@@ -110,6 +110,15 @@ import js.html.CanvasRenderingContext2D;
 		__visible = true;
 	}
 
+	public function drawImageWithId (bitmapID:Int, destX:Float, destY:Float, destWidth:Float, destHeight:Float, smooth:Bool) {
+
+		__inflateBounds (destX, destY);
+		__inflateBounds (destX + destWidth, destY + destHeight);
+		__commands.drawImageWithId (bitmapID, destX, destY, destWidth, destHeight, smooth);
+		__visible = true;
+
+	}
+
 
 	public function beginFill (color:Int = 0, alpha:Float = 1):Void {
 

@@ -49,13 +49,14 @@ import format.tools.Deflate;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import lime.graphics.format.JPEG;
-import openfl.display.PNGEncoderOptions;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.utils.UInt8Array;
 import lime.math.Vector2;
 import lime.math.color.RGBA;
 
+import openfl.display.PNGEncoderOptions;
+import openfl.geom.Point;
 
 class SWFLiteExporter {
 
@@ -486,6 +487,128 @@ class SWFLiteExporter {
 
 	}
 
+	private function simplify (commands:Array<ShapeCommand>):Array<ShapeCommand> {
+
+		var simplifiedCommands = new Array<ShapeCommand> ();
+
+		var i = 0;
+		while (i < commands.length) {
+
+			var command = commands[i];
+
+			function simplifyDrawImage ():Bool {
+
+				switch (command) {
+					case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
+
+						if (i+6 >= commands.length) {
+							return false;
+						}
+
+						var rectStartIndex:Int;
+						var startPoint = new Point ();
+
+						switch (commands[i+1]) {
+
+							case MoveTo (x, y):
+								rectStartIndex = i + 2;
+								startPoint.x = x;
+								startPoint.y = y;
+
+							case LineTo (x, y):
+								rectStartIndex = i + 1;
+								startPoint.x = 0.0;
+								startPoint.y = 0.0;
+
+							default:
+								return false;
+
+						}
+
+						var pointTable = new Array<Point> ();
+						var centerPoint = new Point ();
+
+						for( j in 0...4 ) {
+
+							switch (commands[rectStartIndex + j]) {
+								case LineTo (x, y):
+
+									pointTable.push (new Point (x, y));
+									centerPoint.x += x;
+									centerPoint.y += y;
+
+								default:
+									return false;
+
+							}
+						}
+
+
+						if (pointTable[3].x != startPoint.x || pointTable[3].y != startPoint.y ) {
+
+							return false;
+
+						}
+
+						centerPoint.x = centerPoint.x / 4;
+						centerPoint.y = centerPoint.y / 4;
+
+						inline function getSquareDistance (first:Point, second:Point):Float {
+
+							var dx = first.x - second.x;
+							var dy = first.y - second.y;
+							return dx * dx + dy * dy;
+
+						}
+
+						var squareDistanceToCorner:Float = getSquareDistance (centerPoint, pointTable[0]);
+
+						for( j in 1...4 ) {
+
+							if (getSquareDistance (centerPoint, pointTable[j]) != squareDistanceToCorner) {
+
+								return false;
+
+							}
+
+						}
+
+						// :TODO: ensure whole bitmap should be drawn (bitmap matrix vs Rectangle dimensions)
+
+						if (commands[rectStartIndex+4] == EndFill) {
+
+							var firstPoint = pointTable[0];
+							var secondPoint = pointTable[2];
+							var destX = Math.min (firstPoint.x, secondPoint.x);
+							var destY = Math.min (firstPoint.y, secondPoint.y);
+							var destWidth = Math.abs (firstPoint.x - secondPoint.x);
+							var destHeight = Math.abs (firstPoint.y - secondPoint.y);
+							simplifiedCommands.push (DrawImage(bitmapID, destX, destY, destWidth, destHeight, smooth));
+							i = rectStartIndex+4;
+
+							return true;
+
+						}
+
+					default:
+				}
+
+				return false;
+
+			}
+
+			if (!simplifyDrawImage()) {
+
+				simplifiedCommands.push (command);
+
+			}
+
+			++i;
+		}
+
+		return simplifiedCommands;
+
+	}
 
 	private function addShape (tag:TagDefineShape):SWFSymbol {
 
@@ -494,7 +617,6 @@ class SWFLiteExporter {
 
 		var handler = new ShapeCommandExporter ();
 		tag.export (handler);
-
 
 		for (command in handler.commands) {
 
@@ -512,7 +634,9 @@ class SWFLiteExporter {
 
 		}
 
-		if(isSimpleSprite(handler.commands)) {
+		handler.commands = simplify (handler.commands);
+
+		if (isSimpleSprite (handler.commands)) {
 			var symbol = new SimpleSpriteSymbol ();
 			symbol.id = tag.characterId;
 			symbol.matrix = foundMatrix;
@@ -526,7 +650,7 @@ class SWFLiteExporter {
 
 		var symbol = new ShapeSymbol ();
 		symbol.id = tag.characterId;
-		symbol.fillDrawCommandBuffer(handler.commands);
+		symbol.fillDrawCommandBuffer (handler.commands);
 		symbol.bounds = tag.shapeBounds.rect;
 
 		swfLite.symbols.set (symbol.id, symbol);
@@ -951,54 +1075,9 @@ class SWFLiteExporter {
 
 	private function isSimpleSprite(commands:Array<ShapeCommand>)
 	{
-		var currentX = 0.0;
-		var currentY = 0.0;
-		var lineCount = 0;
-		var isBitmap = false;
 
-		for (command in commands)
-		{
-			switch (command)
-			{
-				case BeginFill (color, alpha):
-					return false;
+		return commands.length == 1 && Type.enumConstructor(commands[0]) == "DrawImage";
 
-				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-					isBitmap = !repeat;
-
-				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-					return false;
-
-				case CurveTo (controlX, controlY, anchorX, anchorY):
-					return false;
-
-				case EndFill:
-
-				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-
-				case LineTo (x, y):
-					if(x == currentX || y == currentY)
-					{
-						currentX = x;
-						currentY = y;
-						++lineCount;
-
-						if(lineCount > 4) {
-							return false;
-						}
-					}
-					else
-					{
-						return false;
-					}
-
-				case MoveTo (x, y):
-					currentX = x;
-					currentY = y;
-			}
-		}
-
-		return lineCount == 4 && isBitmap;
 	}
 }
 

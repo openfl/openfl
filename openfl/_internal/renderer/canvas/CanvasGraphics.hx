@@ -338,6 +338,9 @@ class CanvasGraphics {
 					case DRAW_ELLIPSE:
 						drawEllipse(data);
 
+					case DRAW_IMAGE:
+						drawImage(data);
+
 					case DRAW_RECT:
 						drawRect(data);
 
@@ -547,6 +550,9 @@ class CanvasGraphics {
 						case DRAW_CIRCLE:
 							drawCircle(data);
 
+						case DRAW_IMAGE:
+							drawImage(data);
+
 						case DRAW_ELLIPSE:
 							drawEllipse(data);
 
@@ -737,6 +743,25 @@ class CanvasGraphics {
 		context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
 		context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
 		context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
+	}
+
+	private inline static function drawImage(data:DrawCommandReader)
+	{
+
+		var c = data.readDrawImage();
+
+		if (!hitTesting) {
+
+			context.drawImage (c.bitmap.image.src, c.destX, c.destY, c.destWidth, c.destHeight);
+
+		} else {
+
+			context.fillStyle = "white";
+			context.fillRect (c.destX, c.destY, c.destWidth, c.destHeight);
+
+
+		}
+
 	}
 
 	private inline static function drawRoundRect2(data:DrawCommandReader)

@@ -82,6 +82,12 @@ class DrawCommandReader {
 				
 				fPos += 4; //x, y, width, height
 			
+			case DRAW_IMAGE:
+
+				bdPos += 1; //bitmap
+				fPos += 4; // destX, destY, destWidth, destHeight
+				bPos += 1; // smooth
+
 			case DRAW_PATH:
 				
 				oPos += 3; //commands, data, winding
@@ -223,6 +229,7 @@ class DrawCommandReader {
 	public inline function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
 	public inline function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
 	public inline function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
+	public inline function readDrawImage ():DrawImageView { advance (); prev = DRAW_IMAGE; return new DrawImageView (this); }
 	public inline function readDrawPath ():DrawPathView { advance (); prev = DRAW_PATH; return new DrawPathView (this); }
 	public inline function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
 	public inline function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
@@ -332,6 +339,19 @@ abstract DrawEllipseView (DrawCommandReader) {
 	public var width (get, never):Float; private inline function get_width ():Float { return this.coordinateFloat (2); }
 	public var height(get, never):Float; private inline function get_height ():Float { return this.coordinateFloat (3); }
 	
+}
+
+
+abstract DrawImageView (DrawCommandReader) {
+
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.bitmapData (0); }
+	public var destX (get, never):Float; private inline function get_destX ():Float { return this.float (0); }
+	public var destY (get, never):Float; private inline function get_destY ():Float { return this.float (1); }
+	public var destWidth (get, never):Float; private inline function get_destWidth ():Float { return this.float (2); }
+	public var destHeight (get, never):Float; private inline function get_destHeight ():Float { return this.float (3); }
+	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (0); }
+
 }
 
 

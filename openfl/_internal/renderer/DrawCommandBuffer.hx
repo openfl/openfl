@@ -61,6 +61,7 @@ class DrawCommandBuffer {
 				case CURVE_TO: var c = data.readCurveTo (); curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				case DRAW_CIRCLE: var c = data.readDrawCircle (); drawCircle (c.x, c.y, c.radius);
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
+				case DRAW_IMAGE: var c = data.readDrawImage (); drawImage (c.bitmap, c.destX, c.destY, c.destWidth, c.destHeight, c.smooth);
 				case DRAW_PATH: var c = data.readDrawPath (); drawPath (c.commands, c.data, c.winding);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
@@ -208,6 +209,32 @@ class DrawCommandBuffer {
 		f.push (y);
 		f.push (width);
 		f.push (height);
+
+	}
+
+
+	public function drawImage(bitmap:BitmapData, destX:Float, destY:Float, destWidth:Float, destHeight:Float, smooth:Bool):Void {
+
+		types.push (DRAW_IMAGE);
+		bd.push (bitmap);
+		f.push (destX);
+		f.push (destY);
+		f.push (destWidth);
+		f.push (destHeight);
+		b.push (smooth);
+
+	}
+
+
+	public function drawImageWithId(bitmapId:Int, destX:Float, destY:Float, destWidth:Float, destHeight:Float, smooth:Bool):Void {
+
+		types.push (DRAW_IMAGE);
+		bd.push (bitmapId);
+		f.push (destX);
+		f.push (destY);
+		f.push (destWidth);
+		f.push (destHeight);
+		b.push (smooth);
 
 	}
 
