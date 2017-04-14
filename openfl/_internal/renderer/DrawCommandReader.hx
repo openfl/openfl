@@ -44,7 +44,7 @@ class DrawCommandReader {
 	}
 	
 	
-	private inline function advance ():Void {
+	private function advance ():Void {
 		
 		switch (prev) {
 			
