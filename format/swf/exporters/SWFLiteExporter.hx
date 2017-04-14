@@ -496,6 +496,32 @@ class SWFLiteExporter {
 
 			var command = commands[i];
 
+			function simplifyEmptyLineStyle ():Bool {
+
+				switch (command) {
+
+					case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+						if (thickness == null && color == null && alpha == null
+							&& pixelHinting == null && scaleMode == null && caps == null && joints == null
+							&& miterLimit == null) {
+
+							for( j in i+1...commands.length ) {
+
+								if (commands[j] == EndFill) {
+									i = j;
+									return true;
+								}
+							}
+						}
+
+					default:
+
+				}
+
+				return false;
+
+			}
+
 			function simplifyDrawImage ():Bool {
 
 				switch (command) {
@@ -597,7 +623,7 @@ class SWFLiteExporter {
 
 			}
 
-			if (!simplifyDrawImage()) {
+			if (!simplifyEmptyLineStyle() && !simplifyDrawImage()) {
 
 				simplifiedCommands.push (command);
 
