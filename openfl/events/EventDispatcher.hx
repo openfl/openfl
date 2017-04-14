@@ -248,11 +248,7 @@ class EventDispatcher implements IEventDispatcher {
 				if (listener.useCapture == capture) {
 
 					//listener.callback (event.clone ());
-					#if js
-					untyped __js__("listener.callback.call(this, event)");
-					#else
 					listener.callback (event);
-					#end
 
 					if (event.__isCanceledNow) {
 
