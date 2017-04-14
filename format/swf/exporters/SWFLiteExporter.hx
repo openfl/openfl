@@ -63,6 +63,7 @@ class SWFLiteExporter {
 
 	public var bitmapAlpha:Map <Int, ByteArray>;
 	public var bitmaps:Map <Int, ByteArray>;
+	public var bitmapExtents:Map <Int, Vector2>;
 	public var bitmapTypes:Map <Int, BitmapType>;
 	public var filterClasses:Map <String, Bool>;
 	public var swfLite:SWFLite;
@@ -84,6 +85,7 @@ class SWFLiteExporter {
 
 		bitmapAlpha = new Map <Int, ByteArray> ();
 		bitmaps = new Map <Int, ByteArray> ();
+		bitmapExtents = new Map <Int, Vector2> ();
 		bitmapTypes = new Map <Int, BitmapType> ();
 		filterClasses = new Map <String, Bool> ();
 
@@ -229,6 +231,8 @@ class SWFLiteExporter {
 		var alphaByteArray = null;
 		var byteArray = null;
 		var type = null;
+		var bitmapWidth:Int = 0;
+		var bitmapHeight:Int = 0;
 
 		if (Std.is (tag, TagDefineBitsLossless)) {
 
@@ -238,6 +242,8 @@ class SWFLiteExporter {
 			var buffer = data.zlibBitmapData;
 			buffer.uncompress ();
 			buffer.position = 0;
+			bitmapWidth = data.bitmapWidth;
+			bitmapHeight = data.bitmapHeight;
 
 			if (data.bitmapFormat == BitmapFormat.BIT_8) {
 
@@ -330,6 +336,8 @@ class SWFLiteExporter {
 				}
 
 				var image = lime.graphics.format.JPEG.decodeBytes (bytes, mergeAlphaChannel);
+				bitmapWidth = image.width;
+				bitmapHeight = image.height;
 
 				if( mergeAlphaChannel ){
 					var width = image.width;
@@ -420,6 +428,10 @@ class SWFLiteExporter {
 				byteArray = data.bitmapData;
 				type = BitmapType.JPEG;
 
+				var image = lime.graphics.format.JPEG.decodeBytes (byteArray, false);
+				bitmapWidth = image.width;
+				bitmapHeight = image.height;
+
 			}
 
 		} else if (Std.is (tag, TagDefineBits)) {
@@ -428,6 +440,10 @@ class SWFLiteExporter {
 
 			byteArray = data.bitmapData;
 			type = BitmapType.JPEG;
+
+			var image = lime.graphics.format.JPEG.decodeBytes (byteArray, false);
+			bitmapWidth = image.width;
+			bitmapHeight = image.height;
 
 		}
 
@@ -439,6 +455,7 @@ class SWFLiteExporter {
 			bitmapAlpha.set (symbol.id, alphaByteArray);
 			bitmaps.set (symbol.id, byteArray);
 			bitmapTypes.set (symbol.id, type);
+			bitmapExtents.set (symbol.id, new Vector2 (bitmapWidth, bitmapHeight));
 
 			symbol.path = "";
 			swfLite.symbols.set (symbol.id, symbol);
@@ -527,6 +544,14 @@ class SWFLiteExporter {
 				switch (command) {
 					case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
 
+						if (repeat) {
+							return false;
+						}
+
+						if (matrix.b != 0 || matrix.c != 0) {
+							return false;
+						}
+
 						if (i+6 >= commands.length) {
 							return false;
 						}
@@ -599,7 +624,11 @@ class SWFLiteExporter {
 
 						}
 
-						// :TODO: ensure whole bitmap should be drawn (bitmap matrix vs Rectangle dimensions)
+						if (pointTable[0].x != pointTable[1].x && pointTable[0].y != pointTable[1].y) {
+
+							return false;
+
+						}
 
 						if (commands[rectStartIndex+4] == EndFill) {
 
@@ -609,6 +638,19 @@ class SWFLiteExporter {
 							var destY = Math.min (firstPoint.y, secondPoint.y);
 							var destWidth = Math.abs (firstPoint.x - secondPoint.x);
 							var destHeight = Math.abs (firstPoint.y - secondPoint.y);
+
+							// :TODO: support flipX and flipY by checking matrix.a and matrix.d signs
+
+							var bitmapExtent:Vector2 = bitmapExtents.get (bitmapID);
+							if (Math.abs (bitmapExtent.x * matrix.a - destWidth) > 0.1
+								|| Math.abs (bitmapExtent.y * matrix.d - destHeight) > 0.1
+								|| matrix.tx != destX
+								|| matrix.ty != destY) {
+
+								return false;
+
+							}
+
 							simplifiedCommands.push (DrawImage(bitmapID, destX, destY, destWidth, destHeight, smooth));
 							i = rectStartIndex+4;
 
