@@ -447,7 +447,52 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
-		openfl.Lib.notImplemented ();
+		if (width <= 0 || height <= 0) return;
+
+		__inflateBounds (x - __strokePadding, y - __strokePadding);
+		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
+
+        var xw = x + width;
+        var yh = y + height;
+        var minSize = width < height ? width * 2 : height * 2;
+        topLeftRadius = topLeftRadius < minSize ? topLeftRadius : minSize;
+        topRightRadius = topRightRadius < minSize ? topRightRadius : minSize;
+        bottomLeftRadius = bottomLeftRadius < minSize ? bottomLeftRadius : minSize;
+        bottomRightRadius = bottomRightRadius < minSize ? bottomRightRadius : minSize;
+
+		var anchor = (1 - Math.sin(45 * (Math.PI / 180)));
+		var control = (1 - Math.tan(22.5 * (Math.PI / 180)));
+
+		// bottom-right corner
+        var a = bottomRightRadius * anchor;
+        var s = bottomRightRadius * control;
+        moveTo(xw, yh - bottomRightRadius);
+        curveTo(xw, yh - s, xw - a, yh - a);
+        curveTo(xw - s, yh, xw - bottomRightRadius, yh);
+        
+        // bottom-left corner
+        a = bottomLeftRadius * anchor;
+        s = bottomLeftRadius * control;
+        lineTo(x + bottomLeftRadius, yh);
+        curveTo(x + s, yh, x + a, yh - a);
+        curveTo(x, yh - s, x, yh - bottomLeftRadius);
+        
+        // top-left corner
+        a = topLeftRadius * anchor;
+        s = topLeftRadius * control;
+        lineTo(x, y + topLeftRadius);
+        curveTo(x, y + s, x + a, y + a);
+        curveTo(x + s, y, x + topLeftRadius, y);
+        
+        // top-right corner
+        a = topRightRadius * anchor;
+        s = topRightRadius * control;
+        lineTo(xw - topRightRadius, y);
+        curveTo(xw - s, y, xw - a, y + a);
+        curveTo(xw, y + s, xw, y + topRightRadius);
+        lineTo(xw, yh - bottomRightRadius);
+
+		__dirty = true;
 		
 	}
 	
