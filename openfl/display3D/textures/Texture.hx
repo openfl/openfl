@@ -13,6 +13,7 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 import haxe.Timer;
+import haxe.io.Bytes;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -200,9 +201,25 @@ import haxe.Timer;
 	private function __uploadATFTextureFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		data.position = byteArrayOffset;
+		var version = 0;
+		var length = 0;
+
+		// When the 6th byte is 0xff, we have the new format
+		if (data[byteArrayOffset+6] == 0xff) {
+			
+			version = 1;
+			data.position = byteArrayOffset+8;
+			length = __readUInt32 (data);
 		
-		var version = __getATFVersion (data);
-		var length = (version == 0) ? __readUInt24 (data) : __readUInt32 (data);
+		}
+		else {
+			
+			version = 0;
+			data.position = byteArrayOffset+3;
+			length = __readUInt24 (data);
+		
+		}
+		
 		
 		if (cast ((byteArrayOffset + length), Int) > data.length) {
 			
@@ -219,11 +236,15 @@ import haxe.Timer;
 			
 		}
 		
-		//Removing ATF format limitation to allow for multiple format support.
-		//AtfFormat format = (AtfFormat)(tdata & 0x7f);	
-		//if (format != AtfFormat.Block) {
-		//	throw new NotImplementedException("Only ATF block compressed textures are supported");
-		//}
+		// Handle the different texture formats
+		var format:AtfFormat = cast (tdata & 0x7f);	
+		switch (format) {
+			
+			case AtfFormat.RAW_COMPRESSED: __format = TextureBase.__textureFormatCompressed;
+			case AtfFormat.RAW_COMPRESSED_ALPHA: __format = TextureBase.__textureFormatCompressedAlpha;
+			default: throw new IllegalOperationError("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
+		
+		}
 		
 		var width:Int = (1 << cast data.readUnsignedByte ());
 		var height:Int = (1 << cast data.readUnsignedByte ());
@@ -235,36 +256,41 @@ import haxe.Timer;
 		}
 		
 		var mipCount:Int = cast data.readUnsignedByte ();
-		
+
 		for (level in 0...mipCount) {
 			
-			for (gpuFormat in 0...3) {
+			for (gpuFormat in 0...4) { // DXT1/5, ETC1, PVRTC4, ETC2
 				
 				var blockLength = (version == 0) ? __readUInt24 (data) : __readUInt32 (data);
+
+				if ((data.position + blockLength) > data.length) {
+
+					throw new IllegalOperationError("Block length exceeds ATF file length");
 				
-				/*
-					//TODO: Figure out exceptions
-					if ((data.position + blockLength) > data.length) {
-						throw new System.IO.InvalidDataException("Block length exceeds ATF file length");
-					}*/
+				}
 				
 				if (blockLength > 0) {
 					
-					if (gpuFormat == 1) {
+
+					if (gpuFormat == 0) {
 						
-						//TODO: Removed Monoplatform code
+						// DXT1/5
+
+						var bytes:Bytes = Bytes.alloc(blockLength);
+						data.readBytes(bytes, 0, blockLength);
 						
-					} else if (gpuFormat == 2) {
+						GL.compressedTexImage2D (__textureTarget, level, __format, width>>level, height>>level, 0, blockLength, bytes);
+						GLUtils.CheckGLError ();
+					
+					} else {
+
+						// TODO: Other formats are currently not supported
 						
-						//TODO: Removed Monoplatform code
+						data.position += blockLength;
 						
 					}
 					
-					// TODO handle other formats/platforms
-					
 				}
-				
-				data.position += blockLength;
 				
 			}
 			
@@ -288,7 +314,9 @@ import haxe.Timer;
 	
 	public var RGB888 = 0;
 	public var RGBA8888 = 1;
-	public var COMPRESSED = 2;
-	public var BLOCK = 5;
+	public var COMPRESSED = 2; // JPEG-XR+LZMA & Block compression
+	public var RAW_COMPRESSED = 3; // Block compression
+	public var COMPRESSED_ALPHA = 4; // JPEG-XR+LZMA & Block compression with Alpha
+	public var RAW_COMPRESSED_ALPHA = 5; // Block compression with Alpha
 	
 }
