@@ -29,7 +29,11 @@ class TextureBase extends EventDispatcher {
 	private static var __supportsBGRA:Null<Bool> = null;
 	private static var __textureFormat:Int;
 	private static var __textureInternalFormat:Int;
-	
+
+	private static var __supportsCompressed:Null<Bool> = null;
+	private static var __textureFormatCompressed:Int;
+	private static var __textureFormatCompressedAlpha:Int;
+
 	private var __alphaTexture:Texture;
 	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
@@ -56,7 +60,7 @@ class TextureBase extends EventDispatcher {
 		
 		__textureID = GL.createTexture ();
 		__textureContext = GL.context;
-		
+
 		if (__supportsBGRA == null) {
 			
 			__textureInternalFormat = GL.RGBA;
@@ -88,6 +92,28 @@ class TextureBase extends EventDispatcher {
 				__supportsBGRA = false;
 				__textureFormat = GL.RGBA;
 				
+			}
+			
+		}
+
+		if (__supportsCompressed == null) {
+			
+			#if (js && html5)
+			var compressedExtension = GL.getExtension ("WEBGL_compressed_texture_s3tc");
+			#else
+			var compressedExtension = GL.getExtension ("EXT_texture_compression_s3tc");
+			#end
+			
+			if (compressedExtension != null) {
+
+				__supportsCompressed = true;
+				__textureFormatCompressed = compressedExtension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				__textureFormatCompressedAlpha = compressedExtension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+
+			} else {
+
+				__supportsCompressed = false;
+
 			}
 			
 		}
