@@ -4,6 +4,8 @@ package openfl.utils;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
+import lime.utils.BytePointer;
+import lime.utils.DataPointer;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
@@ -20,6 +22,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public static var defaultObjectEncoding:UInt;
+	
+	private static var __bytePointer = new BytePointer ();
 	
 	public var length (get, set):Int;
 	
@@ -149,6 +153,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#else
 		return (byteArray:ByteArrayData);
 		#end
+		
+	}
+	
+	
+	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
+		
+		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
+		return __bytePointer;
 		
 	}
 	
