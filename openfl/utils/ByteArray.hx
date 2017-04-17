@@ -4,6 +4,9 @@ package openfl.utils;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
+import lime.system.System;
+import lime.utils.BytePointer;
+import lime.utils.DataPointer;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
@@ -263,6 +266,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
 	
+	private static var __defaultEndian:Endian = null;
+	
 	public var bytesAvailable (get, never):UInt;
 	public var endian (get, set):Endian;
 	public var objectEncoding:UInt;
@@ -291,7 +296,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 		__length = length;
-		endian = BIG_ENDIAN;
+		
+		if (__defaultEndian == null) {
+			
+			if (System.endianness == LITTLE_ENDIAN) {
+				
+				__defaultEndian = LITTLE_ENDIAN;
+				
+			} else {
+				
+				__defaultEndian = BIG_ENDIAN;
+				
+			}
+			
+		}
+		
+		endian = __defaultEndian;
 		position = 0;
 		
 	}
