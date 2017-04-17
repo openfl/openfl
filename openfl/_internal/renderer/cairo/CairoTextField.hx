@@ -67,7 +67,8 @@ class CairoTextField {
 		
 		if (cairo != null) {
 			
-			var surface:CairoImageSurface = cast cairo.target;
+			//var surface:CairoImageSurface = cast cairo.target;
+			var surface = graphics.__bitmap.getSurface ();
 			
 			if (!renderable || (graphics.__dirty && (width != surface.width || height != surface.height))) {
 				
