@@ -61,7 +61,7 @@ class FPS extends TextField {
 		}
 		
 		var currentCount = times.length;
-		currentFPS = Math.round ((currentCount + cacheCount) / 2);
+		currentFPS = (currentCount + cacheCount) >> 1;
 		
 		if (currentCount != cacheCount /*&& visible*/) {
 			
