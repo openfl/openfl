@@ -580,6 +580,7 @@ class CairoGraphics {
 					hasPath = true;
 					cairo.lineTo (c.x - offsetX, c.y - offsetY);
 					
+					closeGap = true;
 					positionX = c.x;
 					positionY = c.y;
 				
