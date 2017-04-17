@@ -648,8 +648,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function writeFloat (value:Float):Void {
 		
-		var int = FPHelper.floatToI32 (value);
-		writeInt (int);
+		if (endian == LITTLE_ENDIAN) {
+			
+			__resize (position + 4);
+			setFloat (position, value);
+			position += 4;
+			
+		} else {
+			
+			var int = FPHelper.floatToI32 (value);
+			writeInt (int);
+			
+		}
 		
 	}
 	
