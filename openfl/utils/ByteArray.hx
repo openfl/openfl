@@ -157,12 +157,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
+	#if sys
 	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
 		
 		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
 		return __bytePointer;
 		
 	}
+	#end
 	
 	
 	@:to @:noCompletion private static function toBytes (byteArray:ByteArray):Bytes {
