@@ -549,10 +549,6 @@ class SWFLiteExporter {
 							return false;
 						}
 
-						if (matrix.b != 0 || matrix.c != 0) {
-							return false;
-						}
-
 						if (i+6 >= commands.length) {
 							return false;
 						}
@@ -602,8 +598,8 @@ class SWFLiteExporter {
 
 						}
 
-						centerPoint.x = centerPoint.x / 4;
-						centerPoint.y = centerPoint.y / 4;
+						centerPoint.x /= 4;
+						centerPoint.y /= 4;
 
 						var squareDistanceToCorner:Float = Point.squareDistance (centerPoint, pointTable[0]);
 
