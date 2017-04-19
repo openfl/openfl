@@ -603,10 +603,10 @@ class SWFLiteExporter {
 							var rightPoint = Point.interpolate (pointTable[0], pointTable[1], 0.5);
 							var upPoint = Point.interpolate (pointTable[1], pointTable[2], 0.5);
 
-							var shapeRectangle = new RotatedRectangle (centerPoint, rightPoint.subtract (centerPoint), upPoint.subtract (centerPoint));
+							var shapeRectangle = new Parallellogram (centerPoint, rightPoint.subtract (centerPoint), upPoint.subtract (centerPoint));
 							var bitmapExtent:Vector2 = bitmapExtents.get (bitmapID);
 
-							var imageRectangle = new RotatedRectangle (new Point (0.5 * bitmapExtent.x, 0.5 * bitmapExtent.y), new Point (0.5 * bitmapExtent.x, 0.0), new Point (0.0, 0.5 * bitmapExtent.y));
+							var imageRectangle = new Parallellogram (new Point (0.5 * bitmapExtent.x, 0.5 * bitmapExtent.y), new Point (0.5 * bitmapExtent.x, 0.0), new Point (0.0, 0.5 * bitmapExtent.y));
 							imageRectangle.transform (matrix);
 
 							if (!shapeRectangle.equals (imageRectangle)) {
@@ -667,7 +667,11 @@ class SWFLiteExporter {
 
 		}
 
-		handler.commands = simplify (handler.commands);
+		try {
+			handler.commands = simplify (handler.commands);
+		} catch(e:Dynamic) {
+			throw 'Error simplifying shape ${tag.characterId}: $e';
+		}
 
 		if (isSimpleSprite (handler.commands)) {
 			var symbol = new SimpleSpriteSymbol ();
@@ -1123,7 +1127,7 @@ enum BitmapType {
 
 }
 
-class RotatedRectangle {
+class Parallellogram {
 
 	public var center (default, null):Point;
 	public var halfRight (default, null):Point;
@@ -1135,15 +1139,11 @@ class RotatedRectangle {
 		this.halfRight = halfRight;
 		this.halfUp = halfUp;
 
-		if (halfRight.x * halfUp.x + halfRight.y * halfUp.y > 0.01) {
-			throw "up and right are not perpendicular";
-		}
-
 		normalize ();
 
 	}
 
-	public function equals (other:RotatedRectangle, tolerance:Float = 0.01):Bool {
+	public function equals (other:Parallellogram, tolerance:Float = 0.01):Bool {
 
 		return Point.squareDistance (center, other.center) <= tolerance
 			&& Point.squareDistance (halfRight, other.halfRight) <= tolerance
