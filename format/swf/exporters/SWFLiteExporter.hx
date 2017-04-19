@@ -564,56 +564,42 @@ class SWFLiteExporter {
 								startPoint.y = y;
 
 							case LineTo (x, y):
-								rectStartIndex = i + 1;
-								startPoint.x = 0.0;
-								startPoint.y = 0.0;
+								throw "should never happen (LineTo after BeginBitmapFill)";
 
 							default:
 								return false;
 
 						}
 
-						var pointTable = new Array<Point> ();
-						var centerPoint = new Point ();
+						if (commands[rectStartIndex+4] == EndFill) {
 
-						for( j in 0...4 ) {
+							var pointTable = new Array<Point> ();
+							var centerPoint = new Point ();
 
-							switch (commands[rectStartIndex + j]) {
-								case LineTo (x, y):
+							for( j in 0...4 ) {
 
-									pointTable.push (new Point (x, y));
-									centerPoint.x += x;
-									centerPoint.y += y;
+								switch (commands[rectStartIndex + j]) {
+									case LineTo (x, y):
 
-								default:
-									return false;
+										pointTable.push (new Point (x, y));
+										centerPoint.x += x;
+										centerPoint.y += y;
 
+									default:
+										return false;
+
+								}
 							}
-						}
 
-
-						if (pointTable[3].x != startPoint.x || pointTable[3].y != startPoint.y ) {
-
-							return false;
-
-						}
-
-						centerPoint.x /= 4;
-						centerPoint.y /= 4;
-
-						var squareDistanceToCorner:Float = Point.squareDistance (centerPoint, pointTable[0]);
-
-						for( j in 1...4 ) {
-
-							if (Point.squareDistance (centerPoint, pointTable[j]) != squareDistanceToCorner) {
+							if (pointTable[3].x != startPoint.x || pointTable[3].y != startPoint.y ) {
 
 								return false;
 
 							}
 
-						}
+							centerPoint.x /= 4;
+							centerPoint.y /= 4;
 
-						if (commands[rectStartIndex+4] == EndFill) {
 							var rightPoint = Point.interpolate (pointTable[0], pointTable[1], 0.5);
 							var upPoint = Point.interpolate (pointTable[1], pointTable[2], 0.5);
 

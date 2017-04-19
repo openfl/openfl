@@ -113,12 +113,21 @@ import js.html.CanvasRenderingContext2D;
 	public function drawImageWithId (bitmapID:Int, matrix:Matrix, smooth:Bool) {
 
 		var p = Point.pool.get ();
-		p.x = 1.0;
-		p.y = 1.0;
 
-		matrix.__transformPoint(p);
 		__inflateBounds (matrix.tx, matrix.ty);
-		__inflateBounds (p.x, p.y);
+
+		inline function inflateTransformedCorner(x:Float, y:Float) {
+
+			p.x = x;
+			p.y = y;
+			matrix.__transformPoint(p);
+			__inflateBounds (p.x, p.y);
+
+		}
+
+		inflateTransformedCorner (0.0, 1.0);
+		inflateTransformedCorner (1.0, 0.0);
+		inflateTransformedCorner (1.0, 1.0);
 
 		__commands.drawImageWithId (bitmapID, matrix, smooth);
 		__visible = true;
