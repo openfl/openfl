@@ -49,19 +49,22 @@ import format.tools.Deflate;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import lime.graphics.format.JPEG;
-import openfl.display.PNGEncoderOptions;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.utils.UInt8Array;
 import lime.math.Vector2;
 import lime.math.color.RGBA;
 
+import openfl.display.PNGEncoderOptions;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
 
 class SWFLiteExporter {
 
 
 	public var bitmapAlpha:Map <Int, ByteArray>;
 	public var bitmaps:Map <Int, ByteArray>;
+	public var bitmapExtents:Map <Int, Vector2>;
 	public var bitmapTypes:Map <Int, BitmapType>;
 	public var filterClasses:Map <String, Bool>;
 	public var swfLite:SWFLite;
@@ -83,6 +86,7 @@ class SWFLiteExporter {
 
 		bitmapAlpha = new Map <Int, ByteArray> ();
 		bitmaps = new Map <Int, ByteArray> ();
+		bitmapExtents = new Map <Int, Vector2> ();
 		bitmapTypes = new Map <Int, BitmapType> ();
 		filterClasses = new Map <String, Bool> ();
 
@@ -228,6 +232,8 @@ class SWFLiteExporter {
 		var alphaByteArray = null;
 		var byteArray = null;
 		var type = null;
+		var bitmapWidth:Int = 0;
+		var bitmapHeight:Int = 0;
 
 		if (Std.is (tag, TagDefineBitsLossless)) {
 
@@ -237,6 +243,8 @@ class SWFLiteExporter {
 			var buffer = data.zlibBitmapData;
 			buffer.uncompress ();
 			buffer.position = 0;
+			bitmapWidth = data.bitmapWidth;
+			bitmapHeight = data.bitmapHeight;
 
 			if (data.bitmapFormat == BitmapFormat.BIT_8) {
 
@@ -329,6 +337,8 @@ class SWFLiteExporter {
 				}
 
 				var image = lime.graphics.format.JPEG.decodeBytes (bytes, mergeAlphaChannel);
+				bitmapWidth = image.width;
+				bitmapHeight = image.height;
 
 				if( mergeAlphaChannel ){
 					var width = image.width;
@@ -419,6 +429,10 @@ class SWFLiteExporter {
 				byteArray = data.bitmapData;
 				type = BitmapType.JPEG;
 
+				var image = lime.graphics.format.JPEG.decodeBytes (byteArray, false);
+				bitmapWidth = image.width;
+				bitmapHeight = image.height;
+
 			}
 
 		} else if (Std.is (tag, TagDefineBits)) {
@@ -427,6 +441,10 @@ class SWFLiteExporter {
 
 			byteArray = data.bitmapData;
 			type = BitmapType.JPEG;
+
+			var image = lime.graphics.format.JPEG.decodeBytes (byteArray, false);
+			bitmapWidth = image.width;
+			bitmapHeight = image.height;
 
 		}
 
@@ -438,6 +456,7 @@ class SWFLiteExporter {
 			bitmapAlpha.set (symbol.id, alphaByteArray);
 			bitmaps.set (symbol.id, byteArray);
 			bitmapTypes.set (symbol.id, type);
+			bitmapExtents.set (symbol.id, new Vector2 (bitmapWidth, bitmapHeight));
 
 			symbol.path = "";
 			swfLite.symbols.set (symbol.id, symbol);
@@ -486,6 +505,143 @@ class SWFLiteExporter {
 
 	}
 
+	private function simplify (commands:Array<ShapeCommand>):Array<ShapeCommand> {
+
+		var simplifiedCommands = new Array<ShapeCommand> ();
+
+		var i = 0;
+		while (i < commands.length) {
+
+			var command = commands[i];
+
+			function simplifyEmptyLineStyle ():Bool {
+
+				switch (command) {
+
+					case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+						if (thickness == null && color == null && alpha == null
+							&& pixelHinting == null && scaleMode == null && caps == null && joints == null
+							&& miterLimit == null) {
+
+							for( j in i+1...commands.length ) {
+
+								if (commands[j] == EndFill) {
+									i = j;
+									return true;
+								}
+							}
+						}
+
+					default:
+
+				}
+
+				return false;
+
+			}
+
+			function simplifyDrawImage ():Bool {
+
+				switch (command) {
+					case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
+
+						if (repeat) {
+							return false;
+						}
+
+						if (i+6 >= commands.length) {
+							return false;
+						}
+
+						var rectStartIndex:Int;
+						var startPoint = new Point ();
+
+						switch (commands[i+1]) {
+
+							case MoveTo (x, y):
+								rectStartIndex = i + 2;
+								startPoint.x = x;
+								startPoint.y = y;
+
+							case LineTo (x, y):
+								throw "should never happen (LineTo after BeginBitmapFill)";
+
+							default:
+								return false;
+
+						}
+
+						if (commands[rectStartIndex+4] == EndFill) {
+
+							var pointTable = new Array<Point> ();
+							var centerPoint = new Point ();
+
+							for( j in 0...4 ) {
+
+								switch (commands[rectStartIndex + j]) {
+									case LineTo (x, y):
+
+										pointTable.push (new Point (x, y));
+										centerPoint.x += x;
+										centerPoint.y += y;
+
+									default:
+										return false;
+
+								}
+							}
+
+							if (pointTable[3].x != startPoint.x || pointTable[3].y != startPoint.y ) {
+
+								return false;
+
+							}
+
+							centerPoint.x /= 4;
+							centerPoint.y /= 4;
+
+							var rightPoint = Point.interpolate (pointTable[0], pointTable[1], 0.5);
+							var upPoint = Point.interpolate (pointTable[1], pointTable[2], 0.5);
+
+							var shapeRectangle = new Parallellogram (centerPoint, rightPoint.subtract (centerPoint), upPoint.subtract (centerPoint));
+							var bitmapExtent:Vector2 = bitmapExtents.get (bitmapID);
+
+							var imageRectangle = new Parallellogram (new Point (0.5 * bitmapExtent.x, 0.5 * bitmapExtent.y), new Point (0.5 * bitmapExtent.x, 0.0), new Point (0.0, 0.5 * bitmapExtent.y));
+							imageRectangle.transform (matrix);
+
+							if (!shapeRectangle.equals (imageRectangle)) {
+
+								return false;
+							}
+
+							var imageMatrix:Matrix = new Matrix (bitmapExtent.x, 0, 0, bitmapExtent.y, 0.0, 0.0);
+							imageMatrix.concat (matrix);
+							simplifiedCommands.push (DrawImage(bitmapID, imageMatrix, smooth));
+							i = rectStartIndex+4;
+
+							return true;
+
+						}
+
+					default:
+				}
+
+				return false;
+
+			}
+
+			if (!simplifyEmptyLineStyle() && !simplifyDrawImage()) {
+
+				simplifiedCommands.push (command);
+
+			}
+
+			++i;
+		}
+
+		return simplifiedCommands;
+
+	}
 
 	private function addShape (tag:TagDefineShape):SWFSymbol {
 
@@ -494,7 +650,6 @@ class SWFLiteExporter {
 
 		var handler = new ShapeCommandExporter ();
 		tag.export (handler);
-
 
 		for (command in handler.commands) {
 
@@ -512,7 +667,13 @@ class SWFLiteExporter {
 
 		}
 
-		if(isSimpleSprite(handler.commands)) {
+		try {
+			handler.commands = simplify (handler.commands);
+		} catch(e:Dynamic) {
+			throw 'Error simplifying shape ${tag.characterId}: $e';
+		}
+
+		if (isSimpleSprite (handler.commands)) {
 			var symbol = new SimpleSpriteSymbol ();
 			symbol.id = tag.characterId;
 			symbol.matrix = foundMatrix;
@@ -526,7 +687,7 @@ class SWFLiteExporter {
 
 		var symbol = new ShapeSymbol ();
 		symbol.id = tag.characterId;
-		symbol.fillDrawCommandBuffer(handler.commands);
+		symbol.fillDrawCommandBuffer (handler.commands);
 		symbol.bounds = tag.shapeBounds.rect;
 
 		swfLite.symbols.set (symbol.id, symbol);
@@ -951,54 +1112,9 @@ class SWFLiteExporter {
 
 	private function isSimpleSprite(commands:Array<ShapeCommand>)
 	{
-		var currentX = 0.0;
-		var currentY = 0.0;
-		var lineCount = 0;
-		var isBitmap = false;
 
-		for (command in commands)
-		{
-			switch (command)
-			{
-				case BeginFill (color, alpha):
-					return false;
+		return commands.length == 1 && Type.enumConstructor(commands[0]) == "DrawImage";
 
-				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-					isBitmap = !repeat;
-
-				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-					return false;
-
-				case CurveTo (controlX, controlY, anchorX, anchorY):
-					return false;
-
-				case EndFill:
-
-				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-
-				case LineTo (x, y):
-					if(x == currentX || y == currentY)
-					{
-						currentX = x;
-						currentY = y;
-						++lineCount;
-
-						if(lineCount > 4) {
-							return false;
-						}
-					}
-					else
-					{
-						return false;
-					}
-
-				case MoveTo (x, y):
-					currentX = x;
-					currentY = y;
-			}
-		}
-
-		return lineCount == 4 && isBitmap;
 	}
 }
 
@@ -1009,4 +1125,71 @@ enum BitmapType {
 	JPEG_ALPHA;
 	JPEG;
 
+}
+
+class Parallellogram {
+
+	public var center (default, null):Point;
+	public var halfRight (default, null):Point;
+	public var halfUp (default, null):Point;
+
+	public function new (center:Point, halfRight:Point, halfUp:Point):Void {
+
+		this.center = center;
+		this.halfRight = halfRight;
+		this.halfUp = halfUp;
+
+		normalize ();
+
+	}
+
+	public function equals (other:Parallellogram, tolerance:Float = 0.01):Bool {
+
+		return Point.squareDistance (center, other.center) <= tolerance
+			&& Point.squareDistance (halfRight, other.halfRight) <= tolerance
+			&& Point.squareDistance (halfUp, other.halfUp) <= tolerance;
+
+	}
+
+	public function transform (matrix:Matrix):Void {
+
+		matrix.__transformPoint (center);
+		halfRight = matrix.deltaTransformPoint (halfRight);
+		halfUp = matrix.deltaTransformPoint (halfUp);
+
+		normalize ();
+
+	}
+
+	public function normalize ():Void {
+
+		var normalizedRight = halfRight.clone ();
+		var normalizedUp = halfUp.clone ();
+
+		normalizedRight.normalize (1.0);
+		normalizedUp.normalize (1.0);
+
+		if (Math.abs (normalizedRight.x) < Math.abs (normalizedUp.x) ) {
+
+				var swap = halfRight;
+				halfRight = halfUp;
+				halfUp = swap;
+
+		}
+
+		if (halfRight.x < 0) {
+
+			halfRight.x *= -1;
+			halfRight.y *= -1;
+
+		}
+
+		if (halfUp.y < 0) {
+
+			halfUp.x *= -1;
+			halfUp.y *= -1;
+
+		}
+
+	}
 }
