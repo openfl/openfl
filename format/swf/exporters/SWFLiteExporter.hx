@@ -56,6 +56,7 @@ import lime.math.Vector2;
 import lime.math.color.RGBA;
 
 import openfl.display.PNGEncoderOptions;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 
 class SWFLiteExporter {
@@ -604,54 +605,36 @@ class SWFLiteExporter {
 						centerPoint.x = centerPoint.x / 4;
 						centerPoint.y = centerPoint.y / 4;
 
-						inline function getSquareDistance (first:Point, second:Point):Float {
-
-							var dx = first.x - second.x;
-							var dy = first.y - second.y;
-							return dx * dx + dy * dy;
-
-						}
-
-						var squareDistanceToCorner:Float = getSquareDistance (centerPoint, pointTable[0]);
+						var squareDistanceToCorner:Float = Point.squareDistance (centerPoint, pointTable[0]);
 
 						for( j in 1...4 ) {
 
-							if (getSquareDistance (centerPoint, pointTable[j]) != squareDistanceToCorner) {
+							if (Point.squareDistance (centerPoint, pointTable[j]) != squareDistanceToCorner) {
 
 								return false;
 
 							}
-
-						}
-
-						if (pointTable[0].x != pointTable[1].x && pointTable[0].y != pointTable[1].y) {
-
-							return false;
 
 						}
 
 						if (commands[rectStartIndex+4] == EndFill) {
+							var rightPoint = Point.interpolate (pointTable[0], pointTable[1], 0.5);
+							var upPoint = Point.interpolate (pointTable[1], pointTable[2], 0.5);
 
-							var firstPoint = pointTable[0];
-							var secondPoint = pointTable[2];
-							var destX = Math.min (firstPoint.x, secondPoint.x);
-							var destY = Math.min (firstPoint.y, secondPoint.y);
-							var destWidth = Math.abs (firstPoint.x - secondPoint.x);
-							var destHeight = Math.abs (firstPoint.y - secondPoint.y);
-
-							// :TODO: support flipX and flipY by checking matrix.a and matrix.d signs
-
+							var shapeRectangle = new RotatedRectangle (centerPoint, rightPoint.subtract (centerPoint), upPoint.subtract (centerPoint));
 							var bitmapExtent:Vector2 = bitmapExtents.get (bitmapID);
-							if (Math.abs (bitmapExtent.x * matrix.a - destWidth) > 0.1
-								|| Math.abs (bitmapExtent.y * matrix.d - destHeight) > 0.1
-								|| matrix.tx != destX
-								|| matrix.ty != destY) {
+
+							var imageRectangle = new RotatedRectangle (new Point (0.5 * bitmapExtent.x, 0.5 * bitmapExtent.y), new Point (0.5 * bitmapExtent.x, 0.0), new Point (0.0, 0.5 * bitmapExtent.y));
+							imageRectangle.transform (matrix);
+
+							if (!shapeRectangle.equals (imageRectangle)) {
 
 								return false;
-
 							}
 
-							simplifiedCommands.push (DrawImage(bitmapID, destX, destY, destWidth, destHeight, smooth));
+							var imageMatrix:Matrix = new Matrix (bitmapExtent.x, 0, 0, bitmapExtent.y, 0.0, 0.0);
+							imageMatrix.concat (matrix);
+							simplifiedCommands.push (DrawImage(bitmapID, imageMatrix, smooth));
 							i = rectStartIndex+4;
 
 							return true;
@@ -1156,4 +1139,75 @@ enum BitmapType {
 	JPEG_ALPHA;
 	JPEG;
 
+}
+
+class RotatedRectangle {
+
+	public var center (default, null):Point;
+	public var halfRight (default, null):Point;
+	public var halfUp (default, null):Point;
+
+	public function new (center:Point, halfRight:Point, halfUp:Point):Void {
+
+		this.center = center;
+		this.halfRight = halfRight;
+		this.halfUp = halfUp;
+
+		if (halfRight.x * halfUp.x + halfRight.y * halfUp.y > 0.01) {
+			throw "up and right are not perpendicular";
+		}
+
+		normalize ();
+
+	}
+
+	public function equals (other:RotatedRectangle, tolerance:Float = 0.01):Bool {
+
+		return Point.squareDistance (center, other.center) <= tolerance
+			&& Point.squareDistance (halfRight, other.halfRight) <= tolerance
+			&& Point.squareDistance (halfUp, other.halfUp) <= tolerance;
+
+	}
+
+	public function transform (matrix:Matrix):Void {
+
+		matrix.__transformPoint (center);
+		halfRight = matrix.deltaTransformPoint (halfRight);
+		halfUp = matrix.deltaTransformPoint (halfUp);
+
+		normalize ();
+
+	}
+
+	public function normalize ():Void {
+
+		var normalizedRight = halfRight.clone ();
+		var normalizedUp = halfUp.clone ();
+
+		normalizedRight.normalize (1.0);
+		normalizedUp.normalize (1.0);
+
+		if (Math.abs (normalizedRight.x) < Math.abs (normalizedUp.x) ) {
+
+				var swap = halfRight;
+				halfRight = halfUp;
+				halfUp = swap;
+
+		}
+
+		if (halfRight.x < 0) {
+
+			halfRight.x *= -1;
+			halfRight.y *= -1;
+
+		}
+
+		if (halfUp.y < 0) {
+
+			halfUp.x *= -1;
+			halfUp.y *= -1;
+
+		}
+
+	}
 }

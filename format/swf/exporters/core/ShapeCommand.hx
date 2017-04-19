@@ -19,7 +19,7 @@ enum ShapeCommand {
 	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
 	//DrawCircle (x:Float, y:Float, radius:Float);
 	//DrawEllipse (x:Float, y:Float, width:Float, height:Float);
-	DrawImage (bitmapID:Int, destX:Float, destY:Float, destWidth:Float, destHeight:Float, smooth:Bool);
+	DrawImage (bitmapID:Int, matrix:Matrix, smooth:Bool);
 	//DrawRect (x:Float, y:Float, width:Float, height:Float);
 	//DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
 	//DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);

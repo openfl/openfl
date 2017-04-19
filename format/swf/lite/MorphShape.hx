@@ -117,9 +117,9 @@ class MorphShape extends Shape {
 
 						graphics.moveTo (x, y);
 
-					case DrawImage (bitmapID, destX, destY, destWidth, destHeight, smooth):
+					case DrawImage (bitmapID, matrix, smooth):
 
-						graphics.drawImageWithId (bitmapID, destX, destY, destWidth, destHeight, smooth);
+						graphics.drawImageWithId (bitmapID, matrix, smooth);
 
 				}
 			}

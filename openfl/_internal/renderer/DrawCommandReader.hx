@@ -85,7 +85,7 @@ class DrawCommandReader {
 			case DRAW_IMAGE:
 
 				bdPos += 1; //bitmap
-				fPos += 4; // destX, destY, destWidth, destHeight
+				oPos += 1; // matrix
 				bPos += 1; // smooth
 
 			case DRAW_PATH:
@@ -346,10 +346,7 @@ abstract DrawImageView (DrawCommandReader) {
 
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.bitmapData (0); }
-	public var destX (get, never):Float; private inline function get_destX ():Float { return this.float (0); }
-	public var destY (get, never):Float; private inline function get_destY ():Float { return this.float (1); }
-	public var destWidth (get, never):Float; private inline function get_destWidth ():Float { return this.float (2); }
-	public var destHeight (get, never):Float; private inline function get_destHeight ():Float { return this.float (3); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (0); }
 
 }

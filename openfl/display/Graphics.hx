@@ -110,12 +110,20 @@ import js.html.CanvasRenderingContext2D;
 		__visible = true;
 	}
 
-	public function drawImageWithId (bitmapID:Int, destX:Float, destY:Float, destWidth:Float, destHeight:Float, smooth:Bool) {
+	public function drawImageWithId (bitmapID:Int, matrix:Matrix, smooth:Bool) {
 
-		__inflateBounds (destX, destY);
-		__inflateBounds (destX + destWidth, destY + destHeight);
-		__commands.drawImageWithId (bitmapID, destX, destY, destWidth, destHeight, smooth);
+		var p = Point.pool.get ();
+		p.x = 1.0;
+		p.y = 1.0;
+
+		matrix.__transformPoint(p);
+		__inflateBounds (matrix.tx, matrix.ty);
+		__inflateBounds (p.x, p.y);
+
+		__commands.drawImageWithId (bitmapID, matrix, smooth);
 		__visible = true;
+
+		Point.pool.put (p);
 
 	}
 

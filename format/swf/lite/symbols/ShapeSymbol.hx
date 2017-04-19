@@ -103,9 +103,9 @@ class ShapeSymbol extends SWFSymbol {
 
 					graphics.curveTo (controlX, controlY, anchorX, anchorY);
 
-				case DrawImage (bitmapID, destX, destY, destWidth, destHeight, smooth):
+				case DrawImage (bitmapID, matrix, smooth):
 
-					graphics.drawImageWithId (bitmapID, destX, destY, destWidth, destHeight, smooth);
+					graphics.drawImageWithId (bitmapID, matrix, smooth);
 
 				case EndFill:
 
