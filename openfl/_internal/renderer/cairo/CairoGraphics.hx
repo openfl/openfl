@@ -725,8 +725,8 @@ class CairoGraphics {
 
 					}
 
-					var width = 0;
-					var height = 0;
+					var width:Float = 0;
+					var height:Float = 0;
 
 					if (!colorFill) {
 

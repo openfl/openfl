@@ -123,9 +123,10 @@ import openfl.gl.GL;
 		var upperBound = Math.max(Math.min(ratios[0] / 0xFF, 1.0),0.0);
 		var lowerBoundColor = ARGB.create(Math.round(alphas[0] * 255), ri(colors[0]), gi(colors[0]), bi(colors[0]));
 		var upperBoundColor = ARGB.create(Math.round(alphas[0] * 255), ri(colors[0]), gi(colors[0]), bi(colors[0]));
+		var width = __lookupTexture.physicalWidth;
 		
-		for( x in 0...__lookupTexture.width ) {
-			var ratio = (x + 0.5) / __lookupTexture.width;
+		for( x in 0...width ) {
+			var ratio = (x + 0.5) / width;
 			
 			if (ratio > upperBound) {
 				
@@ -148,7 +149,7 @@ import openfl.gl.GL;
 			var lerpFactor = (ratio - lowerBound) / (upperBound - lowerBound);
 			var color:ARGB = interpolate(lowerBoundColor, upperBoundColor, lerpFactor);
 			
-			for( y in 0...__lookupTexture.height ) {
+			for( y in 0...__lookupTexture.physicalHeight ) {
 				
 				__lookupTexture.setPixel32(x, y, color);
 				
@@ -188,7 +189,7 @@ import openfl.gl.GL;
 			
 		}
 			
-		@:privateAccess __glowBitmapData.__resize(bitmap.width, bitmap.height);
+		@:privateAccess __glowBitmapData.__resizeTo (bitmap);
 	
 		commands.push (Blur1D (__glowBitmapData, bitmap, blurX, quality, true, 1.0, distance, angle));
 		commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, quality, false, strength, 0.0, 0.0));

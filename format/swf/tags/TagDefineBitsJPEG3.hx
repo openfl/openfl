@@ -81,8 +81,8 @@ class TagDefineBitsJPEG3 extends TagDefineBitsJPEG2 implements IDefinitionTag
 			else if (value < 0) return 0;
 			return Std.int (value);
 		}
-		for (y in 0...bitmapData.height) {
-			for (x in 0...bitmapData.width) {
+		for (y in 0...bitmapData.physicalHeight) {
+			for (x in 0...bitmapData.physicalWidth) {
 				var a = bitmapAlphaData.readUnsignedByte ();
 				var unmultiply = 255.0 / a;
 				var pixel = bitmapData.getPixel (x, y);
