@@ -74,11 +74,12 @@ class TextField extends InteractiveObject {
 	public var textWidth (get, null):Float;
 	public var type (get, set):TextFieldType;
 	public var wordWrap (get, set):Bool;
+	public var dirty(get, set):Bool;
 
+	private var __dirty:Bool;
 	private var __bounds:Rectangle;
 	private var __caretIndex:Int;
 	private var __cursorTimer:Timer;
-	private var __dirty:Bool;
 	private var __inputEnabled:Bool;
 	private var __isHTML:Bool;
 	private var __layoutDirty:Bool;
@@ -137,7 +138,7 @@ class TextField extends InteractiveObject {
 		}
 
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
-		__dirty = true;
+		dirty = true;
 		__layoutDirty = true;
 
 	}
@@ -541,7 +542,7 @@ class TextField extends InteractiveObject {
 
 		}
 
-		__dirty = true;
+		dirty = true;
 		__layoutDirty = true;
 
 		return newText;
@@ -578,7 +579,7 @@ class TextField extends InteractiveObject {
 		if (format.letterSpacing != null) __textFormat.letterSpacing = format.letterSpacing;
 		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
 
-		__dirty = true;
+		dirty = true;
 		__layoutDirty = true;
 
 	}
@@ -783,9 +784,6 @@ class TextField extends InteractiveObject {
 
 		if (__cacheAsBitmap) {
 			__isCachingAsBitmap = true;
-			if (__dirty) {
-				__setRenderDirty();
-			}
 			__cacheGL(renderSession);
 			__isCachingAsBitmap = false;
 			return;
@@ -818,7 +816,7 @@ class TextField extends InteractiveObject {
 
 		__cursorTimer = Timer.delay (__startCursorTimer, 600);
 		__showCursor = !__showCursor;
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -869,7 +867,7 @@ class TextField extends InteractiveObject {
 		if (__showCursor) {
 
 			__showCursor = false;
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -957,7 +955,7 @@ class TextField extends InteractiveObject {
 
 	public override function _onWorldTransformScaleRotationChanged ():Void {
 		super._onWorldTransformScaleRotationChanged ();
-		__dirty = true;
+		dirty = true;
 		__layoutDirty = true;
 	}
 
@@ -979,7 +977,7 @@ class TextField extends InteractiveObject {
 
 		/*if (value != __textEngine.antiAliasType) {
 
-			__dirty = true;
+			dirty = true;
 
 		}*/
 
@@ -999,7 +997,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.autoSize) {
 
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1020,7 +1018,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.background) {
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1040,7 +1038,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.backgroundColor) {
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1060,7 +1058,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.border) {
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1080,7 +1078,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.borderColor) {
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1117,7 +1115,7 @@ class TextField extends InteractiveObject {
 		__textFormat.__merge (value);
 
 		__layoutDirty = true;
-		__dirty = true;
+		dirty = true;
 
 		return value;
 
@@ -1135,7 +1133,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.displayAsPassword) {
 
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1156,7 +1154,7 @@ class TextField extends InteractiveObject {
 
 		//if (value != __textEngine.embedFonts) {
 			//
-			//__dirty = true;
+			//dirty = true;
 			//__layoutDirty = true;
 			//
 		//}
@@ -1177,7 +1175,7 @@ class TextField extends InteractiveObject {
 
 		//if (value != __textEngine.gridFitType) {
 			//
-			//__dirty = true;
+			//dirty = true;
 			//__layoutDirty = true;
 			//
 		//}
@@ -1200,7 +1198,7 @@ class TextField extends InteractiveObject {
 		if (scaleY != 1 || value != __textEngine.height) {
 
 			__setTransformDirty ();
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1305,7 +1303,7 @@ class TextField extends InteractiveObject {
 
 		if (!__isHTML || __textEngine.text != value) {
 
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1372,7 +1370,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.maxChars) {
 
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1411,7 +1409,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.multiline) {
 
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1458,7 +1456,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.scrollH) {
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1481,7 +1479,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.scrollV) {
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1543,7 +1541,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.sharpness) {
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1563,7 +1561,7 @@ class TextField extends InteractiveObject {
 
 		if (__isHTML || __textEngine.text != value) {
 
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		} else {
@@ -1599,7 +1597,7 @@ class TextField extends InteractiveObject {
 
 	private function set_textColor (value:Int):Int {
 
-		if (value != __textFormat.color) __dirty = true;
+		if (value != __textFormat.color) dirty = true;
 
 		for (range in __textEngine.textFormatRanges) {
 
@@ -1656,7 +1654,7 @@ class TextField extends InteractiveObject {
 
 			}
 
-			__dirty = true;
+			dirty = true;
 
 		}
 
@@ -1678,7 +1676,7 @@ class TextField extends InteractiveObject {
 		if (scaleX != 1 || __textEngine.width != value) {
 
 			__setTransformDirty ();
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1700,7 +1698,7 @@ class TextField extends InteractiveObject {
 
 		if (value != __textEngine.wordWrap) {
 
-			__dirty = true;
+			dirty = true;
 			__layoutDirty = true;
 
 		}
@@ -1709,7 +1707,17 @@ class TextField extends InteractiveObject {
 
 	}
 
+	private inline function get_dirty ():Bool {
+		return __dirty;
+	}
 
+	private function set_dirty (value:Bool):Bool {
+		if(value) {
+			__setRenderDirty();
+		}
+
+		return __dirty = value;
+	}
 
 
 	// Event Handlers
@@ -1730,7 +1738,7 @@ class TextField extends InteractiveObject {
 			if (position != __caretIndex) {
 
 				__caretIndex = position;
-				__dirty = true;
+				dirty = true;
 
 			}
 
@@ -1823,7 +1831,7 @@ class TextField extends InteractiveObject {
 
 		__caretIndex = __getPosition (mouseX, mouseY);
 		__selectionIndex = __caretIndex;
-		__dirty = true;
+		dirty = true;
 
 		// mouse moved too much. don't check for doubleclick
 		if( __firstDownPos != null && (Math.abs(__firstDownPos.x - mouseX) > __moveDelta || Math.abs(__firstDownPos.y - mouseY) > __moveDelta)) {
@@ -1855,7 +1863,7 @@ class TextField extends InteractiveObject {
 	private function __selectWord() {
 		__caretIndex = __getPosition(mouseX, mouseY);
 		__selectionIndex = __caretIndex;
-		__dirty = true;
+		dirty = true;
 
 		var char = this.text.charAt(__caretIndex);
 		while(__caretIndex > 0 && char != " " && char != "-" ) {
@@ -1876,7 +1884,7 @@ class TextField extends InteractiveObject {
 	private function __selectAll() {
 		__caretIndex = 0;
 		__selectionIndex = this.text.length;
-		__dirty = true;
+		dirty = true;
 	}
 
 	private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
