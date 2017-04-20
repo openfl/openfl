@@ -80,7 +80,7 @@ import openfl.utils.Float32ArrayContainer;
 		if(__shadowBitmapData == null)
 			__shadowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 
-		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
+		@:privateAccess __shadowBitmapData.__resizeTo (bitmap);
 
 		if (inner) {
 			commands.push (ColorTransform (__shadowBitmapData, bitmap, BitmapFilter.__inverseAlphaMultipliers, BitmapFilter.__inverseAlphaOffsets));

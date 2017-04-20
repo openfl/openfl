@@ -39,7 +39,7 @@ class ShapeSymbol extends SWFSymbol {
 
 			for (entry in cachedTable) {
 
-				if (@:privateAccess entry.bitmapData.__width == width && @:privateAccess entry.bitmapData.__height == height) {
+				if (entry.bitmapData.physicalWidth == width && entry.bitmapData.physicalHeight == height) {
 
 					return entry.bitmapData;
 

@@ -126,9 +126,10 @@ class GradientBevelFilter extends BitmapFilter {
 		var upperBound = Math.max(Math.min(ratios[0] / 0xFF, 1.0),0.0);
 		var lowerBoundColor = ARGB.create(Math.round(alphas[0] * 255), ri(colors[0]), gi(colors[0]), bi(colors[0]));
 		var upperBoundColor = ARGB.create(Math.round(alphas[0] * 255), ri(colors[0]), gi(colors[0]), bi(colors[0]));
+		var width = __lookupTexture.physicalWidth;
 
-		for( x in 0...__lookupTexture.width ) {
-			var ratio = (x + 0.5) / __lookupTexture.width;
+		for( x in 0...width ) {
+			var ratio = (x + 0.5) / width;
 
 			if (ratio > upperBound) {
 
@@ -151,7 +152,7 @@ class GradientBevelFilter extends BitmapFilter {
 			var lerpFactor = (ratio - lowerBound) / (upperBound - lowerBound);
 			var color:ARGB = interpolate(lowerBoundColor, upperBoundColor, lerpFactor);
 
-			for( y in 0...__lookupTexture.height ) {
+			for( y in 0...__lookupTexture.physicalHeight ) {
 
 				__lookupTexture.setPixel32(x, y, color);
 
@@ -193,8 +194,8 @@ class GradientBevelFilter extends BitmapFilter {
 			__lookupTextureIsDirty = false;
 		}
 
-		@:privateAccess __highlightBitmapData.__resize(bitmap.width, bitmap.height);
-		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
+		@:privateAccess __highlightBitmapData.__resizeTo (bitmap);
+		@:privateAccess __shadowBitmapData.__resizeTo (bitmap);
 
 		if ( blurX > 1 || blurY > 1 ) {
 			commands.push (Blur1D (__highlightBitmapData, src, blurX, quality, true, 1.0, distance, angle+180));

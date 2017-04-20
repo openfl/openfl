@@ -54,8 +54,8 @@ import openfl.utils.UInt8Array;
 		var p:ByteArray = bitmapData.image.data.buffer;
 		#end
 		
-		width = bitmapData.width;
-		height = bitmapData.height;
+		width = bitmapData.physicalWidth;
+		height = bitmapData.physicalHeight;
 		
 		uploadFromByteArray (p, 0);
 		
