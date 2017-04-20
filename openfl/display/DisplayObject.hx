@@ -815,12 +815,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private inline function __setRenderDirty ():Void {
 
-			__updateCachedBitmap = true;
-			__updateFilters = __filters != null && __filters.length > 0;
+		__updateCachedBitmap = true;
+		__updateFilters = __filters != null && __filters.length > 0;
 
-			if( __isMask ){
-				__maskCached = false;
-			}
+		if( __isMask ){
+			__maskCached = false;
+		}
 
 		if (!__renderDirty) {
 
@@ -920,7 +920,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
 
-    __renderable = (visible && !hasZeroScale() && !__isMask);
+		__renderable = (visible && !hasZeroScale() && !__isMask);
 
 		__updateTransforms ();
 
