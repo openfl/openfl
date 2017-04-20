@@ -23,8 +23,8 @@ import openfl.Vector;
 			
 		}
 		
-		this.commands = commands;
-		this.data = data;
+		this.commands = commands != null ? commands : new Vector();
+		this.data = data != null ? data : new Vector();
 		this.winding = winding;
 		this.__graphicsDataType = PATH;
 		
