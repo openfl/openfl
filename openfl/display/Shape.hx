@@ -20,7 +20,9 @@ class Shape extends DisplayObject {
 	}
 
 
-
+	override public function getSymbol():format.swf.lite.symbols.SWFSymbol{
+		return graphics.__symbol;
+	}
 
 	// Get & Set Methods
 
