@@ -15,6 +15,7 @@ class ShapeSymbol extends SWFSymbol {
 	private var cachedTable:Array<CacheEntry>;
 
 	public var forbidCachedBitmapUpdate:Bool = false;
+	public var snapCoordinates:Bool = false;
 
 	public function new () {
 
