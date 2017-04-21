@@ -39,7 +39,7 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ();
+		var graphicsPath = new GraphicsPath (new Vector(), new Vector());
 		var exists = graphicsPath.winding;
 		
 		Assert.isNotNull (exists);
@@ -51,7 +51,7 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ();
+		var graphicsPath = new GraphicsPath (new Vector(), new Vector());
 		
 		Assert.isNotNull (graphicsPath);
 		
@@ -62,7 +62,7 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ();
+		var graphicsPath = new GraphicsPath (new Vector(), new Vector());
 		var exists = graphicsPath.curveTo;
 		
 		Assert.isNotNull (exists);
@@ -74,7 +74,7 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ();
+		var graphicsPath = new GraphicsPath (new Vector(), new Vector());
 		var exists = graphicsPath.lineTo;
 		
 		Assert.isNotNull (exists);
@@ -86,7 +86,7 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ();
+		var graphicsPath = new GraphicsPath (new Vector(), new Vector());
 		var exists = graphicsPath.moveTo;
 		
 		Assert.isNotNull (exists);
@@ -98,7 +98,7 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ();
+		var graphicsPath = new GraphicsPath (new Vector(), new Vector());
 		var exists = graphicsPath.wideLineTo;
 		
 		Assert.isNotNull (exists);
@@ -110,7 +110,7 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ();
+		var graphicsPath = new GraphicsPath (new Vector(), new Vector());
 		var exists = graphicsPath.wideMoveTo;
 		
 		Assert.isNotNull (exists);

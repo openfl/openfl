@@ -774,21 +774,21 @@ import js.html.CanvasRenderingContext2D;
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
-					path = new GraphicsPath ();
+					path = new GraphicsPath (new Vector(), new Vector());
 					path.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 					graphicsData.push (path);
 				
 				case LINE_TO:
 					
 					var c = data.readLineTo ();
-					path = new GraphicsPath ();
+					path = new GraphicsPath (new Vector(), new Vector());
 					path.lineTo (c.x, c.y);
 					graphicsData.push (path);
 					
 				case MOVE_TO:
 					
 					var c = data.readMoveTo ();
-					path = new GraphicsPath ();
+					path = new GraphicsPath (new Vector(), new Vector());
 					path.moveTo (c.x, c.y);
 					graphicsData.push (path);
 				
