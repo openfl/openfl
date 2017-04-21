@@ -131,7 +131,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public inline function toString ():String {
 		
-		return this.toString ();
+		return this != null ? this.toString () : null;
 		
 	}
 	
@@ -500,7 +500,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -788,7 +788,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1085,7 +1085,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1374,7 +1374,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1662,7 +1662,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1776,7 +1776,6 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public var fixed (get, set):Bool;
 	public var length (get, set):Int;
-	
 	
 	
 	public inline function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void {
@@ -1913,7 +1912,7 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public inline function toString ():String {
 		
-		return this.toString ();
+		return this != null ? "[" + this.toString () + "]" : null;
 		
 	}
 	
