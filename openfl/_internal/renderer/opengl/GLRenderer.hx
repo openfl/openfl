@@ -130,6 +130,10 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.defaultFramebuffer = this.defaultFramebuffer;
 		renderSession.projectionMatrix = this.projectionMatrix;
 
+        #if noPixelSnap
+        renderSession.roundPixels = false;
+        #end
+
 		maskManager = new GLMaskManager (renderSession);
 		renderSession.maskManager = maskManager;
 
