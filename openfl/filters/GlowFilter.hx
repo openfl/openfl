@@ -75,7 +75,7 @@ import openfl.geom.Rectangle;
 		var commands:Array<CommandType> = [];
 		var src = bitmap;
 			
-		@:privateAccess __glowBitmapData.__resize(bitmap.width, bitmap.height);
+		@:privateAccess __glowBitmapData.__resizeTo (bitmap);
 			
 		if (inner) {
 			commands.push (ColorTransform (__glowBitmapData, bitmap, BitmapFilter.__inverseAlphaMultipliers, BitmapFilter.__inverseAlphaOffsets));

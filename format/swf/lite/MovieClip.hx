@@ -300,6 +300,7 @@ class MovieClip extends flash.display.MovieClip {
 			}
 		}
 	#end
+
 	private function __createObject (object:FrameObject):DisplayObject {
 
 		var displayObject:DisplayObject = null;
@@ -405,7 +406,7 @@ class MovieClip extends flash.display.MovieClip {
 		__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 
 		if ( @:privateAccess symbol.graphics.__owner != null ) {
-			@:privateAccess shape.__graphics = new Graphics();
+			@:privateAccess shape.__graphics = new Graphics(false);
 			shape.graphics.copyFrom( symbol.graphics, true );
 			return shape;
 		}
@@ -667,8 +668,10 @@ class MovieClip extends flash.display.MovieClip {
 		var bounds:Rectangle = Rectangle.pool.get();
 		__getBounds (bounds);
 
-		var bordersReservedWidth = __9SliceBitmap.width - __scale9Rect.width;
-		var bordersReservedHeight = __9SliceBitmap.height - __scale9Rect.height;
+		var bitmapWidth = __9SliceBitmap.width;
+		var bitmapHeight = __9SliceBitmap.height;
+		var bordersReservedWidth = bitmapWidth - __scale9Rect.width;
+		var bordersReservedHeight = bitmapHeight - __scale9Rect.height;
 		var bordersHorizontalScale:Float = 1.0;
 		var bordersVerticalScale:Float = 1.0;
 
@@ -682,16 +685,16 @@ class MovieClip extends flash.display.MovieClip {
 
 		var rect = new openfl.geom.Rectangle();
 		rect.left = bordersHorizontalScale * __scale9Rect.left;
-		rect.right = Math.max (rect.left, width - bordersHorizontalScale * (__9SliceBitmap.width - __scale9Rect.right) );
+		rect.right = Math.max (rect.left, width - bordersHorizontalScale * (bitmapWidth - __scale9Rect.right) );
 		rect.top = bordersVerticalScale * __scale9Rect.top;
-		rect.bottom = Math.max (rect.top, height - bordersVerticalScale * (__9SliceBitmap.height - __scale9Rect.bottom) );
+		rect.bottom = Math.max (rect.top, height - bordersVerticalScale * (bitmapHeight - __scale9Rect.bottom) );
 
-		var renderToBitmapXScale = __9SliceBitmap.width / width;
-		var renderToBitmapYScale = __9SliceBitmap.height / height;
-		var cols = [0, rect.left * renderToBitmapXScale, rect.right * renderToBitmapXScale, __9SliceBitmap.width];
-		var rows = [0, rect.top * renderToBitmapYScale, rect.bottom * renderToBitmapYScale, __9SliceBitmap.height];
-		var us = [0, __scale9Rect.left / __9SliceBitmap.width, __scale9Rect.right / __9SliceBitmap.width, 1];
-		var vs = [0, __scale9Rect.top / __9SliceBitmap.height, __scale9Rect.bottom/ __9SliceBitmap.height, 1];
+		var renderToBitmapXScale = bitmapWidth / width;
+		var renderToBitmapYScale = bitmapHeight / height;
+		var cols = [0, rect.left * renderToBitmapXScale, rect.right * renderToBitmapXScale, bitmapWidth];
+		var rows = [0, rect.top * renderToBitmapYScale, rect.bottom * renderToBitmapYScale, bitmapHeight];
+		var us = [0, __scale9Rect.left / bitmapWidth, __scale9Rect.right / bitmapWidth, 1];
+		var vs = [0, __scale9Rect.top / bitmapHeight, __scale9Rect.bottom/ bitmapHeight, 1];
 		var uvs:TextureUvs = TextureUvs.pool.get();
 
 		var bitmapDataUvs = @:privateAccess __9SliceBitmap.__uvData;

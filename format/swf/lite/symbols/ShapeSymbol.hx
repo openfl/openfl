@@ -39,7 +39,7 @@ class ShapeSymbol extends SWFSymbol {
 
 			for (entry in cachedTable) {
 
-				if (@:privateAccess entry.bitmapData.__width == width && @:privateAccess entry.bitmapData.__height == height) {
+				if (entry.bitmapData.physicalWidth == width && entry.bitmapData.physicalHeight == height) {
 
 					return entry.bitmapData;
 
@@ -102,6 +102,10 @@ class ShapeSymbol extends SWFSymbol {
 				case CurveTo (controlX, controlY, anchorX, anchorY):
 
 					graphics.curveTo (controlX, controlY, anchorX, anchorY);
+
+				case DrawImage (bitmapID, matrix, smooth):
+
+					graphics.drawImageWithId (bitmapID, matrix, smooth);
 
 				case EndFill:
 

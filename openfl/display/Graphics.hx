@@ -110,6 +110,32 @@ import js.html.CanvasRenderingContext2D;
 		__visible = true;
 	}
 
+	public function drawImageWithId (bitmapID:Int, matrix:Matrix, smooth:Bool) {
+
+		var p = Point.pool.get ();
+
+		__inflateBounds (matrix.tx, matrix.ty);
+
+		inline function inflateTransformedCorner(x:Float, y:Float) {
+
+			p.x = x;
+			p.y = y;
+			matrix.__transformPoint(p);
+			__inflateBounds (p.x, p.y);
+
+		}
+
+		inflateTransformedCorner (0.0, 1.0);
+		inflateTransformedCorner (1.0, 0.0);
+		inflateTransformedCorner (1.0, 1.0);
+
+		__commands.drawImageWithId (bitmapID, matrix, smooth);
+		__visible = true;
+
+		Point.pool.put (p);
+
+	}
+
 
 	public function beginFill (color:Int = 0, alpha:Float = 1):Void {
 

@@ -117,6 +117,10 @@ class MorphShape extends Shape {
 
 						graphics.moveTo (x, y);
 
+					case DrawImage (bitmapID, matrix, smooth):
+
+						graphics.drawImageWithId (bitmapID, matrix, smooth);
+
 				}
 			}
 		}
