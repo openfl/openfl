@@ -29,6 +29,11 @@ class MorphShape extends Shape {
 
 	}
 
+	override public function getSymbol():format.swf.lite.symbols.SWFSymbol{
+		return __symbol;
+	}
+
+
 	public function set_ratio( _ratio ){
 
 		if( ratio == _ratio ){
