@@ -175,6 +175,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+
+	public function getSymbol():format.swf.lite.symbols.SWFSymbol{
+		return null;
+	}
+
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 
 		var matrix = Matrix.pool.get();

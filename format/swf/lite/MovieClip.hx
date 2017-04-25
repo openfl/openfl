@@ -30,7 +30,6 @@ import openfl.geom.Rectangle;
 import openfl.geom.ColorTransform;
 import openfl._internal.renderer.RenderSession;
 
-
 @:access(openfl.display.Graphics)
 
 class MovieClip extends flash.display.MovieClip {
@@ -129,6 +128,9 @@ class MovieClip extends flash.display.MovieClip {
 		__childrenCache = new Map();
 	}
 
+	override public function getSymbol():format.swf.lite.symbols.SWFSymbol{
+		return __symbol;
+	}
 
 	/*public override function flatten ():Void {
 
@@ -313,15 +315,21 @@ class MovieClip extends flash.display.MovieClip {
 			}
 		}
 
-		#if profile
-		__childrenCreateCount.set(this.__symbol.id, (__childrenCreateCount.exists(this.__symbol.id) ? __childrenCreateCount.get(this.__symbol.id) + 1 : 1));
-		#end
 
 		if (__swf.symbols.exists (object.symbol)) {
 
 			var symbol = __swf.symbols.get (object.symbol);
 
-			if( symbol.className != null)
+			if(symbol.poolable && symbol.pool.size > 0) {
+				displayObject = symbol.pool.get();
+			}
+			else {
+				#if profile
+				__childrenCreateCount.set(this.__symbol.id, (__childrenCreateCount.exists(this.__symbol.id) ? __childrenCreateCount.get(this.__symbol.id) + 1 : 1));
+				#end
+			}
+
+			if(displayObject == null && symbol.className != null)
 			{
 				var _class: Class<Dynamic> = __swf.classes.get(symbol.className);
 
@@ -1087,6 +1095,11 @@ class MovieClip extends flash.display.MovieClip {
 			__maskDataKeys.remove(object);
 			__maskData.remove(object);
 			__maskDataDirty = true;
+
+			var symbol = child.getSymbol();
+			if(symbol != null && symbol.poolable) {
+				symbol.pool.put(child);
+			}
 		}
 		return object;
 	}
