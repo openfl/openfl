@@ -1083,16 +1083,17 @@ class MovieClip extends flash.display.MovieClip {
 
 		__SWFDepthData.set(displayObject, targetDepth);
 
-		for( i in 0 ... numChildren ){
+		var i = numChildren - 1;
+		while( i >= 0 ){
 			var child = getChildAt(i);
-			if( __SWFDepthData.get(child) > targetDepth){
-				addChildAt (displayObject, i);
-
+			if( __SWFDepthData.get(child) <= targetDepth){
+				addChildAt (displayObject, i+1);
 				return;
 			}
+			--i;
 		}
 
-		addChild (displayObject);
+		addChildAt(displayObject, 0);
 	}
 
 	public override function removeChild (child:DisplayObject):DisplayObject {
