@@ -792,11 +792,15 @@ class CanvasGraphics {
 	private inline static function snappedCurveTo(data:DrawCommandReader)
 	{
 		var c = data.readCurveTo();
-		var anchorX = Math.round (currentTransform.__transformX (c.anchorX, c.anchorY));
-		var anchorY = Math.round (currentTransform.__transformY (c.anchorX, c.anchorY));
-		var controlX = currentTransform.__transformX (c.controlX, c.controlY);
-		var controlY = currentTransform.__transformY (c.controlX, c.controlY);
-		context.quadraticCurveTo (controlX, controlY, anchorX, anchorY);
+		var anchorX = currentTransform.__transformX (c.anchorX, c.anchorY);
+		var anchorY = currentTransform.__transformY (c.anchorX, c.anchorY);
+		var roundedAnchorX = Math.round (anchorX);
+		var roundedAnchorY = Math.round (anchorY);
+		var deltaX = roundedAnchorX - anchorX;
+		var deltaY = roundedAnchorY - anchorY;
+		var controlX = currentTransform.__transformX (c.controlX, c.controlY) + deltaX;
+		var controlY = currentTransform.__transformY (c.controlX, c.controlY) + deltaY;
+		context.quadraticCurveTo (controlX, controlY, roundedAnchorX, roundedAnchorY);
 	}
 
 	private inline static function drawCircle(data:DrawCommandReader)
