@@ -743,6 +743,9 @@ class BitmapData implements IBitmapDrawable {
 					gl.texImage2DWeb (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, glCompatibleBuffer);
 				}
 
+				#if profile
+					@:privateAccess lime._backend.html5.HTML5Application.__uploadCount++;
+				#end
 			#end
 
 			image.dirty = false;
