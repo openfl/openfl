@@ -277,14 +277,15 @@ class MovieClip extends flash.display.MovieClip {
 
 	#if profile
 		private static var __childrenCreateCount:Map<Int, Int> = new Map<Int, Int>();
+		private static var __createCount:Map<Int, Int> = new Map<Int, Int>();
 
 		public static function __init__ () {
 
 			#if js
-				untyped __js__ ("$global.Profile = $global.Profile || {}");
-				untyped __js__ ("$global.Profile.CacheInfo = {}");
-				untyped __js__ ("$global.Profile.CacheInfo.resetStatistics = format_swf_lite_MovieClip.resetStatistics" );
-				untyped __js__ ("$global.Profile.CacheInfo.logStatistics = format_swf_lite_MovieClip.logStatistics" );
+				untyped $global.Profile = $global.Profile || {};
+				untyped $global.Profile.CacheInfo = {};
+				untyped $global.Profile.CacheInfo.resetStatistics = resetStatistics;
+				untyped $global.Profile.CacheInfo.logStatistics = logStatistics;
 			#end
 
 		}
@@ -292,13 +293,18 @@ class MovieClip extends flash.display.MovieClip {
 		public static function resetStatistics () {
 
 			__childrenCreateCount = new Map<Int, Int> ();
+			__createCount = new Map<Int, Int> ();
 
 		}
 
 		public static function logStatistics () {
 
 			for( id in __childrenCreateCount.keys () ) {
-				trace ('Symbol id:$id; Created count: ${__childrenCreateCount[id]}');
+				trace ('Symbol id:$id; Created children count: ${__childrenCreateCount[id]}');
+			}
+
+			for( id in __createCount.keys () ) {
+				trace ('Symbol id:$id; Created count: ${__createCount[id]}');
 			}
 		}
 	#end
@@ -326,6 +332,7 @@ class MovieClip extends flash.display.MovieClip {
 			else {
 				#if profile
 				__childrenCreateCount.set(this.__symbol.id, (__childrenCreateCount.exists(this.__symbol.id) ? __childrenCreateCount.get(this.__symbol.id) + 1 : 1));
+				__createCount.set(object.symbol, (__createCount.exists(object.symbol) ? __createCount.get(object.symbol) + 1 : 1));
 				#end
 			}
 
