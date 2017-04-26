@@ -996,7 +996,7 @@ class TextEngine {
 						layoutGroup.height = heightValue;
 						layoutGroups.push (layoutGroup);
 						
-						offsetX = widthValue + spaceWidth;
+						offsetX += widthValue + spaceWidth;
 						marginRight = spaceWidth;
 						
 						wrap = false;
