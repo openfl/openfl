@@ -316,7 +316,9 @@ class TextEngine {
 			instance = findFont (format.font);
 			if (instance != null) return instance;
 			
+			#if (!linux) // this cause segmentation error on linux
 			var systemFontDirectory = System.fontsDirectory;
+			#end
 			
 			switch (format.font) {
 				
@@ -402,7 +404,11 @@ class TextEngine {
 				
 				default:
 					
+					#if linux
+					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
+					#else
 					fontList = [ systemFontDirectory + "/" + format.font ];
+					#end
 				
 			}
 			
