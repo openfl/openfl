@@ -286,9 +286,7 @@ import haxe.macro.Expr;
 	#if !macro
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
-		#if lime_cffi
-		var init = lime.system.CFFI;
-		#end
+		var init = lime.app.Application;
 		
 		#if neko
 		// Copy from https://github.com/HaxeFoundation/haxe/blob/development/std/neko/_std/Sys.hx#L164
