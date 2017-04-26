@@ -88,7 +88,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 		
-		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
+		__commands.beginBitmapFill (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
 		
 		__visible = true;
 		
@@ -309,59 +309,67 @@ import js.html.CanvasRenderingContext2D;
 		var gradientFill:GraphicsGradientFill;
 		var stroke:GraphicsStroke;
 		var path:GraphicsPath;
+		var trianglePath:GraphicsTrianglePath;
 		
 		for (graphics in graphicsData) {
 			
-			if (Std.is (graphics, GraphicsSolidFill)) {
+			switch (graphics.__graphicsDataType) {
 				
-				fill = cast graphics;
-				beginFill (fill.color, fill.alpha);
-				
-			} else if (Std.is (graphics, GraphicsBitmapFill)) {
-				
-				bitmapFill = cast graphics;
-				beginBitmapFill (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
-				
-			} else if (Std.is (graphics, GraphicsGradientFill)) {
-				
-				gradientFill = cast graphics;
-				beginGradientFill (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
-				
-			} else if (Std.is (graphics, GraphicsStroke)) {
-				
-				stroke = cast graphics;
-				
-				if (Std.is (stroke.fill, GraphicsSolidFill)) {
+				case SOLID:
 					
-					fill = cast stroke.fill;
-					lineStyle (stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+					fill = cast graphics;
+					beginFill (fill.color, fill.alpha);
+				
+				case BITMAP:
 					
-				} else {
+					bitmapFill = cast graphics;
+					beginBitmapFill (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+				
+				case GRADIENT:
 					
-					lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+					gradientFill = cast graphics;
+					beginGradientFill (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+				
+				case STROKE:
 					
-					if (Std.is (stroke.fill, GraphicsBitmapFill)) {
+					stroke = cast graphics;
+					
+					switch (stroke.fill.__graphicsFillType) {
 						
-						bitmapFill = cast stroke.fill;
-						lineBitmapStyle (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+						case SOLID_FILL:
+							
+							fill = cast stroke.fill;
+							lineStyle (stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 						
-					} else if (Std.is (stroke.fill, GraphicsGradientFill)) {
+						case BITMAP_FILL:
+							
+							bitmapFill = cast stroke.fill;
+							lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+							lineBitmapStyle (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 						
-						gradientFill = cast stroke.fill;
-						lineGradientStyle (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+						case GRADIENT_FILL:
+							
+							gradientFill = cast stroke.fill;
+							lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+							lineGradientStyle (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+						
+						default:
 						
 					}
+				
+				case PATH:
 					
-				}
+					path = cast graphics;
+					drawPath (path.commands, path.data, path.winding);
 				
-			} else if (Std.is (graphics, GraphicsPath)) {
+				case TRIANGLE_PATH:
+					
+					trianglePath = cast graphics;
+					drawTriangles (trianglePath.vertices, trianglePath.indices, trianglePath.uvtData, trianglePath.culling);
 				
-				path = cast graphics;
-				drawPath (path.commands, path.data, path.winding);
-				
-			} else if (Std.is (graphics, GraphicsEndFill)) {
-				
-				endFill ();
+				case END:
+					
+					endFill ();
 				
 			}
 			
@@ -448,56 +456,54 @@ import js.html.CanvasRenderingContext2D;
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
 		if (width <= 0 || height <= 0) return;
-
+		
 		__inflateBounds (x - __strokePadding, y - __strokePadding);
 		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
-
-        var xw = x + width;
-        var yh = y + height;
-        var minSize = width < height ? width * 2 : height * 2;
-        topLeftRadius = topLeftRadius < minSize ? topLeftRadius : minSize;
-        topRightRadius = topRightRadius < minSize ? topRightRadius : minSize;
-        bottomLeftRadius = bottomLeftRadius < minSize ? bottomLeftRadius : minSize;
-        bottomRightRadius = bottomRightRadius < minSize ? bottomRightRadius : minSize;
-
-		var anchor = (1 - Math.sin(45 * (Math.PI / 180)));
-		var control = (1 - Math.tan(22.5 * (Math.PI / 180)));
-
-		// bottom-right corner
-        var a = bottomRightRadius * anchor;
-        var s = bottomRightRadius * control;
-        moveTo(xw, yh - bottomRightRadius);
-        curveTo(xw, yh - s, xw - a, yh - a);
-        curveTo(xw - s, yh, xw - bottomRightRadius, yh);
-        
-        // bottom-left corner
-        a = bottomLeftRadius * anchor;
-        s = bottomLeftRadius * control;
-        lineTo(x + bottomLeftRadius, yh);
-        curveTo(x + s, yh, x + a, yh - a);
-        curveTo(x, yh - s, x, yh - bottomLeftRadius);
-        
-        // top-left corner
-        a = topLeftRadius * anchor;
-        s = topLeftRadius * control;
-        lineTo(x, y + topLeftRadius);
-        curveTo(x, y + s, x + a, y + a);
-        curveTo(x + s, y, x + topLeftRadius, y);
-        
-        // top-right corner
-        a = topRightRadius * anchor;
-        s = topRightRadius * control;
-        lineTo(xw - topRightRadius, y);
-        curveTo(xw - s, y, xw - a, y + a);
-        curveTo(xw, y + s, xw, y + topRightRadius);
-        lineTo(xw, yh - bottomRightRadius);
-
+		
+		var xw = x + width;
+		var yh = y + height;
+		var minSize = width < height ? width * 2 : height * 2;
+		topLeftRadius = topLeftRadius < minSize ? topLeftRadius : minSize;
+		topRightRadius = topRightRadius < minSize ? topRightRadius : minSize;
+		bottomLeftRadius = bottomLeftRadius < minSize ? bottomLeftRadius : minSize;
+		bottomRightRadius = bottomRightRadius < minSize ? bottomRightRadius : minSize;
+		
+		var anchor = (1 - Math.sin (45 * (Math.PI / 180)));
+		var control = (1 - Math.tan (22.5 * (Math.PI / 180)));
+		
+		var a = bottomRightRadius * anchor;
+		var s = bottomRightRadius * control;
+		moveTo (xw, yh - bottomRightRadius);
+		curveTo (xw, yh - s, xw - a, yh - a);
+		curveTo (xw - s, yh, xw - bottomRightRadius, yh);
+		
+		a = bottomLeftRadius * anchor;
+		s = bottomLeftRadius * control;
+		lineTo (x + bottomLeftRadius, yh);
+		curveTo (x + s, yh, x + a, yh - a);
+		curveTo (x, yh - s, x, yh - bottomLeftRadius);
+		
+		a = topLeftRadius * anchor;
+		s = topLeftRadius * control;
+		lineTo (x, y + topLeftRadius);
+		curveTo (x, y + s, x + a, y + a);
+		curveTo (x + s, y, x + topLeftRadius, y);
+		
+		a = topRightRadius * anchor;
+		s = topRightRadius * control;
+		lineTo (xw - topRightRadius, y);
+		curveTo (xw - s, y, xw - a, y + a);
+		curveTo (xw, y + s, xw, y + topRightRadius);
+		lineTo (xw, yh - bottomRightRadius);
+		
 		__dirty = true;
 		
 	}
 	
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
+		
+		if (vertices == null || indices == null || uvtData == null) return;
 		
 		var vlen = Std.int (vertices.length / 2);
 		

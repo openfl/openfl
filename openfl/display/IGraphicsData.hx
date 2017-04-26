@@ -16,5 +16,6 @@ interface IGraphicsData {
 	PATH;
 	BITMAP;
 	END;
+	TRIANGLE_PATH;
 	
 }
