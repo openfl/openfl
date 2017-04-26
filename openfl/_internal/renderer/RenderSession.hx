@@ -64,5 +64,8 @@ class RenderSession {
 	
 }
 
+#else
+
+class RenderSession {}
 
 #end
