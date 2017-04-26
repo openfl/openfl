@@ -14,7 +14,7 @@ package flash;
 	public function lastIndexOf (x:T, ?from:Int):Int;
 	public function pop ():Null<T>;
 	public function push (x:T):Int;
-	public function reverse ():Void;
+	public function reverse ():Vector<T>;
 	public function shift ():Null<T>;
 	public function unshift (x:T):Void;
 	public function slice (?pos:Int, ?end:Int):Vector<T>;
