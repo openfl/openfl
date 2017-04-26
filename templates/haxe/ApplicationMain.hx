@@ -283,9 +283,14 @@ import haxe.macro.Expr;
 	}
 	
 	
-	#if (neko && !macro)
+	#if !macro
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
+		#if lime_cffi
+		var init = lime.system.CFFI;
+		#end
+		
+		#if neko
 		// Copy from https://github.com/HaxeFoundation/haxe/blob/development/std/neko/_std/Sys.hx#L164
 		// since Sys.programPath () isn't available in __init__
 		var sys_program_path = {
@@ -310,6 +315,7 @@ import haxe.macro.Expr;
 		loader.addPath (haxe.io.Path.directory (#if (haxe_ver >= 3.3) sys_program_path #else Sys.executablePath () #end));
 		loader.addPath ("./");
 		loader.addPath ("@executable_path/");
+		#end
 		
 	}
 	#end
