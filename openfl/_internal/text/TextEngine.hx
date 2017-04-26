@@ -681,6 +681,7 @@ class TextEngine {
 		var leading = 0;
 		var ascent = 0.0;
 		var descent = 0.0;
+		var letterSpacing = 0.0;
 		
 		var layoutGroup = null, advances = null;
 		var widthValue, heightValue = 0.0;
@@ -838,6 +839,7 @@ class TextEngine {
 				ascent = currentFormat.size;
 				descent = currentFormat.size * 0.185;
 				leading = currentFormat.leading;
+				letterSpacing = currentFormat.letterSpacing;
 				
 				heightValue = ascent + descent + leading;
 				
@@ -850,6 +852,7 @@ class TextEngine {
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
 					leading = currentFormat.leading;
+					letterSpacing = currentFormat.letterSpacing;
 					
 					heightValue = ascent + descent + leading;
 					
@@ -858,6 +861,7 @@ class TextEngine {
 					ascent = currentFormat.size;
 					descent = currentFormat.size * 0.185;
 					leading = currentFormat.leading;
+					letterSpacing = currentFormat.letterSpacing;
 					
 					heightValue = ascent + descent + leading;
 					
@@ -1034,7 +1038,7 @@ class TextEngine {
 							layoutGroup.leading = leading;
 							layoutGroup.lineIndex = lineIndex;
 							layoutGroup.offsetY = offsetY;
-							layoutGroup.width = widthValue;
+							layoutGroup.width = widthValue+letterSpacing;
 							layoutGroup.height = heightValue;
 							layoutGroups.push (layoutGroup);
 							
@@ -1053,7 +1057,7 @@ class TextEngine {
 							
 						}
 						
-						offsetX += widthValue + spaceWidth;
+						offsetX += widthValue + spaceWidth+letterSpacing;
 						
 					}
 					
@@ -1080,15 +1084,19 @@ class TextEngine {
 						
 					}
 					
+					var break_space:Bool = false;
 					if (formatRange.end <= previousSpaceIndex) {
 						
 						layoutGroup = null;
 						nextFormatRange ();
+						break_space=true;
 						
 					}
 					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-						
+						if(break_space){
+							offsetX += letterSpacing;
+						}
 						break;
 						
 					}
@@ -1103,6 +1111,10 @@ class TextEngine {
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
 					
+					if (layoutGroup!=null && textFormatRanges.length>1 && textIndex >= layoutGroup.endIndex){
+						layoutGroup = null;
+					}
+					
 					if (layoutGroup == null) {
 						
 						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
@@ -1113,7 +1125,7 @@ class TextEngine {
 						layoutGroup.leading = leading;
 						layoutGroup.lineIndex = lineIndex;
 						layoutGroup.offsetY = offsetY;
-						layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+						layoutGroup.width = getAdvancesWidth (layoutGroup.advances)+letterSpacing;
 						layoutGroup.height = heightValue;
 						layoutGroups.push (layoutGroup);
 						
@@ -1147,7 +1159,7 @@ class TextEngine {
 			}
 			
 		}
-		
+				
 	}
 	
 	
