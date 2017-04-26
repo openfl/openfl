@@ -683,7 +683,7 @@ class TextEngine {
 		var descent = 0.0;
 		
 		var layoutGroup = null, advances = null;
-		var widthValue, heightValue = 0.0;
+		var widthValue, heightValue = 0.0, maxHeightValue = 0.0;
 		
 		var previousSpaceIndex = 0, previousBreakIndex = 0;
 		var spaceIndex = text.indexOf (" ");
@@ -864,6 +864,8 @@ class TextEngine {
 				}
 				
 				#end
+
+				maxHeightValue = Math.max(maxHeightValue, heightValue);
 				
 			}
 			
@@ -892,7 +894,7 @@ class TextEngine {
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
-				offsetY += heightValue;
+				offsetY += maxHeightValue;
 				offsetX = 2;
 				
 				if (formatRange.end == breakIndex) {
@@ -906,6 +908,7 @@ class TextEngine {
 				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
+				maxHeightValue = heightValue;
 				layoutGroup = null;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
@@ -941,7 +944,7 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						offsetY += heightValue;
+						offsetY += maxHeightValue;
 						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
@@ -965,6 +968,7 @@ class TextEngine {
 						}
 						
 						lineIndex++;
+						maxHeightValue = heightValue;
 						
 						offsetX = 2;
 						
