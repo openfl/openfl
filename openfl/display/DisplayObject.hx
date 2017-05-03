@@ -53,7 +53,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
-	private static var __worldTransformDirty = 0;
 	
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
@@ -562,7 +561,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __getWorldTransform ():Matrix {
 		
-		if (__transformDirty || __worldTransformDirty > 0) {
+		if (__transformDirty) {
 			
 			var list = [];
 			var current = this;
@@ -725,9 +724,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __setParentRenderDirty ():Void {
 		
-		if (parent != null && !parent.__childRenderDirty) {
+		if (parent != null && !parent.__renderDirty) {
 			
-			parent.__childRenderDirty = true;
+			parent.__renderDirty = true;
 			parent.__setParentRenderDirty ();
 			
 		}
@@ -754,14 +753,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private inline function __setTransformDirty ():Void {
+	private function __setTransformDirty ():Void {
 		
 		if (!__transformDirty) {
 			
 			__transformDirty = true;
 			__setParentRenderDirty ();
-			
-			__worldTransformDirty++;
 			
 		}
 		
@@ -780,12 +777,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
 		__updateTransforms ();
 		
-		if (updateChildren && __transformDirty) {
+		//if (updateChildren && __transformDirty) {
 			
 			__transformDirty = false;
-			__worldTransformDirty--;
 			
-		}
+		//}
 		
 		if (maskGraphics != null) {
 			
@@ -862,11 +858,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			if (updateChildren && __renderDirty) {
+			//if (updateChildren && __renderDirty) {
 				
-				__renderDirty = false;
+				//__renderDirty = false;
 				
-			}
+			//}
 			
 		}
 		
@@ -881,7 +877,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (__transformDirty) {
 			
 			__transformDirty = false;
-			__worldTransformDirty--;
 			
 		}
 		

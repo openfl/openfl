@@ -173,7 +173,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalWidth = 0;
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
-		__childRenderDirty = true;
+		__renderDirty = true;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -970,15 +970,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
-			// TODO: Fix multiple stages more gracefully
-			
-			if (application != null && application.windows.length > 0) {
-				
-				__setTransformDirty ();
-				__setRenderDirty ();
-				
-			}
-			
 			if (__rendering) return;
 			__rendering = true;
 			
@@ -1690,18 +1681,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, maskGraphics:Graphics = null):Void {
 		
 		if (transformOnly) {
 			
-			if (DisplayObject.__worldTransformDirty > 0) {
+			if (__transformDirty) {
 				
 				super.__update (true, updateChildren, maskGraphics);
 				
 				if (updateChildren) {
 					
-					DisplayObject.__worldTransformDirty = 0;
-					__dirty = true;
+					__transformDirty = false;
+					//__dirty = true;
 					
 				}
 				
@@ -1709,7 +1700,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else {
 			
-			if (DisplayObject.__worldTransformDirty > 0 || __dirty || __childRenderDirty) {
+			if (__transformDirty || __renderDirty) {
 				
 				super.__update (false, updateChildren, maskGraphics);
 				
@@ -1719,9 +1710,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					__wasDirty = true;
 					#end
 					
-					DisplayObject.__worldTransformDirty = 0;
-					//DisplayObject.__worldRenderDirty = 0;
-					__dirty = false;
+					//__dirty = false;
 					
 				}
 				
@@ -1730,7 +1719,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
 				
-				super.__update (false, updateChildren, maskGrahpics);
+				super.__update (false, updateChildren, maskGraphics);
 				
 				if (updateChildren) {
 					
