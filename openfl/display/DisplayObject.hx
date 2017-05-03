@@ -1603,7 +1603,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function mustResetRenderColorTransform():Bool {
 
-		return __cacheAsBitmap;
+		return __cacheAsBitmap || __isMask;
 
 	}
 }

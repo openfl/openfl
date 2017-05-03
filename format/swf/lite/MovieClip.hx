@@ -863,8 +863,7 @@ class MovieClip extends flash.display.MovieClip {
 						}
 
 						if( clipDepth != null ) {
-							__maskDataKeys.push(displayObject);
-							__maskData.set( displayObject, clipDepth );
+							__addObjectToMaskData(displayObject, clipDepth);
 						}
 
 						__addChildAtSwfDepth (displayObject, frameObject.depth);
@@ -881,8 +880,7 @@ class MovieClip extends flash.display.MovieClip {
 
 						displayObject.visible = false;
 
-						__maskData.set( displayObject, frameObject.clipDepth );
-						__maskDataKeys.push(displayObject);
+						__addObjectToMaskData(displayObject, frameObject.clipDepth);
 
 					}
 
@@ -950,6 +948,11 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
+	private inline function __addObjectToMaskData(displayObject:DisplayObject, clipDepth:Int) {
+		__maskDataKeys.push(displayObject);
+		__maskData.set( displayObject, clipDepth );
+		displayObject.__isMask = true;
+	}
 
 	private function __updateFrame ():Void {
 
@@ -1009,7 +1012,7 @@ class MovieClip extends flash.display.MovieClip {
 
 			var result = children_length;
 
-			for( i in maskIndex ... children_length ){
+			for( i in maskIndex + 1 ... children_length ){
 				var sibling = getChildAt(i);
 				if ( sibling != null ) {
 					if( __SWFDepthData.get(sibling) > depthValue){

@@ -391,7 +391,7 @@ class SpriteBatch {
 			shader.uniform4f(shader.getUniformLocation (DefUniform.ColorOffset), 0, 0, 0, 0);
 		}
 
-		gl.activeTexture(gl.TEXTURE0 + 0);
+		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
 
 		if ((shader.smooth != null && shader.smooth) || state.textureSmooth) {
@@ -408,7 +408,7 @@ class SpriteBatch {
 		}
 
 		if (state.maskTexture != null){
-			gl.activeTexture(gl.TEXTURE0 + 1);
+			gl.activeTexture(gl.TEXTURE1);
 			gl.bindTexture(gl.TEXTURE_2D, state.maskTexture);
 
 			shader.uniformMatrix3fv(shader.getUniformLocation (MaskedUniform.MaskMatrix), false, state.maskMatrix);
