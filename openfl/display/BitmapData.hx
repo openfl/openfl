@@ -463,6 +463,7 @@ class BitmapData implements IBitmapDrawable {
 				renderer.resize (width, height);
 				
 				var renderSession = renderer.renderSession;
+				renderSession.clearDirtyFlags = false;
 				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;

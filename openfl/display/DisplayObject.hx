@@ -40,6 +40,7 @@ import js.html.Element;
 #end
 
 @:access(openfl.events.Event)
+@:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.geom.ColorTransform)
@@ -52,7 +53,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
-	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 	
 	@:keep public var alpha (get, set):Float;
@@ -723,12 +723,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __setParentRenderDirty ():Void {
+		
+		if (parent != null && !parent.__childRenderDirty) {
+			
+			parent.__childRenderDirty = true;
+			parent.__setParentRenderDirty ();
+			
+		}
+		
+	}
+	
+	
 	private inline function __setRenderDirty ():Void {
 		
 		if (!__renderDirty) {
 			
 			__renderDirty = true;
-			__worldRenderDirty++;
+			__setParentRenderDirty ();
 			
 		}
 		
@@ -747,6 +759,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (!__transformDirty) {
 			
 			__transformDirty = true;
+			__setParentRenderDirty ();
+			
 			__worldTransformDirty++;
 			
 		}

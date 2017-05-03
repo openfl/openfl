@@ -16,6 +16,7 @@ import openfl.events.Event;
 import openfl.filters.*;
 import openfl.text.TextField;
 
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -699,7 +700,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			
 			__renderDirty = true;
-			DisplayObject.__worldRenderDirty++;
+			//DisplayObject.__worldRenderDirty++;
 			
 		}
 		

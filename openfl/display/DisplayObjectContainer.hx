@@ -31,6 +31,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var numChildren (get, never):Int;
 	public var tabChildren:Bool;
 	
+	private var __childRenderDirty:Bool;
 	private var __removedChildren:Vector<DisplayObject>;
 	private var __tempStack:Vector<DisplayObject>;
 	
@@ -631,6 +632,12 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
+		if (renderSession.clearDirtyFlags) {
+			
+			__childRenderDirty = false;
+			
+		}
+		
 		for (orphan in __removedChildren) {
 			
 			if (orphan.stage == null) {
@@ -686,6 +693,12 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
+		if (renderSession.clearDirtyFlags) {
+			
+			__childRenderDirty = false;
+			
+		}
+		
 		for (orphan in __removedChildren) {
 			
 			if (orphan.stage == null) {
@@ -717,6 +730,12 @@ class DisplayObjectContainer extends InteractiveObject {
 		for (child in __children) {
 			
 			child.__renderGL (renderSession);
+			
+		}
+		
+		if (renderSession.clearDirtyFlags) {
+			
+			__childRenderDirty = false;
 			
 		}
 		

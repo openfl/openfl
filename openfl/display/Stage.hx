@@ -173,6 +173,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalWidth = 0;
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
+		__childRenderDirty = true;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -1689,13 +1690,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGrahpics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		if (transformOnly) {
 			
 			if (DisplayObject.__worldTransformDirty > 0) {
 				
-				super.__update (true, updateChildren, maskGrahpics);
+				super.__update (true, updateChildren, maskGraphics);
 				
 				if (updateChildren) {
 					
@@ -1708,9 +1709,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else {
 			
-			if (DisplayObject.__worldTransformDirty > 0 || __dirty || DisplayObject.__worldRenderDirty > 0) {
+			if (DisplayObject.__worldTransformDirty > 0 || __dirty || __childRenderDirty) {
 				
-				super.__update (false, updateChildren, maskGrahpics);
+				super.__update (false, updateChildren, maskGraphics);
 				
 				if (updateChildren) {
 					
@@ -1719,7 +1720,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					#end
 					
 					DisplayObject.__worldTransformDirty = 0;
-					DisplayObject.__worldRenderDirty = 0;
+					//DisplayObject.__worldRenderDirty = 0;
 					__dirty = false;
 					
 				}
