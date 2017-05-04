@@ -103,7 +103,7 @@ class Sound extends EventDispatcher {
 	}
 	
 	
-	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int #if (openfl < "5.0.0"), forcePlayAsMusic:Bool = false #end):Void {
+	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int):Void {
 		
 		if (bytes == null || bytesLength <= 0) {
 			

@@ -284,14 +284,6 @@ class Preloader extends LimePreloader {
 		removeEventListener (ProgressEvent.PROGRESS, this_onProgress);
 		removeEventListener (Event.COMPLETE, this_onComplete);
 		
-		#if (openfl < "5.0.0")
-		addEventListener (Event.COMPLETE, function (event) {
-			
-			dispatchEvent (new Event (Event.UNLOAD));
-			
-		});
-		#end
-		
 		onLoaded ();
 		
 	}

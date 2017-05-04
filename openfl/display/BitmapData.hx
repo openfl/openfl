@@ -705,19 +705,19 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData {
+	public static function fromBase64 (base64:String, type:String):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromBase64 (base64, type #if (openfl < "5.0.0"), onload #end);
+		bitmapData.__fromBase64 (base64, type);
 		return bitmapData;
 		
 	}
 	
 	
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData {
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromBytes (bytes, rawAlpha #if (openfl < "5.0.0"), onload #end);
+		bitmapData.__fromBytes (bytes, rawAlpha);
 		return bitmapData;
 		
 	}
@@ -737,10 +737,10 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
-	public static function fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null, onerror:Void -> Void = null #end):BitmapData {
+	public static function fromFile (path:String):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromFile (path #if (openfl < "5.0.0"), onload, onerror #end);
+		bitmapData.__fromFile (path);
 		return bitmapData;
 		
 	}
@@ -1616,26 +1616,18 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
+	private inline function __fromBase64 (base64:String, type:String):Void {
 		
 		Image.loadFromBase64 (base64, type).onComplete (function (image) {
 			
 			__fromImage (image);
-			
-			#if (openfl < "5.0.0")
-			if (onload != null) {
-				
-				onload (this);
-				
-			}
-			#end
 			
 		});
 		
 	}
 	
 	
-	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
+	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Void {
 		
 		Image.loadFromBytes (bytes).onComplete (function (image) {
 			
@@ -1647,34 +1639,18 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			#if (openfl < "5.0.0")
-			if (onload != null) {
-				
-				onload (this);
-				
-			}
-			#end
-			
 		});
 		
 	}
 	
 	
-	private function __fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void, onerror:Void -> Void #end):Void {
+	private function __fromFile (path:String):Void {
 		
 		Image.loadFromFile (path).onComplete (function (image) {
 			
 			__fromImage (image);
 			
-			#if (openfl < "5.0.0")
-			if (onload != null) {
-				
-				onload (this);
-				
-			}
-			#end
-			
-		}) #if (openfl < "5.0.0") .onError (function (_) onerror ()) #end;
+		});
 		
 	}
 	
