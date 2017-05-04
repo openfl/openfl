@@ -34,12 +34,6 @@ class GradientBevelFilter extends GradientFilter {
 			__shadowBitmapData.dispose();
 			__shadowBitmapData = null;
 		}
-		
-		if (__lookupTexture != null){
-			__lookupTexture.dispose();
-			__lookupTexture = null;
-			__lookupTextureIsDirty = true;
-		}
 	}
 
 
