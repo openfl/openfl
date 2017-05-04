@@ -116,25 +116,6 @@ import haxe.macro.Expr;
 	}
 	
 	
-	#if (openfl < "5.0.0")
-	#if (js && html5)
-	@:keep @:expose("::APP_FILE::.embed")
-	public static function _embed (element:Dynamic, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
-		
-		lime.system.System.embed ("::APP_FILE::", element, width, height, { background: background, assetsPrefix: assetsPrefix });
-		
-	}
-	
-	@:keep @:expose("openfl.embed")
-	public static function _embed2 (element:Dynamic, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
-		
-		lime.system.System.embed ("::APP_FILE::", element, width, height, { background: background, assetsPrefix: assetsPrefix });
-		
-	}
-	#end
-	#end
-	
-	
 	public static function start (stage:openfl.display.Stage):Void {
 		
 		#if flash
@@ -231,10 +212,6 @@ import haxe.macro.Expr;
 	macro public static function getPreloader () {
 		
 		::if (PRELOADER_NAME != "")::
-		#if (openfl < "5.0.0")
-		Context.defineType ({ name: "NMEPreloader", pack: [], kind: TDClass ({ name: "Preloader", sub: "DefaultPreloader", pack: [ "openfl", "display" ], params: [] }, null, false), fields: [ { name: "new", access: [ APublic ], kind: FFun({ args: [], expr: macro { super (); }, params: [], ret: macro :Void }), pos: Context.currentPos () } ], meta: [ { name: ":deprecated", params: [], pos: Context.currentPos () } ], pos: Context.currentPos () });
-		#end
-		
 		var type = Context.getType ("::PRELOADER_NAME::");
 		
 		switch (type) {
@@ -250,14 +227,6 @@ import haxe.macro.Expr;
 						return macro { new ::PRELOADER_NAME:: (); };
 						
 					}
-					#if (openfl < "5.0.0")
-					else if (searchTypes.pack.length == 0 && searchTypes.name == "NMEPreloader") {
-						
-						Sys.println ("Warning: Usage of NMEPreloader has been deprecated");
-						Sys.println ("Read more at http://community.openfl.org/t/workaround-for-deprecated-nmepreloader/8704");
-						
-					}
-					#end
 					
 					if (searchTypes.superClass != null) {
 						

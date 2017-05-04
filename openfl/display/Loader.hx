@@ -13,8 +13,9 @@ import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
 import openfl.net.URLRequestMethod;
 import openfl.system.LoaderContext;
+import openfl.utils.Assets;
+import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
-import openfl.Assets;
 
 #if (js && html5)
 import js.html.ScriptElement;
