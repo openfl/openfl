@@ -723,6 +723,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderGL (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		renderSession.filterManager.pushObject (this);
 		

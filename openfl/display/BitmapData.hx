@@ -1440,6 +1440,182 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	private function __draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
+		
+		if (matrix == null) {
+			
+			matrix = new Matrix ();
+			
+			if (source.__transform != null) {
+				
+				matrix.copyFrom (source.__transform);
+				matrix.tx = 0;
+				matrix.ty = 0;
+				
+			}
+			
+		}
+		
+		if (!readable /*|| !source.readable*/) {
+			
+			if (GL.context != null) {
+				
+				var gl = GL.context;
+				
+				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
+				gl.viewport (0, 0, width, height);
+				
+				var renderer = new GLRenderer (Lib.current.stage, gl, false);
+				renderer.resize (width, height);
+				
+				var renderSession = renderer.renderSession;
+				renderSession.clearDirtyFlags = true;
+				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				
+				var matrixCache = source.__worldTransform;
+				source.__updateTransforms (matrix);
+				source.__updateChildren (false);
+				source.__renderGL (renderer.renderSession);
+				source.__updateTransforms (matrixCache);
+				source.__updateChildren (true);
+				
+				gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+				
+			}
+			
+		} else {
+			
+			#if (js && html5)
+			
+			if (colorTransform != null) {
+				var width:Int = Math.ceil (Reflect.getProperty (source, "width"));
+				var height:Int = Math.ceil (Reflect.getProperty (source, "height"));
+				var copy = new BitmapData (width, height, true, 0);
+				copy.draw (source);
+				copy.colorTransform (copy.rect, colorTransform);
+				source = copy;
+				
+			}
+			
+			ImageCanvasUtil.convertToCanvas (image);
+			
+			var buffer = image.buffer;
+			
+			var renderSession = new RenderSession ();
+			renderSession.clearDirtyFlags = true;
+			renderSession.context = cast buffer.__srcContext;
+			renderSession.allowSmoothing = smoothing;
+			//renderSession.roundPixels = true;
+			renderSession.maskManager = new CanvasMaskManager (renderSession);
+			
+			if (!smoothing) {
+				
+				untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
+				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
+				untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
+				untyped (buffer.__srcContext).imageSmoothingEnabled = false;
+				
+			}
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.pushRect (clipRect, new Matrix ());
+				
+			}
+			
+			var matrixCache = source.__worldTransform;
+			source.__updateTransforms (matrix);
+			source.__updateChildren (false);
+			source.__renderCanvas (renderSession);
+			source.__updateTransforms (matrixCache);
+			source.__updateChildren (true);
+			
+			if (!smoothing) {
+				
+				untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
+				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
+				untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
+				untyped (buffer.__srcContext).imageSmoothingEnabled = true;
+				
+			}
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.popRect ();
+				
+			}
+			
+			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
+			buffer.__srcImageData = null;
+			buffer.data = null;
+			
+			image.dirty = true;
+			image.version++;
+			
+			#elseif lime_cairo
+			
+			if (source == this) {
+				
+				source = clone ();
+				
+			}
+			
+			if (colorTransform != null) {
+				
+				var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+				copy.draw (source);
+				copy.colorTransform (copy.rect, colorTransform);
+				source = copy;
+				
+			}
+			
+			var surface = getSurface ();
+			var cairo = new Cairo (surface);
+			
+			if (!smoothing) {
+				
+				cairo.antialias = NONE;
+				
+			}
+			
+			var renderSession = new RenderSession ();
+			renderSession.cairo = cairo;
+			renderSession.allowSmoothing = smoothing;
+			//renderSession.roundPixels = true;
+			renderSession.maskManager = new CairoMaskManager (renderSession);
+			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.pushRect (clipRect, new Matrix ());
+				
+			}
+			
+			var matrixCache = source.__worldTransform;
+			source.__updateTransforms (matrix);
+			source.__updateChildren (false);
+			source.__renderCairo (renderSession);
+			source.__updateTransforms (matrixCache);
+			source.__updateChildren (true);
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.popRect ();
+				
+			}
+			
+			surface.flush ();
+			
+			image.dirty = true;
+			image.version++;
+			
+			#end
+			
+		}
+		
+	}
+	
+	
 	private inline function __fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
 		
 		Image.loadFromBase64 (base64, type).onComplete (function (image) {

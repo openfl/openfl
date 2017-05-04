@@ -3,11 +3,15 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
+import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
+import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
@@ -53,6 +57,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
+	private static var __tempRect = new Rectangle ();
 	
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
@@ -84,10 +89,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __blendMode:BlendMode;
 	private var __cacheAsBitmap:Bool;
 	private var __cacheAsBitmapMatrix:Matrix;
+	private var __cacheBitmap:Bitmap;
+	private var __cacheBitmapData:BitmapData;
+	private var __cacheBitmapRender:Bool;
 	private var __cairo:Cairo;
 	private var __children:Array<DisplayObject>;
 	private var __filters:Array<BitmapFilter>;
-	private var __forceCacheAsBitmap:Bool;
 	private var __graphics:Graphics;
 	private var __interactive:Bool;
 	private var __isMask:Bool;
@@ -665,7 +672,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		CairoDisplayObject.render (this, renderSession);
+		__updateCacheBitmap ();
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			CairoBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			CairoDisplayObject.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -688,7 +705,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			CanvasDisplayObject.render (this, renderSession);
+			__updateCacheBitmap ();
+			
+			if (__cacheBitmap != null && !__cacheBitmapRender) {
+				
+				CanvasBitmap.render (__cacheBitmap, renderSession);
+				
+			} else {
+				
+				CanvasDisplayObject.render (this, renderSession);
+				
+			}
 			
 		}
 		
@@ -709,7 +736,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		DOMDisplayObject.render (this, renderSession);
+		__updateCacheBitmap ();
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			DOMBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			DOMDisplayObject.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -717,7 +754,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __renderGL (renderSession:RenderSession):Void {
 		
-		GLDisplayObject.render (this, renderSession);
+		__updateCacheBitmap ();
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			GLDisplayObject.render (this, renderSession);
+			
+		}
 		
 	}
 	
@@ -863,6 +910,54 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				//__renderDirty = false;
 				
 			//}
+			
+		}
+		
+	}
+	
+	
+	private function __updateCacheBitmap ():Void {
+		
+		if (__cacheBitmapRender) return;
+		
+		if (cacheAsBitmap || __renderDirty) {
+			
+			var matrix = Matrix.__temp;
+			matrix.identity ();
+			
+			__getBounds (__tempRect, matrix);
+			
+			if (__cacheBitmap == null || __tempRect.width != __cacheBitmap.width || __tempRect.height != __cacheBitmap.height) {
+				
+				__cacheBitmapData = new BitmapData (Std.int (__tempRect.width), Std.int (__tempRect.height), true, 0);
+				//__cacheBitmapData.disposeImage ();
+				
+				if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
+				__cacheBitmap.bitmapData = __cacheBitmapData;
+				
+			} else {
+				
+				__cacheBitmapData.fillRect (__cacheBitmapData.rect, 0);
+				
+			}
+			
+			__cacheBitmapRender = true;
+			@:privateAccess __cacheBitmapData.__draw (this);
+			__cacheBitmapRender = false;
+			
+			__update (false, true);
+			
+			__cacheBitmap.__renderable = true;
+			__cacheBitmap.__worldTransform = __worldTransform;
+			__cacheBitmap.__renderTransform = __renderTransform;
+			__cacheBitmap.__worldAlpha = __worldAlpha;
+			__cacheBitmap.__worldBlendMode = __worldBlendMode;
+			__cacheBitmap.__scrollRect = __scrollRect;
+		
+		} else {
+			
+			__cacheBitmap = null;
+			__cacheBitmapData = null;
 			
 		}
 		
@@ -1064,26 +1159,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_height ():Float {
 		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		__getLocalBounds (__tempRect);
 		
-		return bounds.height;
+		return __tempRect.height;
 		
 	}
 	
 	
 	private function set_height (value:Float):Float {
 		
-		var bounds = new Rectangle ();
-		
 		var matrix = Matrix.__temp;
 		matrix.identity ();
 		
-		__getBounds (bounds, matrix);
+		__getBounds (__tempRect, matrix);
 		
-		if (value != bounds.height) {
+		if (value != __tempRect.height) {
 			
-			scaleY = value / bounds.height;
+			scaleY = value / __tempRect.height;
 			
 		} else {
 			
@@ -1383,26 +1475,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_width ():Float {
 		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		__getLocalBounds (__tempRect);
 		
-		return bounds.width;
+		return __tempRect.width;
 		
 	}
 	
 	
 	private function set_width (value:Float):Float {
 		
-		var bounds = new Rectangle ();
-		
 		var matrix = Matrix.__temp;
 		matrix.identity ();
 		
-		__getBounds (bounds, matrix);
+		__getBounds (__tempRect, matrix);
 		
-		if (value != bounds.width) {
+		if (value != __tempRect.width) {
 			
-			scaleX = value / bounds.width;
+			scaleX = value / __tempRect.width;
 			
 		} else {
 			
