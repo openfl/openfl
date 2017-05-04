@@ -26,7 +26,7 @@
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 4.0.* is required)" if="${lime < 4.0.0} || ${lime >= 4.1.0}" unless="setup || disable-version-check" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 4.1.* is required)" if="${lime < 4.1.0} || ${lime >= 4.2.0}" unless="setup || disable-version-check" />
 		
 	</section>
 	
