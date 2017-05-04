@@ -98,9 +98,6 @@ class MovieClip extends flash.display.MovieClip {
 
 			}
 
-			if (__symbol.scalingGridRect != null ) {
-				__useSeparateRenderScaleTransform = false;
-			}
 		}
 
 		#if (!flash && openfl && !openfl_legacy)
@@ -630,9 +627,18 @@ class MovieClip extends flash.display.MovieClip {
 
 	private function __update9SliceBitmap ():Void {
 
-		// :TODO: use dirty flag if need to update __9SliceBitmap
+		if (__symbol != null && __symbol.scalingGridRect != null) {
+			var scaleX = Math.max(1.0, renderScaleX);
+			var scaleY = Math.max(1.0, renderScaleY);
 
-		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap == null) {
+			if (__9SliceBitmap != null
+				&& (scaleX != @:privateAccess __9SliceBitmap.__scaleX || scaleY != @:privateAccess __9SliceBitmap.__scaleY)
+				) {
+				__9SliceBitmap.dispose ();
+				__9SliceBitmap = null;
+			}
+
+			if (__9SliceBitmap == null) {
 				__updating9SliceBitmap = true;
 				var bounds:Rectangle = Rectangle.pool.get();
 				__getBounds (bounds);
@@ -644,8 +650,8 @@ class MovieClip extends flash.display.MovieClip {
 
 				if (__scale9Rect == null) {
 					__scale9Rect = __symbol.scalingGridRect.clone();
-					__scale9Rect.x -= bounds.x;
-					__scale9Rect.y -= bounds.y;
+				} else {
+					__scale9Rect.copyFrom (__symbol.scalingGridRect);
 				}
 
 				if ( !__scale9Rect.intersects(bounds) ) {
@@ -654,6 +660,28 @@ class MovieClip extends flash.display.MovieClip {
 					return;
 				}
 
+				__scale9Rect.x -= bounds.x;
+				__scale9Rect.y -= bounds.y;
+
+				var savedRenderScaleX = renderScaleX;
+				var savedRenderScaleY = renderScaleY;
+
+				renderScaleX = scaleX;
+				renderScaleY = scaleY;
+
+				for( child in __children ){
+					if (child.renderScaleX != savedRenderScaleX || child.renderScaleY != savedRenderScaleY) {
+						throw ":TODO: 9 sliced child has different render scale than parent";
+					}
+					child.renderScaleX = scaleX;
+					child.renderScaleY = scaleY;
+				}
+
+				bounds.x *= scaleX;
+				bounds.y *= scaleY;
+				bounds.width *= scaleX;
+				bounds.height *= scaleY;
+
 				var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 
 				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
@@ -661,13 +689,26 @@ class MovieClip extends flash.display.MovieClip {
 
 				var renderTransform = Matrix.pool.get ();
 				renderTransform.identity ();
+				renderTransform.a = scaleX;
+				renderTransform.d = scaleY;
 				renderTransform.translate(-bounds.x, -bounds.y);
+
 				@:privateAccess bitmap.__drawGL(renderSession, this, renderTransform);
 				Matrix.pool.put (renderTransform);
 				Rectangle.pool.put (bounds);
 
 				__9SliceBitmap = bitmap;
+				@:privateAccess __9SliceBitmap.__scaleX = scaleX;
+				@:privateAccess __9SliceBitmap.__scaleY = scaleY;
 				__updating9SliceBitmap = false;
+
+				renderScaleX = savedRenderScaleX;
+				renderScaleY = savedRenderScaleY;
+				for( child in __children ){
+					child.renderScaleX = savedRenderScaleX;
+					child.renderScaleY = savedRenderScaleY;
+				}
+			}
 		}
 	}
 
@@ -689,23 +730,25 @@ class MovieClip extends flash.display.MovieClip {
 		var bordersReservedHeight = bitmapHeight - __scale9Rect.height;
 		var bordersHorizontalScale:Float = 1.0;
 		var bordersVerticalScale:Float = 1.0;
+		var localWidth = width;
+		var localHeight = height;
 
-		if (width < bordersReservedWidth) {
-			bordersHorizontalScale = width / bordersReservedWidth;
+		if (localWidth < bordersReservedWidth) {
+			bordersHorizontalScale = localWidth / bordersReservedWidth;
 		}
 
-		if (height < bordersReservedHeight) {
-			bordersVerticalScale = height / bordersReservedHeight;
+		if (localHeight < bordersReservedHeight) {
+			bordersVerticalScale = localHeight / bordersReservedHeight;
 		}
 
 		var rect = new openfl.geom.Rectangle();
 		rect.left = bordersHorizontalScale * __scale9Rect.left;
-		rect.right = Math.max (rect.left, width - bordersHorizontalScale * (bitmapWidth - __scale9Rect.right) );
+		rect.right = Math.max (rect.left, localWidth - bordersHorizontalScale * (bitmapWidth - __scale9Rect.right) );
 		rect.top = bordersVerticalScale * __scale9Rect.top;
-		rect.bottom = Math.max (rect.top, height - bordersVerticalScale * (bitmapHeight - __scale9Rect.bottom) );
+		rect.bottom = Math.max (rect.top, localHeight - bordersVerticalScale * (bitmapHeight - __scale9Rect.bottom) );
 
-		var renderToBitmapXScale = bitmapWidth / width;
-		var renderToBitmapYScale = bitmapHeight / height;
+		var renderToBitmapXScale = bitmapWidth / localWidth;
+		var renderToBitmapYScale = bitmapHeight / localHeight;
 		var cols = [0, rect.left * renderToBitmapXScale, rect.right * renderToBitmapXScale, bitmapWidth];
 		var rows = [0, rect.top * renderToBitmapYScale, rect.bottom * renderToBitmapYScale, bitmapHeight];
 		var us = [0, __scale9Rect.left / bitmapWidth, __scale9Rect.right / bitmapWidth, 1];
