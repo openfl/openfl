@@ -5,6 +5,6 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "5.0.0",
-	"releasenote": "",
+	"releasenote": "Improved GraphicsPath support, improved Vector and Stage3D",
 	"contributors": [ "singmajesty" ]
 }
