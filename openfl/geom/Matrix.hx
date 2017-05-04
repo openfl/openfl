@@ -41,6 +41,24 @@ class Matrix {
 	}
 	
 	
+	public function preTransform (m:Matrix):Void {
+
+		tx = m.tx * a + m.ty * c + tx;
+		ty = m.tx * b + m.ty * d + ty;
+
+		var a1 = m.a * a + m.b * c;
+		c = m.c * a + m.d * c;
+		a = a1;
+
+		var b1 = m.a * b + m.b * d;
+		d = m.c * b + m.d * d;
+		b = b1;
+
+
+		//__cleanValues ();
+
+	}
+
 	public function concat (m:Matrix):Void {
 		
 		var a1 = a * m.a + b * m.c;

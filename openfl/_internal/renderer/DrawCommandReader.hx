@@ -31,7 +31,6 @@ class DrawCommandReader {
 	private var prev:DrawCommandType;
 	private var tsPos:Int;
 	private var bdPos:Int;
-	private var snapCoordinates:Bool;
 	
 	public function new (buffer:DrawCommandBuffer) {
 		
@@ -40,7 +39,6 @@ class DrawCommandReader {
 		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = bdPos = 0;
 		prev = UNKNOWN;
 		
-		snapCoordinates = false;
 	}
 	
 	
@@ -187,14 +185,6 @@ class DrawCommandReader {
 	}
 	
 	
-	private inline function coordinateFloat (index:Int):Float {
-		
-		var float:Float = buffer.f[fPos + index];
-		return snapCoordinates ?  Math.round (float) : float;
-		
-	}
-	
-	
 	private inline function iArr (index:Int):Array<Int> {
 		
 		return buffer.ii[iiPos + index];
@@ -243,11 +233,10 @@ class DrawCommandReader {
 	public inline function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
 	
 	
-	public function reset (?buffer:DrawCommandBuffer = null, snapCoordinates:Bool = false):Void {
+	public function reset (?buffer:DrawCommandBuffer = null):Void {
 		this.buffer = buffer;
 		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = bdPos = 0;
 		prev = UNKNOWN;
-		this.snapCoordinates = snapCoordinates;
 	}
 	
 	
@@ -304,8 +293,8 @@ abstract CubicCurveToView (DrawCommandReader) {
 	public var controlY1 (get, never):Float; private inline function get_controlY1 ():Float { return this.float (1); }
 	public var controlX2 (get, never):Float; private inline function get_controlX2 ():Float { return this.float (2); }
 	public var controlY2 (get, never):Float; private inline function get_controlY2 ():Float { return this.float (3); }
-	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.coordinateFloat (4); }
-	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.coordinateFloat (5); }
+	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.float (4); }
+	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.float (5); }
 	
 }
 
@@ -315,8 +304,8 @@ abstract CurveToView (DrawCommandReader) {
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var controlX (get, never):Float; private inline function get_controlX ():Float { return this.float (0); }
 	public var controlY (get, never):Float; private inline function get_controlY ():Float { return this.float (1); }
-	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.coordinateFloat (2); }
-	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.coordinateFloat (3); }
+	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.float (2); }
+	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.float (3); }
 	
 }
 
@@ -324,8 +313,8 @@ abstract CurveToView (DrawCommandReader) {
 abstract DrawCircleView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private inline function get_x ():Float { return this.coordinateFloat (0); }
-	public var y (get, never):Float; private inline function get_y ():Float { return this.coordinateFloat (1); }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
 	public var radius(get, never):Float; private inline function get_radius ():Float { return this.float (2); }
 	
 }
@@ -334,10 +323,10 @@ abstract DrawCircleView (DrawCommandReader) {
 abstract DrawEllipseView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private inline function get_x ():Float { return this.coordinateFloat (0); }
-	public var y (get, never):Float; private inline function get_y ():Float { return this.coordinateFloat (1); }
-	public var width (get, never):Float; private inline function get_width ():Float { return this.coordinateFloat (2); }
-	public var height(get, never):Float; private inline function get_height ():Float { return this.coordinateFloat (3); }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
+	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	
 }
 
@@ -365,10 +354,10 @@ abstract DrawPathView (DrawCommandReader) {
 abstract DrawRectView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private inline function get_x ():Float { return this.coordinateFloat (0); }
-	public var y (get, never):Float; private inline function get_y ():Float { return this.coordinateFloat (1); }
-	public var width (get, never):Float; private inline function get_width ():Float { return this.coordinateFloat (2); }
-	public var height(get, never):Float; private inline function get_height ():Float { return this.coordinateFloat (3); }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
+	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	
 }
 
@@ -376,10 +365,10 @@ abstract DrawRectView (DrawCommandReader) {
 abstract DrawRoundRectView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private inline function get_x ():Float { return this.coordinateFloat (0); }
-	public var y (get, never):Float; private inline function get_y ():Float { return this.coordinateFloat (1); }
-	public var width (get, never):Float; private inline function get_width ():Float { return this.coordinateFloat (2); }
-	public var height(get, never):Float; private inline function get_height ():Float { return this.coordinateFloat (3); }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
+	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	public var ellipseWidth (get, never):Float; private inline function get_ellipseWidth ():Float { return this.float (4); }
 	public var ellipseHeight (get, never):Null<Float>; private inline function get_ellipseHeight ():Null<Float> { return this.obj (0); }
 	
@@ -448,8 +437,8 @@ abstract LineStyleView (DrawCommandReader) {
 abstract LineToView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private inline function get_x ():Float { return this.coordinateFloat (0); }
-	public var y (get, never):Float; private inline function get_y ():Float { return this.coordinateFloat (1); }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
 	
 }
 
@@ -457,8 +446,8 @@ abstract LineToView (DrawCommandReader) {
 abstract MoveToView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private inline function get_x ():Float { return this.coordinateFloat (0); }
-	public var y (get, never):Float; private inline function get_y ():Float { return this.coordinateFloat (1); }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
 	
 }
 
