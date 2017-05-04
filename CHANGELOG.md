@@ -1,3 +1,40 @@
+5.0.0 (05/04/2017)
+------------------
+
+* Removed old preloader support (use new preloader format)
+* Removed callback in BitmapData.fromBase64 (use .loadFromBase64)
+* Removed callback in BitmapData.fromBytes (use .loadFromBytes)
+* Removed callbacks in BitmapData.fromFile (use .loadFromFile)
+* Removed unused parameter in sound.loadCompressedDataFromByteArray
+* Removed openfl.embed support in HTML template (use lime.embed)
+* Removed bundled import of asset classes (use openfl.utils.*)
+* Added initial support for compressed Stage3D textures
+* Added initial support for Adobe Texture Format in Stage3D
+* Added support for GraphicsTrianglePath
+* Added support for graphics.drawRoundRectComplex
+* Added support for MovieClip.isPlaying
+* Added capture phase to Event.ADDED and Event.REMOVED_FROM_STAGE
+* Improved alignment and layout grouping in TextField
+* Improved the behavior of GraphicsPath
+* Improved openfl.display.Shader to optimize better in JavaScript
+* Improved behavior of bitmapData.drawWithQuality using StageQuality.LOW
+* Improved the behavior of inherited blend modes
+* Improved the behavior of Stage3D mipmap filter smoothing
+* Improved the way uncaught errors are reported on iOS
+* Improved ByteArray to convert to a DataPointer with position preserved
+* Improved performance of byteArray.writeFloat when LITTLE_ENDIAN
+* Improved vector.toString on Flash to be consistent with other targets
+* Improved Vector.reverse to have the correct return type
+* Fixed conversion of null openfl.Vector to String
+* Fixed inclusion of alpha images in SWF exporter tool
+* Fixed some cases where width or height of a Shape was incorrect
+* Fixed performance regression when using Stage3D in release
+* Fixed binary size of SWF tools to support older Neko releases
+* Fixed an issue using Dictionary in some circumstances on HTML5
+* Fixed code completion issue when referencing RenderSession
+* Fixed static initialization order of CFFI methods
+
+
 4.9.2 (03/28/2017)
 ------------------
 
