@@ -38,7 +38,7 @@ import js.html.Element;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
-
+@:keepSub
 class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
 
 	private static var __worldRenderDirty = 0;
