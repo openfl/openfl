@@ -17,8 +17,10 @@ import openfl.net.URLRequest;
 import openfl.system.ApplicationDomain;
 import openfl.system.LoaderContext;
 import openfl.text.Font;
+import openfl.utils.AssetLibrary;
+import openfl.utils.Assets;
+import openfl.utils.AssetType;
 import openfl.utils.ByteArray;
-import openfl.Assets;
 
 #if flash
 import flash.display.AVM1Movie;
