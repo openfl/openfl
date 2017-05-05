@@ -175,7 +175,7 @@ import haxe.io.Bytes;
 		
 		if (!state.equals (__samplerState)) {
 			
-			if ((state.minFilter == GL.LINEAR_MIPMAP_LINEAR || state.minFilter == GL.NEAREST_MIPMAP_NEAREST) && !state.mipmapGenerated) {
+			if (state.minFilter != GL.NEAREST && state.minFilter != GL.LINEAR && !state.mipmapGenerated) {
 				
 				GL.generateMipmap (GL.TEXTURE_2D);
 				GLUtils.CheckGLError ();

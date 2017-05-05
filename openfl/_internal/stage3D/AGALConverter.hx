@@ -969,12 +969,12 @@ private class SamplerRegister {
 			// nearest
 			case 1:
 				
-				minFilter = (f != 0) ? GL.NEAREST_MIPMAP_LINEAR : GL.NEAREST_MIPMAP_NEAREST;
+				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_NEAREST : GL.NEAREST_MIPMAP_NEAREST;
 			
 			// linear
 			case 2:
 				
-				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_LINEAR : GL.LINEAR_MIPMAP_NEAREST;
+				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_LINEAR : GL.NEAREST_MIPMAP_LINEAR;
 			
 			default:
 				
