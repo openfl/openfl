@@ -33,6 +33,7 @@ import js.html.CanvasRenderingContext2D;
 #end
 
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.GraphicsPath)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -225,6 +226,9 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = anchorX;
 		__positionY = anchorY;
 		
+		__inflateBounds (__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds (__positionX + __strokePadding, __positionY + __strokePadding);
+		
 		__commands.cubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 		
 		__dirty = true;
@@ -334,26 +338,30 @@ import js.html.CanvasRenderingContext2D;
 					
 					stroke = cast graphics;
 					
-					switch (stroke.fill.__graphicsFillType) {
+					if (stroke.fill != null) {
 						
-						case SOLID_FILL:
+						switch (stroke.fill.__graphicsFillType) {
 							
-							fill = cast stroke.fill;
-							lineStyle (stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
-						
-						case BITMAP_FILL:
+							case SOLID_FILL:
+								
+								fill = cast stroke.fill;
+								lineStyle (stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 							
-							bitmapFill = cast stroke.fill;
-							lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
-							lineBitmapStyle (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
-						
-						case GRADIENT_FILL:
+							case BITMAP_FILL:
+								
+								bitmapFill = cast stroke.fill;
+								lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+								lineBitmapStyle (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 							
-							gradientFill = cast stroke.fill;
-							lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
-							lineGradientStyle (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
-						
-						default:
+							case GRADIENT_FILL:
+								
+								gradientFill = cast stroke.fill;
+								lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+								lineGradientStyle (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+							
+							default:
+							
+						}
 						
 					}
 				
@@ -765,7 +773,7 @@ import js.html.CanvasRenderingContext2D;
 	private function __readGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
 		
 		var data = new DrawCommandReader (__commands);
-		var path;
+		var path, stroke;
 		
 		for (type in __commands.types) {
 			
@@ -774,8 +782,9 @@ import js.html.CanvasRenderingContext2D;
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo ();
-					
-					// TODO: Convert cubic curve to bezier path
+					path = new GraphicsPath ();
+					path.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+					graphicsData.push (path);
 				
 				case CURVE_TO:
 					
@@ -800,20 +809,28 @@ import js.html.CanvasRenderingContext2D;
 				
 				case LINE_GRADIENT_STYLE:
 					
-					var c = data.readLineGradientStyle ();
-					
 					// TODO
+					
+					var c = data.readLineGradientStyle ();
+					//stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					//stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+					//graphicsData.push (stroke);
 				
 				case LINE_BITMAP_STYLE:
 					
-					var c = data.readLineBitmapStyle ();
-					
 					// TODO
+					
+					var c = data.readLineBitmapStyle ();
+					//stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					//stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
+					//graphicsData.push (stroke);
 				
 				case LINE_STYLE:
 					
 					var c = data.readLineStyle ();
-					graphicsData.push (new GraphicsStroke (c.thickness, /*c.color, c.alpha,*/ c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit));
+					stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					stroke.fill = new GraphicsSolidFill (c.color, c.alpha);
+					graphicsData.push (stroke);
 				
 				case END_FILL:
 					
@@ -838,26 +855,30 @@ import js.html.CanvasRenderingContext2D;
 				case DRAW_CIRCLE:
 					
 					var c = data.readDrawCircle ();
-					
-					// TODO
+					path = new GraphicsPath ();
+					path.__drawCircle (c.x, c.y, c.radius);
+					graphicsData.push (path);
 				
 				case DRAW_ELLIPSE:
 					
 					var c = data.readDrawEllipse ();
-					
-					// TODO
+					path = new GraphicsPath ();
+					path.__drawEllipse (c.x, c.y, c.width, c.height);
+					graphicsData.push (path);
 				
 				case DRAW_RECT:
 					
-					var c = data.readDrawEllipse ();
-					
-					// TODO
+					var c = data.readDrawRect ();
+					path = new GraphicsPath ();
+					path.__drawRect (c.x, c.y, c.width, c.height);
+					graphicsData.push (path);
 				
 				case DRAW_ROUND_RECT:
 					
-					var c = data.readDrawEllipse ();
-					
-					// TODO
+					var c = data.readDrawRoundRect ();
+					path = new GraphicsPath ();
+					path.__drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
+					graphicsData.push (path);
 				
 				default:
 					
