@@ -146,7 +146,7 @@ class AS3GraphicsDataShapeExporter extends DefaultShapeExporter
 		if(tmpGraphicsPath != null && tmpGraphicsPath.commands != null && tmpGraphicsPath.commands.length > 0) {
 			graphicsData.push(tmpGraphicsPath);
 		}
-		tmpGraphicsPath = new GraphicsPath();
+		tmpGraphicsPath = new GraphicsPath(new Vector(), new Vector());
 		tmpStroke = null;
 	}
 }
