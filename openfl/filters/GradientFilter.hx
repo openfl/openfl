@@ -50,8 +50,9 @@ class GradientFilter extends BitmapFilter {
 
 		var hash = getHash();
 
-		if(__textureCacheMap.exists(hash)) {
-			__lookupTexture = __textureCacheMap.get(hash);
+		__lookupTexture = __textureCacheMap.get(hash);
+
+		if(__lookupTexture != null) {
 			__lookupTextureIsDirty = false;
 			return;
 		}
@@ -145,22 +146,12 @@ class GradientFilter extends BitmapFilter {
 	}
 
 	private function getHash():Int
-	{
-		var buffer = new Float32Array(8 + colors.length + alphas.length + ratios.length);
-
-		buffer[0] = angle;
-		buffer[1] = blurX;
-		buffer[2] = blurY;
-		buffer[3] = distance;
-		buffer[4] = cast type;
-		buffer[5] = knockout ? 1 : 0;
-		buffer[6] = quality;
-		buffer[7] = strength;
-
-		var startIndex = 8;
+	{ 
+		var buffer = new Float32Array(colors.length + alphas.length + ratios.length);
+		var startIndex = 0;
 
 		for(i in 0...colors.length) {
-			buffer[startIndex + i] = colors[i];
+			buffer[i] = colors[i];
 		}
 
 		startIndex += colors.length;
