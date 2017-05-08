@@ -1441,39 +1441,30 @@ class BitmapData implements IBitmapDrawable {
 	
 	private inline function __fromBase64 (base64:String, type:String):Void {
 		
-		Image.loadFromBase64 (base64, type).onComplete (function (image) {
-			
-			__fromImage (image);
-			
-		});
+		var image = Image.fromBase64 (base64, type);
+		__fromImage (image);
 		
 	}
 	
 	
 	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Void {
 		
-		Image.loadFromBytes (bytes).onComplete (function (image) {
+		var image = Image.fromBytes (bytes);
+		__fromImage (image);
+		
+		if (rawAlpha != null) {
 			
-			__fromImage (image);
+			__applyAlpha (rawAlpha);
 			
-			if (rawAlpha != null) {
-				
-				__applyAlpha (rawAlpha);
-				
-			}
-			
-		});
+		}
 		
 	}
 	
 	
 	private function __fromFile (path:String):Void {
 		
-		Image.loadFromFile (path).onComplete (function (image) {
-			
-			__fromImage (image);
-			
-		});
+		var image = Image.fromFile (path);
+		__fromImage (image);
 		
 	}
 	
@@ -1516,6 +1507,49 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		return __framebuffer;
+		
+	}
+	
+	
+	private inline function __loadFromBase64 (base64:String, type:String):Future<BitmapData> {
+		
+		return Image.loadFromBase64 (base64, type).then (function (image) {
+			
+			__fromImage (image);
+			return Future.withValue (this);
+			
+		});
+		
+	}
+	
+	
+	private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData> {
+		
+		return Image.loadFromBytes (bytes).then (function (image) {
+			
+			__fromImage (image);
+			
+			if (rawAlpha != null) {
+				
+				__applyAlpha (rawAlpha);
+				
+			}
+			
+			return Future.withValue (this);
+			
+		});
+		
+	}
+	
+	
+	private function __loadFromFile (path:String):Future<BitmapData> {
+		
+		return Image.loadFromFile (path).then (function (image) {
+			
+			__fromImage (image);
+			return Future.withValue (this);
+			
+		});
 		
 	}
 	

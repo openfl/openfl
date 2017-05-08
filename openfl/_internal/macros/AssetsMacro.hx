@@ -60,7 +60,7 @@ class AssetsMacro {
 					
 				} else {
 					
-					__fromBase64 (haxe.Resource.getString (resourceName), resourceType, function (b) {
+					__loadFromBase64 (haxe.Resource.getString (resourceName), resourceType).onComplete (function (b) {
 						
 						if (preload == null) {
 							
@@ -315,12 +315,12 @@ class AssetsMacro {
 				throw "not implemented";
 				#else
 				var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes (resourceName));
-				loadCompressedDataFromByteArray (byteArray, byteArray.length, forcePlayAsMusic);
+				loadCompressedDataFromByteArray (byteArray, byteArray.length);
 				#end
 
 			};
 			
-			var args = [ { name: "stream", opt: true, type: macro :openfl.net.URLRequest, value: null }, { name: "context", opt: true, type: macro :openfl.media.SoundLoaderContext, value: null }, { name: "forcePlayAsMusic", opt: true, type: macro :Bool, value: macro false } ];
+			var args = [ { name: "stream", opt: true, type: macro :openfl.net.URLRequest, value: null }, { name: "context", opt: true, type: macro :openfl.media.SoundLoaderContext, value: null } ];
 			fields.push ({ name: "new", access: [ APublic ], kind: FFun({ args: args, expr: constructor, params: [], ret: null }), pos: Context.currentPos() });
 			
 			#end
