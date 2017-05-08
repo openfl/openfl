@@ -28,12 +28,6 @@ import openfl.geom.Rectangle;
 			__glowBitmapData.dispose();
 			__glowBitmapData = null;
 		}
-
-		if (__lookupTexture != null){
-			__lookupTexture.dispose();
-			__lookupTexture = null;
-			__lookupTextureIsDirty = true;
-		}
 	}
 	
 	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {

@@ -2,6 +2,7 @@ package openfl.filters;
 
 import lime.math.color.ARGB;
 import openfl.display.BitmapData;
+import haxe.io.Float32Array;
 
 class GradientFilter extends BitmapFilter {
 
@@ -20,6 +21,7 @@ class GradientFilter extends BitmapFilter {
 	private var __lookupTextureIsDirty:Bool = true;
 	private var __lookupTexture:BitmapData;
 
+	static private var __textureCacheMap:Map<Int, BitmapData> = new Map<Int, BitmapData>();
 
 	public function new (distance:Float = 4, angle:Float = 45, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Float> = null, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, type: BitmapFilterType = BitmapFilterType.INNER, knockout:Bool = false) {
 
@@ -36,18 +38,28 @@ class GradientFilter extends BitmapFilter {
 		this.quality = quality;
 		this.type = type;
 		this.knockout = knockout;
+
 	}
 
 
 	public override function dispose(): Void{
-		if (__lookupTexture != null){
-			__lookupTexture.dispose();
-			__lookupTexture = null;
-			__lookupTextureIsDirty = true;
-		}
+
 	}
 
 	private function updateLookupTexture():Void {
+
+		var hash = getHash();
+
+		__lookupTexture = __textureCacheMap.get(hash);
+
+		if(__lookupTexture != null) {
+			__lookupTextureIsDirty = false;
+			return;
+		}
+		else {
+			__lookupTexture = new BitmapData (256, 1);
+			__textureCacheMap.set(hash, __lookupTexture);
+		}
 
 		inline function alpha(color:UInt):Float {
 			return (color >>> 24) / 255;
@@ -93,10 +105,6 @@ class GradientFilter extends BitmapFilter {
 			return bi | (gi << 8) | (ri << 16) | (alphai << 24);
 		}
 
-		if (__lookupTexture == null ){
-			__lookupTexture = new BitmapData (256, 1);
-		}
-
 		var upperBoundIndex = 0;
 		var lowerBound = 0.0;
 		var upperBound = Math.max(Math.min(ratios[0] / 0xFF, 1.0),0.0);
@@ -135,7 +143,30 @@ class GradientFilter extends BitmapFilter {
 			}
 
 		}
+	}
 
+	private function getHash():Int
+	{ 
+		var buffer = new Float32Array(colors.length + alphas.length + ratios.length);
+		var startIndex = 0;
+
+		for(i in 0...colors.length) {
+			buffer[i] = colors[i];
+		}
+
+		startIndex += colors.length;
+
+		for(i in 0...alphas.length) {
+			buffer[startIndex + i] = alphas[i];
+		}
+
+		startIndex += alphas.length;
+		
+		for(i in 0...ratios.length) {
+			buffer[startIndex + i] = ratios[i];
+		}
+
+		return haxe.crypto.Crc32.make(buffer.view.buffer);
 	}
 
 }
