@@ -2,13 +2,15 @@ package openfl._internal.symbols;
 
 
 import openfl._internal.swf.SWFLite;
-import openfl.display.Shape;
 import openfl.geom.Matrix;
+import openfl.text.StaticText;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+
+@:access(openfl.text.StaticText)
 
 
 class StaticTextSymbol extends SWFSymbol {
@@ -16,7 +18,7 @@ class StaticTextSymbol extends SWFSymbol {
 	
 	public var matrix:Matrix;
 	public var records:Array<StaticTextRecord>;
-	public var rendered:Shape;
+	public var rendered:StaticText;
 	
 	
 	public function new () {
@@ -26,17 +28,20 @@ class StaticTextSymbol extends SWFSymbol {
 	}
 	
 	
-	private override function __createObject (swf:SWFLite):Shape {
+	private override function __createObject (swf:SWFLite):StaticText {
 		
-		var shape = new Shape ();
-		var graphics = shape.graphics;
+		var staticText = new StaticText ();
+		var graphics = staticText.__graphics;
 		
 		if (rendered != null) {
 			
-			graphics.copyFrom (rendered.graphics);
-			return shape;
+			staticText.text = rendered.text;
+			graphics.copyFrom (rendered.__graphics);
+			return staticText;
 			
 		}
+		
+		var text = "";
 		
 		if (records != null) {
 			
@@ -44,6 +49,8 @@ class StaticTextSymbol extends SWFSymbol {
 			var color = 0xFFFFFF;
 			var offsetX = matrix.tx;
 			var offsetY = matrix.ty;
+			
+			var scale, index, code;
 			
 			for (record in records) {
 				
@@ -54,14 +61,12 @@ class StaticTextSymbol extends SWFSymbol {
 				
 				if (font != null) {
 					
-					var scale = (record.fontHeight / 1024) * 0.05;
-					
-					var index;
-					var code;
+					scale = (record.fontHeight / 1024) * 0.05;
 					
 					for (i in 0...record.glyphs.length) {
 						
 						index = record.glyphs[i];
+						text += String.fromCharCode (font.codes[index]);
 						
 						for (command in font.glyphs[index]) {
 							
@@ -115,11 +120,14 @@ class StaticTextSymbol extends SWFSymbol {
 			
 		}
 		
-		records = null;
-		rendered = new Shape ();
-		rendered.graphics.copyFrom (shape.graphics);
+		staticText.text = text;
 		
-		return shape;
+		records = null;
+		rendered = new StaticText ();
+		rendered.text = text;
+		rendered.__graphics.copyFrom (staticText.__graphics);
+		
+		return staticText;
 		
 	}
 	
