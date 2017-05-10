@@ -5,6 +5,8 @@ import lime.graphics.RenderContext;
 import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.events.Event;
+import openfl.geom.Matrix;
+import openfl.geom.Transform;
 
 #if (js && html5 && dom)
 import js.html.DivElement;
@@ -17,12 +19,15 @@ import openfl._internal.renderer.dom.DOMRenderer;
 @:access(openfl.display.NativeDOMContext)
 @:access(openfl.display.NativeFlashContext)
 @:access(openfl.display.NativeGLContext)
+@:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
 
 
 class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	
 	
-	public var context:NativeContext;
+	public var context (default, null):NativeContext;
+	public var renderTransform (default, null):Matrix;
 	
 	#if (js && html5 && dom)
 	private var __active:Bool;
@@ -87,9 +92,30 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 		
 		this.context = context;
 		
+		#if flash
+		
+		renderTransform = transform.concatenatedMatrix;
+		
+		#else
+		
+		renderTransform = __renderTransform;
+		
+		// TODO: Implement transform.concatenatedColorTransform
+		
+		if (__objectTransform == null) {
+			
+			__objectTransform = new Transform (this);
+			
+		}
+		
+		__objectTransform.concatenatedColorTransform.__copyFrom (__worldColorTransform);
+		
+		#end
+		
 		dispatchEvent (new Event (Event.RENDER));
 		
 		this.context = null;
+		renderTransform = null;
 		
 	}
 	
@@ -97,7 +123,30 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	#if (lime_cairo && !flash)
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		var cairo = renderSession.cairo;
+		
+		renderSession.maskManager.pushObject (this);
+		
+		var transform = __renderTransform;
+		
+		if (renderSession.roundPixels) {
+			
+			var matrix = transform.__toMatrix3 ();
+			matrix.tx = Math.round (matrix.tx);
+			matrix.ty = Math.round (matrix.ty);
+			cairo.matrix = matrix;
+			
+		} else {
+			
+			cairo.matrix = transform.__toMatrix3 ();
+			
+		}
+		
 		__render (CAIRO (renderSession.cairo));
+		
+		renderSession.maskManager.popObject (this);
 		
 	}
 	#end
@@ -106,7 +155,46 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	#if (js && html5 && !flash)
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		var context = renderSession.context;
+		
+		renderSession.maskManager.pushObject (this, false);
+		
+		context.globalAlpha = __worldAlpha;
+		var transform = __renderTransform;
+		
+		if (renderSession.roundPixels) {
+			
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+			
+		} else {
+			
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+			
+		}
+		
+		if (!renderSession.allowSmoothing) {
+			
+			untyped (context).mozImageSmoothingEnabled = false;
+			//untyped (context).webkitImageSmoothingEnabled = false;
+			untyped (context).msImageSmoothingEnabled = false;
+			untyped (context).imageSmoothingEnabled = false;
+			
+		}
+		
 		__render (CANVAS (renderSession.context));
+		
+		if (!renderSession.allowSmoothing) {
+			
+			untyped (context).mozImageSmoothingEnabled = true;
+			//untyped (context).webkitImageSmoothingEnabled = true;
+			untyped (context).msImageSmoothingEnabled = true;
+			untyped (context).imageSmoothingEnabled = true;
+			
+		}
+		
+		renderSession.maskManager.popObject (this, false);
 		
 	}
 	#end
