@@ -23,7 +23,7 @@ import js.Browser;
 @:access(lime.graphics.opengl.GL)
 
 
-class OpenGLView extends DirectRenderer {
+@:deprecated class OpenGLView extends DirectRenderer {
 	
 	
 	public static inline var CONTEXT_LOST = "glcontextlost";
