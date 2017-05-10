@@ -4,9 +4,13 @@ package openfl.display;
 import lime.graphics.RenderContext;
 import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.RenderSession;
-import openfl.events.Event;
+import openfl.events.NativeRenderEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Transform;
+
+#if !flash
+import openfl._internal.renderer.opengl.GLRenderer;
+#end
 
 #if (js && html5 && dom)
 import js.html.DivElement;
@@ -26,8 +30,11 @@ import openfl._internal.renderer.dom.DOMRenderer;
 class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	
 	
-	public var context (default, null):NativeContext;
+	public var context (default, null):NativeRenderContext;
 	public var renderTransform (default, null):Matrix;
+	public var shader (get, set):Shader;
+	
+	private var __shader:Shader;
 	
 	#if (js && html5 && dom)
 	private var __active:Bool;
@@ -36,6 +43,7 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	
 	#if !flash
 	private var __height:Int;
+	private var __renderSession:RenderSession;
 	private var __width:Int;
 	#end
 	
@@ -54,7 +62,79 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 		FlashRenderer.register (this);
 		#end
 		
-		addEventListener (Event.RENDER, __this_onRender, false, 2147483647);
+	}
+	
+	
+	public function bindShader ():Void {
+		
+		#if !flash
+		if (__renderSession != null) {
+			
+			__renderSession.shaderManager.setShader (__shader);
+			
+		}
+		#end
+		
+	}
+	
+	
+	public function shaderMatrixArray (matrix:Matrix):Array<Float> {
+		
+		#if !flash
+		if (__renderSession != null) {
+			
+			var renderer:GLRenderer = cast __renderSession.renderer;
+			return renderer.getMatrix (matrix);
+			
+		}
+		#end
+		
+		return null;
+		
+	}
+	
+	
+	private function __afterRender ():Bool {
+		
+		var event = new NativeRenderEvent (NativeRenderEvent.AFTER_NATIVE_RENDER);
+		dispatchEvent (event);
+		
+		this.context = null;
+		renderTransform = null;
+		
+		return !event.isDefaultPrevented ();
+		
+	}
+	
+	
+	private function __beforeRender (context:NativeRenderContext):Bool {
+		
+		this.context = context;
+		
+		#if flash
+		
+		renderTransform = transform.concatenatedMatrix;
+		
+		#else
+		
+		renderTransform = __renderTransform;
+		
+		// TODO: Implement transform.concatenatedColorTransform
+		
+		if (__objectTransform == null) {
+			
+			__objectTransform = new Transform (this);
+			
+		}
+		
+		__objectTransform.concatenatedColorTransform.__copyFrom (__worldColorTransform);
+		
+		#end
+		
+		var event = new NativeRenderEvent (NativeRenderEvent.BEFORE_NATIVE_RENDER);
+		dispatchEvent (event);
+		
+		return !event.isDefaultPrevented ();
 		
 	}
 	
@@ -88,34 +168,9 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	#end
 	
 	
-	private function __render (context:NativeContext):Void {
+	private function __render ():Void {
 		
-		this.context = context;
-		
-		#if flash
-		
-		renderTransform = transform.concatenatedMatrix;
-		
-		#else
-		
-		renderTransform = __renderTransform;
-		
-		// TODO: Implement transform.concatenatedColorTransform
-		
-		if (__objectTransform == null) {
-			
-			__objectTransform = new Transform (this);
-			
-		}
-		
-		__objectTransform.concatenatedColorTransform.__copyFrom (__worldColorTransform);
-		
-		#end
-		
-		dispatchEvent (new Event (Event.RENDER));
-		
-		this.context = null;
-		renderTransform = null;
+		dispatchEvent (new NativeRenderEvent (NativeRenderEvent.NATIVE_RENDER));
 		
 	}
 	
@@ -125,28 +180,38 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		var cairo = renderSession.cairo;
+		super.__renderCairo (renderSession);
 		
-		renderSession.maskManager.pushObject (this);
-		
-		var transform = __renderTransform;
-		
-		if (renderSession.roundPixels) {
+		if (__beforeRender (CAIRO (renderSession.cairo))) {
 			
-			var matrix = transform.__toMatrix3 ();
-			matrix.tx = Math.round (matrix.tx);
-			matrix.ty = Math.round (matrix.ty);
-			cairo.matrix = matrix;
+			var cairo = renderSession.cairo;
 			
-		} else {
+			renderSession.maskManager.pushObject (this);
 			
-			cairo.matrix = transform.__toMatrix3 ();
+			var transform = __renderTransform;
+			
+			if (renderSession.roundPixels) {
+				
+				var matrix = transform.__toMatrix3 ();
+				matrix.tx = Math.round (matrix.tx);
+				matrix.ty = Math.round (matrix.ty);
+				cairo.matrix = matrix;
+				
+			} else {
+				
+				cairo.matrix = transform.__toMatrix3 ();
+				
+			}
 			
 		}
 		
-		__render (CAIRO (renderSession.cairo));
+		__render ();
 		
-		renderSession.maskManager.popObject (this);
+		if (__afterRender ()) {
+			
+			renderSession.maskManager.popObject (this);
+			
+		}
 		
 	}
 	#end
@@ -157,44 +222,54 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		var context = renderSession.context;
+		super.__renderCanvas (renderSession);
 		
-		renderSession.maskManager.pushObject (this, false);
-		
-		context.globalAlpha = __worldAlpha;
-		var transform = __renderTransform;
-		
-		if (renderSession.roundPixels) {
+		if (__beforeRender (CANVAS (renderSession.context))) {
 			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+			var context = renderSession.context;
 			
-		} else {
+			renderSession.maskManager.pushObject (this, false);
 			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+			context.globalAlpha = __worldAlpha;
+			var transform = __renderTransform;
+			
+			if (renderSession.roundPixels) {
+				
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+				
+			} else {
+				
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				
+			}
+			
+			if (!renderSession.allowSmoothing) {
+				
+				untyped (context).mozImageSmoothingEnabled = false;
+				//untyped (context).webkitImageSmoothingEnabled = false;
+				untyped (context).msImageSmoothingEnabled = false;
+				untyped (context).imageSmoothingEnabled = false;
+				
+			}
 			
 		}
 		
-		if (!renderSession.allowSmoothing) {
+		__render ();
+		
+		if (__afterRender ()) {
 			
-			untyped (context).mozImageSmoothingEnabled = false;
-			//untyped (context).webkitImageSmoothingEnabled = false;
-			untyped (context).msImageSmoothingEnabled = false;
-			untyped (context).imageSmoothingEnabled = false;
+			if (!renderSession.allowSmoothing) {
+				
+				untyped (context).mozImageSmoothingEnabled = true;
+				//untyped (context).webkitImageSmoothingEnabled = true;
+				untyped (context).msImageSmoothingEnabled = true;
+				untyped (context).imageSmoothingEnabled = true;
+				
+			}
+			
+			renderSession.maskManager.popObject (this, false);
 			
 		}
-		
-		__render (CANVAS (renderSession.context));
-		
-		if (!renderSession.allowSmoothing) {
-			
-			untyped (context).mozImageSmoothingEnabled = true;
-			//untyped (context).webkitImageSmoothingEnabled = true;
-			untyped (context).msImageSmoothingEnabled = true;
-			untyped (context).imageSmoothingEnabled = true;
-			
-		}
-		
-		renderSession.maskManager.popObject (this, false);
 		
 	}
 	#end
@@ -205,17 +280,22 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 		
 		if (stage != null && __worldVisible && __renderable) {
 			
-			if (!__active) {
+			if (__beforeRender (DOM (__element))) {
 				
-				DOMRenderer.initializeElement (this, __element, renderSession);
-				__active = true;
+				if (!__active) {
+					
+					DOMRenderer.initializeElement (this, __element, renderSession);
+					__active = true;
+					
+				}
+				
+				DOMRenderer.updateClip (this, renderSession);
+				DOMRenderer.applyStyle (this, renderSession, true, true, true);
 				
 			}
 			
-			DOMRenderer.updateClip (this, renderSession);
-			DOMRenderer.applyStyle (this, renderSession, true, true, true);
-			
-			__render (DOM (__element));
+			__render ();
+			__afterRender ();
 			
 		} else {
 			
@@ -237,7 +317,9 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	#if flash
 	private function __renderFlash ():Void {
 		
-		__render (FLASH (this));
+		__beforeRender (FLASH (this));
+		__render ();
+		__afterRender ();
 		
 	}
 	#end
@@ -246,34 +328,42 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	#if !flash
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		if (__renderable) {
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		super.__renderGL (renderSession);
+		
+		__renderSession = renderSession;
+		
+		if (__beforeRender (OPENGL (renderSession.gl))) {
 			
-			renderSession.shaderManager.setShader (null);
+			var renderer:GLRenderer = cast renderSession.renderer;
+			var gl = renderSession.gl;
+			
+			renderSession.blendModeManager.setBlendMode (__worldBlendMode);
+			renderSession.maskManager.pushObject (this);
+			
+			__shader = renderSession.filterManager.pushObject (this);
+			
+		} else {
+			
+			renderSession.shaderManager.setShader (__shader);
 			renderSession.blendModeManager.setBlendMode (null);
 			
-			__render (OPENGL (renderSession.gl));
+		}
+		
+		__render ();
+		
+		if (__afterRender ()) {
+			
+			renderSession.filterManager.popObject (this);
+			renderSession.maskManager.popObject (this);
 			
 		}
+		
+		__renderSession = null;
 		
 	}
 	#end
-	
-	
-	
-	
-	// Event Handlers
-	
-	
-	
-	private function __this_onRender (event:Event):Void {
-		
-		if (context == null) {
-			
-			event.stopImmediatePropagation ();
-			
-		}
-		
-	}
 	
 	
 	
@@ -312,6 +402,28 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 		//
 	//}
 	#end
+	
+	
+	private function get_shader ():Shader {
+		
+		return __shader;
+		
+	}
+	
+	
+	private function set_shader (value:Shader):Shader {
+		
+		#if !flash
+		if (__renderSession != null) {
+			
+			__renderSession.shaderManager.setShader (value);
+			
+		}
+		#end
+		
+		return __shader = value;
+		
+	}
 	
 	
 	#if !flash

@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-enum NativeContext {
+enum NativeRenderContext {
 	
 	OPENGL (gl:#if (!flash || display) NativeGLContext #else Dynamic #end);
 	CANVAS (context:NativeCanvasContext);
