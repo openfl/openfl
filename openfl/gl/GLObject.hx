@@ -1,8 +1,4 @@
 package openfl.gl;
 
 
-#if (!js || !html5 || display)
-typedef GLObject = lime.graphics.opengl.GL.GLObject;
-#else
-typedef GLObject = Dynamic;
-#end
+@:deprecated typedef GLObject = #if (!js || !html5 || display) lime.graphics.opengl.GL.GLObject #else Dynamic #end;

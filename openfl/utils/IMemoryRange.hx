@@ -4,7 +4,7 @@ package openfl.utils;
 import openfl.utils.ByteArray;
 
 
-interface IMemoryRange {
+@:deprecated interface IMemoryRange {
 	
 	public function getByteBuffer ():ByteArray;
 	public function getStart ():Int;
