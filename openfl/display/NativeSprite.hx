@@ -6,6 +6,12 @@ import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.events.Event;
 
+#if (js && html5 && dom)
+import js.html.DivElement;
+import js.Browser;
+import openfl._internal.renderer.dom.DOMRenderer;
+#end
+
 @:access(openfl.display.NativeCairoContext)
 @:access(openfl.display.NativeCanvasContext)
 @:access(openfl.display.NativeDOMContext)
@@ -18,6 +24,11 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	
 	public var context:NativeContext;
 	
+	#if (js && html5 && dom)
+	private var __active:Bool;
+	private var __element:DivElement;
+	#end
+	
 	#if !flash
 	private var __height:Int;
 	private var __width:Int;
@@ -27,6 +38,10 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	public function new () {
 		
 		super ();
+		
+		#if (js && html5 && dom)
+		__element = cast Browser.document.createElement ("div");
+		#end
 		
 		#if flash
 		mouseEnabled = false;
@@ -100,7 +115,32 @@ class NativeSprite extends Sprite #if flash implements IDisplayObject #end {
 	#if (js && html5 && dom && !flash)
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
-		__render (DOM (renderSession.element));
+		if (stage != null && __worldVisible && __renderable) {
+			
+			if (!__active) {
+				
+				DOMRenderer.initializeElement (this, __element, renderSession);
+				__active = true;
+				
+			}
+			
+			DOMRenderer.updateClip (this, renderSession);
+			DOMRenderer.applyStyle (this, renderSession, true, true, true);
+			
+			__render (DOM (__element));
+			
+		} else {
+			
+			if (__active) {
+				
+				renderSession.element.removeChild (__element);
+				__active = false;
+				
+			}
+			
+		}
+		
+		super.__renderDOM (renderSession);
 		
 	}
 	#end
