@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLShader = lime.graphics.opengl.GLShader;
+@:deprecated typedef GLShader = lime.graphics.opengl.GLShader;
