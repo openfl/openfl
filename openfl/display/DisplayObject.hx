@@ -847,7 +847,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__transformDirty) {
 
 			__transformDirty = true;
-			__setUpdateDirty();
+			__setRenderDirty();
 			__worldTransformDirty++;
 
 		}
