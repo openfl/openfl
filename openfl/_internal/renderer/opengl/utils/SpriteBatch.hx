@@ -208,32 +208,36 @@ class SpriteBatch {
 		//enableAttributes(color);
 		enableAttributes(0);
 
-		var index = batchedSprites * 4 * elementsPerVertex;
-		fillVertices(index, width, height, matrix, uvs, color, pixelSnapping);
-
-		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader);
-
-		batchedSprites++;
-	}
-
-
-	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
-		color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
-
 		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
 		var localMatrix = Matrix.pool.get ();
 
 		localMatrix.copyFrom (matrix);
 		localMatrix.concat (renderTargetBaseTransform);
 
-		var a = localMatrix.a;
-		var b = localMatrix.b;
-		var c = localMatrix.c;
-		var d = localMatrix.d;
-		var tx = localMatrix.tx;
-		var ty = localMatrix.ty;
+		var index = batchedSprites * 4 * elementsPerVertex;
+		fillVertices(index, width, height, localMatrix, uvs, color, pixelSnapping);
 
+		var itIsSimpleBlit:Bool = Math.abs (Math.abs (localMatrix.a) * width - bitmapData.physicalWidth) < 0.5
+		&& Math.abs (Math.abs (localMatrix.d) * height - bitmapData.physicalHeight) < 0.5
+		&& Math.abs (localMatrix.b) < 0.001
+		&& Math.abs (localMatrix.c) < 0.001;
+
+		setState(batchedSprites, texture, smoothing && !itIsSimpleBlit, blendMode, ct, flashShader);
+
+		batchedSprites++;
 		Matrix.pool.put (localMatrix);
+	}
+
+
+	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
+		color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
+
+		var a = matrix.a;
+		var b = matrix.b;
+		var c = matrix.c;
+		var d = matrix.d;
+		var tx = matrix.tx;
+		var ty = matrix.ty;
 
 		// POSITION
 		if (pixelSnapping == null || pixelSnapping == NEVER) {
