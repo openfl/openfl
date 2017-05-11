@@ -36,6 +36,7 @@ import haxe.macro.Expr;
 				::foreach windows::
 				{
 					allowHighDPI: ::allowHighDPI::,
+					alwaysOnTop: ::alwaysOnTop::,
 					antialiasing: ::antialiasing::,
 					background: ::background::,
 					borderless: ::borderless::,
