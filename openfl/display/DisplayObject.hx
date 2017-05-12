@@ -927,6 +927,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__getBounds (__tempRect, matrix);
 			
+			matrix.tx = - __tempRect.x;
+			matrix.ty = - __tempRect.y;
+			
 			if (__cacheBitmap == null || __tempRect.width != __cacheBitmap.width || __tempRect.height != __cacheBitmap.height) {
 				
 				__cacheBitmapData = new BitmapData (Std.int (__tempRect.width), Std.int (__tempRect.height), true, 0);
@@ -942,10 +945,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 			__cacheBitmapRender = true;
-			@:privateAccess __cacheBitmapData.__draw (this);
+			@:privateAccess __cacheBitmapData.__draw (this, matrix);
 			__cacheBitmapRender = false;
 			
 			__update (false, true);
+			
+			__renderTransform.tx += __tempRect.x;
+			__renderTransform.ty += __tempRect.y;
 			
 			__cacheBitmap.__renderable = true;
 			__cacheBitmap.__worldTransform = __worldTransform;
