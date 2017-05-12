@@ -928,10 +928,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__cacheBitmapRender) return;
 		
-		if (cacheAsBitmap || __renderDirty) {
+		if (cacheAsBitmap && __renderDirty) {
 			
-			var rect = Rectangle.__pool.get ();
+			__getWorldTransform ();
+			__update (false, true);
+			
 			var matrix = Matrix.__pool.get ();
+			var rect = Rectangle.__pool.get ();
 			matrix.identity ();
 			
 			__getBounds (rect, matrix);
@@ -946,6 +949,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 				__cacheBitmap.bitmapData = __cacheBitmapData;
+				__cacheBitmap.smoothing = true;
 				
 			} else {
 				
@@ -957,20 +961,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			@:privateAccess __cacheBitmapData.__draw (this, matrix);
 			__cacheBitmapRender = false;
 			
-			__update (false, true);
-			
-			__renderTransform.tx += rect.x;
-			__renderTransform.ty += rect.y;
-			
-			__cacheBitmap.__renderable = true;
-			__cacheBitmap.__worldTransform = __worldTransform;
-			__cacheBitmap.__renderTransform = __renderTransform;
+			__cacheBitmap.__renderable = __renderable;
+			__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
 			__cacheBitmap.__scrollRect = __scrollRect;
 			
-			Rectangle.__pool.release (rect);
+			matrix.tx *= -1;
+			matrix.ty *= -1;
+			
+			__cacheBitmap.__renderTransform.copyFrom (__renderTransform);
+			__cacheBitmap.__renderTransform.concat (matrix);
+			
 			Matrix.__pool.release (matrix);
+			Rectangle.__pool.release (rect);
 			
 		} else {
 			
