@@ -354,7 +354,7 @@ class SimpleButton extends InteractiveObject {
 		
 		var local = state.__transform;
 		var parentTransform = __worldTransform;
-		var overrideTransform = Matrix.__temp;
+		var overrideTransform = Matrix.__pool.get ();
 		
 		overrideTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
 		overrideTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
@@ -369,6 +369,8 @@ class SimpleButton extends InteractiveObject {
 		state.__update (false, true);
 		
 		state.__transform = cacheTransform;
+		
+		Matrix.__pool.release (overrideTransform);
 		
 		return cacheTransform;
 		

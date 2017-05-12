@@ -625,13 +625,15 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!rect.equals (this.rect)) {
 			
-			var matrix = Matrix.__temp;
+			var matrix = Matrix.__pool.get ();
 			matrix.setTo (1, 0, 0, 1, Math.round (-rect.x), Math.round (-rect.y));
 			
 			var bitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, 0);
 			bitmapData.draw (this, matrix);
 			
 			image = bitmapData.image;
+			
+			Matrix.__pool.release (matrix);
 			
 		}
 		
@@ -1139,7 +1141,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (rect.contains (x, y)) {
 				
-				var hitRect = Rectangle.__temp;
+				var hitRect = Rectangle.__pool.get ();
 				hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
 				
 				var pixels = getPixels (hitRect);
@@ -1149,6 +1151,8 @@ class BitmapData implements IBitmapDrawable {
 				
 				var length = Std.int (hitRect.width * hitRect.height);
 				var pixel, testPixel;
+				
+				Rectangle.__pool.release (hitRect);
 				
 				for (i in 0...length) {
 					
@@ -1169,7 +1173,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else if (Std.is (secondObject, Rectangle)) {
 			
-			var secondRectangle = Rectangle.__temp;
+			var secondRectangle = Rectangle.__pool.get ();
 			secondRectangle.copyFrom (cast secondObject);
 			secondRectangle.offset (-firstPoint.x, -firstPoint.y);
 			secondRectangle.__contract (0, 0, width, height);
@@ -1186,6 +1190,7 @@ class BitmapData implements IBitmapDrawable {
 					
 					if ((pixel >> 24) & 0xFF > firstAlphaThreshold) {
 						
+						Rectangle.__pool.release (secondRectangle);
 						return true;
 						
 					}
@@ -1193,6 +1198,8 @@ class BitmapData implements IBitmapDrawable {
 				}
 				
 			}
+			
+			Rectangle.__pool.release (secondRectangle);
 			
 		}
 		

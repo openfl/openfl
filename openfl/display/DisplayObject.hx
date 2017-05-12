@@ -57,7 +57,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
-	private static var __tempRect = new Rectangle ();
 	
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
@@ -219,6 +218,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
 		var matrix;
+		var usingTemp = false;
 		
 		if (targetCoordinateSpace != null) {
 			
@@ -227,13 +227,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		} else {
 			
-			matrix = Matrix.__temp;
+			usingTemp = true;
+			matrix = Matrix.__pool.get ();
 			matrix.identity ();
 			
 		}
 		
 		var bounds = new Rectangle ();
 		__getBounds (bounds, matrix);
+		
+		if (usingTemp) {
+			
+			Matrix.__pool.release (matrix);
+			
+		}
 		
 		return bounds;
 		
@@ -548,10 +555,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		} else {
 			
-			var r = openfl.geom.Rectangle.__temp;
+			var r = Rectangle.__pool.get ();
 			r.copyFrom (__scrollRect);
 			r.__transform (r, matrix);
 			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
+			Rectangle.__pool.release (r);
 			
 		}
 		
@@ -922,17 +930,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (cacheAsBitmap || __renderDirty) {
 			
-			var matrix = Matrix.__temp;
+			var rect = Rectangle.__pool.get ();
+			var matrix = Matrix.__pool.get ();
 			matrix.identity ();
 			
-			__getBounds (__tempRect, matrix);
+			__getBounds (rect, matrix);
 			
-			matrix.tx = - __tempRect.x;
-			matrix.ty = - __tempRect.y;
+			matrix.tx = -rect.x;
+			matrix.ty = -rect.y;
 			
-			if (__cacheBitmap == null || __tempRect.width != __cacheBitmap.width || __tempRect.height != __cacheBitmap.height) {
+			if (__cacheBitmap == null || rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height) {
 				
-				__cacheBitmapData = new BitmapData (Std.int (__tempRect.width), Std.int (__tempRect.height), true, 0);
+				__cacheBitmapData = new BitmapData (Std.int (rect.width), Std.int (rect.height), true, 0);
 				//__cacheBitmapData.disposeImage ();
 				
 				if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
@@ -950,8 +959,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__update (false, true);
 			
-			__renderTransform.tx += __tempRect.x;
-			__renderTransform.ty += __tempRect.y;
+			__renderTransform.tx += rect.x;
+			__renderTransform.ty += rect.y;
 			
 			__cacheBitmap.__renderable = true;
 			__cacheBitmap.__worldTransform = __worldTransform;
@@ -959,7 +968,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
 			__cacheBitmap.__scrollRect = __scrollRect;
-		
+			
+			Rectangle.__pool.release (rect);
+			Matrix.__pool.release (matrix);
+			
 		} else {
 			
 			__cacheBitmap = null;
@@ -1165,29 +1177,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_height ():Float {
 		
-		__getLocalBounds (__tempRect);
-		
-		return __tempRect.height;
+		var rect = Rectangle.__pool.get ();
+		__getLocalBounds (rect);
+		var height = rect.height;
+		Rectangle.__pool.release (rect);
+		return height;
 		
 	}
 	
 	
 	private function set_height (value:Float):Float {
 		
-		var matrix = Matrix.__temp;
+		var rect = Rectangle.__pool.get ();
+		var matrix = Matrix.__pool.get ();
 		matrix.identity ();
 		
-		__getBounds (__tempRect, matrix);
+		__getBounds (rect, matrix);
 		
-		if (value != __tempRect.height) {
+		if (value != rect.height) {
 			
-			scaleY = value / __tempRect.height;
+			scaleY = value / rect.height;
 			
 		} else {
 			
 			scaleY = 1;
 			
 		}
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (matrix);
 		
 		return value;
 		
@@ -1481,29 +1499,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_width ():Float {
 		
-		__getLocalBounds (__tempRect);
-		
-		return __tempRect.width;
+		var rect = Rectangle.__pool.get ();
+		__getLocalBounds (rect);
+		var width = rect.width;
+		Rectangle.__pool.release (rect);
+		return width;
 		
 	}
 	
 	
 	private function set_width (value:Float):Float {
 		
-		var matrix = Matrix.__temp;
+		var rect = Rectangle.__pool.get ();
+		var matrix = Matrix.__pool.get ();
 		matrix.identity ();
 		
-		__getBounds (__tempRect, matrix);
+		__getBounds (rect, matrix);
 		
-		if (value != __tempRect.width) {
+		if (value != rect.width) {
 			
-			scaleX = value / __tempRect.width;
+			scaleX = value / rect.width;
 			
 		} else {
 			
 			scaleX = 1;
 			
 		}
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (matrix);
 		
 		return value;
 		

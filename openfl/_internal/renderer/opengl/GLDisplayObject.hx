@@ -30,7 +30,7 @@ class GLDisplayObject {
 			
 			var gl = renderSession.gl;
 			
-			var rect = Rectangle.__temp;
+			var rect = Rectangle.__pool.get ();
 			rect.setTo (0, 0, displayObject.width, displayObject.height);
 			renderSession.maskManager.pushRect (rect, displayObject.__renderTransform);
 			
@@ -40,6 +40,8 @@ class GLDisplayObject {
 			
 			renderSession.maskManager.popRect ();
 			renderSession.maskManager.popObject (displayObject);
+			
+			Rectangle.__pool.release (rect);
 			
 		}
 		

@@ -1025,13 +1025,15 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		var bounds = Rectangle.__temp;
+		var bounds = Rectangle.__pool.get ();
 		bounds.copyFrom (__textEngine.bounds);
 		bounds.x += __offsetX;
 		bounds.y += __offsetY;
 		bounds.__transform (bounds, matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		
+		Rectangle.__pool.release (bounds);
 		
 	}
 	
