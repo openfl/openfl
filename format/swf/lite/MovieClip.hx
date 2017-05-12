@@ -951,18 +951,17 @@ class MovieClip extends flash.display.MovieClip {
 
 		__maskDataDirty = true;
 
-		#if (!flash && openfl && !openfl_legacy)
-		inline function labelLogic() {
-			var label = __symbol.frames[index].label;
-			__currentFrameLabel = label;
-			if ( label != null ) {
-				__currentLabel = label;
-			}
+		var label = __symbol.frames[index].label;
+
+		__currentFrameLabel = label;
+
+		if ( label != null ) {
+			__currentLabel = label;
 		}
+
 		if (__frameScripts != null) {
 
 			if (__frameScripts.exists (index)) {
-				labelLogic();
 
 				__frameScripts.get (index) ();
 
@@ -972,10 +971,10 @@ class MovieClip extends flash.display.MovieClip {
 			}
 
 		}
+
 		if (__staticFrameScripts != null) {
 
 			if (__staticFrameScripts.exists (index)) {
-				labelLogic();
 
 				__staticFrameScripts.get (index) (this);
 
@@ -985,7 +984,6 @@ class MovieClip extends flash.display.MovieClip {
 			}
 
 		}
-		#end
 
 		return false;
 
