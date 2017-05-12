@@ -1,5 +1,6 @@
 package format.swf.lite;
 
+import openfl.geom.Rectangle;
 import format.swf.lite.symbols.MorphShapeSymbol;
 import flash.display.Shape;
 import flash.display.Graphics;
@@ -28,6 +29,13 @@ class MorphShape extends Shape {
 		ratio = 0;
 
 	}
+
+	
+	private override function __getRenderBounds (rect:Rectangle):Void {
+		__update(true, false);
+		super.__getRenderBounds(rect);
+	}
+	
 
 	override public function getSymbol():format.swf.lite.symbols.SWFSymbol{
 		return __symbol;
