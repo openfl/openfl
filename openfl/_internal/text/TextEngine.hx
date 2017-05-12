@@ -72,6 +72,7 @@ class TextEngine {
 	public var bottomScrollV (default, null):Int;
 	public var bounds:Rectangle;
 	public var caretIndex:Int;
+	public var computeAdvances:Bool;
 	public var displayAsPassword:Bool;
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
@@ -139,6 +140,7 @@ class TextEngine {
 		displayAsPassword = false;
 		embedFonts = false;
 		selectable = true;
+		computeAdvances = false;
 		borderColor = 0x000000;
 		border = false;
 		backgroundColor = 0xffffff;
@@ -788,6 +790,10 @@ class TextEngine {
 			startLayoutGroup(formatRange.format, textIndex);
 		}
 
+		inline function mustComputeAdvances ():Bool {
+			return selectable || computeAdvances;
+		}
+
 		nextFormatRange();
 		startLayoutGroup(formatRange.format, formatRange.start);
 
@@ -813,7 +819,7 @@ class TextEngine {
 			}
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
-			if ( selectable ) {
+			if ( mustComputeAdvances () ) {
 				advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 			}
 
@@ -823,7 +829,7 @@ class TextEngine {
 				var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
 				if ( layoutGroup.offsetX == OFFSET_START && Math.floor( layoutGroup.offsetX + wordWidth ) > width - OFFSET_START ) {
 					// compute the actual breakindex
-					if ( !selectable ) {
+					if ( advances == null ) {
 						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 					}
 					var subWordWidth:Float = 0.0;
@@ -864,7 +870,7 @@ class TextEngine {
 				textIndex = formatRange.end;
 				// :TODO: Check if still needed
 				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
-				if ( selectable ) {
+				if ( mustComputeAdvances () ) {
 					advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, textIndex);
 				}
 				endLayoutGroup(textIndex);
@@ -1012,6 +1018,5 @@ class TextEngine {
 		getBounds ();
 
 	}
-
 
 }
