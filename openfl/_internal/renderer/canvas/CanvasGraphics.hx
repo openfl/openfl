@@ -54,6 +54,8 @@ class CanvasGraphics {
 	private static var closeGap = false;
 	private static var startX = 0.0;
 	private static var startY = 0.0;
+	private static var currentTransform = new Matrix ();
+	private static var snapCoordinates:Bool = false;
 
 	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>  = new ObjectPool<DrawCommandReader>(
 		function()
@@ -216,10 +218,14 @@ class CanvasGraphics {
 			}
 
 			if (canvasGraphics.hasFill) {
-				context.save();
+				context.save ();
 
 				var pending_matrix = canvasGraphics.pendingMatrix;
 				if (pending_matrix != null && pending_matrix.a * pending_matrix.d - pending_matrix.c * pending_matrix.b != 0  ) {
+
+					if (snapCoordinates) {
+						context.setTransform (currentTransform.a, currentTransform.b, currentTransform.c, currentTransform.d, currentTransform.tx, currentTransform.ty);
+					}
 
 					context.transform (pending_matrix.a, pending_matrix.b, pending_matrix.c, pending_matrix.d, pending_matrix.tx, pending_matrix.ty);
 					canvasGraphics.pendingMatrix = null;
@@ -227,7 +233,7 @@ class CanvasGraphics {
 
 				if (!canvasGraphics.hitTesting) context.fill (canvasGraphics.canvasWindingRule);
 
-				context.restore();
+				context.restore ();
 				context.closePath ();
 
 			}
@@ -254,15 +260,23 @@ class CanvasGraphics {
 			if ( graphics.__canvas == null ) {
 				graphics.__canvas = cast Browser.document.createElement ("canvas");
 				graphics.__context = graphics.__canvas.getContext ("2d");
-			} else {
-				graphics.__context.setTransform(1,0,0,1,0,0);
-				graphics.__context.clearRect(0,0,graphics.__canvas.width,graphics.__canvas.height);
 			}
 
 			context = graphics.__context;
-
 			var context = canvasGraphics.context;
-			context.translate (-bounds.x, -bounds.y);
+
+			if (snapCoordinates) {
+
+				currentTransform.setTo (1.0, 0.0, 0.0, 1.0, -bounds.x, -bounds.y);
+				context.setTransform (1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+
+			} else {
+
+				context.setTransform (1.0, 0.0, 0.0, 1.0, -bounds.x, -bounds.y);
+
+			}
+
+			context.clearRect (0,0,graphics.__canvas.width,graphics.__canvas.height);
 
 			x -= bounds.x;
 			y -= bounds.y;
@@ -271,7 +285,7 @@ class CanvasGraphics {
 			resetFillStyle();
 
 			var data = drawCommandReaderPool.get();
-			data.reset(graphics.__commands, graphics.__snapCoordinates);
+			data.reset(graphics.__commands);
 
 			for (type in graphics.__commands.types) {
 
@@ -289,12 +303,12 @@ class CanvasGraphics {
 						data.readEndFill ();
 						endRenderStep();
 						if (canvasGraphics.hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
-							drawCommandReaderPool.put(data);
+							drawCommandReaderPool.put (data);
 							return true;
 						}
 
 						if (canvasGraphics.hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-							drawCommandReaderPool.put(data);
+							drawCommandReaderPool.put (data);
 							return true;
 						}
 						resetFillStyle();
@@ -311,12 +325,12 @@ class CanvasGraphics {
 						endRenderStep();
 
 						if (hasFill && context.isPointInPath (x, y, canvasWindingRule)) {
-							drawCommandReaderPool.put(data);
+							drawCommandReaderPool.put (data);
 							return true;
 						}
 
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-							drawCommandReaderPool.put(data);
+							drawCommandReaderPool.put (data);
 							return true;
 						}
 
@@ -355,7 +369,7 @@ class CanvasGraphics {
 
 			endRenderStep();
 
-			drawCommandReaderPool.put(data);
+			drawCommandReaderPool.put (data);
 
 			if (hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
 				return true;
@@ -481,209 +495,269 @@ class CanvasGraphics {
 
 				graphics.__canvas.width = width;
 				graphics.__canvas.height = height;
+				snapCoordinates = graphics.snapCoordinates;
 
-				context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
+				if (snapCoordinates) {
 
-				if(graphics.__snapCoordinates) {
-					context.translate (Math.ceil(-scaled_bounds.x), Math.fround(-scaled_bounds.y));
-				}
-				else {
+					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, padding, padding);
+					var matrix = Matrix.pool.get ();
+					// :TODO: optimize this
+					matrix.setTo (1.0, 0.0, 0.0, 1.0, -scaled_bounds.x, -scaled_bounds.y);
+					currentTransform.preTransform (matrix);
+					Matrix.pool.put (matrix);
+
+				} else {
+
+					context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
+
 				}
 
-				Rectangle.pool.put(scaled_bounds);
+				Rectangle.pool.put (scaled_bounds);
 
-				beginRenderStep();
-				resetFillStyle();
+				beginRenderStep ();
+				resetFillStyle ();
 
-				var data = drawCommandReaderPool.get();
-				data.reset(graphics.__commands, graphics.__snapCoordinates);
+				var data = drawCommandReaderPool.get ();
+				data.reset (graphics.__commands);
 
-				for (type in graphics.__commands.types) {
+				if (snapCoordinates) {
+					for (type in graphics.__commands.types) {
 
-					switch (type) {
+						switch (type) {
 
-						case CUBIC_CURVE_TO:
-							cubicCurveTo(data);
+							case CURVE_TO:
+								snappedCurveTo(data);
 
-						case CURVE_TO:
-							curveTo(data);
+							case LINE_TO:
+								snappedLineTo(data);
 
-						case LINE_TO:
-							lineTo(data);
+							case MOVE_TO:
+								snappedMoveTo(data);
 
-						case MOVE_TO:
-							moveTo(data);
+							case END_FILL:
 
-						case END_FILL:
+								data.readEndFill ();
 
-							data.readEndFill ();
+								endRenderStep();
+								resetFillStyle();
+								beginRenderStep();
 
-							endRenderStep();
-							resetFillStyle();
-							beginRenderStep();
+							case BEGIN_BITMAP_FILL:
+								endRenderStep();
+								beginRenderStep();
+								beginBitmapFill(data, isMask);
 
-						case LINE_STYLE:
-							lineStyle(data, isMask);
+							case BEGIN_FILL:
+								endRenderStep();
+								beginRenderStep();
+								beginFill(data, isMask);
 
-						case LINE_GRADIENT_STYLE:
-							lineGradientStyle(data, isMask);
+							case BEGIN_GRADIENT_FILL:
+								endRenderStep();
+								beginRenderStep();
+								beginGradientFill(data, isMask);
 
-						case LINE_BITMAP_STYLE:
-							lineBitmapStyle(data, isMask);
+							case DRAW_IMAGE:
+								snappedDrawImage(data);
 
-						case BEGIN_BITMAP_FILL:
-							endRenderStep();
-							beginRenderStep();
-							beginBitmapFill(data, isMask);
+							default:
 
-						case BEGIN_FILL:
-							endRenderStep();
-							beginRenderStep();
-							beginFill(data, isMask);
+								throw ":TODO:";
 
-						case BEGIN_GRADIENT_FILL:
-							endRenderStep();
-							beginRenderStep();
-							beginGradientFill(data, isMask);
+						}
 
-						case DRAW_CIRCLE:
-							drawCircle(data);
+					}
 
-						case DRAW_IMAGE:
-							drawImage(data);
+				} else {
 
-						case DRAW_ELLIPSE:
-							drawEllipse(data);
+					for (type in graphics.__commands.types) {
 
-						case DRAW_RECT:
-							drawRect(data);
+						switch (type) {
 
-						case DRAW_ROUND_RECT:
-							drawRoundRect2(data);
+							case CUBIC_CURVE_TO:
+								cubicCurveTo(data);
 
-						case DRAW_TRIANGLES:
+							case CURVE_TO:
+								curveTo(data);
 
-							endRenderStep();
-							beginRenderStep();
+							case LINE_TO:
+								lineTo(data);
 
-							var c = data.readDrawTriangles ();
+							case MOVE_TO:
+								moveTo(data);
 
-							var v = c.vertices;
-							var ind = c.indices;
-							var uvt = c.uvtData;
-							var pattern:CanvasElement = null;
+							case END_FILL:
 
-							var i = 0;
-							var l = ind.length;
+								data.readEndFill ();
 
-							var a_:Int, b_:Int, c_:Int;
-							var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
-							var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
-							var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float, uvx3:Float, uvy3:Float;
-							var denom:Float;
-							var t1:Float, t2:Float, t3:Float, t4:Float;
-							var dx:Float, dy:Float;
+								endRenderStep();
+								resetFillStyle();
+								beginRenderStep();
 
-							while (i < l) {
+							case LINE_STYLE:
+								lineStyle(data, isMask);
 
-								a_ = i;
-								b_ = i + 1;
-								c_ = i + 2;
+							case LINE_GRADIENT_STYLE:
+								lineGradientStyle(data, isMask);
 
-								iax = ind[a_] * 2;
-								iay = ind[a_] * 2 + 1;
-								ibx = ind[b_] * 2;
-								iby = ind[b_] * 2 + 1;
-								icx = ind[c_] * 2;
-								icy = ind[c_] * 2 + 1;
+							case LINE_BITMAP_STYLE:
+								lineBitmapStyle(data, isMask);
 
-								x1 = v[iax];
-								y1 = v[iay];
-								x2 = v[ibx];
-								y2 = v[iby];
-								x3 = v[icx];
-								y3 = v[icy];
+							case BEGIN_BITMAP_FILL:
+								endRenderStep();
+								beginRenderStep();
+								beginBitmapFill(data, isMask);
 
-								switch (c.culling) {
+							case BEGIN_FILL:
+								endRenderStep();
+								beginRenderStep();
+								beginFill(data, isMask);
 
-									case POSITIVE:
+							case BEGIN_GRADIENT_FILL:
+								endRenderStep();
+								beginRenderStep();
+								beginGradientFill(data, isMask);
 
-										if (!isCCW (x1, y1, x2, y2, x3, y3)) {
+							case DRAW_CIRCLE:
+								drawCircle(data);
 
-											i += 3;
-											continue;
+							case DRAW_IMAGE:
+								drawImage(data);
 
-										}
+							case DRAW_ELLIPSE:
+								drawEllipse(data);
 
-									case NEGATIVE:
+							case DRAW_RECT:
+								drawRect(data);
 
-										if (isCCW (x1, y1, x2, y2, x3, y3)) {
+							case DRAW_ROUND_RECT:
+								drawRoundRect2(data);
 
-											i += 3;
-											continue;
+							case DRAW_TRIANGLES:
 
-										}
+								endRenderStep();
+								beginRenderStep();
 
-									default:
+								var c = data.readDrawTriangles ();
+
+								var v = c.vertices;
+								var ind = c.indices;
+								var uvt = c.uvtData;
+								var pattern:CanvasElement = null;
+
+								var i = 0;
+								var l = ind.length;
+
+								var a_:Int, b_:Int, c_:Int;
+								var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
+								var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
+								var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float, uvx3:Float, uvy3:Float;
+								var denom:Float;
+								var t1:Float, t2:Float, t3:Float, t4:Float;
+								var dx:Float, dy:Float;
+
+								while (i < l) {
+
+									a_ = i;
+									b_ = i + 1;
+									c_ = i + 2;
+
+									iax = ind[a_] * 2;
+									iay = ind[a_] * 2 + 1;
+									ibx = ind[b_] * 2;
+									iby = ind[b_] * 2 + 1;
+									icx = ind[c_] * 2;
+									icy = ind[c_] * 2 + 1;
+
+									x1 = v[iax];
+									y1 = v[iay];
+									x2 = v[ibx];
+									y2 = v[iby];
+									x3 = v[icx];
+									y3 = v[icy];
+
+									switch (c.culling) {
+
+										case POSITIVE:
+
+											if (!isCCW (x1, y1, x2, y2, x3, y3)) {
+
+												i += 3;
+												continue;
+
+											}
+
+										case NEGATIVE:
+
+											if (isCCW (x1, y1, x2, y2, x3, y3)) {
+
+												i += 3;
+												continue;
+
+											}
+
+										default:
 
 
-								}
+									}
 
-								var context = context;
-								context.save ();
-								context.beginPath ();
-								context.moveTo (x1, y1);
-								context.lineTo (x2, y2);
-								context.lineTo (x3, y3);
-								context.closePath ();
+									var context = context;
+									context.save ();
+									context.beginPath ();
+									context.moveTo (x1, y1);
+									context.lineTo (x2, y2);
+									context.lineTo (x3, y3);
+									context.closePath ();
 
-								context.clip ();
+									context.clip ();
 
-								uvx1 = uvt[iax] * pattern.width;
-								uvx2 = uvt[ibx] * pattern.width;
-								uvx3 = uvt[icx] * pattern.width;
-								uvy1 = uvt[iay] * pattern.height;
-								uvy2 = uvt[iby] * pattern.height;
-								uvy3 = uvt[icy] * pattern.height;
+									uvx1 = uvt[iax] * pattern.width;
+									uvx2 = uvt[ibx] * pattern.width;
+									uvx3 = uvt[icx] * pattern.width;
+									uvy1 = uvt[iay] * pattern.height;
+									uvy2 = uvt[iby] * pattern.height;
+									uvy3 = uvt[icy] * pattern.height;
 
-								denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
+									denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
 
-								if (denom == 0) {
+									if (denom == 0) {
+
+										i += 3;
+										continue;
+
+									}
+
+									t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
+									t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
+									t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
+									t4 = - (uvx2 * y3 + uvx1 * (y2 - y3) - uvx3 * y2 + (uvx3 - uvx2) * y1) / denom;
+									dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
+									dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
+
+									context.transform (t1, t2, t3, t4, dx, dy);
+									context.drawImage (pattern, 0, 0);
+									context.restore ();
 
 									i += 3;
-									continue;
 
 								}
 
-								t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
-								t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
-								t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
-								t4 = - (uvx2 * y3 + uvx1 * (y2 - y3) - uvx3 * y2 + (uvx3 - uvx2) * y1) / denom;
-								dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
-								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 
-								context.transform (t1, t2, t3, t4, dx, dy);
-								context.drawImage (pattern, 0, 0);
-								context.restore ();
+							default:
 
-								i += 3;
+								data.skip (type);
 
-							}
-
-
-						default:
-
-							data.skip (type);
+						}
 
 					}
 
 				}
 
-
 				endRenderStep();
 
-				drawCommandReaderPool.put(data);
+				drawCommandReaderPool.put (data);
+
 				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
 
 				if (graphics.__symbol != null) {
@@ -713,6 +787,20 @@ class CanvasGraphics {
 	{
 		var c = data.readCurveTo();
 		context.quadraticCurveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+	}
+
+	private inline static function snappedCurveTo(data:DrawCommandReader)
+	{
+		var c = data.readCurveTo();
+		var anchorX = currentTransform.__transformX (c.anchorX, c.anchorY);
+		var anchorY = currentTransform.__transformY (c.anchorX, c.anchorY);
+		var roundedAnchorX = Math.round (anchorX);
+		var roundedAnchorY = Math.round (anchorY);
+		var deltaX = roundedAnchorX - anchorX;
+		var deltaY = roundedAnchorY - anchorY;
+		var controlX = currentTransform.__transformX (c.controlX, c.controlY) + deltaX;
+		var controlY = currentTransform.__transformY (c.controlX, c.controlY) + deltaY;
+		context.quadraticCurveTo (controlX, controlY, roundedAnchorX, roundedAnchorY);
 	}
 
 	private inline static function drawCircle(data:DrawCommandReader)
@@ -768,6 +856,48 @@ class CanvasGraphics {
 
 	}
 
+	private inline static function snappedDrawImage(data:DrawCommandReader)
+	{
+
+		var c = data.readDrawImage();
+
+		context.save ();
+
+		var matrix = Matrix.pool.get ();
+		matrix.copyFrom (c.matrix);
+		matrix.concat (currentTransform);
+
+		if (matrix.b != 0.0 || matrix.c != 0.0) {
+			Matrix.pool.put (matrix);
+			throw "can't use snapping on rotated images";
+		}
+
+		context.setTransform (
+			Math.round (matrix.a),
+			Math.round (matrix.b),
+			Math.round (matrix.c),
+			Math.round (matrix.d),
+			Math.round (matrix.tx),
+			Math.round (matrix.ty)
+			);
+
+		Matrix.pool.put (matrix);
+
+		if (!hitTesting) {
+
+			context.drawImage (c.bitmap.image.src, 0.0, 0.0, 1.0, 1.0);
+
+		} else {
+
+			context.fillStyle = "white";
+			context.fillRect (0.0, 0.0, 1.0, 1.0);
+
+		}
+
+		context.restore ();
+
+	}
+
 	private inline static function drawRoundRect2(data:DrawCommandReader)
 	{
 		var c = data.readDrawRoundRect();
@@ -777,9 +907,23 @@ class CanvasGraphics {
 	private inline static function lineTo(data:DrawCommandReader)
 	{
 		var c = data.readLineTo();
+
 		context.lineTo (c.x, c.y);
 		positionX = c.x;
 		positionY = c.y;
+
+	}
+
+	private inline static function snappedLineTo(data:DrawCommandReader)
+	{
+		var c = data.readLineTo();
+
+		var x = Math.round (currentTransform.__transformX (c.x, c.y));
+		var y = Math.round (currentTransform.__transformY (c.x, c.y));
+
+		context.lineTo (x, y);
+		positionX = x;
+		positionY = y;
 	}
 
 	private inline static function moveTo(data:DrawCommandReader)
@@ -793,6 +937,23 @@ class CanvasGraphics {
 		closeGap = true;
 		startX = c.x;
 		startY = c.y;
+	}
+
+	private inline static function snappedMoveTo(data:DrawCommandReader)
+	{
+		var c = data.readMoveTo();
+
+		var x = Math.round (currentTransform.__transformX (c.x, c.y));
+		var y = Math.round (currentTransform.__transformY (c.x, c.y));
+
+		context.moveTo (x, y);
+
+		positionX = x;
+		positionY = y;
+
+		closeGap = true;
+		startX = x;
+		startY = y;
 	}
 
 	private inline static function lineStyle(data:DrawCommandReader, isMask:Bool)

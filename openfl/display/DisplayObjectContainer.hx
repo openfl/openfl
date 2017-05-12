@@ -37,27 +37,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	public function addChild (child:DisplayObject):DisplayObject {
-
-		if (child != null) {
-			if (!__useSeparateRenderScaleTransform) {
-				child.__useSeparateRenderScaleTransform = false;
-			}
-
-			if (child.parent == this) {
-				var childIndex = __children.indexOf(child);
-				__children.splice(childIndex,1);
-				__children.push(child);
-			} else {
-				if (child.parent != null) {
-					child.parent.removeChild (child);
-				}
-				__children.push (child);
-				initParent(child);
-			}
-		}
-		return child;
-
+	inline public function addChild (child:DisplayObject):DisplayObject {
+		return addChildAt(child, numChildren);
 	}
 
 
@@ -65,7 +46,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (index < 0 || index > __children.length) {
 			throw "Invalid index position " + index;
-
 		}
 
 		if (!__useSeparateRenderScaleTransform) {
@@ -77,18 +57,15 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (child.parent == this) {
 			childIndexToRemove = __children.indexOf (child);
 			__children[childIndexToRemove] = null;
+			__children.insert(index,child);
 		} else {
-
 			if (child.parent != null) {
-
 				child.parent.removeChild (child);
-
 			}
 
+			__children.insert(index,child);
 			initParent(child);
 		}
-
-		__children.insert(index,child);
 
 		if(childIndexToRemove > -1) {
 			removeChildAt(childIndexToRemove < index ? childIndexToRemove : childIndexToRemove + 1);
@@ -872,7 +849,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 
 
-	private function get_numChildren ():Int {
+	inline private function get_numChildren ():Int {
 
 		return __children.length;
 

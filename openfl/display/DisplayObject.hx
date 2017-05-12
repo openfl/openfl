@@ -38,7 +38,7 @@ import js.html.Element;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
-
+@:keepSub
 class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
 
 	private static var __worldRenderDirty = 0;
@@ -727,7 +727,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
 
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER);
 
 	}
 
@@ -847,7 +847,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__transformDirty) {
 
 			__transformDirty = true;
-			__setUpdateDirty();
+			__setRenderDirty();
 			__worldTransformDirty++;
 
 		}
@@ -1603,7 +1603,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function mustResetRenderColorTransform():Bool {
 
-		return __cacheAsBitmap;
+		return __cacheAsBitmap || __isMask;
 
 	}
 }

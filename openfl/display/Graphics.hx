@@ -54,6 +54,7 @@ import js.html.CanvasRenderingContext2D;
 	public static inline var TILE_BLEND_INVERT = 0x02000000;
 
 	public var readOnly:Bool;
+	public var snapCoordinates (get, never):Bool;
 
 	private var __bounds:Rectangle;
 	private var __commands:DrawCommandBuffer;
@@ -61,7 +62,6 @@ import js.html.CanvasRenderingContext2D;
 	private var __padding:Int;
 	private var __positionX:Float;
 	private var __positionY:Float;
-	private var __snapCoordinates:Bool = false;
 	private var __strokePadding:Float;
 	private var __visible:Bool;
 	private var __owner:DisplayObject;
@@ -760,6 +760,12 @@ import js.html.CanvasRenderingContext2D;
 		}
 
 		return __bitmap = value;
+
+	}
+
+	public inline function get_snapCoordinates ():Bool {
+
+		return __symbol != null && __symbol.snapCoordinates;
 
 	}
 
