@@ -14,7 +14,7 @@ import js.html.Element;
 #end
 
 
-@:deprecated class DOMSprite extends Sprite {
+class DOMSprite extends Sprite {
 	
 	
 	private var __active:Bool;
