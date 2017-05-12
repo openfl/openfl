@@ -5,7 +5,7 @@ import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 
 
-@:deprecated class DirectRenderer extends #if flash Sprite #else DisplayObject #end {
+class DirectRenderer extends #if flash Sprite #else DisplayObject #end {
 	
 	
 	public var render (get, set):Dynamic;
