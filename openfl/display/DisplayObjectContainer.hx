@@ -573,6 +573,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCairo (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
@@ -625,6 +627,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		#if !neko
 		
 		super.__renderCanvas (renderSession);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
 		renderSession.maskManager.pushObject (this);
 		
@@ -686,6 +690,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		#if dom
 		
 		super.__renderDOM (renderSession);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
 		renderSession.maskManager.pushObject (this);
 		
