@@ -928,7 +928,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__cacheBitmapRender) return;
 		
-		if (cacheAsBitmap && __renderDirty) {
+		if (cacheAsBitmap || __renderDirty) {
 			
 			__getWorldTransform ();
 			__update (false, true);
@@ -957,21 +957,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			__cacheBitmapRender = true;
-			@:privateAccess __cacheBitmapData.__draw (this, matrix);
-			__cacheBitmapRender = false;
-			
 			__cacheBitmap.__renderable = __renderable;
 			__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
 			__cacheBitmap.__scrollRect = __scrollRect;
 			
-			matrix.tx *= -1;
-			matrix.ty *= -1;
-			
 			__cacheBitmap.__renderTransform.copyFrom (__renderTransform);
-			__cacheBitmap.__renderTransform.concat (matrix);
+			__cacheBitmap.__renderTransform.tx += rect.x;
+			__cacheBitmap.__renderTransform.ty += rect.y;
+			
+			__cacheBitmapRender = true;
+			@:privateAccess __cacheBitmapData.__draw (this, matrix);
+			__cacheBitmapRender = false;
+			
+			__getWorldTransform ();
+			__update (false, true);
 			
 			Matrix.__pool.release (matrix);
 			Rectangle.__pool.release (rect);
