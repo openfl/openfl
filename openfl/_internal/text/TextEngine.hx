@@ -482,6 +482,16 @@ class TextEngine {
 
 	}
 
+	public function calculateFontDimensions(format:TextFormat, fontData:FontData) : Dynamic {
+		var object:Dynamic = {};
+		object.ascent = format.size * fontData.ascent;
+		object.descent = format.size * fontData.descent;
+		object.leading = format.leading / 20;
+
+		object.height = object.ascent + object.descent + object.leading;
+
+		return object;
+	}
 
 	private function getLineMeasurements ():Void {
 
@@ -710,11 +720,13 @@ class TextEngine {
 				var fontData = getFont (currentFormat);
 				__context.font = fontData.name;
 
-				ascent = currentFormat.size * fontData.ascent;
-				descent = currentFormat.size * fontData.descent;
-				leading = currentFormat.leading / 20;
+				var data = calculateFontDimensions(currentFormat, fontData);
 
-				heightValue = ascent + descent + leading;
+				ascent = data.ascent;
+				descent = data.descent;
+				leading = data.leading;
+
+				heightValue = data.height;
 
 				#elseif (cpp || neko || nodejs)
 

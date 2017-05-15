@@ -112,7 +112,7 @@ class CanvasTextField {
  			var scaleY = textField.renderScaleY;
 			textField.__updateLayout ();
 
-			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
+			if (!textField.__showCursor && ((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
@@ -215,6 +215,15 @@ class CanvasTextField {
 
 					var offsetY = 0.0;
 
+					if (textField.__showCursor && textEngine.layoutGroups.length == 0) {
+						var format = textField.__textFormat;
+						var fontData = TextEngine.getFont (format);
+						context.font = fontData.name;
+						context.fillStyle = "#" + StringTools.hex (format.color, 6);
+						var data = textEngine.calculateFontDimensions(textField.__textFormat, fontData);
+						context.fillRect (2, 2, 1, data.height);
+					}
+
 					for (group in textEngine.layoutGroups) {
 
 						if (group.lineIndex < textField.scrollV - 1) continue;
@@ -229,6 +238,7 @@ class CanvasTextField {
 
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
 
+							// No selection box, just a cursor
 							if (textField.__selectionIndex == textField.__caretIndex) {
 
 								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && ( group.endIndex > textField.__caretIndex || ( group.endIndex == textEngine.text.length && textEngine.text.length == textField.__caretIndex))) {
@@ -246,6 +256,7 @@ class CanvasTextField {
 
 								}
 
+							// selection box
 							} else if (!((group.endIndex < Math.min(textField.__caretIndex, textField.__selectionIndex))
 									|| (group.startIndex > Math.max(textField.__caretIndex, textField.__selectionIndex)))) {
 
