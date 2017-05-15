@@ -551,6 +551,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (this.window == null || this.window != window) return;
 
+		// :NOTE: This is highly inperformant. Verify if we need this. Mouse event should generate new focus element?
 		var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, null, false, 0);
 		__broadcastFromStage (event, true);
 
