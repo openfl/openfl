@@ -129,7 +129,7 @@ class CairoTilemap {
 		renderSession.maskManager.popObject (tilemap);
 		
 		Rectangle.__pool.release (rect);
-		Matrix.__pool.get (tileTransform);
+		Matrix.__pool.release (tileTransform);
 		
 	}
 	
