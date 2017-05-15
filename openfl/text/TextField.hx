@@ -846,6 +846,7 @@ class TextField extends InteractiveObject {
 				}
 
 				__inputEnabled = true;
+				__textEngine.__hasFocus = true;
 				__startCursorTimer ();
 
 			}
@@ -883,6 +884,7 @@ class TextField extends InteractiveObject {
 			stage.window.onKeyDown.remove (window_onKeyDown);
 
 			__inputEnabled = false;
+			__textEngine.__hasFocus = false;
 			__stopCursorTimer ();
 
 		}
@@ -945,6 +947,14 @@ class TextField extends InteractiveObject {
 
 				__textEngine.getBounds ();
 
+			}
+
+			if ( __caretIndex > __textEngine.text.length ) {
+				__caretIndex = __textEngine.text.length - 1;
+			}
+
+			if ( __selectionIndex > __textEngine.text.length ) {
+				__selectionIndex = __textEngine.text.length - 1;
 			}
 
 			__layoutDirty = false;
