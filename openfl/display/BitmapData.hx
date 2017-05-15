@@ -482,12 +482,23 @@ class BitmapData implements IBitmapDrawable {
 			#if (js && html5)
 			
 			if (colorTransform != null) {
-				var width:Int = Math.ceil (Reflect.getProperty (source, "width"));
-				var height:Int = Math.ceil (Reflect.getProperty (source, "height"));
+				
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				boundsMatrix.identity ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
 				var copy = new BitmapData (width, height, true, 0);
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
 				
 			}
 			
@@ -496,6 +507,7 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
+			renderSession.clearDirtyFlags = false;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -555,10 +567,22 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (colorTransform != null) {
 				
-				var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				boundsMatrix.identity ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
+				var copy = new BitmapData (width, height, true, 0);
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
 				
 			}
 			
@@ -572,6 +596,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
+			renderSession.clearDirtyFlags = false;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -1495,12 +1520,23 @@ class BitmapData implements IBitmapDrawable {
 			#if (js && html5)
 			
 			if (colorTransform != null) {
-				var width:Int = Math.ceil (Reflect.getProperty (source, "width"));
-				var height:Int = Math.ceil (Reflect.getProperty (source, "height"));
+				
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				boundsMatrix.identity ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
 				var copy = new BitmapData (width, height, true, 0);
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
 				
 			}
 			
@@ -1569,10 +1605,22 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (colorTransform != null) {
 				
-				var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				boundsMatrix.identity ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
+				var copy = new BitmapData (width, height, true, 0);
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
 				
 			}
 			
@@ -1586,6 +1634,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
+			renderSession.clearDirtyFlags = true;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -1672,6 +1721,16 @@ class BitmapData implements IBitmapDrawable {
 			__isValid = true;
 			
 		}
+		
+	}
+	
+	
+	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		var bounds = Rectangle.__pool.get ();
+		this.rect.__transform (bounds, matrix);
+		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release (bounds);
 		
 	}
 	

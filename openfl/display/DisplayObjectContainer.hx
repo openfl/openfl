@@ -583,6 +583,12 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
+		if (renderSession.clearDirtyFlags) {
+			
+			__renderDirty = false;
+			
+		}
+		
 		for (orphan in __removedChildren) {
 			
 			if (orphan.stage == null) {
