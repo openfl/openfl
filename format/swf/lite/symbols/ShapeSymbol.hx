@@ -160,10 +160,14 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
-		public static function logStatistics () {
+		public static function logStatistics (?threshold = 0) {
 
 			for( id in missedCountMap.keys () ) {
-				trace ('Shape id:$id; Missed count: ${missedCountMap[id]}');
+				var value = missedCountMap[id];
+				if(value < threshold) {
+					continue;
+				}
+				trace ('Shape id:$id; Missed count: ${value}');
 			}
 
 		}
