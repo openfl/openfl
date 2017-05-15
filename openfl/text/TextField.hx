@@ -952,7 +952,7 @@ class TextField extends InteractiveObject {
 			}
 
 			if ( __selectionIndex > __textEngine.text.length ) {
-				__caretIndex = __textEngine.text.length - 1;
+				__selectionIndex = __textEngine.text.length - 1;
 			}
 
 			__layoutDirty = false;
