@@ -1333,6 +1333,40 @@ class BitmapData implements IBitmapDrawable {
 		}
 
 	}
+
+	#if (dev && js)
+	public static function __init__ () {
+		untyped $global.Tools = $global.Tools || {};
+		untyped $global.Tools.viewBitmapData = viewBitmapData;
+	}
+
+	private static function viewBitmapData(bitmapData:BitmapData) {
+		var gl = bitmapData.__pingPongTexture.gl;
+		var texture = bitmapData.__pingPongTexture.texture;
+		var width = bitmapData.physicalWidth;
+		var height = bitmapData.physicalHeight;
+
+		var framebuffer = gl.createFramebuffer();
+		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+		var data = new js.html.Uint8Array(width * height * 4);
+		gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+		gl.deleteFramebuffer(framebuffer);
+
+		var canvas = untyped $global.document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		var context = canvas.getContext('2d');
+
+		var imageData = context.createImageData(width, height);
+		imageData.data.set(data);
+		context.putImageData(imageData, 0, 0);
+
+		var theTitle = "Preview: " + width + "x" + height;
+
+		untyped $(canvas).dialog({ title: theTitle }).parent().draggable({cancel:'',handle:''});
+	}
+	#end
 }
 
 
