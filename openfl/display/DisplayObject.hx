@@ -648,10 +648,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		public static function logStatistics () {
-
+		public static function logStatistics (?threshold = 0) {
 			for(id in __applyFiltersCountMap.keys()) {
-				trace ('Symbol id:$id; applyFilters count: ${__applyFiltersCountMap[id]}');
+				var value = __applyFiltersCountMap[id];
+				if(value < threshold) {
+					continue;
+				}
+				trace ('Symbol id:$id; applyFilters count: ${value}');
 			}
 		}
 	#end

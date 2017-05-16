@@ -294,14 +294,22 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		public static function logStatistics () {
+		public static function logStatistics(?threshold = 0) {
 
 			for( id in __childrenCreateCount.keys () ) {
-				trace ('Symbol id:$id; Created children count: ${__childrenCreateCount[id]}');
+				var value = __childrenCreateCount[id];
+				if(value < threshold) {
+					continue;
+				}
+				trace ('Symbol id:$id; Created children count: ${value}');
 			}
 
 			for( id in __createCount.keys () ) {
-				trace ('Symbol id:$id; Created count: ${__createCount[id]}');
+				var value = __createCount[id];
+				if(value < threshold) {
+					continue;
+				}
+				trace ('Symbol id:$id; Created count: ${value}');
 			}
 		}
 	#end
