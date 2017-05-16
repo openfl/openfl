@@ -445,8 +445,7 @@ class BitmapData implements IBitmapDrawable {
 			cached_visible = src_display_object.visible && src_display_object.__renderable;
 			if ( !cached_visible ) {
 				src_display_object.visible = true;
-				// :NOTE: Need to call __update here to refresh the __renderable flag
-				src_display_object.__update(true, true);
+				src_display_object.__update(false, true);
 			}
 		}
 		__drawGL ( renderSession, source, matrix, clipRect, smoothing, !__usingPingPongTexture, false, true);
