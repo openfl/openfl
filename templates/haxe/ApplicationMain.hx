@@ -139,7 +139,9 @@ import haxe.macro.Expr;
 			
 		} catch (e:Dynamic) {
 			
+			#if !display
 			stage.__handleError (e);
+			#end
 			
 		}
 		
