@@ -773,39 +773,72 @@ import js.html.CanvasRenderingContext2D;
 	private function __readGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
 		
 		var data = new DrawCommandReader (__commands);
-		var path, stroke;
+		var path = null, stroke;
 		
 		for (type in __commands.types) {
+			
+			switch (type) {
+				
+				case CUBIC_CURVE_TO, CURVE_TO, LINE_TO, MOVE_TO, DRAW_CIRCLE, DRAW_ELLIPSE, DRAW_RECT, DRAW_ROUND_RECT:
+					
+					if (path == null) {
+						
+						path = new GraphicsPath ();
+						
+					}
+				
+				default:
+					
+					if (path != null) {
+						
+						graphicsData.push (path);
+						path = null;
+						
+					}
+				
+			}
 			
 			switch (type) {
 				
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo ();
-					path = new GraphicsPath ();
 					path.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-					graphicsData.push (path);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
-					path = new GraphicsPath ();
 					path.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
-					graphicsData.push (path);
 				
 				case LINE_TO:
 					
 					var c = data.readLineTo ();
-					path = new GraphicsPath ();
 					path.lineTo (c.x, c.y);
-					graphicsData.push (path);
 					
 				case MOVE_TO:
 					
 					var c = data.readMoveTo ();
-					path = new GraphicsPath ();
 					path.moveTo (c.x, c.y);
-					graphicsData.push (path);
+				
+				case DRAW_CIRCLE:
+					
+					var c = data.readDrawCircle ();
+					path.__drawCircle (c.x, c.y, c.radius);
+				
+				case DRAW_ELLIPSE:
+					
+					var c = data.readDrawEllipse ();
+					path.__drawEllipse (c.x, c.y, c.width, c.height);
+				
+				case DRAW_RECT:
+					
+					var c = data.readDrawRect ();
+					path.__drawRect (c.x, c.y, c.width, c.height);
+				
+				case DRAW_ROUND_RECT:
+					
+					var c = data.readDrawRoundRect ();
+					path.__drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 				
 				case LINE_GRADIENT_STYLE:
 					
@@ -821,6 +854,7 @@ import js.html.CanvasRenderingContext2D;
 					// TODO
 					
 					var c = data.readLineBitmapStyle ();
+					path = null;
 					//stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 					//stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
 					//graphicsData.push (stroke);
@@ -852,39 +886,18 @@ import js.html.CanvasRenderingContext2D;
 					var c = data.readBeginGradientFill ();
 					graphicsData.push (new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio));
 				
-				case DRAW_CIRCLE:
-					
-					var c = data.readDrawCircle ();
-					path = new GraphicsPath ();
-					path.__drawCircle (c.x, c.y, c.radius);
-					graphicsData.push (path);
-				
-				case DRAW_ELLIPSE:
-					
-					var c = data.readDrawEllipse ();
-					path = new GraphicsPath ();
-					path.__drawEllipse (c.x, c.y, c.width, c.height);
-					graphicsData.push (path);
-				
-				case DRAW_RECT:
-					
-					var c = data.readDrawRect ();
-					path = new GraphicsPath ();
-					path.__drawRect (c.x, c.y, c.width, c.height);
-					graphicsData.push (path);
-				
-				case DRAW_ROUND_RECT:
-					
-					var c = data.readDrawRoundRect ();
-					path = new GraphicsPath ();
-					path.__drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
-					graphicsData.push (path);
 				
 				default:
 					
 					data.skip (type);
 				
 			}
+			
+		}
+		
+		if (path != null) {
+			
+			graphicsData.push (path);
 			
 		}
 		
