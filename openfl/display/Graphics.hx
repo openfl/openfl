@@ -340,28 +340,40 @@ import js.html.CanvasRenderingContext2D;
 					
 					if (stroke.fill != null) {
 						
+						var thickness:Null<Float> = stroke.thickness;
+						
+						if (Math.isNaN (thickness)) {
+							
+							thickness = null;
+							
+						}
+						
 						switch (stroke.fill.__graphicsFillType) {
 							
 							case SOLID_FILL:
 								
 								fill = cast stroke.fill;
-								lineStyle (stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+								lineStyle (thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 							
 							case BITMAP_FILL:
 								
 								bitmapFill = cast stroke.fill;
-								lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+								lineStyle (thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 								lineBitmapStyle (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 							
 							case GRADIENT_FILL:
 								
 								gradientFill = cast stroke.fill;
-								lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+								lineStyle (thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 								lineGradientStyle (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
 							
 							default:
 							
 						}
+						
+					} else {
+						
+						lineStyle ();
 						
 					}
 				
