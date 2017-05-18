@@ -3,6 +3,7 @@ package openfl.media;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.WebGLContext;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
@@ -30,7 +31,7 @@ class Video extends DisplayObject {
 	private var __active:Bool;
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
-	private var __bufferContext:GLRenderContext;
+	private var __bufferContext:WebGLContext;
 	private var __bufferData:Float32Array;
 	private var __dirty:Bool;
 	private var __height:Float;
@@ -82,7 +83,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getBuffer (gl:GLRenderContext, alpha:Float):GLBuffer {
+	private function __getBuffer (gl:WebGLContext, alpha:Float):GLBuffer {
 		
 		var width = __width;
 		var height = __height;
@@ -177,7 +178,7 @@ class Video extends DisplayObject {
 			var format = gl.RGBA;
 			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			gl.texImage2DWEBGL (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;
 			
