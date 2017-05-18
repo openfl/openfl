@@ -96,15 +96,18 @@ class Sprite extends DisplayObjectContainer {
 			
 			if (__scrollRect != null) {
 				
-				var point = Point.__temp;
+				var point = Point.__pool.get ();
 				point.setTo (x, y);
 				__getRenderTransform ().__transformInversePoint (point);
 				
 				if (!__scrollRect.containsPoint (point)) {
 					
+					Point.__pool.release (point);
 					return false;
 					
 				}
+				
+				Point.__pool.release (point);
 				
 			}
 			

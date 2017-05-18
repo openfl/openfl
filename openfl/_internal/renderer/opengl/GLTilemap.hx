@@ -41,7 +41,7 @@ class GLTilemap {
 		
 		var shader = renderSession.filterManager.pushObject (tilemap);
 		
-		var rect = Rectangle.__temp;
+		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
@@ -120,6 +120,7 @@ class GLTilemap {
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
 		
+		tileMatrix = Matrix.__pool.get ();
 		var drawCount = 0;
 		
 		for (i in 0...count) {
@@ -175,7 +176,6 @@ class GLTilemap {
 			
 			if (tile.__transformDirty) {
 				
-				tileMatrix = Matrix.__temp;
 				tileMatrix.setTo (1, 0, 0, 1, -tile.originX, -tile.originY);
 				tileMatrix.concat (tile.matrix);
 				
@@ -278,6 +278,9 @@ class GLTilemap {
 		renderSession.filterManager.popObject (tilemap);
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (tileMatrix);
 		
 	}
 	

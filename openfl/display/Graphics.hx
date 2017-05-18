@@ -706,9 +706,10 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (__bounds == null) return;
 		
-		var bounds = openfl.geom.Rectangle.__temp;
+		var bounds = Rectangle.__pool.get ();
 		__bounds.__transform (bounds, matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release (bounds);
 		
 	}
 	
