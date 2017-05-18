@@ -35,7 +35,11 @@ class Window extends LimeWindow {
 		
 		if (Reflect.hasField (config, "parameters")) {
 			
-			stage.loaderInfo.parameters = config.parameters;
+			try {
+				
+				stage.loaderInfo.parameters = config.parameters;
+				
+			} catch (e:Dynamic) {}
 			
 		}
 		
