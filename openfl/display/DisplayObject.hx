@@ -963,6 +963,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__cacheBitmap.__worldAlpha = __worldAlpha;
 				__cacheBitmap.__worldBlendMode = __worldBlendMode;
 				__cacheBitmap.__scrollRect = __scrollRect;
+				__cacheBitmap.filters = filters;
 				
 				matrix.tx = Math.round (rect.x);
 				matrix.ty = Math.round (rect.y);
