@@ -11,6 +11,7 @@ import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.opengl.GLVideo;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -68,6 +69,21 @@ class Video extends DisplayObject {
 	public function clear ():Void {
 		
 		
+		
+	}
+	
+	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		#if (js && html5)
+		
+		if (__renderable && __stream != null) {
+			
+			__setRenderDirty ();
+			
+		}
+		
+		#end
 		
 	}
 	

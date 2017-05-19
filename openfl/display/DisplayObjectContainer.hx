@@ -577,15 +577,24 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
-			
-			child.__renderCairo (renderSession);
-			
-		}
-		
 		if (renderSession.clearDirtyFlags) {
 			
+			for (child in __children) {
+				
+				child.__renderCairo (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
 			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderCairo (renderSession);
+				
+			}
 			
 		}
 		
@@ -638,15 +647,24 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
-			
-			child.__renderCanvas (renderSession);
-			
-		}
-		
 		if (renderSession.clearDirtyFlags) {
 			
+			for (child in __children) {
+				
+				child.__renderCanvas (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
 			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderCanvas (renderSession);
+				
+			}
 			
 		}
 		
@@ -701,15 +719,24 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
-			
-			child.__renderDOM (renderSession);
-			
-		}
-		
 		if (renderSession.clearDirtyFlags) {
 			
+			for (child in __children) {
+				
+				child.__renderDOM (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
 			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderDOM (renderSession);
+				
+			}
 			
 		}
 		
@@ -743,15 +770,24 @@ class DisplayObjectContainer extends InteractiveObject {
 		renderSession.maskManager.pushObject (this);
 		renderSession.filterManager.pushObject (this);
 		
-		for (child in __children) {
-			
-			child.__renderGL (renderSession);
-			
-		}
-		
 		if (renderSession.clearDirtyFlags) {
 			
+			for (child in __children) {
+				
+				child.__renderGL (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
 			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderGL (renderSession);
+				
+			}
 			
 		}
 		

@@ -930,6 +930,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
+			__renderDirty = true;
 			__resize ();
 			
 			if (__displayState != NORMAL && !window.fullscreen) {
