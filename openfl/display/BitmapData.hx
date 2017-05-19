@@ -1364,7 +1364,19 @@ class BitmapData implements IBitmapDrawable {
 
 		var theTitle = "Preview: " + width + "x" + height;
 
-		untyped $(canvas).dialog({ title: theTitle }).parent().draggable({cancel:'',handle:''});
+		untyped $(canvas)
+			.dialog({
+				title: theTitle,
+				width: width,
+				height: height,
+				resizable: false
+				})
+			.parent()
+			.draggable({
+				cancel:'',
+				handle:'',
+				containment: false
+				});
 	}
 	#end
 }
