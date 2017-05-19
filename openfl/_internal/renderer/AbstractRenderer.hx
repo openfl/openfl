@@ -48,6 +48,13 @@ class AbstractRenderer {
 	}
 	
 	
+	public function renderStage3D ():Void {
+		
+		
+		
+	}
+	
+	
 	//public function renderShape (shape:Shape):Void {
 		//
 		//

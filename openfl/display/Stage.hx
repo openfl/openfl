@@ -977,11 +977,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			Telemetry.__advanceFrame ();
 			#end
 			
-			// TODO: Clear only if needed (render dirty or Stage3D used)
-			
-			if (__renderer != null /*&& __renderDirty*/) {
+			if (__renderer != null && Stage3D.__active) {
 				
 				__renderer.clear ();
+				__renderer.renderStage3D ();
+				__renderDirty = true;
 				
 			}
 			
@@ -1007,7 +1007,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__deltaTime = 0;
 			__update (false, true);
 			
-			if (__renderer != null /*&& __renderDirty*/) {
+			if (__renderer != null && __renderDirty) {
+				
+				if (!Stage3D.__active) {
+					
+					__renderer.clear ();
+					
+				}
 				
 				if (renderer.type == CAIRO) {
 					

@@ -36,6 +36,8 @@ import js.Browser;
 class Stage3D extends EventDispatcher {
 	
 	
+	private static var __active:Bool;
+	
 	public var context3D (default, null):Context3D;
 	public var visible:Bool;
 	public var x (default, set):Float;

@@ -1363,6 +1363,13 @@ import openfl.profiler.Telemetry;
 	
 	private function __updateBackbufferViewport ():Void {
 		
+		if (!Stage3D.__active) {
+			
+			Stage3D.__active = true;
+			__renderSession.renderer.clear ();
+			
+		}
+		
 		if (__renderToTexture == null && backBufferWidth > 0 && backBufferHeight > 0) {
 			
 			__setViewport (Std.int (__stage3D.x), Std.int (__stage3D.y), backBufferWidth, backBufferHeight);

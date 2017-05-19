@@ -91,12 +91,6 @@ class GLRenderer extends AbstractRenderer {
 		
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderGL (stage, renderSession);
-			
-		}
-		
 	}
 	
 	
@@ -234,6 +228,17 @@ class GLRenderer extends AbstractRenderer {
 			}
 			
 			gl.disable (gl.SCISSOR_TEST);
+			
+		}
+		
+	}
+	
+	
+	public override function renderStage3D ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderGL (stage, renderSession);
 			
 		}
 		
