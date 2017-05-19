@@ -1341,8 +1341,8 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 	private static function viewBitmapData(bitmapData:BitmapData) {
-		var gl = bitmapData.__pingPongTexture.gl;
-		var texture = bitmapData.__pingPongTexture.texture;
+		var gl = @:privateAccess Lib.current.stage.__renderer.renderSession.gl;
+		var texture = bitmapData.getTexture(gl);
 		var width = bitmapData.physicalWidth;
 		var height = bitmapData.physicalHeight;
 
