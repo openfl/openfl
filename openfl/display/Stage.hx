@@ -822,6 +822,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
+			__renderDirty = true;
 			__broadcastEvent (new Event (Event.ACTIVATE));
 			
 			focus = __cacheFocus;
