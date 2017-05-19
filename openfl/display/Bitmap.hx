@@ -206,6 +206,8 @@ class Bitmap extends DisplayObject {
 		bitmapData = value;
 		smoothing = false;
 		
+		__setRenderDirty ();
+		
 		if (__filters != null && __filters.length > 0) {
 			
 			//__updateFilters = true;
@@ -240,6 +242,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.height) {
 				
+				__setRenderDirty ();
 				scaleY = value / bitmapData.height;
 				
 			}
@@ -272,6 +275,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.width) {
 				
+				__setRenderDirty ();
 				scaleX = value / bitmapData.width;
 				
 			}
