@@ -680,7 +680,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap ();
+		__updateCacheBitmap (renderSession);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -713,7 +713,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap ();
+			__updateCacheBitmap (renderSession);
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
@@ -744,7 +744,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		__updateCacheBitmap ();
+		__updateCacheBitmap (renderSession);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -762,7 +762,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __renderGL (renderSession:RenderSession):Void {
 		
-		__updateCacheBitmap ();
+		__updateCacheBitmap (renderSession);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -924,7 +924,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __updateCacheBitmap ():Void {
+	private function __updateCacheBitmap (renderSession:RenderSession):Void {
 		
 		if (__cacheBitmapRender) return;
 		
@@ -950,7 +950,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 					__cacheBitmap.bitmapData = __cacheBitmapData;
-					__cacheBitmap.smoothing = true;
 					
 				} else {
 					
@@ -958,6 +957,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
+				__cacheBitmap.smoothing = renderSession.allowSmoothing;
 				__cacheBitmap.__renderable = __renderable;
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				__cacheBitmap.__worldAlpha = __worldAlpha;
@@ -974,7 +974,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				matrix.ty *= -1;
 				
 				__cacheBitmapRender = true;
-				@:privateAccess __cacheBitmapData.__draw (this, matrix);
+				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
 				__cacheBitmapRender = false;
 				
 				if (!__worldColorTransform.__isDefault ()) {
