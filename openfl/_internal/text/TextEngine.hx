@@ -841,7 +841,7 @@ class TextEngine {
 				var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
 				if ( layoutGroup.offsetX == OFFSET_START && Math.floor( layoutGroup.offsetX + wordWidth ) > width - OFFSET_START ) {
 					// compute the actual breakindex
-					if ( advances == null ) {
+					if ( advances == null || advances.length == 0 ) {
 						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 					}
 					var subWordWidth:Float = 0.0;
