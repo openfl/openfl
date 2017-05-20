@@ -9,8 +9,8 @@
 * Added support for graphicsPath.cubicCurveTo
 * Improved support for graphics.readGraphicsData/drawGraphicsData
 * Improved behavior of Stage3D mipmap filtering
-* Deprecated openfl.gl.* types (use lime.graphics.opengl.*)
-* Deprecated openfl.utils.* typed arrays (use lime.utils.*)
+* Deprecated openfl.gl.\* types (use lime.graphics.opengl.\*)
+* Deprecated openfl.utils.\* typed arrays (use lime.utils.\*)
 * Fixed clipping in graphics.cubicCurveTo
 * Fixed an issue compiling the output of `openfl display`
 * Fixed support for `<window always-on-top="true" />` in template
@@ -27,7 +27,7 @@
 * Removed callbacks in BitmapData.fromFile (use .loadFromFile)
 * Removed unused parameter in sound.loadCompressedDataFromByteArray
 * Removed openfl.embed support in HTML template (use lime.embed)
-* Removed bundled import of asset classes (use openfl.utils.*)
+* Removed bundled import of asset classes (use openfl.utils.\*)
 * Added initial support for compressed Stage3D textures
 * Added initial support for Adobe Texture Format in Stage3D
 * Added support for GraphicsTrianglePath
