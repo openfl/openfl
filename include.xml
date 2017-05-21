@@ -26,7 +26,7 @@
 	
 	<template path="templates" />
 	
-	<source path="externs/core/flash" if="flash" unless="display" />
+	<source path="externs/core/flash" if="flash" />
 	<source path="externs/core/openfl" if="display || flash" />
 	<source path="externs/extras" if="display" />
 	
