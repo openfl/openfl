@@ -17,7 +17,7 @@ class Matrix {
 	
 	private static var __identity = new Matrix ();
 	private static var __matrix3 = new Matrix3 ();
-	private static var __pool = new ObjectPool<Matrix> (function () return new Matrix ());
+	private static var __pool = new ObjectPool<Matrix> (function () return new Matrix (), function (m) m.identity ());
 	
 	public var a:Float;
 	public var b:Float;

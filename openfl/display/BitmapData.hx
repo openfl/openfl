@@ -485,7 +485,6 @@ class BitmapData implements IBitmapDrawable {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
-				boundsMatrix.identity ();
 				
 				source.__getBounds (bounds, boundsMatrix);
 				
@@ -569,7 +568,6 @@ class BitmapData implements IBitmapDrawable {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
-				boundsMatrix.identity ();
 				
 				source.__getBounds (bounds, boundsMatrix);
 				
@@ -651,7 +649,8 @@ class BitmapData implements IBitmapDrawable {
 		if (!rect.equals (this.rect)) {
 			
 			var matrix = Matrix.__pool.get ();
-			matrix.setTo (1, 0, 0, 1, Math.round (-rect.x), Math.round (-rect.y));
+			matrix.tx = Math.round (-rect.x);
+			matrix.ty = Math.round (-rect.y);
 			
 			var bitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, 0);
 			bitmapData.draw (this, matrix);
@@ -1523,7 +1522,6 @@ class BitmapData implements IBitmapDrawable {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
-				boundsMatrix.identity ();
 				
 				source.__getBounds (bounds, boundsMatrix);
 				
@@ -1607,7 +1605,6 @@ class BitmapData implements IBitmapDrawable {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
-				boundsMatrix.identity ();
 				
 				source.__getBounds (bounds, boundsMatrix);
 				
