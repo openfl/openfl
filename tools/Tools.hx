@@ -173,8 +173,8 @@ class Tools {
 	
 	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Array<String> {
 		
-		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/SimpleButton.mtt");
+		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/templates/swf/SimpleButton.mtt");
 		
 		var swf = new SWF (ByteArray.fromBytes (File.getBytes (swfAsset.sourcePath)));
 		
@@ -315,8 +315,8 @@ class Tools {
 	
 	private static function generateSWFLiteClasses (project:HXProject, output:HXProject, swfLite:SWFLite, swfLiteAsset:Asset, prefix:String = ""):Array<String> {
 		
-		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/SimpleButton.mtt");
+		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/templates/swf/SimpleButton.mtt");
 		
 		var generatedClasses = [];
 		
@@ -800,7 +800,7 @@ class Tools {
 						if (FileSystem.exists (cacheFile)) {
 							
 							var cacheDate = FileSystem.stat (cacheFile).mtime;
-							var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/tools/tools.n").mtime;
+							var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/tools/tools.n").mtime;
 							var sourceDate = FileSystem.stat (library.sourcePath).mtime;
 							
 							if (sourceDate.getTime () < cacheDate.getTime () && swfToolDate.getTime () < cacheDate.getTime ()) {
