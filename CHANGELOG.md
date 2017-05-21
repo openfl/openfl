@@ -1,3 +1,11 @@
+5.1.1 (05/20/2017)
+------------------
+
+* Fixed regression causing incorrect internal bounds calculation
+* Fixed an issue compiling `openfl display flash` output
+* Fixed regression in path resolution for SWF library handler tools
+
+
 5.1.0 (05/19/2017)
 ------------------
 
