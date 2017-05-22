@@ -833,7 +833,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__renderDirty) {
 
 			__renderDirty = true;
-			__setUpdateDirty();
 			__worldRenderDirty++;
 
 			if (__cachedParent != null) {
@@ -841,6 +840,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 
 		}
+
+		__setUpdateDirty();
 
 	}
 
