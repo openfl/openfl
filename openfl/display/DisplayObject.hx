@@ -702,9 +702,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateFilters = false;
 
 			#if(profile && js)
-				if(untyped __js__("this.__symbol"))
+				if(untyped __js__("this.symbolId"))
 				{
-					var symbolId:Int = untyped __js__("this.__symbol.id");
+					var symbolId:Int = untyped __js__("this.symbolId");
 					__applyFiltersCountMap.set(symbolId, (__applyFiltersCountMap.exists(symbolId) ? __applyFiltersCountMap.get(symbolId) + 1 : 1));
 				}
 			#end
