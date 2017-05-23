@@ -826,6 +826,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
 
+		__setRenderDirtyNoCachedBitmap();
+
+	}
+
+	private inline function __setRenderDirtyNoCachedBitmap ():Void {
+
 		if( __isMask ){
 			__maskCached = false;
 		}
@@ -1118,7 +1124,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (value > 1.0) value = 1.0;
 		if (value != __alpha) {
-			__setRenderDirty ();
+			__setRenderDirtyNoCachedBitmap();
 		}
 		return __alpha = value;
 
