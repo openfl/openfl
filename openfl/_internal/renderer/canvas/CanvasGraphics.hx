@@ -355,6 +355,11 @@ class CanvasGraphics {
 					case DRAW_IMAGE:
 						drawImage(data);
 
+						if (context.isPointInPath (x, y, canvasWindingRule)) {
+							drawCommandReaderPool.put (data);
+							return true;
+						}
+
 					case DRAW_RECT:
 						drawRect(data);
 
@@ -847,10 +852,10 @@ class CanvasGraphics {
 
 		} else {
 
-			context.fillStyle = "white";
-			context.fillRect (0.0, 0.0, 1.0, 1.0);
-
+			context.rect (0.0, 0.0, 1.0, 1.0);
 		}
+
+
 
 		context.restore ();
 
