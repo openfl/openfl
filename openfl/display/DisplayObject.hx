@@ -1123,6 +1123,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function set_blendMode (value:BlendMode):BlendMode {
 		
 		if (value == null) value = NORMAL;
+		if (value != __blendMode) __setRenderDirty ();
 		return __blendMode = value;
 		
 	}

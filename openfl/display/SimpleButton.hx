@@ -483,6 +483,8 @@ class SimpleButton extends InteractiveObject {
 		
 		if (value != __currentState) {
 			
+			__setRenderDirty ();
+			
 			if (__currentState != null) {
 				
 				__currentState.__setStageReference (null);

@@ -70,6 +70,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				__children.remove (child);
 				__children.insert (index, child);
 				
+				__setRenderDirty ();
+				
 			}
 			
 		} else {
@@ -316,6 +318,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children[index1] = child2;
 			__children[index2] = child1;
 			
+			__setRenderDirty ();
+			
 		}
 		
 	}
@@ -327,6 +331,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
 		swap = null;
+		__setRenderDirty ();
 		
 	}
 	
