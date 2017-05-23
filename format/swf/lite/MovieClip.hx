@@ -445,6 +445,16 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
+	private inline function __getFrameTime():Int {
+		var frameTime = stage.frameTime;
+
+		if (frameTime != null) {
+			return frameTime;
+		} else {
+			return __swf.frameTime;
+		}
+	}
+
 	@:dox(hide) public #if (!flash && openfl && !openfl_legacy) override #end function __enterFrame (deltaTime:Int):Void {
 
 		if (__playing) {
@@ -452,7 +462,7 @@ class MovieClip extends flash.display.MovieClip {
 			#if !swflite_parent_fps
 			__timeElapsed += deltaTime;
 
-			var frameTime = stage.frameTime;
+			var frameTime = __getFrameTime();
 			var advanceFrames = Math.floor (__timeElapsed / frameTime);
 			__timeElapsed = (__timeElapsed % frameTime);
 			#else

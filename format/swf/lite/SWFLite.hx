@@ -25,7 +25,8 @@ import openfl.Assets;
 
 	public var classes : Map<String, Class<Dynamic>>;
 	public var classes_id : Map<Int, Class<Dynamic>>;
-	public var frameRate:Float;
+	public var frameRate (default, set):Float;
+	public var frameTime(default, null):Int;
 	public var root:SpriteSymbol;
 	public var symbols:Map <Int, SWFSymbol>;
 	public var symbolClassNames:Map <String, SWFSymbol>;
@@ -230,5 +231,10 @@ import openfl.Assets;
 		return instances.get("lib/graphics/graphics.dat");
 	}
 
+	private function set_frameRate (value:Float):Float {
+		frameTime = Std.int(1000 / value);
+		frameRate = value;
 	
+		return value;
+	}
 }

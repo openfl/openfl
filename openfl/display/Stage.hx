@@ -72,7 +72,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 
 	public var align:StageAlign;
-	public var frameTime(default, null):Int;
 	public var allowsFullScreen (default, null):Bool;
 	public var allowsFullScreenInteractive (default, null):Bool;
 	public var application (default, null):Application;
@@ -80,6 +79,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var displayState (get, set):StageDisplayState;
 	public var focus (get, set):InteractiveObject;
 	public var frameRate (get, set):Float;
+	public var frameTime(default, null):Int;
 	public var quality:StageQuality;
 	public var scaleMode (get, set):StageScaleMode;
 	public var stage3Ds (default, null):Vector<Stage3D>;
