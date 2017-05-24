@@ -19,10 +19,18 @@
 	
 	<section unless="lime || custom-backend">
 		
-		<haxelib name="lime" version="${lime-version}" unless="create" />
-		<haxelib name="lime" version="${lime-version}" if="display || rebuild" />
+		<!--<haxelib name="lime" version="${lime-version}" unless="create" />-->
+		<!--<haxelib name="lime" version="${lime-version}" if="display || rebuild" />-->
+		<haxelib name="lime" unless="create" />
+		<haxelib name="lime" if="display || rebuild" />
 		
 	</section>
+	
+	<section if="lime">
+ -		
+ -		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 5.0.* is required)" if="${lime < 5.0.0} || ${lime >= 5.1.0}" unless="setup || disable-version-check" />
+ -		
+ -	</section>
 	
 	<template path="templates" />
 	
