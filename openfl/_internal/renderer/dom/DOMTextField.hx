@@ -330,8 +330,16 @@ class DOMTextField {
 			
 			if (textField.__div != null) {
 				
+				// force roundPixels = true for TextFields
+				// Chrome shows blurry text if coordinates are fractional
+				
+				var old = renderSession.roundPixels;
+				renderSession.roundPixels = true;
+				
 				DOMRenderer.updateClip (textField, renderSession);
 				DOMRenderer.applyStyle (textField, renderSession, true, true, true);
+				
+				renderSession.roundPixels = old;
 				
 			}
 			
