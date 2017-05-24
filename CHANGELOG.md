@@ -1,3 +1,11 @@
+5.1.2 (05/23/2017)
+------------------
+
+* Revert wildcard Lime dependency until it is more stable
+* Fixed deprecation of DOMSprite and OpenGLView
+* Fixed cacheAsBitmap when making certain visual changes
+
+
 5.1.1 (05/20/2017)
 ------------------
 
