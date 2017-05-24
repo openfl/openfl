@@ -91,9 +91,6 @@ class RenderTexture {
 		
 		gl.bindTexture (gl.TEXTURE_2D, texture);
 		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, __width, __height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-		#if dev
-			var error = gl.getError();
-		#end
 
 	}
 	
