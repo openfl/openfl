@@ -235,8 +235,6 @@ class TextEngine {
 		}
 
 		var logicalFontName = format.font;
-		logicalFontName += format.bold ? " Bold" : "";
-		logicalFontName += format.italic ? " Italic" : "";
 
 		var font = constructHTMLFontName( false, logicalFontName );
 
