@@ -122,6 +122,7 @@ class DOMBitmap {
 		if (bitmap.__image == null) {
 			
 			bitmap.__image = cast Browser.document.createElement ("img");
+			bitmap.__image.crossOrigin = "Anonymous";
 			bitmap.__image.src = bitmap.bitmapData.image.buffer.__srcImage.src;
 			DOMRenderer.initializeElement (bitmap, bitmap.__image, renderSession);
 			
