@@ -23,7 +23,7 @@ class DOMTextField {
 	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
 	private static var __regexFont = ~/<font ([^>]+)>/gi;
 	private static var __regexCloseFont = new EReg("</font>", "gi");
-	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')>/i;
+	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
 	
 	public static function measureText (textField:TextField):Void {
 		
