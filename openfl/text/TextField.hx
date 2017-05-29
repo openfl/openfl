@@ -15,6 +15,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
+import openfl._internal.text.HtmlParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
@@ -50,20 +51,6 @@ class TextField extends InteractiveObject {
 	
 	private static var __defaultTextFormat:TextFormat;
 	private static var __missingFontWarning = new Map<String, Bool> ();
-	private static var __regexAlign = ~/align=("([^"]+)"|'([^']+)')/i;
-	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
-	private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
-	private static var __regexBreakTag = ~/<br\s*\/?>/gi;
-	private static var __regexEntities = [ ~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g ];
-	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
-	private static var __regexHref = ~/href=("([^"]+)"|'([^']+)')/i;
-	private static var __regexHTMLTag = ~/<.*?>/g;
-	private static var __regexIndent = ~/ indent=("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeading = ~/leading=("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeftMargin = ~/leftmargin=("([^"]+)"|'([^']+)')/i;
-	private static var __regexRightMargin = ~/rightmargin=("([^"]+)"|'([^']+)')/i;
-	private static var __regexTabStops = ~/tabstops=("([^"]+)"|'([^']+)')/i;
-	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
 	
 	public var antiAliasType (get, set):AntiAliasType;
 	public var autoSize (get, set):TextFieldAutoSize;
@@ -1015,14 +1002,7 @@ class TextField extends InteractiveObject {
 		//autoSize = (tag.autoSize) ? TextFieldAutoSize.LEFT : TextFieldAutoSize.NONE;
 		
 	}
-	
-	
-	private function __getAttributeMatch (regex:EReg):String {
-		
-		return regex.matched (2) != null ? regex.matched (2) : regex.matched (3);
-		
-	}
-	
+
 	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
@@ -1763,242 +1743,7 @@ class TextField extends InteractiveObject {
 		
 		if (#if (js && html5) __div == null #else true #end) {
 			
-			value = __regexBreakTag.replace (value, "\n");
-			value = __regexEntities[0].replace (value, "\"");
-			value = __regexEntities[1].replace (value, "'");
-			value = __regexEntities[2].replace (value, "&");
-			
-			// crude solution
-			
-			var segments = value.split ("<");
-			
-			if (segments.length == 1) {
-				
-				value = __regexHTMLTag.replace (value, "");
-				
-				if (__textEngine.textFormatRanges.length > 1) {
-					
-					__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-					
-				}
-				
-				value = __regexEntities[3].replace (value, "<");
-				value = __regexEntities[4].replace (value, ">");
-				
-				var range = __textEngine.textFormatRanges[0];
-				range.format = __textFormat;
-				range.start = 0;
-				range.end = value.length;
-				
-				__updateText (value);
-				
-				return value;
-				
-			} else {
-				
-				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
-				
-				value = "";
-				var segment;
-				
-				for (i in 0...segments.length) {
-					
-					segment = segments[i];
-					segment = __regexEntities[3].replace (segment, "<");
-					segment = __regexEntities[4].replace (segment, ">");
-					segments[i] = segment;
-					
-				}
-				
-				var formatStack = [ __textFormat.clone () ];
-				var sub:String;
-				var noLineBreak = false;
-				
-				for (segment in segments) {
-					
-					if (segment == "") continue;
-					
-					var isClosingTag = segment.substr (0, 1) == "/";
-					var tagEndIndex = segment.indexOf (">");
-					var start = tagEndIndex + 1;
-					var spaceIndex = segment.indexOf (" ");
-					var tagName = segment.substring (isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
-					var format:TextFormat;
-					
-					if (isClosingTag) {
-						
-						formatStack.pop ();
-						format = formatStack[formatStack.length - 1].clone ();
-						
-						if (tagName.toLowerCase () == "p" && __textEngine.textFormatRanges.length > 0) {
-							
-							value += "\n";
-							noLineBreak = true;
-							
-						}
-						
-						if (start < segment.length) {
-							
-							sub = segment.substr (start);
-							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-							value += sub;
-							noLineBreak = false;
-							
-						}
-						
-					} else {
-						
-						format = formatStack[formatStack.length - 1].clone ();
-						
-						if (tagEndIndex > -1) {
-							
-							switch (tagName.toLowerCase ()) {
-								
-								case "a":
-									
-									if (__regexHref.match (segment)) {
-										
-										format.url = __getAttributeMatch (__regexHref);
-										
-									}
-								
-								case "p":
-									
-									if (__textEngine.textFormatRanges.length > 0 && !noLineBreak) {
-										
-										value += "\n";
-										
-									}
-									
-									if (__regexAlign.match (segment)) {
-										
-										format.align = __getAttributeMatch (__regexAlign).toLowerCase ();
-										
-									}
-								
-								case "font":
-									
-									if (__regexFace.match (segment)) {
-										
-										format.font = __getAttributeMatch (__regexFace);
-										
-									}
-									
-									if (__regexColor.match (segment)) {
-										
-										format.color = Std.parseInt ("0x" + __getAttributeMatch (__regexColor));
-										
-									}
-									
-									if (__regexSize.match (segment)) {
-										
-										var sizeAttr = __getAttributeMatch (__regexSize);
-										var firstChar = sizeAttr.charCodeAt (0);
-										
-										if (firstChar == "+".code || firstChar == "-".code) {
-											
-											var parentFormat = (formatStack.length >= 2) ? formatStack[formatStack.length - 2] : __textFormat;
-											format.size = parentFormat.size + Std.parseInt (sizeAttr);
-											
-										} else {
-											
-											format.size = Std.parseInt (sizeAttr);
-											
-										}
-										
-									}
-								
-								case "b":
-									
-									format.bold = true;
-								
-								case "u":
-									
-									format.underline = true;
-								
-								case "i", "em":
-									
-									format.italic = true;
-								
-								case "textformat":
-									
-									if (__regexBlockIndent.match (segment)) {
-										
-										format.blockIndent = Std.parseInt (__getAttributeMatch (__regexBlockIndent));
-										
-									}
-									
-									if (__regexIndent.match (segment)) {
-										
-										format.indent = Std.parseInt (__getAttributeMatch (__regexIndent));
-										
-									}
-									
-									if (__regexLeading.match (segment)) {
-										
-										format.leading = Std.parseInt (__getAttributeMatch (__regexLeading));
-										
-									}
-									
-									if (__regexLeftMargin.match (segment)) {
-										
-										format.leftMargin = Std.parseInt (__getAttributeMatch (__regexLeftMargin));
-										
-									}
-									
-									if (__regexRightMargin.match (segment)) {
-										
-										format.rightMargin = Std.parseInt (__getAttributeMatch (__regexRightMargin));
-										
-									}
-									
-									if (__regexTabStops.match (segment)) {
-										
-										var values = __getAttributeMatch (__regexTabStops).split (" ");
-										var tabStops = [];
-										
-										for (stop in values) {
-											
-											tabStops.push (Std.parseInt (stop));
-											
-										}
-										
-										format.tabStops = tabStops;
-										
-									}
-								
-							}
-							
-							formatStack.push (format);
-							
-							if (start < segment.length) {
-								
-								sub = segment.substring (start);
-								__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-								value += sub;
-								noLineBreak = false;
-								
-							}
-							
-						} else {
-							
-							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + segment.length));
-							value += segment;
-							noLineBreak = false;
-							
-						}
-						
-					}
-					
-				}
-				
-				if (__textEngine.textFormatRanges.length == 0) {
-					
-					__textEngine.textFormatRanges.push (new TextFormatRange (formatStack[0], 0, 0));
-					
-				}
-				
-			}
+			value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 			
 		}
 		
