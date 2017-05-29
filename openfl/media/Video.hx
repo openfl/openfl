@@ -58,11 +58,15 @@ class Video extends DisplayObject {
 	public function attachNetStream (netStream:NetStream):Void {
 		
 		__stream = netStream;
-		
+
 		#if (js && html5)
-		__stream.__video.play ();
+		if (__stream != null) {
+
+			__stream.__video.play ();
+
+		}
 		#end
-		
+
 	}
 	
 	
