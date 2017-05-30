@@ -539,6 +539,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		var cacheY = __transform.ty;
 		__transform.tx = __transform.ty = 0;
 		
+		var cacheX = __transform.tx;
+		var cacheY = __transform.ty;
+		__transform.tx = __transform.ty = 0;
+		
 		__getBounds (rect, __transform);
 		
 		__transform.tx = cacheX;
