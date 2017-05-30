@@ -979,7 +979,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			Telemetry.__advanceFrame ();
 			#end
 			
-			if (__renderer != null && Stage3D.__active) {
+			if (__renderer != null && (Stage3D.__active || stage3Ds[0].__contextRequested)) {
 				
 				__renderer.clear ();
 				__renderer.renderStage3D ();
