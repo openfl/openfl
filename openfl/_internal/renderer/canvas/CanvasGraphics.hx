@@ -191,9 +191,10 @@ class CanvasGraphics {
 		startX = 0.0;
 		startY = 0.0;
 		#end
+		resetFillStyle ();
 	}
 
-	private static function resetFillStyle()
+	private static inline function resetFillStyle()
 	{
 		hasFill = false;
 		hasStroke = false;
@@ -282,7 +283,6 @@ class CanvasGraphics {
 			y -= bounds.y;
 
 			beginRenderStep();
-			resetFillStyle();
 
 			var data = drawCommandReaderPool.get();
 			data.reset(graphics.__commands);
@@ -311,7 +311,7 @@ class CanvasGraphics {
 							drawCommandReaderPool.put (data);
 							return true;
 						}
-						resetFillStyle();
+
 						beginRenderStep();
 					case LINE_STYLE:
 						lineStyle(data, true);
@@ -521,7 +521,6 @@ class CanvasGraphics {
 				Rectangle.pool.put (scaled_bounds);
 
 				beginRenderStep ();
-				resetFillStyle ();
 
 				var data = drawCommandReaderPool.get ();
 				data.reset (graphics.__commands);
@@ -545,7 +544,6 @@ class CanvasGraphics {
 								data.readEndFill ();
 
 								endRenderStep();
-								resetFillStyle();
 								beginRenderStep();
 
 							case BEGIN_BITMAP_FILL:
@@ -597,7 +595,6 @@ class CanvasGraphics {
 								data.readEndFill ();
 
 								endRenderStep();
-								resetFillStyle();
 								beginRenderStep();
 
 							case LINE_STYLE:
