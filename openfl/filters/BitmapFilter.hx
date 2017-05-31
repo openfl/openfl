@@ -43,6 +43,7 @@ class BitmapFilter {
 
 	#if (js && html5)
 	public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+		throw ":TODO: Unsupported path. Patch code.";
 	}
 	#end
 
