@@ -11,6 +11,11 @@ import openfl.utils.ByteArray;
 import openfl.Vector;
 import haxe.io.Bytes;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class VertexBuffer3D {
 	
@@ -21,6 +26,7 @@ class VertexBuffer3D {
 	private var __memoryUsage:Int;
 	private var __numVertices:Int;
 	private var __stride:Int;
+	private var __tempBytes:Bytes;
 	private var __usage:Int;
 	private var __vertexSize:Int;
 	
@@ -72,7 +78,7 @@ class VertexBuffer3D {
 		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		
-		GL.bufferData (GL.ARRAY_BUFFER, data, __usage);
+		GL.bufferData (GL.ARRAY_BUFFER, data.byteLength, data, __usage);
 		GLUtils.CheckGLError ();
 		
 		if (data.byteLength != __memoryUsage) {
@@ -87,11 +93,15 @@ class VertexBuffer3D {
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
+		if (data == null) return;
+		
 		// TODO: Optimize more
 		
 		var start = startVertex * __vertexSize;
 		var count = numVertices * __vertexSize;
 		var length = start + count;
+		
+		#if (js && html5)
 		
 		var buffer = new Float32Array (count);
 		
@@ -102,6 +112,37 @@ class VertexBuffer3D {
 		}
 		
 		uploadFromTypedArray (buffer);
+		
+		#else
+		
+		var byteLength = length * 4;
+		
+		if (__tempBytes == null || __tempBytes.length < byteLength) {
+			
+			__tempBytes = Bytes.alloc (byteLength);
+			
+		}
+		
+		for (i in start...length) {
+			
+			__tempBytes.setFloat ((i - start) * 4, data[i]);
+			
+		}
+		
+		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
+		GLUtils.CheckGLError ();
+		
+		GL.bufferData (GL.ARRAY_BUFFER, byteLength, __tempBytes, __usage);
+		GLUtils.CheckGLError ();
+		
+		if (byteLength != __memoryUsage) {
+			
+			__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, byteLength - __memoryUsage);
+			__memoryUsage = byteLength;
+			
+		}
+		
+		#end
 		
 	}
 	

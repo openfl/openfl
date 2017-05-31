@@ -28,7 +28,7 @@ class CanvasTilemap {
 		
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var rect = Rectangle.__temp;
+		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
@@ -53,7 +53,7 @@ class CanvasTilemap {
 		tiles = tilemap.__tiles;
 		count = tiles.length;
 		
-		var tileTransform = Matrix.__temp;
+		var tileTransform = Matrix.__pool.get ();
 		
 		for (i in 0...count) {
 			
@@ -120,6 +120,9 @@ class CanvasTilemap {
 		
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (tileTransform);
 		
 		#end
 		

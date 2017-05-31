@@ -18,7 +18,7 @@ class DOMDisplayObject {
 		//if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		//if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 		
-		if (displayObject.opaqueBackground != null && displayObject.width > 0 && displayObject.height > 0) {
+		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
 			//renderSession.maskManager.pushObject (displayObject);
 			

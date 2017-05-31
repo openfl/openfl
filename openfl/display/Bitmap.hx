@@ -58,11 +58,13 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			var bounds = Rectangle.__temp;
+			var bounds = Rectangle.__pool.get ();
 			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
 			bounds.__transform (bounds, matrix);
 			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+			
+			Rectangle.__pool.release (bounds);
 			
 		}
 		
@@ -204,6 +206,8 @@ class Bitmap extends DisplayObject {
 		bitmapData = value;
 		smoothing = false;
 		
+		__setRenderDirty ();
+		
 		if (__filters != null && __filters.length > 0) {
 			
 			//__updateFilters = true;
@@ -238,6 +242,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.height) {
 				
+				__setRenderDirty ();
 				scaleY = value / bitmapData.height;
 				
 			}
@@ -270,6 +275,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.width) {
 				
+				__setRenderDirty ();
 				scaleX = value / bitmapData.width;
 				
 			}

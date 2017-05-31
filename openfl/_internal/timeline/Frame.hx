@@ -1,6 +1,12 @@
 package openfl._internal.timeline;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:keep class Frame {
 	
 	

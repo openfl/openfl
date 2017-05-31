@@ -33,6 +33,7 @@ import js.html.CanvasRenderingContext2D;
 #end
 
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.GraphicsPath)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -88,7 +89,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 		
-		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
+		__commands.beginBitmapFill (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
 		
 		__visible = true;
 		
@@ -225,6 +226,9 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = anchorX;
 		__positionY = anchorY;
 		
+		__inflateBounds (__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds (__positionX + __strokePadding, __positionY + __strokePadding);
+		
 		__commands.cubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 		
 		__dirty = true;
@@ -309,59 +313,83 @@ import js.html.CanvasRenderingContext2D;
 		var gradientFill:GraphicsGradientFill;
 		var stroke:GraphicsStroke;
 		var path:GraphicsPath;
+		var trianglePath:GraphicsTrianglePath;
 		
 		for (graphics in graphicsData) {
 			
-			if (Std.is (graphics, GraphicsSolidFill)) {
+			switch (graphics.__graphicsDataType) {
 				
-				fill = cast graphics;
-				beginFill (fill.color, fill.alpha);
-				
-			} else if (Std.is (graphics, GraphicsBitmapFill)) {
-				
-				bitmapFill = cast graphics;
-				beginBitmapFill (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
-				
-			} else if (Std.is (graphics, GraphicsGradientFill)) {
-				
-				gradientFill = cast graphics;
-				beginGradientFill (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
-				
-			} else if (Std.is (graphics, GraphicsStroke)) {
-				
-				stroke = cast graphics;
-				
-				if (Std.is (stroke.fill, GraphicsSolidFill)) {
+				case SOLID:
 					
-					fill = cast stroke.fill;
-					lineStyle (stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+					fill = cast graphics;
+					beginFill (fill.color, fill.alpha);
+				
+				case BITMAP:
 					
-				} else {
+					bitmapFill = cast graphics;
+					beginBitmapFill (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+				
+				case GRADIENT:
 					
-					lineStyle (stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+					gradientFill = cast graphics;
+					beginGradientFill (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+				
+				case STROKE:
 					
-					if (Std.is (stroke.fill, GraphicsBitmapFill)) {
+					stroke = cast graphics;
+					
+					if (stroke.fill != null) {
 						
-						bitmapFill = cast stroke.fill;
-						lineBitmapStyle (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+						var thickness:Null<Float> = stroke.thickness;
 						
-					} else if (Std.is (stroke.fill, GraphicsGradientFill)) {
+						if (Math.isNaN (thickness)) {
+							
+							thickness = null;
+							
+						}
 						
-						gradientFill = cast stroke.fill;
-						lineGradientStyle (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+						switch (stroke.fill.__graphicsFillType) {
+							
+							case SOLID_FILL:
+								
+								fill = cast stroke.fill;
+								lineStyle (thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+							
+							case BITMAP_FILL:
+								
+								bitmapFill = cast stroke.fill;
+								lineStyle (thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+								lineBitmapStyle (bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+							
+							case GRADIENT_FILL:
+								
+								gradientFill = cast stroke.fill;
+								lineStyle (thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+								lineGradientStyle (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+							
+							default:
+							
+						}
+						
+					} else {
+						
+						lineStyle ();
 						
 					}
+				
+				case PATH:
 					
-				}
+					path = cast graphics;
+					drawPath (path.commands, path.data, path.winding);
 				
-			} else if (Std.is (graphics, GraphicsPath)) {
+				case TRIANGLE_PATH:
+					
+					trianglePath = cast graphics;
+					drawTriangles (trianglePath.vertices, trianglePath.indices, trianglePath.uvtData, trianglePath.culling);
 				
-				path = cast graphics;
-				drawPath (path.commands, path.data, path.winding);
-				
-			} else if (Std.is (graphics, GraphicsEndFill)) {
-				
-				endFill ();
+				case END:
+					
+					endFill ();
 				
 			}
 			
@@ -447,12 +475,55 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
-		openfl.Lib.notImplemented ();
+		if (width <= 0 || height <= 0) return;
+		
+		__inflateBounds (x - __strokePadding, y - __strokePadding);
+		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
+		
+		var xw = x + width;
+		var yh = y + height;
+		var minSize = width < height ? width * 2 : height * 2;
+		topLeftRadius = topLeftRadius < minSize ? topLeftRadius : minSize;
+		topRightRadius = topRightRadius < minSize ? topRightRadius : minSize;
+		bottomLeftRadius = bottomLeftRadius < minSize ? bottomLeftRadius : minSize;
+		bottomRightRadius = bottomRightRadius < minSize ? bottomRightRadius : minSize;
+		
+		var anchor = (1 - Math.sin (45 * (Math.PI / 180)));
+		var control = (1 - Math.tan (22.5 * (Math.PI / 180)));
+		
+		var a = bottomRightRadius * anchor;
+		var s = bottomRightRadius * control;
+		moveTo (xw, yh - bottomRightRadius);
+		curveTo (xw, yh - s, xw - a, yh - a);
+		curveTo (xw - s, yh, xw - bottomRightRadius, yh);
+		
+		a = bottomLeftRadius * anchor;
+		s = bottomLeftRadius * control;
+		lineTo (x + bottomLeftRadius, yh);
+		curveTo (x + s, yh, x + a, yh - a);
+		curveTo (x, yh - s, x, yh - bottomLeftRadius);
+		
+		a = topLeftRadius * anchor;
+		s = topLeftRadius * control;
+		lineTo (x, y + topLeftRadius);
+		curveTo (x, y + s, x + a, y + a);
+		curveTo (x + s, y, x + topLeftRadius, y);
+		
+		a = topRightRadius * anchor;
+		s = topRightRadius * control;
+		lineTo (xw - topRightRadius, y);
+		curveTo (xw - s, y, xw - a, y + a);
+		curveTo (xw, y + s, xw, y + topRightRadius);
+		lineTo (xw, yh - bottomRightRadius);
+		
+		__dirty = true;
 		
 	}
 	
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
+		
+		if (vertices == null || indices == null || uvtData == null) return;
 		
 		var vlen = Std.int (vertices.length / 2);
 		
@@ -635,9 +706,10 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (__bounds == null) return;
 		
-		var bounds = openfl.geom.Rectangle.__temp;
+		var bounds = Rectangle.__pool.get ();
 		__bounds.__transform (bounds, matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release (bounds);
 		
 	}
 	
@@ -714,55 +786,98 @@ import js.html.CanvasRenderingContext2D;
 	private function __readGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
 		
 		var data = new DrawCommandReader (__commands);
-		var path;
+		var path = null, stroke;
 		
 		for (type in __commands.types) {
+			
+			switch (type) {
+				
+				case CUBIC_CURVE_TO, CURVE_TO, LINE_TO, MOVE_TO, DRAW_CIRCLE, DRAW_ELLIPSE, DRAW_RECT, DRAW_ROUND_RECT:
+					
+					if (path == null) {
+						
+						path = new GraphicsPath ();
+						
+					}
+				
+				default:
+					
+					if (path != null) {
+						
+						graphicsData.push (path);
+						path = null;
+						
+					}
+				
+			}
 			
 			switch (type) {
 				
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo ();
-					
-					// TODO: Convert cubic curve to bezier path
+					path.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
-					path = new GraphicsPath ();
 					path.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
-					graphicsData.push (path);
 				
 				case LINE_TO:
 					
 					var c = data.readLineTo ();
-					path = new GraphicsPath ();
 					path.lineTo (c.x, c.y);
-					graphicsData.push (path);
 					
 				case MOVE_TO:
 					
 					var c = data.readMoveTo ();
-					path = new GraphicsPath ();
 					path.moveTo (c.x, c.y);
-					graphicsData.push (path);
+				
+				case DRAW_CIRCLE:
+					
+					var c = data.readDrawCircle ();
+					path.__drawCircle (c.x, c.y, c.radius);
+				
+				case DRAW_ELLIPSE:
+					
+					var c = data.readDrawEllipse ();
+					path.__drawEllipse (c.x, c.y, c.width, c.height);
+				
+				case DRAW_RECT:
+					
+					var c = data.readDrawRect ();
+					path.__drawRect (c.x, c.y, c.width, c.height);
+				
+				case DRAW_ROUND_RECT:
+					
+					var c = data.readDrawRoundRect ();
+					path.__drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 				
 				case LINE_GRADIENT_STYLE:
 					
-					var c = data.readLineGradientStyle ();
-					
 					// TODO
+					
+					var c = data.readLineGradientStyle ();
+					//stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					//stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+					//graphicsData.push (stroke);
 				
 				case LINE_BITMAP_STYLE:
 					
-					var c = data.readLineBitmapStyle ();
-					
 					// TODO
+					
+					var c = data.readLineBitmapStyle ();
+					path = null;
+					//stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					//stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
+					//graphicsData.push (stroke);
 				
 				case LINE_STYLE:
 					
 					var c = data.readLineStyle ();
-					graphicsData.push (new GraphicsStroke (c.thickness, /*c.color, c.alpha,*/ c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit));
+					stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					stroke.fill = new GraphicsSolidFill (c.color, c.alpha);
+					graphicsData.push (stroke);
 				
 				case END_FILL:
 					
@@ -784,35 +899,18 @@ import js.html.CanvasRenderingContext2D;
 					var c = data.readBeginGradientFill ();
 					graphicsData.push (new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio));
 				
-				case DRAW_CIRCLE:
-					
-					var c = data.readDrawCircle ();
-					
-					// TODO
-				
-				case DRAW_ELLIPSE:
-					
-					var c = data.readDrawEllipse ();
-					
-					// TODO
-				
-				case DRAW_RECT:
-					
-					var c = data.readDrawEllipse ();
-					
-					// TODO
-				
-				case DRAW_ROUND_RECT:
-					
-					var c = data.readDrawEllipse ();
-					
-					// TODO
 				
 				default:
 					
 					data.skip (type);
 				
 			}
+			
+		}
+		
+		if (path != null) {
+			
+			graphicsData.push (path);
 			
 		}
 		
@@ -902,7 +1000,9 @@ import js.html.CanvasRenderingContext2D;
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height) {
 			
+			#if !openfl_disable_graphics_upscaling
 			__dirty = true;
+			#end
 			
 		}
 		

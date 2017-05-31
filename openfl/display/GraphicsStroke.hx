@@ -18,14 +18,16 @@ import openfl.display.IGraphicsData;
 	public var __graphicsDataType (default, null):GraphicsDataType;
 	
 	
-	public function new (thickness:Float = 0.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3, fill:IGraphicsFill = null) {
+	public function new (thickness:Null<Float> = null, pixelHinting:Bool = false, scaleMode:LineScaleMode = LineScaleMode.NORMAL, caps:CapsStyle = CapsStyle.NONE, joints:JointStyle = JointStyle.ROUND, miterLimit:Float = 3, fill:IGraphicsFill = null) {
 		
-		this.caps = caps != null ? caps : CapsStyle.NONE;
+		if (thickness == null) thickness = Math.NaN;
+		
+		this.caps = caps;
 		this.fill = fill;
-		this.joints = joints != null ? joints : JointStyle.ROUND;
+		this.joints = joints;
 		this.miterLimit = miterLimit;
 		this.pixelHinting = pixelHinting;
-		this.scaleMode = scaleMode != null ? scaleMode : LineScaleMode.NORMAL;
+		this.scaleMode = scaleMode;
 		this.thickness = thickness;
 		this.__graphicsDataType = STROKE;
 		

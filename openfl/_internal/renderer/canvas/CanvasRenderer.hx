@@ -23,6 +23,7 @@ class CanvasRenderer extends AbstractRenderer {
 		this.context = context;
 		
 		renderSession = new RenderSession ();
+		renderSession.clearDirtyFlags = true;
 		renderSession.context = context;
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
@@ -34,19 +35,6 @@ class CanvasRenderer extends AbstractRenderer {
 	
 	
 	public override function clear ():Void {
-		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderCanvas (stage, renderSession);
-			
-		}
-		
-	}
-	
-	
-	public override function render ():Void {
-		
-		renderSession.allowSmoothing = (stage.quality != LOW);
 		
 		context.setTransform (1, 0, 0, 1, 0, 0);
 		context.globalAlpha = 1;
@@ -62,7 +50,25 @@ class CanvasRenderer extends AbstractRenderer {
 			
 		}
 		
+	}
+	
+	
+	public override function render ():Void {
+		
+		renderSession.allowSmoothing = (stage.quality != LOW);
+		
 		stage.__renderCanvas (renderSession);
+		
+	}
+	
+	
+	public override function renderStage3D ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderCanvas (stage, renderSession);
+			
+		}
 		
 	}
 	

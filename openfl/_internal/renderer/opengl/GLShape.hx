@@ -44,7 +44,7 @@ class GLShape {
 				var renderer:GLRenderer = cast renderSession.renderer;
 				var gl = renderSession.gl;
 				
-				renderSession.blendModeManager.setBlendMode (shape.blendMode);
+				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 				renderSession.maskManager.pushObject (shape);
 				
 				var shader = renderSession.filterManager.pushObject (shape);

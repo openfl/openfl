@@ -8,6 +8,11 @@ import lime.graphics.cairo.CairoSurface;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)

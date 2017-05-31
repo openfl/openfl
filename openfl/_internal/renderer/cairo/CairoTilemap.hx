@@ -11,6 +11,11 @@ import openfl.display.Tilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
@@ -30,7 +35,7 @@ class CairoTilemap {
 		
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var rect = Rectangle.__temp;
+		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
@@ -48,7 +53,7 @@ class CairoTilemap {
 		count = tiles.length;
 		
 		var matrix = new Matrix3 ();
-		var tileTransform = Matrix.__temp;
+		var tileTransform = Matrix.__pool.get ();
 		
 		for (i in 0...count) {
 			
@@ -122,6 +127,9 @@ class CairoTilemap {
 		
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (tileTransform);
 		
 	}
 	

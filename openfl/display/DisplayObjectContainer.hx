@@ -8,7 +8,6 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
-import openfl.events.EventPhase;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -33,6 +32,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var tabChildren:Bool;
 	
 	private var __removedChildren:Vector<DisplayObject>;
+	private var __tempStack:Vector<DisplayObject>;
 	
 	
 	private function new () {
@@ -43,6 +43,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__children = new Array<DisplayObject> ();
 		__removedChildren = new Vector<DisplayObject> ();
+		__tempStack = new Vector<DisplayObject> ();
 		
 	}
 	
@@ -68,6 +69,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				__children.remove (child);
 				__children.insert (index, child);
+				
+				__setRenderDirty ();
 				
 			}
 			
@@ -99,10 +102,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__dispatchEvent (event);
 			
 			if (addedToStage) {
-				event = new Event (Event.ADDED_TO_STAGE, false, false);
-				event.target = child;			
-				__dispatchInCapturePhase(event);
-				child.__dispatchChildren (event);
+				
+				child.__dispatchChildren (new Event (Event.ADDED_TO_STAGE, false, false), __tempStack);
+				__tempStack.length = 0;
 				
 			}
 			
@@ -200,10 +202,10 @@ class DisplayObjectContainer extends InteractiveObject {
 					stage.focus = null;
 					
 				}
-				var event = new Event (Event.REMOVED_FROM_STAGE, false, false);
-				event.target = child;
-				__dispatchInCapturePhase(event);
-				child.__dispatchChildren (event);
+				
+				child.__dispatchChildren (new Event (Event.REMOVED_FROM_STAGE, false, false), __tempStack);
+				__tempStack.length = 0;
+				
 				child.__setStageReference (null);
 				
 			}
@@ -316,6 +318,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children[index1] = child2;
 			__children[index2] = child1;
 			
+			__setRenderDirty ();
+			
 		}
 		
 	}
@@ -327,58 +331,20 @@ class DisplayObjectContainer extends InteractiveObject {
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
 		swap = null;
+		__setRenderDirty ();
 		
 	}
 	
-	/**
-	*  Normally, to have the same behaviour as Flash handles capture phase of the events, this method should be called once for evey ADDED_TO_STAGE event of each child of the display object being added. 
-	*  See, the commented calls in __dispatchChildren. This could have big impact on the performnce. Since we didn't have a capture phase for ADDED_TO(REMOVED_FROM)_STAGE
-	*  at all, it would be enough at the moment if we run it only once, only when the actual display object is added, not for its children. 
-	*  If we see that we need to do it exactly the same as flash, that is an easy change. The commented calls in __dispatchChildren should be 
-	*  uncommented, and the calls from the addChildAt and removeChild should be removed.
-	*/
-	private function __dispatchInCapturePhase(event:Event): Void {
-			if (event.bubbles) return;
-
-			event.eventPhase = EventPhase.CAPTURING_PHASE;
-			var parentsStack:Array<DisplayObjectContainer> = [];
-			var target: DisplayObject = cast event.target;
-			var currentParent: DisplayObjectContainer = target.parent;
-
-			while (currentParent != null) {
-
-				parentsStack.push(currentParent);
-				currentParent = currentParent.parent;
-
-			}
-
-			if (parentsStack.length == 0) return;
-
-			currentParent = parentsStack.pop();
-
-			while (currentParent != null) {
-
-				currentParent.__dispatchEvent(event);
-				currentParent = parentsStack.pop();
-
-			}
-
-			event.eventPhase = EventPhase.AT_TARGET;
-	}
-
-	private override function __dispatchChildren (event:Event):Bool {
-
-		// __dispatchInCapturePhase(event);
-		var success = __dispatchEvent (event);
+	
+	private override function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
+		
+		var success = super.__dispatchChildren (event, stack);
 		
 		if (success && __children != null) {
 			
 			for (child in __children) {
-
-				event.target = child;
-				// __dispatchInCapturePhase(event);
-
-				if (!child.__dispatchChildren (event)) {
+				
+				if (!child.__dispatchChildren (event, stack)) {
 					
 					return false;
 					
@@ -480,15 +446,18 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__scrollRect != null) {
 			
-			var point = Point.__temp;
+			var point = Point.__pool.get ();
 			point.setTo (x, y);
 			__getRenderTransform ().__transformInversePoint (point);
 			
 			if (!__scrollRect.containsPoint (point)) {
 				
+				Point.__pool.release (point);
 				return false;
 				
 			}
+			
+			Point.__pool.release (point);
 			
 		}
 		
@@ -609,11 +578,28 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCairo (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
+		if (renderSession.clearDirtyFlags) {
 			
-			child.__renderCairo (renderSession);
+			for (child in __children) {
+				
+				child.__renderCairo (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderCairo (renderSession);
+				
+			}
 			
 		}
 		
@@ -662,11 +648,28 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCanvas (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
+		if (renderSession.clearDirtyFlags) {
 			
-			child.__renderCanvas (renderSession);
+			for (child in __children) {
+				
+				child.__renderCanvas (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderCanvas (renderSession);
+				
+			}
 			
 		}
 		
@@ -717,11 +720,28 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderDOM (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
+		if (renderSession.clearDirtyFlags) {
 			
-			child.__renderDOM (renderSession);
+			for (child in __children) {
+				
+				child.__renderDOM (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderDOM (renderSession);
+				
+			}
 			
 		}
 		
@@ -750,12 +770,29 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderGL (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		renderSession.filterManager.pushObject (this);
 		
-		for (child in __children) {
+		if (renderSession.clearDirtyFlags) {
 			
-			child.__renderGL (renderSession);
+			for (child in __children) {
+				
+				child.__renderGL (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderGL (renderSession);
+				
+			}
 			
 		}
 		
@@ -786,6 +823,27 @@ class DisplayObjectContainer extends InteractiveObject {
 			for (child in __children) {
 				
 				child.__setStageReference (stage);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private override function __setTransformDirty ():Void {
+		
+		if (!__transformDirty) {
+			
+			super.__setTransformDirty ();
+			
+			if (__children != null) {
+				
+				for (child in __children) {
+					
+					child.__setTransformDirty ();
+					
+				}
 				
 			}
 			

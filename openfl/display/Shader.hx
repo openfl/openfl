@@ -7,6 +7,11 @@ import lime.utils.Float32Array;
 import lime.utils.GLUtils;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 
@@ -140,9 +145,11 @@ class Shader {
 		gl.bindBuffer (gl.ARRAY_BUFFER, null);
 		gl.bindTexture (gl.TEXTURE_2D, null);
 		
-		#if desktop
-		gl.disable (gl.TEXTURE_2D);
-		#end
+		if (gl.type == OPENGL) {
+			
+			gl.disable (gl.TEXTURE_2D);
+			
+		}
 		
 	}
 	
@@ -171,13 +178,11 @@ class Shader {
 			
 		}
 		
-		#if desktop
-		if (textureCount > 0) {
+		if (gl.type == OPENGL && textureCount > 0) {
 			
 			gl.enable (gl.TEXTURE_2D);
 			
 		}
-		#end
 		
 	}
 	
@@ -434,11 +439,11 @@ class Shader {
 			
 		}
 		
-		var index:Dynamic = 0;
+		var value, index;
 		
 		for (parameter in __paramBool) {
 			
-			var value = parameter.value;
+			value = parameter.value;
 			index = parameter.index;
 			
 			if (value != null) {
@@ -473,9 +478,11 @@ class Shader {
 			
 		}
 		
+		var value, index;
+		
 		for (parameter in __paramFloat) {
 			
-			var value = parameter.value;
+			value = parameter.value;
 			index = parameter.index;
 			
 			if (value != null) {
@@ -506,7 +513,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix2fv (index, false, __uniformMatrix2);
+						gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
 					
 					//case MATRIX2X3:
 					//case MATRIX2X4:
@@ -520,7 +527,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix3fv (index, false, __uniformMatrix3);
+						gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
 					
 					//case MATRIX3X4:
 					//case MATRIX4X2:
@@ -534,7 +541,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix4fv (index, false, __uniformMatrix4);
+						gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
 					
 					default:
 					
@@ -548,9 +555,12 @@ class Shader {
 			
 		}
 		
+		var value, index;
+		
 		for (parameter in __paramInt) {
 			
-			var value = parameter.value;
+			value = parameter.value;
+			index = parameter.index;
 			
 			if (value != null) {
 				

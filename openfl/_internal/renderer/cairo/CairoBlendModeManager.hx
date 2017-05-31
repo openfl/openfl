@@ -6,6 +6,11 @@ import openfl._internal.renderer.AbstractBlendModeManager;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BlendMode;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class CairoBlendModeManager extends AbstractBlendModeManager {
 	

@@ -1,6 +1,12 @@
 package openfl._internal.symbols;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 class TextSymbol extends SWFSymbol {
 	
 	

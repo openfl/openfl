@@ -3,6 +3,7 @@ package openfl.media;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.WebGLContext;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
@@ -10,6 +11,7 @@ import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.opengl.GLVideo;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -30,6 +32,7 @@ class Video extends DisplayObject {
 	private var __active:Bool;
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
+	private var __bufferContext:WebGLContext;
 	private var __bufferData:Float32Array;
 	private var __dirty:Bool;
 	private var __height:Float;
@@ -57,7 +60,11 @@ class Video extends DisplayObject {
 		__stream = netStream;
 		
 		#if (js && html5)
-		__stream.__video.play ();
+		if (__stream != null) {
+			
+			__stream.__video.play ();
+			
+		}
 		#end
 		
 	}
@@ -70,25 +77,42 @@ class Video extends DisplayObject {
 	}
 	
 	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		#if (js && html5)
+		
+		if (__renderable && __stream != null) {
+			
+			__setRenderDirty ();
+			
+		}
+		
+		#end
+		
+	}
+	
+	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		var bounds = Rectangle.__temp;
+		var bounds = Rectangle.__pool.get ();
 		bounds.setTo (0, 0, __width, __height);
 		bounds.__transform (bounds, matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
+		Rectangle.__pool.release (bounds);
+		
 	}
 	
 	
-	private function __getBuffer (gl:GLRenderContext, alpha:Float):GLBuffer {
+	private function __getBuffer (gl:WebGLContext, alpha:Float):GLBuffer {
 		
 		var width = __width;
 		var height = __height;
 		
 		if (width == 0 || height == 0) return null;
 		
-		if (__buffer == null) {
+		if (__buffer == null || __bufferContext != gl) {
 			
 			#if openfl_power_of_two
 			
@@ -127,6 +151,7 @@ class Video extends DisplayObject {
 			]);
 			
 			__bufferAlpha = alpha;
+			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
@@ -175,7 +200,7 @@ class Video extends DisplayObject {
 			var format = gl.RGBA;
 			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			gl.texImage2DWEBGL (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;
 			

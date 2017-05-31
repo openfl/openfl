@@ -113,6 +113,12 @@ import openfl.geom.Rectangle;
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 private class ColorMatrixShader extends Shader {
 	
 	

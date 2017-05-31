@@ -37,7 +37,7 @@ class RunScript {
 			
 			//args[1] = "openfl:" + args[1];
 			
-		} else if (args[0] == "setup") {
+		} else if (args.length > 0 && args[0] == "setup") {
 			
 			var limeDirectory = PathHelper.getHaxelib (new Haxelib ("lime"));
 			
@@ -47,7 +47,7 @@ class RunScript {
 				
 			}
 			
-		} else if (args.length > 2 && args[0] == "process") {
+		} else if (args.length > 0 && args[0] == "process") {
 			
 			if (!FileSystem.exists ("tools/tools.n")) {
 				

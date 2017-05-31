@@ -4,6 +4,11 @@ package openfl.display;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Tileset {
 	
@@ -100,6 +105,12 @@ class Tileset {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:allow(openfl.display.Tileset) @:dox(hide) private class TileData {

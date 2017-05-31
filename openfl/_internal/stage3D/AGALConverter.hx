@@ -8,6 +8,11 @@ import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class AGALConverter {
 	
@@ -495,6 +500,12 @@ class AGALConverter {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 private class DestRegister {
 	
 	
@@ -675,15 +686,37 @@ class RegisterMap {
 		
 		mEntries.sort (function (a:RegisterMapEntry, b:RegisterMapEntry):Int {
 			
-			if (a.type != b.type) {
+			return a.number - b.number;
+			
+		});
+		
+		var arrayCount = new Map<RegisterMapEntry, Int> ();
+		var entry:RegisterMapEntry;
+		
+		for (i in 0...mEntries.length) {
+			
+			entry = mEntries[i];
+			
+			if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
 				
-				return cast (a.type, Int) - cast (b.type, Int);
-				
-			} else {
-				
-				return a.number - b.number;
+				// find how many registers based on the next entry.
+				if (i < mEntries.length - 1) {
+					
+					arrayCount[entry] = mEntries[i + 1].number - entry.number;
+					
+				} else {
+					
+					arrayCount[entry] = 128;
+					
+				}
 				
 			}
+			
+		}
+		
+		mEntries.sort (function (a:RegisterMapEntry, b:RegisterMapEntry):Int {
+			
+			return cast (a.type, Int) - cast (b.type, Int);
 			
 		});
 		
@@ -691,7 +724,7 @@ class RegisterMap {
 		
 		for (i in 0...mEntries.length) {
 			
-			var entry = mEntries [i];
+			entry = mEntries [i];
 			
 			// only emit temporary registers based on Boolean passed in
 			// this is so temp registers can be grouped in the main() block
@@ -785,16 +818,7 @@ class RegisterMap {
 				
 			} else if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
 				
-				var count = 128;
-				
-				// find how many registers based on the next entry.
-				if (i < mEntries.length - 1) {
-					
-					count = mEntries [i + 1].number - entry.number;
-					
-				}
-				
-				sb.add (entry.name + "[" + count + "]"); // this is an array of "count" elements.
+				sb.add (entry.name + "[" + arrayCount[entry] + "]"); // this is an array of "count" elements.
 				sb.add (";\n");
 				
 			} else {
@@ -812,6 +836,12 @@ class RegisterMap {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class RegisterMapEntry {
@@ -856,6 +886,12 @@ private enum RegisterUsage {
 	VECTOR_4_ARRAY;
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class SamplerRegister {
@@ -933,12 +969,12 @@ private class SamplerRegister {
 			// nearest
 			case 1:
 				
-				minFilter = (f != 0) ? GL.NEAREST_MIPMAP_LINEAR : GL.NEAREST_MIPMAP_NEAREST;
+				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_NEAREST : GL.NEAREST_MIPMAP_NEAREST;
 			
 			// linear
 			case 2:
 				
-				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_LINEAR : GL.LINEAR_MIPMAP_NEAREST;
+				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_LINEAR : GL.NEAREST_MIPMAP_LINEAR;
 			
 			default:
 				
@@ -978,6 +1014,12 @@ private class SamplerRegister {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class SourceRegister {

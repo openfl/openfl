@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
+	<set name="lime-version" value="5.0.*" />
+	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
@@ -17,20 +19,22 @@
 	
 	<section unless="lime || custom-backend">
 		
+		<!--<haxelib name="lime" version="${lime-version}" unless="create" />-->
+		<!--<haxelib name="lime" version="${lime-version}" if="display || rebuild" />-->
 		<haxelib name="lime" unless="create" />
 		<haxelib name="lime" if="display || rebuild" />
-		
-		<template path="templates" />
 		
 	</section>
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 3.7.* is required)" if="${lime < 3.7.0} || ${lime >= 3.8.0}" unless="setup" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 5.0.* is required)" if="${lime < 5.0.0} || ${lime >= 5.1.0}" unless="setup || disable-version-check" />
 		
 	</section>
 	
-	<source path="externs/core/flash" if="flash" unless="display" />
+	<template path="templates" />
+	
+	<source path="externs/core/flash" if="flash" />
 	<source path="externs/core/openfl" if="display || flash" />
 	<source path="externs/extras" if="display" />
 	
@@ -46,12 +50,15 @@
 			<set name="openfl" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<section if="telemetry || advanced-telemetry">
+			<section if="telemetry || advanced-telemetry || openfl-telemetry">
 				
 				<haxelib name="hxtelemetry" />
 				<config:hxtelemetry allocations="true" host="localhost" />
 				
 			</section>
+			
+			<haxedef name="openfl-debug" if="openfl-telemetry" />
+			<haxedef name="lime-debug" if="openfl-telemetry" />
 			
 		</section>
 		

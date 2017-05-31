@@ -16,6 +16,12 @@ import openfl.events.Event;
 import openfl.filters.*;
 import openfl.text.TextField;
 
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.symbols.SWFSymbol)
 
 
@@ -31,6 +37,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var currentLabels (get, never):Array<FrameLabel>;
 	public var enabled:Bool;
 	public var framesLoaded (get, never):Int;
+	public var isPlaying (get, never):Bool;
 	public var totalFrames (get, never):Int;
 	
 	private var __currentFrame:Int;
@@ -40,6 +47,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __frameScripts:Map<Int, Void->Void>;
 	private var __frameTime:Int;
 	private var __lastUpdate:Int;
+	private var __maskCount:Int;
 	private var __objectDepths:Array<TimelineObject>;
 	private var __objects:Map<Int, TimelineObject>;
 	private var __playing:Bool;
@@ -267,6 +275,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__symbol = symbol;
 		
 		__lastUpdate = -1;
+		__maskCount = 0;
 		__objectDepths = [];
 		__objects = new Map ();
 		__zeroSymbol = -1;
@@ -437,6 +446,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 					}
 					
+					if (timelineObject.clipDepth > 0) __maskCount--;
+					if (__maskCount < 0) __maskCount = 0;
+					
 					__objectDepths.splice (i, 1);
 					
 				} else {
@@ -452,7 +464,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		}
 		
 		var frame, timelineObject, displayObject, depth, symbol;
-		var mask = null, maskObject = null;
 		var depthChange = false;
 		
 		for (i in previousIndex...(index + 1)) {
@@ -494,13 +505,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 						if (displayObject != null) {
 							
-							timelineObject = new TimelineObject (frameObject.id, frameObject.depth, displayObject);
+							timelineObject = new TimelineObject (frameObject.id, frameObject.depth, frameObject.clipDepth, displayObject);
 							
+							if (frameObject.clipDepth > 0) __maskCount++;
 							__objectDepths.push (timelineObject);
+							__objects.set (frameObject.id, timelineObject);
 							
 							depthChange = true;
-							
-							__objects.set (frameObject.id, timelineObject);
 							
 						}
 						
@@ -508,10 +519,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 						timelineObject = __objects.get (frameObject.id);
 						displayObject = timelineObject.displayObject;
-
+						
 						if (timelineObject.displayObject.parent == null) {
 							
-							__objectDepths.push(timelineObject);
+							if (frameObject.clipDepth > 0) __maskCount++;
+							__objectDepths.push (timelineObject);
 							
 							depthChange = true;
 							
@@ -523,32 +535,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 						__placeObject (displayObject, frameObject);
 						
-						if (mask != null) {
-							
-							if (mask.clipDepth < frameObject.depth) {
-								
-								mask = null;
-								
-							} else {
-								
-								displayObject.mask = maskObject;
-								
-							}
-							
-						} else {
-							
-							displayObject.mask = null;
-							
-						}
-						
-						if (frameObject.clipDepth != 0 #if neko && frameObject.clipDepth != null #end) {
-							
-							mask = frameObject;
-							displayObject.visible = false;
-							maskObject = displayObject;
-							
-						}
-						
 					}
 					
 				} else {
@@ -557,13 +543,33 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 						timelineObject = __objects.get (frameObject.id);
 						
-						if (timelineObject != null && timelineObject.displayObject.parent == this) {
+						if (timelineObject != null) {
 							
-							removeChild (timelineObject.displayObject);
+							if (timelineObject.displayObject.parent == this) {
+								
+								removeChild (timelineObject.displayObject);
+								
+							}
+							
+							if (timelineObject.clipDepth > 0) {
+								
+								__maskCount--;
+								
+								for (object in __objectDepths) {
+									
+									if (object.displayObject.mask == timelineObject.displayObject) {
+										
+										object.displayObject.mask = null;
+										
+									}
+									
+								}
+								
+							}
+							
+							__objectDepths.remove (timelineObject);
 							
 						}
-						
-						__objectDepths.remove (timelineObject);
 						
 						depthChange = true;
 						
@@ -586,6 +592,40 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				timelineObject = __objectDepths[i];
 				addChildAt (timelineObject.displayObject, 0);
 				i--;
+				
+			}
+			
+		}
+		
+		if (__maskCount > 0) {
+			
+			var object, mask;
+			
+			for (timelineObject in __objectDepths) {
+				
+				if (timelineObject.clipDepth > 0) {
+					
+					mask = timelineObject.displayObject;
+					
+					for (object in __objectDepths) {
+						
+						if (object.depth <= timelineObject.clipDepth) {
+							
+							if (object.depth >= timelineObject.depth) {
+								
+								object.displayObject.mask = mask;
+								
+							}
+							
+						} else {
+							
+							break;
+							
+						}
+						
+					}
+					
+				}
 				
 			}
 			
@@ -659,8 +699,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 			}
 			
-			__renderDirty = true;
-			DisplayObject.__worldRenderDirty++;
+			//__renderDirty = true;
 			
 		}
 		
@@ -681,24 +720,33 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function get_currentLabel ():String { return __currentLabel; }
 	private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
 	private function get_framesLoaded ():Int { return __totalFrames; }
+	private function get_isPlaying ():Bool { return __playing; }
 	private function get_totalFrames ():Int { return __totalFrames; }
 	
 	
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 private class TimelineObject {
 	
 	
+	public var clipDepth:Int;
 	public var depth:Int;
 	public var displayObject:DisplayObject;
 	public var id:Int;
 	
 	
-	public function new (id:Int, depth:Int, displayObject:DisplayObject) {
+	public function new (id:Int, depth:Int, clipDepth:Int, displayObject:DisplayObject) {
 		
 		this.id = id;
 		this.depth = depth;
+		this.clipDepth = clipDepth;
 		this.displayObject = displayObject;
 		
 	}

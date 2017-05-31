@@ -36,12 +36,12 @@ class GLTilemap {
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;
 		
-		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
+		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
 		renderSession.maskManager.pushObject (tilemap);
 		
 		var shader = renderSession.filterManager.pushObject (tilemap);
 		
-		var rect = Rectangle.__temp;
+		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
@@ -111,14 +111,16 @@ class GLTilemap {
 			
 		}
 		
-		if (tilemap.__buffer == null) {
+		if (tilemap.__buffer == null || tilemap.__bufferContext != gl) {
 			
+			tilemap.__bufferContext = gl;
 			tilemap.__buffer = gl.createBuffer ();
 			
 		}
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
 		
+		tileMatrix = Matrix.__pool.get ();
 		var drawCount = 0;
 		
 		for (i in 0...count) {
@@ -174,7 +176,6 @@ class GLTilemap {
 			
 			if (tile.__transformDirty) {
 				
-				tileMatrix = Matrix.__temp;
 				tileMatrix.setTo (1, 0, 0, 1, -tile.originX, -tile.originY);
 				tileMatrix.concat (tile.matrix);
 				
@@ -222,7 +223,7 @@ class GLTilemap {
 			
 		}
 		
-		gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
+		gl.bufferData (gl.ARRAY_BUFFER, bufferData.byteLength, bufferData, gl.DYNAMIC_DRAW);
 		
 		gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
@@ -277,6 +278,9 @@ class GLTilemap {
 		renderSession.filterManager.popObject (tilemap);
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (tileMatrix);
 		
 	}
 	

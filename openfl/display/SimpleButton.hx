@@ -13,6 +13,11 @@ import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
@@ -349,7 +354,7 @@ class SimpleButton extends InteractiveObject {
 		
 		var local = state.__transform;
 		var parentTransform = __worldTransform;
-		var overrideTransform = Matrix.__temp;
+		var overrideTransform = Matrix.__pool.get ();
 		
 		overrideTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
 		overrideTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
@@ -364,6 +369,8 @@ class SimpleButton extends InteractiveObject {
 		state.__update (false, true);
 		
 		state.__transform = cacheTransform;
+		
+		Matrix.__pool.release (overrideTransform);
 		
 		return cacheTransform;
 		
@@ -475,6 +482,8 @@ class SimpleButton extends InteractiveObject {
 		}
 		
 		if (value != __currentState) {
+			
+			__setRenderDirty ();
 			
 			if (__currentState != null) {
 				

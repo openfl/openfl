@@ -12,10 +12,16 @@ import lime.graphics.cairo.CairoImageSurface;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
@@ -61,7 +67,8 @@ class CairoTextField {
 		
 		if (cairo != null) {
 			
-			var surface:CairoImageSurface = cast cairo.target;
+			//var surface:CairoImageSurface = cast cairo.target;
+			var surface = graphics.__bitmap.getSurface ();
 			
 			if (!renderable || (graphics.__dirty && (width != surface.width || height != surface.height))) {
 				
@@ -244,7 +251,46 @@ class CairoTextField {
 					//
 					//cairo.showGlyphs (glyphs);
 					
-					cairo.showText (text.substring (group.startIndex, group.endIndex));
+					var usedHack = false;
+					
+					if (textField.__filters != null && textField.__filters.length > 0) {
+						
+						// Hack, force outline
+						
+						if (Std.is (textField.__filters[0], GlowFilter)) {
+							
+							cairo.textPath (text.substring (group.startIndex, group.endIndex));
+							
+							var glowFilter:GlowFilter = cast textField.__filters[0];
+							
+							color = glowFilter.color;
+							r = ((color & 0xFF0000) >>> 16) / 0xFF;
+							g = ((color & 0x00FF00) >>> 8) / 0xFF;
+							b = (color & 0x0000FF) / 0xFF;
+							
+							cairo.setSourceRGBA (r, g, b, glowFilter.alpha);
+							cairo.lineWidth = Math.max (glowFilter.blurX, glowFilter.blurY);
+							cairo.strokePreserve ();
+							
+							color = group.format.color;
+							r = ((color & 0xFF0000) >>> 16) / 0xFF;
+							g = ((color & 0x00FF00) >>> 8) / 0xFF;
+							b = (color & 0x0000FF) / 0xFF;
+							
+							cairo.setSourceRGB (r, g, b);
+							
+							cairo.fillPreserve ();
+							usedHack = true;
+							
+						}
+						
+					}
+					
+					if (!usedHack) {
+						
+						cairo.showText (text.substring (group.startIndex, group.endIndex));
+						
+					}
 					
 					if (textField.__caretIndex > -1 && textEngine.selectable) {
 						

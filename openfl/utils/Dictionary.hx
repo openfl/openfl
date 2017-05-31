@@ -61,49 +61,49 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
-	@:to static inline function toStringMap<K:String, V> (t:IMap<K, V>, weakKeys:Bool):StringMap<V> {
+	@:to static function toStringMap<K:String, V> (t:IMap<K, V>, weakKeys:Bool):StringMap<V> {
 		
 		return new StringMap<V> ();
 		
 	}
 	
 	
-	@:to static inline function toIntMap<K:Int, V> (t:IMap<K, V>, weakKeys:Bool):IntMap<V> {
+	@:to static function toIntMap<K:Int, V> (t:IMap<K, V>, weakKeys:Bool):IntMap<V> {
 		
 		return new IntMap<V> ();
 		
 	}
 	
 	
-	@:to static inline function toFloatMap<K:Float,V> (t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V> {
+	@:to static function toFloatMap<K:Float,V> (t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V> {
 		
 		return new FloatMap<K, V> ();
 		
 	}
 	
 	
-	@:to static inline function toEnumValueMapMap<K:EnumValue, V> (t:IMap<K, V>, weakKeys:Bool):EnumValueMap<K, V> {
+	@:to static function toEnumValueMapMap<K:EnumValue, V> (t:IMap<K, V>, weakKeys:Bool):EnumValueMap<K, V> {
 		
 		return new EnumValueMap<K, V> ();
 		
 	}
 	
 	
-	@:to static inline function toObjectMap<K:{},V> (t:IMap<K, V>, weakKeys:Bool):ObjectMap<K, V> {
+	@:to static function toObjectMap<K:{},V> (t:IMap<K, V>, weakKeys:Bool):ObjectMap<K, V> {
 		
 		return new ObjectMap<K, V> ();
 		
 	}
 	
 	
-	@:to static inline function toUtilsObjectMap<K:Object,V> (t:IMap<K, V>, weakKeys:Bool):UtilsObjectMap<K, V> {
+	@:to static function toUtilsObjectMap<K:Object,V> (t:IMap<K, V>, weakKeys:Bool):UtilsObjectMap<K, V> {
 		
 		return new UtilsObjectMap<K, V> ();
 		
 	}
 	
 	
-	@:to static inline function toClassMap<K:Class<Dynamic>,V> (t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V> {
+	@:to static function toClassMap<K:Class<Dynamic>,V> (t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V> {
 		
 		return new ClassMap<K, V> ();
 		
@@ -153,6 +153,12 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements Map.IMap<K, V> {
@@ -226,6 +232,12 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:dox(hide) private class FloatMap<K:Float, V> implements Map.IMap<K, V> {
 	
 	
@@ -288,9 +300,9 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	
 	public function set (key:K, value:V): Void {
-
+		
 		insertSorted (key, value);
-
+		
 	}
 	
 	
@@ -356,11 +368,11 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		var endIndex:Int = len - 1;
 		
 		if (len == 0) {
-
+			
 			floatKeys.push (key);
 			values.push(value);
 			return;
-
+			
 		}
 		
 		var midIndex:Int = 0;
@@ -386,19 +398,19 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		}
 		
 		if (floatKeys[startIndex] > key) {
-
+			
 			floatKeys.insert (startIndex, key);
 			values.insert (startIndex, value);
-
+			
 		} else if (floatKeys[startIndex] < key) {
 			
 			floatKeys.insert (startIndex + 1, key);
 			values.insert (startIndex + 1, value);
-
+			
 		} else {
-
+			
 			values[startIndex] = value;
-
+			
 		}
 		
 	}
@@ -412,6 +424,12 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class UtilsObjectMap<K:Object, V> implements Map.IMap<K, V> {

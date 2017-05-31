@@ -7,6 +7,11 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Context3DStateCache {
 	

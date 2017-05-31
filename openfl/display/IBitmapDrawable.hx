@@ -4,6 +4,7 @@ package openfl.display;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 
 interface IBitmapDrawable {
@@ -13,6 +14,7 @@ interface IBitmapDrawable {
 	private var __worldTransform:Matrix;
 	private var __worldColorTransform:ColorTransform;
 	
+	private function __getBounds (rect:Rectangle, matrix:Matrix):Void;
 	private function __renderCairo (renderSession:RenderSession):Void;
 	private function __renderCairoMask (renderSession:RenderSession):Void;
 	private function __renderCanvas (renderSession:RenderSession):Void;

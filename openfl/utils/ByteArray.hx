@@ -4,6 +4,8 @@ package openfl.utils;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
+import lime.utils.BytePointer;
+import lime.utils.DataPointer;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
@@ -20,6 +22,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public static var defaultObjectEncoding:UInt;
+	
+	private static var __bytePointer = new BytePointer ();
 	
 	public var length (get, set):Int;
 	
@@ -151,6 +155,16 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 	}
+	
+	
+	#if sys
+	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
+		
+		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
+		return __bytePointer;
+		
+	}
+	#end
 	
 	
 	@:to @:noCompletion private static function toBytes (byteArray:ByteArray):Bytes {
@@ -580,7 +594,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			__setData (bytes);
 			
 			length = __length;
-			position = __length;
+			position = 0;
 			
 		}
 		
@@ -636,8 +650,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function writeFloat (value:Float):Void {
 		
-		var int = FPHelper.floatToI32 (value);
-		writeInt (int);
+		if (endian == LITTLE_ENDIAN) {
+			
+			__resize (position + 4);
+			setFloat (position, value);
+			position += 4;
+			
+		} else {
+			
+			var int = FPHelper.floatToI32 (value);
+			writeInt (int);
+			
+		}
 		
 	}
 	

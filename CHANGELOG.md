@@ -1,3 +1,126 @@
+5.1.2 (05/23/2017)
+------------------
+
+* Revert wildcard Lime dependency until it is more stable
+* Fixed deprecation of DOMSprite and OpenGLView
+* Fixed cacheAsBitmap when making certain visual changes
+
+
+5.1.1 (05/20/2017)
+------------------
+
+* Fixed regression causing incorrect internal bounds calculation
+* Fixed an issue compiling `openfl display flash` output
+* Fixed regression in path resolution for SWF library handler tools
+
+
+5.1.0 (05/19/2017)
+------------------
+
+* Updated for Lime 5
+* Added openfl.text.StaticText (used in SWF assets)
+* Added openfl.display.AVM1Movie for better compatibility with Flash
+* Added initial support for DisplayObject cacheAsBitmap
+* Added support for DisplayObject colorTransform using cacheAsBitmap
+* Added support for graphicsPath.cubicCurveTo
+* Improved support for graphics.readGraphicsData/drawGraphicsData
+* Improved behavior of Stage3D mipmap filtering
+* Deprecated openfl.gl.\* types (use lime.graphics.opengl.\*)
+* Deprecated openfl.utils.\* typed arrays (use lime.utils.\*)
+* Fixed clipping in graphics.cubicCurveTo
+* Fixed an issue compiling the output of `openfl display`
+* Fixed support for `<window always-on-top="true" />` in template
+* Fixed support for synchronous BitmapData.fromBytes on native
+* Fixed support for Stage3D on HTML5 DOM target
+
+
+5.0.0 (05/04/2017)
+------------------
+
+* Removed old preloader support (use new preloader format)
+* Removed callback in BitmapData.fromBase64 (use .loadFromBase64)
+* Removed callback in BitmapData.fromBytes (use .loadFromBytes)
+* Removed callbacks in BitmapData.fromFile (use .loadFromFile)
+* Removed unused parameter in sound.loadCompressedDataFromByteArray
+* Removed openfl.embed support in HTML template (use lime.embed)
+* Removed bundled import of asset classes (use openfl.utils.\*)
+* Added initial support for compressed Stage3D textures
+* Added initial support for Adobe Texture Format in Stage3D
+* Added support for GraphicsTrianglePath
+* Added support for graphics.drawRoundRectComplex
+* Added support for MovieClip.isPlaying
+* Added capture phase to Event.ADDED and Event.REMOVED_FROM_STAGE
+* Improved alignment and layout grouping in TextField
+* Improved the behavior of GraphicsPath
+* Improved openfl.display.Shader to optimize better in JavaScript
+* Improved behavior of bitmapData.drawWithQuality using StageQuality.LOW
+* Improved the behavior of inherited blend modes
+* Improved the behavior of Stage3D mipmap filter smoothing
+* Improved the way uncaught errors are reported on iOS
+* Improved ByteArray to convert to a DataPointer with position preserved
+* Improved performance of byteArray.writeFloat when LITTLE_ENDIAN
+* Improved vector.toString on Flash to be consistent with other targets
+* Improved Vector.reverse to have the correct return type
+* Fixed conversion of null openfl.Vector to String
+* Fixed inclusion of alpha images in SWF exporter tool
+* Fixed some cases where width or height of a Shape was incorrect
+* Fixed performance regression when using Stage3D in release
+* Fixed binary size of SWF tools to support older Neko releases
+* Fixed an issue using Dictionary in some circumstances on HTML5
+* Fixed code completion issue when referencing RenderSession
+* Fixed static initialization order of CFFI methods
+
+
+4.9.2 (03/28/2017)
+------------------
+
+* Implemented Context3D.drawToBitmapData
+* Improved support for embedded SWF libraries on Flash
+* Fixed a regression in render-to-texture support with Context3D
+* Fixed a minor issue when using OpenFL with Raspberry Pi
+* Fixed support for Assets.getBitmapData from a SWF library
+* Fixed support for Sound.loadPCMFromByteArray
+
+
+4.9.1 (03/17/2017)
+------------------
+
+* Updated additional classes to build for release
+* Fixed a performance regression in Cairo TextField rendering
+* Fixed VertexBuffer3D uploadFromVector to generate less GC activity
+* Fixed double loading of SWFLite data
+
+
+4.9.0 (03/15/2017)
+------------------
+
+* Updated for Lime 4
+* Added initial support for `openfl process` for SWF-based assets
+* Added support for loading generated SWFLite bundles in Loader
+* Added support for multiple HTML5 embeds on the same page
+* Added support for loaderInfo.parameters through the HTML5 embed
+* Added support for TextField restrict and maxChars
+* Added support for Float-based keys in Dictionary
+* Added a hack to add stroke support for TextField
+* Improved support for Lime asset manifests in SWF library
+* Improved template behavior to work if Lime is included before OpenFL
+* Improved the behavior of TextField setTextFormat/replaceText
+* Improved support for String-based messages in HTML5 Socket
+* Improved support for non-smoothed bitmapData in SWF libraries
+* Improved "missing font" warning to only occur once per font name
+* Improved "asset not found" warnings to throw errors
+* Improved animated mask support in MovieClip
+* Fixed support for embedded SWF libraries on Flash
+* Fixed the array count calculation in AGAL to GLSL conversion
+* Fixed support for CubeTexture in Stage3D renderToTexture
+* Fixed the reset position after using byteArray.uncompress
+* Fixed a type-cast error when retrieving a missing MovieClip asset
+* Fixed a possible bug when rendering an object with no parent
+* Fixed wrongful error on Stage3D viewport on OS X
+* Fixed cases where stage3D x/y is set before a backbuffer is created
+* Fixed support for GL context loss
+
+
 4.8.1 (02/15/2017)
 ------------------
 

@@ -69,6 +69,21 @@ class ColorTransform {
 	}
 	
 	
+	private function __copyFrom (ct:ColorTransform):Void {
+		
+		redMultiplier = ct.redMultiplier;
+		greenMultiplier = ct.greenMultiplier;
+		blueMultiplier = ct.blueMultiplier;
+		alphaMultiplier = ct.alphaMultiplier;
+		
+		redOffset = ct.redOffset;
+		greenOffset = ct.greenOffset;
+		blueOffset = ct.blueOffset;
+		alphaOffset = ct.alphaOffset;
+		
+	}
+	
+	
 	private function __combine (ct:ColorTransform):Void {
 		
 		redMultiplier *= ct.redMultiplier;

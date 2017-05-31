@@ -2,6 +2,7 @@ package openfl.geom;
 
 
 import lime.math.Rectangle in LimeRectangle;
+import lime.utils.ObjectPool;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -13,7 +14,7 @@ class Rectangle {
 	
 	
 	private static var __limeRectangle:LimeRectangle;
-	private static var __temp = new Rectangle ();
+	private static var __pool = new ObjectPool<Rectangle> (function () return new Rectangle (), function (r) r.setTo (0, 0, 0, 0));
 	
 	public var bottom (get, set):Float;
 	public var bottomRight (get, set):Point;

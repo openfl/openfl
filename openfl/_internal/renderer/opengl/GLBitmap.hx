@@ -28,7 +28,7 @@ class GLBitmap {
 			var renderer:GLRenderer = cast renderSession.renderer;
 			var gl = renderSession.gl;
 			
-			renderSession.blendModeManager.setBlendMode (bitmap.blendMode);
+			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap);
 			
 			var shader = renderSession.filterManager.pushObject (bitmap);

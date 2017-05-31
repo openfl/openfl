@@ -1,11 +1,10 @@
 package openfl.display3D;
 
 
-import lime.graphics.opengl.ExtensionPackedDepthStencil;
-import lime.graphics.opengl.ExtensionAnisotropicFiltering;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
+import lime.math.Vector2;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.Context3DStateCache;
@@ -31,6 +30,12 @@ import openfl.Vector;
 import openfl.profiler.Telemetry;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+@:access(openfl.display.Stage3D)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.Texture)
@@ -50,6 +55,9 @@ import openfl.profiler.Telemetry;
 	private static inline var MAX_SAMPLERS = 8;
 	private static inline var MAX_ATTRIBUTES = 16;
 	private static inline var MAX_PROGRAM_REGISTERS = 128;
+	
+	private static var TEXTURE_MAX_ANISOTROPY_EXT:Int = 0;
+	private static var DEPTH_STENCIL:Int = 0;
 	
 	private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
 	
@@ -137,23 +145,53 @@ import openfl.profiler.Telemetry;
 		__stencilRef = 0;
 		__stencilReadMask = 0xFF;
 		
+		var anisoExtension:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
+		
 		#if (js && html5)
+		
+		if (anisoExtension == null || !Reflect.hasField (anisoExtension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT"))
+			anisoExtension = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
+		if (anisoExtension == null || !Reflect.hasField (anisoExtension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT"))
+			anisoExtension = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+		
 		__supportsPackedDepthStencil = true;
-		var anisotropicExt:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
-		if (anisotropicExt == null || Reflect.field( anisotropicExt, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) anisotropicExt = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
-		if (anisotropicExt == null || Reflect.field( anisotropicExt, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) anisotropicExt = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
-		__supportsAnisotropicFiltering = (anisotropicExt != null);
-		if (__supportsAnisotropicFiltering) {
-			__maxAnisotropyTexture2D = __maxAnisotropyCubeTexture = GL.getParameter (ExtensionAnisotropicFiltering.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-		}
+		DEPTH_STENCIL = GL.DEPTH_STENCIL;
+		
 		#else
-		__supportsPackedDepthStencil = __hasGLExtension ("GL_OES_packed_depth_stencil") || __hasGLExtension ("GL_EXT_packed_depth_stencil");
-		__supportsAnisotropicFiltering = __hasGLExtension ("GL_EXT_texture_filter_anisotropic");
-		if (__supportsAnisotropicFiltering) {
-			__maxAnisotropyTexture2D = GL.getTexParameter (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT) != 0 ? 16 : 1;
-			__maxAnisotropyCubeTexture = GL.getTexParameter (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT) != 0 ? 16 : 1;
+		
+		var stencilExtension = GL.getExtension ("OES_packed_depth_stencil");
+		
+		if (stencilExtension != null) {
+			
+			__supportsPackedDepthStencil = true;
+			DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_OES;
+			
+		} else {
+			
+			stencilExtension = GL.getExtension ("EXT_packed_depth_stencil");
+			
+			if (stencilExtension != null) {
+				
+				__supportsPackedDepthStencil = true;
+				DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_EXT;
+				
+			}
+			
 		}
+		
 		#end
+		
+		__supportsAnisotropicFiltering = (anisoExtension != null);
+		
+		if (__supportsAnisotropicFiltering) {
+			
+			TEXTURE_MAX_ANISOTROPY_EXT = anisoExtension.TEXTURE_MAX_ANISOTROPY_EXT;
+			
+			var maxAnisotropy:Int = GL.getParameter (anisoExtension.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+			__maxAnisotropyTexture2D = maxAnisotropy;
+			__maxAnisotropyTexture2D = maxAnisotropy;
+			
+		}
 		
 		__stats = new Vector<Int> (Context3DTelemetry.length);
 		__statsCache = new Vector<Int> (Context3DTelemetry.length);
@@ -216,7 +254,7 @@ import openfl.profiler.Telemetry;
 			clearMask |= GL.DEPTH_BUFFER_BIT;
 			
 			GL.depthMask (true);
-			GL.clearDepth (depth);
+			GL.clearDepthf (depth);
 			GLUtils.CheckGLError ();
 			
 		}
@@ -313,6 +351,17 @@ import openfl.profiler.Telemetry;
 	
 	
 	public function drawToBitmapData (destination:BitmapData):Void {
+		
+		if (destination == null) return;
+		
+		var window = __stage3D.__stage.window;
+		
+		if (window != null) {
+			
+			var image = window.renderer.readPixels ();
+			destination.image.copyPixels (image, image.rect, new Vector2 ());
+			
+		}
 		
 		// TODO
 		
@@ -650,24 +699,6 @@ import openfl.profiler.Telemetry;
 		var width = 0;
 		var height = 0;
 		
-		if (Std.is (texture, Texture)) {
-			
-			var texture2D:Texture = cast texture;
-			width = texture2D.__width;
-			height = texture2D.__height;
-			
-		} else if (Std.is (texture, RectangleTexture)) {
-			
-			var rectTexture:RectangleTexture = cast texture;
-			width = rectTexture.__width;
-			height = rectTexture.__height;
-			
-		} else {
-			
-			throw new Error ("Invalid texture");
-			
-		}
-		
 		if (__framebuffer == null) {
 			
 			__framebuffer = GL.createFramebuffer ();
@@ -677,8 +708,43 @@ import openfl.profiler.Telemetry;
 		
 		GL.bindFramebuffer (GL.FRAMEBUFFER, __framebuffer);
 		GLUtils.CheckGLError ();
-		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__textureID, 0);
-		GLUtils.CheckGLError ();
+		
+		if (Std.is (texture, Texture)) {
+			
+			var texture2D:Texture = cast texture;
+			width = texture2D.__width;
+			height = texture2D.__height;
+			
+			GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__textureID, 0);
+			GLUtils.CheckGLError ();
+			
+		} else if (Std.is (texture, RectangleTexture)) {
+			
+			var rectTexture:RectangleTexture = cast texture;
+			width = rectTexture.__width;
+			height = rectTexture.__height;
+			
+			GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__textureID, 0);
+			GLUtils.CheckGLError ();
+			
+		} else if (Std.is (texture, CubeTexture)) {
+			
+			var cubeTexture:CubeTexture = cast texture;
+			width = cubeTexture.__size;
+			height = cubeTexture.__size;
+			
+			for (i in 0...6) {
+				
+				GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureID, 0);
+				GLUtils.CheckGLError ();
+				
+			}
+			
+		} else {
+			
+			throw new Error ("Invalid texture");
+			
+		}
 		
 		if (enableDepthAndStencil) {
 			
@@ -693,7 +759,7 @@ import openfl.profiler.Telemetry;
 				
 				GL.bindRenderbuffer (GL.RENDERBUFFER, __depthStencilRenderBuffer);
 				GLUtils.CheckGLError ();
-				GL.renderbufferStorage (GL.RENDERBUFFER, #if (js && html5) GL.DEPTH_STENCIL #else ExtensionPackedDepthStencil.DEPTH24_STENCIL8_EXT #end, width, height);
+				GL.renderbufferStorage (GL.RENDERBUFFER, DEPTH_STENCIL, width, height);
 				GLUtils.CheckGLError ();
 				
 				GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, __depthStencilRenderBuffer);
@@ -872,11 +938,11 @@ import openfl.profiler.Telemetry;
 			
 			case Context3DMipFilter.MIPLINEAR:
 				
-				state.minFilter = GL.LINEAR_MIPMAP_LINEAR;
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST_MIPMAP_LINEAR : GL.LINEAR_MIPMAP_LINEAR;
 			
 			case Context3DMipFilter.MIPNEAREST:
 				
-				state.minFilter = GL.NEAREST_MIPMAP_NEAREST;
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST_MIPMAP_NEAREST : GL.LINEAR_MIPMAP_NEAREST;
 			
 			case Context3DMipFilter.MIPNONE:
 				
@@ -1297,7 +1363,14 @@ import openfl.profiler.Telemetry;
 	
 	private function __updateBackbufferViewport ():Void {
 		
-		if (__renderToTexture == null) {
+		if (!Stage3D.__active) {
+			
+			Stage3D.__active = true;
+			__renderSession.renderer.clear ();
+			
+		}
+		
+		if (__renderToTexture == null && backBufferWidth > 0 && backBufferHeight > 0) {
 			
 			__setViewport (Std.int (__stage3D.x), Std.int (__stage3D.y), backBufferWidth, backBufferHeight);
 			

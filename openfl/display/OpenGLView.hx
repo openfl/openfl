@@ -2,6 +2,8 @@ package openfl.display;
 
 
 import lime.graphics.opengl.GL;
+import lime.graphics.GLRenderContext;
+
 #if !flash
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.RenderSession;
@@ -15,6 +17,13 @@ import js.html.CanvasElement;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+@:access(lime._backend.html5.HTML5GLRenderContext)
+@:access(lime._backend.native.NativeGLRenderContext)
 @:access(lime.graphics.opengl.GL)
 
 
@@ -61,7 +70,7 @@ class OpenGLView extends DirectRenderer {
 			__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 			#end
 			
-			GL.context = cast __context;
+			GL.context = new GLRenderContext (cast __context);
 			__initialized = true;
 			
 		}

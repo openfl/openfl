@@ -3,6 +3,11 @@ package openfl._internal.symbols;
 
 import openfl._internal.swf.ShapeCommand;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class FontSymbol extends SWFSymbol {
 	

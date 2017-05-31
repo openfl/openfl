@@ -103,7 +103,7 @@ class Sound extends EventDispatcher {
 	}
 	
 	
-	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int #if (openfl < "5.0.0"), forcePlayAsMusic:Bool = false #end):Void {
+	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int):Void {
 		
 		if (bytes == null || bytesLength <= 0) {
 			
@@ -145,7 +145,7 @@ class Sound extends EventDispatcher {
 		}
 		
 		var audioBuffer = new AudioBuffer ();
-		audioBuffer.bitsPerSample = format == "float" ? 16 : 8;
+		audioBuffer.bitsPerSample = format == "float" ? 32 : 16; // "short"
 		audioBuffer.channels = stereo ? 2 : 1;
 		audioBuffer.data = new UInt8Array (bytes);
 		audioBuffer.sampleRate = Std.int (sampleRate);

@@ -155,8 +155,8 @@ class DOMMaskManager extends AbstractMaskManager {
 				
 			}
 			
-			var clip = Rectangle.__temp;
-			var matrix = Matrix.__temp;
+			var clip = Rectangle.__pool.get ();
+			var matrix = Matrix.__pool.get ();
 			
 			matrix.copyFrom (displayObject.__renderTransform);
 			matrix.invert ();
@@ -173,6 +173,9 @@ class DOMMaskManager extends AbstractMaskManager {
 				displayObject.__worldClipChanged = true;
 				
 			}
+			
+			Rectangle.__pool.release (clip);
+			Matrix.__pool.release (matrix);
 			
 		}
 		

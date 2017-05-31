@@ -16,10 +16,20 @@ import openfl.display.BitmapData;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
 import openfl.events.Event;
+import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
+import openfl.net.URLLoader;
+import openfl.net.URLRequest;
 import openfl.text.Font;
+import openfl.utils.Assets;
+import openfl.utils.AssetLibrary;
+import openfl.utils.AssetType;
 import openfl.utils.ByteArray;
-import openfl.Assets;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:keep class SWFLiteLibrary extends AssetLibrary {
@@ -27,6 +37,7 @@ import openfl.Assets;
 	
 	private var alphaCheck:Map<String, Bool>;
 	private var id:String;
+	private var imageClassNames:Map<String, String>;
 	private var preloading:Bool;
 	private var rootPath:String;
 	private var swf:SWFLite;
@@ -39,6 +50,7 @@ import openfl.Assets;
 		this.id = id;
 		
 		alphaCheck = new Map ();
+		imageClassNames = new Map ();
 		
 		#if (ios || tvos)
 		rootPath = "assets/";
@@ -77,6 +89,12 @@ import openfl.Assets;
 	
 	
 	public override function getImage (id:String):Image {
+		
+		if (imageClassNames.exists (id)) {
+			
+			id = imageClassNames.get (id);
+			
+		}
 		
 		// TODO: Better system?
 		
@@ -135,21 +153,33 @@ import openfl.Assets;
 			
 		}
 		
-		#if (js && html5)
-		for (id in paths.keys ()) {
-			
-			preload.set (id, true);
-			
-		}
-		#end
-		
 		var promise = new Promise<lime.utils.AssetLibrary> ();
 		preloading = true;
 		
-		loadText (id).onError (promise.error).onComplete (function (data) {
+		var onComplete = function (data) {
+			
+			cachedText.set (id, data);
 			
 			swf = SWFLite.unserialize (data);
 			swf.library = this;
+			
+			var bitmapSymbol:BitmapSymbol;
+			
+			for (symbol in swf.symbols) {
+				
+				if (Std.is (symbol, BitmapSymbol)) {
+					
+					bitmapSymbol = cast symbol;
+					
+					if (bitmapSymbol.className != null) {
+						
+						imageClassNames.set (bitmapSymbol.className, bitmapSymbol.path);
+						
+					}
+					
+				}
+				
+			}
 			
 			SWFLite.instances.set (id, swf);
 			
@@ -160,7 +190,36 @@ import openfl.Assets;
 				
 			});
 			
-		});
+		}
+		
+		if (Assets.exists (id)) {
+			
+			#if (js && html5)
+			for (id in paths.keys ()) {
+				
+				preload.set (id, true);
+				
+			}
+			#end
+			
+			loadText (id).onError (promise.error).onComplete (onComplete);
+			
+		} else {
+			
+			for (id in paths.keys ()) {
+				
+				preload.set (id, true);
+				
+			}
+			
+			var path = (rootPath != null && rootPath != "") ? rootPath + "/" + id : id;
+			
+			var loader = new URLLoader ();
+			loader.addEventListener (Event.COMPLETE, function (_) onComplete (loader.data));
+			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) promise.error (e));
+			loader.load (new URLRequest (path));
+			
+		}
 		
 		return promise.future;
 		
@@ -168,6 +227,12 @@ import openfl.Assets;
 	
 	
 	public override function loadImage (id:String):Future<Image> {
+		
+		if (imageClassNames.exists (id)) {
+			
+			id = imageClassNames.get (id);
+			
+		}
 		
 		// TODO: Better system?
 		
@@ -244,6 +309,14 @@ import openfl.Assets;
 		#if !sys
 		image.premultiplied = false;
 		#end
+		
+	}
+	
+	
+	private override function __fromManifest (manifest:AssetManifest):Void {
+		
+		rootPath = manifest.rootPath;
+		super.__fromManifest (manifest);
 		
 	}
 	

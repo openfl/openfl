@@ -437,14 +437,14 @@ extern class BitmapData implements IBitmapDrawable {
 	public function floodFill (x:Int, y:Int, color:UInt):Void;
 	
 	
-	public static function fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData;
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData;
+	public static function fromBase64 (base64:String, type:String):BitmapData;
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData;
 	
 	#if (js && html5)
 	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData;
 	#end
 	
-	public static function fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null, onerror:Void -> Void = null #end):BitmapData;
+	public static function fromFile (path:String):BitmapData;
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData;
 	
 	

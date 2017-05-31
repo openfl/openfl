@@ -34,6 +34,7 @@ class DOMRenderer extends AbstractRenderer {
 		this.element = element;
 		
 		renderSession = new RenderSession ();
+		renderSession.clearDirtyFlags = true;
 		renderSession.element = element;
 		//renderSession.roundPixels = true;
 		
@@ -118,17 +119,6 @@ class DOMRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function clear ():Void {
-		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderDOM (stage, renderSession);
-			
-		}
-		
-	}
-	
-	
 	#if (js && html5)
 	public static function initializeElement (displayObject:DisplayObject, element:Element, renderSession:RenderSession):Void {
 		
@@ -168,6 +158,17 @@ class DOMRenderer extends AbstractRenderer {
 		
 		renderSession.z = 1;
 		stage.__renderDOM (renderSession);
+		
+	}
+	
+	
+	public override function renderStage3D ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderDOM (stage, renderSession);
+			
+		}
 		
 	}
 	

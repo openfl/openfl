@@ -87,9 +87,9 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline function reverse ():Void {
+	public inline function reverse ():Vector<T> {
 		
-		this.reverse ();
+		return cast this.reverse ();
 		
 	}
 	
@@ -131,7 +131,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public inline function toString ():String {
 		
-		return this.toString ();
+		return this != null ? this.toString () : null;
 		
 	}
 	
@@ -275,6 +275,8 @@ abstract Vector<T>(IVector<T>) {
 	
 	
 }
+
+
 
 
 #if !openfl_debug
@@ -438,9 +440,10 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function reverse ():IVector<Bool> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -498,7 +501,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -569,6 +572,8 @@ abstract Vector<T>(IVector<T>) {
 	
 	
 }
+
+
 
 
 #if !openfl_debug
@@ -724,9 +729,10 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function reverse ():IVector<Float> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -784,7 +790,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -857,9 +863,9 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
+
+
 #if !cs
-
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -1021,9 +1027,10 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function reverse ():IVector<Function> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -1081,7 +1088,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1153,6 +1160,8 @@ abstract Vector<T>(IVector<T>) {
 	
 }
 #end
+
+
 
 
 #if !openfl_debug
@@ -1308,9 +1317,10 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function reverse ():IVector<Int> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -1368,7 +1378,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1439,6 +1449,8 @@ abstract Vector<T>(IVector<T>) {
 	
 	
 }
+
+
 
 
 #if !openfl_debug
@@ -1594,9 +1606,10 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function reverse ():IVector<T> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -1654,7 +1667,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1744,7 +1757,7 @@ abstract Vector<T>(IVector<T>) {
 	public function lastIndexOf (x:T, ?from:Int = 0):Int;
 	public function pop ():Null<T>;
 	public function push (x:T):Int;
-	public function reverse ():Void;
+	public function reverse ():IVector<T>;
 	public function set (index:Int, value:T):T;
 	public function shift ():Null<T>;
 	public function slice (?pos:Int, ?end:Int):IVector<T>;
@@ -1768,7 +1781,6 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public var fixed (get, set):Bool;
 	public var length (get, set):Int;
-	
 	
 	
 	public inline function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void {
@@ -1868,9 +1880,9 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	public inline function reverse ():Void {
+	public inline function reverse ():Vector<T> {
 		
-		this.reverse ();
+		return this.reverse ();
 		
 	}
 	
@@ -1905,7 +1917,7 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public inline function toString ():String {
 		
-		return this.toString ();
+		return this != null ? "[" + this.toString () + "]" : null;
 		
 	}
 	

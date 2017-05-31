@@ -148,7 +148,7 @@ class GLGraphics {
 							if (bitmap != null) {
 								
 								gl.enableVertexAttribArray (shader.data.aAlpha.index);
-								gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (parentTransform));
+								gl.uniformMatrix4fv (shader.data.uMatrix.index, 1, false, renderer.getMatrix (parentTransform));
 								
 								gl.bindTexture (gl.TEXTURE_2D, bitmap.getTexture (gl));
 								
