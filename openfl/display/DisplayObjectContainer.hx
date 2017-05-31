@@ -83,7 +83,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
 				child.__setStageReference (stage);
 			}
-			child.setCachedParent (true);
+			child.setCachedParent ();
 
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
@@ -169,7 +169,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			child.parent = null;
 			if(child.__cachedParent != null){
-				child.setCachedParent(false);
+				child.unSetCachedParent();
 			}
 			__children.remove (child);
 			child.__setTransformDirty ();
@@ -314,13 +314,24 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
-	private override function setCachedParent (add:Bool){
+	private override function setCachedParent (){
 
-		super.setCachedParent(add);
+		super.setCachedParent();
 
 		if ( __children != null ) {
 			for (child in __children) {
-				child.setCachedParent (add);
+				child.setCachedParent ();
+			}
+		}
+	}
+
+	private override function unSetCachedParent (){
+
+		super.unSetCachedParent();
+
+		if ( __children != null ) {
+			for (child in __children) {
+				child.unSetCachedParent ();
 			}
 		}
 	}
@@ -838,7 +849,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		var result = super.set_cacheAsBitmap(cacheAsBitmap);
 		for(child in __children){
-			child.setCachedParent (cacheAsBitmap);
+			child.setCachedParent ();
 		}
 		return result;
 
