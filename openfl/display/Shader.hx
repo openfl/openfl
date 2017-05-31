@@ -653,13 +653,13 @@ class Shader {
 	
 	private function set_glVertexSource (value:String):String {
 		
-		if (value != __glFragmentSource) {
+		if (value != __glVertexSource) {
 			
 			__glSourceDirty = true;
 			
 		}
 		
-		return __glFragmentSource = value;
+		return __glVertexSource = value;
 		
 	}
 	
