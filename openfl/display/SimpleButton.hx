@@ -21,6 +21,7 @@ import openfl.Vector;
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class SimpleButton extends InteractiveObject {
@@ -284,11 +285,12 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
-		var bounds = new Rectangle ();
+		var bounds = Rectangle.__pool.get ();
 		__getLocalBounds (bounds);
 		
 		renderSession.context.rect (0, 0, bounds.width, bounds.height);
 		
+		Rectangle.__pool.release (bounds);
 		__currentState.__renderCanvasMask (renderSession);
 		
 	}

@@ -55,7 +55,7 @@ class Tileset {
 	public function clone ():Tileset {
 		
 		var tileset = new Tileset (bitmapData, null);
-		var rect = new Rectangle ();
+		var rect = Rectangle.__pool.get ();
 		
 		for (tileData in __data) {
 			
@@ -63,6 +63,8 @@ class Tileset {
 			tileset.addRect (rect);
 			
 		}
+		
+		Rectangle.__pool.release (rect);
 		
 		return tileset;
 		

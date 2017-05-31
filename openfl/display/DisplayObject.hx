@@ -257,9 +257,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	public function globalToLocal (pos:Point):Point {
 		
-		pos = pos.clone ();
-		__getRenderTransform ().__transformInversePoint (pos);
-		return pos;
+		return __globalToLocal (pos, new Point ());
 		
 	}
 	
@@ -622,6 +620,26 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return __worldTransform;
+		
+	}
+	
+	
+	private function __globalToLocal (global:Point, local:Point):Point {
+		
+		__getRenderTransform ();
+		
+		if (global == local) {
+			
+			__renderTransform.__transformInversePoint (global);
+			
+		} else {
+			
+			local.x = __renderTransform.__transformInverseX (global.x, global.y);
+			local.y = __renderTransform.__transformInverseY (global.x, global.y);
+			
+		}
+		
+		return local;
 		
 	}
 	

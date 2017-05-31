@@ -1372,8 +1372,11 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		pixels.position = 0;
-		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
+		var destRect = Rectangle.__pool.get ();
+		destRect.setTo (destPoint.x, destPoint.y, sw, sh);
 		setPixels (destRect, pixels);
+		Rectangle.__pool.release (destRect);
+		
 	}
 	
 	
