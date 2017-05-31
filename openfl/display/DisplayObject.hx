@@ -282,8 +282,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 
 
-	private function setCachedParent (newParent:DisplayObjectContainer){
+	private function setCachedParent (newParent:DisplayObjectContainer, overwrite:Bool = true){
 
+		if ( !overwrite && __cachedParent != null && __cachedParent.cacheAsBitmap ) {
+			return;
+		}
 		__cachedParent = newParent;
 
 	}
