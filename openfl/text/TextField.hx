@@ -6,7 +6,6 @@ import lime.system.Clipboard;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
-import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
@@ -735,14 +734,6 @@ class TextField extends InteractiveObject {
 	}
 
 
-	public override function __renderCairo (renderSession:RenderSession):Void {
-
-		CairoTextField.render (this, renderSession);
-		super.__renderCairo (renderSession);
-
-	}
-
-
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 
 		CanvasTextField.render (this, renderSession);
@@ -791,21 +782,8 @@ class TextField extends InteractiveObject {
 
 		__preRenderGL(renderSession);
 
-		#if !disable_cairo_graphics
-
-		#if lime_cairo
-		CairoTextField.render (this, renderSession);
-		#else
 		CanvasTextField.render (this, renderSession);
-		#end
-
 		GLRenderer.renderBitmap (this, renderSession, false);
-
-		#else
-
-		//GLTextField.render (this, renderSession);
-
-		#end
 
 		__postRenderGL(renderSession);
 

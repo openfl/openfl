@@ -1,10 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
-import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -86,7 +83,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
-	private var __cairo:Cairo;
 	private var __children:UnshrinkableArray<DisplayObject>;
 	private var __cachedParent:DisplayObjectContainer;
 	private var __filters:Array<BitmapFilter>;
@@ -514,28 +510,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	public function __renderCairo (renderSession:RenderSession):Void {
-
-		if (__graphics != null) {
-
-			CairoShape.render (this, renderSession);
-
-		}
-
-	}
-
-
-	public function __renderCairoMask (renderSession:RenderSession):Void {
-
-		if (__graphics != null) {
-
-			CairoGraphics.renderMask (__graphics, renderSession);
-
-		}
-
-	}
-
-
 	public function __renderCanvas (renderSession:RenderSession):Void {
 
 		throw ":TODO: remove me";
@@ -573,8 +547,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			#if (js && html5)
 			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask);
-			#elseif lime_cairo
-			CairoGraphics.render (__graphics, renderSession);
 			#end
 
 			GLRenderer.renderBitmap (this, renderSession);

@@ -1,12 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
 
-import lime.graphics.cairo.CairoExtend;
-import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoImageSurface;
-import lime.graphics.cairo.CairoPattern;
-import lime.graphics.cairo.CairoSurface;
-import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
@@ -20,8 +14,6 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.cairo.CairoRenderer;
-import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.utils.PingPongTexture;
@@ -89,7 +81,6 @@ class BitmapData implements IBitmapDrawable {
 	private var __isValid:Bool;
 	private var __scaleX:Float = 1.0;
 	private var __scaleY:Float = 1.0;
-	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureImage:Image;
 	private var __pingPongTexture:PingPongTexture;
@@ -634,21 +625,6 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	public function getSurface ():CairoImageSurface {
-
-		if (!__isValid) return null;
-
-		if (__surface == null) {
-
-			__surface = CairoImageSurface.fromImage (image);
-
-		}
-
-		return __surface;
-
-	}
-
-
 	public function getTexture (gl:GLRenderContext):GLTexture {
 
 		if (!__isValid) return null;
@@ -674,12 +650,6 @@ class BitmapData implements IBitmapDrawable {
 		if (image != null && image.dirty) {
 
 			var internalFormat, format;
-
-			if (__surface != null) {
-
-				__surface.flush ();
-
-			}
 
 			if (image.buffer.bitsPerPixel == 1) {
 

@@ -8,9 +8,6 @@ import lime.app.IModule;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.graphics.CanvasRenderContext;
-import lime.graphics.ConsoleRenderContext;
-import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
 import lime.graphics.Renderer;
@@ -28,9 +25,7 @@ import lime.ui.KeyModifier;
 import lime.ui.Mouse;
 import lime.ui.Window;
 import openfl._internal.renderer.AbstractRenderer;
-import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
-import openfl._internal.renderer.console.ConsoleRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl.display.DisplayObjectContainer;
 import openfl.errors.Error;
@@ -503,18 +498,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
 					#end
 
-				case CANVAS (context):
-
-					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-
-				case CAIRO (cairo):
-
-					__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
-
-				case CONSOLE (ctx):
-
-					__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
-
 				default:
 
 			}
@@ -819,17 +802,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__updateDirtyElements (false, true);
 
 		if (__renderer != null) {
-
-			switch (renderer.context) {
-
-				case CAIRO (cairo):
-
-					cast (__renderer, CairoRenderer).cairo = cairo;
-					@:privateAccess (__renderer.renderSession).cairo = cairo;
-
-				default:
-
-			}
 
 			__renderer.render (this);
 

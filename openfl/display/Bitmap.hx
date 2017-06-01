@@ -1,7 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
 
-import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.RenderSession;
@@ -104,20 +103,6 @@ class Bitmap extends DisplayObject {
 		}
 
 		return false;
-
-	}
-
-
-	public override function __renderCairo (renderSession:RenderSession):Void {
-
-		CairoBitmap.render (this, renderSession);
-
-	}
-
-
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
-
-		renderSession.cairo.rectangle (0, 0, width, height);
 
 	}
 
