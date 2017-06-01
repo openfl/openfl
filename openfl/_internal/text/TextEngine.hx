@@ -1213,6 +1213,45 @@ class TextEngine {
 			}
 			
 		}
+	}
+	
+	
+	private function getFormattedTextWidth (text:String, format:TextFormat):Float {
+		
+		#if (js && html5)
+		
+		return __context.measureText (text).width;
+		
+		#else
+		
+		if (__textLayout == null) {
+			
+			__textLayout = new TextLayout ();
+			
+		}
+		
+		var width = 0.0;
+		
+		__textLayout.text = null;
+		__textLayout.font = findFont(format.font);
+		
+		if (format.size != null) {
+			
+			__textLayout.size = format.size;
+			
+		}
+		
+		__textLayout.text = text;
+		
+		for (position in __textLayout.positions) {
+			
+			width += position.advance.x;
+			
+		}
+		
+		return width;
+		
+		#end
 		
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups) {
