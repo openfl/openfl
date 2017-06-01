@@ -1120,7 +1120,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		#if display
+		#if !neko
 		var cursor = null;
 
 		for (t in 0...__stack.length) {
