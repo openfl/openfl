@@ -130,6 +130,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __worldVisibleChanged:Bool;
 	private var __worldTransformInvalid:Bool;
 	private var __worldZ:Int;
+	private var __tempStack:Vector<DisplayObject>;
 	
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -159,13 +160,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderTransform = new Matrix ();
-		
+		__tempStack = new Vector<DisplayObject> ();
 		#if dom
 		__worldVisible = true;
 		#end
-		
+
 		name = "instance" + (++__instanceCount);
-		
+
 	}
 	
 	
@@ -213,8 +214,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			touchEvent.stageY = __getRenderTransform ().__transformY (touchEvent.localX, touchEvent.localY);
 			
 		}
-		
-		return super.dispatchEvent (event);
+
+		return __dispatchWithCapture(event, __tempStack);
 		
 	}
 	
@@ -368,9 +369,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
-		
-		event.target = this;
+	private function __dispatchWithCapture (event:Event, stack:Vector<DisplayObject>): Bool {
+
+		if (event.target == null) {
+			event.target = this;
+		}
 		
 		if (parent != null) {
 			
@@ -378,7 +381,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (parent == stage) {
 				
-				parent.__dispatchEvent (event);
+				parent.__dispatch (event);
 				
 			} else {
 				
@@ -386,7 +389,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				var i = 0;
 				
 				while (parent != null) {
-					
+
 					stack[i] = parent;
 					parent = parent.parent;
 					i++;
@@ -394,24 +397,26 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				}
 				
 				for (j in 0...i) {
-					
-					stack[i - j - 1].__dispatchEvent (event);
+
+					stack[i - j - 1].__dispatch (event);
 					
 				}
 				
 			}
-			
+
 		}
-		
+
 		event.eventPhase = AT_TARGET;
-		
-		return __dispatchEvent (event);
-		
+		stack.length = 0;
+		return __dispatchEvent(event);
+	}
+
+	private function __dispatchChildren (event:Event):Void {
 	}
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-		
+
 		var result = super.__dispatchEvent (event);
 		
 		if (event.__isCanceled) {
