@@ -1120,6 +1120,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
+		#if display
 		var cursor = null;
 
 		for (t in 0...__stack.length) {
@@ -1140,6 +1141,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			Mouse.cursor = ARROW;
 
 		}
+		#end
 
 		var event;
 
