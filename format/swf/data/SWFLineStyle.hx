@@ -5,24 +5,24 @@ import format.swf.data.consts.LineCapsStyle;
 import format.swf.data.consts.LineJointStyle;
 import format.swf.utils.ColorUtils;
 
-class SWFLineStyle
+class SWFLineStyle implements hxbit.Serializable
 {
-	public var width:Int;
-	public var color:Int;
+	@:s public var width:Int;
+	@:s public var color:Int;
 
-	public var _level:Int;
-	
+	@:s public var _level:Int;
+
 	// Forward declaration of SWFLineStyle2 properties
-	public var startCapsStyle:Int;
-	public var endCapsStyle:Int;
-	public var jointStyle:Int;
-	public var hasFillFlag:Bool;
-	public var noHScaleFlag:Bool;
-	public var noVScaleFlag:Bool;
-	public var pixelHintingFlag:Bool;
-	public var noClose:Bool;
-	public var miterLimitFactor:Float;
-	public var fillType:SWFFillStyle;
+	@:s public var startCapsStyle:Int;
+	@:s public var endCapsStyle:Int;
+	@:s public var jointStyle:Int;
+	@:s public var hasFillFlag:Bool;
+	@:s public var noHScaleFlag:Bool;
+	@:s public var noVScaleFlag:Bool;
+	@:s public var pixelHintingFlag:Bool;
+	@:s public var noClose:Bool;
+	@:s public var miterLimitFactor:Float;
+	@:s public var fillType:SWFFillStyle;
 
 	public function new(data:SWFData = null, level:Int = 1) {
 		startCapsStyle = LineCapsStyle.ROUND;
@@ -35,18 +35,18 @@ class SWFLineStyle
 		noClose = false;
 		miterLimitFactor = 3;
 		color = 0;
-		
+
 		if (data != null) {
 			parse(data, level);
 		}
 	}
-	
+
 	public function parse(data:SWFData, level:Int = 1):Void {
 		_level = level;
 		width = data.readUI16();
 		color = (level <= 2) ? data.readRGB() : data.readRGBA();
 	}
-	
+
 	public function publish(data:SWFData, level:Int = 1):Void {
 		data.writeUI16(width);
 		if(level <= 2) {
@@ -55,7 +55,7 @@ class SWFLineStyle
 			data.writeRGBA(color);
 		}
 	}
-	
+
 	public function clone():SWFLineStyle {
 		var lineStyle:SWFLineStyle = new SWFLineStyle();
 		lineStyle.width = width;
@@ -72,7 +72,7 @@ class SWFLineStyle
 		lineStyle.fillType = fillType.clone();
 		return lineStyle;
 	}
-	
+
 	public function toString():String {
 		return "[SWFLineStyle] Width: " + width + " Color: " + ((_level <= 2) ? ColorUtils.rgbToString(color) : ColorUtils.rgbaToString(color));
 	}

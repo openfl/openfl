@@ -4,11 +4,12 @@ import openfl.ObjectPool;
 import openfl.display.DisplayObject;
 import openfl.display.BitmapData;
 
-@:keepSub class SWFSymbol {
-	
-	
-	public var className:String;
-	public var id:Int;
+@:keepSub class SWFSymbol implements hxbit.Serializable {
+
+
+	@:s public var className:String = "";
+	@:s public var id:Int = -1;
+
 	public var poolable(default, set):Bool = false;
 	public var pool:ObjectPool<DisplayObject>;
 	public var useUniqueSharedBitmapCache = false;
@@ -27,5 +28,5 @@ import openfl.display.BitmapData;
 		return poolable = value;
 	}
 
-	
+
 }

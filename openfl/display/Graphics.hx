@@ -28,7 +28,7 @@ import js.html.CanvasRenderingContext2D;
 @:access(openfl.geom.Rectangle)
 
 
-@:final class Graphics {
+@:final class Graphics implements hxbit.Serializable {
 
 
 	public static inline var TILE_SCALE = 0x0001;
@@ -54,14 +54,14 @@ import js.html.CanvasRenderingContext2D;
 	public var readOnly:Bool;
 	public var snapCoordinates (get, never):Bool;
 
-	private var __bounds:Rectangle;
-	private var __commands:DrawCommandBuffer;
-	private var __dirty (default, set):Bool = true;
-	private var __padding:Int;
-	private var __positionX:Float;
-	private var __positionY:Float;
-	private var __strokePadding:Float;
-	private var __visible:Bool;
+	@:s private var __bounds:Rectangle;
+	@:s private var __commands:DrawCommandBuffer;
+	@:s private var __dirty (default, set):Bool = true;
+	@:s private var __padding:Int;
+	@:s private var __positionX:Float;
+	@:s private var __positionY:Float;
+	@:s private var __strokePadding:Float;
+	@:s private var __visible:Bool;
 	private var __owner:DisplayObject;
 
 	#if (js && html5)
@@ -70,7 +70,7 @@ import js.html.CanvasRenderingContext2D;
 	#end
 
 	private var __bitmap(default, set):BitmapData;
-	private var __symbol:format.swf.lite.symbols.ShapeSymbol;
+	@:s private var __symbol:format.swf.lite.symbols.ShapeSymbol;
 
 	private function new (?initCommands = true) {
 

@@ -3,6 +3,7 @@
 -lib lime
 -lib openfl
 -lib format
+-lib hxbit
 -cp ..
 -D lime_cairo
 -D optional_cffi

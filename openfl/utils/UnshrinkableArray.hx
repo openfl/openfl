@@ -153,7 +153,8 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
             this._length = index + 1;
         }
 
-        return this._items[index] = value;
+        this._items[index] = value;
+        return value;
     }
 
     private inline function get_length():Int
@@ -162,10 +163,11 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
     }
 }
 
-class UnshrinkableArrayData<T>
+class UnshrinkableArrayData<T> implements hxbit.Serializable
 {
-    public var _items:Array<T>;
-    public var _length:Int;
+
+    @:s public var _items:Array<T>;
+    @:s public var _length:Int;
 
     public function new () {
         _length = 0;

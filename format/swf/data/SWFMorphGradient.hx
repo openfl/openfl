@@ -2,23 +2,23 @@
 
 import format.swf.SWFData;
 
-class SWFMorphGradient
+class SWFMorphGradient implements hxbit.Serializable
 {
-	public var spreadMode:Int;
-	public var interpolationMode:Int;
+	@:s public var spreadMode:Int;
+	@:s public var interpolationMode:Int;
 	// Forward declarations of properties in SWFMorphFocalGradient
-	public var startFocalPoint:Float;
-	public var endFocalPoint:Float;
-	
-	public var records(default, null):Array<SWFMorphGradientRecord>;
-	
+	@:s public var startFocalPoint:Float;
+	@:s public var endFocalPoint:Float;
+
+	@:s public var records(default, null):Array<SWFMorphGradientRecord>;
+
 	public function new(data:SWFData = null, level:Int = 1) {
 		records = new Array <SWFMorphGradientRecord>();
 		if (data != null) {
 			parse(data, level);
 		}
 	}
-	
+
 	public function parse(data:SWFData, level:Int):Void {
 		data.resetBitsPending();
 		spreadMode = data.readUB(2);
@@ -28,7 +28,7 @@ class SWFMorphGradient
 			records.push(data.readMORPHGRADIENTRECORD());
 		}
 	}
-	
+
 	public function publish(data:SWFData, level:Int):Void {
 		var numGradients:Int = records.length;
 		data.resetBitsPending();
@@ -39,15 +39,15 @@ class SWFMorphGradient
 			data.writeMORPHGRADIENTRECORD(records[i]);
 		}
 	}
-	
+
 	public function getMorphedGradient(ratio:Float = 0):SWFGradient {
 		var gradient:SWFGradient = new SWFGradient();
 		for(i in 0...records.length) {
-			gradient.records.push(records[i].getMorphedGradientRecord(ratio)); 
+			gradient.records.push(records[i].getMorphedGradientRecord(ratio));
 		}
 		return gradient;
 	}
-	
+
 	public function toString():String {
 		return "(" + records.join(",") + "), spread:" + spreadMode + ", interpolation:" + interpolationMode;
 	}

@@ -5,17 +5,17 @@ import format.swf.lite.timeline.Frame;
 import format.swf.lite.timeline.FrameObjectType;
 
 class SpriteSymbol extends SWFSymbol {
-	
-	
-	public var frames:Array<Frame>;
-	public var scalingGridRect:flash.geom.Rectangle;
-	
+
+
+	@:s public var frames:Array<Frame>;
+	@:s public var scalingGridRect:flash.geom.Rectangle;
+
 	public function new () {
-		
+
 		super ();
-		
+
 		frames = new Array<Frame> ();
-		
+
 	}
 
 	public function findNeededShapesSymbolId(result:Map<Int, ShapeSymbol>, swflite:SWFLite):Void {

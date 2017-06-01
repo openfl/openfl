@@ -1,9 +1,6 @@
 package openfl.utils;
 
-import haxe.Serializer;
-import haxe.Unserializer;
-
-class Float32ArrayContainer
+class Float32ArrayContainer implements hxbit.CustomSerializable
 {
     public var value:Float32Array;
 
@@ -13,25 +10,25 @@ class Float32ArrayContainer
     }
 
     @:keep
-    function hxSerialize(s:Serializer)
+    public function serialize(ctx:hxbit.Serializer)
     {
-        s.serialize(value.length);
+        ctx.addInt(value.length);
 
         for(i in 0...value.length)
         {
-            s.serialize(value[i]);
+            ctx.addFloat(value[i]);
         }
     }
 
     @:keep
-    function hxUnserialize(u:Unserializer)
+    public function unserialize(ctx:hxbit.Serializer)
     {
-        var length = u.unserialize();
+        var length = ctx.getInt();
         var tempArray = new Array<Float>();
 
         for(i in 0...length)
         {
-            tempArray.push(u.unserialize());
+            tempArray.push(ctx.getFloat());
         }
 
         value = new Float32Array(tempArray);

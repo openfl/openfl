@@ -5,25 +5,25 @@ import format.swf.data.consts.LineCapsStyle;
 import format.swf.data.consts.LineJointStyle;
 import format.swf.utils.ColorUtils;
 
-class SWFMorphLineStyle
+class SWFMorphLineStyle implements hxbit.Serializable
 {
-	public var startWidth:Int;
-	public var endWidth:Int;
-	public var startColor:Int;
-	public var endColor:Int;
+	@:s public var startWidth:Int;
+	@:s public var endWidth:Int;
+	@:s public var startColor:Int;
+	@:s public var endColor:Int;
 
 	// Forward declaration of SWFMorphLineStyle2 properties
-	public var startCapsStyle:Int;
-	public var endCapsStyle:Int;
-	public var jointStyle:Int;
-	public var hasFillFlag:Bool;
-	public var noHScaleFlag:Bool;
-	public var noVScaleFlag:Bool;
-	public var pixelHintingFlag:Bool;
-	public var noClose:Bool;
-	public var miterLimitFactor:Float;
-	public var fillType:SWFMorphFillStyle;
-	
+	@:s public var startCapsStyle:Int;
+	@:s public var endCapsStyle:Int;
+	@:s public var jointStyle:Int;
+	@:s public var hasFillFlag:Bool;
+	@:s public var noHScaleFlag:Bool;
+	@:s public var noVScaleFlag:Bool;
+	@:s public var pixelHintingFlag:Bool;
+	@:s public var noClose:Bool;
+	@:s public var miterLimitFactor:Float;
+	@:s public var fillType:SWFMorphFillStyle;
+
 	public function new(data:SWFData = null, level:Int = 1) {
 		startCapsStyle = LineCapsStyle.ROUND;
 		endCapsStyle = LineCapsStyle.ROUND;
@@ -33,21 +33,21 @@ class SWFMorphLineStyle
 			parse(data, level);
 		}
 	}
-	
+
 	public function parse(data:SWFData, level:Int = 1):Void {
 		startWidth = data.readUI16();
 		endWidth = data.readUI16();
 		startColor = data.readRGBA();
 		endColor = data.readRGBA();
 	}
-	
+
 	public function publish(data:SWFData, level:Int = 1):Void {
 		data.writeUI16(startWidth);
 		data.writeUI16(endWidth);
 		data.writeRGBA(startColor);
 		data.writeRGBA(endColor);
 	}
-	
+
 	public function getMorphedLineStyle(ratio:Float = 0):SWFLineStyle {
 		var lineStyle:SWFLineStyle = new SWFLineStyle();
 		if(hasFillFlag) {
@@ -67,7 +67,7 @@ class SWFMorphLineStyle
 		lineStyle.miterLimitFactor = miterLimitFactor;
 		return lineStyle;
 	}
-	
+
 	public function toString():String {
 		return "[SWFMorphLineStyle] " +
 			"StartWidth: " + startWidth + ", " +

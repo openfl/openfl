@@ -1,4 +1,5 @@
-package openfl.filters; #if !openfl_legacy
+package openfl.filters;
+#if !openfl_legacy
 
 
 import openfl.display.BitmapData;

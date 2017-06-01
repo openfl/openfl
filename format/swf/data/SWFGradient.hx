@@ -2,16 +2,16 @@
 
 import format.swf.SWFData;
 
-class SWFGradient
+class SWFGradient implements hxbit.Serializable
 {
-	public var spreadMode:Int;
-	public var interpolationMode:Int;
+	@:s public var spreadMode:Int;
+	@:s public var interpolationMode:Int;
 
 	// Forward declarations of properties in SWFFocalGradient
-	public var focalPoint:Float;
-	
-	public var records(default, null):Array<SWFGradientRecord>;
-	
+	@:s public var focalPoint:Float;
+
+	@:s public var records(default, null):Array<SWFGradientRecord>;
+
 	public function new(data:SWFData = null, level:Int = 1) {
 		focalPoint = 0.0;
 		records = new Array<SWFGradientRecord>();
@@ -19,7 +19,7 @@ class SWFGradient
 			parse(data, level);
 		}
 	}
-	
+
 	public function parse(data:SWFData, level:Int):Void {
 		data.resetBitsPending();
 		spreadMode = data.readUB(2);
@@ -40,7 +40,7 @@ class SWFGradient
 			data.writeGRADIENTRECORD(records[i], level);
 		}
 	}
-	
+
 	public function clone():SWFGradient {
 		var gradient:SWFGradient = new SWFGradient();
 		gradient.spreadMode = spreadMode;

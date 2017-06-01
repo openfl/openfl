@@ -16,19 +16,19 @@ import openfl.Vector;
 import openfl.utils.UnshrinkableArray;
 
 @:allow(openfl._internal.renderer.DrawCommandReader)
-class DrawCommandBuffer {
+class DrawCommandBuffer implements hxbit.Serializable {
 
 
 	public var length (get, never):Int;
-	public var types:UnshrinkableArray<DrawCommandType>;
+	@:s public var types:UnshrinkableArray<DrawCommandType>;
 
-	private var b:UnshrinkableArray<Bool>;
-	private var f:UnshrinkableArray<Float>;
-	private var ff:UnshrinkableArray<Array<Float>>;
-	private var i:UnshrinkableArray<Int>;
-	private var ii:UnshrinkableArray<Array<Int>>;
-	private var o:UnshrinkableArray<Dynamic>;
-	private var bd:UnshrinkableArray<Dynamic>;
+	@:s private var b:UnshrinkableArray<Bool>;
+	@:s private var f:UnshrinkableArray<Float>;
+	@:s private var ff:UnshrinkableArray<Array<Float>>;
+	@:s private var i:UnshrinkableArray<Int>;
+	@:s private var ii:UnshrinkableArray<Array<Int>>;
+	@:s private var o:UnshrinkableArray<Dynamic>;
+	@:s private var bd:UnshrinkableArray<Dynamic>;
 
 
 	public function new () {
