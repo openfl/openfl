@@ -38,6 +38,10 @@ class ShapeSymbol extends SWFSymbol {
 
 		if (useBitmapCache) {
 
+			if (forbidCachedBitmapUpdate && cachedTable.length > 0) {
+				return cachedTable[0].bitmapData;
+			}
+
 			for (entry in cachedTable) {
 
 				if (entry.bitmapData.physicalWidth == width && entry.bitmapData.physicalHeight == height) {
