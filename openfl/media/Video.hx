@@ -19,6 +19,7 @@ import openfl.net.NetStream;
 
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
+@:access(openfl.geom.Point)
 
 
 class Video extends DisplayObject {
