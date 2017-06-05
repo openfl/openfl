@@ -7,6 +7,7 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
 import lime.utils.Log;
+import lime.text.UTFString;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
@@ -64,7 +65,7 @@ class TextField extends InteractiveObject {
 	public var displayAsPassword (get, set):Bool;
 	public var embedFonts (get, set):Bool;
 	public var gridFitType (get, set):GridFitType;
-	public var htmlText (get, set):String;
+	public var htmlText (get, set):UTFString;
 	public var length (get, never):Int;
 	public var maxChars (get, set):Int;
 	public var maxScrollH (get, never):Int;
@@ -72,14 +73,14 @@ class TextField extends InteractiveObject {
 	public var mouseWheelEnabled (get, set):Bool;
 	public var multiline (get, set):Bool;
 	public var numLines (get, never):Int;
-	public var restrict (get, set):String;
+	public var restrict (get, set):UTFString;
 	public var scrollH (get, set):Int;
 	public var scrollV (get, set):Int;
 	public var selectable (get, set):Bool;
 	public var selectionBeginIndex (get, never):Int;
 	public var selectionEndIndex (get, never):Int;
 	public var sharpness (get, set):Float;
-	public var text (get, set):String;
+	public var text (get, set):UTFString;
 	public var textColor (get, set):Int;
 	public var textHeight (get, never):Float;
 	public var textWidth (get, never):Float;
@@ -100,8 +101,8 @@ class TextField extends InteractiveObject {
 	private var __selectionIndex:Int;
 	private var __showCursor:Bool;
 	private var __symbol:DynamicTextSymbol;
-	private var __text:String;
-	private var __htmlText:String;
+	private var __text:UTFString;
+	private var __htmlText:UTFString;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
 	
