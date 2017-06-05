@@ -186,7 +186,7 @@ class SimpleButton extends InteractiveObject {
 				
 				if (stack != null) {
 					
-					stack[stack.length - 1] = hitObject;
+					stack[stack.length] = hitObject;
 					
 				}
 				
@@ -331,7 +331,8 @@ class SimpleButton extends InteractiveObject {
 	
 	private function __resetTransform (state:DisplayObject, cacheTransform:Matrix):Void {
 		
-		state.__updateTransforms (cacheTransform);
+		//state.__updateTransforms (cacheTransform);
+		__updateTransforms ();
 		state.__updateChildren (false);
 		
 	}
@@ -352,8 +353,6 @@ class SimpleButton extends InteractiveObject {
 	
 	private function __updateTransform (state:DisplayObject):Matrix {
 		
-		var cacheTransform = state.__worldTransform;
-		
 		var local = state.__transform;
 		var parentTransform = __worldTransform;
 		var overrideTransform = Matrix.__pool.get ();
@@ -368,13 +367,14 @@ class SimpleButton extends InteractiveObject {
 		var cacheTransform = state.__transform;
 		state.__transform = overrideTransform;
 		
+		state.__transformDirty = true;
 		state.__update (false, true);
 		
 		state.__transform = cacheTransform;
 		
 		Matrix.__pool.release (overrideTransform);
 		
-		return cacheTransform;
+		return state.__worldTransform;
 		
 	}
 	
