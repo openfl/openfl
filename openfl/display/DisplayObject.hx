@@ -719,7 +719,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
-		if ( ( __updateCachedBitmap && ( !__forbidCachedBitmapUpdate || __cachedBitmap == null ) ) || __updateFilters) {
+		if ( ( __updateCachedBitmap || __updateFilters ) && ( !__forbidCachedBitmapUpdate || __cachedBitmap == null ) ) {
 
  			__updateCachedBitmapFn (renderSession);
 
