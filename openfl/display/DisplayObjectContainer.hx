@@ -79,21 +79,11 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			child.parent = this;
 
-			if (this.__cachedParent != null) {
-
-				child.setCachedParent (this.__cachedParent);
-
-			}	else if (this.__cacheAsBitmap) {
-
-				child.setCachedParent (this);
-
-			}
-
 			if (stage != null) {
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
 				child.__setStageReference (stage);
-
 			}
+			child.updateCachedParent ();
 
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
@@ -179,7 +169,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			child.parent = null;
 			if(child.__cachedParent != null){
-				child.setCachedParent(null);
+				child.updateCachedParent();
 			}
 			__children.remove (child);
 			child.__setTransformDirty ();
@@ -324,26 +314,16 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
-	private override function setCachedParent (newParent:DisplayObjectContainer){
+	private override function updateCachedParent (currentCachedParent:DisplayObjectContainer = null){
 
-		__cachedParent = newParent;
+		currentCachedParent = super.updateCachedParent(currentCachedParent);
 
-		if (newParent != null) {
+		if ( __children != null ) {
 			for (child in __children) {
-				child.setCachedParent (newParent);
-			}
-		} else {
-
-			if( __cacheAsBitmap ) {
-				for (child in __children) {
-					child.setCachedParent (this);
-				}
-			} else {
-				for (child in __children) {
-					child.setCachedParent (null);
-				}
+				child.updateCachedParent (currentCachedParent);
 			}
 		}
+		return currentCachedParent;
 	}
 
 	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
@@ -857,19 +837,11 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
 
-		if (__cachedParent == null){
-			if(cacheAsBitmap) {
-				for(child in __children){
-					child.setCachedParent (this);
-				}
-			} else {
-				for(child in __children){
-					child.setCachedParent (null);
-				}
-			}
+		var result = super.set_cacheAsBitmap(cacheAsBitmap);
+		for(child in __children){
+			child.updateCachedParent ();
 		}
-
-		return super.set_cacheAsBitmap(cacheAsBitmap);
+		return result;
 
 	}
 
