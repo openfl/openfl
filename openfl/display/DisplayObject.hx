@@ -675,6 +675,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return;
 		}
 
+		var symbol = getSymbol();
+
+		if(symbol != null && symbol.useUniqueSharedBitmapCache && symbol.uniqueSharedCachedBitmap != null) {
+			__cachedBitmap = symbol.uniqueSharedCachedBitmap;
+			__forbidCachedBitmapUpdate = true;
+			return;
+		}
+
 		if (__cachedBitmap == null) {
 			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 		}
@@ -715,6 +723,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
 		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
 
+		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
+			symbol.uniqueSharedCachedBitmap = __cachedBitmap;
+		}
 	}
 
 	public inline function __cacheGL (renderSession:RenderSession):Void {
@@ -798,7 +809,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		if (__cachedBitmap != null) {
-			__cachedBitmap.dispose();
+			var symbol = getSymbol();
+			if(symbol == null || !symbol.useUniqueSharedBitmapCache) {
+				__cachedBitmap.dispose();
+			}
 			__cachedBitmap = null;
 			dirty = true;
 		}
