@@ -155,7 +155,21 @@ class BitmapData implements IBitmapDrawable {
 				image.fillRect (image.rect, fillColor);
 				
 			}
-			#else
+			//#elseif (js && html5)
+			//var buffer = new ImageBuffer (null, width, height);
+			//var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+			//buffer.__srcCanvas = canvas;
+			//buffer.__srcContext = canvas.getContext ("2d");
+			//
+			//image = new Image (buffer, 0, 0, width, height);
+			//image.type = CANVAS;
+			//
+			//if (fillColor != 0) {
+				//
+				//image.fillRect (image.rect, fillColor);
+				//
+			//}
+			//#else
 			image = new Image (null, 0, 0, width, height, fillColor);
 			#end
 			
