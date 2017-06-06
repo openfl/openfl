@@ -237,6 +237,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 						if (__frameScripts.exists (__currentFrame - 1)) {
 							
+							#if (swflite_parent_fps || swf_parent_fps)
+							__updateFrame ();
+							#end
+							
 							__frameScripts.get (__currentFrame - 1) ();
 							if (!__playing) break;
 							
