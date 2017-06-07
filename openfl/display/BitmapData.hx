@@ -169,7 +169,7 @@ class BitmapData implements IBitmapDrawable {
 				//image.fillRect (image.rect, fillColor);
 				//
 			//}
-			//#else
+			#else
 			image = new Image (null, 0, 0, width, height, fillColor);
 			#end
 			
