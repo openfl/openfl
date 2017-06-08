@@ -1059,9 +1059,10 @@ class SWFLiteExporter {
 
 		if (tag == null) return null;
 
-		if (excludes.indexOf(tag.characterId) != -1
-			|| excludes.indexOf(tag.name) != -1) {
-			swfLite.symbols.set(tag.characterId, new SWFSymbol());
+		if (excludes.indexOf(tag.characterId) != -1 || excludes.indexOf(tag.name) != -1) {
+			var empty_symbol = new SWFSymbol();
+			empty_symbol.id = tag.characterId;
+			swfLite.symbols.set(tag.characterId, empty_symbol);
 		}
 
 		if (!swfLite.symbols.exists (tag.characterId)) {
