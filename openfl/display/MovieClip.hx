@@ -406,7 +406,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		displayObject.visible = frameObject.visible;
 		
-		#if openfl_dynamic
+		#if (openfl_dynamic || openfl_dynamic_fields_only)
 		Reflect.setField (this, displayObject.name, displayObject);
 		#end
 		
