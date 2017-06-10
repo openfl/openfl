@@ -17,7 +17,7 @@ class SpriteSymbol extends SWFSymbol {
 	
 	
 	public var frames:Array<Frame>;
-	
+	public var linkageBaseClass:String;
 	
 	public function new () {
 		
@@ -37,7 +37,23 @@ class SpriteSymbol extends SWFSymbol {
 		MovieClip.__initSymbol = this;
 		#end
 		
-		if (className != null) {
+		
+		if (linkageBaseClass != null) {
+			
+			var symbolType = Type.resolveClass (linkageBaseClass);
+			
+			if (symbolType != null) {
+				
+				movieClip = Type.createInstance (symbolType, []);
+				
+			} else {
+				
+				trace("Error: Could not resolve .linkageBaseClass = \""+ linkageBaseClass +"\" for symbol \"" + className + "\"!");
+				
+			}
+			
+		}
+		else if (className != null) {
 			
 			var symbolType = Type.resolveClass (className);
 			
