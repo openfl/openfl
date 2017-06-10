@@ -278,8 +278,12 @@ class Loader extends DisplayObjectContainer {
 			if (Std.is (library, AssetLibrary)) {
 				
 				library.load ().onComplete (function (_) {
+					var _library = cast (library, AssetLibrary);
 					
-					contentLoaderInfo.content = cast (library, AssetLibrary).getMovieClip ("");
+					contentLoaderInfo.content = _library.getMovieClip ("");
+					
+					Assets.registerLibrary(Path.withoutDirectory(Path.withoutExtension(manifest.rootPath)), _library);
+					
 					addChild (contentLoaderInfo.content);
 					
 					contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
