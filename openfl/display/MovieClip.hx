@@ -75,7 +75,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			__initSWF = null;
 			__initSymbol = null;
 			
-			__fromSymbol (__swf, __symbol);
+			__fromSymbol ();
 			
 		}
 		
@@ -267,12 +267,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
+	private function __fromSymbol ():Void {
 		
 		if (__objects != null) return;
-		
-		__swf = swf;
-		__symbol = symbol;
 		
 		__lastUpdate = -1;
 		__maskCount = 0;
