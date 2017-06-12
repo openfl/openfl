@@ -232,8 +232,8 @@ class Loader extends DisplayObjectContainer {
 	
 	private function BitmapData_onLoad (bitmapData:BitmapData):Void {
 		
-		contentLoaderInfo.content = new Bitmap (bitmapData);
-		content = contentLoaderInfo.content;
+		content = new Bitmap (bitmapData);
+		contentLoaderInfo.content = content;
 		addChild (content);
 		
 		contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
@@ -279,8 +279,9 @@ class Loader extends DisplayObjectContainer {
 				
 				library.load ().onComplete (function (_) {
 					
-					contentLoaderInfo.content = cast (library, AssetLibrary).getMovieClip ("");
-					addChild (contentLoaderInfo.content);
+					content = cast (library, AssetLibrary).getMovieClip ("");
+					contentLoaderInfo.content = content;
+					addChild (content);
 					
 					contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
 					
@@ -294,8 +295,9 @@ class Loader extends DisplayObjectContainer {
 			
 		} else if (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
 			
-			contentLoaderInfo.content = new Sprite ();
-			addChild (contentLoaderInfo.content);
+			content = new Sprite ();
+			contentLoaderInfo.content = content;
+			addChild (content);
 			
 			#if (js && html5)
 			//var script:ScriptElement = cast Browser.document.createElement ("script");
