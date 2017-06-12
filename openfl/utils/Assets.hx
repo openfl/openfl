@@ -344,6 +344,13 @@ class Assets {
 	}
 	
 	
+	public static function hasLibrary (name:String):Bool {
+		
+		return LimeAssets.hasLibrary (name);
+		
+	}
+	
+	
 	/**
 	 * Returns whether an asset is "local", and therefore can be loaded synchronously
 	 * @param	id 		The ID or asset path for the asset

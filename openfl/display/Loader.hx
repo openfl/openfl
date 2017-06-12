@@ -37,6 +37,7 @@ class Loader extends DisplayObjectContainer {
 	public var content (default, null):DisplayObject;
 	public var contentLoaderInfo (default, null):LoaderInfo;
 	
+	private var __library:AssetLibrary;
 	private var __path:String;
 	
 	
@@ -58,6 +59,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public function load (request:URLRequest, context:LoaderContext = null):Void {
 		
+		contentLoaderInfo.loaderURL = Lib.current.loaderInfo.url;
 		contentLoaderInfo.url = request.url;
 		
 		if (request.contentType == null || request.contentType == "") {
@@ -154,11 +156,18 @@ class Loader extends DisplayObjectContainer {
 	
 	public function unload ():Void {
 		
-		if (numChildren > 0) {
+		if (contentLoaderInfo != null) {
 			
 			while (numChildren > 0) {
 				
 				removeChildAt (0);
+				
+			}
+			
+			if (__library != null) {
+				
+				Assets.unloadLibrary (contentLoaderInfo.url);
+				__library = null;
 				
 			}
 			
@@ -170,10 +179,11 @@ class Loader extends DisplayObjectContainer {
 			contentLoaderInfo.bytesTotal = 0;
 			contentLoaderInfo.width = 0;
 			contentLoaderInfo.height = 0;
-			
-			dispatchEvent (new Event (Event.UNLOAD));
+			contentLoaderInfo = null;
 			
 		}
+		
+		dispatchEvent (new Event (Event.UNLOAD));
 		
 	}
 	
@@ -279,7 +289,10 @@ class Loader extends DisplayObjectContainer {
 				
 				library.load ().onComplete (function (_) {
 					
-					content = cast (library, AssetLibrary).getMovieClip ("");
+					__library = cast library;
+					Assets.registerLibrary (contentLoaderInfo.url, __library);
+					
+					content = __library.getMovieClip ("");
 					contentLoaderInfo.content = content;
 					addChild (content);
 					
