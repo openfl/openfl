@@ -301,9 +301,45 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	public override function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
-		
-		super.removeEventListener (type, listener, useCapture);
-		
+
+		if (__eventMap == null || listener == null) return;
+
+		var list = __eventMap.get (type);
+		if (list == null) return;
+
+		var iterators = __iterators.get (type);
+
+		for (i in 0...list.length) {
+
+			if (((untyped listener.method) == (untyped list[i].callback.method) && untyped list[i].useCapture == useCapture)) {
+
+				for (iterator in iterators) {
+
+					iterator.remove (list[i], i);
+
+				}
+
+				list.splice (i, 1);
+				break;
+
+			}
+
+		}
+
+		if (list.length == 0) {
+
+			__eventMap.remove (type);
+			__iterators.remove (type);
+
+		}
+
+		if (!__eventMap.iterator ().hasNext ()) {
+
+			__eventMap = null;
+			__iterators = null;
+
+		}
+
 		switch (type) {
 			
 			case Event.ACTIVATE, Event.DEACTIVATE, Event.ENTER_FRAME, Event.EXIT_FRAME, Event.FRAME_CONSTRUCTED, Event.RENDER:
