@@ -7,6 +7,7 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
+import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -20,6 +21,7 @@ import openfl.Vector;
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
+@:access(openfl.errors.Error)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 
@@ -56,6 +58,14 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
+		
+		if (child == null) {
+			
+			var error = new TypeError ("Error #2007: Parameter child must be non-null.");
+			error.errorID = 2007;
+			throw error;
+			
+		}
 		
 		if (index > __children.length || index < 0) {
 			
