@@ -39,30 +39,37 @@ import openfl.Lib;
 				functionName += '.bind(${thisArg})';
 			}
 		}
-		
+
+		var fn:Dynamic = js.Lib.eval (functionName);
+		if (Type.ValueType.TFunction == Type.typeof(fn)) {
+			// Flash does not throw an error or attempt to execute
+			// if the function does not exist.
+			return null;
+		}
+
 		if (p1 == null) {
 			
-			callResponse = js.Lib.eval (functionName) ();
+			callResponse = fn ();
 			
 		} else if (p2 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1);
+			callResponse = fn (p1);
 			
 		} else if (p3 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2);
+			callResponse = fn (p1, p2);
 			
 		} else if (p4 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2, p3);
+			callResponse = fn (p1, p2, p3);
 			
 		} else if (p5 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2, p3, p4);
+			callResponse = fn (p1, p2, p3, p4);
 			
 		} else {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2, p3, p4, p5);
+			callResponse = fn (p1, p2, p3, p4, p5);
 			
 		}
 		
