@@ -1,6 +1,5 @@
 package openfl.display; #if !openfl_legacy
 
-import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 import openfl.utils.UnshrinkableArray;
@@ -47,6 +46,8 @@ class Shape extends DisplayObject {
         {
             rect.x -= __graphics.__padding / renderScaleX;
             rect.y -= __graphics.__padding / renderScaleY;
+            rect.width += 2.0 * __graphics.__padding / renderScaleX;
+            rect.height += 2.0 * __graphics.__padding / renderScaleY;
         }
 	}
 
