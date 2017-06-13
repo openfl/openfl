@@ -7,8 +7,6 @@ import format.swf.lite.symbols.BitmapSymbol;
 import format.swf.lite.symbols.SpriteSymbol;
 import format.swf.lite.symbols.SWFSymbol;
 import format.swf.lite.MovieClip;
-import haxe.io.Bytes;
-import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.Assets;
