@@ -191,6 +191,9 @@ class ShapeSymbol extends SWFSymbol {
 
 
 	private function __clearCachedTable(event:Event) {
+		for ( cache in cachedTable ) {
+			cache.bitmapData.dispose();
+		}
 		if ( cachedTable.length > 0 ) {
 			cachedTable.splice(0, cachedTable.length);
 		}
