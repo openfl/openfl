@@ -40,11 +40,22 @@ import openfl.Lib;
 			}
 		}
 
-		var fn:Dynamic = js.Lib.eval (functionName);
-		if (Type.ValueType.TFunction == Type.typeof(fn)) {
-			// Flash does not throw an error or attempt to execute
-			// if the function does not exist.
+		// Flash does not throw an error or attempt to execute
+		// if the function does not exist.
+		var fn:Dynamic;
+		try {
+
+			fn = js.Lib.eval (functionName);
+
+		} catch (e:Dynamic) {
+
 			return null;
+
+		}
+		if (Type.ValueType.TFunction == Type.typeof(fn)) {
+
+			return null;
+
 		}
 
 		if (p1 == null) {
