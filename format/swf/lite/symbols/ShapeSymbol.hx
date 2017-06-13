@@ -5,6 +5,7 @@ import format.swf.exporters.core.ShapeCommand;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
+import openfl.events.Event;
 
 class ShapeSymbol extends SWFSymbol {
 
@@ -29,6 +30,10 @@ class ShapeSymbol extends SWFSymbol {
 
 			cachedTable = new Array<CacheEntry> ();
 
+			openfl.Lib.current.stage.addEventListener(Event.RESIZE, __clearCachedTable);
+
+		} else if ( !useBitmapCache ) {
+			openfl.Lib.current.stage.removeEventListener(Event.RESIZE, __clearCachedTable);
 		}
 
 		return this.useBitmapCache = useBitmapCache;
@@ -183,6 +188,14 @@ class ShapeSymbol extends SWFSymbol {
 		}
 
 	#end
+
+
+	private function __clearCachedTable(event:Event) {
+		if ( cachedTable.length > 0 ) {
+			cachedTable.splice(0, cachedTable.length);
+		}
+	}
+
 
 }
 
