@@ -52,7 +52,7 @@ import openfl.Lib;
 			return null;
 
 		}
-		if (Type.ValueType.TFunction == Type.typeof(fn)) {
+		if (Type.ValueType.TFunction != Type.typeof(fn)) {
 
 			return null;
 
