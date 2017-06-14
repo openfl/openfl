@@ -67,7 +67,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var renderScaleY (default, null):Float = 1.0;
 	public var scrollRect (get, set):Rectangle;
 	public var shader (default, set):Shader;
-	public var stage (default, null):Stage;
+	public var stage (default, set):Stage;
 	public var transform (get, set):Transform;
 	public var visible (get, set):Bool;
 	public var width (get, set):Float;
@@ -747,46 +747,39 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return __displayStack;
 		}
 	#end
+
 	private function __setStageReference (stage:Stage):Void {
-
 		if (this.stage != stage) {
-
-			#if compliant_stage_events
-				var stack = __getDisplayStack( this );
-			#end
-
 			if (this.stage != null) {
-
-				if (this.stage.focus == this) {
-
-					this.stage.focus = null;
-
-				}
-
-				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
-				#else
-					dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
-				#end
-
-				__releaseResources();
-
+				__fireRemovedFromStageEvent();
 			}
+
+			__releaseResources();
 
 			this.stage = stage;
 
 			if (stage != null) {
-
-				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
-				#else
-					dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
-				#end
-
+				__fireAddedToStageEvent();
 			}
-
 		}
+	}
 
+	private function __fireRemovedFromStageEvent() {
+		#if compliant_stage_events
+			var stack = __getDisplayStack( this );
+			Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
+		#else
+			__dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
+		#end
+	}
+
+	private function __fireAddedToStageEvent() {
+		#if compliant_stage_events
+			var stack = __getDisplayStack( this );
+			Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
+		#else
+			__dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
+		#end
 	}
 
 	private function __releaseResources ():Void {
@@ -1153,6 +1146,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		return shader = value;
 
+	}
+
+	private function set_stage(value:Stage) {
+		stage = value;
+		__setUpdateDirty();
+		return stage;
 	}
 
 
