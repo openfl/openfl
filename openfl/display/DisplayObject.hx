@@ -67,7 +67,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var renderScaleY (default, null):Float = 1.0;
 	public var scrollRect (get, set):Rectangle;
 	public var shader (default, set):Shader;
-	public var stage (default, set):Stage;
+	public var stage (default, null):Stage;
 	public var transform (get, set):Transform;
 	public var visible (get, set):Bool;
 	public var width (get, set):Float;
