@@ -127,6 +127,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __scaleMode:StageScaleMode = StageScaleMode.SHOW_ALL;
 	private var __outElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
 	private var __inElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
+	private var __mouseDownStates:Map<Int,Bool> = new Map<Int, Bool>();
 
 	#if (js && html5)
 	//private var __div:DivElement;
@@ -587,6 +588,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		__dispatchEvent (Event.__create (Event.MOUSE_LEAVE));
 
+		for( button in __mouseDownStates.keys() ) {
+			var state = __mouseDownStates.get(button);
+			if ( state ) {
+				onMouseUp(window, __mouseX, __mouseY, button);
+			}
+		}
 	}
 
 
@@ -1077,17 +1084,26 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 				}
 
+
+				__mouseDownStates.set(button, true);
+
 				__mouseDownLeft = target;
 
 			case MouseEvent.MIDDLE_MOUSE_DOWN:
+
+				__mouseDownStates.set(button, true);
 
 				__mouseDownMiddle = target;
 
 			case MouseEvent.RIGHT_MOUSE_DOWN:
 
+				__mouseDownStates.set(button, true);
+
 				__mouseDownRight = target;
 
 			case MouseEvent.MOUSE_UP:
+
+				__mouseDownStates.set(button, false);
 
 				if (__mouseDownLeft == target) {
 
@@ -1100,6 +1116,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			case MouseEvent.MIDDLE_MOUSE_UP:
 
+				__mouseDownStates.set(button, false);
+
 				if (__mouseDownMiddle == target) {
 
 					clickType = MouseEvent.MIDDLE_CLICK;
@@ -1110,6 +1128,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__mouseDownMiddle = null;
 
 			case MouseEvent.RIGHT_MOUSE_UP:
+
+				__mouseDownStates.set(button, false);
 
 				if (__mouseDownRight == target) {
 
