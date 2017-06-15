@@ -1,8 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
 
-import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
@@ -560,68 +558,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 
 		return false;
-
-	}
-
-
-	public override function __renderCairo (renderSession:RenderSession):Void {
-
-		if (!__renderable || __worldAlpha <= 0) return;
-
-		super.__renderCairo (renderSession);
-
-		if (__scrollRect != null) {
-
-			renderSession.maskManager.pushRect (__scrollRect, __worldTransform);
-
-		}
-
-		if (__mask != null) {
-
-			renderSession.maskManager.pushMask (__mask);
-
-		}
-
-		for (child in __children) {
-
-			if (child == null ) continue;
-			child.__renderCairo (renderSession);
-
-		}
-
-		if (__mask != null) {
-
-			renderSession.maskManager.popMask ();
-
-		}
-
-		if (__scrollRect != null) {
-
-			renderSession.maskManager.popRect ();
-
-		}
-
-	}
-
-
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
-
-		if (__graphics != null) {
-
-			CairoGraphics.renderMask (__graphics, renderSession);
-
-		}
-
-		//var bounds = new Rectangle ();
-		//__getLocalBounds (bounds);
-		//
-		//renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
-
-		for (child in __children) {
-			if (child == null ) continue;
-			child.__renderCairoMask (renderSession);
-
-		}
 
 	}
 

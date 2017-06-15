@@ -1,7 +1,5 @@
 package openfl._internal.renderer.opengl;
 
-import lime.graphics.cairo.Cairo;
-import lime.graphics.cairo.CairoSurface;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GL;
@@ -9,8 +7,6 @@ import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import lime.math.Vector2;
 import openfl._internal.renderer.AbstractRenderer;
-import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.opengl.utils.*;
 import openfl._internal.renderer.opengl.utils.BlendModeManager.GLBlendMode;
 import openfl._internal.renderer.RenderSession;
