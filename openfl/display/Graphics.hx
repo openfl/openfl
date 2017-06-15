@@ -1000,7 +1000,9 @@ import js.html.CanvasRenderingContext2D;
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height) {
 			
+			#if !openfl_disable_graphics_upscaling
 			__dirty = true;
+			#end
 			
 		}
 		

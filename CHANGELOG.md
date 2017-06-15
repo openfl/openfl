@@ -1,3 +1,24 @@
+5.1.3 (06/07/2017)
+------------------
+
+* Added `lime.text.UTF8String` internally to improve UTF-8 support
+* Improved `XMLSocket` to use `Socket` internally for better support
+* Improved the performance of -Dopenfl-disable-graphics-upscaling
+* Improved sharpness of text when rendering on HTML5 -Ddom
+* Improved support for ATF textures in Stage3D
+* Improved internal code to reduce recurrent GC activity
+* Improved ByteArray to allow conversion (with position) to BytePointer
+* Fixed regressions in rendering `SimpleButton` objects
+* Fixed some cases of `<font size="" />` in `textField.htmlText`
+* Fixed crash when attempting to attach a null `NetStream` to `Video`
+* Fixed support for specific cross-origin requests in HTML5 -Ddom
+* Fixed support for Stage3D on HTML5 -Ddom
+* Fixed support for cacheAsBitmap on HTML5 -Ddom
+* Fixed regression in bounds calculation for some display objects
+* Fixed setting `Shader.glVertexSource`
+* Fixed support for current Haxe development builds
+
+
 5.1.2 (05/23/2017)
 ------------------
 

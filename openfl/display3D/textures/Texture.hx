@@ -204,10 +204,10 @@ import haxe.io.Bytes;
 		var version = 0;
 		var length = 0;
 
-		// When the 6th byte is 0xff, we have the new format
+		// When the 6th byte is 0xff, we have one of the new formats
 		if (data[byteArrayOffset+6] == 0xff) {
 			
-			version = 1;
+			version = data[byteArrayOffset+7];
 			data.position = byteArrayOffset+8;
 			length = __readUInt32 (data);
 		
@@ -257,9 +257,13 @@ import haxe.io.Bytes;
 		
 		var mipCount:Int = cast data.readUnsignedByte ();
 
+		// DXT1/5, ETC1, PVRTC4, ETC2
+		// ETC2 is available with ATF version 3 
+		var gpuFormats = (version < 3) ? 3 : 4;
+
 		for (level in 0...mipCount) {
 			
-			for (gpuFormat in 0...4) { // DXT1/5, ETC1, PVRTC4, ETC2
+			for (gpuFormat in 0...gpuFormats) {
 				
 				var blockLength = (version == 0) ? __readUInt24 (data) : __readUInt32 (data);
 

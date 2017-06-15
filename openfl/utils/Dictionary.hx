@@ -176,6 +176,17 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	#if (haxe_ver >= "4.0.0")
+	public function copy ():ClassMap<K, V> {
+		
+		var copied = new ClassMap<K, V> ();
+		for (key in keys ()) copied.set (key, get (key));
+		return copied;
+		
+	}
+	#end
+	
+	
 	public function exists (key:K):Bool {
 		
 		return types.exists (Type.getClassName (key));
@@ -251,6 +262,17 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		values = new Array<V> ();
 		
 	}
+	
+	
+	#if (haxe_ver >= "4.0.0")
+	public function copy ():FloatMap<K, V> {
+		
+		var copied = new FloatMap<K, V> ();
+		for (key in keys ()) copied.set (key, get (key));
+		return copied;
+		
+	}
+	#end
 	
 	
 	public function exists (key:K):Bool {
@@ -443,6 +465,17 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		map = new ObjectMap<{}, V> ();
 		
 	}
+	
+	
+	#if (haxe_ver >= "4.0.0")
+	public function copy ():UtilsObjectMap<K, V> {
+		
+		var copied = new UtilsObjectMap<K, V> ();
+		for (key in keys ()) copied.set (key, get (key));
+		return copied;
+		
+	}
+	#end
 	
 	
 	public function exists (key:K):Bool {

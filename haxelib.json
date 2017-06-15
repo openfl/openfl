@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "5.1.2",
-	"releasenote": "Minor improvements",
+	"version": "5.1.3",
+	"releasenote": "Stability fixes, UTF-8 improvements",
 	"contributors": [ "singmajesty" ]
 }

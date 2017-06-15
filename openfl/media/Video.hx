@@ -19,6 +19,7 @@ import openfl.net.NetStream;
 
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
+@:access(openfl.geom.Point)
 
 
 class Video extends DisplayObject {
@@ -60,7 +61,11 @@ class Video extends DisplayObject {
 		__stream = netStream;
 		
 		#if (js && html5)
-		__stream.__video.play ();
+		if (__stream != null) {
+			
+			__stream.__video.play ();
+			
+		}
 		#end
 		
 	}
@@ -242,15 +247,15 @@ class Video extends DisplayObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
-		var point = globalToLocal (new Point (x, y));
+		var point = Point.__pool.get ();
+		point.setTo (x, y);
 		
-		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
-			
-			return true;
-			
-		}
+		__globalToLocal (point, point);
 		
-		return false;
+		var hit = (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height);
+		
+		Point.__pool.release (point);
+		return hit;
 		
 	}
 	
