@@ -9,6 +9,10 @@ import openfl.geom.Rectangle;
 @:noDebug
 #end
 
+#if !flash
+@:access(openfl.geom.Rectangle)
+#end
+
 
 class Tileset {
 	
@@ -55,7 +59,7 @@ class Tileset {
 	public function clone ():Tileset {
 		
 		var tileset = new Tileset (bitmapData, null);
-		var rect = new Rectangle ();
+		var rect = #if flash new Rectangle () #else Rectangle.__pool.get () #end;
 		
 		for (tileData in __data) {
 			
@@ -63,6 +67,10 @@ class Tileset {
 			tileset.addRect (rect);
 			
 		}
+		
+		#if !flash
+		Rectangle.__pool.release (rect);
+		#end
 		
 		return tileset;
 		

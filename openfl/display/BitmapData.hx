@@ -155,6 +155,20 @@ class BitmapData implements IBitmapDrawable {
 				image.fillRect (image.rect, fillColor);
 				
 			}
+			//#elseif (js && html5)
+			//var buffer = new ImageBuffer (null, width, height);
+			//var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+			//buffer.__srcCanvas = canvas;
+			//buffer.__srcContext = canvas.getContext ("2d");
+			//
+			//image = new Image (buffer, 0, 0, width, height);
+			//image.type = CANVAS;
+			//
+			//if (fillColor != 0) {
+				//
+				//image.fillRect (image.rect, fillColor);
+				//
+			//}
 			#else
 			image = new Image (null, 0, 0, width, height, fillColor);
 			#end
@@ -1372,8 +1386,11 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		pixels.position = 0;
-		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
+		var destRect = Rectangle.__pool.get ();
+		destRect.setTo (destPoint.x, destPoint.y, sw, sh);
 		setPixels (destRect, pixels);
+		Rectangle.__pool.release (destRect);
+		
 	}
 	
 	

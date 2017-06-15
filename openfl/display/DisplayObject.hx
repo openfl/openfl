@@ -257,9 +257,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	public function globalToLocal (pos:Point):Point {
 		
-		pos = pos.clone ();
-		__getRenderTransform ().__transformInversePoint (pos);
-		return pos;
+		return __globalToLocal (pos, new Point ());
 		
 	}
 	
@@ -535,14 +533,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __getLocalBounds (rect:Rectangle):Void {
 		
-		var cacheX = __transform.tx;
-		var cacheY = __transform.ty;
-		__transform.tx = __transform.ty = 0;
+		//var cacheX = __transform.tx;
+		//var cacheY = __transform.ty;
+		//__transform.tx = __transform.ty = 0;
 		
 		__getBounds (rect, __transform);
 		
-		__transform.tx = cacheX;
-		__transform.ty = cacheY;
+		//__transform.tx = cacheX;
+		//__transform.ty = cacheY;
+		
+		rect.x -= __transform.tx;
+		rect.y -= __transform.ty;
 		
 	}
 	
@@ -619,6 +620,26 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return __worldTransform;
+		
+	}
+	
+	
+	private function __globalToLocal (global:Point, local:Point):Point {
+		
+		__getRenderTransform ();
+		
+		if (global == local) {
+			
+			__renderTransform.__transformInversePoint (global);
+			
+		} else {
+			
+			local.x = __renderTransform.__transformInverseX (global.x, global.y);
+			local.y = __renderTransform.__transformInverseY (global.x, global.y);
+			
+		}
+		
+		return local;
 		
 	}
 	
@@ -748,6 +769,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
+			__cacheBitmap.stage = stage;
 			DOMBitmap.render (__cacheBitmap, renderSession);
 			
 		} else {

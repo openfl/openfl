@@ -78,6 +78,7 @@ import js.Browser;
 @:access(openfl.display.Sprite)
 @:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
+@:access(openfl.geom.Point)
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
@@ -294,13 +295,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Touch.onStart.remove (onTouchStart);
 		Touch.onMove.remove (onTouchMove);
 		Touch.onEnd.remove (onTouchEnd);
-		
-	}
-	
-	
-	public override function globalToLocal (pos:Point):Point {
-		
-		return pos.clone ();
 		
 	}
 	
@@ -1176,6 +1170,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	private override function __globalToLocal (global:Point, local:Point):Point {
+		
+		if (global != local) {
+			
+			local.copyFrom (global);
+			
+		}
+		
+		return local;
+		
+	}
+	
+	
 	private function __handleError (e:Dynamic):Void {
 		
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
@@ -1274,7 +1281,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (button > 2) return;
 		
-		var targetPoint = new Point (x, y);
+		var targetPoint = Point.__pool.get ();
+		targetPoint.setTo (x, y);
 		__displayMatrix.__transformInversePoint (targetPoint);
 		
 		__mouseX = targetPoint.x;
@@ -1358,18 +1366,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		__dispatchStack (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+		var localPoint = Point.__pool.get ();
+		
+		__dispatchStack (MouseEvent.__create (type, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), target), stack);
 		
 		if (clickType != null) {
 			
-			__dispatchStack (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+			__dispatchStack (MouseEvent.__create (clickType, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), target), stack);
 			
 			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 				
 				var currentTime = Lib.getTimer ();
 				if (currentTime - __lastClickTime < 500) {
 					
-					__dispatchStack (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+					__dispatchStack (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), target), stack);
 					__lastClickTime = 0;
 					
 				} else {
@@ -1415,15 +1425,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		var event, localPoint;
+		var event;
 		
 		if (target != __mouseOverTarget) {
 			
 			if (__mouseOverTarget != null) {
 				
-				localPoint = (__mouseOverTarget == this ? targetPoint : __mouseOverTarget.globalToLocal (targetPoint));
-				
-				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, localPoint, cast __mouseOverTarget);
+				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
 				__mouseOverTarget.__dispatchEvent (event);
 				
 			}
@@ -1436,8 +1444,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				__rollOutStack.remove (target);
 				
-				localPoint = __mouseOverTarget.globalToLocal (targetPoint);
-				event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, localPoint, cast __mouseOverTarget);
+				event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
 				event.bubbles = false;
 				target.__dispatchEvent (event);
 				
@@ -1451,8 +1458,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				if (target.hasEventListener (MouseEvent.ROLL_OVER)) {
 					
-					localPoint = target.globalToLocal (targetPoint);
-					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
 					
@@ -1472,9 +1478,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (target != null) {
 				
-				localPoint = (target == this ? targetPoint : target.globalToLocal (targetPoint));
-				
-				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
 				
@@ -1519,6 +1523,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		Point.__pool.release (targetPoint);
+		Point.__pool.release (localPoint);
+		
 	}
 	
 	
@@ -1542,18 +1549,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		if (target == null) target = this;
-		var targetPoint = new Point (x, y);
+		var targetPoint = Point.__pool.get ();
+		targetPoint.setTo (x, y);
 		__displayMatrix.__transformInversePoint (targetPoint);
 		var delta = Std.int (deltaY);
 		
-		__dispatchStack (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
+		__dispatchStack (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal (targetPoint, targetPoint), target, delta), stack);
+		
+		Point.__pool.release (targetPoint);
 		
 	}
 	
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (Math.round (touch.x * window.width * window.scale), Math.round (touch.y * window.height * window.scale));
+		var point = Point.__pool.get ();
+		point.setTo (Math.round (touch.x * window.width * window.scale), Math.round (touch.y * window.height * window.scale));
 		__displayMatrix.__transformInversePoint (point);
 		
 		var touchX = point.x;
@@ -1565,9 +1576,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			var target = __stack[__stack.length - 1];
 			if (target == null) target = this;
-			var localPoint = target.globalToLocal (point);
 			
-			var touchEvent = TouchEvent.__create (type, null, touchX, touchY, localPoint, cast target);
+			var touchEvent = TouchEvent.__create (type, null, touchX, touchY, target.__globalToLocal (point, point), cast target);
 			touchEvent.touchPointID = touch.id;
 			touchEvent.isPrimaryTouchPoint = (__primaryTouch == touch);
 			
@@ -1582,6 +1592,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__dispatchStack (touchEvent, [ stage ]);
 			
 		}
+		
+		Point.__pool.release (point);
 		
 	}
 	
@@ -1668,7 +1680,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			} else {
 				
-				var mouse = new Point (mouseX, mouseY);
+				var mouse = Point.__pool.get ();
+				mouse.setTo (mouseX, mouseY);
 				var parent = __dragObject.parent;
 				
 				if (parent != null) {
@@ -1679,6 +1692,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				__dragOffsetX = __dragObject.x - mouse.x;
 				__dragOffsetY = __dragObject.y - mouse.y;
+				Point.__pool.release (mouse);
 				
 			}
 			
