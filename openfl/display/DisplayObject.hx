@@ -748,20 +748,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 	#end
 
-	private function __setStageReference (stage:Stage):Void {
+	private function set_stage (stage:Stage):Stage {
 		if (this.stage != stage) {
 			if (this.stage != null) {
 				__fireRemovedFromStageEvent();
+
+				if (this.stage.focus == this) {
+					this.stage.focus = null;
+				}
 			}
 
 			__releaseResources();
 
-			this.stage = stage;
+			this.__updateStageInternal(stage);
 
 			if (stage != null) {
 				__fireAddedToStageEvent();
 			}
 		}
+		return stage;
 	}
 
 	private function __fireRemovedFromStageEvent() {
@@ -1148,10 +1153,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	private function set_stage(value:Stage) {
+	private function __updateStageInternal(value:Stage) {
 		stage = value;
 		__setUpdateDirty();
-		return stage;
 	}
 
 

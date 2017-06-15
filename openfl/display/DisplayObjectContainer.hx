@@ -79,7 +79,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				child.__setStageReference (stage);
+				child.stage = stage;
 			}
 			child.updateCachedParent ();
 
@@ -161,7 +161,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 
-				child.__setStageReference (null);
+				child.stage = null;
 
 			}
 
@@ -678,16 +678,14 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 	}
 
-	private override function set_stage(value:Stage) {
-		super.set_stage(value);
+	private override function __updateStageInternal(value:Stage) {
+		super.__updateStageInternal(value);
 
 		if (__children != null) {
 			for (child in __children) {
 				child.stage = value;
 			}
 		}
-
-		return this.stage;
 	}
 
 	private override function __fireAddedToStageEvent() {
