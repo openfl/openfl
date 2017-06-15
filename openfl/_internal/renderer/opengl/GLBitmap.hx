@@ -48,6 +48,8 @@ class GLBitmap {
 
 	private static var fbData:Array<FrameBufferDataItem> = [];
 
+	private static var dataToClean:Map<IBitmapDrawable, haxe.Timer> = new Map<IBitmapDrawable, haxe.Timer>();
+
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null || !bitmap.bitmapData.__isValid) return;
@@ -164,6 +166,21 @@ class GLBitmap {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return;
 
+		if ( Std.is(source, DisplayObject) ) {
+			var object = cast(source, DisplayObject);
+			if ( object.stage == null ) {
+				if( dataToClean.exists(object) ) {
+					var timer = dataToClean.get(object);
+					timer.stop();
+				}
+				dataToClean.set(object, haxe.Timer.delay(function() {
+					if ( object.stage == null ) {
+						object.__releaseResources();
+					}
+					dataToClean.remove(object);
+					}, 1));
+			}
+		}
 		var viewPort = data.viewPort;
 		var spritebatch = renderSession.spriteBatch;
 		var drawTarget = target != null;
