@@ -467,18 +467,20 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<BitmapData>
 	 */
-	public static function loadBitmapData (id:String, useCache:Null<Bool> = true, handler:BitmapData->Void = null):Future<BitmapData> {
+	public static function loadBitmapData (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:BitmapData->Void = null #end):Future<BitmapData> {
 		
 		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<BitmapData> ();
 		
+		#if (openfl < "6.0.0")
 		if (handler != null) {
 			
 			promise.future.onComplete (handler);
 			promise.future.onError (function (_) handler (null));
 			
 		}
+		#end
 		
 		#if (tools && !display)
 		
@@ -536,17 +538,19 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<ByteArray>
 	 */
-	public static function loadBytes (id:String, handler:ByteArray->Void = null):Future<ByteArray> {
+	public static function loadBytes (id:String #if (openfl < "6.0.0"), handler:ByteArray->Void = null #end):Future<ByteArray> {
 		
 		var promise = new Promise<ByteArray> ();
 		var future = LimeAssets.loadBytes (id);
 		
+		#if (openfl < "6.0.0")
 		if (handler != null) {
 			
 			promise.future.onComplete (handler);
 			promise.future.onError (function (_) handler (null));
 			
 		}
+		#end
 		
 		future.onComplete (function (bytes) promise.complete (bytes));
 		future.onProgress (function (progress, total) promise.progress (progress, total));
@@ -565,18 +569,20 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Font>
 	 */
-	public static function loadFont (id:String, useCache:Null<Bool> = true, handler:Font->Void = null):Future<Font> {
+	public static function loadFont (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:Font->Void = null #end):Future<Font> {
 		
 		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<Font> ();
 		
+		#if (openfl < "6.0.0")
 		if (handler != null) {
 			
 			promise.future.onComplete (handler);
 			promise.future.onError (function (_) handler (null));
 			
 		}
+		#end
 		
 		#if (tools && !display && !macro)
 		
@@ -618,16 +624,18 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<AssetLibrary>
 	 */
-	public static function loadLibrary (name:String, handler:LimeAssetLibrary->Void = null):Future<LimeAssetLibrary> {
+	public static function loadLibrary (name:String #if (openfl < "6.0.0"), handler:LimeAssetLibrary->Void = null #end):Future<LimeAssetLibrary> {
 		
 		var future = LimeAssets.loadLibrary (name);
 		
+		#if (openfl < "6.0.0")
 		if (handler != null) {
 			
 			future.onComplete (handler);
 			future.onError (function (_) handler (null));
 			
 		}
+		#end
 		
 		return future;
 		
@@ -642,13 +650,22 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Sound>
 	 */
-	public static function loadMusic (id:String, useCache:Null<Bool> = true, handler:Sound->Void = null):Future<Sound> {
+	public static function loadMusic (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:Sound->Void = null #end):Future<Sound> {
 		
 		if (useCache == null) useCache = true;
 		
 		#if !html5
 		
 		var promise = new Promise<Sound> ();
+		
+		#if (openfl < "6.0.0")
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
+		#end
 		
 		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
@@ -679,7 +696,18 @@ class Assets {
 		
 		#else
 		
-		return new Future<Sound> (function () return getMusic (id, useCache));
+		var future = new Future<Sound> (function () return getMusic (id, useCache));
+		
+		#if (openfl < "6.0.0")
+		if (handler != null) {
+			
+			future.onComplete (handler);
+			future.onError (function (_) handler (null));
+			
+		}
+		#end
+		
+		return future;
 		
 		#end
 		
@@ -694,16 +722,18 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<MovieClip>
 	 */
-	public static function loadMovieClip (id:String, handler:MovieClip->Void = null):Future<MovieClip> {
+	public static function loadMovieClip (id:String #if (openfl < "6.0.0"), handler:MovieClip->Void = null #end):Future<MovieClip> {
 		
 		var promise = new Promise<MovieClip> ();
 		
+		#if (openfl < "6.0.0")
 		if (handler != null) {
 			
 			promise.future.onComplete (handler);
 			promise.future.onError (function (_) handler (null));
 			
 		}
+		#end
 		
 		#if (tools && !display)
 		
@@ -749,11 +779,20 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Sound>
 	 */
-	public static function loadSound (id:String, useCache:Null<Bool> = true, handler:Sound->Void = null):Future<Sound> {
+	public static function loadSound (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:Sound->Void = null #end):Future<Sound> {
 		
 		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<Sound> ();
+		
+		#if (openfl < "6.0.0")
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
+		#end
 		
 		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
@@ -793,16 +832,18 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<String>
 	 */
-	public static function loadText (id:String, handler:String->Void = null):Future<String> {
+	public static function loadText (id:String #if (openfl < "6.0.0"), handler:String->Void = null #end):Future<String> {
 		
 		var future = LimeAssets.loadText (id);
 		
+		#if (openfl < "6.0.0")
 		if (handler != null) {
 			
 			future.onComplete (handler);
 			future.onError (function (_) handler (null));
 			
 		}
+		#end
 		
 		return future;
 		
