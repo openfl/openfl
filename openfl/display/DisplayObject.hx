@@ -130,7 +130,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __worldVisibleChanged:Bool;
 	private var __worldTransformInvalid:Bool;
 	private var __worldZ:Int;
-	private var __tempStack:Vector<DisplayObject>;
 	
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -159,8 +158,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();
-		__tempStack = new Vector<DisplayObject> ();
+		__renderTransform = new Matrix ();		
 		#if dom
 		__worldVisible = true;
 		#end
@@ -215,7 +213,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 
-		return __dispatchWithCapture(event, __tempStack);
+		return __dispatchWithCapture(event);
 		
 	}
 	
@@ -369,7 +367,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchWithCapture (event:Event, stack:Vector<DisplayObject>): Bool {
+	private function __dispatchWithCapture (event:Event): Bool {
 
 		if (event.target == null) {
 			event.target = this;
@@ -385,6 +383,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			} else {
 				
+				var stack: Vector<DisplayObject> = new Vector<DisplayObject>();
 				var parent = parent;
 				var i = 0;
 				
@@ -406,8 +405,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 
 		}
 
-		event.eventPhase = AT_TARGET;
-		stack.length = 0;
+		event.eventPhase = AT_TARGET;		
 		return __dispatchEvent(event);
 	}
 
