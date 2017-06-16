@@ -980,7 +980,9 @@ class TextField extends InteractiveObject {
 			format.indent = Std.int (symbol.indent / 20);
 			format.leading = Std.int (symbol.leading / 20);
 			
-			if (embedFonts) format.leading += 4; // TODO: Why is this necessary?
+			//It is unknown why this has been added
+			//Removing for now to match actionscript
+			//if (embedFonts) format.leading += 4; // TODO: Why is this necessary?
 			
 		}
 		
