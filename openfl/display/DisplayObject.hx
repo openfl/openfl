@@ -801,10 +801,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __setParentRenderDirty ():Void {
 		
-		if (parent != null && !parent.__renderDirty) {
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		if (renderParent != null && !renderParent.__renderDirty) {
 			
-			parent.__renderDirty = true;
-			parent.__setParentRenderDirty ();
+			renderParent.__renderDirty = true;
+			renderParent.__setParentRenderDirty ();
 			
 		}
 		
@@ -851,7 +852,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
-		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms ();
 		
 		//if (updateChildren && __transformDirty) {
@@ -888,19 +890,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			var __parent = (parent != null) ? parent : __renderParent;
-			
-			if (__parent != null) {
+			if (renderParent != null) {
 				
 				#if !dom
 				
-				__worldAlpha = alpha * __parent.__worldAlpha;
-				__worldColorTransform.__combine (__parent.__worldColorTransform);
+				__worldAlpha = alpha * renderParent.__worldAlpha;
+				__worldColorTransform.__combine (renderParent.__worldColorTransform);
 				
 				if (__blendMode == null || __blendMode == NORMAL) {
 					
 					// TODO: Handle multiple blend modes better
-					__worldBlendMode = __parent.__blendMode;
+					__worldBlendMode = renderParent.__blendMode;
 					
 				} else {
 					
@@ -910,11 +910,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				#else
 				
-				var worldVisible = (__parent.__worldVisible && visible);
+				var worldVisible = (renderParent.__worldVisible && visible);
 				__worldVisibleChanged = (__worldVisible != worldVisible);
 				__worldVisible = worldVisible;
 				
-				var worldAlpha = alpha * __parent.__worldAlpha;
+				var worldAlpha = alpha * renderParent.__worldAlpha;
 				__worldAlphaChanged = (__worldAlpha != worldAlpha);
 				__worldAlpha = worldAlpha;
 				
@@ -1025,7 +1025,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	public function __updateChildren (transformOnly:Bool):Void {
 		
-		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__worldAlpha = alpha;
 		
 		if (__transformDirty) {
@@ -1076,9 +1077,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		var parentTransform;
+		
 		if (!overrided && parent != null) {
 			
-			var parentTransform = parent.__worldTransform;
+			parentTransform = parent.__worldTransform;
 			
 			__worldTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
 			__worldTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
@@ -1087,7 +1091,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 			
-			parentTransform = parent.__renderTransform;
+		} else {
+			
+			__worldTransform.copyFrom (local);
+			
+		}
+		
+		if (!overrided && renderParent != null) {
+			
+			parentTransform = renderParent.__renderTransform;
 			
 			__renderTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
 			__renderTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
@@ -1098,7 +1110,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		} else {
 			
-			__worldTransform.copyFrom (local);
 			__renderTransform.copyFrom (local);
 			
 		}
