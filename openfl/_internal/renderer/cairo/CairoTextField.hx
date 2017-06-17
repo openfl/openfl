@@ -307,9 +307,9 @@ class CairoTextField {
 									
 								}
 								
-								cairo.moveTo (Math.floor (group.offsetX + advance) + 0.5, group.offsetY + 0.5);
+								cairo.moveTo (Math.floor (group.offsetX + advance) + 0.5, group.offsetY - 2 + 0.5);
 								cairo.lineWidth = 1;
-								cairo.lineTo (Math.floor (group.offsetX + advance) + 0.5, group.offsetY + group.height - 1);
+								cairo.lineTo (Math.floor (group.offsetX + advance) + 0.5, group.offsetY - 2 + group.height - 1);
 								cairo.stroke ();
 								
 							}
