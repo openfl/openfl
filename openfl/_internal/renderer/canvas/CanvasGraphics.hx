@@ -25,6 +25,7 @@ import js.html.CanvasElement;
 import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
+import js.html.CanvasWindingRule;
 import js.Browser;
 import js.html.ImageData;
 #end
@@ -194,7 +195,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill ();
+		if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 		return canvas;
 		#end
 		
@@ -874,12 +875,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 					
 				}
 				
@@ -1196,7 +1197,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									if (!hitTesting) context.fill ();
+									if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 									i += 3;
 									continue;
 									
