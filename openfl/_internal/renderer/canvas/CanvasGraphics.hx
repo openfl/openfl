@@ -566,6 +566,7 @@ class CanvasGraphics {
 		var closeGap = false;
 		var startX = 0.0;
 		var startY = 0.0;
+		var setStart = false;
 		
 		setSmoothing (true);
 		
@@ -629,6 +630,12 @@ class CanvasGraphics {
 					
 					positionX = c.x;
 					positionY = c.y;
+					
+					if (positionX == startX && positionY == startY) {
+						
+						closeGap = true;
+						
+					}
 				
 				case MOVE_TO:
 					
@@ -638,9 +645,15 @@ class CanvasGraphics {
 					positionX = c.x;
 					positionY = c.y;
 					
-					closeGap = true;
+					if (setStart) {
+						
+						closeGap = true;
+						
+					}
+					
 					startX = c.x;
 					startY = c.y;
+					setStart = true;
 				
 				case LINE_STYLE:
 					
@@ -854,11 +867,14 @@ class CanvasGraphics {
 			
 			if (hasFill && closeGap) {
 				
+				trace ("1");
 				context.lineTo (startX - offsetX, startY - offsetY);
+				closePath (false);
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
-				closePath (true);
+				trace ("2");
+				closePath (false);
 				
 			}
 			
