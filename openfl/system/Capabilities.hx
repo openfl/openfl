@@ -182,7 +182,7 @@ import lime.system.Locale;
 	
 	private static function get_screenDPI ():Float {
 		
-		var window = Lib.application.window;
+		var window = Lib.application != null ? Lib.application.window : null;
 		var screenDPI:Float;
 		
 		#if (desktop || web)
