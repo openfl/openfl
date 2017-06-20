@@ -67,11 +67,14 @@ class VertexBuffer3D {
 	}
 
 
-	public function uploadFromFloat32Array (data:Float32Array):Void {
+	public function uploadFromFloat32Array (data:Float32Array, startVertex:Int, numVertices:Int):Void {
 
 		GL.bindBuffer (GL.ARRAY_BUFFER, glBuffer);
 		GL.bufferData (GL.ARRAY_BUFFER, data, bufferUsage);
 
+		#if dev
+		if(startVertex != 0) throw "Unsupported";
+		#end
 	}
 
 
