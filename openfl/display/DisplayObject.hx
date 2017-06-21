@@ -747,46 +747,47 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return __displayStack;
 		}
 	#end
-	private function __setStageReference (stage:Stage):Void {
 
+	private function set_stage (stage:Stage):Stage {
 		if (this.stage != stage) {
-
+			var stack = null;
 			#if compliant_stage_events
-				var stack = __getDisplayStack( this );
+				stack = __getDisplayStack( this );
 			#end
 
 			if (this.stage != null) {
+				__fireRemovedFromStageEvent(stack);
 
 				if (this.stage.focus == this) {
-
 					this.stage.focus = null;
-
 				}
-
-				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
-				#else
-					dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
-				#end
-
-				__releaseResources();
-
 			}
 
-			this.stage = stage;
+			__releaseResources();
+
+			this.__updateStageInternal(stage);
 
 			if (stage != null) {
-
-				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
-				#else
-					dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
-				#end
-
+				__fireAddedToStageEvent(stack);
 			}
-
 		}
+		return stage;
+	}
 
+	private function __fireRemovedFromStageEvent(stack=null) {
+		#if compliant_stage_events
+			Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
+		#else
+			__dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
+		#end
+	}
+
+	private function __fireAddedToStageEvent(stack=null) {
+		#if compliant_stage_events
+			Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
+		#else
+			__dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
+		#end
 	}
 
 	private function __releaseResources ():Void {
@@ -1153,6 +1154,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		return shader = value;
 
+	}
+
+	private function __updateStageInternal(value:Stage) {
+		stage = value;
+		__setUpdateDirty();
 	}
 
 

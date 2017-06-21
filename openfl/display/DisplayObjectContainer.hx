@@ -79,7 +79,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				child.__setStageReference (stage);
+				child.stage = stage;
 			}
 			child.updateCachedParent ();
 
@@ -161,7 +161,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 
-				child.__setStageReference (null);
+				child.stage = null;
 
 			}
 
@@ -668,54 +668,46 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
+	private override function __fireRemovedFromStageEvent() {
+		super.__fireRemovedFromStageEvent();
 
-	private override function __setStageReference (stage:Stage):Void {
-
-		if (this.stage != stage) {
-
-			#if compliant_stage_events
-				var stack = __getDisplayStack( this );
-			#end
-
-			if (this.stage != null) {
-
-				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
-				#else
-					__dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
-				#end
-				__releaseResources();
-
+		if (__children != null) {
+			for (child in __children) {
+				child.__fireRemovedFromStageEvent();
 			}
-
-			this.stage = stage;
-
-			__setUpdateDirty();
-
-			if (stage != null) {
-
-				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
-				#else
-					__dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
-				#end
-			}
-
-			if (__children != null) {
-
-				for (child in __children) {
-
-					if(child == null) continue;
-					child.__setStageReference (stage);
-
-				}
-
-			}
-
 		}
-
 	}
 
+	private override function __updateStageInternal(value:Stage) {
+		super.__updateStageInternal(value);
+
+		if (__children != null) {
+			for (child in __children) {
+				child.stage = value;
+			}
+		}
+	}
+
+	private override function __fireAddedToStageEvent() {
+		super.__fireAddedToStageEvent();
+
+		if (__children != null) {
+			for (child in __children) {
+				child.__fireAddedToStageEvent();
+			}
+		}
+	}
+
+	private override function __releaseResources ():Void {
+
+		super.__releaseResources();
+
+		if (__children != null) {
+			for (child in __children) {
+				child.__releaseResources();
+			}
+		}
+	}
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
