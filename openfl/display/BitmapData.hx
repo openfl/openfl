@@ -473,12 +473,11 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, false);
-				renderer.resize (width, height);
+				var renderer = new GLRenderer (Lib.current.stage, gl, this);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearDirtyFlags = false;
-				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderSession.shaderManager = cast(Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
@@ -1513,8 +1512,7 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, false);
-				renderer.resize (width, height);
+				var renderer = new GLRenderer (Lib.current.stage, gl, this);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearDirtyFlags = true;
