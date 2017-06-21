@@ -750,8 +750,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function set_stage (stage:Stage):Stage {
 		if (this.stage != stage) {
+			var stack = null;
+			#if compliant_stage_events
+				stack = __getDisplayStack( this );
+			#end
+
 			if (this.stage != null) {
-				__fireRemovedFromStageEvent();
+				__fireRemovedFromStageEvent(stack);
 
 				if (this.stage.focus == this) {
 					this.stage.focus = null;
@@ -763,24 +768,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			this.__updateStageInternal(stage);
 
 			if (stage != null) {
-				__fireAddedToStageEvent();
+				__fireAddedToStageEvent(stack);
 			}
 		}
 		return stage;
 	}
 
-	private function __fireRemovedFromStageEvent() {
+	private function __fireRemovedFromStageEvent(stack=null) {
 		#if compliant_stage_events
-			var stack = __getDisplayStack( this );
 			Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
 		#else
 			__dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
 		#end
 	}
 
-	private function __fireAddedToStageEvent() {
+	private function __fireAddedToStageEvent(stack=null) {
 		#if compliant_stage_events
-			var stack = __getDisplayStack( this );
 			Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
 		#else
 			__dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
