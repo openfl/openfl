@@ -2,7 +2,7 @@
 ------------------
 
 * Deprecated `handler` callbacks in `openfl.utils.Assets.load*` methods
-* Improved improved the leading of embedded SWF fonts on native
+* Improved the leading of embedded SWF fonts on native
 * Improved `addChild` to throw an error when adding a `null` child
 * Improved loaded asset libraries to register using `loaderURL` as the name
 * Improved the behavior of `ExternalInterface` when errors are thrown
