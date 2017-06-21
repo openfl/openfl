@@ -1,3 +1,10 @@
+5.1.5 (06/21/2017)
+------------------
+
+* Fixed regression where `loader.unload()` set `contentLoaderInfo` to `null`
+* Fixed possible build error in URLLoader
+
+
 5.1.4 (06/20/2017)
 ------------------
 
