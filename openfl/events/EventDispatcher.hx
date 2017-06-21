@@ -238,6 +238,14 @@ class EventDispatcher implements IEventDispatcher {
 	}
 	
 	
+	private function __removeAllListeners ():Void {
+		
+		__eventMap = null;
+		__iterators = null;
+		
+	}
+	
+	
 	private static function __sortByPriority (l1:Listener, l2:Listener):Int {
 		
 		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);

@@ -39,6 +39,7 @@ class Loader extends DisplayObjectContainer {
 	
 	private var __library:AssetLibrary;
 	private var __path:String;
+	private var __unloaded:Bool;
 	
 	
 	public function new () {
@@ -61,6 +62,7 @@ class Loader extends DisplayObjectContainer {
 		
 		contentLoaderInfo.loaderURL = Lib.current.loaderInfo.url;
 		contentLoaderInfo.url = request.url;
+		__unloaded = false;
 		
 		if (request.contentType == null || request.contentType == "") {
 			
@@ -156,7 +158,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public function unload ():Void {
 		
-		if (contentLoaderInfo != null) {
+		if (!__unloaded) {
 			
 			while (numChildren > 0) {
 				
@@ -179,11 +181,11 @@ class Loader extends DisplayObjectContainer {
 			contentLoaderInfo.bytesTotal = 0;
 			contentLoaderInfo.width = 0;
 			contentLoaderInfo.height = 0;
-			contentLoaderInfo = null;
+			__unloaded = true;
+			
+			contentLoaderInfo.dispatchEvent (new Event (Event.UNLOAD));
 			
 		}
-		
-		dispatchEvent (new Event (Event.UNLOAD));
 		
 	}
 	
@@ -235,12 +237,16 @@ class Loader extends DisplayObjectContainer {
 	
 	private function BitmapData_onError (error:Dynamic):Void {
 		
+		// TODO: Dispatch HTTPStatusEvent
+		
 		__dispatchError (Std.string (error));
 		
 	}
 	
 	
 	private function BitmapData_onLoad (bitmapData:BitmapData):Void {
+		
+		// TODO: Dispatch HTTPStatusEvent
 		
 		content = new Bitmap (bitmapData);
 		contentLoaderInfo.content = content;
@@ -262,6 +268,8 @@ class Loader extends DisplayObjectContainer {
 	
 	
 	private function loader_onComplete (event:Event):Void {
+		
+		// TODO: Dispatch HTTPStatusEvent
 		
 		var loader:URLLoader = cast event.target;
 		
@@ -332,6 +340,8 @@ class Loader extends DisplayObjectContainer {
 	
 	
 	private function loader_onError (event:IOErrorEvent):Void {
+		
+		// TODO: Dispatch HTTPStatusEvent
 		
 		event.target = contentLoaderInfo;
 		contentLoaderInfo.dispatchEvent (event);
