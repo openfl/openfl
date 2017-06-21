@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "5.1.4",
-	"releasenote": "Renderer, Socket and Loader improvements, other fixes",
+	"version": "5.1.5",
+	"releasenote": "Minor fixes",
 	"contributors": [ "singmajesty" ]
 }
