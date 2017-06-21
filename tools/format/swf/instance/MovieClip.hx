@@ -366,6 +366,10 @@ class MovieClip extends flash.display.MovieClip {
 			
 			displayObject.filters = filters;
 			
+		} else {
+		
+			displayObject.filters = [];
+		
 		}
 		
 		if (Std.is(displayObject, MorphShape)) {
