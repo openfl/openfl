@@ -659,7 +659,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		filterTransform.d = __renderTransform.d / renderScaleY;
 		filterTransform.invert ();
 
-		__updateCachedBitmapBounds (filterTransform);
+		if (__cachedBitmapBounds == null) {
+			__cachedBitmapBounds = new Rectangle ();
+		}
+
+		__updateCachedBitmapBounds (filterTransform, __cachedBitmapBounds);
 
 		if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
 			return;
@@ -876,28 +880,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 	}
-	private function __updateCachedBitmapBounds (filterTransform:Matrix):Void {
+	private function __updateCachedBitmapBounds (filterTransform:Matrix, rect:Rectangle):Void {
 
-		if (__cachedBitmapBounds == null) {
-			__cachedBitmapBounds = new Rectangle ();
-		}
+		rect.setEmpty();
+		__getRenderBounds (rect);
 
-		__cachedBitmapBounds.setEmpty();
-		__getRenderBounds (__cachedBitmapBounds);
-
-		__cachedBitmapBounds.x *= renderScaleX;
-		__cachedBitmapBounds.y *= renderScaleY;
-		__cachedBitmapBounds.width *= renderScaleX;
-		__cachedBitmapBounds.height *= renderScaleY;
+		rect.x *= renderScaleX;
+		rect.y *= renderScaleY;
+		rect.width *= renderScaleX;
+		rect.height *= renderScaleY;
 
 		if (__filters != null) {
 
-			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, filterTransform);
+			@:privateAccess BitmapFilter.__expandBounds (__filters, rect, filterTransform);
 
 		}
 
-		__cachedBitmapBounds.x = Math.floor (__cachedBitmapBounds.x);
-		__cachedBitmapBounds.y = Math.floor (__cachedBitmapBounds.y);
+		rect.x = Math.floor (rect.x);
+		rect.y = Math.floor (rect.y);
 
 	}
 
