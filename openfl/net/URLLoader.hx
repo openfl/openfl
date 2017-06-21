@@ -107,7 +107,8 @@ class URLLoader extends EventDispatcher {
 		
 		var headers = new Array<URLRequestHeader> ();
 		
-		if (__httpRequest.responseHeaders != null) {
+		#if (!display && !macro)
+		if (__httpRequest.enableResponseHeaders && __httpRequest.responseHeaders != null) {
 			
 			for (header in __httpRequest.responseHeaders) {
 				
@@ -116,6 +117,7 @@ class URLLoader extends EventDispatcher {
 			}
 			
 		}
+		#end
 		
 		event.responseHeaders = headers;
 		dispatchEvent (event);
@@ -176,6 +178,7 @@ class URLLoader extends EventDispatcher {
 		}
 		
 		__httpRequest.userAgent = request.userAgent;
+		__httpRequest.enableResponseHeaders = true;
 		
 	}
 	
