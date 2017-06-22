@@ -79,7 +79,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				child.stage = stage;
+				child.setStage(stage);
 			}
 			child.updateCachedParent ();
 
@@ -161,7 +161,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 
-				child.stage = null;
+				child.setStage(null);
 
 			}
 
@@ -668,13 +668,27 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
-	private override function __fireRemovedFromStageEvent() {
-		super.__fireRemovedFromStageEvent();
+	private override function __fireRemovedFromStageEvent(stack=null) {
+		super.__fireRemovedFromStageEvent(stack);
 
 		if (__children != null) {
+			#if compliant_stage_events
+				#if dev
+					if ( stack[stack.length-1] != this ) {
+						throw "Unexpected stack. Fix behavior..";
+					}
+				#end
+				stack.push(null);
+			#end
 			for (child in __children) {
-				child.__fireRemovedFromStageEvent();
+				#if compliant_stage_events
+					stack[stack.length-1] = child;
+				#end
+				child.__fireRemovedFromStageEvent(stack);
 			}
+			#if compliant_stage_events
+				stack.pop();
+			#end
 		}
 	}
 
@@ -683,18 +697,32 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (__children != null) {
 			for (child in __children) {
-				child.stage = value;
+				child.__updateStageInternal(value);
 			}
 		}
 	}
 
-	private override function __fireAddedToStageEvent() {
-		super.__fireAddedToStageEvent();
+	private override function __fireAddedToStageEvent(stack=null) {
+		super.__fireAddedToStageEvent(stack);
 
 		if (__children != null) {
+			#if compliant_stage_events
+				#if dev
+					if ( stack[stack.length-1] != this ) {
+						throw "Unexpected stack. Fix behavior..";
+					}
+				#end
+				stack.push(null);
+			#end
 			for (child in __children) {
-				child.__fireAddedToStageEvent();
+				#if compliant_stage_events
+					stack[stack.length-1] = child;
+				#end
+				child.__fireAddedToStageEvent(stack);
 			}
+			#if compliant_stage_events
+				stack.pop();
+			#end
 		}
 	}
 
