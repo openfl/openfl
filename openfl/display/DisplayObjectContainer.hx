@@ -126,7 +126,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function getChildByName (name:String):DisplayObject {
 
 		for (child in __children) {
-			if (child == null) continue;
 			if (child.name == name) return child;
 
 		}
@@ -338,8 +337,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			for (child in __children) {
 
-				if(child == null) continue;
-
 				child.__broadcast (event, true);
 
 				if (event.__isCanceled) {
@@ -366,7 +363,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			child.__getTransformedBounds (childRect, child.__transform);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
@@ -390,7 +386,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 
 			var childFilterTransform = Matrix.pool.get ();
@@ -439,7 +434,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			child.__getRenderBounds (childRect);
 
@@ -630,7 +624,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 
 		for (child in __children) {
-			if (child == null ) continue;
 			child.__renderCanvas (renderSession);
 
 		}
@@ -679,10 +672,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if( maskEndDepth == -1 ){
 				renderSession.maskManager.popMask();
-			}
-
-			if (child == null ) {
-				continue;
 			}
 
 			if( child.__clipDepth != 0 ){
@@ -773,7 +762,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			for (child in __children) {
 
-				if (child == null ) continue;
 				child.__update (transformOnly, true);
 
 			}
@@ -789,7 +777,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child == null ) continue;
 			child.__update (transformOnly, true);
 
 		}
