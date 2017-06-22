@@ -668,12 +668,19 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
-	private override function __fireRemovedFromStageEvent() {
-		super.__fireRemovedFromStageEvent();
+	private override function __fireRemovedFromStageEvent(stack=null) {
+		super.__fireRemovedFromStageEvent(stack);
 
 		if (__children != null) {
 			for (child in __children) {
-				child.__fireRemovedFromStageEvent();
+				#if compliant_stage_events
+					if ( stack[stack.length] == this ) {
+						stack.push(child);
+					} else {
+						stack[stack.length] = child;
+					}
+				#end
+				child.__fireRemovedFromStageEvent(stack);
 			}
 		}
 	}
@@ -688,12 +695,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 	}
 
-	private override function __fireAddedToStageEvent() {
-		super.__fireAddedToStageEvent();
+	private override function __fireAddedToStageEvent(stack=null) {
+		super.__fireAddedToStageEvent(stack);
 
 		if (__children != null) {
 			for (child in __children) {
-				child.__fireAddedToStageEvent();
+				#if compliant_stage_events
+					if ( stack[stack.length] == this ) {
+						stack.push(child);
+					} else {
+						stack[stack.length] = child;
+					}
+				#end
+				child.__fireAddedToStageEvent(stack);
 			}
 		}
 	}
