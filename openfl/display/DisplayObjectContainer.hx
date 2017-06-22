@@ -672,16 +672,21 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__fireRemovedFromStageEvent(stack);
 
 		if (__children != null) {
+			#if compliant_stage_events
+				if ( stack[stack.length-1] != this ) {
+					throw "Unexpected stack. Fix behavior..";
+				}
+				stack.push(null);
+			#end
 			for (child in __children) {
 				#if compliant_stage_events
-					if ( stack[stack.length] == this ) {
-						stack.push(child);
-					} else {
-						stack[stack.length] = child;
-					}
+					stack[stack.length-1] = child;
 				#end
 				child.__fireRemovedFromStageEvent(stack);
 			}
+			#if compliant_stage_events
+				stack.pop();
+			#end
 		}
 	}
 
@@ -699,16 +704,21 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__fireAddedToStageEvent(stack);
 
 		if (__children != null) {
+			#if compliant_stage_events
+				if ( stack[stack.length-1] != this ) {
+					throw "Unexpected stack. Fix behavior..";
+				}
+				stack.push(null);
+			#end
 			for (child in __children) {
 				#if compliant_stage_events
-					if ( stack[stack.length] == this ) {
-						stack.push(child);
-					} else {
-						stack[stack.length] = child;
-					}
+					stack[stack.length-1] = child;
 				#end
 				child.__fireAddedToStageEvent(stack);
 			}
+			#if compliant_stage_events
+				stack.pop();
+			#end
 		}
 	}
 
