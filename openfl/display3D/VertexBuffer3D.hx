@@ -83,12 +83,14 @@ class VertexBuffer3D {
 		var float32Array:Float32Array;
 
 		#if js
-		float32Array = new Float32Array (length);
+		if(startVertex == 0 && length == data.length) {
+			float32Array = untyped __js__("new Float32Array(data.data)");
+		} else {
+			float32Array = new Float32Array (length);
 
-		for (i in startVertex...(startVertex + length)) {
-
-			float32Array[i] = data[i];
-
+			for (i in startVertex...(startVertex + length)) {
+				float32Array[i] = data[i];
+			}
 		}
 		#else
 		var offset:Int = startVertex;
