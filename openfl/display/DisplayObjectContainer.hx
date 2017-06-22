@@ -673,9 +673,11 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (__children != null) {
 			#if compliant_stage_events
-				if ( stack[stack.length-1] != this ) {
-					throw "Unexpected stack. Fix behavior..";
-				}
+				#if dev
+					if ( stack[stack.length-1] != this ) {
+						throw "Unexpected stack. Fix behavior..";
+					}
+				#end
 				stack.push(null);
 			#end
 			for (child in __children) {
@@ -705,9 +707,11 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (__children != null) {
 			#if compliant_stage_events
-				if ( stack[stack.length-1] != this ) {
-					throw "Unexpected stack. Fix behavior..";
-				}
+				#if dev
+					if ( stack[stack.length-1] != this ) {
+						throw "Unexpected stack. Fix behavior..";
+					}
+				#end
 				stack.push(null);
 			#end
 			for (child in __children) {
