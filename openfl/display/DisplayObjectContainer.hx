@@ -79,7 +79,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				child.stage = stage;
+				child.setStage(stage);
 			}
 			child.updateCachedParent ();
 
@@ -161,7 +161,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 
-				child.stage = null;
+				child.setStage(null);
 
 			}
 
@@ -690,7 +690,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (__children != null) {
 			for (child in __children) {
-				child.stage = value;
+				child.__updateStageInternal(value);
 			}
 		}
 	}

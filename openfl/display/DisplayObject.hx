@@ -748,7 +748,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 	#end
 
-	private function set_stage (stage:Stage):Stage {
+	private function setStage (stage:Stage):Stage {
 		if (this.stage != stage) {
 			var stack = null;
 			#if compliant_stage_events
