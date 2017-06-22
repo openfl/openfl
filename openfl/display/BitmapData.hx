@@ -1093,10 +1093,10 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private inline function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true) {
+	private inline function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true, ?maskBitmap:BitmapData, ?maskMatrix:Matrix) {
 
 		__pushFrameBuffer(renderSession, smoothing, clearBuffer, powerOfTwo);
-		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, clipRect);
+		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, clipRect, maskBitmap, maskMatrix);
 		__popFrameBuffer(renderSession, readPixels);
 
 	}

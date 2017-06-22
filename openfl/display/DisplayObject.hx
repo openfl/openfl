@@ -649,7 +649,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 	#end
 
-	public inline function __updateCachedBitmapFn (renderSession:RenderSession):Void {
+	public function __updateCachedBitmapFn (renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
 
 		var filterTransform = Matrix.pool.get ();
 		filterTransform.identity ();
@@ -686,10 +686,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		m.d = renderScaleY;
 		m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
 
+		var m2:Matrix = null;
+
+		if (maskMatrix != null) {
+			m2 = Matrix.pool.get ();
+			m2.copyFrom (m);
+			m2.invert ();
+			m2.concat (__renderTransform);
+			m2.concat (maskMatrix);
+		}
+
 		// we disable the container shader, it will be applied to the final texture
 		var shader = __shader;
 		this.__shader = null;
-		@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
+		@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true, maskBitmap, m2);
+
+		if (maskMatrix != null) {
+			Matrix.pool.put(m2);
+		}
+
 		Matrix.pool.put(m);
 		this.__shader = shader;
 

@@ -157,7 +157,7 @@ class GLBitmap {
 	 * @param	blendMode
 	 * @param	clipRect
 	 */
-	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?clipRect:Rectangle) {
+	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?clipRect:Rectangle, ?maskBitmap:BitmapData, ?maskMatrix:Matrix) {
 		var data = fbData[fbData.length - 1];
 		if (data == null) throw "No data to draw to";
 
@@ -175,7 +175,7 @@ class GLBitmap {
 			tmpRect.setTo(viewPort.x, viewPort.y, viewPort.width, viewPort.height);
 		}
 
-		spritebatch.begin (renderSession, drawTarget ? null : tmpRect);
+		spritebatch.begin (renderSession, drawTarget ? null : tmpRect, maskBitmap, maskMatrix);
 
 		if (drawTarget) {
 
