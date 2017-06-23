@@ -248,7 +248,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
 		renderSession.maskManager.pushObject (this);
 		__currentState.__renderCairo (renderSession);
@@ -266,7 +266,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
 		#if !neko
 		
@@ -305,7 +305,12 @@ class SimpleButton extends InteractiveObject {
 		}
 		
 		__previousStates.length = 0;
-		__currentState.__renderDOM (renderSession);
+		
+		if (__currentState != null) {
+			
+			__currentState.__renderDOM (renderSession);
+			
+		}
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -316,7 +321,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
 		renderSession.maskManager.pushObject (this);
 		__currentState.__renderGL (renderSession);
@@ -517,13 +522,13 @@ class SimpleButton extends InteractiveObject {
 	
 	private function set___currentState (value:DisplayObject):DisplayObject {
 		
-		if (__currentState != null) {
+		if (__currentState != null && __currentState != hitTestState) {
 			
 			__currentState.__renderParent = null;
 			
 		}
 		
-		if (value.parent != null) {
+		if (value != null && value.parent != null) {
 			
 			value.parent.removeChild (value);
 			
@@ -556,8 +561,13 @@ class SimpleButton extends InteractiveObject {
 			}
 			#end
 			
-			value.__renderParent = this;
-			value.__setRenderDirty ();
+			if (value != null) {
+				
+				value.__renderParent = this;
+				value.__setRenderDirty ();
+				
+			}
+			
 			__setRenderDirty ();
 			
 		}
@@ -578,11 +588,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private function __this_onMouseDown (event:MouseEvent):Void {
 		
-		if (downState != null) {
-			
-			__currentState = downState;
-			
-		}
+		__currentState = downState;
 		
 	}
 	
