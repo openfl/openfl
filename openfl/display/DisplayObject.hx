@@ -772,14 +772,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			#end
 
 			if (this.stage != null) {
-				__fireRemovedFromStageEvent(stack);
-
 				if (this.stage.focus == this) {
 					this.stage.focus = null;
 				}
+
+				__fireRemovedFromStageEvent(stack);
+				__releaseResources();
+
 			}
 
-			__releaseResources();
 
 			this.__updateStageInternal(stage);
 
