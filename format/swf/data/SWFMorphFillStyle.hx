@@ -14,7 +14,7 @@ class SWFMorphFillStyle implements hxbit.Serializable
 	@:s public var startGradientMatrix:SWFMatrix;
 	@:s public var endGradientMatrix:SWFMatrix;
 	@:s public var gradient:SWFMorphGradient;
-	@:s public var bitmapId:Int;
+	@:s public var bitmapId:Null<Int>;
 	@:s public var startBitmapMatrix:SWFMatrix;
 	@:s public var endBitmapMatrix:SWFMatrix;
 

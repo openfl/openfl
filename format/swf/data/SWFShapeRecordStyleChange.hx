@@ -11,11 +11,11 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 	@:s public var stateFillStyle0:Bool;
 	@:s public var stateMoveTo:Bool;
 
-	@:s public var moveDeltaX:Int;
-	@:s public var moveDeltaY:Int;
-	@:s public var fillStyle0:Int;
-	@:s public var fillStyle1:Int;
-	@:s public var lineStyle:Int;
+	@:s public var moveDeltaX:Int = 0;
+	@:s public var moveDeltaY:Int = 0;
+	@:s public var fillStyle0:Int = 0;
+	@:s public var fillStyle1:Int = 0;
+	@:s public var lineStyle:Int = 0;
 
 	@:s public var numFillBits:Int = 0;
 	@:s public var numLineBits:Int = 0;

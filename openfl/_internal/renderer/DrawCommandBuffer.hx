@@ -16,33 +16,39 @@ import openfl.Vector;
 import openfl.utils.UnshrinkableArray;
 
 @:allow(openfl._internal.renderer.DrawCommandReader)
-class DrawCommandBuffer implements hxbit.Serializable {
+class DrawCommandBuffer implements hxbit.CustomSerializable {
 
 
 	public var length (get, never):Int;
-	@:s public var types:UnshrinkableArray<DrawCommandType>;
 
-	@:s private var b:UnshrinkableArray<Bool>;
-	@:s private var f:UnshrinkableArray<Float>;
-	@:s private var ff:UnshrinkableArray<Array<Float>>;
-	@:s private var i:UnshrinkableArray<Int>;
-	@:s private var ii:UnshrinkableArray<Array<Int>>;
-	@:s private var o:UnshrinkableArray<Dynamic>;
-	@:s private var bd:UnshrinkableArray<Dynamic>;
+	public var types:UnshrinkableArray<DrawCommandType>;
+	private var b:UnshrinkableArray<Bool>;
+	private var f:UnshrinkableArray<Float>;
+	private var ff:UnshrinkableArray<Array<Float>>;
+	private var i:UnshrinkableArray<Int>;
+	private var ii:UnshrinkableArray<Array<Int>>;
+	private var m:UnshrinkableArray<Matrix>;
+	private var vf:UnshrinkableArray<Vector<Float>>;
+	private var vi:UnshrinkableArray<Vector<Int>>;
+	private var bd_ids:UnshrinkableArray<Int>;
 
+	private var bd:UnshrinkableArray<BitmapData>;
 
 	public function new () {
 
-		types = new UnshrinkableArray(128);
+		types = new UnshrinkableArray();
 
-		b = new UnshrinkableArray(128);
-		i = new UnshrinkableArray(128);
-		f = new UnshrinkableArray(128);
-		o = new UnshrinkableArray(128);
-		ff = new UnshrinkableArray(128);
-		ii = new UnshrinkableArray(128);
-		bd = new UnshrinkableArray(128);
+		b = new UnshrinkableArray();
+		i = new UnshrinkableArray();
+		f = new UnshrinkableArray();
+		ff = new UnshrinkableArray();
+		ii = new UnshrinkableArray();
+		m = new UnshrinkableArray();	
+		vf = new UnshrinkableArray();	
+		vi = new UnshrinkableArray();	
+		bd_ids = new UnshrinkableArray();
 
+		bd = new UnshrinkableArray();	
 	}
 
 
@@ -89,7 +95,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 
 		types.push (BEGIN_BITMAP_FILL);
 		bd.push (bitmap);
-		o.push (matrix);
+		m.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
 
@@ -98,8 +104,8 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	public function beginBitmapFillWithId(bitmapId:Int, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
 
 		types.push (BEGIN_BITMAP_FILL);
-		bd.push (bitmapId);
-		o.push (matrix);
+		bd_ids.push (bitmapId);
+		m.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
 
@@ -117,13 +123,13 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
 
 		types.push (BEGIN_GRADIENT_FILL);
-		o.push (type);
+		i.push (cast type);
 		ii.push (colors);
 		ff.push (alphas);
 		ii.push (ratios);
-		o.push (matrix);
-		o.push (spreadMethod);
-		o.push (interpolationMethod);
+		m.push (matrix);
+		i.push (cast spreadMethod);
+		i.push (cast interpolationMethod);
 		f.push (focalPointRatio);
 
 	}
@@ -136,7 +142,10 @@ class DrawCommandBuffer implements hxbit.Serializable {
 		b.clear();
 		i.clear();
 		f.clear();
-		o.clear();
+		m.clear();
+		vi.clear();
+		vf.clear();
+		bd_ids.clear();
 		ff.clear();
 		ii.clear();
 		bd.clear();
@@ -185,9 +194,12 @@ class DrawCommandBuffer implements hxbit.Serializable {
 		b = null;
 		i = null;
 		f = null;
-		o = null;
 		ff = null;
 		ii = null;
+		m = null;
+		vf = null;
+		vi = null;
+		bd_ids = null;
 
 	}
 
@@ -217,7 +229,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 
 		types.push (DRAW_IMAGE);
 		bd.push (bitmap);
-		o.push (matrix);
+		m.push (matrix);
 		b.push (smooth);
 
 	}
@@ -226,8 +238,8 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	public function drawImageWithId(bitmapId:Int, matrix:Matrix, smooth:Bool):Void {
 
 		types.push (DRAW_IMAGE);
-		bd.push (bitmapId);
-		o.push (matrix);
+		bd_ids.push (bitmapId);
+		m.push (matrix);
 		b.push (smooth);
 
 	}
@@ -235,10 +247,11 @@ class DrawCommandBuffer implements hxbit.Serializable {
 
 	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding):Void {
 
+		throw("Unsupported drawPath");
 		types.push (DRAW_PATH);
-		o.push (commands);
-		o.push (data);
-		o.push (winding);
+		vi.push (commands);
+		vf.push (data);
+		i.push (cast winding);
 
 	}
 
@@ -253,7 +266,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 
 	}
 
-	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void {
+	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Float):Void {
 
 		types.push (DRAW_ROUND_RECT);
 		f.push (x);
@@ -261,18 +274,19 @@ class DrawCommandBuffer implements hxbit.Serializable {
 		f.push (width);
 		f.push (height);
 		f.push (ellipseWidth);
-		o.push (ellipseHeight);
+		f.push (ellipseHeight);
 
 	}
 
 
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void {
 
+		throw("Unsupported drawTriangles");
 		types.push (DRAW_TRIANGLES);
-		o.push (vertices);
-		o.push (indices);
-		o.push (uvtData);
-		o.push (culling);
+		vf.push (vertices);
+		vi.push (indices);
+		vf.push (uvtData);
+		i.push (cast culling);
 
 	}
 
@@ -288,7 +302,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 
 		types.push (LINE_BITMAP_STYLE);
 		bd.push (bitmap);
-		o.push (matrix);
+		m.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
 
@@ -298,28 +312,28 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
 
 		types.push (LINE_GRADIENT_STYLE);
-		o.push (type);
+		i.push (cast type);
 		ii.push (colors);
 		ff.push (alphas);
 		ii.push (ratios);
-		o.push (matrix);
-		o.push (spreadMethod);
-		o.push (interpolationMethod);
+		m.push (matrix);
+		i.push (cast spreadMethod);
+		i.push (cast interpolationMethod);
 		f.push (focalPointRatio);
 
 	}
 
 
-	public function lineStyle (thickness:Null<Float>, color:Int, alpha:Float, pixelHinting:Bool, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Float):Void {
+	public function lineStyle (thickness:Float, color:Int, alpha:Float, pixelHinting:Bool, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Float):Void {
 
 		types.push (LINE_STYLE);
-		o.push (thickness);
+		f.push (thickness);
 		i.push (color);
 		f.push (alpha);
 		b.push (pixelHinting);
-		o.push (scaleMode);
-		o.push (caps);
-		o.push (joints);
+		i.push (cast scaleMode);
+		i.push (cast caps);
+		i.push (cast joints);
 		f.push (miterLimit);
 
 	}
@@ -346,7 +360,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	public function overrideMatrix (matrix:Matrix):Void {
 
 		types.push (OVERRIDE_MATRIX);
-		o.push (matrix);
+		m.push (matrix);
 
 	}
 
@@ -361,10 +375,62 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	}
 
 	public function resolveBitmapDatas(swflite:format.swf.lite.SWFLite) {
-		for(i in 0...bd.length) {
-			var symbol:format.swf.lite.symbols.BitmapSymbol = cast swflite.symbols.get (bd[i]);
-			bd[i] = BitmapData.getFromSymbol(symbol);
+		bd = new UnshrinkableArray();
+		for(i in 0...bd_ids.length) {
+			var symbol:format.swf.lite.symbols.BitmapSymbol = cast swflite.symbols.get (bd_ids[i]);
+			bd.push(BitmapData.getFromSymbol(symbol));
 		}
 	}
 
+	@:keep
+    public function serialize(ctx:hxbit.Serializer)
+    {
+		ctx.addArray(types.getInternalArray(), function(item){ ctx.addInt(Type.enumIndex(item)); });
+		ctx.addDynamic(b.getInternalArray());
+		ctx.addDynamic(i.getInternalArray());
+		ctx.addDynamic(f.getInternalArray());
+		ctx.addDynamic(ff.getInternalArray());
+		ctx.addDynamic(ii.getInternalArray());
+		ctx.addArray(
+			m.getInternalArray(),
+			function(m){
+				ctx.addFloat(m.a);
+				ctx.addFloat(m.b);
+				ctx.addFloat(m.c);
+				ctx.addFloat(m.d);
+				ctx.addFloat(m.tx);
+				ctx.addFloat(m.ty);
+			});
+		ctx.addDynamic(bd_ids.getInternalArray());
+    }
+
+    @:keep
+    public function unserialize(ctx:hxbit.Serializer)
+    {
+		types = new UnshrinkableArray(
+			128,
+			ctx.getArray(function(){
+				return Type.createEnumIndex(DrawCommandType, ctx.getInt());
+			})
+			);
+		b = new UnshrinkableArray(128, cast ctx.getDynamic());
+		i = new UnshrinkableArray(128, cast ctx.getDynamic());
+		f = new UnshrinkableArray(128, cast ctx.getDynamic());
+		ff = new UnshrinkableArray(128, cast ctx.getDynamic());
+		ii = new UnshrinkableArray(128, cast ctx.getDynamic());
+		m = new UnshrinkableArray(
+			128,
+			ctx.getArray(function(){
+				var m = new Matrix();
+				m.a = ctx.getFloat();
+				m.b = ctx.getFloat();
+				m.c = ctx.getFloat();
+				m.d = ctx.getFloat();
+				m.tx = ctx.getFloat();
+				m.ty = ctx.getFloat();
+				return m;
+			})
+			);	
+		bd_ids = new UnshrinkableArray(128, cast ctx.getDynamic());
+    }
 }

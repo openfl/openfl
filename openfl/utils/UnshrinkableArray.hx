@@ -6,12 +6,17 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 {
     public var length(get, never):Int;
 
-    public inline function new(maxSize:Int)
+    public inline function new(maxSize:Int = 64, internalArray:Array<T> = null)
     {
         this = new UnshrinkableArrayData();
-        this._items = new Array<T>();
+        this._items = internalArray != null ? internalArray : new Array<T>();
 
-        this._length = 0;
+        this._length = this._items.length;
+    }
+
+    public inline function getInternalArray():Array<T>
+    {
+        return this._items;
     }
 
     public inline function push(item:T)
@@ -163,11 +168,11 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
     }
 }
 
-class UnshrinkableArrayData<T> implements hxbit.Serializable
+class UnshrinkableArrayData<T>
 {
 
-    @:s public var _items:Array<T>;
-    @:s public var _length:Int;
+    public var _items:Array<T>;
+    public var _length:Int;
 
     public function new () {
         _length = 0;

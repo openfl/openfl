@@ -444,7 +444,7 @@ class Tools {
 
 					}
 
-					var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+					var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.BINARY);
 
 					if (library.embed != null) {
 
@@ -544,7 +544,7 @@ class Tools {
 
 					//}
 
-					var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+					var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.BINARY);
 					var swfLiteAssetData = swfLite.serializeLibrary ();
 
 					if (cacheDirectory != null) {

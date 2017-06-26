@@ -32,7 +32,7 @@ class SWFShape implements hxbit.Serializable
 	@:s private var lineEdgeMaps:Array<Map<Int, Array<Edge>>>;
 	@:s private var currentFillEdgeMap:Map<Int, Array<Edge>>;
 	@:s private var currentLineEdgeMap:Map<Int, Array<Edge>>;
-	@:s private var numGroups:Int;
+	@:s private var numGroups:Null<Int>;
 	@:s private var coordMap:Map<String, Array<Edge>>;
 
 	@:s private var unitDivisor:Float;
@@ -378,7 +378,7 @@ class SWFShape implements hxbit.Serializable
 									handler.beginFill(ColorUtils.rgb(fillStyle.rgb), ColorUtils.alpha(fillStyle.rgb));
 								case 0x10, 0x12, 0x13:
 									// Gradient fill
-									var colors:Array<UInt> = [];
+									var colors:Array<Int> = [];
 									var alphas:Array<Float> = [];
 									var ratios:Array<Int> = [];
 									var gradientRecord:SWFGradientRecord;

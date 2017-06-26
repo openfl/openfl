@@ -27,18 +27,36 @@ class DrawCommandReader {
 	private var iPos:Int;
 	private var ffPos:Int;
 	private var fPos:Int;
-	private var oPos:Int;
+	private var mPos:Int;
+	private var viPos:Int;
+	private var vfPos:Int;
 	private var prev:DrawCommandType;
-	private var tsPos:Int;
 	private var bdPos:Int;
 	
 	public function new (buffer:DrawCommandBuffer) {
 		
 		this.buffer = buffer;
 		
-		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = bdPos = 0;
+		bPos = iPos = fPos = mPos = viPos = vfPos = ffPos = iiPos = bdPos = 0;
 		prev = UNKNOWN;
 		
+	}
+
+	public function endCheck()
+	{
+		advance();
+
+		#if js
+		js.Browser.console.assert(bPos == buffer.b.length);
+		js.Browser.console.assert(ffPos == buffer.ff.length);
+		js.Browser.console.assert(fPos == buffer.f.length);
+		js.Browser.console.assert(iiPos == buffer.ii.length);
+		js.Browser.console.assert(iPos == buffer.i.length);
+		js.Browser.console.assert(mPos == buffer.m.length);
+		js.Browser.console.assert(bdPos == buffer.bd.length);
+		//js.Browser.console.assert(viPos == buffer.vi.length);
+		//js.Browser.console.assert(vfPos == buffer.vf.length);
+		#end
 	}
 	
 	
@@ -49,7 +67,7 @@ class DrawCommandReader {
 			case BEGIN_BITMAP_FILL:
 				
 				bdPos += 1; //bitmap
-				oPos += 1; // matrix
+				mPos += 1; // matrix
 				bPos += 2; //repeat, smooth
 			
 			case BEGIN_FILL:
@@ -59,10 +77,11 @@ class DrawCommandReader {
 			
 			case BEGIN_GRADIENT_FILL:
 				
-				oPos += 4;  //type, matrix, spreadMethod, interpolationMethod
+				mPos += 1;  //matrix
 				iiPos += 2; //colors, ratios
 				ffPos += 1; //alphas
 				fPos += 1;  //focalPointRatio
+				iPos += 3; //type, spreadMethod, interpolationMethod
 			
 			case CUBIC_CURVE_TO:
 				
@@ -83,12 +102,14 @@ class DrawCommandReader {
 			case DRAW_IMAGE:
 
 				bdPos += 1; //bitmap
-				oPos += 1; // matrix
+				mPos += 1; // matrix
 				bPos += 1; // smooth
 
 			case DRAW_PATH:
 				
-				oPos += 3; //commands, data, winding
+				viPos += 1; // commands
+				vfPos += 1; // data
+				iPos += 1; // winding
 			
 			case DRAW_RECT:
 				
@@ -96,20 +117,17 @@ class DrawCommandReader {
 			
 			case DRAW_ROUND_RECT:
 				
-				fPos += 5; //x, y, width, height, ellipseWidth
-				oPos += 1; //ellipseHeight
+				fPos += 6; //x, y, width, height, ellipseWidth, ellipseHeight
 			
 			case DRAW_TILES:
 				
-				tsPos += 1; //sheet
-				ffPos += 1; //tileData
-				bPos += 1; //smooth
-				iPos += 2; //flags, count
-				oPos += 1;
+				throw("Unsupported DRAW_TILES");	
 			
 			case DRAW_TRIANGLES:
-				
-				oPos += 4; //vertices, indices, uvtData, culling
+
+				vfPos += 2; //vertices, uvtData
+				viPos += 1; // indices
+				iPos += 1; //culling
 			
 			case END_FILL:
 				
@@ -118,21 +136,21 @@ class DrawCommandReader {
 			case LINE_BITMAP_STYLE:
 				
 				bdPos += 1; //bitmap
-				oPos += 1; //matrix
+				mPos += 1; //matrix
 				bPos += 2; //repeat, smooth
 			
 			case LINE_GRADIENT_STYLE:
 				
-				oPos += 4; //type, matrix, spreadMethod, interpolationMethod
+				mPos += 1; // matrix
 				iiPos += 2; //colors, ratios
 				ffPos += 1; //alphas
 				fPos += 1; //focalPointRatio
+				iPos += 3; //type, spreadMethod, interpolationMethod
 			
 			case LINE_STYLE:
 				
-				oPos += 4; //thickness, scaleMode, caps, joints
-				iPos += 1; //color
-				fPos += 2; //alpha, miterLimit
+				iPos += 4; //color, scaleMode, caps, joints
+				fPos += 3; //thickness, alpha, miterLimit
 				bPos += 1; //pixelHinting
 			
 			case LINE_TO:
@@ -146,7 +164,7 @@ class DrawCommandReader {
 			
 			case OVERRIDE_MATRIX:
 				
-				oPos += 1; //matrix
+				mPos += 1; //matrix
 			
 			default:
 				
@@ -155,14 +173,7 @@ class DrawCommandReader {
 		
 	}
 	
-	
-	private inline function bool (index:Int):Bool {
-		
-		return buffer.b[bPos + index];
-		
-	}
-	
-	
+
 	public function destroy ():Void {
 		
 		buffer = null;
@@ -170,7 +181,12 @@ class DrawCommandReader {
 		
 	}
 	
-	
+	private inline function bool (index:Int):Bool {
+		
+		return buffer.b[bPos + index];
+		
+	}
+
 	private inline function fArr (index:Int):Array<Float> {
 		
 		return buffer.ff[ffPos + index];
@@ -184,13 +200,11 @@ class DrawCommandReader {
 		
 	}
 	
-	
 	private inline function iArr (index:Int):Array<Int> {
 		
 		return buffer.ii[iiPos + index];
 		
 	}
-	
 	
 	private inline function int (index:Int):Int {
 		
@@ -198,10 +212,21 @@ class DrawCommandReader {
 		
 	}
 	
-	
-	private inline function obj (index:Int):Dynamic {
+	private inline function matrix (index:Int):Matrix {
 		
-		return buffer.o[oPos + index];
+		return buffer.m[mPos + index];
+		
+	}
+
+	private inline function iVec (index:Int):Vector<Int> {
+		
+		return buffer.vi[viPos + index];
+		
+	}
+
+	private inline function fVec (index:Int):Vector<Float> {
+		
+		return buffer.vf[vfPos + index];
 		
 	}
 
@@ -235,7 +260,7 @@ class DrawCommandReader {
 	
 	public function reset (?buffer:DrawCommandBuffer = null):Void {
 		this.buffer = buffer;
-		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = bdPos = 0;
+		bPos = iPos = fPos = mPos = viPos = vfPos = ffPos = iiPos = bdPos = 0;
 		prev = UNKNOWN;
 	}
 	
@@ -254,8 +279,8 @@ class DrawCommandReader {
 abstract BeginBitmapFillView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.bitmapData (0); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return this.bitmapData (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
 	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return this.bool (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (1); }
 	
@@ -274,14 +299,14 @@ abstract BeginFillView (DrawCommandReader) {
 abstract BeginGradientFillView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var type (get, never):GradientType; private inline function get_type ():GradientType { return cast this.obj (0); }
-	public var colors (get, never):Array<Int>; private inline function get_colors ():Array<Int> { return cast this.iArr (0); }
-	public var alphas (get, never):Array<Float>; private inline function get_alphas ():Array<Float> { return cast this.fArr (0); }
-	public var ratios (get, never):Array<Int>; private inline function get_ratios ():Array<Int> { return cast this.iArr (1); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
-	public var spreadMethod (get, never):SpreadMethod; private inline function get_spreadMethod ():SpreadMethod { return cast this.obj (2); }
-	public var interpolationMethod (get, never):InterpolationMethod; private inline function get_interpolationMethod ():InterpolationMethod { return cast this.obj (3); }
-	public var focalPointRatio (get, never):Float; private inline function get_focalPointRatio ():Float { return cast this.float (0); }
+	public var type (get, never):GradientType; private inline function get_type ():GradientType { return cast this.int (0); }
+	public var colors (get, never):Array<Int>; private inline function get_colors ():Array<Int> { return this.iArr (0); }
+	public var alphas (get, never):Array<Float>; private inline function get_alphas ():Array<Float> { return this.fArr (0); }
+	public var ratios (get, never):Array<Int>; private inline function get_ratios ():Array<Int> { return this.iArr (1); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
+	public var spreadMethod (get, never):SpreadMethod; private inline function get_spreadMethod ():SpreadMethod { return cast this.int (1); }
+	public var interpolationMethod (get, never):InterpolationMethod; private inline function get_interpolationMethod ():InterpolationMethod { return cast this.int (2); }
+	public var focalPointRatio (get, never):Float; private inline function get_focalPointRatio ():Float { return this.float (0); }
 	
 }
 
@@ -334,8 +359,8 @@ abstract DrawEllipseView (DrawCommandReader) {
 abstract DrawImageView (DrawCommandReader) {
 
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.bitmapData (0); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return this.bitmapData (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (0); }
 
 }
@@ -344,9 +369,9 @@ abstract DrawImageView (DrawCommandReader) {
 abstract DrawPathView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var commands (get, never):Vector<Int>; private inline function get_commands ():Vector<Int> { return cast this.obj (0); }
-	public var data (get, never):Vector<Float>; private inline function get_data ():Vector<Float> { return cast this.obj (1); }
-	public var winding (get, never):GraphicsPathWinding; private inline function get_winding ():GraphicsPathWinding { return cast this.obj (2); }
+	public var commands (get, never):Vector<Int>; private inline function get_commands ():Vector<Int> { return this.iVec (0); }
+	public var data (get, never):Vector<Float>; private inline function get_data ():Vector<Float> { return this.fVec (0); }
+	public var winding (get, never):GraphicsPathWinding; private inline function get_winding ():GraphicsPathWinding { return cast this.int (0); }
 	
 }
 
@@ -370,7 +395,7 @@ abstract DrawRoundRectView (DrawCommandReader) {
 	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
 	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	public var ellipseWidth (get, never):Float; private inline function get_ellipseWidth ():Float { return this.float (4); }
-	public var ellipseHeight (get, never):Null<Float>; private inline function get_ellipseHeight ():Null<Float> { return this.obj (0); }
+	public var ellipseHeight (get, never):Float; private inline function get_ellipseHeight ():Float { return this.float (5); }
 	
 }
 
@@ -378,10 +403,10 @@ abstract DrawRoundRectView (DrawCommandReader) {
 abstract DrawTrianglesView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var vertices (get, never):Vector<Float>; private inline function get_vertices ():Vector<Float> { return cast this.obj (0); }
-	public var indices (get, never):Vector<Int>; private inline function get_indices ():Vector<Int> { return cast this.obj (1); }
-	public var uvtData (get, never):Vector<Float>; private inline function get_uvtData ():Vector<Float> { return cast this.obj (2); }
-	public var culling (get, never):TriangleCulling; private inline function get_culling ():TriangleCulling { return cast this.obj (3); }
+	public var vertices (get, never):Vector<Float>; private inline function get_vertices ():Vector<Float> { return this.fVec (0); }
+	public var indices (get, never):Vector<Int>; private inline function get_indices ():Vector<Int> { return this.iVec (1); }
+	public var uvtData (get, never):Vector<Float>; private inline function get_uvtData ():Vector<Float> { return this.fVec (2); }
+	public var culling (get, never):TriangleCulling; private inline function get_culling ():TriangleCulling { return cast this.int (3); }
 	
 }
 
@@ -396,10 +421,10 @@ abstract EndFillView (DrawCommandReader) {
 abstract LineBitmapStyleView (DrawCommandReader) { 
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.bitmapData (0); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
-	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return cast this.bool (0); }
-	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return cast this.bool (1); }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return this.bitmapData (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
+	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return this.bool (0); }
+	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (1); }
 	
 }
 
@@ -407,14 +432,14 @@ abstract LineBitmapStyleView (DrawCommandReader) {
 abstract LineGradientStyleView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var type (get, never):GradientType; private inline function get_type ():GradientType { return cast this.obj (0); }
-	public var colors (get, never):Array<Int>; private inline function get_colors ():Array<Int> { return cast this.iArr (0); }
-	public var alphas (get, never):Array<Float>; private inline function get_alphas ():Array<Float> { return cast this.fArr (0); }
-	public var ratios (get, never):Array<Int>; private inline function get_ratios ():Array<Int> { return cast this.iArr (1); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
-	public var spreadMethod (get, never):SpreadMethod; private inline function get_spreadMethod ():SpreadMethod { return cast this.obj (2); }
-	public var interpolationMethod (get, never):InterpolationMethod; private inline function get_interpolationMethod ():InterpolationMethod { return cast this.obj (3); }
-	public var focalPointRatio (get, never):Float; private inline function get_focalPointRatio ():Float { return cast this.float (0); }
+	public var type (get, never):GradientType; private inline function get_type ():GradientType { return cast this.int (0); }
+	public var colors (get, never):Array<Int>; private inline function get_colors ():Array<Int> { return this.iArr (0); }
+	public var alphas (get, never):Array<Float>; private inline function get_alphas ():Array<Float> { return this.fArr (0); }
+	public var ratios (get, never):Array<Int>; private inline function get_ratios ():Array<Int> { return this.iArr (1); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
+	public var spreadMethod (get, never):SpreadMethod; private inline function get_spreadMethod ():SpreadMethod { return cast this.int (1); }
+	public var interpolationMethod (get, never):InterpolationMethod; private inline function get_interpolationMethod ():InterpolationMethod { return cast this.int (2); }
+	public var focalPointRatio (get, never):Float; private inline function get_focalPointRatio ():Float { return this.float (0); }
 	
 }
 
@@ -422,14 +447,14 @@ abstract LineGradientStyleView (DrawCommandReader) {
 abstract LineStyleView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var thickness (get, never):Null<Float>; private inline function get_thickness ():Null<Float> { return cast this.obj (0); }
+	public var thickness (get, never):Float; private inline function get_thickness ():Float { return this.float (0); }
 	public var color (get, never):Int; private inline function get_color ():Int { return cast this.int (0); }
-	public var alpha (get, never):Float; private inline function get_alpha ():Float { return cast this.float (0); }
+	public var alpha (get, never):Float; private inline function get_alpha ():Float { return cast this.float (1); }
 	public var pixelHinting (get, never):Bool; private inline function get_pixelHinting ():Bool { return cast this.bool (0); }
-	public var scaleMode (get, never):LineScaleMode; private inline function get_scaleMode ():LineScaleMode { return cast this.obj (1); }
-	public var caps (get, never):CapsStyle; private inline function get_caps ():CapsStyle { return cast this.obj (2); }
-	public var joints (get, never):JointStyle; private inline function get_joints ():JointStyle { return cast this.obj (3); }
-	public var miterLimit (get, never):Float; private inline function get_miterLimit ():Float { return cast this.float (1); }
+	public var scaleMode (get, never):LineScaleMode; private inline function get_scaleMode ():LineScaleMode { return cast this.int (1); }
+	public var caps (get, never):CapsStyle; private inline function get_caps ():CapsStyle { return cast this.int (2); }
+	public var joints (get, never):JointStyle; private inline function get_joints ():JointStyle { return cast this.int (3); }
+	public var miterLimit (get, never):Float; private inline function get_miterLimit ():Float { return cast this.float (2); }
 	
 }
 
@@ -455,6 +480,6 @@ abstract MoveToView (DrawCommandReader) {
 abstract OverrideMatrixView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
 	
 }

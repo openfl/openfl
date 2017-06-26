@@ -25,7 +25,7 @@ class DefaultShapeExporter implements IShapeExporter
 	public function endLines():Void {}
 	
 	public function beginFill(color:Int, alpha:Float = 1.0):Void {}
-	public function beginGradientFill(type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = null/*SpreadMethod.PAD*/, interpolationMethod:InterpolationMethod = null/*InterpolationMethod.RGB*/, focalPointRatio:Float = 0):Void {}
+	public function beginGradientFill(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = null/*SpreadMethod.PAD*/, interpolationMethod:InterpolationMethod = null/*InterpolationMethod.RGB*/, focalPointRatio:Float = 0):Void {}
 	public function beginBitmapFill(bitmapId:Int, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {}
 	public function endFill():Void {}
 	

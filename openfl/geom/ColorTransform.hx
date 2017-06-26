@@ -14,7 +14,7 @@ class ColorTransform implements hxbit.Serializable {
 	@:s public var alphaOffset:Float;
 	@:s public var blueMultiplier:Float;
 	@:s public var blueOffset:Float;
-	@:s public var color (get, set):Int;
+	public var color (get, set):Int;
 	@:s public var greenMultiplier:Float;
 	@:s public var greenOffset:Float;
 	@:s public var redMultiplier:Float;
