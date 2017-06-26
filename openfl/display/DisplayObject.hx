@@ -777,10 +777,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 
 				__fireRemovedFromStageEvent(stack);
+				__releaseResources();
 
 			}
 
-			__releaseResources();
 
 			this.__updateStageInternal(stage);
 
