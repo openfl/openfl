@@ -247,12 +247,12 @@ class TextEngine {
 		#if (js && html5)
 		
 		__context.font = getFont (format);
-		
+
 		if (format.__ascent != null) {
-			
-			ascent = format.__ascent;
-			descent = format.__descent;
-			
+
+			ascent = format.size * format.__ascent;
+			descent = format.size * format.__descent;
+
 		} else {
 			
 			ascent = format.size;
@@ -267,15 +267,15 @@ class TextEngine {
 		var font = getFontInstance (format);
 		
 		if (format.__ascent != null) {
-			
-			ascent = format.__ascent;
-			descent = format.__descent;
-			
+
+			ascent = format.size * format.__ascent;
+			descent = format.size * format.__descent;
+
 		} else if (font != null) {
-			
+
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
-			
+
 		} else {
 			
 			ascent = format.size;
@@ -881,12 +881,12 @@ class TextEngine {
 				#if (js && html5)
 				
 				__context.font = getFont (currentFormat);
-				
+
 				if (currentFormat.__ascent != null) {
-					
-					ascent = currentFormat.__ascent;
-					descent = currentFormat.__descent;
-					
+
+					ascent = currentFormat.size * currentFormat.__ascent;
+					descent = currentFormat.size * currentFormat.__descent;
+
 				} else {
 					
 					ascent = currentFormat.size;
@@ -903,15 +903,15 @@ class TextEngine {
 				font = getFontInstance (currentFormat);
 				
 				if (currentFormat.__ascent != null) {
-					
-					ascent = currentFormat.__ascent;
-					descent = currentFormat.__descent;
-					
+
+					ascent = currentFormat.size * currentFormat.__ascent;
+					descent = currentFormat.size * currentFormat.__descent;
+
 				} else if (font != null) {
-					
+
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
-					
+
 				} else {
 					
 					ascent = currentFormat.size;
