@@ -307,7 +307,11 @@ class SimpleButton extends InteractiveObject {
 		__previousStates.length = 0;
 		
 		if (__currentState != null) {
-			
+
+			if (__currentState.stage != stage) {
+				__currentState.__setStageReference(stage);
+			}
+
 			__currentState.__renderDOM (renderSession);
 			
 		}
