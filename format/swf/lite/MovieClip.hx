@@ -1017,7 +1017,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		if (__currentFrame != __lastUpdate) {
 
-			var scriptHasChangedFlow : Bool;
+			var scriptHasChangedFlow : Bool = false;
 
 			if( __currentFrame < __lastUpdate ){
 				var cacheCurrentFrame = __currentFrame;
@@ -1028,7 +1028,7 @@ class MovieClip extends flash.display.MovieClip {
 						break;
 					}
 				}
-				if (__playing){
+				if (__playing && !scriptHasChangedFlow){
 					for( frameIndex in ( 0 ... cacheCurrentFrame ) ){
 						scriptHasChangedFlow = __renderFrame (frameIndex);
 						if (!__playing || scriptHasChangedFlow)
