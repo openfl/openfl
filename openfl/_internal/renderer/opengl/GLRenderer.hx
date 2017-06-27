@@ -53,7 +53,7 @@ class GLRenderer extends AbstractRenderer {
 		values = new Array ();
 		
 		renderSession = new RenderSession ();
-		renderSession.clearDirtyFlags = true;
+		renderSession.hasDirtyFlags = true;
 		renderSession.gl = gl;
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;

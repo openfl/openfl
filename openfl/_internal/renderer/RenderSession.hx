@@ -26,7 +26,7 @@ class RenderSession {
 	
 	public var allowSmoothing:Bool;
 	public var cairo:CairoRenderContext;
-	public var clearDirtyFlags:Bool;
+	public var hasDirtyFlags:Bool;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl:GLRenderContext;
@@ -58,7 +58,7 @@ class RenderSession {
 	public function new () {
 		
 		allowSmoothing = true;
-		clearDirtyFlags = false;
+		hasDirtyFlags = false;
 		//maskManager = new MaskManager (this);
 		
 	}

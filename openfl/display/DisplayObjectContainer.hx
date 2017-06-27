@@ -592,7 +592,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.hasDirtyFlags) {
 			
 			for (child in __children) {
 				
@@ -662,7 +662,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.hasDirtyFlags) {
 			
 			for (child in __children) {
 				
@@ -735,7 +735,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.hasDirtyFlags) {
 			
 			for (child in __children) {
 				
@@ -786,7 +786,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		renderSession.maskManager.pushObject (this);
 		renderSession.filterManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.hasDirtyFlags) {
 			
 			for (child in __children) {
 				

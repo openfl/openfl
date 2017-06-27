@@ -34,7 +34,7 @@ class DOMRenderer extends AbstractRenderer {
 		this.element = element;
 		
 		renderSession = new RenderSession ();
-		renderSession.clearDirtyFlags = true;
+		renderSession.hasDirtyFlags = true;
 		renderSession.element = element;
 		//renderSession.roundPixels = true;
 		
