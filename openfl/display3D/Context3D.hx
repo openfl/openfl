@@ -90,12 +90,7 @@ import openfl.Lib;
 		var stage = Lib.current.stage;
 
 		ogl = new OpenGLView ();
-		ogl.scrollRect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
-		//scrollRect = ogl.scrollRect.clone ();
-		// get_scrollRect already returns a clone.
-		scrollRect = ogl.scrollRect;
-		ogl.width = stage.stageWidth;
-		ogl.height = stage.stageHeight;
+		resize();
 
 		stage.addChildAt(ogl, 0);
 
@@ -103,6 +98,9 @@ import openfl.Lib;
 		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
 		GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 		#end
+
+		stage.addEventListener (Event.RESIZE, resize);
+
 	}
 
 
@@ -161,6 +159,16 @@ import openfl.Lib;
 
 		updateBackBufferViewPort ();
 
+	}
+
+	private function resize(?dummy:Dynamic) {
+		var stage = Lib.current.stage;
+		var width = stage.stageWidth * stage.scaleX;
+		var height = stage.stageHeight * stage.scaleY;
+		ogl.scrollRect = new Rectangle (0, 0, width, height);
+		scrollRect = ogl.scrollRect;
+		ogl.width = width;
+		ogl.height = height;
 	}
 
 	private function updateBackBufferViewPort () {
@@ -1138,7 +1146,7 @@ import openfl.Lib;
 		setGLSLVertexBufferAt (locationName, buffer, bufferOffset, format);
 
 	}
-	
+
 	private function __getUniformLocationNameFromAgalRegisterIndex (programType:Context3DProgramType, firstRegister:Int):String {
 		if (programType == Context3DProgramType.VERTEX) {
 			return "vc" + firstRegister;
