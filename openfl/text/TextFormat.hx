@@ -29,6 +29,9 @@ class TextFormat {
 	public var underline:Null<Bool>;
 	public var url:String;
 	
+	private var __ascent:Null<Float>;
+	private var __descent:Null<Float>;
+	
 	
 	public function new (font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null, underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null, rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null) {
 		
@@ -65,6 +68,9 @@ class TextFormat {
 		newFormat.letterSpacing = letterSpacing;
 		newFormat.tabStops = tabStops;
 		
+		newFormat.__ascent = __ascent;
+		newFormat.__descent = __descent;
+		
 		return newFormat;
 		
 	}
@@ -90,6 +96,9 @@ class TextFormat {
 		if (format.kerning != null) kerning = format.kerning;
 		if (format.letterSpacing != null) letterSpacing = format.letterSpacing;
 		if (format.tabStops != null) tabStops = format.tabStops;
+		
+		if (format.__ascent != null) __ascent = format.__ascent;
+		if (format.__descent != null) __descent = format.__descent;
 		
 	}
 	

@@ -221,6 +221,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
+		super.__renderCairo (renderSession);
 		CairoTilemap.render (this, renderSession);
 		#end
 		
@@ -229,6 +230,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
+		super.__renderCanvas (renderSession);
 		CanvasTilemap.render (this, renderSession);
 		
 	}
@@ -237,6 +239,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
+		super.__renderDOM (renderSession);
 		DOMTilemap.render (this, renderSession);
 		#end
 		
@@ -254,6 +257,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
+		super.__renderGL (renderSession);
 		GLTilemap.render (this, renderSession);
 		
 	}

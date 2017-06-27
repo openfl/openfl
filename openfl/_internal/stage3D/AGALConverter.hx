@@ -141,7 +141,7 @@ class AGALConverter {
 				
 				case 0x05: // rcp
 					
-					sb.add (dr.toGLSL () + " = vec4(1) / " + sr1.toGLSL () + ", " + sr2.toGLSL () + "; // rcp (untested)");
+					sb.add (dr.toGLSL () + " = vec4(1) / " + sr1.toGLSL () + "; // rcp");
 					map.addDR (dr, RegisterUsage.VECTOR_4);
 					map.addSR (sr1, RegisterUsage.VECTOR_4);
 				

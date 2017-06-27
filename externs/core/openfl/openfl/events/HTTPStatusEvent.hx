@@ -1,6 +1,9 @@
 package openfl.events; #if (display || !flash)
 
 
+import openfl.net.URLRequestHeader;
+
+
 /**
  * The application dispatches HTTPStatusEvent objects when a network request
  * returns an HTTP status code.
@@ -55,7 +58,7 @@ extern class HTTPStatusEvent extends Event {
 	 * The response headers that the response returned, as an array of
 	 * URLRequestHeader objects.
 	 */
-	public var responseHeaders:Array<Dynamic>;
+	public var responseHeaders:Array<URLRequestHeader>;
 	
 	/**
 	 * The URL that the response was returned from. In the case of redirects,

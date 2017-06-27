@@ -50,6 +50,27 @@ class Shader {
 	
 	@:glFragmentSource(
 		
+		#if emscripten
+		"varying float vAlpha;
+		varying vec2 vTexCoord;
+		uniform sampler2D uImage0;
+		
+		void main(void) {
+			
+			vec4 color = texture2D (uImage0, vTexCoord).bgra;
+			
+			if (color.a == 0.0) {
+				
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+				
+			} else {
+				
+				gl_FragColor = color * vAlpha;
+				
+			}
+			
+		}"
+		#else
 		"varying float vAlpha;
 		varying vec2 vTexCoord;
 		uniform sampler2D uImage0;
@@ -69,6 +90,7 @@ class Shader {
 			}
 			
 		}"
+		#end
 		
 	)
 	

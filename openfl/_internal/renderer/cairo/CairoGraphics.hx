@@ -521,6 +521,7 @@ class CairoGraphics {
 		var closeGap = false;
 		var startX = 0.0;
 		var startY = 0.0;
+		var setStart = false;
 		
 		cairo.fillRule = EVEN_ODD;
 		cairo.antialias = SUBPIXEL;
@@ -600,6 +601,12 @@ class CairoGraphics {
 					
 					positionX = c.x;
 					positionY = c.y;
+					
+					if (positionX == startX && positionY == startY) {
+						
+						closeGap = true;
+						
+					}
 				
 				case MOVE_TO:
 					
@@ -609,9 +616,15 @@ class CairoGraphics {
 					positionX = c.x;
 					positionY = c.y;
 					
-					closeGap = true;
+					if (setStart) {
+						
+						closeGap = true;
+						
+					}
+					
 					startX = c.x;
 					startY = c.y;
+					setStart = true;
 				
 				case LINE_STYLE:
 					
@@ -951,10 +964,11 @@ class CairoGraphics {
 				if (hasFill && closeGap) {
 					
 					cairo.lineTo (startX - offsetX, startY - offsetY);
+					closePath (false);
 					
 				} else if (closeGap && positionX == startX && positionY == startY) {
 					
-					closePath (true);
+					closePath (false);
 					
 				}
 				

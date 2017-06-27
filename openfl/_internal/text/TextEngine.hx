@@ -242,33 +242,48 @@ class TextEngine {
 	
 	public static function getFormatHeight (format:TextFormat):Float {
 		
-		var ascent, descent, leading;
+		var ascent:Float, descent:Float, leading:Int;
 		
 		#if (js && html5)
 		
 		__context.font = getFont (format);
 		
-		ascent = format.size;
-		descent = format.size * 0.185;
+		if (format.__ascent != null) {
+			
+			ascent = format.__ascent;
+			descent = format.__descent;
+			
+		} else {
+			
+			ascent = format.size;
+			descent = format.size * 0.185;
+			
+		}
+		
 		leading = format.leading;
 		
 		#elseif (lime_cffi)
 		
 		var font = getFontInstance (format);
 		
-		if (font != null) {
+		if (format.__ascent != null) {
+			
+			ascent = format.__ascent;
+			descent = format.__descent;
+			
+		} else if (font != null) {
 			
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
-			leading = format.leading;
 			
 		} else {
 			
 			ascent = format.size;
 			descent = format.size * 0.185;
-			leading = format.leading;
 			
 		}
+		
+		leading = format.leading;
 		
 		#end
 		
@@ -867,8 +882,18 @@ class TextEngine {
 				
 				__context.font = getFont (currentFormat);
 				
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
+				if (currentFormat.__ascent != null) {
+					
+					ascent = currentFormat.__ascent;
+					descent = currentFormat.__descent;
+					
+				} else {
+					
+					ascent = currentFormat.size;
+					descent = currentFormat.size * 0.185;
+					
+				}
+				
 				leading = currentFormat.leading;
 				
 				heightValue = ascent + descent + leading;
@@ -877,23 +902,26 @@ class TextEngine {
 				
 				font = getFontInstance (currentFormat);
 				
-				if (font != null) {
+				if (currentFormat.__ascent != null) {
+					
+					ascent = currentFormat.__ascent;
+					descent = currentFormat.__descent;
+					
+				} else if (font != null) {
 					
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
-					leading = currentFormat.leading;
-					
-					heightValue = ascent + descent + leading;
 					
 				} else {
 					
 					ascent = currentFormat.size;
 					descent = currentFormat.size * 0.185;
-					leading = currentFormat.leading;
-					
-					heightValue = ascent + descent + leading;
 					
 				}
+				
+				leading = currentFormat.leading;
+				
+				heightValue = ascent + descent + leading;
 				
 				#end
 				

@@ -386,8 +386,10 @@ class SWFLiteExporter {
 			
 			symbol.advances = new Array<Int> ();
 			//symbol.advances = cast defineFont.fontAdvanceTable.copy ();
+			symbol.ascent = defineFont.ascent;
 			symbol.bold = defineFont.bold;
 			symbol.codes = defineFont.codeTable.copy ();
+			symbol.descent = defineFont.descent;
 			symbol.italic = defineFont.italic;
 			symbol.leading = defineFont.leading;
 			symbol.name = defineFont.fontName;

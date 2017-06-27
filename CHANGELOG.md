@@ -1,3 +1,30 @@
+5.1.5 (06/21/2017)
+------------------
+
+* Fixed regression where `loader.unload()` set `contentLoaderInfo` to `null`
+* Fixed possible build error in URLLoader
+
+
+5.1.4 (06/20/2017)
+------------------
+
+* Deprecated `handler` callbacks in `openfl.utils.Assets.load*` methods
+* Improved the leading of embedded SWF fonts on native
+* Improved `addChild` to throw an error when adding a `null` child
+* Improved loaded asset libraries to register using `loaderURL` as the name
+* Improved the behavior of `ExternalInterface` when errors are thrown
+* Improved the behavior of mitered lines in vector shapes
+* Improved support for the `rcp` command in AGAL
+* Fixed the canvas shape renderer to use even/odd winding like Cairo
+* Fixed support for `SimpleButton` rendering in regression cases
+* Fixed cases where `Loader.content`/`LoaderInfo.content` were not set
+* Fixed an incorrect input buffer position in `openfl.net.Socket`
+* Fixed `Socket` to report as not connected immediately on `close()`
+* Fixed `opaqueBackground` rendering for `Tilemap`
+* Fixed dispatching of `HTTPStatusEvent` from `openfl.net.URLLoader`
+* Fixed a case where `Capabilities.screenDPI` could have a `null` error
+
+
 5.1.3 (06/07/2017)
 ------------------
 

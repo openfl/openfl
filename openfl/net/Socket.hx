@@ -535,8 +535,9 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			__socket.close ();
 			
 		} catch (e:Dynamic) {}
-		
+
 		__socket = null;
+		__connected = false;
 		Lib.current.removeEventListener (Event.ENTER_FRAME, this_onEnterFrame);
 		
 	}
@@ -567,7 +568,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		
 		#if (js && html5)
 		if (Std.is (msg.data, String)) {
-			
+
+			__inputBuffer.position = __inputBuffer.length;
 			var cachePosition = __inputBuffer.position;
 			__inputBuffer.writeUTFBytes (msg.data);
 			__inputBuffer.position = cachePosition;
@@ -680,14 +682,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		
 		if (doClose && connected) {
 			
-			__connected = false;
 			__cleanSocket ();
 			
 			dispatchEvent (new Event (Event.CLOSE));
 			
 		} else if (doClose) {
 			
-			__connected = false;
 			__cleanSocket ();
 			
 			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR, true, false, "Connection failed"));
