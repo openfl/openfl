@@ -74,7 +74,7 @@ class EventDispatcher implements IEventDispatcher {
 				
 			}
 			
-			__addListinerByPriority(list, new Listener (listener, useCapture, priority));
+			__addListenerByPriority(list, new Listener (listener, useCapture, priority));
 						
 		}
 		
@@ -245,7 +245,7 @@ class EventDispatcher implements IEventDispatcher {
 	}
 	
 	
-	private function __addListinerByPriority(list: Array<Listener>, listener: Listener): Void {
+	private function __addListenerByPriority(list: Array<Listener>, listener: Listener): Void {
 
 		var numElements: Int = list.length;
 		var addAtPosition: Int = numElements;	
