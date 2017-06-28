@@ -366,6 +366,7 @@ class EventDispatcher implements IEventDispatcher {
 		this.list = list;
 		
 		active = true;
+		isCopy = false;
 		index = 0;
 		
 	}
