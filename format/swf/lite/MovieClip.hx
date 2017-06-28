@@ -645,89 +645,90 @@ class MovieClip extends flash.display.MovieClip {
 
 	private function __update9SliceBitmap ():Void {
 
-		if (__symbol != null && __symbol.scalingGridRect != null) {
-			var scaleX = Math.max(1.0, renderScaleX);
-			var scaleY = Math.max(1.0, renderScaleY);
+		var scaleX = Math.max(1.0, renderScaleX);
+		var scaleY = Math.max(1.0, renderScaleY);
 
-			if (__9SliceBitmap != null
-				&& (scaleX != @:privateAccess __9SliceBitmap.__scaleX || scaleY != @:privateAccess __9SliceBitmap.__scaleY)
-				) {
-				__9SliceBitmap.dispose ();
-				__9SliceBitmap = null;
+		if (__9SliceBitmap != null
+			&& (scaleX != @:privateAccess __9SliceBitmap.__scaleX || scaleY != @:privateAccess __9SliceBitmap.__scaleY)
+			) {
+			__9SliceBitmap.dispose ();
+			__9SliceBitmap = null;
+		}
+
+		if (__9SliceBitmap == null) {
+			__updating9SliceBitmap = true;
+			var bounds:Rectangle = Rectangle.pool.get();
+			__getBounds (bounds);
+
+			if (bounds.width <= 0 && bounds.height <= 0) {
+				Rectangle.pool.put (bounds);
+				throw 'Error creating a cached bitmap. The texture size is ${bounds.width}x${bounds.height}';
 			}
 
-			if (__9SliceBitmap == null) {
-				__updating9SliceBitmap = true;
-				var bounds:Rectangle = Rectangle.pool.get();
-				__getBounds (bounds);
+			if (__scale9Rect == null) {
+				__scale9Rect = __symbol.scalingGridRect.clone();
+			} else {
+				__scale9Rect.copyFrom (__symbol.scalingGridRect);
+			}
 
-				if (bounds.width <= 0 && bounds.height <= 0) {
-					Rectangle.pool.put (bounds);
-					throw 'Error creating a cached bitmap. The texture size is ${bounds.width}x${bounds.height}';
-				}
-
-				if (__scale9Rect == null) {
-					__scale9Rect = __symbol.scalingGridRect.clone();
-				} else {
-					__scale9Rect.copyFrom (__symbol.scalingGridRect);
-				}
-
-				if ( !__scale9Rect.intersects(bounds) ) {
-					__9SliceBitmap = null;
-					__updating9SliceBitmap = false;
-					return;
-				}
-
-				__scale9Rect.x -= bounds.x;
-				__scale9Rect.y -= bounds.y;
-
-				var savedRenderScaleX = renderScaleX;
-				var savedRenderScaleY = renderScaleY;
-
-				renderScaleX = scaleX;
-				renderScaleY = scaleY;
-
-				for( child in __children ){
-					if (child.renderScaleX != savedRenderScaleX || child.renderScaleY != savedRenderScaleY) {
-						throw ":TODO: 9 sliced child has different render scale than parent";
-					}
-					child.renderScaleX = scaleX;
-					child.renderScaleY = scaleY;
-				}
-
-				bounds.x *= scaleX;
-				bounds.y *= scaleY;
-				bounds.width *= scaleX;
-				bounds.height *= scaleY;
-
-				var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
-
-				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-				@:privateAccess bitmap.__resize (Math.ceil (bounds.width), Math.ceil (bounds.height));
-
-				var renderTransform = Matrix.pool.get ();
-				renderTransform.identity ();
-				renderTransform.a = scaleX;
-				renderTransform.d = scaleY;
-				renderTransform.translate(-bounds.x, -bounds.y);
-
-				@:privateAccess bitmap.__drawGL(renderSession, this, renderTransform);
-				Matrix.pool.put (renderTransform);
-				Rectangle.pool.put (bounds);
-
-				__9SliceBitmap = bitmap;
-				@:privateAccess __9SliceBitmap.__scaleX = scaleX;
-				@:privateAccess __9SliceBitmap.__scaleY = scaleY;
+			if ( !__scale9Rect.intersects(bounds) ) {
+				__9SliceBitmap = null;
 				__updating9SliceBitmap = false;
+				return;
+			}
 
-				renderScaleX = savedRenderScaleX;
-				renderScaleY = savedRenderScaleY;
-				for( child in __children ){
-					child.renderScaleX = savedRenderScaleX;
-					child.renderScaleY = savedRenderScaleY;
+			__scale9Rect.x -= bounds.x;
+			__scale9Rect.y -= bounds.y;
+
+			var savedRenderScaleX = renderScaleX;
+			var savedRenderScaleY = renderScaleY;
+
+			renderScaleX = scaleX;
+			renderScaleY = scaleY;
+
+			for( child in __children ){
+				if (child.renderScaleX != savedRenderScaleX || child.renderScaleY != savedRenderScaleY) {
+					throw ":TODO: 9 sliced child has different render scale than parent";
 				}
+				child.renderScaleX = scaleX;
+				child.renderScaleY = scaleY;
+			}
+
+			bounds.x *= scaleX;
+			bounds.y *= scaleY;
+			bounds.width *= scaleX;
+			bounds.height *= scaleY;
+
+			var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
+
+			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			@:privateAccess bitmap.__resize (Math.ceil (bounds.width), Math.ceil (bounds.height));
+
+			var renderTransform = Matrix.pool.get ();
+			renderTransform.identity ();
+			renderTransform.a = scaleX;
+			renderTransform.d = scaleY;
+			renderTransform.translate(-bounds.x, -bounds.y);
+
+			renderSession.maskManager.pushMask (null);
+			@:privateAccess bitmap.__drawGL(renderSession, this, renderTransform);
+			renderSession.maskManager.popMask ();
+			Matrix.pool.put (renderTransform);
+			Rectangle.pool.put (bounds);
+
+			__9SliceBitmap = bitmap;
+			@:privateAccess __9SliceBitmap.__scaleX = scaleX;
+			@:privateAccess __9SliceBitmap.__scaleY = scaleY;
+			__updating9SliceBitmap = false;
+
+			renderScaleX = savedRenderScaleX;
+			renderScaleY = savedRenderScaleY;
+			for( child in __children ){
+				child.renderScaleX = savedRenderScaleX;
+				child.renderScaleY = savedRenderScaleY;
 			}
 		}
+		
 	}
 
 	private function drawScale9Bitmap (renderSession:RenderSession):Void {
@@ -808,7 +809,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 
-		if (!__updating9SliceBitmap) {
+		if (!__updating9SliceBitmap && __symbol != null && __symbol.scalingGridRect != null) {
 			__update9SliceBitmap ();
 		}
 

@@ -49,8 +49,6 @@ class GLMaskManager extends AbstractMaskManager {
 
 	override public function pushRect(rect:Rectangle, transform:Matrix):Void {
 
-		if (rect == null) return;
-
 		var m = transform.clone ();
 		// correct coords from top-left (OpenFL) to bottom-left (GL)
 		@:privateAccess GLBitmap.flipMatrix (m, renderSession.renderer.viewport.height);
@@ -89,23 +87,30 @@ class GLMaskManager extends AbstractMaskManager {
 
 		}
 
-		// :TODO: in case of inner mask, detect if any ancestor has been modified since the previous mask has been pushed
-		// in the meantime, let's update inner masks every frame
+		var bitmap:BitmapData = null;
+		var maskMatrix:Matrix = null;
 
-		if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap || maskBitmapTable.length > 0) {
+		if (mask != null) {
 
-			@:privateAccess mask.__visible = true;
-			@:privateAccess mask.__isMask = false;
-			mask.__update (true, false);
+			// :TODO: in case of inner mask, detect if any ancestor has been modified since the previous mask has been pushed
+			// in the meantime, let's update inner masks every frame
 
-			mask.__updateCachedBitmapFn (renderSession, maskBitmapTable.last (), maskMatrixTable.last ());
+			if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap || maskBitmapTable.length > 0) {
 
-			@:privateAccess mask.__visible = false;
-			@:privateAccess mask.__isMask = true;
-			@:privateAccess mask.__renderable = false;
+				@:privateAccess mask.__visible = true;
+				@:privateAccess mask.__isMask = false;
+				mask.__update (true, false);
+
+				mask.__updateCachedBitmapFn (renderSession, maskBitmapTable.last (), maskMatrixTable.last ());
+
+				@:privateAccess mask.__visible = false;
+				@:privateAccess mask.__isMask = true;
+				@:privateAccess mask.__renderable = false;
+			}
+			
+			bitmap = @:privateAccess mask.__cachedBitmap;
+
 		}
-		var bitmap = @:privateAccess mask.__cachedBitmap;
-        var maskMatrix = null;
 
 		if (bitmap != null)
         {

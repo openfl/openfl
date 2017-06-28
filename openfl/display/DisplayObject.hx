@@ -700,7 +700,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		// we disable the container shader, it will be applied to the final texture
 		var shader = __shader;
 		this.__shader = null;
+		renderSession.maskManager.pushMask (null);
 		@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true, maskBitmap, m2);
+		renderSession.maskManager.popMask ();
 
 		if (maskMatrix != null) {
 			Matrix.pool.put(m2);
