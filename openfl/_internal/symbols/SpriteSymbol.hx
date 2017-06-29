@@ -17,8 +17,10 @@ class SpriteSymbol extends SWFSymbol {
 	
 	
 	public var frames:Array<Frame>;
-	
-	
+	public var frameScripts : Map<Int, Void->Void>;
+	public var frameScriptDefs : Map<Int, String>;
+
+
 	public function new () {
 		
 		super ();
@@ -35,6 +37,7 @@ class SpriteSymbol extends SWFSymbol {
 		#if !macro
 		MovieClip.__initSWF = swf;
 		MovieClip.__initSymbol = this;
+		MovieClip.__initScripts = frameScripts;
 		#end
 		
 		if (className != null) {

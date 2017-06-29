@@ -181,6 +181,39 @@ import openfl.Assets;
 	}
 	
 	
+	private static function __unserializeScripts (spriteSymb:SpriteSymbol) {
+
+		var keys = spriteSymb.frameScriptDefs.keys ();
+		if (!keys.hasNext()) return;
+
+		spriteSymb.frameScripts = new Map ();
+
+		for (k in keys) {
+
+			var s = spriteSymb.frameScriptDefs[k];
+
+			try {
+
+#if js
+				spriteSymb.frameScripts[k - 1] = untyped __js__('eval({0})', "(function(){" + s + "})");
+#else
+				// TODO: Add deserialization for your target (HXScript? Lua?)
+#end
+
+			}
+			catch (e:Dynamic)
+			{
+
+				trace("Unable to attach frame script for className " +  spriteSymb.className + ".\n" +
+					"Probably not translated from AS3 correctly.\nError: " + e + "\nFrame Script:\n"+ s);
+
+			}
+
+		}
+
+	}
+
+	
 	public static function unserialize (data:String):SWFLite {
 		
 		if (data == null) {
@@ -191,9 +224,34 @@ import openfl.Assets;
 		
 		var unserializer = new Unserializer (data);
 		unserializer.setResolver ({ resolveClass: resolveClass, resolveEnum: resolveEnum });
-		
-		return cast unserializer.unserialize ();
-		
+		var swflite:SWFLite = cast unserializer.unserialize ();
+
+#if js
+		if (null != swflite.root.frameScriptDefs) {
+
+			__unserializeScripts (swflite.root);
+
+		}
+
+		for (symb in swflite.symbols) {
+
+			if (Std.is (symb, SpriteSymbol)) {
+
+				var spriteSymb = cast (symb, SpriteSymbol);
+
+				if (null != spriteSymb.frameScriptDefs) {
+					
+					__unserializeScripts (spriteSymb);
+					
+				}
+
+			}
+
+		}
+#end
+
+		return swflite;
+
 	}
 	
 	

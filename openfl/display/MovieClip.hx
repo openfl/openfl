@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import haxe.CallStack.StackItem;
 import lime.utils.Log;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
@@ -30,6 +31,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	private static var __initSWF:SWFLite;
 	private static var __initSymbol:SpriteSymbol;
+	private static var __initScripts:Map<Int, Void->Void>;
 	
 	public var currentFrame (get, never):Int;
 	public var currentFrameLabel (get, never):String;
@@ -71,9 +73,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 			__swf = __initSWF;
 			__symbol = __initSymbol;
+			__frameScripts = __initScripts;
 			
 			__initSWF = null;
 			__initSymbol = null;
+			__initScripts = null;
 			
 			__fromSymbol (__swf, __symbol);
 			
@@ -238,8 +242,42 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						if (__frameScripts.exists (__currentFrame - 1)) {
 							
 							__frameScripts.get (__currentFrame - 1) ();
-							if (!__playing) break;
+
+							var fs = __frameScripts.get (__currentFrame - 1);
+
+							// try to execute frame script in a safe sandbox
+							try {
+								
+#if !js
+								fs();
+#else
+								untyped fs.call(this);
+#end
+
+							}
+							// handle any errors
+							catch (e: Dynamic)
+							{
+
+								// with a very detailed trace including various stack traces
+								trace("Error evaluating frame script\n " +
+									e + "\n" +
+									// sometimes this stack is all you have
+									haxe.CallStack.exceptionStack().map(function(a){ return untyped a[2]; }).join("\n") +"\n" + 
+									// other times this stack is all you have
+									e.stack + "\n" +
+									untyped fs.toString());
+								
+							}
 							
+							// if the frame script called .stop() on this movieclip
+							// do not advance
+							if (!__playing) {
+								
+								break;
+								
+							}
+
 						}
 						
 					}

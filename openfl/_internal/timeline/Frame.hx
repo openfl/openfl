@@ -12,6 +12,8 @@ package openfl._internal.timeline;
 	
 	public var label:String;
 	public var objects:Array <FrameObject>;
+	public var scriptDef:Map<Int,String>;
+	public var scripts:Map<Int,Void->Void>;
 	
 	
 	public function new () {
