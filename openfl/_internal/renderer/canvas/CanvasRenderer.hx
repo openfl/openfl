@@ -23,7 +23,7 @@ class CanvasRenderer extends AbstractRenderer {
 		this.context = context;
 		
 		renderSession = new RenderSession ();
-		renderSession.clearDirtyFlags = true;
+		renderSession.hasDirtyFlags = true;
 		renderSession.context = context;
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
