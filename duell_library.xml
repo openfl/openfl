@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <library xmlns="duell">
-	<duelllib name="lime" version="12.7.1+" />
+	<duelllib name="lime" version="12.7.2+" />
 	<haxelib name="hxcpp" />
 	<haxelib name="format" />
 	<haxelib name="openfl-samples" />
