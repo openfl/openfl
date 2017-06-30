@@ -13,8 +13,13 @@ import openfl.utils.ByteArray;
  * Use the Font class as an abstract base class.
  */
 extern class Font extends LimeFont {
-	
-	
+
+
+	/**
+	 * The id of an embedded font - will be set in HXProject.hx during build process.
+	 */
+	public var fontId (get, set):String;
+
 	/**
 	 * The name of an embedded font.
 	 */
