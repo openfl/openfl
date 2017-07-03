@@ -115,6 +115,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __stack:UnshrinkableArray<DisplayObject>;
 	private var __focusStack:UnshrinkableArray<DisplayObject>;
 	private var __allChildrenStack:HaxeVector<DisplayObject> = new HaxeVector<DisplayObject>(4096);
+	private var __ancestorHasMouseListenerStack:HaxeVector<Bool> = new HaxeVector<Bool>(4096);
+	private var __mouseListenerStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
 	private var __updateStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
 	private var __allChildrenLength: Int;
 	private var __transparent:Bool;
@@ -681,37 +683,60 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 
 	private function __computeFlattenedChildren():Void {
-		var result = [];
 		var stack_id;
 		var i = 0;
-		var base_child_count = 0;
 
-		while( base_child_count < __children.length ) {
-			__allChildrenStack.set(base_child_count, __children[base_child_count]);
-			base_child_count++;
-		}
+		__allChildrenLength = 1;
+		__allChildrenStack.set (0, this);
+		__ancestorHasMouseListenerStack.set (0, false);
+		__mustEvaluateHitTest = false;
 
-		__allChildrenLength = base_child_count;
+		__mouseListenerStack.clear ();
 
 		while (i < __allChildrenLength) {
 			stack_id = __allChildrenStack[i];
+			var ancestorHasMouseListener = __ancestorHasMouseListenerStack[i];
+
 			if (stack_id.__children != null && stack_id.__children.length > 0) {
 				for(child in stack_id.__children) {
-					if ( child.__updateDirty ) {
-						__updateStack.push(child);
+					if (ancestorHasMouseListener) {
+						child.__mustEvaluateHitTest = true;
+						__ancestorHasMouseListenerStack.set (__allChildrenLength, true);
+					} else if (child.hasMouseListener ()) {
+						__mouseListenerStack.push (child);
+						child.__mustEvaluateHitTest = true;
+						__ancestorHasMouseListenerStack.set (__allChildrenLength, true);
+					} else {
+						child.__mustEvaluateHitTest = false;
+						__ancestorHasMouseListenerStack.set (__allChildrenLength, false);
 					}
-					__allChildrenStack.set(__allChildrenLength,child);
-					__allChildrenLength++;
+
+					if (child.__updateDirty) {
+						__updateStack.push (child);
+					}
+
+					__allChildrenStack.set (__allChildrenLength,child);
+					++__allChildrenLength;
 				}
 			}
 			++i;
 		}
+
+		for (mouseListener in __mouseListenerStack) {
+			var parent = mouseListener.parent;
+
+			while (parent != null && !parent.__mustEvaluateHitTest) {
+				parent.__mustEvaluateHitTest = true;
+				parent = parent.parent;
+			}
+		}
+
 	}
 
 	public override function __enterFrame(deltaTime:Int):Void {
 
 		var child;
-		var i = 0;
+		var i = 1;
 
 		while (i < __allChildrenLength) {
 			child = __allChildrenStack[i];
@@ -750,7 +775,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (!event.__isCanceled && notifyChilden) {
 
-			var i = 0;
+			var i = 1;
 			var stack_id;
 			while (i < __allChildrenLength) {
 				stack_id = __allChildrenStack[i];

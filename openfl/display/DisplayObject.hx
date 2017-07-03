@@ -488,7 +488,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__graphics != null) {
 
-			if (!hitObject.visible || __isMask) return false;
+			if (!__mustEvaluateHitTest || !hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 
 			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
