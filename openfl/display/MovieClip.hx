@@ -16,6 +16,11 @@ import openfl.events.Event;
 import openfl.filters.*;
 import openfl.text.TextField;
 
+#if hscript
+import hscript.Interp;
+import hscript.Parser;
+#end
+
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -285,6 +290,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		var frame;
 		
+		#if hscript
+		var parser = null;
+		#end
+		
 		for (i in 0...__symbol.frames.length) {
 			
 			frame = __symbol.frames[i];
@@ -295,8 +304,17 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 			}
 			
-			#if js
-			if (frame.scriptSource != null) {
+			if (frame.script != null) {
+				
+				if (__frameScripts == null) {
+					
+					__frameScripts = new Map ();
+					
+				}
+				
+				__frameScripts.set (i, frame.script);
+				
+			} else if (frame.scriptSource != null) {
 				
 				if (__frameScripts == null) {
 					
@@ -306,24 +324,49 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				try {
 					
-					var script = untyped __js__('eval({0})', "(function(){" + frame.scriptSource + "})");
-					var wrapper = function () {
+					#if hscript
+					
+					if (parser == null) {
 						
-						try {
-							
-							script.call (this);
-							
-						} catch (e:Dynamic) {
-							
-							trace ("Error evaluating frame script\n " + e + "\n" + 
-								haxe.CallStack.exceptionStack ().map (function (a) { return untyped a[2]; }).join ("\n") + "\n" + 
-								e.stack + "\n" + untyped script.toString ());
-							
-						}
+						parser = new Parser ();
+						parser.allowTypes = true;
 						
 					}
 					
-					__frameScripts.set (i, wrapper);
+					var program = parser.parseString (frame.scriptSource);
+					var interp = new Interp ();
+					interp.variables.set ("this", this);
+					
+					var script = function () {
+						
+						interp.execute (program);
+						
+					};
+					
+					__frameScripts.set (i, script);
+					
+					#elseif js
+					
+						var script = untyped __js__('eval({0})', "(function(){" + frame.scriptSource + "})");
+						var wrapper = function () {
+							
+							try {
+								
+								script.call (this);
+								
+							} catch (e:Dynamic) {
+								
+								trace ("Error evaluating frame script\n " + e + "\n" + 
+									haxe.CallStack.exceptionStack ().map (function (a) { return untyped a[2]; }).join ("\n") + "\n" + 
+									e.stack + "\n" + untyped script.toString ());
+								
+							}
+							
+						}
+						
+						__frameScripts.set (i, wrapper);
+					
+					#end
 					
 				} catch (e:Dynamic) {
 					
@@ -337,21 +380,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 					}
 					
-					
 				}
-				
-			} else
-			#end
-			
-			if (frame.script != null) {
-				
-				if (__frameScripts == null) {
-					
-					__frameScripts = new Map ();
-					
-				}
-				
-				__frameScripts.set (i, frame.script);
 				
 			}
 			
