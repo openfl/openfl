@@ -187,7 +187,12 @@ extern class TextFormat {
 	 * the <code>htmlText</code> property for the hyperlink to work.</p>
 	 */
 	public var url:String;
-	
+
+	/**
+	* HTML font-weight value. Overrides <code>bold</code> value.
+	**/
+	public var weight:FontWeight;
+
 	
 	/**
 	 * Creates a TextFormat object with the specified properties. You can then
