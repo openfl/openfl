@@ -930,10 +930,10 @@ class TextField extends InteractiveObject {
 			//format.italic = font.italic;
 			//format.leading = Std.int (font.leading / 20 + (format.size * 0.2) #if flash + 2 #end);
 			//embedFonts = true;
-
+			
 			format.__ascent = ((font.ascent / 20) / 1024);
 			format.__descent = ((font.descent / 20) / 1024);
-
+			
 		}
 		
 		format.font = symbol.fontName;
@@ -958,6 +958,24 @@ class TextField extends InteractiveObject {
 					}
 					
 				}
+			
+		}
+		
+		if (!found) {
+			
+			var alpha = ~/[^a-zA-Z]+/;
+			
+			for (font in Font.enumerateFonts ()) {
+				
+				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
+					
+					format.font = font.fontName;
+					found = true;
+					break;
+					
+				}
+				
+			}
 			
 		}
 		
