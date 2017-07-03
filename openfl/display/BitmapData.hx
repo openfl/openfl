@@ -476,7 +476,7 @@ class BitmapData implements IBitmapDrawable {
 				var renderer = new GLRenderer (Lib.current.stage, gl, this);
 				
 				var renderSession = renderer.renderSession;
-				renderSession.clearDirtyFlags = false;
+				renderSession.clearRenderDirty = false;
 				renderSession.shaderManager = cast(Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
@@ -519,7 +519,7 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = false;
+			renderSession.clearRenderDirty = false;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -607,7 +607,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = false;
+			renderSession.clearRenderDirty = false;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -1515,7 +1515,7 @@ class BitmapData implements IBitmapDrawable {
 				var renderer = new GLRenderer (Lib.current.stage, gl, this);
 				
 				var renderSession = renderer.renderSession;
-				renderSession.clearDirtyFlags = true;
+				renderSession.clearRenderDirty = true;
 				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
@@ -1558,7 +1558,7 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = true;
+			renderSession.clearRenderDirty = true;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -1646,7 +1646,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = true;
+			renderSession.clearRenderDirty = true;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
