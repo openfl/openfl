@@ -102,6 +102,12 @@ class DynamicText extends TextField {
 			
 		}
 		
+		if (tag.hasFontClass) {
+			
+			trace("TODO: Implement .hasFontClass for DynamicText");
+			
+		}
+		
 		if (tag.hasLayout) {
 			
 			switch (tag.align) {

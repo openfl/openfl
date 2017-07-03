@@ -936,13 +936,14 @@ class TextField extends InteractiveObject {
 
 		}
 		
-		format.font = symbol.fontName;
 		
 		var found = false;
 		
-		switch (format.font) {
+		switch (symbol.fontName) {
 			
 			case "_sans", "_serif", "_typewriter", "", null:
+				
+				format.font = symbol.fontName;
 				
 				found = true;
 			
@@ -950,9 +951,26 @@ class TextField extends InteractiveObject {
 				
 				for (font in Font.enumerateFonts ()) {
 					
-					if (font.fontName == format.font) {
+					// we have to do a tricky match on font name
+					// by limiting to alpha numeric characters
+					// so that the .fontClass string value can feasibly match
+					// the proper-cased and spaced font.fontName value
+					// mostly because Animate CC disallows spaces in font class names
+					// which are used for shared fonts.
+					// we also only match up to the same length on both sides,
+					// because the TrueType font name can differ from its font class name
+					// by having extra designations suffixed which are not important.
+					// e.g., we are angling for a "close enough" match.
+					//       could alternatively try soundex match.
+					
+					var sanitizedFontName = ~/[^a-zA-Z]+/.replace(font.fontName, "").substr(0, symbol.fontName.length);
+					 
+					if (sanitizedFontName == symbol.fontName) {
 						
+						format.font = font.fontName;
+
 						found = true;
+						
 						break;
 						
 					}

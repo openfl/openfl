@@ -711,6 +711,11 @@ class SWFLiteExporter {
 			
 		}
 		
+		if (tag.hasFontClass)
+		{
+			symbol.fontName = tag.fontClass;
+		}
+		
 		var bounds = tag.bounds.rect;
 		symbol.x = bounds.x;
 		symbol.y = bounds.y;
