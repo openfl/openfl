@@ -283,11 +283,75 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__currentFrame = 1;
 		__totalFrames = __symbol.frames.length;
 		
+		var frame;
+		
 		for (i in 0...__symbol.frames.length) {
 			
-			if (__symbol.frames[i].label != null) {
+			frame = __symbol.frames[i];
+			
+			if (frame.label != null) {
 				
-				__currentLabels.push (new FrameLabel (__symbol.frames[i].label, i + 1));
+				__currentLabels.push (new FrameLabel (frame.label, i + 1));
+				
+			}
+			
+			#if js
+			if (frame.scriptSource != null) {
+				
+				if (__frameScripts == null) {
+					
+					__frameScripts = new Map ();
+					
+				}
+				
+				try {
+					
+					var script = untyped __js__('eval({0})', "(function(){" + frame.scriptSource + "})");
+					var wrapper = function () {
+						
+						try {
+							
+							script.call (this);
+							
+						} catch (e:Dynamic) {
+							
+							trace ("Error evaluating frame script\n " + e + "\n" + 
+								haxe.CallStack.exceptionStack ().map (function (a) { return untyped a[2]; }).join ("\n") + "\n" + 
+								e.stack + "\n" + untyped script.toString ());
+							
+						}
+						
+					}
+					
+					__frameScripts.set (i, wrapper);
+					
+				} catch (e:Dynamic) {
+					
+					if (symbol.className != null) {
+						
+						Log.warn ("Unable to evaluate frame script source for symbol \"" + symbol.className + "\" frame " + (i + 1) + "\n" + frame.scriptSource);
+						
+					} else {
+						
+						Log.warn ("Unable to evaluate frame script source:\n" + frame.scriptSource);
+						
+					}
+					
+					
+				}
+				
+			} else
+			#end
+			
+			if (frame.script != null) {
+				
+				if (__frameScripts == null) {
+					
+					__frameScripts = new Map ();
+					
+				}
+				
+				__frameScripts.set (i, frame.script);
 				
 			}
 			
@@ -471,6 +535,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			if (i < 0) continue;
 			
 			frame = __symbol.frames[i];
+			if (frame.objects == null) continue;
 			
 			for (frameObject in frame.objects) {
 				

@@ -108,6 +108,7 @@ class SWFLiteExporter {
 				
 				var sprite = new SpriteSymbol ();
 				var frame = new Frame ();
+				frame.objects = [];
 				
 				for (i in 0...records.length) {
 					
@@ -422,6 +423,7 @@ class SWFLiteExporter {
 			
 			var symbol = new SpriteSymbol ();
 			var frame = new Frame ();
+			frame.objects = [];
 			var bitmap, frameObject;
 			
 			for (i in 0...bitmaps.length) {
@@ -526,6 +528,7 @@ class SWFLiteExporter {
 			
 			for (object in frameData.getObjectsSortedByDepth ()) {
 				
+				frame.objects = [];
 				instances.push (object.placedAtIndex);
 				
 				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
