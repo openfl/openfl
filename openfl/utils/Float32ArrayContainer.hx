@@ -1,6 +1,6 @@
 package openfl.utils;
 
-class Float32ArrayContainer implements hxbit.CustomSerializable
+class Float32ArrayContainer implements hxbit.Serializable
 {
     public var value:Float32Array;
 
@@ -10,7 +10,7 @@ class Float32ArrayContainer implements hxbit.CustomSerializable
     }
 
     @:keep
-    public function serialize(ctx:hxbit.Serializer)
+    public function customSerialize(ctx:hxbit.Serializer)
     {
         ctx.addInt(value.length);
 
@@ -21,7 +21,7 @@ class Float32ArrayContainer implements hxbit.CustomSerializable
     }
 
     @:keep
-    public function unserialize(ctx:hxbit.Serializer)
+    public function customUnserialize(ctx:hxbit.Serializer)
     {
         var length = ctx.getInt();
         var tempArray = new Array<Float>();

@@ -16,7 +16,7 @@ import openfl.Vector;
 import openfl.utils.UnshrinkableArray;
 
 @:allow(openfl._internal.renderer.DrawCommandReader)
-class DrawCommandBuffer implements hxbit.CustomSerializable {
+class DrawCommandBuffer implements hxbit.Serializable {
 
 
 	public var length (get, never):Int;
@@ -383,7 +383,7 @@ class DrawCommandBuffer implements hxbit.CustomSerializable {
 	}
 
 	@:keep
-    public function serialize(ctx:hxbit.Serializer)
+    public function customSerialize(ctx:hxbit.Serializer)
     {
 		ctx.addArray(types.getInternalArray(), function(item){ ctx.addInt(Type.enumIndex(item)); });
 		ctx.addDynamic(b.getInternalArray());
@@ -405,7 +405,7 @@ class DrawCommandBuffer implements hxbit.CustomSerializable {
     }
 
     @:keep
-    public function unserialize(ctx:hxbit.Serializer)
+    public function customUnserialize(ctx:hxbit.Serializer)
     {
 		types = new UnshrinkableArray(
 			128,
