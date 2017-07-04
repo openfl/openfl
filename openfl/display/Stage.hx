@@ -701,15 +701,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 				for(child in stack_id.__children) {
 					if (ancestorHasMouseListener) {
 						child.__mustEvaluateHitTest = true;
-						__ancestorHasMouseListenerStack.set (__allChildrenLength, true);
 					} else if (child.hasMouseListener ()) {
 						__mouseListenerStack.push (child);
 						child.__mustEvaluateHitTest = true;
-						__ancestorHasMouseListenerStack.set (__allChildrenLength, true);
 					} else {
 						child.__mustEvaluateHitTest = false;
-						__ancestorHasMouseListenerStack.set (__allChildrenLength, false);
 					}
+
+					__ancestorHasMouseListenerStack.set (__allChildrenLength, child.__mustEvaluateHitTest);
 
 					if (child.__updateDirty) {
 						__updateStack.push (child);

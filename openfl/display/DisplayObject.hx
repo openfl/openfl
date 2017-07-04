@@ -125,6 +125,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __clippedAt : Null<Int>;
 	private var __useSeparateRenderScaleTransform = true;
 	private var __forbidCachedBitmapUpdate = false;
+	private var __mouseListenerCount:Int = 0;
+	private var __mustEvaluateHitTest:Bool = false;
 
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -1127,6 +1129,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 	}
 
+
+	private override function onEventListenerAdded (type:String) {
+
+		if (openfl.events.MouseEvent.isMouseEvent (type)) {
+			++__mouseListenerCount;
+		}
+
+	}
+
+
+	private override function onEventListenerRemoved (type:String) {
+
+		if (openfl.events.MouseEvent.isMouseEvent (type)) {
+			--__mouseListenerCount;
+		}
+
+	}
+
+
+	public function hasMouseListener ():Bool {
+		return __mouseListenerCount > 0;
+	}
 
 	// Get & Set Methods
 

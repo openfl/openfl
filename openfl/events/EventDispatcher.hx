@@ -14,8 +14,6 @@ class EventDispatcher implements IEventDispatcher {
 	private var __targetDispatcher:IEventDispatcher;
 	private var __eventMap:Map<String, Array<Listener>>;
 	private var __newEventMap:Map<String, Array<Listener>>;
-	private var __mouseListenerCount:Int = 0;
-	private var __mustEvaluateHitTest:Bool = false;
 
 
 	public function new (target:IEventDispatcher = null):Void {
@@ -79,9 +77,7 @@ class EventDispatcher implements IEventDispatcher {
 
 		}
 
-		if (openfl.events.MouseEvent.isMouseEvent (type)) {
-			++__mouseListenerCount;
-		}
+		onEventListenerAdded (type);
 		
 	}
 
@@ -149,9 +145,7 @@ class EventDispatcher implements IEventDispatcher {
 			if (list[i].match (listener, useCapture)) {
 
 				list.splice (i, 1);
-				if (openfl.events.MouseEvent.isMouseEvent (type)) {
-					--__mouseListenerCount;
-				}
+				onEventListenerRemoved (type);
 				break;
 
 			}
@@ -175,6 +169,14 @@ class EventDispatcher implements IEventDispatcher {
 
 		}
 
+	}
+
+
+	private function onEventListenerAdded (type:String) {
+	}
+
+
+	private function onEventListenerRemoved (type:String) {
 	}
 
 
@@ -319,10 +321,6 @@ class EventDispatcher implements IEventDispatcher {
 
 		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);
 
-	}
-
-	public function hasMouseListener ():Bool {
-		return __mouseListenerCount > 0;
 	}
 
 }
