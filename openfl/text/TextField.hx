@@ -783,7 +783,7 @@ class TextField extends InteractiveObject {
 		__preRenderGL(renderSession);
 
 		CanvasTextField.render (this, renderSession);
-		GLRenderer.renderBitmap (this, renderSession, false);
+		GLRenderer.renderBitmap (this, renderSession, __textEngine.antiAliasType != ADVANCED || __textEngine.gridFitType != PIXEL);
 
 		__postRenderGL(renderSession);
 
