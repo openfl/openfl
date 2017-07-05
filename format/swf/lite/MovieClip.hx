@@ -28,6 +28,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.ColorTransform;
+import openfl.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 
 @:access(openfl.display.Graphics)
@@ -607,7 +608,7 @@ class MovieClip extends flash.display.MovieClip {
 
 					case ColorMatrixFilter (multipliers, offsets):
 
-						filters.push (new ColorMatrixFilter (multipliers.value, offsets.value));
+						filters.push (new ColorMatrixFilter (new Float32Array(multipliers.value), new Float32Array(offsets.value)));
 
 					case DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject):
 

@@ -6,41 +6,41 @@ import flash.geom.Rectangle;
 
 
 class StaticTextSymbol extends SWFSymbol {
-	
-	
-	public var matrix:Matrix;
-	public var bounds:Rectangle;
-	public var records:Array<StaticTextRecord>;
-	public var shapeIsScaled : Bool;
-	
-	
+
+
+	@:s public var matrix:Matrix;
+	@:s public var bounds:Rectangle;
+	@:s public var records:Array<StaticTextRecord>;
+	@:s public var shapeIsScaled : Bool;
+
+
 	public function new () {
-		
+
 		super ();
-		
+
 	}
-	
-	
+
+
 }
 
 
-@:keep class StaticTextRecord {
-	
-	
-	public var advances:Array<Int>;
-	public var color:Null<Int>;
-	public var fontHeight:Int;
-	public var fontID:Null<Int>;
-	public var glyphs:Array<Int>;
-	public var offsetX:Null<Int>;
-	public var offsetY:Null<Int>;
-	
-	
+@:keep class StaticTextRecord implements hxbit.Serializable {
+
+
+	@:s public var advances:Array<Int>;
+	@:s public var color:Null<Int>;
+	@:s public var fontHeight:Int;
+	@:s public var fontID:Null<Int>;
+	@:s public var glyphs:Array<Int>;
+	@:s public var offsetX:Null<Int>;
+	@:s public var offsetY:Null<Int>;
+
+
 	public function new () {
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 }

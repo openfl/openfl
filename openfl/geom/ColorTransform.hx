@@ -6,19 +6,19 @@ import lime.utils.Float32Array;
 import openfl.ObjectPool;
 
 
-class ColorTransform {
+class ColorTransform implements hxbit.Serializable {
 
 	public static var pool: ObjectPool<ColorTransform>  = new ObjectPool<ColorTransform>( function() { return new ColorTransform(); } );
 
-	public var alphaMultiplier:Float;
-	public var alphaOffset:Float;
-	public var blueMultiplier:Float;
-	public var blueOffset:Float;
+	@:s public var alphaMultiplier:Float;
+	@:s public var alphaOffset:Float;
+	@:s public var blueMultiplier:Float;
+	@:s public var blueOffset:Float;
 	public var color (get, set):Int;
-	public var greenMultiplier:Float;
-	public var greenOffset:Float;
-	public var redMultiplier:Float;
-	public var redOffset:Float;
+	@:s public var greenMultiplier:Float;
+	@:s public var greenOffset:Float;
+	@:s public var redMultiplier:Float;
+	@:s public var redOffset:Float;
 
 
 	public function new (redMultiplier:Float = 1, greenMultiplier:Float = 1, blueMultiplier:Float = 1, alphaMultiplier:Float = 1, redOffset:Float = 0, greenOffset:Float = 0, blueOffset:Float = 0, alphaOffset:Float = 0):Void {

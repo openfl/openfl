@@ -350,7 +350,7 @@ class Tools {
 
 			} catch (e:Dynamic) {
 
-				LogHelper.error (e);
+				LogHelper.error ("", "", e);
 
 			}
 
@@ -444,7 +444,7 @@ class Tools {
 
 					}
 
-					var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+					var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.BINARY);
 
 					if (library.embed != null) {
 
@@ -544,13 +544,13 @@ class Tools {
 
 					//}
 
-					var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
-					var swfLiteAssetData = swfLite.serialize ();
+					var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.BINARY);
+					var swfLiteAssetData = swfLite.serializeLibrary ();
 
 					if (cacheDirectory != null) {
 
 						swfLiteAsset.sourcePath = cacheDirectory + "/" + library.name + ".dat";
-						File.saveContent (swfLiteAsset.sourcePath, swfLiteAssetData);
+						File.saveBytes (swfLiteAsset.sourcePath, swfLiteAssetData);
 
 					} else {
 

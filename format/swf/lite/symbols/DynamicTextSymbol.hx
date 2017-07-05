@@ -6,28 +6,28 @@ package format.swf.lite.symbols;
 
 class DynamicTextSymbol extends SWFSymbol {
 
-	public var variableName:String;
-	public var align:/*TextFormatAlign*/String;
-	public var border:Bool;
-	public var color:Null<Int>;
-	public var fontHeight:Int;
-	public var fontID:Int;
-	public var fontName:String;
-	public var height:Float;
-	public var html:Bool;
-	public var indent:Null<Int>;
-	public var leading:Null<Int>;
-	public var leftMargin:Null<Int>;
-	public var multiline:Bool;
-	public var password:Bool;
-	public var rightMargin:Null<Int>;
-	public var selectable:Bool;
-	public var text:String;
-	public var width:Float;
-	public var wordWrap:Bool;
-	public var x:Float;
-	public var y:Float;
-	public var maxLength:Int;
+	@:s public var variableName:String = "";
+	@:s public var align:/*TextFormatAlign*/String = "";
+	@:s public var border:Bool;
+	@:s public var color:Null<Int>;
+	@:s public var fontHeight:Int;
+	@:s public var fontID:Int;
+	@:s public var fontName:String = "";
+	@:s public var height:Float;
+	@:s public var html:Bool;
+	@:s public var indent:Null<Int>;
+	@:s public var leading:Null<Int>;
+	@:s public var leftMargin:Null<Int>;
+	@:s public var multiline:Bool;
+	@:s public var password:Bool;
+	@:s public var rightMargin:Null<Int>;
+	@:s public var selectable:Bool;
+	@:s public var text:String = "";
+	@:s public var width:Float;
+	@:s public var wordWrap:Bool;
+	@:s public var x:Float;
+	@:s public var y:Float;
+	@:s public var maxLength:Null<Int>;
 
 
 	public function new () {

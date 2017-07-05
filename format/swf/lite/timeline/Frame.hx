@@ -1,18 +1,18 @@
 package format.swf.lite.timeline;
 
 
-@:keep class Frame {
-	
-	
-	public var label:String;
-	public var objects:Array <FrameObject>;
-	
-	
+@:keep class Frame implements hxbit.Serializable {
+
+
+	@:s public var label:String;
+	@:s public var objects:Array <FrameObject>;
+
+
 	public function new () {
-		
+
 		objects = new Array <FrameObject> ();
-		
+
 	}
-	
-	
+
+
 }

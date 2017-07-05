@@ -13,7 +13,7 @@ class ::CLASS_NAME:: extends MovieClip {
 
 		if (!SWFLite.instances.exists ("::SWF_ID::")) {
 
-			SWFLite.instances.set ("::SWF_ID::", SWFLite.unserialize (Assets.getText ("::SWF_ID::")));
+			SWFLite.instances.set ("::SWF_ID::", SWFLite.unserializeLibrary (Assets.getBytes ("::SWF_ID::")));
 
 		}
 

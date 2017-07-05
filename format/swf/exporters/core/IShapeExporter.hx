@@ -21,7 +21,7 @@ interface IShapeExporter
 	function endLines():Void;
 	
 	function beginFill(color:Int, alpha:Float = 1.0):Void;
-	function beginGradientFill(type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = "pad", interpolationMethod:InterpolationMethod = "rgb", focalPointRatio:Float = 0):Void;
+	function beginGradientFill(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = "pad", interpolationMethod:InterpolationMethod = "rgb", focalPointRatio:Float = 0):Void;
 	function beginBitmapFill(bitmapId:Int, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void;
 	function endFill():Void;
 

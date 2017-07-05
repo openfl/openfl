@@ -9,8 +9,8 @@ import openfl.events.Event;
 
 class ShapeSymbol extends SWFSymbol {
 
-	public var bounds:Rectangle;
-	public var graphics:Graphics;
+	@:s public var bounds:Rectangle;
+	@:s public var graphics:Graphics;
 
 	public var useBitmapCache(default, set):Bool = false;
 	private var cachedTable:Array<CacheEntry>;

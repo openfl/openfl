@@ -5,25 +5,25 @@ import format.swf.utils.ColorUtils;
 import format.swf.utils.MatrixUtils;
 import flash.errors.Error;
 
-class SWFMorphFillStyle
+class SWFMorphFillStyle implements hxbit.Serializable
 {
-	public var type:Int;
+	@:s public var type:Int;
 
-	public var startColor:Int;
-	public var endColor:Int;
-	public var startGradientMatrix:SWFMatrix;
-	public var endGradientMatrix:SWFMatrix;
-	public var gradient:SWFMorphGradient;
-	public var bitmapId:Int;
-	public var startBitmapMatrix:SWFMatrix;
-	public var endBitmapMatrix:SWFMatrix;
-	
+	@:s public var startColor:Int;
+	@:s public var endColor:Int;
+	@:s public var startGradientMatrix:SWFMatrix;
+	@:s public var endGradientMatrix:SWFMatrix;
+	@:s public var gradient:SWFMorphGradient;
+	@:s public var bitmapId:Null<Int>;
+	@:s public var startBitmapMatrix:SWFMatrix;
+	@:s public var endBitmapMatrix:SWFMatrix;
+
 	public function new(data:SWFData = null, level:Int = 1) {
 		if (data != null) {
 			parse(data, level);
 		}
 	}
-	
+
 	public function parse(data:SWFData, level:Int = 1):Void {
 		type = data.readUI8();
 		switch(type) {
@@ -42,7 +42,7 @@ class SWFMorphFillStyle
 				throw(new Error("Unknown fill style type: 0x" + StringTools.hex (type)));
 		}
 	}
-	
+
 	public function publish(data:SWFData, level:Int = 1):Void {
 		data.writeUI8(type);
 		switch(type) {
@@ -65,7 +65,7 @@ class SWFMorphFillStyle
 				throw(new Error("Unknown fill style type: 0x" + StringTools.hex (type)));
 		}
 	}
-	
+
 	public function getMorphedFillStyle(ratio:Float = 0):SWFFillStyle {
 		var fillStyle:SWFFillStyle = new SWFFillStyle();
 		fillStyle.type = type;
@@ -81,7 +81,7 @@ class SWFMorphFillStyle
 		}
 		return fillStyle;
 	}
-	
+
 	public function toString():String {
 		var str:String = "[SWFMorphFillStyle] Type: " + StringTools.hex (type);
 		switch(type) {
