@@ -14,10 +14,10 @@ import format.swf.exporters.ShapeCommandExporter;
 
 class MorphShapeSymbol extends SWFSymbol {
 
-	public var startEdges : SWFShape;
-	public var endEdges : SWFShape;
-	public var morphFillStyles :Array<SWFMorphFillStyle>;
-	public var morphLineStyles :Array<SWFMorphLineStyle>;
+	@:s public var startEdges : SWFShape;
+	@:s public var endEdges : SWFShape;
+	@:s public var morphFillStyles :Array<SWFMorphFillStyle>;
+	@:s public var morphLineStyles :Array<SWFMorphLineStyle>;
 
 	public var cachedHandlers: Map<Int,ShapeCommandExporter>;
 

@@ -8,9 +8,9 @@ import openfl.geom.Rectangle;
 class SimpleSpriteSymbol extends SWFSymbol {
 
 
-	public var bitmapID:Int;
-	public var matrix:Matrix;
-	public var bounds:Rectangle;
+	@:s public var bitmapID:Int;
+	@:s public var matrix:Matrix;
+	@:s public var bounds:Rectangle;
 
 	public function new () {
 		super ();

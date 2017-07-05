@@ -105,6 +105,8 @@
 		
 	</section>
 	
+	<haxelib name="hxbit" />
+
 	<include haxelib="openfl-samples" if="create" />
 	
 	<library handler="openfl" type="swf" />

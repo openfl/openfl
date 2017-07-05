@@ -5,24 +5,24 @@ import format.swf.utils.ColorUtils;
 import format.swf.utils.StringUtils;
 import flash.errors.Error;
 
-class SWFFillStyle
+class SWFFillStyle implements hxbit.Serializable
 {
-	public var type:Int;
+	@:s public var type:Int;
 
-	public var rgb:Int;
-	public var gradient:SWFGradient;
-	public var gradientMatrix:SWFMatrix;
-	public var bitmapId:Int;
-	public var bitmapMatrix:SWFMatrix;
+	@:s public var rgb:Int;
+	@:s public var gradient:SWFGradient;
+	@:s public var gradientMatrix:SWFMatrix;
+	@:s public var bitmapId:Int;
+	@:s public var bitmapMatrix:SWFMatrix;
 
-	private var _level:Int;
-	
+	@:s private var _level:Int;
+
 	public function new(data:SWFData = null, level:Int = 1) {
 		if (data != null) {
 			parse(data, level);
 		}
 	}
-	
+
 	public function parse(data:SWFData, level:Int = 1):Void {
 		_level = level;
 		type = data.readUI8();
@@ -39,7 +39,7 @@ class SWFFillStyle
 				throw(new Error("Unknown fill style type: 0x" + StringTools.hex (type)));
 		}
 	}
-	
+
 	public function publish(data:SWFData, level:Int = 1):Void {
 		data.writeUI8(type);
 		switch(type) {
@@ -62,7 +62,7 @@ class SWFFillStyle
 				throw(new Error("Unknown fill style type: 0x" + StringTools.hex (type)));
 		}
 	}
-	
+
 	public function clone():SWFFillStyle {
 		var fillStyle:SWFFillStyle = new SWFFillStyle();
 		fillStyle.type = type;
@@ -73,7 +73,7 @@ class SWFFillStyle
 		fillStyle.bitmapMatrix = bitmapMatrix.clone();
 		return fillStyle;
 	}
-	
+
 	public function toString():String {
 		var str:String = "[SWFFillStyle] Type: " + StringUtils.printf("%02x", [ type ]);
 		switch(type) {

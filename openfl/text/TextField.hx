@@ -689,7 +689,7 @@ class TextField extends InteractiveObject {
 
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		if (!__mustEvaluateHitTest || !hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 
 		__getWorldTransform ();
@@ -783,7 +783,7 @@ class TextField extends InteractiveObject {
 		__preRenderGL(renderSession);
 
 		CanvasTextField.render (this, renderSession);
-		GLRenderer.renderBitmap (this, renderSession, false);
+		GLRenderer.renderBitmap (this, renderSession, __textEngine.antiAliasType != ADVANCED || __textEngine.gridFitType != PIXEL);
 
 		__postRenderGL(renderSession);
 

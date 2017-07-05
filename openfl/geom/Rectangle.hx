@@ -5,22 +5,22 @@ import lime.math.Rectangle in LimeRectangle;
 import openfl.ObjectPool;
 
 
-class Rectangle {
+class Rectangle implements hxbit.Serializable {
 
 	public static var pool: ObjectPool<Rectangle>  = new ObjectPool<Rectangle>( function() { return new Rectangle(); } );
 	private static var __temp = new Rectangle ();
 
 	public var bottom (get, set):Float;
 	public var bottomRight (get, set):Point;
-	public var height:Float;
+	@:s public var height:Float;
 	public var left (get, set):Float;
 	public var right (get, set):Float;
 	public var size (get, set):Point;
 	public var top (get, set):Float;
 	public var topLeft (get, set):Point;
-	public var width:Float;
-	public var x:Float;
-	public var y:Float;
+	@:s public var width:Float;
+	@:s public var x:Float;
+	@:s public var y:Float;
 
 
 	public function new (x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void {

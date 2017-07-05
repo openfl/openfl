@@ -4,25 +4,25 @@ import format.swf.SWFData;
 
 class SWFShapeRecordStraightEdge extends SWFShapeRecord
 {
-	public var generalLineFlag:Bool;
-	public var vertLineFlag:Bool;
-	public var deltaY:Int;
-	public var deltaX:Int;
-	
-	private var numBits:Int;
+	@:s public var generalLineFlag:Bool;
+	@:s public var vertLineFlag:Bool;
+	@:s public var deltaY:Int;
+	@:s public var deltaX:Int;
+
+	@:s private var numBits:Int;
 
 	public function new(data:SWFData = null, numBits:Int = 0, level:Int = 1) {
 		this.numBits = numBits;
 		super(data, level);
 	}
-	
+
 	override public function parse(data:SWFData = null, level:Int = 1):Void {
 		generalLineFlag = (data.readUB(1) == 1);
 		vertLineFlag = !generalLineFlag ? (data.readUB(1) == 1) : false;
 		deltaX = (generalLineFlag || !vertLineFlag) ? data.readSB(numBits) : 0;
 		deltaY = (generalLineFlag || vertLineFlag) ? data.readSB(numBits) : 0;
 	}
-	
+
 	override public function publish(data:SWFData = null, level:Int = 1):Void {
 		var deltas:Array<Int> = [];
 		if(generalLineFlag || !vertLineFlag) { deltas.push(deltaX); }
@@ -38,7 +38,7 @@ class SWFShapeRecordStraightEdge extends SWFShapeRecord
 			data.writeSB(numBits, Std.int(deltas[i]));
 		}
 	}
-	
+
 	override public function clone():SWFShapeRecord {
 		var record:SWFShapeRecordStraightEdge = new SWFShapeRecordStraightEdge();
 		record.deltaX = deltaX;
@@ -48,9 +48,9 @@ class SWFShapeRecordStraightEdge extends SWFShapeRecord
 		record.numBits = numBits;
 		return record;
 	}
-	
+
 	override private function get_type():Int { return SWFShapeRecord.TYPE_STRAIGHTEDGE; }
-	
+
 	override public function toString(indent:Int = 0):String {
 		var str:String = "[SWFShapeRecordStraightEdge] ";
 		if (generalLineFlag) {

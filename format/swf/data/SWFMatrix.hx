@@ -5,30 +5,30 @@ import format.swf.SWFData;
 import flash.geom.Matrix;
 import flash.geom.Point;
 
-class SWFMatrix
+class SWFMatrix implements hxbit.Serializable
 {
 	public var matrix(get_matrix, null):Matrix;
-	public var scaleX:Float = 1.0;
-	public var scaleY:Float = 1.0;
-	public var rotateSkew0:Float = 0.0;
-	public var rotateSkew1:Float = 0.0;
-	public var translateX:Int = 0;
-	public var translateY:Int = 0;
-	
-	public var xscale:Float;
-	public var yscale:Float;
-	public var rotation:Float;
-	
+	@:s public var scaleX:Float = 1.0;
+	@:s public var scaleY:Float = 1.0;
+	@:s public var rotateSkew0:Float = 0.0;
+	@:s public var rotateSkew1:Float = 0.0;
+	@:s public var translateX:Int = 0;
+	@:s public var translateY:Int = 0;
+
+	@:s public var xscale:Float;
+	@:s public var yscale:Float;
+	@:s public var rotation:Float;
+
 	public function new(data:SWFData = null) {
 		if (data != null) {
 			parse(data);
 		}
 	}
-	
+
 	private function get_matrix():Matrix {
 		return new Matrix(scaleX, rotateSkew0, rotateSkew1, scaleY, translateX, translateY);
 	}
-	
+
 	public function parse(data:SWFData):Void {
 		data.resetBitsPending();
 		scaleX = 1.0;
@@ -55,7 +55,7 @@ class SWFMatrix
 		xscale = Math.sqrt(scaleX * scaleX + rotateSkew0 * rotateSkew0) * (scaleX < 0 ? -1 : 1);
 		yscale = Math.sqrt(rotateSkew1 * rotateSkew1 + scaleY * scaleY) * (scaleY < 0 ? -1 : 1);
 	}
-	
+
 	public function clone():SWFMatrix {
 		var matrix:SWFMatrix = new SWFMatrix();
 		matrix.scaleX = scaleX;
@@ -66,11 +66,11 @@ class SWFMatrix
 		matrix.translateY = translateY;
 		return matrix;
 	}
-	
+
 	public function isIdentity():Bool {
 		return (scaleX == 1 && scaleY == 1 && rotateSkew0 == 0 && rotateSkew1 == 0 && translateX == 0 && translateY == 0);
 	}
-	
+
 	public function toString():String {
 		return "(" + scaleX + "," + rotateSkew0 + "," + rotateSkew1 + "," + scaleY + "," + translateX + "," + translateY + ")";
 	}

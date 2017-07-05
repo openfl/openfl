@@ -8,6 +8,4 @@ interface IEdge
 	var to(default, null):Point;
 	var lineStyleIdx(default, null):Int;
 	var fillStyleIdx(default, null):Int;
-	
-	function reverseWithNewFillStyle(newFillStyleIdx:Int):IEdge;
 }

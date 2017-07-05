@@ -5,23 +5,23 @@ import format.swf.utils.StringUtils;
 
 class SWFShapeRecordStyleChange extends SWFShapeRecord
 {
-	public var stateNewStyles:Bool;
-	public var stateLineStyle:Bool;
-	public var stateFillStyle1:Bool;
-	public var stateFillStyle0:Bool;
-	public var stateMoveTo:Bool;
+	@:s public var stateNewStyles:Bool;
+	@:s public var stateLineStyle:Bool;
+	@:s public var stateFillStyle1:Bool;
+	@:s public var stateFillStyle0:Bool;
+	@:s public var stateMoveTo:Bool;
 
-	public var moveDeltaX:Int;
-	public var moveDeltaY:Int;
-	public var fillStyle0:Int;
-	public var fillStyle1:Int;
-	public var lineStyle:Int;
+	@:s public var moveDeltaX:Int = 0;
+	@:s public var moveDeltaY:Int = 0;
+	@:s public var fillStyle0:Int = 0;
+	@:s public var fillStyle1:Int = 0;
+	@:s public var lineStyle:Int = 0;
 
-	public var numFillBits:Int = 0;
-	public var numLineBits:Int = 0;
+	@:s public var numFillBits:Int = 0;
+	@:s public var numLineBits:Int = 0;
 
-	public var fillStyles(default, null):Array<SWFFillStyle>;
-	public var lineStyles(default, null):Array<SWFLineStyle>;
+	@:s public var fillStyles(default, null):Array<SWFFillStyle>;
+	@:s public var lineStyles(default, null):Array<SWFLineStyle>;
 
 	public function new(data:SWFData = null, states:Int = 0, fillBits:Int = 0, lineBits:Int = 0, level:Int = 1) {
 		fillStyles = new Array<SWFFillStyle>();

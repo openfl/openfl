@@ -4,8 +4,8 @@ package format.swf.lite.symbols;
 class BitmapSymbol extends SWFSymbol {
 
 
-	public var alpha:String;
-	public var path:String;
+	@:s public var alpha:String = "";
+	@:s public var path:String = "";
 
 
 	public function new () {

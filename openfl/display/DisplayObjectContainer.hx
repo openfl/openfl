@@ -79,7 +79,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				child.__setStageReference (stage);
+				child.setStage(stage);
 			}
 			child.updateCachedParent ();
 
@@ -126,7 +126,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function getChildByName (name:String):DisplayObject {
 
 		for (child in __children) {
-			if (child == null) continue;
 			if (child.name == name) return child;
 
 		}
@@ -161,7 +160,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (stage != null) {
 
-				child.__setStageReference (null);
+				child.setStage(null);
 
 			}
 
@@ -338,8 +337,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			for (child in __children) {
 
-				if(child == null) continue;
-
 				child.__broadcast (event, true);
 
 				if (event.__isCanceled) {
@@ -366,7 +363,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			child.__getTransformedBounds (childRect, child.__transform);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
@@ -377,6 +373,52 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
+	private override function __updateCachedBitmapBounds (filterTransform:Matrix, rect:Rectangle):Void {
+		super.__updateCachedBitmapBounds(filterTransform, rect);
+
+		if (__scrollRect != null || __children.length == 0) {
+
+			return;
+
+		}
+
+		var childRect = Rectangle.pool.get();
+
+		for (child in __children) {
+
+			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
+
+			var childFilterTransform = Matrix.pool.get ();
+			childFilterTransform.identity ();
+			childFilterTransform.a = child.__renderTransform.a / child.renderScaleX;
+			childFilterTransform.b = child.__renderTransform.b / child.renderScaleX;
+			childFilterTransform.c = child.__renderTransform.c / child.renderScaleY;
+			childFilterTransform.d = child.__renderTransform.d / child.renderScaleY;
+			childFilterTransform.invert ();
+
+			child.__updateCachedBitmapBounds (childFilterTransform, childRect);
+
+			Matrix.pool.put (childFilterTransform);
+
+			var temp_transform = null;
+			if(child.__useSeparateRenderScaleTransform) {
+				temp_transform = @:privateAccess Matrix.__temp;
+				temp_transform.copyFrom(child.__transform);
+				var scaleX = child.scaleX;
+				var scaleY = child.scaleY;
+				temp_transform.a /= scaleX;
+				temp_transform.b /= scaleX;
+				temp_transform.c /= scaleY;
+				temp_transform.d /= scaleY;
+			} else {
+				temp_transform = child.__transform;
+			}
+
+			childRect.__transform (childRect, temp_transform);
+			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
+		}
+		Rectangle.pool.put(childRect);
+	}
 
 	private override function __getRenderBounds (rect:Rectangle):Void {
 
@@ -392,7 +434,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			child.__getRenderBounds (childRect);
 
@@ -420,7 +461,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
+		if (!__mustEvaluateHitTest || !hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		var point = Point.pool.get();
 		point.setTo (x, y);
@@ -583,7 +624,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 
 		for (child in __children) {
-			if (child == null ) continue;
 			child.__renderCanvas (renderSession);
 
 		}
@@ -634,10 +674,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				renderSession.maskManager.popMask();
 			}
 
-			if (child == null ) {
-				continue;
-			}
-
 			if( child.__clipDepth != 0 ){
 
 				if( !child.__maskCached ){
@@ -668,54 +704,74 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
+	private override function __fireRemovedFromStageEvent(stack=null) {
+		super.__fireRemovedFromStageEvent(stack);
 
-	private override function __setStageReference (stage:Stage):Void {
-
-		if (this.stage != stage) {
-
+		if (__children != null) {
 			#if compliant_stage_events
-				var stack = __getDisplayStack( this );
+				#if dev
+					if ( stack[stack.length-1] != this ) {
+						throw "Unexpected stack. Fix behavior..";
+					}
+				#end
+				stack.push(null);
 			#end
-
-			if (this.stage != null) {
-
+			for (child in __children) {
 				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
-				#else
-					__dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
+					stack[stack.length-1] = child;
 				#end
-				__releaseResources();
-
+				child.__fireRemovedFromStageEvent(stack);
 			}
-
-			this.stage = stage;
-
-			__setUpdateDirty();
-
-			if (stage != null) {
-
-				#if compliant_stage_events
-					Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
-				#else
-					__dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
-				#end
-			}
-
-			if (__children != null) {
-
-				for (child in __children) {
-
-					if(child == null) continue;
-					child.__setStageReference (stage);
-
-				}
-
-			}
-
+			#if compliant_stage_events
+				stack.pop();
+			#end
 		}
-
 	}
 
+	private override function __updateStageInternal(value:Stage) {
+		super.__updateStageInternal(value);
+
+		if (__children != null) {
+			for (child in __children) {
+				child.__updateStageInternal(value);
+			}
+		}
+	}
+
+	private override function __fireAddedToStageEvent(stack=null) {
+		super.__fireAddedToStageEvent(stack);
+
+		if (__children != null) {
+			#if compliant_stage_events
+				#if dev
+					if ( stack[stack.length-1] != this ) {
+						throw "Unexpected stack. Fix behavior..";
+					}
+				#end
+				stack.push(null);
+			#end
+			for (child in __children) {
+				#if compliant_stage_events
+					stack[stack.length-1] = child;
+				#end
+				child.__fireAddedToStageEvent(stack);
+			}
+			#if compliant_stage_events
+				stack.pop();
+			#end
+		}
+	}
+
+	private override function __releaseResources ():Void {
+
+		super.__releaseResources();
+
+		if (__children != null) {
+			for (child in __children) {
+				child.__releaseResources();
+			}
+		}
+	}
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
@@ -734,7 +790,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			for (child in __children) {
 
-				if (child == null ) continue;
 				child.__update (transformOnly, true);
 
 			}
@@ -750,7 +805,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child == null ) continue;
 			child.__update (transformOnly, true);
 
 		}

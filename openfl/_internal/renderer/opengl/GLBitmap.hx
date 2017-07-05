@@ -48,6 +48,8 @@ class GLBitmap {
 
 	private static var fbData:Array<FrameBufferDataItem> = [];
 
+	private static var dataToClean:Map<IBitmapDrawable, haxe.Timer> = new Map<IBitmapDrawable, haxe.Timer>();
+
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null || !bitmap.bitmapData.__isValid) return;
@@ -157,13 +159,28 @@ class GLBitmap {
 	 * @param	blendMode
 	 * @param	clipRect
 	 */
-	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?clipRect:Rectangle) {
+	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?clipRect:Rectangle, ?maskBitmap:BitmapData, ?maskMatrix:Matrix) {
 		var data = fbData[fbData.length - 1];
 		if (data == null) throw "No data to draw to";
 
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return;
 
+		if ( Std.is(source, DisplayObject) ) {
+			var object = cast(source, DisplayObject);
+			if ( object.stage == null ) {
+				if( dataToClean.exists(object) ) {
+					var timer = dataToClean.get(object);
+					timer.stop();
+				}
+				dataToClean.set(object, haxe.Timer.delay(function() {
+					if ( object.stage == null ) {
+						object.__releaseResources();
+					}
+					dataToClean.remove(object);
+					}, 1));
+			}
+		}
 		var viewPort = data.viewPort;
 		var spritebatch = renderSession.spriteBatch;
 		var drawTarget = target != null;
@@ -175,7 +192,7 @@ class GLBitmap {
 			tmpRect.setTo(viewPort.x, viewPort.y, viewPort.width, viewPort.height);
 		}
 
-		spritebatch.begin (renderSession, drawTarget ? null : tmpRect);
+		spritebatch.begin (renderSession, drawTarget ? null : tmpRect, maskBitmap, maskMatrix);
 
 		if (drawTarget) {
 
