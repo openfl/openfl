@@ -24,26 +24,24 @@ class SWFShape implements hxbit.Serializable
 {
 	@:s public var records(default, null):Array<SWFShapeRecord>;
 
-	@:s public var fillStyles(default, null):Array<SWFFillStyle>;
-	@:s public var lineStyles(default, null):Array<SWFLineStyle>;
-	@:s public var referencePoint(default, null):Point;
+	public var fillStyles(default, null):Array<SWFFillStyle>;
+	public var lineStyles(default, null):Array<SWFLineStyle>;
 
-	@:s private var fillEdgeMaps:Array<Map<Int, Array<Edge>>>;
-	@:s private var lineEdgeMaps:Array<Map<Int, Array<Edge>>>;
-	@:s private var currentFillEdgeMap:Map<Int, Array<Edge>>;
-	@:s private var currentLineEdgeMap:Map<Int, Array<Edge>>;
-	@:s private var numGroups:Null<Int>;
-	@:s private var coordMap:Map<String, Array<Edge>>;
+	private var fillEdgeMaps:Array<Map<Int, Array<Edge>>>;
+	private var lineEdgeMaps:Array<Map<Int, Array<Edge>>>;
+	private var currentFillEdgeMap:Map<Int, Array<Edge>>;
+	private var currentLineEdgeMap:Map<Int, Array<Edge>>;
+	private var numGroups:Null<Int>;
+	private var coordMap:Map<String, Array<Edge>>;
 
 	@:s private var unitDivisor:Float;
 
-	@:s private var edgeMapsCreated:Bool = false;
+	private var edgeMapsCreated:Bool = false;
 
 	public function new(data:SWFData = null, level:Int = 1, unitDivisor:Float = 20) {
 		records = new Array<SWFShapeRecord>();
 		fillStyles = new Array<SWFFillStyle>();
 		lineStyles = new Array<SWFLineStyle>();
-		referencePoint = new Point(0, 0);
 		this.unitDivisor = unitDivisor;
 		if (data != null) {
 			parse(data, level);
@@ -92,7 +90,6 @@ class SWFShape implements hxbit.Serializable
 		var numFillBits:Int = data.readUB(4);
 		var numLineBits:Int = data.readUB(4);
 		readShapeRecords(data, numFillBits, numLineBits, level);
-		determineReferencePoint();
 	}
 
 	public function publish(data:SWFData, level:Int = 1):Void {
@@ -174,16 +171,6 @@ class SWFShape implements hxbit.Serializable
 						lineBits = styleChangeRecord.numLineBits;
 					}
 				}
-			}
-		}
-	}
-
-	private function determineReferencePoint():Void {
-		if (Std.is (records[0], SWFShapeRecordStyleChange)) {
-			var styleChangeRecord:SWFShapeRecordStyleChange = cast records[0];
-			if(styleChangeRecord != null && styleChangeRecord.stateMoveTo) {
-				referencePoint.x = NumberUtils.roundPixels400(styleChangeRecord.moveDeltaX / unitDivisor);
-				referencePoint.y = NumberUtils.roundPixels400(styleChangeRecord.moveDeltaY / unitDivisor);
 			}
 		}
 	}
