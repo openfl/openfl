@@ -46,7 +46,7 @@ class DrawCommandReader {
 	{
 		advance();
 
-		#if js
+		#if (js && dev)
 		js.Browser.console.assert(bPos == buffer.b.length);
 		js.Browser.console.assert(ffPos == buffer.ff.length);
 		js.Browser.console.assert(fPos == buffer.f.length);
@@ -54,8 +54,8 @@ class DrawCommandReader {
 		js.Browser.console.assert(iPos == buffer.i.length);
 		js.Browser.console.assert(mPos == buffer.m.length);
 		js.Browser.console.assert(bdPos == buffer.bd.length);
-		//js.Browser.console.assert(viPos == buffer.vi.length);
-		//js.Browser.console.assert(vfPos == buffer.vf.length);
+		js.Browser.console.assert(viPos == buffer.vi.length);
+		js.Browser.console.assert(vfPos == buffer.vf.length);
 		#end
 	}
 	

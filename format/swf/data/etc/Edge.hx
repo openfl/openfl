@@ -15,6 +15,7 @@ class Edge implements IEdge implements hxbit.Serializable
 	}
 
     public function reverseWithNewFillStyle(newFillStyleIdx:Int):Edge {
+		throw "Pure virtual baseclass. Should not be instantiated or called.";
 		return new Edge();
 	}
 }
