@@ -9,14 +9,14 @@ class SWFMorphFillStyle implements hxbit.Serializable
 {
 	@:s public var type:Int;
 
-	@:s public var startColor:Int;
-	@:s public var endColor:Int;
-	@:s public var startGradientMatrix:SWFMatrix;
-	@:s public var endGradientMatrix:SWFMatrix;
-	@:s public var gradient:SWFMorphGradient;
+	@:s public var startColor:Null<Int>;
+	@:s public var endColor:Null<Int>;
+	@:s public var startGradientMatrix:Null<SWFMatrix>;
+	@:s public var endGradientMatrix:Null<SWFMatrix>;
+	@:s public var gradient:Null<SWFMorphGradient>;
 	@:s public var bitmapId:Null<Int>;
-	@:s public var startBitmapMatrix:SWFMatrix;
-	@:s public var endBitmapMatrix:SWFMatrix;
+	@:s public var startBitmapMatrix:Null<SWFMatrix>;
+	@:s public var endBitmapMatrix:Null<SWFMatrix>;
 
 	public function new(data:SWFData = null, level:Int = 1) {
 		if (data != null) {
