@@ -6,9 +6,6 @@ class SWFMorphGradient implements hxbit.Serializable
 {
 	@:s public var spreadMode:Int;
 	@:s public var interpolationMode:Int;
-	// Forward declarations of properties in SWFMorphFocalGradient
-	@:s public var startFocalPoint:Float;
-	@:s public var endFocalPoint:Float;
 
 	@:s public var records(default, null):Array<SWFMorphGradientRecord>;
 
