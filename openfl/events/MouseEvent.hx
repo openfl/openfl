@@ -120,6 +120,24 @@ class MouseEvent extends Event {
 		}
 	}
 
+	public static function isMouseEvent (type:String):Bool {
+		return type == CLICK
+			|| type == DOUBLE_CLICK
+			|| type == MIDDLE_CLICK
+			|| type == MIDDLE_MOUSE_DOWN
+			|| type == MIDDLE_MOUSE_UP
+			|| type == MOUSE_DOWN
+			|| type == MOUSE_MOVE
+			|| type == MOUSE_OUT
+			|| type == MOUSE_OVER
+			|| type == MOUSE_UP
+			|| type == MOUSE_WHEEL
+			|| type == RIGHT_CLICK
+			|| type == RIGHT_MOUSE_DOWN
+			|| type == RIGHT_MOUSE_UP
+			|| type == ROLL_OUT
+			|| type == ROLL_OVER;
+	}
 }
 
 

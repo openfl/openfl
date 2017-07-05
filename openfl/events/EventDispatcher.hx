@@ -77,6 +77,8 @@ class EventDispatcher implements IEventDispatcher {
 
 		}
 
+		onEventListenerAdded (type);
+		
 	}
 
 
@@ -143,6 +145,7 @@ class EventDispatcher implements IEventDispatcher {
 			if (list[i].match (listener, useCapture)) {
 
 				list.splice (i, 1);
+				onEventListenerRemoved (type);
 				break;
 
 			}
@@ -166,6 +169,14 @@ class EventDispatcher implements IEventDispatcher {
 
 		}
 
+	}
+
+
+	private function onEventListenerAdded (type:String) {
+	}
+
+
+	private function onEventListenerRemoved (type:String) {
 	}
 
 
@@ -311,7 +322,6 @@ class EventDispatcher implements IEventDispatcher {
 		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);
 
 	}
-
 
 }
 
