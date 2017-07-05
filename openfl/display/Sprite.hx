@@ -68,11 +68,10 @@ class Sprite extends DisplayObjectContainer {
 		
 	}
 	
-	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private function __hitTestHitArea (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (hitArea != null) {
-			
+					
 			if (!hitArea.mouseEnabled) {
 				
 				hitArea.mouseEnabled = true;
@@ -84,52 +83,58 @@ class Sprite extends DisplayObjectContainer {
 					stack[stack.length] = hitObject;
 					
 				}
-				
+
 				return hitTest;
-				
+								
 			}
 			
-		} else {
+		} 
+
+		return false;
+
+	}
+	
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+		
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return __hitTestHitArea(x, y, shapeFlag, stack, true, hitObject);
+		if (mask != null && !mask.__hitTestMask (x, y)) return __hitTestHitArea(x, y, shapeFlag, stack, true, hitObject);
+		
+		if (__scrollRect != null) {
 			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
-			if (mask != null && !mask.__hitTestMask (x, y)) return false;
+			var point = Point.__pool.get ();
+			point.setTo (x, y);
+			__getRenderTransform ().__transformInversePoint (point);
 			
-			if (__scrollRect != null) {
-				
-				var point = Point.__pool.get ();
-				point.setTo (x, y);
-				__getRenderTransform ().__transformInversePoint (point);
-				
-				if (!__scrollRect.containsPoint (point)) {
-					
-					Point.__pool.release (point);
-					return false;
-					
-				}
+			if (!__scrollRect.containsPoint (point)) {
 				
 				Point.__pool.release (point);
+				return __hitTestHitArea(x, y, shapeFlag, stack, true, hitObject);
 				
 			}
 			
-			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
-				
-				return interactiveOnly;
-				
-			} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
-				
-				if (stack != null) {
-					
-					stack.push (hitObject);
-					
-				}
-				
-				return true;
-				
-			}
+			Point.__pool.release (point);
 			
 		}
 		
-		return false;
+		if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
+			
+			return interactiveOnly;
+			
+		} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
+			
+			if (stack != null) {
+				
+				stack.push (hitObject);
+				
+			}
+			
+			return true;
+			
+		}
+			
+		
+		
+		return __hitTestHitArea(x, y, shapeFlag, stack, true, hitObject);
 		
 	}
 	
