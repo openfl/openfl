@@ -1148,7 +1148,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	public function hasMouseListener ():Bool {
+	public inline function hasMouseListener ():Bool {
 		return __mouseListenerCount > 0;
 	}
 

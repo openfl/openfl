@@ -114,8 +114,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __rendering:Bool;
 	private var __stack:UnshrinkableArray<DisplayObject>;
 	private var __focusStack:UnshrinkableArray<DisplayObject>;
-	private var __allChildrenStack:HaxeVector<DisplayObject> = new HaxeVector<DisplayObject>(4096);
-	private var __ancestorHasMouseListenerStack:HaxeVector<Bool> = new HaxeVector<Bool>(4096);
+	private var __allChildrenStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(4096);
+	private var __ancestorHasMouseListenerStack:UnshrinkableArray<Bool> = new UnshrinkableArray<Bool>(4096);
 	private var __mouseListenerStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
 	private var __updateStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
 	private var __allChildrenLength: Int;
@@ -687,11 +687,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var i = 0;
 
 		__allChildrenLength = 1;
-		__allChildrenStack.set (0, this);
-		__ancestorHasMouseListenerStack.set (0, false);
+		__allChildrenStack[0] = this;
+		__ancestorHasMouseListenerStack[0] = false;
 		__mustEvaluateHitTest = false;
-
-		__mouseListenerStack.clear ();
+		var mouseListenerCount = 0;
+		var updateChildrenCount = 0;
 
 		while (i < __allChildrenLength) {
 			stack_id = __allChildrenStack[i];
@@ -699,27 +699,33 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			if (stack_id.__children != null && stack_id.__children.length > 0) {
 				for(child in stack_id.__children) {
+					if (!child.__renderable || child.__worldAlpha <= 0) continue;
 					if (ancestorHasMouseListener) {
 						child.__mustEvaluateHitTest = true;
 					} else if (child.hasMouseListener ()) {
-						__mouseListenerStack.push (child);
+						__mouseListenerStack[mouseListenerCount++] = child;
 						child.__mustEvaluateHitTest = true;
 					} else {
 						child.__mustEvaluateHitTest = false;
 					}
 
-					__ancestorHasMouseListenerStack.set (__allChildrenLength, child.__mustEvaluateHitTest);
+					__ancestorHasMouseListenerStack[__allChildrenLength] = child.__mustEvaluateHitTest;
 
 					if (child.__updateDirty) {
-						__updateStack.push (child);
+						__updateStack[updateChildrenCount++] = child;
 					}
 
-					__allChildrenStack.set (__allChildrenLength,child);
+					__allChildrenStack[__allChildrenLength] = child;
 					++__allChildrenLength;
 				}
 			}
 			++i;
 		}
+
+		__allChildrenStack.splice(__allChildrenLength, __allChildrenStack.length - __allChildrenLength);
+		__updateStack.splice(updateChildrenCount, __updateStack.length - updateChildrenCount);
+		__mouseListenerStack.splice(mouseListenerCount, __mouseListenerStack.length - mouseListenerCount);
+		__ancestorHasMouseListenerStack.splice(__allChildrenLength, __ancestorHasMouseListenerStack.length - __allChildrenLength);
 
 		for (mouseListener in __mouseListenerStack) {
 			var parent = mouseListener.parent;
@@ -1410,8 +1416,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 				__dirty = transformOnly;
 			}
-
-			__updateStack.clear();
 
 		}
 	}
