@@ -10,6 +10,9 @@ class DirectRenderer extends #if flash Sprite #else DisplayObject #end {
 	
 	public var render (get, set):Dynamic;
 	
+	var __width:Int;
+	var __height:Int;
+
 	@:noCompletion private var __render:Dynamic;
 	
 	
@@ -40,7 +43,21 @@ class DirectRenderer extends #if flash Sprite #else DisplayObject #end {
 		
 	}
 	
+	public override function set_width(value:Float) {
+		return __width = Std.int(value);
+	}
+
+	public override function get_width() {
+		return __width;
+	}
 	
+	public override function set_height(value:Float) {
+		return __height = Std.int(value);
+	}
+
+	public override function get_height() {
+		return __height;
+	}
 }
 
 

@@ -163,8 +163,9 @@ import openfl.Lib;
 
 	private function resize(?dummy:Dynamic) {
 		var stage = Lib.current.stage;
-		var width = stage.stageWidth * stage.scaleX;
-		var height = stage.stageHeight * stage.scaleY;
+		var renderer = @:privateAccess stage.__renderer;
+		var width = renderer != null ? renderer.width : stage.stageWidth * stage.scaleX;
+		var height = renderer != null ? renderer.height : stage.stageHeight * stage.scaleY;
 		ogl.scrollRect = new Rectangle (0, 0, width, height);
 		scrollRect = ogl.scrollRect;
 		ogl.width = width;
