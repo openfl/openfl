@@ -318,6 +318,7 @@ class MovieClip extends flash.display.MovieClip {
 	private function __createObject (object:FrameObject):DisplayObject {
 
 		var displayObject:DisplayObject = null;
+		var skipChildrenCache = false;
 
 		if(__childrenCache != null)
 		{
@@ -332,8 +333,13 @@ class MovieClip extends flash.display.MovieClip {
 
 			var symbol = __swf.symbols.get (object.symbol);
 
-			if(symbol.poolable && symbol.pool.size > 0) {
-				displayObject = symbol.pool.get();
+			if(symbol.poolable) {
+
+				skipChildrenCache = true;
+
+				if(symbol.pool.size > 0) {
+					return symbol.pool.get();
+				}
 			}
 			else {
 				#if profile
@@ -412,8 +418,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		if(__childrenCache != null)
-		{
+		if(__childrenCache != null && !skipChildrenCache) {
 			__childrenCache[object] = displayObject;
 		}
 
