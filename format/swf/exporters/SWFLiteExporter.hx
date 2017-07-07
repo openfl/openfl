@@ -734,6 +734,9 @@ class SWFLiteExporter {
 		var lastModified = new Map<Int, Int> ();
 		var zeroCharacter = -1;
 
+		var hasShape = false;
+		var hasSprite = false;
+
 		var frame, frameObject, frameData, placeTag:TagPlaceObject;
 
 		for (frameData in tag.frames) {
@@ -752,15 +755,16 @@ class SWFLiteExporter {
 
 				instances.push (object.placedAtIndex);
 
+				var objectTag = data.getCharacter (object.characterId);
+
 				if (!lastModified.exists (object.placedAtIndex)) {
 
-					processTag (cast data.getCharacter (object.characterId));
-
+					processTag (objectTag);
 					placeTag = cast tag.tags[object.placedAtIndex];
 
 				} else if ( object.isKeyframe ){
 
-					processTag (cast data.getCharacter (object.characterId));
+					processTag (objectTag);
 					placeTag = cast tag.tags[object.lastModifiedAtIndex];
 
 				}
@@ -846,6 +850,9 @@ class SWFLiteExporter {
 
 				frame.objects.push (frameObject);
 
+				hasShape = hasShape || Std.is(objectTag, TagDefineShape);
+				hasSprite = hasSprite || Std.is(objectTag, TagDefineSprite);
+
 			}
 
 			for (id in lastModified.keys ()) {
@@ -877,6 +884,16 @@ class SWFLiteExporter {
 
 		}
 
+		// From 'scale9Grid' documentation:
+		// When the scale9Grid property is set and a movie clip is scaled, all text and child movie clips scale normally, ...
+		// :TODO: detect other tags (texts, ...)
+		if (symbol.scalingGridRect != null && hasSprite) {
+			if (hasShape) {
+				throw ":TODO: support 9 slice on sprites containing both shapes and sprites";
+			} else {
+				symbol.scalingGridRect = null;
+			}
+		}
 		return symbol;
 
 	}
