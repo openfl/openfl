@@ -298,7 +298,7 @@ class Loader extends DisplayObjectContainer {
 				library.load ().onComplete (function (_) {
 					
 					__library = cast library;
-					Assets.registerLibrary (contentLoaderInfo.url, __library);
+					Assets.registerLibrary (manifest.name, __library);
 					
 					content = __library.getMovieClip ("");
 					contentLoaderInfo.content = content;
