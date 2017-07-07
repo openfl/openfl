@@ -61,7 +61,7 @@ class OpenGLView extends DirectRenderer {
 			
 			if (__scrollRect == null) {
 				
-				rect.setTo (0, 0, stage.stageWidth, stage.stageHeight);
+				rect.setTo (0, 0, width, height);
 				
 			} else {
 				
@@ -74,7 +74,7 @@ class OpenGLView extends DirectRenderer {
 			
 			renderSession.shaderManager.setShader(null);
 			renderSession.blendModeManager.setBlendMode(null);
-			renderSession.renderer.setViewport(0,0,stage.stageWidth, stage.stageHeight, true);
+			renderSession.renderer.setViewport(0,0,Std.int(width), Std.int(height), true);
 			openfl._internal.renderer.opengl.shaders2.Shader.resetCache ();
 		}
 		
