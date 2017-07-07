@@ -7,39 +7,39 @@ import openfl.ui.KeyLocation;
 /**
  * A KeyboardEvent object id dispatched in response to user input through a
  * keyboard. There are two types of keyboard events:
- * <code>KeyboardEvent.KEY_DOWN</code> and <code>KeyboardEvent.KEY_UP</code>
+ * `KeyboardEvent.KEY_DOWN` and `KeyboardEvent.KEY_UP`
  *
- * <p>Because mappings between keys and specific characters vary by device and
+ * Because mappings between keys and specific characters vary by device and
  * operating system, use the TextEvent event type for processing character
- * input.</p>
+ * input.
  *
- * <p>To listen globally for key events, listen on the Stage for the capture
- * and target or bubble phase.</p>
+ * To listen globally for key events, listen on the Stage for the capture
+ * and target or bubble phase.
  * 
  */
 extern class KeyboardEvent extends Event {
 	
 	
 	/**
-	 * The <code>KeyboardEvent.KEY_DOWN</code> constant defines the value of the
-	 * <code>type</code> property of a <code>keyDown</code> event object.
+	 * The `KeyboardEvent.KEY_DOWN` constant defines the value of the
+	 * `type` property of a `keyDown` event object.
 	 *
-	 * <p>This event has the following properties:</p>
+	 * This event has the following properties:
 	 */
 	public static inline var KEY_DOWN = "keyDown";
 	
 	/**
-	 * The <code>KeyboardEvent.KEY_UP</code> constant defines the value of the
-	 * <code>type</code> property of a <code>keyUp</code> event object.
+	 * The `KeyboardEvent.KEY_UP` constant defines the value of the
+	 * `type` property of a `keyUp` event object.
 	 *
-	 * <p>This event has the following properties:</p>
+	 * This event has the following properties:
 	 */
 	public static inline var KEY_UP = "keyUp";
 	
 	
 	/**
-	 * Indicates whether the Alt key is active(<code>true</code>) or inactive
-	 * (<code>false</code>) on Windows; indicates whether the Option key is
+	 * Indicates whether the Alt key is active(`true`) or inactive
+	 * (`false`) on Windows; indicates whether the Option key is
 	 * active on Mac OS.
 	 */
 	public var altKey:Bool;
@@ -47,17 +47,17 @@ extern class KeyboardEvent extends Event {
 	/**
 	 * Contains the character code value of the key pressed or released. The
 	 * character code values are English keyboard values. For example, if you
-	 * press Shift+3, <code>charCode</code> is # on a Japanese keyboard, just as
+	 * press Shift+3, `charCode` is # on a Japanese keyboard, just as
 	 * it is on an English keyboard.
 	 *
-	 * <p><b>Note: </b>When an input method editor(IME) is running,
-	 * <code>charCode</code> does not report accurate character codes.</p>
+	 * **Note: **When an input method editor(IME) is running,
+	 * `charCode` does not report accurate character codes.
 	 */
 	public var charCode:Int;
 	
 	/**
 	 * On Windows and Linux, indicates whether the Ctrl key is active
-	 * (<code>true</code>) or inactive(<code>false</code>); On Mac OS, indicates
+	 * (`true`) or inactive(`false`); On Mac OS, indicates
 	 * whether either the Ctrl key or the Command key is active.
 	 */
 	public var ctrlKey:Bool;
@@ -69,8 +69,8 @@ extern class KeyboardEvent extends Event {
 	/**
 	 * The key code value of the key pressed or released.
 	 *
-	 * <p><b>Note: </b>When an input method editor(IME) is running,
-	 * <code>keyCode</code> does not report accurate key codes.</p>
+	 * **Note: **When an input method editor(IME) is running,
+	 * `keyCode` does not report accurate key codes.
 	 */
 	public var keyCode:Int;
 	
@@ -78,17 +78,17 @@ extern class KeyboardEvent extends Event {
 	 * Indicates the location of the key on the keyboard. This is useful for
 	 * differentiating keys that appear more than once on a keyboard. For
 	 * example, you can differentiate between the left and right Shift keys by
-	 * the value of this property: <code>KeyLocation.LEFT</code> for the left and
-	 * <code>KeyLocation.RIGHT</code> for the right. Another example is
+	 * the value of this property: `KeyLocation.LEFT` for the left and
+	 * `KeyLocation.RIGHT` for the right. Another example is
 	 * differentiating between number keys pressed on the standard keyboard
-	 * (<code>KeyLocation.STANDARD</code>) versus the numeric keypad
-	 * (<code>KeyLocation.NUM_PAD</code>).
+	 * (`KeyLocation.STANDARD`) versus the numeric keypad
+	 * (`KeyLocation.NUM_PAD`).
 	 */
 	public var keyLocation:KeyLocation;
 	
 	/**
-	 * Indicates whether the Shift key modifier is active(<code>true</code>) or
-	 * inactive(<code>false</code>).
+	 * Indicates whether the Shift key modifier is active(`true`) or
+	 * inactive(`false`).
 	 */
 	public var shiftKey:Bool;
 	
@@ -98,8 +98,8 @@ extern class KeyboardEvent extends Event {
 	 * events. Event objects are passed as parameters to event listeners.
 	 * 
 	 * @param type             The type of the event. Possible values are:
-	 *                         <code>KeyboardEvent.KEY_DOWN</code> and
-	 *                         <code>KeyboardEvent.KEY_UP</code>
+	 *                         `KeyboardEvent.KEY_DOWN` and
+	 *                         `KeyboardEvent.KEY_UP`
 	 * @param bubbles          Determines whether the Event object participates
 	 *                         in the bubbling stage of the event flow.
 	 * @param cancelable       Determines whether the Event object can be
@@ -107,7 +107,7 @@ extern class KeyboardEvent extends Event {
 	 * @param charCodeValue    The character code value of the key pressed or
 	 *                         released. The character code values returned are
 	 *                         English keyboard values. For example, if you press
-	 *                         Shift+3, the <code>Keyboard.charCode()</code>
+	 *                         Shift+3, the `Keyboard.charCode()`
 	 *                         property returns # on a Japanese keyboard, just as
 	 *                         it does on an English keyboard.
 	 * @param keyCodeValue     The key code value of the key pressed or released.

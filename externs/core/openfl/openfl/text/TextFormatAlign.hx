@@ -9,7 +9,7 @@ package openfl.text; #if (display || !flash)
 	
 	/**
 	 * Constant; centers the text in the text field. Use the syntax
-	 * <code>TextFormatAlign.CENTER</code>.
+	 * `TextFormatAlign.CENTER`.
 	 */
 	public var CENTER = 0;
 	
@@ -17,19 +17,19 @@ package openfl.text; #if (display || !flash)
 	
 	/**
 	 * Constant; justifies text within the text field. Use the syntax
-	 * <code>TextFormatAlign.JUSTIFY</code>.
+	 * `TextFormatAlign.JUSTIFY`.
 	 */
 	public var JUSTIFY = 2;
 	
 	/**
 	 * Constant; aligns text to the left within the text field. Use the syntax
-	 * <code>TextFormatAlign.LEFT</code>.
+	 * `TextFormatAlign.LEFT`.
 	 */
 	public var LEFT = 3;
 	
 	/**
 	 * Constant; aligns text to the right within the text field. Use the syntax
-	 * <code>TextFormatAlign.RIGHT</code>.
+	 * `TextFormatAlign.RIGHT`.
 	 */
 	public var RIGHT = 4;
 	

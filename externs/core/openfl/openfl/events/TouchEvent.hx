@@ -18,17 +18,17 @@ import openfl.utils.ByteArray;
  * properties and methods of these classes to construct event handlers that
  * respond to the user touching the device.
  *
- * <p>Use the Multitouch class to determine the current environment's support
+ * Use the Multitouch class to determine the current environment's support
  * for touch interaction, and to manage the support of touch interaction if
- * the current environment supports it.</p>
+ * the current environment supports it.
  *
- * <p><b>Note:</b> When objects are nested on the display list, touch events
+ * **Note:** When objects are nested on the display list, touch events
  * target the deepest possible nested object that is visible in the display
  * list. This object is called the target node. To have a target node's
  * ancestor(an object containing the target node in the display list) receive
  * notification of a touch event, use
- * <code>EventDispatcher.addEventListener()</code> on the ancestor node with
- * the type parameter set to the specific touch event you want to detect.</p>
+ * `EventDispatcher.addEventListener()` on the ancestor node with
+ * the type parameter set to the specific touch event you want to detect.
  * 
  */
 extern class TouchEvent extends Event {
@@ -64,73 +64,73 @@ extern class TouchEvent extends Event {
 	
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_BEGIN</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_BEGIN` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_BEGIN = "touchBegin";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_END</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_END` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_END = "touchEnd";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_MOVE</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_MOVE` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_MOVE = "touchMove";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_OUT</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_OUT` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_OUT = "touchOut";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_OVER</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_OVER` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_OVER = "touchOver";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_ROLL_OUT</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_ROLL_OUT` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_ROLL_OUT = "touchRollOut";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_ROLL_OVER</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_ROLL_OVER` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_ROLL_OVER = "touchRollOver";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>TOUCH_TAP</code> touch event object.
+	 * Defines the value of the `type` property of a
+	 * `TOUCH_TAP` touch event object.
 	 *
-	 * <p>The dispatched TouchEvent object has the following properties:</p>
+	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_TAP = "touchTap";
 	
 	
 	/**
-	 * Indicates whether the Alt key is active(<code>true</code>) or inactive
-	 * (<code>false</code>). Supported for Windows and Linux operating systems
+	 * Indicates whether the Alt key is active(`true`) or inactive
+	 * (`false`). Supported for Windows and Linux operating systems
 	 * only.
 	 */
 	public var altKey:Bool;
@@ -141,7 +141,7 @@ extern class TouchEvent extends Event {
 	
 	/**
 	 * On Windows or Linux, indicates whether the Ctrl key is active
-	 * (<code>true</code>) or inactive(<code>false</code>). On Macintosh,
+	 * (`true`) or inactive(`false`). On Macintosh,
 	 * indicates whether either the Control key or the Command key is activated.
 	 */
 	public var ctrlKey:Bool;
@@ -170,31 +170,31 @@ extern class TouchEvent extends Event {
 	public var localY:Float;
 	
 	/**
-	 * A value between <code>0.0</code> and <code>1.0</code> indicating force of
+	 * A value between `0.0` and `1.0` indicating force of
 	 * the contact with the device. If the device does not support detecting the
-	 * pressure, the value is <code>1.0</code>.
+	 * pressure, the value is `1.0`.
 	 */
 	public var pressure:Float;
 	
 	/**
 	 * A reference to a display list object that is related to the event. For
-	 * example, when a <code>touchOut</code> event occurs,
-	 * <code>relatedObject</code> represents the display list object to which the
+	 * example, when a `touchOut` event occurs,
+	 * `relatedObject` represents the display list object to which the
 	 * pointing device now points. This property applies to the
-	 * <code>touchOut</code>, <code>touchOver</code>, <code>touchRollOut</code>,
-	 * and <code>touchRollOver</code> events.
+	 * `touchOut`, `touchOver`, `touchRollOut`,
+	 * and `touchRollOver` events.
 	 *
-	 * <p>The value of this property can be <code>null</code> in two
+	 * The value of this property can be `null` in two
 	 * circumstances: if there is no related object, or there is a related
 	 * object, but it is in a security sandbox to which you don't have access.
-	 * Use the <code>isRelatedObjectInaccessible()</code> property to determine
-	 * which of these reasons applies.</p>
+	 * Use the `isRelatedObjectInaccessible()` property to determine
+	 * which of these reasons applies.
 	 */
 	public var relatedObject:InteractiveObject;
 	
 	/**
-	 * Indicates whether the Shift key is active(<code>true</code>) or inactive
-	 * (<code>false</code>).
+	 * Indicates whether the Shift key is active(`true`) or inactive
+	 * (`false`).
 	 */
 	public var shiftKey:Bool;
 	
@@ -212,14 +212,14 @@ extern class TouchEvent extends Event {
 	
 	/**
 	 * The horizontal coordinate at which the event occurred in global Stage
-	 * coordinates. This property is calculated when the <code>localX</code>
+	 * coordinates. This property is calculated when the `localX`
 	 * property is set.
 	 */
 	public var stageX:Float;
 	
 	/**
 	 * The vertical coordinate at which the event occurred in global Stage
-	 * coordinates. This property is calculated when the <code>localY</code>
+	 * coordinates. This property is calculated when the `localY`
 	 * property is set.
 	 */
 	public var stageY:Float;
@@ -235,14 +235,14 @@ extern class TouchEvent extends Event {
 	 * Event objects are passed as parameters to event listeners.
 	 * 
 	 * @param type                The type of the event. Possible values are:
-	 *                            <code>TouchEvent.TOUCH_BEGIN</code>,
-	 *                            <code>TouchEvent.TOUCH_END</code>,
-	 *                            <code>TouchEvent.TOUCH_MOVE</code>,
-	 *                            <code>TouchEvent.TOUCH_OUT</code>,
-	 *                            <code>TouchEvent.TOUCH_OVER</code>,
-	 *                            <code>TouchEvent.TOUCH_ROLL_OUT</code>,
-	 *                            <code>TouchEvent.TOUCH_ROLL_OVER</code>, and
-	 *                            <code>TouchEvent.TOUCH_TAP</code>.
+	 *                            `TouchEvent.TOUCH_BEGIN`,
+	 *                            `TouchEvent.TOUCH_END`,
+	 *                            `TouchEvent.TOUCH_MOVE`,
+	 *                            `TouchEvent.TOUCH_OUT`,
+	 *                            `TouchEvent.TOUCH_OVER`,
+	 *                            `TouchEvent.TOUCH_ROLL_OUT`,
+	 *                            `TouchEvent.TOUCH_ROLL_OVER`, and
+	 *                            `TouchEvent.TOUCH_TAP`.
 	 * @param bubbles             Determines whether the Event object
 	 *                            participates in the bubbling phase of the event
 	 *                            flow.
@@ -254,8 +254,8 @@ extern class TouchEvent extends Event {
 	 *                            mapped to mouse events.
 	 * @param relatedObject       The complementary InteractiveObject instance
 	 *                            that is affected by the event. For example,
-	 *                            when a <code>touchOut</code> event occurs,
-	 *                            <code>relatedObject</code> represents the
+	 *                            when a `touchOut` event occurs,
+	 *                            `relatedObject` represents the
 	 *                            display list object to which the pointing
 	 *                            device now points.
 	 * @param ctrlKey             On Windows or Linux, indicates whether the Ctrl
