@@ -699,7 +699,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			if (stack_id.__children != null && stack_id.__children.length > 0) {
 				for(child in stack_id.__children) {
-					if (!child.__renderable || child.__worldAlpha <= 0) continue;
+					if (!child.isRenderable()) continue;
 					if (ancestorHasMouseListener) {
 						child.__mustEvaluateHitTest = true;
 					} else if (child.hasMouseListener ()) {
