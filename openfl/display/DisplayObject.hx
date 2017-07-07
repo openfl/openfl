@@ -3,6 +3,7 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
+import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -57,7 +58,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
-	
+	private static var __displayObjectStackPool = new ObjectPool<Array<DisplayObject>>(function () return new Array<DisplayObject> (), function (stack) stack.splice (0, stack.length));
+
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
@@ -379,7 +381,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			} else {
 				
-				var stack: Vector<DisplayObject> = new Vector<DisplayObject>();
+				var stack: Array<DisplayObject> = __displayObjectStackPool.get();
 				var parent = parent;
 				var i = 0;
 				
@@ -396,13 +398,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					stack[i - j - 1].__dispatch (event);
 					
 				}
-				
+
+				__displayObjectStackPool.release(stack);
+
 			}
 
 		}
 
-		event.eventPhase = AT_TARGET;		
+		event.eventPhase = AT_TARGET;
+
 		return __dispatchEvent(event);
+
 	}
 
 	private function __dispatchChildren (event:Event):Void {
