@@ -526,9 +526,10 @@ class SWFLiteExporter {
 			
 			instances.splice (0, instances.length);
 			
+			frame.objects = [];
+			
 			for (object in frameData.getObjectsSortedByDepth ()) {
 				
-				frame.objects = [];
 				instances.push (object.placedAtIndex);
 				
 				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
