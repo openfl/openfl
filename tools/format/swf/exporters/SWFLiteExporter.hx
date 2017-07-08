@@ -48,6 +48,7 @@ import lime.graphics.format.JPEG;
 import openfl.display.PNGEncoderOptions;
 import format.abc.Data;
 import format.abc.Data.Name;
+import format.swf.tags.TagDefineSound;
 
 using StringTools;
 using format.swf.exporters.SWFLiteExporter.AVM2;
@@ -58,6 +59,9 @@ class SWFLiteExporter {
 	public var bitmapAlpha:Map <Int, ByteArray>;
 	public var bitmaps:Map <Int, ByteArray>;
 	public var bitmapTypes:Map <Int, BitmapType>;
+	public var sounds:Map <Int, ByteArray>;
+	public var soundTypes:Map <Int, SoundType>;
+	public var soundSymbolClassNames:Map <Int, String>;
 	public var filterClasses:Map <String, Bool>;
 	public var swfLite:SWFLite;
 	
@@ -72,6 +76,9 @@ class SWFLiteExporter {
 		bitmapAlpha = new Map <Int, ByteArray> ();
 		bitmaps = new Map <Int, ByteArray> ();
 		bitmapTypes = new Map <Int, BitmapType> ();
+		sounds = new Map <Int, ByteArray> ();
+		soundTypes = new Map <Int, SoundType> ();
+		soundSymbolClassNames = new Map <Int, String> ();
 		filterClasses = new Map <String, Bool> ();
 		
 		swfLite = new SWFLite ();
@@ -811,6 +818,34 @@ class SWFLiteExporter {
 		return symbol;
 		
 	}
+
+	private function addSound (tag:IDefinitionTag):Void {
+
+		if (Std.is (tag, TagDefineSound)) {
+
+			var defineSound:TagDefineSound = cast tag;
+			
+			var byteArray = defineSound.soundData;
+			var type:SoundType = switch (defineSound.soundFormat) {
+				case 0: SoundType.UNCOMPRESSED_NATIVE_ENDIAN;
+				case 1: SoundType.ADPCM;
+				case 2: SoundType.MP3;
+				case 3: SoundType.UNCOMPRESSED_LITTLE_ENDIAN;
+				case 4: SoundType.NELLYMOSER_16_KHZ;
+				case 5: SoundType.NELLYMOSER_8_KHZ;
+				case 6: SoundType.NELLYMOSER;
+				case 7: SoundType.SPEEX;
+				case _: throw("invalid sound type!");
+			}
+			sounds.set (tag.characterId, byteArray);
+			soundTypes.set (tag.characterId, type);
+
+		}
+
+		return null;
+
+	}	
+	
 	
 	
 	private function processSymbol (symbol:format.swf.data.SWFSymbol):Void {
@@ -825,6 +860,11 @@ class SWFLiteExporter {
 		//       cuz not everyone wants to do it this way
 
 		trace("processing symbol "+ symbol.name);
+		
+		// apply names to sounds
+		if (null != sounds.get (symbol.tagId)) {
+			soundSymbolClassNames.set(symbol.tagId, symbol.name);
+		}
 		
 		// root symbol is a special case
 		if (data2 == null && ~/_fla\.MainTimeline$/.match(symbol.name)) {
@@ -954,6 +994,10 @@ class SWFLiteExporter {
 				
 				return addFont (tag);
 				
+			} else if (Std.is (tag, TagDefineSound)) {
+
+				addSound (tag);
+
 			}
 			
 			return null;
@@ -978,6 +1022,16 @@ enum BitmapType {
 	
 }
 
+enum SoundType {
+	UNCOMPRESSED_NATIVE_ENDIAN;
+	ADPCM;
+	MP3;
+	UNCOMPRESSED_LITTLE_ENDIAN;
+	NELLYMOSER_16_KHZ;
+	NELLYMOSER_8_KHZ;
+	NELLYMOSER;
+	SPEEX;
+}
 
 /**
  * AVM2 ActionScript3 Byte Code (ABC) Instruction Traversal
