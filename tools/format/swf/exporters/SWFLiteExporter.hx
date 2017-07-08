@@ -696,6 +696,7 @@ class SWFLiteExporter {
 		symbol.wordWrap = tag.wordWrap;
 		symbol.input = !tag.readOnly;
 		
+		// embedded fonts
 		if (tag.hasFont) {
 			
 			var font:IDefinitionTag = cast data.getCharacter (tag.fontId);
@@ -708,6 +709,13 @@ class SWFLiteExporter {
 			
 			symbol.fontID = tag.fontId;
 			symbol.fontName = cast (font, TagDefineFont2).fontName;
+			
+		}
+		
+		// shared fonts
+		if (tag.hasFontClass) {
+			
+			symbol.fontName = tag.fontClass;
 			
 		}
 		
