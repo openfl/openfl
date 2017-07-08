@@ -23,7 +23,6 @@ class SWF extends EventDispatcher {
 	
 	public var data:SWFRoot;
 	public static var instances = new Map<String, SWF> ();
-	public static var parseABC:Bool = false;
 	
 	public var backgroundColor (default, null):Int;
 	public var frameRate (default, null):Float;
