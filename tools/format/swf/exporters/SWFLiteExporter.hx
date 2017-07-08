@@ -893,29 +893,6 @@ class SWFLiteExporter {
 		// find the as3 class definition
 		var cls = data.abcData.findClassByName(symbol.name);
 		
-		if (data2 != null) {
-			data2.className = symbol.name;
-		}
-		
-		// TODO: guard the rest of this code with appropriate macro
-		//       cuz not everyone wants to do it this way
-
-		trace("processing symbol "+ symbol.name);
-		
-		// root symbol is a special case
-		if (data2 == null && ~/_fla\.MainTimeline$/.match(symbol.name)) {
-			data2 = swfLite.root;
-		}
-		
-		// we only want to operate on DefineSprite tags from here
-		if (!Std.is (data2, SpriteSymbol)) {
-			return;
-		}
-		var spriteSymbol:SpriteSymbol = cast data2; 
-		
-		// find the as3 class definition
-		var cls = data.abcData.findClassByName(symbol.name);
-		
 		// get base class
 		var superClsName = data.abcData.resolveMultiNameByIndex(cls.superclass);
 		switch (superClsName.nameSpace) {
