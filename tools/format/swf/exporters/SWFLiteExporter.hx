@@ -48,8 +48,13 @@ import lime.graphics.format.JPEG;
 import openfl.display.PNGEncoderOptions;
 import format.abc.Data;
 import format.abc.Data.Name;
+<<<<<<< HEAD
 import format.swf.tags.TagDefineSound;
+=======
+>>>>>>> translate AVM2 ActionScript3 Byte Code (ABC) to JavaScript;
 
+using StringTools;
+using format.swf.exporters.SWFLiteExporter.AVM2;
 
 class SWFLiteExporter {
 	
@@ -890,12 +895,106 @@ class SWFLiteExporter {
 		// find the as3 class definition
 		var cls = data.abcData.findClassByName(symbol.name);
 		
-		if (data != null) {
-			
-			data.className = symbol.name;
-			
+		if (data2 != null) {
+			data2.className = symbol.name;
 		}
 		
+		// TODO: guard the rest of this code with appropriate macro
+		//       cuz not everyone wants to do it this way
+
+		trace("processing symbol "+ symbol.name);
+		
+		// root symbol is a special case
+		if (data2 == null && ~/_fla\.MainTimeline$/.match(symbol.name)) {
+			data2 = swfLite.root;
+		}
+		
+		// we only want to operate on DefineSprite tags from here
+		if (!Std.is (data2, SpriteSymbol)) {
+			return;
+		}
+		var spriteSymbol:SpriteSymbol = cast data2; 
+		
+		// find the as3 class definition
+		var cls = data.abcData.findClassByName(symbol.name);
+		
+		// get base class
+		var superClsName = data.abcData.resolveMultiNameByIndex(cls.superclass);
+		switch (superClsName.nameSpace) {
+			case NPublic(_) if (!~/^flash\./.match(superClsName.nameSpaceName)):
+				// store on SWFLite object for serialized .dat export
+				spriteSymbol.baseClassName =
+					("" == superClsName.nameSpaceName ? "" : 
+						superClsName.nameSpaceName
+							+".")
+					+ superClsName.name;
+				trace("data.className", symbol.name, "baseClass", spriteSymbol.baseClassName);
+			case _:
+		}
+		
+		// get frame scripts
+		if (cls.fields.length > 0) {
+			for (field in cls.fields) {
+				switch (field.kind) {
+					case FMethod(idx, _, _, _):
+						var methodName = data.abcData.resolveMultiNameByIndex(field.name);
+						if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
+							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
+							trace("frame script #"+ frameNumOneIndexed);
+							var pcodes:Array<OpCode> = data.pcode[idx.getIndex()];
+							var js = "";
+							var prop:MultiName;
+							var stack:Array<Dynamic> = new Array();
+							for (pcode in pcodes) {
+								switch (pcode) {
+									case OThis:
+									case OScope:
+									case OFindPropStrict(nameIndex):
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+									case OString(strIndex):
+										var str = data.abcData.getStringByIndex(strIndex);
+										stack.push(str);
+									case OCallPropVoid(nameIndex, argCount):
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+										// invoke function
+										switch (prop.nameSpace) {
+											case NPublic(_) if ("" != prop.nameSpaceName):
+												js += prop.nameSpaceName +"."+ prop.name;
+											case NInternal(_) if (cls.name == prop.nameIndex):
+												js += "this." + prop.name;
+											case NPublic(_):
+												switch (prop.name) {
+													case "trace":
+														js += "console.log";
+													case _:
+														js += "this." + prop.name;
+												}
+											case _:
+												// TODO: throw() on unsupported namespaces
+												trace("unsupported namespace "+ prop.nameSpace);
+										}
+										js += "(";
+										for (i in 0...argCount) {
+											if (i > 0) js += ", ";
+											var arg = stack.shift();
+											js += haxe.Json.stringify(arg);
+										}
+										js += ");\n";
+									case ORetVoid:
+									case _:
+										// TODO: throw() on unsupported pcodes
+										trace("pcode "+ pcode);
+								}
+							}
+							trace("javascript:\n"+js);
+							
+							// store on SWFLite object for serialized .dat export
+							spriteSymbol.frames[frameNumOneIndexed-1].script = js;
+						}
+					case _:
+				}
+			}
+		}
 	}
 	
 	
@@ -970,4 +1069,81 @@ enum SoundType {
 	NELLYMOSER_8_KHZ;
 	NELLYMOSER;
 	SPEEX;
+
+/**
+ * AVM2 ActionScript3 Byte Code (ABC) Instruction Traversal
+ */
+
+typedef MultiName = {
+	var name: String;
+	var nameIndex: Index<Name>;
+	var nameSpace: Namespace;
+	var nameSpaceName: String;
+} 
+
+class AVM2 {
+	public static var FRAME_SCRIPT_METHOD_NAME = ~/frame(\d+)/;
+	
+	public static function getIndex<T>( idx: Index<T>): Int {
+		return switch(idx) {
+			case Idx(i): i;
+		};
+	}
+	
+	public static function getMultiNameByIndex(abcData: ABCData, i: Index<Name>): Name {
+		return abcData.names[i.getIndex()-1];
+	}
+
+	public static function getStringByIndex(abcData: ABCData, i: Index<String>): String {
+		return abcData.strings[i.getIndex()-1];
+	}
+
+	public static function getNameSpaceByIndex(abcData: ABCData, i: Index<Namespace>): Namespace {
+		return abcData.namespaces[i.getIndex()-1];
+	}
+
+	public static function getFunctionByIndex(abcData: ABCData, i: Index<MethodType>): Function {
+		return abcData.functions[i.getIndex()];
+	}
+	
+	public static function resolveMultiNameByIndex(abcData: ABCData, i: Index<Name>): MultiName {
+		var multiName = abcData.getMultiNameByIndex(i);
+		switch (multiName) {
+			case NName(nameIndex, nsIndex): // a.k.a. QName
+				var nameSpace = abcData.getNameSpaceByIndex(nsIndex);
+				switch (nameSpace) {
+					case NPublic(nsNameIndex) | NInternal(nsNameIndex): // a.k.a. PackageNamespace, PackageInternalNS
+						return { 
+							name: abcData.getStringByIndex(nameIndex),
+							nameIndex: i,
+							nameSpace: nameSpace,
+							nameSpaceName: abcData.getStringByIndex(nsNameIndex) 
+						}
+					case _:
+				}
+			case _:
+		}
+		return null;
+	}
+	
+	public static function findClassByName(abcData: ABCData, s: String): ClassDef {
+		var x = s.lastIndexOf(".");
+		var pkgName = "";
+		var clsName = s;
+		if (-1 != x) {
+			pkgName = s.substr(0, x);
+			clsName = s.substr(x+1);
+		}
+		for (cls in abcData.classes) {
+			if (cls.isInterface) continue;
+			var multiName = abcData.resolveMultiNameByIndex(cls.name);
+			if (clsName == multiName.name &&
+				pkgName == multiName.nameSpaceName)
+			{
+				return cls;
+			}
+		}
+		
+		return null;
+	} 
 }
