@@ -47,6 +47,7 @@ import haxe.io.BytesOutput;
 import lime.graphics.format.JPEG;
 import openfl.display.PNGEncoderOptions;
 import format.abc.Data;
+import format.abc.Data.ABCData;
 import format.abc.Data.Name;
 import format.swf.tags.TagDefineSound;
 
@@ -940,44 +941,145 @@ class SWFLiteExporter {
 							trace("frame script #"+ frameNumOneIndexed);
 							var pcodes:Array<OpCode> = data.pcode[idx.getIndex()];
 							var js = "";
-							var prop:MultiName;
+							var prop:MultiName = null;
 							var stack:Array<Dynamic> = new Array();
 							for (pcode in pcodes) {
 								switch (pcode) {
 									case OThis:
+										stack.push("this");
 									case OScope:
+										stack.pop();
 									case OFindPropStrict(nameIndex):
+//										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+									case OGetLex(nameIndex):
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+										var fullname = "";
+
+										if (prop != null)
+										{
+											fullname += AVM2.getFullName(data.abcData, prop, cls);
+											stack.push(fullname);
+										}
+									case OGetProp(nameIndex):
+										var fullname = "";
+
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+										if (prop != null)
+										{
+											fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
+										}
+
+										trace("OGetProp fullname", fullname);
+
+										stack.push(fullname);
+									case OSetProp(nameIndex):
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+										trace("OSetProp stack", prop.name, stack);
+
+										var temp = stack.pop();
+										js += stack.pop() + "." + prop.name + " = " + temp + ";\n";
 									case OString(strIndex):
 										var str = data.abcData.getStringByIndex(strIndex);
-										stack.push(str);
+										stack.push("\"" + str + "\"");
+									case OInt(i):
+										stack.push(i);
+										trace("int", i);
+									case OSmallInt(i):
+										stack.push(i);
+										trace("smallint", i);
 									case OCallPropVoid(nameIndex, argCount):
+										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+
+										if (stack.length > 0)
+										{
+											js += stack.pop() + ".";
+										}
+
+										js += temp;
+										js += ";\n";
+									case OCallProperty(nameIndex, argCount):
+										trace("OCallProperty stack", stack);
+
+										stack.pop();
+										if (prop != null)
+										{
+											stack.push(AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
+										}
+									case OConstructProperty(nameIndex, argCount):
+										trace("OConstructProperty stack", stack);
+
+										var temp = "new ";
+										temp += AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+										stack.push(temp);
+
+										trace("OConstructProperty value", temp);
+									case OInitProp(nameIndex):
+										trace("OInitProp stack", stack);
+
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-										// invoke function
-										switch (prop.nameSpace) {
-											case NPublic(_) if ("" != prop.nameSpaceName):
-												js += prop.nameSpaceName +"."+ prop.name;
-											case NInternal(_) if (cls.name == prop.nameIndex):
-												js += "this." + prop.name;
-											case NPublic(_):
-												switch (prop.name) {
-													case "trace":
-														js += "console.log";
-													case _:
-														js += "this." + prop.name;
-												}
-											case _:
-												// TODO: throw() on unsupported namespaces
-												trace("unsupported namespace "+ prop.nameSpace);
+
+										var temp = stack.pop();
+
+										js += stack.pop() + "." + prop.name + " = " + Std.string(temp) + ";\n";
+									case ODup:
+										stack.push(stack[stack.length - 1]);
+									case OArray(argCount):
+										trace("before array", stack);
+
+										var str = "";
+										var temp = [];
+										for (i in 0...argCount)
+										{
+											temp.push(stack.pop());
 										}
-										js += "(";
-										for (i in 0...argCount) {
-											if (i > 0) js += ", ";
-											var arg = stack.shift();
-											js += haxe.Json.stringify(arg);
-										}
-										js += ");\n";
+										temp.reverse();
+										stack.push(temp);
+
+										trace("after array", stack);
 									case ORetVoid:
+									case ONull:
+										stack.push(null);
+									case OOp(op):
+										var operator = null;
+										switch (op) {
+											case OpMul:
+												operator = "*";
+											case OpAdd:
+												operator = "+";
+											case _:
+												trace("OOp");
+										}
+
+										if (op == OpAs)
+										{
+											trace("cast to ", stack.pop(), " is discarded");
+										}
+
+										if (operator != null)
+										{
+											var temp = stack.pop();
+											stack.push(Std.string(stack.pop()) + " " + operator + " " + Std.string(temp));
+										}
+									case OJump(j, delta):
+										switch (j) {
+											case JNeq:
+//												trace(stack[0]);
+												var temp = stack.pop();
+												js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
+											case JAlways:
+												js += "else\n";
+												trace(delta);
+											case JFalse:
+												js += "if (" + Std.string(stack.pop()) + ")\n";
+											case _:
+												trace("OJump");
+										}
+									case OTrue:
+										stack.push(true);
+									case OFalse:
+										stack.push(false);
 									case _:
 										// TODO: throw() on unsupported pcodes
 										trace("pcode "+ pcode);
@@ -1110,16 +1212,25 @@ class AVM2 {
 			case NName(nameIndex, nsIndex): // a.k.a. QName
 				var nameSpace = abcData.getNameSpaceByIndex(nsIndex);
 				switch (nameSpace) {
-					case NPublic(nsNameIndex) | NInternal(nsNameIndex): // a.k.a. PackageNamespace, PackageInternalNS
-						return { 
+					case NPublic(nsNameIndex) | NInternal(nsNameIndex) | NPrivate(nsNameIndex): // a.k.a. PackageNamespace, PackageInternalNS
+						return {
 							name: abcData.getStringByIndex(nameIndex),
 							nameIndex: i,
 							nameSpace: nameSpace,
-							nameSpaceName: abcData.getStringByIndex(nsNameIndex) 
+							nameSpaceName: abcData.getStringByIndex(nsNameIndex)
 						}
 					case _:
+						trace("other type of namespace");
+				}
+			case NMulti(nameIndex, nsIndexSet):
+				return {
+					name: abcData.getStringByIndex(nameIndex),
+					nameIndex: i,
+					nameSpace: null,
+					nameSpaceName: null
 				}
 			case _:
+				trace("other type of name");
 		}
 		return null;
 	}
@@ -1134,14 +1245,132 @@ class AVM2 {
 		}
 		for (cls in abcData.classes) {
 			if (cls.isInterface) continue;
+
 			var multiName = abcData.resolveMultiNameByIndex(cls.name);
-			if (clsName == multiName.name &&
-				pkgName == multiName.nameSpaceName)
+
+			if (multiName != null)
 			{
-				return cls;
+				if (clsName == multiName.name &&
+				pkgName == multiName.nameSpaceName)
+				{
+					return cls;
+				}
+			}
+			else
+			{
+				trace("multiname", multiName);
 			}
 		}
-		
+
 		return null;
-	} 
+	}
+
+	public static function classHasField(abcData: ABCData, cls: ClassDef, name: String):Bool
+	{
+		var classHasField = false;
+
+		for (field in cls.fields) {
+			switch (field.kind) {
+				case FMethod(idx, _, _, _):
+					var methodName = abcData.resolveMultiNameByIndex(field.name);
+					if (methodName.name == name)
+					{
+						classHasField = true;
+						break;
+					}
+				case FVar(_, _, _):
+					var methodName = abcData.resolveMultiNameByIndex(field.name);
+					if (methodName.name == name)
+					{
+						classHasField = true;
+						break;
+					}
+				case _:
+			}
+		}
+
+		return classHasField;
+	}
+
+	public static function getFullName(abcData: ABCData, prop: MultiName, cls:ClassDef): String
+	{
+		var js = null;
+
+		if (prop == null)
+		{
+			trace("unable to get full name of property, prop = null");
+			return "";
+		}
+
+		if (prop.nameSpace == null)
+		{
+			trace("namespace is null");
+			js = prop.name;
+		}
+		else
+		{
+			switch (prop.nameSpace) {
+				case NPublic(_) if ("" != prop.nameSpaceName):
+					js = prop.nameSpaceName +"."+ prop.name;
+				case NInternal(_) if (cls.name == prop.nameIndex):
+					js = "this." + prop.name;
+				case NPublic(_):
+					switch (prop.name) {
+						case "trace":
+							js = "console.log";
+						case _:
+//						var classHasField = classHasField(abcData, cls, prop.name);
+//
+//						if (classHasField)
+//						{
+//							js = "this." + prop.name;
+//						}
+//						else
+//						{
+							js = prop.name;
+//						}
+					}
+				case _:
+					// TODO: throw() on unsupported namespaces
+					trace("unsupported namespace "+ prop.nameSpace);
+			}
+		}
+
+		return js;
+	}
+
+	public static function parseFunctionCall(abcData: ABCData, cls: ClassDef, nameIndex: IName, argCount: Int, stack:Array<Dynamic>):String
+	{
+		var prop = abcData.resolveMultiNameByIndex(nameIndex);
+
+		if (prop == null)
+		{
+			trace("parseFunctionCall is stopped, prop = null");
+			return "";
+		}
+
+		var js = getFullName(abcData, prop, cls);
+		// invoke function
+		js += "(";
+
+		var temp = [];
+		for (i in 0...argCount) {
+//			if (i > 0) js += ", ";
+			var arg = stack.pop();
+			if (Std.is(arg, String))
+			{
+//				js += arg;
+				temp.push(arg);
+			}
+			else
+			{
+//				js += haxe.Json.stringify(arg);
+				temp.push(haxe.Json.stringify(arg));
+			}
+		}
+		temp.reverse();
+		js += temp.join(", ") + ")";
+
+		return js;
+	}
 }
