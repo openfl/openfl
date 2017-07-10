@@ -23,7 +23,7 @@ import openfl.Assets;
 
 	public var classes : Map<String, Class<Dynamic>>;
 	public var classes_id : Map<Int, Class<Dynamic>>;
-	public var frameRate (default, set):Float;
+	@:s public var frameRate (default, set):Float;
 	public var frameTime(default, null):Int;
 	@:s public var root:SpriteSymbol;
 	@:s public var symbols:Map <Int, SWFSymbol>;
