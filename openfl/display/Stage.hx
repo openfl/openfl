@@ -778,7 +778,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var stack_id;
 			while (i < __allChildrenLength) {
 				stack_id = __allChildrenStack[i];
-				broadcast(event, stack_id);
+
+				// :TRICKY: display objects can have been removed from the hierarchy by previous listeners
+				// :TODO: handle object addition too
+				if (stack_id.stage == this) {
+					broadcast(event, stack_id);
+				}
 
 				if (event.__isCanceled) {
 					event.release();
