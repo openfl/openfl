@@ -1289,11 +1289,11 @@ class AVM2 {
 //
 //						if (classHasField)
 //						{
-//							js = "this." + prop.name;
+							js = "this." + prop.name;
 //						}
 //						else
 //						{
-							js = prop.name;
+//							js = prop.name;
 //						}
 					}
 				case _:
