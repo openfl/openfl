@@ -962,6 +962,10 @@ class SWFLiteExporter {
 										{
 											js += stack.pop() + ".";
 										}
+										else
+										{
+											js += "this" + ".";
+										}
 
 										js += temp;
 										js += ";\n";
@@ -1277,7 +1281,7 @@ class AVM2 {
 		{
 			switch (prop.nameSpace) {
 				case NPublic(_) if ("" != prop.nameSpaceName):
-					js = prop.nameSpaceName +"."+ prop.name;
+					js = prop.nameSpaceName +"_"+ prop.name;
 				case NInternal(_) if (cls.name == prop.nameIndex):
 					js = "this." + prop.name;
 				case NPublic(_):
@@ -1289,11 +1293,11 @@ class AVM2 {
 //
 //						if (classHasField)
 //						{
-							js = "this." + prop.name;
+//							js = "this." + prop.name;
 //						}
 //						else
 //						{
-//							js = prop.name;
+							js = prop.name;
 //						}
 					}
 				case _:
