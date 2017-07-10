@@ -955,9 +955,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__inlineUpdate(transformOnly, updateChildren);
 	}
 
+	public inline function isRenderable() {
+		return (visible && !hasZeroScale() && !__isMask);
+	}
+
 	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
 
-		__renderable = (visible && !hasZeroScale() && !__isMask);
+		__renderable = isRenderable();
 
 		__updateTransforms ();
 
@@ -1148,7 +1152,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	public function hasMouseListener ():Bool {
+	public inline function hasMouseListener ():Bool {
 		return __mouseListenerCount > 0;
 	}
 

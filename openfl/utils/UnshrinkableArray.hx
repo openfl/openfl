@@ -53,7 +53,7 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         this._length = 0;
     }
 
-    public inline function remove(item:T)
+    public function remove(item:T)
     {
         var found = indexOf(item);
 
@@ -71,7 +71,7 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         return found >= 0;
     }
 
-    public inline function splice(from:Int, count:Int)
+    public function splice(from:Int, count:Int)
     {
         from = cast Math.max(from , 0);
         count = cast Math.min(count, this._length - from);
