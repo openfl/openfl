@@ -889,7 +889,7 @@ class SWFLiteExporter {
 		// :TODO: detect other tags (texts, ...)
 		if (symbol.scalingGridRect != null && hasSprite) {
 			if (hasShape) {
-				throw ":TODO: support 9 slice on sprites containing both shapes and sprites";
+				throw ":TODO: support 9 slice on sprites containing both shapes and sprites (symbol " + symbol.id + ")";
 			} else {
 				symbol.scalingGridRect = null;
 			}
@@ -1061,7 +1061,7 @@ class SWFLiteExporter {
 
 	private function processSymbol (symbol:format.swf.data.SWFSymbol):Void {
 
-		var data = processTag (cast data.getCharacter (symbol.tagId));
+		var data = processTag (cast data.getCharacter (symbol.tagId), symbol.name);
 
 		if (data != null) {
 
@@ -1072,13 +1072,14 @@ class SWFLiteExporter {
 	}
 
 
-	private function processTag (tag:IDefinitionTag):SWFSymbol {
+	private function processTag (tag:IDefinitionTag, name:String = ""):SWFSymbol {
 
 		if (tag == null) return null;
 
-		if (excludes.indexOf(tag.characterId) != -1 || excludes.indexOf(tag.name) != -1) {
+		if (excludes.indexOf(tag.characterId) != -1 || excludes.indexOf(name) != -1) {
 			var empty_symbol = new SWFSymbol();
 			empty_symbol.id = tag.characterId;
+			empty_symbol.className = name;
 			swfLite.symbols.set(tag.characterId, empty_symbol);
 		}
 
