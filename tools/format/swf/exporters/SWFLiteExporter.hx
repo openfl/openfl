@@ -1221,7 +1221,7 @@ class AVM2 {
 			if (multiName != null)
 			{
 				if (clsName == multiName.name &&
-				pkgName == multiName.nameSpaceName)
+					pkgName == multiName.nameSpaceName)
 				{
 					return cls;
 				}
