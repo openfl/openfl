@@ -851,6 +851,8 @@ class SWFLiteExporter {
 	
 	private function processSymbol (symbol:format.swf.data.SWFSymbol):Void {
 		
+		trace("processing symbol "+ symbol.name);
+		
 		var data2 = processTag (cast data.getCharacter (symbol.tagId));
 		
 		if (data2 != null) {
@@ -860,7 +862,6 @@ class SWFLiteExporter {
 		// TODO: guard the rest of this code with appropriate macro
 		//       cuz not everyone wants to do it this way
 
-		trace("processing symbol "+ symbol.name);
 		
 		// apply names to sounds
 		if (null != sounds.get (symbol.tagId)) {
