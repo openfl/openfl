@@ -5,9 +5,12 @@ import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 import flash.utils.ByteArray;
-import format.swf.instance.Bitmap;
-import format.swf.instance.MovieClip;
-import format.swf.instance.SimpleButton;
+//import format.swf.instance.Bitmap;
+//import format.swf.instance.MovieClip;
+//import format.swf.instance.SimpleButton;
+import flash.display.Bitmap;
+import flash.display.MovieClip;
+import flash.display.SimpleButton;
 import format.swf.SWFRoot;
 import format.swf.SWFTimelineContainer;
 import format.swf.tags.TagDefineBits;
@@ -134,11 +137,11 @@ class SWF extends EventDispatcher {
 			symbol = data.getCharacter (charId);
 		}
 		
-		if (Std.is (symbol, TagDefineButton2)) {
+		// if (Std.is (symbol, TagDefineButton2)) {
 			
-			return new SimpleButton (data, cast symbol);
+		// 	return new SimpleButton (data, cast symbol);
 			
-		}
+		// }
 		
 		return null;
 		
@@ -169,11 +172,11 @@ class SWF extends EventDispatcher {
 			
 		}
 		
-		if (Std.is (symbol, SWFTimelineContainer)) {
+		// if (Std.is (symbol, SWFTimelineContainer)) {
 			
-			return new MovieClip (cast symbol);
+		// 	return new MovieClip (cast symbol);
 			
-		}
+		// }
 		
 		return null;
 		

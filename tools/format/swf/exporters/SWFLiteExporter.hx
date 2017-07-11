@@ -626,6 +626,13 @@ class SWFLiteExporter {
 					frameObject = new FrameObject ();
 					frameObject.id = id;
 					frameObject.type = FrameObjectType.DESTROY;
+					
+					if (frame.objects == null) {
+						
+						frame.objects = [];
+						
+					}
+					
 					frame.objects.push (frameObject);
 					
 				}
