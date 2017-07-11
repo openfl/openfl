@@ -528,7 +528,6 @@ class SWFLiteExporter {
 			
 			for (object in frameData.getObjectsSortedByDepth ()) {
 				
-				frame.objects = [];
 				instances.push (object.placedAtIndex);
 				
 				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
@@ -612,6 +611,12 @@ class SWFLiteExporter {
 				frameObject.visible = (placeTag.hasVisible ? placeTag.visible != 0 : true);
 				
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
+				
+				if (frame.objects == null) {
+					
+					frame.objects = [];
+					
+				}
 				
 				frame.objects.push (frameObject);
 				
