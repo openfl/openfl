@@ -685,7 +685,8 @@ class Tools {
 
 			File.saveBytes (PathHelper.combine (targetPath, path), assetData);
 
-			var soundAsset = new Asset ("", path, AssetType.SOUND);
+			// NOTICE: everything must be .mp3 in its final form, even though we write out various formats to disk
+			var soundAsset = new Asset ("", "sounds/"+ symbolClassName + ".mp3", AssetType.SOUND);
 			project.assets.push (soundAsset);
 		}
 		
