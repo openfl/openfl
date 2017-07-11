@@ -676,9 +676,7 @@ class Tools {
 			var type;
 			switch (typeId) {
 				case SoundType.MP3: type = "mp3";
-				case SoundType.ADPCM: type = "wav";
-				// TODO: this WAV header may become necessary to prepend in some cases
-				// "524946464409000057415645666D7420100000000100010044AC0000885801000200100064617461"
+				case SoundType.ADPCM: type = "adpcm";
 				case _:
 					throw "unsupported sound type "+id+", type "+ typeId +", symbol class name "+ symbolClassName;
 			};
