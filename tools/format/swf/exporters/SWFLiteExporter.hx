@@ -942,10 +942,15 @@ class SWFLiteExporter {
 										stack.push(fullname);
 									case OSetProp(nameIndex):
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-										trace("OSetProp stack", prop.name, stack);
-
-										var temp = stack.pop();
-										js += stack.pop() + "." + prop.name + " = " + temp + ";\n";
+										if (null == prop) {
+											trace("prop.name is null but shouldn't be. parsing error. verify translation");
+										}
+										else {
+											trace("OSetProp stack", prop.name, stack);
+											
+											var temp = stack.pop();
+											js += stack.pop() + "." + prop.name + " = " + temp + ";\n";
+										}
 									case OString(strIndex):
 										var str = data.abcData.getStringByIndex(strIndex);
 										stack.push("\"" + str + "\"");
