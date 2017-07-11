@@ -905,12 +905,12 @@ class SWFLiteExporter {
 						if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
 							trace("frame script #"+ frameNumOneIndexed);
-							var pcodes:Array<OpCode> = data.pcode[idx.getIndex()];
+							var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
 							var js = "";
 							var prop:MultiName = null;
 							var stack:Array<Dynamic> = new Array();
 							for (pcode in pcodes) {
-								switch (pcode) {
+								switch (pcode.opr) {
 									case OThis:
 										stack.push("this");
 									case OScope:
@@ -942,10 +942,32 @@ class SWFLiteExporter {
 										stack.push(fullname);
 									case OSetProp(nameIndex):
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-										trace("OSetProp stack", prop.name, stack);
+										trace("OSetProp stack", prop, stack);
 
-										var temp = stack.pop();
-										js += stack.pop() + "." + prop.name + " = " + temp + ";\n";
+										var result = stack.pop();
+
+										var name = null;
+
+										if (prop != null)
+										{
+											if (prop.name != null)
+											{
+												name = "." + prop.name;
+											}
+											else
+											{
+												name = "[" + stack.pop() + "]";
+											}
+										}
+
+										var instance = stack.pop();
+
+										if (instance != "this")
+										{
+											instance = "this" + "." + instance;
+										}
+
+										js += instance + name + " = " + result + ";\n";
 									case OString(strIndex):
 										var str = data.abcData.getStringByIndex(strIndex);
 										stack.push("\"" + str + "\"");
@@ -1037,15 +1059,17 @@ class SWFLiteExporter {
 											case JNeq:
 //												trace(stack[0]);
 												var temp = stack.pop();
-												js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
+												js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n{\n";
 											case JAlways:
-												js += "else\n";
+												js += "}\nelse\n{\n";
 												trace(delta);
 											case JFalse:
 												js += "if (" + Std.string(stack.pop()) + ")\n";
 											case _:
 												trace("OJump");
 										}
+
+										trace(j, delta);
 									case OTrue:
 										stack.push(true);
 									case OFalse:
@@ -1195,6 +1219,13 @@ class AVM2 {
 			case NMulti(nameIndex, nsIndexSet):
 				return {
 					name: abcData.getStringByIndex(nameIndex),
+					nameIndex: i,
+					nameSpace: null,
+					nameSpaceName: null
+				}
+			case NMultiLate(nset):
+				return {
+					name: null,
 					nameIndex: i,
 					nameSpace: null,
 					nameSpaceName: null
