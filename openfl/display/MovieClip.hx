@@ -32,7 +32,7 @@ import hscript.Parser;
 @:access(openfl._internal.symbols.SWFSymbol)
 
 
-class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
+class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObjectContainer> #end {
 	
 	
 	private static var __initSWF:SWFLite;
