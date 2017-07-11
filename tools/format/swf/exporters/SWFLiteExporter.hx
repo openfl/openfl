@@ -976,10 +976,37 @@ class SWFLiteExporter {
 										stack.push(fullname);
 									case OSetProp(nameIndex):
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-										trace("OSetProp stack", prop.name, stack);
+										trace("OSetProp stack", prop, stack);
 
-										var temp = stack.pop();
-										js += stack.pop() + "." + prop.name + " = " + temp + ";\n";
+										var result = stack.pop();
+
+										var name = null;
+
+										if (prop != null)
+										{
+											if (prop.name != null)
+											{
+												name = "." + prop.name;
+											}
+											else
+											{
+												name = "[" + stack.pop() + "]";
+											}
+										}
+										else
+										{
+											trace("OSetProp stack prop is null");
+											break;
+										}
+
+										var instance = stack.pop();
+
+										if (instance != "this")
+										{
+											instance = "this" + "." + instance;
+										}
+
+										js += instance + name + " = " + result + ";\n";
 									case OString(strIndex):
 										var str = data.abcData.getStringByIndex(strIndex);
 										stack.push("\"" + str + "\"");
@@ -1229,6 +1256,13 @@ class AVM2 {
 			case NMulti(nameIndex, nsIndexSet):
 				return {
 					name: abcData.getStringByIndex(nameIndex),
+					nameIndex: i,
+					nameSpace: null,
+					nameSpaceName: null
+				}
+			case NMultiLate(nset):
+				return {
+					name: null,
 					nameIndex: i,
 					nameSpace: null,
 					nameSpaceName: null
