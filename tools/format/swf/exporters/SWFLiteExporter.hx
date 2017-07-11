@@ -115,6 +115,7 @@ class SWFLiteExporter {
 					var object = records[i];
 					
 					var frameObject = new FrameObject ();
+					frameObject.type = FrameObjectType.CREATE;
 					frameObject.symbol = object.characterId;
 					frameObject.id = i;
 					
