@@ -65,6 +65,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			initParent(child);
 		}
 		__setBranchDirty();
+		__updateRecursiveMouseListenerCount(child.__recursiveMouseListenerCount);
 
 		if(childIndexToRemove > -1) {
 			removeChildAt(childIndexToRemove < index ? childIndexToRemove : childIndexToRemove + 1);
@@ -164,6 +165,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 
 			__setBranchDirty();
+			__updateRecursiveMouseListenerCount(-child.__recursiveMouseListenerCount);
 			child.parent = null;
 			if(child.__cachedParent != null){
 				child.updateCachedParent();
@@ -437,22 +439,44 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
-		if (!__mustEvaluateHitTest || !hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
+		if (!__mustEvaluateHitTest() || !hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		var point = Point.pool.get();
 		point.setTo (x, y);
 		if (__scrollRect != null && !__scrollRect.containsPoint (globalToLocal (point))) {
 			Point.pool.put(point);
+
 			return false;
 		} else {
 			Point.pool.put(point);
 		}
 
+		var itHasMouseListener = __hasMouseListener ();
+
+		inline function __pushHitTestLevel () {
+			if (itHasMouseListener) {
+				DisplayObject.__mouseListenerBranchDepthStack.add (__branchDepth);
+				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
+				DisplayObject.__lastMouseListenerBranchDepth = (__branchDepth != null && __branchDepth != 0) ? __branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
+			}
+		}
+
+		inline function __popHitTestLevel () {
+			if (itHasMouseListener) {
+				DisplayObject.__mouseListenerBranchDepthStack.pop ();
+				var branchDepth = DisplayObject.__mouseListenerBranchDepthStack.first ();
+				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
+				DisplayObject.__lastMouseListenerBranchDepth = (branchDepth != null && branchDepth != 0) ? branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
+			}
+		}
+
+		__pushHitTestLevel ();
+
 		var i = __children.length;
+
 		if (interactiveOnly) {
 
 			if (stack == null || !mouseChildren) {
-
 
 				while (--i >= 0) {
 
@@ -474,6 +498,8 @@ class DisplayObjectContainer extends InteractiveObject {
 							stack.push (hitObject);
 
 						}
+
+						__popHitTestLevel ();
 
 						return true;
 
@@ -514,6 +540,9 @@ class DisplayObjectContainer extends InteractiveObject {
 							if (interactive) {
 
 								if ( !hitTest ) {
+
+									__popHitTestLevel ();
+
 									return true;
 								}
 								break;
@@ -529,6 +558,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				if (hitTest) {
 
 					stack.insert (length, hitObject);
+					__popHitTestLevel ();
+
 					return true;
 
 				}
@@ -546,12 +577,16 @@ class DisplayObjectContainer extends InteractiveObject {
 
 					}
 
+					__popHitTestLevel ();
+
 					return true;
 				};
 
 			}
 
 		}
+
+		__popHitTestLevel ();
 
 		return false;
 

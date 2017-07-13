@@ -125,7 +125,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __useSeparateRenderScaleTransform = true;
 	private var __forbidCachedBitmapUpdate = false;
 	private var __mouseListenerCount:Int = 0;
-	private var __mustEvaluateHitTest:Bool = false;
+	private var __recursiveMouseListenerCount:Int = 0;
+	static private var __mouseListenerBranchDepthStack:haxe.ds.GenericStack<Int> = new haxe.ds.GenericStack<Int>();
+	static private inline var NO_MOUSE_LISTENER_BRANCH_DEPTH = 9999;
+	static private var __lastMouseListenerBranchDepth:Int = NO_MOUSE_LISTENER_BRANCH_DEPTH;
 
 	private var __renderDirty:Bool;
 	private var __transformDirty:Bool;
@@ -493,7 +496,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__graphics != null) {
 
-			if (!__mustEvaluateHitTest || !hitObject.visible || __isMask) return false;
+			if (!__mustEvaluateHitTest() || !hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 
 			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
@@ -1141,11 +1144,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 	}
 
+	private function __updateRecursiveMouseListenerCount(amount:Int=0) {
+			var object = this;
+			while(object != null){
+				object.__recursiveMouseListenerCount += amount;
+				object = object.parent;
+			}
+	}
 
 	private override function onEventListenerAdded (type:String) {
 
 		if (openfl.events.MouseEvent.isMouseEvent (type)) {
 			++__mouseListenerCount;
+			__updateRecursiveMouseListenerCount(1);
 		}
 
 	}
@@ -1155,12 +1166,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (openfl.events.MouseEvent.isMouseEvent (type)) {
 			--__mouseListenerCount;
+			__updateRecursiveMouseListenerCount(-1);
 		}
 
 	}
 
+	private inline function __mustEvaluateHitTest ():Bool {
+		var result = __recursiveMouseListenerCount > 0 || __branchDepth == null || __branchDepth > __lastMouseListenerBranchDepth;
+		return result;
+	}
 
-	public inline function hasMouseListener ():Bool {
+	private inline function __hasMouseListener():Bool {
 		return __mouseListenerCount > 0;
 	}
 

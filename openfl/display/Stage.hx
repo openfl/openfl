@@ -117,8 +117,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __allChildrenStack:UnshrinkableArray<DisplayObject>;
 	private var __pingPongChildrenStack:Array<UnshrinkableArray<DisplayObject>> = [new UnshrinkableArray<DisplayObject>(4096), new UnshrinkableArray<DisplayObject>(4096)];
 	private var __pingPongIndex:Int = 0;
-	private var __ancestorHasMouseListenerStack:UnshrinkableArray<Bool> = new UnshrinkableArray<Bool>(4096);
-	private var __mouseListenerStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	private var __scaleMode:StageScaleMode = StageScaleMode.SHOW_ALL;
@@ -1365,6 +1363,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		Point.pool.put(point);
 	}
+
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+		var result = super.__hitTest(x,y,shapeFlag,stack,interactiveOnly,hitObject);
+		if ( !result ) {
+			var rect = Rectangle.pool.get();
+			rect.x = this.x;
+			rect.y = this.y;
+			rect.width = scaleX * stageWidth;
+			rect.height = scaleY * stageHeight;
+			result = rect.contains(x, y);
+			Rectangle.pool.put(rect);
+			if ( result && stack != null ) {
+				stack.push(this);
+			}
+		}
+
+		#if dev
+			if (DisplayObject.__mouseListenerBranchDepthStack.first () != null) throw "inconsistent mouse listener depth branch stack";
+		#end
+		return result;
+	}
+
 
 
 	private function __resize ():Void {
