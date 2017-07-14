@@ -432,10 +432,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					__setCurrentFrameByOneIndex (__getFrameByOneIndex (currentFrameOneIndexed));
 
 					// verify we have a frame script to execute on this frame
-					if (__frameScripts.exists (__currentFrameZeroIndexed - 1)) {
+					if (__frameScripts.exists (__currentFrameZeroIndexed)) {
 
 						// get the frame script function
-						var fs = __frameScripts.get (__currentFrameZeroIndexed - 1);
+						var fs = __frameScripts.get (__currentFrameZeroIndexed);
 
 							// try to execute frame script in a safe sandbox
 							try {
