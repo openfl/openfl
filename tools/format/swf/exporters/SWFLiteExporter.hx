@@ -1096,7 +1096,7 @@ class SWFLiteExporter {
 							trace("javascript:\n"+js);
 							
 							// store on SWFLite object for serialized .dat export
-							spriteSymbol.frames[frameNumOneIndexed-1].script = js;
+							spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
 						}
 					case _:
 				}
