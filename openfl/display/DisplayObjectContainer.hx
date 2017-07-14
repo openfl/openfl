@@ -472,6 +472,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			Point.pool.put(point);
 		}
 
+		shapeFlag = shapeFlag && ( getSymbol() != null ? getSymbol().pixelPerfectHitTest : true );
+
 		var i = __children.length;
 		if (interactiveOnly) {
 

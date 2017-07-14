@@ -493,6 +493,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			if (!__mustEvaluateHitTest || !hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 
+			shapeFlag = shapeFlag && ( getSymbol() != null ? getSymbol().pixelPerfectHitTest : true );
+
 			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
 
 				if (stack != null && !interactiveOnly) {

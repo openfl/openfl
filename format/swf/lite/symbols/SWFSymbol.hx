@@ -14,6 +14,7 @@ import openfl.display.BitmapData;
 	public var pool:ObjectPool<DisplayObject>;
 	public var useUniqueSharedBitmapCache = false;
 	public var uniqueSharedCachedBitmap:BitmapData = null;
+	public var pixelPerfectHitTest:Bool = true;
 
 	public function new () {
 
