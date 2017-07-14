@@ -1,7 +1,5 @@
 package openfl.utils;
 
-import haxe.ds.Vector;
-
 abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 {
     public var length(get, never):Int;
@@ -45,12 +43,31 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         ++this._length;
     }
 
+    public function concat(a:UnshrinkableArray<T>):UnshrinkableArray<T> {
+        this._items.concat(a.getInternalArray().slice(0, a.length));
+        this._length += a.length;
+        return cast this;
+    }
+
     public inline function clear()
     {
         for ( i in 0...this._length) {
             this._items[i] = null;
         }
         this._length = 0;
+    }
+
+    public function filter(f:T -> Bool):UnshrinkableArray<T> {
+        var result = new UnshrinkableArray<T>();
+
+        for ( i in 0...this._length) {
+            var item = this._items[i];
+            if (f(item)) {
+                result.push (item);
+            }
+        }
+
+        return result;
     }
 
     public function remove(item:T)
@@ -88,6 +105,13 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
             }
             this._length -= count;
         }
+    }
+
+    public function slice(from:Int, ?end:Int):UnshrinkableArray<T>
+    {
+        end = end == null ? this._length : cast Math.min(this._length, end);
+        var result = new UnshrinkableArray<T>(this._items.slice(from, end));
+        return result;
     }
 
     public inline function reverse()
@@ -131,9 +155,9 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         this._length += other.length;
     }
 
-    public inline function indexOf(item:T):Int
+    public inline function indexOf(item:T, ?fromIndex:Int):Int
     {
-        var found = this._items.indexOf(item);
+        var found = this._items.indexOf(item, fromIndex);
         return found >= this._length ? -1 : found;
     }
 

@@ -40,6 +40,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
+	private static var __worldBranchDirty = 0;
 
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
@@ -81,6 +82,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __children:UnshrinkableArray<DisplayObject>;
+	private var __branchDepth:Int;
 	private var __cachedParent:DisplayObjectContainer;
 	private var __filters:Array<BitmapFilter>;
 	private var __graphics:Graphics;
@@ -92,15 +94,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __objectTransform:Transform;
 	private var __offset:Point;
 	private var __renderable:Bool;
-	private var __renderDirty:Bool;
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
 	private var __scrollRect:Rectangle;
 	private var __shader:Shader;
 	private var __transform:Matrix;
-	private var __transformDirty:Bool;
-	private var __updateDirty:Bool;
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
@@ -128,6 +127,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __mouseListenerCount:Int = 0;
 	private var __mustEvaluateHitTest:Bool = false;
 
+	private var __renderDirty:Bool;
+	private var __transformDirty:Bool;
+	private var __updateDirty:Bool;
+	private var __branchDirty:Bool;
 	#if (js && html5)
 	private var __canvas:CanvasElement;
 	private var __context:CanvasRenderingContext2D;
@@ -893,10 +896,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private inline function __setUpdateDirty() :Void {
 		if ( !__updateDirty && stage != null && this != this.stage ) {
 			__updateDirty = true;
-			stage.__updateStack.push(this);
 		}
 
 	}
+
+	private inline function __setBranchDirty() : Void {
+		__branchDirty = true;
+		__worldBranchDirty++;
+	}
+
 	private function __updateCachedBitmapBounds (filterTransform:Matrix, rect:Rectangle):Void {
 
 		rect.setEmpty();

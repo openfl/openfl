@@ -64,6 +64,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.insert(index,child);
 			initParent(child);
 		}
+		__setBranchDirty();
 
 		if(childIndexToRemove > -1) {
 			removeChildAt(childIndexToRemove < index ? childIndexToRemove : childIndexToRemove + 1);
@@ -159,11 +160,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.dispatchEvent (Event.__create (Event.REMOVED, true));
 
 			if (stage != null) {
-
 				child.setStage(null);
-
 			}
 
+			__setBranchDirty();
 			child.parent = null;
 			if(child.__cachedParent != null){
 				child.updateCachedParent();
@@ -192,6 +192,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				__children.splice(index, 1);
 			}
 
+			__setBranchDirty();
 		}
 
 		return null;
@@ -259,6 +260,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				__children.insert(index, child);
 			}
 
+			__setBranchDirty();
 		}
 
 	}
@@ -268,35 +270,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (child1.parent == this && child2.parent == this) {
 
-			#if (haxe_ver > 3.100)
-
 			var index1 = __children.indexOf (child1);
 			var index2 = __children.indexOf (child2);
-
-			#else
-
-			var index1 = -1;
-			var index2 = -1;
-
-			for (i in 0...__children.length) {
-
-				if (__children[i] == child1) {
-
-					index1 = i;
-
-				} else if (__children[i] == child2) {
-
-					index2 = i;
-
-				}
-
-			}
-
-			#end
-
-			__children[index1] = child2;
-			__children[index2] = child1;
-
+			swapChildrenAt(index1,index2);
 		}
 
 	}
@@ -307,7 +283,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		var swap:DisplayObject = __children[index1];
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
-		swap = null;
+		__setBranchDirty();
 
 	}
 

@@ -58,6 +58,14 @@ class Shape extends DisplayObject {
         return super.__hitTest(x,y,shapeFlag,stack,interactiveOnly,hitObject);
     }
 
+	public override function toString():String
+	{
+		var symbol = getSymbol();
+		if (symbol != null)
+			return '[Shape id: ${symbol.id}]';
+		else
+			return super.toString();
+	}
 }
 
 
