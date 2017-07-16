@@ -53,6 +53,14 @@ import openfl.Lib;
 			case MouseCursor.BUTTON: LimeMouse.cursor = POINTER;
 			case MouseCursor.HAND: LimeMouse.cursor = MOVE;
 			case MouseCursor.IBEAM: LimeMouse.cursor = TEXT;
+			case MouseCursor.CROSSHAIR: LimeMouse.cursor = CROSSHAIR;
+			case MouseCursor.RESIZE_NESW: LimeMouse.cursor = RESIZE_NESW;
+			case MouseCursor.RESIZE_NS: LimeMouse.cursor = RESIZE_NS;
+			case MouseCursor.RESIZE_NWSE: LimeMouse.cursor = RESIZE_NWSE;
+			case MouseCursor.RESIZE_WE: LimeMouse.cursor = RESIZE_WE;
+			case MouseCursor.WAIT: LimeMouse.cursor = WAIT;
+			case MouseCursor.WAIT_ARROW: LimeMouse.cursor = WAIT_ARROW;
+				
 			default:
 			
 		}
