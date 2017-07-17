@@ -736,7 +736,7 @@ class MovieClip extends flash.display.MovieClip {
 				child.renderScaleY = savedRenderScaleY;
 			}
 		}
-		
+
 	}
 
 	private function drawScale9Bitmap (renderSession:RenderSession):Void {

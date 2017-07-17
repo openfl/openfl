@@ -451,6 +451,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			Point.pool.put(point);
 		}
 
+		shapeFlag = shapeFlag && ( getSymbol() != null ? getSymbol().pixelPerfectHitTest : true );
+
 		var itHasMouseListener = __hasMouseListener ();
 
 		inline function __pushHitTestLevel () {
