@@ -257,8 +257,13 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
+		var bitmapRender = __cacheBitmapRender;
+		__cacheBitmapRender = true; // hack, disable cacheAsBitmap for now
+		
 		super.__renderGL (renderSession);
 		GLTilemap.render (this, renderSession);
+		
+		__cacheBitmapRender = bitmapRender;
 		
 	}
 	#end
