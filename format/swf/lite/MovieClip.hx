@@ -1239,6 +1239,14 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
+	public override function toString():String
+	{
+		if (__symbol != null)
+			return '[MovieClip id: ${__symbol.id}]';
+		else
+			return super.toString();
+	}
+
 	// Get & Set Methods
 
 

@@ -24,6 +24,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var numChildren (get, null):Int;
 	public var tabChildren:Bool;
 
+	static private var __mouseListenerBranchDepthStack:UnshrinkableArray<Int> = new UnshrinkableArray<Int>(32);
+
 	private function new () {
 
 		super ();
@@ -64,6 +66,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.insert(index,child);
 			initParent(child);
 		}
+		__setBranchDirty();
+		__updateRecursiveMouseListenerCount(child.__recursiveMouseListenerCount);
 
 		if(childIndexToRemove > -1) {
 			removeChildAt(childIndexToRemove < index ? childIndexToRemove : childIndexToRemove + 1);
@@ -159,11 +163,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.dispatchEvent (Event.__create (Event.REMOVED, true));
 
 			if (stage != null) {
-
 				child.setStage(null);
-
 			}
 
+			__setBranchDirty();
+			__updateRecursiveMouseListenerCount(-child.__recursiveMouseListenerCount);
 			child.parent = null;
 			if(child.__cachedParent != null){
 				child.updateCachedParent();
@@ -192,6 +196,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				__children.splice(index, 1);
 			}
 
+			__setBranchDirty();
 		}
 
 		return null;
@@ -259,6 +264,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				__children.insert(index, child);
 			}
 
+			__setBranchDirty();
 		}
 
 	}
@@ -268,35 +274,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (child1.parent == this && child2.parent == this) {
 
-			#if (haxe_ver > 3.100)
-
 			var index1 = __children.indexOf (child1);
 			var index2 = __children.indexOf (child2);
-
-			#else
-
-			var index1 = -1;
-			var index2 = -1;
-
-			for (i in 0...__children.length) {
-
-				if (__children[i] == child1) {
-
-					index1 = i;
-
-				} else if (__children[i] == child2) {
-
-					index2 = i;
-
-				}
-
-			}
-
-			#end
-
-			__children[index1] = child2;
-			__children[index2] = child1;
-
+			swapChildrenAt(index1,index2);
 		}
 
 	}
@@ -307,7 +287,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		var swap:DisplayObject = __children[index1];
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
-		swap = null;
+		__setBranchDirty();
 
 	}
 
@@ -461,12 +441,13 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
-		if (!__mustEvaluateHitTest || !hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
+		if (!__mustEvaluateHitTest() || !hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		var point = Point.pool.get();
 		point.setTo (x, y);
 		if (__scrollRect != null && !__scrollRect.containsPoint (globalToLocal (point))) {
 			Point.pool.put(point);
+
 			return false;
 		} else {
 			Point.pool.put(point);
@@ -474,11 +455,32 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		shapeFlag = shapeFlag && ( getSymbol() != null ? getSymbol().pixelPerfectHitTest : true );
 
+		var itHasMouseListener = __hasMouseListener ();
+
+		inline function __pushHitTestLevel () {
+			if (itHasMouseListener) {
+				__mouseListenerBranchDepthStack.push (__branchDepth);
+				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
+				DisplayObject.__lastMouseListenerBranchDepth = (__branchDepth != null && __branchDepth != 0) ? __branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
+			}
+		}
+
+		inline function __popHitTestLevel () {
+			if (itHasMouseListener) {
+				__mouseListenerBranchDepthStack.pop ();
+				var branchDepth = __mouseListenerBranchDepthStack.last ();
+				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
+				DisplayObject.__lastMouseListenerBranchDepth = (branchDepth != null && branchDepth != 0) ? branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
+			}
+		}
+
+		__pushHitTestLevel ();
+
 		var i = __children.length;
+
 		if (interactiveOnly) {
 
 			if (stack == null || !mouseChildren) {
-
 
 				while (--i >= 0) {
 
@@ -500,6 +502,8 @@ class DisplayObjectContainer extends InteractiveObject {
 							stack.push (hitObject);
 
 						}
+
+						__popHitTestLevel ();
 
 						return true;
 
@@ -540,6 +544,9 @@ class DisplayObjectContainer extends InteractiveObject {
 							if (interactive) {
 
 								if ( !hitTest ) {
+
+									__popHitTestLevel ();
+
 									return true;
 								}
 								break;
@@ -555,6 +562,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				if (hitTest) {
 
 					stack.insert (length, hitObject);
+					__popHitTestLevel ();
+
 					return true;
 
 				}
@@ -572,12 +581,16 @@ class DisplayObjectContainer extends InteractiveObject {
 
 					}
 
+					__popHitTestLevel ();
+
 					return true;
 				};
 
 			}
 
 		}
+
+		__popHitTestLevel ();
 
 		return false;
 

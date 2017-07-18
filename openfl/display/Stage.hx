@@ -114,11 +114,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __rendering:Bool;
 	private var __stack:UnshrinkableArray<DisplayObject>;
 	private var __focusStack:UnshrinkableArray<DisplayObject>;
-	private var __allChildrenStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(4096);
-	private var __ancestorHasMouseListenerStack:UnshrinkableArray<Bool> = new UnshrinkableArray<Bool>(4096);
-	private var __mouseListenerStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
-	private var __updateStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
-	private var __allChildrenLength: Int;
+	private var __allChildrenStack:UnshrinkableArray<DisplayObject>;
+	private var __allChildrenTempStack:UnshrinkableArray<Int> = new UnshrinkableArray<Int>(128);
+	private var __pingPongChildrenStack:Array<UnshrinkableArray<DisplayObject>> = [new UnshrinkableArray<DisplayObject>(4096), new UnshrinkableArray<DisplayObject>(4096)];
+	private var __pingPongIndex:Int = 0;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	private var __scaleMode:StageScaleMode = StageScaleMode.SHOW_ALL;
@@ -142,6 +141,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 
 		super ();
+		__branchDepth = 0;
 
 		this.application = window.application;
 		this.window = window;
@@ -195,6 +195,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stage.addChild (Lib.current);
 
 		}
+
+		__allChildrenStack = __pingPongChildrenStack[__pingPongIndex];
+		__allChildrenStack.push(stage);
 
 	}
 
@@ -682,60 +685,74 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-	private function __computeFlattenedChildren():Void {
-		var stack_id;
-		var i = 0;
+	private function __concatDepthFirstChildren(array:UnshrinkableArray<DisplayObject>, head:DisplayObject) {
+		#if dev
+			if (__allChildrenTempStack.length > 0) throw "working stack should be empty";
+		#end
 
-		__allChildrenLength = 1;
-		__allChildrenStack[0] = this;
-		__ancestorHasMouseListenerStack[0] = false;
-		__mustEvaluateHitTest = false;
-		var mouseListenerCount = 0;
-		var updateChildrenCount = 0;
+		__allChildrenTempStack.push (0);
 
-		while (i < __allChildrenLength) {
-			stack_id = __allChildrenStack[i];
-			var ancestorHasMouseListener = __ancestorHasMouseListenerStack[i];
+		inline function push() {
+			if (head != null) {
+				head.__branchDirty = false;
+				head.__branchDepth = head.parent != null ? head.parent.__branchDepth + 1 : 0;
+				array.push (head);
+			}
+		}
 
-			if (stack_id.__children != null && stack_id.__children.length > 0) {
-				for(child in stack_id.__children) {
-					if (!child.isRenderable()) continue;
-					if (ancestorHasMouseListener) {
-						child.__mustEvaluateHitTest = true;
-					} else if (child.hasMouseListener ()) {
-						__mouseListenerStack[mouseListenerCount++] = child;
-						child.__mustEvaluateHitTest = true;
-					} else {
-						child.__mustEvaluateHitTest = false;
-					}
+		push ();
 
-					__ancestorHasMouseListenerStack[__allChildrenLength] = child.__mustEvaluateHitTest;
+		while (__allChildrenTempStack.length > 0) {
+			var first = __allChildrenTempStack.last ();
+			if (head.__children == null || head.__children.length == 0 || first >= head.__children.length) {
+				__allChildrenTempStack.pop();
+				if (__allChildrenTempStack.length > 0) {
+					__allChildrenTempStack.push (__allChildrenTempStack.pop() + 1);
+				}
+				head = head.parent;
+			} else {
+				head = head.__children[first];
+				push ();
+				__allChildrenTempStack.push (0);
+			}
+		}
+	}
 
-					if (child.__updateDirty) {
-						__updateStack[updateChildrenCount++] = child;
-					}
+	private function __updateAllChildrenStack() {
+		if ( DisplayObject.__worldBranchDirty == 0 ) {
+			return;
+		}
+		DisplayObject.__worldBranchDirty = 0;
 
-					__allChildrenStack[__allChildrenLength] = child;
-					++__allChildrenLength;
+		var previousIndex = __pingPongIndex;
+		__pingPongIndex ^= 1;
+		var previousChildrenStack = __pingPongChildrenStack[previousIndex];
+		var newChildrenStack = __pingPongChildrenStack[__pingPongIndex];
+		var previousCursor = 0;
+
+		inline function __updatePreviousCursorByDepth(targetDepth:Int, cursorValue:Int) {
+			while(++cursorValue < previousChildrenStack.length) {
+				var nextDepth = previousChildrenStack[cursorValue].__branchDepth;
+				if (nextDepth <= targetDepth) {
+					break;
 				}
 			}
-			++i;
+			return cursorValue;
 		}
 
-		__allChildrenStack.splice(__allChildrenLength, __allChildrenStack.length - __allChildrenLength);
-		__updateStack.splice(updateChildrenCount, __updateStack.length - updateChildrenCount);
-		__mouseListenerStack.splice(mouseListenerCount, __mouseListenerStack.length - mouseListenerCount);
-		__ancestorHasMouseListenerStack.splice(__allChildrenLength, __ancestorHasMouseListenerStack.length - __allChildrenLength);
-
-		for (mouseListener in __mouseListenerStack) {
-			var parent = mouseListener.parent;
-
-			while (parent != null && !parent.__mustEvaluateHitTest) {
-				parent.__mustEvaluateHitTest = true;
-				parent = parent.parent;
+		while(previousCursor < previousChildrenStack.length) {
+			var child = previousChildrenStack[previousCursor];
+			if ( !child.__branchDirty ) {
+				previousCursor++;
+				newChildrenStack.push(child);
+			} else {
+				__concatDepthFirstChildren(newChildrenStack,child);
+				previousCursor = __updatePreviousCursorByDepth(child.__branchDepth, previousCursor);
 			}
 		}
 
+		previousChildrenStack.clear();
+		__allChildrenStack = newChildrenStack;
 	}
 
 	public override function __enterFrame(deltaTime:Int):Void {
@@ -743,7 +760,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var child;
 		var i = 1;
 
-		while (i < __allChildrenLength) {
+		while (i < __allChildrenStack.length) {
 			child = __allChildrenStack[i];
 			if(child.stage != null) {
 				child.__enterFrame(deltaTime);
@@ -782,7 +799,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			var i = 1;
 			var stack_id;
-			while (i < __allChildrenLength) {
+			while (i < __allChildrenStack.length) {
 				stack_id = __allChildrenStack[i];
 
 				// :TRICKY: display objects can have been removed from the hierarchy by previous listeners
@@ -839,7 +856,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		__renderable = true;
 
+		__updateAllChildrenStack();
 		__enterFrame (__deltaTime);
+		__updateAllChildrenStack();
 		__deltaTime = 0;
 		__updateDirtyElements (false, true);
 
@@ -868,7 +887,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		__calledOnMouseThisFrame = false;
 
-		__computeFlattenedChildren();
+		__updateAllChildrenStack();
 	}
 
 	public static function fireEvent (event:Event, stack:UnshrinkableArray<DisplayObject>):Void {
@@ -1352,6 +1371,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Point.pool.put(point);
 	}
 
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+		var result = super.__hitTest(x,y,shapeFlag,stack,interactiveOnly,hitObject);
+		if ( !result ) {
+			var rect = Rectangle.pool.get();
+			rect.x = this.x;
+			rect.y = this.y;
+			rect.width = scaleX * stageWidth;
+			rect.height = scaleY * stageHeight;
+			result = rect.contains(x, y);
+			Rectangle.pool.put(rect);
+			if ( result && stack != null ) {
+				stack.push(this);
+			}
+		}
+
+		#if dev
+			if (DisplayObjectContainer.__mouseListenerBranchDepthStack.length > 0) throw "inconsistent mouse listener depth branch stack";
+		#end
+		return result;
+	}
+
+
 
 	private function __resize ():Void {
 	}
@@ -1407,8 +1448,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__inlineUpdate(transformOnly, updateChildren);
 			var i = 0;
 			// :NOTE: Length can change here. don't cache it.
-			while (i < __updateStack.length ) {
-				var child = __updateStack[i];
+			while (i < __allChildrenStack.length ) {
+				var child = __allChildrenStack[i];
 				if ( child.__updateDirty ) {
 					child.__update(transformOnly, updateChildren);
 				}
