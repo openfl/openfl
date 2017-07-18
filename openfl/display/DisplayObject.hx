@@ -126,7 +126,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __forbidCachedBitmapUpdate = false;
 	private var __mouseListenerCount:Int = 0;
 	private var __recursiveMouseListenerCount:Int = 0;
-	static private var __mouseListenerBranchDepthStack:haxe.ds.GenericStack<Int> = new haxe.ds.GenericStack<Int>();
 	static private inline var NO_MOUSE_LISTENER_BRANCH_DEPTH = 9999;
 	static private var __lastMouseListenerBranchDepth:Int = NO_MOUSE_LISTENER_BRANCH_DEPTH;
 

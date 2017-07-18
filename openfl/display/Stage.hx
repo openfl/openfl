@@ -115,6 +115,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __stack:UnshrinkableArray<DisplayObject>;
 	private var __focusStack:UnshrinkableArray<DisplayObject>;
 	private var __allChildrenStack:UnshrinkableArray<DisplayObject>;
+	private var __allChildrenTempStack:UnshrinkableArray<Int> = new UnshrinkableArray<Int>(128);
 	private var __pingPongChildrenStack:Array<UnshrinkableArray<DisplayObject>> = [new UnshrinkableArray<DisplayObject>(4096), new UnshrinkableArray<DisplayObject>(4096)];
 	private var __pingPongIndex:Int = 0;
 	private var __transparent:Bool;
@@ -685,28 +686,34 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 
 	private function __concatDepthFirstChildren(array:UnshrinkableArray<DisplayObject>, head:DisplayObject) {
-		var stack:haxe.ds.GenericStack<Int> = new haxe.ds.GenericStack<Int>();
-		stack.add(0);
+		#if dev
+			if (__allChildrenTempStack.length > 0) throw "working stack should be empty";
+		#end
+
+		__allChildrenTempStack.push (0);
+
 		inline function push() {
-			if ( head != null ) {
+			if (head != null) {
 				head.__branchDirty = false;
 				head.__branchDepth = head.parent != null ? head.parent.__branchDepth + 1 : 0;
-				array.push(head);
+				array.push (head);
 			}
 		}
-		push();
-		while(!stack.isEmpty()) {
-			var first = stack.first();
-			if( head.__children == null || head.__children.length == 0 || first >= head.__children.length ) {
-				stack.pop();
-				if ( !stack.isEmpty() ) {
-					stack.add(stack.pop() + 1);
+
+		push ();
+
+		while (__allChildrenTempStack.length > 0) {
+			var first = __allChildrenTempStack.last ();
+			if (head.__children == null || head.__children.length == 0 || first >= head.__children.length) {
+				__allChildrenTempStack.pop();
+				if (__allChildrenTempStack.length > 0) {
+					__allChildrenTempStack.push (__allChildrenTempStack.pop() + 1);
 				}
 				head = head.parent;
 			} else {
 				head = head.__children[first];
-				push();
-				stack.add(0);
+				push ();
+				__allChildrenTempStack.push (0);
 			}
 		}
 	}
@@ -1380,7 +1387,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 		#if dev
-			if (DisplayObject.__mouseListenerBranchDepthStack.first () != null) throw "inconsistent mouse listener depth branch stack";
+			if (DisplayObjectContainer.__mouseListenerBranchDepthStack.length > 0) throw "inconsistent mouse listener depth branch stack";
 		#end
 		return result;
 	}

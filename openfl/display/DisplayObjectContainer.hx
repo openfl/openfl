@@ -24,6 +24,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var numChildren (get, null):Int;
 	public var tabChildren:Bool;
 
+	static private var __mouseListenerBranchDepthStack:UnshrinkableArray<Int> = new UnshrinkableArray<Int>(32);
+
 	private function new () {
 
 		super ();
@@ -457,7 +459,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		inline function __pushHitTestLevel () {
 			if (itHasMouseListener) {
-				DisplayObject.__mouseListenerBranchDepthStack.add (__branchDepth);
+				__mouseListenerBranchDepthStack.push (__branchDepth);
 				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
 				DisplayObject.__lastMouseListenerBranchDepth = (__branchDepth != null && __branchDepth != 0) ? __branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
 			}
@@ -465,8 +467,8 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		inline function __popHitTestLevel () {
 			if (itHasMouseListener) {
-				DisplayObject.__mouseListenerBranchDepthStack.pop ();
-				var branchDepth = DisplayObject.__mouseListenerBranchDepthStack.first ();
+				__mouseListenerBranchDepthStack.pop ();
+				var branchDepth = __mouseListenerBranchDepthStack.last ();
 				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
 				DisplayObject.__lastMouseListenerBranchDepth = (branchDepth != null && branchDepth != 0) ? branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
 			}
