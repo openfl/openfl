@@ -127,6 +127,7 @@ class SWFLiteExporter {
 					var object = records[i];
 					
 					var frameObject = new FrameObject ();
+					frameObject.type = FrameObjectType.CREATE;
 					frameObject.symbol = object.characterId;
 					frameObject.id = i;
 					
@@ -626,6 +627,12 @@ class SWFLiteExporter {
 				
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
 				
+				if (frame.objects == null) {
+					
+					frame.objects = [];
+					
+				}
+				
 				frame.objects.push (frameObject);
 				
 			}
@@ -639,6 +646,13 @@ class SWFLiteExporter {
 					frameObject = new FrameObject ();
 					frameObject.id = id;
 					frameObject.type = FrameObjectType.DESTROY;
+					
+					if (frame.objects == null) {
+						
+						frame.objects = [];
+						
+					}
+					
 					frame.objects.push (frameObject);
 					
 				}
