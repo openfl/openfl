@@ -457,24 +457,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		var itHasMouseListener = __hasMouseListener ();
 
-		inline function __pushHitTestLevel () {
-			if (itHasMouseListener) {
-				__mouseListenerBranchDepthStack.push (__branchDepth);
-				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
-				DisplayObject.__lastMouseListenerBranchDepth = (__branchDepth != null && __branchDepth != 0) ? __branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
-			}
-		}
-
-		inline function __popHitTestLevel () {
-			if (itHasMouseListener) {
-				__mouseListenerBranchDepthStack.pop ();
-				var branchDepth = __mouseListenerBranchDepthStack.last ();
-				// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
-				DisplayObject.__lastMouseListenerBranchDepth = (branchDepth != null && branchDepth != 0) ? branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
-			}
-		}
-
-		__pushHitTestLevel ();
+		__pushHitTestLevel (itHasMouseListener);
 
 		var i = __children.length;
 
@@ -503,7 +486,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 						}
 
-						__popHitTestLevel ();
+						__popHitTestLevel (itHasMouseListener);
 
 						return true;
 
@@ -545,7 +528,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 								if ( !hitTest ) {
 
-									__popHitTestLevel ();
+									__popHitTestLevel (itHasMouseListener);
 
 									return true;
 								}
@@ -562,7 +545,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				if (hitTest) {
 
 					stack.insert (length, hitObject);
-					__popHitTestLevel ();
+					__popHitTestLevel (itHasMouseListener);
 
 					return true;
 
@@ -581,7 +564,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 					}
 
-					__popHitTestLevel ();
+					__popHitTestLevel (itHasMouseListener);
 
 					return true;
 				};
@@ -590,7 +573,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		}
 
-		__popHitTestLevel ();
+		__popHitTestLevel (itHasMouseListener);
 
 		return false;
 
@@ -826,6 +809,37 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
+
+	private inline function __pushHitTestLevel (itHasMouseListener:Bool):Void {
+		if (itHasMouseListener) {
+			__mouseListenerBranchDepthStack.push (__branchDepth);
+
+			if (__branchDepth == null) {
+				var depth = 0;
+				var parent = this;
+
+				while (parent.__branchDepth == null) {
+					parent = parent.parent;
+					++depth;
+				}
+
+				__branchDepth = parent.__branchDepth + depth;
+			}
+
+			// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
+			DisplayObject.__lastMouseListenerBranchDepth = __branchDepth != 0 ? __branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
+		}
+	}
+
+	private inline function __popHitTestLevel (itHasMouseListener:Bool):Void {
+		if (itHasMouseListener) {
+			__mouseListenerBranchDepthStack.pop ();
+			var branchDepth = __mouseListenerBranchDepthStack.last ();
+
+			// :TRICKY: do not use stage branch depth (== 0) to avoid having to hittest everything under the stage
+			DisplayObject.__lastMouseListenerBranchDepth = branchDepth != 0 ? branchDepth : DisplayObject.NO_MOUSE_LISTENER_BRANCH_DEPTH;
+		}
+	}
 
 
 
