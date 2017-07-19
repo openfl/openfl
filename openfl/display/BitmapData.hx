@@ -473,7 +473,8 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, this);
+				var renderer = new GLRenderer (Lib.current.stage, gl, false);
+				renderer.resize (width, height);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearRenderDirty = false;
@@ -1512,7 +1513,8 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, this);
+				var renderer = new GLRenderer (Lib.current.stage, gl, false);
+				renderer.resize (width, height);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearRenderDirty = true;
