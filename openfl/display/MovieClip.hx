@@ -427,7 +427,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 					}
 					
-					var program = parser.parseString (frame.scriptSource);
+					var program = parser.parseString (frameData.scriptSource);
 					var interp = new Interp ();
 					interp.variables.set ("this", this);
 					
@@ -441,7 +441,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					
 					#elseif js
 					
-					var script = untyped __js__('eval({0})', "(function(){" + frame.scriptSource + "})");
+					var script = untyped __js__('eval({0})', "(function(){" + frameData.scriptSource + "})");
 					var wrapper = function () {
 						
 						try {
