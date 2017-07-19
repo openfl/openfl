@@ -68,9 +68,15 @@ class Sprite extends DisplayObjectContainer {
 
 			if (!hitArea.mouseEnabled)
 			{
+				var itHasMouseListener = __hasMouseListener ();
+
+				__pushHitTestLevel (itHasMouseListener);
+
 				hitArea.mouseEnabled = true;
 				var hitTest = hitArea.__hitTest (x, y, shapeFlag, null, true, hitObject);
 				hitArea.mouseEnabled = false;
+
+				__popHitTestLevel (itHasMouseListener);
 
 				if( hitTest ){
 					stack.push(hitObject);
