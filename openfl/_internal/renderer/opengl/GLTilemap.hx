@@ -386,6 +386,10 @@ class GLTilemap {
 		var parentAlpha = worldAlpha * tileArray.alpha;
 		var parentMatrix = tileArray.matrix;
 		
+		var bitmapWidth = tileset.bitmapData.width;
+		var bitmapHeight = tileset.bitmapData.height;
+		var rect:Rectangle;
+		
 		for (i in 0...tileArray.length) {
 			
 			tile = tileArray[i];
@@ -405,28 +409,35 @@ class GLTilemap {
 				x2 = tileData.__uvWidth;
 				y2 = tileData.__uvHeight;
 				
-				bufferData[tileOffset + 2] = x;
-				bufferData[tileOffset + 3] = y;
-				bufferData[tileOffset + 7] = x2;
-				bufferData[tileOffset + 8] = y;
-				bufferData[tileOffset + 12] = x;
-				bufferData[tileOffset + 13] = y2;
-				
-				bufferData[tileOffset + 17] = x;
-				bufferData[tileOffset + 18] = y2;
-				bufferData[tileOffset + 22] = x2;
-				bufferData[tileOffset + 23] = y;
-				bufferData[tileOffset + 27] = x2;
-				bufferData[tileOffset + 28] = y2;
-				
 			} else {
 				
-				// use rect
+				rect = tile.rect;
+				
+				x = rect.x / bitmapWidth;
+				y = rect.y / bitmapHeight;
+				x2 = rect.right / bitmapWidth;
+				y2 = rect.bottom / bitmapHeight;
+				
+				tileWidth = Std.int (rect.width);
+				tileHeight = Std.int (rect.height);
 				
 			}
 			
-			alpha = 1;
-			//alpha = parentAlpha * tile.alpha;
+			bufferData[tileOffset + 2] = x;
+			bufferData[tileOffset + 3] = y;
+			bufferData[tileOffset + 7] = x2;
+			bufferData[tileOffset + 8] = y;
+			bufferData[tileOffset + 12] = x;
+			bufferData[tileOffset + 13] = y2;
+			
+			bufferData[tileOffset + 17] = x;
+			bufferData[tileOffset + 18] = y2;
+			bufferData[tileOffset + 22] = x2;
+			bufferData[tileOffset + 23] = y;
+			bufferData[tileOffset + 27] = x2;
+			bufferData[tileOffset + 28] = y2;
+			
+			alpha = parentAlpha * tile.alpha;
 			
 			bufferData[tileOffset + 4] = alpha;
 			bufferData[tileOffset + 9] = alpha;
@@ -436,8 +447,7 @@ class GLTilemap {
 			bufferData[tileOffset + 29] = alpha;
 			
 			tileMatrix = tile.matrix;
-			trace (tileMatrix);
-			//tileMatrix.concat (parentMatrix);
+			tileMatrix.concat (parentMatrix);
 			
 			x = tileMatrix.__transformX (0, 0);
 			y = tileMatrix.__transformY (0, 0);
