@@ -1,11 +1,13 @@
 package openfl._internal.renderer.opengl;
 
 
+import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.Tile;
+import openfl.display.TileArray;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -129,6 +131,15 @@ class GLTilemap {
 			
 			tile = tiles[i];
 			
+			if (tile.__type == TILE_ARRAY) {
+				
+				tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
+				__updateTileArrayBuffer (cast tile, tileset, gl, worldAlpha);
+				drawCount = i;
+				continue;
+				
+			}
+			
 			alpha = tile.alpha;
 			visible = tile.visible;
 			
@@ -243,6 +254,37 @@ class GLTilemap {
 			tile = tiles[i];
 			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
 			
+			if (tile.__type == TILE_ARRAY) {
+				
+				var tileArray:TileArrayData = cast tile;
+				gl.bindBuffer (gl.ARRAY_BUFFER, tileArray.__buffer);
+				gl.bufferData (gl.ARRAY_BUFFER, tileArray.__bufferData.byteLength, tileArray.__bufferData, gl.DYNAMIC_DRAW);
+				
+				gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				
+				cacheBitmapData = tileset.bitmapData;
+				shader.data.uImage0.input = cacheBitmapData;
+				renderSession.shaderManager.setShader (shader);
+				
+				gl.drawArrays (gl.TRIANGLES, 0, tileArray.__length * 6);
+				
+				if (i != drawCount) {
+					
+					gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
+					gl.bufferData (gl.ARRAY_BUFFER, bufferData.byteLength, bufferData, gl.DYNAMIC_DRAW);
+					
+					gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+					gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+					gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+					
+				}
+				
+				continue;
+				
+			}
+			
 			if (tileset.bitmapData != cacheBitmapData) {
 				
 				if (cacheBitmapData != null) {
@@ -314,6 +356,113 @@ class GLTilemap {
 		bufferData[tileOffset + 29] = alpha;
 		
 		tile.__alphaDirty = false;
+		
+	}
+	
+	
+	private static function __updateTileArrayBuffer (tileArray:TileArray, tileset:Tileset, gl:GLRenderContext, worldAlpha:Float):Void {
+		
+		if ((tileArray:TileArrayData).__buffer == null || (tileArray:TileArrayData).__bufferContext != gl) {
+			
+			(tileArray:TileArrayData).__bufferContext = gl;
+			(tileArray:TileArrayData).__buffer = gl.createBuffer ();
+			
+		}
+		
+		var bufferData = (tileArray:TileArrayData).__bufferData;
+		var bufferLength = tileArray.length * 30;
+		
+		if (bufferData == null || bufferLength != bufferData.length) {
+			
+			bufferData = new Float32Array (bufferLength);
+			(tileArray:TileArrayData).__bufferData = bufferData;
+			
+		}
+		
+		var tile, tileOffset;
+		var id, x, y, x2, y2, x3, y3, x4, y4, alpha;
+		var tileWidth = 0, tileHeight = 0, tileMatrix;
+		
+		var parentAlpha = worldAlpha * tileArray.alpha;
+		var parentMatrix = tileArray.matrix;
+		
+		for (i in 0...tileArray.length) {
+			
+			tile = tileArray[i];
+			tileOffset = i * 30;
+			id = tile.id;
+			
+			if (id > -1) {
+				
+				var tileData = tileset.__data[tile.id];
+				if (tileData == null) continue;
+				
+				tileWidth = tileData.width;
+				tileHeight = tileData.height;
+				
+				x = tileData.__uvX;
+				y = tileData.__uvY;
+				x2 = tileData.__uvWidth;
+				y2 = tileData.__uvHeight;
+				
+				bufferData[tileOffset + 2] = x;
+				bufferData[tileOffset + 3] = y;
+				bufferData[tileOffset + 7] = x2;
+				bufferData[tileOffset + 8] = y;
+				bufferData[tileOffset + 12] = x;
+				bufferData[tileOffset + 13] = y2;
+				
+				bufferData[tileOffset + 17] = x;
+				bufferData[tileOffset + 18] = y2;
+				bufferData[tileOffset + 22] = x2;
+				bufferData[tileOffset + 23] = y;
+				bufferData[tileOffset + 27] = x2;
+				bufferData[tileOffset + 28] = y2;
+				
+			} else {
+				
+				// use rect
+				
+			}
+			
+			alpha = 1;
+			//alpha = parentAlpha * tile.alpha;
+			
+			bufferData[tileOffset + 4] = alpha;
+			bufferData[tileOffset + 9] = alpha;
+			bufferData[tileOffset + 14] = alpha;
+			bufferData[tileOffset + 19] = alpha;
+			bufferData[tileOffset + 24] = alpha;
+			bufferData[tileOffset + 29] = alpha;
+			
+			tileMatrix = tile.matrix;
+			trace (tileMatrix);
+			//tileMatrix.concat (parentMatrix);
+			
+			x = tileMatrix.__transformX (0, 0);
+			y = tileMatrix.__transformY (0, 0);
+			x2 = tileMatrix.__transformX (tileWidth, 0);
+			y2 = tileMatrix.__transformY (tileWidth, 0);
+			x3 = tileMatrix.__transformX (0, tileHeight);
+			y3 = tileMatrix.__transformY (0, tileHeight);
+			x4 = tileMatrix.__transformX (tileWidth, tileHeight);
+			y4 = tileMatrix.__transformY (tileWidth, tileHeight);
+			
+			bufferData[tileOffset + 0] = x;
+			bufferData[tileOffset + 1] = y;
+			bufferData[tileOffset + 5] = x2;
+			bufferData[tileOffset + 6] = y2;
+			bufferData[tileOffset + 10] = x3;
+			bufferData[tileOffset + 11] = y3;
+			
+			bufferData[tileOffset + 15] = x3;
+			bufferData[tileOffset + 16] = y3;
+			bufferData[tileOffset + 20] = x2;
+			bufferData[tileOffset + 21] = y2;
+			bufferData[tileOffset + 25] = x4;
+			bufferData[tileOffset + 26] = y4;
+			
+		}
 		
 	}
 	

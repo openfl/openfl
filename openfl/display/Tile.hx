@@ -35,6 +35,7 @@ class Tile {
 	private var __sourceDirty:Bool;
 	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
+	private var __type:TileType;
 	
 	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0) {
@@ -57,6 +58,7 @@ class Tile {
 		__sourceDirty = true;
 		__transformDirty = true;
 		__transform = [];
+		__type = TILE;
 		
 	}
 	
@@ -315,5 +317,13 @@ class Tile {
 		
 	}
 	
+	
+}
+
+
+private enum TileType {
+	
+	TILE;
+	TILE_ARRAY;
 	
 }
