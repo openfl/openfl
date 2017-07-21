@@ -52,20 +52,31 @@ class Shader {
 		
 		#if emscripten
 		"varying float vAlpha;
+		varying mat4 vColorMultipliers;
+		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
+		
+		uniform bool uColorTransform;
 		uniform sampler2D uImage0;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (uImage0, vTexCoord).bgra;
+			vec4 color = texture2D (uImage0, vTexCoord);
 			
 			if (color.a == 0.0) {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 				
+			} else if (uColorTransform) {
+				
+				color = vec4 (color.rgb / color.a, color.a);
+				color = vColorOffsets + (color * vColorMultipliers);
+				
+				gl_FragColor = vec4 (color.bgr * color.a * vAlpha, color.a * vAlpha);
+				
 			} else {
 				
-				gl_FragColor = color * vAlpha;
+				gl_FragColor = color.bgra * vAlpha;
 				
 			}
 			

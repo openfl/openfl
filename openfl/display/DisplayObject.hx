@@ -701,7 +701,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -734,7 +734,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap (renderSession);
+			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
@@ -765,7 +765,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -784,7 +784,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __renderGL (renderSession:RenderSession):Void {
 		
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -946,13 +946,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __updateCacheBitmap (renderSession:RenderSession):Void {
+	private function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
 		
 		if (__cacheBitmapRender) return;
 		
 		if (cacheAsBitmap) {
 			
-			if (__cacheBitmap == null || (__renderDirty && ((__children != null && __children.length > 0) || !__worldColorTransform.__isDefault ()))) {
+			if (__cacheBitmap == null || (__renderDirty && ((__children != null && __children.length > 0) || force))) {
 				
 				__getWorldTransform ();
 				__update (false, true);

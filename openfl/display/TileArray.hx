@@ -4,11 +4,13 @@ package openfl.display;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
 @:access(openfl.display.Tileset)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -20,7 +22,8 @@ import openfl.Vector;
 	private static inline var RECT_INDEX = 1;
 	private static inline var MATRIX_INDEX = 5;
 	private static inline var ALPHA_INDEX = 11;
-	private static inline var DATA_LENGTH = 12;
+	private static inline var COLOR_TRANSFORM_INDEX = 12;
+	private static inline var DATA_LENGTH = 20;
 	
 	public var alpha (get, set):Float;
 	public var id (get, set):Int;
@@ -56,6 +59,23 @@ import openfl.Vector;
 	}
 	
 	
+	public function getColorTransform (colorTransform:ColorTransform = null):ColorTransform {
+		
+		if (colorTransform == null) colorTransform = new ColorTransform ();
+		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
+		colorTransform.redMultiplier = __data[i];
+		colorTransform.greenMultiplier = __data[i + 1];
+		colorTransform.blueMultiplier = __data[i + 2];
+		colorTransform.alphaMultiplier = __data[i + 3];
+		colorTransform.redOffset = __data[i + 4];
+		colorTransform.greenOffset = __data[i + 4];
+		colorTransform.blueOffset = __data[i + 4];
+		colorTransform.alphaOffset = __data[i + 4];
+		return colorTransform;
+		
+	}
+	
+	
 	public function getMatrix (matrix:Matrix = null):Matrix {
 		
 		if (matrix == null) matrix = new Matrix ();
@@ -80,6 +100,21 @@ import openfl.Vector;
 		rect.width = __data[i + 2];
 		rect.height = __data[i + 3];
 		return rect;
+		
+	}
+	
+	
+	public function setColorTransform (redMultiplier:Float, greenMultiplier:Float, blueMultiplier:Float, alphaMultiplier:Float, redOffset:Float, greenOffset:Float, blueOffset:Float, alphaOffset:Float):Void {
+		
+		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
+		__data[i] = redMultiplier;
+		__data[i + 1] = greenMultiplier;
+		__data[i + 2] = blueMultiplier;
+		__data[i + 3] = alphaMultiplier;
+		__data[i + 4] = redOffset;
+		__data[i + 5] = greenOffset;
+		__data[i + 6] = blueOffset;
+		__data[i + 7] = alphaOffset;
 		
 	}
 	
@@ -114,6 +149,7 @@ import openfl.Vector;
 		this.position = position;
 		
 		alpha = 1;
+		setColorTransform (1, 1, 1, 1, 0, 0, 0, 0);
 		id = 0;
 		setMatrix (1, 0, 0, 1, 0, 0);
 		tileset = null;
@@ -123,12 +159,13 @@ import openfl.Vector;
 	
 	
 	#if !flash
-	private function __updateGLBuffer (gl:GLRenderContext, defaultTileset:Tileset, worldAlpha:Float):GLBuffer {
+	private function __updateGLBuffer (gl:GLRenderContext, defaultTileset:Tileset, worldAlpha:Float, defaultColorTransform:ColorTransform):GLBuffer {
 		
 		// TODO: More closely align internal data format with GL buffer format?
 		
-		var itemSize = 30;
-		var bufferLength = __length * itemSize;
+		var attributeLength = 25;
+		var stride = attributeLength * 6;
+		var bufferLength = __length * stride;
 		
 		if (__bufferData == null) {
 			
@@ -168,6 +205,7 @@ import openfl.Vector;
 		if (__bufferDirty || (__cacheAlpha != worldAlpha) || (__cacheDefaultTileset != defaultTileset)) {
 			
 			var matrix = Matrix.__pool.get ();
+			var colorTransform = new ColorTransform ();
 			var rect = null;
 			
 			// TODO: Dirty algorithm per tile?
@@ -177,24 +215,26 @@ import openfl.Vector;
 			var bitmapWidth, bitmapHeight, tileWidth:Float, tileHeight:Float;
 			var uvX, uvY, uvWidth, uvHeight;
 			var x, y, x2, y2, x3, y3, x4, y4;
+			var redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier;
+			var redOffset, greenOffset, blueOffset, alphaOffset;
 			
 			position = 0;
 			
 			var __skipTile = function (i, offset:Int):Void {
 				
-				__bufferData[offset + 4] = 0;
-				__bufferData[offset + 9] = 0;
-				__bufferData[offset + 14] = 0;
-				__bufferData[offset + 19] = 0;
-				__bufferData[offset + 24] = 0;
-				__bufferData[offset + 29] = 0;
+				for (i in 0...6) {
+					
+					__bufferData[offset + (attributeLength * i) + 4] = alpha;
+					
+				}
+				
 				__bufferSkipped[i] = true;
 				
 			}
 			
 			for (i in 0...__length) {
 				
-				offset = i * itemSize;
+				offset = i * stride;
 				
 				alpha = this.alpha;
 				visible = this.visible;
@@ -256,8 +296,6 @@ import openfl.Vector;
 					
 				}
 				
-				// transform
-				
 				getMatrix (matrix);
 				x = matrix.__transformX (0, 0);
 				y = matrix.__transformY (0, 0);
@@ -268,45 +306,66 @@ import openfl.Vector;
 				x4 = matrix.__transformX (tileWidth, tileHeight);
 				y4 = matrix.__transformY (tileWidth, tileHeight);
 				
+				alpha *= worldAlpha;
+				
+				getColorTransform (colorTransform);
+				colorTransform.__combine (defaultColorTransform);
+				
+				redMultiplier = colorTransform.redMultiplier;
+				greenMultiplier = colorTransform.greenMultiplier;
+				blueMultiplier = colorTransform.blueMultiplier;
+				alphaMultiplier = colorTransform.alphaMultiplier;
+				redOffset = colorTransform.redOffset;
+				greenOffset = colorTransform.greenOffset;
+				blueOffset = colorTransform.blueOffset;
+				alphaOffset = colorTransform.alphaOffset;
+				
 				__bufferData[offset + 0] = x;
 				__bufferData[offset + 1] = y;
-				__bufferData[offset + 5] = x2;
-				__bufferData[offset + 6] = y2;
-				__bufferData[offset + 10] = x3;
-				__bufferData[offset + 11] = y3;
+				__bufferData[offset + 3] = uvX;
+				__bufferData[offset + 4] = uvY;
 				
-				__bufferData[offset + 15] = x3;
-				__bufferData[offset + 16] = y3;
-				__bufferData[offset + 20] = x2;
-				__bufferData[offset + 21] = y2;
-				__bufferData[offset + 25] = x4;
-				__bufferData[offset + 26] = y4;
+				__bufferData[offset + (attributeLength) + 0] = x2;
+				__bufferData[offset + (attributeLength) + 1] = y2;
+				__bufferData[offset + (attributeLength) + 2] = uvWidth;
+				__bufferData[offset + (attributeLength) + 3] = uvY;
 				
-				// uv
+				__bufferData[offset + (attributeLength * 2) + 0] = x3;
+				__bufferData[offset + (attributeLength * 2) + 1] = y3;
+				__bufferData[offset + (attributeLength * 2) + 2] = uvX;
+				__bufferData[offset + (attributeLength * 2) + 3] = uvHeight;
 				
-				__bufferData[offset + 2] = uvX;
-				__bufferData[offset + 3] = uvY;
-				__bufferData[offset + 7] = uvWidth;
-				__bufferData[offset + 8] = uvY;
-				__bufferData[offset + 12] = uvX;
-				__bufferData[offset + 13] = uvHeight;
+				__bufferData[offset + (attributeLength * 3) + 0] = x3;
+				__bufferData[offset + (attributeLength * 3) + 1] = y3;
+				__bufferData[offset + (attributeLength * 3) + 2] = uvX;
+				__bufferData[offset + (attributeLength * 3) + 3] = uvHeight;
 				
-				__bufferData[offset + 17] = uvX;
-				__bufferData[offset + 18] = uvHeight;
-				__bufferData[offset + 22] = uvWidth;
-				__bufferData[offset + 23] = uvY;
-				__bufferData[offset + 27] = uvWidth;
-				__bufferData[offset + 28] = uvHeight;
+				__bufferData[offset + (attributeLength * 4) + 0] = x2;
+				__bufferData[offset + (attributeLength * 4) + 1] = y2;
+				__bufferData[offset + (attributeLength * 4) + 2] = uvWidth;
+				__bufferData[offset + (attributeLength * 4) + 3] = uvY;
 				
-				// alpha
+				__bufferData[offset + (attributeLength * 5) + 0] = x4;
+				__bufferData[offset + (attributeLength * 5) + 1] = y4;
+				__bufferData[offset + (attributeLength * 5) + 2] = uvWidth;
+				__bufferData[offset + (attributeLength * 5) + 3] = uvHeight;
 				
-				alpha *= worldAlpha;
-				__bufferData[offset + 4] = alpha;
-				__bufferData[offset + 9] = alpha;
-				__bufferData[offset + 14] = alpha;
-				__bufferData[offset + 19] = alpha;
-				__bufferData[offset + 24] = alpha;
-				__bufferData[offset + 29] = alpha;
+				for (i in 0...6) {
+					
+					__bufferData[offset + (attributeLength * i) + 4] = alpha;
+					
+					// 4 x 4 matrix
+					__bufferData[offset + (attributeLength * i) + 5] = redMultiplier;
+					__bufferData[offset + (attributeLength * i) + 10] = greenMultiplier;
+					__bufferData[offset + (attributeLength * i) + 15] = blueMultiplier;
+					__bufferData[offset + (attributeLength * i) + 20] = alphaMultiplier;
+					
+					__bufferData[offset + (attributeLength * i) + 21] = redOffset;
+					__bufferData[offset + (attributeLength * i) + 22] = greenOffset;
+					__bufferData[offset + (attributeLength * i) + 23] = blueOffset;
+					__bufferData[offset + (attributeLength * i) + 24] = alphaOffset;
+					
+				}
 				
 				__bufferSkipped[i] = false;
 				position++;

@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
 #if !openfl_debug
@@ -9,6 +10,7 @@ import openfl.geom.Matrix;
 #end
 
 @:access(openfl.display.TileArray)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 
 
@@ -16,6 +18,7 @@ class Tile {
 	
 	
 	public var alpha (default, set):Float;
+	@:beta public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
 	public var id (default, set):Int;
 	public var matrix (default, set):Matrix;
@@ -31,6 +34,7 @@ class Tile {
 	public var y (get, set):Float;
 	
 	private var __alphaDirty:Bool;
+	private var __colorTransform:ColorTransform;
 	private var __rotation:Null<Float>;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
@@ -102,6 +106,12 @@ class Tile {
 		// TODO: Dirty algorithm
 		tileArray.shader = shader;
 		
+		if (__colorTransform != null) {
+			
+			tileArray.setColorTransform (__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier, __colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset, __colorTransform.alphaOffset);
+			
+		}
+		
 		if (__visibleDirty || forceUpdate) {
 			
 			tileArray.visible = visible;
@@ -168,6 +178,48 @@ class Tile {
 		
 		__alphaDirty = true;
 		return alpha = value;
+		
+	}
+	
+	
+	private function get_colorTransform ():ColorTransform {
+		
+		if (__colorTransform == null) {
+			
+			__colorTransform = new ColorTransform ();
+			
+		}
+		
+		return __colorTransform;
+		
+	}
+	
+	
+	private function set_colorTransform (value:ColorTransform):ColorTransform {
+		
+		if (__colorTransform == null) {
+			
+			if (value != null) {
+				
+				__colorTransform = value.__clone ();
+				
+			}
+			
+		} else {
+			
+			if (value != null) {
+				
+				__colorTransform.__copyFrom (value);
+				
+			} else {
+				
+				__colorTransform.__identity ();
+				
+			}
+			
+		}
+		
+		return value;
 		
 	}
 	
