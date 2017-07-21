@@ -34,12 +34,13 @@ class GLVideo {
 			renderSession.filterManager.pushObject (video);
 			
 			var shader = renderSession.shaderManager.initShader (video.shader);
+			renderSession.shaderManager.setShader (shader);
 			
 			//shader.data.uImage0.input = bitmap.bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
 			
-			renderSession.shaderManager.setShader (shader);
+			renderSession.shaderManager.updateShader (shader);
 			
 			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (gl));
 			

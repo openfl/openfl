@@ -24,6 +24,7 @@ class Tile {
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
+	@:beta public var shader:Shader;
 	public var tileset (default, set):Tileset;
 	public var visible (default, set):Bool;
 	public var x (get, set):Float;
@@ -97,6 +98,9 @@ class Tile {
 		
 		var cachePosition = tileArray.position;
 		tileArray.position = position;
+		
+		// TODO: Dirty algorithm
+		tileArray.shader = shader;
 		
 		if (__visibleDirty || forceUpdate) {
 			

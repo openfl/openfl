@@ -48,14 +48,15 @@ class GLTilemap {
 		
 		var shader = renderSession.shaderManager.initShader (tilemap.shader);
 		
+		var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
+		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
+		
 		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
-		shader.data.uMatrix.value = renderer.getMatrix (tilemap.__renderTransform);
-		shader.data.uImage0.smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
-		
 		var tileArray = tilemap.__tileArray;
+		var defaultShader = shader;
 		var defaultTileset = tilemap.tileset;
 		
 		tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha);
@@ -64,6 +65,7 @@ class GLTilemap {
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 		
+		var cacheShader = null;
 		var cacheBitmapData = null;
 		var lastIndex = 0;
 		var skipped = tileArray.__bufferSkipped;
@@ -71,7 +73,7 @@ class GLTilemap {
 		
 		tileArray.position = 0;
 		
-		var tileset;
+		var shader = null, tileset, flush = false;
 		
 		for (i in 0...(drawCount + 1)) {
 			
@@ -81,29 +83,61 @@ class GLTilemap {
 				
 			}
 			
+			tileArray.position = (i < drawCount ? i : drawCount - 1);
+			
+			shader = tileArray.shader;
+			if (shader == null) shader = defaultShader;
+			
+			if (shader != cacheShader && cacheShader != null) {
+				
+				flush = true;
+				
+			}
+			
 			tileset = tileArray.tileset;
 			if (tileset == null) tileset = defaultTileset;
 			
-			if (tileset.bitmapData != cacheBitmapData) {
+			if (tileset.bitmapData != cacheBitmapData && cacheBitmapData != null) {
 				
-				if (cacheBitmapData != null) {
-					
-					shader.data.uImage0.input = cacheBitmapData;
-					renderSession.shaderManager.setShader (shader);
-					
-					gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
-					
-				}
+				flush = true;
 				
-				cacheBitmapData = tileset.bitmapData;
+			}
+			
+			if (flush) {
+				
+				cacheShader.data.uImage0.input = cacheBitmapData;
+				renderSession.shaderManager.updateShader (cacheShader);
+				
+				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
+				
+				flush = false;
 				lastIndex = i;
 				
 			}
 			
+			if (shader != cacheShader) {
+				
+				renderSession.shaderManager.setShader (shader);
+				
+				shader.data.uMatrix.value = uMatrix;
+				shader.data.uImage0.smoothing = smoothing;
+				
+				// gl.bindBuffer (gl.ARRAY_BUFFER, tileArray.__buffer);
+				
+				// gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+				// gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+				// gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				
+				cacheShader = shader;
+				
+			}
+			
+			cacheBitmapData = tileset.bitmapData;
+			
 			if (i == drawCount && tileset.bitmapData != null) {
 				
 				shader.data.uImage0.input = tileset.bitmapData;
-				renderSession.shaderManager.setShader (shader);
+				renderSession.shaderManager.updateShader (shader);
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1 - lastIndex) * 6);
 				

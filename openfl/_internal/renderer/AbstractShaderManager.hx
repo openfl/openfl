@@ -37,4 +37,11 @@ class AbstractShaderManager {
 	}
 	
 	
+	public function updateShader (shader:Shader):Void {
+		
+		
+		
+	}
+	
+	
 }

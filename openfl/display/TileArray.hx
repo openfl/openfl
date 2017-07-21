@@ -26,6 +26,7 @@ import openfl.Vector;
 	public var id (get, set):Int;
 	public var length (get, set):Int;
 	public var position:Int;
+	public var shader (get, set):Shader;
 	public var tileset (get, set):Tileset;
 	public var visible (get, set):Bool;
 	
@@ -38,6 +39,7 @@ import openfl.Vector;
 	private var __cacheDefaultTileset:Tileset;
 	private var __data:Vector<Float>;
 	private var __length:Int;
+	private var __shaders:Vector<Shader>;
 	private var __tilesets:Vector<Tileset>;
 	private var __visible:Vector<Bool>;
 	
@@ -46,6 +48,7 @@ import openfl.Vector;
 		
 		__cacheAlpha = -1;
 		__data = new Vector<Float> (length * DATA_LENGTH);
+		__shaders = new Vector<Shader> (length);
 		__tilesets = new Vector<Tileset> (length);
 		__visible = new Vector<Bool> (length);
 		__length = length;
@@ -373,6 +376,7 @@ import openfl.Vector;
 	private function set_length (value:Int):Int {
 		
 		__data.length = value * DATA_LENGTH;
+		__shaders.length = value;
 		__tilesets.length = value;
 		__visible.length = value;
 		
@@ -391,6 +395,21 @@ import openfl.Vector;
 		}
 		
 		__length = value;
+		return value;
+		
+	}
+	
+	
+	private inline function get_shader ():Shader {
+		
+		return __shaders[position];
+		
+	}
+	
+	
+	private inline function set_shader (value:Shader):Shader {
+		
+		__shaders[position] = value;
 		return value;
 		
 	}

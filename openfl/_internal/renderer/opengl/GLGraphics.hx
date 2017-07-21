@@ -113,7 +113,7 @@ class GLGraphics {
 				var gl = renderSession.gl;
 				
 				var shader = renderSession.shaderManager.defaultShader;
-				renderSession.shaderManager.setShader (renderSession.shaderManager.defaultShader);
+				renderSession.shaderManager.setShader (shader);
 				
 				var bitmap = null;
 				var smooth = false;

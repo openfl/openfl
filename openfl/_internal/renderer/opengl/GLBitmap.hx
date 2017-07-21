@@ -34,12 +34,13 @@ class GLBitmap {
 			renderSession.filterManager.pushObject (bitmap);
 			
 			var shader = renderSession.shaderManager.initShader (bitmap.shader);
+			renderSession.shaderManager.setShader (shader);
 			
 			shader.data.uImage0.input = bitmap.bitmapData;
 			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
 			
-			renderSession.shaderManager.setShader (shader);
+			renderSession.shaderManager.updateShader (shader);
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.bitmapData.getBuffer (gl, bitmap.__worldAlpha));
 			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
