@@ -224,7 +224,7 @@ import openfl.Vector;
 				
 				for (i in 0...6) {
 					
-					__bufferData[offset + (attributeLength * i) + 4] = alpha;
+					__bufferData[offset + (attributeLength * i) + 4] = 0;
 					
 				}
 				
