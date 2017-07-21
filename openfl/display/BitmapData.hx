@@ -87,7 +87,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public var height (default, null):Int;
 	public var image (default, null):Image;
-	public var readable (default, null):Bool;
+	@:beta public var readable (default, null):Bool;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
@@ -441,7 +441,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function disposeImage ():Void {
+	@:beta public function disposeImage ():Void {
 		
 		readable = false;
 		

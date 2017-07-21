@@ -162,7 +162,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	public function getTiles ():TileArray {
+	@:beta public function getTiles ():TileArray {
 		
 		__updateTileArray ();
 		
@@ -231,7 +231,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	public function setTiles (tileArray:TileArray):Void {
+	@:beta public function setTiles (tileArray:TileArray):Void {
 		
 		__tileArray = tileArray;
 		numTiles = __tileArray.length;

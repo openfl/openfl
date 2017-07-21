@@ -13,7 +13,7 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 
 
-class TileArray {
+@:beta class TileArray {
 	
 	
 	private static inline var ID_INDEX = 0;
