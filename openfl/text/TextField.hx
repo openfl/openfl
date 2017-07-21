@@ -488,8 +488,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 		
 		replaceText (startIndex, endIndex, value);
-		
-		var i = startIndex + value.length;
+
+        var i = startIndex + cast(value, UTF8String).length;
 		setSelection(i,i);
 		
 	}
