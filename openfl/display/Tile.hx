@@ -197,6 +197,38 @@ class Tile {
 	
 	private function set_colorTransform (value:ColorTransform):ColorTransform {
 		
+		#if flash
+		
+		if (__colorTransform == null) {
+			
+			__colorTransform = new ColorTransform ();
+			
+		} else if (value == null) {
+			
+			__colorTransform.redMultiplier = 1;
+			__colorTransform.greenMultiplier = 1;
+			__colorTransform.blueMultiplier = 1;
+			__colorTransform.alphaMultiplier = 1;
+			__colorTransform.redOffset = 0;
+			__colorTransform.greenOffset = 0;
+			__colorTransform.blueOffset = 0;
+			__colorTransform.alphaOffset = 0;
+			return value;
+			
+		}
+		
+		__colorTransform.redMultiplier = value.redMultiplier;
+		__colorTransform.greenMultiplier = value.greenMultiplier;
+		__colorTransform.blueMultiplier = value.blueMultiplier;
+		__colorTransform.alphaMultiplier = value.alphaMultiplier;
+		__colorTransform.redOffset = value.redOffset;
+		__colorTransform.greenOffset = value.greenOffset;
+		__colorTransform.blueOffset = value.blueOffset;
+		__colorTransform.alphaOffset = value.alphaOffset;
+		return value;
+		
+		#else
+		
 		if (__colorTransform == null) {
 			
 			if (value != null) {
@@ -220,6 +252,8 @@ class Tile {
 		}
 		
 		return value;
+		
+		#end
 		
 	}
 	
