@@ -1,7 +1,7 @@
 package openfl.ui;
 
 
-@:enum abstract KeyLocation(Int) from Int to Int {
+@:enum abstract KeyLocation(Int) from Int to Int from UInt to UInt {
 	
 	public var LEFT = 1;
 	public var NUM_PAD = 3;

@@ -1,4 +1,4 @@
 package openfl.utils;
 
 
-typedef ArrayBufferView = lime.utils.ArrayBufferView;
+@:deprecated typedef ArrayBufferView = lime.utils.ArrayBufferView;

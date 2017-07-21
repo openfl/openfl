@@ -3,6 +3,11 @@ package openfl._internal.stage3D.assembler;
 
 import haxe.ds.StringMap;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class RegMap {
 	

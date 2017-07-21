@@ -135,10 +135,9 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	public function seek (offset:Float):Void {
+	public function seek (time:Float):Void {
 		
 		#if (js && html5)
-		var time = __video.currentTime + offset;
 		
 		if (time < 0) {
 			
@@ -254,7 +253,8 @@ class NetStream extends EventDispatcher {
 				handler ({
 					
 					width: __video.videoWidth,
-					height: __video.videoHeight
+					height: __video.videoHeight,
+					duration: __video.duration
 					
 				});
 				

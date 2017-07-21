@@ -4,16 +4,20 @@ package openfl.events;
 import openfl.events.EventPhase;
 import openfl.events.IEventDispatcher;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.events.Event)
 
 
 class EventDispatcher implements IEventDispatcher {
 	
 	
-	private var __dispatching:Map<String, Bool>;
-	private var __targetDispatcher:IEventDispatcher;
 	private var __eventMap:Map<String, Array<Listener>>;
-	private var __newEventMap:Map<String, Array<Listener>>;
+	private var __iterators:Map<String, Array<DispatchIterator>>;
+	private var __targetDispatcher:IEventDispatcher;
 	
 	
 	public function new (target:IEventDispatcher = null):Void {
@@ -29,11 +33,12 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
 		
+		if (listener == null) return;
+		
 		if (__eventMap == null) {
 			
-			__dispatching = new Map ();
 			__eventMap = new Map ();
-			__newEventMap = new Map ();
+			__iterators = new Map ();
 			
 		}
 		
@@ -41,40 +46,36 @@ class EventDispatcher implements IEventDispatcher {
 			
 			var list = new Array<Listener> ();
 			list.push (new Listener (listener, useCapture, priority));
+			
+			var iterator = new DispatchIterator (list);
+			
 			__eventMap.set (type, list);
+			__iterators.set (type, [ iterator ]);
 			
 		} else {
 			
-			var list;
-			
-			if (__dispatching.get (type) == true) {
-				
-				if (!__newEventMap.exists (type)) {
-					
-					list = __eventMap.get (type).copy ();
-					__newEventMap.set (type, list);
-					
-				} else {
-					
-					list = __newEventMap.get (type);
-					
-				}
-				
-			} else {
-				
-				list = __eventMap.get (type);
-				
-			}
+			var list = __eventMap.get (type);
 			
 			for (i in 0...list.length) {
 				
-				if (Reflect.compareMethods (list[i].callback, listener)) return;
+				if (list[i].match (listener, useCapture)) return;
 				
 			}
 			
-			list.push (new Listener (listener, useCapture, priority));
-			list.sort (__sortByPriority);
+			var iterators = __iterators.get (type);
 			
+			for (iterator in iterators) {
+				
+				if (iterator.active) {
+					
+					iterator.copy ();
+					
+				}
+				
+			}
+			
+			__addListenerByPriority(list, new Listener (listener, useCapture, priority));
+						
 		}
 		
 	}
@@ -101,46 +102,29 @@ class EventDispatcher implements IEventDispatcher {
 		
 		if (__eventMap == null) return false;
 		
-		if (__dispatching.get (type) == true && __newEventMap.exists (type)) {
-			
-			return __newEventMap.get (type).length > 0;
-			
-		} else {
-			
-			return __eventMap.exists (type);
-			
-		}
+		return __eventMap.exists (type);
 		
 	}
 	
 	
 	public function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
 		
-		if (__eventMap == null) return;
+		if (__eventMap == null || listener == null) return;
 		
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		var dispatching = (__dispatching.get (type) == true);
-		
-		if (dispatching) {
-			
-			if (!__newEventMap.exists (type)) {
-				
-				list = __eventMap.get (type).copy ();
-				__newEventMap.set (type, list);
-				
-			} else {
-				
-				list = __newEventMap.get (type);
-				
-			}
-			
-		}
+		var iterators = __iterators.get (type);
 		
 		for (i in 0...list.length) {
 			
 			if (list[i].match (listener, useCapture)) {
+				
+				for (iterator in iterators) {
+					
+					iterator.remove (list[i], i);
+					
+				}
 				
 				list.splice (i, 1);
 				break;
@@ -149,20 +133,17 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		if (!dispatching) {
+		if (list.length == 0) {
 			
-			if (list.length == 0) {
-				
-				__eventMap.remove (type);
-				
-			}
+			__eventMap.remove (type);
+			__iterators.remove (type);
 			
-			if (!__eventMap.iterator ().hasNext ()) {
-				
-				__eventMap = null;
-				__newEventMap = null;
-				
-			}
+		}
+		
+		if (!__eventMap.iterator ().hasNext ()) {
+			
+			__eventMap = null;
+			__iterators = null;
 			
 		}
 		
@@ -188,25 +169,12 @@ class EventDispatcher implements IEventDispatcher {
 	
 	private function __dispatchEvent (event:Event):Bool {
 		
-		if (__eventMap == null || event == null) return false;
+		if (__eventMap == null || event == null) return true;
 		
 		var type = event.type;
-		var list;
 		
-		if (__dispatching.get (type) == true) {
-			
-			list = __newEventMap.get (type);
-			if (list == null) list = __eventMap.get (type);
-			if (list == null) return false;
-			list = list.copy ();
-			
-		} else {
-			
-			list = __eventMap.get (type);
-			if (list == null) return false;
-			__dispatching.set (type, true);
-			
-		}
+		var list = __eventMap.get (type);
+		if (list == null) return true;
 		
 		if (event.target == null) {
 			
@@ -226,11 +194,22 @@ class EventDispatcher implements IEventDispatcher {
 		
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
 		var index = 0;
-		var listener;
 		
-		while (index < list.length) {
+		var iterators = __iterators.get (type);
+		var iterator = iterators[0];
+		
+		if (iterator.active) {
 			
-			listener = list[index];
+			iterator = new DispatchIterator (list);
+			iterators.push (iterator);
+			
+		}
+		
+		iterator.reset (list);
+		
+		for (listener in iterator) {
+			
+			if (listener == null) continue;
 			
 			if (listener.useCapture == capture) {
 				
@@ -245,56 +224,161 @@ class EventDispatcher implements IEventDispatcher {
 				
 			}
 			
-			if (listener == list[index]) {
-				
-				index++;
-				
-			}
-			
 		}
 		
-		if (__newEventMap != null && __newEventMap.exists (type)) {
+		if (iterator != iterators[0]) {
 			
-			var list = __newEventMap.get (type);
-			
-			if (list.length > 0) {
-				
-				__eventMap.set (type, list);
-				
-			} else {
-				
-				__eventMap.remove (type);
-				
-			}
-			
-			if (!__eventMap.iterator ().hasNext ()) {
-				
-				__eventMap = null;
-				__newEventMap = null;
-				
-			} else {
-				
-				__newEventMap.remove (type);
-				
-			}
+			iterators.remove (iterator);
 			
 		}
-		
-		__dispatching.set (event.type, false);
 		
 		return true;
 		
 	}
 	
 	
-	private static function __sortByPriority (l1:Listener, l2:Listener):Int {
+	private function __removeAllListeners ():Void {
 		
-		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);
+		__eventMap = null;
+		__iterators = null;
+		
+	}
+	
+	
+	private function __addListenerByPriority(list: Array<Listener>, listener: Listener): Void {
+
+		var numElements: Int = list.length;
+		var addAtPosition: Int = numElements;	
+
+		for (i in 0...numElements) {
+
+			if (list[i].priority < listener.priority) {
+
+				addAtPosition = i;
+
+				break;	
+
+			}
+
+		}
+
+		list.insert(addAtPosition, listener);
 		
 	}
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
+@:dox(hide) private class DispatchIterator {
+	
+	
+	public var active:Bool;
+	public var index (default, null):Int;
+	
+	private var isCopy:Bool;
+	private var list:Array<Listener>;
+	
+	
+	public function new (list:Array<Listener>) {
+		
+		this.list = list;
+		index = list.length;
+		
+	}
+	
+	
+	public function copy ():Void {
+		
+		if (index < list.length && !isCopy) {
+			
+			list = list.copy ();
+			isCopy = true;
+			
+		}
+		
+	}
+	
+	
+	public function hasNext ():Bool {
+		
+		if (index < list.length) {
+			
+			return true;
+			
+		} else {
+			
+			active = false;
+			return false;
+			
+		}
+		
+	}
+	
+	
+	public function next ():Listener {
+		
+		return list[index++];
+		
+	}
+	
+	
+	public function remove (listener:Listener, listIndex:Int):Void {
+		
+		if (active) {
+			
+			if (!isCopy) {
+				
+				if (listIndex < index) {
+					
+					index--;
+					
+				}
+				
+			} else {
+				
+				for (i in index...list.length) {
+					
+					if (list[i] == listener) {
+						
+						list.splice (i, 1);
+						break;
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	public function reset (list:Array<Listener>):Void {
+		
+		this.list = list;
+		
+		active = true;
+		isCopy = false;
+		index = 0;
+		
+	}
+	
+	
+}
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class Listener {

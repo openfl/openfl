@@ -10,16 +10,16 @@ import openfl.Vector;
 /**
  * The Graphics class contains a set of methods that you can use to create a
  * vector shape. Display objects that support drawing include Sprite and Shape
- * objects. Each of these classes includes a <code>graphics</code> property
+ * objects. Each of these classes includes a `graphics` property
  * that is a Graphics object. The following are among those helper functions
- * provided for ease of use: <code>drawRect()</code>,
- * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
- * <code>drawEllipse()</code>.
+ * provided for ease of use: `drawRect()`,
+ * `drawRoundRect()`, `drawCircle()`, and
+ * `drawEllipse()`.
  *
- * <p>You cannot create a Graphics object directly from ActionScript code. If
- * you call <code>new Graphics()</code>, an exception is thrown.</p>
+ * You cannot create a Graphics object directly from ActionScript code. If
+ * you call `new Graphics()`, an exception is thrown.
  *
- * <p>The Graphics class is final; it cannot be subclassed.</p>
+ * The Graphics class is final; it cannot be subclassed.
  */
 @:final extern class Graphics {
 	
@@ -27,12 +27,12 @@ import openfl.Vector;
 	/**
 	 * Fills a drawing area with a bitmap image. The bitmap can be repeated or
 	 * tiled to fill the area. The fill remains in effect until you call the
-	 * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-	 * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-	 * method. Calling the <code>clear()</code> method clears the fill.
+	 * `beginFill()`, `beginBitmapFill()`,
+	 * `beginGradientFill()`, or `beginShaderFill()`
+	 * method. Calling the `clear()` method clears the fill.
 	 *
-	 * <p>The application renders the fill whenever three or more points are
-	 * drawn, or when the <code>endFill()</code> method is called. </p>
+	 * The application renders the fill whenever three or more points are
+	 * drawn, or when the `endFill()` method is called. 
 	 * 
 	 * @param bitmap A transparent or opaque bitmap image that contains the bits
 	 *               to be displayed.
@@ -40,24 +40,24 @@ import openfl.Vector;
 	 *               can use to define transformations on the bitmap. For
 	 *               example, you can use the following matrix to rotate a bitmap
 	 *               by 45 degrees(pi/4 radians):
-	 * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
-	 *               pattern. If <code>false</code>, the bitmap image does not
+	 * @param repeat If `true`, the bitmap image repeats in a tiled
+	 *               pattern. If `false`, the bitmap image does not
 	 *               repeat, and the edges of the bitmap are used for any fill
 	 *               area that extends beyond the bitmap.
 	 *
-	 *               <p>For example, consider the following bitmap(a 20 x
-	 *               20-pixel checkerboard pattern):</p>
+	 *               For example, consider the following bitmap(a 20 x
+	 *               20-pixel checkerboard pattern):
 	 *
-	 *               <p>When <code>repeat</code> is set to <code>true</code>(as
+	 *               When `repeat` is set to `true`(as
 	 *               in the following example), the bitmap fill repeats the
-	 *               bitmap:</p>
+	 *               bitmap:
 	 *
-	 *               <p>When <code>repeat</code> is set to <code>false</code>,
+	 *               When `repeat` is set to `false`,
 	 *               the bitmap fill uses the edge pixels for the fill area
-	 *               outside the bitmap:</p>
-	 * @param smooth If <code>false</code>, upscaled bitmap images are rendered
+	 *               outside the bitmap:
+	 * @param smooth If `false`, upscaled bitmap images are rendered
 	 *               by using a nearest-neighbor algorithm and look pixelated. If
-	 *               <code>true</code>, upscaled bitmap images are rendered by
+	 *               `true`, upscaled bitmap images are rendered by
 	 *               using a bilinear algorithm. Rendering by using the nearest
 	 *               neighbor algorithm is faster.
 	 */
@@ -66,14 +66,14 @@ import openfl.Vector;
 	
 	/**
 	 * Specifies a simple one-color fill that subsequent calls to other Graphics
-	 * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
+	 * methods(such as `lineTo()` or `drawCircle()`) use
 	 * when drawing. The fill remains in effect until you call the
-	 * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-	 * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-	 * method. Calling the <code>clear()</code> method clears the fill.
+	 * `beginFill()`, `beginBitmapFill()`,
+	 * `beginGradientFill()`, or `beginShaderFill()`
+	 * method. Calling the `clear()` method clears the fill.
 	 *
-	 * <p>The application renders the fill whenever three or more points are
-	 * drawn, or when the <code>endFill()</code> method is called.</p>
+	 * The application renders the fill whenever three or more points are
+	 * drawn, or when the `endFill()` method is called.
 	 * 
 	 * @param color The color of the fill(0xRRGGBB).
 	 * @param alpha The alpha value of the fill(0.0 to 1.0).
@@ -83,58 +83,58 @@ import openfl.Vector;
 	
 	/**
 	 * Specifies a gradient fill used by subsequent calls to other Graphics
-	 * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
+	 * methods(such as `lineTo()` or `drawCircle()`) for
 	 * the object. The fill remains in effect until you call the
-	 * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-	 * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-	 * method. Calling the <code>clear()</code> method clears the fill.
+	 * `beginFill()`, `beginBitmapFill()`,
+	 * `beginGradientFill()`, or `beginShaderFill()`
+	 * method. Calling the `clear()` method clears the fill.
 	 *
-	 * <p>The application renders the fill whenever three or more points are
-	 * drawn, or when the <code>endFill()</code> method is called. </p>
+	 * The application renders the fill whenever three or more points are
+	 * drawn, or when the `endFill()` method is called. 
 	 * 
 	 * @param type                A value from the GradientType class that
 	 *                            specifies which gradient type to use:
-	 *                            <code>GradientType.LINEAR</code> or
-	 *                            <code>GradientType.RADIAL</code>.
+	 *                            `GradientType.LINEAR` or
+	 *                            `GradientType.RADIAL`.
 	 * @param matrix              A transformation matrix as defined by the
 	 *                            openfl.geom.Matrix class. The openfl.geom.Matrix
 	 *                            class includes a
-	 *                            <code>createGradientBox()</code> method, which
+	 *                            `createGradientBox()` method, which
 	 *                            lets you conveniently set up the matrix for use
-	 *                            with the <code>beginGradientFill()</code>
+	 *                            with the `beginGradientFill()`
 	 *                            method.
 	 * @param spreadMethod        A value from the SpreadMethod class that
 	 *                            specifies which spread method to use, either:
-	 *                            <code>SpreadMethod.PAD</code>,
-	 *                            <code>SpreadMethod.REFLECT</code>, or
-	 *                            <code>SpreadMethod.REPEAT</code>.
+	 *                            `SpreadMethod.PAD`,
+	 *                            `SpreadMethod.REFLECT`, or
+	 *                            `SpreadMethod.REPEAT`.
 	 *
-	 *                            <p>For example, consider a simple linear
-	 *                            gradient between two colors:</p>
+	 *                            For example, consider a simple linear
+	 *                            gradient between two colors:
 	 *
-	 *                            <p>This example uses
-	 *                            <code>SpreadMethod.PAD</code> for the spread
+	 *                            This example uses
+	 *                            `SpreadMethod.PAD` for the spread
 	 *                            method, and the gradient fill looks like the
-	 *                            following:</p>
+	 *                            following:
 	 *
-	 *                            <p>If you use <code>SpreadMethod.REFLECT</code>
+	 *                            If you use `SpreadMethod.REFLECT`
 	 *                            for the spread method, the gradient fill looks
-	 *                            like the following:</p>
+	 *                            like the following:
 	 *
-	 *                            <p>If you use <code>SpreadMethod.REPEAT</code>
+	 *                            If you use `SpreadMethod.REPEAT`
 	 *                            for the spread method, the gradient fill looks
-	 *                            like the following:</p>
+	 *                            like the following:
 	 * @param interpolationMethod A value from the InterpolationMethod class that
 	 *                            specifies which value to use:
-	 *                            <code>InterpolationMethod.LINEAR_RGB</code> or
-	 *                            <code>InterpolationMethod.RGB</code>
+	 *                            `InterpolationMethod.LINEAR_RGB` or
+	 *                            `InterpolationMethod.RGB`
 	 *
-	 *                            <p>For example, consider a simple linear
+	 *                            For example, consider a simple linear
 	 *                            gradient between two colors(with the
-	 *                            <code>spreadMethod</code> parameter set to
-	 *                            <code>SpreadMethod.REFLECT</code>). The
+	 *                            `spreadMethod` parameter set to
+	 *                            `SpreadMethod.REFLECT`). The
 	 *                            different interpolation methods affect the
-	 *                            appearance as follows: </p>
+	 *                            appearance as follows: 
 	 * @param focalPointRatio     A number that controls the location of the
 	 *                            focal point of the gradient. 0 means that the
 	 *                            focal point is in the center. 1 means that the
@@ -143,8 +143,8 @@ import openfl.Vector;
 	 *                            other border of the gradient circle. A value
 	 *                            less than -1 or greater than 1 is rounded to -1
 	 *                            or 1. For example, the following example shows
-	 *                            a <code>focalPointRatio</code> set to 0.75:
-	 * @throws ArgumentError If the <code>type</code> parameter is not valid.
+	 *                            a `focalPointRatio` set to 0.75:
+	 * @throws ArgumentError If the `type` parameter is not valid.
 	 */
 	public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
 	
@@ -171,19 +171,19 @@ import openfl.Vector;
 	/**
 	 * Draws a curve using the current line style from the current drawing
 	 * position to(anchorX, anchorY) and using the control point that
-	 * (<code>controlX</code>, <code>controlY</code>) specifies. The current
-	 * drawing position is then set to(<code>anchorX</code>,
-	 * <code>anchorY</code>). If the movie clip in which you are drawing contains
+	 * (`controlX`, `controlY`) specifies. The current
+	 * drawing position is then set to(`anchorX`,
+	 * `anchorY`). If the movie clip in which you are drawing contains
 	 * content created with the Flash drawing tools, calls to the
-	 * <code>curveTo()</code> method are drawn underneath this content. If you
-	 * call the <code>curveTo()</code> method before any calls to the
-	 * <code>moveTo()</code> method, the default of the current drawing position
+	 * `curveTo()` method are drawn underneath this content. If you
+	 * call the `curveTo()` method before any calls to the
+	 * `moveTo()` method, the default of the current drawing position
 	 * is(0, 0). If any of the parameters are missing, this method fails and the
 	 * current drawing position is not changed.
 	 *
-	 * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
+	 * The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
 	 * consist of two anchor points and one control point. The curve interpolates
-	 * the two anchor points and curves toward the control point. </p>
+	 * the two anchor points and curves toward the control point. 
 	 * 
 	 * @param controlX A number that specifies the horizontal position of the
 	 *                 control point relative to the registration point of the
@@ -203,15 +203,15 @@ import openfl.Vector;
 	
 	/**
 	 * Draws a circle. Set the line style, fill, or both before you call the
-	 * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
-	 * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-	 * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+	 * `drawCircle()` method, by calling the `linestyle()`,
+	 * `lineGradientStyle()`, `beginFill()`,
+	 * `beginGradientFill()`, or `beginBitmapFill()`
 	 * method.
 	 * 
-	 * @param x      The <i>x</i> location of the center of the circle relative
+	 * @param x      The _x_ location of the center of the circle relative
 	 *               to the registration point of the parent display object(in
 	 *               pixels).
-	 * @param y      The <i>y</i> location of the center of the circle relative
+	 * @param y      The _y_ location of the center of the circle relative
 	 *               to the registration point of the parent display object(in
 	 *               pixels).
 	 * @param radius The radius of the circle(in pixels).
@@ -221,15 +221,15 @@ import openfl.Vector;
 	
 	/**
 	 * Draws an ellipse. Set the line style, fill, or both before you call the
-	 * <code>drawEllipse()</code> method, by calling the
-	 * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-	 * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-	 * <code>beginBitmapFill()</code> method.
+	 * `drawEllipse()` method, by calling the
+	 * `linestyle()`, `lineGradientStyle()`,
+	 * `beginFill()`, `beginGradientFill()`, or
+	 * `beginBitmapFill()` method.
 	 * 
-	 * @param x      The <i>x</i> location of the top-left of the bounding-box of
+	 * @param x      The _x_ location of the top-left of the bounding-box of
 	 *               the ellipse relative to the registration point of the parent
 	 *               display object(in pixels).
-	 * @param y      The <i>y</i> location of the top left of the bounding-box of
+	 * @param y      The _y_ location of the top left of the bounding-box of
 	 *               the ellipse relative to the registration point of the parent
 	 *               display object(in pixels).
 	 * @param width  The width of the ellipse(in pixels).
@@ -245,55 +245,55 @@ import openfl.Vector;
 	 * instances can refer to a part of a shape, or a complex fully defined set
 	 * of data for rendering a complete shape.
 	 *
-	 * <p> Graphics paths can contain other graphics paths. If the
-	 * <code>graphicsData</code> Vector includes a path, that path and all its
-	 * sub-paths are rendered during this operation. </p>
+	 *  Graphics paths can contain other graphics paths. If the
+	 * `graphicsData` Vector includes a path, that path and all its
+	 * sub-paths are rendered during this operation. 
 	 * 
 	 */
 	public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void;
 	
 	
 	/**
-	 * Submits a series of commands for drawing. The <code>drawPath()</code>
-	 * method uses vector arrays to consolidate individual <code>moveTo()</code>,
-	 * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
-	 * single call. The <code>drawPath()</code> method parameters combine drawing
+	 * Submits a series of commands for drawing. The `drawPath()`
+	 * method uses vector arrays to consolidate individual `moveTo()`,
+	 * `lineTo()`, and `curveTo()` drawing commands into a
+	 * single call. The `drawPath()` method parameters combine drawing
 	 * commands with x- and y-coordinate value pairs and a drawing direction. The
 	 * drawing commands are values from the GraphicsPathCommand class. The x- and
 	 * y-coordinate value pairs are Numbers in an array where each pair defines a
 	 * coordinate location. The drawing direction is a value from the
 	 * GraphicsPathWinding class.
 	 *
-	 * <p> Generally, drawings render faster with <code>drawPath()</code> than
-	 * with a series of individual <code>lineTo()</code> and
-	 * <code>curveTo()</code> methods. </p>
+	 *  Generally, drawings render faster with `drawPath()` than
+	 * with a series of individual `lineTo()` and
+	 * `curveTo()` methods. 
 	 *
-	 * <p> The <code>drawPath()</code> method uses a uses a floating computation
+	 *  The `drawPath()` method uses a uses a floating computation
 	 * so rotation and scaling of shapes is more accurate and gives better
-	 * results. However, curves submitted using the <code>drawPath()</code>
+	 * results. However, curves submitted using the `drawPath()`
 	 * method can have small sub-pixel alignment errors when used in conjunction
-	 * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
+	 * with the `lineTo()` and `curveTo()` methods. 
 	 *
-	 * <p> The <code>drawPath()</code> method also uses slightly different rules
-	 * for filling and drawing lines. They are: </p>
+	 *  The `drawPath()` method also uses slightly different rules
+	 * for filling and drawing lines. They are: 
 	 *
-	 * <ul>
-	 *   <li>When a fill is applied to rendering a path:
-	 * <ul>
-	 *   <li>A sub-path of less than 3 points is not rendered.(But note that the
+	 * 
+	 *  * When a fill is applied to rendering a path:
+	 * 
+	 *  * A sub-path of less than 3 points is not rendered.(But note that the
 	 * stroke rendering will still occur, consistent with the rules for strokes
-	 * below.)</li>
-	 *   <li>A sub-path that isn't closed(the end point is not equal to the
-	 * begin point) is implicitly closed.</li>
-	 * </ul>
-	 * </li>
-	 *   <li>When a stroke is applied to rendering a path:
-	 * <ul>
-	 *   <li>The sub-paths can be composed of any number of points.</li>
-	 *   <li>The sub-path is never implicitly closed.</li>
-	 * </ul>
-	 * </li>
-	 * </ul>
+	 * below.)
+	 *  * A sub-path that isn't closed(the end point is not equal to the
+	 * begin point) is implicitly closed.
+	 * 
+	 * 
+	 *  * When a stroke is applied to rendering a path:
+	 * 
+	 *  * The sub-paths can be composed of any number of points.
+	 *  * The sub-path is never implicitly closed.
+	 * 
+	 * 
+	 * 
 	 * 
 	 * @param winding Specifies the winding rule using a value defined in the
 	 *                GraphicsPathWinding class.
@@ -303,9 +303,9 @@ import openfl.Vector;
 	
 	/**
 	 * Draws a rectangle. Set the line style, fill, or both before you call the
-	 * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
-	 * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-	 * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+	 * `drawRect()` method, by calling the `linestyle()`,
+	 * `lineGradientStyle()`, `beginFill()`,
+	 * `beginGradientFill()`, or `beginBitmapFill()`
 	 * method.
 	 * 
 	 * @param x      A number indicating the horizontal position relative to the
@@ -314,19 +314,19 @@ import openfl.Vector;
 	 *               registration point of the parent display object(in pixels).
 	 * @param width  The width of the rectangle(in pixels).
 	 * @param height The height of the rectangle(in pixels).
-	 * @throws ArgumentError If the <code>width</code> or <code>height</code>
+	 * @throws ArgumentError If the `width` or `height`
 	 *                       parameters are not a number
-	 *                      (<code>Number.NaN</code>).
+	 *                      (`Number.NaN`).
 	 */
 	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void;
 	
 	
 	/**
 	 * Draws a rounded rectangle. Set the line style, fill, or both before you
-	 * call the <code>drawRoundRect()</code> method, by calling the
-	 * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-	 * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-	 * <code>beginBitmapFill()</code> method.
+	 * call the `drawRoundRect()` method, by calling the
+	 * `linestyle()`, `lineGradientStyle()`,
+	 * `beginFill()`, `beginGradientFill()`, or
+	 * `beginBitmapFill()` method.
 	 * 
 	 * @param x             A number indicating the horizontal position relative
 	 *                      to the registration point of the parent display
@@ -341,11 +341,11 @@ import openfl.Vector;
 	 * @param ellipseHeight The height of the ellipse used to draw the rounded
 	 *                      corners(in pixels). Optional; if no value is
 	 *                      specified, the default value matches that provided
-	 *                      for the <code>ellipseWidth</code> parameter.
-	 * @throws ArgumentError If the <code>width</code>, <code>height</code>,
-	 *                       <code>ellipseWidth</code> or
-	 *                       <code>ellipseHeight</code> parameters are not a
-	 *                       number(<code>Number.NaN</code>).
+	 *                      for the `ellipseWidth` parameter.
+	 * @throws ArgumentError If the `width`, `height`,
+	 *                       `ellipseWidth` or
+	 *                       `ellipseHeight` parameters are not a
+	 *                       number(`Number.NaN`).
 	 */
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ?ellipseHeight:Null<Float>):Void;
 	
@@ -355,15 +355,15 @@ import openfl.Vector;
 	
 	/**
 	 * Renders a set of triangles, typically to distort bitmaps and give them a
-	 * three-dimensional appearance. The <code>drawTriangles()</code> method maps
+	 * three-dimensional appearance. The `drawTriangles()` method maps
 	 * either the current fill, or a bitmap fill, to the triangle faces using a
 	 * set of(u,v) coordinates.
 	 *
-	 * <p> Any type of fill can be used, but if the fill has a transform matrix
-	 * that transform matrix is ignored. </p>
+	 *  Any type of fill can be used, but if the fill has a transform matrix
+	 * that transform matrix is ignored. 
 	 *
-	 * <p> A <code>uvtData</code> parameter improves texture mapping when a
-	 * bitmap fill is used. </p>
+	 *  A `uvtData` parameter improves texture mapping when a
+	 * bitmap fill is used. 
 	 * 
 	 * @param culling Specifies whether to render triangles that face in a
 	 *                specified direction. This parameter prevents the rendering
@@ -376,12 +376,12 @@ import openfl.Vector;
 	
 	/**
 	 * Applies a fill to the lines and curves that were added since the last call
-	 * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-	 * <code>beginBitmapFill()</code> method. Flash uses the fill that was
-	 * specified in the previous call to the <code>beginFill()</code>,
-	 * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+	 * to the `beginFill()`, `beginGradientFill()`, or
+	 * `beginBitmapFill()` method. Flash uses the fill that was
+	 * specified in the previous call to the `beginFill()`,
+	 * `beginGradientFill()`, or `beginBitmapFill()`
 	 * method. If the current drawing position does not equal the previous
-	 * position specified in a <code>moveTo()</code> method and a fill is
+	 * position specified in a `moveTo()` method and a fill is
 	 * defined, the path is closed with a line and then filled.
 	 * 
 	 */
@@ -391,23 +391,23 @@ import openfl.Vector;
 	/**
 	 * Specifies a bitmap to use for the line stroke when drawing lines.
 	 *
-	 * <p>The bitmap line style is used for subsequent calls to Graphics methods
-	 * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+	 * The bitmap line style is used for subsequent calls to Graphics methods
+	 * such as the `lineTo()` method or the `drawCircle()`
 	 * method. The line style remains in effect until you call the
-	 * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
-	 * the <code>lineBitmapStyle()</code> method again with different parameters.
-	 * </p>
+	 * `lineStyle()` or `lineGradientStyle()` methods, or
+	 * the `lineBitmapStyle()` method again with different parameters.
+	 * 
 	 *
-	 * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
+	 * You can call the `lineBitmapStyle()` method in the middle of
 	 * drawing a path to specify different styles for different line segments
-	 * within a path. </p>
+	 * within a path. 
 	 *
-	 * <p>Call the <code>lineStyle()</code> method before you call the
-	 * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
-	 * value of the line style is <code>undefined</code>.</p>
+	 * Call the `lineStyle()` method before you call the
+	 * `lineBitmapStyle()` method to enable a stroke, or else the
+	 * value of the line style is `undefined`.
 	 *
-	 * <p>Calls to the <code>clear()</code> method set the line style back to
-	 * <code>undefined</code>. </p>
+	 * Calls to the `clear()` method set the line style back to
+	 * `undefined`. 
 	 * 
 	 * @param bitmap The bitmap to use for the line stroke.
 	 * @param matrix An optional transformation matrix as defined by the
@@ -423,23 +423,23 @@ import openfl.Vector;
 	/**
 	 * Specifies a gradient to use for the stroke when drawing lines.
 	 *
-	 * <p>The gradient line style is used for subsequent calls to Graphics
-	 * methods such as the <code>lineTo()</code> methods or the
-	 * <code>drawCircle()</code> method. The line style remains in effect until
-	 * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
-	 * methods, or the <code>lineGradientStyle()</code> method again with
-	 * different parameters. </p>
+	 * The gradient line style is used for subsequent calls to Graphics
+	 * methods such as the `lineTo()` methods or the
+	 * `drawCircle()` method. The line style remains in effect until
+	 * you call the `lineStyle()` or `lineBitmapStyle()`
+	 * methods, or the `lineGradientStyle()` method again with
+	 * different parameters. 
 	 *
-	 * <p>You can call the <code>lineGradientStyle()</code> method in the middle
+	 * You can call the `lineGradientStyle()` method in the middle
 	 * of drawing a path to specify different styles for different line segments
-	 * within a path. </p>
+	 * within a path. 
 	 *
-	 * <p>Call the <code>lineStyle()</code> method before you call the
-	 * <code>lineGradientStyle()</code> method to enable a stroke, or else the
-	 * value of the line style is <code>undefined</code>.</p>
+	 * Call the `lineStyle()` method before you call the
+	 * `lineGradientStyle()` method to enable a stroke, or else the
+	 * value of the line style is `undefined`.
 	 *
-	 * <p>Calls to the <code>clear()</code> method set the line style back to
-	 * <code>undefined</code>. </p>
+	 * Calls to the `clear()` method set the line style back to
+	 * `undefined`. 
 	 * 
 	 * @param type                A value from the GradientType class that
 	 *                            specifies which gradient type to use, either
@@ -447,18 +447,18 @@ import openfl.Vector;
 	 * @param matrix              A transformation matrix as defined by the
 	 *                            openfl.geom.Matrix class. The openfl.geom.Matrix
 	 *                            class includes a
-	 *                            <code>createGradientBox()</code> method, which
+	 *                            `createGradientBox()` method, which
 	 *                            lets you conveniently set up the matrix for use
-	 *                            with the <code>lineGradientStyle()</code>
+	 *                            with the `lineGradientStyle()`
 	 *                            method.
 	 * @param spreadMethod        A value from the SpreadMethod class that
 	 *                            specifies which spread method to use:
 	 * @param interpolationMethod A value from the InterpolationMethod class that
 	 *                            specifies which value to use. For example,
 	 *                            consider a simple linear gradient between two
-	 *                            colors(with the <code>spreadMethod</code>
+	 *                            colors(with the `spreadMethod`
 	 *                            parameter set to
-	 *                            <code>SpreadMethod.REFLECT</code>). The
+	 *                            `SpreadMethod.REFLECT`). The
 	 *                            different interpolation methods affect the
 	 *                            appearance as follows:
 	 * @param focalPointRatio     A number that controls the location of the
@@ -470,28 +470,28 @@ import openfl.Vector;
 	 *                            gradient circle. Values less than -1 or greater
 	 *                            than 1 are rounded to -1 or 1. The following
 	 *                            image shows a gradient with a
-	 *                            <code>focalPointRatio</code> of -0.75:
+	 *                            `focalPointRatio` of -0.75:
 	 */
 	public function lineGradientStyle (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
 	
 	
 	/**
 	 * Specifies a line style used for subsequent calls to Graphics methods such
-	 * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+	 * as the `lineTo()` method or the `drawCircle()`
 	 * method. The line style remains in effect until you call the
-	 * <code>lineGradientStyle()</code> method, the
-	 * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
+	 * `lineGradientStyle()` method, the
+	 * `lineBitmapStyle()` method, or the `lineStyle()`
 	 * method with different parameters.
 	 *
-	 * <p>You can call the <code>lineStyle()</code> method in the middle of
+	 * You can call the `lineStyle()` method in the middle of
 	 * drawing a path to specify different styles for different line segments
-	 * within the path.</p>
+	 * within the path.
 	 *
-	 * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
-	 * style back to <code>undefined</code>.</p>
+	 * **Note: **Calls to the `clear()` method set the line
+	 * style back to `undefined`.
 	 *
-	 * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
-	 * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
+	 * **Note: **Flash Lite 4 supports only the first three parameters
+	 * (`thickness`, `color`, and `alpha`).
 	 * 
 	 * @param thickness    An integer that indicates the thickness of the line in
 	 *                     points; valid values are 0-255. If a number is not
@@ -513,119 +513,119 @@ import openfl.Vector;
 	 *                     specifies whether to hint strokes to full pixels. This
 	 *                     affects both the position of anchors of a curve and
 	 *                     the line stroke size itself. With
-	 *                     <code>pixelHinting</code> set to <code>true</code>,
+	 *                     `pixelHinting` set to `true`,
 	 *                     line widths are adjusted to full pixel widths. With
-	 *                     <code>pixelHinting</code> set to <code>false</code>,
+	 *                     `pixelHinting` set to `false`,
 	 *                     disjoints can appear for curves and straight lines.
 	 *                     For example, the following illustrations show how
 	 *                     Flash Player or Adobe AIR renders two rounded
 	 *                     rectangles that are identical, except that the
-	 *                     <code>pixelHinting</code> parameter used in the
-	 *                     <code>lineStyle()</code> method is set differently
+	 *                     `pixelHinting` parameter used in the
+	 *                     `lineStyle()` method is set differently
 	 *                    (the images are scaled by 200%, to emphasize the
 	 *                     difference):
 	 *
-	 *                     <p>If a value is not supplied, the line does not use
-	 *                     pixel hinting.</p>
+	 *                     If a value is not supplied, the line does not use
+	 *                     pixel hinting.
 	 * @param scaleMode   (Not supported in Flash Lite 4) A value from the
 	 *                     LineScaleMode class that specifies which scale mode to
 	 *                     use:
-	 *                     <ul>
-	 *                       <li> <code>LineScaleMode.NORMAL</code> - Always
+	 *                     
+	 *                      *  `LineScaleMode.NORMAL` - Always
 	 *                     scale the line thickness when the object is scaled
-	 *                    (the default). </li>
-	 *                       <li> <code>LineScaleMode.NONE</code> - Never scale
-	 *                     the line thickness. </li>
-	 *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
+	 *                    (the default). 
+	 *                      *  `LineScaleMode.NONE` - Never scale
+	 *                     the line thickness. 
+	 *                      *  `LineScaleMode.VERTICAL` - Do not
 	 *                     scale the line thickness if the object is scaled
-	 *                     vertically <i>only</i>. For example, consider the
+	 *                     vertically _only_. For example, consider the
 	 *                     following circles, drawn with a one-pixel line, and
-	 *                     each with the <code>scaleMode</code> parameter set to
-	 *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
+	 *                     each with the `scaleMode` parameter set to
+	 *                     `LineScaleMode.VERTICAL`. The circle on the
 	 *                     left is scaled vertically only, and the circle on the
 	 *                     right is scaled both vertically and horizontally:
-	 *                     </li>
-	 *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
+	 *                     
+	 *                      *  `LineScaleMode.HORIZONTAL` - Do not
 	 *                     scale the line thickness if the object is scaled
-	 *                     horizontally <i>only</i>. For example, consider the
+	 *                     horizontally _only_. For example, consider the
 	 *                     following circles, drawn with a one-pixel line, and
-	 *                     each with the <code>scaleMode</code> parameter set to
-	 *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
+	 *                     each with the `scaleMode` parameter set to
+	 *                     `LineScaleMode.HORIZONTAL`. The circle on
 	 *                     the left is scaled horizontally only, and the circle
 	 *                     on the right is scaled both vertically and
-	 *                     horizontally:   </li>
-	 *                     </ul>
+	 *                     horizontally:   
+	 *                     
 	 * @param caps        (Not supported in Flash Lite 4) A value from the
 	 *                     CapsStyle class that specifies the type of caps at the
 	 *                     end of lines. Valid values are:
-	 *                     <code>CapsStyle.NONE</code>,
-	 *                     <code>CapsStyle.ROUND</code>, and
-	 *                     <code>CapsStyle.SQUARE</code>. If a value is not
+	 *                     `CapsStyle.NONE`,
+	 *                     `CapsStyle.ROUND`, and
+	 *                     `CapsStyle.SQUARE`. If a value is not
 	 *                     indicated, Flash uses round caps.
 	 *
-	 *                     <p>For example, the following illustrations show the
-	 *                     different <code>capsStyle</code> settings. For each
+	 *                     For example, the following illustrations show the
+	 *                     different `capsStyle` settings. For each
 	 *                     setting, the illustration shows a blue line with a
-	 *                     thickness of 30(for which the <code>capsStyle</code>
+	 *                     thickness of 30(for which the `capsStyle`
 	 *                     applies), and a superimposed black line with a
-	 *                     thickness of 1(for which no <code>capsStyle</code>
-	 *                     applies): </p>
+	 *                     thickness of 1(for which no `capsStyle`
+	 *                     applies): 
 	 * @param joints      (Not supported in Flash Lite 4) A value from the
 	 *                     JointStyle class that specifies the type of joint
 	 *                     appearance used at angles. Valid values are:
-	 *                     <code>JointStyle.BEVEL</code>,
-	 *                     <code>JointStyle.MITER</code>, and
-	 *                     <code>JointStyle.ROUND</code>. If a value is not
+	 *                     `JointStyle.BEVEL`,
+	 *                     `JointStyle.MITER`, and
+	 *                     `JointStyle.ROUND`. If a value is not
 	 *                     indicated, Flash uses round joints.
 	 *
-	 *                     <p>For example, the following illustrations show the
-	 *                     different <code>joints</code> settings. For each
+	 *                     For example, the following illustrations show the
+	 *                     different `joints` settings. For each
 	 *                     setting, the illustration shows an angled blue line
 	 *                     with a thickness of 30(for which the
-	 *                     <code>jointStyle</code> applies), and a superimposed
+	 *                     `jointStyle` applies), and a superimposed
 	 *                     angled black line with a thickness of 1(for which no
-	 *                     <code>jointStyle</code> applies): </p>
+	 *                     `jointStyle` applies): 
 	 *
-	 *                     <p><b>Note:</b> For <code>joints</code> set to
-	 *                     <code>JointStyle.MITER</code>, you can use the
-	 *                     <code>miterLimit</code> parameter to limit the length
-	 *                     of the miter.</p>
+	 *                     **Note:** For `joints` set to
+	 *                     `JointStyle.MITER`, you can use the
+	 *                     `miterLimit` parameter to limit the length
+	 *                     of the miter.
 	 * @param miterLimit  (Not supported in Flash Lite 4) A number that
 	 *                     indicates the limit at which a miter is cut off. Valid
 	 *                     values range from 1 to 255(and values outside that
 	 *                     range are rounded to 1 or 255). This value is only
-	 *                     used if the <code>jointStyle</code> is set to
-	 *                     <code>"miter"</code>. The <code>miterLimit</code>
+	 *                     used if the `jointStyle` is set to
+	 *                     `"miter"`. The `miterLimit`
 	 *                     value represents the length that a miter can extend
 	 *                     beyond the point at which the lines meet to form a
 	 *                     joint. The value expresses a factor of the line
-	 *                     <code>thickness</code>. For example, with a
-	 *                     <code>miterLimit</code> factor of 2.5 and a
-	 *                     <code>thickness</code> of 10 pixels, the miter is cut
+	 *                     `thickness`. For example, with a
+	 *                     `miterLimit` factor of 2.5 and a
+	 *                     `thickness` of 10 pixels, the miter is cut
 	 *                     off at 25 pixels.
 	 *
-	 *                     <p>For example, consider the following angled lines,
-	 *                     each drawn with a <code>thickness</code> of 20, but
-	 *                     with <code>miterLimit</code> set to 1, 2, and 4.
+	 *                     For example, consider the following angled lines,
+	 *                     each drawn with a `thickness` of 20, but
+	 *                     with `miterLimit` set to 1, 2, and 4.
 	 *                     Superimposed are black reference lines showing the
-	 *                     meeting points of the joints:</p>
+	 *                     meeting points of the joints:
 	 *
-	 *                     <p>Notice that a given <code>miterLimit</code> value
+	 *                     Notice that a given `miterLimit` value
 	 *                     has a specific maximum angle for which the miter is
-	 *                     cut off. The following table lists some examples:</p>
+	 *                     cut off. The following table lists some examples:
 	 */
 	public function lineStyle (thickness:Null<Float> = null, ?color:UInt, ?alpha:Float, ?pixelHinting:Bool, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Float = 3):Void;
 	
 	
 	/**
 	 * Draws a line using the current line style from the current drawing
-	 * position to(<code>x</code>, <code>y</code>); the current drawing position
-	 * is then set to(<code>x</code>, <code>y</code>). If the display object in
+	 * position to(`x`, `y`); the current drawing position
+	 * is then set to(`x`, `y`). If the display object in
 	 * which you are drawing contains content that was created with the Flash
-	 * drawing tools, calls to the <code>lineTo()</code> method are drawn
-	 * underneath the content. If you call <code>lineTo()</code> before any calls
-	 * to the <code>moveTo()</code> method, the default position for the current
-	 * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
+	 * drawing tools, calls to the `lineTo()` method are drawn
+	 * underneath the content. If you call `lineTo()` before any calls
+	 * to the `moveTo()` method, the default position for the current
+	 * drawing is(_0, 0_). If any of the parameters are missing, this
 	 * method fails and the current drawing position is not changed.
 	 * 
 	 * @param x A number that indicates the horizontal position relative to the
@@ -637,7 +637,7 @@ import openfl.Vector;
 	
 	
 	/**
-	 * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
+	 * Moves the current drawing position to(`x`, `y`). If
 	 * any of the parameters are missing, this method fails and the current
 	 * drawing position is not changed.
 	 * 

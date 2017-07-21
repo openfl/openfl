@@ -69,7 +69,7 @@ class SharedObject extends EventDispatcher {
 			
 			#else
 			
-			var path = System.applicationStorageDirectory + "/" + __localPath + "/" + __name + ".sol";
+			var path = __getPath (__localPath, __name);
 			
 			if (FileSystem.exists (path)) {
 				
@@ -93,7 +93,7 @@ class SharedObject extends EventDispatcher {
 	
 	public function connect (myConnection:NetConnection, params:String = null):Void {
 		
-		openfl.Lib.notImplemented ("SharedObject.connect");
+		openfl.Lib.notImplemented ();
 		
 	}
 	
@@ -123,15 +123,16 @@ class SharedObject extends EventDispatcher {
 			
 			#else
 			
-			var path = System.applicationStorageDirectory + "/" + __localPath;
+			var path = __getPath (__localPath, __name);
+			var directory = Path.directory (path);
 			
-			if (!FileSystem.exists (path)) {
+			if (!FileSystem.exists (directory)) {
 				
-				__mkdir (path);
+				__mkdir (directory);
 				
 			}
 			
-			var output = File.write (path + "/" + __name + ".sol", false);
+			var output = File.write (path, false);
 			output.writeString (encodedData);
 			output.close ();
 			
@@ -149,6 +150,35 @@ class SharedObject extends EventDispatcher {
 	
 	
 	public static function getLocal (name:String, localPath:String = null, secure:Bool = false /* note: unsupported */):SharedObject {
+		
+		var illegalValues = [ " ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#" ];
+		var allowed = true;
+		
+		if (name == null || name == "") {
+			
+			allowed = false;
+			
+		} else {
+			
+			for (value in illegalValues) {
+				
+				if (name.indexOf (value) > -1) {
+					
+					allowed = false;
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
+		if (!allowed) {
+			
+			throw new Error ("Error #2134: Cannot create SharedObject.");
+			return null;
+			
+		}
 		
 		if (localPath == null) {
 			
@@ -192,7 +222,7 @@ class SharedObject extends EventDispatcher {
 				
 				#else
 				
-				var path = System.applicationStorageDirectory + "/" + localPath + "/" + name + ".sol";
+				var path = __getPath (localPath, name);
 				
 				if (FileSystem.exists (path)) {
 					
@@ -227,16 +257,16 @@ class SharedObject extends EventDispatcher {
 	
 	public static function getRemote (name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject {
 		
-		openfl.Lib.notImplemented ("SharedObject.getRemote");
+		openfl.Lib.notImplemented ();
 		
 		return null;
 		
 	}
 	
 	
-	public function send (arguments:Array<Dynamic>):Void {
+	public function send (args:Array<Dynamic>):Void {
 		
-		openfl.Lib.notImplemented ("SharedObject.send");
+		openfl.Lib.notImplemented ();
 		
 	}
 	
@@ -255,6 +285,45 @@ class SharedObject extends EventDispatcher {
 			Reflect.setField (data, propertyName, value);
 			
 		}
+		
+	}
+	
+	
+	private static function __getPath (localPath:String, name:String):String {
+		
+		var path = System.applicationStorageDirectory + "/" + localPath + "/";
+		
+		name = StringTools.replace (name, "//", "/");
+		name = StringTools.replace (name, "//", "/");
+		
+		if (StringTools.startsWith (name, "/")) {
+			
+			name = name.substr (1);
+			
+		}
+		
+		if (StringTools.endsWith (name, "/")) {
+			
+			name = name.substring (0, name.length - 1);
+			
+		}
+		
+		if (name.indexOf ("/") > -1) {
+			
+			var split = name.split ("/");
+			name = "";
+			
+			for (i in 0...(split.length - 1)) {
+				
+				name += "#" + split[i] + "/";
+				
+			}
+			
+			name += split[split.length - 1];
+			
+		}
+		
+		return path + name + ".sol";
 		
 	}
 	

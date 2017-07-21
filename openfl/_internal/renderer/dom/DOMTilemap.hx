@@ -40,6 +40,7 @@ class DOMTilemap {
 			
 			renderSession.context = null;
 			
+			DOMRenderer.updateClip (tilemap, renderSession);
 			DOMRenderer.applyStyle (tilemap, renderSession, true, false, true);
 			
 		} else {

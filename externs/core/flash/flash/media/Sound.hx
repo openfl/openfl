@@ -1,7 +1,7 @@
 package flash.media; #if (!display && flash)
 
 
-import lime.audio.AudioBuffer;
+import lime.media.AudioBuffer;
 import openfl.events.EventDispatcher;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;

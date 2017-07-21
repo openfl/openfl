@@ -1,6 +1,9 @@
 package openfl.events;
 
 
+import openfl.net.URLRequestHeader;
+
+
 class HTTPStatusEvent extends Event {
 	
 	
@@ -8,7 +11,7 @@ class HTTPStatusEvent extends Event {
 	public static inline var HTTP_STATUS = "httpStatus";
 	
 	public var redirected:Bool;
-	public var responseHeaders:Array<Dynamic>;
+	public var responseHeaders:Array<URLRequestHeader>;
 	public var responseURL:String;
 	public var status (default, null):Int;
 	

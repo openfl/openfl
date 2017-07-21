@@ -10,6 +10,11 @@ import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class IndexBuffer3D {
 	
@@ -61,10 +66,12 @@ import openfl.Vector;
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
+		if (data == null) return;
+		
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data, __usage);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data.byteLength, data, __usage);
 		GLUtils.CheckGLError ();
 		
 		if (data.byteLength != __memoryUsage) {
@@ -79,7 +86,19 @@ import openfl.Vector;
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
-		uploadFromTypedArray (new Int16Array (data, startOffset * 2, count));
+		// TODO: Optimize more
+		
+		var length = startOffset + count;
+		
+		var buffer = new Int16Array (count);
+		
+		for (i in startOffset...length) {
+			
+			buffer[i - startOffset] = data[i];
+			
+		}
+		
+		uploadFromTypedArray (buffer);
 		
 	}
 	

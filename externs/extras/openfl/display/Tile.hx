@@ -11,6 +11,8 @@ extern class Tile {
 	public var data:Dynamic;
 	public var id (default, set):Int;
 	public var matrix:Matrix;
+	public var originX (default, set):Int;
+	public var originY (default, set):Int;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;

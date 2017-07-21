@@ -116,14 +116,11 @@ class ConsoleRenderer extends AbstractRenderer {
 	#end
 
 	
-	public function new (width:Int, height:Int, ctx:ConsoleRenderContext) {
+	public function new (stage:Stage, ctx:ConsoleRenderContext) {
 
 		this.ctx = ctx;
 		
-		super (width, height);
-		
-		this.width = width;
-		this.height = height;
+		super (stage);
 
 		defaultShader = ctx.lookupShader ("openfl_default");
 		fillShader = ctx.lookupShader ("openfl_fill");
@@ -160,7 +157,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function render ():Void {
 
 		viewProj = Matrix4.createOrtho (
 			0 + pixelOffsetX,
@@ -1325,16 +1322,16 @@ import openfl.display.Stage;
 class ConsoleRenderer extends AbstractRenderer {
 	
 
-	public function new (width:Int, height:Int, ctx:ConsoleRenderContext) {
+	public function new (stage:Stage, ctx:ConsoleRenderContext) {
 		
-		super (width, height);
+		super (stage);
 
 		throw "ConsoleRenderer not supported";
 
 	}
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function render ():Void {
 
 
 

@@ -4,15 +4,20 @@ package openfl.desktop;
 import lime.system.Clipboard in LimeClipboard;
 import openfl.utils.Object;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Clipboard {
 	
 	
-	public static var generalClipboard (get, null):Clipboard;
+	public static var generalClipboard (get, never):Clipboard;
 	
 	private static var __generalClipboard:Clipboard;
 	
-	public var formats:Array<ClipboardFormats>;
+	public var formats (get, never):Array<ClipboardFormats>;
 	
 	private var __htmlText:String;
 	private var __richText:String;
@@ -20,7 +25,7 @@ class Clipboard {
 	private var __text:String;
 	
 	
-	public function new () {
+	private function new () {
 		
 		
 		
@@ -190,9 +195,9 @@ class Clipboard {
 	}
 	
 	
-	public function setDataHandler (format:ClipboardFormats, handler:Dynamic, serializable:Bool = true):Bool {
+	public function setDataHandler (format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool {
 		
-		openfl.Lib.notImplemented ("Clipboard.setDataHandler");
+		openfl.Lib.notImplemented ();
 		return false;
 		
 	}
@@ -203,6 +208,17 @@ class Clipboard {
 	// Get & Set Methods
 	
 	
+	
+	
+	private function get_formats ():Array<ClipboardFormats> {
+		
+		var formats = [ ClipboardFormats.TEXT_FORMAT ];
+		if (hasFormat (HTML_FORMAT)) formats.push (HTML_FORMAT);
+		if (hasFormat (RICH_TEXT_FORMAT)) formats.push (RICH_TEXT_FORMAT);
+		if (hasFormat (TEXT_FORMAT)) formats.push (TEXT_FORMAT);
+		return formats;
+		
+	}
 	
 	
 	private static function get_generalClipboard ():Clipboard {

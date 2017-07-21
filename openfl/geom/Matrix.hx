@@ -3,14 +3,21 @@ package openfl.geom;
 
 import lime.math.Matrix3;
 import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
 import openfl.geom.Point;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 class Matrix {
 	
 	
 	private static var __identity = new Matrix ();
-	private static var __temp = new Matrix ();
+	private static var __matrix3 = new Matrix3 ();
+	private static var __pool = new ObjectPool<Matrix> (function () return new Matrix (), function (m) m.identity ());
 	
 	public var a:Float;
 	public var b:Float;
@@ -479,7 +486,8 @@ class Matrix {
 	
 	private function __toMatrix3 ():Matrix3 {
 		
-		return new Matrix3 (a, b, c, d, tx, ty);
+		__matrix3.setTo (a, b, c, d, tx, ty);
+		return __matrix3;
 		
 	}
 	

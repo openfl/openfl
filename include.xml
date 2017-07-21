@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
+	<set name="lime-version" value="5.2.*" />
+	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
@@ -17,12 +19,20 @@
 	
 	<section unless="lime || custom-backend">
 		
+		<!--<haxelib name="lime" version="${lime-version}" unless="create" />-->
+		<!--<haxelib name="lime" version="${lime-version}" if="display || rebuild" />-->
 		<haxelib name="lime" unless="create" />
 		<haxelib name="lime" if="display || rebuild" />
 		
-		<template path="templates" />
+	</section>
+	
+	<section if="lime">
+		
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 5.2.* is required)" if="${lime < 5.2.0} || ${lime >= 5.3.0}" unless="setup || disable-version-check" />
 		
 	</section>
+	
+	<template path="templates" />
 	
 	<source path="externs/core/flash" if="flash" />
 	<source path="externs/core/openfl" if="display || flash" />
@@ -40,12 +50,15 @@
 			<set name="openfl" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<section if="telemetry || advanced-telemetry">
+			<section if="telemetry || advanced-telemetry || openfl-telemetry">
 				
 				<haxelib name="hxtelemetry" />
 				<config:hxtelemetry allocations="true" host="localhost" />
 				
 			</section>
+			
+			<haxedef name="openfl-debug" if="openfl-telemetry" />
+			<haxedef name="lime-debug" if="openfl-telemetry" />
 			
 		</section>
 		
@@ -62,17 +75,53 @@
 			<set name="openfl-html5" />
 			<haxedef name="openfl-html5" />
 			<haxeflag name="--remap" value="flash:openfl" />
-			<dependency path="dependencies/soundjs.min.js" />
+			
+			<module name="openfl" if="modular">
+				
+				<source path="" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
+				
+				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
+				<class remove="lime.graphics.opengl.GLContextType" />
+				<class remove="lime.graphics.ImageChannel" />
+				<class remove="lime.graphics.ImageType" />
+				<class remove="lime.graphics.RendererType" />
+				<class remove="lime.ui.FileDialogType" />
+				<class remove="lime.ui.MouseCursor" />
+				<class remove="lime.system.Endian" />
+				<class remove="lime.system.SensorType" />
+				
+				<include type="openfl.display3D._Program3D.Uniform" />
+				<include type="openfl.display3D._Program3D.UniformMap" />
+				<include type="openfl.display.DefaultPreloader" />
+				<include type="openfl.events._EventDispatcher.Listener" />
+				<include type="openfl.utils.ByteArrayData" />
+				<include type="openfl._Vector.IVector" />
+				<include type="openfl._Vector.BoolVector" />
+				<include type="openfl._Vector.FloatVector" />
+				<include type="openfl._Vector.FunctionVector" />
+				<include type="openfl._Vector.IntVector" />
+				<include type="openfl._Vector.ObjectVector" />
+				<include type="openfl._internal.renderer.console.ConsoleRenderer" />
+				<include type="openfl._internal.stage3D._AGALConverter.DestRegister" />
+				<include type="openfl._internal.stage3D.RegisterMap" />
+				<include type="openfl._internal.stage3D._AGALConverter.RegisterMapEntry" />
+				<include type="openfl._internal.stage3D._AGALConverter.SamplerRegister" />
+				<include type="openfl._internal.stage3D._AGALConverter.SourceRegister" />
+				
+			</module>
 			
 		</section>
 		
 	</section>
 	
+	<library handler="openfl" type="swf" />
+	<library handler="openfl" type="swflite" />
+	<library handler="openfl" type="swf_lite" />
+	
 	<section if="setup">
 		
 		<haxelib name="lime" />
 		<haxelib name="openfl-samples" />
-		<haxelib name="swf" />
 		
 	</section>
 	

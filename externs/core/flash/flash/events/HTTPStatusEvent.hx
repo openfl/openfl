@@ -1,6 +1,9 @@
 package flash.events; #if (!display && flash)
 
 
+import openfl.net.URLRequestHeader;
+
+
 extern class HTTPStatusEvent extends Event {
 	
 	
@@ -8,7 +11,7 @@ extern class HTTPStatusEvent extends Event {
 	public static var HTTP_STATUS (default, never):String;
 	
 	public var redirected:Bool;
-	@:require(flash10_1) public var responseHeaders:Array<Dynamic>;
+	@:require(flash10_1) public var responseHeaders:Array<URLRequestHeader>;
 	@:require(flash10_1) public var responseURL:String;
 	public var status (default, null):Int;
 	

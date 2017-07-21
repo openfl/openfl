@@ -1,15 +1,21 @@
 package openfl.geom;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 class Vector3D {
 	
 	
-	public static var X_AXIS (get, null):Vector3D;
-	public static var Y_AXIS (get, null):Vector3D;
-	public static var Z_AXIS (get, null):Vector3D;
+	public static var X_AXIS (get, never):Vector3D;
+	public static var Y_AXIS (get, never):Vector3D;
+	public static var Z_AXIS (get, never):Vector3D;
 	
-	public var length (get, null):Float;
-	public var lengthSquared (get, null):Float;
+	public var length (get, never):Float;
+	public var lengthSquared (get, never):Float;
 	public var w:Float;
 	public var x:Float;
 	public var y:Float;

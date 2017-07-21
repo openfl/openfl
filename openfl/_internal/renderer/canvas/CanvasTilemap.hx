@@ -1,16 +1,18 @@
 package openfl._internal.renderer.canvas;
 
 
-import flash.geom.Matrix;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class CanvasTilemap {
@@ -20,16 +22,24 @@ class CanvasTilemap {
 		
 		#if (js && html5)
 		
-		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
+		
+		tilemap.__updateTileArray ();
+		
+		if (tilemap.__tileArray == null) return;
 		
 		var context = renderSession.context;
 		
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var transform = tilemap.__worldTransform;
+		var rect = Rectangle.__pool.get ();
+		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
+		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
+		
+		var transform = tilemap.__renderTransform;
 		var roundPixels = renderSession.roundPixels;
 		
-		if (!tilemap.smoothing) {
+		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = false;
 			//untyped (context).webkitImageSmoothingEnabled = false;
@@ -42,29 +52,42 @@ class CanvasTilemap {
 		var cacheBitmapData = null;
 		var source = null;
 		
-		var tiles, count, tile, alpha, visible, tileset, tileData, bitmapData;
+		var alpha, visible, tileset, id, tileData, bitmapData;
 		
-		tiles = tilemap.__tiles;
-		count = tiles.length;
+		var tileArray = tilemap.__tileArray;
+		var count = tileArray.length;
 		
-		var tileTransform = Matrix.__temp;
+		tileArray.position = 0;
+		
+		var tileTransform = Matrix.__pool.get ();
+		var tileRect = Rectangle.__pool.get ();
 		
 		for (i in 0...count) {
 			
-			tile = tiles[i];
-			
-			alpha = tile.alpha;
-			visible = tile.visible;
-			
+			alpha = tileArray.alpha;
+			visible = tileArray.visible;
 			if (!visible || alpha <= 0) continue;
 			
-			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
-			
+			tileset = tileArray.tileset;
+			if (tileset == null) tileset = defaultTileset;
 			if (tileset == null) continue;
 			
-			tileData = tileset.__data[tile.id];
-			bitmapData = tileset.bitmapData;
+			id = tileArray.id;
 			
+			if (id == -1) {
+				
+				tileArray.getRect (tileRect);
+				
+			} else {
+				
+				tileData = tileset.__data[id];
+				if (tileData == null) continue;
+				
+				tileRect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
+				
+			}
+			
+			bitmapData = tileset.bitmapData;
 			if (bitmapData == null) continue;
 			
 			if (bitmapData != cacheBitmapData) {
@@ -82,8 +105,8 @@ class CanvasTilemap {
 			
 			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
-			tileTransform.copyFrom (transform);
-			tileTransform.concat (tile.matrix);
+			tileArray.getMatrix(tileTransform);
+			tileTransform.concat (transform);
 			
 			if (roundPixels) {
 				
@@ -95,11 +118,13 @@ class CanvasTilemap {
 				
 			}
 			
-			context.drawImage (source, tileData.x, tileData.y, tileData.width, tileData.height, 0, 0, tileData.width, tileData.height);
+			context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
+			
+			tileArray.position++;
 			
 		}
 		
-		if (!tilemap.smoothing) {
+		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = true;
 			//untyped (context).webkitImageSmoothingEnabled = true;
@@ -108,7 +133,12 @@ class CanvasTilemap {
 			
 		}
 		
+		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+		Rectangle.__pool.release (rect);
+		Rectangle.__pool.release (tileRect);
+		Matrix.__pool.release (tileTransform);
 		
 		#end
 		

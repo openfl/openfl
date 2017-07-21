@@ -10,14 +10,8 @@ extern class Video extends DisplayObject {
 	
 	public var deblocking:Int;
 	public var smoothing:Bool;
-	
-	#if flash
-	@:noCompletion @:dox(hide) public var videoHeight (default, null):Int;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) public var videoWidth (default, null):Int;
-	#end
+	public var videoHeight (get, never):Int;
+	public var videoWidth (get, never):Int;
 	
 	
 	public function new (width:Int = 320, height:Int = 240):Void;

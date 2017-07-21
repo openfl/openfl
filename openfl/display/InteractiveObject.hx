@@ -3,12 +3,17 @@ package openfl.display;
 
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class InteractiveObject extends DisplayObject {
 	
 	
 	public var doubleClickEnabled:Bool;
-	public var focusRect:Dynamic;
+	public var focusRect:Null<Bool>;
 	public var mouseEnabled:Bool;
 	public var needsSoftKeyboard:Bool;
 	
@@ -34,7 +39,7 @@ class InteractiveObject extends DisplayObject {
 	
 	public function requestSoftKeyboard ():Bool {
 		
-		openfl.Lib.notImplemented ("InteractiveObject.requestSoftKeyboard");
+		openfl.Lib.notImplemented ();
 		
 		return false;
 		

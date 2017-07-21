@@ -43,9 +43,7 @@ class TextFieldTest {
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
-		// Need to determine why alpha is FE in native
-		Assert.isTrue ((StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFFFFFFFF, 8)) || (StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFEFFFFFF, 8)));
-		//Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
+		Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
 		
 	}
 	
@@ -54,9 +52,7 @@ class TextFieldTest {
 		
 		var textField = new TextField ();
 		
-		// Need to determine why alpha is FE in native
-		Assert.isTrue ((StringTools.hex (textField.backgroundColor, 6) == StringTools.hex (0xFFFFFF, 6)) || (StringTools.hex (textField.backgroundColor, 8) == StringTools.hex (0xFFFFFFFF, 8)));
-		//Assert.areEqual (StringTools.hex (0xFFFFFF, 6), StringTools.hex (textField.backgroundColor, 6));
+		Assert.areEqual (StringTools.hex (0xFFFFFF, 6), StringTools.hex (textField.backgroundColor, 6));
 		
 		textField.backgroundColor = 0x00FF00;
 		
@@ -65,20 +61,14 @@ class TextFieldTest {
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
-		// Need to determine why alpha is FE in native
-		Assert.isTrue ((StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFFFFFFFF, 8)) || (StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFEFFFFFF, 8)));
-		//Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
+		Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
 		
 		textField.background = true;
 		
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
-		// Need to determine why alpha is FE in native
-		#if flash
-		Assert.isTrue ((StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFF00FF00, 8)) || (StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFE00FF00, 8)));
-		#end
-		//Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
+		Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
 		
 	}
 	
@@ -96,10 +86,7 @@ class TextFieldTest {
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
-		#if (!cpp && !neko && !js)
-		// Looks correct, anti-aliasing is slightly different ATM
 		Assert.areEqual (StringTools.hex (0xFF000000, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		#end
 		
 	}
 	
@@ -124,10 +111,7 @@ class TextFieldTest {
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
-		#if (!cpp && !neko && !js)
-		// Looks correct, anti-aliasing is slightly different ATM
 		Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		#end
 		
 	}
 	
@@ -164,12 +148,32 @@ class TextFieldTest {
 	
 	@Test public function displayAsPassword () {
 		
-		// TODO: Confirm functionality
-		
 		var textField = new TextField ();
-		var exists = textField.displayAsPassword;
+		textField.text = "Hello";
 		
-		Assert.isFalse (exists);
+		var textField2 = new TextField ();
+		textField2.text = "Hello";
+		textField2.displayAsPassword = true;
+		
+		var textField3 = new TextField ();
+		textField3.text = "*****";
+		
+		#if flash
+		// TODO -- textWidth is still unchanged?
+		Assert.areEqual (textField.textWidth, textField2.textWidth);
+		Assert.areNotEqual (textField3.textWidth, textField2.textWidth);
+		#end
+		
+		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
+		var bitmapData2 = bitmapData.clone ();
+		var bitmapData3 = bitmapData.clone ();
+		
+		bitmapData.draw (textField);
+		bitmapData2.draw (textField2);
+		bitmapData3.draw (textField3);
+		
+		Assert.isTrue (Std.is (bitmapData2.compare (bitmapData), BitmapData));
+		Assert.areEqual (0, bitmapData2.compare (bitmapData3));
 		
 	}
 	
@@ -246,6 +250,37 @@ class TextFieldTest {
 		
 		Assert.areEqual (1, textField.maxScrollV);
 		
+		textField.multiline = true;
+		
+		Assert.areEqual (1, textField.maxScrollV);
+		
+		textField.text = "Hello\n\nWorld\n\nHello\n\nWorld\n\n";
+		
+		#if !flash // sometimes 3, not 2?
+		
+		#if !html5
+		//Assert.areEqual (2, textField.maxScrollV);
+		Assert.isTrue (textField.maxScrollV == 2 || textField.maxScrollV == 3);
+		#end
+		
+		textField.height = 10;
+		
+		#if flash
+		// should we replicate not updating until text is changed?
+		Assert.areEqual (2, textField.maxScrollV);
+		#end
+		
+		#end
+		
+		textField.text = textField.text;
+		
+		#if (!flash && !html5) // sometimes 10, not 9?
+		
+		//Assert.areEqual (9, textField.maxScrollV);
+		Assert.isTrue (textField.maxScrollV == 9 || textField.maxScrollV == 10);
+		
+		#end
+		
 	}
 	
 	
@@ -301,6 +336,37 @@ class TextFieldTest {
 		textField.text = "Hello";
 		
 		Assert.areEqual (1, textField.scrollV);
+		
+		textField.text = "Hello\nWorld";
+		textField.height = 20;
+		textField.multiline = true;
+		
+		#if flash
+		textField.text = textField.text;
+		#end
+		
+		var textField2 = new TextField ();
+		textField2.height = 20;
+		textField2.text = "World";
+		
+		textField.scrollV = 2;
+		
+		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
+		var bitmapData2 = bitmapData.clone ();
+		
+		bitmapData.draw (textField);
+		bitmapData2.draw (textField2);
+		
+		Assert.areEqual (0, bitmapData.compare (bitmapData2));
+		
+		textField.scrollV = 1000;
+		
+		Assert.areEqual (textField.maxScrollV, textField.scrollV);
+		
+		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
+		bitmapData.draw (textField);
+		
+		Assert.areEqual (0, bitmapData.compare (bitmapData2));
 		
 	}
 	

@@ -1,4 +1,4 @@
-package openfl.display; #if (!display && flash)
+package flash.display; #if (!display && flash)
 
 
 import openfl.events.EventDispatcher;

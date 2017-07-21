@@ -1,4 +1,4 @@
 package openfl.utils;
 
 
-typedef JNI = lime.system.JNI;
+@:deprecated typedef JNI = lime.system.JNI;

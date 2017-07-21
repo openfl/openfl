@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLShaderPrecisionFormat = lime.graphics.opengl.GLShaderPrecisionFormat;
+@:deprecated typedef GLShaderPrecisionFormat = lime.graphics.opengl.GLShaderPrecisionFormat;

@@ -15,11 +15,18 @@ import openfl.display.BlendMode;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class RenderSession {
 	
 	
+	public var allowSmoothing:Bool;
 	public var cairo:CairoRenderContext;
+	public var clearRenderDirty:Bool;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl:GLRenderContext;
@@ -27,9 +34,10 @@ class RenderSession {
 	public var roundPixels:Bool;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;
+	public var upscaled:Bool;
 	public var vendorPrefix:String;
-	public var z:Int;
 	public var projectionMatrix:Matrix;
+	public var z:Int;
 	
 	public var drawCount:Int;
 	public var currentBlendMode:BlendMode;
@@ -37,6 +45,7 @@ class RenderSession {
 	
 	//public var shaderManager:ShaderManager;
 	public var blendModeManager:AbstractBlendModeManager;
+	public var filterManager:AbstractFilterManager;
 	public var maskManager:AbstractMaskManager;
 	public var shaderManager:AbstractShaderManager;
 	//public var filterManager:FilterManager;
@@ -48,6 +57,8 @@ class RenderSession {
 	
 	public function new () {
 		
+		allowSmoothing = true;
+		clearRenderDirty = false;
 		//maskManager = new MaskManager (this);
 		
 	}
@@ -55,5 +66,8 @@ class RenderSession {
 	
 }
 
+#else
+
+class RenderSession {}
 
 #end

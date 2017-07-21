@@ -9,6 +9,9 @@ extern class Shader {
 	
 	public var byteCode (null, default):ByteArray;
 	public var data:ShaderData;
+	public var glFragmentSource (get, set):String;
+	public var glProgram (default, null):Dynamic;
+	public var glVertexSource (get, set):String;
 	public var precisionHint:ShaderPrecision;
 	
 	

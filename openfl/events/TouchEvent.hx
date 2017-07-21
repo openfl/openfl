@@ -54,6 +54,9 @@ class TouchEvent extends Event {
 		this.commandKey = commandKey;
 		this.controlKey = controlKey;
 		
+		stageX = Math.NaN;
+		stageY = Math.NaN;
+		
 	}
 	
 	

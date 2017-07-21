@@ -187,6 +187,7 @@ import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 import openfl.ui.Multitouch;
 import openfl.ui.MultitouchInputMode;
 import openfl.utils.AGALMiniAssembler;
@@ -212,19 +213,6 @@ import lime.app.IModule;
 import lime.app.Module;
 import lime.app.Preloader;
 import lime.app.Promise;
-import lime.audio.openal.AL;
-import lime.audio.openal.ALC;
-import lime.audio.openal.ALContext;
-import lime.audio.openal.ALDevice;
-import lime.audio.ALAudioContext;
-import lime.audio.ALCAudioContext;
-import lime.audio.AudioBuffer;
-import lime.audio.AudioContext;
-import lime.audio.AudioManager;
-import lime.audio.AudioSource;
-import lime.audio.FlashAudioContext;
-import lime.audio.HTML5AudioContext;
-import lime.audio.WebAudioContext;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoAntialias;
 import lime.graphics.cairo.CairoContent;
@@ -235,6 +223,7 @@ import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.cairo.CairoFontOptions;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoFTFontFace;
+import lime.graphics.cairo.CairoGlyph;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoLineCap;
@@ -251,14 +240,23 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLActiveInfo;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLContextAttributes;
+import lime.graphics.opengl.GLContextType;
+import lime.graphics.opengl.GLES2Context;
+import lime.graphics.opengl.GLES3Context;
 import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLObject;
 import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLQuery;
 import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLSampler;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLShaderPrecisionFormat;
+import lime.graphics.opengl.GLSync;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.GLTransformFeedback;
 import lime.graphics.opengl.GLUniformLocation;
+import lime.graphics.opengl.GLVertexArrayObject;
+import lime.graphics.opengl.WebGL2Context;
+import lime.graphics.opengl.WebGLContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.graphics.utils.ImageDataUtil;
 import lime.graphics.CairoRenderContext;
@@ -283,6 +281,27 @@ import lime.math.Matrix4;
 import lime.math.Rectangle;
 import lime.math.Vector2;
 import lime.math.Vector4;
+import lime.media.codecs.vorbis.Vorbis;
+import lime.media.codecs.vorbis.VorbisComment;
+import lime.media.codecs.vorbis.VorbisFile;
+import lime.media.codecs.vorbis.VorbisInfo;
+import lime.media.howlerjs.Howl;
+import lime.media.howlerjs.Howler;
+import lime.media.openal.AL;
+import lime.media.openal.ALBuffer;
+import lime.media.openal.ALC;
+import lime.media.openal.ALContext;
+import lime.media.openal.ALDevice;
+import lime.media.openal.ALSource;
+import lime.media.ALAudioContext;
+import lime.media.ALCAudioContext;
+import lime.media.AudioBuffer;
+import lime.media.AudioContext;
+import lime.media.AudioManager;
+import lime.media.AudioSource;
+import lime.media.FlashAudioContext;
+import lime.media.HTML5AudioContext;
+import lime.media.WebAudioContext;
 import lime.net.curl.CURL;
 import lime.net.curl.CURLCode;
 import lime.net.curl.CURLEasy;
@@ -296,8 +315,8 @@ import lime.net.oauth.OAuthSignatureMethod;
 import lime.net.oauth.OAuthToken;
 import lime.net.oauth.OAuthVersion;
 import lime.net.HTTPRequest;
-//import lime.net.NetConnection;
-//import lime.net.NetConnectionManager;
+import lime.net.HTTPRequestHeader;
+import lime.net.HTTPRequestMethod;
 import lime.net.URIParser;
 #if (windows || mac || linux || neko)
 import lime.project.ApplicationData;
@@ -313,6 +332,8 @@ import lime.project.Haxelib;
 import lime.project.Icon;
 import lime.project.Keystore;
 import lime.project.Library;
+import lime.project.MetaData;
+import lime.project.ModuleData;
 import lime.project.NDLL;
 import lime.project.NDLLType;
 import lime.project.Orientation;
@@ -331,6 +352,7 @@ import lime.system.Display;
 import lime.system.DisplayMode;
 import lime.system.Endian;
 import lime.system.JNI;
+import lime.system.Locale;
 import lime.system.Sensor;
 import lime.system.SensorType;
 import lime.system.System;
@@ -351,6 +373,7 @@ import lime.tools.helpers.AssetHelper;
 import lime.tools.helpers.BlackBerryHelper;
 import lime.tools.helpers.CLIHelper;
 import lime.tools.helpers.CPPHelper;
+import lime.tools.helpers.CSHelper;
 import lime.tools.helpers.CompatibilityHelper;
 import lime.tools.helpers.CordovaHelper;
 import lime.tools.helpers.FileHelper;
@@ -361,6 +384,7 @@ import lime.tools.helpers.IconHelper;
 import lime.tools.helpers.ImageHelper;
 import lime.tools.helpers.JavaHelper;
 import lime.tools.helpers.LogHelper;
+import lime.tools.helpers.ModuleHelper;
 import lime.tools.helpers.NekoHelper;
 import lime.tools.helpers.NodeJSHelper;
 import lime.tools.helpers.ObjectHelper;
@@ -391,17 +415,30 @@ import lime.ui.FileDialogType;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
+import lime.ui.Haptic;
 import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
+import lime.ui.ScanCode;
 import lime.ui.Touch;
 import lime.ui.Window;
+import lime.utils.compress.Deflate;
+import lime.utils.compress.GZip;
+import lime.utils.compress.LZMA;
+import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
 import lime.utils.ArrayBufferView;
+import lime.utils.AssetCache;
+import lime.utils.AssetLibrary;
+import lime.utils.AssetManifest;
+import lime.utils.Assets;
+import lime.utils.AssetType;
+import lime.utils.BytePointer;
 import lime.utils.Bytes;
+import lime.utils.DataPointer;
 import lime.utils.DataView;
 import lime.utils.Float32Array;
 import lime.utils.Float64Array;
@@ -410,19 +447,16 @@ import lime.utils.Int16Array;
 import lime.utils.Int32Array;
 import lime.utils.Int8Array;
 import lime.utils.Log;
-import lime.utils.LZMA;
+import lime.utils.ObjectPool;
 import lime.utils.UInt16Array;
 import lime.utils.UInt32Array;
 import lime.utils.UInt8Array;
 import lime.utils.UInt8ClampedArray;
-//import lime.vm.NekoVM;
-import lime.Assets;
 
 
 #if (windows || mac || linux || ios || android || blackberry)
 
 
-#if (haxe_ver >= "3.2")
 import cpp.abi.Abi;
 import cpp.abi.CDecl;
 import cpp.abi.FastCall;
@@ -432,7 +466,6 @@ import cpp.abi.Winapi;
 
 //import cpp.cppia.Host;
 //import cpp.cppia.HostClasses;
-#end
 
 import cpp.net.Poll;
 import cpp.net.ThreadServer;
@@ -456,7 +489,6 @@ import cpp.zip.Compress;
 import cpp.zip.Flush;
 import cpp.zip.Uncompress;
 
-#if (haxe_ver >= "3.2")
 import cpp.Callable;
 import cpp.CastCharStar;
 import cpp.Char;
@@ -479,7 +511,7 @@ import cpp.UInt32;
 import cpp.UInt64;
 import cpp.UInt8;
 import cpp.Void;
-#end
+
 import cpp.FastIterator;
 import cpp.Lib;
 import cpp.NativeArray;
@@ -490,11 +522,9 @@ import cpp.Random;
 #end
 
 
-#if (haxe_ver >= "3.2")
 import haxe.crypto.Hmac;
 import haxe.crypto.Sha224;
 import haxe.crypto.Sha256;
-#end
 import haxe.crypto.Adler32;
 import haxe.crypto.Base64;
 import haxe.crypto.BaseCode;
@@ -502,9 +532,7 @@ import haxe.crypto.Crc32;
 import haxe.crypto.Md5;
 import haxe.crypto.Sha1;
 
-#if (haxe_ver >= "3.2")
 import haxe.ds.Either;
-#end
 import haxe.ds.ArraySort;
 import haxe.ds.BalancedTree;
 import haxe.ds.EnumValueMap;
@@ -518,15 +546,12 @@ import haxe.ds.StringMap;
 import haxe.ds.Vector;
 import haxe.ds.WeakMap;
 
-#if (haxe_ver >= "3.2")
 import haxe.extern.EitherType;
 import haxe.extern.Rest;
-#end
 
 import haxe.format.JsonParser;
 import haxe.format.JsonPrinter;
 
-#if (haxe_ver >= "3.2")
 //import haxe.io.ArrayBufferView;
 //import haxe.io.Float32Array;
 //import haxe.io.Float64Array;
@@ -535,7 +560,6 @@ import haxe.format.JsonPrinter;
 //import haxe.io.UInt8Array;
 //import haxe.io.UInt16Array;
 //import haxe.io.UInt32Array;
-#end
 import haxe.io.BufferInput;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
@@ -549,9 +573,7 @@ import haxe.io.Output;
 import haxe.io.Path;
 import haxe.io.StringInput;
 
-#if (haxe_ver >= "3.2")
 import haxe.macro.PositionTools;
-#end
 import haxe.macro.Compiler;
 import haxe.macro.ComplexTypeTools;
 import haxe.macro.Context;
@@ -590,9 +612,7 @@ import haxe.remoting.SocketProtocol;
 import haxe.remoting.SyncSocketConnection;
 #end
 
-#if (haxe_ver >= "3.2")
 import haxe.rtti.Rtti;
-#end
 import haxe.rtti.CType;
 import haxe.rtti.Meta;
 import haxe.rtti.XmlParser;
@@ -621,9 +641,7 @@ import haxe.zip.Tools;
 import haxe.zip.Uncompress;
 import haxe.zip.Writer;
 
-#if (haxe_ver >= "3.2")
 import haxe.DynamicAccess;
-#end
 import haxe.CallStack;
 import haxe.Constraints;
 import haxe.EnumFlags;
@@ -646,7 +664,6 @@ import haxe.Utf8;
 #if html5
 
 
-#if (haxe_ver >= "3.2")
 import js.html.audio.BiquadFilterType;
 import js.html.audio.ChannelCountMode;
 import js.html.audio.ChannelInterpretation;
@@ -661,12 +678,6 @@ import js.html.audio.StereoPannerNode;
 import js.html.compat.ArrayBuffer;
 import js.html.compat.Float32Array;
 import js.html.compat.Uint8Array;
-#else
-import js.html.audio.AudioBufferCallback;
-import js.html.audio.AudioGain;
-import js.html.audio.AudioSourceNode;
-import js.html.audio.WaveTable;
-#end
 import js.html.audio.AnalyserNode;
 import js.html.audio.ChannelSplitterNode;
 import js.html.audio.AudioBuffer;
@@ -691,34 +702,7 @@ import js.html.audio.WaveShaperNode;
 import js.html.audio.BiquadFilterNode;
 import js.html.audio.ChannelMergerNode;
 
-#if (haxe_ver < "3.2")
-import js.html.fs.DirectoryEntry;
-import js.html.fs.EntryCallback;
-import js.html.fs.FileSystem;
-import js.html.fs.DirectoryEntrySync;
-import js.html.fs.EntrySync;
-import js.html.fs.FileSystemCallback;
-import js.html.fs.DirectoryReader;
-import js.html.fs.ErrorCallback;
-import js.html.fs.FileSystemSync;
-import js.html.fs.DirectoryReaderSync;
-import js.html.fs.FileCallback;
-import js.html.fs.FileWriter;
-import js.html.fs.EntriesCallback;
-import js.html.fs.FileEntry;
-import js.html.fs.FileWriterCallback;
-import js.html.fs.Entry;
-import js.html.fs.FileEntrySync;
-import js.html.fs.FileWriterSync;
-import js.html.fs.EntryArray;
-import js.html.fs.FileError;
-import js.html.fs.Metadata;
-import js.html.fs.EntryArraySync;
-import js.html.fs.FileException;
-import js.html.fs.MetadataCallback;
-#end
 
-#if (haxe_ver >= "3.2")
 import js.html.idb.CursorDirection;
 import js.html.idb.FileHandle;
 import js.html.idb.FileMetadataParameters;
@@ -730,13 +714,6 @@ import js.html.idb.OpenDBOptions;
 import js.html.idb.RequestReadyState;
 import js.html.idb.TransactionMode;
 import js.html.idb.VersionChangeEventInit;
-#else
-import js.html.idb.Any;
-import js.html.idb.DatabaseException;
-import js.html.idb.Key;
-import js.html.idb.UpgradeNeededEvent;
-import js.html.idb.VersionChangeRequest;
-#end
 import js.html.idb.Index;
 import js.html.idb.Transaction;
 import js.html.idb.Cursor;
@@ -749,7 +726,6 @@ import js.html.idb.OpenDBRequest;
 import js.html.idb.Factory;
 import js.html.idb.Request;
 
-#if (haxe_ver >= "3.2")
 import js.html.rtc.Configuration;
 import js.html.rtc.DataChannelInit;
 import js.html.rtc.DataChannelState;
@@ -764,86 +740,15 @@ import js.html.rtc.RtpSender;
 import js.html.rtc.SdpType;
 import js.html.rtc.SessionDescriptionInit;
 import js.html.rtc.SignalingState;
-#else
-import js.html.rtc.DataChannelEvent;
-import js.html.rtc.ErrorCallback;
-import js.html.rtc.IceCandidateEvent;
-import js.html.rtc.LocalMediaStream;
-import js.html.rtc.MediaStream;
-import js.html.rtc.MediaStreamEvent;
-import js.html.rtc.MediaStreamList;
-import js.html.rtc.MediaStreamTrack;
-import js.html.rtc.MediaStreamTrackEvent;
-import js.html.rtc.MediaStreamTrackList;
-import js.html.rtc.NavigatorUserMediaError;
-import js.html.rtc.NavigatorUserMediaErrorCallback;
-import js.html.rtc.NavigatorUserMediaSuccessCallback;
-import js.html.rtc.SessionDescriptionCallback;
-import js.html.rtc.StatsCallback;
-import js.html.rtc.StatsElement;
-import js.html.rtc.StatsResponse;
-#end
 import js.html.rtc.DataChannel;
 import js.html.rtc.IceCandidate;
 import js.html.rtc.PeerConnection;
 import js.html.rtc.SessionDescription;
 import js.html.rtc.StatsReport;
 
-#if (haxe_ver < "3.2")
-import js.html.sql.Database;
-import js.html.sql.StatementCallback;
-import js.html.sql.DatabaseCallback;
-import js.html.sql.StatementErrorCallback;
-import js.html.sql.DatabaseSync;
-import js.html.sql.Transaction;
-import js.html.sql.Error;
-import js.html.sql.TransactionCallback;
-import js.html.sql.Exception;
-import js.html.sql.TransactionErrorCallback;
-import js.html.sql.ResultSet;
-import js.html.sql.TransactionSync;
-import js.html.sql.ResultSetRowList;
-import js.html.sql.TransactionSyncCallback;
-#end
-
-#if (haxe_ver >= "3.2")
 import js.html.svg.BoundingBoxOptions;
 import js.html.svg.GraphicsElement;
-import js.html.svg.IFrameElement;
-#else
-import js.html.svg.AltGlyphDefElement;
-import js.html.svg.AltGlyphItemElement;
-import js.html.svg.AnimateColorElement;
-import js.html.svg.Color;
-import js.html.svg.CursorElement;
-import js.html.svg.ElementInstance;
-import js.html.svg.ElementInstanceList;
-import js.html.svg.Exception;
-import js.html.svg.ExternalResourcesRequired;
-import js.html.svg.FilterPrimitiveStandardAttributes;
-import js.html.svg.FitToViewBox;
-import js.html.svg.FontElement;
-import js.html.svg.FontFaceElement;
-import js.html.svg.FontFaceFormatElement;
-import js.html.svg.FontFaceNameElement;
-import js.html.svg.FontFaceSrcElement;
-import js.html.svg.FontFaceUriElement;
-import js.html.svg.GlyphElement;
-import js.html.svg.GlyphRefElement;
-import js.html.svg.HKernElement;
-import js.html.svg.LangSpace;
-import js.html.svg.Locatable;
-import js.html.svg.MissingGlyphElement;
-import js.html.svg.Paint;
-import js.html.svg.RenderingIntent;
-import js.html.svg.Stylable;
-import js.html.svg.Tests;
-import js.html.svg.Transformable;
-import js.html.svg.TRefElement;
-import js.html.svg.URIReference;
-import js.html.svg.ViewSpec;
-import js.html.svg.VKernElement;
-#end
+//import js.html.svg.IFrameElement;
 import js.html.svg.AElement;
 import js.html.svg.ImageElement;
 import js.html.svg.AltGlyphElement;
@@ -965,7 +870,6 @@ import js.html.svg.GradientElement;
 import js.html.svg.ZoomAndPan;
 import js.html.svg.ZoomEvent;
 
-#if (haxe_ver >= "3.2")
 import js.html.webgl.ContextEventInit;
 import js.html.webgl.ExtensionBlendMinMax;
 import js.html.webgl.ExtensionColorBufferFloat;
@@ -990,21 +894,8 @@ import js.html.webgl.ExtensionTextureFloat;
 import js.html.webgl.ExtensionTextureFloatLinear;
 import js.html.webgl.ExtensionTextureHalfFloat;
 import js.html.webgl.ExtensionTextureHalfFloatLinear;
-import js.html.webgl.ExtensionVertexArray;
-import js.html.webgl.VertexArray;
-#else
-import js.html.webgl.CompressedTextureS3TC;
-import js.html.webgl.DebugRendererInfo;
-import js.html.webgl.DebugShaders;
-import js.html.webgl.DepthTexture;
-import js.html.webgl.EXTTextureFilterAnisotropic;
-import js.html.webgl.LoseContext;
-import js.html.webgl.OESElementIndexUint;
-import js.html.webgl.OESStandardDerivatives;
-import js.html.webgl.OESTextureFloat;
-import js.html.webgl.OESVertexArrayObject;
-import js.html.webgl.VertexArrayObjectOES;
-#end
+//import js.html.webgl.ExtensionVertexArray;
+//import js.html.webgl.VertexArray;
 import js.html.webgl.ActiveInfo;
 import js.html.webgl.Buffer;
 import js.html.webgl.ContextAttributes;
@@ -1018,12 +909,12 @@ import js.html.webgl.Framebuffer;
 import js.html.webgl.Texture;
 import js.html.webgl.GL;
 import js.html.webgl.UniformLocation;
+//import js.html.webgl.VertexArrayObjectOES;
 
-#if (haxe_ver >= "3.2")
 import js.html.AlignSetting;
-import js.html.AnimationEffect;
+//import js.html.AnimationEffect;
 import js.html.AnimationEventInit;
-import js.html.AnimationPlayer;
+//import js.html.AnimationPlayer;
 import js.html.AnimationPlayState;
 import js.html.AnimationTimeline;
 import js.html.ApplicationCache;
@@ -1043,7 +934,7 @@ import js.html.ClipboardEventInit;
 import js.html.CloseEventInit;
 import js.html.CommandEvent;
 import js.html.ConvertCoordinateOptions;
-import js.html.CreateFileOptions;
+//import js.html.CreateFileOptions;
 import js.html.CryptoKey;
 import js.html.CSS;
 import js.html.CustomEventInit;
@@ -1096,7 +987,7 @@ import js.html.FontFaceSetLoadStatus;
 import js.html.FormData;
 import js.html.GamepadButton;
 import js.html.GamepadMappingType;
-import js.html.GetNotificationOptions;
+//import js.html.GetNotificationOptions;
 import js.html.GetUserMediaRequest;
 import js.html.HashChangeEventInit;
 import js.html.HitRegionOptions;
@@ -1111,15 +1002,15 @@ import js.html.KeyboardEventInit;
 import js.html.KeyEvent;
 import js.html.LifecycleCallbacks;
 import js.html.LocalMediaStream;
-import js.html.MediaEncryptedEvent;
-import js.html.MediaKeyMessageEvent;
-import js.html.MediaKeyMessageEventInit;
-import js.html.MediaKeyMessageType;
-import js.html.MediaKeyNeededEventInit;
-import js.html.MediaKeys;
-import js.html.MediaKeySession;
-import js.html.MediaKeySystemAccess;
-import js.html.MediaKeySystemOptions;
+//import js.html.MediaEncryptedEvent;
+//import js.html.MediaKeyMessageEvent;
+//import js.html.MediaKeyMessageEventInit;
+//import js.html.MediaKeyMessageType;
+//import js.html.MediaKeyNeededEventInit;
+//import js.html.MediaKeys;
+//import js.html.MediaKeySession;
+//import js.html.MediaKeySystemAccess;
+//import js.html.MediaKeySystemOptions;
 import js.html.MediaRecorder;
 import js.html.MediaRecorderOptions;
 import js.html.MediaSourceEndOfStreamError;
@@ -1128,7 +1019,7 @@ import js.html.MediaStream;
 import js.html.MediaStreamConstraints;
 import js.html.MediaStreamError;
 import js.html.MediaStreamTrack;
-import js.html.MediaWaitingFor;
+//import js.html.MediaWaitingFor;
 import js.html.MenuItemElement;
 import js.html.MessageEventInit;
 import js.html.MessagePortList;
@@ -1137,8 +1028,8 @@ import js.html.MimeTypeArray;
 import js.html.MouseEventInit;
 import js.html.MouseScrollEvent;
 import js.html.MutationObserverInit;
-import js.html.NotificationDirection;
-import js.html.NotificationOptions;
+//import js.html.NotificationDirection;
+//import js.html.NotificationOptions;
 import js.html.NotifyPaintEvent;
 import js.html.ObjectURLOptions;
 import js.html.PageTransitionEventInit;
@@ -1168,10 +1059,10 @@ import js.html.ScrollOptions;
 import js.html.ScrollToOptions;
 import js.html.Selection;
 import js.html.SelectionMode;
-import js.html.ServiceWorkerClient;
-import js.html.ServiceWorkerClients;
+//import js.html.ServiceWorkerClient;
+//import js.html.ServiceWorkerClients;
 import js.html.ServiceWorkerGlobalScope;
-import js.html.SessionType;
+//import js.html.SessionType;
 import js.html.SharedWorkerGlobalScope;
 import js.html.SimpleGestureEvent;
 import js.html.SourceBufferAppendMode;
@@ -1214,91 +1105,6 @@ import js.html.XMLDocument;
 import js.html.XMLHttpRequestEventTarget;
 import js.html.XMLHttpRequestResponseType;
 import js.html.XMLStylesheetProcessingInstruction;
-#else
-import js.html.AbstractWorker;
-import js.html.AnimationList;
-import js.html.BarInfo;
-import js.html.BaseFontElement;
-import js.html.BeforeLoadEvent;
-import js.html.CanvasRenderingContext;
-import js.html.ClientRect;
-import js.html.ClientRectList;
-import js.html.Clipboard;
-import js.html.Counter;
-import js.html.CSSCharsetRule;
-import js.html.CSSFilterValue;
-import js.html.CSSFontFaceRule;
-import js.html.CSSImportRule;
-import js.html.CSSKeyframeRule;
-import js.html.CSSKeyframesRule;
-import js.html.CSSMatrix;
-import js.html.CSSMediaRule;
-import js.html.CSSPageRule;
-import js.html.CSSRule;
-import js.html.CSSStyleRule;
-import js.html.CSSTransformValue;
-import js.html.CSSUnknownRule;
-import js.html.DataTransferItem;
-import js.html.DataTransferItemList;
-import js.html.DedicatedWorkerContext;
-import js.html.DetailsElement;
-import js.html.DOMApplicationCache;
-import js.html.DOMCoreException;
-import js.html.DOMFormData;
-import js.html.DOMMimeType;
-import js.html.DOMMimeTypeArray;
-import js.html.DOMPlugin;
-import js.html.DOMPluginArray;
-import js.html.DOMSelection;
-import js.html.DOMURL;
-import js.html.DOMWindow;
-import js.html.ElementTimeControl;
-import js.html.Entity;
-import js.html.EntityReference;
-import js.html.EventException;
-import js.html.GamepadList;
-import js.html.Geoposition;
-import js.html.JavaScriptCallFrame;
-import js.html.KeygenElement;
-import js.html.MarqueeElement;
-import js.html.MediaController;
-import js.html.MediaKeyEvent;
-import js.html.MediaQueryList;
-import js.html.MediaQueryListListener;
-import js.html.MemoryInfo;
-import js.html.MessageChannel;
-import js.html.MutationCallback;
-import js.html.NamedFlow;
-import js.html.Notation;
-import js.html.NotificationCenter;
-import js.html.NotificationPermissionCallback;
-import js.html.OverflowEvent;
-import js.html.PagePopupController;
-import js.html.Point;
-import js.html.PositionCallback;
-import js.html.PositionErrorCallback;
-import js.html.RangeException;
-import js.html.RequestAnimationFrameCallback;
-import js.html.ScriptProfile;
-import js.html.ScriptProfileNode;
-import js.html.SharedWorkerContext;
-import js.html.SpeechInputEvent;
-import js.html.SpeechInputResult;
-import js.html.SpeechInputResultList;
-import js.html.StorageInfo;
-import js.html.StorageInfoErrorCallback;
-import js.html.StorageInfoQuotaCallback;
-import js.html.StorageInfoUsageCallback;
-import js.html.StringCallback;
-import js.html.StyleMedia;
-import js.html.TextEvent;
-import js.html.TextTrackCue;
-import js.html.VoidCallback;
-import js.html.WorkerContext;
-import js.html.XMLHttpRequestException;
-import js.html.XMLHttpRequestProgressEvent;
-import js.html.XPathException;
-#end
 import js.html.MediaList;
 import js.html.AnchorElement;
 import js.html.Animation;
@@ -1334,7 +1140,7 @@ import js.html.CDATASection;
 import js.html.NodeFilter;
 import js.html.NodeIterator;
 import js.html.NodeList;
-import js.html.Notification;
+//import js.html.Notification;
 import js.html.OListElement;
 import js.html.ObjectElement;
 import js.html.OptGroupElement;
@@ -1391,7 +1197,7 @@ import js.html.SourceBufferList;
 import js.html.SourceElement;
 import js.html.SpanElement;
 import js.html.SpeechGrammar;
-import js.html.DOMSettableTokenList;
+//import js.html.DOMSettableTokenList;
 import js.html.SpeechGrammarList;
 import js.html.DOMStringList;
 import js.html.DOMTokenList;
@@ -1476,11 +1282,7 @@ import js.html.HeadingElement;
 import js.html.VideoElement;
 import js.html.VideoElement;
 import js.html.History;
-#if (haxe_ver >= "3.2")
 //import js.html.HTMLElement;
-#else
-import js.html.HtmlElement;
-#end
 import js.html.WebSocket;
 import js.html.IFrameElement;
 import js.html.WheelEvent;
@@ -1511,12 +1313,10 @@ import js.html.XSLTProcessor;
 import js.html.MapElement;
 import js.html.MediaElement;
 import js.html.MediaError;
-import js.html.MediaKeyError;
+//import js.html.MediaKeyError;
 
-#if (haxe_ver >= "3.2")
 import js.Promise;
 import js.RegExp;
-#end
 import js.Boot;
 import js.Browser;
 import js.Cookie;
@@ -1570,15 +1370,15 @@ import neko.Web;
 
 
 import sys.db.Connection;
-import sys.db.Manager;
+//import sys.db.Manager;
 import sys.db.Mysql;
-import sys.db.Object;
+//import sys.db.Object;
 import sys.db.RecordInfos;
-import sys.db.RecordMacros;
+//import sys.db.RecordMacros;
 import sys.db.ResultSet;
 import sys.db.Sqlite;
-import sys.db.TableCreate;
-import sys.db.Transaction;
+//import sys.db.TableCreate;
+//import sys.db.Transaction;
 import sys.db.Types;
 
 import sys.io.File;

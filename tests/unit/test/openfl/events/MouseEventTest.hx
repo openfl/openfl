@@ -112,13 +112,7 @@ class MouseEventTest {
 		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.stageX;
 		
-		#if cpp
-		Assert.areEqual (0, exists);
-		#elseif neko
-		Assert.isNull (exists);
-		#else
 		Assert.isNaN (exists);
-		#end
 		
 	}
 	
@@ -130,13 +124,7 @@ class MouseEventTest {
 		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.stageY;
 		
-		#if cpp
-		Assert.areEqual (0, exists);
-		#elseif neko
-		Assert.isNull (exists);
-		#else
 		Assert.isNaN (exists);
-		#end
 		
 	}
 	

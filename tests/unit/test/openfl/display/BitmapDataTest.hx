@@ -14,6 +14,63 @@ import openfl.utils.ByteArray;
 class BitmapDataTest {
 	
 	
+	@Test public function fromBase64 () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = BitmapData.fromBase64;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function fromBytes () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = BitmapData.fromBytes;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	#if (!js || !html5) @Ignore #end @Test public function fromCanvas () {
+		
+		// TODO: Confirm functionality
+		
+		#if (js && html5)
+		var exists = BitmapData.fromCanvas;
+		
+		Assert.isNotNull (exists);
+		#end
+		
+	}
+	
+	
+	@Test public function fromFile () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = BitmapData.fromFile;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function fromImage () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = BitmapData.fromImage;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
 	@Test public function height () {
 		
 		var bitmapData = new BitmapData (1, 1);
@@ -23,6 +80,22 @@ class BitmapDataTest {
 		bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
 		
 		Assert.areEqual (100.0, bitmapData.height);
+		
+	}
+	
+	
+	@Test public function image () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (1, 1);
+		var exists = bitmapData.image;
+		
+		#if flash
+		Assert.isNull (exists);
+		#else
+		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -203,13 +276,17 @@ class BitmapDataTest {
 	}
 	
 	
-	#if !flash @Ignore #end @Test public function compare () {
-		
-		#if flash
+	@Test public function compare () {
 		
 		var bitmapData = new BitmapData (50, 50, true, 0xFFFF8800);
-		var bitmapData2 = new BitmapData (50, 50, true, 0xCCCC6600);
+		var bitmapData2 = new BitmapData (50, 50, true, 0xFFCC6600);
+		//var bitmapData2 = new BitmapData (50, 50, true, 0xCCCC6600);
 		var bitmapData3:BitmapData = cast bitmapData.compare (bitmapData2);
+		
+		//Assert.areEqual (hex (0xFF8800), hex (bitmapData.getPixel (0, 0)));
+		//Assert.areEqual (hex (0xFFFF8800), hex (bitmapData.getPixel32 (0, 0)));
+		//Assert.areEqual (hex (0xCC6600), hex (bitmapData.getPixel (0, 0)));
+		//Assert.areEqual (hex (0xCCCC6600), hex (bitmapData.getPixel32 (0, 0)));
 		
 		Assert.areEqual (hex (0x332200), hex (bitmapData3.getPixel (0, 0)));
 		
@@ -239,8 +316,6 @@ class BitmapDataTest {
 		bitmapData2 = new BitmapData (50, 60);
 		
 		Assert.areEqual (-4, bitmapData.compare (bitmapData2));
-		
-		#end
 		
 	}
 	
@@ -369,6 +444,20 @@ class BitmapDataTest {
 	}
 	
 	
+	@Test public function drawWithQuality () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (1, 1);
+		#if !neko
+		var exists = bitmapData.drawWithQuality;
+		
+		Assert.isNotNull (exists);
+		#end
+		
+	}
+	
+	
 	@Test public function encode () {
 		
 		#if !flash // Linux Flash Player does not support this feature
@@ -465,7 +554,19 @@ class BitmapDataTest {
 		
 		Assert.isNotNull (exists);
 		
-	}	
+	}
+	
+	
+	@Test public function getPixels () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (1, 1);
+		var exists = bitmapData.getPixels;
+		
+		Assert.isNotNull (exists);
+		
+	}
 	
 	
 	@Test public function getVector () {
@@ -474,6 +575,30 @@ class BitmapDataTest {
 		
 		var bitmapData = new BitmapData (100, 100);
 		var exists = bitmapData.getVector;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function histogram () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (1, 1);
+		var exists = bitmapData.histogram;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function hitTest () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (1, 1);
+		var exists = bitmapData.hitTest;
 		
 		Assert.isNotNull (exists);
 		
@@ -523,6 +648,20 @@ class BitmapDataTest {
 		var exists = bitmapData.noise;
 		
 		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function paletteMap () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (1, 1);
+		#if !neko
+		var exists = bitmapData.paletteMap;
+		
+		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -625,6 +764,7 @@ class BitmapDataTest {
 		Assert.isNotNull (exists);
 		
 	}
+	
 	
 	private static inline var TEST_WIDTH : Int = 100;
 	private static inline var TEST_HEIGHT : Int = 100;

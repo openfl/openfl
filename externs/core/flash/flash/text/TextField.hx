@@ -25,6 +25,7 @@ extern class TextField extends InteractiveObject {
 	public var maxChars:Int;
 	public var maxScrollH (default, null):Int;
 	public var maxScrollV (default, null):Int;
+	public var mouseWheelEnabled:Bool;
 	public var multiline:Bool;
 	public var numLines (default, null):Int;
 	public var restrict:String;

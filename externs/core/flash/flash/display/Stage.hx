@@ -60,17 +60,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var nativeWindow(default,null) : NativeWindow;
 	#end
 	
-	#if flash
 	public var fullScreenHeight (default, null):UInt;
-	#end
 	
 	#if flash
 	public var fullScreenSourceRect:Rectangle;
 	#end
 	
-	#if flash
 	public var fullScreenWidth (default, null):UInt;
-	#end
 	
 	#if flash
 	@:require(flash11_2) public var mouseLock:Bool;
@@ -78,10 +74,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var quality:StageQuality;
 	public var scaleMode:StageScaleMode;
-	
-	#if flash
 	public var showDefaultContextMenu:Bool;
-	#end
 	
 	#if flash
 	@:require(flash11) public var softKeyboardRect (default, null):Rectangle;
@@ -89,13 +82,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
-	public var stageHeight:Int;
+	public var stageHeight (default, null):Int;
 	
 	#if flash
 	@:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
 	#end
 	
-	public var stageWidth:Int;
+	public var stageWidth (default, null):Int;
 	public var window (get, never):Window;
 	
 	private inline function get_window ():Window { return Lib.application.window; }

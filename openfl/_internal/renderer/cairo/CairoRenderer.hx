@@ -7,8 +7,14 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 @:allow(openfl.display.Stage)
 
 
@@ -18,23 +24,26 @@ class CairoRenderer extends AbstractRenderer {
 	private var cairo:Cairo;
 	
 	
-	public function new (width:Int, height:Int, cairo:Cairo) {
+	public function new (stage:Stage, cairo:Cairo) {
 		
-		super (width, height);
+		super (stage);
 		
+		#if lime_cairo
 		this.cairo = cairo;
 		
 		renderSession = new RenderSession ();
+		renderSession.clearRenderDirty = true;
 		renderSession.cairo = cairo;
-		renderSession.roundPixels = true;
+		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
 		renderSession.maskManager = new CairoMaskManager (renderSession);
 		renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
+		#end
 		
 	}
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function clear ():Void {
 		
 		cairo.identityMatrix ();
 		
@@ -45,16 +54,26 @@ class CairoRenderer extends AbstractRenderer {
 			
 		}
 		
+	}
+	
+	
+	public override function render ():Void {
+		
+		renderSession.allowSmoothing = (stage.quality != LOW);
+		
 		stage.__renderCairo (renderSession);
 		
 	}
-
-
-	public function renderDisplayObject (object:DisplayObject):Void {
-
-		cairo.identityMatrix ();
-		object.__renderCairo (renderSession);
-
+	
+	
+	public override function renderStage3D ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderCairo (stage, renderSession);
+			
+		}
+		
 	}
 	
 	

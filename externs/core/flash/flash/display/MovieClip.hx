@@ -1,7 +1,7 @@
 package flash.display; #if (!display && flash)
 
 
-extern class MovieClip extends Sprite implements Dynamic {
+extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end {
 	
 	
 	public var currentFrame (default, null):Int;
@@ -10,10 +10,7 @@ extern class MovieClip extends Sprite implements Dynamic {
 	public var currentLabels (default, null):Array<FrameLabel>;
 	public var enabled:Bool;
 	public var framesLoaded (default, null):Int;
-	
-	#if flash
 	@:require(flash11) public var isPlaying (default, null):Bool;
-	#end
 	
 	#if flash
 	public var scenes (default, null):Array<flash.display.Scene>;

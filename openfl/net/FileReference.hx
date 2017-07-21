@@ -102,7 +102,7 @@ class FileReference extends EventDispatcher {
 		var saveFileDialog = new FileDialog ();
 		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
-		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null);
+		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null, defaultFileName);
 		
 	}
 	
@@ -113,7 +113,7 @@ class FileReference extends EventDispatcher {
 		
 		if (__path != null) {
 			
-			data = Bytes.readFile (__path);
+			data = Bytes.fromFile (__path);
 			openFileDialog_onComplete();
 			
 		}
@@ -146,7 +146,7 @@ class FileReference extends EventDispatcher {
 		var saveFileDialog = new FileDialog ();
 		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
-		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null);
+		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null, defaultFileName);
 		
 		#end
 		
@@ -155,7 +155,7 @@ class FileReference extends EventDispatcher {
 	
 	public function upload (request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void {
 		
-		openfl.Lib.notImplemented ("FileReference.upload");
+		openfl.Lib.notImplemented ();
 		
 	}
 	

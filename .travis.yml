@@ -1,7 +1,10 @@
 language: haxe
 
 haxe:
-  - "3.2.1"
+  #- 3.2.0
+  - 3.2.1
+  - 3.4.2
+  - development
 
 env:
   - TARGET=flash
@@ -9,6 +12,10 @@ env:
   - TARGET=cpp
   - TARGET=html5
   - TARGET=docs
+
+matrix:
+  allow_failures:
+  - haxe: development
 
 sudo: false
 
@@ -19,21 +26,30 @@ before_install:
   - export AUDIODEV=null
 
 install:
-  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
+  - haxelib dev openfl $(pwd)
+  - if [[ $TRAVIS_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt ; fi
+  - if [[ $TRAVIS_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt ; fi
+  #- git clone --recursive https://github.com/openfl/lime ~/lime > log.txt || cat log.txt
+  #- cd ~/lime
+  #- git reset --hard 87573bb26119cb4be4b3c4ef0ebc4042ecba59e3
   - haxelib dev lime ~/lime
-  - haxelib install compiletime
-  - haxelib install hxcpp > log.txt || cat log.txt
-  - haxelib install format > log.txt || cat log.txt
+  - yes | haxelib install compiletime
+  - if [[ $TRAVIS_HAXE_VERSION != 'development' ]]; then yes | haxelib install hxcpp > log.txt || cat log.txt ; fi
+  - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then git clone https://github.com/haxefoundation/hxcpp ~/hxcpp --depth 1 > log.txt || cat log.txt ; fi
+  - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then haxelib dev hxcpp ~/hxcpp ; fi
+  - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then cd ~/hxcpp/tools/hxcpp && haxe compile.hxml ; fi
+  - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then cd ~/hxcpp/project && neko build.n linux-m64 ; fi
+  - yes | haxelib install format > log.txt || cat log.txt
   - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
   - if [[ $TARGET == 'docs' ]]; then haxelib dev dox ~/dox ; fi
-  - haxelib install mcover > log.txt || cat log.txt
-  - haxelib install hamcrest > log.txt || cat log.txt
+  - yes | haxelib install mcover > log.txt || cat log.txt
+  - yes | haxelib install hamcrest > log.txt || cat log.txt
   - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1 > log.txt || cat log.txt
   - haxelib dev munit ~/munit/src
-  - haxelib dev openfl $(pwd)
   - cd ~/munit/tool
   - haxe build.hxml
   - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > log.txt || cat log.txt; fi
+  #- if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -debug -64 -nocffi > log.txt || cat log.txt; fi
   - haxelib run lime rebuild tools -nocffi
 
 before_script:
@@ -48,15 +64,12 @@ script:
   - if [[ $TARGET == 'flash' ]]; then haxelib run munit test -as3 -norun -nocffi ; fi
   - if [[ $TARGET == 'html5' ]]; then haxelib run munit test -browser phantomjs -nocffi ; fi
   - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false ; fi
+  #- if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false -debug ; fi
   - if [[ $TARGET == 'docs' ]]; then cd $TRAVIS_BUILD_DIR/docs && haxe build.hxml ; fi
 
   # Functional testing
-  - if [[ $TARGET == 'neko' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_neko.hxml && neko tests.n ; fi
-  - if [[ $TARGET == 'cpp' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_cpp.hxml && ./bin/FunctionalTest ; fi
+  #- if [[ $TARGET == 'neko' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_neko.hxml && neko tests.n ; fi
+  #- if [[ $TARGET == 'cpp' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_cpp.hxml && ./bin/FunctionalTest ; fi
 
 notifications:
   slack: openfl:sBwVO0kgB7EuWLYzZzUezVIz
-
-cache:
-  directories:
-    - $HOME/haxe/lib

@@ -3,89 +3,57 @@ package openfl.net; #if (display || !flash)
 
 /**
  * The URLRequestMethod class provides values that specify whether the
- * URLRequest object should use the <code>POST</code> method or the
- * <code>GET</code> method when sending data to a server.
+ * URLRequest object should use the `POST` method or the
+ * `GET` method when sending data to a server.
  */
-@:enum abstract URLRequestMethod(Null<Int>) {
+@:enum abstract URLRequestMethod(String) from String to String {
 	
 	/**
-	 * Specifies that the URLRequest object is a <code>DELETE</code>.
+	 * Specifies that the URLRequest object is a `DELETE`.
 	 */
 	#if flash
 	@:require(flash10_1)
 	#end
-	public var DELETE = 0;
+	public var DELETE = "DELETE";
 	
 	/**
-	 * Specifies that the URLRequest object is a <code>GET</code>.
+	 * Specifies that the URLRequest object is a `GET`.
 	 */
-	public var GET = 1;
+	public var GET = "GET";
 	
 	/**
-	 * Specifies that the URLRequest object is a <code>HEAD</code>.
-	 */
-	#if flash
-	@:require(flash10_1)
-	#end
-	public var HEAD = 2;
-	
-	/**
-	 * Specifies that the URLRequest object is <code>OPTIONS</code>.
+	 * Specifies that the URLRequest object is a `HEAD`.
 	 */
 	#if flash
 	@:require(flash10_1)
 	#end
-	public var OPTIONS = 3;
+	public var HEAD = "HEAD";
 	
 	/**
-	 * Specifies that the URLRequest object is a <code>POST</code>.
+	 * Specifies that the URLRequest object is `OPTIONS`.
+	 */
+	#if flash
+	@:require(flash10_1)
+	#end
+	public var OPTIONS = "OPTIONS";
+	
+	/**
+	 * Specifies that the URLRequest object is a `POST`.
 	 *
-	 * <p><i>Note:</i> For content running in Adobe AIR, when using the
-	 * <code>navigateToURL()</code> function, the runtime treats a URLRequest
-	 * that uses the POST method(one that has its <code>method</code> property
-	 * set to <code>URLRequestMethod.POST</code>) as using the GET method.</p>
+	 * _Note:_ For content running in Adobe AIR, when using the
+	 * `navigateToURL()` function, the runtime treats a URLRequest
+	 * that uses the POST method(one that has its `method` property
+	 * set to `URLRequestMethod.POST`) as using the GET method.
 	 */
-	public var POST = 4;
+	public var POST = "POST";
 	
 	/**
-	 * Specifies that the URLRequest object is a <code>PUT</code>.
+	 * Specifies that the URLRequest object is a `PUT`.
 	 */
 	#if flash
 	@:require(flash10_1)
 	#end
-	public var PUT = 5;
-	
-	@:from private static function fromString (value:String):URLRequestMethod {
-		
-		return switch (value) {
-			
-			case "DELETE": DELETE;
-			case "GET": GET;
-			case "HEAD": HEAD;
-			case "OPTIONS": OPTIONS;
-			case "POST": POST;
-			case "PUT": PUT;
-			default: null;
-			
-		}
-		
-	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case URLRequestMethod.DELETE: "DELETE";
-			case URLRequestMethod.GET: "GET";
-			case URLRequestMethod.HEAD: "HEAD";
-			case URLRequestMethod.OPTIONS: "OPTIONS";
-			case URLRequestMethod.POST: "POST";
-			case URLRequestMethod.PUT: "PUT";
-			default: null;
-			
-		}
-		
-	}
+	public var PUT = "PUT";
 	
 }
 

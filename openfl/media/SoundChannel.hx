@@ -1,7 +1,7 @@
 package openfl.media;
 
 
-import lime.audio.AudioSource;
+import lime.media.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
@@ -21,12 +21,8 @@ import openfl.media.Sound;
 	private var __soundTransform:SoundTransform;
 	private var __source:AudioSource;
 	
-	#if html5
-	private var __soundInstance:SoundJSInstance;
-	#end
 	
-	
-	private function new (#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end = null, soundTransform:SoundTransform = null):Void {
+	private function new (source:AudioSource = null, soundTransform:SoundTransform = null):Void {
 		
 		super (this);
 		
@@ -43,29 +39,15 @@ import openfl.media.Sound;
 			
 		}
 		
-		#if !html5
+		if (source != null) {
 			
-			if (source != null) {
-				
-				__source = source;
-				__source.onComplete.add (source_onComplete);
-				__isValid = true;
-				
-				__source.play ();
-				
-			}
+			__source = source;
+			__source.onComplete.add (source_onComplete);
+			__isValid = true;
 			
-		#else
+			__source.play ();
 			
-			if (soundInstance != null) {
-				
-				__soundInstance = soundInstance;
-				__soundInstance.addEventListener ("complete", source_onComplete);
-				__isValid = true;
-				
-			}
-			
-		#end
+		}
 		
 		SoundMixer.__registerSoundChannel (this);
 		
@@ -78,12 +60,8 @@ import openfl.media.Sound;
 		
 		if (!__isValid) return;
 		
-		#if !html5
 		__source.stop ();
 		__dispose ();
-		#else
-		__soundInstance.stop ();
-		#end
 		
 	}
 	
@@ -92,13 +70,8 @@ import openfl.media.Sound;
 		
 		if (!__isValid) return;
 		
-		#if !html5
+		__source.onComplete.remove (source_onComplete);
 		__source.dispose ();
-		#else
-		__soundInstance.stop ();
-		__soundInstance = null;
-		#end
-		
 		__isValid = false;
 		
 	}
@@ -122,11 +95,7 @@ import openfl.media.Sound;
 		
 		if (!__isValid) return 0;
 		
-		#if !html5
-		return (__source.currentTime + __source.offset) / 1000;
-		#else
-		return __soundInstance.getPosition ();
-		#end
+		return __source.currentTime + __source.offset;
 		
 	}
 	
@@ -135,13 +104,8 @@ import openfl.media.Sound;
 		
 		if (!__isValid) return 0;
 		
-		#if !html5
-		__source.currentTime = Std.int (value * 1000) - __source.offset;
+		__source.currentTime = Std.int (value) - __source.offset;
 		return value;
-		#else
-		__soundInstance.setPosition (Std.int (value));
-		return __soundInstance.getPosition ();
-		#end
 		
 	}
 	
@@ -169,7 +133,6 @@ import openfl.media.Sound;
 			
 			if (__isValid) {
 				
-				#if !html5
 				__source.gain = volume;
 				
 				var position = __source.position;
@@ -178,10 +141,6 @@ import openfl.media.Sound;
 				__source.position = position;
 				
 				return value;
-				#else
-				__soundInstance.setVolume (volume);
-				__soundInstance.setPan (pan);
-				#end
 				
 			}
 			
@@ -199,16 +158,9 @@ import openfl.media.Sound;
 	
 	
 	
-	#if html5
-	private function soundInstance_onComplete (_):Void {
-		
-		dispatchEvent (new Event (Event.SOUND_COMPLETE));
-		
-	}
-	#end
-	
-	
 	private function source_onComplete ():Void {
+		
+		SoundMixer.__unregisterSoundChannel (this);
 		
 		__dispose ();
 		dispatchEvent (new Event (Event.SOUND_COMPLETE));

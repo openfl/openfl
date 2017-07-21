@@ -2,27 +2,27 @@ package openfl.display; #if (display || !flash)
 
 
 /**
- * The SpreadMethod class provides values for the <code>spreadMethod</code>
- * parameter in the <code>beginGradientFill()</code> and
- * <code>lineGradientStyle()</code> methods of the Graphics class.
+ * The SpreadMethod class provides values for the `spreadMethod`
+ * parameter in the `beginGradientFill()` and
+ * `lineGradientStyle()` methods of the Graphics class.
  *
- * <p>The following example shows the same gradient fill using various spread
- * methods:</p>
+ * The following example shows the same gradient fill using various spread
+ * methods:
  */
 @:enum abstract SpreadMethod(Null<Int>) {
 	
 	/**
-	 * Specifies that the gradient use the <i>pad</i> spread method.
+	 * Specifies that the gradient use the _pad_ spread method.
 	 */
 	public var PAD = 0;
 	
 	/**
-	 * Specifies that the gradient use the <i>reflect</i> spread method.
+	 * Specifies that the gradient use the _reflect_ spread method.
 	 */
 	public var REFLECT = 1;
 	
 	/**
-	 * Specifies that the gradient use the <i>repeat</i> spread method.
+	 * Specifies that the gradient use the _repeat_ spread method.
 	 */
 	public var REPEAT = 2;
 	

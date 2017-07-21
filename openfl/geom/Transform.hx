@@ -3,6 +3,11 @@ package openfl.geom;
 
 import openfl.display.DisplayObject;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.ColorTransform)
 
@@ -110,19 +115,7 @@ class Transform {
 		
 		if (__displayObject != null) {
 			
-			var rotation = (180 / Math.PI) * Math.atan2 (value.d, value.c) - 90;
-			
-			if (rotation != __displayObject.__rotation) {
-				
-				__displayObject.__rotation = rotation;
-				var radians = rotation * (Math.PI / 180);
-				__displayObject.__rotationSine = Math.sin (radians);
-				__displayObject.__rotationCosine = Math.cos (radians);
-				
-			}
-			
-			__displayObject.__transform.copyFrom (value);
-			__displayObject.__setTransformDirty ();
+			__setTransform (value.a, value.b, value.c, value.d, value.tx, value.ty);
 			
 		}
 		
@@ -136,7 +129,7 @@ class Transform {
 		if (__hasMatrix3D) {
 			
 			var matrix = __displayObject.__transform;
-			return new Matrix3D ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]);
+			return new Matrix3D (Vector.ofArray ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]));
 			
 		}
 		
@@ -157,9 +150,44 @@ class Transform {
 		__hasMatrix = false;
 		__hasMatrix3D = true;
 		
+		__setTransform (value.rawData[0], value.rawData[1], value.rawData[5], value.rawData[6], value.rawData[12], value.rawData[13]);
+		
+		return value;
+		
+	}
+	
+	
+	private function __setTransform (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void {
+		
 		if (__displayObject != null) {
 			
-			var rotation = (180 / Math.PI) * Math.atan2 (value.rawData[5], value.rawData[4]) - 90;
+			var scaleX = 0.0;
+			var scaleY = 0.0;
+			
+			if (b == 0) {
+				
+				scaleX = a;
+				
+			} else {
+				
+				scaleX = Math.sqrt (a * a + b * b);
+				
+			}
+			
+			if (c == 0) {
+				
+				scaleY = a;
+				
+			} else {
+				
+				scaleY = Math.sqrt (c * c + d * d);
+				
+			}
+			
+			__displayObject.__scaleX = scaleX;
+			__displayObject.__scaleY = scaleY;
+			
+			var rotation = (180 / Math.PI) * Math.atan2 (d, c) - 90;
 			
 			if (rotation != __displayObject.__rotation) {
 				
@@ -170,18 +198,16 @@ class Transform {
 				
 			}
 			
-			__displayObject.__transform.a = value.rawData[0];
-			__displayObject.__transform.b = value.rawData[1];
-			__displayObject.__transform.c = value.rawData[5];
-			__displayObject.__transform.d = value.rawData[6];
-			__displayObject.__transform.tx = value.rawData[12];
-			__displayObject.__transform.ty = value.rawData[13];
+			__displayObject.__transform.a = a;
+			__displayObject.__transform.b = b;
+			__displayObject.__transform.c = c;
+			__displayObject.__transform.d = d;
+			__displayObject.__transform.tx = tx;
+			__displayObject.__transform.ty = ty;
 			
 			__displayObject.__setTransformDirty ();
 			
 		}
-		
-		return value;
 		
 	}
 	

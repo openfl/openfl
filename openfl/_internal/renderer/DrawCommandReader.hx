@@ -14,6 +14,11 @@ import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:allow(openfl._internal.renderer)
 
 
@@ -42,7 +47,7 @@ class DrawCommandReader {
 	}
 	
 	
-	private #if !html5 inline #end function advance ():Void {
+	private inline function advance ():Void {
 		
 		switch (prev) {
 			
@@ -136,7 +141,7 @@ class DrawCommandReader {
 	}
 	
 	
-	private #if !html5 inline #end function bool (index:Int):Bool {
+	private inline function bool (index:Int):Bool {
 		
 		return buffer.b[bPos + index];
 		
@@ -151,58 +156,58 @@ class DrawCommandReader {
 	}
 	
 	
-	private #if !html5 inline #end function fArr (index:Int):Array<Float> {
+	private inline function fArr (index:Int):Array<Float> {
 		
 		return buffer.ff[ffPos + index];
 		
 	}
 	
 	
-	private #if !html5 inline #end function float (index:Int):Float {
+	private inline function float (index:Int):Float {
 		
 		return buffer.f[fPos + index];
 		
 	}
 	
 	
-	private #if !html5 inline #end function iArr (index:Int):Array<Int> {
+	private inline function iArr (index:Int):Array<Int> {
 		
 		return buffer.ii[iiPos + index];
 		
 	}
 	
 	
-	private #if !html5 inline #end function int (index:Int):Int {
+	private inline function int (index:Int):Int {
 		
 		return buffer.i[iPos + index];
 		
 	}
 	
 	
-	private #if !html5 inline #end function obj (index:Int):Dynamic {
+	private inline function obj (index:Int):Dynamic {
 		
 		return buffer.o[oPos + index];
 		
 	}
 	
 	
-	public #if !html5 inline #end function readBeginBitmapFill ():BeginBitmapFillView { advance (); prev = BEGIN_BITMAP_FILL; return new BeginBitmapFillView (this); }
-	public #if !html5 inline #end function readBeginFill ():BeginFillView { advance (); prev = BEGIN_FILL; return new BeginFillView (this); }
-	public #if !html5 inline #end function readBeginGradientFill ():BeginGradientFillView { advance (); prev = BEGIN_GRADIENT_FILL; return new BeginGradientFillView (this); }
-	public #if !html5 inline #end function readCubicCurveTo ():CubicCurveToView { advance (); prev = CUBIC_CURVE_TO; return new CubicCurveToView (this); }
-	public #if !html5 inline #end function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
-	public #if !html5 inline #end function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
-	public #if !html5 inline #end function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
-	public #if !html5 inline #end function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
-	public #if !html5 inline #end function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
-	public #if !html5 inline #end function readDrawTriangles ():DrawTrianglesView { advance (); prev = DRAW_TRIANGLES; return new DrawTrianglesView (this); }
-	public #if !html5 inline #end function readEndFill ():EndFillView { advance (); prev = END_FILL; return new EndFillView (this); }
-	public #if !html5 inline #end function readLineBitmapStyle ():LineBitmapStyleView { advance (); prev = LINE_BITMAP_STYLE; return new LineBitmapStyleView (this); }
-	public #if !html5 inline #end function readLineGradientStyle ():LineGradientStyleView { advance (); prev = LINE_GRADIENT_STYLE; return new LineGradientStyleView (this); }
-	public #if !html5 inline #end function readLineStyle ():LineStyleView { advance (); prev = LINE_STYLE; return new LineStyleView (this); }
-	public #if !html5 inline #end function readLineTo ():LineToView { advance (); prev = LINE_TO; return new LineToView (this); }
-	public #if !html5 inline #end function readMoveTo ():MoveToView { advance (); prev = MOVE_TO; return new MoveToView (this); }
-	public #if !html5 inline #end function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
+	public inline function readBeginBitmapFill ():BeginBitmapFillView { advance (); prev = BEGIN_BITMAP_FILL; return new BeginBitmapFillView (this); }
+	public inline function readBeginFill ():BeginFillView { advance (); prev = BEGIN_FILL; return new BeginFillView (this); }
+	public inline function readBeginGradientFill ():BeginGradientFillView { advance (); prev = BEGIN_GRADIENT_FILL; return new BeginGradientFillView (this); }
+	public inline function readCubicCurveTo ():CubicCurveToView { advance (); prev = CUBIC_CURVE_TO; return new CubicCurveToView (this); }
+	public inline function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
+	public inline function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
+	public inline function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
+	public inline function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
+	public inline function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
+	public inline function readDrawTriangles ():DrawTrianglesView { advance (); prev = DRAW_TRIANGLES; return new DrawTrianglesView (this); }
+	public inline function readEndFill ():EndFillView { advance (); prev = END_FILL; return new EndFillView (this); }
+	public inline function readLineBitmapStyle ():LineBitmapStyleView { advance (); prev = LINE_BITMAP_STYLE; return new LineBitmapStyleView (this); }
+	public inline function readLineGradientStyle ():LineGradientStyleView { advance (); prev = LINE_GRADIENT_STYLE; return new LineGradientStyleView (this); }
+	public inline function readLineStyle ():LineStyleView { advance (); prev = LINE_STYLE; return new LineStyleView (this); }
+	public inline function readLineTo ():LineToView { advance (); prev = LINE_TO; return new LineToView (this); }
+	public inline function readMoveTo ():MoveToView { advance (); prev = MOVE_TO; return new MoveToView (this); }
+	public inline function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
 	
 	
 	public function reset ():Void {
@@ -212,7 +217,7 @@ class DrawCommandReader {
 	}
 	
 	
-	public #if !html5 inline #end function skip (type:DrawCommandType):Void {
+	public inline function skip (type:DrawCommandType):Void {
 		
 		advance ();
 		prev = type;
@@ -225,188 +230,188 @@ class DrawCommandReader {
 
 abstract BeginBitmapFillView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private #if !html5 inline #end function get_bitmap ():BitmapData { return cast this.obj (0); }
-	public var matrix (get, never):Matrix; private #if !html5 inline #end function get_matrix ():Matrix { return cast this.obj (1); }
-	public var repeat (get, never):Bool; private #if !html5 inline #end function get_repeat ():Bool { return this.bool (0); }
-	public var smooth (get, never):Bool; private #if !html5 inline #end function get_smooth ():Bool { return this.bool (1); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.obj (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return this.bool (0); }
+	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (1); }
 	
 }
 
 
 abstract BeginFillView (DrawCommandReader) {
 
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var color (get, never):Int; private #if !html5 inline #end function get_color ():Int { return this.int (0); }
-	public var alpha (get, never):Float; private #if !html5 inline #end function get_alpha ():Float { return this.float (0); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var color (get, never):Int; private inline function get_color ():Int { return this.int (0); }
+	public var alpha (get, never):Float; private inline function get_alpha ():Float { return this.float (0); }
 	
 }
 
 
 abstract BeginGradientFillView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var type (get, never):GradientType; private #if !html5 inline #end function get_type ():GradientType { return cast this.obj (0); }
-	public var colors (get, never):Array<Int>; private #if !html5 inline #end function get_colors ():Array<Int> { return cast this.iArr (0); }
-	public var alphas (get, never):Array<Float>; private #if !html5 inline #end function get_alphas ():Array<Float> { return cast this.fArr (0); }
-	public var ratios (get, never):Array<Int>; private #if !html5 inline #end function get_ratios ():Array<Int> { return cast this.iArr (1); }
-	public var matrix (get, never):Matrix; private #if !html5 inline #end function get_matrix ():Matrix { return cast this.obj (1); }
-	public var spreadMethod (get, never):SpreadMethod; private #if !html5 inline #end function get_spreadMethod ():SpreadMethod { return cast this.obj (2); }
-	public var interpolationMethod (get, never):InterpolationMethod; private #if !html5 inline #end function get_interpolationMethod ():InterpolationMethod { return cast this.obj (3); }
-	public var focalPointRatio (get, never):Float; private #if !html5 inline #end function get_focalPointRatio ():Float { return cast this.float (0); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var type (get, never):GradientType; private inline function get_type ():GradientType { return cast this.obj (0); }
+	public var colors (get, never):Array<Int>; private inline function get_colors ():Array<Int> { return cast this.iArr (0); }
+	public var alphas (get, never):Array<Float>; private inline function get_alphas ():Array<Float> { return cast this.fArr (0); }
+	public var ratios (get, never):Array<Int>; private inline function get_ratios ():Array<Int> { return cast this.iArr (1); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	public var spreadMethod (get, never):SpreadMethod; private inline function get_spreadMethod ():SpreadMethod { return cast this.obj (2); }
+	public var interpolationMethod (get, never):InterpolationMethod; private inline function get_interpolationMethod ():InterpolationMethod { return cast this.obj (3); }
+	public var focalPointRatio (get, never):Float; private inline function get_focalPointRatio ():Float { return cast this.float (0); }
 	
 }
 
 
 abstract CubicCurveToView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var controlX1 (get, never):Float; private #if !html5 inline #end function get_controlX1 ():Float { return this.float (0); }
-	public var controlY1 (get, never):Float; private #if !html5 inline #end function get_controlY1 ():Float { return this.float (1); }
-	public var controlX2 (get, never):Float; private #if !html5 inline #end function get_controlX2 ():Float { return this.float (2); }
-	public var controlY2 (get, never):Float; private #if !html5 inline #end function get_controlY2 ():Float { return this.float (3); }
-	public var anchorX (get, never):Float; private #if !html5 inline #end function get_anchorX ():Float { return this.float (4); }
-	public var anchorY (get, never):Float; private #if !html5 inline #end function get_anchorY ():Float { return this.float (5); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var controlX1 (get, never):Float; private inline function get_controlX1 ():Float { return this.float (0); }
+	public var controlY1 (get, never):Float; private inline function get_controlY1 ():Float { return this.float (1); }
+	public var controlX2 (get, never):Float; private inline function get_controlX2 ():Float { return this.float (2); }
+	public var controlY2 (get, never):Float; private inline function get_controlY2 ():Float { return this.float (3); }
+	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.float (4); }
+	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.float (5); }
 	
 }
 
 
 abstract CurveToView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var controlX (get, never):Float; private #if !html5 inline #end function get_controlX ():Float { return this.float (0); }
-	public var controlY (get, never):Float; private #if !html5 inline #end function get_controlY ():Float { return this.float (1); }
-	public var anchorX (get, never):Float; private #if !html5 inline #end function get_anchorX ():Float { return this.float (2); }
-	public var anchorY (get, never):Float; private #if !html5 inline #end function get_anchorY ():Float { return this.float (3); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var controlX (get, never):Float; private inline function get_controlX ():Float { return this.float (0); }
+	public var controlY (get, never):Float; private inline function get_controlY ():Float { return this.float (1); }
+	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.float (2); }
+	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.float (3); }
 	
 }
 
 
 abstract DrawCircleView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private #if !html5 inline #end function get_x ():Float { return this.float (0); }
-	public var y (get, never):Float; private #if !html5 inline #end function get_y ():Float { return this.float (1); }
-	public var radius(get, never):Float; private #if !html5 inline #end function get_radius ():Float { return this.float (2); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	public var radius(get, never):Float; private inline function get_radius ():Float { return this.float (2); }
 	
 }
 
 
 abstract DrawEllipseView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private #if !html5 inline #end function get_x ():Float { return this.float (0); }
-	public var y (get, never):Float; private #if !html5 inline #end function get_y ():Float { return this.float (1); }
-	public var width (get, never):Float; private #if !html5 inline #end function get_width ():Float { return this.float (2); }
-	public var height(get, never):Float; private #if !html5 inline #end function get_height ():Float { return this.float (3); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
+	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	
 }
 
 
 abstract DrawRectView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private #if !html5 inline #end function get_x ():Float { return this.float (0); }
-	public var y (get, never):Float; private #if !html5 inline #end function get_y ():Float { return this.float (1); }
-	public var width (get, never):Float; private #if !html5 inline #end function get_width ():Float { return this.float (2); }
-	public var height(get, never):Float; private #if !html5 inline #end function get_height ():Float { return this.float (3); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
+	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	
 }
 
 
 abstract DrawRoundRectView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private #if !html5 inline #end function get_x ():Float { return this.float (0); }
-	public var y (get, never):Float; private #if !html5 inline #end function get_y ():Float { return this.float (1); }
-	public var width (get, never):Float; private #if !html5 inline #end function get_width ():Float { return this.float (2); }
-	public var height(get, never):Float; private #if !html5 inline #end function get_height ():Float { return this.float (3); }
-	public var ellipseWidth (get, never):Float; private #if !html5 inline #end function get_ellipseWidth ():Float { return this.float (4); }
-	public var ellipseHeight (get, never):Null<Float>; private #if !html5 inline #end function get_ellipseHeight ():Null<Float> { return this.obj (0); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
+	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
+	public var ellipseWidth (get, never):Float; private inline function get_ellipseWidth ():Float { return this.float (4); }
+	public var ellipseHeight (get, never):Null<Float>; private inline function get_ellipseHeight ():Null<Float> { return this.obj (0); }
 	
 }
 
 
 abstract DrawTrianglesView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var vertices (get, never):Vector<Float>; private #if !html5 inline #end function get_vertices ():Vector<Float> { return cast this.obj (0); }
-	public var indices (get, never):Vector<Int>; private #if !html5 inline #end function get_indices ():Vector<Int> { return cast this.obj (1); }
-	public var uvtData (get, never):Vector<Float>; private #if !html5 inline #end function get_uvtData ():Vector<Float> { return cast this.obj (2); }
-	public var culling (get, never):TriangleCulling; private #if !html5 inline #end function get_culling ():TriangleCulling { return cast this.obj (3); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var vertices (get, never):Vector<Float>; private inline function get_vertices ():Vector<Float> { return cast this.obj (0); }
+	public var indices (get, never):Vector<Int>; private inline function get_indices ():Vector<Int> { return cast this.obj (1); }
+	public var uvtData (get, never):Vector<Float>; private inline function get_uvtData ():Vector<Float> { return cast this.obj (2); }
+	public var culling (get, never):TriangleCulling; private inline function get_culling ():TriangleCulling { return cast this.obj (3); }
 	
 }
 
 
 abstract EndFillView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
+	public inline function new (d:DrawCommandReader) { this = d; }
 	
 }
 
 
 abstract LineBitmapStyleView (DrawCommandReader) { 
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private #if !html5 inline #end function get_bitmap ():BitmapData { return cast this.obj (0); }
-	public var matrix (get, never):Matrix; private #if !html5 inline #end function get_matrix ():Matrix { return cast this.obj (1); }
-	public var repeat (get, never):Bool; private #if !html5 inline #end function get_repeat ():Bool { return cast this.bool (0); }
-	public var smooth (get, never):Bool; private #if !html5 inline #end function get_smooth ():Bool { return cast this.bool (1); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.obj (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return cast this.bool (0); }
+	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return cast this.bool (1); }
 	
 }
 
 
 abstract LineGradientStyleView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var type (get, never):GradientType; private #if !html5 inline #end function get_type ():GradientType { return cast this.obj (0); }
-	public var colors (get, never):Array<Int>; private #if !html5 inline #end function get_colors ():Array<Int> { return cast this.iArr (0); }
-	public var alphas (get, never):Array<Float>; private #if !html5 inline #end function get_alphas ():Array<Float> { return cast this.fArr (0); }
-	public var ratios (get, never):Array<Int>; private #if !html5 inline #end function get_ratios ():Array<Int> { return cast this.iArr (1); }
-	public var matrix (get, never):Matrix; private #if !html5 inline #end function get_matrix ():Matrix { return cast this.obj (1); }
-	public var spreadMethod (get, never):SpreadMethod; private #if !html5 inline #end function get_spreadMethod ():SpreadMethod { return cast this.obj (2); }
-	public var interpolationMethod (get, never):InterpolationMethod; private #if !html5 inline #end function get_interpolationMethod ():InterpolationMethod { return cast this.obj (3); }
-	public var focalPointRatio (get, never):Float; private #if !html5 inline #end function get_focalPointRatio ():Float { return cast this.float (0); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var type (get, never):GradientType; private inline function get_type ():GradientType { return cast this.obj (0); }
+	public var colors (get, never):Array<Int>; private inline function get_colors ():Array<Int> { return cast this.iArr (0); }
+	public var alphas (get, never):Array<Float>; private inline function get_alphas ():Array<Float> { return cast this.fArr (0); }
+	public var ratios (get, never):Array<Int>; private inline function get_ratios ():Array<Int> { return cast this.iArr (1); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	public var spreadMethod (get, never):SpreadMethod; private inline function get_spreadMethod ():SpreadMethod { return cast this.obj (2); }
+	public var interpolationMethod (get, never):InterpolationMethod; private inline function get_interpolationMethod ():InterpolationMethod { return cast this.obj (3); }
+	public var focalPointRatio (get, never):Float; private inline function get_focalPointRatio ():Float { return cast this.float (0); }
 	
 }
 
 
 abstract LineStyleView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var thickness (get, never):Null<Float>; private #if !html5 inline #end function get_thickness ():Null<Float> { return cast this.obj (0); }
-	public var color (get, never):Int; private #if !html5 inline #end function get_color ():Int { return cast this.int (0); }
-	public var alpha (get, never):Float; private #if !html5 inline #end function get_alpha ():Float { return cast this.float (0); }
-	public var pixelHinting (get, never):Bool; private #if !html5 inline #end function get_pixelHinting ():Bool { return cast this.bool (0); }
-	public var scaleMode (get, never):LineScaleMode; private #if !html5 inline #end function get_scaleMode ():LineScaleMode { return cast this.obj (1); }
-	public var caps (get, never):CapsStyle; private #if !html5 inline #end function get_caps ():CapsStyle { return cast this.obj (2); }
-	public var joints (get, never):JointStyle; private #if !html5 inline #end function get_joints ():JointStyle { return cast this.obj (3); }
-	public var miterLimit (get, never):Float; private #if !html5 inline #end function get_miterLimit ():Float { return cast this.float (1); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var thickness (get, never):Null<Float>; private inline function get_thickness ():Null<Float> { return cast this.obj (0); }
+	public var color (get, never):Int; private inline function get_color ():Int { return cast this.int (0); }
+	public var alpha (get, never):Float; private inline function get_alpha ():Float { return cast this.float (0); }
+	public var pixelHinting (get, never):Bool; private inline function get_pixelHinting ():Bool { return cast this.bool (0); }
+	public var scaleMode (get, never):LineScaleMode; private inline function get_scaleMode ():LineScaleMode { return cast this.obj (1); }
+	public var caps (get, never):CapsStyle; private inline function get_caps ():CapsStyle { return cast this.obj (2); }
+	public var joints (get, never):JointStyle; private inline function get_joints ():JointStyle { return cast this.obj (3); }
+	public var miterLimit (get, never):Float; private inline function get_miterLimit ():Float { return cast this.float (1); }
 	
 }
 
 
 abstract LineToView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private #if !html5 inline #end function get_x ():Float { return this.float (0); }
-	public var y (get, never):Float; private #if !html5 inline #end function get_y ():Float { return this.float (1); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
 	
 }
 
 
 abstract MoveToView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var x (get, never):Float; private #if !html5 inline #end function get_x ():Float { return this.float (0); }
-	public var y (get, never):Float; private #if !html5 inline #end function get_y ():Float { return this.float (1); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
+	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
 	
 }
 
 
 abstract OverrideMatrixView (DrawCommandReader) {
 	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var matrix (get, never):Matrix; private #if !html5 inline #end function get_matrix ():Matrix { return cast this.obj (0); }
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
 	
 }

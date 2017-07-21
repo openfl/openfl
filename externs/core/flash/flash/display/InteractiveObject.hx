@@ -16,7 +16,7 @@ extern class InteractiveObject extends DisplayObject {
 	#end
 	
 	public var doubleClickEnabled:Bool;
-	public var focusRect:Dynamic;
+	public var focusRect:Null<Bool>;
 	public var mouseEnabled:Bool;
 	@:require(flash11) public var needsSoftKeyboard:Bool;
 	@:require(flash11) public var softKeyboardInputAreaOfInterest:Rectangle;

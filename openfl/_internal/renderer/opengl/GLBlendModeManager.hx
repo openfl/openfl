@@ -5,6 +5,11 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractBlendModeManager;
 import openfl.display.BlendMode;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class GLBlendModeManager extends AbstractBlendModeManager {
 	
@@ -68,7 +73,7 @@ class GLBlendModeManager extends AbstractBlendModeManager {
 			default:
 				
 				gl.blendEquation (gl.FUNC_ADD);
-				gl.blendFunc (gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+				gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 			
 		}
 		

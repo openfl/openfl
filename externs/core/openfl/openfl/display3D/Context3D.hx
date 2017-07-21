@@ -16,33 +16,15 @@ import openfl.Vector;
 @:final extern class Context3D extends EventDispatcher {
 	
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public static var supportsVideoTexture (default, null):Bool;
-	#end
+	public static var supportsVideoTexture (default, null):Bool;
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public var backBufferHeight (default, null):Int;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public var backBufferWidth (default, null):Int;
-	#end
-	
+	public var backBufferHeight (default, null):Int;
+	public var backBufferWidth (default, null):Int;
 	public var driverInfo (default, null):String;
 	public var enableErrorChecking:Bool;
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public var maxBackBufferHeight:Int;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public var maxBackBufferWidth:Int;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash12) public var profile (default, null):String;
-	#end
-	
+	public var maxBackBufferHeight:Int;
+	public var maxBackBufferWidth:Int;
+	public var profile (default, null):String;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = 0xFFFFFFFF):Void;
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void;

@@ -25,6 +25,11 @@ extern class Event {
 	
 	@:require(flash10) public static var CLEAR (default, never):String;
 	public static var CLOSE (default, never):String;
+	
+	#if (flash && air)
+	public static var CLOSING (default, never):String;
+	#end
+	
 	public static var COMPLETE (default, never):String;
 	public static var CONNECT (default, never):String;
 	@:require(flash11) public static var CONTEXT3D_CREATE (default, never):String;

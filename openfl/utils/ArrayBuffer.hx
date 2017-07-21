@@ -1,4 +1,4 @@
 package openfl.utils;
 
 
-typedef ArrayBuffer = lime.utils.ArrayBuffer;
+@:deprecated typedef ArrayBuffer = lime.utils.ArrayBuffer;

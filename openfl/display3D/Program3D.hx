@@ -5,6 +5,7 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
+import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import lime.utils.Log;
 import openfl._internal.stage3D.AGALConverter;
@@ -14,6 +15,11 @@ import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:access(openfl.display3D.Context3D)
 
@@ -65,10 +71,11 @@ import openfl.Vector;
 	
 	public function upload (vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
 		
-		var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
+		//var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
+		var samplerStates = new Array<SamplerState> ();
 		
-		var glslVertex = AGALConverter.ConvertToGLSL (vertexProgram, null);
-		var glslFragment = AGALConverter.ConvertToGLSL (fragmentProgram, samplerStates);
+		var glslVertex = AGALConverter.convertToGLSL (vertexProgram, null);
+		var glslFragment = AGALConverter.convertToGLSL (fragmentProgram, samplerStates);
 		
 		__uploadFromGLSL (glslVertex, glslFragment);
 		
@@ -253,7 +260,7 @@ import openfl.Vector;
 		
 		if (__positionScale != null) {
 			
-			GL.uniform4fv (__positionScale.location, /*1,*/ positionScale);
+			GL.uniform4fv (__positionScale.location, 1, positionScale);
 			GLUtils.CheckGLError ();
 			
 		}
@@ -274,8 +281,8 @@ import openfl.Vector;
 		
 		if (verbose) {
 			
-			trace (vertexShaderSource);
-			trace (fragmentShaderSource);
+			Log.info (vertexShaderSource);
+			Log.info (fragmentShaderSource);
 			
 		}
 		
@@ -355,7 +362,7 @@ import openfl.Vector;
 		
 		if (infoLog != null && infoLog.length != 0) {
 			
-			trace ("program: ${infoLog}");
+			trace ('program: ${infoLog}');
 			
 		}
 		
@@ -429,6 +436,12 @@ import openfl.Vector;
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 private class Uniform {
 	
 	
@@ -441,25 +454,29 @@ private class Uniform {
 	public var regCount:Int;
 	public var isDirty:Bool;
 	
+	private var regDataPointer:BytePointer;
+	
 	
 	public function new () {
 		
 		isDirty = true;
+		regDataPointer = new BytePointer ();
 		
 	}
 	
 	
 	public function flush ():Void {
 		
+		var index:Int = regIndex * 4;
 		switch (type) {
 			
-			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, false, __getRegisters (regIndex * 4, size * 2 * 2));
-			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, false, __getRegisters (regIndex * 4, size * 3 * 3));
-			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, false, __getRegisters (regIndex * 4, size * 4 * 4));
-			case GL.FLOAT_VEC2: GL.uniform2fv (location, __getRegisters (regIndex * 4, regCount * 2));
-			case GL.FLOAT_VEC3: GL.uniform3fv (location, __getRegisters (regIndex * 4, regCount * 3));
-			case GL.FLOAT_VEC4: GL.uniform4fv (location, __getRegisters (regIndex * 4, regCount * 4));
-			default: GL.uniform4fv (location, __getRegisters (regIndex * 4, regCount * 4));
+			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, size, false, __getRegisters (index, size * 2 * 2));
+			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, size, false, __getRegisters (index, size * 3 * 3));
+			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, size, false, __getRegisters (index, size * 4 * 4));
+			case GL.FLOAT_VEC2: GL.uniform2fv (location, regCount, __getRegisters (index, regCount * 2));
+			case GL.FLOAT_VEC3: GL.uniform3fv (location, regCount, __getRegisters (index, regCount * 3));
+			case GL.FLOAT_VEC4: GL.uniform4fv (location, regCount, __getRegisters (index, regCount * 4));
+			default: GL.uniform4fv (location, regCount, __getRegisters (index, regCount * 4));
 			
 		}
 		
@@ -468,35 +485,29 @@ private class Uniform {
 	}
 	
 	
+	#if (js && html5)
 	private function __getRegisters (index:Int, size:Int):Float32Array {
 		
-		// TODO
-		// HACK: on Neko, CPP, subarray returns a view into the RegData
-		// array. When uploading that data as a uniform, it will upload
-		// the underlying array, which is far too long, causing it to
-		// throw an exception. Workaround here is just to create a new
-		// array and copy it directly so we know that it will be the
-		// right size. Significant downside is that we're introducing
-		// an extra copy.
-		
-		#if (js && html5)
 		return this.regData.subarray (index, index + size);
-		#else
-		var result = new Float32Array (size);
-		
-		for (i in 0...size) {
-			
-			result[i] = this.regData[index + i];
-			
-		}
-		
-		return result;
-		#end
 		
 	}
+	#else
+	private function __getRegisters (index:Int, size:Int):BytePointer {
+		
+		regDataPointer.set (this.regData, index * 4);
+		return regDataPointer;
+		
+	}
+	#end
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class UniformMap {

@@ -1,23 +1,25 @@
 package openfl.media;
 
 
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
+import lime.utils.Float32Array;
+import openfl._internal.renderer.canvas.CanvasVideo;
+import openfl._internal.renderer.dom.DOMVideo;
+import openfl._internal.renderer.opengl.GLVideo;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
-import openfl.display.InteractiveObject;
-import openfl.display.Stage;
+import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
-#if (js && html5)
-import openfl._internal.renderer.dom.DOMRenderer;
-import js.html.MediaElement;
-import js.Browser;
-#end
-
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
+@:access(openfl.geom.Point)
 
 
 class Video extends DisplayObject {
@@ -25,11 +27,19 @@ class Video extends DisplayObject {
 	
 	public var deblocking:Int;
 	public var smoothing:Bool;
+	public var videoHeight (get, never):Int;
+	public var videoWidth (get, never):Int;
 	
 	private var __active:Bool;
+	private var __buffer:GLBuffer;
+	private var __bufferAlpha:Float;
+	private var __bufferContext:WebGLContext;
+	private var __bufferData:Float32Array;
 	private var __dirty:Bool;
 	private var __height:Float;
 	private var __stream:NetStream;
+	private var __texture:GLTexture;
+	private var __textureTime:Float;
 	private var __width:Float;
 	
 	
@@ -51,7 +61,11 @@ class Video extends DisplayObject {
 		__stream = netStream;
 		
 		#if (js && html5)
-		__stream.__video.play ();
+		if (__stream != null) {
+			
+			__stream.__video.play ();
+			
+		}
 		#end
 		
 	}
@@ -64,13 +78,142 @@ class Video extends DisplayObject {
 	}
 	
 	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		#if (js && html5)
+		
+		if (__renderable && __stream != null) {
+			
+			__setRenderDirty ();
+			
+		}
+		
+		#end
+		
+	}
+	
+	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		var bounds = Rectangle.__temp;
+		var bounds = Rectangle.__pool.get ();
 		bounds.setTo (0, 0, __width, __height);
 		bounds.__transform (bounds, matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		
+		Rectangle.__pool.release (bounds);
+		
+	}
+	
+	
+	private function __getBuffer (gl:WebGLContext, alpha:Float):GLBuffer {
+		
+		var width = __width;
+		var height = __height;
+		
+		if (width == 0 || height == 0) return null;
+		
+		if (__buffer == null || __bufferContext != gl) {
+			
+			#if openfl_power_of_two
+			
+			var newWidth = 1;
+			var newHeight = 1;
+			
+			while (newWidth < width) {
+				
+				newWidth <<= 1;
+				
+			}
+			
+			while (newHeight < height) {
+				
+				newHeight <<= 1;
+				
+			}
+			
+			var uvWidth = width / newWidth;
+			var uvHeight = height / newHeight;
+			
+			#else
+			
+			var uvWidth = 1;
+			var uvHeight = 1;
+			
+			#end
+			
+			__bufferData = new Float32Array ([
+				
+				width, height, 0, uvWidth, uvHeight, alpha,
+				0, height, 0, 0, uvHeight, alpha,
+				width, 0, 0, uvWidth, 0, alpha,
+				0, 0, 0, 0, 0, alpha
+				
+			]);
+			
+			__bufferAlpha = alpha;
+			__bufferContext = gl;
+			__buffer = gl.createBuffer ();
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			
+		} else if (__bufferAlpha != alpha) {
+			
+			__bufferData[5] = alpha;
+			__bufferData[11] = alpha;
+			__bufferData[17] = alpha;
+			__bufferData[23] = alpha;
+			__bufferAlpha = alpha;
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			
+		}
+		
+		return __buffer;
+		
+	}
+	
+	
+	private function __getTexture (gl:GLRenderContext):GLTexture {
+		
+		#if (js && html5)
+		
+		if (__stream == null) return null;
+		
+		if (__texture == null) {
+			
+			__texture = gl.createTexture ();
+			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			__textureTime = -1;
+			
+		}
+		
+		if (__stream.__video.currentTime != __textureTime) {
+			
+			var internalFormat = gl.RGBA;
+			var format = gl.RGBA;
+			
+			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			gl.texImage2DWEBGL (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			
+			__textureTime = __stream.__video.currentTime;
+			
+		}
+		
+		return __texture;
+		
+		#else
+		
+		return null;
+		
+		#end
 		
 	}
 	
@@ -80,11 +223,14 @@ class Video extends DisplayObject {
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		var point = globalToLocal (new Point (x, y));
+		__getRenderTransform ();
 		
-		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
+		
+		if (px > 0 && py > 0 && px <= __width && py <= __height) {
 			
-			if (stack != null) {
+			if (stack != null && !interactiveOnly) {
 				
 				stack.push (hitObject);
 				
@@ -101,113 +247,36 @@ class Video extends DisplayObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
-		var point = globalToLocal (new Point (x, y));
+		var point = Point.__pool.get ();
+		point.setTo (x, y);
 		
-		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
-			
-			return true;
-			
-		}
+		__globalToLocal (point, point);
 		
-		return false;
+		var hit = (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height);
 		
-	}
-	
-	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
-		
-		#if (js && html5)
-		if (!__renderable || __worldAlpha <= 0 || __stream == null) return;
-		
-		var context = renderSession.context;
-		
-		if (__stream.__video != null) {
-			
-			renderSession.maskManager.pushObject (this);
-			
-			context.globalAlpha = __worldAlpha;
-			var transform = __worldTransform;
-			
-			if (renderSession.roundPixels) {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-				
-			} else {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-				
-			}
-			
-			if (!smoothing) {
-				
-				untyped (context).mozImageSmoothingEnabled = false;
-				//untyped (context).webkitImageSmoothingEnabled = false;
-				untyped (context).msImageSmoothingEnabled = false;
-				untyped (context).imageSmoothingEnabled = false;
-				
-			}
-			
-			if (scrollRect == null) {
-				
-				context.drawImage (__stream.__video, 0, 0, width, height);
-				
-			} else {
-				
-				context.drawImage (__stream.__video, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-				
-			}
-			
-			if (!smoothing) {
-				
-				untyped (context).mozImageSmoothingEnabled = true;
-				//untyped (context).webkitImageSmoothingEnabled = true;
-				untyped (context).msImageSmoothingEnabled = true;
-				untyped (context).imageSmoothingEnabled = true;
-				
-			}
-			
-			renderSession.maskManager.popObject (this);
-			
-		}
-		#end
+		Point.__pool.release (point);
+		return hit;
 		
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		#if (js && html5)
-		if (stage != null && __worldVisible && __renderable) {
-			
-			if (!__active) {
-				
-				DOMRenderer.initializeElement (this, __stream.__video, renderSession);
-				__active = true;
-				__dirty = true;
-				
-			}
-			
-			if (__dirty) {
-				
-				__stream.__video.width = Std.int (__width);
-				__stream.__video.height = Std.int (__height);
-				__dirty = false;
-				
-			}
-			
-			DOMRenderer.applyStyle (this, renderSession, true, true, true);
-			
-		} else {
-			
-			if (__active) {
-				
-				renderSession.element.removeChild (__stream.__video);
-				__active = false;
-				
-			}
-			
-		}
-		#end
+		CanvasVideo.render (this, renderSession);
+		
+	}
+	
+	
+	private override function __renderDOM (renderSession:RenderSession):Void {
+		
+		DOMVideo.render (this, renderSession);
+		
+	}
+	
+	
+	private override function __renderGL (renderSession:RenderSession):Void {
+		
+		GLVideo.render (this, renderSession);
 		
 	}
 	
@@ -241,16 +310,46 @@ class Video extends DisplayObject {
 	}
 	
 	
+	private function get_videoHeight ():Int {
+		
+		#if (js && html5)
+		if (__stream != null) {
+			
+			return Std.int (__stream.__video.videoHeight);
+			
+		}
+		#end
+		
+		return 0;
+		
+	}
+	
+	
+	private function get_videoWidth ():Int {
+		
+		#if (js && html5)
+		if (__stream != null) {
+			
+			return Std.int (__stream.__video.videoWidth);
+			
+		}
+		#end
+		
+		return 0;
+		
+	}
+	
+	
 	private override function get_width ():Float {
 		
-		return __width * scaleX;
+		return __width * __scaleX;
 		
 	}
 	
 	
 	private override function set_width (value:Float):Float {
 		
-		if (scaleX != 1 || __width != value) {
+		if (__scaleX != 1 || __width != value) {
 			
 			__setTransformDirty ();
 			__dirty = true;

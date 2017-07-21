@@ -20,7 +20,8 @@ tests/unit/test/*/TestSuite.hx
 tests/unit/test/*/*/ExampleTest.hx
 tests/unit/test/*/*/TestMain.hx
 tests/unit/test/*/*/TestSuite.hx
-docs/*.xml
+tools/*.n
+docs/xml
 docs/pages
 haxedoc.xml
 .temp

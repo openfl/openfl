@@ -3,6 +3,11 @@ package openfl.geom;
 
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Utils3D {
 	
@@ -52,8 +57,7 @@ class Utils3D {
 			projectedVerts.push( x1 / w1 );
 			projectedVerts.push( y1 / w1 );
 			
-			uvts.push( 0 );
-			uvts.push( 1/w1 );
+			uvts[i + 2] = 1 / w1;
 			
 			i += 3;
 		}

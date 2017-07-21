@@ -2,8 +2,11 @@ package openfl._internal.renderer.cairo;
 
 
 import openfl.display.DisplayObject;
-import openfl.geom.Matrix;
-import openfl.text.TextField;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -22,7 +25,7 @@ class CairoShape {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderSession, shape.__worldTransform);
+			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
 			
 			var bounds = graphics.__bounds;
 			

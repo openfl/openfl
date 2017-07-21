@@ -1,20 +1,28 @@
 package openfl.display;
 
 
-import haxe.ds.Vector;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
+import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Vector;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
+@:access(openfl.errors.Error)
+@:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 
 
@@ -22,10 +30,11 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public var mouseChildren:Bool;
-	public var numChildren (get, null):Int;
+	public var numChildren (get, never):Int;
 	public var tabChildren:Bool;
 	
-	private var __removedChildren:Array<DisplayObject>;
+	private var __removedChildren:Vector<DisplayObject>;
+	private var __tempStack:Vector<DisplayObject>;
 	
 	
 	private function new () {
@@ -35,7 +44,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		mouseChildren = true;
 		
 		__children = new Array<DisplayObject> ();
-		__removedChildren = new Array<DisplayObject> ();
+		__removedChildren = new Vector<DisplayObject> ();
+		__tempStack = new Vector<DisplayObject> ();
 		
 	}
 	
@@ -49,6 +59,14 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
 		
+		if (child == null) {
+			
+			var error = new TypeError ("Error #2007: Parameter child must be non-null.");
+			error.errorID = 2007;
+			throw error;
+			
+		}
+		
 		if (index > __children.length || index < 0) {
 			
 			throw "Invalid index position " + index;
@@ -57,8 +75,14 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child.parent == this) {
 			
-			__children.remove (child);
-			__children.insert (index, child);
+			if (__children[index] != child) {
+				
+				__children.remove (child);
+				__children.insert (index, child);
+				
+				__setRenderDirty ();
+				
+			}
 			
 		} else {
 			
@@ -71,21 +95,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.insert (index, child);
 			child.parent = this;
 			
-			var addedToStage = (child.stage == null);
+			var addedToStage = (stage != null && child.stage == null);
 			
 			if (addedToStage) {
 				
-				child.stage = stage;
-				
-				if (child.__children != null) {
-					
-					for (_child in child.__children) {
-						
-						_child.stage = stage;
-						
-					}
-					
-				}
+				this.__setStageReference (stage);
 				
 			}
 			
@@ -99,19 +113,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (addedToStage) {
 				
-				var event = new Event (Event.ADDED_TO_STAGE, false, false);
-				
-				child.dispatchEvent (event);
-				
-				if (child.__children != null) {
-					
-					for (_child in child.__children) {
-						
-						_child.dispatchEvent (event);
-						
-					}
-					
-				}
+				child.__dispatchChildren (new Event (Event.ADDED_TO_STAGE, false, false), __tempStack);
+				__tempStack.length = 0;
 				
 			}
 			
@@ -196,47 +199,24 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child != null && child.parent == this) {
 			
+			child.__setTransformDirty ();
+			child.__setRenderDirty ();
+			__setRenderDirty();
+			
 			child.__dispatchEvent (new Event (Event.REMOVED, true));
 			
 			if (stage != null) {
 				
-				var event = new Event (Event.REMOVED_FROM_STAGE, false, false);
-				
-				child.dispatchEvent (event);
-				
-				if (child.__children != null) {
-					
-					for (_child in child.__children) {
-						
-						_child.dispatchEvent (event);
-						
-					}
-					
-				}
-				
-				child.stage = null;
-				
-				if (stage.focus == child) {
+				if (child.stage != null && stage.focus == child) {
 					
 					stage.focus = null;
 					
 				}
 				
-				if (child.__children != null) {
-					
-					for (_child in child.__children) {
-						
-						_child.stage = null;
-						
-						if (stage.focus == _child) {
-							
-							stage.focus = null;
-							
-						}
-						
-					}
-					
-				}
+				child.__dispatchChildren (new Event (Event.REMOVED_FROM_STAGE, false, false), __tempStack);
+				__tempStack.length = 0;
+				
+				child.__setStageReference (null);
 				
 			}
 			
@@ -244,8 +224,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.remove (child);
 			__removedChildren.push (child);
 			child.__setTransformDirty ();
-			child.__setRenderDirty ();
-			__setRenderDirty();
 			
 		}
 		
@@ -344,34 +322,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child1.parent == this && child2.parent == this) {
 			
-			#if (haxe_ver > 3.100)
-			
 			var index1 = __children.indexOf (child1);
 			var index2 = __children.indexOf (child2);
 			
-			#else
-			
-			var index1 = -1;
-			var index2 = -1;
-			
-			for (i in 0...__children.length) {
-				
-				if (__children[i] == child1) {
-					
-					index1 = i;
-					
-				} else if (__children[i] == child2) {
-					
-					index2 = i;
-					
-				}
-				
-			}
-			
-			#end
-			
 			__children[index1] = child2;
 			__children[index2] = child1;
+			
+			__setRenderDirty ();
 			
 		}
 		
@@ -384,29 +341,22 @@ class DisplayObjectContainer extends InteractiveObject {
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
 		swap = null;
+		__setRenderDirty ();
 		
 	}
 	
 	
-	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
+	private override function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
 		
-		if (event.target == null) {
-			
-			event.target = this;
-			
-		}
+		var success = super.__dispatchChildren (event, stack);
 		
-		var result = super.__broadcast (event, notifyChilden);
-		
-		if (!event.__isCanceled && notifyChilden) {
+		if (success && __children != null) {
 			
 			for (child in __children) {
 				
-				child.__broadcast (event, true);
-				
-				if (event.__isCanceled) {
+				if (!child.__dispatchChildren (event, stack)) {
 					
-					return true;
+					return false;
 					
 				}
 				
@@ -414,7 +364,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		return result;
+		return success;
 		
 	}
 	
@@ -445,7 +395,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		for (child in __children) {
 			
-			if (child.scaleX == 0 || child.scaleY == 0) continue;
+			if (child.__scaleX == 0 || child.__scaleY == 0) continue;
 			child.__getBounds (rect, child.__worldTransform);
 			
 		}
@@ -484,7 +434,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		for (child in __children) {
 			
-			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
+			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
 			child.__getRenderBounds (rect, child.__worldTransform);
 			
 		}
@@ -503,7 +453,23 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
-		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
+		
+		if (__scrollRect != null) {
+			
+			var point = Point.__pool.get ();
+			point.setTo (x, y);
+			__getRenderTransform ().__transformInversePoint (point);
+			
+			if (!__scrollRect.containsPoint (point)) {
+				
+				Point.__pool.release (point);
+				return false;
+				
+			}
+			
+			Point.__pool.release (point);
+			
+		}
 		
 		var i = __children.length;
 		if (interactiveOnly) {
@@ -615,17 +581,35 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		super.__renderCairo (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
+		if (renderSession.clearRenderDirty) {
 			
-			child.__renderCairo (renderSession);
+			for (child in __children) {
+				
+				child.__renderCairo (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderCairo (renderSession);
+				
+			}
 			
 		}
 		
@@ -639,19 +623,17 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
+		#end
 		
 	}
 	
 	
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		if (__graphics != null) {
 			
 			CairoGraphics.renderMask (__graphics, renderSession);
@@ -663,23 +645,41 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__renderCairoMask (renderSession);
 			
 		}
+		#end
 		
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
 		
 		#if !neko
 		
 		super.__renderCanvas (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
+		if (renderSession.clearRenderDirty) {
 			
-			child.__renderCanvas (renderSession);
+			for (child in __children) {
+				
+				child.__renderCanvas (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderCanvas (renderSession);
+				
+			}
 			
 		}
 		
@@ -693,11 +693,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -706,7 +702,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -714,11 +710,12 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		var bounds = new Rectangle ();
+		var bounds = Rectangle.__pool.get ();
 		__getLocalBounds (bounds);
 		
 		renderSession.context.rect (0, 0, bounds.width, bounds.height);
 		
+		Rectangle.__pool.release (bounds);
 		/*for (child in __children) {
 			
 			child.__renderMask (renderSession);
@@ -728,17 +725,34 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
-		#if !neko
+		#if dom
 		
 		super.__renderDOM (renderSession);
 		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
 		renderSession.maskManager.pushObject (this);
 		
-		for (child in __children) {
+		if (renderSession.clearRenderDirty) {
 			
-			child.__renderDOM (renderSession);
+			for (child in __children) {
+				
+				child.__renderDOM (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderDOM (renderSession);
+				
+			}
 			
 		}
 		
@@ -752,11 +766,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -765,17 +775,35 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		super.__renderGL (renderSession);
 		
-		renderSession.maskManager.pushObject (this);
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
-		for (child in __children) {
+		renderSession.maskManager.pushObject (this);
+		renderSession.filterManager.pushObject (this);
+		
+		if (renderSession.clearRenderDirty) {
 			
-			child.__renderGL (renderSession);
+			for (child in __children) {
+				
+				child.__renderGL (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderGL (renderSession);
+				
+			}
 			
 		}
 		
@@ -789,17 +817,52 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
+		renderSession.filterManager.popObject (this);
 		renderSession.maskManager.popObject (this);
 		
 	}
 	
 	
+	private override function __setStageReference (stage:Stage):Void {
+		
+		super.__setStageReference (stage);
+		
+		if (__children != null) {
+			
+			for (child in __children) {
+				
+				child.__setStageReference (stage);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private override function __setTransformDirty ():Void {
+		
+		if (!__transformDirty) {
+			
+			super.__setTransformDirty ();
+			
+			if (__children != null) {
+				
+				for (child in __children) {
+					
+					child.__setTransformDirty ();
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+
+
 	private override function __stopAllMovieClips ():Void {
 		
 		for (child in __children) {
@@ -814,13 +877,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		super.__update (transformOnly, updateChildren, maskGraphics);
-		
-		// nested objects into a mask are non renderables but are part of the mask
-		if (!__renderable && !__isMask #if dom && !__worldAlphaChanged && !__worldClipChanged && !__worldTransformChanged && !__worldVisibleChanged #end) {
-			
-			return;
-			
-		}
 		
 		if (updateChildren) {
 			

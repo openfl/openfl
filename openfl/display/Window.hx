@@ -6,6 +6,12 @@ import lime.app.Config;
 import lime.ui.Window in LimeWindow;
 import openfl.Lib;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+@:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Stage)
 
 
@@ -23,9 +29,19 @@ class Window extends LimeWindow {
 		
 		super.create (application);
 		
-		#if !flash
+		#if (!flash && !macro)
 		
 		stage = new Stage (this, Reflect.hasField (config, "background") ? config.background : 0xFFFFFF);
+		
+		if (Reflect.hasField (config, "parameters")) {
+			
+			try {
+				
+				stage.loaderInfo.parameters = config.parameters;
+				
+			} catch (e:Dynamic) {}
+			
+		}
 		
 		if (Reflect.hasField (config, "resizable") && !config.resizable) {
 			

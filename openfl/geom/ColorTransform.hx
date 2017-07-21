@@ -4,9 +4,16 @@ package openfl.geom;
 import lime.math.ColorMatrix;
 import lime.utils.Float32Array;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class ColorTransform {
 	
+	
+	private static var __limeColorMatrix:Float32Array;
 	
 	public var alphaMultiplier:Float;
 	public var alphaOffset:Float;
@@ -58,6 +65,21 @@ class ColorTransform {
 	private function __clone ():ColorTransform {
 		
 		return new ColorTransform (redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+		
+	}
+	
+	
+	private function __copyFrom (ct:ColorTransform):Void {
+		
+		redMultiplier = ct.redMultiplier;
+		greenMultiplier = ct.greenMultiplier;
+		blueMultiplier = ct.blueMultiplier;
+		alphaMultiplier = ct.alphaMultiplier;
+		
+		redOffset = ct.redOffset;
+		greenOffset = ct.greenOffset;
+		blueOffset = ct.blueOffset;
+		alphaOffset = ct.alphaOffset;
 		
 	}
 	
@@ -122,7 +144,22 @@ class ColorTransform {
 	
 	private function __toLimeColorMatrix ():ColorMatrix {
 		
-		return cast new Float32Array ([ redMultiplier, 0, 0, 0, redOffset / 255, 0, greenMultiplier, 0, 0, greenOffset / 255, 0, 0, blueMultiplier, 0, blueOffset / 255, 0, 0, 0, alphaMultiplier, alphaOffset / 255 ]);
+		if (__limeColorMatrix == null) {
+			
+			__limeColorMatrix = new Float32Array (20);
+			
+		}
+		
+		__limeColorMatrix[0] = redMultiplier;
+		__limeColorMatrix[4] = redOffset / 255;
+		__limeColorMatrix[6] = greenMultiplier;
+		__limeColorMatrix[9] = greenOffset / 255;
+		__limeColorMatrix[12] = blueMultiplier;
+		__limeColorMatrix[14] = blueOffset / 255;
+		__limeColorMatrix[18] = alphaMultiplier;
+		__limeColorMatrix[19] = alphaOffset / 255;
+		
+		return __limeColorMatrix;
 		
 	}
 	

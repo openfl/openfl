@@ -6,6 +6,11 @@ import openfl._internal.renderer.AbstractMaskManager;
 import openfl.display.*;
 import openfl.geom.*;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
 @:keep
@@ -43,9 +48,9 @@ class CairoMaskManager extends AbstractMaskManager {
 	
 	public override function pushObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
-		if (handleScrollRect && object.scrollRect != null) {
+		if (handleScrollRect && object.__scrollRect != null) {
 			
-			pushRect (object.scrollRect, object.__worldTransform);
+			pushRect (object.__scrollRect, object.__renderTransform);
 			
 		}
 		
@@ -87,7 +92,7 @@ class CairoMaskManager extends AbstractMaskManager {
 			
 		}
 		
-		if (handleScrollRect && object.scrollRect != null) {
+		if (handleScrollRect && object.__scrollRect != null) {
 			
 			popRect ();
 			

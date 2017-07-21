@@ -14,16 +14,24 @@ import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:allow(openfl._internal.renderer.DrawCommandReader)
 
 
 class DrawCommandBuffer {
 	
 	
+	private static var empty:DrawCommandBuffer = new DrawCommandBuffer ();
+	
 	public var length (get, never):Int; 
 	public var types:Array<DrawCommandType>;
 	
 	private var b:Array<Bool>;
+	private var copyOnWrite:Bool;
 	private var f:Array<Float>;
 	private var ff:Array<Array<Float>>;
 	private var i:Array<Int>;
@@ -33,19 +41,44 @@ class DrawCommandBuffer {
 	
 	public function new () {
 		
-		types = [];
-		
-		b = [];
-		i = [];
-		f = [];
-		o = [];
-		ff = [];
-		ii = [];
+		if (empty == null) {
+			
+			types = [];
+			
+			b = [];
+			i = [];
+			f = [];
+			o = [];
+			ff = [];
+			ii = [];
+			
+			copyOnWrite = true;
+			
+		} else {
+			
+			clear ();
+			
+		}
 		
 	}
 	
 	
 	public function append (other:DrawCommandBuffer):DrawCommandBuffer {
+		
+		if (length == 0) {
+			
+			this.types = other.types;
+			this.b = other.b;
+			this.i = other.i;
+			this.f = other.f;
+			this.o = other.o;
+			this.ff = other.ff;
+			this.ii = other.ii;
+			this.copyOnWrite = other.copyOnWrite = true;
+			
+			return other;
+			
+		}
 		
 		var data = new DrawCommandReader (other);
 		
@@ -82,7 +115,9 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+		
+		prepareWrite ();
 		
 		types.push (BEGIN_BITMAP_FILL);
 		o.push (bitmap);
@@ -94,6 +129,8 @@ class DrawCommandBuffer {
 	
 	public function beginFill (color:Int, alpha:Float):Void {
 		
+		prepareWrite ();
+		
 		types.push (BEGIN_FILL);
 		i.push (color);
 		f.push (alpha);
@@ -102,6 +139,8 @@ class DrawCommandBuffer {
 	
 	
 	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
+		
+		prepareWrite ();
 		
 		types.push (BEGIN_GRADIENT_FILL);
 		o.push (type);
@@ -118,14 +157,16 @@ class DrawCommandBuffer {
 	
 	public function clear ():Void {
 		
-		types.splice (0, types.length);
+		types = empty.types;
 		
-		b.splice (0, b.length);
-		i.splice (0, i.length);
-		f.splice (0, f.length);
-		o.splice (0, o.length);
-		ff.splice (0, ff.length);
-		ii.splice (0, ii.length);
+		b = empty.b;
+		i = empty.i;
+		f = empty.f;
+		o = empty.o;
+		ff = empty.ff;
+		ii = empty.ii;
+		
+		copyOnWrite = true;
 		
 	}
 	
@@ -141,6 +182,8 @@ class DrawCommandBuffer {
 	
 	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void {
 		
+		prepareWrite ();
+		
 		types.push (CUBIC_CURVE_TO);
 		f.push (controlX1);
 		f.push (controlY1);
@@ -152,6 +195,8 @@ class DrawCommandBuffer {
 	}
 	
 	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void {
+		
+		prepareWrite ();
 		
 		types.push (CURVE_TO);
 		f.push (controlX);
@@ -180,6 +225,8 @@ class DrawCommandBuffer {
 	
 	public function drawCircle (x:Float, y:Float, radius:Float):Void {
 		
+		prepareWrite ();
+		
 		types.push (DRAW_CIRCLE);
 		f.push (x);
 		f.push (y);
@@ -189,6 +236,8 @@ class DrawCommandBuffer {
 	
 	
 	public function drawEllipse (x:Float, y:Float, width:Float, height:Float):Void {
+		
+		prepareWrite ();
 		
 		types.push (DRAW_ELLIPSE);
 		f.push (x);
@@ -201,6 +250,8 @@ class DrawCommandBuffer {
 	
 	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void {
 		
+		prepareWrite ();
+		
 		types.push (DRAW_RECT);
 		f.push (x);
 		f.push (y);
@@ -210,6 +261,8 @@ class DrawCommandBuffer {
 	}
 	
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void {
+		
+		prepareWrite ();
 		
 		types.push (DRAW_ROUND_RECT);
 		f.push (x);
@@ -224,6 +277,8 @@ class DrawCommandBuffer {
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void {
 		
+		prepareWrite ();
+		
 		types.push (DRAW_TRIANGLES);
 		o.push (vertices);
 		o.push (indices);
@@ -235,12 +290,16 @@ class DrawCommandBuffer {
 	
 	public function endFill ():Void {
 		
+		prepareWrite ();
+		
 		types.push (END_FILL);
 		
 	}
 	
 	
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+		
+		prepareWrite ();
 		
 		types.push (LINE_BITMAP_STYLE);
 		o.push (bitmap);
@@ -252,6 +311,8 @@ class DrawCommandBuffer {
 	
 	
 	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
+		
+		prepareWrite ();
 		
 		types.push (LINE_GRADIENT_STYLE);
 		o.push (type);
@@ -268,6 +329,8 @@ class DrawCommandBuffer {
 	
 	public function lineStyle (thickness:Null<Float>, color:Int, alpha:Float, pixelHinting:Bool, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Float):Void {
 		
+		prepareWrite ();
+		
 		types.push (LINE_STYLE);
 		o.push (thickness);
 		i.push (color);
@@ -283,6 +346,8 @@ class DrawCommandBuffer {
 	
 	public function lineTo (x:Float, y:Float):Void {
 		
+		prepareWrite ();
+		
 		types.push (LINE_TO);
 		f.push (x);
 		f.push (y);
@@ -292,6 +357,8 @@ class DrawCommandBuffer {
 	
 	public function moveTo (x:Float, y:Float):Void {
 		
+		prepareWrite ();
+		
 		types.push (MOVE_TO);
 		f.push (x);
 		f.push (y);
@@ -299,7 +366,28 @@ class DrawCommandBuffer {
 	}
 	
 	
+	private function prepareWrite ():Void {
+		
+		if (copyOnWrite) {
+			
+			types = types.copy ();
+			b = b.copy ();
+			i = i.copy ();
+			f = f.copy ();
+			o = o.copy ();
+			ff = ff.copy ();
+			ii = ii.copy ();
+			
+			copyOnWrite = false;
+			
+		}
+		
+	}
+	
+	
 	public function overrideMatrix (matrix:Matrix):Void {
+		
+		prepareWrite ();
 		
 		types.push (OVERRIDE_MATRIX);
 		o.push (matrix);

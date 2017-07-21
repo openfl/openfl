@@ -16,19 +16,10 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="D:\Development\Haxe\openfl" />
-    <class path="d:\Development\Haxe\lime" />
     <class path="Source" />
-    <class path="Export\html5\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=3.0.0-beta&#xA;lime=2.1.3&#xA;tools=2.1.3&#xA;no-compilation&#xA;openfl-html5&#xA;canvas&#xA;lime-html5&#xA;html5&#xA;web&#xA;html5" />
-    <option flashStrict="False" />
-    <option noInlineOnDebug="False" />
-    <option mainClass="ApplicationMain" />
-    <option enabledebug="False" />
-    <option additional="--remap flash:openfl&#xA;--macro allowPackage(&quot;flash&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

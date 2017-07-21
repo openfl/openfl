@@ -11,25 +11,17 @@ package openfl.ui; #if (display || !flash)
 @:final extern class Mouse {
 	
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var cursor:Dynamic;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public static var supportsCursor (default, null):Bool;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public static var supportsNativeCursor (default, null):Bool;
-	#end
+	public static var cursor:String;
+	public static var supportsCursor (default, null):Bool;
+	public static var supportsNativeCursor (default, null):Bool;
 	
 	
 	/**
 	 * Hides the pointer. The pointer is visible by default.
 	 *
-	 * <p><b>Note:</b> You need to call <code>Mouse.hide()</code> only once,
+	 * **Note:** You need to call `Mouse.hide()` only once,
 	 * regardless of the number of previous calls to
-	 * <code>Mouse.show()</code>.</p>
+	 * `Mouse.show()`.
 	 * 
 	 */
 	public static function hide ():Void;
@@ -43,9 +35,9 @@ package openfl.ui; #if (display || !flash)
 	/**
 	 * Displays the pointer. The pointer is visible by default.
 	 *
-	 * <p><b>Note:</b> You need to call <code>Mouse.show()</code> only once,
+	 * **Note:** You need to call `Mouse.show()` only once,
 	 * regardless of the number of previous calls to
-	 * <code>Mouse.hide()</code>.</p>
+	 * `Mouse.hide()`.
 	 * 
 	 */
 	public static function show ():Void;

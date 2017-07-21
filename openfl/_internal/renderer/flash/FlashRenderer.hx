@@ -20,7 +20,7 @@ class FlashRenderer {
 			
 			instances = new Dictionary (true);
 			
-			Lib.current.stage.addEventListener (Event.ENTER_FRAME, render);
+			Lib.current.stage.addEventListener (Event.ENTER_FRAME, render, false, -2147483648);
 			
 		}
 		
@@ -43,10 +43,13 @@ class FlashRenderer {
 }
 
 
+@:allow(openfl._internal.renderer.flash.FlashRenderer)
+
+
 interface IDisplayObject {
 	
 	
-	public function __renderFlash ():Void;
+	private function __renderFlash ():Void;
 	
 	
 }

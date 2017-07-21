@@ -13,10 +13,7 @@ import openfl.Vector;
 	
 	public function new (commands:Vector<Int> = null, data:Vector<Float> = null, ?winding:GraphicsPathWinding);
 	
-	#if flash
-	@:require(flash11) public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float): Void;
-	#end
-	
+	@:require(flash11) public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void;
 	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void;
 	public function lineTo (x:Float, y:Float):Void;
 	public function moveTo (x:Float, y:Float):Void;

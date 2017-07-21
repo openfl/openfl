@@ -31,6 +31,18 @@ class SpriteTest {
 	}
 	
 	
+	@Test public function hitArea () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.hitArea;
+		
+		Assert.isNull (exists);
+		
+	}
+	
+	
 	@Test public function useHandCursor () {
 		
 		// TODO: Confirm functionality

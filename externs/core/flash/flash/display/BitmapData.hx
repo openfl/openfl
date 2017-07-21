@@ -1,6 +1,8 @@
 package flash.display; #if (!display && flash)
 
 
+import lime.app.Future;
+import lime.app.Promise;
 import lime.graphics.Image;
 import openfl.display.BitmapDataChannel;
 import openfl.filters.BitmapFilter;
@@ -20,6 +22,9 @@ extern class BitmapData implements IBitmapDrawable {
 	public var image (get, never):Image;
 	private inline function get_image ():Image { return null; }
 	
+	public var readable (get, never):Bool;
+	private inline function get_readable ():Bool { return true; }
+	
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
@@ -37,6 +42,9 @@ extern class BitmapData implements IBitmapDrawable {
 	#end
 	
 	public function dispose ():Void;
+	
+	public inline function disposeImage ():Void {}
+	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void;
 	@:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null) : Void;
 	@:require(flash11_3) public function encode (rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray;
@@ -44,21 +52,21 @@ extern class BitmapData implements IBitmapDrawable {
 	public function floodFill (x:Int, y:Int, color:UInt):Void;
 	
 	
-	public static inline function fromBase64 (base64:String, type:String, onload:BitmapData -> Void = null):BitmapData {
+	public static inline function fromBase64 (base64:String, type:String):BitmapData {
 		
 		return null;
 		
 	}
 	
 	
-	public static inline function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null):BitmapData {
+	public static inline function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData {
 		
 		return null;
 		
 	}
 	
 	
-	public static inline function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
+	public static inline function fromFile (path:String):BitmapData {
 		
 		return null;
 		
@@ -84,6 +92,81 @@ extern class BitmapData implements IBitmapDrawable {
 	
 	@:require(flash10) public function histogram (hRect:Rectangle = null):Vector<Vector<Float>>;
 	public function hitTest (firstPoint:Point, firstAlphaThreshold:UInt, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:UInt = 1):Bool;
+	
+	
+	public static inline function loadFromBase64 (base64:String, type:String):Future<BitmapData> {
+		
+		return Image.loadFromBase64 (base64, type).then (function (image) {
+			
+			if (image == null) {
+				
+				return Future.withValue (null);
+				
+			} else {
+				
+				return Future.withValue (image.src);
+				
+			}
+			
+		});
+		
+	}
+	
+	
+	public static inline function loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData> {
+		
+		return Image.loadFromBytes (bytes).then (function (image) {
+			
+			if (image == null) {
+				
+				return Future.withValue (null);
+				
+			} else {
+				
+				var bitmapData:BitmapData = image.src;
+				
+				if (rawAlpha != null) {
+					
+					var data = bitmapData.getPixels (bitmapData.rect);
+					
+					for (i in 0...rawAlpha.length) {
+						
+						data[i * 4] = rawAlpha.readUnsignedByte ();
+						
+					}
+					
+					bitmapData.setPixels (bitmapData.rect, data);
+					
+				}
+				
+				return Future.withValue (bitmapData);
+				
+			}
+			
+		});
+		
+	}
+	
+	
+	public static inline function loadFromFile (path:String):Future<BitmapData> {
+		
+		return Image.loadFromFile (path).then (function (image) {
+			
+			if (image == null) {
+				
+				return Future.withValue (null);
+				
+			} else {
+				
+				return Future.withValue (image.src);
+				
+			}
+			
+		});
+		
+	}
+	
+	
 	public function lock ():Void;
 	public function merge (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt, alphaMultiplier:UInt):Void;
 	public function noise (randomSeed:Int, low:UInt = 0, high:UInt = 255, channelOptions:UInt = 7, grayScale:Bool = false):Void;

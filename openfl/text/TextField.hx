@@ -3,28 +3,42 @@ package openfl.text;
 
 import haxe.Timer;
 import lime.system.Clipboard;
+import lime.text.UTF8String;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
+import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.swf.SWFLite;
+import openfl._internal.symbols.DynamicTextSymbol;
+import openfl._internal.symbols.FontSymbol;
+import openfl._internal.text.HtmlParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
+import openfl._internal.text.TextLayoutGroup;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
+import openfl.events.TextEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.net.URLRequest;
 import openfl.Lib;
 
 #if (js && html5)
 import js.html.DivElement;
+#end
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
 #end
 
 @:access(openfl.display.Graphics)
@@ -37,6 +51,7 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
+	private static var __missingFontWarning = new Map<String, Bool> ();
 	
 	public var antiAliasType (get, set):AntiAliasType;
 	public var autoSize (get, set):TextFieldAutoSize;
@@ -44,30 +59,31 @@ class TextField extends InteractiveObject {
 	public var backgroundColor (get, set):Int;
 	public var border (get, set):Bool;
 	public var borderColor (get, set):Int;
-	public var bottomScrollV (get, null):Int;
-	public var caretIndex (get, null):Int;
+	public var bottomScrollV (get, never):Int;
+	public var caretIndex (get, never):Int;
 	public var defaultTextFormat (get, set):TextFormat;
 	public var displayAsPassword (get, set):Bool;
 	public var embedFonts (get, set):Bool;
 	public var gridFitType (get, set):GridFitType;
-	public var htmlText (get, set):String;
-	public var length (get, null):Int;
+	public var htmlText (get, set):UTF8String;
+	public var length (get, never):Int;
 	public var maxChars (get, set):Int;
-	public var maxScrollH (get, null):Int;
-	public var maxScrollV (get, null):Int;
+	public var maxScrollH (get, never):Int;
+	public var maxScrollV (get, never):Int;
+	public var mouseWheelEnabled (get, set):Bool;
 	public var multiline (get, set):Bool;
-	public var numLines (get, null):Int;
-	public var restrict (get, set):String;
+	public var numLines (get, never):Int;
+	public var restrict (get, set):UTF8String;
 	public var scrollH (get, set):Int;
 	public var scrollV (get, set):Int;
 	public var selectable (get, set):Bool;
-	public var selectionBeginIndex (get, null):Int;
-	public var selectionEndIndex (get, null):Int;
+	public var selectionBeginIndex (get, never):Int;
+	public var selectionEndIndex (get, never):Int;
 	public var sharpness (get, set):Float;
-	public var text (get, set):String;
+	public var text (get, set):UTF8String;
 	public var textColor (get, set):Int;
-	public var textHeight (get, null):Float;
-	public var textWidth (get, null):Float;
+	public var textHeight (get, never):Float;
+	public var textWidth (get, never):Float;
 	public var type (get, set):TextFieldType;
 	public var wordWrap (get, set):Bool;
 	
@@ -75,11 +91,18 @@ class TextField extends InteractiveObject {
 	private var __caretIndex:Int;
 	private var __cursorTimer:Timer;
 	private var __dirty:Bool;
+	private var __displayAsPassword:Bool;
 	private var __inputEnabled:Bool;
 	private var __isHTML:Bool;
 	private var __layoutDirty:Bool;
+	private var __mouseWheelEnabled:Bool;
+	private var __offsetX:Float;
+	private var __offsetY:Float;
 	private var __selectionIndex:Int;
 	private var __showCursor:Bool;
+	private var __symbol:DynamicTextSymbol;
+	private var __text:UTF8String;
+	private var __htmlText:UTF8String;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
 	
@@ -93,10 +116,15 @@ class TextField extends InteractiveObject {
 		super ();
 		
 		__caretIndex = -1;
+		__displayAsPassword = false;
 		__graphics = new Graphics (this);
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
+		__offsetX = 0;
+		__offsetY = 0;
 		__tabEnabled = true;
+		__mouseWheelEnabled = true;
+		__text = "";
 		
 		if (__defaultTextFormat == null) {
 			
@@ -118,18 +146,22 @@ class TextField extends InteractiveObject {
 	
 	public function appendText (text:String):Void {
 		
-		__textEngine.text += text;
-		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
+		if (text == null || text == "") return;
 		
 		__dirty = true;
 		__layoutDirty = true;
+		__setRenderDirty ();
+		
+		__updateText (__text + text);
+		
+		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 		
 	}
 	
 	
 	public function getCharBoundaries (charIndex:Int):Rectangle {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
+		if (charIndex < 0 || charIndex > __text.length - 1) return null;
 		
 		__updateLayout ();
 		
@@ -205,7 +237,7 @@ class TextField extends InteractiveObject {
 	
 	public function getFirstCharInParagraph (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
+		if (charIndex < 0 || charIndex > __text.length - 1) return 0;
 		
 		var index = __textEngine.getLineBreakIndex ();
 		var startIndex = 0;
@@ -260,7 +292,7 @@ class TextField extends InteractiveObject {
 	
 	public function getLineIndexOfChar (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return -1;
+		if (charIndex < 0 || charIndex > __text.length) return -1;
 		
 		__updateLayout ();
 		
@@ -303,7 +335,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (endIndex == -1) endIndex = __textEngine.text.length;
+		if (endIndex == -1) endIndex = __text.length;
 		return endIndex - startIndex;
 		
 	}
@@ -379,7 +411,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (endIndex == -1) endIndex = __textEngine.text.length;
+		if (endIndex == -1) endIndex = __text.length;
 		
 		return __textEngine.text.substring (startIndex, endIndex);
 		
@@ -388,12 +420,12 @@ class TextField extends InteractiveObject {
 	
 	public function getParagraphLength (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
+		if (charIndex < 0 || charIndex > __text.length - 1) return 0;
 		
 		var startIndex = getFirstCharInParagraph (charIndex);
 		var endIndex = __textEngine.getLineBreakIndex (charIndex) + 1;
 		
-		if (endIndex == 0) endIndex = __textEngine.text.length;
+		if (endIndex == 0) endIndex = __text.length;
 		return endIndex - startIndex;
 		
 	}
@@ -452,17 +484,17 @@ class TextField extends InteractiveObject {
 		
 		replaceText (startIndex, endIndex, value);
 		
-		__caretIndex = startIndex + value.length;
-		__selectionIndex = __caretIndex;
+		var i = startIndex + value.length;
+		setSelection(i,i);
 		
 	}
 	
 	
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
 		
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null) return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
 		
-		__textEngine.text = __textEngine.text.substring (0, beginIndex) + newText + __textEngine.text.substring (endIndex);
+		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
 		
 		var offset = newText.length - (endIndex - beginIndex);
 		
@@ -480,7 +512,18 @@ class TextField extends InteractiveObject {
 				
 			} else if (range.start >= beginIndex && range.end <= endIndex) {
 				
-				__textEngine.textFormatRanges.splice (i, 1);
+				if (i > 0) {
+					
+					__textEngine.textFormatRanges.splice (i, 1);
+					
+				} else {
+					
+					range.start = 0;
+					range.end = beginIndex + newText.length;
+					i++;
+					
+				}
+				
 				offset -= (range.end - range.start);
 				
 			} else if (range.start > beginIndex && range.start <= endIndex) {
@@ -498,6 +541,7 @@ class TextField extends InteractiveObject {
 		
 		__dirty = true;
 		__layoutDirty = true;
+		__setRenderDirty ();
 		
 	}
 	
@@ -512,49 +556,549 @@ class TextField extends InteractiveObject {
 	
 	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void {
 		
-		if (format.font != null) __textFormat.font = format.font;
-		if (format.size != null) __textFormat.size = format.size;
-		if (format.color != null) __textFormat.color = format.color;
-		if (format.bold != null) __textFormat.bold = format.bold;
-		if (format.italic != null) __textFormat.italic = format.italic;
-		if (format.underline != null) __textFormat.underline = format.underline;
-		if (format.url != null) __textFormat.url = format.url;
-		if (format.target != null) __textFormat.target = format.target;
-		if (format.align != null) __textFormat.align = format.align;
-		if (format.leftMargin != null) __textFormat.leftMargin = format.leftMargin;
-		if (format.rightMargin != null) __textFormat.rightMargin = format.rightMargin;
-		if (format.indent != null) __textFormat.indent = format.indent;
-		if (format.leading != null) __textFormat.leading = format.leading;
-		if (format.blockIndent != null) __textFormat.blockIndent = format.blockIndent;
-		if (format.bullet != null) __textFormat.bullet = format.bullet;
-		if (format.kerning != null) __textFormat.kerning = format.kerning;
-		if (format.letterSpacing != null) __textFormat.letterSpacing = format.letterSpacing;
-		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
+		var max = text.length;
+		var range;
+		
+		if (beginIndex < 0) beginIndex = 0;
+		if (endIndex < 0) endIndex = 0;
+		
+		if (endIndex == 0) {
+			
+			if (beginIndex == 0) {
+				
+				endIndex = max;
+				
+			} else {
+				
+				endIndex = beginIndex + 1;
+				
+			}
+			
+		}
+		
+		if (endIndex < beginIndex) return;
+		
+		if (beginIndex == 0 && endIndex == max) {
+			
+			__textFormat.__merge (format);
+			
+			if (__textEngine.textFormatRanges.length > 1) {
+				
+				__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
+				
+				range = __textEngine.textFormatRanges[0];
+				range.format = __textFormat;
+				range.start = 0;
+				range.end = max;
+				
+			}
+			
+		} else {
+			
+			var index = __textEngine.textFormatRanges.length;
+			var searchIndex;
+			
+			while (index > 0) {
+				
+				index--;
+				range = __textEngine.textFormatRanges[index];
+				
+				if (range.start == beginIndex && range.end == endIndex) {
+					
+					range.format = __defaultTextFormat.clone ();
+					range.format.__merge (format);
+					return;
+					
+				}
+				
+				if (range.start > beginIndex && range.end < endIndex) {
+					
+					searchIndex = __textEngine.textFormatRanges.indexOf (range);
+					
+					if (searchIndex > -1) {
+						
+						__textEngine.textFormatRanges.splice (searchIndex, 1);
+						
+					}
+					
+				}
+				
+			}
+			
+			var prevRange = null, nextRange = null;
+			
+			for (i in 0...__textEngine.textFormatRanges.length) {
+				
+				range = __textEngine.textFormatRanges[i];
+				
+				if (beginIndex > 0) {
+					
+					if (prevRange == null && range.end >= beginIndex) {
+						
+						prevRange = range;
+						
+						// TODO: Since this is sorted, we could break on first match here if we also do the TODO just below.
+						
+					}
+					
+				}
+				
+				if (endIndex < max) {
+					
+					if (range.start <= endIndex) {
+						
+						nextRange = range;
+						
+						// TODO: Move to decreasing while loop, then break on first match??
+						
+					}
+					
+				}
+				
+			}
+			
+			if (nextRange == prevRange) {
+				
+				nextRange = new TextFormatRange (nextRange.format.clone (), nextRange.start, nextRange.end);
+				__textEngine.textFormatRanges.push (nextRange);
+				
+			}
+			
+			if (prevRange != null) {
+				
+				prevRange.end = beginIndex;
+				
+				if (prevRange.end <= prevRange.start) {
+					
+					searchIndex = __textEngine.textFormatRanges.indexOf (prevRange);
+					
+					if (searchIndex > -1) {
+						
+						__textEngine.textFormatRanges.splice (searchIndex, 1);
+						
+					}
+					
+					prevRange = null;
+					
+				}
+				
+			}
+			
+			if (nextRange != null) {
+				
+				nextRange.start = endIndex;
+				
+				if (nextRange.start >= nextRange.end) {
+					
+					searchIndex = __textEngine.textFormatRanges.indexOf (nextRange);
+					
+					if (searchIndex > -1) {
+						
+						__textEngine.textFormatRanges.splice (searchIndex, 1);
+						
+					}
+					
+					nextRange = null;
+					
+				}
+				
+			}
+			
+			var textFormat = __defaultTextFormat.clone ();
+			textFormat.__merge (format);
+			
+			__textEngine.textFormatRanges.push (new TextFormatRange (textFormat, beginIndex, endIndex));
+			
+			__textEngine.textFormatRanges.sort (function (a:TextFormatRange, b:TextFormatRange):Int {
+				
+				if (a.start < b.start || a.end < b.end) {
+					
+					return -1;
+					
+				} else if (a.start > b.start || a.end > b.end) {
+					
+					return 1;
+					
+				}
+				
+				return 0;
+				
+			});
+			
+		}
 		
 		__dirty = true;
 		__layoutDirty = true;
+		__setRenderDirty ();
 		
 	}
 	
 	
+	private function __caretBeginningOfLine ():Void {
+		
+		if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex) {
+			
+			__caretIndex = getLineOffset (getLineIndexOfChar (__caretIndex));
+			
+		} else {
+			
+			__selectionIndex = getLineOffset (getLineIndexOfChar (__selectionIndex));
+			
+		}
+		
+	}
+	
+	
+	private function __caretEndOfLine ():Void {
+		
+		var lineIndex;
+		
+		if (__selectionIndex == __caretIndex) {
+			
+			lineIndex = getLineIndexOfChar (__caretIndex);
+			
+		} else {
+			
+			lineIndex = getLineIndexOfChar (Std.int (Math.max (__caretIndex, __selectionIndex)));
+			
+		}
+		
+		if (lineIndex < __textEngine.numLines - 1) {
+			
+			__caretIndex = getLineOffset (lineIndex + 1) - 1;
+			
+		} else {
+			
+			__caretIndex = __text.length;
+			
+		}
+		
+	}
+	
+	
+	private function __caretNextCharacter ():Void {
+		
+		if (__caretIndex < __text.length) {
+			
+			__caretIndex++;
+			
+		}
+		
+	}
+	
+	
+	private function __caretNextLine (lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void {
+		
+		if (lineIndex == null) {
+			
+			lineIndex = getLineIndexOfChar (__caretIndex);
+			
+		}
+		
+		if (lineIndex < __textEngine.numLines - 1) {
+			
+			if (caretIndex == null) {
+				
+				caretIndex = __caretIndex;
+				
+			}
+			
+			__caretIndex = __getCharIndexOnDifferentLine (caretIndex, lineIndex + 1);
+			
+		} else {
+			
+			__caretIndex = __text.length;
+			
+		}
+		
+	}
+	
+	
+	private function __caretPreviousCharacter ():Void {
+		
+		if (__caretIndex > 0) {
+			
+			__caretIndex--;
+			
+		}
+		
+	}
+	
+	
+	private function __caretPreviousLine (lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void {
+		
+		if (lineIndex == null) {
+			
+			lineIndex = getLineIndexOfChar (__caretIndex);
+			
+		}
+		
+		if (lineIndex > 0) {
+			
+			if (caretIndex == null) {
+				
+				caretIndex = __caretIndex;
+				
+			}
+			
+			__caretIndex = __getCharIndexOnDifferentLine (caretIndex, lineIndex - 1);
+			
+		} else {
+			
+			__caretIndex = 0;
+			
+		}
+		
+	}
+	
+	
+	private override function __dispatch (event:Event):Bool {
+		
+		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP) {
+			
+			var event:MouseEvent = cast event;
+			var group = __getGroup (mouseX, mouseY, true);
+			
+			if (group != null) {
+				
+				var url = group.format.url;
+				
+				if (url != "") {
+					
+					if (StringTools.startsWith (url, "event:")) {
+						
+						dispatchEvent (new TextEvent (TextEvent.LINK, false, false, url.substr (6)));
+						
+					} else {
+						
+						Lib.getURL (new URLRequest (url));
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		return super.__dispatch (event);
+		
+	}
+	
+	
+	private function __fromSymbol (swf:SWFLite, symbol:DynamicTextSymbol):Void {
+		
+		__symbol = symbol;
+		
+		width = symbol.width;
+		height = symbol.height;
+		
+		__offsetX = symbol.x;
+		__offsetY = symbol.y;
+		
+		multiline = symbol.multiline;
+		wordWrap = symbol.wordWrap;
+		displayAsPassword = symbol.password;
+		
+		if (symbol.border) {
+			
+			border = true;
+			background = true;
+			
+		}
+		
+		selectable = symbol.selectable;
+		
+		if (symbol.input) {
+			
+			type = INPUT;
+			
+		}
+		
+		var format = new TextFormat ();
+		if (symbol.color != null) format.color = (symbol.color & 0x00FFFFFF);
+		format.size = Math.round (symbol.fontHeight / 20);
+		
+		var font:FontSymbol = cast swf.symbols.get (symbol.fontID);
+		
+		if (font != null) {
+			
+			// TODO: Bold and italic are handled in the font already
+			// Setting this can cause "extra" bold in HTML5
+			
+			//format.bold = font.bold;
+			//format.italic = font.italic;
+			//format.leading = Std.int (font.leading / 20 + (format.size * 0.2) #if flash + 2 #end);
+			//embedFonts = true;
+			
+			format.__ascent = ((font.ascent / 20) / 1024);
+			format.__descent = ((font.descent / 20) / 1024);
+			
+		}
+		
+		format.font = symbol.fontName;
+		
+		var found = false;
+		
+		switch (format.font) {
+			
+			case "_sans", "_serif", "_typewriter", "", null:
+				
+				found = true;
+			
+			default:
+				
+				for (font in Font.enumerateFonts ()) {
+					
+					if (font.fontName == format.font) {
+						
+						found = true;
+						break;
+						
+					}
+					
+				}
+			
+		}
+		
+		if (!found) {
+			
+			var alpha = ~/[^a-zA-Z]+/;
+			
+			for (font in Font.enumerateFonts ()) {
+				
+				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
+					
+					format.font = font.fontName;
+					found = true;
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
+		if (found) {
+			
+			embedFonts = true;
+			
+		} else if (!__missingFontWarning.exists (format.font)) {
+			
+			__missingFontWarning[format.font] = true;
+			Log.warn ("Could not find required font \"" + format.font + "\", it has not been embedded");
+			
+		}
+		
+		if (symbol.align != null) {
+			
+			if (symbol.align == "center") format.align = TextFormatAlign.CENTER;
+			else if (symbol.align == "right") format.align = TextFormatAlign.RIGHT;
+			else if (symbol.align == "justify") format.align = TextFormatAlign.JUSTIFY;
+			
+			format.leftMargin = Std.int (symbol.leftMargin / 20);
+			format.rightMargin = Std.int (symbol.rightMargin / 20);
+			format.indent = Std.int (symbol.indent / 20);
+			format.leading = Std.int (symbol.leading / 20);
+			
+		}
+		
+		defaultTextFormat = format;
+		
+		if (symbol.text != null) {
+			
+			if (symbol.html) {
+				
+				htmlText = symbol.text;
+				
+			} else {
+				
+				text = symbol.text;
+				
+			}
+			
+		}
+		
+		//autoSize = (tag.autoSize) ? TextFieldAutoSize.LEFT : TextFieldAutoSize.NONE;
+		
+	}
+
+	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		__updateLayout ();
-		var bounds = Rectangle.__temp;
-		__textEngine.bounds.__transform (bounds, matrix);
+		
+		var bounds = Rectangle.__pool.get ();
+		bounds.copyFrom (__textEngine.bounds);
+		bounds.x += __offsetX;
+		bounds.y += __offsetY;
+		bounds.__transform (bounds, matrix);
+		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		
+		Rectangle.__pool.release (bounds);
+		
+	}
+	
+	
+	private function __getCharIndexOnDifferentLine (charIndex:Int, lineIndex:Int):Int {
+		
+		if (charIndex < 0 || charIndex > __text.length) return -1;
+		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
+		
+		var x:Null<Float> = null, y:Null<Float> = null;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
+				
+				x = group.offsetX;
+				
+				for (i in 0...(charIndex - group.startIndex)) {
+					
+					x += group.advances[i];
+					
+				}
+				
+				if (y != null) return __getPosition (x, y);
+				
+			}
+			
+			if (group.lineIndex == lineIndex) {
+				
+				y = group.offsetY + group.height / 2;
+				
+				if (x != null) return __getPosition (x, y);
+				
+			}
+			
+		}
+		
+		return -1;
 		
 	}
 	
 	
 	private override function __getCursor ():MouseCursor {
 		
-		return __textEngine.selectable ? TEXT : null;
+		var group = __getGroup (mouseX, mouseY, true);
+		
+		if (group != null && group.format.url != "") {
+			
+			return POINTER;
+			
+		} else if (__textEngine.selectable) {
+			
+			return TEXT;
+			
+		}
+		
+		return null;
 		
 	}
 	
 	
-	private function __getPosition (x:Float, y:Float):Int {
+	private function __getGroup (x:Float, y:Float, precise = false):TextLayoutGroup {
 		
 		__updateLayout ();
 		
@@ -566,7 +1110,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (y > __textEngine.textHeight) y = __textEngine.textHeight;
+		if (!precise && y > __textEngine.textHeight) y = __textEngine.textHeight;
 		
 		var firstGroup = true;
 		var group, nextGroup;
@@ -593,33 +1137,11 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			if ((y >= group.offsetY && y <= group.offsetY + group.height) || nextGroup == null) {
+			if ((y >= group.offsetY && y <= group.offsetY + group.height) || (!precise && nextGroup == null)) {
 				
-				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
+				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (!precise && (nextGroup == null || nextGroup.lineIndex != group.lineIndex))) {
 					
-					var advance = 0.0;
-					
-					for (i in 0...group.advances.length) {
-						
-						advance += group.advances[i];
-						
-						if (x <= group.offsetX + advance) {
-							
-							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
-								
-								return group.startIndex + i;
-								
-							} else {
-								
-								return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
-								
-							}
-							
-						}
-						
-					}
-					
-					return group.endIndex;
+					return group;
 					
 				}
 				
@@ -627,8 +1149,44 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		return __textEngine.text.length;
+		return null;
 		
+	}
+	
+	
+	private function __getPosition (x:Float, y:Float):Int {
+		
+		var group = __getGroup (x, y);
+		
+		if (group == null) {
+			
+			return __text.length;
+			
+		}
+		
+		var advance = 0.0;
+		
+		for (i in 0...group.advances.length) {
+			
+			advance += group.advances[i];
+			
+			if (x <= group.offsetX + advance) {
+				
+				if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+					
+					return group.startIndex + i;
+					
+				} else {
+					
+					return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
+					
+				}
+				
+			}
+			
+		}
+		
+		return group.endIndex;
 	}
 	
 	
@@ -637,11 +1195,11 @@ class TextField extends InteractiveObject {
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		__getWorldTransform ();
+		__getRenderTransform ();
 		__updateLayout ();
 		
-		var px = __worldTransform.__transformInverseX (x, y);
-		var py = __worldTransform.__transformInverseY (x, y);
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (__textEngine.bounds.contains (px, py)) {
 			
@@ -662,11 +1220,11 @@ class TextField extends InteractiveObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
-		__getWorldTransform ();
+		__getRenderTransform ();
 		__updateLayout ();
 		
-		var px = __worldTransform.__transformInverseX (x, y);
-		var py = __worldTransform.__transformInverseY (x, y);
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (__textEngine.bounds.contains (px, py)) {
 			
@@ -679,15 +1237,17 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		CairoTextField.render (this, renderSession, __worldTransform);
 		super.__renderCairo (renderSession);
+		#end
 		
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
@@ -724,14 +1284,16 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if dom
 		DOMTextField.render (this, renderSession);
+		#end
 		
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		CanvasTextField.render (this, renderSession, __worldTransform);
@@ -749,6 +1311,7 @@ class TextField extends InteractiveObject {
 		__cursorTimer = Timer.delay (__startCursorTimer, 600);
 		__showCursor = !__showCursor;
 		__dirty = true;
+		__setRenderDirty ();
 		
 	}
 	
@@ -757,7 +1320,7 @@ class TextField extends InteractiveObject {
 		
 		if (__caretIndex < 0) {
 			
-			__caretIndex = __textEngine.text.length;
+			__caretIndex = __text.length;
 			__selectionIndex = __caretIndex;
 			
 		}
@@ -804,6 +1367,7 @@ class TextField extends InteractiveObject {
 			
 			__showCursor = false;
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -834,29 +1398,12 @@ class TextField extends InteractiveObject {
 		
 		if (__layoutDirty) {
 			
+			var cacheWidth = __textEngine.width;
+			var cacheHeight = __textEngine.height;
+			
 			__textEngine.update ();
 			
 			if (__textEngine.autoSize != NONE) {
-				
-				var cacheWidth = __textEngine.width;
-				var cacheHeight = __textEngine.height;
-				
-				switch (__textEngine.autoSize) {
-					
-					case LEFT, RIGHT, CENTER:
-						
-						if (!__textEngine.wordWrap) {
-							
-							__textEngine.width = __textEngine.textWidth + 4;
-							
-						}
-						
-						__textEngine.height = __textEngine.textHeight + 4;
-					
-					default:
-						
-					
-				}
 				
 				if (__textEngine.width != cacheWidth) {
 					
@@ -885,6 +1432,46 @@ class TextField extends InteractiveObject {
 			__layoutDirty = false;
 			
 		}
+		
+	}
+	
+	
+	private function __updateText (value:String):Void {
+		
+		__text = value;
+		
+		if (__text.length < __caretIndex) {
+			
+			__selectionIndex = __caretIndex = __text.length;
+			
+		}
+		
+		if (!__displayAsPassword #if (js && html5 && dom) || true #end) {
+			
+			__textEngine.text = __text;
+			
+		} else {
+			
+			var length = text.length;
+			var mask = "";
+			
+			for (i in 0...length) {
+				
+				mask += "*";
+				
+			}
+			
+			__textEngine.text = mask;
+			
+		}
+		
+	}
+	
+	
+	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+		
+		super.__updateTransforms (overrideTransform);
+		__renderTransform.__translateTransformed (__offsetX, __offsetY);
 		
 	}
 	
@@ -929,6 +1516,7 @@ class TextField extends InteractiveObject {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -949,6 +1537,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.background) {
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -969,6 +1558,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.backgroundColor) {
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -989,6 +1579,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.border) {
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1009,6 +1600,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.borderColor) {
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1046,6 +1638,7 @@ class TextField extends InteractiveObject {
 		
 		__layoutDirty = true;
 		__dirty = true;
+		__setRenderDirty ();
 		
 		return value;
 		
@@ -1054,21 +1647,25 @@ class TextField extends InteractiveObject {
 	
 	private function get_displayAsPassword ():Bool {
 		
-		return __textEngine.displayAsPassword;
+		return __displayAsPassword;
 		
 	}
 	
 	
 	private function set_displayAsPassword (value:Bool):Bool {
 		
-		if (value != __textEngine.displayAsPassword) {
+		if (value != __displayAsPassword) {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
+			
+			__displayAsPassword = value;
+			__updateText (__text);
 			
 		}
 		
-		return __textEngine.displayAsPassword = value;
+		return value;
 		
 	}
 	
@@ -1118,235 +1715,74 @@ class TextField extends InteractiveObject {
 	private override function get_height ():Float {
 		
 		__updateLayout ();
-		return __textEngine.height;
+		return __textEngine.height * Math.abs (scaleY);
 		
 	}
 	
 	
 	private override function set_height (value:Float):Float {
 		
-		if (scaleY != 1 || value != __textEngine.height) {
+		if (value != __textEngine.height) {
 			
 			__setTransformDirty ();
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
+			
+			__textEngine.height = value;
 			
 		}
 		
-		scaleY = 1;
-		return __textEngine.height = value;
+		return __textEngine.height * Math.abs (scaleY);
 		
 	}
 	
 	
 	private function get_htmlText ():String {
 		
-		return __textEngine.text;
+		return __text;
 		
 	}
 	
 	
 	private function set_htmlText (value:String):String {
 		
-		if (!__isHTML || __textEngine.text != value) {
+		if (!__isHTML || __text != value) {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
 		__isHTML = true;
 		
-		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
+		#if (js && html5 && dom)
+		var rawHtmlText = value;
+		#end
+		
+		if (#if (js && html5) __div == null #else true #end) {
 			
-			inline function decodeHTMLEntities (text) {
-				
-				var entities = [
-					[ 'quot', '"' ],
-					[ 'apos', '\'' ],
-					[ 'amp', '&' ],
-					[ 'lt', '<' ],
-					[ 'gt', '>' ]
-				];
-				
-				for (i in 0...entities.length) {
-					
-					text = new EReg ('&' + entities[i][0] + ';', 'g').replace (text, entities[i][1]);
-					
-				}
-				
-				return text;
-				
-			}
-			
-			value = new EReg ("<br>", "g").replace (value, "\n");
-			value = new EReg ("<br/>", "g").replace (value, "\n");
-			value = decodeHTMLEntities (value);
-			
-			// crude solution
-			
-			var segments = value.split ("<");
-			
-			if (segments.length == 1) {
-				
-				value = new EReg ("<.*?>", "g").replace (value, "");
-				
-				if (__textEngine.textFormatRanges.length > 1) {
-					
-					__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-					
-				}
-				
-				var range = __textEngine.textFormatRanges[0];
-				range.format = __textFormat;
-				range.start = 0;
-				range.end = value.length;
-				
-				return __textEngine.text = value;
-				
-			} else {
-				
-				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
-				
-				value = "";
-				
-				var formatStack:Array<TextFormat> = [__textFormat.clone()];
-				var sub:String;
-				var noLineBreak:Bool = false;
-				
-				for (segment in segments) {
-					
-					if (segment == "") continue;
-					
-					var isClosingTag = segment.substr (0, 1) == "/";
-					var tagEndIndex = segment.indexOf (">");
-					var start = tagEndIndex + 1;
-					var spaceIndex = segment.indexOf (" ");
-					var tagName:String = segment.substring (isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
-					var format:TextFormat;
-					
-					if (isClosingTag) {
-						
-						formatStack.pop ();
-						format = formatStack[formatStack.length - 1].clone ();
-						
-						if (tagName.toLowerCase () == "p" && __textEngine.textFormatRanges.length > 0) {
-							
-							value += "\n";
-							noLineBreak = true;
-							
-						}
-						
-						if (start < segment.length) {
-							
-							sub = segment.substr (start);
-							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-							value += sub;
-							noLineBreak = false;
-							
-						}
-						
-					} else {
-						
-						format = formatStack[formatStack.length - 1].clone ();
-						
-						if (tagEndIndex > -1) {
-							
-							switch (tagName.toLowerCase ()) {
-								
-								case "p":
-									
-									if (__textEngine.textFormatRanges.length > 0 && !noLineBreak) {
-										
-										value += "\n";
-										
-									}
-									
-									var alignEreg = ~/align="([^"]+)/i;
-									
-									if (alignEreg.match (segment)) {
-										
-										format.align = alignEreg.matched (1).toLowerCase ();
-										
-									}
-								
-								case "font":
-									
-									var faceEreg = ~/face="([^"]+)/i;
-									
-									if (faceEreg.match (segment)) {
-										
-										format.font = faceEreg.matched (1);
-										
-									}
-									
-									var colorEreg = ~/color="#([^"]+)/i;
-									
-									if (colorEreg.match (segment)) {
-										
-										format.color = Std.parseInt ("0x" + colorEreg.matched (1));
-										
-									}
-									
-									var sizeEreg = ~/size="([^"]+)/i;
-									
-									if (sizeEreg.match (segment)) {
-										
-										format.size = Std.parseInt (sizeEreg.matched (1));
-										
-									}
-								
-								case "b":
-									
-									format.bold = true;
-								
-								case "u":
-									
-									format.underline = true;
-								
-								case "i", "em":
-									
-									format.italic = true;
-								
-							}
-							
-							formatStack.push (format);
-							
-							if (start < segment.length) {
-								
-								sub = segment.substring (start);
-								__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-								value += sub;
-								noLineBreak = false;
-								
-							}
-							
-						} else {
-							
-							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + segment.length));
-							value += segment;
-							noLineBreak = false;
-							
-						}
-						
-					}
-					
-				}
-				
-			}
+			value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 			
 		}
 		
-		return __textEngine.text = value;
+		#if (js && html5 && dom)
+		__updateText (rawHtmlText);
+		#else
+		__updateText (value);
+		#end
+		
+		return value;
 		
 	}
 	
 	
 	private function get_length ():Int {
 		
-		if (__textEngine.text != null) {
+		if (__text != null) {
 			
-			return __textEngine.text.length;
+			return __text.length;
 			
 		}
 		
@@ -1368,6 +1804,7 @@ class TextField extends InteractiveObject {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1394,6 +1831,20 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	private function get_mouseWheelEnabled ():Bool {
+		
+		return __mouseWheelEnabled;
+		
+	}
+	
+	
+	private function set_mouseWheelEnabled (value:Bool):Bool {
+		
+		return __mouseWheelEnabled = value;
+		
+	}
+	
+	
 	private function get_multiline ():Bool {
 		
 		return __textEngine.multiline;
@@ -1407,6 +1858,7 @@ class TextField extends InteractiveObject {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1447,12 +1899,15 @@ class TextField extends InteractiveObject {
 	
 	private function set_scrollH (value:Int):Int {
 		
+		__updateLayout ();
+		
 		if (value > __textEngine.maxScrollH) value = __textEngine.maxScrollH;
 		if (value < 0) value = 0;
 		
 		if (value != __textEngine.scrollH) {
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1470,12 +1925,15 @@ class TextField extends InteractiveObject {
 	
 	private function set_scrollV (value:Int):Int {
 		
+		__updateLayout ();
+		
 		if (value > __textEngine.maxScrollV) value = __textEngine.maxScrollV;
 		if (value < 1) value = 1;
 		
 		if (value != __textEngine.scrollV) {
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1538,6 +1996,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.sharpness) {
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1548,17 +2007,18 @@ class TextField extends InteractiveObject {
 	
 	private function get_text ():String {
 		
-		return __textEngine.text;
+		return __text;
 		
 	}
 	
 	
 	private function set_text (value:String):String {
 		
-		if (__isHTML || __textEngine.text != value) {
+		if (__isHTML || __text != value) {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
 			
 		} else {
 			
@@ -1579,7 +2039,9 @@ class TextField extends InteractiveObject {
 		
 		__isHTML = false;
 		
-		return __textEngine.text = value;
+		__updateText (value);
+		
+		return value;
 		
 	}
 	
@@ -1593,7 +2055,12 @@ class TextField extends InteractiveObject {
 	
 	private function set_textColor (value:Int):Int {
 		
-		if (value != __textFormat.color) __dirty = true;
+		if (value != __textFormat.color) {
+			
+			__dirty = true;
+			__setRenderDirty ();
+			
+		}
 		
 		for (range in __textEngine.textFormatRanges) {
 			
@@ -1639,6 +2106,7 @@ class TextField extends InteractiveObject {
 				addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				this_onFocusIn (null);
+				__textEngine.__useIntAdvances = true;
 				
 			} else {
 				
@@ -1647,10 +2115,12 @@ class TextField extends InteractiveObject {
 				removeEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				__stopTextInput ();
+				__textEngine.__useIntAdvances = null;
 				
 			}
 			
 			__dirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1662,23 +2132,25 @@ class TextField extends InteractiveObject {
 	override private function get_width ():Float {
 		
 		__updateLayout ();
-		return __textEngine.width;
+		return __textEngine.width * Math.abs (__scaleX);
 		
 	}
 	
 	
 	override private function set_width (value:Float):Float {
 		
-		if (scaleX != 1 || __textEngine.width != value) {
+		if (value != __textEngine.width) {
 			
 			__setTransformDirty ();
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
+			
+			__textEngine.width = value;
 			
 		}
 		
-		scaleX = 1;
-		return __textEngine.width = value;
+		return __textEngine.width * Math.abs (__scaleX);
 		
 	}
 	
@@ -1696,6 +2168,7 @@ class TextField extends InteractiveObject {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -1724,7 +2197,10 @@ class TextField extends InteractiveObject {
 			if (position != __caretIndex) {
 				
 				__caretIndex = position;
+				#if !dom
 				__dirty = true;
+				__setRenderDirty ();
+				#end
 				
 			}
 			
@@ -1805,7 +2281,10 @@ class TextField extends InteractiveObject {
 		
 		__caretIndex = __getPosition (mouseX, mouseY);
 		__selectionIndex = __caretIndex;
+		#if !dom
 		__dirty = true;
+		__setRenderDirty ();
+		#end
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
@@ -1816,6 +2295,15 @@ class TextField extends InteractiveObject {
 	private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
 		
 		switch (key) {
+			
+			case RETURN, NUMPAD_ENTER:
+				
+				if (__textEngine.multiline) {
+					
+					replaceSelectedText ("\n");
+					dispatchEvent (new Event (Event.CHANGE, true));
+					
+				}
 			
 			case BACKSPACE:
 				
@@ -1836,7 +2324,7 @@ class TextField extends InteractiveObject {
 			
 			case DELETE:
 				
-				if (__selectionIndex == __caretIndex && __caretIndex < __textEngine.text.length) {
+				if (__selectionIndex == __caretIndex && __caretIndex < __text.length) {
 					
 					__selectionIndex = __caretIndex + 1;
 					
@@ -1853,23 +2341,25 @@ class TextField extends InteractiveObject {
 			
 			case LEFT:
 				
-				if (modifier.shiftKey) {
+				if (modifier.metaKey) {
 					
-					if (__caretIndex > 0) {
+					__caretBeginningOfLine ();
+					
+					if (!modifier.shiftKey) {
 						
-						__caretIndex--;
+						__selectionIndex = __caretIndex;
 						
 					}
+					
+				} else if (modifier.shiftKey) {
+					
+					__caretPreviousCharacter ();
 					
 				} else {
 					
 					if (__selectionIndex == __caretIndex) {
 						
-						if (__caretIndex > 0) {
-							
-							__caretIndex--;
-							
-						}
+						__caretPreviousCharacter ();
 						
 					} else {
 						
@@ -1886,23 +2376,25 @@ class TextField extends InteractiveObject {
 			
 			case RIGHT:
 				
-				if (modifier.shiftKey) {
+				if (modifier.metaKey) {
 					
-					if (__caretIndex < __textEngine.text.length) {
+					__caretEndOfLine ();
+					
+					if (!modifier.shiftKey) {
 						
-						__caretIndex++;
+						__selectionIndex = __caretIndex;
 						
 					}
+					
+				} else if (modifier.shiftKey) {
+					
+					__caretNextCharacter ();
 					
 				} else {
 					
 					if (__selectionIndex == __caretIndex) {
 						
-						if (__caretIndex < __textEngine.text.length) {
-							
-							__caretIndex++;
-							
-						}
+						__caretNextCharacter ();
 						
 					} else {
 						
@@ -1917,19 +2409,83 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
+			case DOWN:
+				
+				if (modifier.shiftKey) {
+					
+					__caretNextLine ();
+					
+				} else {
+					
+					if (__selectionIndex == __caretIndex) {
+						
+						__caretNextLine ();
+						
+					} else {
+						
+						var lineIndex = getLineIndexOfChar (Std.int (Math.max (__caretIndex, __selectionIndex)));
+						__caretNextLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
+						
+					}
+					
+					__selectionIndex = __caretIndex;
+					
+				}
+				
+				__stopCursorTimer ();
+				__startCursorTimer ();
+			
+			case UP:
+				
+				if (modifier.shiftKey) {
+					
+					__caretPreviousLine ();
+					
+				} else {
+					
+					if (__selectionIndex == __caretIndex) {
+						
+						__caretPreviousLine ();
+						
+					} else {
+						
+						var lineIndex = getLineIndexOfChar (Std.int (Math.min (__caretIndex, __selectionIndex)));
+						__caretPreviousLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
+						
+					}
+					
+					__selectionIndex = __caretIndex;
+					
+				}
+				
+				__stopCursorTimer ();
+				__startCursorTimer ();
+			
+			case HOME:
+				
+				__caretBeginningOfLine ();
+				__stopCursorTimer ();
+				__startCursorTimer ();
+			
+			case END:
+				
+				__caretEndOfLine ();
+				__stopCursorTimer ();
+				__startCursorTimer ();
+			
 			case C:
 				
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
-					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
+					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
 				}
 			
 			case X:
 				
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
-					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
+					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
 					if (__caretIndex != __selectionIndex) {
 						
@@ -1940,9 +2496,10 @@ class TextField extends InteractiveObject {
 					
 				}
 			
+			#if !js
 			case V:
 				
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				if (#if mac modifier.metaKey #else modifier.ctrlKey #end) {
 					
 					var text = Clipboard.text;
 					
@@ -1958,8 +2515,20 @@ class TextField extends InteractiveObject {
 					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
-				}else{
-					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
+				} else {
+					
+					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
+					
+				}
+			#end
+			
+			case A:
+				
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
+					
+					__caretIndex = __text.length;
+					__selectionIndex = 0;
+					
 				}
 			
 			default:

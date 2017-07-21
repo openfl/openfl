@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import haxe.CallStack;
 import haxe.EnumFlags;
 import lime.app.Application;
 import lime.app.IModule;
@@ -17,7 +18,6 @@ import lime.graphics.Renderer;
 import lime.math.Matrix4;
 import lime.system.System;
 import lime.ui.Touch;
-import lime.utils.GLUtils;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
@@ -25,8 +25,10 @@ import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.Mouse;
+import lime.ui.Mouse in LimeMouse;
 import lime.ui.Window;
+import lime.utils.GLUtils;
+import lime.utils.Log;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
@@ -44,13 +46,18 @@ import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
+import openfl.events.UncaughtErrorEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom.Transform;
 import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
+import openfl.utils.TouchData;
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -63,9 +70,20 @@ import js.html.Element;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+@:access(openfl._internal.renderer.AbstractRenderer)
+@:access(openfl.display.Sprite)
+@:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
+@:access(openfl.geom.Point)
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
+@:access(openfl.ui.Mouse)
+@:access(openfl.utils.TouchData)
 
 
 class Stage extends DisplayObjectContainer implements IModule {
@@ -79,13 +97,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var displayState (get, set):StageDisplayState;
 	public var focus (get, set):InteractiveObject;
 	public var frameRate (get, set):Float;
+	public var fullScreenHeight (get, never):UInt;
+	public var fullScreenWidth (get, never):UInt;
 	public var quality:StageQuality;
 	public var scaleMode:StageScaleMode;
+	public var showDefaultContextMenu:Bool;
+	public var softKeyboardRect:Rectangle;
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
 	public var stageHeight (default, null):Int;
 	public var stageWidth (default, null):Int;
-	
 	public var window (default, null):Window;
 	
 	private var __cacheFocus:InteractiveObject;
@@ -111,15 +132,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseDownLeft:InteractiveObject;
 	private var __mouseDownMiddle:InteractiveObject;
 	private var __mouseDownRight:InteractiveObject;
-	private var __mouseOutStack:Array<DisplayObject>;
+	private var __mouseOverTarget:InteractiveObject;
 	private var __mouseX:Float;
 	private var __mouseY:Float;
+	private var __primaryTouch:Touch;
 	private var __renderer:AbstractRenderer;
 	private var __rendering:Bool;
+	private var __rollOutStack:Array<DisplayObject>;
 	private var __stack:Array<DisplayObject>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	
+	private var __touchData:Map<Int, TouchData>;
 	
 	public function new (window:Window, color:Null<Int> = null) {
 		
@@ -153,6 +177,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalWidth = 0;
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
+		__renderDirty = true;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -171,6 +196,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
+		showDefaultContextMenu = true;
+		softKeyboardRect = new Rectangle ();
 		stageFocusRect = true;
 		
 		#if mac
@@ -181,7 +208,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__clearBeforeRender = true;
 		__stack = [];
-		__mouseOutStack = [];
+		__rollOutStack = [];
+		__touchData = new Map<Int, TouchData>();
 		
 		if (Lib.current.stage == null) {
 			
@@ -206,7 +234,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (this.window != window) return;
 		
 		window.onActivate.add (onWindowActivate.bind (window));
-		window.onClose.add (onWindowClose.bind (window));
+		window.onClose.add (onWindowClose.bind (window), false, -9000);
 		window.onCreate.add (onWindowCreate.bind (window));
 		window.onDeactivate.add (onWindowDeactivate.bind (window));
 		window.onDropFile.add (onWindowDropFile.bind (window));
@@ -275,13 +303,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function globalToLocal (pos:Point):Point {
-		
-		return pos.clone ();
-		
-	}
-	
-	
 	public function invalidate ():Void {
 		
 		__invalidated = true;
@@ -298,35 +319,75 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
-		GameInput.__onGamepadAxisMove (gamepad, axis, value);
+		try {
+			
+			GameInput.__onGamepadAxisMove (gamepad, axis, value);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		GameInput.__onGamepadButtonDown (gamepad, button);
+		try {
+			
+			GameInput.__onGamepadButtonDown (gamepad, button);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		GameInput.__onGamepadButtonUp (gamepad, button);
+		try {
+			
+			GameInput.__onGamepadButtonUp (gamepad, button);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadConnect (gamepad:Gamepad):Void {
 		
-		GameInput.__onGamepadConnect (gamepad);
+		try {
+			
+			GameInput.__onGamepadConnect (gamepad);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
-		GameInput.__onGamepadDisconnect (gamepad);
+		try {
+			
+			GameInput.__onGamepadDisconnect (gamepad);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -384,7 +445,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
+		try {
+			
+			__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -393,7 +462,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
+		try {
+			
+			__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -402,8 +479,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (window != null) {
 			
-			var event = new Event (Event.DEACTIVATE);
-			__broadcast (event, true);
+			try {
+				
+				__broadcastEvent (new Event (Event.DEACTIVATE));
+				
+			} catch (e:Dynamic) {
+				
+				__handleError (e);
+				
+			}
 			
 		}
 		
@@ -414,15 +498,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var type = switch (button) {
+		try {
 			
-			case 1: MouseEvent.MIDDLE_MOUSE_DOWN;
-			case 2: MouseEvent.RIGHT_MOUSE_DOWN;
-			default: MouseEvent.MOUSE_DOWN;
+			var type = switch (button) {
+				
+				case 1: MouseEvent.MIDDLE_MOUSE_DOWN;
+				case 2: MouseEvent.RIGHT_MOUSE_DOWN;
+				default: MouseEvent.MOUSE_DOWN;
+				
+			}
+			
+			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
 		
 	}
 	
@@ -431,7 +523,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+		try {
+			
+			__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -447,15 +547,29 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var type = switch (button) {
+		try {
 			
-			case 1: MouseEvent.MIDDLE_MOUSE_UP;
-			case 2: MouseEvent.RIGHT_MOUSE_UP;
-			default: MouseEvent.MOUSE_UP;
+			var type = switch (button) {
+				
+				case 1: MouseEvent.MIDDLE_MOUSE_UP;
+				case 2: MouseEvent.RIGHT_MOUSE_UP;
+				default: MouseEvent.MOUSE_UP;
+				
+			}
+			
+			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			
+			if (!showDefaultContextMenu && button == 2) {
+				
+				window.onMouseUp.cancel ();
+				
+			}
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
 		
 	}
 	
@@ -464,7 +578,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
+		try {
+			
+			__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -485,14 +607,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onRenderContextLost (renderer:Renderer):Void {
 		
-		
+		__renderer = null;
 		
 	}
 	
 	
 	public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
 		
-		
+		__createRenderer ();
 		
 	}
 	
@@ -508,27 +630,36 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var stack = new Array <DisplayObject> ();
-		
-		if (__focus == null) {
+		try {
 			
-			__getInteractive (stack);
+			var stack = new Array <DisplayObject> ();
 			
-		} else {
+			if (__focus == null) {
+				
+				__getInteractive (stack);
+				
+			} else {
+				
+				__focus.__getInteractive (stack);
+				
+			}
 			
-			__focus.__getInteractive (stack);
+			var event = new TextEvent (TextEvent.TEXT_INPUT, true, false, text);
+			if (stack.length > 0) {
+				
+				stack.reverse ();
+				__dispatchStack (event, stack);
+				
+			} else {
+				
+				__dispatchEvent (event);
+				
+			}
 			
-		}
-		
-		var event = new TextEvent (TextEvent.TEXT_INPUT, true, false, text);
-		if (stack.length > 0) {
+		} catch (e:Dynamic) {
 			
-			stack.reverse ();
-			__fireEvent (event, stack);
+			__handleError (e);
 			
-		} else {
-			
-			__broadcast (event, true);
 		}
 		
 	}
@@ -536,21 +667,57 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onTouchMove (touch:Touch):Void {
 		
-		__onTouch (TouchEvent.TOUCH_MOVE, touch);
+		try {
+			
+			__onTouch (TouchEvent.TOUCH_MOVE, touch);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onTouchEnd (touch:Touch):Void {
 		
-		__onTouch (TouchEvent.TOUCH_END, touch);
+		try {
+			
+			if (__primaryTouch == touch) {
+				
+				__primaryTouch = null;
+				
+			}
+			
+			__onTouch (TouchEvent.TOUCH_END, touch);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onTouchStart (touch:Touch):Void {
 		
-		__onTouch (TouchEvent.TOUCH_BEGIN, touch);
+		try {
+			
+			if (__primaryTouch == null) {
+				
+				__primaryTouch = touch;
+				
+			}
+			
+			__onTouch (TouchEvent.TOUCH_BEGIN, touch);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -559,8 +726,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var event = new Event (Event.ACTIVATE);
-		__broadcast (event, true);
+		//try {
+			//
+			//__broadcastEvent (new Event (Event.ACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
@@ -573,6 +747,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		try {
+			
+			__primaryTouch = null;
+			__broadcastEvent (new Event (Event.DEACTIVATE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
+		
 	}
 	
 	
@@ -580,39 +765,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		if (window.renderer != null) {
+		try {
 			
-			switch (window.renderer.context) {
+			if (window.renderer != null) {
 				
-				case OPENGL (gl):
-					
-					#if (!disable_cffi && (!html5 || !canvas))
-					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
-					#end
-				
-				case CANVAS (context):
-					
-					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-				
-				case DOM (element):
-					
-					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-				
-				case CAIRO (cairo):
-					
-					#if !html5
-					__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
-					#end
-				
-				case CONSOLE (ctx):
-					
-					#if !html5
-					__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
-					#end
-				
-				default:
+				__createRenderer ();
 				
 			}
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
 		
@@ -623,8 +786,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var event = new Event (Event.DEACTIVATE);
-		__broadcast (event, true);
+		//try {
+			//
+			//__primaryTouch = null;
+			//__broadcastEvent (new Event (Event.DEACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
@@ -647,7 +818,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		focus = __cacheFocus;
+		try {
+			
+			__renderDirty = true;
+			__broadcastEvent (new Event (Event.ACTIVATE));
+			
+			focus = __cacheFocus;
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -656,8 +838,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__cacheFocus = focus;
-		focus = null;
+		try {
+			
+			__primaryTouch = null;
+			__broadcastEvent (new Event (Event.DEACTIVATE));
+			
+			var currentFocus = focus;
+			focus = null;
+			__cacheFocus = currentFocus;
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -666,9 +860,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		if (__displayState == NORMAL) {
+		try {
 			
-			__displayState = FULL_SCREEN_INTERACTIVE;
+			__resize ();
+			
+			if (__displayState == NORMAL) {
+				
+				__displayState = FULL_SCREEN_INTERACTIVE;
+				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
+				
+			}
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
 		
@@ -679,14 +884,33 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
+		try {
+			
+			__dispatchEvent (new Event (Event.MOUSE_LEAVE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onWindowMinimize (window:Window):Void {
 		
-		//if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+		
+		//try {
+			//
+			//__primaryTouch = null;
+			//__broadcastEvent (new Event (Event.DEACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
@@ -702,23 +926,40 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		if (__displayState != NORMAL && !window.fullscreen) {
+		try {
 			
-			__displayState = NORMAL;
+			__renderDirty = true;
+			__resize ();
+			
+			if (__displayState != NORMAL && !window.fullscreen) {
+				
+				__displayState = NORMAL;
+				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
+				
+			}
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		__resize ();
-		
-		var event = new Event (Event.RESIZE);
-		__broadcast (event, false);
 		
 	}
 	
 	
 	public function onWindowRestore (window:Window):Void {
 		
-		//if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+		
+		//try {
+			//
+			//__broadcastEvent (new Event (Event.ACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
@@ -727,76 +968,90 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (renderer.window == null || renderer.window != window) return;
 		
-		// TODO: Fix multiple stages more gracefully
-		
-		if (application != null && application.windows.length > 0) {
+		try {
 			
-			__setTransformDirty ();
-			__setRenderDirty ();
+			if (__rendering) return;
+			__rendering = true;
 			
-		}
-		
-		if (__rendering) return;
-		__rendering = true;
-		
-		#if hxtelemetry
-		Telemetry.__advanceFrame ();
-		#end
-		
-		if (__renderer != null) {
+			#if hxtelemetry
+			Telemetry.__advanceFrame ();
+			#end
 			
-			__renderer.init (this);
-			
-		}
-		
-		__broadcast (new Event (Event.ENTER_FRAME), true);
-		__broadcast (new Event (Event.EXIT_FRAME), true);
-		
-		if (__invalidated) {
-			
-			__invalidated = false;
-			__broadcast (new Event (Event.RENDER), true);
-			
-		}
-		
-		#if hxtelemetry
-		var stack = Telemetry.__unwindStack ();
-		Telemetry.__startTiming (TelemetryCommandName.RENDER);
-		#end
-		
-		__renderable = true;
-		
-		__enterFrame (__deltaTime);
-		__deltaTime = 0;
-		__update (false, true);
-		
-		if (__renderer != null) {
-			
-			if (renderer.type == CAIRO) {
+			if (__renderer != null && (Stage3D.__active || stage3Ds[0].__contextRequested)) {
 				
-				switch (renderer.context) {
-					
-					case CAIRO (cairo):
-						
-						cast (__renderer, CairoRenderer).cairo = cairo;
-						@:privateAccess (__renderer.renderSession).cairo = cairo;
-					
-					default:
-						
-				}
+				__renderer.clear ();
+				__renderer.renderStage3D ();
+				__renderDirty = true;
 				
 			}
 			
-			__renderer.render (this);
+			__broadcastEvent (new Event (Event.ENTER_FRAME));
+			__broadcastEvent (new Event (Event.FRAME_CONSTRUCTED));
+			__broadcastEvent (new Event (Event.EXIT_FRAME));
+			
+			if (__invalidated) {
+				
+				__invalidated = false;
+				__broadcastEvent (new Event (Event.RENDER));
+				
+			}
+			
+			#if hxtelemetry
+			var stack = Telemetry.__unwindStack ();
+			Telemetry.__startTiming (TelemetryCommandName.RENDER);
+			#end
+			
+			__renderable = true;
+			
+			__enterFrame (__deltaTime);
+			__deltaTime = 0;
+			__update (false, true);
+			
+			if (__renderer != null /*&& __renderDirty*/) {
+				
+				if (!Stage3D.__active) {
+					
+					__renderer.clear ();
+					
+				}
+				
+				if (renderer.type == CAIRO) {
+					
+					switch (renderer.context) {
+						
+						case CAIRO (cairo):
+							
+							#if lime_cairo
+							cast (__renderer, CairoRenderer).cairo = cairo;
+							@:privateAccess (__renderer.renderSession).cairo = cairo;
+							#end
+						
+						default:
+							
+					}
+					
+				}
+				
+				__renderer.render ();
+				
+			} else {
+				
+				renderer.onRender.cancel ();
+				
+			}
+			
+			#if hxtelemetry
+			Telemetry.__endTiming (TelemetryCommandName.RENDER);
+			Telemetry.__rewindStack (stack);
+			#end
+			
+			__rendering = false;
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		#if hxtelemetry
-		Telemetry.__endTiming (TelemetryCommandName.RENDER);
-		Telemetry.__rewindStack (stack);
-		#end
-		
-		__rendering = false;
 		
 	}
 	
@@ -808,12 +1063,68 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	private function __broadcastEvent (event:Event):Void {
+		
+		if (DisplayObject.__broadcastEvents.exists (event.type)) {
+			
+			var dispatchers = DisplayObject.__broadcastEvents.get (event.type);
+			
+			for (dispatcher in dispatchers) {
+				
+				dispatcher.__dispatch (event);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private function __createRenderer ():Void {
+		
+		switch (window.renderer.context) {
+			
+			case OPENGL (gl):
+				
+				#if (!disable_cffi && (!html5 || !canvas))
+				__renderer = new GLRenderer (this, gl);
+				#end
+			
+			case CANVAS (context):
+				
+				__renderer = new CanvasRenderer (this, context);
+			
+			case DOM (element):
+				
+				#if dom
+				__renderer = new DOMRenderer (this, element);
+				#end
+			
+			case CAIRO (cairo):
+				
+				#if lime_cairo
+				__renderer = new CairoRenderer (this, cairo);
+				#end
+			
+			case CONSOLE (ctx):
+				
+				#if lime_console
+				__renderer = new ConsoleRenderer (this, ctx);
+				#end
+			
+			default:
+			
+		}
+		
+	}
+	
+	
 	private function __drag (mouse:Point):Void {
 		
 		var parent = __dragObject.parent;
 		if (parent != null) {
 			
-			mouse = parent.globalToLocal (mouse);
+			parent.__getWorldTransform ().__transformInversePoint (mouse);
 			
 		}
 		
@@ -850,67 +1161,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	private function __fireEvent (event:Event, stack:Array<DisplayObject>):Void {
-		
-		var length = stack.length;
-		
-		if (length == 0) {
-			
-			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__broadcast (event, false);
-			
-		} else {
-			
-			event.eventPhase = EventPhase.CAPTURING_PHASE;
-			event.target = stack[stack.length - 1];
-			
-			for (i in 0...length - 1) {
-				
-				stack[i].__broadcast (event, false);
-				
-				if (event.__isCanceled) {
-					
-					return;
-					
-				}
-				
-			}
-			
-			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__broadcast (event, false);
-			
-			if (event.__isCanceled) {
-				
-				return;
-				
-			}
-			
-			if (event.bubbles) {
-				
-				event.eventPhase = EventPhase.BUBBLING_PHASE;
-				var i = length - 2;
-				
-				while (i >= 0) {
-					
-					stack[i].__broadcast (event, false);
-					
-					if (event.__isCanceled) {
-						
-						return;
-						
-					}
-					
-					i--;
-					
-				}
-				
-			}
-			
-		}
-		
-	}
-	
-	
 	private override function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
 		if (stack != null) {
@@ -922,6 +1172,50 @@ class Stage extends DisplayObjectContainer implements IModule {
 		return true;
 		
 	}
+	
+	
+	private override function __globalToLocal (global:Point, local:Point):Point {
+		
+		if (global != local) {
+			
+			local.copyFrom (global);
+			
+		}
+		
+		return local;
+		
+	}
+	
+	
+	private function __handleError (e:Dynamic):Void {
+		
+		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
+		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+		
+		if (!event.__preventDefault) {
+			
+			#if mobile
+			Log.println (CallStack.toString (CallStack.exceptionStack ()));
+			Log.println (Std.string (e));
+			#end
+			
+			#if cpp
+			untyped __cpp__ ("throw e");
+			#elseif neko
+			neko.Lib.rethrow (e);
+			#elseif js
+			untyped __js__ ("throw e");
+			#elseif cs
+			throw e;
+			//cs.Lib.rethrow (e);
+			#else
+			throw e;
+			#end
+			
+		}
+		
+	}
+	
 	
 	
 	private function __onKey (type:String, keyCode:KeyCode, modifier:KeyModifier):Void {
@@ -949,12 +1243,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var keyCode = Keyboard.__convertKeyCode (keyCode);
 			var charCode = Keyboard.__getCharCode (keyCode, modifier.shiftKey);
 			
-			var event = new KeyboardEvent (type, true, false, charCode, keyCode, keyLocation, __macKeyboard ? modifier.ctrlKey || modifier.metaKey : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
+			// Flash Player events are not cancelable, should we make only some events (like APP_CONTROL_BACK) cancelable?
+			
+			var event = new KeyboardEvent (type, true, true, charCode, keyCode, keyLocation, __macKeyboard ? modifier.ctrlKey || modifier.metaKey : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 			
 			stack.reverse ();
-			__fireEvent (event, stack);
+			__dispatchStack (event, stack);
 			
-			if (event.__isCanceled) {
+			if (event.__preventDefault) {
 				
 				if (type == KeyboardEvent.KEY_DOWN) {
 					
@@ -989,7 +1285,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (button > 2) return;
 		
-		var targetPoint = new Point (x, y);
+		var targetPoint = Point.__pool.get ();
+		targetPoint.setTo (x, y);
 		__displayMatrix.__transformInversePoint (targetPoint);
 		
 		__mouseX = targetPoint.x;
@@ -1073,18 +1370,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+		var localPoint = Point.__pool.get ();
+		
+		__dispatchStack (MouseEvent.__create (type, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), target), stack);
 		
 		if (clickType != null) {
 			
-			__fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+			__dispatchStack (MouseEvent.__create (clickType, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), target), stack);
 			
 			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 				
 				var currentTime = Lib.getTimer ();
 				if (currentTime - __lastClickTime < 500) {
 					
-					__fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+					__dispatchStack (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), target), stack);
 					__lastClickTime = 0;
 					
 				} else {
@@ -1097,45 +1396,59 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		var cursor = null;
-		
-		if (__mouseDownLeft != null) {
+		if (Mouse.__cursor == MouseCursor.AUTO) {
 			
-			cursor = __mouseDownLeft.__getCursor ();
+			var cursor = null;
 			
-		} else {
-			
-			for (target in stack) {
+			if (__mouseDownLeft != null) {
 				
-				cursor = target.__getCursor ();
+				cursor = __mouseDownLeft.__getCursor ();
 				
-				if (cursor != null) {
+			} else {
+				
+				for (target in stack) {
 					
-					Mouse.cursor = cursor;
-					break;
+					cursor = target.__getCursor ();
+					
+					if (cursor != null) {
+						
+						LimeMouse.cursor = cursor;
+						break;
+						
+					}
 					
 				}
 				
 			}
 			
+			if (cursor == null) {
+				
+				LimeMouse.cursor = ARROW;
+				
+			}
+			
 		}
 		
-		if (cursor == null) {
+		var event;
+		
+		if (target != __mouseOverTarget) {
 			
-			Mouse.cursor = ARROW;
+			if (__mouseOverTarget != null) {
+				
+				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
+				__mouseOverTarget.__dispatchEvent (event);
+				
+			}
 			
 		}
 		
-		var event, localPoint;
-		
-		for (target in __mouseOutStack) {
+		for (target in __rollOutStack) {
 			
 			if (stack.indexOf (target) == -1) {
 				
-				__mouseOutStack.remove (target);
+				__rollOutStack.remove (target);
 				
-				localPoint = target.globalToLocal (targetPoint);
-				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, localPoint, cast target);
+				event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
 				event.bubbles = false;
 				target.__dispatchEvent (event);
 				
@@ -1145,20 +1458,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		for (target in stack) {
 			
-			if (__mouseOutStack.indexOf (target) == -1) {
+			if (__rollOutStack.indexOf (target) == -1) {
 				
-				if (target.hasEventListener (MouseEvent.MOUSE_OVER)) {
+				if (target.hasEventListener (MouseEvent.ROLL_OVER)) {
 					
-					localPoint = target.globalToLocal (targetPoint);
-					event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
 					
 				}
 				
-				if (target.hasEventListener (MouseEvent.MOUSE_OUT)) {
+				if (target.hasEventListener (MouseEvent.ROLL_OUT)) {
 					
-					__mouseOutStack.push (target);
+					__rollOutStack.push (target);
 					
 				}
 				
@@ -1166,11 +1478,57 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		if (target != __mouseOverTarget) {
+			
+			if (target != null) {
+				
+				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), cast target);
+				event.bubbles = true;
+				target.__dispatchEvent (event);
+				
+			}
+			
+			__mouseOverTarget = target;
+			
+		}
+		
 		if (__dragObject != null) {
 			
 			__drag (targetPoint);
 			
+			var dropTarget = null;
+			
+			if (__mouseOverTarget == __dragObject) {
+				
+				var cacheMouseEnabled = __dragObject.mouseEnabled;
+				var cacheMouseChildren = __dragObject.mouseChildren;
+				
+				__dragObject.mouseEnabled = false;
+				__dragObject.mouseChildren = false;
+				
+				var stack = [];
+				
+				if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
+					
+					dropTarget = stack[stack.length - 1];
+					
+				}
+				
+				__dragObject.mouseEnabled = cacheMouseEnabled;
+				__dragObject.mouseChildren = cacheMouseChildren;
+				
+			} else if (__mouseOverTarget != this) {
+				
+				dropTarget = __mouseOverTarget;
+				
+			}
+			
+			__dragObject.dropTarget = dropTarget;
+			
 		}
+		
+		Point.__pool.release (targetPoint);
+		Point.__pool.release (localPoint);
 		
 	}
 	
@@ -1181,88 +1539,216 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var y = __mouseY;
 		
 		var stack = [];
+		var target:InteractiveObject = null;
 		
-		if (!__hitTest (x, y, false, stack, true, this)) {
+		if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
 			
+			target = cast stack[stack.length - 1];
+			
+		} else {
+			
+			target = this;
 			stack = [ this ];
 			
 		}
 		
-		var target:InteractiveObject = cast stack[stack.length - 1];
-		var targetPoint = new Point (x, y);
+		if (target == null) target = this;
+		var targetPoint = Point.__pool.get ();
+		targetPoint.setTo (x, y);
 		__displayMatrix.__transformInversePoint (targetPoint);
 		var delta = Std.int (deltaY);
 		
-		__fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
+		__dispatchStack (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal (targetPoint, targetPoint), target, delta), stack);
+		
+		Point.__pool.release (targetPoint);
 		
 	}
 	
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (touch.x * window.width, touch.y * window.height);
-		__displayMatrix.__transformInversePoint (point);
+		var targetPoint = Point.__pool.get ();
+		targetPoint.setTo (Math.round (touch.x * window.width * window.scale), Math.round (touch.y * window.height * window.scale));
+		__displayMatrix.__transformInversePoint (targetPoint);
 		
-		__mouseX = point.x;
-		__mouseY = point.y;
+		var touchX = targetPoint.x;
+		var touchY = targetPoint.y;
 		
-		var __stack = [];
+		var stack = [];
+		var target:InteractiveObject = null;
 		
-		if (__hitTest (__mouseX, __mouseY, false, __stack, true, this)) {
+		if (__hitTest (touchX, touchY, false, stack, true, this)) {
 			
-			var target = __stack[__stack.length - 1];
-			if (target == null) target = this;
-			var localPoint = target.globalToLocal (point);
+			target = cast stack[stack.length - 1];
 			
-			var touchEvent = TouchEvent.__create (type, null, __mouseX, __mouseY, localPoint, cast target);
-			touchEvent.touchPointID = touch.id;
-			touchEvent.isPrimaryTouchPoint = true;
+		}
+		else {
 			
-			__fireEvent (touchEvent, __stack);
+			target = this;
+			stack = [ this ];
+			
+		}
+		
+		if (target == null) target = this;
+		
+		var touchId:Int = touch.id;
+		var touchData:TouchData = null;
+		
+		if (__touchData.exists(touchId)) {
+			
+			touchData = __touchData.get(touchId);
 			
 		} else {
 			
-			var touchEvent = TouchEvent.__create (type, null, __mouseX, __mouseY, point, this);
-			touchEvent.touchPointID = touch.id;
-			touchEvent.isPrimaryTouchPoint = true;
-			
-			__fireEvent (touchEvent, [ stage ]);
-			
-		}
-		
-	}
-	
-	
-	public override function __renderDOM (renderSession:RenderSession):Void {
-		
-		for (stage3D in stage3Ds) {
-			
-			stage3D.__renderDOM (this, renderSession);
+			touchData = TouchData.__pool.get ();
+			touchData.reset();
+			touchData.touch = touch;
+			__touchData.set(touchId, touchData);
 			
 		}
 		
-		super.__renderDOM (renderSession);
+		var touchType = null;
+		var releaseTouchData:Bool = false;
 		
-	}
-	
-	
-	public override function __renderGL (renderSession:RenderSession):Void {
-		
-		for (stage3D in stage3Ds) {
+		switch (type) {
 			
-			stage3D.__renderGL (this, renderSession);
+			case TouchEvent.TOUCH_BEGIN:
+			
+				touchData.touchDownTarget = target;
+			
+			case TouchEvent.TOUCH_END:
+				
+				if (touchData.touchDownTarget == target) {
+					
+					touchType = TouchEvent.TOUCH_TAP;
+					
+				}
+				
+				touchData.touchDownTarget = null;
+				releaseTouchData = true;
+			
+			default:
+			
 			
 		}
 		
-		super.__renderGL (renderSession);
+		var localPoint = Point.__pool.get ();
+		var isPrimaryTouchPoint:Bool = (__primaryTouch == touch);
+		var touchEvent = TouchEvent.__create (type, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
+		touchEvent.touchPointID = touchId;
+		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+		
+		__dispatchStack (touchEvent, stack);
+		
+		if (touchType != null) {
+			
+			touchEvent = TouchEvent.__create (touchType, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
+			touchEvent.touchPointID = touchId;
+			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			
+			__dispatchStack (touchEvent, stack);
+			
+		}
+		
+		var touchOverTarget = touchData.touchOverTarget;
+		
+		if (target != touchOverTarget && touchOverTarget != null) {
+			
+			touchEvent = TouchEvent.__create (TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal (targetPoint, localPoint), cast touchOverTarget);
+			touchEvent.touchPointID = touchId;
+			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			
+			touchOverTarget.__dispatchEvent (touchEvent);
+			
+		}
+		
+		var touchOutStack = touchData.rollOutStack;
+		
+		for (target in touchOutStack) {
+			
+			if (stack.indexOf (target) == -1) {
+				
+				touchOutStack.remove (target);
+				
+				touchEvent = TouchEvent.__create (TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal (targetPoint, localPoint), cast touchOverTarget);
+				touchEvent.touchPointID = touchId;
+				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+				touchEvent.bubbles = false;
+				
+				target.__dispatchEvent (touchEvent);
+				
+			}
+			
+		}
+		
+		for (target in stack) {
+			
+			if (touchOutStack.indexOf (target) == -1) {
+				
+				if (target.hasEventListener (TouchEvent.TOUCH_ROLL_OVER)) {
+					
+					touchEvent = TouchEvent.__create (TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY, touchOverTarget.__globalToLocal (targetPoint, localPoint), cast target);
+					touchEvent.touchPointID = touchId;
+					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+					touchEvent.bubbles = false;
+					
+					target.__dispatchEvent (touchEvent);
+					
+				}
+				
+				if (target.hasEventListener (TouchEvent.TOUCH_ROLL_OUT)) {
+					
+					touchOutStack.push (target);
+					
+				}
+				
+			}
+			
+		}
+		
+		if (target != touchOverTarget) {
+			
+			if (target != null) {
+				
+				touchEvent = TouchEvent.__create (TouchEvent.TOUCH_OVER, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
+				touchEvent.touchPointID = touchId;
+				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+				touchEvent.bubbles = true;
+				
+				target.__dispatchEvent (touchEvent);
+				
+			}
+			
+			touchData.touchOverTarget = target;
+			
+		}
+		
+		Point.__pool.release (targetPoint);
+		Point.__pool.release (localPoint);
+		
+		if (releaseTouchData) {
+			
+			__touchData.remove(touchId);
+			touchData.reset();
+			TouchData.__pool.release (touchData);
+			
+		}
 		
 	}
 	
 	
 	private function __resize ():Void {
 		
+		var cacheWidth = stageWidth;
+		var cacheHeight = stageHeight;
+		
 		var windowWidth = Std.int (window.width * window.scale);
 		var windowHeight = Std.int (window.height * window.scale);
+		
+		#if (js && html5)
+		__logicalWidth = windowWidth;
+		__logicalHeight = windowHeight;
+		#end
 		
 		__displayMatrix.identity ();
 		
@@ -1296,7 +1782,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null) {
 			
-			__renderer.resize (stageWidth, stageHeight);
+			__renderer.resize (windowWidth, windowHeight);
+			
+		}
+		
+		if (stageWidth != cacheWidth || stageHeight != cacheHeight) {
+			
+			__dispatchEvent (new Event (Event.RESIZE));
 			
 		}
 		
@@ -1322,22 +1814,24 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (lockCenter) {
 				
-				__dragOffsetX = -__dragObject.width / 2;
-				__dragOffsetY = -__dragObject.height / 2;
+				__dragOffsetX = 0;
+				__dragOffsetY = 0;
 				
 			} else {
 				
-				var mouse = new Point (mouseX, mouseY);
+				var mouse = Point.__pool.get ();
+				mouse.setTo (mouseX, mouseY);
 				var parent = __dragObject.parent;
 				
 				if (parent != null) {
 					
-					mouse = parent.globalToLocal (mouse);
+					parent.__getWorldTransform ().__transformInversePoint (mouse);
 					
 				}
 				
 				__dragOffsetX = __dragObject.x - mouse.x;
 				__dragOffsetY = __dragObject.y - mouse.y;
+				Point.__pool.release (mouse);
 				
 			}
 			
@@ -1354,18 +1848,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGrahpics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, maskGraphics:Graphics = null):Void {
 		
 		if (transformOnly) {
 			
-			if (DisplayObject.__worldTransformDirty > 0) {
+			if (__transformDirty) {
 				
-				super.__update (true, updateChildren, maskGrahpics);
+				super.__update (true, updateChildren, maskGraphics);
 				
 				if (updateChildren) {
 					
-					DisplayObject.__worldTransformDirty = 0;
-					__dirty = true;
+					__transformDirty = false;
+					//__dirty = true;
 					
 				}
 				
@@ -1373,9 +1867,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else {
 			
-			if (DisplayObject.__worldTransformDirty > 0 || __dirty || DisplayObject.__worldRenderDirty > 0) {
+			if (__transformDirty || __renderDirty) {
 				
-				super.__update (false, updateChildren, maskGrahpics);
+				super.__update (false, updateChildren, maskGraphics);
 				
 				if (updateChildren) {
 					
@@ -1383,9 +1877,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					__wasDirty = true;
 					#end
 					
-					DisplayObject.__worldTransformDirty = 0;
-					DisplayObject.__worldRenderDirty = 0;
-					__dirty = false;
+					//__dirty = false;
 					
 				}
 				
@@ -1394,7 +1886,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
 				
-				super.__update (false, updateChildren, maskGrahpics);
+				super.__update (false, updateChildren, maskGraphics);
 				
 				if (updateChildren) {
 					
@@ -1430,7 +1922,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var b = (value & 0x0000FF);
 		
 		__colorSplit = [ r / 0xFF, g / 0xFF, b / 0xFF ];
-		__colorString = "#" + StringTools.hex (value, 6);
+		__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
 		
 		return __color = value;
 		
@@ -1457,11 +1949,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 						//window.minimized = false;
 						window.fullscreen = false;
 						
-						__resize ();
-						
-						dispatchEvent (new Event (Event.FULLSCREEN));
-						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
-						
 					}
 				
 				default:
@@ -1470,11 +1957,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						//window.minimized = false;
 						window.fullscreen = true;
-						
-						__resize ();
-						
-						dispatchEvent (new Event (Event.FULLSCREEN));
-						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 						
 					}
 				
@@ -1500,24 +1982,25 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			var oldFocus = __focus;
 			__focus = value;
+			__cacheFocus = value;
 			
 			if (oldFocus != null) {
 				
 				var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, __focus, false, 0);
-				__stack = [];
-				oldFocus.__getInteractive (__stack);
-				__stack.reverse ();
-				__fireEvent (event, __stack);
+				var stack = new Array <DisplayObject> ();
+				oldFocus.__getInteractive (stack);
+				stack.reverse ();
+				__dispatchStack (event, stack);
 				
 			}
 			
 			if (__focus != null) {
 				
 				var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, oldFocus, false, 0);
-				__stack = [];
-				value.__getInteractive (__stack);
-				__stack.reverse ();
-				__fireEvent (event, __stack);
+				var stack = new Array <DisplayObject> ();
+				value.__getInteractive (stack);
+				stack.reverse ();
+				__dispatchStack (event, stack);
 				
 			}
 			
@@ -1554,6 +2037,27 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	private function get_fullScreenHeight ():UInt {
+		
+		return window.display.currentMode.height;
+		
+	}
+	
+	
+	private function get_fullScreenWidth ():UInt {
+		
+		return window.display.currentMode.width;
+		
+	}
+	
+	
+	private override function set_height (value:Float):Float {
+		
+		return this.height;
+		
+	}
+	
+	
 	private override function get_mouseX ():Float {
 		
 		return __mouseX;
@@ -1564,6 +2068,55 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private override function get_mouseY ():Float {
 		
 		return __mouseY;
+		
+	}
+	
+	
+	private override function set_rotation (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_scaleX (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_scaleY (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_transform (value:Transform):Transform {
+		
+		return this.transform;
+		
+	}
+	
+	
+	private override function set_width (value:Float):Float {
+		
+		return this.width;
+		
+	}
+	
+	
+	private override function set_x (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_y (value:Float):Float {
+		
+		return 0;
 		
 	}
 	

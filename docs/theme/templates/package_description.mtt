@@ -1,0 +1,36 @@
+<h1>::api.currentPageName:: <small ::cond api.isDefined("version") && full == ""::>version ::api.getValue('version')::</small></h1>
+<p ::cond api.isDefined("description")::>::api.getValue("description")::</p>
+
+<!-- 
+::if full == ""::
+	<h1>Haxe API documentation <small ::cond api.isDefined("version")::>version ::api.getValue('version')::</small></h1>
+	<p>Haxe is an open source toolkit based on a modern, high level, strictly typed programming language, a cross-compiler, a complete cross-platform standard library and ways to access each platform's native capabilities.</p> 
+	<h3>Getting Started With Haxe</h3>
+	<ul>
+		<li>Take a look at our <a href="http://haxe.org/documentation/introduction/">introduction</a></li>
+		<li>Read through the <a href="http://haxe.org/manual/">Haxe Manual</a></li>
+		<li>Look at these <a href="http://haxe.org/use-cases/">use cases for Haxe</a></li>
+		<li>Find and install <a href="http://lib.haxe.org/t/all/">popular Haxe libraries</a></li>
+		<li>Learn by example with the <a href="http://code.haxe.org">Haxe Code Cookbook</a></li>
+	</ul>
+	<hr/>
+	<h3>Top Level</h3>
+::elseif full.split(".").length==1::
+	<h1>Haxe/::full:: API documentation</h1>
+	<p>To get started with the Haxe ::full:: target:</p>
+	<ul>
+		<li>Read through the <a href="http://haxe.org/manual/">Haxe Manual</a></li>
+		<li ::cond full=="js"::>Read the <a href="http://haxe.org/manual/target-javascript.html">Haxe/JavaScript target details</a></li>
+		<li ::cond full=="flash"::>Read the <a href="http://haxe.org/manual/target-flash.html">Haxe/Flash target details</a></li>
+		<li ::cond full=="php"::>Read the <a href="http://haxe.org/manual/target-php.html">Haxe/PHP target details</a></li>
+		<li ::cond full=="cpp"::>Read the <a href="http://haxe.org/manual/target-cpp.html">Haxe/C++ target details</a></li>
+		<li ::cond full=="neko"::>Read the <a href="http://nekovm.org/doc">Neko documentation</a></li>
+		<li>Find and install <a href="http://lib.haxe.org/t/::full::/">popular Haxe/::full:: libraries</a></li>
+		<li>Learn by example with the <a href="http://code.haxe.org">Haxe Code Cookbook</a></li>
+	</ul>
+	<hr/>
+	<h1><small class="directive">package</small> ::full::</h1>
+::else::
+	<h1><small class="directive">package</small> ::full::</h1>
+::end::
+-->

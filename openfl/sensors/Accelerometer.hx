@@ -23,7 +23,7 @@ class Accelerometer extends EventDispatcher {
 	private static var initialized = false;
 	private static var supported = false;
 	
-	public static var isSupported (get, null):Bool;
+	public static var isSupported (get, never):Bool;
 	public var muted (default, set):Bool;
 	
 	private var _interval:Int;
