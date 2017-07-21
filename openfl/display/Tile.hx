@@ -8,6 +8,9 @@ import openfl.geom.Matrix;
 @:noDebug
 #end
 
+@:access(openfl.display.TileArray)
+@:access(openfl.geom.Matrix)
+
 
 class Tile {
 	
@@ -22,7 +25,7 @@ class Tile {
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
 	public var tileset (default, set):Tileset;
-	public var visible:Bool;
+	public var visible (default, set):Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
@@ -35,7 +38,7 @@ class Tile {
 	private var __sourceDirty:Bool;
 	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
-	private var __type:TileType;
+	private var __visibleDirty:Bool;
 	
 	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0) {
@@ -57,8 +60,8 @@ class Tile {
 		__alphaDirty = true;
 		__sourceDirty = true;
 		__transformDirty = true;
+		__visibleDirty = true;
 		__transform = [];
-		__type = TILE;
 		
 	}
 	
@@ -69,6 +72,83 @@ class Tile {
 		tile.matrix = matrix.clone ();
 		tile.tileset = tileset;
 		return tile;
+		
+	}
+	
+	
+	private static function __fromTileArray (position:Int, tileArray:TileArray):Tile {
+		
+		var cachePosition = tileArray.position;
+		tileArray.position = position;
+		
+		var tile = new Tile ();
+		tile.alpha = tileArray.alpha;
+		tile.id = tileArray.id;
+		tileArray.getMatrix (tile.matrix);
+		
+		tileArray.position = cachePosition;
+		
+		return tile;
+		
+	}
+	
+	
+	private function __updateTileArray (position:Int, tileArray:TileArray, forceUpdate:Bool):Void {
+		
+		var cachePosition = tileArray.position;
+		tileArray.position = position;
+		
+		if (__visibleDirty || forceUpdate) {
+			
+			tileArray.visible = visible;
+			tileArray.__bufferDirty = true;
+			__visibleDirty = false;
+			
+		}
+		
+		if (__alphaDirty || forceUpdate) {
+			
+			tileArray.alpha = alpha;
+			tileArray.__bufferDirty = true;
+			__alphaDirty = false;
+			
+		}
+		
+		if (__sourceDirty || forceUpdate) {
+			
+			tileArray.id = id;
+			tileArray.tileset = tileset;
+			tileArray.__bufferDirty = true;
+			__sourceDirty = true;
+			
+		}
+		
+		if (__transformDirty || forceUpdate) {
+			
+			if (originX != 0 || originY != 0) {
+				
+				var tempMatrix = #if flash new Matrix (); #else Matrix.__pool.get (); #end
+				tempMatrix.setTo (1, 0, 0, 1, -originX, -originY);
+				tempMatrix.concat (matrix);
+				
+				tileArray.setMatrix (tempMatrix.a, tempMatrix.b, tempMatrix.c, tempMatrix.d, tempMatrix.tx, tempMatrix.ty);
+				
+				#if !flash
+				Matrix.__pool.release (tempMatrix);
+				#end
+				
+			} else {
+				
+				tileArray.setMatrix (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+				
+			}
+			
+			tileArray.__bufferDirty = true;
+			__transformDirty = false;
+			
+		}
+		
+		tileArray.position = cachePosition;
 		
 	}
 	
@@ -288,6 +368,14 @@ class Tile {
 	}
 	
 	
+	private function set_visible (value:Bool):Bool {
+		
+		__visibleDirty = true;
+		return visible = value;
+		
+	}
+	
+	
 	private function get_x ():Float {
 		
 		return matrix.tx;
@@ -317,13 +405,5 @@ class Tile {
 		
 	}
 	
-	
-}
-
-
-private enum TileType {
-	
-	TILE;
-	TILE_ARRAY;
 	
 }

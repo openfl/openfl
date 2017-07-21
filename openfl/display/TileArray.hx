@@ -8,481 +8,420 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
-@:access(openfl.display.TileArrayAccess)
-@:access(openfl.display.TileArrayData)
-@:forward()
+@:access(openfl.display.Tileset)
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
-abstract TileArray(TileArrayData) from TileArrayData to TileArrayData {
-	
-	
-	public var length (get, set):Int;
-	
-	
-	public inline function new (length:Int = 0) {
-		
-		this = new TileArrayData (length);
-		
-	}
-	
-	
-	@:arrayAccess @:noCompletion private inline function get (index:Int):TileArrayAccess {
-		
-		this.__access.index = index;
-		return this.__access;
-		
-	}
-	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
-	private inline function get_length ():Int {
-		
-		return this.getLength ();
-		
-	}
-	
-	
-	private inline function set_length (value:Int):Int {
-		
-		return this.setLength (value);
-		
-	}
-	
-	
-}
-
-
-@:access(openfl.display.TileArrayData)
-
-
-@:dox(hide) @:noCompletion class TileArrayAccess {
-	
-	
-	public var alpha (get, set):Float;
-	public var id (get, set):Int;
-	public var matrix (get, set):Matrix;
-	//public var originX (get, set):Float;
-	//public var originY (get, set):Float;
-	public var rect (get, set):Rectangle;
-	//public var rotation (get, set):Float;
-	//public var scaleX (get, set):Float;
-	//public var scaleY (get, set):Float;
-	//public var visible (get, set):Bool;
-	public var x (get, set):Float;
-	public var y (get, set):Float;
-	
-	private var data:TileArrayData;
-	private var index:Int;
-	
-	
-	private function new (data:TileArrayData) {
-		
-		this.data = data;
-		index = 0;
-		
-	}
-	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
-	private function get_alpha ():Float {
-		
-		return data.getAlpha (index);
-		
-	}
-	
-	
-	private function set_alpha (value:Float):Float {
-		
-		return data.setAlpha (index, value);
-		
-	}
-	
-	
-	private function get_id ():Int {
-		
-		return data.getID (index);
-		
-	}
-	
-	
-	private function set_id (value:Int):Int {
-		
-		return data.setID (index, value);
-		
-	}
-	
-	
-	private function get_matrix ():Matrix {
-		
-		return data.getMatrix (index);
-		
-	}
-	
-	
-	private function set_matrix (value:Matrix):Matrix {
-		
-		return data.setMatrix (index, value);
-		
-	}
-	
-	
-	private function get_originX ():Float {
-		
-		return data.getOriginX (index);
-		
-	}
-	
-	
-	private function set_originX (value:Float):Float {
-		
-		return data.setOriginX (index, value);
-		
-	}
-	
-	
-	private function get_originY ():Float {
-		
-		return data.getOriginY (index);
-		
-	}
-	
-	
-	private function set_originY (value:Float):Float {
-		
-		return data.setOriginY (index, value);
-		
-	}
-	
-	
-	private function get_rect ():Rectangle {
-		
-		return data.getRect (index);
-		
-	}
-	
-	
-	private function set_rect (value:Rectangle):Rectangle {
-		
-		return data.setRect (index, value);
-		
-	}
-	
-	
-	private function get_rotation ():Float {
-		
-		return data.getRotation (index);
-		
-	}
-	
-	
-	private function set_rotation (value:Float):Float {
-		
-		return data.setRotation (index, value);
-		
-	}
-	
-	
-	private function get_scaleX ():Float {
-		
-		return data.getScaleX (index);
-		
-	}
-	
-	
-	private function set_scaleX (value:Float):Float {
-		
-		return data.setScaleX (index, value);
-		
-	}
-	
-	
-	private function get_scaleY ():Float {
-		
-		return data.getScaleY (index);
-		
-	}
-	
-	
-	private function set_scaleY (value:Float):Float {
-		
-		return data.setScaleY (index, value);
-		
-	}
-	
-	
-	private function get_x ():Float {
-		
-		return data.getX (index);
-		
-	}
-	
-	
-	private function set_x (value:Float):Float {
-		
-		return data.setX (index, value);
-		
-	}
-	
-	
-	private function get_y ():Float {
-		
-		return data.getY (index);
-		
-	}
-	
-	
-	private function set_y (value:Float):Float {
-		
-		return data.setY (index, value);
-		
-	}
-	
-	
-}
-
-
-@:access(openfl.display.TileArrayAccess)
-
-
-@:dox(hide) @:noCompletion class TileArrayData extends Tile {
+class TileArray {
 	
 	
 	private static inline var ID_INDEX = 0;
 	private static inline var RECT_INDEX = 1;
 	private static inline var MATRIX_INDEX = 5;
 	private static inline var ALPHA_INDEX = 11;
-	private static inline var ITEM_LENGTH = 12;
+	private static inline var DATA_LENGTH = 12;
 	
-	private var __access:TileArrayAccess;
+	public var alpha (get, set):Float;
+	public var id (get, set):Int;
+	public var length (get, set):Int;
+	public var position:Int;
+	public var tileset (get, set):Tileset;
+	public var visible (get, set):Bool;
+	
 	private var __buffer:GLBuffer;
 	private var __bufferContext:GLRenderContext;
+	private var __bufferDirty:Bool;
 	private var __bufferData:Float32Array;
+	private var __bufferSkipped:Vector<Bool>;
+	private var __cacheAlpha:Float;
+	private var __cacheDefaultTileset:Tileset;
 	private var __data:Vector<Float>;
 	private var __length:Int;
-	private var __matrix:Matrix;
-	private var __rect:Rectangle;
+	private var __tilesets:Vector<Tileset>;
+	private var __visible:Vector<Bool>;
 	
 	
-	private function new (length:Int = 0) {
+	public function new (length:Int = 0) {
 		
-		super ();
-		
-		// TODO: Init with identity matrix values?
-		
-		__type = TILE_ARRAY;
-		
-		__access = new TileArrayAccess (this);
-		__data = new Vector<Float> (length * ITEM_LENGTH);
+		__cacheAlpha = -1;
+		__data = new Vector<Float> (length * DATA_LENGTH);
+		__tilesets = new Vector<Tileset> (length);
+		__visible = new Vector<Bool> (length);
+		__length = length;
 		
 	}
 	
 	
-	private inline function getAlpha (index:Int):Float {
+	public function getMatrix (matrix:Matrix = null):Matrix {
 		
-		return __data[ALPHA_INDEX + (index * ITEM_LENGTH)];
+		if (matrix == null) matrix = new Matrix ();
+		var i = MATRIX_INDEX + (position * DATA_LENGTH);
+		matrix.a = __data[i];
+		matrix.b = __data[i + 1];
+		matrix.c = __data[i + 2];
+		matrix.d = __data[i + 3];
+		matrix.tx = __data[i + 4];
+		matrix.ty = __data[i + 5];
+		return matrix;
 		
 	}
 	
 	
-	private inline function getID (index:Int):Int {
+	public function getRect (rect:Rectangle = null):Rectangle {
 		
-		return Std.int (__data[ID_INDEX + (index * ITEM_LENGTH)]);
+		if (rect == null) rect = new Rectangle ();
+		var i = RECT_INDEX + (position * DATA_LENGTH);
+		rect.x = __data[i];
+		rect.y = __data[i + 1];
+		rect.width = __data[i + 2];
+		rect.height = __data[i + 3];
+		return rect;
 		
 	}
 	
 	
-	private inline function getLength ():Int {
+	public function setMatrix (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void {
+		
+		var i = MATRIX_INDEX + (position * DATA_LENGTH);
+		__data[i] = a;
+		__data[i + 1] = b;
+		__data[i + 2] = c;
+		__data[i + 3] = d;
+		__data[i + 4] = tx;
+		__data[i + 5] = ty;
+		
+	}
+	
+	
+	public function setRect (x:Float, y:Float, width:Float, height:Float):Void {
+		
+		__data[ID_INDEX + (position * DATA_LENGTH)] = -1;
+		var i = RECT_INDEX + (position * DATA_LENGTH);
+		__data[i] = x;
+		__data[i + 1] = y;
+		__data[i + 2] = width;
+		__data[i + 3] = height;
+		
+	}
+	
+	
+	private inline function __init (position:Int):Void {
+		
+		this.position = position;
+		
+		alpha = 1;
+		id = 0;
+		setMatrix (1, 0, 0, 1, 0, 0);
+		tileset = null;
+		visible = true;
+		
+	}
+	
+	
+	#if !flash
+	private function __updateGLBuffer (gl:GLRenderContext, defaultTileset:Tileset, worldAlpha:Float):GLBuffer {
+		
+		// TODO: More closely align internal data format with GL buffer format?
+		
+		var itemSize = 30;
+		var bufferLength = __length * itemSize;
+		
+		if (__bufferData == null) {
+			
+			__bufferData = new Float32Array (bufferLength);
+			__bufferSkipped = new Vector<Bool> (__length);
+			__bufferDirty = true;
+			
+		} else if (__bufferData.length != bufferLength) {
+			
+			var data = new Float32Array (bufferLength);
+			
+			if (__bufferData.length <= data.length) {
+				
+				data.set (__bufferData);
+				
+			} else {
+				
+				data.set (__bufferData.subarray (0, data.length));
+				
+			}
+			
+			__bufferData = data;
+			__bufferSkipped.length = __length;
+			__bufferDirty = true;
+			
+		}
+		
+		if (__buffer == null || __bufferContext != gl) {
+			
+			__bufferContext = gl;
+			__buffer = gl.createBuffer ();
+			
+		}
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+		
+		if (__bufferDirty || (__cacheAlpha != worldAlpha) || (__cacheDefaultTileset != defaultTileset)) {
+			
+			var matrix = Matrix.__pool.get ();
+			var rect = null;
+			
+			// TODO: Dirty algorithm per tile?
+			
+			var offset = 0;
+			var alpha, visible, tileset, tileData, id;
+			var bitmapWidth, bitmapHeight, tileWidth:Float, tileHeight:Float;
+			var uvX, uvY, uvWidth, uvHeight;
+			var x, y, x2, y2, x3, y3, x4, y4;
+			
+			position = 0;
+			
+			var __skipTile = function (i, offset:Int):Void {
+				
+				__bufferData[offset + 4] = 0;
+				__bufferData[offset + 9] = 0;
+				__bufferData[offset + 14] = 0;
+				__bufferData[offset + 19] = 0;
+				__bufferData[offset + 24] = 0;
+				__bufferData[offset + 29] = 0;
+				__bufferSkipped[i] = true;
+				
+			}
+			
+			for (i in 0...__length) {
+				
+				offset = i * itemSize;
+				
+				alpha = this.alpha;
+				visible = this.visible;
+				
+				if (!visible || alpha <= 0) {
+					
+					__skipTile (i, offset);
+					continue;
+					
+				}
+				
+				tileset = this.tileset;
+				if (tileset == null) tileset = defaultTileset;
+				if (tileset == null) {
+					
+					__skipTile (i, offset);
+					continue;
+					
+				}
+				
+				id = this.id;
+				
+				if (id > -1) {
+					
+					tileData = tileset.__data[id];
+					
+					if (tileData == null) {
+						
+						__skipTile (i, offset);
+						continue;
+						
+					}
+					
+					tileWidth = tileData.width;
+					tileHeight = tileData.height;
+					uvX = tileData.__uvX;
+					uvY = tileData.__uvY;
+					uvWidth = tileData.__uvWidth;
+					uvHeight = tileData.__uvHeight;
+					
+				} else {
+					
+					if (rect == null) {
+						
+						rect = #if flash new Rectangle (); #else Rectangle.__pool.get (); #end
+						
+					}
+					
+					getRect (rect);
+					
+					tileWidth = rect.width;
+					tileHeight = rect.height;
+					bitmapWidth = tileset.bitmapData.width;
+					bitmapHeight = tileset.bitmapData.height;
+					uvX = rect.x / bitmapWidth;
+					uvY = rect.y / bitmapHeight;
+					uvWidth = rect.right / bitmapWidth;
+					uvHeight = rect.bottom / bitmapHeight;
+					
+				}
+				
+				// transform
+				
+				getMatrix (matrix);
+				x = matrix.__transformX (0, 0);
+				y = matrix.__transformY (0, 0);
+				x2 = matrix.__transformX (tileWidth, 0);
+				y2 = matrix.__transformY (tileWidth, 0);
+				x3 = matrix.__transformX (0, tileHeight);
+				y3 = matrix.__transformY (0, tileHeight);
+				x4 = matrix.__transformX (tileWidth, tileHeight);
+				y4 = matrix.__transformY (tileWidth, tileHeight);
+				
+				__bufferData[offset + 0] = x;
+				__bufferData[offset + 1] = y;
+				__bufferData[offset + 5] = x2;
+				__bufferData[offset + 6] = y2;
+				__bufferData[offset + 10] = x3;
+				__bufferData[offset + 11] = y3;
+				
+				__bufferData[offset + 15] = x3;
+				__bufferData[offset + 16] = y3;
+				__bufferData[offset + 20] = x2;
+				__bufferData[offset + 21] = y2;
+				__bufferData[offset + 25] = x4;
+				__bufferData[offset + 26] = y4;
+				
+				// uv
+				
+				__bufferData[offset + 2] = uvX;
+				__bufferData[offset + 3] = uvY;
+				__bufferData[offset + 7] = uvWidth;
+				__bufferData[offset + 8] = uvY;
+				__bufferData[offset + 12] = uvX;
+				__bufferData[offset + 13] = uvHeight;
+				
+				__bufferData[offset + 17] = uvX;
+				__bufferData[offset + 18] = uvHeight;
+				__bufferData[offset + 22] = uvWidth;
+				__bufferData[offset + 23] = uvY;
+				__bufferData[offset + 27] = uvWidth;
+				__bufferData[offset + 28] = uvHeight;
+				
+				// alpha
+				
+				alpha *= worldAlpha;
+				__bufferData[offset + 4] = alpha;
+				__bufferData[offset + 9] = alpha;
+				__bufferData[offset + 14] = alpha;
+				__bufferData[offset + 19] = alpha;
+				__bufferData[offset + 24] = alpha;
+				__bufferData[offset + 29] = alpha;
+				
+				__bufferSkipped[i] = false;
+				position++;
+				
+			}
+			
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.DYNAMIC_DRAW);
+			
+			if (rect != null) Rectangle.__pool.release (rect);
+			Matrix.__pool.release (matrix);
+			
+			__cacheAlpha = worldAlpha;
+			__cacheDefaultTileset = defaultTileset;
+			__bufferDirty = false;
+			
+		}
+		
+		return __buffer;
+		
+	}
+	#end
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private inline function get_alpha ():Float {
+		
+		return __data[ALPHA_INDEX + (position * DATA_LENGTH)];
+		
+	}
+	
+	
+	private inline function set_alpha (value:Float):Float {
+		
+		return __data[ALPHA_INDEX + (position * DATA_LENGTH)] = value;
+		
+	}
+	
+	
+	private inline function get_id ():Int {
+		
+		return Std.int (__data[ID_INDEX + (position * DATA_LENGTH)]);
+		
+	}
+	
+	
+	private inline function set_id (value:Int):Int {
+		
+		__data[ID_INDEX + (position * DATA_LENGTH)] = value;
+		return value;
+		
+	}
+	
+	
+	private inline function get_length ():Int {
 		
 		return __length;
 		
 	}
 	
 	
-	private function getMatrix (index:Int):Matrix {
+	private function set_length (value:Int):Int {
 		
-		if (__matrix == null) __matrix = new Matrix ();
-		var i = MATRIX_INDEX + (index * ITEM_LENGTH);
-		__matrix.a = __data[i];
-		__matrix.b = __data[i + 1];
-		__matrix.c = __data[i + 2];
-		__matrix.d = __data[i + 3];
-		__matrix.tx = __data[i + 4];
-		__matrix.ty = __data[i + 5];
-		return __matrix;
+		__data.length = value * DATA_LENGTH;
+		__tilesets.length = value;
+		__visible.length = value;
 		
-	}
-	
-	
-	private inline function getOriginX (index:Int):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private inline function getOriginY (index:Int):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private function getRect (index:Int):Rectangle {
-		
-		if (__rect == null) __rect = new Rectangle ();
-		var i = RECT_INDEX + (index * ITEM_LENGTH);
-		__rect.x = __data[i];
-		__rect.y = __data[i + 1];
-		__rect.width = __data[i + 2];
-		__rect.height = __data[i + 3];
-		return __rect;
-		
-	}
-	
-	
-	private inline function getRotation (index:Int):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private inline function getScaleX (index:Int):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private inline function getScaleY (index:Int):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private inline function getX (index:Int):Float {
-		
-		return __data[MATRIX_INDEX + 4 + (index * ITEM_LENGTH)];
-		
-	}
-	
-	
-	private inline function getY (index:Int):Float {
-		
-		return __data[MATRIX_INDEX + 5 + (index * ITEM_LENGTH)];
-		
-	}
-	
-	
-	private inline function setAlpha (index:Int, value:Float):Float {
-		
-		return __data[ALPHA_INDEX + (index * ITEM_LENGTH)] = value;
-		
-	}
-	
-	
-	private inline function setID (index:Int, value:Int):Int {
-		
-		__data[ID_INDEX + (index * ITEM_LENGTH)] = value;
-		return value;
-		
-	}
-	
-	
-	private inline function setLength (value:Int):Int {
+		if (value > __length) {
+			
+			var cachePosition = position;
+			
+			for (i in __length...value) {
+				
+				__init (i);
+				
+			}
+			
+			position = cachePosition;
+			
+		}
 		
 		__length = value;
-		__data.length = value * ITEM_LENGTH;
 		return value;
 		
 	}
 	
 	
-	private function setMatrix (index:Int, value:Matrix):Matrix {
+	private inline function get_tileset ():Tileset {
 		
-		var i = MATRIX_INDEX + (index * ITEM_LENGTH);
-		__data[i] = value.a;
-		__data[i + 1] = value.b;
-		__data[i + 2] = value.c;
-		__data[i + 3] = value.d;
-		__data[i + 4] = value.tx;
-		__data[i + 5] = value.ty;
+		return __tilesets[position];
+		
+	}
+	
+	
+	private inline function set_tileset (value:Tileset):Tileset {
+		
+		__tilesets[position] = value;
 		return value;
 		
 	}
 	
 	
-	private inline function setOriginX (index:Int, value:Float):Float {
+	private inline function get_visible ():Bool {
 		
-		return 0;
-		
-	}
-	
-	
-	private inline function setOriginY (index:Int, value:Float):Float {
-		
-		return 0;
+		return __visible[position];
 		
 	}
 	
 	
-	private function setRect (index:Int, value:Rectangle):Rectangle {
+	private inline function set_visible (value:Bool):Bool {
 		
-		__data[ID_INDEX + (index * ITEM_LENGTH)] = -1;
-		var i = RECT_INDEX + (index * ITEM_LENGTH);
-		__data[i] = value.x;
-		__data[i + 1] = value.y;
-		__data[i + 2] = value.width;
-		__data[i + 3] = value.height;
+		__visible[position] = value;
 		return value;
-		
-	}
-	
-	
-	private inline function setRotation (index:Int, value:Float):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private inline function setScaleX (index:Int, value:Float):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private inline function setScaleY (index:Int, value:Float):Float {
-		
-		return 0;
-		
-	}
-	
-	
-	private inline function setX (index:Int, value:Float):Float {
-		
-		return __data[MATRIX_INDEX + 4 + (index * ITEM_LENGTH)] = value;
-		
-	}
-	
-	
-	private inline function setY (index:Int, value:Float):Float {
-		
-		return __data[MATRIX_INDEX + 5 + (index * ITEM_LENGTH)] = value;
 		
 	}
 	
