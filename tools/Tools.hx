@@ -660,7 +660,7 @@ class Tools {
 			
 		}
 		
-		var swfLiteAsset = new Asset ("", "swflite.dat", AssetType.TEXT);
+		var swfLiteAsset = new Asset ("", "swflite.txt", AssetType.TEXT);
 		var swfLiteAssetData = swfLite.serialize ();
 		project.assets.push (swfLiteAsset);
 		
@@ -670,7 +670,7 @@ class Tools {
 		
 		var data = AssetHelper.createManifest (project);
 		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-		data.libraryArgs = [ "swflite.dat" ];
+		data.libraryArgs = [ "swflite.txt" ];
 		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
 		
 		File.saveContent (PathHelper.combine (targetPath, "library.json"), data.serialize ());
@@ -795,7 +795,7 @@ class Tools {
 					if (targetDirectory != null) {
 						
 						cacheDirectory = targetDirectory + "/obj/libraries/" + library.name;
-						var cacheFile = cacheDirectory + "/" + library.name + ".dat";
+						var cacheFile = cacheDirectory + "/" + library.name + ".txt";
 						
 						if (FileSystem.exists (cacheFile)) {
 							
@@ -833,7 +833,7 @@ class Tools {
 							
 						}
 						
-						var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+						var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".txt", "lib/" + library.name + "/" + library.name + ".txt", AssetType.TEXT);
 						
 						if (library.embed != null) {
 							
@@ -960,12 +960,12 @@ class Tools {
 							
 						//}
 						
-						var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+						var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".txt", AssetType.TEXT);
 						var swfLiteAssetData = swfLite.serialize ();
 						
 						if (cacheDirectory != null) {
 							
-							swfLiteAsset.sourcePath = cacheDirectory + "/" + library.name + ".dat";
+							swfLiteAsset.sourcePath = cacheDirectory + "/" + library.name + ".txt";
 							File.saveContent (swfLiteAsset.sourcePath, swfLiteAssetData);
 							
 						} else {
@@ -1006,7 +1006,7 @@ class Tools {
 					
 					var data = AssetHelper.createManifest (merge);
 					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".dat" ];
+					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".txt" ];
 					data.name = library.name;
 					
 					for (asset in merge.assets) {
