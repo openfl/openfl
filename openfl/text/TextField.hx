@@ -23,6 +23,8 @@ import openfl._internal.text.TextLayoutGroup;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.IShaderDrawable;
+import openfl.display.Shader;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
@@ -47,7 +49,7 @@ import js.html.DivElement;
 @:access(openfl.text.TextFormat)
 
 
-class TextField extends InteractiveObject {
+class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
@@ -79,6 +81,7 @@ class TextField extends InteractiveObject {
 	public var selectable (get, set):Bool;
 	public var selectionBeginIndex (get, never):Int;
 	public var selectionEndIndex (get, never):Int;
+	@:beta public var shader:Shader;
 	public var sharpness (get, set):Float;
 	public var text (get, set):UTF8String;
 	public var textColor (get, set):Int;

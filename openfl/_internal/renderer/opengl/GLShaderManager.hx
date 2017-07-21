@@ -26,8 +26,29 @@ class GLShaderManager extends AbstractShaderManager {
 		this.gl = gl;
 		
 		defaultShader = new Shader ();
-		defaultShader.gl = gl;
-		defaultShader.__init ();
+		initShader (defaultShader);
+		
+	}
+	
+	
+	public override function initShader (shader:Shader):Shader {
+		
+		if (shader != null) {
+			
+			// TODO: Change of GL context?
+			
+			if (shader.gl == null) {
+				
+				shader.gl = gl;
+				shader.__init ();
+				
+			}
+			
+			return shader;
+			
+		}
+		
+		return defaultShader;
 		
 	}
 	

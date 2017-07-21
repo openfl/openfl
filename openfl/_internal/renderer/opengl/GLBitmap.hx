@@ -31,7 +31,9 @@ class GLBitmap {
 			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap);
 			
-			var shader = renderSession.filterManager.pushObject (bitmap);
+			renderSession.filterManager.pushObject (bitmap);
+			
+			var shader = renderSession.shaderManager.initShader (bitmap.shader);
 			
 			shader.data.uImage0.input = bitmap.bitmapData;
 			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);

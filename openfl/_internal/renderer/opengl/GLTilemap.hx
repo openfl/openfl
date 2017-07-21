@@ -44,7 +44,9 @@ class GLTilemap {
 		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var shader = renderSession.filterManager.pushObject (tilemap);
+		renderSession.filterManager.pushObject (tilemap);
+		
+		var shader = renderSession.shaderManager.initShader (tilemap.shader);
 		
 		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);

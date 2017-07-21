@@ -31,7 +31,9 @@ class GLVideo {
 			renderSession.blendModeManager.setBlendMode (video.__worldBlendMode);
 			renderSession.maskManager.pushObject (video);
 			
-			var shader = renderSession.filterManager.pushObject (video);
+			renderSession.filterManager.pushObject (video);
+			
+			var shader = renderSession.shaderManager.initShader (video.shader);
 			
 			//shader.data.uImage0.input = bitmap.bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);

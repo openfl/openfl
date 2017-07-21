@@ -49,6 +49,8 @@ class GLShape {
 				
 				var shader = renderSession.filterManager.pushObject (shape);
 				
+				//var shader = renderSession.shaderManager.initShader (shape.shader);
+				
 				shader.data.uImage0.input = graphics.__bitmap;
 				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);

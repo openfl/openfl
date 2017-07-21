@@ -28,10 +28,11 @@ import openfl._internal.renderer.opengl.GLTilemap;
 @:access(openfl.geom.Rectangle)
 
 
-class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end {
+class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end implements IShaderDrawable {
 	
 	
 	public var numTiles (default, null):Int;
+	@:beta public var shader:Shader;
 	public var tileset (default, set):Tileset;
 	
 	#if !flash
