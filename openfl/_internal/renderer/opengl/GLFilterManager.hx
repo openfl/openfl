@@ -49,6 +49,8 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	public override function pushObject (object:DisplayObject):Shader {
 		
+		return renderSession.shaderManager.defaultShader;
+		
 		// TODO: Support one-pass filters?
 		
 		if (object.__filters != null && object.__filters.length > 0) {
@@ -81,6 +83,8 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	
 	public override function popObject (object:DisplayObject):Void {
+		
+		return;
 		
 		if (object.__filters != null && object.__filters.length > 0) {
 			
