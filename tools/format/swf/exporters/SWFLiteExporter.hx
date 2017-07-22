@@ -11,6 +11,7 @@ import format.swf.data.SWFButtonRecord;
 import openfl._internal.swf.FilterType;
 import openfl._internal.swf.ShapeCommand;
 import format.swf.instance.Bitmap;
+import lime.tools.helpers.LogHelper;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl._internal.symbols.DynamicTextSymbol;
@@ -863,7 +864,7 @@ class SWFLiteExporter {
 	
 	private function processSymbol (symbol:format.swf.data.SWFSymbol):Void {
 		
-		trace("processing symbol "+ symbol.name);
+		LogHelper.info ("", "processing symbol "+ symbol.name);
 		
 		var data2 = processTag (cast data.getCharacter (symbol.tagId));
 		
@@ -904,7 +905,7 @@ class SWFLiteExporter {
 						superClsName.nameSpaceName
 							+".")
 					+ superClsName.name;
-				trace("data.className", symbol.name, "baseClass", spriteSymbol.baseClassName);
+				LogHelper.info ("", "data.className: " + symbol.name + ", baseClass: " + spriteSymbol.baseClassName);
 			case _:
 		}
 		
@@ -916,7 +917,7 @@ class SWFLiteExporter {
 						var methodName = data.abcData.resolveMultiNameByIndex(field.name);
 						if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
-							trace("frame script #"+ frameNumOneIndexed);
+							LogHelper.info ("", "frame script #"+ frameNumOneIndexed);
 							var pcodes:Array<OpCode> = data.pcode[idx.getIndex()];
 							var js = "";
 							var prop:MultiName = null;
@@ -949,12 +950,12 @@ class SWFLiteExporter {
 											fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
 										}
 
-										trace("OGetProp fullname", fullname);
+										LogHelper.info ("", "OGetProp fullname: " + fullname);
 
 										stack.push(fullname);
 									case OSetProp(nameIndex):
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-										trace("OSetProp stack", prop, stack);
+										LogHelper.info ("", "OSetProp stack: " + prop + ", " + stack);
 
 										var result = stack.pop();
 
@@ -973,7 +974,7 @@ class SWFLiteExporter {
 										}
 										else
 										{
-											trace("OSetProp stack prop is null");
+											LogHelper.info ("", "OSetProp stack prop is null");
 											break;
 										}
 
@@ -990,10 +991,10 @@ class SWFLiteExporter {
 										stack.push("\"" + str + "\"");
 									case OInt(i):
 										stack.push(i);
-										trace("int", i);
+										LogHelper.info ("", "int: " + i);
 									case OSmallInt(i):
 										stack.push(i);
-										trace("smallint", i);
+										LogHelper.info ("", "smallint: " + i);
 									case OCallPropVoid(nameIndex, argCount):
 										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
 
@@ -1009,7 +1010,7 @@ class SWFLiteExporter {
 										js += temp;
 										js += ";\n";
 									case OCallProperty(nameIndex, argCount):
-										trace("OCallProperty stack", stack);
+										LogHelper.info ("", "OCallProperty stack: " + stack);
 
 										stack.pop();
 										if (prop != null)
@@ -1017,15 +1018,15 @@ class SWFLiteExporter {
 											stack.push(AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
 										}
 									case OConstructProperty(nameIndex, argCount):
-										trace("OConstructProperty stack", stack);
+										LogHelper.info ("", "OConstructProperty stack: " + stack);
 
 										var temp = "new ";
 										temp += AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
 										stack.push(temp);
 
-										trace("OConstructProperty value", temp);
+										LogHelper.info ("", "OConstructProperty value: " + temp);
 									case OInitProp(nameIndex):
-										trace("OInitProp stack", stack);
+										LogHelper.info ("", "OInitProp stack: " + stack);
 
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
 
@@ -1035,7 +1036,7 @@ class SWFLiteExporter {
 									case ODup:
 										stack.push(stack[stack.length - 1]);
 									case OArray(argCount):
-										trace("before array", stack);
+										LogHelper.info ("", "before array: " + stack);
 
 										var str = "";
 										var temp = [];
@@ -1046,7 +1047,7 @@ class SWFLiteExporter {
 										temp.reverse();
 										stack.push(temp);
 
-										trace("after array", stack);
+										LogHelper.info ("", "after array: " + stack);
 									case ORetVoid:
 									case ONull:
 										stack.push(null);
@@ -1058,12 +1059,12 @@ class SWFLiteExporter {
 											case OpAdd:
 												operator = "+";
 											case _:
-												trace("OOp");
+												LogHelper.info ("", "OOp");
 										}
 
 										if (op == OpAs)
 										{
-											trace("cast to ", stack.pop(), " is discarded");
+											LogHelper.info ("", "cast to " + stack.pop() + " is discarded");
 										}
 
 										if (operator != null)
@@ -1074,16 +1075,16 @@ class SWFLiteExporter {
 									case OJump(j, delta):
 										switch (j) {
 											case JNeq:
-//												trace(stack[0]);
+//												LogHelper.info ("", stack[0]);
 												var temp = stack.pop();
 												js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
 											case JAlways:
 												js += "else\n";
-												trace(delta);
+												LogHelper.info ("", Std.string(delta));
 											case JFalse:
 												js += "if (" + Std.string(stack.pop()) + ")\n";
 											case _:
-												trace("OJump");
+												LogHelper.info ("", "OJump");
 										}
 									case OTrue:
 										stack.push(true);
@@ -1091,10 +1092,10 @@ class SWFLiteExporter {
 										stack.push(false);
 									case _:
 										// TODO: throw() on unsupported pcodes
-										trace("pcode "+ pcode);
+										LogHelper.info ("", "pcode "+ pcode);
 								}
 							}
-							trace("javascript:\n"+js);
+							LogHelper.info ("", "javascript:\n"+js);
 							
 							// store on SWFLite object for serialized .dat export
 							spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
@@ -1229,7 +1230,7 @@ class AVM2 {
 							nameSpaceName: abcData.getStringByIndex(nsNameIndex)
 						}
 					case _:
-						trace("other type of namespace");
+						LogHelper.info ("", "other type of namespace");
 				}
 			case NMulti(nameIndex, nsIndexSet):
 				return {
@@ -1246,7 +1247,7 @@ class AVM2 {
 					nameSpaceName: null
 				}
 			case _:
-				trace("other type of name");
+				LogHelper.info ("", "other type of name");
 		}
 		return null;
 	}
@@ -1274,7 +1275,7 @@ class AVM2 {
 			}
 			else
 			{
-				trace("multiname", multiName);
+				LogHelper.info ("", "multiname: " + multiName);
 			}
 		}
 
@@ -1314,13 +1315,13 @@ class AVM2 {
 
 		if (prop == null)
 		{
-			trace("unable to get full name of property, prop = null");
+			LogHelper.info ("", "unable to get full name of property, prop = null");
 			return "";
 		}
 
 		if (prop.nameSpace == null)
 		{
-			trace("namespace is null");
+			LogHelper.info ("", "namespace is null");
 			js = prop.name;
 		}
 		else
@@ -1348,7 +1349,7 @@ class AVM2 {
 					}
 				case _:
 					// TODO: throw() on unsupported namespaces
-					trace("unsupported namespace "+ prop.nameSpace);
+					LogHelper.info ("", "unsupported namespace "+ prop.nameSpace);
 			}
 		}
 
@@ -1361,7 +1362,7 @@ class AVM2 {
 
 		if (prop == null)
 		{
-			trace("parseFunctionCall is stopped, prop = null");
+			LogHelper.info ("", "parseFunctionCall is stopped, prop = null");
 			return "";
 		}
 
