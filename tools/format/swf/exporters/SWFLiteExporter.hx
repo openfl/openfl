@@ -985,6 +985,8 @@ class SWFLiteExporter {
 									case OInt(i):
 										stack.push(i);
 //										trace("int", i);
+									case OIntRef(nameIndex):
+										stack.push(data.abcData.getIntByIndex(nameIndex));
 									case OSmallInt(i):
 										stack.push(i);
 //										trace("smallint", i);
@@ -1338,6 +1340,10 @@ class AVM2 {
 		return abcData.strings[i.getIndex()-1];
 	}
 
+	public static function getIntByIndex(abcData: ABCData, i: Index<Int>): Int {
+		return abcData.ints[i.getIndex()-1];
+	}
+
 	public static function getNameSpaceByIndex(abcData: ABCData, i: Index<Namespace>): Namespace {
 		return abcData.namespaces[i.getIndex()-1];
 	}
@@ -1458,7 +1464,7 @@ class AVM2 {
 		{
 			switch (prop.nameSpace) {
 				case NPublic(_) if ("" != prop.nameSpaceName):
-					js = prop.nameSpaceName +"_"+ prop.name;
+					js = prop.nameSpaceName.replace(".", "_") +"_"+ prop.name;
 				case NInternal(_) if (cls.name == prop.nameIndex):
 					js = "this." + prop.name;
 				case NPublic(_):
