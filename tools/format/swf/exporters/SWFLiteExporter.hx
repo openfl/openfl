@@ -909,6 +909,9 @@ class SWFLiteExporter {
 							var js = "";
 							var prop:MultiName = null;
 							var stack:Array<Dynamic> = new Array();
+							var closingBrackets = [];
+							var openingBrackets = [];
+							var indentationLevel = 0;
 							for (pcode in pcodes) {
 								switch (pcode.opr) {
 									case OThis:
@@ -960,9 +963,9 @@ class SWFLiteExporter {
 											}
 										}
 
-										var instance = stack.pop();
+										var instance = Std.string(stack.pop());
 
-										if (instance != "this")
+										if (instance != "this" && !instance.startsWith("this."))
 										{
 											instance = "this" + "." + instance;
 										}
@@ -973,10 +976,10 @@ class SWFLiteExporter {
 										stack.push("\"" + str + "\"");
 									case OInt(i):
 										stack.push(i);
-										trace("int", i);
+//										trace("int", i);
 									case OSmallInt(i):
 										stack.push(i);
-										trace("smallint", i);
+//										trace("smallint", i);
 									case OCallPropVoid(nameIndex, argCount):
 										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
 
@@ -994,11 +997,18 @@ class SWFLiteExporter {
 									case OCallProperty(nameIndex, argCount):
 										trace("OCallProperty stack", stack);
 
-										stack.pop();
-										if (prop != null)
-										{
-											stack.push(AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
-										}
+//										stack.pop();
+//										if (prop != null)
+//										{
+//											var temp = AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+//											trace("OCallProperty pushed to stack", temp);
+//											stack.push(temp);
+//										}
+
+										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+										var result = stack.pop() + "." + temp;
+										trace("OCallProperty result", result);
+										stack.push(result);
 									case OConstructProperty(nameIndex, argCount):
 										trace("OConstructProperty stack", stack);
 
@@ -1018,7 +1028,7 @@ class SWFLiteExporter {
 									case ODup:
 										stack.push(stack[stack.length - 1]);
 									case OArray(argCount):
-										trace("before array", stack);
+//										trace("before array", stack);
 
 										var str = "";
 										var temp = [];
@@ -1029,7 +1039,7 @@ class SWFLiteExporter {
 										temp.reverse();
 										stack.push(temp);
 
-										trace("after array", stack);
+//										trace("after array", stack);
 									case ORetVoid:
 									case ONull:
 										stack.push(null);
@@ -1041,7 +1051,7 @@ class SWFLiteExporter {
 											case OpAdd:
 												operator = "+";
 											case _:
-												trace("OOp");
+												trace("OOp", op);
 										}
 
 										if (op == OpAs)
@@ -1056,18 +1066,59 @@ class SWFLiteExporter {
 										}
 									case OJump(j, delta):
 										switch (j) {
-											case JNeq:
-//												trace(stack[0]);
+											case JNeq | JNotGt | JNotLt:
+												var operator = null;
+
+												switch (j) {
+													case JNeq:
+														operator = "==";
+													case JNotGt:
+														operator = ">";
+													case JNotLt:
+														operator = "<";
+													case _:
+												}
+
 												var temp = stack.pop();
-												js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n{\n";
+												js += "if (" + Std.string(stack.pop()) + " " + operator + " " + Std.string(temp) + ")\n{\n";
+
+												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+												{
+													closingBrackets.push(pcode.pos + delta);
+												}
+
+												indentationLevel += 1;
+												trace("indentationLevel", j, indentationLevel, closingBrackets);
 											case JAlways:
-												js += "}\nelse\n{\n";
-												trace(delta);
-											case JFalse:
-												js += "if (" + Std.string(stack.pop()) + ")\n";
+												trace("JAlways", delta, pcode.pos);
+
+//												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+//												{
+													closingBrackets.push(pcode.pos + delta);
+//												}
+											case JFalse | JTrue:
+												var condition = "";
+
+												if (j.match(JTrue)) {
+													condition += "!";
+												}
+
+												condition += Std.string(stack.pop());
+
+												js += "if (" + condition + ")\n{\n";
+
+												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+												{
+													closingBrackets.push(pcode.pos + delta);
+												}
+
+												indentationLevel += 1;
+												trace("indentationLevel", j, indentationLevel, closingBrackets);
 											case _:
-												trace("OJump");
+												trace("OJump", j, delta);
 										}
+
+										trace(closingBrackets);
 
 										trace(j, delta);
 									case OTrue:
@@ -1078,9 +1129,80 @@ class SWFLiteExporter {
 										// TODO: throw() on unsupported pcodes
 										trace("pcode "+ pcode);
 								}
+
+								for (i in 0...closingBrackets.length) {
+									if (pcode.pos == closingBrackets[i])
+									{
+										trace("found a pcode for opening bracket", pcode);
+										js += "}\n";
+										closingBrackets.remove(i);
+
+										indentationLevel += -1;
+										trace("decreased indentationLevel", indentationLevel, closingBrackets);
+
+										switch (pcode.opr) {
+											case OJump(j, delta):
+												if (j == JAlways) {
+													js += "else ";
+
+													var foundConditionals = false;
+
+													for (k in pcodes.indexOf(pcode)+1...pcodes.length) {
+														trace("pcodes to look for conditional", pcodes[k]);
+														if (pcodes[k].pos > pcode.pos + delta) {
+															break;
+														}
+														else
+														{
+															if (pcodes[k].opr.match(OJump(j2, delta2))) {
+																foundConditionals = true;
+															}
+														}
+													}
+
+													trace("foundConditionals", foundConditionals);
+													if (!foundConditionals) {
+														js += "\n{\n";
+														indentationLevel += 1;
+														trace("indentationLevel", j, indentationLevel, closingBrackets);
+													}
+												}
+											case _:
+										}
+//										break;
+									}
+
+//									if (pcode.pos == openingBrackets[i])
+//									{
+//										trace("found a pcode for a OJump (JNeq)", pcode);
+//										openingBrackets.remove(i);
+//
+//										var index = pcodes.indexOf(pcode);
+//
+//										if (index + 1 < pcodes.length - 1)
+//										{
+//											switch (pcodes[index + 1].opr)
+//											{
+//												case OJump(jumpStyle, delta):
+//													trace("pcode is OJump", jumpStyle);
+//												case _:
+//													trace("pcode", pcodes[index + 1].opr);
+//											}
+//										}
+//
+//										js += "{ \\\\opening\n";
+//										break;
+//									}
+								}
+
+								for (i in 0...openingBrackets.length) {
+
+								}
 							}
 							trace("javascript:\n"+js);
-							
+
+							trace(pcodes);
+
 							// store on SWFLite object for serialized .dat export
 							spriteSymbol.frames[frameNumOneIndexed-1].script = js;
 						}
