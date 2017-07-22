@@ -164,12 +164,16 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	private function renderPass (target:BitmapData, shader:Shader):Void {
 		
+		if (target == null || shader == null) return;
+		
 		shader.data.uImage0.input = target;
 		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
 		shader.data.uMatrix.value = renderer.getMatrix (matrix);
 		
-		if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-		shader.data.uColorTransform.value[0] = false;
+		if (shader.data.uColorTransform != null) {
+			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+			shader.data.uColorTransform.value[0] = false;
+		}
 		
 		renderSession.shaderManager.setShader (shader);
 		
