@@ -1,9 +1,6 @@
 package openfl.display;
 
 
-import lime.graphics.GLRenderContext;
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.Float32Array;
 import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.flash.FlashTilemap;
 import openfl._internal.renderer.RenderSession;
@@ -39,11 +36,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public var smoothing:Bool;
 	#end
 	
-	private var __buffer:GLBuffer;
-	private var __bufferContext:GLRenderContext;
-	private var __bufferData:Float32Array;
-	private var __cacheAlpha:Float;
-	private var __dirty:Bool;
 	private var __tiles:Vector<Tile>;
 	private var __tileArray:TileArray;
 	private var __tileArrayDirty:Bool;
@@ -79,7 +71,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public function addTile (tile:Tile):Tile {
 		
 		__tiles[numTiles] = tile;
-		__tileArrayDirty = true;
 		numTiles++;
 		
 		return tile;
@@ -90,9 +81,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public function addTiles (tiles:Array<Tile>):Array<Tile> {
 		
 		for (tile in tiles) {
-			
 			addTile (tile);
-			
 		}
 		
 		return tiles;
@@ -107,9 +96,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		removeTile (tile);
 		
 		if (cacheLength < __tiles.length) {
-			
 			index--;
-			
 		}
 		
 		__tiles.insertAt (index, tile);
@@ -153,9 +140,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public function getTileIndex (tile:Tile):Int {
 		
 		for (i in 0...__tiles.length) {
-			
 			if (__tiles[i] == tile) return i;
-			
 		}
 		
 		return -1;
@@ -168,9 +153,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__updateTileArray ();
 		
 		if (__tileArray == null) {
-			
 			__tileArray = new TileArray ();
-			
 		}
 		
 		return __tileArray;
@@ -185,9 +168,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		for (i in 0...__tiles.length) {
 			
 			if (__tiles[i] == tile) {
-				
 				__tiles[i] = null;
-				
 			}
 			
 		}
@@ -195,9 +176,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileArrayDirty = true;
 		
 		if (cacheLength < __tiles.length) {
-			
 			numTiles--;
-			
 		}
 		
 		return tile;
@@ -208,9 +187,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public function removeTileAt (index:Int):Tile {
 		
 		if (index >= 0 && index < numTiles) {
-			
 			return removeTile (__tiles[index]);
-			
 		}
 		
 		return null;
@@ -219,8 +196,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	public function removeTiles (beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void {
-		
-		// TODO, update for TileArray
 		
 		if (beginIndex < 0) beginIndex = 0;
 		if (endIndex > __tiles.length - 1) endIndex = __tiles.length - 1;
@@ -272,9 +247,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (px > 0 && py > 0 && px <= __width && py <= __height) {
 			
 			if (stack != null && !interactiveOnly) {
-				
 				stack.push (hitObject);
-				
 			}
 			
 			return true;
@@ -348,15 +321,11 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (__tiles.length > 0) {
 			
 			if (__tileArray == null) {
-				
 				__tileArray = new TileArray ();
-				
 			}
 			
 			if (__tileArray.length < numTiles) {
-				
 				__tileArray.length = numTiles;
-				
 			}
 			
 			var tile:Tile;
@@ -364,13 +333,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			for (i in 0...__tiles.length) {
 				
 				tile = __tiles[i];
-				
-				// TODO: Tile dirty flag
-				
 				if (tile != null) {
-					
 					tile.__updateTileArray (i, __tileArray, __tileArrayDirty);
-					
 				}
 				
 			}

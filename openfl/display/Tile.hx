@@ -43,7 +43,6 @@ class Tile {
 	private var __scaleY:Null<Float>;
 	private var __shaderDirty:Bool;
 	private var __sourceDirty:Bool;
-	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
 	private var __visibleDirty:Bool;
 	
@@ -68,7 +67,6 @@ class Tile {
 		__sourceDirty = true;
 		__transformDirty = true;
 		__visibleDirty = true;
-		__transform = [];
 		
 	}
 	
@@ -201,9 +199,7 @@ class Tile {
 	private function get_colorTransform ():ColorTransform {
 		
 		if (__colorTransform == null) {
-			
 			__colorTransform = new ColorTransform ();
-			
 		}
 		
 		return __colorTransform;
@@ -248,21 +244,15 @@ class Tile {
 		if (__colorTransform == null) {
 			
 			if (value != null) {
-				
 				__colorTransform = value.__clone ();
-				
 			}
 			
 		} else {
 			
 			if (value != null) {
-				
 				__colorTransform.__copyFrom (value);
-				
 			} else {
-				
 				__colorTransform.__identity ();
-				
 			}
 			
 		}

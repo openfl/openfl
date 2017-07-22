@@ -325,10 +325,10 @@ import openfl.Vector;
 				__bufferData[offset + 3] = uvX;
 				__bufferData[offset + 4] = uvY;
 				
-				__bufferData[offset + (attributeLength) + 0] = x2;
-				__bufferData[offset + (attributeLength) + 1] = y2;
-				__bufferData[offset + (attributeLength) + 2] = uvWidth;
-				__bufferData[offset + (attributeLength) + 3] = uvY;
+				__bufferData[offset + attributeLength + 0] = x2;
+				__bufferData[offset + attributeLength + 1] = y2;
+				__bufferData[offset + attributeLength + 2] = uvWidth;
+				__bufferData[offset + attributeLength + 3] = uvY;
 				
 				__bufferData[offset + (attributeLength * 2) + 0] = x3;
 				__bufferData[offset + (attributeLength * 2) + 1] = y3;
