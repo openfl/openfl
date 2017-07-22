@@ -47,7 +47,7 @@ class MovieClip extends flash.display.MovieClip {
 	@:noCompletion private var activeObjects:Array<ChildObject>;
 	
 	#if flash
-	@:noCompletion private var __currentFrameOneIndexed:Int;
+	@:noCompletion private var __currentFrame:Int;
 	@:noCompletion private var __currentFrameLabel:String;
 	@:noCompletion private var __totalFrames:Int;
 	@:noCompletion private var __currentLabel:String;
@@ -81,7 +81,7 @@ class MovieClip extends flash.display.MovieClip {
 			
 		}
 		
-		__setCurrentFrameByOneIndex (1);
+		__currentFrame = 1;
 		__totalFrames = data.frames.length;
 		
 		__currentLabels = [];
@@ -123,13 +123,13 @@ class MovieClip extends flash.display.MovieClip {
 	
 	@:noCompletion private function enterFrame ():Void {
 		
-		if (lastUpdate == __currentFrameOneIndexed) {
+		if (lastUpdate == __currentFrame) {
 			
-			__setCurrentFrameByOneIndex (__getFrameByOneIndex (__currentFrameOneIndexed ++));
+			__currentFrame ++;
 			
-			if (__currentFrameOneIndexed > __totalFrames) {
+			if (__currentFrame > __totalFrames) {
 				
-				__setCurrentFrameByOneIndex (1);
+				__currentFrame = 1;
 				
 			}
 			
@@ -209,7 +209,7 @@ class MovieClip extends flash.display.MovieClip {
 	
 	public override function gotoAndPlay (frame:#if flash flash.utils.Object #else Dynamic #end, scene:String = null):Void {
 		
-		__currentFrameOneIndexed = getFrame (frame);
+		__currentFrame = getFrame (frame);
 		update ();
 		play ();
 		
@@ -218,7 +218,7 @@ class MovieClip extends flash.display.MovieClip {
 	
 	public override function gotoAndStop (frame:#if flash flash.utils.Object #else Dynamic #end, scene:String = null):Void {
 		
-		__currentFrameOneIndexed = getFrame (frame);
+		__currentFrame = getFrame (frame);
 		update ();
 		stop ();
 		
@@ -227,7 +227,7 @@ class MovieClip extends flash.display.MovieClip {
 	
 	public override function nextFrame ():Void {
 		
-		var next = __currentFrameOneIndexed + 1;
+		var next = __currentFrame + 1;
 		
 		if (next > __totalFrames) {
 			
@@ -396,7 +396,7 @@ class MovieClip extends flash.display.MovieClip {
 	
 	public override function prevFrame ():Void {
 		
-		var previous = __currentFrameOneIndexed - 1;
+		var previous = __currentFrame - 1;
 		
 		if (previous < 1) {
 			
@@ -634,9 +634,9 @@ class MovieClip extends flash.display.MovieClip {
 	
 	@:noCompletion private function update ():Void {
 		
-		if (__currentFrameOneIndexed != lastUpdate) {
+		if (__currentFrame != lastUpdate) {
 			
-			var frameIndex = __currentFrameOneIndexed - 1;
+			var frameIndex = __currentFrame - 1;
 			
 			if (frameIndex > -1) {
 				
@@ -654,7 +654,7 @@ class MovieClip extends flash.display.MovieClip {
 			
 		}
 		
-		lastUpdate = __currentFrameOneIndexed;
+		lastUpdate = __currentFrame;
 		
 	}
 	
@@ -737,7 +737,7 @@ class MovieClip extends flash.display.MovieClip {
 	#if flash
 	@:noCompletion @:getter public function get_currentFrame():Int {
 		
-		return __currentFrameOneIndexed;
+		return __currentFrame;
 		
 	}
 	

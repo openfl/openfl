@@ -48,7 +48,8 @@ class SpriteSymbol extends SWFSymbol {
 				
 			}
 			
-		} else if (baseClassName != null) {
+		}
+		if (symbolType == null && baseClassName != null) {
 			
 			symbolType = Type.resolveClass (baseClassName);
 			

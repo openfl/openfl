@@ -62,7 +62,6 @@ class GLFilterManager extends AbstractFilterManager {
 			
 			if (object.__filters.length == 1 && object.__filters[0].__numPasses == 0) {
 				
-				renderer.getRenderTarget (false);
 				return object.__filters[0].__initShader (renderSession, 0);
 				
 			} else {
@@ -144,10 +143,9 @@ class GLFilterManager extends AbstractFilterManager {
 					// TODO: Properly handle filter-within-filter rendering
 					
 					filterDepth--;
-					currentTarget = renderer.currentRenderTarget;
 					renderer.getRenderTarget(filterDepth > 0);
 					
-					renderPass(currentTarget, renderSession.shaderManager.defaultShader);
+					renderPass(renderer.currentRenderTarget, renderSession.shaderManager.defaultShader);
 					
 				}
 				

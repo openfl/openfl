@@ -127,6 +127,7 @@ class SWFLiteExporter {
 					var object = records[i];
 					
 					var frameObject = new FrameObject ();
+					frameObject.type = FrameObjectType.CREATE;
 					frameObject.symbol = object.characterId;
 					frameObject.id = i;
 					
@@ -626,6 +627,12 @@ class SWFLiteExporter {
 				
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
 				
+				if (frame.objects == null) {
+					
+					frame.objects = [];
+					
+				}
+				
 				frame.objects.push (frameObject);
 				
 			}
@@ -639,6 +646,13 @@ class SWFLiteExporter {
 					frameObject = new FrameObject ();
 					frameObject.id = id;
 					frameObject.type = FrameObjectType.DESTROY;
+					
+					if (frame.objects == null) {
+						
+						frame.objects = [];
+						
+					}
+					
 					frame.objects.push (frameObject);
 					
 				}
@@ -963,7 +977,7 @@ class SWFLiteExporter {
 											}
 										}
 
-										var instance = Std.string(stack.pop());
+                    var instance = Std.string(stack.pop());
 
 										if (instance != "this" && !instance.startsWith("this."))
 										{
@@ -1204,7 +1218,7 @@ class SWFLiteExporter {
 							trace(pcodes);
 
 							// store on SWFLite object for serialized .dat export
-							spriteSymbol.frames[frameNumOneIndexed-1].script = js;
+							spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
 						}
 					case _:
 				}
@@ -1374,7 +1388,7 @@ class AVM2 {
 			if (multiName != null)
 			{
 				if (clsName == multiName.name &&
-				pkgName == multiName.nameSpaceName)
+					pkgName == multiName.nameSpaceName)
 				{
 					return cls;
 				}

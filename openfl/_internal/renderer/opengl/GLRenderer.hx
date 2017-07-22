@@ -2,7 +2,6 @@ package openfl._internal.renderer.opengl;
 
 
 import lime.graphics.GLRenderContext;
-import lime.graphics.opengl.GLFramebuffer;
 import lime.math.Matrix4;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl.display.BitmapData;
@@ -28,8 +27,6 @@ class GLRenderer extends AbstractRenderer {
 	public var projection:Matrix4;
 	public var projectionFlipped:Matrix4;
 	
-	public var defaultRenderTarget:BitmapData;
-	
 	// private var cacheObject:BitmapData;
 	private var currentRenderTarget:BitmapData;
 	private var displayHeight:Int;
@@ -45,13 +42,12 @@ class GLRenderer extends AbstractRenderer {
 	private var values:Array<Float>;
 	
 	
-	public function new (stage:Stage, gl:GLRenderContext, ?defaultRenderTarget:BitmapData) {
+	public function new (stage:Stage, gl:GLRenderContext, flipped:Bool = true) {
 		
 		super (stage);
 		
 		this.gl = gl;
-		this.defaultRenderTarget = defaultRenderTarget;
-		this.flipped = (defaultRenderTarget == null);
+		this.flipped = flipped;
 		
 		matrix = new Matrix4 ();
 		values = new Array ();
@@ -74,10 +70,7 @@ class GLRenderer extends AbstractRenderer {
 				
 			}
 			
-			var width:Int = (defaultRenderTarget != null) ? defaultRenderTarget.width : Math.ceil (stage.window.width * stage.window.scale);
-			var height:Int = (defaultRenderTarget != null) ? defaultRenderTarget.height : Math.ceil (stage.window.height * stage.window.scale);
-			
-			resize (width, height);
+			resize (Math.ceil (stage.window.width * stage.window.scale), Math.ceil (stage.window.height * stage.window.scale));
 			
 		}
 		
@@ -191,12 +184,10 @@ class GLRenderer extends AbstractRenderer {
 			
 		} else {
 			
-			currentRenderTarget = defaultRenderTarget;
-			var frameBuffer:GLFramebuffer = (currentRenderTarget != null) ? currentRenderTarget.__getFramebuffer (gl) : null;
+			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, frameBuffer);
+			flipped = true;
 			
-			flipped = (currentRenderTarget == null);
 		}
 		
 	}
@@ -292,15 +283,12 @@ class GLRenderer extends AbstractRenderer {
 			
 		}
 		
-		displayMatrix = (defaultRenderTarget == null) ? stage.__displayMatrix : new Matrix ();
-		
-		var w = (defaultRenderTarget == null) ? stage.stageWidth : defaultRenderTarget.width;
-		var h = (defaultRenderTarget == null) ? stage.stageHeight : defaultRenderTarget.height;
+		displayMatrix = stage.__displayMatrix;
 		
 		offsetX = Math.round (displayMatrix.__transformX (0, 0));
 		offsetY = Math.round (displayMatrix.__transformY (0, 0));
-		displayWidth = Math.round (displayMatrix.__transformX (w, 0) - offsetX);
-		displayHeight = Math.round (displayMatrix.__transformY (0, h) - offsetY);
+		displayWidth = Math.round (displayMatrix.__transformX (stage.stageWidth, 0) - offsetX);
+		displayHeight = Math.round (displayMatrix.__transformY (0, stage.stageHeight) - offsetY);
 		
 		projection = Matrix4.createOrtho (offsetX, displayWidth + offsetX, offsetY, displayHeight + offsetY, -1000, 1000);
 		projectionFlipped = Matrix4.createOrtho (offsetX, displayWidth + offsetX, displayHeight + offsetY, offsetY, -1000, 1000);
