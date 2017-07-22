@@ -37,7 +37,7 @@ class GLTilemap {
 		
 		tilemap.__updateTileArray ();
 		
-		if (tilemap.__tileArray == null) return;
+		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;

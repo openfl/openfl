@@ -28,6 +28,10 @@ class FlashTilemap {
 		#if flash
 		if (tilemap.stage == null || !tilemap.visible || tilemap.alpha <= 0) return;
 		
+		tilemap.__updateTileArray ();
+		
+		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
+		
 		var defaultTileset = tilemap.tileset;
 		var bitmapData = tilemap.bitmapData;
 		

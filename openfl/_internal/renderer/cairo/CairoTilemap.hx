@@ -33,7 +33,7 @@ class CairoTilemap {
 		
 		tilemap.__updateTileArray ();
 		
-		if (tilemap.__tileArray == null) return;
+		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
 		var cairo = renderSession.cairo;
 		
