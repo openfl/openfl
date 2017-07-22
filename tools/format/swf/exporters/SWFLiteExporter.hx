@@ -937,7 +937,15 @@ class SWFLiteExporter {
 
 										if (prop != null)
 										{
-											fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
+											if (prop.name != null)
+											{
+												fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
+											}
+											else
+											{
+												var name = stack.pop();
+												fullname += stack.pop() + "[" + name + "]";
+											}
 										}
 
 										trace("OGetProp fullname", fullname);
@@ -1006,7 +1014,23 @@ class SWFLiteExporter {
 //										}
 
 										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
-										var result = stack.pop() + "." + temp;
+
+										var prop2 = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+										var result = "";
+
+										if (prop2 != null)
+										{
+											if (prop2.name != "int")
+											{
+												result += stack.pop() + "." + temp;
+											}
+											else
+											{
+												result += temp;
+											}
+										}
+
 										trace("OCallProperty result", result);
 										stack.push(result);
 									case OConstructProperty(nameIndex, argCount):
