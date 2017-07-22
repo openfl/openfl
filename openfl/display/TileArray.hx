@@ -25,6 +25,13 @@ import openfl.Vector;
 	private static inline var COLOR_TRANSFORM_INDEX = 12;
 	private static inline var DATA_LENGTH = 21;
 	
+	private static inline var SOURCE_DIRTY_INDEX = 0;
+	private static inline var MATRIX_DIRTY_INDEX = 1;
+	private static inline var ALPHA_DIRTY_INDEX = 2;
+	private static inline var COLOR_TRANSFORM_DIRTY_INDEX = 3;
+	private static inline var ALL_DIRTY_INDEX = 4;
+	private static inline var DIRTY_LENGTH = 5;
+	
 	public var alpha (get, set):Float;
 	public var id (get, set):Int;
 	public var length (get, set):Int;
@@ -41,6 +48,7 @@ import openfl.Vector;
 	private var __cacheAlpha:Float;
 	private var __cacheDefaultTileset:Tileset;
 	private var __data:Vector<Float>;
+	private var __dirty:Vector<Bool>;
 	private var __length:Int;
 	private var __shaders:Vector<Shader>;
 	private var __tilesets:Vector<Tileset>;
@@ -51,6 +59,7 @@ import openfl.Vector;
 		
 		__cacheAlpha = -1;
 		__data = new Vector<Float> (length * DATA_LENGTH);
+		__dirty = new Vector<Bool> (length * DIRTY_LENGTH);
 		__shaders = new Vector<Shader> (length);
 		__tilesets = new Vector<Tileset> (length);
 		__visible = new Vector<Bool> (length);
@@ -115,6 +124,7 @@ import openfl.Vector;
 		__data[i + 5] = greenOffset;
 		__data[i + 6] = blueOffset;
 		__data[i + 7] = alphaOffset;
+		__dirty[COLOR_TRANSFORM_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		
 	}
 	
@@ -128,6 +138,7 @@ import openfl.Vector;
 		__data[i + 3] = d;
 		__data[i + 4] = tx;
 		__data[i + 5] = ty;
+		__dirty[MATRIX_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		
 	}
 	
@@ -140,6 +151,7 @@ import openfl.Vector;
 		__data[i + 1] = y;
 		__data[i + 2] = width;
 		__data[i + 3] = height;
+		__dirty[SOURCE_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		
 	}
 	
@@ -154,6 +166,8 @@ import openfl.Vector;
 		setMatrix (1, 0, 0, 1, 0, 0);
 		tileset = null;
 		visible = true;
+		
+		__dirty[ALL_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		
 	}
 	
@@ -175,11 +189,26 @@ import openfl.Vector;
 			
 		} else if (__bufferData.length != bufferLength) {
 			
+			// TODO: Use newer Lime GL buffer API to pass length, do not need to recreate if size shrinks
+			
 			var data = new Float32Array (bufferLength);
 			
 			if (__bufferData.length <= data.length) {
 				
 				data.set (__bufferData);
+				
+				if (__bufferData.length == 0) {
+					
+					__bufferDirty = true;
+					
+				} else {
+					
+					var cacheLength = __bufferData.length;
+					for (i in cacheLength...bufferLength) {
+						__dirty[ALL_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
+					}
+					
+				}
 				
 			} else {
 				
@@ -201,6 +230,8 @@ import openfl.Vector;
 		}
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+		
+		// TODO: Handle __dirty flags, copy only changed values
 		
 		if (__bufferDirty || (__cacheAlpha != worldAlpha) || (__cacheDefaultTileset != defaultTileset)) {
 			
@@ -405,6 +436,7 @@ import openfl.Vector;
 	
 	private inline function set_alpha (value:Float):Float {
 		
+		__dirty[ALPHA_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		return __data[ALPHA_INDEX + (position * DATA_LENGTH)] = value;
 		
 	}
@@ -419,6 +451,7 @@ import openfl.Vector;
 	
 	private inline function set_id (value:Int):Int {
 		
+		__dirty[SOURCE_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		__data[ID_INDEX + (position * DATA_LENGTH)] = value;
 		return value;
 		
@@ -435,6 +468,7 @@ import openfl.Vector;
 	private function set_length (value:Int):Int {
 		
 		__data.length = value * DATA_LENGTH;
+		__dirty.length = value * DIRTY_LENGTH;
 		__shaders.length = value;
 		__tilesets.length = value;
 		__visible.length = value;
