@@ -659,6 +659,37 @@ class Tools {
 			}
 			
 		}
+
+		createdDirectory = false;
+		for (id in exporter.sounds.keys ()) {
+
+			if (!createdDirectory) {
+
+				PathHelper.mkdir (PathHelper.combine (targetPath, "sounds"));
+				createdDirectory = true;
+
+			}
+
+			var symbolClassName = exporter.soundSymbolClassNames.get (id);
+			var typeId = exporter.soundTypes.get (id);
+			trace("exporting sound id "+id+", type "+ typeId +", symbol class name "+ symbolClassName);
+			var type;
+			switch (typeId) {
+				case SoundType.MP3: type = "mp3";
+				case SoundType.ADPCM: type = "wav";
+				// TODO: this WAV header may become necessary to prepend in some cases
+				// "524946464409000057415645666D7420100000000100010044AC0000885801000200100064617461"
+				case _:
+					throw "unsupported sound type "+id+", type "+ typeId +", symbol class name "+ symbolClassName;
+			};
+			var path = "sounds/"+ symbolClassName + "." + type;
+			var assetData = exporter.sounds.get (id);
+
+			File.saveBytes (PathHelper.combine (targetPath, path), assetData);
+
+			var soundAsset = new Asset ("", path, AssetType.SOUND);
+			project.assets.push (soundAsset);
+		}
 		
 		var swfLiteAsset = new Asset ("", "swflite.dat", AssetType.TEXT);
 		var swfLiteAssetData = swfLite.serialize ();
