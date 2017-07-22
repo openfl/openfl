@@ -26,6 +26,7 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl.Lib;
+import openfl._internal.renderer.canvas.CanvasBlendModeManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -1649,6 +1650,7 @@ class BitmapData implements IBitmapDrawable {
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
+			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 			
 			if (!smoothing) {
 				

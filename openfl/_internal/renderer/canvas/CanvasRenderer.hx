@@ -28,7 +28,8 @@ class CanvasRenderer extends AbstractRenderer {
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
 		#if !neko
-		renderSession.maskManager = new CanvasMaskManager(renderSession);
+		renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
+		renderSession.maskManager = new CanvasMaskManager (renderSession);
 		#end
 		
 	}

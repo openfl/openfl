@@ -37,6 +37,7 @@ class CairoTilemap {
 		
 		var cairo = renderSession.cairo;
 		
+		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
 		renderSession.maskManager.pushObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
