@@ -1066,6 +1066,7 @@ enum SoundType {
 	NELLYMOSER_8_KHZ;
 	NELLYMOSER;
 	SPEEX;
+}
 
 /**
  * AVM2 ActionScript3 Byte Code (ABC) Instruction Traversal
