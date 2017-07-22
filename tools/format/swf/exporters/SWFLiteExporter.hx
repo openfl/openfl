@@ -48,10 +48,7 @@ import lime.graphics.format.JPEG;
 import openfl.display.PNGEncoderOptions;
 import format.abc.Data;
 import format.abc.Data.Name;
-<<<<<<< HEAD
 import format.swf.tags.TagDefineSound;
-=======
->>>>>>> translate AVM2 ActionScript3 Byte Code (ABC) to JavaScript;
 
 using StringTools;
 using format.swf.exporters.SWFLiteExporter.AVM2;
