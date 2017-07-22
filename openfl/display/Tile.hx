@@ -27,7 +27,7 @@ class Tile {
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	@:beta public var shader:Shader;
+	@:beta public var shader (default, set):Shader;
 	public var tileset (default, set):Tileset;
 	public var visible (default, set):Bool;
 	public var x (get, set):Float;
@@ -35,11 +35,13 @@ class Tile {
 	
 	private var __alphaDirty:Bool;
 	private var __colorTransform:ColorTransform;
+	private var __colorTransformDirty:Bool;
 	private var __rotation:Null<Float>;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
 	private var __scaleX:Null<Float>;
 	private var __scaleY:Null<Float>;
+	private var __shaderDirty:Bool;
 	private var __sourceDirty:Bool;
 	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
@@ -103,12 +105,26 @@ class Tile {
 		var cachePosition = tileArray.position;
 		tileArray.position = position;
 		
-		// TODO: Dirty algorithm
-		tileArray.shader = shader;
-		
-		if (__colorTransform != null) {
+		if (__shaderDirty || forceUpdate) {
 			
-			tileArray.setColorTransform (__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier, __colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset, __colorTransform.alphaOffset);
+			tileArray.shader = shader;
+			__shaderDirty = false;
+			
+		}
+		
+		if (__colorTransformDirty || forceUpdate) {
+			
+			if (__colorTransform == null) {
+				
+				tileArray.setColorTransform (1, 1, 1, 1, 0, 0, 0, 0);
+				
+			} else {
+				
+				tileArray.setColorTransform (__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier, __colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset, __colorTransform.alphaOffset);
+				
+			}
+			
+			__colorTransformDirty = false;
 			
 		}
 		
@@ -251,6 +267,7 @@ class Tile {
 			
 		}
 		
+		__colorTransformDirty = true;
 		return value;
 		
 		#end
@@ -446,6 +463,14 @@ class Tile {
 		}
 		
 		return value;
+		
+	}
+	
+	
+	private function set_shader (value:Shader):Shader {
+		
+		__shaderDirty = true;
+		return shader = value;
 		
 	}
 	
