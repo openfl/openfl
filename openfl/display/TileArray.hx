@@ -68,9 +68,9 @@ import openfl.Vector;
 		colorTransform.blueMultiplier = __data[i + 2];
 		colorTransform.alphaMultiplier = __data[i + 3];
 		colorTransform.redOffset = __data[i + 4];
-		colorTransform.greenOffset = __data[i + 4];
-		colorTransform.blueOffset = __data[i + 4];
-		colorTransform.alphaOffset = __data[i + 4];
+		colorTransform.greenOffset = __data[i + 5];
+		colorTransform.blueOffset = __data[i + 6];
+		colorTransform.alphaOffset = __data[i + 7];
 		return colorTransform;
 		
 	}
