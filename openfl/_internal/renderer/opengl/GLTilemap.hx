@@ -161,8 +161,6 @@ class GLTilemap {
 			
 		}
 		
-		gl.disableVertexAttribArray (shader.data.aAlpha.index);
-		
 		renderSession.filterManager.popObject (tilemap);
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
