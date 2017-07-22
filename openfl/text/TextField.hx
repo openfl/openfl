@@ -489,7 +489,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		replaceText (startIndex, endIndex, value);
 
-        var i = startIndex + cast(value, UTF8String).length;
+		var i = startIndex + cast(value, UTF8String).length;
 		setSelection(i,i);
 		
 	}
