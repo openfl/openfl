@@ -23,7 +23,7 @@ import openfl.Vector;
 	private static inline var MATRIX_INDEX = 5;
 	private static inline var ALPHA_INDEX = 11;
 	private static inline var COLOR_TRANSFORM_INDEX = 12;
-	private static inline var DATA_LENGTH = 20;
+	private static inline var DATA_LENGTH = 21;
 	
 	public var alpha (get, set):Float;
 	public var id (get, set):Int;
@@ -322,8 +322,8 @@ import openfl.Vector;
 				
 				__bufferData[offset + 0] = x;
 				__bufferData[offset + 1] = y;
-				__bufferData[offset + 3] = uvX;
-				__bufferData[offset + 4] = uvY;
+				__bufferData[offset + 2] = uvX;
+				__bufferData[offset + 3] = uvY;
 				
 				__bufferData[offset + attributeLength + 0] = x2;
 				__bufferData[offset + attributeLength + 1] = y2;
