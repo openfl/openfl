@@ -37,6 +37,8 @@ class CanvasRenderer extends AbstractRenderer {
 	
 	public override function clear ():Void {
 		
+		renderSession.blendModeManager.setBlendMode (NORMAL);
+		
 		context.setTransform (1, 0, 0, 1, 0, 0);
 		context.globalAlpha = 1;
 		
