@@ -756,9 +756,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
-		if (frameObject.visible == false) {
+		if (frameObject.visible != null) {
 			
-			displayObject.visible = false;
+			displayObject.visible = frameObject.visible;
 			
 		}
 		

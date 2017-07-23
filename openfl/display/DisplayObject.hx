@@ -1028,6 +1028,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__worldAlpha = alpha;
+		__worldBlendMode = blendMode;
 		
 		if (__transformDirty) {
 			
