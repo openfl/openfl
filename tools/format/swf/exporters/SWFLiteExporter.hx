@@ -7,6 +7,7 @@ import flash.utils.ByteArray;
 import format.png.Data;
 import format.png.Writer;
 import format.swf.data.consts.BitmapFormat;
+import format.swf.data.consts.BlendMode;
 import format.swf.data.SWFButtonRecord;
 import openfl._internal.swf.FilterType;
 import openfl._internal.swf.ShapeCommand;
@@ -147,6 +148,13 @@ class SWFLiteExporter {
 					if (object.colorTransform != null) {
 						
 						frameObject.colorTransform = object.colorTransform.colorTransform;
+						
+					}
+					
+					if (object.hasBlendMode) {
+						
+						var blendMode = BlendMode.toString (object.blendMode);
+						frameObject.blendMode = blendMode;
 						
 					}
 					
@@ -622,7 +630,25 @@ class SWFLiteExporter {
 				
 				frameObject.depth = placeTag.depth;
 				frameObject.clipDepth = (placeTag.hasClipDepth ? placeTag.clipDepth : 0);
-				frameObject.visible = (placeTag.hasVisible ? placeTag.visible != 0 : true);
+				
+				if (placeTag.hasVisible) {
+					
+					frameObject.visible = placeTag.visible != 0;
+					
+				}
+				
+				if (placeTag.hasBlendMode) {
+					
+					var blendMode = BlendMode.toString (placeTag.blendMode);
+					frameObject.blendMode = blendMode;
+					
+				}
+				
+				if (placeTag.hasCacheAsBitmap) {
+					
+					frameObject.cacheAsBitmap = placeTag.bitmapCache != 0;
+					
+				}
 				
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
 				

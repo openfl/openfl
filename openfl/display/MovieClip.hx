@@ -756,8 +756,23 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
-		// TODO: need to check for null. SWFLiteExporter needs to provide a null instead of assuming true.
-		//displayObject.visible = frameObject.visible;
+		if (frameObject.visible == false) {
+			
+			displayObject.visible = false;
+			
+		}
+		
+		if (frameObject.blendMode != null) {
+			
+			displayObject.blendMode = frameObject.blendMode;
+			
+		}
+		
+		if (frameObject.cacheAsBitmap != null) {
+			
+			//displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;
+			
+		}
 		
 		#if (openfl_dynamic || openfl_dynamic_fields_only)
 		Reflect.setField (this, displayObject.name, displayObject);
