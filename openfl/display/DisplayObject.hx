@@ -949,7 +949,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
 		
 		if (__cacheBitmapRender) return;
-
+		
 		if (cacheAsBitmap) {
 			
 			if (__cacheBitmap == null || (__renderDirty && ((__children != null && __children.length > 0) || force))) {
