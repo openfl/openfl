@@ -160,19 +160,19 @@ class CanvasTextField {
 				
 				#if dom
 					
-					var devicePixelRatio = untyped window.devicePixelRatio || 1;
+					var scale = CanvasRenderer.scale;
 					
-					graphics.__canvas.width  = Std.int( width * devicePixelRatio);
-					graphics.__canvas.height = Std.int(height * devicePixelRatio);
+					graphics.__canvas.width  = Std.int( width * scale);
+					graphics.__canvas.height = Std.int(height * scale);
 					graphics.__canvas.style.width  =  width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a  * devicePixelRatio,
-					                      transform.b  * devicePixelRatio,
-					                      transform.c  * devicePixelRatio,
-					                      transform.d  * devicePixelRatio,
-					                      transform.tx * devicePixelRatio,
-					                      transform.ty * devicePixelRatio);
+					context.setTransform (transform.a  * scale,
+					                      transform.b  * scale,
+					                      transform.c  * scale,
+					                      transform.d  * scale,
+					                      transform.tx * scale,
+					                      transform.ty * scale);
 					
 				#else
 					
