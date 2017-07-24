@@ -49,7 +49,12 @@ class CanvasShape {
 						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 						
 					}
-					
+
+					#if dom
+					 var reveseScale = 1/CanvasRenderer.scale;
+					 context.scale(reveseScale, reveseScale);
+					#end
+
 					context.drawImage (graphics.__canvas, 0, 0);
 					
 					renderSession.maskManager.popObject (shape);
