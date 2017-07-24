@@ -776,6 +776,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	#if compliant_stage_events
 		private function __getDisplayStack(object:DisplayObject):UnshrinkableArray<DisplayObject> {
+			#if dev
+				if(__displayStackDepth >= __displayStacks.length)
+				{
+					throw "Maximum display stack depth reached.";
+				}
+			#end
 			var stack = __displayStacks[__displayStackDepth];
 			stack.clear();
 			var element : DisplayObject = object;
