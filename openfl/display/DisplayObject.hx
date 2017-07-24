@@ -139,6 +139,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __style:CSSStyleDeclaration;
 	#end
 
+	#if compliant_stage_events
+	private static var __displayStackDepth = 0;
+	private static var __displayStacks:Array<UnshrinkableArray<DisplayObject>> = [
+		new UnshrinkableArray<DisplayObject>(16),
+		new UnshrinkableArray<DisplayObject>(16),
+		new UnshrinkableArray<DisplayObject>(16),
+		new UnshrinkableArray<DisplayObject>(16),
+		new UnshrinkableArray<DisplayObject>(16),
+		new UnshrinkableArray<DisplayObject>(16)
+		];
+	#end
+
 	private function new () {
 
 		super ();
@@ -764,7 +776,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	#if compliant_stage_events
 		private function __getDisplayStack(object:DisplayObject):UnshrinkableArray<DisplayObject> {
-			var stack = new UnshrinkableArray<DisplayObject>(16);
+			#if dev
+				if(__displayStackDepth >= __displayStacks.length)
+				{
+					throw "Maximum display stack depth reached.";
+				}
+			#end
+			var stack = __displayStacks[__displayStackDepth];
+			stack.clear();
 			var element : DisplayObject = object;
 			while(element != null) {
 				stack.push(element);
@@ -780,6 +799,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			var stack = null;
 			#if compliant_stage_events
 				stack = __getDisplayStack( this );
+				++__displayStackDepth;
 			#end
 
 			if (this.stage != null) {
@@ -792,12 +812,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			}
 
-
 			this.__updateStageInternal(stage);
 
 			if (stage != null) {
 				__fireAddedToStageEvent(stack);
 			}
+
+			#if compliant_stage_events
+				--__displayStackDepth;
+			#end
 		}
 		return stage;
 	}
