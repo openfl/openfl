@@ -1148,7 +1148,7 @@ import openfl.profiler.Telemetry;
 	
 	private function __setViewport (originX:Int, originY:Int, width:Int, height:Int):Void {
 		
-		if (__renderToTexture == null) originY *= -1;
+		if (__renderToTexture != null) originY *= -1;
 		
 		if (__stateCache.updateViewport (originX, originY, width, height)) {
 			
