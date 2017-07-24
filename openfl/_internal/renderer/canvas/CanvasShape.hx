@@ -56,7 +56,7 @@ class CanvasShape {
 					}
 					
 					#if dom
-					var reverseScale = 1 / Browser.window.devicePixelRatio;
+					var reverseScale = 1 / CanvasRenderer.scale;
 					context.scale (reverseScale, reverseScale);
 					#end
 					
