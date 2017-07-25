@@ -160,7 +160,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	@:to @:noCompletion private static function toBytePointer (byteArray:ByteArray):BytePointer {
 		
 		#if !display
-		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
+		__bytePointer.set (#if flash byteArray #else (byteArray:ByteArrayData) #end, byteArray.position);
 		#end
 		return __bytePointer;
 		
