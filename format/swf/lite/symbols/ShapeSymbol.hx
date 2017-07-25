@@ -36,7 +36,10 @@ class ShapeSymbol extends SWFSymbol {
 			shapeSymbolsUsingBitmapCacheMap.set(this, this);
 
 			if(!eventIsListened) {
-				openfl.Lib.current.stage.addEventListener(Event.RESIZE, __clearCachedTables);
+				var stage = openfl.Lib.current.stage;
+				lastStageWidth = stage.stageWidth;
+				lastStageHeight = stage.stageHeight;
+				stage.addEventListener(Event.RESIZE, __clearCachedTables);
 				eventIsListened = true;
 			}
 		} else if ( !useBitmapCache ) {
