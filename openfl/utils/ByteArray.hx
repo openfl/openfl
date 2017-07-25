@@ -167,7 +167,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	#if sys
+	#if (sys || display)
 	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
 		
 		#if !display
