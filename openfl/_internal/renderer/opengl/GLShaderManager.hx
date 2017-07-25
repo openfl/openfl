@@ -26,20 +26,37 @@ class GLShaderManager extends AbstractShaderManager {
 		this.gl = gl;
 		
 		defaultShader = new Shader ();
-		defaultShader.gl = gl;
-		defaultShader.__init ();
+		initShader (defaultShader);
+		
+	}
+	
+	
+	public override function initShader (shader:Shader):Shader {
+		
+		if (shader != null) {
+			
+			// TODO: Change of GL context?
+			
+			if (shader.gl == null) {
+				
+				shader.gl = gl;
+				shader.__init ();
+				
+			}
+			
+			//currentShader = shader;
+			return shader;
+			
+		}
+		
+		return defaultShader;
 		
 	}
 	
 	
 	public override function setShader (shader:Shader):Void {
 		
-		if (currentShader == shader) {
-			
-			if (currentShader != null) currentShader.__update ();
-			return;
-			
-		}
+		if (currentShader == shader) return;
 		
 		if (currentShader != null) {
 			
@@ -53,20 +70,25 @@ class GLShaderManager extends AbstractShaderManager {
 			gl.useProgram (null);
 			return;
 			
-		}
-		
-		currentShader = shader;
-		
-		if (currentShader.gl == null) {
+		} else {
 			
-			currentShader.gl = gl;
-			currentShader.__init ();
+			currentShader = shader;
+			initShader (shader);
+			gl.useProgram (shader.glProgram);
+			currentShader.__enable ();
 			
 		}
 		
-		gl.useProgram (shader.glProgram);
-		currentShader.__enable ();
-		currentShader.__update ();
+	}
+	
+	
+	public override function updateShader (shader:Shader):Void {
+		
+		if (currentShader != null) {
+			
+			currentShader.__update ();
+			
+		}
 		
 	}
 	

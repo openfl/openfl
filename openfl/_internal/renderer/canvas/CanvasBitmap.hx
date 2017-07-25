@@ -21,6 +21,7 @@ class CanvasBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
+			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap, false);
 			
 			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);

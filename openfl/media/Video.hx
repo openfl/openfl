@@ -12,6 +12,8 @@ import openfl._internal.renderer.opengl.GLVideo;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
+import openfl.display.IShaderDrawable;
+import openfl.display.Shader;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -22,10 +24,11 @@ import openfl.net.NetStream;
 @:access(openfl.geom.Point)
 
 
-class Video extends DisplayObject {
+class Video extends DisplayObject implements IShaderDrawable {
 	
 	
 	public var deblocking:Int;
+	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	public var videoHeight (get, never):Int;
 	public var videoWidth (get, never):Int;

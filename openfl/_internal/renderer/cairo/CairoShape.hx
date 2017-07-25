@@ -31,6 +31,7 @@ class CairoShape {
 			
 			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1 && graphics.__height >= 1) {
 				
+				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 				renderSession.maskManager.pushObject (shape);
 				
 				var cairo = renderSession.cairo;

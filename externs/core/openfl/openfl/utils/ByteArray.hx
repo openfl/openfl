@@ -8,7 +8,9 @@ import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
+import lime.utils.BytePointer;
 import lime.utils.Bytes in LimeBytes;
+import lime.utils.DataPointer;
 import openfl.errors.EOFError;
 
 @:access(haxe.io.Bytes)
@@ -20,6 +22,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public static var defaultObjectEncoding:UInt;
+	
+	private static var __bytePointer = new BytePointer ();
 	
 	public var length (get, set):Int;
 	
@@ -151,6 +155,28 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 	}
+	
+	
+	@:to @:noCompletion private static function toBytePointer (byteArray:ByteArray):BytePointer {
+		
+		#if !display
+		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
+		#end
+		return __bytePointer;
+		
+	}
+	
+	
+	#if sys
+	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
+		
+		#if !display
+		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
+		#end
+		return __bytePointer;
+		
+	}
+	#end
 	
 	
 	@:to @:noCompletion private static function toBytes (byteArray:ByteArray):Bytes {
@@ -580,9 +606,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			__setData (bytes);
 			
 			length = __length;
-			position = __length;
 			
 		}
+		
+		position = 0;
 		
 	}
 	
@@ -636,8 +663,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function writeFloat (value:Float):Void {
 		
-		var int = FPHelper.floatToI32 (value);
-		writeInt (int);
+		if (endian == LITTLE_ENDIAN) {
+			
+			__resize (position + 4);
+			setFloat (position, value);
+			position += 4;
+			
+		} else {
+			
+			var int = FPHelper.floatToI32 (value);
+			writeInt (int);
+			
+		}
 		
 	}
 	
