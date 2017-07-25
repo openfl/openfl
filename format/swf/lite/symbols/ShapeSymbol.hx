@@ -18,6 +18,11 @@ class ShapeSymbol extends SWFSymbol {
 	public var forbidCachedBitmapUpdate:Bool = false;
 	public var snapCoordinates:Bool = false;
 
+	static public var shapeSymbolsUsingBitmapCacheMap = new Map<ShapeSymbol, ShapeSymbol>();
+	static private var lastStageWidth:Null<Int>;
+	static private var lastStageHeight:Null<Int>;
+	static private var eventIsListened:Bool = false;
+
 	public function new () {
 
 		super ();
@@ -27,13 +32,15 @@ class ShapeSymbol extends SWFSymbol {
 	public function set_useBitmapCache (useBitmapCache:Bool):Bool {
 
 		if (useBitmapCache && cachedTable == null) {
-
 			cachedTable = new Array<CacheEntry> ();
+			shapeSymbolsUsingBitmapCacheMap.set(this, this);
 
-			openfl.Lib.current.stage.addEventListener(Event.RESIZE, __clearCachedTable);
-
+			if(!eventIsListened) {
+				openfl.Lib.current.stage.addEventListener(Event.RESIZE, __clearCachedTables);
+				eventIsListened = true;
+			}
 		} else if ( !useBitmapCache ) {
-			openfl.Lib.current.stage.removeEventListener(Event.RESIZE, __clearCachedTable);
+			shapeSymbolsUsingBitmapCacheMap.remove(this);
 		}
 
 		return this.useBitmapCache = useBitmapCache;
@@ -190,7 +197,7 @@ class ShapeSymbol extends SWFSymbol {
 	#end
 
 
-	private function __clearCachedTable(event:Event) {
+	private function __clearCachedTable() {
 		graphics.dispose();
 
 		for ( cache in cachedTable ) {
@@ -202,6 +209,18 @@ class ShapeSymbol extends SWFSymbol {
 		}
 	}
 
+	private static function __clearCachedTables(e:openfl.events.Event) {
+		var width = e.currentTarget.stageWidth;
+		var height = e.currentTarget.stageHeight;
+
+		if(lastStageWidth != width || lastStageHeight != height) {
+			for(s in shapeSymbolsUsingBitmapCacheMap) {
+				s.__clearCachedTable();
+			}
+			lastStageWidth = width;
+			lastStageHeight = height;
+		}
+	}
 
 }
 
