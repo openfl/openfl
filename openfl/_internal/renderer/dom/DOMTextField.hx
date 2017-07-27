@@ -318,10 +318,10 @@ class DOMTextField {
 				} else {
 					
 					if (textField.__div != null) {
-						
+
 						renderSession.element.removeChild (textField.__div);
 						textField.__div = null;
-						
+
 					}
 					
 				}
@@ -345,20 +345,26 @@ class DOMTextField {
 			
 		} else {
 			
-			if (textField.__div != null) {
-				
-				renderSession.element.removeChild (textField.__div);
-				textField.__div = null;
-				textField.__style = null;
-				
-			}
+			clean(textField, renderSession);
 			
 		}
 		
 		#end
 		
 	}
-	
+
+	public static function clean(textField:TextField, renderSession:RenderSession): Void {
+		#if (js && html5)
+			if (textField.__div != null) {
+
+				renderSession.element.removeChild (textField.__div);
+				textField.__div = null;
+				textField.__style = null;
+
+			}
+		#end
+	}
+
 	private static function __getAttributeMatch (regex:EReg):String {
 		
 		return regex.matched (2) != null ? regex.matched (2) : regex.matched (3);
