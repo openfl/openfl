@@ -3,7 +3,7 @@ package openfl.display; #if (display || !flash)
 
 /**
  * The StageDisplayState class provides values for the
- * <code>Stage.displayState</code> property.
+ * `Stage.displayState` property.
  */
 @:enum abstract StageDisplayState(Null<Int>) {
 	

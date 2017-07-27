@@ -29,12 +29,13 @@ class CanvasRenderer extends AbstractRenderer {
 		this.context = context;
 		
 		renderSession = new RenderSession ();
-		renderSession.clearDirtyFlags = true;
+		renderSession.clearRenderDirty = true;
 		renderSession.context = context;
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
 		#if !neko
-		renderSession.maskManager = new CanvasMaskManager(renderSession);
+		renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
+		renderSession.maskManager = new CanvasMaskManager (renderSession);
 		#end
 
 		#if (js && html5)
@@ -52,6 +53,8 @@ class CanvasRenderer extends AbstractRenderer {
 
 
 	public override function clear ():Void {
+		
+		renderSession.blendModeManager.setBlendMode (NORMAL);
 		
 		context.setTransform (1, 0, 0, 1, 0, 0);
 		context.globalAlpha = 1;

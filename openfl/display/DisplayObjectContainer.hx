@@ -592,7 +592,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.clearRenderDirty) {
 			
 			for (child in __children) {
 				
@@ -662,7 +662,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.clearRenderDirty) {
 			
 			for (child in __children) {
 				
@@ -735,7 +735,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.clearRenderDirty) {
 			
 			for (child in __children) {
 				
@@ -775,6 +775,23 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	private override function __renderDOMClear (renderSession:RenderSession):Void {
+		
+		#if dom
+		for (child in __children) {
+			child.__renderDOMClear (renderSession);
+		}
+		
+		for (orphan in __removedChildren) {
+			if (orphan.stage == null) {
+				orphan.__renderDOMClear (renderSession);
+			}
+		}
+		#end
+		
+	}
+	
+	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
@@ -786,7 +803,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		renderSession.maskManager.pushObject (this);
 		renderSession.filterManager.pushObject (this);
 		
-		if (renderSession.clearDirtyFlags) {
+		if (renderSession.clearRenderDirty) {
 			
 			for (child in __children) {
 				

@@ -10,33 +10,33 @@ package openfl.filters; #if (display || !flash)
  * class), such as MovieClip, SimpleButton, TextField, and Video objects, as
  * well as to BitmapData objects.
  *
- * <p>The use of filters depends on the object to which you apply the
- * filter:</p>
+ * The use of filters depends on the object to which you apply the
+ * filter:
  *
- * <ul>
- *   <li>To apply filters to display objects use the <code>filters</code>
- * property(inherited from DisplayObject). Setting the <code>filters</code>
+ * 
+ *  * To apply filters to display objects use the `filters`
+ * property(inherited from DisplayObject). Setting the `filters`
  * property of an object does not modify the object, and you can remove the
- * filter by clearing the <code>filters</code> property. </li>
- *   <li>To apply filters to BitmapData objects, use the
- * <code>BitmapData.applyFilter()</code> method. Calling
- * <code>applyFilter()</code> on a BitmapData object takes the source
+ * filter by clearing the `filters` property. 
+ *  * To apply filters to BitmapData objects, use the
+ * `BitmapData.applyFilter()` method. Calling
+ * `applyFilter()` on a BitmapData object takes the source
  * BitmapData object and the filter object and generates a filtered image as a
- * result.</li>
- * </ul>
+ * result.
+ * 
  *
- * <p>If you apply a filter to a display object, the value of the
- * <code>cacheAsBitmap</code> property of the display object is set to
- * <code>true</code>. If you clear all filters, the original value of
- * <code>cacheAsBitmap</code> is restored.</p>
+ * If you apply a filter to a display object, the value of the
+ * `cacheAsBitmap` property of the display object is set to
+ * `true`. If you clear all filters, the original value of
+ * `cacheAsBitmap` is restored.
  *
- * <p>This filter supports Stage scaling. However, it does not support general
+ * This filter supports Stage scaling. However, it does not support general
  * scaling, rotation, and skewing. If the object itself is scaled(if
- * <code>scaleX</code> and <code>scaleY</code> are set to a value other than
+ * `scaleX` and `scaleY` are set to a value other than
  * 1.0), the filter is not scaled. It is scaled only when the user zooms in on
- * the Stage.</p>
+ * the Stage.
  *
- * <p>A filter is not applied if the resulting image exceeds the maximum
+ * A filter is not applied if the resulting image exceeds the maximum
  * dimensions. In AIR 1.5 and Flash Player 10, the maximum is 8,191 pixels in
  * width or height, and the total number of pixels cannot exceed 16,777,215
  * pixels.(So, if an image is 8,191 pixels wide, it can only be 2,048 pixels
@@ -44,7 +44,7 @@ package openfl.filters; #if (display || !flash)
  * limitation is 2,880 pixels in height and 2,880 pixels in width. If, for
  * example, you zoom in on a large movie clip with a filter applied, the
  * filter is turned off if the resulting image exceeds the maximum
- * dimensions.</p>
+ * dimensions.
  */
 @:final extern class DropShadowFilter extends BitmapFilter {
 	
@@ -76,7 +76,7 @@ package openfl.filters; #if (display || !flash)
 	
 	/**
 	 * The color of the shadow. Valid values are in hexadecimal format
-	 * <i>0xRRGGBB</i>. The default value is 0x000000.
+	 * _0xRRGGBB_. The default value is 0x000000.
 	 */
 	public var color:Int;
 	
@@ -87,40 +87,40 @@ package openfl.filters; #if (display || !flash)
 	public var distance:Float;
 	
 	/**
-	 * Indicates whether or not the object is hidden. The value <code>true</code>
+	 * Indicates whether or not the object is hidden. The value `true`
 	 * indicates that the object itself is not drawn; only the shadow is visible.
-	 * The default is <code>false</code>(the object is shown).
+	 * The default is `false`(the object is shown).
 	 */
 	public var hideObject (default, set):Bool;
 	
 	/**
 	 * Indicates whether or not the shadow is an inner shadow. The value
-	 * <code>true</code> indicates an inner shadow. The default is
-	 * <code>false</code>, an outer shadow(a shadow around the outer edges of
+	 * `true` indicates an inner shadow. The default is
+	 * `false`, an outer shadow(a shadow around the outer edges of
 	 * the object).
 	 */
 	public var inner:Bool;
 	
 	/**
-	 * Applies a knockout effect(<code>true</code>), which effectively makes the
+	 * Applies a knockout effect(`true`), which effectively makes the
 	 * object's fill transparent and reveals the background color of the
-	 * document. The default is <code>false</code>(no knockout).
+	 * document. The default is `false`(no knockout).
 	 */
 	public var knockout (default, set):Bool;
 	
 	/**
 	 * The number of times to apply the filter. The default value is
-	 * <code>BitmapFilterQuality.LOW</code>, which is equivalent to applying the
-	 * filter once. The value <code>BitmapFilterQuality.MEDIUM</code> applies the
-	 * filter twice; the value <code>BitmapFilterQuality.HIGH</code> applies it
+	 * `BitmapFilterQuality.LOW`, which is equivalent to applying the
+	 * filter once. The value `BitmapFilterQuality.MEDIUM` applies the
+	 * filter twice; the value `BitmapFilterQuality.HIGH` applies it
 	 * three times. Filters with lower values are rendered more quickly.
 	 *
-	 * <p>For most applications, a quality value of low, medium, or high is
+	 * For most applications, a quality value of low, medium, or high is
 	 * sufficient. Although you can use additional numeric values up to 15 to
 	 * achieve different effects, higher values are rendered more slowly. Instead
-	 * of increasing the value of <code>quality</code>, you can often get a
+	 * of increasing the value of `quality`, you can often get a
 	 * similar effect, and with faster rendering, by simply increasing the values
-	 * of the <code>blurX</code> and <code>blurY</code> properties.</p>
+	 * of the `blurX` and `blurY` properties.
 	 */
 	public var quality (default, set):Int;
 	
@@ -138,7 +138,7 @@ package openfl.filters; #if (display || !flash)
 	 * @param distance   Offset distance for the shadow, in pixels.
 	 * @param angle      Angle of the shadow, 0 to 360 degrees(floating point).
 	 * @param color      Color of the shadow, in hexadecimal format
-	 *                   <i>0xRRGGBB</i>. The default value is 0x000000.
+	 *                   _0xRRGGBB_. The default value is 0x000000.
 	 * @param alpha      Alpha transparency value for the shadow color. Valid
 	 *                   values are 0.0 to 1.0. For example, .25 sets a
 	 *                   transparency value of 25%.
@@ -152,23 +152,23 @@ package openfl.filters; #if (display || !flash)
 	 *                   values are 0 to 255.0.
 	 * @param quality    The number of times to apply the filter. Use the
 	 *                   BitmapFilterQuality constants:
-	 *                   <ul>
-	 *                     <li><code>BitmapFilterQuality.LOW</code></li>
-	 *                     <li><code>BitmapFilterQuality.MEDIUM</code></li>
-	 *                     <li><code>BitmapFilterQuality.HIGH</code></li>
-	 *                   </ul>
+	 *                   
+	 *                    * `BitmapFilterQuality.LOW`
+	 *                    * `BitmapFilterQuality.MEDIUM`
+	 *                    * `BitmapFilterQuality.HIGH`
+	 *                   
 	 *
-	 *                   <p>For more information about these values, see the
-	 *                   <code>quality</code> property description.</p>
+	 *                   For more information about these values, see the
+	 *                   `quality` property description.
 	 * @param inner      Indicates whether or not the shadow is an inner shadow.
-	 *                   A value of <code>true</code> specifies an inner shadow.
-	 *                   A value of <code>false</code> specifies an outer shadow
+	 *                   A value of `true` specifies an inner shadow.
+	 *                   A value of `false` specifies an outer shadow
 	 *                  (a shadow around the outer edges of the object).
-	 * @param knockout   Applies a knockout effect(<code>true</code>), which
+	 * @param knockout   Applies a knockout effect(`true`), which
 	 *                   effectively makes the object's fill transparent and
 	 *                   reveals the background color of the document.
 	 * @param hideObject Indicates whether or not the object is hidden. A value
-	 *                   of <code>true</code> indicates that the object itself is
+	 *                   of `true` indicates that the object itself is
 	 *                   not drawn; only the shadow is visible.
 	 */
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false);

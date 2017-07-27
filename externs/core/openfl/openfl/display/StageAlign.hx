@@ -3,7 +3,7 @@ package openfl.display; #if (display || !flash)
 
 /**
  * The StageAlign class provides constant values to use for the
- * <code>Stage.align</code> property.
+ * `Stage.align` property.
  */
 @:enum abstract StageAlign(Null<Int>) {
 	

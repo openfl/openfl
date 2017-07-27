@@ -128,7 +128,7 @@ class DynamicText extends TextField {
 			
 			#if (cpp || neko)
 			
-			var plain = new EReg ("</p>", "g").replace (tag.initialText, "\n");
+			var plain = new EReg ("", "g").replace (tag.initialText, "\n");
 			plain = new EReg ("<br>", "g").replace (plain, "\n");
 			plain = new EReg ("<.*?>", "g").replace (plain, "");
 			text = StringTools.htmlUnescape (plain);

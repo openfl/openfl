@@ -8,7 +8,7 @@ import openfl.events.EventDispatcher;
  * The SoundChannel class controls a sound in an application. Every sound is
  * assigned to a sound channel, and the application can have multiple sound
  * channels that are mixed together. The SoundChannel class contains a
- * <code>stop()</code> method, properties for monitoring the amplitude
+ * `stop()` method, properties for monitoring the amplitude
  * (volume) of the channel, and a property for assigning a SoundTransform
  * object to the channel.
  * 
@@ -24,17 +24,17 @@ import openfl.events.EventDispatcher;
 	public var leftPeak (default, null):Float;
 	
 	/**
-	 * When the sound is playing, the <code>position</code> property indicates in
+	 * When the sound is playing, the `position` property indicates in
 	 * milliseconds the current point that is being played in the sound file.
-	 * When the sound is stopped or paused, the <code>position</code> property
+	 * When the sound is stopped or paused, the `position` property
 	 * indicates the last point that was played in the sound file.
 	 *
-	 * <p>A common use case is to save the value of the <code>position</code>
+	 * A common use case is to save the value of the `position`
 	 * property when the sound is stopped. You can resume the sound later by
-	 * restarting it from that saved position. </p>
+	 * restarting it from that saved position. 
 	 *
-	 * <p>If the sound is looped, <code>position</code> is reset to 0 at the
-	 * beginning of each loop.</p>
+	 * If the sound is looped, `position` is reset to 0 at the
+	 * beginning of each loop.
 	 */
 	public var position (get, set):Float;
 	

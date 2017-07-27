@@ -18,6 +18,29 @@ import js.Browser;
 class DOMBitmap {
 	
 	
+	public static function clear (bitmap:Bitmap, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		if (bitmap.__image != null) {
+			
+			renderSession.element.removeChild (bitmap.__image);
+			bitmap.__image = null;
+			bitmap.__style = null;
+			
+		}
+		
+		if (bitmap.__canvas != null) {
+			
+			renderSession.element.removeChild (bitmap.__canvas);
+			bitmap.__canvas = null;
+			bitmap.__style = null;
+			
+		}
+		#end
+		
+	}
+	
+	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
@@ -39,21 +62,7 @@ class DOMBitmap {
 			
 		} else {
 			
-			if (bitmap.__image != null) {
-				
-				renderSession.element.removeChild (bitmap.__image);
-				bitmap.__image = null;
-				bitmap.__style = null;
-				
-			}
-			
-			if (bitmap.__canvas != null) {
-				
-				renderSession.element.removeChild (bitmap.__canvas);
-				bitmap.__canvas = null;
-				bitmap.__style = null;
-				
-			}
+			clear (bitmap, renderSession);
 			
 		}
 		#end
@@ -93,6 +102,9 @@ class DOMBitmap {
 		if (bitmap.__imageVersion != bitmap.bitmapData.image.version) {
 			
 			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
+			
+			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
+			bitmap.__canvas.width = bitmap.bitmapData.width + 1;
 			
 			bitmap.__canvas.width = bitmap.bitmapData.width;
 			bitmap.__canvas.height = bitmap.bitmapData.height;

@@ -2,9 +2,9 @@ package openfl.display; #if (display || !flash)
 
 
 /**
- * The GradientType class provides values for the <code>type</code> parameter
- * in the <code>beginGradientFill()</code> and
- * <code>lineGradientStyle()</code> methods of the openfl.display.Graphics
+ * The GradientType class provides values for the `type` parameter
+ * in the `beginGradientFill()` and
+ * `lineGradientStyle()` methods of the openfl.display.Graphics
  * class.
  */
 @:enum abstract GradientType(Null<Int>) {

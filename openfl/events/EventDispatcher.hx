@@ -74,9 +74,8 @@ class EventDispatcher implements IEventDispatcher {
 				
 			}
 			
-			list.push (new Listener (listener, useCapture, priority));
-			list.sort (__sortByPriority);
-			
+			__addListenerByPriority(list, new Listener (listener, useCapture, priority));
+						
 		}
 		
 	}
@@ -246,9 +245,24 @@ class EventDispatcher implements IEventDispatcher {
 	}
 	
 	
-	private static function __sortByPriority (l1:Listener, l2:Listener):Int {
-		
-		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);
+	private function __addListenerByPriority(list: Array<Listener>, listener: Listener): Void {
+
+		var numElements: Int = list.length;
+		var addAtPosition: Int = numElements;	
+
+		for (i in 0...numElements) {
+
+			if (list[i].priority < listener.priority) {
+
+				addAtPosition = i;
+
+				break;	
+
+			}
+
+		}
+
+		list.insert(addAtPosition, listener);
 		
 	}
 	
@@ -352,6 +366,7 @@ class EventDispatcher implements IEventDispatcher {
 		this.list = list;
 		
 		active = true;
+		isCopy = false;
 		index = 0;
 		
 	}

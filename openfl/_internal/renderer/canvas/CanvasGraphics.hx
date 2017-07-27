@@ -867,13 +867,11 @@ class CanvasGraphics {
 			
 			if (hasFill && closeGap) {
 				
-				trace ("1");
 				context.lineTo (startX - offsetX, startY - offsetY);
 				closePath (false);
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
-				trace ("2");
 				closePath (false);
 				
 			}

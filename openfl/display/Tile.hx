@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
 #if !openfl_debug
@@ -8,11 +9,16 @@ import openfl.geom.Matrix;
 @:noDebug
 #end
 
+@:access(openfl.display.TileArray)
+@:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
+
 
 class Tile {
 	
 	
 	public var alpha (default, set):Float;
+	@:beta public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
 	public var id (default, set):Int;
 	public var matrix (default, set):Matrix;
@@ -21,20 +27,24 @@ class Tile {
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
+	@:beta public var shader (default, set):Shader;
 	public var tileset (default, set):Tileset;
-	public var visible:Bool;
+	public var visible (default, set):Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
 	private var __alphaDirty:Bool;
+	private var __colorTransform:ColorTransform;
+	private var __colorTransformDirty:Bool;
 	private var __rotation:Null<Float>;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
 	private var __scaleX:Null<Float>;
 	private var __scaleY:Null<Float>;
+	private var __shaderDirty:Bool;
 	private var __sourceDirty:Bool;
-	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
+	private var __visibleDirty:Bool;
 	
 	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0) {
@@ -56,7 +66,7 @@ class Tile {
 		__alphaDirty = true;
 		__sourceDirty = true;
 		__transformDirty = true;
-		__transform = [];
+		__visibleDirty = true;
 		
 	}
 	
@@ -67,6 +77,106 @@ class Tile {
 		tile.matrix = matrix.clone ();
 		tile.tileset = tileset;
 		return tile;
+		
+	}
+	
+	
+	private static function __fromTileArray (position:Int, tileArray:TileArray):Tile {
+		
+		var cachePosition = tileArray.position;
+		tileArray.position = position;
+		
+		var tile = new Tile ();
+		tile.alpha = tileArray.alpha;
+		tile.id = tileArray.id;
+		tileArray.getMatrix (tile.matrix);
+		
+		tileArray.position = cachePosition;
+		
+		return tile;
+		
+	}
+	
+	
+	private function __updateTileArray (position:Int, tileArray:TileArray, forceUpdate:Bool):Void {
+		
+		var cachePosition = tileArray.position;
+		tileArray.position = position;
+		
+		if (__shaderDirty || forceUpdate) {
+			
+			tileArray.shader = shader;
+			__shaderDirty = false;
+			
+		}
+		
+		if (__colorTransformDirty || forceUpdate) {
+			
+			if (__colorTransform == null) {
+				
+				tileArray.setColorTransform (1, 1, 1, 1, 0, 0, 0, 0);
+				
+			} else {
+				
+				tileArray.setColorTransform (__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier, __colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset, __colorTransform.alphaOffset);
+				
+			}
+			
+			__colorTransformDirty = false;
+			
+		}
+		
+		if (__visibleDirty || forceUpdate) {
+			
+			tileArray.visible = visible;
+			tileArray.__bufferDirty = true;
+			__visibleDirty = false;
+			
+		}
+		
+		if (__alphaDirty || forceUpdate) {
+			
+			tileArray.alpha = alpha;
+			tileArray.__bufferDirty = true;
+			__alphaDirty = false;
+			
+		}
+		
+		if (__sourceDirty || forceUpdate) {
+			
+			tileArray.id = id;
+			tileArray.tileset = tileset;
+			tileArray.__bufferDirty = true;
+			__sourceDirty = true;
+			
+		}
+		
+		if (__transformDirty || forceUpdate) {
+			
+			if (originX != 0 || originY != 0) {
+				
+				var tempMatrix = #if flash new Matrix (); #else Matrix.__pool.get (); #end
+				tempMatrix.setTo (1, 0, 0, 1, -originX, -originY);
+				tempMatrix.concat (matrix);
+				
+				tileArray.setMatrix (tempMatrix.a, tempMatrix.b, tempMatrix.c, tempMatrix.d, tempMatrix.tx, tempMatrix.ty);
+				
+				#if !flash
+				Matrix.__pool.release (tempMatrix);
+				#end
+				
+			} else {
+				
+				tileArray.setMatrix (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+				
+			}
+			
+			tileArray.__bufferDirty = true;
+			__transformDirty = false;
+			
+		}
+		
+		tileArray.position = cachePosition;
 		
 	}
 	
@@ -82,6 +192,75 @@ class Tile {
 		
 		__alphaDirty = true;
 		return alpha = value;
+		
+	}
+	
+	
+	private function get_colorTransform ():ColorTransform {
+		
+		if (__colorTransform == null) {
+			__colorTransform = new ColorTransform ();
+		}
+		
+		return __colorTransform;
+		
+	}
+	
+	
+	private function set_colorTransform (value:ColorTransform):ColorTransform {
+		
+		#if flash
+		
+		if (__colorTransform == null) {
+			
+			__colorTransform = new ColorTransform ();
+			
+		} else if (value == null) {
+			
+			__colorTransform.redMultiplier = 1;
+			__colorTransform.greenMultiplier = 1;
+			__colorTransform.blueMultiplier = 1;
+			__colorTransform.alphaMultiplier = 1;
+			__colorTransform.redOffset = 0;
+			__colorTransform.greenOffset = 0;
+			__colorTransform.blueOffset = 0;
+			__colorTransform.alphaOffset = 0;
+			return value;
+			
+		}
+		
+		__colorTransform.redMultiplier = value.redMultiplier;
+		__colorTransform.greenMultiplier = value.greenMultiplier;
+		__colorTransform.blueMultiplier = value.blueMultiplier;
+		__colorTransform.alphaMultiplier = value.alphaMultiplier;
+		__colorTransform.redOffset = value.redOffset;
+		__colorTransform.greenOffset = value.greenOffset;
+		__colorTransform.blueOffset = value.blueOffset;
+		__colorTransform.alphaOffset = value.alphaOffset;
+		return value;
+		
+		#else
+		
+		if (__colorTransform == null) {
+			
+			if (value != null) {
+				__colorTransform = value.__clone ();
+			}
+			
+		} else {
+			
+			if (value != null) {
+				__colorTransform.__copyFrom (value);
+			} else {
+				__colorTransform.__identity ();
+			}
+			
+		}
+		
+		__colorTransformDirty = true;
+		return value;
+		
+		#end
 		
 	}
 	
@@ -278,10 +457,26 @@ class Tile {
 	}
 	
 	
+	private function set_shader (value:Shader):Shader {
+		
+		__shaderDirty = true;
+		return shader = value;
+		
+	}
+	
+	
 	private function set_tileset (value:Tileset):Tileset {
 		
 		__sourceDirty = true;
 		return tileset = value;
+		
+	}
+	
+	
+	private function set_visible (value:Bool):Bool {
+		
+		__visibleDirty = true;
+		return visible = value;
 		
 	}
 	
