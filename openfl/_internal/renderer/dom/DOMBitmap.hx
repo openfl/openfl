@@ -39,27 +39,32 @@ class DOMBitmap {
 			
 		} else {
 			
-			if (bitmap.__image != null) {
-				
-				renderSession.element.removeChild (bitmap.__image);
-				bitmap.__image = null;
-				bitmap.__style = null;
-				
-			}
-			
-			if (bitmap.__canvas != null) {
-				
-				renderSession.element.removeChild (bitmap.__canvas);
-				bitmap.__canvas = null;
-				bitmap.__style = null;
-				
-			}
+			clean(bitmap, renderSession);
 			
 		}
 		#end
 		
 	}
-	
+
+	public static function clean(bitmap:Bitmap, renderSession:RenderSession): Void {
+		#if (js && html5)
+			if (bitmap.__image != null) {
+
+				renderSession.element.removeChild (bitmap.__image);
+				bitmap.__image = null;
+				bitmap.__style = null;
+
+			}
+
+			if (bitmap.__canvas != null) {
+
+				renderSession.element.removeChild (bitmap.__canvas);
+				bitmap.__canvas = null;
+				bitmap.__style = null;
+
+			}
+		#end
+	}
 	
 	private static function renderCanvas (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
