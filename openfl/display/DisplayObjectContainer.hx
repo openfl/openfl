@@ -723,26 +723,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		}*/
 		
 	}
-
-	private override function __cleanDOM(renderSession: RenderSession): Void {
-		#if dom
-		for (child in __children) {
-
-			child.__cleanDOM(renderSession);
-
-		}
-
-		for (orphan in __removedChildren) {
-
-			if (orphan.stage == null) {
-
-				orphan.__cleanDOM (renderSession);
-
-			}
-
-		}
-		#end
-	}
+	
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
@@ -789,6 +770,23 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.popObject (this);
 		
+		#end
+		
+	}
+	
+	
+	private override function __renderDOMClear (renderSession:RenderSession):Void {
+		
+		#if dom
+		for (child in __children) {
+			child.__renderDOMClear (renderSession);
+		}
+		
+		for (orphan in __removedChildren) {
+			if (orphan.stage == null) {
+				orphan.__renderDOMClear (renderSession);
+			}
+		}
 		#end
 		
 	}

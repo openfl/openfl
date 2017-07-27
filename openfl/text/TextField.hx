@@ -10,8 +10,8 @@ import lime.ui.MouseCursor;
 import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
@@ -45,6 +45,7 @@ import js.html.DivElement;
 #end
 
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextFormat)
@@ -1252,12 +1253,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
+		
+		// TODO: Better DOM workaround on cacheAsBitmap
 		#if (js && html5 && dom)
 		if (__graphics.__canvas == null) {
 			__dirty = true;
 		}
 		#end
-
+		
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
@@ -1291,29 +1294,34 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 	}
-
-	private override function __cleanDOM(renderSession: RenderSession): Void {
-		#if dom
-			DOMTextField.clean(this, renderSession);
-		#end
-	}
+	
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		__updateCacheBitmap (renderSession);
-
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
-			__cleanDOM(renderSession);
+			
+			__renderDOMClear (renderSession);
 			__cacheBitmap.stage = stage;
+			
 			DOMBitmap.render (__cacheBitmap, renderSession);
-
+			
 		} else {
-
+			
 			DOMTextField.render (this, renderSession);
-
+			
 		}
-
+		#end
+		
+	}
+	
+	
+	private override function __renderDOMClear (renderSession:RenderSession):Void {
+		
+		#if dom
+		DOMTextField.clear (this, renderSession);
 		#end
 		
 	}

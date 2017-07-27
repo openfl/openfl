@@ -11,6 +11,15 @@ import openfl.display.DisplayObject;
 class DOMDisplayObject {
 	
 	
+	public static function clear (displayObject:DisplayObject, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		DOMShape.clear (displayObject, renderSession);
+		#end
+		
+	}
+	
+	
 	public static inline function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
@@ -32,11 +41,6 @@ class DOMDisplayObject {
 		#end
 		
 	}
-
-	public static function clean(displayObject:DisplayObject, renderSession:RenderSession): Void {
-		#if (js && html5)
-			DOMShape.clean (displayObject, renderSession);
-		#end
-	}
+	
 	
 }

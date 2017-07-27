@@ -159,23 +159,15 @@ class CanvasTextField {
 				var transform = graphics.__renderTransform;
 				
 				#if dom
-
-					textField.__graphics.__dirty = false;
-					textField.__dirty = false;
-
+					
 					var devicePixelRatio = untyped window.devicePixelRatio || 1;
-
-					graphics.__canvas.width  = Std.int( width * devicePixelRatio);
-					graphics.__canvas.height = Std.int(height * devicePixelRatio);
+					
+					graphics.__canvas.width  = Std.int (width * devicePixelRatio);
+					graphics.__canvas.height = Std.int (height * devicePixelRatio);
 					graphics.__canvas.style.width  =  width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a  * devicePixelRatio,
-					                      transform.b  * devicePixelRatio,
-					                      transform.c  * devicePixelRatio,
-					                      transform.d  * devicePixelRatio,
-					                      transform.tx * devicePixelRatio,
-					                      transform.ty * devicePixelRatio);
+					context.setTransform (transform.a * devicePixelRatio, transform.b * devicePixelRatio, transform.c * devicePixelRatio, transform.d * devicePixelRatio, transform.tx * devicePixelRatio, transform.ty * devicePixelRatio);
 					
 				#else
 					
