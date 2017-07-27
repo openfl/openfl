@@ -49,13 +49,7 @@ class DOMShape {
 					
 				} else {
 					
-					if (shape.__canvas != null) {
-						
-						renderSession.element.removeChild (shape.__canvas);
-						shape.__canvas = null;
-						shape.__style = null;
-						
-					}
+					clean(shape, renderSession);
 					
 				}
 				
@@ -86,17 +80,23 @@ class DOMShape {
 			
 		} else {
 			
-			if (shape.__canvas != null) {
-				
-				renderSession.element.removeChild (shape.__canvas);
-				shape.__canvas = null;
-				shape.__style = null;
-				
-			}
+			clean(shape, renderSession);
 			
 		}
 		#end
 		
+	}
+
+	public static function clean(shape:DisplayObject, renderSession:RenderSession): Void {
+		#if (js && html5)
+			if (shape.__canvas != null) {
+
+				renderSession.element.removeChild (shape.__canvas);
+				shape.__canvas = null;
+				shape.__style = null;
+
+			}
+		#end
 	}
 	
 	

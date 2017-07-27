@@ -152,8 +152,13 @@ class Bitmap extends DisplayObject {
 		renderSession.context.rect (0, 0, width, height);
 		
 	}
-	
-	
+
+	private override function __cleanDOM(renderSession: RenderSession): Void {
+		#if dom
+			DOMBitmap.clean(this, renderSession);
+		#end
+	}
+
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
