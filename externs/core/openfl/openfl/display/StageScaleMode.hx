@@ -3,7 +3,7 @@ package openfl.display; #if (display || !flash)
 
 /**
  * The StageScaleMode class provides values for the
- * <code>Stage.scaleMode</code> property.
+ * `Stage.scaleMode` property.
  */
 @:enum abstract StageScaleMode(Null<Int>) {
 	

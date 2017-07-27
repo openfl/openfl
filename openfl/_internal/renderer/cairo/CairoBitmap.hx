@@ -30,6 +30,7 @@ class CairoBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
+			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap);
 			
 			var transform = bitmap.__renderTransform;

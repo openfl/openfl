@@ -57,6 +57,7 @@ import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+import openfl.utils.TouchData;
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -82,6 +83,7 @@ import js.Browser;
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
+@:access(openfl.utils.TouchData)
 
 
 class Stage extends DisplayObjectContainer implements IModule {
@@ -141,6 +143,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	
+	private var __touchData:Map<Int, TouchData>;
 	
 	public function new (window:Window, color:Null<Int> = null) {
 		
@@ -206,6 +209,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__clearBeforeRender = true;
 		__stack = [];
 		__rollOutStack = [];
+		__touchData = new Map<Int, TouchData>();
 		
 		if (Lib.current.stage == null) {
 			
@@ -1454,7 +1458,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		for (target in stack) {
 			
-			if (__rollOutStack.indexOf (target) == -1) {
+			if (__rollOutStack.indexOf (target) == -1 && __mouseOverTarget != null) {
 				
 				if (target.hasEventListener (MouseEvent.ROLL_OVER)) {
 					
@@ -1563,37 +1567,172 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = Point.__pool.get ();
-		point.setTo (Math.round (touch.x * window.width * window.scale), Math.round (touch.y * window.height * window.scale));
-		__displayMatrix.__transformInversePoint (point);
+		var targetPoint = Point.__pool.get ();
+		targetPoint.setTo (Math.round (touch.x * window.width * window.scale), Math.round (touch.y * window.height * window.scale));
+		__displayMatrix.__transformInversePoint (targetPoint);
 		
-		var touchX = point.x;
-		var touchY = point.y;
+		var touchX = targetPoint.x;
+		var touchY = targetPoint.y;
 		
-		var __stack = [];
+		var stack = [];
+		var target:InteractiveObject = null;
 		
-		if (__hitTest (touchX, touchY, false, __stack, true, this)) {
+		if (__hitTest (touchX, touchY, false, stack, true, this)) {
 			
-			var target = __stack[__stack.length - 1];
-			if (target == null) target = this;
+			target = cast stack[stack.length - 1];
 			
-			var touchEvent = TouchEvent.__create (type, null, touchX, touchY, target.__globalToLocal (point, point), cast target);
-			touchEvent.touchPointID = touch.id;
-			touchEvent.isPrimaryTouchPoint = (__primaryTouch == touch);
+		}
+		else {
 			
-			__dispatchStack (touchEvent, __stack);
-			
-		} else {
-			
-			var touchEvent = TouchEvent.__create (type, null, touchX, touchY, point, this);
-			touchEvent.touchPointID = touch.id;
-			touchEvent.isPrimaryTouchPoint = (__primaryTouch == touch);
-			
-			__dispatchStack (touchEvent, [ stage ]);
+			target = this;
+			stack = [ this ];
 			
 		}
 		
-		Point.__pool.release (point);
+		if (target == null) target = this;
+		
+		var touchId:Int = touch.id;
+		var touchData:TouchData = null;
+		
+		if (__touchData.exists(touchId)) {
+			
+			touchData = __touchData.get(touchId);
+			
+		} else {
+			
+			touchData = TouchData.__pool.get ();
+			touchData.reset();
+			touchData.touch = touch;
+			__touchData.set(touchId, touchData);
+			
+		}
+		
+		var touchType = null;
+		var releaseTouchData:Bool = false;
+		
+		switch (type) {
+			
+			case TouchEvent.TOUCH_BEGIN:
+			
+				touchData.touchDownTarget = target;
+			
+			case TouchEvent.TOUCH_END:
+				
+				if (touchData.touchDownTarget == target) {
+					
+					touchType = TouchEvent.TOUCH_TAP;
+					
+				}
+				
+				touchData.touchDownTarget = null;
+				releaseTouchData = true;
+			
+			default:
+			
+			
+		}
+		
+		var localPoint = Point.__pool.get ();
+		var isPrimaryTouchPoint:Bool = (__primaryTouch == touch);
+		var touchEvent = TouchEvent.__create (type, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
+		touchEvent.touchPointID = touchId;
+		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+		
+		__dispatchStack (touchEvent, stack);
+		
+		if (touchType != null) {
+			
+			touchEvent = TouchEvent.__create (touchType, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
+			touchEvent.touchPointID = touchId;
+			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			
+			__dispatchStack (touchEvent, stack);
+			
+		}
+		
+		var touchOverTarget = touchData.touchOverTarget;
+		
+		if (target != touchOverTarget && touchOverTarget != null) {
+			
+			touchEvent = TouchEvent.__create (TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal (targetPoint, localPoint), cast touchOverTarget);
+			touchEvent.touchPointID = touchId;
+			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			
+			touchOverTarget.__dispatchEvent (touchEvent);
+			
+		}
+		
+		var touchOutStack = touchData.rollOutStack;
+		
+		for (target in touchOutStack) {
+			
+			if (stack.indexOf (target) == -1) {
+				
+				touchOutStack.remove (target);
+				
+				touchEvent = TouchEvent.__create (TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal (targetPoint, localPoint), cast touchOverTarget);
+				touchEvent.touchPointID = touchId;
+				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+				touchEvent.bubbles = false;
+				
+				target.__dispatchEvent (touchEvent);
+				
+			}
+			
+		}
+		
+		for (target in stack) {
+			
+			if (touchOutStack.indexOf (target) == -1) {
+				
+				if (target.hasEventListener (TouchEvent.TOUCH_ROLL_OVER)) {
+					
+					touchEvent = TouchEvent.__create (TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY, touchOverTarget.__globalToLocal (targetPoint, localPoint), cast target);
+					touchEvent.touchPointID = touchId;
+					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+					touchEvent.bubbles = false;
+					
+					target.__dispatchEvent (touchEvent);
+					
+				}
+				
+				if (target.hasEventListener (TouchEvent.TOUCH_ROLL_OUT)) {
+					
+					touchOutStack.push (target);
+					
+				}
+				
+			}
+			
+		}
+		
+		if (target != touchOverTarget) {
+			
+			if (target != null) {
+				
+				touchEvent = TouchEvent.__create (TouchEvent.TOUCH_OVER, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
+				touchEvent.touchPointID = touchId;
+				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+				touchEvent.bubbles = true;
+				
+				target.__dispatchEvent (touchEvent);
+				
+			}
+			
+			touchData.touchOverTarget = target;
+			
+		}
+		
+		Point.__pool.release (targetPoint);
+		Point.__pool.release (localPoint);
+		
+		if (releaseTouchData) {
+			
+			__touchData.remove(touchId);
+			touchData.reset();
+			TouchData.__pool.release (touchData);
+			
+		}
 		
 	}
 	

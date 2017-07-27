@@ -3,7 +3,7 @@ package openfl.net; #if (display || !flash)
 
 /**
  * The SharedObjectFlushStatus class provides values for the code returned
- * from a call to the <code>SharedObject.flush()</code> method.
+ * from a call to the `SharedObject.flush()` method.
  */
 @:enum abstract SharedObjectFlushStatus(Null<Int>) {
 	

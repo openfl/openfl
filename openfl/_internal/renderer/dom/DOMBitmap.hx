@@ -99,6 +99,9 @@ class DOMBitmap {
 			
 			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
 			
+			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
+			bitmap.__canvas.width = bitmap.bitmapData.width + 1;
+			
 			bitmap.__canvas.width = bitmap.bitmapData.width;
 			bitmap.__canvas.height = bitmap.bitmapData.height;
 			

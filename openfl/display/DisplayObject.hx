@@ -701,7 +701,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -734,7 +734,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap (renderSession);
+			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
@@ -770,7 +770,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 
@@ -790,7 +790,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __renderGL (renderSession:RenderSession):Void {
 		
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -961,14 +961,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		return false;
 	}
 	
-	private function __updateCacheBitmap (renderSession:RenderSession):Void {
+	private function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
 		
 		if (__cacheBitmapRender) return;
 
 		if (cacheAsBitmap) {
 			
-			if (__cacheBitmap == null || ((__renderDirty || __isCachedBitmapDataOutdated()) && ((__children != null && __children.length > 0) ||
-			!__worldColorTransform.__isDefault () || __graphics != null))) {
+			if (__cacheBitmap == null || ((__renderDirty || __isCachedBitmapDataOutdated()) && ((__children != null && __children.length > 0) || force || __graphics != null))) {
 
 				__getWorldTransform ();
 				__update (false, true);
@@ -981,7 +980,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 
-				if (rect.width != 0 && rect.height != 0) {
+				if (rect.width >= 0.5 && rect.height >= 0.5) {
 
 					if (__renderDirty) {
 						if (__cacheBitmap == null || rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height) {
@@ -1053,7 +1052,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__worldAlpha = alpha;
-		
+		__worldBlendMode = blendMode;
+
 		if (__transformDirty) {
 			
 			__transformDirty = false;

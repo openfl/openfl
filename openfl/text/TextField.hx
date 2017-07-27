@@ -24,6 +24,8 @@ import openfl._internal.text.TextLayoutGroup;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.IShaderDrawable;
+import openfl.display.Shader;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
@@ -48,7 +50,7 @@ import js.html.DivElement;
 @:access(openfl.text.TextFormat)
 
 
-class TextField extends InteractiveObject {
+class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
@@ -80,6 +82,7 @@ class TextField extends InteractiveObject {
 	public var selectable (get, set):Bool;
 	public var selectionBeginIndex (get, never):Int;
 	public var selectionEndIndex (get, never):Int;
+	@:beta public var shader:Shader;
 	public var sharpness (get, set):Float;
 	public var text (get, set):UTF8String;
 	public var textColor (get, set):Int;
@@ -932,8 +935,8 @@ class TextField extends InteractiveObject {
 			//format.leading = Std.int (font.leading / 20 + (format.size * 0.2) #if flash + 2 #end);
 			//embedFonts = true;
 			
-			format.__ascent = ((font.ascent / 20) / 1024) * format.size;
-			format.__descent = ((font.descent / 20) / 1024) * format.size;
+			format.__ascent = ((font.ascent / 20) / 1024);
+			format.__descent = ((font.descent / 20) / 1024);
 			
 		}
 		
@@ -959,6 +962,24 @@ class TextField extends InteractiveObject {
 					}
 					
 				}
+			
+		}
+		
+		if (!found) {
+			
+			var alpha = ~/[^a-zA-Z]+/;
+			
+			for (font in Font.enumerateFonts ()) {
+				
+				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
+					
+					format.font = font.fontName;
+					found = true;
+					break;
+					
+				}
+				
+			}
 			
 		}
 		

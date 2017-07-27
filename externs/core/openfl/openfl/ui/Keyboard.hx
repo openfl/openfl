@@ -539,14 +539,14 @@ package openfl.ui; #if (display || !flash)
 	#end
 	
 	/**
-	 * Specifies whether the Caps Lock key is activated(<code>true</code>) or
-	 * not(<code>false</code>).
+	 * Specifies whether the Caps Lock key is activated(`true`) or
+	 * not(`false`).
 	 */
 	public static var capsLock (default, null):Bool;
 	
 	/**
-	 * Specifies whether the Num Lock key is activated(<code>true</code>) or not
-	 * (<code>false</code>).
+	 * Specifies whether the Num Lock key is activated(`true`) or not
+	 * (`false`).
 	 */
 	public static var numLock (default, null):Bool;
 	
@@ -557,9 +557,9 @@ package openfl.ui; #if (display || !flash)
 	 * domain from accessing a keystroke generated from a SWF file in another
 	 * domain.
 	 * 
-	 * @return The value <code>true</code> if the last key pressed can be
+	 * @return The value `true` if the last key pressed can be
 	 *         accessed. If access is not permitted, this method returns
-	 *         <code>false</code>.
+	 *         `false`.
 	 */
 	public static function isAccessible ():Bool;
 	

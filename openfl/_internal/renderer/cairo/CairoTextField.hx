@@ -63,7 +63,7 @@ class CairoTextField {
 		var width = graphics.__width;
 		var height = graphics.__height;
 		
-		var renderable = (textEngine.border || textEngine.background || (textEngine.text != null && textEngine.text != ""));
+		var renderable = (textEngine.border || textEngine.background || textEngine.text != null);
 		
 		if (cairo != null) {
 			

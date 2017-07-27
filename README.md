@@ -59,8 +59,6 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
 
 OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3.
 
-You can use the optional OpenFL [SWF](http://github.com/openfl/swf) library to use SWF assets.
-
 
 Code Editors
 ============

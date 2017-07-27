@@ -659,6 +659,38 @@ class Tools {
 			}
 			
 		}
+
+		createdDirectory = false;
+		for (id in exporter.sounds.keys ()) {
+
+			if (!createdDirectory) {
+
+				PathHelper.mkdir (PathHelper.combine (targetPath, "sounds"));
+				createdDirectory = true;
+
+			}
+
+			var symbolClassName = exporter.soundSymbolClassNames.get (id);
+			var typeId = exporter.soundTypes.get (id);
+			
+			LogHelper.info ("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
+			
+			var type;
+			switch (typeId) {
+				case SoundType.MP3: type = "mp3";
+				case SoundType.ADPCM: type = "adpcm";
+				case _:
+					throw "unsupported sound type "+id+", type "+ typeId +", symbol class name "+ symbolClassName;
+			};
+			var path = "sounds/"+ symbolClassName + "." + type;
+			var assetData = exporter.sounds.get (id);
+
+			File.saveBytes (PathHelper.combine (targetPath, path), assetData);
+
+			// NOTICE: everything must be .mp3 in its final form, even though we write out various formats to disk
+			var soundAsset = new Asset ("", "sounds/"+ symbolClassName + ".mp3", AssetType.SOUND);
+			project.assets.push (soundAsset);
+		}
 		
 		var swfLiteAsset = new Asset ("", "swflite.dat", AssetType.TEXT);
 		var swfLiteAssetData = swfLite.serialize ();

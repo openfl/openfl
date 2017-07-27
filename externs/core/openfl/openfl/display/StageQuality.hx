@@ -2,7 +2,7 @@ package openfl.display; #if (display || !flash)
 
 
 /**
- * The StageQuality class provides values for the <code>Stage.quality</code>
+ * The StageQuality class provides values for the `Stage.quality`
  * property.
  */
 @:enum abstract StageQuality(Null<Int>) {

@@ -11,10 +11,10 @@ extern class AccelerometerEvent extends Event {
 	
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>AccelerometerEvent</code> event object.
+	 * Defines the value of the `type` property of a
+	 * `AccelerometerEvent` event object.
 	 *
-	 * <p>This event has the following properties:</p>
+	 * This event has the following properties:
 	 */
 	public static inline var UPDATE = "update";
 	
@@ -46,7 +46,7 @@ extern class AccelerometerEvent extends Event {
 	/**
 	 * The number of milliseconds at the time of the event since the runtime was
 	 * initialized. For example, if the device captures accelerometer data 4
-	 * seconds after the application initializes, then the <code>timestamp</code>
+	 * seconds after the application initializes, then the `timestamp`
 	 * property of the event is set to 4000.
 	 */
 	public var timestamp:Float;
@@ -59,14 +59,14 @@ extern class AccelerometerEvent extends Event {
 	 * 
 	 * @param type          The type of the event. Event listeners can access
 	 *                      this information through the inherited
-	 *                      <code>type</code> property. There is only one type of
-	 *                      update event: <code>AccelerometerEvent.UPDATE</code>.
+	 *                      `type` property. There is only one type of
+	 *                      update event: `AccelerometerEvent.UPDATE`.
 	 * @param bubbles       Determines whether the Event object bubbles. Event
 	 *                      listeners can access this information through the
-	 *                      inherited <code>bubbles</code> property.
+	 *                      inherited `bubbles` property.
 	 * @param cancelable    Determines whether the Event object can be canceled.
 	 *                      Event listeners can access this information through
-	 *                      the inherited <code>cancelable</code> property.
+	 *                      the inherited `cancelable` property.
 	 * @param timestamp     The timestamp of the Accelerometer update.
 	 * @param accelerationX The acceleration value in Gs(9.8m/sec/sec) along the
 	 *                      x-axis.

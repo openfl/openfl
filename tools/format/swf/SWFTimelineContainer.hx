@@ -1,6 +1,5 @@
 package format.swf;
 
-#if test_abc
 import format.abc.Data.ABCData;
 import format.abc.Data.ClassDef;
 import format.abc.Data.Field;
@@ -8,7 +7,6 @@ import format.abc.Data.IName;
 import format.abc.Data.Index;
 import format.abc.Data.Name;
 import format.abc.Data.Namespace;
-#end
 import format.SWF;
 import format.swf.data.SWFFrameLabel;
 import format.swf.data.SWFRawTag;
@@ -93,11 +91,10 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	public var backgroundColor:Int;
 	public var jpegTablesTag:TagJPEGTables;
 
-	#if test_abc
 	public var abcTag:TagDoABC;
 	public var abcData:ABCData;
+	public var pcode:Array<Dynamic>;
 	public var abcClasses(default, null):Map<Int, ClassDef>;
-	#end
 
 
 	public function new()
@@ -362,10 +359,8 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			case TagDefineScalingGrid.TYPE:
 				processScalingGridTag(cast tag, currentTagIndex);
 			// Actionscript 3
-			#if test_abc
 			case TagDoABC.TYPE:
-				if (SWF.parseABC) processAS3Tag(cast tag, currentTagIndex);
-			#end
+				processAS3Tag(cast tag, currentTagIndex);
 		}
 	}
 
@@ -470,13 +465,11 @@ class SWFTimelineContainer extends SWFEventDispatcher
 		scalingGrids.set (tag.characterId, currentTagIndex);
 	}
 
-	#if test_abc
-
 	private function processAS3Tag(tag:TagDoABC, currentTagIndex:Int):Void {
 		// Just store it for now
 		abcTag = tag;
 
-		//trace("ABC: " + tag);
+		//trace("ABC: " + tag.toString());
 
 		var bytes = #if flash haxe.io.Bytes.ofData(tag.bytes) #else tag.bytes #end;
 		var input = new haxe.io.BytesInput(bytes);
@@ -485,10 +478,11 @@ class SWFTimelineContainer extends SWFEventDispatcher
 		//trace("Reading...");
 		abcData = reader.read();
 
-
+		pcode = new Array();
+		for (fn in abcData.functions) {
+			pcode.push(format.abc.OpReader.decode(new haxe.io.BytesInput(fn.code)));
+		}
 	}
-
-	#end
 
 	public function buildLayers():Void {
 		var i:Int;

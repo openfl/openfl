@@ -26,6 +26,7 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl.Lib;
+import openfl._internal.renderer.canvas.CanvasBlendModeManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -81,19 +82,21 @@ import openfl._internal.renderer.cairo.CairoMaskManager;
 class BitmapData implements IBitmapDrawable {
 	
 	
+	private static inline var __bufferStride = 26;
 	private static var __supportsBGRA:Null<Bool> = null;
 	private static var __textureFormat:Int;
 	private static var __textureInternalFormat:Int;
 	
 	public var height (default, null):Int;
 	public var image (default, null):Image;
-	public var readable (default, null):Bool;
+	@:beta public var readable (default, null):Bool;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
 	
 	private var __blendMode:BlendMode;
 	private var __buffer:GLBuffer;
+	private var __bufferColorTransform:ColorTransform;
 	private var __bufferContext:GLRenderContext;
 	private var __bufferAlpha:Float;
 	private var __bufferData:Float32Array;
@@ -441,7 +444,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function disposeImage ():Void {
+	@:beta public function disposeImage ():Void {
 		
 		readable = false;
 		
@@ -473,12 +476,11 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, false);
-				renderer.resize (width, height);
+				var renderer = new GLRenderer (Lib.current.stage, gl, this);
 				
 				var renderSession = renderer.renderSession;
-				renderSession.clearDirtyFlags = false;
-				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderSession.clearRenderDirty = false;
+				renderSession.shaderManager = cast(Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
@@ -520,11 +522,12 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = false;
+			renderSession.clearRenderDirty = false;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
+			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 			
 			if (!smoothing) {
 				
@@ -608,7 +611,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = false;
+			renderSession.clearRenderDirty = false;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -819,7 +822,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getBuffer (gl:GLRenderContext, alpha:Float):GLBuffer {
+	public function getBuffer (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):GLBuffer {
 		
 		if (__buffer == null || __bufferContext != gl) {
 			
@@ -850,16 +853,58 @@ class BitmapData implements IBitmapDrawable {
 			
 			#end
 			
-			__bufferData = new Float32Array ([
+			//__bufferData = new Float32Array ([
+				//
+				//width, height, 0, uvWidth, uvHeight, alpha, (color transform, color offset...)
+				//0, height, 0, 0, uvHeight, alpha, (color transform, color offset...)
+				//width, 0, 0, uvWidth, 0, alpha, (color transform, color offset...)
+				//0, 0, 0, 0, 0, alpha, (color transform, color offset...)
+				//
+				//
+			//]);
+			
+			//[ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
+			//[ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
+			
+			__bufferData = new Float32Array (__bufferStride * 4);
+			
+			__bufferData[0] = width;
+			__bufferData[1] = height;
+			__bufferData[3] = uvWidth;
+			__bufferData[4] = uvHeight;
+			__bufferData[__bufferStride + 1] = height;
+			__bufferData[__bufferStride + 4] = uvHeight;
+			__bufferData[__bufferStride * 2] = width;
+			__bufferData[__bufferStride * 2 + 3] = uvWidth;
+			
+			for (i in 0...4) {
 				
-				width, height, 0, uvWidth, uvHeight, alpha,
-				0, height, 0, 0, uvHeight, alpha,
-				width, 0, 0, uvWidth, 0, alpha,
-				0, 0, 0, 0, 0, alpha
+				__bufferData[__bufferStride * i + 5] = alpha;
 				
-			]);
+				if (colorTransform != null) {
+					
+					__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+					__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+					__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+					__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+					__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+					__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+					__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+					__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+					
+				} else {
+					
+					__bufferData[__bufferStride * i + 6] = 1;
+					__bufferData[__bufferStride * i + 11] = 1;
+					__bufferData[__bufferStride * i + 16] = 1;
+					__bufferData[__bufferStride * i + 21] = 1;
+					
+				}
+				
+			}
 			
 			__bufferAlpha = alpha;
+			__bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
 			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
@@ -867,13 +912,55 @@ class BitmapData implements IBitmapDrawable {
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
-		} else if (__bufferAlpha != alpha) {
+		} else {
 			
-			__bufferData[5] = alpha;
-			__bufferData[11] = alpha;
-			__bufferData[17] = alpha;
-			__bufferData[23] = alpha;
-			__bufferAlpha = alpha;
+			if (__bufferAlpha != alpha) {
+				
+				for (i in 0...4) {
+					
+					__bufferData[__bufferStride * i + 5] = alpha;
+					
+				}
+				
+			}
+			
+			if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+				
+				if (colorTransform != null) {
+					
+					__bufferColorTransform = colorTransform.__clone ();
+					
+					for (i in 0...4) {
+						
+						__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+						__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+						__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+						__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+						__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+						__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+						__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+						__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+						
+					}
+					
+				} else {
+					
+					for (i in 0...4) {
+						
+						__bufferData[__bufferStride * i + 6] = 1;
+						__bufferData[__bufferStride * i + 11] = 1;
+						__bufferData[__bufferStride * i + 16] = 1;
+						__bufferData[__bufferStride * i + 21] = 1;
+						__bufferData[__bufferStride * i + 22] = 0;
+						__bufferData[__bufferStride * i + 23] = 0;
+						__bufferData[__bufferStride * i + 24] = 0;
+						__bufferData[__bufferStride * i + 25] = 0;
+						
+					}
+					
+				}
+				
+			}
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
@@ -1513,11 +1600,10 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, false);
-				renderer.resize (width, height);
+				var renderer = new GLRenderer (Lib.current.stage, gl, this);
 				
 				var renderSession = renderer.renderSession;
-				renderSession.clearDirtyFlags = true;
+				renderSession.clearRenderDirty = true;
 				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
@@ -1560,11 +1646,12 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = true;
+			renderSession.clearRenderDirty = true;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
+			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 			
 			if (!smoothing) {
 				
@@ -1648,7 +1735,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
-			renderSession.clearDirtyFlags = true;
+			renderSession.clearRenderDirty = true;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
 			//renderSession.roundPixels = true;
@@ -1923,7 +2010,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		renderSession.shaderManager.setShader (shader);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl, 1));
+		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl, 1, __worldColorTransform));
 		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);

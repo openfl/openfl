@@ -5,8 +5,8 @@ package openfl.events; #if (display || !flash)
  * A ProgressEvent object is dispatched when a load operation has begun or a
  * socket has received data. These events are usually generated when SWF
  * files, images or data are loaded into an application. There are two types
- * of progress events: <code>ProgressEvent.PROGRESS</code> and
- * <code>ProgressEvent.SOCKET_DATA</code>. Additionally, in AIR ProgressEvent
+ * of progress events: `ProgressEvent.PROGRESS` and
+ * `ProgressEvent.SOCKET_DATA`. Additionally, in AIR ProgressEvent
  * objects are dispatched when a data is sent to or from a child process using
  * the NativeProcess class.
  * 
@@ -15,18 +15,18 @@ extern class ProgressEvent extends Event {
 	
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>progress</code> event object.
+	 * Defines the value of the `type` property of a
+	 * `progress` event object.
 	 *
-	 * <p>This event has the following properties:</p>
+	 * This event has the following properties:
 	 */
 	public static inline var PROGRESS = "progress";
 	
 	/**
-	 * Defines the value of the <code>type</code> property of a
-	 * <code>socketData</code> event object.
+	 * Defines the value of the `type` property of a
+	 * `socketData` event object.
 	 *
-	 * <p>This event has the following properties:</p>
+	 * This event has the following properties:
 	 */
 	public static inline var SOCKET_DATA = "socketData";
 	
@@ -51,11 +51,11 @@ extern class ProgressEvent extends Event {
 	 * Event objects are passed as parameters to event listeners.
 	 * 
 	 * @param type        The type of the event. Possible values
-	 *                    are:<code>ProgressEvent.PROGRESS</code>,
-	 *                    <code>ProgressEvent.SOCKET_DATA</code>,
-	 *                    <code>ProgressEvent.STANDARD_ERROR_DATA</code>,
-	 *                    <code>ProgressEvent.STANDARD_INPUT_PROGRESS</code>, and
-	 *                    <code>ProgressEvent.STANDARD_OUTPUT_DATA</code>.
+	 *                    are:`ProgressEvent.PROGRESS`,
+	 *                    `ProgressEvent.SOCKET_DATA`,
+	 *                    `ProgressEvent.STANDARD_ERROR_DATA`,
+	 *                    `ProgressEvent.STANDARD_INPUT_PROGRESS`, and
+	 *                    `ProgressEvent.STANDARD_OUTPUT_DATA`.
 	 * @param bubbles     Determines whether the Event object participates in the
 	 *                    bubbling stage of the event flow.
 	 * @param cancelable  Determines whether the Event object can be canceled.

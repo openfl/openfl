@@ -80,6 +80,16 @@
 				
 				<source path="" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
 				
+				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
+				<class remove="lime.graphics.opengl.GLContextType" />
+				<class remove="lime.graphics.ImageChannel" />
+				<class remove="lime.graphics.ImageType" />
+				<class remove="lime.graphics.RendererType" />
+				<class remove="lime.ui.FileDialogType" />
+				<class remove="lime.ui.MouseCursor" />
+				<class remove="lime.system.Endian" />
+				<class remove="lime.system.SensorType" />
+				
 				<include type="openfl.display3D._Program3D.Uniform" />
 				<include type="openfl.display3D._Program3D.UniformMap" />
 				<include type="openfl.display.DefaultPreloader" />

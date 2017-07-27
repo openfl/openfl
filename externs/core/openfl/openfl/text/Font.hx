@@ -42,10 +42,10 @@ extern class Font extends LimeFont {
 	 * 
 	 * @param enumerateDeviceFonts Indicates whether you want to limit the list
 	 *                             to only the currently available embedded
-	 *                             fonts. If this is set to <code>true</code>
+	 *                             fonts. If this is set to `true`
 	 *                             then a list of all fonts, both device fonts
 	 *                             and embedded fonts, is returned. If this is
-	 *                             set to <code>false</code> then only a list of
+	 *                             set to `false` then only a list of
 	 *                             embedded fonts is returned.
 	 * @return A list of available fonts as an array of Font objects.
 	 */

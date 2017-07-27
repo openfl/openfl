@@ -8,17 +8,17 @@ import openfl.Vector;
  * A collection of drawing commands and the coordinate parameters for those
  * commands.
  *
- * <p> Use a GraphicsPath object with the
- * <code>Graphics.drawGraphicsData()</code> method. Drawing a GraphicsPath
- * object is the equivalent of calling the <code>Graphics.drawPath()</code>
- * method. </p>
+ *  Use a GraphicsPath object with the
+ * `Graphics.drawGraphicsData()` method. Drawing a GraphicsPath
+ * object is the equivalent of calling the `Graphics.drawPath()`
+ * method. 
  *
- * <p>The GraphicsPath class also has its own set of methods
- * (<code>curveTo()</code>, <code>lineTo()</code>, <code>moveTo()</code>
- * <code>wideLineTo()</code> and <code>wideMoveTo()</code>) similar to those
+ * The GraphicsPath class also has its own set of methods
+ * (`curveTo()`, `lineTo()`, `moveTo()`
+ * `wideLineTo()` and `wideMoveTo()`) similar to those
  * in the Graphics class for making adjustments to the
- * <code>GraphicsPath.commands</code> and <code>GraphicsPath.data</code>
- * vector arrays.</p>
+ * `GraphicsPath.commands` and `GraphicsPath.data`
+ * vector arrays.
  */
 @:final extern class GraphicsPath implements IGraphicsData implements IGraphicsPath {
 	
@@ -54,8 +54,8 @@ import openfl.Vector;
 	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void;
 	
 	/**
-	 * Adds a new "curveTo" command to the <code>commands</code> vector and new
-	 * coordinates to the <code>data</code> vector.
+	 * Adds a new "curveTo" command to the `commands` vector and new
+	 * coordinates to the `data` vector.
 	 * 
 	 * @param controlX A number that specifies the horizontal position of the
 	 *                 control point relative to the registration point of the
@@ -74,8 +74,8 @@ import openfl.Vector;
 	
 	
 	/**
-	 * Adds a new "lineTo" command to the <code>commands</code> vector and new
-	 * coordinates to the <code>data</code> vector.
+	 * Adds a new "lineTo" command to the `commands` vector and new
+	 * coordinates to the `data` vector.
 	 * 
 	 * @param x The x coordinate of the destination point for the line.
 	 * @param y The y coordinate of the destination point for the line.
@@ -84,8 +84,8 @@ import openfl.Vector;
 	
 	
 	/**
-	 * Adds a new "moveTo" command to the <code>commands</code> vector and new
-	 * coordinates to the <code>data</code> vector.
+	 * Adds a new "moveTo" command to the `commands` vector and new
+	 * coordinates to the `data` vector.
 	 * 
 	 * @param x The x coordinate of the destination point.
 	 * @param y The y coordinate of the destination point.
@@ -94,8 +94,8 @@ import openfl.Vector;
 	
 	
 	/**
-	 * Adds a new "wideLineTo" command to the <code>commands</code> vector and
-	 * new coordinates to the <code>data</code> vector.
+	 * Adds a new "wideLineTo" command to the `commands` vector and
+	 * new coordinates to the `data` vector.
 	 * 
 	 * @param x The x-coordinate of the destination point for the line.
 	 * @param y The y-coordinate of the destination point for the line.
@@ -104,8 +104,8 @@ import openfl.Vector;
 	
 	
 	/**
-	 * Adds a new "wideMoveTo" command to the <code>commands</code> vector and
-	 * new coordinates to the <code>data</code> vector.
+	 * Adds a new "wideMoveTo" command to the `commands` vector and
+	 * new coordinates to the `data` vector.
 	 * 
 	 * @param x The x-coordinate of the destination point.
 	 * @param y The y-coordinate of the destination point.

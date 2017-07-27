@@ -32,7 +32,7 @@ class CairoRenderer extends AbstractRenderer {
 		this.cairo = cairo;
 		
 		renderSession = new RenderSession ();
-		renderSession.clearDirtyFlags = true;
+		renderSession.clearRenderDirty = true;
 		renderSession.cairo = cairo;
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;

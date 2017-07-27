@@ -11,6 +11,7 @@ import openfl.net.NetStream;
 @:noDebug
 #end
 
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)
 
@@ -31,13 +32,20 @@ class GLVideo {
 			renderSession.blendModeManager.setBlendMode (video.__worldBlendMode);
 			renderSession.maskManager.pushObject (video);
 			
-			var shader = renderSession.filterManager.pushObject (video);
+			renderSession.filterManager.pushObject (video);
+			
+			var shader = renderSession.shaderManager.initShader (video.shader);
+			renderSession.shaderManager.setShader (shader);
 			
 			//shader.data.uImage0.input = bitmap.bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
 			
-			renderSession.shaderManager.setShader (shader);
+			var useColorTransform = !video.__worldColorTransform.__isDefault ();
+			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+			shader.data.uColorTransform.value[0] = useColorTransform;
+			
+			renderSession.shaderManager.updateShader (shader);
 			
 			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (gl));
 			
@@ -53,10 +61,21 @@ class GLVideo {
 				
 			}
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl, video.__worldAlpha));
-			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl, video.__worldAlpha, video.__worldColorTransform));
+			
+			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+			
+			if (true || useColorTransform) {
+				
+				gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 1, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 10 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 2, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 14 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 3, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 18 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 22 * Float32Array.BYTES_PER_ELEMENT);
+				
+			}
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			

@@ -8,17 +8,17 @@ import openfl.media.SoundTransform;
  * The SimpleButton class lets you control all instances of button symbols in
  * a SWF file.
  *
- * <p>In Flash Professional, you can give a button an instance name in the
+ * In Flash Professional, you can give a button an instance name in the
  * Property inspector. SimpleButton instance names are displayed in the Movie
  * Explorer and in the Insert Target Path dialog box in the Actions panel.
  * After you create an instance of a button in Flash Professional, you can use
  * the methods and properties of the SimpleButton class to manipulate buttons
- * with ActionScript.</p>
+ * with ActionScript.
  *
- * <p>In ActionScript 3.0, you use the <code>new SimpleButton()</code>
- * constructor to create a SimpleButton instance.</p>
+ * In ActionScript 3.0, you use the `new SimpleButton()`
+ * constructor to create a SimpleButton instance.
  *
- * <p>The SimpleButton class inherits from the InteractiveObject class.</p>
+ * The SimpleButton class inherits from the InteractiveObject class.
  */
 extern class SimpleButton extends InteractiveObject {
 	
@@ -26,30 +26,30 @@ extern class SimpleButton extends InteractiveObject {
 	/**
 	 * Specifies a display object that is used as the visual object for the
 	 * button "Down" state  - the state that the button is in when the user
-	 * selects the <code>hitTestState</code> object.
+	 * selects the `hitTestState` object.
 	 */
 	public var downState (default, set):DisplayObject;
 	
 	/**
 	 * A Boolean value that specifies whether a button is enabled. When a button
-	 * is disabled(the enabled property is set to <code>false</code>), the
+	 * is disabled(the enabled property is set to `false`), the
 	 * button is visible but cannot be clicked. The default value is
-	 * <code>true</code>. This property is useful if you want to disable part of
+	 * `true`. This property is useful if you want to disable part of
 	 * your navigation; for example, you might want to disable a button in the
 	 * currently displayed page so that it can't be clicked and the page cannot
 	 * be reloaded.
 	 *
-	 * <p><b>Note:</b> To prevent mouseClicks on a button, set both the
-	 * <code>enabled</code> and <code>mouseEnabled</code> properties to
-	 * <code>false</code>.</p>
+	 * **Note:** To prevent mouseClicks on a button, set both the
+	 * `enabled` and `mouseEnabled` properties to
+	 * `false`.
 	 */
 	public var enabled:Bool;
 	
 	/**
 	 * Specifies a display object that is used as the hit testing object for the
-	 * button. For a basic button, set the <code>hitTestState</code> property to
-	 * the same display object as the <code>overState</code> property. If you do
-	 * not set the <code>hitTestState</code> property, the SimpleButton is
+	 * button. For a basic button, set the `hitTestState` property to
+	 * the same display object as the `overState` property. If you do
+	 * not set the `hitTestState` property, the SimpleButton is
 	 * inactive  -  it does not respond to user input events.
 	 */
 	public var hitTestState (default, set):DisplayObject;
@@ -73,13 +73,13 @@ extern class SimpleButton extends InteractiveObject {
 	/**
 	 * Indicates whether other display objects that are SimpleButton or MovieClip
 	 * objects can receive user input release events. The
-	 * <code>trackAsMenu</code> property lets you create menus. You can set the
-	 * <code>trackAsMenu</code> property on any SimpleButton or MovieClip object.
-	 * If the <code>trackAsMenu</code> property does not exist, the default
-	 * behavior is <code>false</code>.
+	 * `trackAsMenu` property lets you create menus. You can set the
+	 * `trackAsMenu` property on any SimpleButton or MovieClip object.
+	 * If the `trackAsMenu` property does not exist, the default
+	 * behavior is `false`.
 	 *
-	 * <p>You can change the <code>trackAsMenu</code> property at any time; the
-	 * modified button immediately takes on the new behavior. </p>
+	 * You can change the `trackAsMenu` property at any time; the
+	 * modified button immediately takes on the new behavior. 
 	 */
 	public var trackAsMenu:Bool;
 	
@@ -91,13 +91,13 @@ extern class SimpleButton extends InteractiveObject {
 	public var upState (default, set):DisplayObject;
 	
 	/**
-	 * A Boolean value that, when set to <code>true</code>, indicates whether the
+	 * A Boolean value that, when set to `true`, indicates whether the
 	 * hand cursor is shown when the pointer rolls over a button. If this
-	 * property is set to <code>false</code>, the arrow pointer cursor is
-	 * displayed instead. The default is <code>true</code>.
+	 * property is set to `false`, the arrow pointer cursor is
+	 * displayed instead. The default is `true`.
 	 *
-	 * <p>You can change the <code>useHandCursor</code> property at any time; the
-	 * modified button immediately uses the new cursor behavior. </p>
+	 * You can change the `useHandCursor` property at any time; the
+	 * modified button immediately uses the new cursor behavior. 
 	 */
 	public var useHandCursor:Bool;
 	
