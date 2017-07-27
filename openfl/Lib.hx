@@ -76,7 +76,7 @@ import js.Browser;
 	#end
 	
 	
-	public static function getTimer ():Int {
+	public static inline function getTimer ():Int {
 		
 		#if flash
 		return flash.Lib.getTimer ();
