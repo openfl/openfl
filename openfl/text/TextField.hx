@@ -11,6 +11,7 @@ import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
@@ -1251,7 +1252,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
-		
+		#if (js && html5 && dom)
+		if (__graphics.__canvas == null) {
+			__dirty = true;
+		}
+		#end
+
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
@@ -1285,12 +1291,29 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 	}
-	
+
+	private override function __cleanDOM(renderSession: RenderSession): Void {
+		#if dom
+			DOMTextField.clean(this, renderSession);
+		#end
+	}
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		DOMTextField.render (this, renderSession);
+		__updateCacheBitmap (renderSession);
+
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			__cleanDOM(renderSession);
+			__cacheBitmap.stage = stage;
+			DOMBitmap.render (__cacheBitmap, renderSession);
+
+		} else {
+
+			DOMTextField.render (this, renderSession);
+
+		}
+
 		#end
 		
 	}

@@ -39,16 +39,22 @@ class DOMVideo {
 			
 		} else {
 			
-			if (video.__active) {
-				
-				renderSession.element.removeChild (video.__stream.__video);
-				video.__active = false;
-				
-			}
+			clean(video, renderSession);
 			
 		}
 		#end
 		
+	}
+
+	public static function clean(video:Video, renderSession:RenderSession): Void {
+		#if (js && html5)
+			if (video.__active) {
+
+				renderSession.element.removeChild (video.__stream.__video);
+				video.__active = false;
+
+			}
+		#end
 	}
 	
 	

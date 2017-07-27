@@ -45,18 +45,23 @@ class DOMTilemap {
 			
 		} else {
 			
-			if (tilemap.__canvas != null) {
-				
-				renderSession.element.removeChild (tilemap.__canvas);
-				tilemap.__canvas = null;
-				tilemap.__style = null;
-				
-			}
+			clean(tilemap, renderSession);
 			
 		}
 		#end
 		
 	}
-	
+
+	public static function clean(tilemap:Tilemap, renderSession:RenderSession): Void {
+		#if (js && html5)
+			if (tilemap.__canvas != null) {
+
+				renderSession.element.removeChild (tilemap.__canvas);
+				tilemap.__canvas = null;
+				tilemap.__style = null;
+
+			}
+		#end
+	}
 	
 }

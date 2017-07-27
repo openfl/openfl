@@ -32,6 +32,11 @@ class DOMDisplayObject {
 		#end
 		
 	}
-	
+
+	public static function clean(displayObject:DisplayObject, renderSession:RenderSession): Void {
+		#if (js && html5)
+			DOMShape.clean (displayObject, renderSession);
+		#end
+	}
 	
 }
