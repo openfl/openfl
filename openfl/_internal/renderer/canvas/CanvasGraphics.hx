@@ -945,16 +945,16 @@ class CanvasGraphics {
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 				
-				var devicePixelRatio = untyped window.devicePixelRatio || 1;
-				var scaledWidth = Std.int (width * devicePixelRatio);
-				var scaledHeight = Std.int (height * devicePixelRatio);
+				var scale = CanvasRenderer.scale;
+				var scaledWidth = Std.int (width * scale);
+				var scaledHeight = Std.int (height * scale);
 				
 				#if dom
-				
+
 				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
-					
+
 					context.clearRect (0, 0, scaledWidth, scaledHeight);
-					
+
 				} else {
 				
 					canvas.width = scaledWidth;
@@ -965,7 +965,7 @@ class CanvasGraphics {
 				}
 				
 				var transform = graphics.__renderTransform;
-				context.setTransform (transform.a * devicePixelRatio, transform.b * devicePixelRatio, transform.c * devicePixelRatio, transform.d * devicePixelRatio, transform.tx * devicePixelRatio, transform.ty * devicePixelRatio);
+				context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
 				
 				#else
 				
@@ -974,16 +974,16 @@ class CanvasGraphics {
 					context.clearRect (0, 0, scaledWidth, scaledHeight);
 					
 				} else {
-					
+
 					canvas.width  = width;
 					canvas.height = height;
 					
 				}
 				
 				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-				
+
 				#end
-				
+
 				fillCommands.clear ();
 				strokeCommands.clear ();
 				

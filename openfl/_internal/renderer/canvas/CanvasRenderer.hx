@@ -6,16 +6,22 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 
+#if (js && html5)
+import js.Browser;
+#end
+
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
 
 
 class CanvasRenderer extends AbstractRenderer {
-	
+
+	//devicePixelRatio scaling
+	public static var scale(default, null): Float = 1;
 	
 	private var context:CanvasRenderContext;
-	
-	
+
+
 	public function new (stage:Stage, context:CanvasRenderContext) {
 		
 		super (stage);
@@ -31,10 +37,21 @@ class CanvasRenderer extends AbstractRenderer {
 		renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 		renderSession.maskManager = new CanvasMaskManager (renderSession);
 		#end
-		
+
+		#if (js && html5)
+
+			var config = stage.window.config;
+
+			if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
+
+				scale = Browser.window.devicePixelRatio;
+
+			}
+		#end
+
 	}
-	
-	
+
+
 	public override function clear ():Void {
 		
 		renderSession.blendModeManager.setBlendMode (NORMAL);

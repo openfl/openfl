@@ -4,10 +4,6 @@ package openfl._internal.renderer.canvas;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 
-#if (js && html5 && dom)
-import js.Browser;
-#end
-
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
@@ -54,12 +50,12 @@ class CanvasShape {
 						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 						
 					}
-					
+
 					#if dom
-					var reverseScale = 1 / Browser.window.devicePixelRatio;
-					context.scale (reverseScale, reverseScale);
+					var reverseScale = 1/CanvasRenderer.scale;
+					context.scale(reverseScale, reverseScale);
 					#end
-					
+
 					context.drawImage (graphics.__canvas, 0, 0);
 					
 					renderSession.maskManager.popObject (shape);
