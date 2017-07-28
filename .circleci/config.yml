@@ -1,0 +1,219 @@
+version: 2
+jobs:
+
+  #TODO: Use 'persist_to_workspace' to reduce duplication
+
+  html5-3.2:
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit test -browser phantomjs -nocffi
+  
+  neko-3.2:
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: apt-get install libgl1-mesa-dev libglu1-mesa-dev g++ g++-multilib gcc-multilib libasound2-dev libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev
+     - run: haxelib run lime rebuild linux -release -64 -nocffi
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run lime build neko -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run lime build neko -Ddisable-cffi -nocffi
+  
+  cpp-3.2:
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: apt-get install libgl1-mesa-dev libglu1-mesa-dev g++ g++-multilib gcc-multilib libasound2-dev libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev
+     - run: haxelib run lime rebuild linux -release -64 -nocffi
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run lime test linux --window-hardware=false
+  
+  flash-3.2:
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit test -as3 -norun -nocffi
+  
+  docs-3.2:
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: git clone https://github.com/openfl/dox ~/dox --depth 1
+     - run: haxelib dev dox ~/dox
+     - run: cd ~/project/docs && haxe build.hxml
+
+######
+
+  html5-3.4:
+    docker:
+     - image: openfl/openfl-tests-unit-3.4:0.0.2
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit test -browser phantomjs -nocffi
+  
+  neko-3.4:
+    docker:
+     - image: openfl/openfl-tests-unit-3.4:0.0.2
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: apt-get install libgl1-mesa-dev libglu1-mesa-dev g++ g++-multilib gcc-multilib libasound2-dev libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev
+     - run: haxelib run lime rebuild linux -release -64 -nocffi
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run lime build neko -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run lime build neko -Ddisable-cffi -nocffi
+  
+  cpp-3.4:
+    docker:
+     - image: openfl/openfl-tests-unit-3.4:0.0.2
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: apt-get install libgl1-mesa-dev libglu1-mesa-dev g++ g++-multilib gcc-multilib libasound2-dev libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev
+     - run: haxelib run lime rebuild linux -release -64 -nocffi
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run lime test linux --window-hardware=false
+  
+  flash-3.4:
+    docker:
+     - image: openfl/openfl-tests-unit-3.4:0.0.2
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: haxelib run lime rebuild tools -nocffi
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit gen
+     - run:
+         working_directory: ~/project/tests/unit
+         command: haxelib run munit test -as3 -norun -nocffi
+  
+  docs-3.4:
+    docker:
+     - image: openfl/openfl-tests-unit-3.4:0.0.2
+    steps:
+     - checkout
+     - run:
+        name: Setup OpenFL dev directory
+        command: haxelib dev openfl ~/project
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
+     - run: haxelib dev lime ~/lime
+     - run: git clone https://github.com/openfl/dox ~/dox --depth 1
+     - run: haxelib dev dox ~/dox
+     - run: cd ~/project/docs && haxe build.hxml
+
+workflows:
+  version: 2
+  haxe-3.2:
+    jobs:
+     - html5-3.2
+     - neko-3.2
+     - cpp-3.2
+     - flash-3.2
+     - docs-3.2
+  haxe-3.4:
+    jobs:
+     - html5-3.4
+     - neko-3.4
+     - cpp-3.4
+     - flash-3.4
+     - docs-3.4
