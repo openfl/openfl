@@ -46,7 +46,7 @@ class DOMRenderer extends AbstractRenderer {
 		
 		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
 			
-			CanvasRenderer.scale = Browser.window.devicePixelRatio;
+			CanvasRenderer.scale = untyped window.devicePixelRatio || 1;
 			
 		}
 		

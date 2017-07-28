@@ -17,7 +17,7 @@ import js.Browser;
 class CanvasRenderer extends AbstractRenderer {
 	
 	
-	public static var scale (default, null):Float = 1; //devicePixelRatio scaling
+	public static var scale (default, null):Float = 1;
 	
 	private var context:CanvasRenderContext;
 	
@@ -43,7 +43,7 @@ class CanvasRenderer extends AbstractRenderer {
 		
 		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
 			
-			scale = Browser.window.devicePixelRatio;
+			scale = untyped window.devicePixelRatio || 1;
 			
 		}
 		#end
