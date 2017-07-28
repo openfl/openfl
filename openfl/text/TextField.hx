@@ -940,7 +940,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 		format.font = symbol.fontName;
-		
+
 		var found = false;
 		
 		switch (format.font) {
@@ -965,12 +965,16 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 		if (!found) {
-			
+			// perform inexact font match
+			// enables shared font class names to match human-friendly names
+
 			var alpha = ~/[^a-zA-Z]+/;
+
+			var sanitizedSymbolFontName = alpha.replace (symbol.fontName, "").toLowerCase ();
 			
 			for (font in Font.enumerateFonts ()) {
 				
-				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
+				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length).toLowerCase() == sanitizedSymbolFontName) {
 					
 					format.font = font.fontName;
 					found = true;
