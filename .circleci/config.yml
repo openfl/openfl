@@ -21,8 +21,7 @@ jobs:
          root: /
          paths:
           - usr/local/lib/haxe/lib/*/.dev
-          - workspace/openfl
-          - workspace/lime
+          - workspace
   
   Setup (Haxe 3.4.x):
     docker:
@@ -44,8 +43,7 @@ jobs:
          root: /
          paths:
           - usr/local/lib/haxe/lib/*/.dev
-          - workspace/openfl
-          - workspace/lime
+          - workspace
 
 
   HTML5 (Haxe 3.2.1):
@@ -56,6 +54,16 @@ jobs:
      - attach_workspace:
          at: /
      - run: haxelib run munit test -browser phantomjs -nocffi
+  
+  HTML5 (Haxe 3.4.x):
+    docker:
+     - image: openfl/openfl-tests-unit-3.4:0.0.2
+    working_directory: /workspace/openfl/tests/unit
+    steps:
+     - attach_workspace:
+         at: /
+     - run: haxelib run munit test -browser phantomjs -nocffi
+  
   
   Neko (Haxe 3.2.1):
     docker:
@@ -68,46 +76,6 @@ jobs:
      - run: haxelib run lime build neko -nocffi
      - run: haxelib run lime build neko -Ddisable-cffi -nocffi
   
-  C++ (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: /workspace/openfl/tests/unit
-    steps:
-     - attach_workspace:
-         at: /
-     - run: haxelib run lime rebuild linux -release -64 -nocffi
-     - run: haxelib run lime test linux --window-hardware=false
-  
-  Flash (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: /workspace/openfl/tests/unit
-    steps:
-     - attach_workspace:
-         at: /
-     - run: haxelib run munit test -as3 -norun -nocffi
-  
-  Documentation (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: /workspace/openfl/docs
-    steps:
-     - attach_workspace:
-         at: /
-     - run: git clone https://github.com/openfl/dox ~/dox --depth 1
-     - run: haxelib dev dox ~/dox
-     - run: haxe build.hxml
-
-
-  HTML5 (Haxe 3.4.x):
-    docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.2
-    working_directory: /workspace/openfl/tests/unit
-    steps:
-     - attach_workspace:
-         at: /
-     - run: haxelib run munit test -browser phantomjs -nocffi
-  
   Neko (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
@@ -119,6 +87,17 @@ jobs:
      - run: haxelib run lime build neko -nocffi
      - run: haxelib run lime build neko -Ddisable-cffi -nocffi
   
+  
+  C++ (Haxe 3.2.1):
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    working_directory: /workspace/openfl/tests/unit
+    steps:
+     - attach_workspace:
+         at: /
+     - run: haxelib run lime rebuild linux -release -64 -nocffi
+     - run: haxelib run lime test linux --window-hardware=false
+  
   C++ (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
@@ -129,6 +108,16 @@ jobs:
      - run: haxelib run lime rebuild linux -release -64 -nocffi
      - run: haxelib run lime test linux --window-hardware=false
   
+  
+  Flash (Haxe 3.2.1):
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    working_directory: /workspace/openfl/tests/unit
+    steps:
+     - attach_workspace:
+         at: /
+     - run: haxelib run munit test -as3 -norun -nocffi
+  
   Flash (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
@@ -137,6 +126,18 @@ jobs:
      - attach_workspace:
          at: /
      - run: haxelib run munit test -as3 -norun -nocffi
+  
+  
+  Documentation (Haxe 3.2.1):
+    docker:
+     - image: openfl/openfl-tests-unit-3.2:0.0.1
+    working_directory: /workspace/openfl/docs
+    steps:
+     - attach_workspace:
+         at: /
+     - run: git clone https://github.com/openfl/dox ~/dox --depth 1
+     - run: haxelib dev dox ~/dox
+     - run: haxe build.hxml
   
   Documentation (Haxe 3.4.x):
     docker:
