@@ -614,12 +614,13 @@ class Tools {
 			targetPath = Path.withoutExtension (sourcePath) + ".bundle";
 			
 		}
-		
-		try {
-			
-			PathHelper.removeDirectory (targetPath);
-			
-		} catch (e:Dynamic) {}
+
+		// TODO: enable this only with -clean parameter
+//		try {
+//
+//			PathHelper.removeDirectory (targetPath);
+//
+//		} catch (e:Dynamic) {}
 		
 		PathHelper.mkdir (targetPath);
 		
