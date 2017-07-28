@@ -53,8 +53,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
-	private static var __missingFontWarning = new Map<String, Bool> ();
-	
+
 	public var antiAliasType (get, set):AntiAliasType;
 	public var autoSize (get, set):TextFieldAutoSize;
 	public var background (get, set):Bool;
@@ -990,10 +989,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			embedFonts = true;
 			
-		} else if (!__missingFontWarning.exists (format.font)) {
+		} else {
 			
-			__missingFontWarning[format.font] = true;
-			Log.warn ("Could not find required font \"" + format.font + "\", it has not been embedded");
+			trace ("Could not find required font \"" + format.font + "\"");
 			
 		}
 		
