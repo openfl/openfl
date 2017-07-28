@@ -72,6 +72,9 @@ jobs:
      - attach_workspace:
          at: /
      - run:
+         name: Build Tests
+         command: haxelib run lime build html5 -nocffi
+     - run:
          name: Run Tests
          command: haxelib run munit test -browser phantomjs -nocffi
   
@@ -82,6 +85,9 @@ jobs:
     steps:
      - attach_workspace:
          at: /
+     - run:
+         name: Build Tests
+         command: haxelib run lime build html5 -nocffi
      - run:
          name: Run Tests
          command: haxelib run munit test -browser phantomjs -nocffi
@@ -159,6 +165,9 @@ jobs:
      - attach_workspace:
          at: /
      - run:
+         name: Build Tests
+         command: haxelib run lime build flash -nocffi
+     - run:
          name: Run Tests
          command: haxelib run munit test -as3 -norun -nocffi
   
@@ -169,6 +178,9 @@ jobs:
     steps:
      - attach_workspace:
          at: /
+     - run:
+         name: Build Tests
+         command: haxelib run lime build flash -nocffi
      - run:
          name: Run Tests
          command: haxelib run munit test -as3 -norun -nocffi
