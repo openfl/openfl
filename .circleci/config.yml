@@ -1,8 +1,7 @@
 version: 2
 jobs:
 
-
-  setup-3.2:
+  Setup (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
     working_directory: /workspace/openfl
@@ -25,7 +24,7 @@ jobs:
           - workspace/openfl
           - workspace/lime
   
-  setup-3.4:
+  Setup (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
     working_directory: /workspace/openfl
@@ -49,9 +48,7 @@ jobs:
           - workspace/lime
 
 
-
-
-  html5-3.2:
+  HTML5 (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
     working_directory: /workspace/openfl/tests/unit
@@ -60,7 +57,7 @@ jobs:
          at: /
      - run: haxelib run munit test -browser phantomjs -nocffi
   
-  neko-3.2:
+  Neko (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
     working_directory: /workspace/openfl/tests/unit
@@ -71,7 +68,7 @@ jobs:
      - run: haxelib run lime build neko -nocffi
      - run: haxelib run lime build neko -Ddisable-cffi -nocffi
   
-  cpp-3.2:
+  C++ (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
     working_directory: /workspace/openfl/tests/unit
@@ -81,7 +78,7 @@ jobs:
      - run: haxelib run lime rebuild linux -release -64 -nocffi
      - run: haxelib run lime test linux --window-hardware=false
   
-  flash-3.2:
+  Flash (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
     working_directory: /workspace/openfl/tests/unit
@@ -90,7 +87,7 @@ jobs:
          at: /
      - run: haxelib run munit test -as3 -norun -nocffi
   
-  docs-3.2:
+  Documentation (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
     working_directory: /workspace/openfl/docs
@@ -102,9 +99,7 @@ jobs:
      - run: haxe build.hxml
 
 
-
-
-  html5-3.4:
+  HTML5 (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
     working_directory: /workspace/openfl/tests/unit
@@ -113,7 +108,7 @@ jobs:
          at: /
      - run: haxelib run munit test -browser phantomjs -nocffi
   
-  neko-3.4:
+  Neko (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
     working_directory: /workspace/openfl/tests/unit
@@ -124,7 +119,7 @@ jobs:
      - run: haxelib run lime build neko -nocffi
      - run: haxelib run lime build neko -Ddisable-cffi -nocffi
   
-  cpp-3.4:
+  C++ (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
     working_directory: /workspace/openfl/tests/unit
@@ -134,7 +129,7 @@ jobs:
      - run: haxelib run lime rebuild linux -release -64 -nocffi
      - run: haxelib run lime test linux --window-hardware=false
   
-  flash-3.4:
+  Flash (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
     working_directory: /workspace/openfl/tests/unit
@@ -143,7 +138,7 @@ jobs:
          at: /
      - run: haxelib run munit test -as3 -norun -nocffi
   
-  docs-3.4:
+  Documentation (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
     working_directory: /workspace/openfl/docs
@@ -153,49 +148,45 @@ jobs:
      - run: git clone https://github.com/openfl/dox ~/dox --depth 1
      - run: haxelib dev dox ~/dox
      - run: haxe build.hxml
-
-
 
 
 workflows:
   version: 2
   
-  
-  haxe-3.2:
+  Tests (Haxe 3.2.1):
     jobs:
-     - setup-3.2
-     - html5-3.2:
+     - Setup (Haxe 3.2.1)
+     - HTML5 (Haxe 3.2.1):
          requires:
-          - setup-3.2
-     - neko-3.2:
+          - Setup (Haxe 3.2.1)
+     - Neko (Haxe 3.2.1):
          requires:
-          - setup-3.2
-     - cpp-3.2:
+          - Setup (Haxe 3.2.1)
+     - C++ (Haxe 3.2.1):
          requires:
-          - setup-3.2
-     - flash-3.2:
+          - Setup (Haxe 3.2.1)
+     - Flash (Haxe 3.2.1):
          requires:
-          - setup-3.2
-     - docs-3.2:
+          - Setup (Haxe 3.2.1)
+     - Documentation (Haxe 3.2.1):
          requires:
-          - setup-3.2
+          - Setup (Haxe 3.2.1)
   
-  
-  haxe-3.4:
+  Tests (Haxe 3.4.x):
     jobs:
-     - setup-3.4
-     - html5-3.4:
+     - Setup (Haxe 3.4.x)
+     - HTML5 (Haxe 3.4.x):
          requires:
-          - setup-3.4
-     - neko-3.4:
+          - Setup (Haxe 3.4.x)
+     - Neko (Haxe 3.4.x):
          requires:
-          - setup-3.4
-     - cpp-3.4:
+          - Setup (Haxe 3.4.x)
+     - C++ (Haxe 3.4.x):
          requires:
-          - setup-3.4
-     - flash-3.4:
+          - Setup (Haxe 3.4.x)
+     - Flash (Haxe 3.4.x):
          requires:
-          - setup-3.4
-     - docs-3.4:
+          - Setup (Haxe 3.4.x)
+     - Documentation (Haxe 3.4.x):
          requires:
-          - setup-3.4
+          - Setup (Haxe 3.4.x)
