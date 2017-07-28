@@ -52,8 +52,8 @@ class CanvasShape {
 					}
 
 					#if dom
-					 var reveseScale = 1/CanvasRenderer.scale;
-					 context.scale(reveseScale, reveseScale);
+					var reverseScale = 1/CanvasRenderer.scale;
+					context.scale(reverseScale, reverseScale);
 					#end
 
 					context.drawImage (graphics.__canvas, 0, 0);
