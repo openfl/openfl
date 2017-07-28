@@ -5,48 +5,48 @@ jobs:
   setup-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: ~/openfl
     steps:
-     - checkout
+     - checkout:
+         path: /workspace/openfl
      - run:
         name: Setup OpenFL dev directory
-        command: haxelib dev openfl .
-     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
-     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
-     - run: haxelib dev lime ~/lime
+        command: haxelib dev openfl /workspace/openfl
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
+     - run: haxelib dev lime /workspace/lime
      - run: haxelib run lime rebuild tools -nocffi
      - run:
          working_directory: tests/unit
          command: haxelib run munit gen
      - persist_to_workspace:
-         root: ~/
+         root: /
          paths:
-          - ../../usr/local/lib/haxe/lib/*/.dev
-          - openfl
-          - lime
+          - usr/local/lib/haxe/lib/*/.dev
+          - workspace/openfl
+          - workspace/lime
   
   setup-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
-    working_directory: ~/openfl
     steps:
-     - checkout
+     - checkout:
+         path: /workspace/openfl
      - run:
         name: Setup OpenFL dev directory
-        command: haxelib dev openfl .
-     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
-     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ~/lime --depth 1 ; fi
-     - run: haxelib dev lime ~/lime
+        command: haxelib dev openfl /workspace/openfl
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
+     - run: haxelib dev lime /workspace/lime
      - run: haxelib run lime rebuild tools -nocffi
      - run:
          working_directory: tests/unit
          command: haxelib run munit gen
      - persist_to_workspace:
-         root: ~/
+         root: /
          paths:
-          - ../../usr/local/lib/haxe/lib/*/.dev
-          - openfl
-          - lime
+          - usr/local/lib/haxe/lib/*/.dev
+          - workspace/openfl
+          - workspace/lime
 
 
 
@@ -54,19 +54,19 @@ jobs:
   html5-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run munit test -browser phantomjs -nocffi
   
   neko-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run lime rebuild linux -release -64 -nocffi
      - run: haxelib run lime build neko -nocffi
      - run: haxelib run lime build neko -Ddisable-cffi -nocffi
@@ -74,29 +74,29 @@ jobs:
   cpp-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run lime rebuild linux -release -64 -nocffi
      - run: haxelib run lime test linux --window-hardware=false
   
   flash-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run munit test -as3 -norun -nocffi
   
   docs-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
-    working_directory: ~/openfl/docs
+    working_directory: /workspace/openfl/docs
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: git clone https://github.com/openfl/dox ~/dox --depth 1
      - run: haxelib dev dox ~/dox
      - run: haxe build.hxml
@@ -107,19 +107,19 @@ jobs:
   html5-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run munit test -browser phantomjs -nocffi
   
   neko-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run lime rebuild linux -release -64 -nocffi
      - run: haxelib run lime build neko -nocffi
      - run: haxelib run lime build neko -Ddisable-cffi -nocffi
@@ -127,29 +127,29 @@ jobs:
   cpp-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run lime rebuild linux -release -64 -nocffi
      - run: haxelib run lime test linux --window-hardware=false
   
   flash-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
-    working_directory: ~/openfl/tests/unit
+    working_directory: /workspace/openfl/tests/unit
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: haxelib run munit test -as3 -norun -nocffi
   
   docs-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
-    working_directory: ~/openfl/docs
+    working_directory: /workspace/openfl/docs
     steps:
      - attach_workspace:
-         at: ~/
+         at: /
      - run: git clone https://github.com/openfl/dox ~/dox --depth 1
      - run: haxelib dev dox ~/dox
      - run: haxe build.hxml
