@@ -5,15 +5,15 @@ jobs:
   setup-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
+    working_directory: /workspace/openfl
     steps:
-     - checkout:
-         path: /workspace/openfl
+     - checkout
      - run:
         name: Setup OpenFL dev directory
-        command: haxelib dev openfl /workspace/openfl
-     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
-     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
-     - run: haxelib dev lime /workspace/lime
+        command: haxelib dev openfl .
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run: haxelib dev lime ../lime
      - run: haxelib run lime rebuild tools -nocffi
      - run:
          working_directory: tests/unit
@@ -28,15 +28,15 @@ jobs:
   setup-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
+    working_directory: /workspace/openfl
     steps:
-     - checkout:
-         path: /workspace/openfl
+     - checkout
      - run:
         name: Setup OpenFL dev directory
-        command: haxelib dev openfl /workspace/openfl
-     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
-     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime /workspace/lime --depth 1 ; fi
-     - run: haxelib dev lime /workspace/lime
+        command: haxelib dev openfl .
+     - run: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run: haxelib dev lime ../lime
      - run: haxelib run lime rebuild tools -nocffi
      - run:
          working_directory: tests/unit
