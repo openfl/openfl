@@ -164,19 +164,19 @@ workflows:
   haxe-3.2:
     jobs:
      - setup-3.2
-     - html5-3.2
+     - html5-3.2:
          requires:
           - setup-3.2
-     - neko-3.2
+     - neko-3.2:
          requires:
           - setup-3.2
-     - cpp-3.2
+     - cpp-3.2:
          requires:
           - setup-3.2
-     - flash-3.2
+     - flash-3.2:
          requires:
           - setup-3.2
-     - docs-3.2
+     - docs-3.2:
          requires:
           - setup-3.2
   
@@ -184,18 +184,18 @@ workflows:
   haxe-3.4:
     jobs:
      - setup-3.4
-     - html5-3.4
+     - html5-3.4:
          requires:
           - setup-3.4
-     - neko-3.4
+     - neko-3.4:
          requires:
           - setup-3.4
-     - cpp-3.4
+     - cpp-3.4:
          requires:
           - setup-3.4
-     - flash-3.4
+     - flash-3.4:
          requires:
           - setup-3.4
-     - docs-3.4
+     - docs-3.4:
          requires:
           - setup-3.4
