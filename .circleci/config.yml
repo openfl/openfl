@@ -5,9 +5,9 @@ jobs:
   setup-3.2:
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.1
+    working_directory: ~/openfl
     steps:
      - checkout
-         path: ~/openfl
      - run:
         name: Setup OpenFL dev directory
         command: haxelib dev openfl ~/openfl
@@ -28,9 +28,9 @@ jobs:
   setup-3.4:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.2
+    working_directory: ~/openfl
     steps:
      - checkout
-         path: ~/openfl
      - run:
         name: Setup OpenFL dev directory
         command: haxelib dev openfl ~/openfl
