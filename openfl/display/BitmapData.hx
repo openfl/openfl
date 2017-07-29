@@ -193,7 +193,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		
-		filter.__applyFilter (sourceBitmapData, this, sourceRect, destPoint);
+		filter.__applyFilter (this, sourceBitmapData, sourceRect, destPoint);
 		
 	}
 	

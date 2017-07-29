@@ -47,6 +47,7 @@ import js.html.Element;
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -983,6 +984,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
+			// TODO: Update rect size based on filter dimensions
+			
 			if (needRender) {
 				
 				__cacheBitmapBackground = opaqueBackground;
@@ -1033,7 +1036,32 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			if (needRender) {
 				
 				__cacheBitmapRender = true;
+				
 				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
+				
+				if (__filters != null && __filters.length > 0) {
+					
+					var bitmapData = __cacheBitmapData;
+					var bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+					var cacheBitmap;
+					
+					var sourceRect = bitmapData.rect;
+					var destPoint = new Point (); // TODO: ObjectPool
+					
+					for (filter in __filters) {
+						
+						bitmapData2.applyFilter (bitmapData, sourceRect, destPoint, filter);
+						
+						cacheBitmap = bitmapData;
+						bitmapData = bitmapData2;
+						bitmapData2 = cacheBitmap;
+						
+					}
+					
+					__cacheBitmap.bitmapData = bitmapData;
+					
+				}
+				
 				__cacheBitmapRender = false;
 				
 				if (__cacheBitmapColorTransform == null) __cacheBitmapColorTransform = new ColorTransform ();

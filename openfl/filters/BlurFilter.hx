@@ -2,9 +2,15 @@ package openfl.filters;
 
 
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+@:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 @:final class BlurFilter extends BitmapFilter {
@@ -34,6 +40,15 @@ import openfl.geom.Rectangle;
 	public override function clone ():BitmapFilter {
 		
 		return new BlurFilter (blurX, blurY, quality);
+		
+	}
+	
+	
+	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
+		
+		// TODO: Fix support for multiple passes
+		
+		bitmapData.image.gaussianBlur (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, 1);
 		
 	}
 	
