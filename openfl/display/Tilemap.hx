@@ -82,17 +82,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	public function addTiles (tiles:Array<Tile>):Array<Tile> {
-		
-		for (tile in tiles) {
-			addTile (tile);
-		}
-		
-		return tiles;
-		
-	}
-	
-	
 	public function addTileAt (tile:Tile, index:Int):Tile {
 		
 		var cacheLength = __tiles.length;
@@ -113,6 +102,17 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		#end
 		
 		return tile;
+		
+	}
+	
+	
+	public function addTiles (tiles:Array<Tile>):Array<Tile> {
+		
+		for (tile in tiles) {
+			addTile (tile);
+		}
+		
+		return tiles;
 		
 	}
 	
