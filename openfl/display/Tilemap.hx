@@ -73,7 +73,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tiles[numTiles] = tile;
 		tile.parent = this;
 		numTiles++;
+		#if !flash
 		__setRenderDirty ();
+		#end
 		
 		return tile;
 		
@@ -106,7 +108,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileArrayDirty = true;
 		numTiles++;
 		
+		#if !flash
 		__setRenderDirty ();
+		#end
 		
 		return tile;
 		
@@ -185,7 +189,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			numTiles--;
 		}
 		
+		#if !flash
 		__setRenderDirty ();
+		#end
 		
 		return tile;
 		
@@ -215,7 +221,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileArrayDirty = true;
 		numTiles = __tiles.length;
 		
+		#if !flash
 		__setRenderDirty ();
+		#end
 		
 	}
 	
@@ -227,7 +235,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileArray.__bufferDirty = true;
 		__tileArrayDirty = false;
 		__tiles.length = 0;
+		#if !flash
 		__setRenderDirty ();
+		#end
 		
 	}
 	

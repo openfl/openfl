@@ -102,11 +102,13 @@ class Tile {
 	
 	private inline function __setRenderDirty ():Void {
 		
+		#if !flash
 		if (parent != null) {
 			
 			parent.__setRenderDirty ();
 			
 		}
+		#end
 		
 	}
 	
