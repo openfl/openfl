@@ -71,7 +71,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public function addTile (tile:Tile):Tile {
 		
 		__tiles[numTiles] = tile;
+		tile.parent = this;
 		numTiles++;
+		__setRenderDirty ();
 		
 		return tile;
 		
@@ -100,8 +102,11 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 		__tiles.insertAt (index, tile);
+		tile.parent = this;
 		__tileArrayDirty = true;
 		numTiles++;
+		
+		__setRenderDirty ();
 		
 		return tile;
 		
@@ -169,6 +174,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			
 			if (__tiles[i] == tile) {
 				__tiles[i] = null;
+				tile.parent = null;
 			}
 			
 		}
@@ -178,6 +184,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (cacheLength < __tiles.length) {
 			numTiles--;
 		}
+		
+		__setRenderDirty ();
 		
 		return tile;
 		
@@ -200,9 +208,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (beginIndex < 0) beginIndex = 0;
 		if (endIndex > __tiles.length - 1) endIndex = __tiles.length - 1;
 		
-		__tiles.splice (beginIndex, endIndex - beginIndex + 1);
+		var removed = __tiles.splice (beginIndex, endIndex - beginIndex + 1);
+		for (tile in removed) {
+			tile.parent = null;
+		}
 		__tileArrayDirty = true;
 		numTiles = __tiles.length;
+		
+		__setRenderDirty ();
 		
 	}
 	
@@ -214,6 +227,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileArray.__bufferDirty = true;
 		__tileArrayDirty = false;
 		__tiles.length = 0;
+		__setRenderDirty ();
 		
 	}
 	
