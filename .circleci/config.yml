@@ -219,6 +219,84 @@ jobs:
      - run:
          name: Generate Documentation
          command: haxe build.hxml
+  
+  
+  # This is used for local tests, it assumes you already have a working environment
+  build:
+    docker:
+     - image: openfl/openfl-tests-unit-3.4:0.0.2
+    working_directory: /workspace/openfl
+    steps:
+     # Setup
+     - checkout
+     - run:
+         name: Setup OpenFL Development Directory
+         command: haxelib dev openfl .
+     - run:
+         name: Clone Lime (Master)
+         command: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run:
+         name: Clone Lime (Develop)
+         command: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run:
+         name: Set Lime Development Directory
+         command: haxelib dev lime ../lime
+     - run:
+         name: Rebuild Lime Tools
+         command: haxelib run lime rebuild tools -nocffi
+     - run:
+         name: Generate MUnit Test Runner
+         working_directory: tests/unit
+         command: haxelib run munit gen
+     # HTML5
+     - run:
+         name: Build Tests
+         working_directory: tests/unit
+         command: haxelib run lime build html5 -nocffi
+     - run:
+         name: Run Tests
+         working_directory: tests/unit
+         command: haxelib run munit test -browser phantomjs -nocffi
+     # Neko
+     - run:
+         name: Rebuild Lime Desktop Binary
+         command: haxelib run lime rebuild linux -release -64 -nocffi
+     - run:
+         name: Run Tests (CFFI-enabled)
+         working_directory: tests/unit
+         command: haxelib run lime build neko -nocffi
+     - run:
+         name: Run Tests (CFFI-disabled)
+         working_directory: tests/unit
+         command: haxelib run lime build neko -Ddisable-cffi -nocffi
+     # Linux
+     - run:
+         name: Rebuild Lime Desktop Binary
+         command: haxelib run lime rebuild linux -release -64 -nocffi
+     - run:
+         name: Run Tests
+         working_directory: tests/unit
+         command: haxelib run lime test linux --window-hardware=false
+     # Flash
+     - run:
+         name: Build Tests
+         working_directory: tests/unit
+         command: haxelib run lime build flash -nocffi
+     - run:
+         name: Run Tests
+         working_directory: tests/unit
+         command: haxelib run munit test -as3 -norun -nocffi
+     # Documentation
+     - run:
+         name: Clone Dox
+         command: git clone https://github.com/openfl/dox ~/dox --depth 1
+     - run:
+         name: Set Dox Development Directory
+         command: haxelib dev dox ~/dox
+     - run:
+         name: Generate Documentation
+         working_directory: docs
+         command: haxe build.hxml
 
 
 workflows:
