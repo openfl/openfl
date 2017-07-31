@@ -43,6 +43,26 @@
 	
 	<section unless="custom-backend">
 		
+		<config:ios output-directory="ios" />
+		<config:android output-directory="android" />
+		
+		<section if="${${targetType} == cpp}">
+			<config:windows output-directory="windows" />
+			<config:mac output-directory="macos" />
+			<config:linux output-directory="linux" />
+		</section>
+		
+		<section if="${${targetType} != cpp}">
+			<config:windows output-directory="${targetType}" />
+			<config:mac output-directory="${targetType}" />
+			<config:linux output-directory="${targetType}" />
+		</section>
+		
+		<config:html5 output-directory="html5" />
+		<config:flash output-directory="flash" />
+		<config:emscripten output-directory="emscripten" />
+		<config:tvos output-directory="tvos" />
+		
 		<section if="native">
 			
 			<set name="openfl-native" />
