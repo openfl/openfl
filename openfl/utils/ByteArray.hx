@@ -5,8 +5,6 @@ import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
 import lime.system.System;
-import lime.utils.BytePointer;
-import lime.utils.DataPointer;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
@@ -311,7 +309,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		}
 		
+		#if openfl_big_endian
+		endian = BIG_ENDIAN;
+		#else
 		endian = __defaultEndian;
+		#end
+		
 		position = 0;
 		
 	}
