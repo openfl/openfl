@@ -36,6 +36,7 @@ import openfl.display.Sprite;
 	
 	@:noCompletion private function set_render (value:Dynamic):Dynamic {
 		
+		__setRenderDirty ();
 		return __render = value;
 		
 	}

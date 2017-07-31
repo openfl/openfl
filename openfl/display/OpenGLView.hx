@@ -89,6 +89,13 @@ import js.Browser;
 	}
 	
 	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		if (__render != null) __setRenderDirty ();
+		
+	}
+	
+	
 	#if !flash
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
