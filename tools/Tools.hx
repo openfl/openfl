@@ -290,15 +290,15 @@ class Tools {
 				var template = new Template (templateData);
 				var targetPath;
 				
-				if (project.target == IOS) {
+				// if (project.target == IOS) {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
+				// 	targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
 					
-				} else {
+				// } else {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe/_generated";
+					targetPath = "../haxe/_generated";
 					
-				}
+				// }
 				
 				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (className.split (".").join ("/"))) + "/" + prefix + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
@@ -793,7 +793,7 @@ class Tools {
 					
 					output.assets.push (asset);
 					
-					if (library.generate) {
+					if (true || library.generate) {
 						
 						var generatedClasses = generateSWFClasses (project, output, swf, library.prefix);
 						
