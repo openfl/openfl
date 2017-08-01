@@ -945,7 +945,6 @@ class SWFLiteExporter {
 						var methodName = data.abcData.resolveMultiNameByIndex(field.name);
 						if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
-							trace("frame script #"+ frameNumOneIndexed);
 							LogHelper.info ("", "frame script #"+ frameNumOneIndexed);
               var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
 							var js = "";
@@ -1033,14 +1032,12 @@ class SWFLiteExporter {
 										stack.push("\"" + str + "\"");
 									case OInt(i):
 										stack.push(i);
-                    LogHelper.info ("", "int: " + i);
-//										trace("int", i);
+                    					LogHelper.info ("", "int: " + i);
 									case OIntRef(nameIndex):
 										stack.push(data.abcData.getIntByIndex(nameIndex));
 									case OSmallInt(i):
 										stack.push(i);
-//										trace("smallint", i);
-                    LogHelper.info ("", "smallint: " + i);
+                    					LogHelper.info ("", "smallint: " + i);
 									case OFloat(nameIndex):
 										stack.push(data.abcData.getFloatByIndex(nameIndex));
 									case OCallPropVoid(nameIndex, argCount):
@@ -1086,7 +1083,7 @@ class SWFLiteExporter {
 											}
 										}
 
-										trace("OCallProperty result", result);
+										LogHelper.info("", "OCallProperty result" + Std.string(result));
 										stack.push(result);
 									case OConstructProperty(nameIndex, argCount):
 										LogHelper.info ("", "OConstructProperty stack: " + stack);
@@ -1136,8 +1133,7 @@ class SWFLiteExporter {
 											case OpEq:
 												operator = "==";
 											case _:
-												trace("OOp", op);
-												LogHelper.info ("", "OOp");
+												LogHelper.info ("", "OOp" + op);
 										}
 
 										if (op == OpAs)
@@ -1184,9 +1180,9 @@ class SWFLiteExporter {
 												}
 
 												indentationLevel += 1;
-												trace("indentationLevel", j, indentationLevel, closingBrackets);
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + "closingBrackets" + Std.string(closingBrackets));
 											case JAlways:
-												trace("JAlways", delta, pcode.pos);
+												LogHelper.info("", "JAlways" + delta + " " + pcode.pos);
 
 //												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
 //												{
@@ -1209,15 +1205,14 @@ class SWFLiteExporter {
 												}
 
 												indentationLevel += 1;
-												trace("indentationLevel", j, indentationLevel, closingBrackets);
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
 											case _:
-												trace("OJump", j, delta);
-                        LogHelper.info ("", "OJump");
+                        						LogHelper.info ("", "OJump" + j + delta);
 										}
 
-										trace(closingBrackets);
+										LogHelper.info("", Std.string(closingBrackets));
 
-										trace(j, delta);
+										LogHelper.info("", j + " " + delta);
 									case OTrue:
 										stack.push(true);
 									case OFalse:
@@ -1230,12 +1225,12 @@ class SWFLiteExporter {
 								for (i in 0...closingBrackets.length) {
 									if (pcode.pos == closingBrackets[i])
 									{
-										trace("found a pcode for opening bracket", pcode);
+										LogHelper.info("", "found a pcode for opening bracket" + pcode);
 										js += "}\n";
 										closingBrackets.remove(i);
 
 										indentationLevel += -1;
-										trace("decreased indentationLevel", indentationLevel, closingBrackets);
+										LogHelper.info("", "decreased indentationLevel" + indentationLevel + " " + closingBrackets);
 
 										switch (pcode.opr) {
 											case OJump(j, delta):
@@ -1245,7 +1240,7 @@ class SWFLiteExporter {
 													var foundConditionals = false;
 
 													for (k in pcodes.indexOf(pcode)+1...pcodes.length) {
-														trace("pcodes to look for conditional", pcodes[k]);
+														LogHelper.info("", "pcodes to look for conditional" + pcodes[k]);
 														if (pcodes[k].pos > pcode.pos + delta) {
 															break;
 														}
@@ -1257,11 +1252,11 @@ class SWFLiteExporter {
 														}
 													}
 
-													trace("foundConditionals", foundConditionals);
+													LogHelper.info("", "foundConditionals" + foundConditionals);
 													if (!foundConditionals) {
 														js += "\n{\n";
 														indentationLevel += 1;
-														trace("indentationLevel", j, indentationLevel, closingBrackets);
+														LogHelper.info("", "indentationLevel" + j + indentationLevel + closingBrackets);
 													}
 												}
 											case _:
@@ -1298,7 +1293,7 @@ class SWFLiteExporter {
 							}
 							LogHelper.info ("", "javascript:\n"+js);
 
-							trace(pcodes);
+							LogHelper.info("", Std.string(pcodes));
 							// store on SWFLite object for serialized .dat export
 							spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
 						}
