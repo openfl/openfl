@@ -363,8 +363,8 @@ class Tools {
 					
 					var spriteSymbol:SpriteSymbol = cast symbol;
 					
-					if (spriteSymbol.frames.length > 0) {
-						
+					if (spriteSymbol.frames.length > 0 && Reflect.hasField(spriteSymbol.frames[0], "objects")) {
+
 						for (object in spriteSymbol.frames[0].objects) {
 							
 							if (object.name != null) {
