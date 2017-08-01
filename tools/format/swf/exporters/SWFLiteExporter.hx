@@ -932,6 +932,8 @@ class SWFLiteExporter {
 										stack.push("this");
 									case OScope:
 										stack.pop();
+									case OPop:
+										stack.pop();
 									case OFindPropStrict(nameIndex):
 //										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
 									case OGetLex(nameIndex):
@@ -985,7 +987,7 @@ class SWFLiteExporter {
 											}
 										}
 
-                    var instance = Std.string(stack.pop());
+                    					var instance = Std.string(stack.pop());
 
 										if (instance != "this" && !instance.startsWith("this."))
 										{
@@ -1004,6 +1006,8 @@ class SWFLiteExporter {
 									case OSmallInt(i):
 										stack.push(i);
 //										trace("smallint", i);
+									case OFloat(nameIndex):
+										stack.push(data.abcData.getFloatByIndex(nameIndex));
 									case OCallPropVoid(nameIndex, argCount):
 										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
 
@@ -1090,6 +1094,12 @@ class SWFLiteExporter {
 												operator = "*";
 											case OpAdd:
 												operator = "+";
+											case OpDiv:
+												operator = "/";
+											case OpGt:
+												operator = ">";
+											case OpEq:
+												operator = "==";
 											case _:
 												trace("OOp", op);
 										}
@@ -1104,9 +1114,17 @@ class SWFLiteExporter {
 											var temp = stack.pop();
 											stack.push(Std.string(stack.pop()) + " " + operator + " " + Std.string(temp));
 										}
+										else
+										{
+											if (op == OpDecr)
+											{
+												operator = "-";
+												stack.push(Std.string(stack.pop()) + " " + operator + " 1");
+											}
+										}
 									case OJump(j, delta):
 										switch (j) {
-											case JNeq | JNotGt | JNotLt:
+											case JNeq | JNotGt | JNotLt | JNotGte:
 												var operator = null;
 
 												switch (j) {
@@ -1116,6 +1134,8 @@ class SWFLiteExporter {
 														operator = ">";
 													case JNotLt:
 														operator = "<";
+													case JNotGte:
+														operator = ">=";
 													case _:
 												}
 
@@ -1356,6 +1376,10 @@ class AVM2 {
 
 	public static function getIntByIndex(abcData: ABCData, i: Index<Int>): Int {
 		return abcData.ints[i.getIndex()-1];
+	}
+
+	public static function getFloatByIndex(abcData: ABCData, i: Index<Float>): Float {
+		return abcData.floats[i.getIndex()-1];
 	}
 
 	public static function getNameSpaceByIndex(abcData: ABCData, i: Index<Namespace>): Namespace {
