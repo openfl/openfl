@@ -20,13 +20,13 @@ Platforms
 
 Currently, OpenFL supports the following platforms:
 
- * Windows
- * Mac
- * Linux
  * iOS
  * Android
- * Firefox OS
  * HTML5
+ * Windows
+ * macOS
+ * Linux
+ * WebAssembly
  * Flash
 
 There is also a community effort to bring OpenFL to consoles, OpenFL is running on:
@@ -51,11 +51,14 @@ Libraries
 
 OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from ActionScript or written originally in Haxe, including:
 
- * [HaxeFlixel](https://github.com/haxeflixel/flixel)
- * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
+ * [Starling](https://github.com/openfl/starling)
+ * [Away3D](https://github.com/openfl/away3d)
+ * [DragonBones](https://github.com/openfl/dragonbones)
  * [Nape](https://github.com/deltaluca/nape)
  * [Box2D](https://github.com/jgranick/Box2D)
  * [Actuate](https://github.com/jgranick/Actuate)
+ * [HaxeFlixel](https://github.com/haxeflixel/flixel)
+ * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
 
 OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3.
 
