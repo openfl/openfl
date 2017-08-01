@@ -2,6 +2,7 @@ package openfl._internal.timeline;
 
 
 import openfl._internal.swf.FilterType;
+import openfl.display.BlendMode;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
@@ -14,6 +15,8 @@ import openfl.geom.Matrix;
 class FrameObject {
 	
 	
+	public var blendMode:BlendMode;
+	public var cacheAsBitmap:Null<Bool>;
 	public var clipDepth:Int;
 	public var colorTransform:ColorTransform;
 	public var depth:Int;
@@ -23,7 +26,7 @@ class FrameObject {
 	public var name:String;
 	public var symbol:Int;
 	public var type:FrameObjectType;
-	public var visible:Bool;
+	public var visible:Null<Bool>;
 	
 	
 	public function new () {

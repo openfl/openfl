@@ -49,6 +49,8 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	public override function pushObject (object:DisplayObject):Shader {
 		
+		return renderSession.shaderManager.defaultShader;
+		
 		// TODO: Support one-pass filters?
 		
 		if (object.__filters != null && object.__filters.length > 0) {
@@ -62,6 +64,7 @@ class GLFilterManager extends AbstractFilterManager {
 			
 			if (object.__filters.length == 1 && object.__filters[0].__numPasses == 0) {
 				
+				renderer.getRenderTarget (false);
 				return object.__filters[0].__initShader (renderSession, 0);
 				
 			} else {
@@ -80,6 +83,8 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	
 	public override function popObject (object:DisplayObject):Void {
+		
+		return;
 		
 		if (object.__filters != null && object.__filters.length > 0) {
 			
@@ -143,9 +148,10 @@ class GLFilterManager extends AbstractFilterManager {
 					// TODO: Properly handle filter-within-filter rendering
 					
 					filterDepth--;
+					currentTarget = renderer.currentRenderTarget;
 					renderer.getRenderTarget(filterDepth > 0);
 					
-					renderPass(renderer.currentRenderTarget, renderSession.shaderManager.defaultShader);
+					renderPass(currentTarget, renderSession.shaderManager.defaultShader);
 					
 				}
 				
@@ -162,16 +168,24 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	private function renderPass (target:BitmapData, shader:Shader):Void {
 		
+		if (target == null || shader == null) return;
+		
 		shader.data.uImage0.input = target;
 		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
 		shader.data.uMatrix.value = renderer.getMatrix (matrix);
 		
+		if (shader.data.uColorTransform != null) {
+			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+			shader.data.uColorTransform.value[0] = false;
+		}
+		
 		renderSession.shaderManager.setShader (shader);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl, 1));
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl, 1, null));
+		
+		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		

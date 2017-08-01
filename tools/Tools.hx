@@ -614,12 +614,13 @@ class Tools {
 			targetPath = Path.withoutExtension (sourcePath) + ".bundle";
 			
 		}
-		
-		try {
-			
-			PathHelper.removeDirectory (targetPath);
-			
-		} catch (e:Dynamic) {}
+
+		// TODO: enable this only with -clean parameter
+//		try {
+//
+//			PathHelper.removeDirectory (targetPath);
+//
+//		} catch (e:Dynamic) {}
 		
 		PathHelper.mkdir (targetPath);
 		
@@ -672,7 +673,9 @@ class Tools {
 
 			var symbolClassName = exporter.soundSymbolClassNames.get (id);
 			var typeId = exporter.soundTypes.get (id);
-			trace("exporting sound id "+id+", type "+ typeId +", symbol class name "+ symbolClassName);
+			
+			LogHelper.info ("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
+			
 			var type;
 			switch (typeId) {
 				case SoundType.MP3: type = "mp3";

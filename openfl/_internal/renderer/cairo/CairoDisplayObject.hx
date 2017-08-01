@@ -25,6 +25,7 @@ class CairoDisplayObject {
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
+			renderSession.blendModeManager.setBlendMode (displayObject.__worldBlendMode);
 			renderSession.maskManager.pushObject (displayObject);
 			
 			var cairo = renderSession.cairo;

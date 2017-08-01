@@ -34,6 +34,7 @@ class CanvasShape {
 				
 				if (width > 0 && height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
 					
+					renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 					renderSession.maskManager.pushObject (shape);
 					
 					context.globalAlpha = shape.__worldAlpha;

@@ -1458,7 +1458,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		for (target in stack) {
 			
-			if (__rollOutStack.indexOf (target) == -1) {
+			if (__rollOutStack.indexOf (target) == -1 && __mouseOverTarget != null) {
 				
 				if (target.hasEventListener (MouseEvent.ROLL_OVER)) {
 					

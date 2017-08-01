@@ -985,7 +985,7 @@ import openfl.profiler.Telemetry;
 	}
 	
 	
-	public function setTextureAt(sampler:Int, texture:TextureBase):Void {
+	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
 		if (__samplerTextures[sampler] != texture) {
 			
@@ -999,7 +999,7 @@ import openfl.profiler.Telemetry;
 	
 	
 
-	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
+	public function setVertexBufferAt (index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
 		if (buffer == null) {
 			
@@ -1351,8 +1351,8 @@ import openfl.profiler.Telemetry;
 			
 		}
 		
-		GL.scissor (Std.int (__scissorRectangle.x),
-			Std.int (height - Std.int (__scissorRectangle.y) - Std.int (__scissorRectangle.height)),
+		GL.scissor (Std.int (__scissorRectangle.x) + Std.int (__stage3D.x),
+			Std.int (height - Std.int (__scissorRectangle.y) - Std.int (__scissorRectangle.height)) + Std.int (__stage3D.y),
 			Std.int (__scissorRectangle.width),
 			Std.int (__scissorRectangle.height)
 		);

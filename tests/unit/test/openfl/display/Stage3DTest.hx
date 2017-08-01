@@ -101,6 +101,9 @@ class Stage3DTest {
 		
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		
+		// This is not currently stable
+		return null;
+		
 		if (stage3D != null) {
 			
 			if (stage3D.context3D == null) {

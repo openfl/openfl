@@ -23,6 +23,8 @@ import openfl._internal.text.TextLayoutGroup;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.IShaderDrawable;
+import openfl.display.Shader;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
@@ -47,12 +49,11 @@ import js.html.DivElement;
 @:access(openfl.text.TextFormat)
 
 
-class TextField extends InteractiveObject {
+class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
-	private static var __missingFontWarning = new Map<String, Bool> ();
-	
+
 	public var antiAliasType (get, set):AntiAliasType;
 	public var autoSize (get, set):TextFieldAutoSize;
 	public var background (get, set):Bool;
@@ -79,6 +80,7 @@ class TextField extends InteractiveObject {
 	public var selectable (get, set):Bool;
 	public var selectionBeginIndex (get, never):Int;
 	public var selectionEndIndex (get, never):Int;
+	@:beta public var shader:Shader;
 	public var sharpness (get, set):Float;
 	public var text (get, set):UTF8String;
 	public var textColor (get, set):Int;
@@ -937,7 +939,7 @@ class TextField extends InteractiveObject {
 		}
 		
 		format.font = symbol.fontName;
-		
+
 		var found = false;
 		
 		switch (format.font) {
@@ -962,12 +964,16 @@ class TextField extends InteractiveObject {
 		}
 		
 		if (!found) {
-			
+			// perform inexact font match
+			// enables shared font class names to match human-friendly names
+
 			var alpha = ~/[^a-zA-Z]+/;
+
+			var sanitizedSymbolFontName = alpha.replace (symbol.fontName, "").toLowerCase ();
 			
 			for (font in Font.enumerateFonts ()) {
 				
-				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
+				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length).toLowerCase() == sanitizedSymbolFontName) {
 					
 					format.font = font.fontName;
 					found = true;
@@ -983,10 +989,9 @@ class TextField extends InteractiveObject {
 			
 			embedFonts = true;
 			
-		} else if (!__missingFontWarning.exists (format.font)) {
+		} else {
 			
-			__missingFontWarning[format.font] = true;
-			Log.warn ("Could not find required font \"" + format.font + "\", it has not been embedded");
+			trace ("Could not find required font \"" + format.font + "\"");
 			
 		}
 		
