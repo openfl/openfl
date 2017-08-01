@@ -480,7 +480,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 
 		pcode = new Array();
 		for (fn in abcData.functions) {
-			pcode.push(format.abc.OpReader.decode(new haxe.io.BytesInput(fn.code)));
+			pcode.push(tools.format.swf.exporters.OpReader.decode(new haxe.io.BytesInput(fn.code)));
 		}
 	}
 
