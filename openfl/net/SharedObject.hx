@@ -264,7 +264,7 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
-	public function send (arguments:Array<Dynamic>):Void {
+	public function send (args:Array<Dynamic>):Void {
 		
 		openfl.Lib.notImplemented ();
 		

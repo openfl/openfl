@@ -23,7 +23,21 @@ class AbstractShaderManager {
 	}
 	
 	
+	public function initShader (shader:Shader):Shader {
+		
+		return shader;
+		
+	}
+	
+	
 	public function setShader (shader:Shader):Void {
+		
+		
+		
+	}
+	
+	
+	public function updateShader (shader:Shader):Void {
 		
 		
 		

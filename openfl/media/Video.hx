@@ -12,20 +12,27 @@ import openfl._internal.renderer.opengl.GLVideo;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
+import openfl.display.IShaderDrawable;
+import openfl.display.Shader;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
 @:access(openfl.geom.Point)
 
 
-class Video extends DisplayObject {
+class Video extends DisplayObject implements IShaderDrawable {
 	
+	
+	private static inline var __bufferStride = 26;
 	
 	public var deblocking:Int;
+	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	public var videoHeight (get, never):Int;
 	public var videoWidth (get, never):Int;
@@ -33,6 +40,7 @@ class Video extends DisplayObject {
 	private var __active:Bool;
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
+	private var __bufferColorTransform:ColorTransform;
 	private var __bufferContext:WebGLContext;
 	private var __bufferData:Float32Array;
 	private var __dirty:Bool;
@@ -106,12 +114,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getBuffer (gl:WebGLContext, alpha:Float):GLBuffer {
-		
-		var width = __width;
-		var height = __height;
-		
-		if (width == 0 || height == 0) return null;
+	private function __getBuffer (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):GLBuffer {
 		
 		if (__buffer == null || __bufferContext != gl) {
 			
@@ -142,33 +145,117 @@ class Video extends DisplayObject {
 			
 			#end
 			
-			__bufferData = new Float32Array ([
+			//__bufferData = new Float32Array ([
+				//
+				//width, height, 0, uvWidth, uvHeight, alpha, (color transform, color offset...)
+				//0, height, 0, 0, uvHeight, alpha, (color transform, color offset...)
+				//width, 0, 0, uvWidth, 0, alpha, (color transform, color offset...)
+				//0, 0, 0, 0, 0, alpha, (color transform, color offset...)
+				//
+				//
+			//]);
+			
+			//[ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
+			//[ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
+			
+			__bufferData = new Float32Array (__bufferStride * 4);
+			
+			__bufferData[0] = width;
+			__bufferData[1] = height;
+			__bufferData[3] = uvWidth;
+			__bufferData[4] = uvHeight;
+			__bufferData[__bufferStride + 1] = height;
+			__bufferData[__bufferStride + 4] = uvHeight;
+			__bufferData[__bufferStride * 2] = width;
+			__bufferData[__bufferStride * 2 + 3] = uvWidth;
+			
+			for (i in 0...4) {
 				
-				width, height, 0, uvWidth, uvHeight, alpha,
-				0, height, 0, 0, uvHeight, alpha,
-				width, 0, 0, uvWidth, 0, alpha,
-				0, 0, 0, 0, 0, alpha
+				__bufferData[__bufferStride * i + 5] = alpha;
 				
-			]);
+				if (colorTransform != null) {
+					
+					__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+					__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+					__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+					__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+					__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+					__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+					__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+					__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+					
+				} else {
+					
+					__bufferData[__bufferStride * i + 6] = 1;
+					__bufferData[__bufferStride * i + 11] = 1;
+					__bufferData[__bufferStride * i + 16] = 1;
+					__bufferData[__bufferStride * i + 21] = 1;
+					
+				}
+				
+			}
 			
 			__bufferAlpha = alpha;
+			__bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
 			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
-		} else if (__bufferAlpha != alpha) {
+		} else {
 			
-			__bufferData[5] = alpha;
-			__bufferData[11] = alpha;
-			__bufferData[17] = alpha;
-			__bufferData[23] = alpha;
-			__bufferAlpha = alpha;
+			if (__bufferAlpha != alpha) {
+				
+				for (i in 0...4) {
+					
+					__bufferData[__bufferStride * i + 5] = alpha;
+					
+				}
+				
+			}
+			
+			if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+				
+				if (colorTransform != null) {
+					
+					__bufferColorTransform = colorTransform.__clone ();
+					
+					for (i in 0...4) {
+						
+						__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+						__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+						__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+						__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+						__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+						__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+						__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+						__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+						
+					}
+					
+				} else {
+					
+					for (i in 0...4) {
+						
+						__bufferData[__bufferStride * i + 6] = 1;
+						__bufferData[__bufferStride * i + 11] = 1;
+						__bufferData[__bufferStride * i + 16] = 1;
+						__bufferData[__bufferStride * i + 21] = 1;
+						__bufferData[__bufferStride * i + 22] = 0;
+						__bufferData[__bufferStride * i + 23] = 0;
+						__bufferData[__bufferStride * i + 24] = 0;
+						__bufferData[__bufferStride * i + 25] = 0;
+						
+					}
+					
+				}
+				
+			}
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			
 		}
 		

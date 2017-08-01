@@ -17,6 +17,7 @@ import openfl.geom.Matrix;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.filters.BitmapFilter)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 
 
@@ -49,16 +50,34 @@ class GLShape {
 				
 				var shader = renderSession.filterManager.pushObject (shape);
 				
+				//var shader = renderSession.shaderManager.initShader (shape.shader);
+				renderSession.shaderManager.setShader (shader);
+				
 				shader.data.uImage0.input = graphics.__bitmap;
 				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
 				
-				renderSession.shaderManager.setShader (shader);
+				var useColorTransform = !shape.__worldColorTransform.__isDefault ();
+				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+				shader.data.uColorTransform.value[0] = useColorTransform;
 				
-				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha));
-				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+				renderSession.shaderManager.updateShader (shader);
+				
+				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha, shape.__worldColorTransform));
+				
+				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+				
+				if (true || useColorTransform) {
+					
+					gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+					gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 1, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 10 * Float32Array.BYTES_PER_ELEMENT);
+					gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 2, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 14 * Float32Array.BYTES_PER_ELEMENT);
+					gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 3, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 18 * Float32Array.BYTES_PER_ELEMENT);
+					gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 22 * Float32Array.BYTES_PER_ELEMENT);
+					
+				}
 				
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				

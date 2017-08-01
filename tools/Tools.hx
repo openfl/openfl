@@ -50,6 +50,8 @@ import sys.FileSystem;
 class Tools {
 	
 	
+	private static inline var SWFLITE_DATA_SUFFIX = #if force_dat_suffix ".dat" #else ".bin" #end;
+	
 	private static var filePrefix:String;
 	private static var targetDirectory:String;
 	private static var targetFlags:Map<String, String>;
@@ -288,15 +290,15 @@ class Tools {
 				var template = new Template (templateData);
 				var targetPath;
 				
-				if (project.target == IOS) {
+				// if (project.target == IOS) {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
+				// 	targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
 					
-				} else {
+				// } else {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe/_generated";
+					targetPath = "../haxe/_generated";
 					
-				}
+				// }
 				
 				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (className.split (".").join ("/"))) + "/" + prefix + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
@@ -659,8 +661,40 @@ class Tools {
 			}
 			
 		}
+
+		createdDirectory = false;
+		for (id in exporter.sounds.keys ()) {
+
+			if (!createdDirectory) {
+
+				PathHelper.mkdir (PathHelper.combine (targetPath, "sounds"));
+				createdDirectory = true;
+
+			}
+
+			var symbolClassName = exporter.soundSymbolClassNames.get (id);
+			var typeId = exporter.soundTypes.get (id);
+			
+			LogHelper.info ("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
+			
+			var type;
+			switch (typeId) {
+				case SoundType.MP3: type = "mp3";
+				case SoundType.ADPCM: type = "adpcm";
+				case _:
+					throw "unsupported sound type "+id+", type "+ typeId +", symbol class name "+ symbolClassName;
+			};
+			var path = "sounds/"+ symbolClassName + "." + type;
+			var assetData = exporter.sounds.get (id);
+
+			File.saveBytes (PathHelper.combine (targetPath, path), assetData);
+
+			// NOTICE: everything must be .mp3 in its final form, even though we write out various formats to disk
+			var soundAsset = new Asset ("", "sounds/"+ symbolClassName + ".mp3", AssetType.SOUND);
+			project.assets.push (soundAsset);
+		}
 		
-		var swfLiteAsset = new Asset ("", "swflite.dat", AssetType.TEXT);
+		var swfLiteAsset = new Asset ("", "swflite" + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 		var swfLiteAssetData = swfLite.serialize ();
 		project.assets.push (swfLiteAsset);
 		
@@ -670,7 +704,7 @@ class Tools {
 		
 		var data = AssetHelper.createManifest (project);
 		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-		data.libraryArgs = [ "swflite.dat" ];
+		data.libraryArgs = [ "swflite" + SWFLITE_DATA_SUFFIX ];
 		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
 		
 		File.saveContent (PathHelper.combine (targetPath, "library.json"), data.serialize ());
@@ -759,7 +793,7 @@ class Tools {
 					
 					output.assets.push (asset);
 					
-					if (library.generate) {
+					if (true || library.generate) {
 						
 						var generatedClasses = generateSWFClasses (project, output, swf, library.prefix);
 						
@@ -795,7 +829,7 @@ class Tools {
 					if (targetDirectory != null) {
 						
 						cacheDirectory = targetDirectory + "/obj/libraries/" + library.name;
-						var cacheFile = cacheDirectory + "/" + library.name + ".dat";
+						var cacheFile = cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX;
 						
 						if (FileSystem.exists (cacheFile)) {
 							
@@ -833,7 +867,7 @@ class Tools {
 							
 						}
 						
-						var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+						var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX, "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 						
 						if (library.embed != null) {
 							
@@ -960,12 +994,12 @@ class Tools {
 							
 						//}
 						
-						var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+						var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 						var swfLiteAssetData = swfLite.serialize ();
 						
 						if (cacheDirectory != null) {
 							
-							swfLiteAsset.sourcePath = cacheDirectory + "/" + library.name + ".dat";
+							swfLiteAsset.sourcePath = cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX;
 							File.saveContent (swfLiteAsset.sourcePath, swfLiteAssetData);
 							
 						} else {
@@ -1006,7 +1040,7 @@ class Tools {
 					
 					var data = AssetHelper.createManifest (merge);
 					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".dat" ];
+					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX ];
 					data.name = library.name;
 					
 					for (asset in merge.assets) {

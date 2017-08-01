@@ -1007,7 +1007,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__deltaTime = 0;
 			__update (false, true);
 			
-			if (__renderer != null /*&& __renderDirty*/) {
+			if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
 				
 				if (!Stage3D.__active) {
 					
@@ -1458,7 +1458,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		for (target in stack) {
 			
-			if (__rollOutStack.indexOf (target) == -1) {
+			if (__rollOutStack.indexOf (target) == -1 && __mouseOverTarget != null) {
 				
 				if (target.hasEventListener (MouseEvent.ROLL_OVER)) {
 					

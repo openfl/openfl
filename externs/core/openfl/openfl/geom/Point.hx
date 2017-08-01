@@ -3,25 +3,25 @@ package openfl.geom; #if (display || !flash)
 
 /**
  * The Point object represents a location in a two-dimensional coordinate
- * system, where <i>x</i> represents the horizontal axis and <i>y</i>
+ * system, where _x_ represents the horizontal axis and _y_
  * represents the vertical axis.
  *
- * <p>The following code creates a point at(0,0):</p>
+ * The following code creates a point at(0,0):
  *
- * <p>Methods and properties of the following classes use Point objects:</p>
+ * Methods and properties of the following classes use Point objects:
  *
- * <ul>
- *   <li>BitmapData</li>
- *   <li>DisplayObject</li>
- *   <li>DisplayObjectContainer</li>
- *   <li>DisplacementMapFilter</li>
- *   <li>NativeWindow</li>
- *   <li>Matrix</li>
- *   <li>Rectangle</li>
- * </ul>
+ * 
+ *  * BitmapData
+ *  * DisplayObject
+ *  * DisplayObjectContainer
+ *  * DisplacementMapFilter
+ *  * NativeWindow
+ *  * Matrix
+ *  * Rectangle
+ * 
  *
- * <p>You can use the <code>new Point()</code> constructor to create a Point
- * object.</p>
+ * You can use the `new Point()` constructor to create a Point
+ * object.
  */
 extern class Point {
 	
@@ -74,7 +74,7 @@ extern class Point {
 	
 	
 	/**
-	 * Returns the distance between <code>pt1</code> and <code>pt2</code>.
+	 * Returns the distance between `pt1` and `pt2`.
 	 * 
 	 * @param pt1 The first point.
 	 * @param pt2 The second point.
@@ -85,32 +85,32 @@ extern class Point {
 	
 	/**
 	 * Determines whether two points are equal. Two points are equal if they have
-	 * the same <i>x</i> and <i>y</i> values.
+	 * the same _x_ and _y_ values.
 	 * 
 	 * @param toCompare The point to be compared.
-	 * @return A value of <code>true</code> if the object is equal to this Point
-	 *         object; <code>false</code> if it is not equal.
+	 * @return A value of `true` if the object is equal to this Point
+	 *         object; `false` if it is not equal.
 	 */
 	public function equals (toCompare:Point):Bool;
 	
 	
 	/**
 	 * Determines a point between two specified points. The parameter
-	 * <code>f</code> determines where the new interpolated point is located
-	 * relative to the two end points specified by parameters <code>pt1</code>
-	 * and <code>pt2</code>. The closer the value of the parameter <code>f</code>
-	 * is to <code>1.0</code>, the closer the interpolated point is to the first
-	 * point(parameter <code>pt1</code>). The closer the value of the parameter
-	 * <code>f</code> is to 0, the closer the interpolated point is to the second
-	 * point(parameter <code>pt2</code>).
+	 * `f` determines where the new interpolated point is located
+	 * relative to the two end points specified by parameters `pt1`
+	 * and `pt2`. The closer the value of the parameter `f`
+	 * is to `1.0`, the closer the interpolated point is to the first
+	 * point(parameter `pt1`). The closer the value of the parameter
+	 * `f` is to 0, the closer the interpolated point is to the second
+	 * point(parameter `pt2`).
 	 * 
 	 * @param pt1 The first point.
 	 * @param pt2 The second point.
 	 * @param f   The level of interpolation between the two points. Indicates
 	 *            where the new point will be, along the line between
-	 *            <code>pt1</code> and <code>pt2</code>. If <code>f</code>=1,
-	 *            <code>pt1</code> is returned; if <code>f</code>=0,
-	 *            <code>pt2</code> is returned.
+	 *            `pt1` and `pt2`. If `f`=1,
+	 *            `pt1` is returned; if `f`=0,
+	 *            `pt2` is returned.
 	 * @return The new, interpolated point.
 	 */
 	public static function interpolate (pt1:Point, pt2:Point, f:Float):Point;
@@ -130,13 +130,13 @@ extern class Point {
 	
 	/**
 	 * Offsets the Point object by the specified amount. The value of
-	 * <code>dx</code> is added to the original value of <i>x</i> to create the
-	 * new <i>x</i> value. The value of <code>dy</code> is added to the original
-	 * value of <i>y</i> to create the new <i>y</i> value.
+	 * `dx` is added to the original value of _x_ to create the
+	 * new _x_ value. The value of `dy` is added to the original
+	 * value of _y_ to create the new _y_ value.
 	 * 
 	 * @param dx The amount by which to offset the horizontal coordinate,
-	 *           <i>x</i>.
-	 * @param dy The amount by which to offset the vertical coordinate, <i>y</i>.
+	 *           _x_.
+	 * @param dy The amount by which to offset the vertical coordinate, _y_.
 	 */
 	public function offset (dx:Float, dy:Float):Void;
 	
@@ -166,10 +166,10 @@ extern class Point {
 	
 	
 	/**
-	 * Returns a string that contains the values of the <i>x</i> and <i>y</i>
-	 * coordinates. The string has the form <code>"(x=<i>x</i>,
-	 * y=<i>y</i>)"</code>, so calling the <code>toString()</code> method for a
-	 * point at 23,17 would return <code>"(x=23, y=17)"</code>.
+	 * Returns a string that contains the values of the _x_ and _y_
+	 * coordinates. The string has the form `"(x=_x_,
+	 * y=_y_)"`, so calling the `toString()` method for a
+	 * point at 23,17 would return `"(x=23, y=17)"`.
 	 * 
 	 * @return The string representation of the coordinates.
 	 */

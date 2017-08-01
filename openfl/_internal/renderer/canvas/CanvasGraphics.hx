@@ -945,9 +945,9 @@ class CanvasGraphics {
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 				
-				var devicePixelRatio = untyped window.devicePixelRatio || 1;
-				var scaledWidth = Std.int (width * devicePixelRatio);
-				var scaledHeight = Std.int (height * devicePixelRatio);
+				var scale = CanvasRenderer.scale;
+				var scaledWidth = Std.int (width * scale);
+				var scaledHeight = Std.int (height * scale);
 				
 				#if dom
 				
@@ -965,7 +965,7 @@ class CanvasGraphics {
 				}
 				
 				var transform = graphics.__renderTransform;
-				context.setTransform (transform.a * devicePixelRatio, transform.b * devicePixelRatio, transform.c * devicePixelRatio, transform.d * devicePixelRatio, transform.tx * devicePixelRatio, transform.ty * devicePixelRatio);
+				context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
 				
 				#else
 				

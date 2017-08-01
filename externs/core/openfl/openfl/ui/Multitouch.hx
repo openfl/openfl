@@ -21,26 +21,26 @@ import openfl.Vector;
  * gesture events. The API for handling user interaction with these gesture
  * events includes the following classes:
  *
- * <p>
- * <ul>
- *   <li>flash.events.TouchEvent</li>
- *   <li>flash.events.GestureEvent</li>
- *   <li>flash.events.GesturePhase</li>
- *   <li>flash.events.TransformGestureEvent</li>
- *   <li>flash.events.PressAndTapGestureEvent</li>
- * </ul>
- * </p>
+ * 
+ * 
+ *  * flash.events.TouchEvent
+ *  * flash.events.GestureEvent
+ *  * flash.events.GesturePhase
+ *  * flash.events.TransformGestureEvent
+ *  * flash.events.PressAndTapGestureEvent
+ * 
+ * 
  *
- * <p>Use the listed classes to write code that handles touch events. Use the
+ * Use the listed classes to write code that handles touch events. Use the
  * Multitouch class to determine the current environment's support for touch
  * interaction, and to manage the support of touch interaction if the current
- * environment supports touch input.</p>
+ * environment supports touch input.
  *
- * <p>You cannot create a Multitouch object directly from ActionScript code.
- * If you call <code>new Multitouch()</code>, an exception is thrown.</p>
+ * You cannot create a Multitouch object directly from ActionScript code.
+ * If you call `new Multitouch()`, an exception is thrown.
  *
- * <p><b>Note:</b> The Multitouch feature is not supported for SWF files
- * embedded in HTML running on Mac OS.</p>
+ * **Note:** The Multitouch feature is not supported for SWF files
+ * embedded in HTML running on Mac OS.
  */
 @:final extern class Multitouch {
 	
@@ -72,20 +72,20 @@ import openfl.Vector;
 	 * types supported in the current environment. The array of strings can be
 	 * used as event types to register event listeners. Possible values are
 	 * constants from the GestureEvent, PressAndTapGestureEvent, and
-	 * TransformGestureEvent classes(such as <code>GESTURE_PAN</code>).
+	 * TransformGestureEvent classes(such as `GESTURE_PAN`).
 	 *
-	 * <p>If the Flash runtime is in an environment that does not support any
-	 * multi-touch gestures, the value is <code>null</code>.</p>
+	 * If the Flash runtime is in an environment that does not support any
+	 * multi-touch gestures, the value is `null`.
 	 *
-	 * <p><b>Note:</b> For Mac OS 10.5.3 and later,
-	 * <code>Multitouch.supportedGestures</code> returns non-null values
+	 * **Note:** For Mac OS 10.5.3 and later,
+	 * `Multitouch.supportedGestures` returns non-null values
 	 * (possibly indicating incorrectly that gesture events are supported) even
-	 * if the current hardware does not support gesture input.</p>
+	 * if the current hardware does not support gesture input.
 	 *
-	 * <p>Use this property to test for multi-touch gesture support. Then, use
+	 * Use this property to test for multi-touch gesture support. Then, use
 	 * event handlers for the available multi-touch gestures. For those gestures
 	 * that are not supported in the current evironment, you'll need to create
-	 * alternative event handling.</p>
+	 * alternative event handling.
 	 */
 	public static var supportedGestures (default, null):Vector<String>;
 	
@@ -95,10 +95,10 @@ import openfl.Vector;
 	 * the TransformGestureEvent, PressAndTapGestureEvent, and GestureEvent
 	 * classes.
 	 *
-	 * <p><b>Note:</b> For Mac OS 10.5.3 and later, this value is always
-	 * <code>true</code>. <code>Multitouch.supportsGestureEvent</code> returns
-	 * <code>true</code> even if the hardware does not support gesture
-	 * events.</p>
+	 * **Note:** For Mac OS 10.5.3 and later, this value is always
+	 * `true`. `Multitouch.supportsGestureEvent` returns
+	 * `true` even if the hardware does not support gesture
+	 * events.
 	 */
 	public static var supportsGestureEvents (default, null):Bool;
 	

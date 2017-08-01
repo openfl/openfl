@@ -11,12 +11,15 @@ package openfl._internal.timeline;
 	
 	
 	public var label:String;
-	public var objects:Array <FrameObject>;
+	public var objects:Array<FrameObject>;
+	public var script:Dynamic;
+	public var scriptSource:String;
+	//public var scriptType:FrameScriptType;
 	
 	
 	public function new () {
 		
-		objects = new Array <FrameObject> ();
+		
 		
 	}
 	

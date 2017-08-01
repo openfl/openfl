@@ -21,55 +21,55 @@ import openfl.geom.Rectangle;
 /**
  * The Stage class represents the main drawing area.
  *
- * <p>For SWF content running in the browser(in Flash<sup>®</sup> Player),
+ * For SWF content running in the browser(in Flash<sup>®</sup> Player),
  * the Stage represents the entire area where Flash content is shown. For
  * content running in AIR on desktop operating systems, each NativeWindow
- * object has a corresponding Stage object.</p>
+ * object has a corresponding Stage object.
  *
- * <p>The Stage object is not globally accessible. You need to access it
- * through the <code>stage</code> property of a DisplayObject instance.</p>
+ * The Stage object is not globally accessible. You need to access it
+ * through the `stage` property of a DisplayObject instance.
  *
- * <p>The Stage class has several ancestor classes  -  DisplayObjectContainer,
+ * The Stage class has several ancestor classes  -  DisplayObjectContainer,
  * InteractiveObject, DisplayObject, and EventDispatcher  -  from which it
  * inherits properties and methods. Many of these properties and methods are
  * either inapplicable to Stage objects, or require security checks when
  * called on a Stage object. The properties and methods that require security
- * checks are documented as part of the Stage class.</p>
+ * checks are documented as part of the Stage class.
  *
- * <p>In addition, the following inherited properties are inapplicable to
+ * In addition, the following inherited properties are inapplicable to
  * Stage objects. If you try to set them, an IllegalOperationError is thrown.
  * These properties may always be read, but since they cannot be set, they
- * will always contain default values.</p>
+ * will always contain default values.
  *
- * <ul>
- *   <li><code>accessibilityProperties</code></li>
- *   <li><code>alpha</code></li>
- *   <li><code>blendMode</code></li>
- *   <li><code>cacheAsBitmap</code></li>
- *   <li><code>contextMenu</code></li>
- *   <li><code>filters</code></li>
- *   <li><code>focusRect</code></li>
- *   <li><code>loaderInfo</code></li>
- *   <li><code>mask</code></li>
- *   <li><code>mouseEnabled</code></li>
- *   <li><code>name</code></li>
- *   <li><code>opaqueBackground</code></li>
- *   <li><code>rotation</code></li>
- *   <li><code>scale9Grid</code></li>
- *   <li><code>scaleX</code></li>
- *   <li><code>scaleY</code></li>
- *   <li><code>scrollRect</code></li>
- *   <li><code>tabEnabled</code></li>
- *   <li><code>tabIndex</code></li>
- *   <li><code>transform</code></li>
- *   <li><code>visible</code></li>
- *   <li><code>x</code></li>
- *   <li><code>y</code></li>
- * </ul>
+ * 
+ *  * `accessibilityProperties`
+ *  * `alpha`
+ *  * `blendMode`
+ *  * `cacheAsBitmap`
+ *  * `contextMenu`
+ *  * `filters`
+ *  * `focusRect`
+ *  * `loaderInfo`
+ *  * `mask`
+ *  * `mouseEnabled`
+ *  * `name`
+ *  * `opaqueBackground`
+ *  * `rotation`
+ *  * `scale9Grid`
+ *  * `scaleX`
+ *  * `scaleY`
+ *  * `scrollRect`
+ *  * `tabEnabled`
+ *  * `tabIndex`
+ *  * `transform`
+ *  * `visible`
+ *  * `x`
+ *  * `y`
+ * 
  *
- * <p>Some events that you might expect to be a part of the Stage class, such
- * as <code>enterFrame</code>, <code>exitFrame</code>,
- * <code>frameConstructed</code>, and <code>render</code>, cannot be Stage
+ * Some events that you might expect to be a part of the Stage class, such
+ * as `enterFrame`, `exitFrame`,
+ * `frameConstructed`, and `render`, cannot be Stage
  * events because a reference to the Stage object cannot be guaranteed to
  * exist in every situation where these events are used. Because these events
  * cannot be dispatched by the Stage object, they are instead dispatched by
@@ -77,14 +77,14 @@ import openfl.geom.Rectangle;
  * listener to any DisplayObject instance to listen for these events. These
  * events, which are part of the DisplayObject class, are called broadcast
  * events to differentiate them from events that target a specific
- * DisplayObject instance. Two other broadcast events, <code>activate</code>
- * and <code>deactivate</code>, belong to DisplayObject's superclass,
- * EventDispatcher. The <code>activate</code> and <code>deactivate</code>
+ * DisplayObject instance. Two other broadcast events, `activate`
+ * and `deactivate`, belong to DisplayObject's superclass,
+ * EventDispatcher. The `activate` and `deactivate`
  * events behave similarly to the DisplayObject broadcast events, except that
  * these two events are dispatched not only by all DisplayObject instances,
  * but also by all EventDispatcher instances and instances of other
  * EventDispatcher subclasses. For more information on broadcast events, see
- * the DisplayObject class.</p>
+ * the DisplayObject class.
  * 
  * @event fullScreen             Dispatched when the Stage object enters, or
  *                               leaves, full-screen mode. A change in
@@ -99,37 +99,37 @@ import openfl.geom.Rectangle;
  * @event orientationChange      Dispatched by the Stage object when the stage
  *                               orientation changes.
  *
- *                               <p>Orientation changes can occur when the
+ *                               Orientation changes can occur when the
  *                               user rotates the device, opens a slide-out
  *                               keyboard, or when the
- *                               <code>setAspectRatio()</code> is called.</p>
+ *                               `setAspectRatio()` is called.
  *
- *                               <p><b>Note:</b> If the
- *                               <code>autoOrients</code> property is
- *                               <code>false</code>, then the stage
+ *                               **Note:** If the
+ *                               `autoOrients` property is
+ *                               `false`, then the stage
  *                               orientation does not change when a device is
  *                               rotated. Thus, StageOrientationEvents are
  *                               only dispatched for device rotation when
- *                               <code>autoOrients</code> is
- *                               <code>true</code>.</p>
+ *                               `autoOrients` is
+ *                               `true`.
  * @event orientationChanging    Dispatched by the Stage object when the stage
  *                               orientation begins changing.
  *
- *                               <p><b>Important:</b> orientationChanging
+ *                               **Important:** orientationChanging
  *                               events are not dispatched on Android
- *                               devices.</p>
+ *                               devices.
  *
- *                               <p><b>Note:</b> If the
- *                               <code>autoOrients</code> property is
- *                               <code>false</code>, then the stage
+ *                               **Note:** If the
+ *                               `autoOrients` property is
+ *                               `false`, then the stage
  *                               orientation does not change when a device is
  *                               rotated. Thus, StageOrientationEvents are
  *                               only dispatched for device rotation when
- *                               <code>autoOrients</code> is
- *                               <code>true</code>.</p>
- * @event resize                 Dispatched when the <code>scaleMode</code>
+ *                               `autoOrients` is
+ *                               `true`.
+ * @event resize                 Dispatched when the `scaleMode`
  *                               property of the Stage object is set to
- *                               <code>StageScaleMode.NO_SCALE</code> and the
+ *                               `StageScaleMode.NO_SCALE` and the
  *                               SWF file is resized.
  * @event stageVideoAvailability Dispatched by the Stage object when the state
  *                               of the stageVideos property changes.
@@ -141,13 +141,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 * A value from the StageAlign class that specifies the alignment of the
 	 * stage in Flash Player or the browser. The following are valid values:
 	 *
-	 * <p>The <code>align</code> property is only available to an object that is
+	 * The `align` property is only available to an object that is
 	 * in the same security sandbox as the Stage owner(the main SWF file). To
 	 * avoid this, the Stage owner can grant permission to the domain of the
-	 * calling object by calling the <code>Security.allowDomain()</code> method
-	 * or the <code>Security.alowInsecureDomain()</code> method. For more
-	 * information, see the "Security" chapter in the <i>ActionScript 3.0
-	 * Developer's Guide</i>.</p>
+	 * calling object by calling the `Security.allowDomain()` method
+	 * or the `Security.alowInsecureDomain()` method. For more
+	 * information, see the "Security" chapter in the _ActionScript 3.0
+	 * Developer's Guide_.
 	 */
 	public var align:StageAlign;
 	
@@ -191,41 +191,41 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	/**
 	 * A value from the StageDisplayState class that specifies which display
 	 * state to use. The following are valid values:
-	 * <ul>
-	 *   <li><code>StageDisplayState.FULL_SCREEN</code> Sets AIR application or
+	 * 
+	 *  * `StageDisplayState.FULL_SCREEN` Sets AIR application or
 	 * Flash runtime to expand the stage over the user's entire screen, with
-	 * keyboard input disabled.</li>
-	 *   <li><code>StageDisplayState.FULL_SCREEN_INTERACTIVE</code> Sets the AIR
+	 * keyboard input disabled.
+	 *  * `StageDisplayState.FULL_SCREEN_INTERACTIVE` Sets the AIR
 	 * application to expand the stage over the user's entire screen, with
 	 * keyboard input allowed.(Not available for content running in Flash
-	 * Player.)</li>
-	 *   <li><code>StageDisplayState.NORMAL</code> Sets the Flash runtime back to
-	 * the standard stage display mode.</li>
-	 * </ul>
+	 * Player.)
+	 *  * `StageDisplayState.NORMAL` Sets the Flash runtime back to
+	 * the standard stage display mode.
+	 * 
 	 *
-	 * <p>The scaling behavior of the movie in full-screen mode is determined by
-	 * the <code>scaleMode</code> setting(set using the
-	 * <code>Stage.scaleMode</code> property or the SWF file's <code>embed</code>
-	 * tag settings in the HTML file). If the <code>scaleMode</code> property is
-	 * set to <code>noScale</code> while the application transitions to
-	 * full-screen mode, the Stage <code>width</code> and <code>height</code>
-	 * properties are updated, and the Stage dispatches a <code>resize</code>
+	 * The scaling behavior of the movie in full-screen mode is determined by
+	 * the `scaleMode` setting(set using the
+	 * `Stage.scaleMode` property or the SWF file's `embed`
+	 * tag settings in the HTML file). If the `scaleMode` property is
+	 * set to `noScale` while the application transitions to
+	 * full-screen mode, the Stage `width` and `height`
+	 * properties are updated, and the Stage dispatches a `resize`
 	 * event. If any other scale mode is set, the stage and its contents are
 	 * scaled to fill the new screen dimensions. The Stage object retains its
-	 * original <code>width</code> and <code>height</code> values and does not
-	 * dispatch a <code>resize</code> event.</p>
+	 * original `width` and `height` values and does not
+	 * dispatch a `resize` event.
 	 *
-	 * <p>The following restrictions apply to SWF files that play within an HTML
+	 * The following restrictions apply to SWF files that play within an HTML
 	 * page(not those using the stand-alone Flash Player or not running in the
-	 * AIR runtime):</p>
+	 * AIR runtime):
 	 *
-	 * <ul>
-	 *   <li>To enable full-screen mode, add the <code>allowFullScreen</code>
-	 * parameter to the <code>object</code> and <code>embed</code> tags in the
-	 * HTML page that includes the SWF file, with <code>allowFullScreen</code>
-	 * set to <code>"true"</code>, as shown in the following example: </li>
-	 *   <li>Full-screen mode is initiated in response to a mouse click or key
-	 * press by the user; the movie cannot change <code>Stage.displayState</code>
+	 * 
+	 *  * To enable full-screen mode, add the `allowFullScreen`
+	 * parameter to the `object` and `embed` tags in the
+	 * HTML page that includes the SWF file, with `allowFullScreen`
+	 * set to `"true"`, as shown in the following example: 
+	 *  * Full-screen mode is initiated in response to a mouse click or key
+	 * press by the user; the movie cannot change `Stage.displayState`
 	 * without user input. Flash runtimes restrict keyboard input in full-screen
 	 * mode. Acceptable keys include keyboard shortcuts that terminate
 	 * full-screen mode and non-printing keys such as arrows, space, Shift, and
@@ -233,52 +233,52 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 * (Windows, Linux, and Mac), Control+W(Windows), Command+W(Mac), and
 	 * Alt+F4.
 	 *
-	 * <p>A Flash runtime dialog box appears over the movie when users enter
+	 * A Flash runtime dialog box appears over the movie when users enter
 	 * full-screen mode to inform the users they are in full-screen mode and that
-	 * they can press the Escape key to end full-screen mode.</p>
-	 * </li>
-	 *   <li>Starting with Flash Player 9.0.115.0, full-screen works the same in
-	 * windowless mode as it does in window mode. If you set the Window Mode
-	 * (<code>wmode</code> in the HTML) to Opaque Windowless
-	 * (<code>opaque</code>) or Transparent Windowless
-	 * (<code>transparent</code>), full-screen can be initiated, but the
-	 * full-screen window will always be opaque.</li>
-	 * </ul>
-	 *
-	 * <p>These restrictions are <i>not</i> present for SWF content running in
-	 * the stand-alone Flash Player or in AIR. AIR supports an interactive
-	 * full-screen mode which allows keyboard input.</p>
-	 *
-	 * <p>For AIR content running in full-screen mode, the system screen saver
-	 * and power saving options are disabled while video content is playing and
-	 * until either the video stops or full-screen mode is exited.</p>
-	 *
-	 * <p>On Linux, setting <code>displayState</code> to
-	 * <code>StageDisplayState.FULL_SCREEN</code> or
-	 * <code>StageDisplayState.FULL_SCREEN_INTERACTIVE</code> is an asynchronous
-	 * operation.</p>
+	 * they can press the Escape key to end full-screen mode.
 	 * 
-	 * @throws SecurityError Calling the <code>displayState</code> property of a
+	 *  * Starting with Flash Player 9.0.115.0, full-screen works the same in
+	 * windowless mode as it does in window mode. If you set the Window Mode
+	 * (`wmode` in the HTML) to Opaque Windowless
+	 * (`opaque`) or Transparent Windowless
+	 * (`transparent`), full-screen can be initiated, but the
+	 * full-screen window will always be opaque.
+	 * 
+	 *
+	 * These restrictions are _not_ present for SWF content running in
+	 * the stand-alone Flash Player or in AIR. AIR supports an interactive
+	 * full-screen mode which allows keyboard input.
+	 *
+	 * For AIR content running in full-screen mode, the system screen saver
+	 * and power saving options are disabled while video content is playing and
+	 * until either the video stops or full-screen mode is exited.
+	 *
+	 * On Linux, setting `displayState` to
+	 * `StageDisplayState.FULL_SCREEN` or
+	 * `StageDisplayState.FULL_SCREEN_INTERACTIVE` is an asynchronous
+	 * operation.
+	 * 
+	 * @throws SecurityError Calling the `displayState` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
 	 *                       owner(the main SWF file). To avoid this, the Stage
 	 *                       owner can grant permission to the domain of the
 	 *                       caller by calling the
-	 *                       <code>Security.allowDomain()</code> method or the
-	 *                       <code>Security.allowInsecureDomain()</code> method.
+	 *                       `Security.allowDomain()` method or the
+	 *                       `Security.allowInsecureDomain()` method.
 	 *                       For more information, see the "Security" chapter in
-	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
-	 *                       Trying to set the <code>displayState</code> property
+	 *                       the _ActionScript 3.0 Developer's Guide_.
+	 *                       Trying to set the `displayState` property
 	 *                       while the settings dialog is displayed, without a
-	 *                       user response, or if the <code>param</code> or
-	 *                       <code>embed</code> HTML tag's
-	 *                       <code>allowFullScreen</code> attribute is not set to
-	 *                       <code>true</code> throws a security error.
+	 *                       user response, or if the `param` or
+	 *                       `embed` HTML tag's
+	 *                       `allowFullScreen` attribute is not set to
+	 *                       `true` throws a security error.
 	 */
 	public var displayState (get, set):StageDisplayState;
 	
 	/**
-	 * The interactive object with keyboard focus; or <code>null</code> if focus
+	 * The interactive object with keyboard focus; or `null` if focus
 	 * is not set or if the focused object belongs to a security sandbox to which
 	 * the calling object does not have access.
 	 * 
@@ -292,27 +292,27 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 * first SWF file loaded. Valid range for the frame rate is from 0.01 to 1000
 	 * frames per second.
 	 *
-	 * <p><b>Note:</b> An application might not be able to follow high frame rate
+	 * **Note:** An application might not be able to follow high frame rate
 	 * settings, either because the target platform is not fast enough or the
 	 * player is synchronized to the vertical blank timing of the display device
 	 * (usually 60 Hz on LCD devices). In some cases, a target platform might
 	 * also choose to lower the maximum frame rate if it anticipates high CPU
-	 * usage.</p>
+	 * usage.
 	 *
-	 * <p>For content running in Adobe AIR, setting the <code>frameRate</code>
+	 * For content running in Adobe AIR, setting the `frameRate`
 	 * property of one Stage object changes the frame rate for all Stage objects
-	 * (used by different NativeWindow objects). </p>
+	 * (used by different NativeWindow objects). 
 	 * 
-	 * @throws SecurityError Calling the <code>frameRate</code> property of a
+	 * @throws SecurityError Calling the `frameRate` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
 	 *                       owner(the main SWF file). To avoid this, the Stage
 	 *                       owner can grant permission to the domain of the
 	 *                       caller by calling the
-	 *                       <code>Security.allowDomain()</code> method or the
-	 *                       <code>Security.allowInsecureDomain()</code> method.
+	 *                       `Security.allowDomain()` method or the
+	 *                       `Security.allowInsecureDomain()` method.
 	 *                       For more information, see the "Security" chapter in
-	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
+	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var frameRate (get, set):Float;
 	
@@ -331,91 +331,91 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	/**
 	 * A value from the StageQuality class that specifies which rendering quality
 	 * is used. The following are valid values:
-	 * <ul>
-	 *   <li><code>StageQuality.LOW</code> - Low rendering quality. Graphics are
+	 * 
+	 *  * `StageQuality.LOW` - Low rendering quality. Graphics are
 	 * not anti-aliased, and bitmaps are not smoothed, but runtimes still use
-	 * mip-mapping.</li>
-	 *   <li><code>StageQuality.MEDIUM</code> - Medium rendering quality.
+	 * mip-mapping.
+	 *  * `StageQuality.MEDIUM` - Medium rendering quality.
 	 * Graphics are anti-aliased using a 2 x 2 pixel grid, bitmap smoothing is
-	 * dependent on the <code>Bitmap.smoothing</code> setting. Runtimes use
+	 * dependent on the `Bitmap.smoothing` setting. Runtimes use
 	 * mip-mapping. This setting is suitable for movies that do not contain
-	 * text.</li>
-	 *   <li><code>StageQuality.HIGH</code> - High rendering quality. Graphics
+	 * text.
+	 *  * `StageQuality.HIGH` - High rendering quality. Graphics
 	 * are anti-aliased using a 4 x 4 pixel grid, and bitmap smoothing is
-	 * dependent on the <code>Bitmap.smoothing</code> setting. Runtimes use
+	 * dependent on the `Bitmap.smoothing` setting. Runtimes use
 	 * mip-mapping. This is the default rendering quality setting that Flash
-	 * Player uses.</li>
-	 *   <li><code>StageQuality.BEST</code> - Very high rendering quality.
+	 * Player uses.
+	 *  * `StageQuality.BEST` - Very high rendering quality.
 	 * Graphics are anti-aliased using a 4 x 4 pixel grid. If
-	 * <code>Bitmap.smoothing</code> is <code>true</code> the runtime uses a high
+	 * `Bitmap.smoothing` is `true` the runtime uses a high
 	 * quality downscale algorithm that produces fewer artifacts(however, using
-	 * <code>StageQuality.BEST</code> with <code>Bitmap.smoothing</code> set to
-	 * <code>true</code> slows performance significantly and is not a recommended
-	 * setting).</li>
-	 * </ul>
+	 * `StageQuality.BEST` with `Bitmap.smoothing` set to
+	 * `true` slows performance significantly and is not a recommended
+	 * setting).
+	 * 
 	 *
-	 * <p>Higher quality settings produce better rendering of scaled bitmaps.
+	 * Higher quality settings produce better rendering of scaled bitmaps.
 	 * However, higher quality settings are computationally more expensive. In
 	 * particular, when rendering scaled video, using higher quality settings can
-	 * reduce the frame rate. </p>
+	 * reduce the frame rate. 
 	 *
-	 * <p>In the desktop profile of Adobe AIR, <code>quality</code> can be set to
-	 * <code>StageQuality.BEST</code> or <code>StageQuality.HIGH</code>(and the
-	 * default value is <code>StageQuality.HIGH</code>). Attempting to set it to
+	 * In the desktop profile of Adobe AIR, `quality` can be set to
+	 * `StageQuality.BEST` or `StageQuality.HIGH`(and the
+	 * default value is `StageQuality.HIGH`). Attempting to set it to
 	 * another value has no effect(and the property remains unchanged). In the
 	 * moble profile of AIR, all four quality settings are available. The default
-	 * value on mobile devices is <code>StageQuality.MEDIUM</code>.</p>
+	 * value on mobile devices is `StageQuality.MEDIUM`.
 	 *
-	 * <p>For content running in Adobe AIR, setting the <code>quality</code>
+	 * For content running in Adobe AIR, setting the `quality`
 	 * property of one Stage object changes the rendering quality for all Stage
-	 * objects(used by different NativeWindow objects). </p>
-	 * <b><i>Note:</i></b> The operating system draws the device fonts, which are
-	 * therefore unaffected by the <code>quality</code> property.
+	 * objects(used by different NativeWindow objects). 
+	 * **_Note:_** The operating system draws the device fonts, which are
+	 * therefore unaffected by the `quality` property.
 	 * 
-	 * @throws SecurityError Calling the <code>quality</code> property of a Stage
+	 * @throws SecurityError Calling the `quality` property of a Stage
 	 *                       object throws an exception for any caller that is
 	 *                       not in the same security sandbox as the Stage owner
 	 *                      (the main SWF file). To avoid this, the Stage owner
 	 *                       can grant permission to the domain of the caller by
-	 *                       calling the <code>Security.allowDomain()</code>
+	 *                       calling the `Security.allowDomain()`
 	 *                       method or the
-	 *                       <code>Security.allowInsecureDomain()</code> method.
+	 *                       `Security.allowInsecureDomain()` method.
 	 *                       For more information, see the "Security" chapter in
-	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
+	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var quality:StageQuality;
 	
 	/**
 	 * A value from the StageScaleMode class that specifies which scale mode to
 	 * use. The following are valid values:
-	 * <ul>
-	 *   <li><code>StageScaleMode.EXACT_FIT</code> - The entire application is
+	 * 
+	 *  * `StageScaleMode.EXACT_FIT` - The entire application is
 	 * visible in the specified area without trying to preserve the original
 	 * aspect ratio. Distortion can occur, and the application may appear
-	 * stretched or compressed. </li>
-	 *   <li><code>StageScaleMode.SHOW_ALL</code> - The entire application is
+	 * stretched or compressed. 
+	 *  * `StageScaleMode.SHOW_ALL` - The entire application is
 	 * visible in the specified area without distortion while maintaining the
 	 * original aspect ratio of the application. Borders can appear on two sides
-	 * of the application. </li>
-	 *   <li><code>StageScaleMode.NO_BORDER</code> - The entire application fills
+	 * of the application. 
+	 *  * `StageScaleMode.NO_BORDER` - The entire application fills
 	 * the specified area, without distortion but possibly with some cropping,
-	 * while maintaining the original aspect ratio of the application. </li>
-	 *   <li><code>StageScaleMode.NO_SCALE</code> - The entire application is
+	 * while maintaining the original aspect ratio of the application. 
+	 *  * `StageScaleMode.NO_SCALE` - The entire application is
 	 * fixed, so that it remains unchanged even as the size of the player window
 	 * changes. Cropping might occur if the player window is smaller than the
-	 * content. </li>
-	 * </ul>
+	 * content. 
 	 * 
-	 * @throws SecurityError Calling the <code>scaleMode</code> property of a
+	 * 
+	 * @throws SecurityError Calling the `scaleMode` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
 	 *                       owner(the main SWF file). To avoid this, the Stage
 	 *                       owner can grant permission to the domain of the
 	 *                       caller by calling the
-	 *                       <code>Security.allowDomain()</code> method or the
-	 *                       <code>Security.allowInsecureDomain()</code> method.
+	 *                       `Security.allowDomain()` method or the
+	 *                       `Security.allowInsecureDomain()` method.
 	 *                       For more information, see the "Security" chapter in
-	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
+	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var scaleMode:StageScaleMode;
 	
@@ -431,59 +431,59 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 * Specifies whether or not objects display a glowing border when they have
 	 * focus.
 	 * 
-	 * @throws SecurityError Calling the <code>stageFocusRect</code> property of
+	 * @throws SecurityError Calling the `stageFocusRect` property of
 	 *                       a Stage object throws an exception for any caller
 	 *                       that is not in the same security sandbox as the
 	 *                       Stage owner(the main SWF file). To avoid this, the
 	 *                       Stage owner can grant permission to the domain of
 	 *                       the caller by calling the
-	 *                       <code>Security.allowDomain()</code> method or the
-	 *                       <code>Security.allowInsecureDomain()</code> method.
+	 *                       `Security.allowDomain()` method or the
+	 *                       `Security.allowInsecureDomain()` method.
 	 *                       For more information, see the "Security" chapter in
-	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
+	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var stageFocusRect:Bool;
 	
 	/**
 	 * The current height, in pixels, of the Stage.
 	 *
-	 * <p>If the value of the <code>Stage.scaleMode</code> property is set to
-	 * <code>StageScaleMode.NO_SCALE</code> when the user resizes the window, the
-	 * Stage content maintains its size while the <code>stageHeight</code>
+	 * If the value of the `Stage.scaleMode` property is set to
+	 * `StageScaleMode.NO_SCALE` when the user resizes the window, the
+	 * Stage content maintains its size while the `stageHeight`
 	 * property changes to reflect the new height size of the screen area
 	 * occupied by the SWF file.(In the other scale modes, the
-	 * <code>stageHeight</code> property always reflects the original height of
-	 * the SWF file.) You can add an event listener for the <code>resize</code>
-	 * event and then use the <code>stageHeight</code> property of the Stage
+	 * `stageHeight` property always reflects the original height of
+	 * the SWF file.) You can add an event listener for the `resize`
+	 * event and then use the `stageHeight` property of the Stage
 	 * class to determine the actual pixel dimension of the resized Flash runtime
 	 * window. The event listener allows you to control how the screen content
-	 * adjusts when the user resizes the window.</p>
+	 * adjusts when the user resizes the window.
 	 *
-	 * <p>Air for TV devices have slightly different behavior than desktop
-	 * devices when you set the <code>stageHeight</code> property. If the
-	 * <code>Stage.scaleMode</code> property is set to
-	 * <code>StageScaleMode.NO_SCALE</code> and you set the
-	 * <code>stageHeight</code> property, the stage height does not change until
-	 * the next frame of the SWF.</p>
+	 * Air for TV devices have slightly different behavior than desktop
+	 * devices when you set the `stageHeight` property. If the
+	 * `Stage.scaleMode` property is set to
+	 * `StageScaleMode.NO_SCALE` and you set the
+	 * `stageHeight` property, the stage height does not change until
+	 * the next frame of the SWF.
 	 *
-	 * <p><b>Note:</b> In an HTML page hosting the SWF file, both the
-	 * <code>object</code> and <code>embed</code> tags' <code>height</code>
-	 * attributes must be set to a percentage(such as <code>100%</code>), not
+	 * **Note:** In an HTML page hosting the SWF file, both the
+	 * `object` and `embed` tags' `height`
+	 * attributes must be set to a percentage(such as `100%`), not
 	 * pixels. If the settings are generated by JavaScript code, the
-	 * <code>height</code> parameter of the <code>AC_FL_RunContent() </code>
+	 * `height` parameter of the `AC_FL_RunContent() `
 	 * method must be set to a percentage, too. This percentage is applied to the
-	 * <code>stageHeight</code> value.</p>
+	 * `stageHeight` value.
 	 * 
-	 * @throws SecurityError Calling the <code>stageHeight</code> property of a
+	 * @throws SecurityError Calling the `stageHeight` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
 	 *                       owner(the main SWF file). To avoid this, the Stage
 	 *                       owner can grant permission to the domain of the
 	 *                       caller by calling the
-	 *                       <code>Security.allowDomain()</code> method or the
-	 *                       <code>Security.allowInsecureDomain()</code> method.
+	 *                       `Security.allowDomain()` method or the
+	 *                       `Security.allowInsecureDomain()` method.
 	 *                       For more information, see the "Security" chapter in
-	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
+	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var stageHeight (default, null):Int;
 	
@@ -494,43 +494,43 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	/**
 	 * Specifies the current width, in pixels, of the Stage.
 	 *
-	 * <p>If the value of the <code>Stage.scaleMode</code> property is set to
-	 * <code>StageScaleMode.NO_SCALE</code> when the user resizes the window, the
-	 * Stage content maintains its defined size while the <code>stageWidth</code>
+	 * If the value of the `Stage.scaleMode` property is set to
+	 * `StageScaleMode.NO_SCALE` when the user resizes the window, the
+	 * Stage content maintains its defined size while the `stageWidth`
 	 * property changes to reflect the new width size of the screen area occupied
-	 * by the SWF file.(In the other scale modes, the <code>stageWidth</code>
+	 * by the SWF file.(In the other scale modes, the `stageWidth`
 	 * property always reflects the original width of the SWF file.) You can add
-	 * an event listener for the <code>resize</code> event and then use the
-	 * <code>stageWidth</code> property of the Stage class to determine the
+	 * an event listener for the `resize` event and then use the
+	 * `stageWidth` property of the Stage class to determine the
 	 * actual pixel dimension of the resized Flash runtime window. The event
 	 * listener allows you to control how the screen content adjusts when the
-	 * user resizes the window.</p>
+	 * user resizes the window.
 	 *
-	 * <p>Air for TV devices have slightly different behavior than desktop
-	 * devices when you set the <code>stageWidth</code> property. If the
-	 * <code>Stage.scaleMode</code> property is set to
-	 * <code>StageScaleMode.NO_SCALE</code> and you set the
-	 * <code>stageWidth</code> property, the stage width does not change until
-	 * the next frame of the SWF.</p>
+	 * Air for TV devices have slightly different behavior than desktop
+	 * devices when you set the `stageWidth` property. If the
+	 * `Stage.scaleMode` property is set to
+	 * `StageScaleMode.NO_SCALE` and you set the
+	 * `stageWidth` property, the stage width does not change until
+	 * the next frame of the SWF.
 	 *
-	 * <p><b>Note:</b> In an HTML page hosting the SWF file, both the
-	 * <code>object</code> and <code>embed</code> tags' <code>width</code>
-	 * attributes must be set to a percentage(such as <code>100%</code>), not
+	 * **Note:** In an HTML page hosting the SWF file, both the
+	 * `object` and `embed` tags' `width`
+	 * attributes must be set to a percentage(such as `100%`), not
 	 * pixels. If the settings are generated by JavaScript code, the
-	 * <code>width</code> parameter of the <code>AC_FL_RunContent() </code>
+	 * `width` parameter of the `AC_FL_RunContent() `
 	 * method must be set to a percentage, too. This percentage is applied to the
-	 * <code>stageWidth</code> value.</p>
+	 * `stageWidth` value.
 	 * 
-	 * @throws SecurityError Calling the <code>stageWidth</code> property of a
+	 * @throws SecurityError Calling the `stageWidth` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
 	 *                       owner(the main SWF file). To avoid this, the Stage
 	 *                       owner can grant permission to the domain of the
 	 *                       caller by calling the
-	 *                       <code>Security.allowDomain()</code> method or the
-	 *                       <code>Security.allowInsecureDomain()</code> method.
+	 *                       `Security.allowDomain()` method or the
+	 *                       `Security.allowInsecureDomain()` method.
 	 *                       For more information, see the "Security" chapter in
-	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
+	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var stageWidth (default, null):Int;
 	
@@ -547,25 +547,25 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	/**
-	 * Calling the <code>invalidate()</code> method signals Flash runtimes to
+	 * Calling the `invalidate()` method signals Flash runtimes to
 	 * alert display objects on the next opportunity it has to render the display
 	 * list(for example, when the playhead advances to a new frame). After you
-	 * call the <code>invalidate()</code> method, when the display list is next
-	 * rendered, the Flash runtime sends a <code>render</code> event to each
-	 * display object that has registered to listen for the <code>render</code>
-	 * event. You must call the <code>invalidate()</code> method each time you
-	 * want the Flash runtime to send <code>render</code> events.
+	 * call the `invalidate()` method, when the display list is next
+	 * rendered, the Flash runtime sends a `render` event to each
+	 * display object that has registered to listen for the `render`
+	 * event. You must call the `invalidate()` method each time you
+	 * want the Flash runtime to send `render` events.
 	 *
-	 * <p>The <code>render</code> event gives you an opportunity to make changes
+	 * The `render` event gives you an opportunity to make changes
 	 * to the display list immediately before it is actually rendered. This lets
 	 * you defer updates to the display list until the latest opportunity. This
-	 * can increase performance by eliminating unnecessary screen updates.</p>
+	 * can increase performance by eliminating unnecessary screen updates.
 	 *
-	 * <p>The <code>render</code> event is dispatched only to display objects
+	 * The `render` event is dispatched only to display objects
 	 * that are in the same security domain as the code that calls the
-	 * <code>stage.invalidate()</code> method, or to display objects from a
+	 * `stage.invalidate()` method, or to display objects from a
 	 * security domain that has been granted permission via the
-	 * <code>Security.allowDomain()</code> method.</p>
+	 * `Security.allowDomain()` method.
 	 * 
 	 */
 	public function invalidate ():Void;
