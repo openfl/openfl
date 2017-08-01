@@ -1,6 +1,7 @@
 package openfl.filters;
 
 
+import lime.graphics.utils.ImageDataUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
@@ -34,6 +35,8 @@ import openfl.geom.Rectangle;
 		this.blurY = blurY;
 		this.quality = quality;
 		
+		__filterRequiresCopy = true;
+		
 	}
 	
 	
@@ -44,11 +47,11 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
+	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
-		// TODO: Fix support for multiple passes
-		
-		bitmapData.image.gaussianBlur (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, 1);
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality);
+		if (finalImage == bitmapData.image) return bitmapData;
+		return sourceBitmapData;
 		
 	}
 	
@@ -90,7 +93,7 @@ import openfl.geom.Rectangle;
 		horizontalPasses = (blurX <= 0) ? 0 : Math.round (blurX * (value / 4)) + 1;
 		verticalPasses = (blurY <= 0) ? 0 : Math.round (blurY * (value / 4)) + 1;
 		
-		__numPasses = horizontalPasses + verticalPasses;
+		__numShaderPasses = horizontalPasses + verticalPasses;
 		
 		return quality = value;
 		

@@ -13,12 +13,14 @@ class BitmapFilter {
 	
 	
 	private var __cacheObject:Bool;
-	private var __numPasses:Int;
+	private var __filterRequiresCopy:Bool;
+	private var __numShaderPasses:Int;
 	
 	
 	public function new () {
 		
-		__numPasses = 0;
+		__filterRequiresCopy = true;
+		__numShaderPasses = 0;
 		
 	}
 	
@@ -30,9 +32,9 @@ class BitmapFilter {
 	}
 	
 	
-	private function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
+	private function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
-		
+		return bitmapData;
 		
 	}
 	
