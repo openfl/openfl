@@ -946,7 +946,7 @@ class SWFLiteExporter {
 						if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
 							LogHelper.info ("", "frame script #"+ frameNumOneIndexed);
-              var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
+							var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
 							var js = "";
 							var prop:MultiName = null;
 							var stack:Array<Dynamic> = new Array();
@@ -1019,7 +1019,7 @@ class SWFLiteExporter {
 											break;
 										}
 
-                    var instance = Std.string(stack.pop());
+										var instance = Std.string(stack.pop());
 
 										if (instance != "this" && !instance.startsWith("this."))
 										{
@@ -1032,7 +1032,7 @@ class SWFLiteExporter {
 										stack.push("\"" + str + "\"");
 									case OInt(i):
 										stack.push(i);
-                    					LogHelper.info ("", "int: " + i);
+										LogHelper.info ("", "int: " + i);
 									case OIntRef(nameIndex):
 										stack.push(data.abcData.getIntByIndex(nameIndex));
 									case OSmallInt(i):
