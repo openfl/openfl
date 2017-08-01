@@ -1037,7 +1037,7 @@ class SWFLiteExporter {
 										stack.push(data.abcData.getIntByIndex(nameIndex));
 									case OSmallInt(i):
 										stack.push(i);
-                    					LogHelper.info ("", "smallint: " + i);
+										LogHelper.info ("", "smallint: " + i);
 									case OFloat(nameIndex):
 										stack.push(data.abcData.getFloatByIndex(nameIndex));
 									case OCallPropVoid(nameIndex, argCount):
@@ -1207,7 +1207,7 @@ class SWFLiteExporter {
 												indentationLevel += 1;
 												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
 											case _:
-                        						LogHelper.info ("", "OJump" + j + delta);
+												LogHelper.info ("", "OJump" + j + delta);
 										}
 
 										LogHelper.info("", Std.string(closingBrackets));
