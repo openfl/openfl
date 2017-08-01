@@ -71,20 +71,13 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public function addTile (tile:Tile):Tile {
 		
 		__tiles[numTiles] = tile;
+		tile.parent = this;
 		numTiles++;
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 		return tile;
-		
-	}
-	
-	
-	public function addTiles (tiles:Array<Tile>):Array<Tile> {
-		
-		for (tile in tiles) {
-			addTile (tile);
-		}
-		
-		return tiles;
 		
 	}
 	
@@ -100,10 +93,26 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 		__tiles.insertAt (index, tile);
+		tile.parent = this;
 		__tileArrayDirty = true;
 		numTiles++;
 		
+		#if !flash
+		__setRenderDirty ();
+		#end
+		
 		return tile;
+		
+	}
+	
+	
+	public function addTiles (tiles:Array<Tile>):Array<Tile> {
+		
+		for (tile in tiles) {
+			addTile (tile);
+		}
+		
+		return tiles;
 		
 	}
 	
@@ -169,6 +178,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			
 			if (__tiles[i] == tile) {
 				__tiles[i] = null;
+				tile.parent = null;
 			}
 			
 		}
@@ -178,6 +188,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (cacheLength < __tiles.length) {
 			numTiles--;
 		}
+		
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 		return tile;
 		
@@ -200,9 +214,16 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (beginIndex < 0) beginIndex = 0;
 		if (endIndex > __tiles.length - 1) endIndex = __tiles.length - 1;
 		
-		__tiles.splice (beginIndex, endIndex - beginIndex + 1);
+		var removed = __tiles.splice (beginIndex, endIndex - beginIndex + 1);
+		for (tile in removed) {
+			tile.parent = null;
+		}
 		__tileArrayDirty = true;
 		numTiles = __tiles.length;
+		
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 	}
 	
@@ -214,6 +235,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileArray.__bufferDirty = true;
 		__tileArrayDirty = false;
 		__tiles.length = 0;
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 	}
 	
@@ -284,6 +308,15 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		#if dom
 		super.__renderDOM (renderSession);
 		DOMTilemap.render (this, renderSession);
+		#end
+		
+	}
+	
+	
+	private override function __renderDOMClear (renderSession:RenderSession):Void {
+		
+		#if dom
+		DOMTilemap.clear (this, renderSession);
 		#end
 		
 	}

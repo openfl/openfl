@@ -193,7 +193,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		
-		filter.__applyFilter (sourceBitmapData, this, sourceRect, destPoint);
+		filter.__applyFilter (this, sourceBitmapData, sourceRect, destPoint);
 		
 	}
 	
@@ -922,13 +922,19 @@ class BitmapData implements IBitmapDrawable {
 					
 				}
 				
+				__bufferAlpha = alpha;
+				
 			}
 			
 			if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
 				
 				if (colorTransform != null) {
 					
-					__bufferColorTransform = colorTransform.__clone ();
+					if (__bufferColorTransform == null) {
+						__bufferColorTransform = colorTransform.__clone ();
+					} else {
+						__bufferColorTransform.__copyFrom (colorTransform);
+					}
 					
 					for (i in 0...4) {
 						

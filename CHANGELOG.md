@@ -1,3 +1,37 @@
+6.0.0 (07/31/2017)
+------------------
+
+* Removed `openfl.gl` typedefs (use `lime.graphics.opengl`)
+* Removed TypedArray typedefs (use types from `lime.utils.*`)
+* Added (beta) custom shader support for most basic `DisplayObject` types
+* Added (beta) `TileArray` API for `Tilemap` rendering
+* Added support for OpenGL hardware `colorTransform`
+* Added initial support for JS/HScript frame scripts with SWF content
+* Added initial sound exporting to SWF content bundles
+* Added blend mode support for canvas, Cairo, and improved GL support
+* Added support for skipping rendering if the stage has not changed
+* Added support for `Tilemap` OpenGL `colorTransform` and custom shaders
+* Made `openfl.utils.ByteArray` use Lime `System.endianness` by default
+* Changed the output directory to not include the build type by default
+* Improved the quality of `MovieClip` animation rendering
+* Improved SWF content to support `visible`, `blendMode` and `cacheAsBitmap`
+* Improved documentation to be in Markdown format instead of HTML
+* Improved SWF font name matching if font name has no spaces
+* Improved support for SWF custom base classes
+* Improved support for WebAssembly builds
+* Fixed support for `cacheAsBitmap` on HTML5 -Ddom rendering
+* Fixed use of `bitmapData.draw` on high-DPI HTML5 -Ddom rendering
+* Fixed an issue with some kinds of UTF8 text input
+* Fixed sorting of event listeners to preserve order if priority is equal
+* Fixed rendering of `SimpleButton` on HTML5 -Ddom mode
+* Fixed use of insecure WebSocket protocol on https:// sites
+* Fixed unknown file extension in generated SWF content with some servers
+* Fixed rendering of `stage3D.x`/`stage3D.y` when using a scissor
+* Fixed caret not rendering on Cairo when `textField.text` is empty
+* Fixed rendering issue on Chrome when resizing canvas in -Ddom mode
+* Fixed compilation in JavaScript -Dmodular builds
+
+
 5.1.5 (06/21/2017)
 ------------------
 

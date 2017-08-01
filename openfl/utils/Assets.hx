@@ -18,24 +18,6 @@ import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.text.Font;
 
-
-/**
- * The Assets class provides a cross-platform interface to access 
- * embedded images, fonts, sounds and other resource files.
- * 
- * The contents are populated automatically when an application
- * is compiled using the OpenFL command-line tools, based on the
- * contents of the *.xml project file.
- * 
- * For most platforms, the assets are included in the same directory
- * or package as the application, and the paths are handled
- * automatically. For web content, the assets are preloaded before
- * the start of the rest of the application. You can customize the 
- * preloader by extending the `NMEPreloader` class,
- * and specifying a custom preloader using <window preloader="" />
- * in the project file.
- */
-
 @:access(openfl.display.BitmapData)
 @:access(openfl.text.Font)
 @:access(openfl.utils.AssetLibrary)
@@ -70,12 +52,7 @@ class Assets {
 		
 	}
 	
-	/**
-	 * Returns whether a specific asset exists
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	type	The asset type to match, or null to match any type
-	 * @return		Whether the requested asset ID and type exists
-	 */
+	
 	public static function exists (id:String, type:AssetType = null):Bool {
 		
 		return LimeAssets.exists (id, cast type);
@@ -83,13 +60,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets an instance of an embedded bitmap
-	 * @usage		var bitmap = new Bitmap (Assets.getBitmapData ("image.png"));
-	 * @param	id		The ID or asset path for the bitmap
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @return		A new BitmapData object
-	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
 		#if (tools && !display)
@@ -133,12 +103,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets an instance of an embedded binary asset
-	 * @usage		var bytes = Assets.getBytes ("file.zip");
-	 * @param	id		The ID or asset path for the asset
-	 * @return		A new ByteArray object
-	 */
 	public static function getBytes (id:String):ByteArray {
 		
 		return LimeAssets.getBytes (id);
@@ -146,13 +110,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets an instance of an embedded font
-	 * @usage		var fontName = Assets.getFont ("font.ttf").fontName;
-	 * @param	id		The ID or asset path for the font
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @return		A new Font object
-	 */
 	public static function getFont (id:String, useCache:Bool = true):Font {
 		
 		#if (tools && !display && !macro)
@@ -197,12 +154,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets an instance of an included MovieClip
-	 * @usage		var movieClip = Assets.getMovieClip ("library:BouncingBall");
-	 * @param	id		The ID for the MovieClip
-	 * @return		A new MovieClip object
-	 */
 	public static function getMovieClip (id:String):MovieClip {
 		
 		#if (tools && !display)
@@ -260,13 +211,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets an instance of an embedded streaming sound
-	 * @usage		var sound = Assets.getMusic ("sound.ogg");
-	 * @param	id		The ID or asset path for the audio stream
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @return		A new Sound object
-	 */
 	public static function getMusic (id:String, useCache:Bool = true):Sound {
 		
 		// TODO: Streaming sound
@@ -276,12 +220,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets the file path (if available) for an asset
-	 * @usage		var path = Assets.getPath ("file.txt");
-	 * @param	id		The ID or asset path for the asset
-	 * @return		The path to the asset, or null if it does not exist
-	 */
 	public static function getPath (id:String):String {
 		
 		return LimeAssets.getPath (id);
@@ -289,13 +227,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets an instance of an embedded sound
-	 * @usage		var sound = Assets.getSound ("sound.wav");
-	 * @param	id		The ID or asset path for the sound
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @return		A new Sound object
-	 */
 	public static function getSound (id:String, useCache:Bool = true):Sound {
 		
 		#if (tools && !display)
@@ -339,12 +270,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Gets an instance of an embedded text asset
-	 * @usage		var text = Assets.getText ("text.txt");
-	 * @param	id		The ID or asset path for the asset
-	 * @return		A new String object
-	 */
 	public static function getText (id:String):String {
 		
 		return LimeAssets.getText (id);
@@ -366,13 +291,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Returns whether an asset is "local", and therefore can be loaded synchronously
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	type	The asset type to match, or null to match any type
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @return	Whether the asset is local
-	 */
 	public static function isLocal (id:String, type:AssetType = null, useCache:Bool = true):Bool {
 		
 		#if (tools && !display)
@@ -462,11 +380,6 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Returns a list of all embedded assets (by type)
-	 * @param	type	The asset type to match, or null to match any type
-	 * @return	An array of asset ID values
-	 */
 	public static function list (type:AssetType = null):Array<String> {
 		
 		return LimeAssets.list (cast type);
@@ -474,28 +387,11 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Loads an included bitmap asset asynchronously
-	 * @usage	Assets.loadBitmapData ("image.png").onComplete (handleImage);
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<BitmapData>
-	 */
-	public static function loadBitmapData (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:BitmapData->Void = null #end):Future<BitmapData> {
+	public static function loadBitmapData (id:String, useCache:Null<Bool> = true):Future<BitmapData> {
 		
 		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<BitmapData> ();
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			promise.future.onComplete (handler);
-			promise.future.onError (function (_) handler (null));
-			
-		}
-		#end
 		
 		#if (tools && !display)
 		
@@ -545,27 +441,10 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Loads an included byte asset asynchronously
-	 * @usage	Assets.loadBytes ("file.zip").onComplete (handleBytes);
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<ByteArray>
-	 */
-	public static function loadBytes (id:String #if (openfl < "6.0.0"), handler:ByteArray->Void = null #end):Future<ByteArray> {
+	public static function loadBytes (id:String):Future<ByteArray> {
 		
 		var promise = new Promise<ByteArray> ();
 		var future = LimeAssets.loadBytes (id);
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			promise.future.onComplete (handler);
-			promise.future.onError (function (_) handler (null));
-			
-		}
-		#end
 		
 		future.onComplete (function (bytes) promise.complete (bytes));
 		future.onProgress (function (progress, total) promise.progress (progress, total));
@@ -576,28 +455,11 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Loads an included font asset asynchronously
-	 * @usage	Assets.loadFont ("font.ttf").onComplete (handleFont);
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<Font>
-	 */
-	public static function loadFont (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:Font->Void = null #end):Future<Font> {
+	public static function loadFont (id:String, useCache:Null<Bool> = true):Future<Font> {
 		
 		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<Font> ();
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			promise.future.onComplete (handler);
-			promise.future.onError (function (_) handler (null));
-			
-		}
-		#end
 		
 		#if (tools && !display && !macro)
 		
@@ -633,54 +495,21 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Load an included AssetLibrary
-	 * @param	name		The name of the AssetLibrary to load
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<AssetLibrary>
-	 */
-	public static function loadLibrary (name:String #if (openfl < "6.0.0"), handler:LimeAssetLibrary->Void = null #end):Future<LimeAssetLibrary> {
+	public static function loadLibrary (name:String):Future<LimeAssetLibrary> {
 		
 		var future = LimeAssets.loadLibrary (name);
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			future.onComplete (handler);
-			future.onError (function (_) handler (null));
-			
-		}
-		#end
-		
 		return future;
 		
 	}
 	
 	
-	/**
-	 * Loads an included music asset asynchronously
-	 * @usage	Assets.loadMusic ("music.ogg").onComplete (handleMusic);
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<Sound>
-	 */
-	public static function loadMusic (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:Sound->Void = null #end):Future<Sound> {
+	public static function loadMusic (id:String, useCache:Null<Bool> = true):Future<Sound> {
 		
 		if (useCache == null) useCache = true;
 		
 		#if !html5
 		
 		var promise = new Promise<Sound> ();
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			promise.future.onComplete (handler);
-			promise.future.onError (function (_) handler (null));
-			
-		}
-		#end
 		
 		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
@@ -712,16 +541,6 @@ class Assets {
 		#else
 		
 		var future = new Future<Sound> (function () return getMusic (id, useCache));
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			future.onComplete (handler);
-			future.onError (function (_) handler (null));
-			
-		}
-		#end
-		
 		return future;
 		
 		#end
@@ -729,26 +548,9 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Loads an included MovieClip asset asynchronously
-	 * @usage	Assets.loadMovieClip ("library:BouncingBall").onComplete (handleMovieClip);
-	 * @param	id 		The ID for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<MovieClip>
-	 */
-	public static function loadMovieClip (id:String #if (openfl < "6.0.0"), handler:MovieClip->Void = null #end):Future<MovieClip> {
+	public static function loadMovieClip (id:String):Future<MovieClip> {
 		
 		var promise = new Promise<MovieClip> ();
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			promise.future.onComplete (handler);
-			promise.future.onError (function (_) handler (null));
-			
-		}
-		#end
 		
 		#if (tools && !display)
 		
@@ -786,28 +588,11 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Loads an included sound asset asynchronously
-	 * @usage	Assets.loadSound ("sound.wav").onComplete (handleSound);
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<Sound>
-	 */
-	public static function loadSound (id:String, useCache:Null<Bool> = true #if (openfl < "6.0.0"), handler:Sound->Void = null #end):Future<Sound> {
+	public static function loadSound (id:String, useCache:Null<Bool> = true):Future<Sound> {
 		
 		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<Sound> ();
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			promise.future.onComplete (handler);
-			promise.future.onError (function (_) handler (null));
-			
-		}
-		#end
 		
 		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
@@ -839,27 +624,9 @@ class Assets {
 	}
 	
 	
-	/**
-	 * Loads an included text asset asynchronously
-	 * @usage	Assets.loadText ("text.txt").onComplete (handleString);
-	 * @param	id 		The ID or asset path for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
-	 * @return		Returns a Future<String>
-	 */
-	public static function loadText (id:String #if (openfl < "6.0.0"), handler:String->Void = null #end):Future<String> {
+	public static function loadText (id:String):Future<String> {
 		
 		var future = LimeAssets.loadText (id);
-		
-		#if (openfl < "6.0.0")
-		if (handler != null) {
-			
-			future.onComplete (handler);
-			future.onError (function (_) handler (null));
-			
-		}
-		#end
-		
 		return future;
 		
 	}

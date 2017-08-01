@@ -164,6 +164,15 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __renderDOMClear (renderSession: RenderSession):Void {
+		
+		#if dom
+		DOMBitmap.clear (this, renderSession);
+		#end
+		
+	}
+	
+	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLBitmap.render (this, renderSession);

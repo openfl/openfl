@@ -10,6 +10,7 @@ import openfl.geom.Matrix;
 #end
 
 @:access(openfl.display.TileArray)
+@:access(openfl.display.Tilemap)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 
@@ -24,6 +25,7 @@ class Tile {
 	public var matrix (default, set):Matrix;
 	public var originX (default, set):Float;
 	public var originY (default, set):Float;
+	public var parent (default, null):Tilemap;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
@@ -94,6 +96,19 @@ class Tile {
 		tileArray.position = cachePosition;
 		
 		return tile;
+		
+	}
+	
+	
+	private inline function __setRenderDirty ():Void {
+		
+		#if !flash
+		if (parent != null) {
+			
+			parent.__setRenderDirty ();
+			
+		}
+		#end
 		
 	}
 	
@@ -191,6 +206,7 @@ class Tile {
 	private function set_alpha (value:Float):Float {
 		
 		__alphaDirty = true;
+		__setRenderDirty ();
 		return alpha = value;
 		
 	}
@@ -258,6 +274,7 @@ class Tile {
 		}
 		
 		__colorTransformDirty = true;
+		__setRenderDirty ();
 		return value;
 		
 		#end
@@ -268,6 +285,7 @@ class Tile {
 	private function set_id (value:Int):Int {
 		
 		__sourceDirty = true;
+		__setRenderDirty ();
 		return id = value;
 		
 	}
@@ -279,6 +297,7 @@ class Tile {
 		__scaleX = null;
 		__scaleY = null;
 		__transformDirty = true;
+		__setRenderDirty ();
 		return this.matrix = value;
 		
 	}
@@ -287,6 +306,7 @@ class Tile {
 	private function set_originX (value:Float):Float {
 		
 		__transformDirty = true;
+		__setRenderDirty ();
 		return this.originX = value;
 		
 	}
@@ -295,6 +315,7 @@ class Tile {
 	private function set_originY (value:Float):Float {
 		
 		__transformDirty = true;
+		__setRenderDirty ();
 		return this.originY = value;
 		
 	}
@@ -345,6 +366,7 @@ class Tile {
 			matrix.d = __rotationCosine * __scaleY;
 			
 			__transformDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -397,6 +419,7 @@ class Tile {
 			}
 			
 			__transformDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -449,6 +472,7 @@ class Tile {
 			}
 			
 			__transformDirty = true;
+			__setRenderDirty ();
 			
 		}
 		
@@ -460,6 +484,7 @@ class Tile {
 	private function set_shader (value:Shader):Shader {
 		
 		__shaderDirty = true;
+		__setRenderDirty ();
 		return shader = value;
 		
 	}
@@ -468,6 +493,7 @@ class Tile {
 	private function set_tileset (value:Tileset):Tileset {
 		
 		__sourceDirty = true;
+		__setRenderDirty ();
 		return tileset = value;
 		
 	}
@@ -476,6 +502,7 @@ class Tile {
 	private function set_visible (value:Bool):Bool {
 		
 		__visibleDirty = true;
+		__setRenderDirty ();
 		return visible = value;
 		
 	}
@@ -488,6 +515,15 @@ class Tile {
 	}
 	
 	
+	private function set_x (value:Float):Float {
+		
+		__transformDirty = true;
+		__setRenderDirty ();
+		return matrix.tx = value;
+		
+	}
+	
+	
 	private function get_y ():Float {
 		
 		return matrix.ty;
@@ -495,17 +531,10 @@ class Tile {
 	}
 	
 	
-	private function set_x (value:Float):Float {
-		
-		__transformDirty = true;
-		return matrix.tx = value;
-		
-	}
-	
-	
 	private function set_y (value:Float):Float {
 		
 		__transformDirty = true;
+		__setRenderDirty ();
 		return matrix.ty = value;
 		
 	}

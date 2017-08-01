@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
-	<set name="lime-version" value="5.2.*" />
+	<set name="lime-version" value="5.3.*" />
 	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
@@ -28,7 +28,7 @@
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 5.2.* is required)" if="${lime < 5.2.0} || ${lime >= 5.3.0}" unless="setup || disable-version-check" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 5.3.* is required)" if="${lime < 5.3.0} || ${lime >= 5.4.0}" unless="setup || disable-version-check" />
 		
 	</section>
 	
@@ -42,6 +42,26 @@
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
 	
 	<section unless="custom-backend">
+		
+		<config:ios output-directory="ios" />
+		<config:android output-directory="android" />
+		
+		<section if="${${targetType} == cpp}">
+			<config:windows output-directory="windows" />
+			<config:mac output-directory="macos" />
+			<config:linux output-directory="linux" />
+		</section>
+		
+		<section if="${${targetType} != cpp}">
+			<config:windows output-directory="${targetType}" />
+			<config:mac output-directory="${targetType}" />
+			<config:linux output-directory="${targetType}" />
+		</section>
+		
+		<config:html5 output-directory="html5" />
+		<config:flash output-directory="flash" />
+		<config:emscripten output-directory="emscripten" />
+		<config:tvos output-directory="tvos" />
 		
 		<section if="native">
 			

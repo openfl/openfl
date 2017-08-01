@@ -90,6 +90,15 @@ import js.Browser;
 	
 	
 	#if !flash
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		if (__render != null) __setRenderDirty ();
+		
+	}
+	#end
+	
+	
+	#if !flash
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		/*if (!__added) {
