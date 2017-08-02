@@ -810,6 +810,11 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
+	public override function isRenderable() {
+		return super.isRenderable() && (__graphics != null || (__children != null && __children.length > 0));
+	}
+
+
 	private inline function __pushHitTestLevel (itHasMouseListener:Bool):Void {
 		if (itHasMouseListener) {
 			__mouseListenerBranchDepthStack.push (__branchDepth);
