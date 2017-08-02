@@ -990,7 +990,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__inlineUpdate(transformOnly, updateChildren);
 	}
 
-	public inline function isRenderable() {
+	public function isRenderable() {
 		return (visible && !hasZeroScale() && !__isMask);
 	}
 
