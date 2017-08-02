@@ -25,6 +25,7 @@ class GLMaskManager extends AbstractMaskManager {
 
 	private var maskBitmapTable:UnshrinkableArray<BitmapData>;
 	private var maskMatrixTable:UnshrinkableArray<Matrix>;
+	private var maskCount:Int;
 
 
 	public function new (renderSession:RenderSession) {
@@ -36,6 +37,7 @@ class GLMaskManager extends AbstractMaskManager {
 		clips = [];
 		maskBitmapTable = new UnshrinkableArray<BitmapData> (128);
 		maskMatrixTable = new UnshrinkableArray<Matrix> (128);
+		maskCount = 0;
 
 	}
 
@@ -95,7 +97,7 @@ class GLMaskManager extends AbstractMaskManager {
 			// :TODO: in case of inner mask, detect if any ancestor has been modified since the previous mask has been pushed
 			// in the meantime, let's update inner masks every frame
 
-			if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap || maskBitmapTable.length > 0) {
+			if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap || maskCount > 0) {
 
 				@:privateAccess mask.__visible = true;
 				@:privateAccess mask.__isMask = false;
@@ -122,6 +124,7 @@ class GLMaskManager extends AbstractMaskManager {
             maskMatrix.concat (renderTargetBaseTransform);
             maskMatrix.invert ();
             maskMatrix.scale ( 1.0 / bitmap.width, 1.0 / bitmap.height );
+            ++maskCount;
         }
 
         maskBitmapTable.push(bitmap);
@@ -133,7 +136,11 @@ class GLMaskManager extends AbstractMaskManager {
 
 	public override function popMask () {
 
-		maskBitmapTable.pop();
+		var bitmap = maskBitmapTable.pop();
+
+		if (bitmap != null) {
+			--maskCount;
+		}
 
 		var maskMatrix = maskMatrixTable.pop();
 
