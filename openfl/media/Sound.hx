@@ -29,7 +29,10 @@ class Sound extends EventDispatcher {
 	public var url (default, null):String;
 	
 	private var __buffer:AudioBuffer;
-	
+
+	private var __spriteSrc:SoundSprite = null;
+	private var __spriteTimings:Array<Float> = null;
+	private var __spriteLoop:Bool = null;
 	
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null) {
 		
@@ -47,7 +50,12 @@ class Sound extends EventDispatcher {
 		}
 		
 	}
-	
+
+	public function setSprite(src:SoundSprite, timings:Array<Float>, loop:Bool):Void {
+		__spriteTimings = timings;
+		__spriteLoop = loop;
+		this.__buffer = src.buffer;
+	}
 	
 	public function close ():Void {
 		
