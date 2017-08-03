@@ -154,8 +154,7 @@ class GLTilemap {
 				
 				shader.data.uImage0.input = tileset.bitmapData;
 				renderSession.shaderManager.updateShader (shader);
-				
-				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1 - lastIndex) * 6);
+				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
 			}
 			
