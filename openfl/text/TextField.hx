@@ -1330,8 +1330,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		trace ("hi");
-		
 		#if (js && html5)
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		#elseif lime_cairo
