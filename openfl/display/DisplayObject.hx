@@ -192,6 +192,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		return null;
 	}
 
+	#if(profile && js)
+		public function getProfileId():String {
+			var symbol = getSymbol();
+			var symbolId = "";
+			if(symbol != null) {
+				symbolId = Std.string(symbol.id);
+			}
+			return symbolId + "|" + name + "|" + untyped __js__("this.__class__.name");
+		}
+	#end
+
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 
 		var matrix = Matrix.pool.get();
@@ -637,7 +648,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	#if profile
-		private static var __applyFiltersCountMap:Map<Int, Int> = new Map<Int, Int>();
+		private static var __applyFiltersCountMap:Map<String, Int> = new Map<String, Int>();
 
 		public static function __init__ () {
 
@@ -652,7 +663,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		public static function resetStatistics () {
 
-			__applyFiltersCountMap = new Map<Int, Int> ();
+			__applyFiltersCountMap = new Map<String, Int> ();
 
 		}
 
@@ -662,7 +673,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Symbol id:$id; applyFilters count: ${value}');
+				trace ('${id} => applyFilters x${value}');
 			}
 		}
 	#end
@@ -739,11 +750,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateFilters = false;
 
 			#if(profile && js)
-				if(untyped __js__("this.symbolId"))
-				{
-					var symbolId:Int = untyped __js__("this.symbolId");
-					__applyFiltersCountMap.set(symbolId, (__applyFiltersCountMap.exists(symbolId) ? __applyFiltersCountMap.get(symbolId) + 1 : 1));
-				}
+				var profileId = getProfileId();
+				__applyFiltersCountMap.set(profileId, (__applyFiltersCountMap.exists(profileId) ? __applyFiltersCountMap.get(profileId) + 1 : 1));
 			#end
 		}
 
@@ -1009,19 +1017,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!transformOnly) {
 
-			#if profile
+			#if (profile && js)
 				lime._backend.html5.HTML5Application.__updateCalls++;
-				var key :String = null;
-				if ( Reflect.field(this, "__symbol")) {
-					key = Std.string(Reflect.field(this, "__symbol").id);
-				} else if ( name != "" ) {
-					key = name;
-				}
-				if ( key != null ) {
-					var val = lime._backend.html5.HTML5Application.__updateMap.get(key);
-					val = val != null ? val : 0;
-					lime._backend.html5.HTML5Application.__updateMap.set(key, val + 1);
-				}
+				var key:String = getProfileId();
+				var val = lime._backend.html5.HTML5Application.__updateMap.get(key);
+				val = val != null ? val : 0;
+				lime._backend.html5.HTML5Application.__updateMap.set(key, val + 1);
 			#end
 
 			__updateColor();
