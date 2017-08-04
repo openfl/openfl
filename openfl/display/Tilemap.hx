@@ -177,8 +177,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		for (i in 0...__tiles.length) {
 			
 			if (__tiles[i] == tile) {
-				__tiles[i] = null;
 				tile.parent = null;
+				__tiles.splice (i, 1);
+				break;
 			}
 			
 		}
