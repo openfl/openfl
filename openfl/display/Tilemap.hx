@@ -357,9 +357,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 				__tileArray = new TileArray ();
 			}
 			
-			if (__tileArray.length < numTiles) {
+			//if (__tileArray.length < numTiles) {
 				__tileArray.length = numTiles;
-			}
+			//}
 			
 			var tile:Tile;
 			
