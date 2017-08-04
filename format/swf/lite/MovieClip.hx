@@ -275,8 +275,8 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	#if profile
-		private static var __childrenCreateCount:Map<Int, Int> = new Map<Int, Int>();
-		private static var __createCount:Map<Int, Int> = new Map<Int, Int>();
+		private static var __childrenCreateCount:Map<String, Int> = new Map<String, Int>();
+		private static var __createCount:Map<String, Int> = new Map<String, Int>();
 
 		public static function __init__ () {
 
@@ -291,8 +291,8 @@ class MovieClip extends flash.display.MovieClip {
 
 		public static function resetStatistics () {
 
-			__childrenCreateCount = new Map<Int, Int> ();
-			__createCount = new Map<Int, Int> ();
+			__childrenCreateCount = new Map<String, Int> ();
+			__createCount = new Map<String, Int> ();
 
 		}
 
@@ -303,7 +303,7 @@ class MovieClip extends flash.display.MovieClip {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Symbol id:$id; Created children count: ${value}');
+				trace (' ${id} => created children x${value}');
 			}
 
 			for( id in __createCount.keys () ) {
@@ -311,7 +311,7 @@ class MovieClip extends flash.display.MovieClip {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Symbol id:$id; Created count: ${value}');
+				trace (' ${id} => created x${value}');
 			}
 		}
 	#end
@@ -341,12 +341,6 @@ class MovieClip extends flash.display.MovieClip {
 				if(symbol.pool.size > 0) {
 					return symbol.pool.get();
 				}
-			}
-			else {
-				#if profile
-				__childrenCreateCount.set(this.__symbol.id, (__childrenCreateCount.exists(this.__symbol.id) ? __childrenCreateCount.get(this.__symbol.id) + 1 : 1));
-				__createCount.set(object.symbol, (__createCount.exists(object.symbol) ? __createCount.get(object.symbol) + 1 : 1));
-				#end
 			}
 
 			if(displayObject == null && symbol.className != null)
@@ -417,6 +411,10 @@ class MovieClip extends flash.display.MovieClip {
 
 			}
 
+			#if(profile && js)
+			__childrenCreateCount.set(getProfileId(), (__childrenCreateCount.exists(getProfileId()) ? __childrenCreateCount.get(getProfileId()) + 1 : 1));
+			__createCount.set(displayObject.getProfileId(), (__createCount.exists(displayObject.getProfileId()) ? __createCount.get(displayObject.getProfileId()) + 1 : 1));
+			#end
 		}
 
 		if(__childrenCache != null && !skipChildrenCache) {
