@@ -128,8 +128,8 @@ class TextEngine {
 		
 		this.textField = textField;
 		
-		width = 100;
-		height = 100;
+		width = 5;
+		height = 5;
 		text = "";
 		
 		bounds = new Rectangle (0, 0, 0, 0);
