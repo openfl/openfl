@@ -88,7 +88,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		removeTile (tile);
 		
-		if (cacheLength < __tiles.length) {
+		if (cacheLength > __tiles.length) {
 			index--;
 		}
 		
@@ -186,7 +186,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		__tileArrayDirty = true;
 		
-		if (cacheLength < __tiles.length) {
+		if (cacheLength > __tiles.length) {
 			numTiles--;
 		}
 		
