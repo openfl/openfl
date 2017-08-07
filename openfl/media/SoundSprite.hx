@@ -19,34 +19,32 @@ class SoundSprite {
   public var spritePaths:Array<String>;
   public var children = new Map<String, Array<Dynamic>>();
   public var assetKey:String;
-  
-  private var __dirty:Bool = false;
+
   private var __spriteIndex = new Map<String, Array<Dynamic>>();
 
-	public function new (assetKey:String, spritePaths:Array<String>, spriteIndex:Map<String, Array<Dynamic>>) {
+	public function new (assetKey:String, spritePaths:Array<String>, spriteIndex:Map<String, Dynamic>, ?preload:Bool=false) {
     this.spritePaths = spritePaths;
+    this.buffer = AudioBuffer.makeSprite(spritePaths, spriteIndex, preload);
+    trace('Requesting files associated with this soundsprite...');
+    AudioBuffer.loadFromFiles(spritePaths, this.buffer);
 	}
 
-  public function registerSound(key:String, member:Sound, ?loop:Bool):Void {
-    var timings = [2, 3];
-    this.children.set(key, [member, timings, loop]);
-    __spriteIndex.set(key, [timings[0], timings[1], loop]);
-    member.__buffer = this.buffer;
+  public static function prepSpriteData(spritePart:SoundSpriteInfo):Dynamic {
+    var secToMsStart = spritePart.msStart * 1000;
+    var secToMsEnd = spritePart.msEnd * 1000;
+    return [secToMsStart, (secToMsEnd - secToMsStart)];
+  }
+
+  public function makeSound(spritePart:SoundSpriteInfo):Sound {
+    var key = spritePart.spriteKey;
+    var sound = Sound.fromAudioBuffer(this.buffer);
+    this.children.set(key, [spritePart, sound]);
+    return sound;
   }
 
   public function getIndex():Map<String, Array<Dynamic>> {
     // we may need to jsonify this or something, which is why we use getIndex.
     return __spriteIndex;
   }
-
-	public function makeSprite(?preload:Bool):AudioBuffer {
-		var audioBuffer = new AudioBuffer ();
-		audioBuffer.__srcHowl = new Howl ({
-			src: spritePaths,
-			sprite: this.__spriteIndex,
-			preload: (preload == null ? false : preload)
-		});
-		return audioBuffer;
-	}
 }
 #end
