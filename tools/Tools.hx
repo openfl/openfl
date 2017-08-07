@@ -743,6 +743,8 @@ class Tools {
 				
 			}
 			
+			var libPath = "lib-" + project.target + "/"; 
+			
 			if (type == "swf" || type == "swf_lite" || type == "swflite") {
 				
 				if (project.target == Platform.FLASH || project.target == Platform.AIR) {
@@ -756,8 +758,8 @@ class Tools {
 					
 					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
-					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-					swf.id = "lib/" + library.name + "/" + library.name + ".swf";
+					var swf = new Asset (library.sourcePath, libPath + library.name + "/" + library.name + ".swf", AssetType.BINARY);
+					swf.id = libPath + library.name + "/" + library.name + ".swf";
 					swf.library = library.name;
 					
 					var embed = (library.embed != false);
@@ -779,10 +781,10 @@ class Tools {
 					
 					var data = AssetHelper.createManifest (output, library.name);
 					data.libraryType = "openfl._internal.swf.SWFLibrary";
-					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
+					data.libraryArgs = [ libPath + library.name + "/" + library.name + ".swf" ];
 					data.name = library.name;
 					
-					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.MANIFEST);
+					var asset = new Asset ("", libPath + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
 					asset.library = library.name;
 					asset.data = data.serialize ();
@@ -850,7 +852,7 @@ class Tools {
 							
 							if (Path.extension (file) == "png" || Path.extension (file) == "jpg") {
 								
-								var asset = new Asset (cacheDirectory + "/" + file, "lib/" + library.name + "/" + file, AssetType.IMAGE);
+								var asset = new Asset (cacheDirectory + "/" + file, libPath + library.name + "/" + file, AssetType.IMAGE);
 								
 								if (library.embed != null) {
 									
@@ -921,7 +923,7 @@ class Tools {
 							
 							var type = exporter.bitmapTypes.get (id) == BitmapType.PNG ? "png" : "jpg";
 							var symbol:BitmapSymbol = cast swfLite.symbols.get (id);
-							symbol.path = "lib/" + library.name + "/" + id + "." + type;
+							symbol.path = libPath + library.name + "/" + id + "." + type;
 							swfLite.symbols.set (id, symbol);
 							
 							var asset = new Asset ("", symbol.path, AssetType.IMAGE);
@@ -951,7 +953,7 @@ class Tools {
 							
 							if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
 								
-								symbol.alpha = "lib/" + library.name + "/" + id + "a.png";
+								symbol.alpha = libPath + library.name + "/" + id + "a.png";
 								
 								var asset = new Asset ("", symbol.alpha, AssetType.IMAGE);
 								var assetData = exporter.bitmapAlpha.get (id);
@@ -991,7 +993,7 @@ class Tools {
 							
 						//}
 						
-						var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
+						var swfLiteAsset = new Asset ("", libPath + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 						var swfLiteAssetData = swfLite.serialize ();
 						
 						if (cacheDirectory != null) {
@@ -1037,7 +1039,7 @@ class Tools {
 					
 					var data = AssetHelper.createManifest (merge);
 					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX ];
+					data.libraryArgs = [ libPath + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX ];
 					data.name = library.name;
 					
 					for (asset in merge.assets) {
@@ -1048,7 +1050,7 @@ class Tools {
 					
 					output.merge (merge);
 					
-					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.MANIFEST);
+					var asset = new Asset ("", libPath + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
 					asset.library = library.name;
 					asset.data = data.serialize ();
