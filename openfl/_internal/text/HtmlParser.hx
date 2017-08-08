@@ -8,7 +8,7 @@ class HtmlParser {
     private static var __regexBreakTag = ~/<br\s*\/?>/gi;
     private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
     private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
-    private static var __regexEntities = [ ~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g ];
+    private static var __regexEntities = [ ~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g ];
     private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
     private static var __regexHTMLTag = ~/<.*?>/g;
     private static var __regexHref = ~/href=("([^"]+)"|'([^']+)')/i;
@@ -25,6 +25,7 @@ class HtmlParser {
         value = __regexEntities[0].replace (value, "\"");
         value = __regexEntities[1].replace (value, "'");
         value = __regexEntities[2].replace (value, "&");
+        value = __regexEntities[5].replace (value, " ");
 
         // crude solution
 
