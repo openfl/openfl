@@ -118,6 +118,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	#if dom
 		private var __renderedOnCanvasWhileOnDOM:Bool = false;
 		private var __rawHtmlText:String;
+		private var __forceCachedBitmapUpdate:Bool = false;
 	#end
 
 	
@@ -1360,8 +1361,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
-		
+		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
+		__forceCachedBitmapUpdate = false;
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
 			__renderDOMClear (renderSession);
@@ -1520,7 +1521,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private function __updateText (value:String):Void {
-		
+
+		#if dom
+		if (__renderedOnCanvasWhileOnDOM) {
+			__forceCachedBitmapUpdate = __text != value;
+		}
+		#end
+
 		__text = value;
 		
 		if (__text.length < __caretIndex) {
@@ -2296,6 +2303,10 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				#if !dom
 				__dirty = true;
 				__setRenderDirty ();
+				#else
+				if (__renderedOnCanvasWhileOnDOM) {
+					__forceCachedBitmapUpdate = true;
+				}
 				#end
 				
 			}
@@ -2336,6 +2347,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				__stopCursorTimer ();
 				__startCursorTimer ();
+
+				#if dom
+				if (__renderedOnCanvasWhileOnDOM) {
+					__forceCachedBitmapUpdate = true;
+				}
+				#end
 				
 			}
 			
