@@ -106,9 +106,13 @@ class TextField extends InteractiveObject {
 	private var __htmlText:UTF8String;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
-	
+
 	#if (js && html5)
 	private var __div:DivElement;
+	#end
+	#if dom
+		private var __renderedOnCanvasWhileOnDOM:Bool = false;
+		private var __rawHtmlText:String;
 	#end
 	
 	
@@ -126,7 +130,7 @@ class TextField extends InteractiveObject {
 		__tabEnabled = true;
 		__mouseWheelEnabled = true;
 		__text = "";
-		
+
 		if (__defaultTextFormat == null) {
 			
 			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
@@ -492,7 +496,7 @@ class TextField extends InteractiveObject {
 	
 	
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
-		
+
 		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
 		
 		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
@@ -501,7 +505,7 @@ class TextField extends InteractiveObject {
 		
 		var i = 0;
 		var range;
-		
+
 		while (i < __textEngine.textFormatRanges.length) {
 			
 			range = __textEngine.textFormatRanges[i];
@@ -537,7 +541,7 @@ class TextField extends InteractiveObject {
 				i++;
 				
 			}
-			
+
 		}
 		
 		__dirty = true;
@@ -851,7 +855,21 @@ class TextField extends InteractiveObject {
 		}
 		
 	}
-	
+
+	private function __disableInput ():Void {
+
+		if (__inputEnabled && stage != null) {
+
+			stage.window.enableTextEvents = false;
+			stage.window.onTextInput.remove (window_onTextInput);
+			stage.window.onKeyDown.remove (window_onKeyDown);
+
+			__inputEnabled = false;
+			__stopCursorTimer ();
+
+		}
+
+	}
 	
 	private override function __dispatch (event:Event):Bool {
 		
@@ -885,8 +903,33 @@ class TextField extends InteractiveObject {
 		return super.__dispatch (event);
 		
 	}
-	
-	
+
+	private function __enableInput ():Void {
+
+		if (stage != null) {
+
+			stage.window.enableTextEvents = true;
+
+			if (!__inputEnabled) {
+
+				stage.window.enableTextEvents = true;
+
+				if (!stage.window.onTextInput.has (window_onTextInput)) {
+
+					stage.window.onTextInput.add (window_onTextInput);
+					stage.window.onKeyDown.add (window_onKeyDown);
+
+				}
+
+				__inputEnabled = true;
+				__startCursorTimer ();
+
+			}
+
+		}
+
+	}
+
 	private function __fromSymbol (swf:SWFLite, symbol:DynamicTextSymbol):Void {
 		
 		__symbol = symbol;
@@ -1232,8 +1275,25 @@ class TextField extends InteractiveObject {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		#if (js && html5 && dom)
-		if (__graphics.__canvas == null) {
+		if (!__renderedOnCanvasWhileOnDOM) {
+			__renderedOnCanvasWhileOnDOM = true;
+
+			if (type == TextFieldType.INPUT) {
+
+				replaceText(0, __text.length, __text);
+
+			}
+
+			if (__isHTML) {
+
+				__updateText (HtmlParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
+
+			}
+
 			__dirty = true;
+			__layoutDirty = true;
+			__setRenderDirty ();
+
 		}
 		#end
 
@@ -1283,18 +1343,33 @@ class TextField extends InteractiveObject {
 		__updateCacheBitmap (renderSession);
 
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
+
 			__cleanDOM(renderSession);
 			__cacheBitmap.stage = stage;
 			DOMBitmap.render (__cacheBitmap, renderSession);
 
 		} else {
 
+			if (__renderedOnCanvasWhileOnDOM) {
+
+				__renderedOnCanvasWhileOnDOM = false;
+
+				if (__isHTML && __rawHtmlText != null) {
+
+					__updateText (__rawHtmlText);
+					__dirty = true;
+					__layoutDirty = true;
+					__setRenderDirty ();
+
+				}
+
+			}
+
 			DOMTextField.render (this, renderSession);
 
 		}
-
 		#end
-		
+
 	}
 	
 	
@@ -1329,35 +1404,16 @@ class TextField extends InteractiveObject {
 			__selectionIndex = __caretIndex;
 			
 		}
-		
-		if (stage != null) {
-			
-			#if !dom
-			
-			stage.window.enableTextEvents = true;
-			
-			if (!__inputEnabled) {
-				
-				stage.window.enableTextEvents = true;
-				
-				if (!stage.window.onTextInput.has (window_onTextInput)) {
-					
-					stage.window.onTextInput.add (window_onTextInput);
-					stage.window.onKeyDown.add (window_onKeyDown);
-					
-				}
-				
-				__inputEnabled = true;
-				__startCursorTimer ();
-				
-			}
-			
-			#end
-			
+		var enableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
+
+		if (enableInput) {
+
+			__enableInput ();
+
 		}
-		
+
 	}
-	
+
 	
 	private function __stopCursorTimer ():Void {
 		
@@ -1380,24 +1436,17 @@ class TextField extends InteractiveObject {
 	
 	
 	private function __stopTextInput ():Void {
-		
-		#if !dom
-		
-		if (__inputEnabled && stage != null) {
-			
-			stage.window.enableTextEvents = false;
-			stage.window.onTextInput.remove (window_onTextInput);
-			stage.window.onKeyDown.remove (window_onKeyDown);
-			
-			__inputEnabled = false;
-			__stopCursorTimer ();
-			
+
+		var disableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
+
+		if (disableInput) {
+
+			__disableInput ();
+
 		}
-		
-		#end
-		
+
 	}
-	
+
 	
 	private function __updateLayout ():Void {
 		
@@ -1451,7 +1500,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (!__displayAsPassword #if (js && html5 && dom) || true #end) {
+		if (!__displayAsPassword #if (js && html5 && dom) || !__renderedOnCanvasWhileOnDOM #end) {
 			
 			__textEngine.text = __text;
 			
@@ -1763,7 +1812,7 @@ class TextField extends InteractiveObject {
 		__isHTML = true;
 		
 		#if (js && html5 && dom)
-		var rawHtmlText = value;
+		__rawHtmlText = value;
 		#end
 		
 		if (#if (js && html5) __div == null #else true #end) {
@@ -1773,7 +1822,11 @@ class TextField extends InteractiveObject {
 		}
 		
 		#if (js && html5 && dom)
-		__updateText (rawHtmlText);
+		if (__renderedOnCanvasWhileOnDOM) {
+			__updateText (value);
+		} else {
+			__updateText (__rawHtmlText);
+		}
 		#else
 		__updateText (value);
 		#end
@@ -2032,7 +2085,7 @@ class TextField extends InteractiveObject {
 		}
 		
 		if (__textEngine.textFormatRanges.length > 1) {
-			
+
 			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
 			
 		}
@@ -2206,7 +2259,7 @@ class TextField extends InteractiveObject {
 				__dirty = true;
 				__setRenderDirty ();
 				#end
-				
+
 			}
 			
 		}
@@ -2290,7 +2343,7 @@ class TextField extends InteractiveObject {
 		__dirty = true;
 		__setRenderDirty ();
 		#end
-		
+
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
