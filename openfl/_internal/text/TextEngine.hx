@@ -1117,6 +1117,8 @@ class TextEngine {
 							if (lineFormat.align != JUSTIFY) {
 								
 								layoutGroup.endIndex = spaceIndex;
+								layoutGroup.advances = layoutGroup.advances.concat (advances);
+								layoutGroup.width += widthValue;
 								
 							}
 							
