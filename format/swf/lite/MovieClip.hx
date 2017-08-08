@@ -412,8 +412,10 @@ class MovieClip extends flash.display.MovieClip {
 			}
 
 			#if(profile && js)
-			__childrenCreateCount.set(getProfileId(), (__childrenCreateCount.exists(getProfileId()) ? __childrenCreateCount.get(getProfileId()) + 1 : 1));
-			__createCount.set(displayObject.getProfileId(), (__createCount.exists(displayObject.getProfileId()) ? __createCount.get(displayObject.getProfileId()) + 1 : 1));
+			var profileId = getProfileId();
+			var otherProfileId = displayObject.getProfileId(this);
+			__childrenCreateCount.set(profileId, (__childrenCreateCount.exists(profileId) ? __childrenCreateCount.get(profileId) + 1 : 1));
+			__createCount.set(otherProfileId, (__createCount.exists(otherProfileId) ? __createCount.get(otherProfileId) + 1 : 1));
 			#end
 		}
 

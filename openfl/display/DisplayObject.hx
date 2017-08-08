@@ -193,13 +193,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	#if(profile && js)
-		public function getProfileId():String {
+		public function getProfileId(forcedParent:DisplayObjectContainer = null):String {
 			var symbol = getSymbol();
 			var symbolId = "";
 			if(symbol != null) {
 				symbolId = Std.string(symbol.id);
+			} else {
+				var currentParent = forcedParent != null ? forcedParent : parent;
+				while(currentParent != null) {
+					symbolId += "*";
+				 	var parentSymbol = currentParent.getSymbol();
+					if(parentSymbol != null) {
+						symbolId = Std.string(parentSymbol.id) + symbolId;
+						break;
+					}
+					currentParent = currentParent.parent;
+				}
 			}
-			return symbolId + "|" + name + "|" + untyped __js__("this.__class__.name");
+
+			return symbolId + " | " + name + " | " + untyped __js__("this.__class__.name");
 		}
 	#end
 
