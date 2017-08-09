@@ -128,8 +128,8 @@ class TextEngine {
 		
 		this.textField = textField;
 		
-		width = 4;
-		height = 4;
+		width = 100;
+		height = 100;
 		text = "";
 		
 		bounds = new Rectangle (0, 0, 0, 0);
@@ -1385,6 +1385,8 @@ class TextEngine {
 			maxScrollH = 0;
 			maxScrollV = 1;
 			bottomScrollV = 1;
+			width = 4;
+			height = 4;
 			
 		} else {
 			
