@@ -717,7 +717,7 @@ class TextEngine {
 		var lineIndex = 0;
 		var lineFormat = null;
 		
-		inline function getAdvances (text:String, startIndex:Int, endIndex:Int):Array<Float> {
+		inline function getAdvances (text:UTF8String, startIndex:Int, endIndex:Int):Array<Float> {
 			
 			// TODO: optimize
 			
