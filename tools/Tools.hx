@@ -230,6 +230,7 @@ class Tools {
 			if (templateData != null) {
 				
 				var classProperties = [];
+				var objectReferences = new Map<String, Bool> ();
 				
 				if (Std.is (symbol, SWFTimelineContainer)) {
 					
@@ -270,8 +271,9 @@ class Tools {
 										
 									}
 									
-									if (className != null) {
+									if (className != null && !objectReferences.exists (placeObject.instanceName)) {
 										
+										objectReferences[placeObject.instanceName] = true;
 										classProperties.push ( { name: placeObject.instanceName, type: className } );
 										
 									}
