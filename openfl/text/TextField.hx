@@ -2150,10 +2150,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
+		var utfValue:UTF8String = value;
 		var range = __textEngine.textFormatRanges[0];
 		range.format = __textFormat;
 		range.start = 0;
-		range.end = value.length;
+		range.end = utfValue.length;
 		
 		__isHTML = false;
 		
