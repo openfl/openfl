@@ -1860,17 +1860,30 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__rawHtmlText = value;
 		#end
 		
-		if (#if (js && html5) __div == null #else true #end) {
-			
-			value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
-			
-		}
-		
+		value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
+
 		#if (js && html5 && dom)
+
+		if (__textEngine.textFormatRanges.length > 1) {
+
+			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
+
+		}
+
+		var range = __textEngine.textFormatRanges[0];
+		range.format = __textFormat;
+		range.start = 0;
+
 		if (__renderedOnCanvasWhileOnDOM) {
+
+			range.end = value.length;
 			__updateText (value);
+
 		} else {
+
+			range.end = __rawHtmlText.length;
 			__updateText (__rawHtmlText);
+
 		}
 		#else
 		__updateText (value);
@@ -2011,6 +2024,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__setRenderDirty ();
+			dispatchEvent(new Event(Event.SCROLL));
 			
 		}
 		
@@ -2037,6 +2051,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__setRenderDirty ();
+			dispatchEvent(new Event(Event.SCROLL));
 			
 		}
 		

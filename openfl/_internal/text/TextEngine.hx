@@ -123,7 +123,7 @@ class TextEngine {
 	private var __hiddenInput:InputElement;
 	#end
 	
-	
+
 	public function new (textField:TextField) {
 		
 		this.textField = textField;
@@ -541,14 +541,20 @@ class TextEngine {
 	
 	
 	public function getLineBreakIndex (startIndex:Int = 0):Int {
-		
+
+		var br = text.indexOf ("<br>", startIndex);
 		var cr = text.indexOf ("\n", startIndex);
 		var lf = text.indexOf ("\r", startIndex);
 		
-		if (cr == -1) return lf;
-		if (lf == -1) return cr;
-		
-		return cr < lf ? cr : lf;
+		if (cr == -1 && br == -1) return lf;
+		if (lf == -1 && br == -1) return cr;
+		if (lf == -1 && cr == -1) return br;
+
+		if (cr == -1) return Std.int(Math.min(br, lf));
+		if (lf == -1) return Std.int(Math.min(br, cr));
+		if (br == -1) return Std.int(Math.min(cr, lf));
+
+		return Std.int(Math.min(Math.min(cr, lf), br));
 		
 	}
 	
