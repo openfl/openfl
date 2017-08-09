@@ -1,6 +1,7 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.GLRenderContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.opengl.GL;
@@ -12,6 +13,11 @@ import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.display3D.Context3D)
 @:access(openfl._internal.stage3D.SamplerState)
@@ -20,8 +26,14 @@ import openfl.utils.ByteArray;
 class TextureBase extends EventDispatcher {
 	
 	
-	private static var __isGLES:Null<Bool>;
-	
+	private static var __supportsBGRA:Null<Bool> = null;
+	private static var __textureFormat:Int;
+	private static var __textureInternalFormat:Int;
+
+	private static var __supportsCompressed:Null<Bool> = null;
+	private static var __textureFormatCompressed:Int;
+	private static var __textureFormatCompressedAlpha:Int;
+
 	private var __alphaTexture:Texture;
 	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
@@ -33,6 +45,7 @@ class TextureBase extends EventDispatcher {
 	private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
 	private var __streamingLevels:Int;
+	private var __textureContext:GLRenderContext;
 	private var __textureID:GLTexture;
 	private var __textureTarget:Int;
 	private var __width:Int;
@@ -46,39 +59,67 @@ class TextureBase extends EventDispatcher {
 		__textureTarget = target;
 		
 		__textureID = GL.createTexture ();
-		
-		#if !sys
-		
-		__internalFormat = GL.RGBA;
-		__format = GL.RGBA;
-		
-		#elseif (ios || tvos)
-		
-		__internalFormat = GL.RGBA;
-		__format = GL.BGRA_EXT;
-		
-		#else
-		
-		if (__isGLES == null) {
+		__textureContext = GL.context;
+
+		if (__supportsBGRA == null) {
 			
-			var version:String = GL.getParameter (GL.VERSION);
+			__textureInternalFormat = GL.RGBA;
 			
-			if (version == null) {
+			var bgraExtension = null;
+			#if (!js || !html5)
+			bgraExtension = GL.getExtension ("EXT_bgra");
+			if (bgraExtension == null)
+				bgraExtension = GL.getExtension ("EXT_texture_format_BGRA8888");
+			if (bgraExtension == null)
+				bgraExtension = GL.getExtension ("APPLE_texture_format_BGRA8888");
+			#end
+			
+			if (bgraExtension != null) {
 				
-				__isGLES = false;
+				__supportsBGRA = true;
+				__textureFormat = bgraExtension.BGRA_EXT;
+				
+				#if (!ios && !tvos)
+				if (GL.type == GLES) {
+					
+					__textureInternalFormat = bgraExtension.BGRA_EXT;
+					
+				}
+				#end
 				
 			} else {
 				
-				__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+				__supportsBGRA = false;
+				__textureFormat = GL.RGBA;
 				
 			}
 			
 		}
+
+		if (__supportsCompressed == null) {
+			
+			#if (js && html5)
+			var compressedExtension = GL.getExtension ("WEBGL_compressed_texture_s3tc");
+			#else
+			var compressedExtension = GL.getExtension ("EXT_texture_compression_s3tc");
+			#end
+			
+			if (compressedExtension != null) {
+
+				__supportsCompressed = true;
+				__textureFormatCompressed = compressedExtension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				__textureFormatCompressedAlpha = compressedExtension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+
+			} else {
+
+				__supportsCompressed = false;
+
+			}
+			
+		}
 		
-		__internalFormat = (__isGLES ? GL.BGRA_EXT : GL.RGBA);
-		__format = GL.BGRA_EXT;
-		
-		#end
+		__internalFormat = __textureInternalFormat;
+		__format = __textureFormat;
 		
 		__memoryUsage = 0;
 		__compressedMemoryUsage = 0;

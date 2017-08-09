@@ -6,12 +6,18 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 
+#if (js && html5)
+import js.Browser;
+#end
+
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
 
 
 class CanvasRenderer extends AbstractRenderer {
 	
+	
+	public static var scale (default, null):Float = 1;
 	
 	private var context:CanvasRenderContext;
 	
@@ -23,11 +29,23 @@ class CanvasRenderer extends AbstractRenderer {
 		this.context = context;
 		
 		renderSession = new RenderSession ();
+		renderSession.clearRenderDirty = true;
 		renderSession.context = context;
-		renderSession.roundPixels = true;
+		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
 		#if !neko
-		renderSession.maskManager = new CanvasMaskManager(renderSession);
+		renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
+		renderSession.maskManager = new CanvasMaskManager (renderSession);
+		#end
+		
+		#if (js && html5)
+		var config = stage.window.config;
+		
+		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
+			
+			scale = untyped window.devicePixelRatio || 1;
+			
+		}
 		#end
 		
 	}
@@ -35,18 +53,7 @@ class CanvasRenderer extends AbstractRenderer {
 	
 	public override function clear ():Void {
 		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderCanvas (stage, renderSession);
-			
-		}
-		
-	}
-	
-	
-	public override function render ():Void {
-		
-		renderSession.allowSmoothing = (stage.quality != LOW);
+		renderSession.blendModeManager.setBlendMode (NORMAL);
 		
 		context.setTransform (1, 0, 0, 1, 0, 0);
 		context.globalAlpha = 1;
@@ -62,7 +69,25 @@ class CanvasRenderer extends AbstractRenderer {
 			
 		}
 		
+	}
+	
+	
+	public override function render ():Void {
+		
+		renderSession.allowSmoothing = (stage.quality != LOW);
+		
 		stage.__renderCanvas (renderSession);
+		
+	}
+	
+	
+	public override function renderStage3D ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderCanvas (stage, renderSession);
+			
+		}
 		
 	}
 	

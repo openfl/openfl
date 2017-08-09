@@ -8,7 +8,9 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
+import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
+import openfl.text.TextField;
 import openfl.Vector;
 
 #if !openfl_debug
@@ -47,12 +49,22 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	public override function pushObject (object:DisplayObject):Shader {
 		
+		return renderSession.shaderManager.defaultShader;
+		
 		// TODO: Support one-pass filters?
 		
 		if (object.__filters != null && object.__filters.length > 0) {
 			
-			if (object.__filters.length == 1 && object.__filters[0].__numPasses == 0) {
+			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
 				
+				// Hack, force outline
+				return renderSession.shaderManager.defaultShader;
+				
+			}
+			
+			if (object.__filters.length == 1 && object.__filters[0].__numShaderPasses == 0) {
+				
+				renderer.getRenderTarget (false);
 				return object.__filters[0].__initShader (renderSession, 0);
 				
 			} else {
@@ -72,12 +84,34 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	public override function popObject (object:DisplayObject):Void {
 		
+		return;
+		
+		// TEMPORARILY DISABLED
+		
 		if (object.__filters != null && object.__filters.length > 0) {
 			
-			var filter =  object.__filters[0];
-			var currentTarget, shader;
+			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
+				
+				// Hack, force outline
+				return;
+				
+			}
 			
-			if (object.__filters.length > 1 || filter.__numPasses > 0) {
+			var numPasses:Int = 0;
+			
+			if (object.__filters.length > 1 || object.__filters[0].__numShaderPasses > 0) {
+				
+				numPasses = object.__filters.length;
+				
+				for (filter in object.__filters) {
+					
+					numPasses += (filter.__numShaderPasses > 0) ? (filter.__numShaderPasses - 1) : 0;
+					
+				}
+				
+			}
+			
+			if (numPasses > 0) {
 				
 				// if (filter.__cacheObject) {
 					
@@ -88,22 +122,31 @@ class GLFilterManager extends AbstractFilterManager {
 					
 				// }
 				
-				for (i in 0...filter.__numPasses) {
+				var currentTarget, shader;
+				
+				for (filter in object.__filters) {
 					
+					// TODO: Handle mixture of software-only filters
+					
+					for (i in 0...filter.__numShaderPasses) {
+						
+						currentTarget = renderer.currentRenderTarget;
+						renderer.getRenderTarget(true);
+						shader = filter.__initShader(renderSession, i);
+						
+						renderPass (currentTarget, shader);
+						
+					}
+					
+					// TODO: Properly handle filter-within-filter rendering
+					
+					filterDepth--;
 					currentTarget = renderer.currentRenderTarget;
-					renderer.getRenderTarget (true);
-					shader = filter.__initShader (renderSession, i);
+					renderer.getRenderTarget (filterDepth > 0);
 					
-					renderPass (currentTarget, shader);
+					renderPass (currentTarget, renderSession.shaderManager.defaultShader);
 					
 				}
-				
-				// TODO: Properly handle filter-within-filter rendering
-				
-				filterDepth--;
-				renderer.getRenderTarget (filterDepth > 0);
-				
-				renderPass (renderer.currentRenderTarget, renderSession.shaderManager.defaultShader);
 				
 			} else {
 				
@@ -118,16 +161,24 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	private function renderPass (target:BitmapData, shader:Shader):Void {
 		
+		if (target == null || shader == null) return;
+		
 		shader.data.uImage0.input = target;
 		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
 		shader.data.uMatrix.value = renderer.getMatrix (matrix);
 		
+		if (shader.data.uColorTransform != null) {
+			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+			shader.data.uColorTransform.value[0] = false;
+		}
+		
 		renderSession.shaderManager.setShader (shader);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl, 1));
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl, 1, null));
+		
+		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		

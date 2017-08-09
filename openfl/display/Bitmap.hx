@@ -24,17 +24,19 @@ import js.html.ImageElement;
 @:access(openfl.geom.Rectangle)
 
 
-class Bitmap extends DisplayObject {
+class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	
 	public var bitmapData (default, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
+	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	
 	#if (js && html5)
 	private var __image:ImageElement;
-	private var __imageVersion:Int;
 	#end
+	
+	private var __imageVersion:Int;
 	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
@@ -54,15 +56,34 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		#if (!js || !dom)
+		if (bitmapData != null && bitmapData.image != null) {
+			
+			var image = bitmapData.image;
+			if (bitmapData.image.version != __imageVersion) {
+				__setRenderDirty ();
+				__imageVersion = image.version;
+			}
+			
+		}
+		#end
+		
+	}
+	
+	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (bitmapData != null) {
 			
-			var bounds = Rectangle.__temp;
+			var bounds = Rectangle.__pool.get ();
 			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
 			bounds.__transform (bounds, matrix);
 			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+			
+			Rectangle.__pool.release (bounds);
 			
 		}
 		
@@ -80,6 +101,12 @@ class Bitmap extends DisplayObject {
 		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (px > 0 && py > 0 && px <= bitmapData.width && py <= bitmapData.height) {
+			
+			if (__scrollRect != null && !__scrollRect.contains (px, py)) {
+				
+				return false;
+				
+			}
 			
 			if (stack != null && !interactiveOnly) {
 				
@@ -155,6 +182,15 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
+	private override function __renderDOMClear (renderSession: RenderSession):Void {
+		
+		#if dom
+		DOMBitmap.clear (this, renderSession);
+		#end
+		
+	}
+	
+	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLBitmap.render (this, renderSession);
@@ -198,15 +234,15 @@ class Bitmap extends DisplayObject {
 		bitmapData = value;
 		smoothing = false;
 		
+		__setRenderDirty ();
+		
 		if (__filters != null && __filters.length > 0) {
 			
 			//__updateFilters = true;
 			
 		}
 		
-		#if (js && html5 && dom)
 		__imageVersion = -1;
-		#end
 		
 		return bitmapData;
 		
@@ -232,6 +268,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.height) {
 				
+				__setRenderDirty ();
 				scaleY = value / bitmapData.height;
 				
 			}
@@ -264,6 +301,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.width) {
 				
+				__setRenderDirty ();
 				scaleX = value / bitmapData.width;
 				
 			}

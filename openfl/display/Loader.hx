@@ -1,28 +1,32 @@
 package openfl.display;
 
 
-import haxe.Json;
-import haxe.Unserializer;
-import lime.system.BackgroundWorker;
+import haxe.io.Path;
+import lime.utils.AssetLibrary in LimeAssetLibrary;
+import lime.utils.AssetManifest;
 import openfl._internal.swf.SWFLiteLibrary;
-import openfl._internal.swf.SWFLite;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.geom.Rectangle;
+import openfl.events.ProgressEvent;
 import openfl.net.URLLoader;
 import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
+import openfl.net.URLRequestMethod;
 import openfl.system.LoaderContext;
+import openfl.utils.Assets;
+import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
-import openfl.Assets;
 
 #if (js && html5)
 import js.html.ScriptElement;
 import js.Browser;
 #end
 
-@:access(lime.Assets)
-@:access(openfl._internal.swf.SWFLiteLibrary)
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.events.Event)
 
@@ -32,6 +36,10 @@ class Loader extends DisplayObjectContainer {
 	
 	public var content (default, null):DisplayObject;
 	public var contentLoaderInfo (default, null):LoaderInfo;
+	
+	private var __library:AssetLibrary;
+	private var __path:String;
+	private var __unloaded:Bool;
 	
 	
 	public function new () {
@@ -52,26 +60,50 @@ class Loader extends DisplayObjectContainer {
 	
 	public function load (request:URLRequest, context:LoaderContext = null):Void {
 		
-		var extension = "";
-		var path = request.url;
-		
-		var queryIndex = path.indexOf ('?');
-		if (queryIndex > -1) {
-			
-			path = path.substring (0, queryIndex);
-			
-		}
-		
-		var extIndex = path.lastIndexOf('.');
-		if (extIndex > -1) {
-			
-			extension = path.substring(extIndex + 1);
-			
-		}
-		
+		contentLoaderInfo.loaderURL = Lib.current.loaderInfo.url;
 		contentLoaderInfo.url = request.url;
+		__unloaded = false;
 		
 		if (request.contentType == null || request.contentType == "") {
+			
+			var extension = "";
+			__path = request.url;
+			
+			var queryIndex = __path.indexOf ('?');
+			if (queryIndex > -1) {
+				
+				__path = __path.substring (0, queryIndex);
+				
+			}
+			
+			while (StringTools.endsWith (__path, "/")) {
+				
+				__path = __path.substring (0, __path.length - 1);
+				
+			}
+			
+			if (StringTools.endsWith (__path, ".bundle")) {
+				
+				__path += "/library.json";
+				
+				if (queryIndex > -1) {
+					
+					request.url = __path + request.url.substring (queryIndex);
+					
+				} else {
+					
+					request.url = __path;
+					
+				}
+				
+			}
+			
+			var extIndex = __path.lastIndexOf ('.');
+			if (extIndex > -1) {
+				
+				extension = __path.substring (extIndex + 1);
+				
+			}
 			
 			contentLoaderInfo.contentType = switch (extension) {
 				
@@ -91,210 +123,53 @@ class Loader extends DisplayObjectContainer {
 			
 		}
 		
-		if (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
+		#if (js && html5)
+		if (contentLoaderInfo.contentType.indexOf ("image/") > -1 && request.method == URLRequestMethod.GET && (request.requestHeaders == null || request.requestHeaders.length == 0) && request.userAgent == null) {
 			
-			#if (js && html5)
-			var loader = new URLLoader ();
-			loader.addEventListener (Event.COMPLETE, function (e) {
-				
-				contentLoaderInfo.content = new Sprite ();
-				addChild (contentLoaderInfo.content);
-				
-				//var script:ScriptElement = cast Browser.document.createElement ("script");
-				//script.innerHTML = loader.data;
-				//Browser.document.head.appendChild (script);
-				
-				untyped __js__ ("eval") ('(function () {' + loader.data + '})()');
-				
-				var event = new Event (Event.COMPLETE);
-				event.target = contentLoaderInfo;
-				event.currentTarget = contentLoaderInfo;
-				contentLoaderInfo.dispatchEvent (event);
-				
-			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
-			loader.dataFormat = URLLoaderDataFormat.TEXT;
-			loader.load (request);
-			#else
-			BitmapData_onError (null);
-			#end
-			
+			BitmapData.loadFromFile (request.url).onComplete (BitmapData_onLoad).onError (BitmapData_onError).onProgress (BitmapData_onProgress);
 			return;
 			
-		} else if (contentLoaderInfo.contentType.indexOf ("/json") > -1) {
+		}
+		#end
+		
+		var loader = new URLLoader ();
+		loader.dataFormat = URLLoaderDataFormat.BINARY;
+		
+		if (contentLoaderInfo.contentType.indexOf ("/json") > -1 || contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
 			
-			var loader = new URLLoader ();
-			loader.addEventListener (Event.COMPLETE, function (e) {
-				
-				var info = Json.parse (loader.data);
-				var library:SWFLiteLibrary = cast Type.createInstance (Type.resolveClass (info.type), [ null ]/*info.args*/);
-				
-				Assets.registerLibrary (info.name, library);
-				
-				var manifest:Array<Dynamic> = cast Unserializer.run (info.manifest);
-				var assetType:AssetType;
-				
-				var basePath = request.url;
-				basePath = StringTools.replace (basePath, "\\", "/");
-				var parts = basePath.split ("/");
-				parts.pop ();
-				parts.pop ();
-				basePath = parts.join ("/");
-				
-				var libraryData:String = null;
-				
-				var loaded = -1;
-				var total = 0;
-				
-				var checkLoaded = function () {
-					
-					if (loaded >= total) {
-						
-						library.swf = SWFLite.unserialize (libraryData);
-						
-						contentLoaderInfo.content = library.getMovieClip ("");
-						addChild (contentLoaderInfo.content);
-						
-						var event = new Event (Event.COMPLETE);
-						event.target = contentLoaderInfo;
-						event.currentTarget = contentLoaderInfo;
-						contentLoaderInfo.dispatchEvent (event);
-						
-					}
-					
-				}
-				
-				for (asset in manifest) {
-					
-					if (!Assets.exists (asset.id)) {
-						
-						assetType = asset.type;
-						
-						switch (assetType) {
-							
-							case IMAGE:
-								
-								total++;
-								
-								BitmapData.fromFile (basePath + "/" + asset.path, function (bitmapData) {
-									
-									loaded++;
-									checkLoaded ();
-									
-									Assets.cache.setBitmapData (asset.path, bitmapData);
-									
-								}, function () BitmapData_onError (null));
-							
-							case TEXT:
-								
-								total++;
-								
-								var textLoader = new URLLoader ();
-								textLoader.addEventListener (Event.COMPLETE, function (_) {
-									
-									libraryData = textLoader.data;
-									
-									loaded++;
-									checkLoaded ();
-									
-								});
-								textLoader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-									
-									BitmapData_onError (e);
-									
-								});
-								textLoader.dataFormat = URLLoaderDataFormat.TEXT;
-								textLoader.load (new URLRequest (basePath + "/" + asset.path));
-							
-							default:
-								
-							
-						}
-						
-					}
-					
-				}
-				
-				loaded++;
-				checkLoaded ();
-				
-			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
-			loader.dataFormat = URLLoaderDataFormat.TEXT;
-			loader.load (request);
+			loader.dataFormat = TEXT;
 			
 		}
 		
-		#if sys
-		if (request.url != null && request.url.indexOf ("http://") > -1 || request.url.indexOf ("https://") > -1) {
-			
-			var loader = new URLLoader ();
-			loader.addEventListener (Event.COMPLETE, function (e) {
-				
-				BitmapData_onLoad (BitmapData.fromBytes (loader.data));
-				
-			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
-			loader.dataFormat = URLLoaderDataFormat.BINARY;
-			loader.load (request);
-			return;
-			
-		} else 
-		#end
-		{
-			
-			var worker = new BackgroundWorker ();
-			
-			worker.doWork.add (function (_) {
-				
-				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
-				
-			});
-			
-			worker.onError.add (BitmapData_onError);
-			worker.onComplete.add (BitmapData_onLoad);
-			worker.run ();
-			
-		}
+		loader.addEventListener (Event.COMPLETE, loader_onComplete);
+		loader.addEventListener (IOErrorEvent.IO_ERROR, loader_onError);
+		loader.addEventListener (ProgressEvent.PROGRESS, loader_onProgress);
+		loader.load (request);
 		
 	}
 	
 	
 	public function loadBytes (buffer:ByteArray, context:LoaderContext = null):Void {
 		
-		var worker = new BackgroundWorker ();
-		
-		worker.doWork.add (function (_) {
-			
-			BitmapData.fromBytes (buffer, function (bitmapData) worker.sendComplete (bitmapData));
-			
-		});
-		
-		worker.onComplete.add (BitmapData_onLoad);
-		worker.run ();
+		BitmapData.loadFromBytes (buffer).onComplete (BitmapData_onLoad).onError (BitmapData_onError);
 		
 	}
 	
 	
 	public function unload ():Void {
 		
-		if (numChildren > 0) {
+		if (!__unloaded) {
 			
 			while (numChildren > 0) {
 				
 				removeChildAt (0);
+				
+			}
+			
+			if (__library != null) {
+				
+				Assets.unloadLibrary (contentLoaderInfo.url);
+				__library = null;
 				
 			}
 			
@@ -306,10 +181,9 @@ class Loader extends DisplayObjectContainer {
 			contentLoaderInfo.bytesTotal = 0;
 			contentLoaderInfo.width = 0;
 			contentLoaderInfo.height = 0;
+			__unloaded = true;
 			
-			var event = new Event (Event.UNLOAD);
-			event.currentTarget = this;
-			__dispatchEvent (event);
+			contentLoaderInfo.dispatchEvent (new Event (Event.UNLOAD));
 			
 		}
 		
@@ -318,7 +192,38 @@ class Loader extends DisplayObjectContainer {
 	
 	public function unloadAndStop (gc:Bool = true):Void {
 		
-		openfl.Lib.notImplemented ();
+		if (content != null) {
+			
+			content.__stopAllMovieClips ();
+			
+		}
+		
+		for (i in 0...numChildren) {
+			
+			getChildAt (i).__stopAllMovieClips ();
+			
+		}
+		
+		unload ();
+		
+		if (gc) {
+			
+			#if cpp
+			cpp.vm.Gc.run (false);
+			#elseif neko
+			neko.vm.Gc.run (false);
+			#end
+			
+		}
+		
+	}
+	
+	
+	private function __dispatchError (text:String):Void {
+		
+		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
+		event.text = text;
+		contentLoaderInfo.dispatchEvent (event);
 		
 	}
 	
@@ -330,25 +235,129 @@ class Loader extends DisplayObjectContainer {
 	
 	
 	
+	private function BitmapData_onError (error:Dynamic):Void {
+		
+		// TODO: Dispatch HTTPStatusEvent
+		
+		__dispatchError (Std.string (error));
+		
+	}
+	
+	
 	private function BitmapData_onLoad (bitmapData:BitmapData):Void {
 		
-		contentLoaderInfo.content = new Bitmap (bitmapData);
-		content = contentLoaderInfo.content;
+		// TODO: Dispatch HTTPStatusEvent
+		
+		content = new Bitmap (bitmapData);
+		contentLoaderInfo.content = content;
 		addChild (content);
 		
-		var event = new Event (Event.COMPLETE);
-		event.target = contentLoaderInfo;
-		event.currentTarget = contentLoaderInfo;
+		contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+		
+	}
+	
+	
+	private function BitmapData_onProgress (bytesLoaded:Int, bytesTotal:Int):Void {
+		
+		var event = new ProgressEvent (ProgressEvent.PROGRESS);
+		event.bytesLoaded = bytesLoaded;
+		event.bytesTotal = bytesTotal;
 		contentLoaderInfo.dispatchEvent (event);
 		
 	}
 	
 	
-	private function BitmapData_onError (_):Void {
+	private function loader_onComplete (event:Event):Void {
 		
-		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
+		// TODO: Dispatch HTTPStatusEvent
+		
+		var loader:URLLoader = cast event.target;
+		
+		if (contentLoaderInfo.contentType.indexOf ("/json") > -1) {
+			
+			var manifest = AssetManifest.parse (loader.data, Path.directory (__path));
+			
+			if (manifest == null) {
+				
+				__dispatchError ("Cannot parse asset manifest");
+				return;
+				
+			}
+			
+			var library = LimeAssetLibrary.fromManifest (manifest);
+			
+			if (library == null) {
+				
+				__dispatchError ("Cannot open library");
+				return;
+				
+			}
+			
+			if (Std.is (library, AssetLibrary)) {
+				
+				library.load ().onComplete (function (_) {
+					
+					__library = cast library;
+					Assets.registerLibrary (contentLoaderInfo.url, __library);
+					
+					if (manifest.name != null && !Assets.hasLibrary (manifest.name)) {
+						
+						Assets.registerLibrary (manifest.name, __library);
+						
+					}
+					
+					content = __library.getMovieClip ("");
+					contentLoaderInfo.content = content;
+					addChild (content);
+					
+					contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+					
+				}).onError (function (e) {
+					
+					__dispatchError (e);
+					
+				});
+				
+			}
+			
+		} else if (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
+			
+			content = new Sprite ();
+			contentLoaderInfo.content = content;
+			addChild (content);
+			
+			#if (js && html5)
+			//var script:ScriptElement = cast Browser.document.createElement ("script");
+			//script.innerHTML = loader.data;
+			//Browser.document.head.appendChild (script);
+			
+			untyped __js__ ("eval") ('(function () {' + loader.data + '})()');
+			#end
+			
+			contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+			
+		} else {
+			
+			BitmapData.loadFromBytes (loader.data).onComplete (BitmapData_onLoad).onError (BitmapData_onError);
+			
+		}
+		
+	}
+	
+	
+	private function loader_onError (event:IOErrorEvent):Void {
+		
+		// TODO: Dispatch HTTPStatusEvent
+		
 		event.target = contentLoaderInfo;
-		event.currentTarget = contentLoaderInfo;
+		contentLoaderInfo.dispatchEvent (event);
+		
+	}
+	
+	
+	private function loader_onProgress (event:ProgressEvent):Void {
+		
+		event.target = contentLoaderInfo;
 		contentLoaderInfo.dispatchEvent (event);
 		
 	}

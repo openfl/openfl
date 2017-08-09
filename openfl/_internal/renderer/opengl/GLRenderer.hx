@@ -2,10 +2,10 @@ package openfl._internal.renderer.opengl;
 
 
 import lime.graphics.GLRenderContext;
+import lime.graphics.opengl.GLFramebuffer;
 import lime.math.Matrix4;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl.display.BitmapData;
-import openfl.display.OpenGLView;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 
@@ -28,6 +28,8 @@ class GLRenderer extends AbstractRenderer {
 	public var projection:Matrix4;
 	public var projectionFlipped:Matrix4;
 	
+	public var defaultRenderTarget:BitmapData;
+	
 	// private var cacheObject:BitmapData;
 	private var currentRenderTarget:BitmapData;
 	private var displayHeight:Int;
@@ -43,19 +45,21 @@ class GLRenderer extends AbstractRenderer {
 	private var values:Array<Float>;
 	
 	
-	public function new (stage:Stage, gl:GLRenderContext, flipped:Bool = true) {
+	public function new (stage:Stage, gl:GLRenderContext, ?defaultRenderTarget:BitmapData) {
 		
 		super (stage);
 		
 		this.gl = gl;
-		this.flipped = flipped;
+		this.defaultRenderTarget = defaultRenderTarget;
+		this.flipped = (defaultRenderTarget == null);
 		
 		matrix = new Matrix4 ();
 		values = new Array ();
 		
 		renderSession = new RenderSession ();
+		renderSession.clearRenderDirty = true;
 		renderSession.gl = gl;
-		renderSession.roundPixels = true;
+		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
 		renderSession.blendModeManager = new GLBlendModeManager (gl);
 		renderSession.filterManager = new GLFilterManager (this, renderSession);
@@ -70,7 +74,10 @@ class GLRenderer extends AbstractRenderer {
 				
 			}
 			
-			resize (Math.ceil (stage.window.width * stage.window.scale), Math.ceil (stage.window.height * stage.window.scale));
+			var width:Int = (defaultRenderTarget != null) ? defaultRenderTarget.width : Math.ceil (stage.window.width * stage.window.scale);
+			var height:Int = (defaultRenderTarget != null) ? defaultRenderTarget.height : Math.ceil (stage.window.height * stage.window.scale);
+			
+			resize (width, height);
 			
 		}
 		
@@ -91,12 +98,6 @@ class GLRenderer extends AbstractRenderer {
 		
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderGL (stage, renderSession);
-			
-		}
-		
 	}
 	
 	
@@ -114,7 +115,7 @@ class GLRenderer extends AbstractRenderer {
 	
 	public function getMatrix (transform:Matrix):Array<Float> {
 		
-		var _matrix = Matrix.__temp;
+		var _matrix = Matrix.__pool.get ();
 		_matrix.copyFrom (transform);
 		_matrix.concat (displayMatrix);
 		
@@ -139,6 +140,8 @@ class GLRenderer extends AbstractRenderer {
 			values[i] = matrix[i];
 			
 		}
+		
+		Matrix.__pool.release (_matrix);
 		
 		return values;
 		
@@ -188,10 +191,12 @@ class GLRenderer extends AbstractRenderer {
 			
 		} else {
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			currentRenderTarget = defaultRenderTarget;
+			var frameBuffer:GLFramebuffer = (currentRenderTarget != null) ? currentRenderTarget.__getFramebuffer (gl) : null;
 			
-			flipped = true;
+			gl.bindFramebuffer (gl.FRAMEBUFFER, frameBuffer);
 			
+			flipped = (currentRenderTarget == null);
 		}
 		
 	}
@@ -238,6 +243,17 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
+	public override function renderStage3D ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderGL (stage, renderSession);
+			
+		}
+		
+	}
+	
+	
 	public override function resize (width:Int, height:Int):Void {
 		
 		super.resize (width, height);
@@ -252,32 +268,39 @@ class GLRenderer extends AbstractRenderer {
 			
 		// }
 		
-		if (renderTargetA != null && (renderTargetA.width != width || renderTargetA.height != height)) {
+		if (width > 0 && height > 0) {
 			
-			renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
+			if (renderTargetA != null && (renderTargetA.width != width || renderTargetA.height != height)) {
+				
+				renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
+				
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl));
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				
+			}
 			
-			gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl));
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			if (renderTargetB != null && (renderTargetB.width != width || renderTargetB.height != height)) {
+				
+				renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
+				
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl));
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				
+			}
 			
 		}
 		
-		if (renderTargetB != null && (renderTargetB.width != width || renderTargetB.height != height)) {
-			
-			renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
-			
-			gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl));
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			
-		}
+		displayMatrix = (defaultRenderTarget == null) ? stage.__displayMatrix : new Matrix ();
 		
-		displayMatrix = stage.__displayMatrix;
+		var w = (defaultRenderTarget == null) ? stage.stageWidth : defaultRenderTarget.width;
+		var h = (defaultRenderTarget == null) ? stage.stageHeight : defaultRenderTarget.height;
 		
 		offsetX = Math.round (displayMatrix.__transformX (0, 0));
 		offsetY = Math.round (displayMatrix.__transformY (0, 0));
-		displayWidth = Math.round (displayMatrix.__transformX (stage.stageWidth, 0) - offsetX);
-		displayHeight = Math.round (displayMatrix.__transformY (0, stage.stageHeight) - offsetY);
+		displayWidth = Math.round (displayMatrix.__transformX (w, 0) - offsetX);
+		displayHeight = Math.round (displayMatrix.__transformY (0, h) - offsetY);
 		
 		projection = Matrix4.createOrtho (offsetX, displayWidth + offsetX, offsetY, displayHeight + offsetY, -1000, 1000);
 		projectionFlipped = Matrix4.createOrtho (offsetX, displayWidth + offsetX, displayHeight + offsetY, offsetY, -1000, 1000);

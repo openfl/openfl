@@ -1,10 +1,17 @@
 package openfl.filters;
 
 
+import lime.graphics.utils.ImageDataUtil;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+@:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 @:final class BlurFilter extends BitmapFilter {
@@ -28,12 +35,23 @@ import openfl.geom.Rectangle;
 		this.blurY = blurY;
 		this.quality = quality;
 		
+		__filterRequiresCopy = true;
+		
 	}
 	
 	
 	public override function clone ():BitmapFilter {
 		
 		return new BlurFilter (blurX, blurY, quality);
+		
+	}
+	
+	
+	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
+		
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality);
+		if (finalImage == bitmapData.image) return bitmapData;
+		return sourceBitmapData;
 		
 	}
 	
@@ -75,7 +93,7 @@ import openfl.geom.Rectangle;
 		horizontalPasses = (blurX <= 0) ? 0 : Math.round (blurX * (value / 4)) + 1;
 		verticalPasses = (blurY <= 0) ? 0 : Math.round (blurY * (value / 4)) + 1;
 		
-		__numPasses = horizontalPasses + verticalPasses;
+		__numShaderPasses = horizontalPasses + verticalPasses;
 		
 		return quality = value;
 		
@@ -83,6 +101,12 @@ import openfl.geom.Rectangle;
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class BlurShader extends Shader {

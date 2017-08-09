@@ -19,11 +19,28 @@ import js.Browser;
 
 class DOMTextField {
 	
+	
 	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
 	private static var __regexFont = ~/<font ([^>]+)>/gi;
 	private static var __regexCloseFont = new EReg("</font>", "gi");
-	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')>/i;
+	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
+	
+	
+	public static function clear (textField:TextField, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		if (textField.__div != null) {
+			
+			renderSession.element.removeChild (textField.__div);
+			textField.__div = null;
+			textField.__style = null;
+			
+		}
+		#end
+		
+	}
+	
 	
 	public static function measureText (textField:TextField):Void {
 		
@@ -330,20 +347,22 @@ class DOMTextField {
 			
 			if (textField.__div != null) {
 				
+				// force roundPixels = true for TextFields
+				// Chrome shows blurry text if coordinates are fractional
+				
+				var old = renderSession.roundPixels;
+				renderSession.roundPixels = true;
+				
 				DOMRenderer.updateClip (textField, renderSession);
 				DOMRenderer.applyStyle (textField, renderSession, true, true, true);
+				
+				renderSession.roundPixels = old;
 				
 			}
 			
 		} else {
 			
-			if (textField.__div != null) {
-				
-				renderSession.element.removeChild (textField.__div);
-				textField.__div = null;
-				textField.__style = null;
-				
-			}
+			clear (textField, renderSession);
 			
 		}
 		
@@ -351,10 +370,12 @@ class DOMTextField {
 		
 	}
 	
+	
 	private static function __getAttributeMatch (regex:EReg):String {
 		
 		return regex.matched (2) != null ? regex.matched (2) : regex.matched (3);
 		
 	}
+	
 	
 }

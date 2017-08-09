@@ -3,17 +3,17 @@ package openfl.text; #if (display || !flash)
 
 /**
  * The TextFieldType class is an enumeration of constant values used in
- * setting the <code>type</code> property of the TextField class.
+ * setting the `type` property of the TextField class.
  */
 @:enum abstract TextFieldType(Null<Int>) {
 	
 	/**
-	 * Used to specify a <code>dynamic</code> TextField.
+	 * Used to specify a `dynamic` TextField.
 	 */
 	public var DYNAMIC = 0;
 	
 	/**
-	 * Used to specify an <code>input</code> TextField.
+	 * Used to specify an `input` TextField.
 	 */
 	public var INPUT = 1;
 	

@@ -3,9 +3,9 @@ package openfl.display; #if (display || !flash)
 
 /**
  * The InterpolationMethod class provides values for the
- * <code>interpolationMethod</code> parameter in the
- * <code>Graphics.beginGradientFill()</code> and
- * <code>Graphics.lineGradientStyle()</code> methods. This parameter
+ * `interpolationMethod` parameter in the
+ * `Graphics.beginGradientFill()` and
+ * `Graphics.lineGradientStyle()` methods. This parameter
  * determines the RGB space to use when rendering the gradient.
  */
 @:enum abstract InterpolationMethod(Null<Int>) {
@@ -17,10 +17,10 @@ package openfl.display; #if (display || !flash)
 	 * conversion between red, green, and blue component values and the actual
 	 * intensity of the visible component color.
 	 *
-	 * <p>For example, consider a simple linear gradient between two colors(with
-	 * the <code>spreadMethod</code> parameter set to
-	 * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-	 * affect the appearance as follows: </p>
+	 * For example, consider a simple linear gradient between two colors(with
+	 * the `spreadMethod` parameter set to
+	 * `SpreadMethod.REFLECT`). The different interpolation methods
+	 * affect the appearance as follows: 
 	 */
 	public var LINEAR_RGB = 0;
 	
@@ -31,10 +31,10 @@ package openfl.display; #if (display || !flash)
 	 * conversion between red, green, and blue component values and the actual
 	 * intensity of the visible component color.
 	 *
-	 * <p>For example, consider a simple linear gradient between two colors(with
-	 * the <code>spreadMethod</code> parameter set to
-	 * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-	 * affect the appearance as follows: </p>
+	 * For example, consider a simple linear gradient between two colors(with
+	 * the `spreadMethod` parameter set to
+	 * `SpreadMethod.REFLECT`). The different interpolation methods
+	 * affect the appearance as follows: 
 	 */
 	public var RGB = 1;
 	

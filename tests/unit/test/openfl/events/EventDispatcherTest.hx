@@ -65,7 +65,7 @@ class EventDispatcherTest {
 		
 		// TODO: this dispatchEvent will never go through CAPTURING_PHASE.
 		// It needs to come from Stage
-		// (or possibly through e.g. DisplayObject.__fireEvent)
+		// (or possibly through e.g. DisplayObject.__dispatchStack)
 		// See FocusEventTest for an example.
 		//DISABLED//Assert.isTrue (correctPhase);
 		

@@ -4,6 +4,11 @@ package openfl._internal.symbols;
 import openfl._internal.swf.SWFLite;
 import openfl.text.TextField;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.text.TextField)
 
 

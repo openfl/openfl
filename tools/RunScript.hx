@@ -31,13 +31,24 @@ class RunScript {
 	public static function main () {
 		
 		var args = Sys.args ();
+		var cacheDirectory = Sys.getCwd ();
 		var workingDirectory = args.pop ();
+		
+		try {
+			
+			Sys.setCwd (workingDirectory);
+			
+		} catch (e:Dynamic) {
+			
+			LogHelper.error ("Cannot set current working directory to \"" + workingDirectory + "\"");
+			
+		}
 		
 		if (args.length > 1 && args[0] == "create") {
 			
 			//args[1] = "openfl:" + args[1];
 			
-		} else if (args[0] == "setup") {
+		} else if (args.length > 0 && args[0] == "setup") {
 			
 			var limeDirectory = PathHelper.getHaxelib (new Haxelib ("lime"));
 			
@@ -47,7 +58,9 @@ class RunScript {
 				
 			}
 			
-		} else if (args.length > 2 && args[0] == "process") {
+		} else if (args.length > 0 && args[0] == "process") {
+			
+			Sys.setCwd (cacheDirectory);
 			
 			if (!FileSystem.exists ("tools/tools.n")) {
 				
@@ -61,17 +74,6 @@ class RunScript {
 		}
 		
 		var args = [ "run", "lime" ].concat (args);
-		
-		try {
-			
-			Sys.setCwd (workingDirectory);
-			
-		} catch (e:Dynamic) {
-			
-			LogHelper.error ("Cannot set current working directory to \"" + workingDirectory + "\"");
-			
-		}
-		
 		Sys.exit (Sys.command ("haxelib", args.concat ([ "-openfl" ])));
 		
 	}

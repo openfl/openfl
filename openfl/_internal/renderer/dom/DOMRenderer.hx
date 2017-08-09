@@ -2,6 +2,7 @@ package openfl._internal.renderer.dom;
 
 
 import lime.graphics.DOMRenderContext;
+import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
@@ -11,8 +12,10 @@ import openfl.geom.Rectangle;
 
 #if (js && html5)
 import js.html.Element;
+import js.Browser;
 #end
 
+@:access(openfl._internal.renderer.canvas.CanvasRenderer)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
@@ -34,10 +37,19 @@ class DOMRenderer extends AbstractRenderer {
 		this.element = element;
 		
 		renderSession = new RenderSession ();
+		renderSession.clearRenderDirty = true;
 		renderSession.element = element;
-		renderSession.roundPixels = true;
+		//renderSession.roundPixels = true;
 		
 		#if (js && html5)
+		var config = stage.window.config;
+		
+		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
+			
+			CanvasRenderer.scale = untyped window.devicePixelRatio || 1;
+			
+		}
+		
 		var prefix = untyped __js__ ("(function () {
 		  var styles = window.getComputedStyle(document.documentElement, ''),
 			pre = (Array.prototype.slice
@@ -118,17 +130,6 @@ class DOMRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function clear ():Void {
-		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderDOM (stage, renderSession);
-			
-		}
-		
-	}
-	
-	
 	#if (js && html5)
 	public static function initializeElement (displayObject:DisplayObject, element:Element, renderSession:RenderSession):Void {
 		
@@ -168,6 +169,17 @@ class DOMRenderer extends AbstractRenderer {
 		
 		renderSession.z = 1;
 		stage.__renderDOM (renderSession);
+		
+	}
+	
+	
+	public override function renderStage3D ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderDOM (stage, renderSession);
+			
+		}
 		
 	}
 	

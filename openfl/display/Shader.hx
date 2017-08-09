@@ -7,6 +7,11 @@ import lime.utils.Float32Array;
 import lime.utils.GLUtils;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 
@@ -45,8 +50,13 @@ class Shader {
 	
 	@:glFragmentSource(
 		
+		#if emscripten
 		"varying float vAlpha;
+		varying mat4 vColorMultipliers;
+		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
+		
+		uniform bool uColorTransform;
 		uniform sampler2D uImage0;
 		
 		void main(void) {
@@ -57,6 +67,44 @@ class Shader {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 				
+			} else if (uColorTransform) {
+				
+				color = vec4 (color.rgb / color.a, color.a);
+				color = vColorOffsets + (color * vColorMultipliers);
+				
+				gl_FragColor = vec4 (color.bgr * color.a * vAlpha, color.a * vAlpha);
+				
+			} else {
+				
+				gl_FragColor = color.bgra * vAlpha;
+				
+			}
+			
+		}"
+		#else
+		"varying float vAlpha;
+		varying mat4 vColorMultipliers;
+		varying vec4 vColorOffsets;
+		varying vec2 vTexCoord;
+		
+		uniform bool uColorTransform;
+		uniform sampler2D uImage0;
+		
+		void main(void) {
+			
+			vec4 color = texture2D (uImage0, vTexCoord);
+			
+			if (color.a == 0.0) {
+				
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+				
+			} else if (uColorTransform) {
+				
+				color = vec4 (color.rgb / color.a, color.a);
+				color = vColorOffsets + (color * vColorMultipliers);
+				
+				gl_FragColor = vec4 (color.rgb * color.a * vAlpha, color.a * vAlpha);
+				
 			} else {
 				
 				gl_FragColor = color * vAlpha;
@@ -64,6 +112,7 @@ class Shader {
 			}
 			
 		}"
+		#end
 		
 	)
 	
@@ -71,17 +120,30 @@ class Shader {
 	@:glVertexSource(
 		
 		"attribute float aAlpha;
+		attribute mat4 aColorMultipliers;
+		attribute vec4 aColorOffsets;
 		attribute vec4 aPosition;
 		attribute vec2 aTexCoord;
 		varying float vAlpha;
+		varying mat4 vColorMultipliers;
+		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
 		
 		uniform mat4 uMatrix;
+		uniform bool uColorTransform;
 		
 		void main(void) {
 			
 			vAlpha = aAlpha;
 			vTexCoord = aTexCoord;
+			
+			if (uColorTransform) {
+				
+				vColorMultipliers = aColorMultipliers;
+				vColorOffsets = aColorOffsets;
+				
+			}
+			
 			gl_Position = uMatrix * aPosition;
 			
 		}"
@@ -140,9 +202,11 @@ class Shader {
 		gl.bindBuffer (gl.ARRAY_BUFFER, null);
 		gl.bindTexture (gl.TEXTURE_2D, null);
 		
-		#if desktop
-		gl.disable (gl.TEXTURE_2D);
-		#end
+		if (gl.type == OPENGL) {
+			
+			gl.disable (gl.TEXTURE_2D);
+			
+		}
 		
 	}
 	
@@ -171,13 +235,11 @@ class Shader {
 			
 		}
 		
-		#if desktop
-		if (textureCount > 0) {
+		if (gl.type == OPENGL && textureCount > 0) {
 			
 			gl.enable (gl.TEXTURE_2D);
 			
 		}
-		#end
 		
 	}
 	
@@ -434,11 +496,11 @@ class Shader {
 			
 		}
 		
-		var index:Dynamic = 0;
+		var value, index;
 		
 		for (parameter in __paramBool) {
 			
-			var value = parameter.value;
+			value = parameter.value;
 			index = parameter.index;
 			
 			if (value != null) {
@@ -473,9 +535,11 @@ class Shader {
 			
 		}
 		
+		var value, index;
+		
 		for (parameter in __paramFloat) {
 			
-			var value = parameter.value;
+			value = parameter.value;
 			index = parameter.index;
 			
 			if (value != null) {
@@ -506,7 +570,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix2fv (index, false, __uniformMatrix2);
+						gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
 					
 					//case MATRIX2X3:
 					//case MATRIX2X4:
@@ -520,7 +584,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix3fv (index, false, __uniformMatrix3);
+						gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
 					
 					//case MATRIX3X4:
 					//case MATRIX4X2:
@@ -534,7 +598,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix4fv (index, false, __uniformMatrix4);
+						gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
 					
 					default:
 					
@@ -544,13 +608,37 @@ class Shader {
 				
 				gl.enableVertexAttribArray (parameter.index);
 				
+				switch (parameter.type) {
+					
+					case MATRIX2X2:
+						
+						gl.enableVertexAttribArray (parameter.index + 1);
+					
+					case MATRIX3X3:
+						
+						gl.enableVertexAttribArray (parameter.index + 1);
+						gl.enableVertexAttribArray (parameter.index + 2);
+					
+					case MATRIX4X4:
+						
+						gl.enableVertexAttribArray (parameter.index + 1);
+						gl.enableVertexAttribArray (parameter.index + 2);
+						gl.enableVertexAttribArray (parameter.index + 3);
+					
+					default:
+					
+				}
+				
 			}
 			
 		}
 		
+		var value, index;
+		
 		for (parameter in __paramInt) {
 			
-			var value = parameter.value;
+			value = parameter.value;
+			index = parameter.index;
 			
 			if (value != null) {
 				
@@ -643,13 +731,13 @@ class Shader {
 	
 	private function set_glVertexSource (value:String):String {
 		
-		if (value != __glFragmentSource) {
+		if (value != __glVertexSource) {
 			
 			__glSourceDirty = true;
 			
 		}
 		
-		return __glFragmentSource = value;
+		return __glVertexSource = value;
 		
 	}
 	

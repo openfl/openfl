@@ -49,6 +49,7 @@ class ShapeBitmapExporter {
 		var positionX = 0.0;
 		var positionY = 0.0;
 		var transform = null;
+		var smoothBitmap = true;
 		
 		// TODO: Handle cropped bitmaps?
 		
@@ -61,6 +62,7 @@ class ShapeBitmapExporter {
 				case BeginBitmapFill (bid, matrix, repeat, smooth) if (index == 2): 
 					bitmapID = bid;
 					transform = matrix;
+					smoothBitmap = smooth;
 				case MoveTo(x, y) if (index == 3): 
 					positionX = x;
 					positionY = y;
@@ -84,7 +86,7 @@ class ShapeBitmapExporter {
 			
 		}
 		
-		return Some ({ id: bitmapID, transform: transform });
+		return Some ({ id: bitmapID, transform: transform, smooth: smoothBitmap });
 		
 	}
 	
@@ -95,6 +97,7 @@ class ShapeBitmapExporter {
 typedef BitmapFill = {
 	
 	id:Int, 
-	transform:Matrix
+	transform:Matrix,
+	smooth:Bool
 	
 }

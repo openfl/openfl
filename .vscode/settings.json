@@ -1,0 +1,13 @@
+{
+    "editor.trimAutoWhitespace": false,
+    "editor.insertSpaces": false,
+    "codedox": {
+        "commentprefix": "    ",
+        "commentdescription": "",
+        "commentend": "**/",
+        "alwaysMultiline": false,
+        "paramFormat": "",
+        "returnFormat": "",
+        "neverAskTemplate": true
+    }
+}

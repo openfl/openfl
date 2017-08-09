@@ -4,6 +4,15 @@ package openfl.display;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+#if !flash
+@:access(openfl.geom.Rectangle)
+#end
+
 
 class Tileset {
 	
@@ -24,9 +33,7 @@ class Tileset {
 		if (rects != null) {
 			
 			for (rect in rects) {
-				
 				addRect (rect);
-				
 			}
 			
 		}
@@ -50,7 +57,7 @@ class Tileset {
 	public function clone ():Tileset {
 		
 		var tileset = new Tileset (bitmapData, null);
-		var rect = new Rectangle ();
+		var rect = #if flash new Rectangle () #else Rectangle.__pool.get () #end;
 		
 		for (tileData in __data) {
 			
@@ -58,6 +65,10 @@ class Tileset {
 			tileset.addRect (rect);
 			
 		}
+		
+		#if !flash
+		Rectangle.__pool.release (rect);
+		#end
 		
 		return tileset;
 		
@@ -89,9 +100,7 @@ class Tileset {
 		bitmapData = value;
 		
 		for (data in __data) {
-			
 			data.__update (bitmapData);
-			
 		}
 		
 		return value;
@@ -100,6 +109,12 @@ class Tileset {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:allow(openfl.display.Tileset) @:dox(hide) private class TileData {

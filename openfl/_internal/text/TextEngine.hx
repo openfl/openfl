@@ -7,6 +7,7 @@ import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 import lime.text.TextLayout;
+import lime.text.UTF8String;
 import openfl.Vector;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -84,12 +85,12 @@ class TextEngine {
 	public var maxScrollV (default, null):Int;
 	public var multiline:Bool;
 	public var numLines (default, null):Int;
-	public var restrict:String;
+	public var restrict (default, set):UTF8String;
 	public var scrollH:Int;
 	public var scrollV:Int;
 	public var selectable:Bool;
 	public var sharpness:Float;
-	public var text:String;
+	public var text (default, set):UTF8String;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
@@ -104,6 +105,7 @@ class TextEngine {
 	@:noCompletion private var __isKeyDown:Bool;
 	@:noCompletion private var __measuredHeight:Int;
 	@:noCompletion private var __measuredWidth:Int;
+	@:noCompletion private var __restrictRegexp:EReg;
 	@:noCompletion private var __selectionStart:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
@@ -165,6 +167,37 @@ class TextEngine {
 	}
 	
 	
+	private function createRestrictRegexp (restrict:String):EReg {
+		
+		var declinedRange = ~/\^(.-.|.)/gu;
+		var declined = '';
+		
+		var accepted = declinedRange.map (restrict, function (ereg) {
+			
+			declined += ereg.matched (1);
+			return '';
+			
+		});
+		
+		var testRegexpParts:Array<String> = [];
+		
+		if (accepted.length > 0) {
+			
+			testRegexpParts.push ('[^$restrict]');
+			
+		}
+		
+		if (declined.length > 0) {
+			
+			testRegexpParts.push ('[$declined]');
+			
+		}
+		
+		return new EReg ('(${testRegexpParts.join('|')})', 'g');
+		
+	}
+	
+	
 	private static function findFont (name:String):Font {
 		
 		#if (lime_cffi)
@@ -209,33 +242,48 @@ class TextEngine {
 	
 	public static function getFormatHeight (format:TextFormat):Float {
 		
-		var ascent, descent, leading;
+		var ascent:Float, descent:Float, leading:Int;
 		
 		#if (js && html5)
 		
 		__context.font = getFont (format);
+
+		if (format.__ascent != null) {
+
+			ascent = format.size * format.__ascent;
+			descent = format.size * format.__descent;
+
+		} else {
+			
+			ascent = format.size;
+			descent = format.size * 0.185;
+			
+		}
 		
-		ascent = format.size;
-		descent = format.size * 0.185;
 		leading = format.leading;
 		
 		#elseif (lime_cffi)
 		
 		var font = getFontInstance (format);
 		
-		if (font != null) {
-			
+		if (format.__ascent != null) {
+
+			ascent = format.size * format.__ascent;
+			descent = format.size * format.__descent;
+
+		} else if (font != null) {
+
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
-			leading = format.leading;
-			
+
 		} else {
 			
 			ascent = format.size;
 			descent = format.size * 0.185;
-			leading = format.leading;
 			
 		}
+		
+		leading = format.leading;
 		
 		#end
 		
@@ -317,7 +365,7 @@ class TextEngine {
 						
 					}
 					#elseif (mac || ios || tvos)
-					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf", systemFontDirectory + "/Cache/Arial Black.ttf", systemFontDirectory + "/Cache/Arial.ttf", systemFontDirectory + "/Cache/Helvetica.ttf", systemFontDirectory + "/Core/Arial Black.ttf", systemFontDirectory + "/Core/Arial.ttf", systemFontDirectory + "/Core/Helvetica.ttf", systemFontDirectory + "/CoreAddition/Arial Black.ttf", systemFontDirectory + "/CoreAddition/Arial.ttf", systemFontDirectory + "/CoreAddition/Helvetica.ttf" ];
+					fontList = [ systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf", systemFontDirectory + "/Cache/Arial.ttf", systemFontDirectory + "/Cache/Helvetica.ttf", systemFontDirectory + "/Core/Arial.ttf", systemFontDirectory + "/Core/Helvetica.ttf", systemFontDirectory + "/CoreAddition/Arial.ttf", systemFontDirectory + "/CoreAddition/Helvetica.ttf" ];
 					#elseif linux
 					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
 					#elseif android
@@ -650,14 +698,13 @@ class TextEngine {
 		var ascent = 0.0;
 		var descent = 0.0;
 		
-		var layoutGroup = null, advances = null;
+		var layoutGroup:TextLayoutGroup = null, advances = null;
 		var widthValue, heightValue = 0.0;
 		
-		var previousSpaceIndex = 0, previousBreakIndex = 0;
+		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = getLineBreakIndex ();
 		
-		var marginRight = 0.0;
 		var offsetX = 2.0;
 		var offsetY = 2.0;
 		var textIndex = 0;
@@ -699,7 +746,22 @@ class TextEngine {
 				
 				for (i in startIndex...endIndex) {
 					
-					advances.push (__context.measureText (text.charAt (i)).width);
+					var advance;
+					
+					if (i < text.length-1) {
+						
+						// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
+						var nextWidth = __context.measureText (text.charAt (i + 1)).width;
+						var twoWidths = __context.measureText (text.substr (i,  2)).width;
+						advance = twoWidths - nextWidth;
+						
+					} else {
+						
+						advance = __context.measureText (text.charAt (i)).width;
+						
+					}
+					
+					advances.push (advance);
 					
 				}
 				
@@ -791,6 +853,23 @@ class TextEngine {
 			
 		}
 		
+		inline function nextLayoutGroup (startIndex, endIndex):Void {
+			
+			if (layoutGroup == null || layoutGroup.startIndex != layoutGroup.endIndex) {
+				
+				layoutGroup = new TextLayoutGroup (formatRange.format, startIndex, endIndex);
+				layoutGroups.push (layoutGroup);
+				
+			} else {
+				
+				layoutGroup.format = formatRange.format;
+				layoutGroup.startIndex = startIndex;
+				layoutGroup.endIndex = endIndex;
+				
+			}
+			
+		}
+		
 		inline function nextFormatRange ():Void {
 			
 			if (rangeIndex < textFormatRanges.length - 1) {
@@ -802,9 +881,19 @@ class TextEngine {
 				#if (js && html5)
 				
 				__context.font = getFont (currentFormat);
+
+				if (currentFormat.__ascent != null) {
+
+					ascent = currentFormat.size * currentFormat.__ascent;
+					descent = currentFormat.size * currentFormat.__descent;
+
+				} else {
+					
+					ascent = currentFormat.size;
+					descent = currentFormat.size * 0.185;
+					
+				}
 				
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
 				leading = currentFormat.leading;
 				
 				heightValue = ascent + descent + leading;
@@ -813,23 +902,26 @@ class TextEngine {
 				
 				font = getFontInstance (currentFormat);
 				
-				if (font != null) {
-					
+				if (currentFormat.__ascent != null) {
+
+					ascent = currentFormat.size * currentFormat.__ascent;
+					descent = currentFormat.size * currentFormat.__descent;
+
+				} else if (font != null) {
+
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
-					leading = currentFormat.leading;
-					
-					heightValue = ascent + descent + leading;
-					
+
 				} else {
 					
 					ascent = currentFormat.size;
 					descent = currentFormat.size * 0.185;
-					leading = currentFormat.leading;
-					
-					heightValue = ascent + descent + leading;
 					
 				}
+				
+				leading = currentFormat.leading;
+				
+				heightValue = ascent + descent + leading;
 				
 				#end
 				
@@ -848,17 +940,30 @@ class TextEngine {
 			
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
-				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
-				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
-				layoutGroup.offsetX = offsetX;
-				layoutGroup.ascent = ascent;
-				layoutGroup.descent = descent;
-				layoutGroup.leading = leading;
-				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-				layoutGroup.height = heightValue;
-				layoutGroups.push (layoutGroup);
+				if (textIndex <= breakIndex) {
+					
+					nextLayoutGroup (textIndex, breakIndex);
+					
+					layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					layoutGroup.height = heightValue;
+					
+					layoutGroup = null;
+					
+				} else if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
+					
+					// Trim the last space from the line width, for correct TextFormatAlign.RIGHT alignment
+					layoutGroup.width -= layoutGroup.advances[layoutGroup.advances.length - 1];
+					
+					layoutGroup = null;
+					
+				}
 				
 				offsetY += heightValue;
 				offsetX = 2;
@@ -871,35 +976,57 @@ class TextEngine {
 				}
 				
 				textIndex = breakIndex + 1;
-				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
-				layoutGroup = null;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
 				
-				if (layoutGroup != null && previousSpaceIndex != previousBreakIndex && previousSpaceIndex == textIndex-1 && textIndex == formatRange.start && spaceIndex <= formatRange.end) {
-					// This ensures we render contiguous selection rectangles
-					// TODO: Fix the case where a block of whitespace needs its own TextLayoutGroup
-					layoutGroup.endIndex = textIndex;
-					layoutGroup.width += layoutGroup.advances[layoutGroup.advances.length - 1];
+				if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
+					
+					layoutGroup = null;
+					
 				}
 				
-				layoutGroup = null;
 				wrap = false;
 				
 				while (true) {
 					
 					if (textIndex == formatRange.end) break;
-					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
-					advances = getAdvances (text, textIndex, spaceIndex + 1);
-					var spaceWidth = advances[advances.length - 1];
-					widthValue = getAdvancesWidth (advances) - spaceWidth;
+					var endIndex = spaceIndex == -1? (breakIndex == -1? formatRange.end : breakIndex) : (spaceIndex + 1) > formatRange.end? formatRange.end : spaceIndex + 1;
+					
+					advances = getAdvances (text, textIndex, endIndex);
+					widthValue = getAdvancesWidth (advances);
+					
+					
+					if (lineFormat.align == JUSTIFY) {
+						
+						if (advances.length > 0 && textIndex == previousSpaceIndex) {
+							
+							// Trim left space of this word
+							textIndex++;
+							
+							var spaceWidth = advances.shift();
+							widthValue -= spaceWidth;
+							offsetX += spaceWidth;
+							
+						}
+						
+						if (advances.length > 0 && endIndex == spaceIndex+1) {
+							
+							// Trim right space of this word
+							endIndex--;
+							
+							var spaceWidth = advances.pop();
+							widthValue -= spaceWidth;
+							
+						}
+						
+					}
 					
 					if (wordWrap) {
 						
-						if (offsetX + widthValue > width - 2) {
+						if (offsetX + widthValue > width) {
 							
 							wrap = true;
 							
@@ -908,6 +1035,19 @@ class TextEngine {
 					}
 					
 					if (wrap) {
+						
+						if (lineFormat.align != JUSTIFY && (layoutGroup != null || layoutGroups.length > 0)) {
+							
+							var previous = layoutGroup;
+							if (previous == null) {
+								previous = layoutGroups[layoutGroups.length - 1];
+							}
+							
+							// For correct selection rectangles and alignment, trim the trailing space of the previous line:
+							previous.width -= previous.advances[previous.advances.length - 1];
+							previous.endIndex--;
+							
+						}
 						
 						offsetY += heightValue;
 						
@@ -952,7 +1092,8 @@ class TextEngine {
 							
 						}
 						
-						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
+						nextLayoutGroup (textIndex, endIndex);
+						
 						layoutGroup.advances = advances;
 						layoutGroup.offsetX = offsetX;
 						layoutGroup.ascent = ascent;
@@ -962,39 +1103,29 @@ class TextEngine {
 						layoutGroup.offsetY = offsetY;
 						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
-						layoutGroups.push (layoutGroup);
 						
-						offsetX = widthValue + spaceWidth;
-						marginRight = spaceWidth;
+						offsetX += widthValue;
+						
+						textIndex = endIndex;
 						
 						wrap = false;
 						
 					} else {
 						
-						if (formatRange.start == previousSpaceIndex && textIndex - 1 == previousSpaceIndex) {
-							
-							// Grow this TextLayoutGroup to the left 1 space for contiguous selection rectangles
-							advances = getAdvances (text, previousSpaceIndex, textIndex).concat(advances);
-							widthValue += advances[0];
-							offsetX -= advances[0];
-							
-							textIndex = previousSpaceIndex;
-							
-						}
-						
 						if (layoutGroup != null && textIndex == spaceIndex) {
 							
-							if (formatRange.format.align != JUSTIFY) {
+							if (lineFormat.align != JUSTIFY) {
 								
 								layoutGroup.endIndex = spaceIndex;
+								layoutGroup.advances = layoutGroup.advances.concat (advances);
+								layoutGroup.width += widthValue;
 								
 							}
 							
-							marginRight += spaceWidth;
-							
 						} else if (layoutGroup == null || lineFormat.align == JUSTIFY) {
 							
-							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
+							nextLayoutGroup (textIndex, endIndex);
+							
 							layoutGroup.advances = advances;
 							layoutGroup.offsetX = offsetX;
 							layoutGroup.ascent = ascent;
@@ -1004,58 +1135,58 @@ class TextEngine {
 							layoutGroup.offsetY = offsetY;
 							layoutGroup.width = widthValue;
 							layoutGroup.height = heightValue;
-							layoutGroups.push (layoutGroup);
-							
-							marginRight = spaceWidth;
 							
 						} else {
 							
-							layoutGroup.endIndex = spaceIndex;
+							layoutGroup.endIndex = endIndex;
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
+							layoutGroup.width += widthValue;
 							
-							//layoutGroup.width += marginRight + widthValue + spaceWidth;
-							layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-							//layoutGroup.width += widthValue + spaceWidth;
-							
-							marginRight = spaceWidth;
+							// If next char is newline, process it immediately and prevent useless extra layout groups
+							if (breakIndex == endIndex) endIndex++;
 							
 						}
 						
-						offsetX += widthValue + spaceWidth;
+						offsetX += widthValue;
+						
+						textIndex = endIndex;
 						
 					}
 					
-					textIndex = spaceIndex + 1;
-					
-					previousSpaceIndex = spaceIndex;
-					var nextSpaceIndex = text.indexOf (" ", previousSpaceIndex + 1);
-					
-					// Check if we can continue wrapping this line until the next line-break or end-of-String.
-					// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
-					if (previousSpaceIndex != breakIndex && breakIndex > -1 && (nextSpaceIndex == -1 || nextSpaceIndex > breakIndex)) {
-						
-						spaceIndex = breakIndex;
-						
-					} else {
-						
-						if (breakIndex == previousSpaceIndex) {
-							
-							textIndex = breakIndex;
-							
-						}
-						
-						spaceIndex = nextSpaceIndex;
-						
-					}
+					var nextSpaceIndex = text.indexOf (" ", textIndex);
 					
 					if (formatRange.end <= previousSpaceIndex) {
 						
 						layoutGroup = null;
+						textIndex = formatRange.end;
 						nextFormatRange ();
+						
+					} else {
+						
+						// Check if we can continue wrapping this line until the next line-break or end-of-String.
+						// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
+						
+						if (breakIndex == previousSpaceIndex) {
+							
+							layoutGroup.endIndex = breakIndex;
+							
+							if (breakIndex - layoutGroup.startIndex - layoutGroup.advances.length < 0) {
+								
+								// Newline has no size
+								layoutGroup.advances.push (0.0);
+								
+							}
+							
+							textIndex = breakIndex+1;
+							
+						}
+						
+						previousSpaceIndex = spaceIndex;
+						spaceIndex = nextSpaceIndex;
 						
 					}
 					
-					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
+					if ((breakIndex > -1 && (spaceIndex > breakIndex || spaceIndex == -1 && breakIndex <= textIndex)) || textIndex > text.length || spaceIndex > formatRange.end) {
 						
 						break;
 						
@@ -1071,9 +1202,19 @@ class TextEngine {
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
 					
-					if (layoutGroup == null) {
+					advances = getAdvances (text, textIndex, formatRange.end);
+					widthValue = getAdvancesWidth (advances);
+					
+					if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
 						
-						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+						layoutGroup.advances = layoutGroup.advances.concat (advances);
+						layoutGroup.width += widthValue;
+						layoutGroup.endIndex = formatRange.end;
+						
+					} else {
+						
+						nextLayoutGroup (textIndex, formatRange.end);
+						
 						layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
 						layoutGroup.offsetX = offsetX;
 						layoutGroup.ascent = ascent;
@@ -1083,22 +1224,10 @@ class TextEngine {
 						layoutGroup.offsetY = offsetY;
 						layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
 						layoutGroup.height = heightValue;
-						layoutGroups.push (layoutGroup);
-						
-						offsetX += layoutGroup.width;
-						
-					} else if (layoutGroup.startIndex != layoutGroup.endIndex) {
-						
-						advances = getAdvances (text, textIndex, formatRange.end);
-						widthValue = getAdvancesWidth (advances);
-						layoutGroup.advances = layoutGroup.advances.concat (advances);
-						layoutGroup.width += marginRight + widthValue;
-						layoutGroup.endIndex = formatRange.end;
-						
-						offsetX += widthValue;
 						
 					}
 					
+					offsetX += widthValue;
 					textIndex = formatRange.end;
 					
 				}
@@ -1116,6 +1245,12 @@ class TextEngine {
 			
 		}
 		
+		#if openfl_trace_text_layout_groups
+		for (lg in layoutGroups) {
+			trace("LG", lg.advances.length - (lg.endIndex - lg.startIndex), "line:"+lg.lineIndex, "w:"+lg.width, "x:"+Std.int(lg.offsetX), "y:"+Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
+		}
+		#end
+		
 	}
 	
 	
@@ -1123,6 +1258,7 @@ class TextEngine {
 		
 		var lineIndex = -1;
 		var offsetX = 0.0;
+		var totalWidth = this.width - 4;
 		var group, lineLength;
 		
 		for (i in 0...layoutGroups.length) {
@@ -1137,9 +1273,9 @@ class TextEngine {
 					
 					case CENTER:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < totalWidth) {
 							
-							offsetX = Math.round ((width - 4 - lineWidths[lineIndex]) / 2);
+							offsetX = Math.round ((totalWidth - lineWidths[lineIndex]) / 2);
 							
 						} else {
 							
@@ -1149,9 +1285,9 @@ class TextEngine {
 					
 					case RIGHT:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < totalWidth) {
 							
-							offsetX = Math.round (width - 4 - lineWidths[lineIndex]);
+							offsetX = Math.round (totalWidth - lineWidths[lineIndex]);
 							
 						} else {
 							
@@ -1161,7 +1297,7 @@ class TextEngine {
 					
 					case JUSTIFY:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < totalWidth) {
 							
 							lineLength = 1;
 							
@@ -1169,7 +1305,11 @@ class TextEngine {
 								
 								if (layoutGroups[j].lineIndex == lineIndex) {
 									
-									lineLength++;
+									if (j == 0 || text.charCodeAt (layoutGroups[j].startIndex - 1) == " ".code){
+										
+										lineLength++;
+										
+									}
 									
 								} else {
 									
@@ -1183,16 +1323,24 @@ class TextEngine {
 								
 								group = layoutGroups[i + lineLength - 1];
 								
-								var endChar = text.charAt (group.endIndex);
-								if (group.endIndex < text.length && endChar != "\n" && endChar != "\r") {
+								var endChar = text.charCodeAt (group.endIndex);
+								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code) {
 									
-									offsetX = (width - 4 - lineWidths[lineIndex]) / (lineLength - 1);
+									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
 									
-									for (j in 1...lineLength) {
+									var j = 0;
+									do {
+										
+										if (j > 1 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+											
+											layoutGroups[i + j].offsetX += (offsetX * (j-1));
+											j++;
+											
+										}
 										
 										layoutGroups[i + j].offsetX += (offsetX * j);
 										
-									}
+									} while (++j < lineLength);
 									
 								}
 								
@@ -1249,6 +1397,62 @@ class TextEngine {
 		}
 		
 		getBounds ();
+		
+	}
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function set_restrict (value:String):String {
+		
+		if (restrict == value) {
+			
+			return restrict;
+			
+		}
+		
+		restrict = value;
+		
+		if (restrict == null || restrict.length == 0) {
+			
+			__restrictRegexp = null;
+			
+		} else {
+			
+			__restrictRegexp = createRestrictRegexp (value);
+			
+		}
+		
+		return restrict;
+		
+	}
+	
+	
+	private function set_text (value:String):String {
+		
+		if (value == null) {
+			return text = value;
+		}
+		
+		if (__restrictRegexp != null) {
+			
+			value = __restrictRegexp.split (value).join ('');
+			
+		}
+		
+		if (maxChars > 0 && value.length > maxChars) {
+			
+			value = value.substr (0, maxChars);
+			
+		}
+		
+		text = value;
+		
+		return text;
 		
 	}
 	

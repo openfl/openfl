@@ -1,7 +1,6 @@
 package openfl.display3D.textures;
 
 
-import lime.graphics.opengl.ExtensionAnisotropicFiltering;
 import lime.graphics.opengl.GL;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
@@ -12,7 +11,13 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.stage3D.SamplerState)
+@:access(openfl.display3D.Context3D)
 
 
 @:final class RectangleTexture extends TextureBase {
@@ -90,7 +95,7 @@ import openfl.utils.ByteArray;
 			
 			if (state.maxAniso != 0.0) {
 				
-				GL.texParameterf (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				GL.texParameterf (GL.TEXTURE_2D, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
 				GLUtils.CheckGLError ();
 				
 			}

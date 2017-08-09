@@ -3,6 +3,7 @@ package openfl.geom;
 
 import lime.math.Matrix3;
 import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
 import openfl.geom.Point;
 
 #if !openfl_debug
@@ -16,7 +17,7 @@ class Matrix {
 	
 	private static var __identity = new Matrix ();
 	private static var __matrix3 = new Matrix3 ();
-	private static var __temp = new Matrix ();
+	private static var __pool = new ObjectPool<Matrix> (function () return new Matrix (), function (m) m.identity ());
 	
 	public var a:Float;
 	public var b:Float;

@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.7.3",
-	"releasenote": "Fixed regression in textField.textWidth, Capabilities improvements, other fixes",
+	"version": "6.0.1",
+	"releasenote": "Minor fixes",
 	"contributors": [ "singmajesty" ]
 }

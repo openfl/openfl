@@ -3,6 +3,7 @@ package openfl.utils;
 
 import haxe.Int64;
 import massive.munit.Assert;
+import lime.system.System;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.CompressionAlgorithm;
@@ -436,6 +437,10 @@ class ByteArrayTest {
 	
 	
 	@Test public function testEndianness () {
+		
+		var byteArray = new ByteArray ();
+		var defaultEndian:Endian = System.endianness;
+		Assert.areEqual (defaultEndian, byteArray.endian);
 		
 		var short:Int = 3000;
 		var int:Int = 200000000;

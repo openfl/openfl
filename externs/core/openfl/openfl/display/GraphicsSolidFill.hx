@@ -4,10 +4,10 @@ package openfl.display; #if (display || !flash)
 /**
  * Defines a solid fill.
  *
- * <p> Use a GraphicsSolidFill object with the
- * <code>Graphics.drawGraphicsData()</code> method. Drawing a
+ *  Use a GraphicsSolidFill object with the
+ * `Graphics.drawGraphicsData()` method. Drawing a
  * GraphicsSolidFill object is the equivalent of calling the
- * <code>Graphics.beginFill()</code> method. </p>
+ * `Graphics.beginFill()` method. 
  */
 @:final extern class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill {
 	

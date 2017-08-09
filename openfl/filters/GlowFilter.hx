@@ -98,7 +98,7 @@ import openfl.geom.Rectangle;
 		horizontalPasses = (blurX <= 0) ? 0 : Math.round (blurX * (value / 4)) + 1;
 		verticalPasses = (blurY <= 0) ? 0 : Math.round (blurY * (value / 4)) + 1;
 		
-		__numPasses = horizontalPasses + verticalPasses;
+		__numShaderPasses = horizontalPasses + verticalPasses;
 		
 		return quality = value;
 		
@@ -106,6 +106,12 @@ import openfl.geom.Rectangle;
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class GlowShader extends Shader {

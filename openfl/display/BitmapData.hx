@@ -13,6 +13,7 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.GL;
+import lime.graphics.opengl.WebGLContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
@@ -25,6 +26,7 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl.Lib;
+import openfl._internal.renderer.canvas.CanvasBlendModeManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -80,23 +82,30 @@ import openfl._internal.renderer.cairo.CairoMaskManager;
 class BitmapData implements IBitmapDrawable {
 	
 	
-	private static var __isGLES:Null<Bool> = null;
+	private static inline var __bufferStride = 26;
+	private static var __supportsBGRA:Null<Bool> = null;
+	private static var __textureFormat:Int;
+	private static var __textureInternalFormat:Int;
 	
 	public var height (default, null):Int;
 	public var image (default, null):Image;
-	public var readable (default, null):Bool;
+	@:beta public var readable (default, null):Bool;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
 	
 	private var __blendMode:BlendMode;
 	private var __buffer:GLBuffer;
+	private var __bufferColorTransform:ColorTransform;
+	private var __bufferContext:GLRenderContext;
 	private var __bufferAlpha:Float;
 	private var __bufferData:Float32Array;
 	private var __framebuffer:GLFramebuffer;
+	private var __framebufferContext:GLRenderContext;
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
+	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
 	private var __transform:Matrix;
 	private var __worldColorTransform:ColorTransform;
@@ -149,6 +158,20 @@ class BitmapData implements IBitmapDrawable {
 				image.fillRect (image.rect, fillColor);
 				
 			}
+			//#elseif (js && html5)
+			//var buffer = new ImageBuffer (null, width, height);
+			//var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+			//buffer.__srcCanvas = canvas;
+			//buffer.__srcContext = canvas.getContext ("2d");
+			//
+			//image = new Image (buffer, 0, 0, width, height);
+			//image.type = CANVAS;
+			//
+			//if (fillColor != 0) {
+				//
+				//image.fillRect (image.rect, fillColor);
+				//
+			//}
 			#else
 			image = new Image (null, 0, 0, width, height, fillColor);
 			#end
@@ -170,7 +193,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		
-		filter.__applyFilter (sourceBitmapData, this, sourceRect, destPoint);
+		filter.__applyFilter (this, sourceBitmapData, sourceRect, destPoint);
 		
 	}
 	
@@ -190,7 +213,9 @@ class BitmapData implements IBitmapDrawable {
 			bitmapData.rect.copyFrom (rect);
 			
 			bitmapData.__framebuffer = __framebuffer;
+			bitmapData.__framebufferContext = __framebufferContext;
 			bitmapData.__texture = __texture;
+			bitmapData.__textureContext = __textureContext;
 			bitmapData.__isValid = true;
 			
 			return bitmapData;
@@ -392,7 +417,9 @@ class BitmapData implements IBitmapDrawable {
 		
 		__buffer = null;
 		__framebuffer = null;
+		__framebufferContext = null;
 		__texture = null;
+		__textureContext = null;
 		
 		//if (__texture != null) {
 			//
@@ -417,7 +444,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function disposeImage ():Void {
+	@:beta public function disposeImage ():Void {
 		
 		readable = false;
 		
@@ -449,11 +476,11 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, false);
-				renderer.resize (width, height);
+				var renderer = new GLRenderer (Lib.current.stage, gl, this);
 				
 				var renderSession = renderer.renderSession;
-				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderSession.clearRenderDirty = false;
+				renderSession.shaderManager = cast(Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
@@ -471,12 +498,22 @@ class BitmapData implements IBitmapDrawable {
 			#if (js && html5)
 			
 			if (colorTransform != null) {
-				var width:Int = Math.ceil (Reflect.getProperty (source, "width"));
-				var height:Int = Math.ceil (Reflect.getProperty (source, "height"));
+				
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
 				var copy = new BitmapData (width, height, true, 0);
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
 				
 			}
 			
@@ -485,10 +522,12 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
+			renderSession.clearRenderDirty = false;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
+			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 			
 			if (!smoothing) {
 				
@@ -544,10 +583,21 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (colorTransform != null) {
 				
-				var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
+				var copy = new BitmapData (width, height, true, 0);
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
 				
 			}
 			
@@ -561,9 +611,10 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
+			renderSession.clearRenderDirty = false;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
 			
@@ -600,7 +651,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null):Void {
 		
-		draw (source, matrix, colorTransform, blendMode, clipRect, smoothing);
+		draw (source, matrix, colorTransform, blendMode, clipRect, quality != LOW ? smoothing : false);
 		
 	}
 	
@@ -614,13 +665,16 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!rect.equals (this.rect)) {
 			
-			var matrix = Matrix.__temp;
-			matrix.setTo (1, 0, 0, 1, Math.round (-rect.x), Math.round (-rect.y));
+			var matrix = Matrix.__pool.get ();
+			matrix.tx = Math.round (-rect.x);
+			matrix.ty = Math.round (-rect.y);
 			
 			var bitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, 0);
 			bitmapData.draw (this, matrix);
 			
 			image = bitmapData.image;
+			
+			Matrix.__pool.release (matrix);
 			
 		}
 		
@@ -694,19 +748,19 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData {
+	public static function fromBase64 (base64:String, type:String):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromBase64 (base64, type #if (openfl < "5.0.0"), onload #end);
+		bitmapData.__fromBase64 (base64, type);
 		return bitmapData;
 		
 	}
 	
 	
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData {
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromBytes (bytes, rawAlpha #if (openfl < "5.0.0"), onload #end);
+		bitmapData.__fromBytes (bytes, rawAlpha);
 		return bitmapData;
 		
 	}
@@ -726,10 +780,10 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
-	public static function fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null, onerror:Void -> Void = null #end):BitmapData {
+	public static function fromFile (path:String):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromFile (path #if (openfl < "5.0.0"), onload, onerror #end);
+		bitmapData.__fromFile (path);
 		return bitmapData;
 		
 	}
@@ -754,6 +808,7 @@ class BitmapData implements IBitmapDrawable {
 		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
 		bitmapData.__texture = texture.__textureID;
+		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.image = null;
 		return bitmapData;
 		
@@ -767,9 +822,9 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getBuffer (gl:GLRenderContext, alpha:Float):GLBuffer {
+	public function getBuffer (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):GLBuffer {
 		
-		if (__buffer == null) {
+		if (__buffer == null || __bufferContext != gl) {
 			
 			#if openfl_power_of_two
 			
@@ -798,32 +853,123 @@ class BitmapData implements IBitmapDrawable {
 			
 			#end
 			
-			__bufferData = new Float32Array ([
+			//__bufferData = new Float32Array ([
+				//
+				//width, height, 0, uvWidth, uvHeight, alpha, (color transform, color offset...)
+				//0, height, 0, 0, uvHeight, alpha, (color transform, color offset...)
+				//width, 0, 0, uvWidth, 0, alpha, (color transform, color offset...)
+				//0, 0, 0, 0, 0, alpha, (color transform, color offset...)
+				//
+				//
+			//]);
+			
+			//[ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
+			//[ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
+			
+			__bufferData = new Float32Array (__bufferStride * 4);
+			
+			__bufferData[0] = width;
+			__bufferData[1] = height;
+			__bufferData[3] = uvWidth;
+			__bufferData[4] = uvHeight;
+			__bufferData[__bufferStride + 1] = height;
+			__bufferData[__bufferStride + 4] = uvHeight;
+			__bufferData[__bufferStride * 2] = width;
+			__bufferData[__bufferStride * 2 + 3] = uvWidth;
+			
+			for (i in 0...4) {
 				
-				width, height, 0, uvWidth, uvHeight, alpha,
-				0, height, 0, 0, uvHeight, alpha,
-				width, 0, 0, uvWidth, 0, alpha,
-				0, 0, 0, 0, 0, alpha
+				__bufferData[__bufferStride * i + 5] = alpha;
 				
-			]);
+				if (colorTransform != null) {
+					
+					__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+					__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+					__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+					__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+					__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+					__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+					__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+					__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+					
+				} else {
+					
+					__bufferData[__bufferStride * i + 6] = 1;
+					__bufferData[__bufferStride * i + 11] = 1;
+					__bufferData[__bufferStride * i + 16] = 1;
+					__bufferData[__bufferStride * i + 21] = 1;
+					
+				}
+				
+			}
 			
 			__bufferAlpha = alpha;
+			__bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
-		} else if (__bufferAlpha != alpha) {
+		} else {
 			
-			__bufferData[5] = alpha;
-			__bufferData[11] = alpha;
-			__bufferData[17] = alpha;
-			__bufferData[23] = alpha;
-			__bufferAlpha = alpha;
+			if (__bufferAlpha != alpha) {
+				
+				for (i in 0...4) {
+					
+					__bufferData[__bufferStride * i + 5] = alpha;
+					
+				}
+				
+				__bufferAlpha = alpha;
+				
+			}
+			
+			if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+				
+				if (colorTransform != null) {
+					
+					if (__bufferColorTransform == null) {
+						__bufferColorTransform = colorTransform.__clone ();
+					} else {
+						__bufferColorTransform.__copyFrom (colorTransform);
+					}
+					
+					for (i in 0...4) {
+						
+						__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+						__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+						__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+						__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+						__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+						__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+						__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+						__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+						
+					}
+					
+				} else {
+					
+					for (i in 0...4) {
+						
+						__bufferData[__bufferStride * i + 6] = 1;
+						__bufferData[__bufferStride * i + 11] = 1;
+						__bufferData[__bufferStride * i + 16] = 1;
+						__bufferData[__bufferStride * i + 21] = 1;
+						__bufferData[__bufferStride * i + 22] = 0;
+						__bufferData[__bufferStride * i + 23] = 0;
+						__bufferData[__bufferStride * i + 24] = 0;
+						__bufferData[__bufferStride * i + 25] = 0;
+						
+					}
+					
+				}
+				
+			}
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			
 		}
 		
@@ -880,6 +1026,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__surface == null) {
 			
+			
 			__surface = CairoImageSurface.fromImage (image);
 			
 		}
@@ -893,9 +1040,11 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		
-		if (__texture == null) {
+		if (__texture == null || __textureContext != gl) {
 			
+			__textureContext = gl;
 			__texture = gl.createTexture ();
+			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -926,29 +1075,43 @@ class BitmapData implements IBitmapDrawable {
 				
 			} else {
 				
-				#if !sys
-				
-				internalFormat = gl.RGBA;
-				format = gl.RGBA;
-				
-				#elseif (ios || tvos)
-				
-				internalFormat = gl.RGBA;
-				format = gl.BGRA_EXT;
-				
-				#else
-				
-				if (__isGLES == null) {
+				if (__supportsBGRA == null) {
 					
-					var version:String = gl.getParameter (gl.VERSION);
-					__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+					__textureInternalFormat = gl.RGBA;
+					
+					var bgraExtension = null;
+					#if (!js || !html5)
+					bgraExtension = gl.getExtension ("EXT_bgra");
+					if (bgraExtension == null)
+						bgraExtension = gl.getExtension ("EXT_texture_format_BGRA8888");
+					if (bgraExtension == null)
+						bgraExtension = gl.getExtension ("APPLE_texture_format_BGRA8888");
+					#end
+					
+					if (bgraExtension != null) {
+						
+						__supportsBGRA = true;
+						__textureFormat = bgraExtension.BGRA_EXT;
+						
+						#if (!ios && !tvos)
+						if (gl.type == GLES) {
+							
+							__textureInternalFormat = bgraExtension.BGRA_EXT;
+							
+						}
+						#end
+						
+					} else {
+						
+						__supportsBGRA = false;
+						__textureFormat = gl.RGBA;
+						
+					}
 					
 				}
 				
-				internalFormat = (__isGLES ? gl.BGRA_EXT : gl.RGBA);
-				format = gl.BGRA_EXT;
-				
-				#end
+				internalFormat = __textureInternalFormat;
+				format = __textureFormat;
 				
 			}
 			
@@ -973,7 +1136,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			// TODO: Some way to support BGRA on WebGL?
 			
-			if (textureImage.format != RGBA32) {
+			if (!__supportsBGRA && textureImage.format != RGBA32) {
 				
 				textureImage = textureImage.clone ();
 				textureImage.format = RGBA32;
@@ -990,7 +1153,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			} else {
 				
-				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, textureImage.src);
+				(gl:WebGLContext).texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, textureImage.src);
 				
 			}
 			
@@ -1082,7 +1245,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				var pixel = getPixel32 (x, y);
 				
-				if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+				if ((pixel >> 24) & 0xFF > firstAlphaThreshold) {
 					
 					return true;
 					
@@ -1109,7 +1272,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (rect.contains (x, y)) {
 				
-				var hitRect = Rectangle.__temp;
+				var hitRect = Rectangle.__pool.get ();
 				hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
 				
 				var pixels = getPixels (hitRect);
@@ -1120,12 +1283,14 @@ class BitmapData implements IBitmapDrawable {
 				var length = Std.int (hitRect.width * hitRect.height);
 				var pixel, testPixel;
 				
+				Rectangle.__pool.release (hitRect);
+				
 				for (i in 0...length) {
 					
 					pixel = pixels.readUnsignedInt ();
 					testPixel = testPixels.readUnsignedInt ();
 					
-					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
+					if ((pixel >> 24) & 0xFF > firstAlphaThreshold && (testPixel >> 24) & 0xFF > secondAlphaThreshold) {
 						
 						return true;
 						
@@ -1139,7 +1304,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else if (Std.is (secondObject, Rectangle)) {
 			
-			var secondRectangle = Rectangle.__temp;
+			var secondRectangle = Rectangle.__pool.get ();
 			secondRectangle.copyFrom (cast secondObject);
 			secondRectangle.offset (-firstPoint.x, -firstPoint.y);
 			secondRectangle.__contract (0, 0, width, height);
@@ -1154,8 +1319,9 @@ class BitmapData implements IBitmapDrawable {
 					
 					pixel = pixels.readUnsignedInt ();
 					
-					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+					if ((pixel >> 24) & 0xFF > firstAlphaThreshold) {
 						
+						Rectangle.__pool.release (secondRectangle);
 						return true;
 						
 					}
@@ -1163,6 +1329,8 @@ class BitmapData implements IBitmapDrawable {
 				}
 				
 			}
+			
+			Rectangle.__pool.release (secondRectangle);
 			
 		}
 		
@@ -1311,8 +1479,11 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		pixels.position = 0;
-		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
+		var destRect = Rectangle.__pool.get ();
+		destRect.setTo (destPoint.x, destPoint.y, sw, sh);
 		setPixels (destRect, pixels);
+		Rectangle.__pool.release (destRect);
+		
 	}
 	
 	
@@ -1410,65 +1581,230 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
+	private function __draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
-		Image.fromBase64 (base64, type, function (image) {
+		if (matrix == null) {
 			
-			__fromImage (image);
+			matrix = new Matrix ();
 			
-			#if (openfl < "5.0.0")
-			if (onload != null) {
+			if (source.__transform != null) {
 				
-				onload (this);
+				matrix.copyFrom (source.__transform);
+				matrix.tx = 0;
+				matrix.ty = 0;
 				
 			}
+			
+		}
+		
+		if (!readable /*|| !source.readable*/) {
+			
+			if (GL.context != null) {
+				
+				var gl = GL.context;
+				
+				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
+				gl.viewport (0, 0, width, height);
+				
+				var renderer = new GLRenderer (Lib.current.stage, gl, this);
+				
+				var renderSession = renderer.renderSession;
+				renderSession.clearRenderDirty = true;
+				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				
+				var matrixCache = source.__worldTransform;
+				source.__updateTransforms (matrix);
+				source.__updateChildren (false);
+				source.__renderGL (renderer.renderSession);
+				source.__updateTransforms (matrixCache);
+				source.__updateChildren (true);
+				
+				gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+				
+			}
+			
+		} else {
+			
+			#if (js && html5)
+			
+			if (colorTransform != null) {
+				
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
+				var copy = new BitmapData (width, height, true, 0);
+				copy.draw (source);
+				copy.colorTransform (copy.rect, colorTransform);
+				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
+				
+			}
+			
+			ImageCanvasUtil.convertToCanvas (image);
+			
+			var buffer = image.buffer;
+			
+			var renderSession = new RenderSession ();
+			renderSession.clearRenderDirty = true;
+			renderSession.context = cast buffer.__srcContext;
+			renderSession.allowSmoothing = smoothing;
+			//renderSession.roundPixels = true;
+			renderSession.maskManager = new CanvasMaskManager (renderSession);
+			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
+			
+			if (!smoothing) {
+				
+				untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
+				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
+				untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
+				untyped (buffer.__srcContext).imageSmoothingEnabled = false;
+				
+			}
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.pushRect (clipRect, new Matrix ());
+				
+			}
+			
+			var matrixCache = source.__worldTransform;
+			source.__updateTransforms (matrix);
+			source.__updateChildren (false);
+			source.__renderCanvas (renderSession);
+			source.__updateTransforms (matrixCache);
+			source.__updateChildren (true);
+			
+			if (!smoothing) {
+				
+				untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
+				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
+				untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
+				untyped (buffer.__srcContext).imageSmoothingEnabled = true;
+				
+			}
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.popRect ();
+				
+			}
+			
+			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
+			buffer.__srcImageData = null;
+			buffer.data = null;
+			
+			image.dirty = true;
+			image.version++;
+			
+			#elseif lime_cairo
+			
+			if (source == this) {
+				
+				source = clone ();
+				
+			}
+			
+			if (colorTransform != null) {
+				
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
+				var copy = new BitmapData (width, height, true, 0);
+				copy.draw (source);
+				copy.colorTransform (copy.rect, colorTransform);
+				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
+				
+			}
+			
+			var surface = getSurface ();
+			var cairo = new Cairo (surface);
+			
+			if (!smoothing) {
+				
+				cairo.antialias = NONE;
+				
+			}
+			
+			var renderSession = new RenderSession ();
+			renderSession.clearRenderDirty = true;
+			renderSession.cairo = cairo;
+			renderSession.allowSmoothing = smoothing;
+			//renderSession.roundPixels = true;
+			renderSession.maskManager = new CairoMaskManager (renderSession);
+			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.pushRect (clipRect, new Matrix ());
+				
+			}
+			
+			var matrixCache = source.__worldTransform;
+			source.__updateTransforms (matrix);
+			source.__updateChildren (false);
+			source.__renderCairo (renderSession);
+			source.__updateTransforms (matrixCache);
+			source.__updateChildren (true);
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.popRect ();
+				
+			}
+			
+			surface.flush ();
+			
+			image.dirty = true;
+			image.version++;
+			
 			#end
 			
-		});
+		}
 		
 	}
 	
 	
-	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
+	private inline function __fromBase64 (base64:String, type:String):Void {
 		
-		Image.fromBytes (bytes, function (image) {
-			
-			__fromImage (image);
-			
-			if (rawAlpha != null) {
-				
-				__applyAlpha (rawAlpha);
-				
-			}
-			
-			#if (openfl < "5.0.0")
-			if (onload != null) {
-				
-				onload (this);
-				
-			}
-			#end
-			
-		});
+		var image = Image.fromBase64 (base64, type);
+		__fromImage (image);
 		
 	}
 	
 	
-	private function __fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void, onerror:Void -> Void #end):Void {
+	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Void {
 		
-		Image.fromFile (path, function (image) {
+		var image = Image.fromBytes (bytes);
+		__fromImage (image);
+		
+		if (rawAlpha != null) {
 			
-			__fromImage (image);
+			__applyAlpha (rawAlpha);
 			
-			#if (openfl < "5.0.0")
-			if (onload != null) {
-				
-				onload (this);
-				
-			}
-			#end
-			
-		} #if (openfl < "5.0.0"), onerror #end);
+		}
+		
+	}
+	
+	
+	private function __fromFile (path:String):Void {
+		
+		var image = Image.fromFile (path);
+		__fromImage (image);
 		
 	}
 	
@@ -1496,12 +1832,23 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		var bounds = Rectangle.__pool.get ();
+		this.rect.__transform (bounds, matrix);
+		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release (bounds);
+		
+	}
+	
+	
 	private function __getFramebuffer (gl:GLRenderContext):GLFramebuffer {
 		
-		if (__framebuffer == null) {
+		if (__framebuffer == null || __framebufferContext != gl) {
 			
 			getTexture (gl);
 			
+			__framebufferContext = gl;
 			__framebuffer = gl.createFramebuffer ();
 			
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
@@ -1510,6 +1857,49 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		return __framebuffer;
+		
+	}
+	
+	
+	private inline function __loadFromBase64 (base64:String, type:String):Future<BitmapData> {
+		
+		return Image.loadFromBase64 (base64, type).then (function (image) {
+			
+			__fromImage (image);
+			return Future.withValue (this);
+			
+		});
+		
+	}
+	
+	
+	private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData> {
+		
+		return Image.loadFromBytes (bytes).then (function (image) {
+			
+			__fromImage (image);
+			
+			if (rawAlpha != null) {
+				
+				__applyAlpha (rawAlpha);
+				
+			}
+			
+			return Future.withValue (this);
+			
+		});
+		
+	}
+	
+	
+	private function __loadFromFile (path:String):Future<BitmapData> {
+		
+		return Image.loadFromFile (path).then (function (image) {
+			
+			__fromImage (image);
+			return Future.withValue (this);
+			
+		});
 		
 	}
 	
@@ -1626,7 +2016,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		renderSession.shaderManager.setShader (shader);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl, 1));
+		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl, 1, __worldColorTransform));
 		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);

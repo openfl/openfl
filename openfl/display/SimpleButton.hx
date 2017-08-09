@@ -13,9 +13,15 @@ import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class SimpleButton extends InteractiveObject {
@@ -174,13 +180,19 @@ class SimpleButton extends InteractiveObject {
 		
 		if (hitTestState != null) {
 			
-			var cacheTransform = __updateTransform (hitTestState);
-			
 			if (hitTestState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 				
 				if (stack != null) {
 					
-					stack[stack.length - 1] = hitObject;
+					if (stack.length == 0) {
+						
+						stack[0] = hitObject;
+						
+					} else {
+						
+						stack[stack.length - 1] = hitObject;
+						
+					}
 					
 				}
 				
@@ -188,22 +200,16 @@ class SimpleButton extends InteractiveObject {
 				
 			}
 			
-			__resetTransform (hitTestState, cacheTransform);
-			
 		} else if (__currentState != null) {
 			
 			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
-			
-			var cacheTransform = __updateTransform (__currentState);
 			
 			if (__currentState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 				
 				hitTest = interactiveOnly;
 				
 			}
-			
-			__resetTransform (__currentState, cacheTransform);
 			
 		}
 		
@@ -229,15 +235,11 @@ class SimpleButton extends InteractiveObject {
 		
 		var hitTest = false;
 		
-		var cacheTransform = __updateTransform (__currentState);
-		
 		if (__currentState.__hitTestMask (x, y)) {
 			
 			hitTest = true;
 			
 		}
-		
-		__resetTransform (__currentState, cacheTransform);
 		
 		return hitTest;
 		
@@ -246,7 +248,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
 		renderSession.maskManager.pushObject (this);
 		__currentState.__renderCairo (renderSession);
@@ -264,7 +266,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
 		#if !neko
 		
@@ -279,11 +281,12 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
-		var bounds = new Rectangle ();
+		var bounds = Rectangle.__pool.get ();
 		__getLocalBounds (bounds);
 		
 		renderSession.context.rect (0, 0, bounds.width, bounds.height);
 		
+		Rectangle.__pool.release (bounds);
 		__currentState.__renderCanvasMask (renderSession);
 		
 	}
@@ -302,7 +305,16 @@ class SimpleButton extends InteractiveObject {
 		}
 		
 		__previousStates.length = 0;
-		__currentState.__renderDOM (renderSession);
+		
+		if (__currentState != null) {
+
+			if (__currentState.stage != stage) {
+				__currentState.__setStageReference(stage);
+			}
+
+			__currentState.__renderDOM (renderSession);
+			
+		}
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -313,19 +325,11 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
 		renderSession.maskManager.pushObject (this);
 		__currentState.__renderGL (renderSession);
 		renderSession.maskManager.popObject (this);
-		
-	}
-	
-	
-	private function __resetTransform (state:DisplayObject, cacheTransform:Matrix):Void {
-		
-		state.__updateTransforms (cacheTransform);
-		state.__updateChildren (false);
 		
 	}
 	
@@ -340,32 +344,72 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
+		if (hitTestState != null && hitTestState != __currentState) {
+			
+			hitTestState.__setStageReference (stage);
+			
+		}
+		
 	}
 	
 	
-	private function __updateTransform (state:DisplayObject):Matrix {
+	private override function __setTransformDirty ():Void {
 		
-		var cacheTransform = state.__worldTransform;
+		super.__setTransformDirty ();
 		
-		var local = state.__transform;
-		var parentTransform = __worldTransform;
-		var overrideTransform = Matrix.__temp;
+		if (__currentState != null) {
+			
+			__currentState.__setTransformDirty ();
+			
+		}
 		
-		overrideTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
-		overrideTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
-		overrideTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
-		overrideTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
-		overrideTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
-		overrideTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+		if (hitTestState != null && hitTestState != __currentState) {
+			
+			hitTestState.__setTransformDirty ();
+			
+		}
 		
-		var cacheTransform = state.__transform;
-		state.__transform = overrideTransform;
+	}
+	
+	
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
-		state.__update (false, true);
+		super.__update (transformOnly, updateChildren, maskGraphics);
 		
-		state.__transform = cacheTransform;
+		if (updateChildren) {
+			
+			if (__currentState != null) {
+				
+				__currentState.__update (transformOnly, true, maskGraphics);
+				
+			}
+			
+			if (hitTestState != null && hitTestState != __currentState) {
+				
+				hitTestState.__update (transformOnly, true, maskGraphics);
+				
+			}
+			
+		}
 		
-		return cacheTransform;
+	}
+	
+	
+	public override function __updateChildren (transformOnly:Bool):Void {
+		
+		super.__updateChildren (transformOnly);
+		
+		if (__currentState != null) {
+			
+			__currentState.__updateChildren (transformOnly);
+			
+		}
+		
+		if (hitTestState != null && hitTestState != __currentState) {
+			
+			hitTestState.__updateChildren (transformOnly);
+			
+		}
 		
 	}
 	
@@ -374,7 +418,17 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__updateTransforms (overrideTransform);
 		
-		__updateTransform (__currentState);
+		if (__currentState != null) {
+			
+			__currentState.__updateTransforms ();
+			
+		}
+		
+		if (hitTestState != null && hitTestState != __currentState) {
+			
+			hitTestState.__updateTransforms ();
+			
+		}
 		
 	}
 	
@@ -400,6 +454,23 @@ class SimpleButton extends InteractiveObject {
 	
 	
 	private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
+		
+		if (this.hitTestState != null && this.hitTestState != hitTestState) {
+			
+			if (this.hitTestState != downState && this.hitTestState != upState && this.hitTestState != overState) {
+				
+				this.hitTestState.__renderParent = null;
+				
+			}
+			
+		}
+		
+		if (hitTestState != null) {
+			
+			hitTestState.__renderParent = this;
+			hitTestState.__setRenderDirty ();
+			
+		}
 		
 		return this.hitTestState = hitTestState;
 		
@@ -455,13 +526,13 @@ class SimpleButton extends InteractiveObject {
 	
 	private function set___currentState (value:DisplayObject):DisplayObject {
 		
-		if (__currentState != null) {
+		if (__currentState != null && __currentState != hitTestState) {
 			
 			__currentState.__renderParent = null;
 			
 		}
 		
-		if (value.parent != null) {
+		if (value != null && value.parent != null) {
 			
 			value.parent.removeChild (value);
 			
@@ -473,9 +544,11 @@ class SimpleButton extends InteractiveObject {
 			__previousStates = new Vector<DisplayObject> ();
 			
 		}
+		#end
 		
 		if (value != __currentState) {
 			
+			#if (js && html5 && dom)
 			if (__currentState != null) {
 				
 				__currentState.__setStageReference (null);
@@ -490,15 +563,22 @@ class SimpleButton extends InteractiveObject {
 				__previousStates.splice (index, 1);
 				
 			}
+			#end
 			
-			value.__setStageReference (stage);
-			value.__worldAlphaChanged = true;
+			if (value != null) {
+				
+				value.__renderParent = this;
+				value.__setRenderDirty ();
+				
+			}
+			
+			__setRenderDirty ();
 			
 		}
-		#end
 		
-		value.__renderParent = this;
-		return __currentState = value;
+		__currentState = value;
+		
+		return value;
 		
 	}
 	
@@ -512,11 +592,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private function __this_onMouseDown (event:MouseEvent):Void {
 		
-		if (downState != null) {
-			
-			__currentState = downState;
-			
-		}
+		__currentState = downState;
 		
 	}
 	

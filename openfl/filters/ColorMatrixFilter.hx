@@ -24,7 +24,7 @@ import openfl.geom.Rectangle;
 		this.matrix = matrix;
 		
 		// __numPasses = 1;
-		__numPasses = 0;
+		__numShaderPasses = 0;
 		
 	}
 	
@@ -36,7 +36,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __applyFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
+	private override function __applyFilter (destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
 		#if (js && html5)
 		ImageCanvasUtil.convertToCanvas (sourceBitmapData.image);
@@ -78,6 +78,7 @@ import openfl.geom.Rectangle;
 		}
 		
 		destBitmapData.image.dirty = true;
+		return destBitmapData;
 		
 	}
 	
@@ -111,6 +112,12 @@ import openfl.geom.Rectangle;
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class ColorMatrixShader extends Shader {

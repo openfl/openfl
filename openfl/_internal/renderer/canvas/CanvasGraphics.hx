@@ -25,6 +25,7 @@ import js.html.CanvasElement;
 import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
+import js.html.CanvasWindingRule;
 import js.Browser;
 import js.html.ImageData;
 #end
@@ -32,6 +33,8 @@ import js.html.ImageData;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Point)
 
 
 class CanvasGraphics {
@@ -111,42 +114,60 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		var gradientFill = null;
+		var gradientFill = null, point = null, point2 = null, releaseMatrix = false;
+		
+		if (matrix == null) {
+			
+			matrix = Matrix.__pool.get ();
+			releaseMatrix = true;
+			
+		}
 		
 		switch (type) {
 			
 			case RADIAL:
 				
-				if (matrix == null) matrix = new Matrix ();
-				var point = matrix.transformPoint (new Point (1638.4, 0));
+				point = Point.__pool.get ();
+				point.setTo (1638.4, 0);
+				matrix.__transformPoint (point);
 				
 				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, Math.abs ((point.x - matrix.tx) / 2));
 			
 			case LINEAR:
 				
-				var matrix = matrix != null ? matrix : new Matrix ();
-				var point1 = matrix.transformPoint (new Point (-819.2, 0));
-				var point2 = matrix.transformPoint (new Point (819.2, 0));
+				point = Point.__pool.get ();
+				point.setTo (-819.2, 0);
+				matrix.__transformPoint (point);
 				
-				gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
+				point2 = Point.__pool.get ();
+				point2.setTo (819.2, 0);
+				matrix.__transformPoint (point2);
+				
+				gradientFill = context.createLinearGradient (point.x, point.y, point2.x, point2.y);
 			
 		}
 		
+		var rgb, alpha, r, g, b, ratio;
+		
 		for (i in 0...colors.length) {
 			
-			var rgb = colors[i];
-			var alpha = alphas[i];
-			var r = (rgb & 0xFF0000) >>> 16;
-			var g = (rgb & 0x00FF00) >>> 8;
-			var b = (rgb & 0x0000FF);
+			rgb = colors[i];
+			alpha = alphas[i];
+			r = (rgb & 0xFF0000) >>> 16;
+			g = (rgb & 0x00FF00) >>> 8;
+			b = (rgb & 0x0000FF);
 			
-			var ratio = ratios[i] / 0xFF;
+			ratio = ratios[i] / 0xFF;
 			if (ratio < 0) ratio = 0;
 			if (ratio > 1) ratio = 1;
 			
 			gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
 			
 		}
+		
+		if (point != null) Point.__pool.release (point);
+		if (point2 != null) Point.__pool.release (point2);
+		if (releaseMatrix) Matrix.__pool.release (matrix);
 		
 		return cast (gradientFill);
 		
@@ -174,7 +195,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill ();
+		if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 		return canvas;
 		#end
 		
@@ -545,10 +566,14 @@ class CanvasGraphics {
 		var closeGap = false;
 		var startX = 0.0;
 		var startY = 0.0;
+		var setStart = false;
 		
 		setSmoothing (true);
 		
 		var data = new DrawCommandReader (commands);
+		
+		var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym, r, g, b;
+		var optimizationUsed, canOptimizeMatrix, st:Float, sr:Float, sb:Float, sl:Float, stl = null, sbr = null;
 		
 		for (type in commands.types) {
 			
@@ -573,20 +598,19 @@ class CanvasGraphics {
 				case DRAW_ELLIPSE:
 					
 					var c = data.readDrawEllipse ();
-					var x = c.x;
-					var y = c.y;
-					var width = c.width;
-					var height = c.height;
+					x = c.x;
+					y = c.y;
+					width = c.width;
+					height = c.height;
 					x -= offsetX;
 					y -= offsetY;
 					
-					var kappa = .5522848,
-						ox = (width / 2) * kappa, // control point offset horizontal
-						oy = (height / 2) * kappa, // control point offset vertical
-						xe = x + width,           // x-end
-						ye = y + height,           // y-end
-						xm = x + width / 2,       // x-middle
-						ym = y + height / 2;       // y-middle
+					ox = (width / 2) * kappa; // control point offset horizontal
+					oy = (height / 2) * kappa; // control point offset vertical
+					xe = x + width; // x-end
+					ye = y + height; // y-end
+					xm = x + width / 2; // x-middle
+					ym = y + height / 2; // y-middle
 					
 					context.moveTo (x, ym);
 					context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
@@ -606,6 +630,12 @@ class CanvasGraphics {
 					
 					positionX = c.x;
 					positionY = c.y;
+					
+					if (positionX == startX && positionY == startY) {
+						
+						closeGap = true;
+						
+					}
 				
 				case MOVE_TO:
 					
@@ -615,16 +645,22 @@ class CanvasGraphics {
 					positionX = c.x;
 					positionY = c.y;
 					
-					closeGap = true;
+					if (setStart) {
+						
+						closeGap = true;
+						
+					}
+					
 					startX = c.x;
 					startY = c.y;
+					setStart = true;
 				
 				case LINE_STYLE:
 					
 					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
 						
-						closePath (c.thickness == null);
+						closePath (true);
 						
 					}
 					
@@ -652,9 +688,9 @@ class CanvasGraphics {
 							
 						} else {
 							
-							var r = (c.color & 0xFF0000) >>> 16;
-							var g = (c.color & 0x00FF00) >>> 8;
-							var b = (c.color & 0x0000FF);
+							r = (c.color & 0xFF0000) >>> 16;
+							g = (c.color & 0x00FF00) >>> 8;
+							b = (c.color & 0x0000FF);
 							
 							context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + c.alpha + ")";
 							
@@ -729,9 +765,9 @@ class CanvasGraphics {
 							
 						} else {
 							
-							var r = (c.color & 0xFF0000) >>> 16;
-							var g = (c.color & 0x00FF00) >>> 8;
-							var b = (c.color & 0x0000FF);
+							r = (c.color & 0xFF0000) >>> 16;
+							g = (c.color & 0x00FF00) >>> 8;
+							b = (c.color & 0x0000FF);
 							
 							context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + c.alpha + ")";
 							
@@ -755,16 +791,16 @@ class CanvasGraphics {
 				case DRAW_RECT:
 					
 					var c = data.readDrawRect ();
-					var optimizationUsed = false;
+					optimizationUsed = false;
 					
 					if (bitmapFill != null && !hitTesting) {
 						
-						var st:Float = 0;
-						var sr:Float = 0;
-						var sb:Float = 0;
-						var sl:Float = 0;
+						st = 0;
+						sr = 0;
+						sb = 0;
+						sl = 0;
 						
-						var canOptimizeMatrix = true;
+						canOptimizeMatrix = true;
 						
 						if (pendingMatrix != null) {
 							
@@ -774,8 +810,14 @@ class CanvasGraphics {
 								
 							} else {
 								
-								var stl = inversePendingMatrix.transformPoint (new Point (c.x, c.y));
-								var sbr = inversePendingMatrix.transformPoint (new Point (c.x + c.width, c.y + c.height));
+								if (stl == null) stl = Point.__pool.get ();
+								if (sbr == null) sbr = Point.__pool.get ();
+								
+								stl.setTo (c.x, c.y);
+								inversePendingMatrix.__transformPoint (stl);
+								
+								sbr.setTo (c.x + c.width, c.y + c.height);
+								inversePendingMatrix.__transformPoint (sbr);
 								
 								st = stl.y;
 								sl = stl.x;
@@ -799,6 +841,7 @@ class CanvasGraphics {
 							if (!hitTesting) context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
 							
 						}
+						
 					}
 					
 					if (!optimizationUsed) {
@@ -815,6 +858,9 @@ class CanvasGraphics {
 			
 		}
 		
+		if (stl != null) Point.__pool.release (stl);
+		if (sbr != null) Point.__pool.release (sbr);
+		
 		data.destroy ();
 		
 		if (stroke && hasStroke) {
@@ -822,10 +868,11 @@ class CanvasGraphics {
 			if (hasFill && closeGap) {
 				
 				context.lineTo (startX - offsetX, startY - offsetY);
+				closePath (false);
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
-				closePath (true);
+				closePath (false);
 				
 			}
 			
@@ -842,12 +889,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 					
 				}
 				
@@ -896,39 +943,45 @@ class CanvasGraphics {
 				
 				context = graphics.__context;
 				var transform = graphics.__renderTransform;
+				var canvas = graphics.__canvas;
+				
+				var scale = CanvasRenderer.scale;
+				var scaledWidth = Std.int (width * scale);
+				var scaledHeight = Std.int (height * scale);
 				
 				#if dom
+				
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 					
-					var devicePixelRatio = untyped window.devicePixelRatio || 1;
-					if (devicePixelRatio > 1) {
-						
-						graphics.__canvas.width  = Std.int( width * devicePixelRatio);
-						graphics.__canvas.height = Std.int(height * devicePixelRatio);
-						graphics.__canvas.style.width  =  width + "px";
-						graphics.__canvas.style.height = height + "px";	
-						
-						var transform = graphics.__renderTransform;
-						context.setTransform (transform.a  * devicePixelRatio,
-						                      transform.b  * devicePixelRatio,
-						                      transform.c  * devicePixelRatio,
-						                      transform.d  * devicePixelRatio,
-						                      transform.tx * devicePixelRatio,
-						                      transform.ty * devicePixelRatio);
-						
-					} else {
-						
-						graphics.__canvas.width  = width;
-						graphics.__canvas.height = height;
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-						
-					}
+					context.clearRect (0, 0, scaledWidth, scaledHeight);
 					
+				} else {
+				
+					canvas.width = scaledWidth;
+					canvas.height = scaledHeight;
+					canvas.style.width = width + "px";
+					canvas.style.height = height + "px";
+					
+				}
+				
+				var transform = graphics.__renderTransform;
+				context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
+				
 				#else
+				
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 					
-					graphics.__canvas.width  = width;
-					graphics.__canvas.height = height;
-					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					context.clearRect (0, 0, scaledWidth, scaledHeight);
 					
+				} else {
+					
+					canvas.width  = width;
+					canvas.height = height;
+					
+				}
+				
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				
 				#end
 				
 				fillCommands.clear ();
@@ -1158,7 +1211,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									if (!hitTesting) context.fill ();
+									if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 									i += 3;
 									continue;
 									
@@ -1254,6 +1307,8 @@ class CanvasGraphics {
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
+			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
+			
 			for (type in graphics.__commands.types) {
 				
 				switch (type) {
@@ -1280,20 +1335,19 @@ class CanvasGraphics {
 					case DRAW_ELLIPSE:
 						
 						var c = data.readDrawEllipse ();
-						var x = c.x;
-						var y = c.y;
-						var width = c.width;
-						var height = c.height;
+						x = c.x;
+						y = c.y;
+						width = c.width;
+						height = c.height;
 						x -= offsetX;
 						y -= offsetY;
 						
-						var kappa = .5522848,
-							ox = (width / 2) * kappa, // control point offset horizontal
-							oy = (height / 2) * kappa, // control point offset vertical
-							xe = x + width,           // x-end
-							ye = y + height,          // y-end
-							xm = x + width / 2,       // x-middle
-							ym = y + height / 2;      // y-middle
+						ox = (width / 2) * kappa; // control point offset horizontal
+						oy = (height / 2) * kappa; // control point offset vertical
+						xe = x + width; // x-end
+						ye = y + height; // y-end
+						xm = x + width / 2; // x-middle
+						ym = y + height / 2; // y-middle
 						
 						//closePath (false);
 						//beginPath ();

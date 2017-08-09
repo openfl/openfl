@@ -17,11 +17,22 @@ import openfl.geom.Rectangle;
 class FlashTilemap {
 	
 	
+	private static var colorTransform = new ColorTransform ();
+	private static var destPoint = new Point ();
+	private static var sourceRect = new Rectangle ();
+	private static var tileMatrix = new Matrix ();
+	
+	
 	public static inline function render (tilemap:Tilemap):Void {
 		
 		#if flash
 		if (tilemap.stage == null || !tilemap.visible || tilemap.alpha <= 0) return;
 		
+		tilemap.__updateTileArray ();
+		
+		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
+		
+		var defaultTileset = tilemap.tileset;
 		var bitmapData = tilemap.bitmapData;
 		
 		bitmapData.lock ();
@@ -29,43 +40,51 @@ class FlashTilemap {
 		
 		var smoothing = tilemap.smoothing;
 		
-		var tiles, count, tile, alpha, visible, tileset, tileData, sourceBitmapData, matrix;
-		var sourceRect = new Rectangle ();
-		var destPoint = new Point ();
+		var alpha, visible, tileset, id, tileData, sourceBitmapData;
 		
-		var colorTransform = new ColorTransform ();
+		var tileArray = tilemap.__tileArray;
+		var count = tileArray.length;
 		
-		if (tilemap.__tiles.length > 0) {
+		if (count > 0) {
 			
-			tiles = tilemap.__tiles;
-			count = tiles.length;
+			tileArray.position = 0;
 			
 			for (i in 0...count) {
 				
-				tile = tiles[i];
-				
-				alpha = tile.alpha;
-				visible = tile.visible;
-				
+				alpha = tileArray.alpha;
+				visible = tileArray.visible;
 				if (!visible || alpha <= 0) continue;
 				
-				tileset = (tile.tileset != null) ? tile.tileset : tilemap.tileset;
-				
+				tileset = tileArray.tileset;
+				if (tileset == null) tileset = defaultTileset;
 				if (tileset == null) continue;
 				
-				tileData = tileset.__data[tile.id];
+				id = tileArray.id;
 				
-				if (tileData == null) continue;
+				if (id == -1) {
+					
+					// TODO: Support arbitrary source rect
+					//tileArray.getRect (tileRect);
+					continue;
+					
+				} else {
+					
+					tileData = tileset.__data[id];
+					if (tileData == null) continue;
+					
+					//tileRect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
+					
+				}
 				
 				sourceBitmapData = tileData.__bitmapData;
-				matrix = tile.matrix;
+				if (sourceBitmapData == null) continue;
 				
-				if (sourceBitmapData == null || alpha == 0) continue;
+				tileArray.getMatrix(tileMatrix);
 				
-				if (alpha == 1 && matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1) {
+				if (alpha == 1 && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
 					
-					destPoint.x = tile.x;
-					destPoint.y = tile.y;
+					destPoint.x = tileMatrix.tx;
+					destPoint.y = tileMatrix.ty;
 					
 					bitmapData.copyPixels (sourceBitmapData, sourceBitmapData.rect, destPoint, null, null, true);
 					
@@ -73,9 +92,11 @@ class FlashTilemap {
 					
 					colorTransform.alphaMultiplier = alpha;
 					
-					bitmapData.draw (sourceBitmapData, matrix, colorTransform, null, null, smoothing);
+					bitmapData.draw (sourceBitmapData, tileMatrix, colorTransform, null, null, smoothing);
 					
 				}
+				
+				tileArray.position++;
 				
 			}
 			

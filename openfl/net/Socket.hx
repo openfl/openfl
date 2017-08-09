@@ -19,6 +19,7 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
+import js.Browser;
 #end
 
 #if sys
@@ -30,9 +31,9 @@ import sys.net.Socket in SysSocket;
 class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	public var bytesAvailable (get, never) : Int;
-	public var bytesPending (get, never) : Int;
-	public var connected (get, never): Bool;
+	public var bytesAvailable (get, never):Int;
+	public var bytesPending (get, never):Int;
+	public var connected (get, never):Bool;
 	public var objectEncoding:UInt;
 	public var secure:Bool;
 	public var timeout:Int;
@@ -120,6 +121,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		#end
 		
 		#if (js && html5)
+		
+		if (Browser.location.protocol == "https:") {
+			
+			secure = true;
+			
+		}
 		
 		var schema = secure ? "wss" : "ws";
 		var urlReg = ~/^(.*:\/\/)?([A-Za-z0-9\-\.]+)\/?(.*)/g;
@@ -535,8 +542,9 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			__socket.close ();
 			
 		} catch (e:Dynamic) {}
-		
+
 		__socket = null;
+		__connected = false;
 		Lib.current.removeEventListener (Event.ENTER_FRAME, this_onEnterFrame);
 		
 	}
@@ -566,8 +574,19 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private function socket_onMessage (msg:Dynamic):Void {
 		
 		#if (js && html5)
-		var newData:ByteArray = (msg.data:ArrayBuffer);
-		newData.readBytes (__inputBuffer, __inputBuffer.length);
+		if (Std.is (msg.data, String)) {
+
+			__inputBuffer.position = __inputBuffer.length;
+			var cachePosition = __inputBuffer.position;
+			__inputBuffer.writeUTFBytes (msg.data);
+			__inputBuffer.position = cachePosition;
+			
+		} else {
+			
+			var newData:ByteArray = (msg.data:ArrayBuffer);
+			newData.readBytes (__inputBuffer, __inputBuffer.length);
+			
+		}
 		#end
 		
 	}
@@ -670,14 +689,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		
 		if (doClose && connected) {
 			
-			__connected = false;
 			__cleanSocket ();
 			
 			dispatchEvent (new Event (Event.CLOSE));
 			
 		} else if (doClose) {
 			
-			__connected = false;
 			__cleanSocket ();
 			
 			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR, true, false, "Connection failed"));

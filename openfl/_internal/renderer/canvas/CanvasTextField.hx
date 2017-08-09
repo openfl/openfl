@@ -9,6 +9,7 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
+import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
@@ -159,19 +160,14 @@ class CanvasTextField {
 				
 				#if dom
 					
-					var devicePixelRatio = untyped window.devicePixelRatio || 1;
+					var scale = CanvasRenderer.scale;
 					
-					graphics.__canvas.width  = Std.int( width * devicePixelRatio);
-					graphics.__canvas.height = Std.int(height * devicePixelRatio);
-					graphics.__canvas.style.width  =  width + "px";
+					graphics.__canvas.width = Std.int (width * scale);
+					graphics.__canvas.height = Std.int (height * scale);
+					graphics.__canvas.style.width = width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a  * devicePixelRatio,
-					                      transform.b  * devicePixelRatio,
-					                      transform.c  * devicePixelRatio,
-					                      transform.d  * devicePixelRatio,
-					                      transform.tx * devicePixelRatio,
-					                      transform.ty * devicePixelRatio);
+					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
 					
 				#else
 					
@@ -266,6 +262,28 @@ class CanvasTextField {
 						if (applyHack) {
 							
 							offsetY = group.format.size * 0.185;
+							
+						}
+						
+						if (textField.__filters != null && textField.__filters.length > 0) {
+							
+							// Hack, force outline
+							
+							if (Std.is (textField.__filters[0], GlowFilter)) {
+								
+								var glowFilter:GlowFilter = cast textField.__filters[0];
+								
+								var cacheAlpha = context.globalAlpha;
+								context.globalAlpha = cacheAlpha * glowFilter.alpha;
+								
+								context.strokeStyle = "#" + StringTools.hex (glowFilter.color & 0xFFFFFF, 6);
+								context.lineWidth = Math.max (glowFilter.blurX, glowFilter.blurY);
+								context.strokeText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
+								
+								context.strokeStyle = null;
+								context.globalAlpha = cacheAlpha;
+								
+							}
 							
 						}
 						

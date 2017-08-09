@@ -14,7 +14,7 @@ import js.html.Element;
 #end
 
 
-class DOMSprite extends Sprite {
+@:replacementPlanned class DOMSprite extends Sprite {
 	
 	
 	private var __active:Bool;

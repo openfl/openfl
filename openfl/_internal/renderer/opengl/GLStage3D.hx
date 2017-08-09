@@ -2,6 +2,7 @@ package openfl._internal.renderer.opengl;
 
 
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.stage3D.GLUtils;
 import openfl.display.Stage3D;
 
 #if !openfl_debug
@@ -9,6 +10,7 @@ import openfl.display.Stage3D;
 @:noDebug
 #end
 
+@:access(openfl._internal.stage3D.GLUtils)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
 
@@ -33,6 +35,12 @@ class GLStage3D {
 				}
 				
 			}
+			
+		}
+		
+		if (GLUtils.debug) {
+			
+			renderSession.gl.getError ();
 			
 		}
 		
