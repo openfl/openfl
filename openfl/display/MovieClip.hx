@@ -535,6 +535,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							if (displayObject != null) {
 								
 								displayObject.parent = this;
+								displayObject.stage = stage;
 								instance = new FrameSymbolInstance (frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject.clipDepth);
 								
 							}
