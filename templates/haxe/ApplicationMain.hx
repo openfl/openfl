@@ -319,9 +319,9 @@ class DocumentClass {
 				var fields = Context.getBuildFields ();
 				
 				var method = macro {
-					
-					current.addChild (this);
+
 					super ();
+					current.addChild (this);
 					dispatchEvent (new openfl.events.Event (openfl.events.Event.ADDED_TO_STAGE, false, false));
 					
 				}
