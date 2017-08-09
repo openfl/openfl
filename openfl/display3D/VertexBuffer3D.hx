@@ -3,6 +3,7 @@ package openfl.display3D;
 
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.Float32Array;
 import openfl._internal.stage3D.GLUtils;
@@ -78,7 +79,11 @@ class VertexBuffer3D {
 		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		
+		#if (js && html5)
+		(GL:WebGLContext).bufferData (GL.ARRAY_BUFFER, data, __usage);
+		#else
 		GL.bufferData (GL.ARRAY_BUFFER, data.byteLength, data, __usage);
+		#end
 		GLUtils.CheckGLError ();
 		
 		if (data.byteLength != __memoryUsage) {
