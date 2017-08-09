@@ -929,6 +929,58 @@ class TextEngine {
 			
 		}
 		
+		inline function breakLongWords (endIndex:Int):Void {
+			
+			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
+			
+			while (offsetX + tempWidth > width - 2) {
+				
+				var i = 1;
+				
+				while (textIndex + i < endIndex + 1) {
+					
+					tempWidth = getTextWidth(text.substr(textIndex, i));
+					
+					if (offsetX + tempWidth > width - 2) {
+						
+						i--;
+						break;
+						
+					}
+					
+					i++;
+					
+				}
+				
+				if (i == 0) i = 1;
+				
+				nextLayoutGroup(textIndex, textIndex + i);
+				layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getAdvancesWidth(layoutGroup.advances);
+				layoutGroup.height = heightValue;
+				
+				layoutGroup = null;
+				
+				lineIndex++;
+				textIndex += i;
+				
+				offsetX = 2;
+				offsetY += heightValue;
+				
+				advances = getAdvances(text, textIndex, endIndex);
+				widthValue = getAdvancesWidth(advances);
+				
+				tempWidth = widthValue;
+			}
+			
+		}
+		
 		nextFormatRange ();
 		
 		lineFormat = formatRange.format;
@@ -941,6 +993,10 @@ class TextEngine {
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
 				if (textIndex <= breakIndex) {
+					
+					if (wordWrap && previousSpaceIndex <= textIndex) {
+						breakLongWords(breakIndex);
+					}
 					
 					nextLayoutGroup (textIndex, breakIndex);
 					
@@ -993,7 +1049,31 @@ class TextEngine {
 					
 					if (textIndex == formatRange.end) break;
 					
-					var endIndex = spaceIndex == -1? (breakIndex == -1? formatRange.end : breakIndex) : (spaceIndex + 1) > formatRange.end? formatRange.end : spaceIndex + 1;
+					var endIndex = -1;
+					
+					if (spaceIndex == -1) {
+						
+						endIndex = breakIndex;
+						
+					}
+					
+					else {
+						
+						endIndex = spaceIndex + 1;
+						
+						if (breakIndex > -1 && breakIndex < endIndex) {
+							
+							endIndex = breakIndex;
+							
+						}
+						
+					}
+					
+					if (endIndex == -1 || endIndex > formatRange.end) {
+						
+						endIndex = formatRange.end;
+						
+					}
 					
 					advances = getAdvances (text, textIndex, endIndex);
 					widthValue = getAdvancesWidth (advances);
@@ -1026,7 +1106,7 @@ class TextEngine {
 					
 					if (wordWrap) {
 						
-						if (offsetX + widthValue > width) {
+						if (offsetX + widthValue > width - 2) {
 							
 							wrap = true;
 							
@@ -1049,8 +1129,6 @@ class TextEngine {
 							
 						}
 						
-						offsetY += heightValue;
-						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 						
@@ -1072,7 +1150,12 @@ class TextEngine {
 							
 						}
 						
-						lineIndex++;
+						if (textIndex == previousSpaceIndex + 1) {
+							
+							offsetY += heightValue;
+							lineIndex++;
+							
+						}
 						
 						offsetX = 2;
 						
@@ -1091,6 +1174,8 @@ class TextEngine {
 							}
 							
 						}
+						
+						breakLongWords(endIndex);
 						
 						nextLayoutGroup (textIndex, endIndex);
 						
@@ -1186,7 +1271,7 @@ class TextEngine {
 						
 					}
 					
-					if ((breakIndex > -1 && (spaceIndex > breakIndex || spaceIndex == -1 && breakIndex <= textIndex)) || textIndex > text.length || spaceIndex > formatRange.end) {
+					if ((breakIndex > -1 && breakIndex <= textIndex && (spaceIndex > breakIndex || spaceIndex == -1)) || textIndex > text.length || spaceIndex > formatRange.end) {
 						
 						break;
 						
@@ -1201,6 +1286,10 @@ class TextEngine {
 					break;
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
+					
+					if (wordWrap) {
+						breakLongWords(formatRange.end);
+					}
 					
 					advances = getAdvances (text, textIndex, formatRange.end);
 					widthValue = getAdvancesWidth (advances);
