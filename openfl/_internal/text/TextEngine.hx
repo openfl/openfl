@@ -991,8 +991,7 @@ class TextEngine {
 		
 		lineFormat = formatRange.format;
 		var wrap;
-		var maxLoops = text.length;
-		if (multiline) maxLoops++; // Do an extra iteration to ensure a LayoutGroup is created for the last (empty) line.
+		var maxLoops = text.length + 1; // Do an extra iteration to ensure a LayoutGroup is created in case the last line is empty (multiline or trailing line break).
 		
 		while (textIndex < maxLoops) {
 			
@@ -1027,7 +1026,12 @@ class TextEngine {
 					
 				}
 				
-				offsetY += heightValue;
+				if (breakIndex < text.length - 1) {
+					
+					offsetY += heightValue;
+					
+				}
+				
 				offsetX = 2;
 				
 				if (formatRange.end == breakIndex) {
@@ -1466,7 +1470,7 @@ class TextEngine {
 	
 	private function update ():Void {
 		
-		if (text == null || (!multiline && StringTools.trim (text) == "") || textFormatRanges.length == 0) {
+		if (text == null || text == "" || textFormatRanges.length == 0) {
 			
 			lineAscents.length = 0;
 			lineBreaks.length = 0;
