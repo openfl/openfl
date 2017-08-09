@@ -1031,7 +1031,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
 			__cacheBitmap.__scrollRect = __scrollRect;
-			__cacheBitmap.filters = filters;
+			//__cacheBitmap.filters = filters;
 			
 			if (needRender) {
 				
@@ -1047,14 +1047,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					var sourceRect = bitmapData.rect;
 					var destPoint = new Point (); // TODO: ObjectPool
+					var lastBitmap;
 					
 					for (filter in __filters) {
 						
-						bitmapData2.applyFilter (bitmapData, sourceRect, destPoint, filter);
+						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
-						cacheBitmap = bitmapData;
-						bitmapData = bitmapData2;
-						bitmapData2 = cacheBitmap;
+						if (lastBitmap == bitmapData2) {
+							
+							cacheBitmap = bitmapData;
+							bitmapData = bitmapData2;
+							bitmapData2 = cacheBitmap;
+							
+						}
 						
 					}
 					

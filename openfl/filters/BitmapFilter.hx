@@ -34,7 +34,7 @@ class BitmapFilter {
 	
 	private function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
-		return bitmapData;
+		return sourceBitmapData;
 		
 	}
 	
