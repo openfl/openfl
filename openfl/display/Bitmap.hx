@@ -171,12 +171,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		renderSession.context.rect (0, 0, width, height);
 		
 	}
-
-	private override function __cleanDOM(renderSession: RenderSession): Void {
-		#if dom
-			DOMBitmap.clean(this, renderSession);
-		#end
-	}
+	
 
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
@@ -185,7 +180,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		#end
 		
 	}
-	
+
 	
 	private override function __renderDOMClear (renderSession: RenderSession):Void {
 		
