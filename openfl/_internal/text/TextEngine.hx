@@ -701,11 +701,11 @@ class TextEngine {
 		var currentFormat = TextField.__defaultTextFormat.clone ();
 		
 		var leading = 0;
-		var ascent = 0.0;
+		var ascent = 0.0, maxAscent = 0.0;
 		var descent = 0.0;
 		
 		var layoutGroup:TextLayoutGroup = null, advances = null;
-		var widthValue, heightValue = 0.0;
+		var widthValue = 0.0, heightValue = 0.0, maxHeightValue = 0.0;
 		
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var spaceIndex = text.indexOf (" ");
@@ -887,12 +887,12 @@ class TextEngine {
 				#if (js && html5)
 				
 				__context.font = getFont (currentFormat);
-
+				
 				if (currentFormat.__ascent != null) {
-
+					
 					ascent = currentFormat.size * currentFormat.__ascent;
 					descent = currentFormat.size * currentFormat.__descent;
-
+					
 				} else {
 					
 					ascent = currentFormat.size;
@@ -909,15 +909,15 @@ class TextEngine {
 				font = getFontInstance (currentFormat);
 				
 				if (currentFormat.__ascent != null) {
-
+					
 					ascent = currentFormat.size * currentFormat.__ascent;
 					descent = currentFormat.size * currentFormat.__descent;
-
+					
 				} else if (font != null) {
-
+					
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
-
+					
 				} else {
 					
 					ascent = currentFormat.size;
@@ -931,7 +931,35 @@ class TextEngine {
 				
 				#end
 				
+				if (heightValue > maxHeightValue) {
+					
+					maxHeightValue = heightValue;
+					
+				}
+				
+				if (ascent > maxAscent) {
+					
+					maxAscent = ascent;
+					
+				}
 			}
+			
+		}
+		
+		inline function alignBaseline ():Void {
+			
+			for (lg in layoutGroups) {
+				
+				if (lg.lineIndex < lineIndex) continue;
+				if (lg.lineIndex > lineIndex) break;
+				
+				if (lg.ascent == maxAscent) continue;
+				
+				lg.offsetY += maxAscent - lg.ascent;
+				
+			}
+			
+			maxAscent = 0.0;
 			
 		}
 		
@@ -973,11 +1001,14 @@ class TextEngine {
 				
 				layoutGroup = null;
 				
+				alignBaseline();
+				
+				maxHeightValue = 0.0;
 				lineIndex++;
 				textIndex += i;
 				
 				offsetX = 2;
-				offsetY += heightValue;
+				offsetY += maxHeightValue;
 				
 				advances = getAdvances(text, textIndex, endIndex);
 				widthValue = getAdvancesWidth(advances);
@@ -1028,7 +1059,7 @@ class TextEngine {
 				
 				if (breakIndex < text.length - 1) {
 					
-					offsetY += heightValue;
+					offsetY += maxHeightValue;
 					
 				}
 				
@@ -1041,9 +1072,13 @@ class TextEngine {
 					
 				}
 				
+				alignBaseline();
+				
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
+				
+				maxHeightValue = 0.0;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
 				
@@ -1162,7 +1197,10 @@ class TextEngine {
 						
 						if (textIndex == previousSpaceIndex + 1) {
 							
-							offsetY += heightValue;
+							alignBaseline();
+							
+							offsetY += maxHeightValue;
+							maxHeightValue = 0.0;
 							lineIndex++;
 							
 						}
@@ -1304,27 +1342,17 @@ class TextEngine {
 					advances = getAdvances (text, textIndex, formatRange.end);
 					widthValue = getAdvancesWidth (advances);
 					
-					if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
-						
-						layoutGroup.advances = layoutGroup.advances.concat (advances);
-						layoutGroup.width += widthValue;
-						layoutGroup.endIndex = formatRange.end;
-						
-					} else {
-						
-						nextLayoutGroup (textIndex, formatRange.end);
-						
-						layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
-						layoutGroup.offsetX = offsetX;
-						layoutGroup.ascent = ascent;
-						layoutGroup.descent = descent;
-						layoutGroup.leading = leading;
-						layoutGroup.lineIndex = lineIndex;
-						layoutGroup.offsetY = offsetY;
-						layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-						layoutGroup.height = heightValue;
-						
-					}
+					nextLayoutGroup (textIndex, formatRange.end);
+					
+					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					layoutGroup.height = heightValue;
 					
 					offsetX += widthValue;
 					textIndex = formatRange.end;
@@ -1346,7 +1374,7 @@ class TextEngine {
 		
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups) {
-			trace("LG", lg.advances.length - (lg.endIndex - lg.startIndex), "line:"+lg.lineIndex, "w:"+lg.width, "x:"+Std.int(lg.offsetX), "y:"+Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
+			trace("LG", lg.advances.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
 		}
 		#end
 		
