@@ -43,12 +43,18 @@ class RenderSession {
 
 	private var renderTargetBaseTransformStack:UnshrinkableArray<Matrix>;
 
-
 	public function new () {
 
 		//maskManager = new MaskManager (this);
 		renderTargetBaseTransformStack = new UnshrinkableArray<Matrix> (64);
 		pushRenderTargetBaseTransform (null, null);
+
+		#if (profile && js)
+		untyped $global.Profile = $global.Profile || {};
+		untyped $global.Profile.RenderInfo = {};
+		untyped $global.Profile.RenderInfo.logStatistics = logStatistics;
+		untyped $global.Profile.RenderInfo.resetStatistics = resetStatistics;
+		#end
 	}
 
 	public function pushRenderTargetBaseTransform (source:IBitmapDrawable, renderTargetBaseTransform:Matrix) {
@@ -98,5 +104,29 @@ class RenderSession {
 		return spriteBatch == glRenderer.mainSpriteBatch;
 
 	}
+
+
+	#if profile
+	static private var lastDrawCount:Int = 0;
+	static private var highestDrawCount:Int = 0;
+
+	static private function resetStatistics() {
+		lastDrawCount = 0;
+		highestDrawCount = 0;
+	}
+
+	static private function logStatistics() {
+		trace("RenderInfo:");
+		trace("  last:    " + lastDrawCount);
+		trace("  highest: " + highestDrawCount);
+	}
+
+	static public function onDrawCount(drawCount:Int) {
+		lastDrawCount = drawCount;
+		if(lastDrawCount > highestDrawCount) {
+			highestDrawCount = lastDrawCount;
+		}
+	}
+	#end
 
 } #end

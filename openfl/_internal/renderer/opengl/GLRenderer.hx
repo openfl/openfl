@@ -374,6 +374,9 @@ class GLRenderer extends AbstractRenderer {
 		mainSpriteBatch.preventFlush = false;
 		mainSpriteBatch.finish();
 
+		#if profile
+		RenderSession.onDrawCount(renderSession.drawCount);
+		#end
 	}
 
 
