@@ -296,7 +296,7 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function copy ():Void {
 		
-		if (index < list.length && !isCopy) {
+		if (!isCopy) {
 			
 			list = list.copy ();
 			isCopy = true;
