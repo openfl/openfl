@@ -992,6 +992,10 @@ class CanvasGraphics {
 				bitmapFill = null;
 				bitmapRepeat = false;
 				
+				var hasLineStyle = false;
+				var initStrokeX = 0.0;
+				var initStrokeY = 0.0;
+				
 				var data = new DrawCommandReader (graphics.__commands);
 				
 				for (type in graphics.__commands.types) {
@@ -1002,25 +1006,65 @@ class CanvasGraphics {
 							
 							var c = data.readCubicCurveTo ();
 							fillCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-							strokeCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+								
+							} else {
+								
+								initStrokeX = c.anchorX;
+								initStrokeY = c.anchorY;
+								
+							}
 						
 						case CURVE_TO:
 							
 							var c = data.readCurveTo ();
 							fillCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
-							strokeCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+								
+							} else {
+								
+								initStrokeX = c.anchorX;
+								initStrokeY = c.anchorY;
+								
+							}
 						
 						case LINE_TO:
 							
 							var c = data.readLineTo ();
 							fillCommands.lineTo (c.x, c.y);
-							strokeCommands.lineTo (c.x, c.y);
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.lineTo (c.x, c.y);
+								
+							} else {
+								
+								initStrokeX = c.x;
+								initStrokeY = c.y;
+								
+							}
 						
 						case MOVE_TO:
 							
 							var c = data.readMoveTo ();
 							fillCommands.moveTo (c.x, c.y);
-							strokeCommands.moveTo (c.x, c.y);
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.moveTo (c.x, c.y);
+								
+							} else {
+								
+								initStrokeX = c.x;
+								initStrokeY = c.y;
+								
+							}
 						
 						case END_FILL:
 							
@@ -1028,22 +1072,59 @@ class CanvasGraphics {
 							endFill ();
 							endStroke ();
 							hasFill = false;
+							hasLineStyle = false;
 							bitmapFill = null;
-						
-						case LINE_STYLE:
-							
-							var c = data.readLineStyle ();
-							strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+							initStrokeX = 0;
+							initStrokeY = 0;
 						
 						case LINE_GRADIENT_STYLE:
 							
 							var c = data.readLineGradientStyle ();
+							
+							if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0)) {
+								
+								strokeCommands.moveTo (initStrokeX, initStrokeY);
+								initStrokeX = 0;
+								initStrokeY = 0;
+								
+							}
+							
+							hasLineStyle = true;
 							strokeCommands.lineGradientStyle (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 						
 						case LINE_BITMAP_STYLE:
 							
 							var c = data.readLineBitmapStyle ();
+							
+							if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0)) {
+								
+								strokeCommands.moveTo (initStrokeX, initStrokeY);
+								initStrokeX = 0;
+								initStrokeY = 0;
+								
+							}
+							
+							hasLineStyle = true;
 							strokeCommands.lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
+						
+						case LINE_STYLE:
+							
+							var c = data.readLineStyle ();
+							
+							if (!hasLineStyle && c.thickness != null) {
+								
+								if (initStrokeX != 0 || initStrokeY != 0) {
+									
+									strokeCommands.moveTo (initStrokeX, initStrokeY);
+									initStrokeX = 0;
+									initStrokeY = 0;
+									
+								}
+								
+							}
+							
+							hasLineStyle = c.thickness != null;
+							strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 						
 						case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 							
@@ -1074,25 +1155,46 @@ class CanvasGraphics {
 							
 							var c = data.readDrawCircle ();
 							fillCommands.drawCircle (c.x, c.y, c.radius);
-							strokeCommands.drawCircle (c.x, c.y, c.radius);
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.drawCircle (c.x, c.y, c.radius);
+								
+							}
 						
 						case DRAW_ELLIPSE:
 							
 							var c = data.readDrawEllipse ();
 							fillCommands.drawEllipse (c.x, c.y, c.width, c.height);
-							strokeCommands.drawEllipse (c.x, c.y, c.width, c.height);
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.drawEllipse (c.x, c.y, c.width, c.height);
+								
+							}
 						
 						case DRAW_RECT:
 							
 							var c = data.readDrawRect ();
 							fillCommands.drawRect (c.x, c.y, c.width, c.height);
-							strokeCommands.drawRect (c.x, c.y, c.width, c.height);
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.drawRect (c.x, c.y, c.width, c.height);
+								
+							}
 						
 						case DRAW_ROUND_RECT:
 							
 							var c = data.readDrawRoundRect ();
 							fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-							strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+							
+							
+							if (hasLineStyle) {
+								
+								strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+								
+							}
 						
 						case DRAW_TRIANGLES:
 							
