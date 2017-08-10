@@ -10,8 +10,8 @@ import lime.ui.MouseCursor;
 import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
@@ -24,10 +24,13 @@ import openfl._internal.text.TextLayoutGroup;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.IShaderDrawable;
+import openfl.display.Shader;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
+import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.net.URLRequest;
@@ -43,12 +46,13 @@ import js.html.DivElement;
 #end
 
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextFormat)
 
 
-class TextField extends InteractiveObject {
+class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
@@ -80,6 +84,7 @@ class TextField extends InteractiveObject {
 	public var selectable (get, set):Bool;
 	public var selectionBeginIndex (get, never):Int;
 	public var selectionEndIndex (get, never):Int;
+	@:beta public var shader:Shader;
 	public var sharpness (get, set):Float;
 	public var text (get, set):UTF8String;
 	public var textColor (get, set):Int;
@@ -106,15 +111,16 @@ class TextField extends InteractiveObject {
 	private var __htmlText:UTF8String;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
-
+	
 	#if (js && html5)
 	private var __div:DivElement;
 	#end
 	#if dom
 		private var __renderedOnCanvasWhileOnDOM:Bool = false;
 		private var __rawHtmlText:String;
+		private var __forceCachedBitmapUpdate:Bool = false;
 	#end
-	
+
 	
 	public function new () {
 		
@@ -130,7 +136,7 @@ class TextField extends InteractiveObject {
 		__tabEnabled = true;
 		__mouseWheelEnabled = true;
 		__text = "";
-
+		
 		if (__defaultTextFormat == null) {
 			
 			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
@@ -488,15 +494,15 @@ class TextField extends InteractiveObject {
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 		
 		replaceText (startIndex, endIndex, value);
-		
-		var i = startIndex + value.length;
+
+		var i = startIndex + cast(value, UTF8String).length;
 		setSelection(i,i);
 		
 	}
 	
 	
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
-
+		
 		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
 		
 		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
@@ -505,7 +511,7 @@ class TextField extends InteractiveObject {
 		
 		var i = 0;
 		var range;
-
+		
 		while (i < __textEngine.textFormatRanges.length) {
 			
 			range = __textEngine.textFormatRanges[i];
@@ -541,7 +547,7 @@ class TextField extends InteractiveObject {
 				i++;
 				
 			}
-
+			
 		}
 		
 		__dirty = true;
@@ -975,8 +981,8 @@ class TextField extends InteractiveObject {
 			//format.leading = Std.int (font.leading / 20 + (format.size * 0.2) #if flash + 2 #end);
 			//embedFonts = true;
 			
-			format.__ascent = ((font.ascent / 20) / 1024) * format.size;
-			format.__descent = ((font.descent / 20) / 1024) * format.size;
+			format.__ascent = ((font.ascent / 20) / 1024);
+			format.__descent = ((font.descent / 20) / 1024);
 			
 		}
 		
@@ -1005,6 +1011,24 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		if (!found) {
+
+			var alpha = ~/[^a-zA-Z]+/;
+
+			for (font in Font.enumerateFonts ()) {
+
+				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
+
+					format.font = font.fontName;
+					found = true;
+					break;
+
+				}
+
+			}
+
+		}
+
 		if (found) {
 			
 			embedFonts = true;
@@ -1274,6 +1298,8 @@ class TextField extends InteractiveObject {
 	
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
+
+		// TODO: Better DOM workaround on cacheAsBitmap
 		#if (js && html5 && dom)
 		if (!__renderedOnCanvasWhileOnDOM) {
 			__renderedOnCanvasWhileOnDOM = true;
@@ -1330,26 +1356,21 @@ class TextField extends InteractiveObject {
 		}
 		
 	}
-
-	private override function __cleanDOM(renderSession: RenderSession): Void {
-		#if dom
-			DOMTextField.clean(this, renderSession);
-		#end
-	}
+	
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		__updateCacheBitmap (renderSession);
-
+		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
+		__forceCachedBitmapUpdate = false;
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 
-			__cleanDOM(renderSession);
+			__renderDOMClear (renderSession);
 			__cacheBitmap.stage = stage;
+
 			DOMBitmap.render (__cacheBitmap, renderSession);
 
 		} else {
-
 			if (__renderedOnCanvasWhileOnDOM) {
 
 				__renderedOnCanvasWhileOnDOM = false;
@@ -1370,6 +1391,15 @@ class TextField extends InteractiveObject {
 		}
 		#end
 
+	}
+
+
+	private override function __renderDOMClear (renderSession:RenderSession):Void {
+
+		#if dom
+		DOMTextField.clear (this, renderSession);
+		#end
+		
 	}
 	
 	
@@ -1431,7 +1461,7 @@ class TextField extends InteractiveObject {
 			__setRenderDirty ();
 			
 		}
-		
+
 	}
 	
 	
@@ -1446,7 +1476,7 @@ class TextField extends InteractiveObject {
 		}
 
 	}
-
+	
 	
 	private function __updateLayout ():Void {
 		
@@ -1491,7 +1521,13 @@ class TextField extends InteractiveObject {
 	
 	
 	private function __updateText (value:String):Void {
-		
+
+		#if dom
+		if (__renderedOnCanvasWhileOnDOM) {
+			__forceCachedBitmapUpdate = __text != value;
+		}
+		#end
+
 		__text = value;
 		
 		if (__text.length < __caretIndex) {
@@ -1672,6 +1708,15 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	private override function get_cacheAsBitmap ():Bool {
+
+		// HACK
+		if (__filters != null && __filters.length == 1 && Std.is (__filters[0], GlowFilter)) return false;
+		return super.get_cacheAsBitmap ();
+
+	}
+
+
 	private function get_caretIndex ():Int {
 		
 		return __caretIndex;
@@ -1980,7 +2025,7 @@ class TextField extends InteractiveObject {
 			__dirty = true;
 			__setRenderDirty ();
 			dispatchEvent(new Event(Event.SCROLL));
-			
+
 		}
 		
 		return __textEngine.scrollH = value;
@@ -2007,7 +2052,7 @@ class TextField extends InteractiveObject {
 			__dirty = true;
 			__setRenderDirty ();
 			dispatchEvent(new Event(Event.SCROLL));
-			
+
 		}
 		
 		return __textEngine.scrollV = value;
@@ -2100,15 +2145,16 @@ class TextField extends InteractiveObject {
 		}
 		
 		if (__textEngine.textFormatRanges.length > 1) {
-
+			
 			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
 			
 		}
 		
+		var utfValue:UTF8String = value;
 		var range = __textEngine.textFormatRanges[0];
 		range.format = __textFormat;
 		range.start = 0;
-		range.end = value.length;
+		range.end = utfValue.length;
 		
 		__isHTML = false;
 		
@@ -2273,8 +2319,12 @@ class TextField extends InteractiveObject {
 				#if !dom
 				__dirty = true;
 				__setRenderDirty ();
+				#else
+				if (__renderedOnCanvasWhileOnDOM) {
+					__forceCachedBitmapUpdate = true;
+				}
 				#end
-
+				
 			}
 			
 		}
@@ -2313,7 +2363,13 @@ class TextField extends InteractiveObject {
 				
 				__stopCursorTimer ();
 				__startCursorTimer ();
-				
+
+				#if dom
+				if (__renderedOnCanvasWhileOnDOM) {
+					__forceCachedBitmapUpdate = true;
+				}
+				#end
+
 			}
 			
 		}
@@ -2358,7 +2414,7 @@ class TextField extends InteractiveObject {
 		__dirty = true;
 		__setRenderDirty ();
 		#end
-
+		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		

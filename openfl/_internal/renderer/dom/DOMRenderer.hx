@@ -2,6 +2,7 @@ package openfl._internal.renderer.dom;
 
 
 import lime.graphics.DOMRenderContext;
+import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
@@ -9,24 +10,17 @@ import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
-#if dom
-import openfl._internal.renderer.canvas.CanvasRenderer;
-#end
-
 #if (js && html5)
 import js.html.Element;
 import js.Browser;
 #end
 
+@:access(openfl._internal.renderer.canvas.CanvasRenderer)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-
-#if dom
-@:access(openfl._internal.renderer.canvas.CanvasRenderer)
-#end
 
 
 class DOMRenderer extends AbstractRenderer {
@@ -43,16 +37,16 @@ class DOMRenderer extends AbstractRenderer {
 		this.element = element;
 		
 		renderSession = new RenderSession ();
-		renderSession.clearDirtyFlags = true;
+		renderSession.clearRenderDirty = true;
 		renderSession.element = element;
 		//renderSession.roundPixels = true;
-
+		
 		#if (js && html5)
 		var config = stage.window.config;
 
 		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
 
-			CanvasRenderer.scale = Browser.window.devicePixelRatio;
+			CanvasRenderer.scale = untyped window.devicePixelRatio || 1;
 
 		}
 

@@ -9,15 +9,15 @@ import openfl.geom.Rectangle;
  * objects with which the user can interact, using the mouse, keyboard, or
  * other user input device.
  *
- * <p>You cannot instantiate the InteractiveObject class directly. A call to
- * the <code>new InteractiveObject()</code> constructor throws an
- * <code>ArgumentError</code> exception.</p>
+ * You cannot instantiate the InteractiveObject class directly. A call to
+ * the `new InteractiveObject()` constructor throws an
+ * `ArgumentError` exception.
  *
- * <p>The InteractiveObject class itself does not include any APIs for
+ * The InteractiveObject class itself does not include any APIs for
  * rendering content onscreen. To create a custom subclass of the
  * InteractiveObject class, extend one of the subclasses that do have APIs for
  * rendering content onscreen, such as the Sprite, SimpleButton, TextField, or
- * MovieClip classes.</p>
+ * MovieClip classes.
  * 
  * @event clear                  Dispatched when the user selects 'Clear'(or
  *                               'Delete') from the text context menu. This
@@ -34,12 +34,12 @@ import openfl.geom.Rectangle;
  *                               series of events in the order of occurrence:
  *                               mouseDown event, then mouseUp. The target
  *                               object must be identical for both of these
- *                               events; otherwise the <code>click</code>
+ *                               events; otherwise the `click`
  *                               event does not occur. Any number of other
  *                               mouse events can occur at any time between
- *                               the <code>mouseDown</code> or
- *                               <code>mouseUp</code> events; the
- *                               <code>click</code> event still occurs.
+ *                               the `mouseDown` or
+ *                               `mouseUp` events; the
+ *                               `click` event still occurs.
  * @event contextMenu            Dispatched when a user gesture triggers the
  *                               context menu associated with this interactive
  *                               object in an AIR application.
@@ -66,39 +66,39 @@ import openfl.geom.Rectangle;
  *                               the main button of a pointing device twice in
  *                               rapid succession over the same
  *                               InteractiveObject when that object's
- *                               <code>doubleClickEnabled</code> flag is set
- *                               to <code>true</code>. For a
- *                               <code>doubleClick</code> event to occur, it
+ *                               `doubleClickEnabled` flag is set
+ *                               to `true`. For a
+ *                               `doubleClick` event to occur, it
  *                               must immediately follow the following series
- *                               of events: <code>mouseDown</code>,
- *                               <code>mouseUp</code>, <code>click</code>,
- *                               <code>mouseDown</code>, <code>mouseUp</code>.
+ *                               of events: `mouseDown`,
+ *                               `mouseUp`, `click`,
+ *                               `mouseDown`, `mouseUp`.
  *                               All of these events must share the same
- *                               target as the <code>doubleClick</code> event.
+ *                               target as the `doubleClick` event.
  *                               The second click, represented by the second
- *                               <code>mouseDown</code> and
- *                               <code>mouseUp</code> events, must occur
+ *                               `mouseDown` and
+ *                               `mouseUp` events, must occur
  *                               within a specific period of time after the
- *                               <code>click</code> event. The allowable
+ *                               `click` event. The allowable
  *                               length of this period varies by operating
  *                               system and can often be configured by the
  *                               user. If the target is a selectable text
  *                               field, the word under the pointer is selected
  *                               as the default behavior. If the target
  *                               InteractiveObject does not have its
- *                               <code>doubleClickEnabled</code> flag set to
- *                               <code>true</code> it receives two
- *                               <code>click</code> events.
+ *                               `doubleClickEnabled` flag set to
+ *                               `true` it receives two
+ *                               `click` events.
  *
- *                               <p>The <code>doubleClickEnabled</code>
- *                               property defaults to <code>false</code>. </p>
+ *                               The `doubleClickEnabled`
+ *                               property defaults to `false`. 
  *
- *                               <p>The double-click text selection behavior
+ *                               The double-click text selection behavior
  *                               of a TextField object is not related to the
- *                               <code>doubleClick</code> event. Use
- *                               <code>TextField.doubleClickEnabled</code> to
- *                               control TextField selections.</p>
- * @event focusIn                Dispatched <i>after</i> a display object
+ *                               `doubleClick` event. Use
+ *                               `TextField.doubleClickEnabled` to
+ *                               control TextField selections.
+ * @event focusIn                Dispatched _after_ a display object
  *                               gains focus. This situation happens when a
  *                               user highlights the object with a pointing
  *                               device or keyboard navigation. The recipient
@@ -108,12 +108,12 @@ import openfl.geom.Rectangle;
  *                               because of this change is called the related
  *                               object. A reference to the related object is
  *                               stored in the receiving object's
- *                               <code>relatedObject</code> property. The
- *                               <code>shiftKey</code> property is not used.
+ *                               `relatedObject` property. The
+ *                               `shiftKey` property is not used.
  *                               This event follows the dispatch of the
- *                               previous object's <code>focusOut</code>
+ *                               previous object's `focusOut`
  *                               event.
- * @event focusOut               Dispatched <i>after</i> a display object
+ * @event focusOut               Dispatched _after_ a display object
  *                               loses focus. This happens when a user
  *                               highlights a different object with a pointing
  *                               device or keyboard navigation. The object
@@ -123,10 +123,10 @@ import openfl.geom.Rectangle;
  *                               focus is called the related object. A
  *                               reference to the related object is stored in
  *                               the target object's
- *                               <code>relatedObject</code> property. The
- *                               <code>shiftKey</code> property is not used.
+ *                               `relatedObject` property. The
+ *                               `shiftKey` property is not used.
  *                               This event precedes the dispatch of the
- *                               <code>focusIn</code> event by the related
+ *                               `focusIn` event by the related
  *                               object.
  * @event gesturePan             Dispatched when the user moves a point of
  *                               contact over the InteractiveObject instance
@@ -135,15 +135,15 @@ import openfl.geom.Rectangle;
  *                               object on a mobile phone or tablet with a
  *                               touch screen). Some devices might also
  *                               interpret this contact as a
- *                               <code>mouseOver</code> event and as a
- *                               <code>touchOver</code> event.
+ *                               `mouseOver` event and as a
+ *                               `touchOver` event.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, the
  *                               InteractiveObject instance can dispatch a
- *                               <code>mouseOver</code> event or a
- *                               <code>touchOver</code> event or a
- *                               <code>gesturePan</code> event, or all if the
+ *                               `mouseOver` event or a
+ *                               `touchOver` event or a
+ *                               `gesturePan` event, or all if the
  *                               current environment supports it. Choose how
  *                               you want to handle the user interaction. Use
  *                               the openfl.ui.Multitouch class to manage touch
@@ -151,20 +151,20 @@ import openfl.geom.Rectangle;
  *                               handling, simple touch point event handling,
  *                               or disable touch events so only mouse events
  *                               are dispatched). If you choose to handle the
- *                               <code>mouseOver</code> event, then the same
+ *                               `mouseOver` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>gesturePan</code> event, you can design
+ *                               `gesturePan` event, you can design
  *                               your event handler to respond to the specific
  *                               needs of a touch-enabled environment and
  *                               provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event gesturePressAndTap     Dispatched when the user creates a point of
  *                               contact with an InteractiveObject instance,
  *                               then taps on a touch-enabled device(such as
@@ -176,13 +176,13 @@ import openfl.geom.Rectangle;
  *                               combination of several mouse events, as well.
  *
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, and then provides
  *                               a secondary tap, the InteractiveObject
  *                               instance can dispatch a
- *                               <code>mouseOver</code> event and a
- *                               <code>click</code> event(among others) as
- *                               well as the <code>gesturePressAndTap</code>
+ *                               `mouseOver` event and a
+ *                               `click` event(among others) as
+ *                               well as the `gesturePressAndTap`
  *                               event, or all if the current environment
  *                               supports it. Choose how you want to handle
  *                               the user interaction. Use the
@@ -191,26 +191,26 @@ import openfl.geom.Rectangle;
  *                               handling, simple touch point event handling,
  *                               or disable touch events so only mouse events
  *                               are dispatched). If you choose to handle the
- *                               <code>mouseOver</code> event, then the same
+ *                               `mouseOver` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>gesturePressAndTap</code> event, you
+ *                               `gesturePressAndTap` event, you
  *                               can design your event handler to respond to
  *                               the specific needs of a touch-enabled
  *                               environment and provide users with a richer
  *                               touch-enabled experience. You can also handle
  *                               both events, separately, to provide a
  *                               different response for a touch event than a
- *                               mouse event.</p>
+ *                               mouse event.
  *
- *                               <p>When handling the properties of the event
- *                               object, note that the <code>localX</code> and
- *                               <code>localY</code> properties are set to the
+ *                               When handling the properties of the event
+ *                               object, note that the `localX` and
+ *                               `localY` properties are set to the
  *                               primary point of contact(the "push"). The
- *                               <code>offsetX</code> and <code>offsetY</code>
+ *                               `offsetX` and `offsetY`
  *                               properties are the distance to the secondary
- *                               point of contact(the "tap").</p>
+ *                               point of contact(the "tap").
  * @event gestureRotate          Dispatched when the user performs a rotation
  *                               gesture at a point of contact with an
  *                               InteractiveObject instance(such as touching
@@ -224,12 +224,12 @@ import openfl.geom.Rectangle;
  *                               a combination of several mouse events, as
  *                               well.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, the
  *                               InteractiveObject instance can dispatch a
- *                               <code>mouseOver</code> event and a
- *                               <code>click</code> event(among others), in
- *                               addition to the <code>gestureRotate</code>
+ *                               `mouseOver` event and a
+ *                               `click` event(among others), in
+ *                               addition to the `gestureRotate`
  *                               event, or all if the current environment
  *                               supports it. Choose how you want to handle
  *                               the user interaction. Use the
@@ -238,29 +238,29 @@ import openfl.geom.Rectangle;
  *                               handling, simple touch point event handling,
  *                               or disable touch events so only mouse events
  *                               are dispatched). If you choose to handle the
- *                               <code>mouseOver</code> event, then the same
+ *                               `mouseOver` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>gestureRotate</code> event, you can
+ *                               `gestureRotate` event, you can
  *                               design your event handler to respond to the
  *                               specific needs of a touch-enabled environment
  *                               and provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p>When handling the properties of the event
- *                               object, note that the <code>localX</code> and
- *                               <code>localY</code> properties are set to the
+ *                               When handling the properties of the event
+ *                               object, note that the `localX` and
+ *                               `localY` properties are set to the
  *                               primary point of contact. The
- *                               <code>offsetX</code> and <code>offsetY</code>
+ *                               `offsetX` and `offsetY`
  *                               properties are the distance to the point of
  *                               contact where the rotation gesture is
- *                               complete.</p>
+ *                               complete.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event gestureSwipe           Dispatched when the user performs a swipe
  *                               gesture at a point of contact with an
  *                               InteractiveObject instance(such as touching
@@ -274,41 +274,41 @@ import openfl.geom.Rectangle;
  *                               also interpret this contact as a combination
  *                               of several mouse events, as well.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, and then moves the
  *                               fingers together, the InteractiveObject
- *                               instance can dispatch a <code>rollOver</code>
- *                               event and a <code>rollOut</code> event(among
+ *                               instance can dispatch a `rollOver`
+ *                               event and a `rollOut` event(among
  *                               others), in addition to the
- *                               <code>gestureSwipe</code> event, or all if
+ *                               `gestureSwipe` event, or all if
  *                               the current environment supports it. Choose
  *                               how you want to handle the user interaction.
  *                               If you choose to handle the
- *                               <code>rollOver</code> event, then the same
+ *                               `rollOver` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>gestureSwipe</code> event, you can
+ *                               `gestureSwipe` event, you can
  *                               design your event handler to respond to the
  *                               specific needs of a touch-enabled environment
  *                               and provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p>When handling the properties of the event
- *                               object, note that the <code>localX</code> and
- *                               <code>localY</code> properties are set to the
+ *                               When handling the properties of the event
+ *                               object, note that the `localX` and
+ *                               `localY` properties are set to the
  *                               primary point of contact. The
- *                               <code>offsetX</code> and <code>offsetY</code>
+ *                               `offsetX` and `offsetY`
  *                               properties are the distance to the point of
  *                               contact where the swipe gesture is
- *                               complete.</p>
+ *                               complete.
  *
- *                               <p><b>Note:</b> While some devices using the
+ *                               **Note:** While some devices using the
  *                               Mac OS operating system can interpret a
  *                               four-finger swipe, this API only supports a
- *                               three-finger swipe.</p>
+ *                               three-finger swipe.
  * @event gestureTwoFingerTap    Dispatched when the user presses two points
  *                               of contact over the same InteractiveObject
  *                               instance on a touch-enabled device(such as
@@ -316,13 +316,13 @@ import openfl.geom.Rectangle;
  *                               display object on a mobile phone or tablet
  *                               with a touch screen). Some devices might also
  *                               interpret this contact as a
- *                               <code>doubleClick</code> event.
+ *                               `doubleClick` event.
  *
- *                               <p>Specifically, if a user taps two fingers
+ *                               Specifically, if a user taps two fingers
  *                               over an InteractiveObject, the
  *                               InteractiveObject instance can dispatch a
- *                               <code>doubleClick</code> event or a
- *                               <code>gestureTwoFingerTap</code> event, or
+ *                               `doubleClick` event or a
+ *                               `gestureTwoFingerTap` event, or
  *                               both if the current environment supports it.
  *                               Choose how you want to handle the user
  *                               interaction. Use the openfl.ui.Multitouch
@@ -330,21 +330,21 @@ import openfl.geom.Rectangle;
  *                               touch gesture event handling, simple touch
  *                               point event handling, or disable touch events
  *                               so only mouse events are dispatched). If you
- *                               choose to handle the <code>doubleClick</code>
+ *                               choose to handle the `doubleClick`
  *                               event, then the same event handler will run
  *                               on a touch-enabled device and a mouse enabled
  *                               device. However, if you choose to handle the
- *                               <code>gestureTwoFingerTap</code> event, you
+ *                               `gestureTwoFingerTap` event, you
  *                               can design your event handler to respond to
  *                               the specific needs of a touch-enabled
  *                               environment and provide users with a richer
  *                               touch-enabled experience. You can also handle
  *                               both events, separately, to provide a
  *                               different response for a touch event than a
- *                               mouse event.</p>
+ *                               mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event gestureZoom            Dispatched when the user performs a zoom
  *                               gesture at a point of contact with an
  *                               InteractiveObject instance(such as touching
@@ -359,13 +359,13 @@ import openfl.geom.Rectangle;
  *                               combination of several mouse events, as well.
  *
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, and then moves the
  *                               fingers apart, the InteractiveObject instance
- *                               can dispatch a <code>mouseOver</code> event
- *                               and a <code>click</code> event(among
+ *                               can dispatch a `mouseOver` event
+ *                               and a `click` event(among
  *                               others), in addition to the
- *                               <code>gestureZoom</code> event, or all if the
+ *                               `gestureZoom` event, or all if the
  *                               current environment supports it. Choose how
  *                               you want to handle the user interaction. Use
  *                               the openfl.ui.Multitouch class to manage touch
@@ -373,29 +373,29 @@ import openfl.geom.Rectangle;
  *                               handling, simple touch point event handling,
  *                               or disable touch events so only mouse events
  *                               are dispatched). If you choose to handle the
- *                               <code>mouseOver</code> event, then the same
+ *                               `mouseOver` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>gestureZoom</code> event, you can
+ *                               `gestureZoom` event, you can
  *                               design your event handler to respond to the
  *                               specific needs of a touch-enabled environment
  *                               and provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p>When handling the properties of the event
- *                               object, note that the <code>localX</code> and
- *                               <code>localY</code> properties are set to the
+ *                               When handling the properties of the event
+ *                               object, note that the `localX` and
+ *                               `localY` properties are set to the
  *                               primary point of contact. The
- *                               <code>offsetX</code> and <code>offsetY</code>
+ *                               `offsetX` and `offsetY`
  *                               properties are the distance to the point of
  *                               contact where the zoom gesture is
- *                               complete.</p>
+ *                               complete.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event imeStartComposition    This event is dispatched to any client app
  *                               that supports inline input with an IME
  * @event keyDown                Dispatched when the user presses a key.
@@ -407,30 +407,30 @@ import openfl.geom.Rectangle;
  *                               characters, such as Chinese ideographs, that
  *                               the standard QWERTY keyboard is ill-equipped
  *                               to produce. This event occurs before the
- *                               <code>keyUp</code> event.
+ *                               `keyUp` event.
  *
- *                               <p>In AIR, canceling this event prevents the
+ *                               In AIR, canceling this event prevents the
  *                               character from being entered into a text
- *                               field.</p>
+ *                               field.
  * @event keyFocusChange         Dispatched when the user attempts to change
  *                               focus by using keyboard navigation. The
  *                               default behavior of this event is to change
  *                               the focus and dispatch the corresponding
- *                               <code>focusIn</code> and
- *                               <code>focusOut</code> events.
+ *                               `focusIn` and
+ *                               `focusOut` events.
  *
- *                               <p>This event is dispatched to the object
+ *                               This event is dispatched to the object
  *                               that currently has focus. The related object
  *                               for this event is the InteractiveObject
  *                               instance that receives focus if you do not
  *                               prevent the default behavior. You can prevent
  *                               the change in focus by calling the
- *                               <code>preventDefault()</code> method in an
+ *                               `preventDefault()` method in an
  *                               event listener that is properly registered
  *                               with the target object. Focus changes and
- *                               <code>focusIn</code> and
- *                               <code>focusOut</code> events are dispatched
- *                               by default.</p>
+ *                               `focusIn` and
+ *                               `focusOut` events are dispatched
+ *                               by default.
  * @event keyUp                  Dispatched when the user releases a key.
  *                               Mappings between keys and specific characters
  *                               vary by device and operating system. This
@@ -440,23 +440,23 @@ import openfl.geom.Rectangle;
  *                               characters, such as Chinese ideographs, that
  *                               the standard QWERTY keyboard is ill-equipped
  *                               to produce. This event occurs after a
- *                               <code>keyDown</code> event and has the
+ *                               `keyDown` event and has the
  *                               following characteristics:
  * @event middleClick            Dispatched when a user presses and releases
  *                               the middle button of the user's pointing
  *                               device over the same InteractiveObject. For a
- *                               <code>middleClick</code> event to occur, it
+ *                               `middleClick` event to occur, it
  *                               must always follow this series of events in
  *                               the order of occurrence:
- *                               <code>middleMouseDown</code> event, then
- *                               <code>middleMouseUp</code>. The target object
+ *                               `middleMouseDown` event, then
+ *                               `middleMouseUp`. The target object
  *                               must be identical for both of these events;
- *                               otherwise the <code>middleClick</code> event
+ *                               otherwise the `middleClick` event
  *                               does not occur. Any number of other mouse
  *                               events can occur at any time between the
- *                               <code>middleMouseDown</code> or
- *                               <code>middleMouseUp</code> events; the
- *                               <code>middleClick</code> event still occurs.
+ *                               `middleMouseDown` or
+ *                               `middleMouseUp` events; the
+ *                               `middleClick` event still occurs.
  * @event middleMouseDown        Dispatched when a user presses the middle
  *                               pointing device button over an
  *                               InteractiveObject instance.
@@ -467,7 +467,7 @@ import openfl.geom.Rectangle;
  *                               device button over an InteractiveObject
  *                               instance. If the target is a SimpleButton
  *                               instance, the SimpleButton instance displays
- *                               the <code>downState</code> display object as
+ *                               the `downState` display object as
  *                               the default behavior. If the target is a
  *                               selectable text field, the text field begins
  *                               selection as the default behavior.
@@ -475,22 +475,22 @@ import openfl.geom.Rectangle;
  *                               focus by using a pointer device. The default
  *                               behavior of this event is to change the focus
  *                               and dispatch the corresponding
- *                               <code>focusIn</code> and
- *                               <code>focusOut</code> events.
+ *                               `focusIn` and
+ *                               `focusOut` events.
  *
- *                               <p>This event is dispatched to the object
+ *                               This event is dispatched to the object
  *                               that currently has focus. The related object
  *                               for this event is the InteractiveObject
  *                               instance that receives focus if you do not
  *                               prevent the default behavior. You can prevent
  *                               the change in focus by calling
- *                               <code>preventDefault()</code> in an event
+ *                               `preventDefault()` in an event
  *                               listener that is properly registered with the
- *                               target object. The <code>shiftKey</code>
+ *                               target object. The `shiftKey`
  *                               property is not used. Focus changes and
- *                               <code>focusIn</code> and
- *                               <code>focusOut</code> events are dispatched
- *                               by default.</p>
+ *                               `focusIn` and
+ *                               `focusOut` events are dispatched
+ *                               by default.
  * @event mouseMove              Dispatched when a user moves the pointing
  *                               device while it is over an InteractiveObject.
  *                               If the target is a text field that the user
@@ -500,19 +500,19 @@ import openfl.geom.Rectangle;
  *                               device away from an InteractiveObject
  *                               instance. The event target is the object
  *                               previously under the pointing device. The
- *                               <code>relatedObject</code> is the object the
+ *                               `relatedObject` is the object the
  *                               pointing device has moved to. If the target
  *                               is a SimpleButton instance, the button
- *                               displays the <code>upState</code> display
+ *                               displays the `upState` display
  *                               object as the default behavior.
  *
- *                               <p>The <code>mouseOut</code> event is
+ *                               The `mouseOut` event is
  *                               dispatched each time the mouse leaves the
  *                               area of any child object of the display
  *                               object container, even if the mouse remains
  *                               over another child object of the display
  *                               object container. This is different behavior
- *                               than the purpose of the <code>rollOut</code>
+ *                               than the purpose of the `rollOut`
  *                               event, which is to simplify the coding of
  *                               rollover behaviors for display object
  *                               containers with children. When the mouse
@@ -520,50 +520,50 @@ import openfl.geom.Rectangle;
  *                               area of any of its children to go to an
  *                               object that is not one of its children, the
  *                               display object dispatches the
- *                               <code>rollOut</code> event.The
- *                               <code>rollOut</code> events are dispatched
+ *                               `rollOut` event.The
+ *                               `rollOut` events are dispatched
  *                               consecutively up the parent chain of the
  *                               object, starting with the object and ending
  *                               with the highest parent that is neither the
  *                               root nor an ancestor of the
- *                               <code>relatedObject</code>.</p>
+ *                               `relatedObject`.
  * @event mouseOver              Dispatched when the user moves a pointing
  *                               device over an InteractiveObject instance.
- *                               The <code>relatedObject</code> is the object
+ *                               The `relatedObject` is the object
  *                               that was previously under the pointing
  *                               device. If the target is a SimpleButton
  *                               instance, the object displays the
- *                               <code>overState</code> or
- *                               <code>upState</code> display object,
+ *                               `overState` or
+ *                               `upState` display object,
  *                               depending on whether the mouse button is
  *                               down, as the default behavior.
  *
- *                               <p>The <code>mouseOver</code> event is
+ *                               The `mouseOver` event is
  *                               dispatched each time the mouse enters the
  *                               area of any child object of the display
  *                               object container, even if the mouse was
  *                               already over another child object of the
  *                               display object container. This is different
  *                               behavior than the purpose of the
- *                               <code>rollOver</code> event, which is to
+ *                               `rollOver` event, which is to
  *                               simplify the coding of rollout behaviors for
  *                               display object containers with children. When
  *                               the mouse enters the area of a display object
  *                               or the area of any of its children from an
  *                               object that is not one of its children, the
  *                               display object dispatches the
- *                               <code>rollOver</code> event. The
- *                               <code>rollOver</code> events are dispatched
+ *                               `rollOver` event. The
+ *                               `rollOver` events are dispatched
  *                               consecutively down the parent chain of the
  *                               object, starting with the highest parent that
  *                               is neither the root nor an ancestor of the
- *                               <code>relatedObject</code> and ending with
- *                               the object.</p>
+ *                               `relatedObject` and ending with
+ *                               the object.
  * @event mouseUp                Dispatched when a user releases the pointing
  *                               device button over an InteractiveObject
  *                               instance. If the target is a SimpleButton
  *                               instance, the object displays the
- *                               <code>upState</code> display object. If the
+ *                               `upState` display object. If the
  *                               target is a selectable text field, the text
  *                               field ends selection as the default behavior.
  * @event mouseWheel             Dispatched when a mouse wheel is spun over an
@@ -575,73 +575,73 @@ import openfl.geom.Rectangle;
  *                               InteractiveObject when the user releases the
  *                               drag gesture.
  *
- *                               <p>The event's dropAction property indicates
+ *                               The event's dropAction property indicates
  *                               the action set by the drag target object; a
  *                               value of "none"
- *                              (<code>DragActions.NONE</code>) indicates
+ *                              (`DragActions.NONE`) indicates
  *                               that the drop was canceled or was not
- *                               accepted.</p>
+ *                               accepted.
  *
- *                               <p>The <code>nativeDragComplete</code> event
+ *                               The `nativeDragComplete` event
  *                               handler is a convenient place to update the
  *                               state of the initiating display object, for
  *                               example, by removing an item from a list(on
  *                               a drag action of "move"), or by changing the
- *                               visual properties.</p>
+ *                               visual properties.
  * @event nativeDragDrop         Dispatched by the target InteractiveObject
  *                               when a dragged object is dropped on it and
  *                               the drop has been accepted with a call to
  *                               DragManager.acceptDragDrop().
  *
- *                               <p>Access the dropped data using the event
- *                               object <code>clipboard</code> property.</p>
+ *                               Access the dropped data using the event
+ *                               object `clipboard` property.
  *
- *                               <p>The handler for this event should set the
- *                               <code>DragManager.dropAction</code> property
+ *                               The handler for this event should set the
+ *                               `DragManager.dropAction` property
  *                               to provide feedback to the initiator object
  *                               about which drag action was taken. If no
  *                               value is set, the DragManager will select a
  *                               default value from the list of allowed
- *                               actions.</p>
+ *                               actions.
  * @event nativeDragEnter        Dispatched by an InteractiveObject when a
  *                               drag gesture enters its boundary.
  *
- *                               <p>Handle either the
- *                               <code>nativeDragEnter</code> or
- *                               <code>nativeDragOver</code> events to allow
+ *                               Handle either the
+ *                               `nativeDragEnter` or
+ *                               `nativeDragOver` events to allow
  *                               the display object to become the drop
- *                               target.</p>
+ *                               target.
  *
- *                               <p>To determine whether the dispatching
+ *                               To determine whether the dispatching
  *                               display object can accept the drop, check the
  *                               suitability of the data in
- *                               <code>clipboard</code> property of the event
+ *                               `clipboard` property of the event
  *                               object, and the allowed drag actions in the
- *                               <code>allowedActions</code> property.</p>
+ *                               `allowedActions` property.
  * @event nativeDragExit         Dispatched by an InteractiveObject when a
  *                               drag gesture leaves its boundary.
  * @event nativeDragOver         Dispatched by an InteractiveObject
  *                               continually while a drag gesture remains
  *                               within its boundary.
  *
- *                               <p><code>nativeDragOver</code> events are
+ *                               `nativeDragOver` events are
  *                               dispatched whenever the mouse is moved. On
  *                               Windows and Mac, they are also dispatched on
  *                               a short timer interval even when the mouse
- *                               has not moved.</p>
+ *                               has not moved.
  *
- *                               <p>Handle either the
- *                               <code>nativeDragOver</code> or
- *                               <code>nativeDragEnter</code> events to allow
+ *                               Handle either the
+ *                               `nativeDragOver` or
+ *                               `nativeDragEnter` events to allow
  *                               the display object to become the drop
- *                               target.</p>
+ *                               target.
  *
- *                               <p>To determine whether the dispatching
+ *                               To determine whether the dispatching
  *                               display object can accept the drop, check the
  *                               suitability of the data in
- *                               <code>clipboard</code> property of the event
+ *                               `clipboard` property of the event
  *                               object, and the allowed drag actions in the
- *                               <code>allowedActions</code> property.</p>
+ *                               `allowedActions` property.
  * @event nativeDragStart        Dispatched at the beginning of a drag
  *                               operation by the InteractiveObject that is
  *                               specified as the drag initiator in the
@@ -651,8 +651,8 @@ import openfl.geom.Rectangle;
  *                               drag initiator in the DragManager.doDrag()
  *                               call.
  *
- *                               <p><code>nativeDragUpdate</code> events are
- *                               not dispatched on Linux.</p>
+ *                               `nativeDragUpdate` events are
+ *                               not dispatched on Linux.
  * @event paste                  Dispatched when the user activates the
  *                               platform-specific accelerator key combination
  *                               for a paste operation or selects 'Paste' from
@@ -667,18 +667,18 @@ import openfl.geom.Rectangle;
  * @event rightClick             Dispatched when a user presses and releases
  *                               the right button of the user's pointing
  *                               device over the same InteractiveObject. For a
- *                               <code>rightClick</code> event to occur, it
+ *                               `rightClick` event to occur, it
  *                               must always follow this series of events in
  *                               the order of occurrence:
- *                               <code>rightMouseDown</code> event, then
- *                               <code>rightMouseUp</code>. The target object
+ *                               `rightMouseDown` event, then
+ *                               `rightMouseUp`. The target object
  *                               must be identical for both of these events;
- *                               otherwise the <code>rightClick</code> event
+ *                               otherwise the `rightClick` event
  *                               does not occur. Any number of other mouse
  *                               events can occur at any time between the
- *                               <code>rightMouseDown</code> or
- *                               <code>rightMouseUp</code> events; the
- *                               <code>rightClick</code> event still occurs.
+ *                               `rightMouseDown` or
+ *                               `rightMouseUp` events; the
+ *                               `rightClick` event still occurs.
  * @event rightMouseDown         Dispatched when a user presses the pointing
  *                               device button over an InteractiveObject
  *                               instance.
@@ -690,58 +690,58 @@ import openfl.geom.Rectangle;
  *                               instance. The event target is the object
  *                               previously under the pointing device or a
  *                               parent of that object. The
- *                               <code>relatedObject</code> is the object that
+ *                               `relatedObject` is the object that
  *                               the pointing device has moved to. The
- *                               <code>rollOut</code> events are dispatched
+ *                               `rollOut` events are dispatched
  *                               consecutively up the parent chain of the
  *                               object, starting with the object and ending
  *                               with the highest parent that is neither the
  *                               root nor an ancestor of the
- *                               <code>relatedObject</code>.
+ *                               `relatedObject`.
  *
- *                               <p>The purpose of the <code>rollOut</code>
+ *                               The purpose of the `rollOut`
  *                               event is to simplify the coding of rollover
  *                               behaviors for display object containers with
  *                               children. When the mouse leaves the area of a
  *                               display object or the area of any of its
  *                               children to go to an object that is not one
  *                               of its children, the display object
- *                               dispatches the <code>rollOut</code> event.
+ *                               dispatches the `rollOut` event.
  *                               This is different behavior than that of the
- *                               <code>mouseOut</code> event, which is
+ *                               `mouseOut` event, which is
  *                               dispatched each time the mouse leaves the
  *                               area of any child object of the display
  *                               object container, even if the mouse remains
  *                               over another child object of the display
- *                               object container.</p>
+ *                               object container.
  * @event rollOver               Dispatched when the user moves a pointing
  *                               device over an InteractiveObject instance.
  *                               The event target is the object under the
  *                               pointing device or a parent of that object.
- *                               The <code>relatedObject</code> is the object
+ *                               The `relatedObject` is the object
  *                               that was previously under the pointing
- *                               device. The <code>rollOver</code> events are
+ *                               device. The `rollOver` events are
  *                               dispatched consecutively down the parent
  *                               chain of the object, starting with the
  *                               highest parent that is neither the root nor
- *                               an ancestor of the <code>relatedObject</code>
+ *                               an ancestor of the `relatedObject`
  *                               and ending with the object.
  *
- *                               <p>The purpose of the <code>rollOver</code>
+ *                               The purpose of the `rollOver`
  *                               event is to simplify the coding of rollout
  *                               behaviors for display object containers with
  *                               children. When the mouse enters the area of a
  *                               display object or the area of any of its
  *                               children from an object that is not one of
  *                               its children, the display object dispatches
- *                               the <code>rollOver</code> event. This is
+ *                               the `rollOver` event. This is
  *                               different behavior than that of the
- *                               <code>mouseOver</code> event, which is
+ *                               `mouseOver` event, which is
  *                               dispatched each time the mouse enters the
  *                               area of any child object of the display
  *                               object container, even if the mouse was
  *                               already over another child object of the
- *                               display object container. </p>
+ *                               display object container. 
  * @event selectAll              Dispatched when the user activates the
  *                               platform-specific accelerator key combination
  *                               for a select all operation or selects 'Select
@@ -758,11 +758,11 @@ import openfl.geom.Rectangle;
  * @event softKeyboardDeactivate Dispatched immediately after the soft
  *                               keyboard is lowered.
  * @event tabChildrenChange      Dispatched when the value of the object's
- *                               <code>tabChildren</code> flag changes.
+ *                               `tabChildren` flag changes.
  * @event tabEnabledChange       Dispatched when the object's
- *                               <code>tabEnabled</code> flag changes.
+ *                               `tabEnabled` flag changes.
  * @event tabIndexChange         Dispatched when the value of the object's
- *                               <code>tabIndex</code> property changes.
+ *                               `tabIndex` property changes.
  * @event textInput              Dispatched when a user enters one or more
  *                               characters of text. Various text input
  *                               methods can generate this event, including
@@ -775,13 +775,13 @@ import openfl.geom.Rectangle;
  *                               finger to a mobile phone or tablet with a
  *                               touch screen). Some devices might also
  *                               interpret this contact as a
- *                               <code>mouseDown</code> event.
+ *                               `mouseDown` event.
  *
- *                               <p>Specifically, if a user touches a finger
+ *                               Specifically, if a user touches a finger
  *                               to a touch screen, the InteractiveObject
  *                               instance can dispatch a
- *                               <code>mouseDown</code> event or a
- *                               <code>touchBegin</code> event, or both if the
+ *                               `mouseDown` event or a
+ *                               `touchBegin` event, or both if the
  *                               current environment supports it. Choose how
  *                               you want to handle the user interaction. Use
  *                               the openfl.ui.Multitouch class to manage touch
@@ -789,31 +789,31 @@ import openfl.geom.Rectangle;
  *                               handling, simple touch point event handling,
  *                               or disable touch events so only mouse events
  *                               are dispatched). If you choose to handle the
- *                               <code>mouseDown</code> event, then the same
+ *                               `mouseDown` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>touchBegin</code> event, you can design
+ *                               `touchBegin` event, you can design
  *                               your event handler to respond to the specific
  *                               needs of a touch-enabled environment and
  *                               provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event touchEnd               Dispatched when the user removes contact with
  *                               a touch-enabled device(such as lifts a
  *                               finger off a mobile phone or tablet with a
  *                               touch screen). Some devices might also
  *                               interpret this contact as a
- *                               <code>mouseUp</code> event.
+ *                               `mouseUp` event.
  *
- *                               <p>Specifically, if a user lifts a finger
+ *                               Specifically, if a user lifts a finger
  *                               from a touch screen, the InteractiveObject
- *                               instance can dispatch a <code>mouseUp</code>
- *                               event or a <code>touchEnd</code> event, or
+ *                               instance can dispatch a `mouseUp`
+ *                               event or a `touchEnd` event, or
  *                               both if the current environment supports it.
  *                               Choose how you want to handle the user
  *                               interaction. Use the openfl.ui.Multitouch
@@ -821,32 +821,32 @@ import openfl.geom.Rectangle;
  *                               touch gesture event handling, simple touch
  *                               point event handling, or disable touch events
  *                               so only mouse events are dispatched). If you
- *                               choose to handle the <code>mouseUp</code>
+ *                               choose to handle the `mouseUp`
  *                               event, then the same event handler will run
  *                               on a touch-enabled device and a mouse enabled
  *                               device. However, if you choose to handle the
- *                               <code>touchEnd</code> event, you can design
+ *                               `touchEnd` event, you can design
  *                               your event handler to respond to the specific
  *                               needs of a touch-enabled environment and
  *                               provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event touchMove              Dispatched when the user moves the point of
  *                               contact with a touch-enabled device(such as
  *                               drags a finger across a mobile phone or
  *                               tablet with a touch screen). Some devices
  *                               might also interpret this contact as a
- *                               <code>mouseMove</code> event.
+ *                               `mouseMove` event.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               across a touch screen, the InteractiveObject
  *                               instance can dispatch a
- *                               <code>mouseMove</code> event or a
- *                               <code>touchMove</code> event, or both if the
+ *                               `mouseMove` event or a
+ *                               `touchMove` event, or both if the
  *                               current environment supports it. Choose how
  *                               you want to handle the user interaction. Use
  *                               the openfl.ui.Multitouch class to manage touch
@@ -854,33 +854,33 @@ import openfl.geom.Rectangle;
  *                               handling, simple touch point event handling,
  *                               or disable touch events so only mouse events
  *                               are dispatched). If you choose to handle the
- *                               <code>mouseMove</code> event, then the same
+ *                               `mouseMove` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>touchMove</code> event, you can design
+ *                               `touchMove` event, you can design
  *                               your event handler to respond to the specific
  *                               needs of a touch-enabled environment and
  *                               provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event touchOut               Dispatched when the user moves the point of
  *                               contact away from InteractiveObject instance
  *                               on a touch-enabled device(such as drags a
  *                               finger from one display object to another on
  *                               a mobile phone or tablet with a touch
  *                               screen). Some devices might also interpret
- *                               this contact as a <code>mouseOut</code>
+ *                               this contact as a `mouseOut`
  *                               event.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               across a touch screen, the InteractiveObject
- *                               instance can dispatch a <code>mouseOut</code>
- *                               event or a <code>touchOut</code> event, or
+ *                               instance can dispatch a `mouseOut`
+ *                               event or a `touchOut` event, or
  *                               both if the current environment supports it.
  *                               Choose how you want to handle the user
  *                               interaction. Use the openfl.ui.Multitouch
@@ -888,20 +888,20 @@ import openfl.geom.Rectangle;
  *                               touch gesture event handling, simple touch
  *                               point event handling, or disable touch events
  *                               so only mouse events are dispatched). If you
- *                               choose to handle the <code>mouseOut</code>
+ *                               choose to handle the `mouseOut`
  *                               event, then the same event handler will run
  *                               on a touch-enabled device and a mouse enabled
  *                               device. However, if you choose to handle the
- *                               <code>touchOut</code> event, you can design
+ *                               `touchOut` event, you can design
  *                               your event handler to respond to the specific
  *                               needs of a touch-enabled environment and
  *                               provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event touchOver              Dispatched when the user moves the point of
  *                               contact over an InteractiveObject instance on
  *                               a touch-enabled device(such as drags a
@@ -909,13 +909,13 @@ import openfl.geom.Rectangle;
  *                               to a point over a display object on a mobile
  *                               phone or tablet with a touch screen). Some
  *                               devices might also interpret this contact as
- *                               a <code>mouseOver</code> event.
+ *                               a `mouseOver` event.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, the
  *                               InteractiveObject instance can dispatch a
- *                               <code>mouseOver</code> event or a
- *                               <code>touchOver</code> event, or both if the
+ *                               `mouseOver` event or a
+ *                               `touchOver` event, or both if the
  *                               current environment supports it. Choose how
  *                               you want to handle the user interaction. Use
  *                               the openfl.ui.Multitouch class to manage touch
@@ -923,20 +923,20 @@ import openfl.geom.Rectangle;
  *                               handling, simple touch point event handling,
  *                               or disable touch events so only mouse events
  *                               are dispatched). If you choose to handle the
- *                               <code>mouseOver</code> event, then the same
+ *                               `mouseOver` event, then the same
  *                               event handler will run on a touch-enabled
  *                               device and a mouse enabled device. However,
  *                               if you choose to handle the
- *                               <code>touchOver</code> event, you can design
+ *                               `touchOver` event, you can design
  *                               your event handler to respond to the specific
  *                               needs of a touch-enabled environment and
  *                               provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event touchRollOut           Dispatched when the user moves the point of
  *                               contact away from an InteractiveObject
  *                               instance on a touch-enabled device(such as
@@ -944,13 +944,13 @@ import openfl.geom.Rectangle;
  *                               a point outside the display object on a
  *                               mobile phone or tablet with a touch screen).
  *                               Some devices might also interpret this
- *                               contact as a <code>rollOut</code> event.
+ *                               contact as a `rollOut` event.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, the
  *                               InteractiveObject instance can dispatch a
- *                               <code>rollOut</code> event or a
- *                               <code>touchRollOut</code> event, or both if
+ *                               `rollOut` event or a
+ *                               `touchRollOut` event, or both if
  *                               the current environment supports it. Choose
  *                               how you want to handle the user interaction.
  *                               Use the openfl.ui.Multitouch class to manage
@@ -958,20 +958,20 @@ import openfl.geom.Rectangle;
  *                               event handling, simple touch point event
  *                               handling, or disable touch events so only
  *                               mouse events are dispatched). If you choose
- *                               to handle the <code>rollOut</code> event,
+ *                               to handle the `rollOut` event,
  *                               then the same event handler will run on a
  *                               touch-enabled device and a mouse enabled
  *                               device. However, if you choose to handle the
- *                               <code>touchRollOut</code> event, you can
+ *                               `touchRollOut` event, you can
  *                               design your event handler to respond to the
  *                               specific needs of a touch-enabled environment
  *                               and provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event touchRollOver          Dispatched when the user moves the point of
  *                               contact over an InteractiveObject instance on
  *                               a touch-enabled device(such as drags a
@@ -979,13 +979,13 @@ import openfl.geom.Rectangle;
  *                               to a point over a display object on a mobile
  *                               phone or tablet with a touch screen). Some
  *                               devices might also interpret this contact as
- *                               a <code>rollOver</code> event.
+ *                               a `rollOver` event.
  *
- *                               <p>Specifically, if a user moves a finger
+ *                               Specifically, if a user moves a finger
  *                               over an InteractiveObject, the
  *                               InteractiveObject instance can dispatch a
- *                               <code>rollOver</code> event or a
- *                               <code>touchRollOver</code> event, or both if
+ *                               `rollOver` event or a
+ *                               `touchRollOver` event, or both if
  *                               the current environment supports it. Choose
  *                               how you want to handle the user interaction.
  *                               Use the openfl.ui.Multitouch class to manage
@@ -993,20 +993,20 @@ import openfl.geom.Rectangle;
  *                               event handling, simple touch point event
  *                               handling, or disable touch events so only
  *                               mouse events are dispatched). If you choose
- *                               to handle the <code>rollOver</code> event,
+ *                               to handle the `rollOver` event,
  *                               then the same event handler will run on a
  *                               touch-enabled device and a mouse enabled
  *                               device. However, if you choose to handle the
- *                               <code>touchRollOver</code> event, you can
+ *                               `touchRollOver` event, you can
  *                               design your event handler to respond to the
  *                               specific needs of a touch-enabled environment
  *                               and provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  * @event touchTap               Dispatched when the user lifts the point of
  *                               contact over the same InteractiveObject
  *                               instance on which the contact was initiated
@@ -1015,12 +1015,12 @@ import openfl.geom.Rectangle;
  *                               over a display object on a mobile phone or
  *                               tablet with a touch screen). Some devices
  *                               might also interpret this contact as a
- *                               <code>click</code> event.
+ *                               `click` event.
  *
- *                               <p>Specifically, if a user taps a finger over
+ *                               Specifically, if a user taps a finger over
  *                               an InteractiveObject, the InteractiveObject
- *                               instance can dispatch a <code>click</code>
- *                               event or a <code>touchTap</code> event, or
+ *                               instance can dispatch a `click`
+ *                               event or a `touchTap` event, or
  *                               both if the current environment supports it.
  *                               Choose how you want to handle the user
  *                               interaction. Use the openfl.ui.Multitouch
@@ -1028,20 +1028,20 @@ import openfl.geom.Rectangle;
  *                               touch gesture event handling, simple touch
  *                               point event handling, or disable touch events
  *                               so only mouse events are dispatched). If you
- *                               choose to handle the <code>click</code>
+ *                               choose to handle the `click`
  *                               event, then the same event handler will run
  *                               on a touch-enabled device and a mouse enabled
  *                               device. However, if you choose to handle the
- *                               <code>touchTap</code> event, you can design
+ *                               `touchTap` event, you can design
  *                               your event handler to respond to the specific
  *                               needs of a touch-enabled environment and
  *                               provide users with a richer touch-enabled
  *                               experience. You can also handle both events,
  *                               separately, to provide a different response
- *                               for a touch event than a mouse event.</p>
+ *                               for a touch event than a mouse event.
  *
- *                               <p><b>Note:</b> See the Multitouch class for
- *                               environment compatibility information.</p>
+ *                               **Note:** See the Multitouch class for
+ *                               environment compatibility information.
  */
 extern class InteractiveObject extends DisplayObject {
 	
@@ -1055,18 +1055,18 @@ extern class InteractiveObject extends DisplayObject {
 	#end
 	
 	/**
-	 * Specifies whether the object receives <code>doubleClick</code> events. The
-	 * default value is <code>false</code>, which means that by default an
-	 * InteractiveObject instance does not receive <code>doubleClick</code>
-	 * events. If the <code>doubleClickEnabled</code> property is set to
-	 * <code>true</code>, the instance receives <code>doubleClick</code> events
-	 * within its bounds. The <code>mouseEnabled</code> property of the
-	 * InteractiveObject instance must also be set to <code>true</code> for the
-	 * object to receive <code>doubleClick</code> events.
+	 * Specifies whether the object receives `doubleClick` events. The
+	 * default value is `false`, which means that by default an
+	 * InteractiveObject instance does not receive `doubleClick`
+	 * events. If the `doubleClickEnabled` property is set to
+	 * `true`, the instance receives `doubleClick` events
+	 * within its bounds. The `mouseEnabled` property of the
+	 * InteractiveObject instance must also be set to `true` for the
+	 * object to receive `doubleClick` events.
 	 *
-	 * <p>No event is dispatched by setting this property. You must use the
-	 * <code>addEventListener()</code> method to add an event listener for the
-	 * <code>doubleClick</code> event.</p>
+	 * No event is dispatched by setting this property. You must use the
+	 * `addEventListener()` method to add an event listener for the
+	 * `doubleClick` event.
 	 */
 	public var doubleClickEnabled:Bool;
 	
@@ -1074,19 +1074,19 @@ extern class InteractiveObject extends DisplayObject {
 	
 	/**
 	 * Specifies whether this object receives mouse, or other user input,
-	 * messages. The default value is <code>true</code>, which means that by
+	 * messages. The default value is `true`, which means that by
 	 * default any InteractiveObject instance that is on the display list
 	 * receives mouse events or other user input events. If
-	 * <code>mouseEnabled</code> is set to <code>false</code>, the instance does
+	 * `mouseEnabled` is set to `false`, the instance does
 	 * not receive any mouse events(or other user input events like keyboard
 	 * events). Any children of this instance on the display list are not
-	 * affected. To change the <code>mouseEnabled</code> behavior for all
+	 * affected. To change the `mouseEnabled` behavior for all
 	 * children of an object on the display list, use
-	 * <code>openfl.display.DisplayObjectContainer.mouseChildren</code>.
+	 * `openfl.display.DisplayObjectContainer.mouseChildren`.
 	 *
-	 * <p> No event is dispatched by setting this property. You must use the
-	 * <code>addEventListener()</code> method to create interactive
-	 * functionality.</p>
+	 *  No event is dispatched by setting this property. You must use the
+	 * `addEventListener()` method to create interactive
+	 * functionality.
 	 */
 	public var mouseEnabled:Bool;
 	
@@ -1094,23 +1094,23 @@ extern class InteractiveObject extends DisplayObject {
 	 * Specifies whether a virtual keyboard(an on-screen, software keyboard)
 	 * should display when this InteractiveObject instance receives focus.
 	 *
-	 * <p>By default, the value is <code>false</code> and focusing an
+	 * By default, the value is `false` and focusing an
 	 * InteractiveObject instance does not raise a soft keyboard. If the
-	 * <code>needsSoftKeyboard</code> property is set to <code>true</code>, the
+	 * `needsSoftKeyboard` property is set to `true`, the
 	 * runtime raises a soft keyboard when the InteractiveObject instance is
 	 * ready to accept user input. An InteractiveObject instance is ready to
 	 * accept user input after a programmatic call to set the Stage
-	 * <code>focus</code> property or a user interaction, such as a "tap." If the
+	 * `focus` property or a user interaction, such as a "tap." If the
 	 * client system has a hardware keyboard available or does not support
-	 * virtual keyboards, then the soft keyboard is not raised.</p>
+	 * virtual keyboards, then the soft keyboard is not raised.
 	 *
-	 * <p>The InteractiveObject instance dispatches
-	 * <code>softKeyboardActivating</code>, <code>softKeyboardActivate</code>,
-	 * and <code>softKeyboardDeactivate</code> events when the soft keyboard
-	 * raises and lowers.</p>
+	 * The InteractiveObject instance dispatches
+	 * `softKeyboardActivating`, `softKeyboardActivate`,
+	 * and `softKeyboardDeactivate` events when the soft keyboard
+	 * raises and lowers.
 	 *
-	 * <p><b>Note:</b> This property is not supported in AIR applications on
-	 * iOS.</p>
+	 * **Note:** This property is not supported in AIR applications on
+	 * iOS.
 	 */
 	public var needsSoftKeyboard:Bool;
 	public var softKeyboardInputAreaOfInterest:Rectangle;
@@ -1119,16 +1119,16 @@ extern class InteractiveObject extends DisplayObject {
 	
 	
 	/**
-	 * Calling the <code>new InteractiveObject()</code> constructor throws an
-	 * <code>ArgumentError</code> exception. You can, however, call constructors
+	 * Calling the `new InteractiveObject()` constructor throws an
+	 * `ArgumentError` exception. You can, however, call constructors
 	 * for the following subclasses of InteractiveObject:
-	 * <ul>
-	 *   <li><code>new SimpleButton()</code></li>
-	 *   <li><code>new TextField()</code></li>
-	 *   <li><code>new Loader()</code></li>
-	 *   <li><code>new Sprite()</code></li>
-	 *   <li><code>new MovieClip()</code></li>
-	 * </ul>
+	 * 
+	 *  * `new SimpleButton()`
+	 *  * `new TextField()`
+	 *  * `new Loader()`
+	 *  * `new Sprite()`
+	 *  * `new MovieClip()`
+	 * 
 	 */
 	public function new ();
 	
@@ -1136,17 +1136,17 @@ extern class InteractiveObject extends DisplayObject {
 	/**
 	 * Raises a virtual keyboard.
 	 *
-	 * <p>Calling this method focuses the InteractiveObject instance and raises
-	 * the soft keyboard, if necessary. The <code>needsSoftKeyboard</code> must
-	 * also be <code>true</code>. A keyboard is not raised if a hardware keyboard
+	 * Calling this method focuses the InteractiveObject instance and raises
+	 * the soft keyboard, if necessary. The `needsSoftKeyboard` must
+	 * also be `true`. A keyboard is not raised if a hardware keyboard
 	 * is available, or if the client system does not support virtual
-	 * keyboards.</p>
+	 * keyboards.
 	 *
-	 * <p><b>Note:</b> This method is not supported in AIR applications on
-	 * iOS.</p>
+	 * **Note:** This method is not supported in AIR applications on
+	 * iOS.
 	 * 
-	 * @return A value of <code>true</code> means that the soft keyboard request
-	 *         was granted; <code>false</code> means that the soft keyboard was
+	 * @return A value of `true` means that the soft keyboard request
+	 *         was granted; `false` means that the soft keyboard was
 	 *         not raised.
 	 */
 	public function requestSoftKeyboard ():Bool;

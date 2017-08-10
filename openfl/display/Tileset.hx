@@ -33,9 +33,7 @@ class Tileset {
 		if (rects != null) {
 			
 			for (rect in rects) {
-				
 				addRect (rect);
-				
 			}
 			
 		}
@@ -102,9 +100,7 @@ class Tileset {
 		bitmapData = value;
 		
 		for (data in __data) {
-			
 			data.__update (bitmapData);
-			
 		}
 		
 		return value;

@@ -24,17 +24,19 @@ import js.html.ImageElement;
 @:access(openfl.geom.Rectangle)
 
 
-class Bitmap extends DisplayObject {
+class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	
 	public var bitmapData (default, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
+	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	
 	#if (js && html5)
 	private var __image:ImageElement;
-	private var __imageVersion:Int;
 	#end
+	
+	private var __imageVersion:Int;
 	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
@@ -50,6 +52,23 @@ class Bitmap extends DisplayObject {
 			this.pixelSnapping = PixelSnapping.AUTO;
 			
 		}
+		
+	}
+	
+	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		#if (!js || !dom)
+		if (bitmapData != null && bitmapData.image != null) {
+			
+			var image = bitmapData.image;
+			if (bitmapData.image.version != __imageVersion) {
+				__setRenderDirty ();
+				__imageVersion = image.version;
+			}
+			
+		}
+		#end
 		
 	}
 	
@@ -168,6 +187,15 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
+	private override function __renderDOMClear (renderSession: RenderSession):Void {
+		
+		#if dom
+		DOMBitmap.clear (this, renderSession);
+		#end
+		
+	}
+	
+	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLBitmap.render (this, renderSession);
@@ -219,9 +247,7 @@ class Bitmap extends DisplayObject {
 			
 		}
 		
-		#if (js && html5 && dom)
 		__imageVersion = -1;
-		#end
 		
 		return bitmapData;
 		

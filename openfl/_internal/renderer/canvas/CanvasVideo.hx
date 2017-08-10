@@ -21,6 +21,7 @@ class CanvasVideo {
 		
 		if (video.__stream.__video != null) {
 			
+			renderSession.blendModeManager.setBlendMode (video.__worldBlendMode);
 			renderSession.maskManager.pushObject (video);
 			
 			context.globalAlpha = video.__worldAlpha;

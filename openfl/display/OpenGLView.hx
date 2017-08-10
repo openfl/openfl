@@ -27,7 +27,7 @@ import js.Browser;
 @:access(lime.graphics.opengl.GL)
 
 
-class OpenGLView extends DirectRenderer {
+@:replacementPlanned class OpenGLView extends DirectRenderer {
 	
 	
 	public static inline var CONTEXT_LOST = "glcontextlost";
@@ -87,6 +87,15 @@ class OpenGLView extends DirectRenderer {
 		#end
 		
 	}
+	
+	
+	#if !flash
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		if (__render != null) __setRenderDirty ();
+		
+	}
+	#end
 	
 	
 	#if !flash

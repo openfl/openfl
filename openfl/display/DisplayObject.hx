@@ -48,6 +48,7 @@ import js.html.Element;
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -91,6 +92,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __cacheAsBitmap:Bool;
 	private var __cacheAsBitmapMatrix:Matrix;
 	private var __cacheBitmap:Bitmap;
+	private var __cacheBitmapBackground:Int;
+	private var __cacheBitmapColorTransform:ColorTransform;
 	private var __cacheBitmapData:BitmapData;
 	private var __cacheBitmapRender:Bool;
 	private var __cairo:Cairo;
@@ -156,13 +159,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();		
+		__renderTransform = new Matrix ();
+		
 		#if dom
 		__worldVisible = true;
 		#end
-
+		
 		name = "instance" + (++__instanceCount);
-
+		
 	}
 	
 	
@@ -413,7 +417,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 
 	private function __dispatchChildren (event:Event):Void {
 	}
-	
+
 	
 	private override function __dispatchEvent (event:Event):Bool {
 
@@ -710,7 +714,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -743,7 +747,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap (renderSession);
+			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
@@ -769,22 +773,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 	}
-
-	private function __cleanDOM(renderSession: RenderSession): Void {
-		#if dom
-			DOMDisplayObject.clean(this, renderSession);
-		#end
-	}
+	
 	
 	private function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 
-			__cleanDOM(renderSession);
+			__renderDOMClear (renderSession);
 			__cacheBitmap.stage = stage;
+
 			DOMBitmap.render (__cacheBitmap, renderSession);
 			
 		} else {
@@ -797,9 +797,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __renderDOMClear (renderSession:RenderSession):Void {
+
+		#if dom
+		DOMDisplayObject.clear (this, renderSession);
+		#end
+
+	}
+
+
 	private function __renderGL (renderSession:RenderSession):Void {
 		
-		__updateCacheBitmap (renderSession);
+		__updateCacheBitmap (renderSession, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
@@ -959,87 +968,130 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 	}
-
-	private function __isCachedBitmapDataOutdated(): Bool {
-		if (cacheAsBitmap && __cacheBitmap != null) {
-			return __cacheBitmap.__worldAlpha != __worldAlpha  || !__cacheBitmap.__worldTransform.equals (__worldTransform) ||
-			__cacheBitmap.__scrollRect != __scrollRect || __cacheBitmap.__worldBlendMode != __worldBlendMode ||
-			__cacheBitmap.__renderable != __renderable;
-		}
-
-		return false;
-	}
 	
-	private function __updateCacheBitmap (renderSession:RenderSession):Void {
+	
+	private function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
 		
 		if (__cacheBitmapRender) return;
-
+		
 		if (cacheAsBitmap) {
 			
-			if (__cacheBitmap == null || ((__renderDirty || __isCachedBitmapDataOutdated()) && ((__children != null && __children.length > 0) ||
-			!__worldColorTransform.__isDefault () || __graphics != null))) {
+			var matrix = null, rect = null;
 
-				__getWorldTransform ();
-				__update (false, true);
+			__getWorldTransform ();
+			__update (false, true);
+
+			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
+			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
+
+			if (updateTransform) {
 				
-				var matrix = Matrix.__pool.get ();
-				var rect = Rectangle.__pool.get ();
+				matrix = Matrix.__pool.get ();
+				rect = Rectangle.__pool.get ();
 				matrix.identity ();
 				
 				__getBounds (rect, matrix);
 				
+			}
+
+			// TODO: Update rect size based on filter dimensions
+
+			if (needRender) {
+
+				__cacheBitmapBackground = opaqueBackground;
 				var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
-
-				if (rect.width != 0 && rect.height != 0) {
-
-					if (__renderDirty) {
-						if (__cacheBitmap == null || rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height) {
-
-							__cacheBitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, color);
-							//__cacheBitmapData.disposeImage ();
-
-							if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
-							__cacheBitmap.bitmapData = __cacheBitmapData;
-
-						} else {
-
-							__cacheBitmapData.fillRect (__cacheBitmapData.rect, color);
-
-						}
-					}
-
-					if (__cacheBitmap != null) {
-						__cacheBitmap.smoothing = renderSession.allowSmoothing;
-						__cacheBitmap.__renderable = __renderable;
-						__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
-						__cacheBitmap.__worldAlpha = __worldAlpha;
-						__cacheBitmap.__worldBlendMode = __worldBlendMode;
-						__cacheBitmap.__scrollRect = __scrollRect;
-						__cacheBitmap.filters = filters;
-
-						matrix.tx = Math.round (rect.x);
-						matrix.ty = Math.round (rect.y);
-
-						__cacheBitmap.__renderTransform.copyFrom (matrix);
-						__cacheBitmap.__renderTransform.concat (__renderTransform);
-
-						matrix.tx *= -1;
-						matrix.ty *= -1;
-
-						if (__renderDirty) {
-							__cacheBitmapRender = true;
-							@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
-							__cacheBitmapRender = false;
-						}
-
-						if (!__worldColorTransform.__isDefault ()) {
-
-							__cacheBitmapData.colorTransform (__cacheBitmapData.rect, __worldColorTransform);
-
-						}
-					}
-				}
 				
+				if (rect.width >= 0.5 && rect.height >= 0.5) {
+
+					if (__cacheBitmap == null || rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height) {
+
+						__cacheBitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, color);
+						//__cacheBitmapData.disposeImage ();
+
+						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
+						__cacheBitmap.bitmapData = __cacheBitmapData;
+
+					} else {
+
+						__cacheBitmapData.fillRect (__cacheBitmapData.rect, color);
+
+					}
+
+				}
+
+			}
+
+			if (updateTransform) {
+
+				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
+
+				matrix.tx = Math.round (rect.x);
+				matrix.ty = Math.round (rect.y);
+
+				__cacheBitmap.__renderTransform.copyFrom (matrix);
+				__cacheBitmap.__renderTransform.concat (__renderTransform);
+
+				matrix.tx *= -1;
+				matrix.ty *= -1;
+
+			}
+
+			__cacheBitmap.smoothing = renderSession.allowSmoothing;
+			__cacheBitmap.__renderable = __renderable;
+			__cacheBitmap.__worldAlpha = __worldAlpha;
+			__cacheBitmap.__worldBlendMode = __worldBlendMode;
+			__cacheBitmap.__scrollRect = __scrollRect;
+			//__cacheBitmap.filters = filters;
+
+			if (needRender) {
+
+				__cacheBitmapRender = true;
+
+				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
+
+				if (__filters != null && __filters.length > 0) {
+
+					var bitmapData = __cacheBitmapData;
+					var bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+					var cacheBitmap;
+
+					var sourceRect = bitmapData.rect;
+					var destPoint = new Point (); // TODO: ObjectPool
+					var lastBitmap;
+
+					for (filter in __filters) {
+
+						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
+
+						if (lastBitmap == bitmapData2) {
+
+							cacheBitmap = bitmapData;
+							bitmapData = bitmapData2;
+							bitmapData2 = cacheBitmap;
+
+						}
+
+					}
+
+					__cacheBitmap.bitmapData = bitmapData;
+
+				}
+
+				__cacheBitmapRender = false;
+
+				if (__cacheBitmapColorTransform == null) __cacheBitmapColorTransform = new ColorTransform ();
+				__cacheBitmapColorTransform.__copyFrom (__worldColorTransform);
+
+				if (!__cacheBitmapColorTransform.__isDefault ()) {
+
+					__cacheBitmapData.colorTransform (__cacheBitmapData.rect, __cacheBitmapColorTransform);
+					
+				}
+
+			}
+
+			if (updateTransform) {
+
 				__update (false, true);
 				
 				Matrix.__pool.release (matrix);
@@ -1048,10 +1100,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 		} else if (__cacheBitmap != null) {
-			__cacheBitmap.__cleanDOM(renderSession);
+
+			#if dom
+			__cacheBitmap.__renderDOMClear (renderSession);
+			#end
+
 			__cacheBitmap = null;
 			__cacheBitmapData = null;
-			
+			__cacheBitmapColorTransform = null;
+
 		}
 		
 	}
@@ -1062,7 +1119,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__worldAlpha = alpha;
-		
+		__worldBlendMode = blendMode;
+
 		if (__transformDirty) {
 			
 			__transformDirty = false;

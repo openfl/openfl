@@ -19,6 +19,7 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
+import js.Browser;
 #end
 
 #if sys
@@ -120,6 +121,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		#end
 		
 		#if (js && html5)
+		
+		if (Browser.location.protocol == "https:") {
+			
+			secure = true;
+			
+		}
 		
 		var schema = secure ? "wss" : "ws";
 		var urlReg = ~/^(.*:\/\/)?([A-Za-z0-9\-\.]+)\/?(.*)/g;

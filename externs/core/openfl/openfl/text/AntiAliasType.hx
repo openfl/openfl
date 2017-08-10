@@ -12,18 +12,18 @@ package openfl.text; #if (display || !flash)
 	 * allows font faces to be rendered at very high quality at small sizes. It
 	 * is best used with applications that have a lot of small text. Advanced
 	 * anti-aliasing is not recommended for very large fonts(larger than 48
-	 * points). This constant is used for the <code>antiAliasType</code> property
+	 * points). This constant is used for the `antiAliasType` property
 	 * in the TextField class. Use the syntax
-	 * <code>AntiAliasType.ADVANCED</code>.
+	 * `AntiAliasType.ADVANCED`.
 	 */
 	public var ADVANCED = 0;
 	
 	/**
 	 * Sets anti-aliasing to the anti-aliasing that is used in Flash Player 7 and
 	 * earlier. This setting is recommended for applications that do not have a
-	 * lot of text. This constant is used for the <code>antiAliasType</code>
+	 * lot of text. This constant is used for the `antiAliasType`
 	 * property in the TextField class. Use the syntax
-	 * <code>AntiAliasType.NORMAL</code>.
+	 * `AntiAliasType.NORMAL`.
 	 */
 	public var NORMAL = 1;
 	

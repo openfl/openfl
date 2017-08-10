@@ -159,23 +159,15 @@ class CanvasTextField {
 				var transform = graphics.__renderTransform;
 				
 				#if dom
-
-					textField.__graphics.__dirty = false;
-					textField.__dirty = false;
-
+					
 					var scale = CanvasRenderer.scale;
 
-					graphics.__canvas.width  = Std.int(width * scale);
-					graphics.__canvas.height = Std.int(height * scale);
-					graphics.__canvas.style.width  =  width + "px";
+					graphics.__canvas.width = Std.int (width * scale);
+					graphics.__canvas.height = Std.int (height * scale);
+					graphics.__canvas.style.width = width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a  * scale,
-					                      transform.b  * scale,
-					                      transform.c  * scale,
-					                      transform.d  * scale,
-					                      transform.tx * scale,
-					                      transform.ty * scale);
+					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
 					
 				#else
 					

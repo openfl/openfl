@@ -4,12 +4,12 @@ package openfl.filters; #if (display || !flash)
 /**
  * The BitmapFilter class is the base class for all image filter effects.
  *
- * <p>The BevelFilter, BlurFilter, ColorMatrixFilter, ConvolutionFilter,
+ * The BevelFilter, BlurFilter, ColorMatrixFilter, ConvolutionFilter,
  * DisplacementMapFilter, DropShadowFilter, GlowFilter, GradientBevelFilter,
  * and GradientGlowFilter classes all extend the BitmapFilter class. You can
- * apply these filter effects to any display object.</p>
+ * apply these filter effects to any display object.
  *
- * <p>You can neither directly instantiate nor extend BitmapFilter.</p>
+ * You can neither directly instantiate nor extend BitmapFilter.
  */
 extern class BitmapFilter {
 	
