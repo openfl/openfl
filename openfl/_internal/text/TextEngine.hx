@@ -956,6 +956,19 @@ class TextEngine {
 		
 		inline function alignBaseline ():Void {
 			
+			// since nextFormatRange may not have been called, have to update these manually
+			if (ascent > maxAscent) {
+				
+				maxAscent = ascent;
+				
+			}
+			
+			if (heightValue > maxHeightValue) {
+				
+				maxHeightValue = heightValue;
+				
+			}
+			
 			for (lg in layoutGroups) {
 				
 				if (lg.lineIndex < lineIndex) continue;
@@ -981,7 +994,7 @@ class TextEngine {
 			
 			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
 			
-			while (offsetX + tempWidth > width - 2) {
+			while (tempWidth > width - 4) {
 				
 				var i = 1;
 				
@@ -1041,7 +1054,9 @@ class TextEngine {
 				if (textIndex <= breakIndex) {
 					
 					if (wordWrap && previousSpaceIndex <= textIndex) {
+						
 						breakLongWords(breakIndex);
+						
 					}
 					
 					nextLayoutGroup (textIndex, breakIndex);
@@ -1071,23 +1086,6 @@ class TextEngine {
 					
 					nextFormatRange ();
 					lineFormat = formatRange.format;
-					
-				}
-				
-				else {
-					
-					// since nextFormatRange may not have been called, have to update these manually
-					if (ascent > maxAscent) {
-						
-						maxAscent = ascent;
-						
-					}
-					
-					if (heightValue > maxHeightValue) {
-						
-						maxHeightValue = heightValue;
-						
-					}
 					
 				}
 				
@@ -1146,7 +1144,6 @@ class TextEngine {
 					
 					advances = getAdvances (text, textIndex, endIndex);
 					widthValue = getAdvancesWidth (advances);
-					
 					
 					if (lineFormat.align == JUSTIFY) {
 						
@@ -1316,19 +1313,6 @@ class TextEngine {
 						
 					} else {
 						
-						// since nextFormatRange may not have been called, have to update these manually
-						if (ascent > maxAscent) {
-							
-							maxAscent = ascent;
-							
-						}
-						
-						if (heightValue > maxHeightValue) {
-							
-							maxHeightValue = heightValue;
-							
-						}
-						
 						// Check if we can continue wrapping this line until the next line-break or end-of-String.
 						// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
 						
@@ -1370,7 +1354,9 @@ class TextEngine {
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
 					
 					if (wordWrap) {
+						
 						breakLongWords(formatRange.end);
+						
 					}
 					
 					advances = getAdvances (text, textIndex, formatRange.end);
