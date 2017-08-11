@@ -1,5 +1,7 @@
 package openfl.media;
-#if howlerjs
+#if !howlerjs
+class SoundSprite { }
+#else
 import lime.media.howlerjs.Howl;
 import js.html.Audio;
 import lime.media.AudioBuffer;
