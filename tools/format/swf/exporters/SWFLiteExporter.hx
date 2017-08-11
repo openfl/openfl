@@ -946,15 +946,20 @@ class SWFLiteExporter {
 						if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
 							LogHelper.info ("", "frame script #"+ frameNumOneIndexed);
-							var pcodes:Array<OpCode> = data.pcode[idx.getIndex()];
+							var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
 							var js = "";
 							var prop:MultiName = null;
 							var stack:Array<Dynamic> = new Array();
+							var closingBrackets = [];
+							var openingBrackets = [];
+							var indentationLevel = 0;
 							for (pcode in pcodes) {
-								switch (pcode) {
+								switch (pcode.opr) {
 									case OThis:
 										stack.push("this");
 									case OScope:
+										stack.pop();
+									case OPop:
 										stack.pop();
 									case OFindPropStrict(nameIndex):
 //										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
@@ -975,7 +980,15 @@ class SWFLiteExporter {
 
 										if (prop != null)
 										{
-											fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
+											if (prop.name != null)
+											{
+												fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
+											}
+											else
+											{
+												var name = stack.pop();
+												fullname += stack.pop() + "[" + name + "]";
+											}
 										}
 
 										LogHelper.info ("", "OGetProp fullname: " + fullname);
@@ -1006,9 +1019,9 @@ class SWFLiteExporter {
 											break;
 										}
 
-										var instance = stack.pop();
+										var instance = Std.string(stack.pop());
 
-										if (instance != "this")
+										if (instance != "this" && !instance.startsWith("this."))
 										{
 											instance = "this" + "." + instance;
 										}
@@ -1020,9 +1033,13 @@ class SWFLiteExporter {
 									case OInt(i):
 										stack.push(i);
 										LogHelper.info ("", "int: " + i);
+									case OIntRef(nameIndex):
+										stack.push(data.abcData.getIntByIndex(nameIndex));
 									case OSmallInt(i):
 										stack.push(i);
 										LogHelper.info ("", "smallint: " + i);
+									case OFloat(nameIndex):
+										stack.push(data.abcData.getFloatByIndex(nameIndex));
 									case OCallPropVoid(nameIndex, argCount):
 										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
 
@@ -1040,11 +1057,34 @@ class SWFLiteExporter {
 									case OCallProperty(nameIndex, argCount):
 										LogHelper.info ("", "OCallProperty stack: " + stack);
 
-										stack.pop();
-										if (prop != null)
+//										stack.pop();
+//										if (prop != null)
+//										{
+//											var temp = AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+//											trace("OCallProperty pushed to stack", temp);
+//											stack.push(temp);
+//										}
+
+										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+
+										var prop2 = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+										var result = "";
+
+										if (prop2 != null)
 										{
-											stack.push(AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
+											if (prop2.name != "int")
+											{
+												result += stack.pop() + "." + temp;
+											}
+											else
+											{
+												result += temp;
+											}
 										}
+
+										LogHelper.info("", "OCallProperty result" + Std.string(result));
+										stack.push(result);
 									case OConstructProperty(nameIndex, argCount):
 										LogHelper.info ("", "OConstructProperty stack: " + stack);
 
@@ -1086,8 +1126,14 @@ class SWFLiteExporter {
 												operator = "*";
 											case OpAdd:
 												operator = "+";
+											case OpDiv:
+												operator = "/";
+											case OpGt:
+												operator = ">";
+											case OpEq:
+												operator = "==";
 											case _:
-												LogHelper.info ("", "OOp");
+												LogHelper.info ("", "OOp" + op);
 										}
 
 										if (op == OpAs)
@@ -1100,20 +1146,73 @@ class SWFLiteExporter {
 											var temp = stack.pop();
 											stack.push(Std.string(stack.pop()) + " " + operator + " " + Std.string(temp));
 										}
+										else
+										{
+											if (op == OpDecr)
+											{
+												operator = "-";
+												stack.push(Std.string(stack.pop()) + " " + operator + " 1");
+											}
+										}
 									case OJump(j, delta):
 										switch (j) {
-											case JNeq:
-//												LogHelper.info ("", stack[0]);
+											case JNeq | JNotGt | JNotLt | JNotGte:
+												var operator = null;
+
+												switch (j) {
+													case JNeq:
+														operator = "==";
+													case JNotGt:
+														operator = ">";
+													case JNotLt:
+														operator = "<";
+													case JNotGte:
+														operator = ">=";
+													case _:
+												}
+
 												var temp = stack.pop();
-												js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
+												js += "if (" + Std.string(stack.pop()) + " " + operator + " " + Std.string(temp) + ")\n{\n";
+
+												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+												{
+													closingBrackets.push(pcode.pos + delta);
+												}
+
+												indentationLevel += 1;
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + "closingBrackets" + Std.string(closingBrackets));
 											case JAlways:
-												js += "else\n";
-												LogHelper.info ("", Std.string(delta));
-											case JFalse:
-												js += "if (" + Std.string(stack.pop()) + ")\n";
+												LogHelper.info("", "JAlways" + delta + " " + pcode.pos);
+
+//												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+//												{
+													closingBrackets.push(pcode.pos + delta);
+//												}
+											case JFalse | JTrue:
+												var condition = "";
+
+												if (j.match(JTrue)) {
+													condition += "!";
+												}
+
+												condition += Std.string(stack.pop());
+
+												js += "if (" + condition + ")\n{\n";
+
+												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+												{
+													closingBrackets.push(pcode.pos + delta);
+												}
+
+												indentationLevel += 1;
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
 											case _:
-												LogHelper.info ("", "OJump");
+												LogHelper.info ("", "OJump" + j + delta);
 										}
+
+										LogHelper.info("", Std.string(closingBrackets));
+
+										LogHelper.info("", j + " " + delta);
 									case OTrue:
 										stack.push(true);
 									case OFalse:
@@ -1122,9 +1221,79 @@ class SWFLiteExporter {
 										// TODO: throw() on unsupported pcodes
 										LogHelper.info ("", "pcode "+ pcode);
 								}
+
+								for (i in 0...closingBrackets.length) {
+									if (pcode.pos == closingBrackets[i])
+									{
+										LogHelper.info("", "found a pcode for opening bracket" + pcode);
+										js += "}\n";
+										closingBrackets.remove(i);
+
+										indentationLevel += -1;
+										LogHelper.info("", "decreased indentationLevel" + indentationLevel + " " + closingBrackets);
+
+										switch (pcode.opr) {
+											case OJump(j, delta):
+												if (j == JAlways) {
+													js += "else ";
+
+													var foundConditionals = false;
+
+													for (k in pcodes.indexOf(pcode)+1...pcodes.length) {
+														LogHelper.info("", "pcodes to look for conditional" + pcodes[k]);
+														if (pcodes[k].pos > pcode.pos + delta) {
+															break;
+														}
+														else
+														{
+															if (pcodes[k].opr.match(OJump(j2, delta2))) {
+																foundConditionals = true;
+															}
+														}
+													}
+
+													LogHelper.info("", "foundConditionals" + foundConditionals);
+													if (!foundConditionals) {
+														js += "\n{\n";
+														indentationLevel += 1;
+														LogHelper.info("", "indentationLevel" + j + indentationLevel + closingBrackets);
+													}
+												}
+											case _:
+										}
+//										break;
+									}
+
+//									if (pcode.pos == openingBrackets[i])
+//									{
+//										trace("found a pcode for a OJump (JNeq)", pcode);
+//										openingBrackets.remove(i);
+//
+//										var index = pcodes.indexOf(pcode);
+//
+//										if (index + 1 < pcodes.length - 1)
+//										{
+//											switch (pcodes[index + 1].opr)
+//											{
+//												case OJump(jumpStyle, delta):
+//													trace("pcode is OJump", jumpStyle);
+//												case _:
+//													trace("pcode", pcodes[index + 1].opr);
+//											}
+//										}
+//
+//										js += "{ \\\\opening\n";
+//										break;
+//									}
+								}
+
+								for (i in 0...openingBrackets.length) {
+
+								}
 							}
 							LogHelper.info ("", "javascript:\n"+js);
-							
+
+							LogHelper.info("", Std.string(pcodes));
 							// store on SWFLite object for serialized .dat export
 							spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
 						}
@@ -1234,6 +1403,14 @@ class AVM2 {
 
 	public static function getStringByIndex(abcData: ABCData, i: Index<String>): String {
 		return abcData.strings[i.getIndex()-1];
+	}
+
+	public static function getIntByIndex(abcData: ABCData, i: Index<Int>): Int {
+		return abcData.ints[i.getIndex()-1];
+	}
+
+	public static function getFloatByIndex(abcData: ABCData, i: Index<Float>): Float {
+		return abcData.floats[i.getIndex()-1];
 	}
 
 	public static function getNameSpaceByIndex(abcData: ABCData, i: Index<Namespace>): Namespace {
@@ -1356,7 +1533,7 @@ class AVM2 {
 		{
 			switch (prop.nameSpace) {
 				case NPublic(_) if ("" != prop.nameSpaceName):
-					js = prop.nameSpaceName +"_"+ prop.name;
+					js = prop.nameSpaceName.replace(".", "_") +"_"+ prop.name;
 				case NInternal(_) if (cls.name == prop.nameIndex):
 					js = "this." + prop.name;
 				case NPublic(_):
