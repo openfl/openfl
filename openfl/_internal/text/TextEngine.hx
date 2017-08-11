@@ -572,6 +572,7 @@ class TextEngine {
 		var currentLineLeading:Null<Int> = null;
 		var currentLineHeight = 0.0;
 		var currentLineWidth = 0.0;
+		var currentTextHeight = 0.0;
 		
 		textWidth = 0;
 		textHeight = 0;
@@ -627,7 +628,13 @@ class TextEngine {
 				
 			}
 			
-			textHeight = group.offsetY - 2 + group.ascent + group.descent;
+			currentTextHeight = group.offsetY - 2 + group.ascent + group.descent;
+			
+			if (currentTextHeight > textHeight) {
+				
+				textHeight = currentTextHeight;
+				
+			}
 			
 		}
 		
@@ -931,17 +938,18 @@ class TextEngine {
 				
 				#end
 				
-				if (heightValue > maxHeightValue) {
-					
-					maxHeightValue = heightValue;
-					
-				}
+			}
+			
+			if (heightValue > maxHeightValue) {
 				
-				if (ascent > maxAscent) {
-					
-					maxAscent = ascent;
-					
-				}
+				maxHeightValue = heightValue;
+				
+			}
+			
+			if (ascent > maxAscent) {
+				
+				maxAscent = ascent;
+				
 			}
 			
 		}
@@ -959,7 +967,13 @@ class TextEngine {
 				
 			}
 			
+			offsetY += maxHeightValue;
+			
 			maxAscent = 0.0;
+			maxHeightValue = 0.0;
+			
+			++lineIndex;
+			offsetX = 2;
 			
 		}
 		
@@ -1003,12 +1017,7 @@ class TextEngine {
 				
 				alignBaseline();
 				
-				maxHeightValue = 0.0;
-				lineIndex++;
 				textIndex += i;
-				
-				offsetX = 2;
-				offsetY += maxHeightValue;
 				
 				advances = getAdvances(text, textIndex, endIndex);
 				widthValue = getAdvancesWidth(advances);
@@ -1027,6 +1036,7 @@ class TextEngine {
 		while (textIndex < maxLoops) {
 			
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
+				// if a line break is the next thing that needs to be dealt with
 				
 				if (textIndex <= breakIndex) {
 					
@@ -1057,14 +1067,6 @@ class TextEngine {
 					
 				}
 				
-				if (breakIndex < text.length - 1) {
-					
-					offsetY += maxHeightValue;
-					
-				}
-				
-				offsetX = 2;
-				
 				if (formatRange.end == breakIndex) {
 					
 					nextFormatRange ();
@@ -1072,15 +1074,37 @@ class TextEngine {
 					
 				}
 				
+				else {
+					
+					// since nextFormatRange may not have been called, have to update these manually
+					if (ascent > maxAscent) {
+						
+						maxAscent = ascent;
+						
+					}
+					
+					if (heightValue > maxHeightValue) {
+						
+						maxHeightValue = heightValue;
+						
+					}
+					
+				}
+				
+				if (breakIndex >= text.length - 1) {
+					
+					// Trailing line breaks do not add to textHeight (offsetY), but they do add to numLines (lineIndex)
+					offsetY -= maxHeightValue;
+					
+				}
+				
 				alignBaseline();
 				
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
-				lineIndex++;
-				
-				maxHeightValue = 0.0;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
+				// if a space is the next thing that needs to be dealt with
 				
 				if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
 					
@@ -1199,10 +1223,6 @@ class TextEngine {
 							
 							alignBaseline();
 							
-							offsetY += maxHeightValue;
-							maxHeightValue = 0.0;
-							lineIndex++;
-							
 						}
 						
 						offsetX = 2;
@@ -1296,6 +1316,19 @@ class TextEngine {
 						
 					} else {
 						
+						// since nextFormatRange may not have been called, have to update these manually
+						if (ascent > maxAscent) {
+							
+							maxAscent = ascent;
+							
+						}
+						
+						if (heightValue > maxHeightValue) {
+							
+							maxHeightValue = heightValue;
+							
+						}
+						
 						// Check if we can continue wrapping this line until the next line-break or end-of-String.
 						// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
 						
@@ -1328,6 +1361,7 @@ class TextEngine {
 				}
 				
 			} else {
+				// if there are no line breaks or spaces to deal with next, place remaining text in the format range
 				
 				if (textIndex > formatRange.end) {
 					
@@ -1362,6 +1396,8 @@ class TextEngine {
 				nextFormatRange ();
 				
 				if (textIndex == formatRange.end) {
+					
+					alignBaseline();
 					
 					textIndex++;
 					break;
