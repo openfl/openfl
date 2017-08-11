@@ -61,6 +61,7 @@ import openfl.display.StageDisplayState;
 import openfl.display.StageQuality;
 import openfl.display.StageScaleMode;
 import openfl.display.Tile;
+import openfl.display.TileArray;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.TriangleCulling;

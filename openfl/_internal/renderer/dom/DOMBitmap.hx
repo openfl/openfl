@@ -18,6 +18,29 @@ import js.Browser;
 class DOMBitmap {
 	
 	
+	public static function clear (bitmap:Bitmap, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		if (bitmap.__image != null) {
+			
+			renderSession.element.removeChild (bitmap.__image);
+			bitmap.__image = null;
+			bitmap.__style = null;
+			
+		}
+		
+		if (bitmap.__canvas != null) {
+			
+			renderSession.element.removeChild (bitmap.__canvas);
+			bitmap.__canvas = null;
+			bitmap.__style = null;
+			
+		}
+		#end
+		
+	}
+	
+	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
@@ -39,21 +62,7 @@ class DOMBitmap {
 			
 		} else {
 			
-			if (bitmap.__image != null) {
-				
-				renderSession.element.removeChild (bitmap.__image);
-				bitmap.__image = null;
-				bitmap.__style = null;
-				
-			}
-			
-			if (bitmap.__canvas != null) {
-				
-				renderSession.element.removeChild (bitmap.__canvas);
-				bitmap.__canvas = null;
-				bitmap.__style = null;
-				
-			}
+			clear (bitmap, renderSession);
 			
 		}
 		#end

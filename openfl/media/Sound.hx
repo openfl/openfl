@@ -27,10 +27,10 @@ class Sound extends EventDispatcher {
 	public var isBuffering (default, null):Bool;
 	public var length (get, never):Float;
 	public var url (default, null):String;
+	public var spriteKey (default, default):String;
 	
 	private var __buffer:AudioBuffer;
-	
-	
+
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null) {
 		
 		super (this);
@@ -47,8 +47,7 @@ class Sound extends EventDispatcher {
 		}
 		
 	}
-	
-	
+
 	public function close ():Void {
 		
 		if (__buffer != null) {
@@ -58,7 +57,7 @@ class Sound extends EventDispatcher {
 		}
 		
 	}
-	
+
 	
 	public static function fromAudioBuffer (buffer:AudioBuffer):Sound {
 		
@@ -68,14 +67,16 @@ class Sound extends EventDispatcher {
 		
 	}
 	
-	
 	public static function fromFile (path:String):Sound {
 		
 		return fromAudioBuffer (AudioBuffer.fromFile (path));
 		
 	}
 	
-	
+	public function triggerLoadEvent():Void {
+			AudioBuffer_onURLLoad (this.__buffer);
+  }
+
 	public function load (stream:URLRequest, context:SoundLoaderContext = null):Void {
 		
 		url = stream.url;
@@ -193,7 +194,7 @@ class Sound extends EventDispatcher {
 		position.z = -1 * Math.sqrt (1 - Math.pow (pan, 2));
 		source.position = position;
 		
-		return new SoundChannel (source, sndTransform);
+		return new SoundChannel (source, sndTransform, this.spriteKey);
 		
 	}
 	

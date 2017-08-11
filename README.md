@@ -1,4 +1,4 @@
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/travis/openfl/openfl.svg?style=flat)](https://travis-ci.org/openfl/openfl)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/develop.svg)](https://circleci.com/gh/openfl/openfl)
 
 
 <br />
@@ -20,13 +20,13 @@ Platforms
 
 Currently, OpenFL supports the following platforms:
 
- * Windows
- * Mac
- * Linux
  * iOS
  * Android
- * Firefox OS
  * HTML5
+ * Windows
+ * macOS
+ * Linux
+ * WebAssembly
  * Flash
 
 There is also a community effort to bring OpenFL to consoles, OpenFL is running on:
@@ -51,11 +51,14 @@ Libraries
 
 OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from ActionScript or written originally in Haxe, including:
 
- * [HaxeFlixel](https://github.com/haxeflixel/flixel)
- * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
+ * [Starling](https://github.com/openfl/starling)
+ * [Away3D](https://github.com/openfl/away3d)
+ * [DragonBones](https://github.com/openfl/dragonbones)
  * [Nape](https://github.com/deltaluca/nape)
  * [Box2D](https://github.com/jgranick/Box2D)
  * [Actuate](https://github.com/jgranick/Actuate)
+ * [HaxeFlixel](https://github.com/haxeflixel/flixel)
+ * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
 
 OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3.
 
@@ -63,9 +66,10 @@ OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3
 Code Editors
 ============
 
-Plugins have been written for many [code editors](http://haxe.org/com/ide), but the most popular editors used for Haxe and OpenFL development are:
+Plugins have been written for many [code editors](http://haxe.org/documentation/introduction/editors-and-ides.html), but the most popular editors used for Haxe and OpenFL development are:
 
  * [FlashDevelop](http://www.flashdevelop.org)
+ * [Visual Studio Code](https://code.visualstudio.com/) (with [plugin](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension))
  * [Sublime Text](http://www.sublimetext.com) (with [plugin](https://github.com/clemos/haxe-sublime-bundle))
  * [IntelliJ IDEA](http://www.jetbrains.com/idea/) (with [plugin](http://plugins.jetbrains.com/plugin/6873?pr=))
 

@@ -71,7 +71,35 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public function addTile (tile:Tile):Tile {
 		
 		__tiles[numTiles] = tile;
+		tile.parent = this;
 		numTiles++;
+		#if !flash
+		__setRenderDirty ();
+		#end
+		
+		return tile;
+		
+	}
+	
+	
+	public function addTileAt (tile:Tile, index:Int):Tile {
+		
+		var cacheLength = __tiles.length;
+		
+		removeTile (tile);
+		
+		if (cacheLength > __tiles.length) {
+			index--;
+		}
+		
+		__tiles.insertAt (index, tile);
+		tile.parent = this;
+		__tileArrayDirty = true;
+		numTiles++;
+		
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 		return tile;
 		
@@ -85,25 +113,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 		return tiles;
-		
-	}
-	
-	
-	public function addTileAt (tile:Tile, index:Int):Tile {
-		
-		var cacheLength = __tiles.length;
-		
-		removeTile (tile);
-		
-		if (cacheLength < __tiles.length) {
-			index--;
-		}
-		
-		__tiles.insertAt (index, tile);
-		__tileArrayDirty = true;
-		numTiles++;
-		
-		return tile;
 		
 	}
 	
@@ -168,16 +177,22 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		for (i in 0...__tiles.length) {
 			
 			if (__tiles[i] == tile) {
-				__tiles[i] = null;
+				tile.parent = null;
+				__tiles.splice (i, 1);
+				break;
 			}
 			
 		}
 		
 		__tileArrayDirty = true;
 		
-		if (cacheLength < __tiles.length) {
+		if (cacheLength > __tiles.length) {
 			numTiles--;
 		}
+		
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 		return tile;
 		
@@ -200,9 +215,16 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (beginIndex < 0) beginIndex = 0;
 		if (endIndex > __tiles.length - 1) endIndex = __tiles.length - 1;
 		
-		__tiles.splice (beginIndex, endIndex - beginIndex + 1);
+		var removed = __tiles.splice (beginIndex, endIndex - beginIndex + 1);
+		for (tile in removed) {
+			tile.parent = null;
+		}
 		__tileArrayDirty = true;
 		numTiles = __tiles.length;
+		
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 	}
 	
@@ -214,6 +236,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileArray.__bufferDirty = true;
 		__tileArrayDirty = false;
 		__tiles.length = 0;
+		#if !flash
+		__setRenderDirty ();
+		#end
 		
 	}
 	
@@ -287,6 +312,15 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		#end
 		
 	}
+	
+	
+	private override function __renderDOMClear (renderSession:RenderSession):Void {
+		
+		#if dom
+		DOMTilemap.clear (this, renderSession);
+		#end
+		
+	}
 	#end
 	
 	
@@ -324,9 +358,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 				__tileArray = new TileArray ();
 			}
 			
-			if (__tileArray.length < numTiles) {
+			//if (__tileArray.length < numTiles) {
 				__tileArray.length = numTiles;
-			}
+			//}
 			
 			var tile:Tile;
 			

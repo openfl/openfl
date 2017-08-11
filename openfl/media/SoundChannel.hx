@@ -20,9 +20,10 @@ import openfl.media.Sound;
 	private var __isValid:Bool;
 	private var __soundTransform:SoundTransform;
 	private var __source:AudioSource;
+  private var __spriteKey:String;
 	
 	
-	private function new (source:AudioSource = null, soundTransform:SoundTransform = null):Void {
+	private function new (source:AudioSource = null, soundTransform:SoundTransform = null, ?spriteKey:String):Void {
 		
 		super (this);
 		
@@ -39,13 +40,17 @@ import openfl.media.Sound;
 			
 		}
 		
+    if (spriteKey != null)
+    {
+      __spriteKey = spriteKey;
+    }
 		if (source != null) {
 			
 			__source = source;
 			__source.onComplete.add (source_onComplete);
 			__isValid = true;
 			
-			__source.play ();
+      __source.play (spriteKey);
 			
 		}
 		

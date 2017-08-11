@@ -11,7 +11,7 @@ package openfl.ui; #if (display || !flash)
 @:final extern class Mouse {
 	
 	
-	public static var cursor:String;
+	public static var cursor:MouseCursor;
 	public static var supportsCursor (default, null):Bool;
 	public static var supportsNativeCursor (default, null):Bool;
 	

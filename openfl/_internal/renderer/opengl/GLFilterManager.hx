@@ -62,7 +62,7 @@ class GLFilterManager extends AbstractFilterManager {
 				
 			}
 			
-			if (object.__filters.length == 1 && object.__filters[0].__numPasses == 0) {
+			if (object.__filters.length == 1 && object.__filters[0].__numShaderPasses == 0) {
 				
 				renderer.getRenderTarget (false);
 				return object.__filters[0].__initShader (renderSession, 0);
@@ -86,6 +86,8 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		return;
 		
+		// TEMPORARILY DISABLED
+		
 		if (object.__filters != null && object.__filters.length > 0) {
 			
 			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
@@ -97,13 +99,13 @@ class GLFilterManager extends AbstractFilterManager {
 			
 			var numPasses:Int = 0;
 			
-			if (object.__filters.length > 1 || object.__filters[0].__numPasses > 0) {
+			if (object.__filters.length > 1 || object.__filters[0].__numShaderPasses > 0) {
 				
 				numPasses = object.__filters.length;
 				
 				for (filter in object.__filters) {
 					
-					numPasses += (filter.__numPasses > 0) ? (filter.__numPasses - 1) : 0;
+					numPasses += (filter.__numShaderPasses > 0) ? (filter.__numShaderPasses - 1) : 0;
 					
 				}
 				
@@ -124,34 +126,25 @@ class GLFilterManager extends AbstractFilterManager {
 				
 				for (filter in object.__filters) {
 					
-					if (filter.__numPasses > 0) {
-						
-						for (i in 0...filter.__numPasses) {
-							
-							currentTarget = renderer.currentRenderTarget;
-							renderer.getRenderTarget(true);
-							shader = filter.__initShader(renderSession, i);
-							
-							renderPass(currentTarget, shader);
-							
-						}
-						
-					} else {
+					// TODO: Handle mixture of software-only filters
+					
+					for (i in 0...filter.__numShaderPasses) {
 						
 						currentTarget = renderer.currentRenderTarget;
 						renderer.getRenderTarget(true);
-						shader = filter.__initShader(renderSession, 0);
+						shader = filter.__initShader(renderSession, i);
 						
-						renderPass(currentTarget, shader);
+						renderPass (currentTarget, shader);
+						
 					}
 					
 					// TODO: Properly handle filter-within-filter rendering
 					
 					filterDepth--;
 					currentTarget = renderer.currentRenderTarget;
-					renderer.getRenderTarget(filterDepth > 0);
+					renderer.getRenderTarget (filterDepth > 0);
 					
-					renderPass(currentTarget, renderSession.shaderManager.defaultShader);
+					renderPass (currentTarget, renderSession.shaderManager.defaultShader);
 					
 				}
 				

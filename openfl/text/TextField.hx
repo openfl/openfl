@@ -10,6 +10,7 @@ import lime.ui.MouseCursor;
 import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
@@ -29,6 +30,7 @@ import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
+import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.net.URLRequest;
@@ -44,6 +46,7 @@ import js.html.DivElement;
 #end
 
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextFormat)
@@ -111,7 +114,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	#if (js && html5)
 	private var __div:DivElement;
 	#end
-	
+	#if dom
+		private var __renderedOnCanvasWhileOnDOM:Bool = false;
+		private var __rawHtmlText:String;
+		private var __forceCachedBitmapUpdate:Bool = false;
+	#end
+
 	
 	public function new () {
 		
@@ -485,8 +493,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 		
 		replaceText (startIndex, endIndex, value);
-		
-		var i = startIndex + value.length;
+
+		var i = startIndex + cast(value, UTF8String).length;
 		setSelection(i,i);
 		
 	}
@@ -852,7 +860,21 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 	}
-	
+
+	private function __disableInput ():Void {
+
+		if (__inputEnabled && stage != null) {
+
+			stage.window.enableTextEvents = false;
+			stage.window.onTextInput.remove (window_onTextInput);
+			stage.window.onKeyDown.remove (window_onKeyDown);
+
+			__inputEnabled = false;
+			__stopCursorTimer ();
+
+		}
+
+	}
 	
 	private override function __dispatch (event:Event):Bool {
 		
@@ -886,8 +908,33 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		return super.__dispatch (event);
 		
 	}
-	
-	
+
+	private function __enableInput ():Void {
+
+		if (stage != null) {
+
+			stage.window.enableTextEvents = true;
+
+			if (!__inputEnabled) {
+
+				stage.window.enableTextEvents = true;
+
+				if (!stage.window.onTextInput.has (window_onTextInput)) {
+
+					stage.window.onTextInput.add (window_onTextInput);
+					stage.window.onKeyDown.add (window_onKeyDown);
+
+				}
+
+				__inputEnabled = true;
+				__startCursorTimer ();
+
+			}
+
+		}
+
+	}
+
 	private function __fromSymbol (swf:SWFLite, symbol:DynamicTextSymbol):Void {
 		
 		__symbol = symbol;
@@ -1254,6 +1301,30 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
+		// TODO: Better DOM workaround on cacheAsBitmap
+		#if (js && html5 && dom)
+		if (!__renderedOnCanvasWhileOnDOM) {
+			__renderedOnCanvasWhileOnDOM = true;
+
+			if (type == TextFieldType.INPUT) {
+
+				replaceText(0, __text.length, __text);
+
+			}
+
+			if (__isHTML) {
+
+				__updateText (HtmlParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
+
+			}
+
+			__dirty = true;
+			__layoutDirty = true;
+			__setRenderDirty ();
+
+		}
+		#end
+		
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
@@ -1292,7 +1363,43 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		DOMTextField.render (this, renderSession);
+		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
+		__forceCachedBitmapUpdate = false;
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			__renderDOMClear (renderSession);
+			__cacheBitmap.stage = stage;
+			
+			DOMBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			if (__renderedOnCanvasWhileOnDOM) {
+			
+				__renderedOnCanvasWhileOnDOM = false;
+
+				if (__isHTML && __rawHtmlText != null) {
+
+					__updateText (__rawHtmlText);
+					__dirty = true;
+					__layoutDirty = true;
+					__setRenderDirty ();
+
+				}
+
+			}
+
+			DOMTextField.render (this, renderSession);
+			
+		}
+		#end
+		
+	}
+	
+	
+	private override function __renderDOMClear (renderSession:RenderSession):Void {
+		
+		#if dom
+		DOMTextField.clear (this, renderSession);
 		#end
 		
 	}
@@ -1329,35 +1436,16 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__selectionIndex = __caretIndex;
 			
 		}
-		
-		if (stage != null) {
-			
-			#if !dom
-			
-			stage.window.enableTextEvents = true;
-			
-			if (!__inputEnabled) {
-				
-				stage.window.enableTextEvents = true;
-				
-				if (!stage.window.onTextInput.has (window_onTextInput)) {
-					
-					stage.window.onTextInput.add (window_onTextInput);
-					stage.window.onKeyDown.add (window_onKeyDown);
-					
-				}
-				
-				__inputEnabled = true;
-				__startCursorTimer ();
-				
-			}
-			
-			#end
-			
+		var enableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
+
+		if (enableInput) {
+
+			__enableInput ();
+
 		}
-		
+
 	}
-	
+
 	
 	private function __stopCursorTimer ():Void {
 		
@@ -1375,26 +1463,19 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__setRenderDirty ();
 			
 		}
-		
+
 	}
 	
 	
 	private function __stopTextInput ():Void {
-		
-		#if !dom
-		
-		if (__inputEnabled && stage != null) {
-			
-			stage.window.enableTextEvents = false;
-			stage.window.onTextInput.remove (window_onTextInput);
-			stage.window.onKeyDown.remove (window_onKeyDown);
-			
-			__inputEnabled = false;
-			__stopCursorTimer ();
-			
+
+		var disableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
+
+		if (disableInput) {
+
+			__disableInput ();
+
 		}
-		
-		#end
 		
 	}
 	
@@ -1442,7 +1523,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private function __updateText (value:String):Void {
-		
+
+		#if dom
+		if (__renderedOnCanvasWhileOnDOM) {
+			__forceCachedBitmapUpdate = __text != value;
+		}
+		#end
+
 		__text = value;
 		
 		if (__text.length < __caretIndex) {
@@ -1451,7 +1538,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
-		if (!__displayAsPassword #if (js && html5 && dom) || true #end) {
+		if (!__displayAsPassword #if (js && html5 && dom) || !__renderedOnCanvasWhileOnDOM #end) {
 			
 			__textEngine.text = __text;
 			
@@ -1623,6 +1710,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function get_cacheAsBitmap ():Bool {
+		
+		// HACK
+		if (__filters != null && __filters.length == 1 && Std.is (__filters[0], GlowFilter)) return false;
+		return super.get_cacheAsBitmap ();
+		
+	}
+	
+	
 	private function get_caretIndex ():Int {
 		
 		return __caretIndex;
@@ -1763,17 +1859,34 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__isHTML = true;
 		
 		#if (js && html5 && dom)
-		var rawHtmlText = value;
+		__rawHtmlText = value;
 		#end
 		
-		if (#if (js && html5) __div == null #else true #end) {
-			
-			value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
-			
-		}
-		
+		value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
+
 		#if (js && html5 && dom)
-		__updateText (rawHtmlText);
+
+		if (__textEngine.textFormatRanges.length > 1) {
+
+			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
+
+		}
+
+		var range = __textEngine.textFormatRanges[0];
+		range.format = __textFormat;
+		range.start = 0;
+
+		if (__renderedOnCanvasWhileOnDOM) {
+
+			range.end = value.length;
+			__updateText (value);
+
+		} else {
+
+			range.end = __rawHtmlText.length;
+			__updateText (__rawHtmlText);
+
+		}
 		#else
 		__updateText (value);
 		#end
@@ -1913,6 +2026,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__setRenderDirty ();
+			dispatchEvent(new Event(Event.SCROLL));
 			
 		}
 		
@@ -1939,6 +2053,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__setRenderDirty ();
+			dispatchEvent(new Event(Event.SCROLL));
 			
 		}
 		
@@ -2037,10 +2152,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
+		var utfValue:UTF8String = value;
 		var range = __textEngine.textFormatRanges[0];
 		range.format = __textFormat;
 		range.start = 0;
-		range.end = value.length;
+		range.end = utfValue.length;
 		
 		__isHTML = false;
 		
@@ -2205,6 +2321,10 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				#if !dom
 				__dirty = true;
 				__setRenderDirty ();
+				#else
+				if (__renderedOnCanvasWhileOnDOM) {
+					__forceCachedBitmapUpdate = true;
+				}
 				#end
 				
 			}
@@ -2245,6 +2365,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				__stopCursorTimer ();
 				__startCursorTimer ();
+
+				#if dom
+				if (__renderedOnCanvasWhileOnDOM) {
+					__forceCachedBitmapUpdate = true;
+				}
+				#end
 				
 			}
 			

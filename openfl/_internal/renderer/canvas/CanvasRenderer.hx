@@ -6,12 +6,18 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 
+#if (js && html5)
+import js.Browser;
+#end
+
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
 
 
 class CanvasRenderer extends AbstractRenderer {
 	
+	
+	public static var scale (default, null):Float = 1;
 	
 	private var context:CanvasRenderContext;
 	
@@ -30,6 +36,16 @@ class CanvasRenderer extends AbstractRenderer {
 		#if !neko
 		renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 		renderSession.maskManager = new CanvasMaskManager (renderSession);
+		#end
+		
+		#if (js && html5)
+		var config = stage.window.config;
+		
+		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
+			
+			scale = untyped window.devicePixelRatio || 1;
+			
+		}
 		#end
 		
 	}

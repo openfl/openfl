@@ -8,7 +8,7 @@ import openfl.events.NetStatusEvent;
 class NetConnection extends EventDispatcher {
 	
 	
-	public static inline var CONNECT_SUCCESS:String = "connectSuccess";
+	public static inline var CONNECT_SUCCESS:String = "NetConnection.Connect.Success";
 	
 	
 	public function new () {
