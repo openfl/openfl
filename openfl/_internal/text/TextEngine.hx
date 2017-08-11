@@ -994,7 +994,7 @@ class TextEngine {
 			
 			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
 			
-			while (tempWidth > width - 4) {
+			while (offsetX + tempWidth > width - 2) {
 				
 				var i = 1;
 				
@@ -1013,29 +1013,50 @@ class TextEngine {
 					
 				}
 				
-				if (i == 0) i = 1;
+				if (i == 0 && tempWidth > width - 4) {
+					// if the textfield is smaller than a single character
+					
+					i = text.length;
+					
+				}
 				
-				nextLayoutGroup(textIndex, textIndex + i);
-				layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
-				layoutGroup.offsetX = offsetX;
-				layoutGroup.ascent = ascent;
-				layoutGroup.descent = descent;
-				layoutGroup.leading = leading;
-				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getAdvancesWidth(layoutGroup.advances);
-				layoutGroup.height = heightValue;
+				if (i == 0) {
+					// if a single character in a new format made the line too long
+					
+					offsetX = 2;
+					offsetY += layoutGroup.height;
+					++lineIndex;
+					
+					break;
+					
+				}
 				
-				layoutGroup = null;
+				else {
+					
+					nextLayoutGroup(textIndex, textIndex + i);
+					layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = getAdvancesWidth(layoutGroup.advances);
+					layoutGroup.height = heightValue;
+					
+					layoutGroup = null;
+					
+					alignBaseline();
+					
+					textIndex += i;
+					
+					advances = getAdvances(text, textIndex, endIndex);
+					widthValue = getAdvancesWidth(advances);
+					
+					tempWidth = widthValue;
+					
+				}
 				
-				alignBaseline();
-				
-				textIndex += i;
-				
-				advances = getAdvances(text, textIndex, endIndex);
-				widthValue = getAdvancesWidth(advances);
-				
-				tempWidth = widthValue;
 			}
 			
 		}
