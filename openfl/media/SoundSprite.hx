@@ -32,8 +32,8 @@ class SoundSprite {
 	}
 
   public static function prepSpriteData(spritePart:SoundSpriteInfo):Dynamic {
-    var secToMsStart = spritePart.msStart * 1000;
-    var secToMsEnd = spritePart.msEnd * 1000;
+    var secToMsStart = spritePart.msStart;
+    var secToMsEnd = spritePart.msEnd;
     return [secToMsStart, (secToMsEnd - secToMsStart)];
   }
 
