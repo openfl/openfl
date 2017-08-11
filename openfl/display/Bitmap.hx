@@ -34,8 +34,9 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	#if (js && html5)
 	private var __image:ImageElement;
-	private var __imageVersion:Int;
 	#end
+	
+	private var __imageVersion:Int;
 	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
@@ -51,6 +52,23 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			this.pixelSnapping = PixelSnapping.AUTO;
 			
 		}
+		
+	}
+	
+	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		#if (!js || !dom)
+		if (bitmapData != null && bitmapData.image != null) {
+			
+			var image = bitmapData.image;
+			if (bitmapData.image.version != __imageVersion) {
+				__setRenderDirty ();
+				__imageVersion = image.version;
+			}
+			
+		}
+		#end
 		
 	}
 	
@@ -224,9 +242,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			
 		}
 		
-		#if (js && html5 && dom)
 		__imageVersion = -1;
-		#end
 		
 		return bitmapData;
 		

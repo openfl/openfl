@@ -1,3 +1,12 @@
+6.0.1 (08/03/2017)
+------------------
+
+* Fixed caching in `Bitmap` when there are `BitmapData` changes
+* Fixed a regression in GL rendering for `Tilemap`
+* Fixed issue where `tileArray.visible` could affect multiple tiles
+* Fixed the value of info.level when a NetConnection succeeds
+
+
 6.0.0 (07/31/2017)
 ------------------
 

@@ -66,9 +66,10 @@ OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3
 Code Editors
 ============
 
-Plugins have been written for many [code editors](http://haxe.org/com/ide), but the most popular editors used for Haxe and OpenFL development are:
+Plugins have been written for many [code editors](http://haxe.org/documentation/introduction/editors-and-ides.html), but the most popular editors used for Haxe and OpenFL development are:
 
  * [FlashDevelop](http://www.flashdevelop.org)
+ * [Visual Studio Code](https://code.visualstudio.com/) (with [plugin](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension))
  * [Sublime Text](http://www.sublimetext.com) (with [plugin](https://github.com/clemos/haxe-sublime-bundle))
  * [IntelliJ IDEA](http://www.jetbrains.com/idea/) (with [plugin](http://plugins.jetbrains.com/plugin/6873?pr=))
 

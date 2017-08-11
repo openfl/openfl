@@ -322,11 +322,19 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 			}
 			
-			// TODO: Do not remove manually added children
+			var child, length = __children.length;
 			
-			while (__children.length > currentInstances.length) {
+			for (i in currentInstances.length...length) {
 				
-				removeChild (__children[__children.length - 1]);
+				child = __children[i];
+				
+				// TODO: Faster method of determining if this was automatically added?
+				
+				for (instance in __activeInstances) {
+					if (instance.displayObject == child) {
+						removeChild (child);
+					}
+				}
 				
 			}
 			
@@ -535,6 +543,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							if (displayObject != null) {
 								
 								displayObject.parent = this;
+								displayObject.stage = stage;
 								instance = new FrameSymbolInstance (frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject.clipDepth);
 								
 							}

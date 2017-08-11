@@ -265,6 +265,7 @@ import openfl.Vector;
 			
 			for (i in 0...__length) {
 				
+				position = i;
 				offset = i * stride;
 				
 				alpha = this.alpha;
@@ -399,7 +400,6 @@ import openfl.Vector;
 				}
 				
 				__bufferSkipped[i] = false;
-				position++;
 				
 			}
 			

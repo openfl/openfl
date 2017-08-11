@@ -88,7 +88,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		removeTile (tile);
 		
-		if (cacheLength < __tiles.length) {
+		if (cacheLength > __tiles.length) {
 			index--;
 		}
 		
@@ -177,15 +177,16 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		for (i in 0...__tiles.length) {
 			
 			if (__tiles[i] == tile) {
-				__tiles[i] = null;
 				tile.parent = null;
+				__tiles.splice (i, 1);
+				break;
 			}
 			
 		}
 		
 		__tileArrayDirty = true;
 		
-		if (cacheLength < __tiles.length) {
+		if (cacheLength > __tiles.length) {
 			numTiles--;
 		}
 		
@@ -357,9 +358,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 				__tileArray = new TileArray ();
 			}
 			
-			if (__tileArray.length < numTiles) {
+			//if (__tileArray.length < numTiles) {
 				__tileArray.length = numTiles;
-			}
+			//}
 			
 			var tile:Tile;
 			
