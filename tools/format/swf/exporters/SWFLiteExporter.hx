@@ -1146,12 +1146,16 @@ class SWFLiteExporter {
 												operator = "<";
 											case OpEq:
 												operator = "==";
+											case OpPhysEq:
+												operator = "===";
 											case OpGte:
 												operator = ">=";
 											case OpLte:
 												operator = "<=";
 											case OpAnd:
 												operator = "&&";
+											case OpOr:
+												operator = "||";
 											case OpIncr:
 												incr_operator = " + 1";
 											case OpDecr:
