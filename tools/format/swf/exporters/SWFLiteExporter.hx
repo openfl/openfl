@@ -1249,6 +1249,10 @@ class SWFLiteExporter {
 										stack.push(true);
 									case OFalse:
 										stack.push(false);
+									case OLabel:
+										// Indicator for while loop position
+										// OJump(JAlways) can bring us back here at end of loop
+										LogHelper.info ("", "Label reached " + pcode);
 									case _:
 										// TODO: throw() on unsupported pcodes
 										LogHelper.info ("", "pcode "+ pcode);
