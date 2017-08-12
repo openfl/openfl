@@ -1131,6 +1131,18 @@ class SWFLiteExporter {
 									case OOp(op):
 										var operator = null;
 										var incr_operator = null;
+
+										var next_pcode = pcodes[pindex+1];
+										var _inverted:Bool = false;
+
+										// if next pcode is OpNot
+										// then we actually need to negate the boolean outcome
+										switch (next_pcode.opr) {
+											case OOp(_op):
+												if(_op == OpNot) _inverted = true;
+											case _ :
+										}
+
 										switch (op) {
 											case OpMul:
 												operator = "*";
@@ -1142,16 +1154,22 @@ class SWFLiteExporter {
 												operator = "/";
 											case OpGt:
 												operator = ">";
+												if(_inverted) operator = "<=";
 											case OpLt:
 												operator = "<";
+												if(_inverted) operator = ">=";
 											case OpEq:
 												operator = "==";
+												if(_inverted) operator = "!=";
 											case OpPhysEq:
 												operator = "===";
+												if(_inverted) operator = "!==";
 											case OpGte:
 												operator = ">=";
+												if(_inverted) operator = "<";
 											case OpLte:
 												operator = "<=";
+												if(_inverted) operator = ">";
 											case OpAnd:
 												operator = "&&";
 											case OpOr:
@@ -1164,6 +1182,8 @@ class SWFLiteExporter {
 												incr_operator = "++";
 											case OpIDecr:
 												incr_operator = "--";
+											case OpNot:
+
 											case OpAs:
 
 											case _:
