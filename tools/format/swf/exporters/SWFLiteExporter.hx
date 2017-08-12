@@ -1128,6 +1128,7 @@ class SWFLiteExporter {
 										stack.push(null);
 									case OOp(op):
 										var operator = null;
+										var incr_operator = null;
 										switch (op) {
 											case OpMul:
 												operator = "*";
@@ -1149,6 +1150,14 @@ class SWFLiteExporter {
 												operator = "<=";
 											case OpAnd:
 												operator = "&&";
+											case OpIncr:
+												incr_operator = " + 1";
+											case OpDecr:
+												incr_operator = " - 1";
+											case OpIIncr:
+												incr_operator = "++";
+											case OpIDecr:
+												incr_operator = "--";
 											case _:
 												LogHelper.info ("", "OOp" + op);
 										}
@@ -1164,13 +1173,10 @@ class SWFLiteExporter {
 											var temp = stack.pop();
 											stack.push(Std.string(stack.pop()) + " " + operator + " " + Std.string(temp));
 										}
-										else
+
+										if (incr_operator != null)
 										{
-											if (op == OpDecr)
-											{
-												operator = "-";
-												stack.push(Std.string(stack.pop()) + " " + operator + " 1");
-											}
+											stack.push(Std.string(stack.pop()) + incr_operator);
 										}
 									case OJump(j, delta):
 										switch (j) {
