@@ -953,7 +953,9 @@ class SWFLiteExporter {
 							var closingBrackets = [];
 							var openingBrackets = [];
 							var indentationLevel = 0;
-							for (pcode in pcodes) {
+							for (pindex in 0...pcodes.length) {
+
+								var pcode = pcodes[pindex];
 								switch (pcode.opr) {
 									case OThis:
 										stack.push("this");
