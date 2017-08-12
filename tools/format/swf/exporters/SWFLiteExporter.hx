@@ -1255,7 +1255,8 @@ class SWFLiteExporter {
 										LogHelper.info ("", "Label reached " + pcode);
 									case _:
 										// TODO: throw() on unsupported pcodes
-										LogHelper.info ("", "pcode "+ pcode);
+										LogHelper.warn ("", "unsupported pcode "+ pcode, true);
+										//throw(pcode);
 								}
 
 								for (i in 0...closingBrackets.length) {
