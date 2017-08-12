@@ -1158,8 +1158,10 @@ class SWFLiteExporter {
 												incr_operator = "++";
 											case OpIDecr:
 												incr_operator = "--";
+											case OpAs:
+
 											case _:
-												LogHelper.info ("", "OOp" + op);
+												LogHelper.warn ("", "Unhandled OOp: " + op, true);
 										}
 
 										if (op == OpAs)
