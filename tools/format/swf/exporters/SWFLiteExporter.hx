@@ -953,6 +953,8 @@ class SWFLiteExporter {
 							var closingBrackets = [];
 							var openingBrackets = [];
 							var indentationLevel = 0;
+							var cond_break:Array<String> = [];
+							var in_if:Bool = false;
 							for (pindex in 0...pcodes.length) {
 
 								var pcode = pcodes[pindex];
@@ -1207,6 +1209,9 @@ class SWFLiteExporter {
 											stack.push(Std.string(stack.pop()) + incr_operator);
 										}
 									case OJump(j, delta):
+
+										var if_cond = null;
+										
 										switch (j) {
 											case JNeq | JEq | JPhysNeq | JPhysEq | JNotGt | JNotLt | JNotGte | JNotLte | JLt | JGt | JLte | JGte :
 
@@ -1281,7 +1286,8 @@ class SWFLiteExporter {
 												}
 
 												var temp = stack.pop();
-												js += "if (" + Std.string(stack.pop()) + " " + operator + " " + Std.string(temp) + ")\n{\n";
+
+												if_cond = Std.string(stack.pop()) + " " + operator + " " + Std.string(temp);
 
 												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
 												{
@@ -1297,29 +1303,58 @@ class SWFLiteExporter {
 //												{
 													closingBrackets.push(pcode.pos + delta);
 //												}
-											case JFalse | JTrue:
-												var condition = "";
+											case JFalse:
+												if(pcodes[pindex-1].opr == ODup && pcodes[pindex+1].opr == OPop ) {
+													// We are in between an "AND" if conditional
+													cond_break.push("&&");
+													if_cond = Std.string(stack.pop());
+												}else{
+													if_cond = Std.string(stack.pop());
+													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+													{
+														closingBrackets.push(pcode.pos + delta);
+													}
 
-												if (j.match(JTrue)) {
-													condition += "!";
+													indentationLevel += 1;
 												}
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
+											case JTrue:
+												if(pcodes[pindex-1].opr == ODup && pcodes[pindex+1].opr == OPop ) {
+													// We are in between an "OR" if conditional
+													cond_break.push("||");
+													if_cond = Std.string(stack.pop());
+												}else{
+													if_cond = "!" + Std.string(stack.pop());
+													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+													{
+														closingBrackets.push(pcode.pos + delta);
+													}
 
-												condition += Std.string(stack.pop());
-
-												js += "if (" + condition + ")\n{\n";
-
-												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
-												{
-													closingBrackets.push(pcode.pos + delta);
+													indentationLevel += 1;
 												}
-
-												indentationLevel += 1;
 												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
 											case _:
 												LogHelper.info ("", "OJump" + j + delta);
 										}
 
 										LogHelper.info("", Std.string(closingBrackets));
+
+										if(if_cond != null) {
+											if(!in_if) {
+												js += "if (" + if_cond;
+											} else {
+												js += if_cond;
+											}
+
+											// If the next pcode is a OPop we're in a conditional
+											if(pcodes[pindex+1].opr == OPop || pcodes[pindex+2].opr == OPop) {
+												js += " " + cond_break.pop() + " ";
+												in_if = true;
+											} else {
+ 												js += ")\n" + "{\n";
+ 												in_if = false;
+											}
+										}
 
 										LogHelper.info("", j + " " + delta);
 									case OTrue:
@@ -1337,7 +1372,8 @@ class SWFLiteExporter {
 								}
 
 								for (i in 0...closingBrackets.length) {
-									if (pcode.pos == closingBrackets[i])
+									if(in_if) break;
+									if (indentationLevel > -1 && pcode.pos == closingBrackets[i])
 									{
 										LogHelper.info("", "found a pcode for opening bracket" + pcode);
 										js += "}\n";
