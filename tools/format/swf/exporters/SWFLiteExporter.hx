@@ -1133,12 +1133,22 @@ class SWFLiteExporter {
 												operator = "*";
 											case OpAdd:
 												operator = "+";
+											case OpSub:
+												operator = "-";
 											case OpDiv:
 												operator = "/";
 											case OpGt:
 												operator = ">";
+											case OpLt:
+												operator = "<";
 											case OpEq:
 												operator = "==";
+											case OpGte:
+												operator = ">=";
+											case OpLte:
+												operator = "<=";
+											case OpAnd:
+												operator = "&&";
 											case _:
 												LogHelper.info ("", "OOp" + op);
 										}
