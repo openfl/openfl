@@ -1088,8 +1088,15 @@ class SWFLiteExporter {
 									case OConstructProperty(nameIndex, argCount):
 										LogHelper.info ("", "OConstructProperty stack: " + stack);
 
-										var temp = "new ";
+										var temp = "";
 										temp += AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+										if(temp == "int()") {
+											temp = "0";
+										} else if(temp.indexOf("[") == 0) {
+											// Array
+										} else {
+											temp = "new " + temp;
+										}
 										stack.push(temp);
 
 										LogHelper.info ("", "OConstructProperty value: " + temp);
@@ -1564,6 +1571,7 @@ class AVM2 {
 
 	public static function parseFunctionCall(abcData: ABCData, cls: ClassDef, nameIndex: IName, argCount: Int, stack:Array<Dynamic>):String
 	{
+		var is_array:Bool = false;
 		var prop = abcData.resolveMultiNameByIndex(nameIndex);
 
 		if (prop == null)
@@ -1573,8 +1581,13 @@ class AVM2 {
 		}
 
 		var js = getFullName(abcData, prop, cls);
-		// invoke function
-		js += "(";
+		if(js == "Array") {
+			js = "[";
+			is_array = true;
+		}else {
+			// invoke function
+			js += "(";
+		}
 
 		var temp = [];
 		for (i in 0...argCount) {
@@ -1592,8 +1605,14 @@ class AVM2 {
 			}
 		}
 		temp.reverse();
-		js += temp.join(", ") + ")";
+		js += temp.join(", ");
+		if(is_array) {
+			js += "]";
+		} else {
+			js += ")";
+		}
 
 		return js;
 	}
+
 }
