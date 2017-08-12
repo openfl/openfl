@@ -1208,19 +1208,76 @@ class SWFLiteExporter {
 										}
 									case OJump(j, delta):
 										switch (j) {
-											case JNeq | JNotGt | JNotLt | JNotGte:
-												var operator = null;
+											case JNeq | JEq | JPhysNeq | JPhysEq | JNotGt | JNotLt | JNotGte | JNotLte | JLt | JGt | JLte | JGte :
 
-												switch (j) {
-													case JNeq:
-														operator = "==";
-													case JNotGt:
-														operator = ">";
-													case JNotLt:
-														operator = "<";
-													case JNotGte:
-														operator = ">=";
-													case _:
+												var operator = null;
+												var next_pcode = pcodes[pindex+1];
+												var _inverted:Bool = false;
+
+												// if next pcode is an Always Jump,
+												// then we're actually checking the opposite
+												switch (next_pcode.opr) {
+													case OJump(_j, _d):
+														if(_j == JAlways) _inverted = true;
+													case _ :
+												}
+
+												if(!_inverted) {
+													switch(j) {
+														case JNeq:
+															operator = "==";
+														case JEq:
+															operator = "!=";
+														case JPhysNeq:
+															operator = "===";
+														case JPhysEq:
+															operator = "!==";
+														case JNotGt:
+															operator = ">";
+														case JNotLt:
+															operator = "<";
+														case JNotGte:
+															operator = ">=";
+														case JNotLte:
+															operator = "<=";
+														case JLt:
+															operator = "<";
+														case JGt:
+															operator = ">";
+														case JLte:
+															operator = "<=";
+														case JGte:
+															operator = ">=";
+														case _:
+													}
+												} else {
+													switch(j) {
+														case JNeq:
+															operator = "!=";
+														case JEq:
+															operator = "==";
+														case JPhysNeq:
+															operator = "!==";
+														case JPhysEq:
+															operator = "===";
+														case JNotGt:
+															operator = "<=";
+														case JNotLt:
+															operator = ">=";
+														case JNotGte:
+															operator = "<";
+														case JNotLte:
+															operator = ">";
+														case JLt:
+															operator = ">=";
+														case JGt:
+															operator = "<=";
+														case JLte:
+															operator = ">";
+														case JGte:
+															operator = "<";
+														case _:
+													}
 												}
 
 												var temp = stack.pop();
