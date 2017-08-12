@@ -1138,7 +1138,8 @@ class SWFLiteExporter {
 
 										if (op == OpAs)
 										{
-											LogHelper.info ("", "cast to " + stack.pop() + " is discarded");
+											var discard = stack.pop();
+											LogHelper.info ("", "cast to " + discard + " is discarded");
 										}
 
 										if (operator != null)
