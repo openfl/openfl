@@ -955,6 +955,8 @@ class SWFLiteExporter {
 							var indentationLevel = 0;
 							var cond_break:Array<String> = [];
 							var in_if:Bool = false;
+							var while_loops = [];
+
 							for (pindex in 0...pcodes.length) {
 
 								var pcode = pcodes[pindex];
@@ -1289,19 +1291,18 @@ class SWFLiteExporter {
 
 												if_cond = Std.string(stack.pop()) + " " + operator + " " + Std.string(temp);
 
-												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+												if (delta > 0 && closingBrackets.indexOf(pcode.pos + delta) == -1)
 												{
 													closingBrackets.push(pcode.pos + delta);
 												}
 
-												indentationLevel += 1;
 												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + "closingBrackets" + Std.string(closingBrackets));
 											case JAlways:
-												LogHelper.info("", "JAlways" + delta + " " + pcode.pos);
+												LogHelper.info("", "JAlways " + delta + " " + pcode.pos);
 
 //												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
 //												{
-													closingBrackets.push(pcode.pos + delta);
+													if(delta > 0) closingBrackets.push(pcode.pos + delta);
 //												}
 											case JFalse:
 												if(pcodes[pindex-1].opr == ODup && pcodes[pindex+1].opr == OPop ) {
@@ -1310,12 +1311,10 @@ class SWFLiteExporter {
 													if_cond = Std.string(stack.pop());
 												}else{
 													if_cond = Std.string(stack.pop());
-													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+													if (delta > 0 && closingBrackets.indexOf(pcode.pos + delta) == -1)
 													{
 														closingBrackets.push(pcode.pos + delta);
 													}
-
-													indentationLevel += 1;
 												}
 												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
 											case JTrue:
@@ -1325,12 +1324,10 @@ class SWFLiteExporter {
 													if_cond = Std.string(stack.pop());
 												}else{
 													if_cond = "!" + Std.string(stack.pop());
-													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+													if (delta > 0 && closingBrackets.indexOf(pcode.pos + delta) == -1)
 													{
 														closingBrackets.push(pcode.pos + delta);
 													}
-
-													indentationLevel += 1;
 												}
 												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
 											case _:
@@ -1339,20 +1336,41 @@ class SWFLiteExporter {
 
 										LogHelper.info("", Std.string(closingBrackets));
 
+										var out = "";
 										if(if_cond != null) {
 											if(!in_if) {
-												js += "if (" + if_cond;
+												if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
+													out += "while (" + if_cond;
+												} else {
+													out += "if (" + if_cond;
+												}
 											} else {
-												js += if_cond;
+												out += if_cond;
 											}
 
 											// If the next pcode is a OPop we're in a conditional
 											if(pcodes[pindex+1].opr == OPop || pcodes[pindex+2].opr == OPop) {
-												js += " " + cond_break.pop() + " ";
+												out += " " + cond_break.pop() + " ";
 												in_if = true;
 											} else {
- 												js += ")\n" + "{\n";
+ 												out += ")" + "{";
  												in_if = false;
+ 												indentationLevel++;
+											}
+										}
+
+										if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
+											js = js.replace("[[[loop"+ (pcode.pos + delta + 1) +"]]]", out);
+											indentationLevel--;
+											//js += "}";
+										} else if (out != "") {
+											// Already have indentation from "else"
+											if(js.endsWith("else ")) {
+												js += out;	
+											} else {
+												indentationLevel--;
+												js += out;
+												indentationLevel++;												
 											}
 										}
 
@@ -1365,6 +1383,20 @@ class SWFLiteExporter {
 										// Indicator for while loop position
 										// OJump(JAlways) can bring us back here at end of loop
 										LogHelper.info ("", "Label reached " + pcode);
+
+										var prev_pcode = pcodes[pindex-1];
+
+										// if next pcode is a Label,
+										// then we're actually in a while loop
+										switch (prev_pcode.opr) {
+											case OJump(_j, _delta):
+												if (_j == JAlways) 
+													while_loops.push((pcode.pos));
+													js += "[[[loop"+ (pcode.pos) +"]]]";
+													indentationLevel += 1;
+											case _ :
+										}
+
 									case _:
 										// TODO: throw() on unsupported pcodes
 										LogHelper.warn ("", "unsupported pcode "+ pcode, true);
@@ -1376,15 +1408,17 @@ class SWFLiteExporter {
 									if (indentationLevel > -1 && pcode.pos == closingBrackets[i])
 									{
 										LogHelper.info("", "found a pcode for opening bracket" + pcode);
-										js += "}\n";
+										if(indentationLevel > 0) {
+											indentationLevel--;
+											js += "}";
+										}
 										closingBrackets.remove(i);
-
-										indentationLevel += -1;
 										LogHelper.info("", "decreased indentationLevel" + indentationLevel + " " + closingBrackets);
 
 										switch (pcode.opr) {
 											case OJump(j, delta):
 												if (j == JAlways) {
+													if(delta < 0) return;
 													js += "else ";
 
 													var foundConditionals = false;
