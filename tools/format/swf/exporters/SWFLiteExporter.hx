@@ -71,6 +71,7 @@ class SWFLiteExporter {
 	private var alphaPalette:Bytes;
 	private var data:SWFRoot;
 	
+	private static var indentationLevel:Int = 0;
 	
 	public function new (data:SWFRoot) {
 		
@@ -952,7 +953,7 @@ class SWFLiteExporter {
 							var stack:Array<Dynamic> = new Array();
 							var closingBrackets = [];
 							var openingBrackets = [];
-							var indentationLevel = 0;
+							indentationLevel = 0;
 							var cond_break:Array<String> = [];
 							var in_if:Bool = false;
 							var while_loops = [];
@@ -1032,7 +1033,7 @@ class SWFLiteExporter {
 											instance = "this" + "." + instance;
 										}
 
-										js += instance + name + " = " + result + ";\n";
+										js += ind() + instance + name + " = " + result + ";";
 									case OString(strIndex):
 										var str = data.abcData.getStringByIndex(strIndex);
 										stack.push("\"" + str + "\"");
@@ -1049,17 +1050,22 @@ class SWFLiteExporter {
 									case OCallPropVoid(nameIndex, argCount):
 										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
 
+										var callpropvoid:String = "";
+
 										if (stack.length > 0)
 										{
-											js += stack.pop() + ".";
+											callpropvoid += stack.pop() + ".";
 										}
 										else
 										{
-											js += "this" + ".";
+											if(!temp.startsWith("this.")) callpropvoid += "this" + ".";
 										}
 
-										js += temp;
-										js += ";\n";
+										callpropvoid += temp;
+										callpropvoid += ";";
+
+										js += ind() + callpropvoid;
+										// prop = null;
 									case OCallProperty(nameIndex, argCount):
 										LogHelper.info ("", "OCallProperty stack: " + stack);
 
@@ -1113,7 +1119,7 @@ class SWFLiteExporter {
 
 										var temp = stack.pop();
 
-										js += stack.pop() + "." + prop.name + " = " + Std.string(temp) + ";\n";
+										js += ind() + stack.pop() + "." + prop.name + " = " + Std.string(temp) + ";";
 									case ODup:
 										stack.push(stack[stack.length - 1]);
 									case OArray(argCount):
@@ -1353,7 +1359,7 @@ class SWFLiteExporter {
 												out += " " + cond_break.pop() + " ";
 												in_if = true;
 											} else {
- 												out += ")" + "{";
+ 												out += ")" + ind() + "{";
  												in_if = false;
  												indentationLevel++;
 											}
@@ -1362,14 +1368,14 @@ class SWFLiteExporter {
 										if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
 											js = js.replace("[[[loop"+ (pcode.pos + delta + 1) +"]]]", out);
 											indentationLevel--;
-											//js += "}";
+											//js += ind() + "}";
 										} else if (out != "") {
 											// Already have indentation from "else"
 											if(js.endsWith("else ")) {
 												js += out;	
 											} else {
 												indentationLevel--;
-												js += out;
+												js += ind() + out;
 												indentationLevel++;												
 											}
 										}
@@ -1392,7 +1398,7 @@ class SWFLiteExporter {
 											case OJump(_j, _delta):
 												if (_j == JAlways) 
 													while_loops.push((pcode.pos));
-													js += "[[[loop"+ (pcode.pos) +"]]]";
+													js += ind() + "[[[loop"+ (pcode.pos) +"]]]";
 													indentationLevel += 1;
 											case _ :
 										}
@@ -1410,7 +1416,7 @@ class SWFLiteExporter {
 										LogHelper.info("", "found a pcode for opening bracket" + pcode);
 										if(indentationLevel > 0) {
 											indentationLevel--;
-											js += "}";
+											js += ind() + "}";
 										}
 										closingBrackets.remove(i);
 										LogHelper.info("", "decreased indentationLevel" + indentationLevel + " " + closingBrackets);
@@ -1419,7 +1425,7 @@ class SWFLiteExporter {
 											case OJump(j, delta):
 												if (j == JAlways) {
 													if(delta < 0) return;
-													js += "else ";
+													js += ind() + "else ";
 
 													var foundConditionals = false;
 
@@ -1438,7 +1444,7 @@ class SWFLiteExporter {
 
 													LogHelper.info("", "foundConditionals" + foundConditionals);
 													if (!foundConditionals) {
-														js += "\n{\n";
+														js += ind() + "{";
 														indentationLevel += 1;
 														LogHelper.info("", "indentationLevel" + j + indentationLevel + closingBrackets);
 													}
@@ -1466,7 +1472,7 @@ class SWFLiteExporter {
 //											}
 //										}
 //
-//										js += "{ \\\\opening\n";
+//										js += ind() + "{ \\\\opening\n";
 //										break;
 //									}
 								}
@@ -1537,7 +1543,13 @@ class SWFLiteExporter {
 		}
 		
 	}
-	
+
+	public static function ind():String
+	{
+		var a:String = "\n";
+		for(_ in 0...indentationLevel) a += "	";
+		return a;
+	}
 	
 }
 
