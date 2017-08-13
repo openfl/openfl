@@ -1349,7 +1349,12 @@ class SWFLiteExporter {
 												if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
 													out += "while (" + if_cond;
 												} else {
-													out += "if (" + if_cond;
+													// Already have indentation from "else"
+													if(js.endsWith("else ")) {
+														out += "if (" + if_cond;
+													}else{
+														out += ind() + "if (" + if_cond;
+													}
 												}
 											} else {
 												out += if_cond;
@@ -1371,14 +1376,7 @@ class SWFLiteExporter {
 											indentationLevel--;
 											//js += ind() + "}";
 										} else if (out != "") {
-											// Already have indentation from "else"
-											if(js.endsWith("else ")) {
-												js += out;	
-											} else {
-												indentationLevel--;
-												js += ind() + out;
-												indentationLevel++;												
-											}
+											js += out;
 										}
 
 										LogHelper.info("", j + " " + delta);
