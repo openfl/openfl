@@ -971,6 +971,7 @@ class SWFLiteExporter {
 									case OFindPropStrict(nameIndex):
 //										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
 									case OGetLex(nameIndex):
+										LogHelper.info ("", "OGetLex: " + nameIndex);
 										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
 
 										var fullname = "";
@@ -1028,7 +1029,7 @@ class SWFLiteExporter {
 
 										var instance = Std.string(stack.pop());
 
-										if (instance != "this" && !instance.startsWith("this."))
+										if (!instance.startsWith("this"))
 										{
 											instance = "this" + "." + instance;
 										}
