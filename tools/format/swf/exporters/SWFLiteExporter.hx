@@ -914,6 +914,10 @@ class SWFLiteExporter {
 		if (data2 == null && ~/_fla\.MainTimeline$/.match(symbol.name)) {
 			data2 = swfLite.root;
 		}
+
+		if (data2 == null) {
+			LogHelper.warn ("", "could not process symbol "+ symbol.name +" at "+ symbol.tagId);
+		}
 		
 		// we only want to operate on DefineSprite tags from here
 		if (!Std.is (data2, SpriteSymbol)) {
