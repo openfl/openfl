@@ -65,6 +65,7 @@ class CairoTilemap {
 		
 		for (i in 0...count) {
 			
+			tileArray.position = i;
 			alpha = tileArray.alpha;
 			visible = tileArray.visible;
 			if (!visible || alpha <= 0) continue;
@@ -136,8 +137,6 @@ class CairoTilemap {
 			}
 			
 			cairo.restore ();
-			
-			tileArray.position++;
 			
 		}
 		
