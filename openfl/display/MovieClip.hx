@@ -365,7 +365,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 	}
 	
-	
+	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
 	private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
 		
 		if (__activeInstances != null) return;
@@ -449,8 +449,16 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							script.call (this);
 							
 						} catch (e:Dynamic) {
-							
-							trace ("Error evaluating frame script\n " + e + "\n" + 
+							var p: DisplayObjectContainer = this;
+							var name: Array<String> = new Array();
+							do {
+								name.push(p.__name);
+							} while (null != (p = p.parent));
+							name.reverse();
+							trace ("Error evaluating frame script\n" + 
+								"swf: "+ this.__swf.library.rootPath +"\n" +
+								"symbol path: "+ name.join('.') +"\n" +
+								e + "\n" + 
 								haxe.CallStack.exceptionStack ().map (function (a) { return untyped a[2]; }).join ("\n") + "\n" + 
 								e.stack + "\n" + untyped script.toString ());
 							
