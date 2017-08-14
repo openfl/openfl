@@ -4,23 +4,14 @@ package openfl.display; #if !openfl_legacy
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
-import lime.graphics.Image;
-import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.color.ARGB;
-import lime.math.ColorMatrix;
-import lime.math.Rectangle in LimeRectangle;
-import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.utils.PingPongTexture;
-import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
-import openfl.errors.IOError;
-import openfl.errors.TypeError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -30,18 +21,12 @@ import openfl.utils.ByteArray;
 import openfl.Vector;
 import format.swf.lite.symbols.BitmapSymbol;
 import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
 import lime.Assets in LimeAssets;
 
 #if (js && html5)
 import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.html.ImageData;
-import js.html.ImageElement;
-import js.html.Uint8ClampedArray;
-import js.Browser;
 #end
 
 @:access(lime.graphics.Image)
@@ -79,6 +64,8 @@ class BitmapData implements IBitmapDrawable {
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
 	private var __isValid:Bool;
+	private var __offsetX:Float = 0.0;
+	private var __offsetY:Float = 0.0;
 	private var __scaleX:Float = 1.0;
 	private var __scaleY:Float = 1.0;
 	private var __texture:GLTexture;

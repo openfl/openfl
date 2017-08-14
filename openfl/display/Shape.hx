@@ -39,18 +39,6 @@ class Shape extends DisplayObject {
 
 	}
 
-	private override function __getRenderBounds (rect:Rectangle):Void {
-
-		super.__getRenderBounds (rect);
-        if (__graphics != null)
-        {
-            rect.x -= __graphics.__padding / renderScaleX;
-            rect.y -= __graphics.__padding / renderScaleY;
-            rect.width += 2.0 * __graphics.__padding / renderScaleX;
-            rect.height += 2.0 * __graphics.__padding / renderScaleY;
-        }
-	}
-
     private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
         if ( !parent.mouseEnabled && interactiveOnly ) {
             return false;
