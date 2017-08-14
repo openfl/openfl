@@ -1501,11 +1501,14 @@ class SWFLiteExporter {
 //										break;
 //									}
 								}
-
-								for (i in 0...openingBrackets.length) {
-
-								}
 							}
+
+							var _force_close = (indentationLevel > 0);
+							while (indentationLevel > 0) {
+								indentationLevel--;
+								js += ind() + "}";
+							}
+							if(_force_close) js += ind() + "// force close due to same bracket close collision, double-check statements";
 							LogHelper.info ("", "javascript:\n"+js);
 
 							LogHelper.info("", Std.string(pcodes));
