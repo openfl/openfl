@@ -43,59 +43,51 @@ class FlashTilemap {
 		var alpha, visible, tileset, id, tileData, sourceBitmapData;
 		
 		var tileArray = tilemap.__tileArray;
-		var count = tileArray.length;
 		
-		if (count > 0) {
+		for (tile in tileArray) {
 			
-			tileArray.position = 0;
+			alpha = tile.alpha;
+			visible = tile.visible;
+			if (!visible || alpha <= 0) continue;
 			
-			for (i in 0...count) {
+			tileset = tile.tileset;
+			if (tileset == null) tileset = defaultTileset;
+			if (tileset == null) continue;
+			
+			id = tile.id;
+			
+			if (id == -1) {
 				
-				tileArray.position = i;
-				alpha = tileArray.alpha;
-				visible = tileArray.visible;
-				if (!visible || alpha <= 0) continue;
+				// TODO: Support arbitrary source rect
+				//tile.getRect (tileRect);
+				continue;
 				
-				tileset = tileArray.tileset;
-				if (tileset == null) tileset = defaultTileset;
-				if (tileset == null) continue;
+			} else {
 				
-				id = tileArray.id;
+				tileData = tileset.__data[id];
+				if (tileData == null) continue;
 				
-				if (id == -1) {
-					
-					// TODO: Support arbitrary source rect
-					//tileArray.getRect (tileRect);
-					continue;
-					
-				} else {
-					
-					tileData = tileset.__data[id];
-					if (tileData == null) continue;
-					
-					//tileRect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
-					
-				}
+				//tileRect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
 				
-				sourceBitmapData = tileData.__bitmapData;
-				if (sourceBitmapData == null) continue;
+			}
+			
+			sourceBitmapData = tileData.__bitmapData;
+			if (sourceBitmapData == null) continue;
+			
+			tile.getMatrix (tileMatrix);
+			
+			if (alpha == 1 && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
 				
-				tileArray.getMatrix(tileMatrix);
+				destPoint.x = tileMatrix.tx;
+				destPoint.y = tileMatrix.ty;
 				
-				if (alpha == 1 && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
-					
-					destPoint.x = tileMatrix.tx;
-					destPoint.y = tileMatrix.ty;
-					
-					bitmapData.copyPixels (sourceBitmapData, sourceBitmapData.rect, destPoint, null, null, true);
-					
-				} else {
-					
-					colorTransform.alphaMultiplier = alpha;
-					
-					bitmapData.draw (sourceBitmapData, tileMatrix, colorTransform, null, null, smoothing);
-					
-				}
+				bitmapData.copyPixels (sourceBitmapData, sourceBitmapData.rect, destPoint, null, null, true);
+				
+			} else {
+				
+				colorTransform.alphaMultiplier = alpha;
+				
+				bitmapData.draw (sourceBitmapData, tileMatrix, colorTransform, null, null, smoothing);
 				
 			}
 			

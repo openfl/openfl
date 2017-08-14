@@ -55,30 +55,26 @@ class CairoTilemap {
 		var alpha, visible, tileset, id, tileData, bitmapData;
 		
 		var tileArray = tilemap.__tileArray;
-		var count = tileArray.length;
-		
-		tileArray.position = 0;
 		
 		var matrix = new Matrix3 ();
 		var tileTransform = Matrix.__pool.get ();
 		var tileRect = Rectangle.__pool.get ();
 		
-		for (i in 0...count) {
+		for (tile in tileArray) {
 			
-			tileArray.position = i;
-			alpha = tileArray.alpha;
-			visible = tileArray.visible;
+			alpha = tile.alpha;
+			visible = tile.visible;
 			if (!visible || alpha <= 0) continue;
 			
-			tileset = tileArray.tileset;
+			tileset = tile.tileset;
 			if (tileset == null) tileset = defaultTileset;
 			if (tileset == null) continue;
 			
-			id = tileArray.id;
+			id = tile.id;
 			
 			if (id == -1) {
 				
-				tileArray.getRect (tileRect);
+				tile.getRect (tileRect);
 				
 			} else {
 				
@@ -103,7 +99,7 @@ class CairoTilemap {
 				
 			}
 			
-			tileArray.getMatrix (tileTransform);
+			tile.getMatrix (tileTransform);
 			tileTransform.concat (transform);
 			
 			if (roundPixels) {

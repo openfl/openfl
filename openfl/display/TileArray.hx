@@ -15,7 +15,7 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 
 
-@:beta class TileArray {
+@:beta class TileArray implements ITileArrayElement {
 	
 	
 	private static inline var ID_INDEX = 0;
@@ -109,6 +109,13 @@ import openfl.Vector;
 		rect.width = __data[i + 2];
 		rect.height = __data[i + 3];
 		return rect;
+		
+	}
+	
+	
+	public function iterator ():TileArrayIterator {
+		
+		return @:privateAccess new TileArrayIterator (this);
 		
 	}
 	
@@ -534,6 +541,52 @@ import openfl.Vector;
 		
 		__visible[position] = value;
 		return value;
+		
+	}
+	
+	
+}
+
+
+
+
+private class TileArrayIterator {
+	
+	
+	private var cachePosition:Int;
+	private var data:TileArray;
+	private var position:Int;
+	
+	
+	private function new (data:TileArray) {
+		
+		this.data = data;
+		cachePosition = data.position;
+		position = 0;
+		
+	}
+	
+	
+	public function hasNext ():Bool {
+		
+		if (position < data.length) {
+			
+			return true;
+			
+		} else {
+			
+			data.position = cachePosition;
+			return false;
+			
+		}
+		
+	}
+	
+	
+	public function next ():ITileArrayElement {
+		
+		data.position = position++;
+		return data;
 		
 	}
 	
