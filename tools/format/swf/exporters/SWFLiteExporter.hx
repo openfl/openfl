@@ -1302,7 +1302,7 @@ class SWFLiteExporter {
 
 												if_cond = Std.string(stack.pop()) + " " + operator + " " + Std.string(temp);
 
-												if (delta > 0 && closingBrackets.indexOf(pcode.pos + delta) == -1)
+												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
 												{
 													closingBrackets.push(pcode.pos + delta);
 												}
@@ -1313,7 +1313,7 @@ class SWFLiteExporter {
 
 //												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
 //												{
-													if(delta > 0) closingBrackets.push(pcode.pos + delta);
+													closingBrackets.push(pcode.pos + delta);
 //												}
 											case JFalse:
 												if((pcodes[pindex-1] != null && pcodes[pindex-1].opr == ODup) && (pcodes[pindex+1] != null && pcodes[pindex+1].opr == OPop )) {
@@ -1322,7 +1322,7 @@ class SWFLiteExporter {
 													if_cond = Std.string(stack.pop());
 												}else{
 													if_cond = Std.string(stack.pop());
-													if (delta > 0 && closingBrackets.indexOf(pcode.pos + delta) == -1)
+													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
 													{
 														closingBrackets.push(pcode.pos + delta);
 													}
@@ -1335,7 +1335,7 @@ class SWFLiteExporter {
 													if_cond = Std.string(stack.pop());
 												}else{
 													if_cond = "!" + Std.string(stack.pop());
-													if (delta > 0 && closingBrackets.indexOf(pcode.pos + delta) == -1)
+													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
 													{
 														closingBrackets.push(pcode.pos + delta);
 													}
@@ -1347,11 +1347,13 @@ class SWFLiteExporter {
 
 										LogHelper.info("", Std.string(closingBrackets));
 
+										var in_while = false;
 										var out = "";
 										if(if_cond != null) {
 											if(!in_if) {
 												if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
 													out += "while (" + if_cond;
+													in_while = true;
 												} else {
 													// Already have indentation from "else"
 													if(js.endsWith("else ")) {
@@ -1369,15 +1371,20 @@ class SWFLiteExporter {
 												out += " " + cond_break.pop() + " ";
 												in_if = true;
 											} else {
- 												out += ")" + ind() + "{";
+												if(in_while) {
+													out += ")";
+												}else{
+													out += ")" + ind() + "{";
+													indentationLevel++;
+												}
  												in_if = false;
- 												indentationLevel++;
 											}
 										}
 
 										if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
 											js = js.replace("[[[loop"+ (pcode.pos + delta + 1) +"]]]", out);
-											indentationLevel--;
+											//indentationLevel--;
+											closingBrackets.push(pcode.pos);
 											//js += ind() + "}";
 										} else if (out != "") {
 											js += out;
