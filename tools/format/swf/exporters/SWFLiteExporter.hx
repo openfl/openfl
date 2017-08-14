@@ -1444,6 +1444,18 @@ class SWFLiteExporter {
 
 													for (k in pcodes.indexOf(pcode)+1...pcodes.length) {
 														LogHelper.info("", "pcodes to look for conditional" + pcodes[k]);
+
+														switch(pcodes[k].opr) {
+															case OSetProp(_) | OCallPropVoid(_, _) | OInitProp(_):
+																foundConditionals = false;
+																break;
+															case OJump(_, _):
+																foundConditionals = true;
+																break;
+															case _:
+
+														}
+
 														if (pcodes[k].pos > pcode.pos + delta) {
 															break;
 														}
