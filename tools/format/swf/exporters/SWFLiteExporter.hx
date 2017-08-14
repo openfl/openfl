@@ -1148,10 +1148,12 @@ class SWFLiteExporter {
 
 										// if next pcode is OpNot
 										// then we actually need to negate the boolean outcome
-										switch (next_pcode.opr) {
-											case OOp(_op):
-												if(_op == OpNot) _inverted = true;
-											case _ :
+										if(next_pcode != null) {
+											switch (next_pcode.opr) {
+												case OOp(_op):
+													if(_op == OpNot) _inverted = true;
+												case _ :
+											}
 										}
 
 										switch (op) {
@@ -1230,10 +1232,12 @@ class SWFLiteExporter {
 
 												// if next pcode is an Always Jump,
 												// then we're actually checking the opposite
-												switch (next_pcode.opr) {
-													case OJump(_j, _d):
-														if(_j == JAlways) _inverted = true;
-													case _ :
+												if(next_pcode != null) {
+													switch (next_pcode.opr) {
+														case OJump(_j, _d):
+															if(_j == JAlways) _inverted = true;
+														case _ :
+													}
 												}
 
 												if(!_inverted) {
@@ -1312,7 +1316,7 @@ class SWFLiteExporter {
 													if(delta > 0) closingBrackets.push(pcode.pos + delta);
 //												}
 											case JFalse:
-												if(pcodes[pindex-1].opr == ODup && pcodes[pindex+1].opr == OPop ) {
+												if((pcodes[pindex-1] != null && pcodes[pindex-1].opr == ODup) && (pcodes[pindex+1] != null && pcodes[pindex+1].opr == OPop )) {
 													// We are in between an "AND" if conditional
 													cond_break.push("&&");
 													if_cond = Std.string(stack.pop());
@@ -1325,7 +1329,7 @@ class SWFLiteExporter {
 												}
 												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
 											case JTrue:
-												if(pcodes[pindex-1].opr == ODup && pcodes[pindex+1].opr == OPop ) {
+												if((pcodes[pindex-1] != null && pcodes[pindex-1].opr == ODup) && (pcodes[pindex+1] != null && pcodes[pindex+1].opr == OPop )) {
 													// We are in between an "OR" if conditional
 													cond_break.push("||");
 													if_cond = Std.string(stack.pop());
@@ -1361,7 +1365,7 @@ class SWFLiteExporter {
 											}
 
 											// If the next pcode is a OPop we're in a conditional
-											if(pcodes[pindex+1].opr == OPop || pcodes[pindex+2].opr == OPop) {
+											if((pcodes[pindex+1] != null && pcodes[pindex+1].opr == OPop) || (pcodes[pindex+2] != null && pcodes[pindex+2].opr == OPop)) {
 												out += " " + cond_break.pop() + " ";
 												in_if = true;
 											} else {
@@ -1393,13 +1397,16 @@ class SWFLiteExporter {
 
 										// if next pcode is a Label,
 										// then we're actually in a while loop
-										switch (prev_pcode.opr) {
-											case OJump(_j, _delta):
-												if (_j == JAlways) 
-													while_loops.push((pcode.pos));
-													js += ind() + "[[[loop"+ (pcode.pos) +"]]]";
-													indentationLevel += 1;
-											case _ :
+										if(prev_pcode != null) {
+											switch (prev_pcode.opr) {
+												case OJump(_j, _delta):
+													if (_j == JAlways) 
+														while_loops.push((pcode.pos));
+														js += ind() + "[[[loop"+ (pcode.pos) +"]]]";
+														js += ind() + "{";
+														indentationLevel++;
+												case _ :
+											}
 										}
 
 									case _:
