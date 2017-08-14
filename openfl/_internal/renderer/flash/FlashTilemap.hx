@@ -51,6 +51,7 @@ class FlashTilemap {
 			
 			for (i in 0...count) {
 				
+				tileArray.position = i;
 				alpha = tileArray.alpha;
 				visible = tileArray.visible;
 				if (!visible || alpha <= 0) continue;
@@ -95,8 +96,6 @@ class FlashTilemap {
 					bitmapData.draw (sourceBitmapData, tileMatrix, colorTransform, null, null, smoothing);
 					
 				}
-				
-				tileArray.position++;
 				
 			}
 			

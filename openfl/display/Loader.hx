@@ -8,6 +8,7 @@ import openfl._internal.swf.SWFLiteLibrary;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
+import openfl.events.UncaughtErrorEvents;
 import openfl.net.URLLoader;
 import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
@@ -36,6 +37,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public var content (default, null):DisplayObject;
 	public var contentLoaderInfo (default, null):LoaderInfo;
+	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
 	
 	private var __library:AssetLibrary;
 	private var __path:String;
@@ -47,6 +49,7 @@ class Loader extends DisplayObjectContainer {
 		super ();
 		
 		contentLoaderInfo = LoaderInfo.create (this);
+		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
 		
 	}
 	

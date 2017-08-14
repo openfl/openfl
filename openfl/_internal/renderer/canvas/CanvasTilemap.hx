@@ -65,6 +65,7 @@ class CanvasTilemap {
 		
 		for (i in 0...count) {
 			
+			tileArray.position = i;
 			alpha = tileArray.alpha;
 			visible = tileArray.visible;
 			if (!visible || alpha <= 0) continue;
@@ -120,8 +121,6 @@ class CanvasTilemap {
 			}
 			
 			context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
-			
-			tileArray.position++;
 			
 		}
 		
