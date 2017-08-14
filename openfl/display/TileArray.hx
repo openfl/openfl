@@ -15,7 +15,7 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 
 
-@:beta class TileArray implements ITileArrayElement {
+@:beta class TileArray implements ITile {
 	
 	
 	private static inline var ID_INDEX = 0;
@@ -33,9 +33,12 @@ import openfl.Vector;
 	private static inline var DIRTY_LENGTH = 5;
 	
 	public var alpha (get, set):Float;
+	public var colorTransform (get, set):ColorTransform;
 	public var id (get, set):Int;
 	public var length (get, set):Int;
+	public var matrix (get, set):Matrix;
 	public var position:Int;
+	public var rect (get, set):Rectangle;
 	public var shader (get, set):Shader;
 	public var tileset (get, set):Tileset;
 	public var visible (get, set):Bool;
@@ -47,9 +50,12 @@ import openfl.Vector;
 	private var __bufferSkipped:Vector<Bool>;
 	private var __cacheAlpha:Float;
 	private var __cacheDefaultTileset:Tileset;
+	private var __colorTransform:ColorTransform;
 	private var __data:Vector<Float>;
 	private var __dirty:Vector<Bool>;
 	private var __length:Int;
+	private var __matrix:Matrix;
+	private var __rect:Rectangle;
 	private var __shaders:Vector<Shader>;
 	private var __tilesets:Vector<Tileset>;
 	private var __visible:Vector<Bool>;
@@ -68,97 +74,9 @@ import openfl.Vector;
 	}
 	
 	
-	public function getColorTransform (colorTransform:ColorTransform = null):ColorTransform {
-		
-		if (colorTransform == null) colorTransform = new ColorTransform ();
-		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
-		colorTransform.redMultiplier = __data[i];
-		colorTransform.greenMultiplier = __data[i + 1];
-		colorTransform.blueMultiplier = __data[i + 2];
-		colorTransform.alphaMultiplier = __data[i + 3];
-		colorTransform.redOffset = __data[i + 4];
-		colorTransform.greenOffset = __data[i + 5];
-		colorTransform.blueOffset = __data[i + 6];
-		colorTransform.alphaOffset = __data[i + 7];
-		return colorTransform;
-		
-	}
-	
-	
-	public function getMatrix (matrix:Matrix = null):Matrix {
-		
-		if (matrix == null) matrix = new Matrix ();
-		var i = MATRIX_INDEX + (position * DATA_LENGTH);
-		matrix.a = __data[i];
-		matrix.b = __data[i + 1];
-		matrix.c = __data[i + 2];
-		matrix.d = __data[i + 3];
-		matrix.tx = __data[i + 4];
-		matrix.ty = __data[i + 5];
-		return matrix;
-		
-	}
-	
-	
-	public function getRect (rect:Rectangle = null):Rectangle {
-		
-		if (rect == null) rect = new Rectangle ();
-		var i = RECT_INDEX + (position * DATA_LENGTH);
-		rect.x = __data[i];
-		rect.y = __data[i + 1];
-		rect.width = __data[i + 2];
-		rect.height = __data[i + 3];
-		return rect;
-		
-	}
-	
-	
 	public function iterator ():TileArrayIterator {
 		
 		return @:privateAccess new TileArrayIterator (this);
-		
-	}
-	
-	
-	public function setColorTransform (redMultiplier:Float, greenMultiplier:Float, blueMultiplier:Float, alphaMultiplier:Float, redOffset:Float, greenOffset:Float, blueOffset:Float, alphaOffset:Float):Void {
-		
-		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
-		__data[i] = redMultiplier;
-		__data[i + 1] = greenMultiplier;
-		__data[i + 2] = blueMultiplier;
-		__data[i + 3] = alphaMultiplier;
-		__data[i + 4] = redOffset;
-		__data[i + 5] = greenOffset;
-		__data[i + 6] = blueOffset;
-		__data[i + 7] = alphaOffset;
-		__dirty[COLOR_TRANSFORM_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
-		
-	}
-	
-	
-	public function setMatrix (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void {
-		
-		var i = MATRIX_INDEX + (position * DATA_LENGTH);
-		__data[i] = a;
-		__data[i + 1] = b;
-		__data[i + 2] = c;
-		__data[i + 3] = d;
-		__data[i + 4] = tx;
-		__data[i + 5] = ty;
-		__dirty[MATRIX_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
-		
-	}
-	
-	
-	public function setRect (x:Float, y:Float, width:Float, height:Float):Void {
-		
-		__data[ID_INDEX + (position * DATA_LENGTH)] = -1;
-		var i = RECT_INDEX + (position * DATA_LENGTH);
-		__data[i] = x;
-		__data[i + 1] = y;
-		__data[i + 2] = width;
-		__data[i + 3] = height;
-		__dirty[SOURCE_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		
 	}
 	
@@ -168,9 +86,9 @@ import openfl.Vector;
 		this.position = position;
 		
 		alpha = 1;
-		setColorTransform (1, 1, 1, 1, 0, 0, 0, 0);
+		colorTransform = null;
 		id = 0;
-		setMatrix (1, 0, 0, 1, 0, 0);
+		matrix = null;
 		tileset = null;
 		visible = true;
 		
@@ -242,9 +160,7 @@ import openfl.Vector;
 		
 		if (__bufferDirty || (__cacheAlpha != worldAlpha) || (__cacheDefaultTileset != defaultTileset)) {
 			
-			var matrix = Matrix.__pool.get ();
-			var colorTransform = new ColorTransform ();
-			var rect = null;
+			var tileMatrix, tileColorTransform, tileRect = null;
 			
 			// TODO: Dirty algorithm per tile?
 			
@@ -316,48 +232,49 @@ import openfl.Vector;
 					
 				} else {
 					
-					if (rect == null) {
+					tileRect = this.rect;
+					tileWidth = tileRect.width;
+					tileHeight = tileRect.height;
+					
+					if (tileWidth <= 0 || tileHeight <= 0) {
 						
-						rect = #if flash new Rectangle (); #else Rectangle.__pool.get (); #end
+						__skipTile (i, offset);
+						continue;
 						
 					}
 					
-					getRect (rect);
-					
-					tileWidth = rect.width;
-					tileHeight = rect.height;
 					bitmapWidth = tileset.bitmapData.width;
 					bitmapHeight = tileset.bitmapData.height;
-					uvX = rect.x / bitmapWidth;
-					uvY = rect.y / bitmapHeight;
-					uvWidth = rect.right / bitmapWidth;
-					uvHeight = rect.bottom / bitmapHeight;
+					uvX = tileRect.x / bitmapWidth;
+					uvY = tileRect.y / bitmapHeight;
+					uvWidth = tileRect.right / bitmapWidth;
+					uvHeight = tileRect.bottom / bitmapHeight;
 					
 				}
 				
-				getMatrix (matrix);
-				x = matrix.__transformX (0, 0);
-				y = matrix.__transformY (0, 0);
-				x2 = matrix.__transformX (tileWidth, 0);
-				y2 = matrix.__transformY (tileWidth, 0);
-				x3 = matrix.__transformX (0, tileHeight);
-				y3 = matrix.__transformY (0, tileHeight);
-				x4 = matrix.__transformX (tileWidth, tileHeight);
-				y4 = matrix.__transformY (tileWidth, tileHeight);
+				tileMatrix = this.matrix;
+				x = tileMatrix.__transformX (0, 0);
+				y = tileMatrix.__transformY (0, 0);
+				x2 = tileMatrix.__transformX (tileWidth, 0);
+				y2 = tileMatrix.__transformY (tileWidth, 0);
+				x3 = tileMatrix.__transformX (0, tileHeight);
+				y3 = tileMatrix.__transformY (0, tileHeight);
+				x4 = tileMatrix.__transformX (tileWidth, tileHeight);
+				y4 = tileMatrix.__transformY (tileWidth, tileHeight);
 				
 				alpha *= worldAlpha;
 				
-				getColorTransform (colorTransform);
-				colorTransform.__combine (defaultColorTransform);
+				tileColorTransform = this.colorTransform;
+				tileColorTransform.__combine (defaultColorTransform);
 				
-				redMultiplier = colorTransform.redMultiplier;
-				greenMultiplier = colorTransform.greenMultiplier;
-				blueMultiplier = colorTransform.blueMultiplier;
-				alphaMultiplier = colorTransform.alphaMultiplier;
-				redOffset = colorTransform.redOffset;
-				greenOffset = colorTransform.greenOffset;
-				blueOffset = colorTransform.blueOffset;
-				alphaOffset = colorTransform.alphaOffset;
+				redMultiplier = tileColorTransform.redMultiplier;
+				greenMultiplier = tileColorTransform.greenMultiplier;
+				blueMultiplier = tileColorTransform.blueMultiplier;
+				alphaMultiplier = tileColorTransform.alphaMultiplier;
+				redOffset = tileColorTransform.redOffset;
+				greenOffset = tileColorTransform.greenOffset;
+				blueOffset = tileColorTransform.blueOffset;
+				alphaOffset = tileColorTransform.alphaOffset;
 				
 				__bufferData[offset + 0] = x;
 				__bufferData[offset + 1] = y;
@@ -412,9 +329,6 @@ import openfl.Vector;
 			
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.DYNAMIC_DRAW);
 			
-			if (rect != null) Rectangle.__pool.release (rect);
-			Matrix.__pool.release (matrix);
-			
 			__cacheAlpha = worldAlpha;
 			__cacheDefaultTileset = defaultTileset;
 			__bufferDirty = false;
@@ -447,6 +361,57 @@ import openfl.Vector;
 		return __data[ALPHA_INDEX + (position * DATA_LENGTH)] = value;
 		
 	}
+	
+	private function get_colorTransform ():ColorTransform {
+		
+		if (__colorTransform == null) __colorTransform = new ColorTransform ();
+		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
+		__colorTransform.redMultiplier = __data[i];
+		__colorTransform.greenMultiplier = __data[i + 1];
+		__colorTransform.blueMultiplier = __data[i + 2];
+		__colorTransform.alphaMultiplier = __data[i + 3];
+		__colorTransform.redOffset = __data[i + 4];
+		__colorTransform.greenOffset = __data[i + 5];
+		__colorTransform.blueOffset = __data[i + 6];
+		__colorTransform.alphaOffset = __data[i + 7];
+		return __colorTransform;
+		
+	}
+	
+	
+	private function set_colorTransform (value:ColorTransform):ColorTransform {
+		
+		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
+		
+		if (value != null) {
+			
+			__data[i] = value.redMultiplier;
+			__data[i + 1] = value.greenMultiplier;
+			__data[i + 2] = value.blueMultiplier;
+			__data[i + 3] = value.alphaMultiplier;
+			__data[i + 4] = value.redOffset;
+			__data[i + 5] = value.greenOffset;
+			__data[i + 6] = value.blueOffset;
+			__data[i + 7] = value.alphaOffset;
+			
+		} else {
+			
+			__data[i] = 1;
+			__data[i + 1] = 1;
+			__data[i + 2] = 1;
+			__data[i + 3] = 1;
+			__data[i + 4] = 0;
+			__data[i + 5] = 0;
+			__data[i + 6] = 0;
+			__data[i + 7] = 0;
+			
+		}
+		
+		__dirty[COLOR_TRANSFORM_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
+		return value;
+		
+	}
+	
 	
 	
 	private inline function get_id ():Int {
@@ -495,6 +460,91 @@ import openfl.Vector;
 		}
 		
 		__length = value;
+		return value;
+		
+	}
+	
+	
+	private function get_matrix ():Matrix {
+		
+		if (__matrix == null) __matrix = new Matrix ();
+		var i = MATRIX_INDEX + (position * DATA_LENGTH);
+		__matrix.a = __data[i];
+		__matrix.b = __data[i + 1];
+		__matrix.c = __data[i + 2];
+		__matrix.d = __data[i + 3];
+		__matrix.tx = __data[i + 4];
+		__matrix.ty = __data[i + 5];
+		return __matrix;
+		
+	}
+	
+	
+	private function set_matrix (value:Matrix):Matrix {
+		
+		var i = MATRIX_INDEX + (position * DATA_LENGTH);
+		
+		if (value != null) {
+			
+			__data[i] = value.a;
+			__data[i + 1] = value.b;
+			__data[i + 2] = value.c;
+			__data[i + 3] = value.d;
+			__data[i + 4] = value.tx;
+			__data[i + 5] = value.ty;
+				
+		} else {
+			
+			__data[i] = 1;
+			__data[i + 1] = 0;
+			__data[i + 2] = 0;
+			__data[i + 3] = 1;
+			__data[i + 4] = 0;
+			__data[i + 5] = 0;
+			
+		}
+		
+		__dirty[MATRIX_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
+		return value;
+		
+	}
+	
+	
+	private function get_rect ():Rectangle {
+		
+		if (__rect == null) __rect = new Rectangle ();
+		var i = RECT_INDEX + (position * DATA_LENGTH);
+		__rect.x = __data[i];
+		__rect.y = __data[i + 1];
+		__rect.width = __data[i + 2];
+		__rect.height = __data[i + 3];
+		return __rect;
+		
+	}
+	
+	
+	private function set_rect (value:Rectangle):Rectangle {
+		
+		if (value != null) {
+			
+			__data[ID_INDEX + (position * DATA_LENGTH)] = -1;
+			var i = RECT_INDEX + (position * DATA_LENGTH);
+			__data[i] = value.x;
+			__data[i + 1] = value.y;
+			__data[i + 2] = value.width;
+			__data[i + 3] = value.height;
+			
+		} else {
+			
+			var i = RECT_INDEX + (position * DATA_LENGTH);
+			__data[i] = 0;
+			__data[i + 1] = 0;
+			__data[i + 2] = 0;
+			__data[i + 3] = 0;
+			
+		}
+		
+		__dirty[SOURCE_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		return value;
 		
 	}
@@ -583,7 +633,7 @@ private class TileArrayIterator {
 	}
 	
 	
-	public function next ():ITileArrayElement {
+	public function next ():ITile {
 		
 		data.position = position++;
 		return data;

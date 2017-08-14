@@ -57,7 +57,7 @@ class CanvasTilemap {
 		
 		var tileArray = tilemap.__tileArray;
 		
-		var tileTransform = Matrix.__pool.get ();
+		var tileTransform;
 		var tileRect = Rectangle.__pool.get ();
 		
 		for (tile in tileArray) {
@@ -74,7 +74,8 @@ class CanvasTilemap {
 			
 			if (id == -1) {
 				
-				tile.getRect (tileRect);
+				tileRect.copyFrom (tile.rect);
+				if (tileRect.width <= 0 || tileRect.height <= 0) continue;
 				
 			} else {
 				
@@ -103,7 +104,7 @@ class CanvasTilemap {
 			
 			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
-			tile.getMatrix (tileTransform);
+			tileTransform = tile.matrix;
 			tileTransform.concat (transform);
 			
 			if (roundPixels) {
@@ -134,7 +135,6 @@ class CanvasTilemap {
 		
 		Rectangle.__pool.release (rect);
 		Rectangle.__pool.release (tileRect);
-		Matrix.__pool.release (tileTransform);
 		
 		#end
 		

@@ -20,7 +20,6 @@ class FlashTilemap {
 	private static var colorTransform = new ColorTransform ();
 	private static var destPoint = new Point ();
 	private static var sourceRect = new Rectangle ();
-	private static var tileMatrix = new Matrix ();
 	
 	
 	public static inline function render (tilemap:Tilemap):Void {
@@ -43,6 +42,7 @@ class FlashTilemap {
 		var alpha, visible, tileset, id, tileData, sourceBitmapData;
 		
 		var tileArray = tilemap.__tileArray;
+		var tileMatrix;
 		
 		for (tile in tileArray) {
 			
@@ -74,7 +74,7 @@ class FlashTilemap {
 			sourceBitmapData = tileData.__bitmapData;
 			if (sourceBitmapData == null) continue;
 			
-			tile.getMatrix (tileMatrix);
+			tileMatrix = tile.matrix;
 			
 			if (alpha == 1 && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
 				
