@@ -83,7 +83,6 @@ import js.html.CanvasRenderingContext2D;
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
-		__padding = 1;
 
 		#if (js && html5)
 		if(__commands != null) {

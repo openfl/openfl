@@ -344,7 +344,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		for (child in __children) {
 
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			child.__getTransformedBounds (childRect, child.__transform);
+			child.__getLocalBounds (childRect);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
 		}
@@ -353,58 +353,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
-	private override function __updateCachedBitmapBounds (filterTransform:Matrix, rect:Rectangle):Void {
-		super.__updateCachedBitmapBounds(filterTransform, rect);
+	private override function __getChildrenRenderBounds (rect:Rectangle):Void {
 
-		if (__scrollRect != null || __children.length == 0) {
-
-			return;
-
-		}
-
-		var childRect = Rectangle.pool.get();
-
-		for (child in __children) {
-
-			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-
-			var childFilterTransform = Matrix.pool.get ();
-			childFilterTransform.identity ();
-			childFilterTransform.a = child.__renderTransform.a / child.renderScaleX;
-			childFilterTransform.b = child.__renderTransform.b / child.renderScaleX;
-			childFilterTransform.c = child.__renderTransform.c / child.renderScaleY;
-			childFilterTransform.d = child.__renderTransform.d / child.renderScaleY;
-			childFilterTransform.invert ();
-
-			child.__updateCachedBitmapBounds (childFilterTransform, childRect);
-
-			Matrix.pool.put (childFilterTransform);
-
-			var temp_transform = null;
-			if(child.__useSeparateRenderScaleTransform) {
-				temp_transform = @:privateAccess Matrix.__temp;
-				temp_transform.copyFrom(child.__transform);
-				var scaleX = child.scaleX;
-				var scaleY = child.scaleY;
-				temp_transform.a /= scaleX;
-				temp_transform.b /= scaleX;
-				temp_transform.c /= scaleY;
-				temp_transform.d /= scaleY;
-			} else {
-				temp_transform = child.__transform;
-			}
-
-			childRect.__transform (childRect, temp_transform);
-			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
-		}
-		Rectangle.pool.put(childRect);
-	}
-
-	private override function __getRenderBounds (rect:Rectangle):Void {
-
-		super.__getRenderBounds (rect);
-
-		if (__scrollRect != null || __children.length == 0) {
+		if (__children.length == 0) {
 
 			return;
 
@@ -416,25 +367,10 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			child.__getRenderBounds (childRect);
-
-			var temp_transform = null;
-			if(child.__useSeparateRenderScaleTransform) {
-				temp_transform = @:privateAccess Matrix.__temp;
-				temp_transform.copyFrom(child.__transform);
-				var scaleX = child.scaleX;
-				var scaleY = child.scaleY;
-				temp_transform.a /= scaleX;
-				temp_transform.b /= scaleX;
-				temp_transform.c /= scaleY;
-				temp_transform.d /= scaleY;
-			} else {
-				temp_transform = child.__transform;
-			}
-
-			childRect.__transform (childRect, temp_transform);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
 		}
+
 		Rectangle.pool.put(childRect);
 	}
 

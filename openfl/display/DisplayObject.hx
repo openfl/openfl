@@ -415,7 +415,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	private function __getTransformedBounds (rect:Rectangle, matrix:Matrix):Void {
+	private inline function __getTransformedBounds (rect:Rectangle, matrix:Matrix):Void {
 
 		__getBounds (rect);
 		rect.__transform (rect, matrix);
@@ -456,11 +456,43 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
+	private function __getFilterTransform (filterTransform:Matrix):Void {
+		filterTransform.identity ();
+		filterTransform.a = __renderTransform.a / renderScaleX;
+		filterTransform.b = __renderTransform.b / renderScaleX;
+		filterTransform.c = __renderTransform.c / renderScaleY;
+		filterTransform.d = __renderTransform.d / renderScaleY;
+		filterTransform.invert ();
+	}
+
+
 	private function __getRenderBounds (rect:Rectangle):Void {
 
 		if (__scrollRect == null) {
 
-			__getBounds (rect);
+			if (__graphics != null) {
+
+				__graphics.__getBounds (rect);
+				rect.__transform (rect, __renderTransform);
+
+			} else {
+
+				rect.setEmpty ();
+
+			}
+
+			__getChildrenRenderBounds (rect);
+
+			if (__filters != null) {
+
+				var filterTransform = Matrix.pool.get ();
+
+				__getFilterTransform (filterTransform);
+				@:privateAccess BitmapFilter.__expandBounds (__filters, rect, filterTransform);
+
+				Matrix.pool.put (filterTransform);
+
+			}
 
 		} else {
 
@@ -470,6 +502,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	private function __getChildrenRenderBounds (rect:Rectangle):Void {
+	}
 
 	private static var __parentList = new haxe.ds.Vector(32);
 	private function __getWorldTransform ():Matrix {
@@ -693,19 +727,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __updateCachedBitmapFn (renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
 
-		var filterTransform = Matrix.pool.get ();
-		filterTransform.identity ();
-		filterTransform.a = __renderTransform.a / renderScaleX;
-		filterTransform.b = __renderTransform.b / renderScaleX;
-		filterTransform.c = __renderTransform.c / renderScaleY;
-		filterTransform.d = __renderTransform.d / renderScaleY;
-		filterTransform.invert ();
-
 		if (__cachedBitmapBounds == null) {
 			__cachedBitmapBounds = new Rectangle ();
 		}
 
-		__updateCachedBitmapBounds (filterTransform, __cachedBitmapBounds);
+		__getRenderBounds (__cachedBitmapBounds);
+		var renderToLocal = Matrix.__temp;
+		renderToLocal.copyFrom (__renderTransform);
+		renderToLocal.invert ();
+		__cachedBitmapBounds.__transform( __cachedBitmapBounds, renderToLocal);
 
 		if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
 			return;
@@ -724,13 +754,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
-		@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width), Math.ceil (__cachedBitmapBounds.height));
+		@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width * renderScaleX), Math.ceil (__cachedBitmapBounds.height * renderScaleY));
 
 		var m = Matrix.pool.get();
 		m.identity ();
 		m.a = renderScaleX;
 		m.d = renderScaleY;
-		m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+		m.translate (-__cachedBitmapBounds.x * renderScaleX, -__cachedBitmapBounds.y * renderScaleY);
 
 		var m2:Matrix = null;
 
@@ -759,8 +789,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateCachedBitmap = false;
 
 		if (__updateFilters) {
+			var filterTransform = Matrix.pool.get ();
+
+			__getFilterTransform (filterTransform);
 			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, filterTransform);
 			__updateFilters = false;
+
+			Matrix.pool.put (filterTransform);
 
 			#if(profile && js)
 				var profileId = getProfileId();
@@ -770,10 +805,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__cleanupIntermediateTextures();
 		}
 
-		Matrix.pool.put (filterTransform);
-
 		@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
 		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
+
+		@:privateAccess __cachedBitmap.__offsetX = __cachedBitmapBounds.x;
+		@:privateAccess __cachedBitmap.__offsetY = __cachedBitmapBounds.y;
 
 		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
 			symbol.uniqueSharedCachedBitmap = __cachedBitmap;
@@ -789,8 +825,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		__cacheGLMatrix.identity ();
-		__cacheGLMatrix.translate (__cachedBitmapBounds.x / renderScaleX, __cachedBitmapBounds.y / renderScaleY);
-		__cacheGLMatrix.concat (__renderTransform);
+		__cacheGLMatrix.copyFrom (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
 
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER);
@@ -963,27 +998,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private inline function __setBranchDirty() : Void {
 		__branchDirty = true;
 		__worldBranchDirty++;
-	}
-
-	private function __updateCachedBitmapBounds (filterTransform:Matrix, rect:Rectangle):Void {
-
-		rect.setEmpty();
-		__getRenderBounds (rect);
-
-		rect.x *= renderScaleX;
-		rect.y *= renderScaleY;
-		rect.width *= renderScaleX;
-		rect.height *= renderScaleY;
-
-		if (__filters != null) {
-
-			@:privateAccess BitmapFilter.__expandBounds (__filters, rect, filterTransform);
-
-		}
-
-		rect.x = Math.floor (rect.x);
-		rect.y = Math.floor (rect.y);
-
 	}
 
 	public function __updateColor()
