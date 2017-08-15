@@ -1007,7 +1007,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					}
 					
-				}
+				} else {
+          return;
+        }
 				
 			}
 			
