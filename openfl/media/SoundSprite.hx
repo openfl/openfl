@@ -31,7 +31,7 @@ class SoundSprite {
     trace('Requesting files associated with this soundsprite...');
     if (this.__bufferFuture == null) {
       this.buffer = AudioBuffer.makeSprite(spritePaths, spriteIndex, preload);
-      this.__bufferFuture = AudioBuffer.loadFromFiles(spritePaths);
+      this.__bufferFuture = AudioBuffer.loadFromFiles(spritePaths, this.buffer);
       this.__bufferFuture.onComplete(function(a:AudioBuffer) {
         trace('bufferFuture loaded; setting this.buffer.');
         this.buffer = a;
