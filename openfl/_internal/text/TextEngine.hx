@@ -974,9 +974,8 @@ class TextEngine {
 				if (lg.lineIndex < lineIndex) continue;
 				if (lg.lineIndex > lineIndex) break;
 				
-				if (lg.ascent == maxAscent) continue;
-				
-				lg.offsetY += maxAscent - lg.ascent;
+				lg.ascent = maxAscent;
+				lg.height = maxHeightValue;
 				
 			}
 			
