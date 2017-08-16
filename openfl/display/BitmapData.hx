@@ -1339,13 +1339,18 @@ class BitmapData implements IBitmapDrawable {
 
 		var theTitle = "Preview: " + width + "x" + height;
 
-		untyped $(canvas)
+		var container = untyped $("<div></div>")
+			.css({
+				"background-color": "#EEEEEE"
+				})
+			.append(canvas);
+		untyped $(container)
 			.dialog({
 				title: theTitle,
-				width: width,
-				height: height,
+				width: width + 30,
 				resizable: false
 				})
+			.children().first().css({width: "" + width + "px", height: "" + height + "px", "min-width": 0, "min-height": 0})
 			.parent()
 			.draggable({
 				cancel:'',
