@@ -141,7 +141,18 @@ class AGALConverter {
 				
 				case 0x05: // rcp
 					
-					sb.add (dr.toGLSL () + " = vec4(1) / " + sr1.toGLSL () + "; // rcp");
+					var sr = sr1.toGLSL ();
+					
+					if (sr.indexOf (".") > -1) { // swizzle
+					
+						sb.add (dr.toGLSL () + " = 1.0 / " + sr1.toGLSL () + "; // rcp");
+						
+					} else {
+						
+						sb.add (dr.toGLSL () + " = vec4(1) / " + sr1.toGLSL () + "; // rcp");
+						
+					}
+					
 					map.addDR (dr, RegisterUsage.VECTOR_4);
 					map.addSR (sr1, RegisterUsage.VECTOR_4);
 				
