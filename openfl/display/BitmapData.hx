@@ -1309,6 +1309,7 @@ class BitmapData implements IBitmapDrawable {
 		untyped $global.Tools.viewBitmapData = viewBitmapData;
 		untyped $global.Tools.viewGLTexture = viewGLTexture;
         untyped $global.Tools.viewTexture = viewTexture;
+		untyped $global.Tools.viewAllTextures = viewAllTextures;
 	}
 
 	private static function viewBitmapData(bitmapData:BitmapData) {
@@ -1358,6 +1359,12 @@ class BitmapData implements IBitmapDrawable {
 		viewGLTexture (data.texture, data.width, data.height);
 	}
 
+	private static function viewAllTextures() {
+		var table = @:privateAccess lime.graphics.opengl.GL.textureDataTable;
+		for (data in table.iterator()) {
+			viewGLTexture(data.texture, data.width, data.height);
+		}
+	}
 	#end
 }
 
