@@ -3,6 +3,7 @@ package openfl.display;
 
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -15,45 +16,55 @@ import openfl.geom.Matrix;
 @:access(openfl.geom.Matrix)
 
 
-class Tile {
+class Tile implements ITile {
 	
 	
-	public var alpha (default, set):Float;
+	private static var __tempMatrix = new Matrix ();
+	
+	public var alpha (get, set):Float;
 	@:beta public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
-	public var id (default, set):Int;
-	public var matrix (default, set):Matrix;
+	public var id (get, set):Int;
+	public var matrix (get, set):Matrix;
 	public var originX (default, set):Float;
 	public var originY (default, set):Float;
 	public var parent (default, null):Tilemap;
+	@:beta public var rect (get, set):Rectangle;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	@:beta public var shader (default, set):Shader;
-	public var tileset (default, set):Tileset;
-	public var visible (default, set):Bool;
+	@:beta public var shader (get, set):Shader;
+	public var tileset (get, set):Tileset;
+	public var visible (get, set):Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
+	private var __alpha:Float;
 	private var __alphaDirty:Bool;
 	private var __colorTransform:ColorTransform;
 	private var __colorTransformDirty:Bool;
+	private var __id:Int;
+	private var __matrix:Matrix;
+	private var __rect:Rectangle;
 	private var __rotation:Null<Float>;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
 	private var __scaleX:Null<Float>;
 	private var __scaleY:Null<Float>;
+	private var __shader:Shader;
 	private var __shaderDirty:Bool;
 	private var __sourceDirty:Bool;
+	private var __tileset:Tileset;
 	private var __transformDirty:Bool;
+	private var __visible:Bool;
 	private var __visibleDirty:Bool;
 	
 	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0) {
 		
-		this.id = id;
+		__id = id;
 		
-		this.matrix = new Matrix ();
+		__matrix = new Matrix ();
 		if (x != 0) this.x = x;
 		if (y != 0) this.y = y;
 		if (scaleX != 1) this.scaleX = scaleX;
@@ -62,8 +73,8 @@ class Tile {
 		this.originX = originX;
 		this.originY = originY;
 		
-		alpha = 1;
-		visible = true;
+		__alpha = 1;
+		__visible = true;
 		
 		__alphaDirty = true;
 		__sourceDirty = true;
@@ -75,9 +86,9 @@ class Tile {
 	
 	public function clone ():Tile {
 		
-		var tile = new Tile (id);
-		tile.matrix = matrix.clone ();
-		tile.tileset = tileset;
+		var tile = new Tile (__id);
+		tile.matrix = __matrix.clone ();
+		tile.tileset = __tileset;
 		return tile;
 		
 	}
@@ -91,7 +102,7 @@ class Tile {
 		var tile = new Tile ();
 		tile.alpha = tileArray.alpha;
 		tile.id = tileArray.id;
-		tileArray.getMatrix (tile.matrix);
+		tileArray.matrix = tile.matrix;
 		
 		tileArray.position = cachePosition;
 		
@@ -120,30 +131,21 @@ class Tile {
 		
 		if (__shaderDirty || forceUpdate) {
 			
-			tileArray.shader = shader;
+			tileArray.shader = __shader;
 			__shaderDirty = false;
 			
 		}
 		
 		if (__colorTransformDirty || forceUpdate) {
 			
-			if (__colorTransform == null) {
-				
-				tileArray.setColorTransform (1, 1, 1, 1, 0, 0, 0, 0);
-				
-			} else {
-				
-				tileArray.setColorTransform (__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier, __colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset, __colorTransform.alphaOffset);
-				
-			}
-			
+			tileArray.colorTransform = __colorTransform;
 			__colorTransformDirty = false;
 			
 		}
 		
 		if (__visibleDirty || forceUpdate) {
 			
-			tileArray.visible = visible;
+			tileArray.visible = __visible;
 			tileArray.__bufferDirty = true;
 			__visibleDirty = false;
 			
@@ -151,7 +153,7 @@ class Tile {
 		
 		if (__alphaDirty || forceUpdate) {
 			
-			tileArray.alpha = alpha;
+			tileArray.alpha = __alpha;
 			tileArray.__bufferDirty = true;
 			__alphaDirty = false;
 			
@@ -159,8 +161,17 @@ class Tile {
 		
 		if (__sourceDirty || forceUpdate) {
 			
-			tileArray.id = id;
-			tileArray.tileset = tileset;
+			if (__rect == null) {
+				
+				tileArray.id = __id;
+				
+			} else {
+				
+				tileArray.rect = rect;
+				
+			}
+			
+			tileArray.tileset = __tileset;
 			tileArray.__bufferDirty = true;
 			__sourceDirty = true;
 			
@@ -170,19 +181,13 @@ class Tile {
 			
 			if (originX != 0 || originY != 0) {
 				
-				var tempMatrix = #if flash new Matrix (); #else Matrix.__pool.get (); #end
-				tempMatrix.setTo (1, 0, 0, 1, -originX, -originY);
-				tempMatrix.concat (matrix);
-				
-				tileArray.setMatrix (tempMatrix.a, tempMatrix.b, tempMatrix.c, tempMatrix.d, tempMatrix.tx, tempMatrix.ty);
-				
-				#if !flash
-				Matrix.__pool.release (tempMatrix);
-				#end
+				__tempMatrix.setTo (1, 0, 0, 1, -originX, -originY);
+				__tempMatrix.concat (__matrix);
+				tileArray.matrix = __tempMatrix;
 				
 			} else {
 				
-				tileArray.setMatrix (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+				tileArray.matrix = __matrix;
 				
 			}
 			
@@ -203,11 +208,18 @@ class Tile {
 	
 	
 	
+	private function get_alpha ():Float {
+		
+		return __alpha;
+		
+	}
+	
+	
 	private function set_alpha (value:Float):Float {
 		
 		__alphaDirty = true;
 		__setRenderDirty ();
-		return alpha = value;
+		return __alpha = value;
 		
 	}
 	
@@ -282,11 +294,25 @@ class Tile {
 	}
 	
 	
+	private function get_id ():Int {
+		
+		return __id;
+		
+	}
+	
+	
 	private function set_id (value:Int):Int {
 		
 		__sourceDirty = true;
 		__setRenderDirty ();
-		return id = value;
+		return __id = value;
+		
+	}
+	
+	
+	private function get_matrix ():Matrix {
+		
+		return __matrix;
 		
 	}
 	
@@ -298,7 +324,7 @@ class Tile {
 		__scaleY = null;
 		__transformDirty = true;
 		__setRenderDirty ();
-		return this.matrix = value;
+		return __matrix = value;
 		
 	}
 	
@@ -321,11 +347,27 @@ class Tile {
 	}
 	
 	
+	private function get_rect ():Rectangle {
+		
+		return __rect;
+		
+	}
+	
+	
+	private function set_rect (value:Rectangle):Rectangle {
+		
+		__sourceDirty = true;
+		__setRenderDirty ();
+		return __rect = value;
+		
+	}
+	
+	
 	private function get_rotation ():Float {
 		
 		if (__rotation == null) {
 			
-			if (matrix.b == 0 && matrix.c == 0) {
+			if (__matrix.b == 0 && __matrix.c == 0) {
 				
 				__rotation = 0;
 				__rotationSine = 0;
@@ -333,7 +375,7 @@ class Tile {
 				
 			} else {
 				
-				var radians = Math.atan2 (matrix.d, matrix.c) - (Math.PI / 2);
+				var radians = Math.atan2 (__matrix.d, __matrix.c) - (Math.PI / 2);
 				
 				__rotation = radians * (180 / Math.PI);
 				__rotationSine = Math.sin (radians);
@@ -360,10 +402,10 @@ class Tile {
 			var __scaleX = this.scaleX;
 			var __scaleY = this.scaleY;
 			
-			matrix.a = __rotationCosine * __scaleX;
-			matrix.b = __rotationSine * __scaleX;
-			matrix.c = -__rotationSine * __scaleY;
-			matrix.d = __rotationCosine * __scaleY;
+			__matrix.a = __rotationCosine * __scaleX;
+			__matrix.b = __rotationSine * __scaleX;
+			__matrix.c = -__rotationSine * __scaleY;
+			__matrix.d = __rotationCosine * __scaleY;
 			
 			__transformDirty = true;
 			__setRenderDirty ();
@@ -381,11 +423,11 @@ class Tile {
 			
 			if (matrix.b == 0) {
 				
-				__scaleX = matrix.a;
+				__scaleX = __matrix.a;
 				
 			} else {
 				
-				__scaleX = Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
+				__scaleX = Math.sqrt (__matrix.a * __matrix.a + __matrix.b * __matrix.b);
 				
 			}
 			
@@ -402,9 +444,9 @@ class Tile {
 			
 			__scaleX = value;
 			
-			if (matrix.b == 0) {
+			if (__matrix.b == 0) {
 				
-				matrix.a = value;
+				__matrix.a = value;
 				
 			} else {
 				
@@ -413,8 +455,8 @@ class Tile {
 				var a = __rotationCosine * value;
 				var b = __rotationSine * value;
 				
-				matrix.a = a;
-				matrix.b = b;
+				__matrix.a = a;
+				__matrix.b = b;
 				
 			}
 			
@@ -432,13 +474,13 @@ class Tile {
 		
 		if (__scaleY == null) {
 			
-			if (matrix.c == 0) {
+			if (__matrix.c == 0) {
 				
 				__scaleY = matrix.d;
 				
 			} else {
 				
-				__scaleY = Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
+				__scaleY = Math.sqrt (__matrix.c * __matrix.c + __matrix.d * __matrix.d);
 				
 			}
 			
@@ -455,9 +497,9 @@ class Tile {
 			
 			__scaleY = value;
 			
-			if (matrix.c == 0) {
+			if (__matrix.c == 0) {
 				
-				matrix.d = value;
+				__matrix.d = value;
 				
 			} else {
 				
@@ -466,8 +508,8 @@ class Tile {
 				var c = -__rotationSine * value;
 				var d = __rotationCosine * value;
 				
-				matrix.c = c;
-				matrix.d = d;
+				__matrix.c = c;
+				__matrix.d = d;
 				
 			}
 			
@@ -481,11 +523,25 @@ class Tile {
 	}
 	
 	
+	private function get_shader ():Shader {
+		
+		return __shader;
+		
+	}
+	
+	
 	private function set_shader (value:Shader):Shader {
 		
 		__shaderDirty = true;
 		__setRenderDirty ();
-		return shader = value;
+		return __shader = value;
+		
+	}
+	
+	
+	private function get_tileset ():Tileset {
+		
+		return __tileset;
 		
 	}
 	
@@ -494,7 +550,14 @@ class Tile {
 		
 		__sourceDirty = true;
 		__setRenderDirty ();
-		return tileset = value;
+		return __tileset = value;
+		
+	}
+	
+	
+	private function get_visible ():Bool {
+		
+		return __visible;
 		
 	}
 	
@@ -503,14 +566,14 @@ class Tile {
 		
 		__visibleDirty = true;
 		__setRenderDirty ();
-		return visible = value;
+		return __visible = value;
 		
 	}
 	
 	
 	private function get_x ():Float {
 		
-		return matrix.tx;
+		return __matrix.tx;
 		
 	}
 	
@@ -519,14 +582,14 @@ class Tile {
 		
 		__transformDirty = true;
 		__setRenderDirty ();
-		return matrix.tx = value;
+		return __matrix.tx = value;
 		
 	}
 	
 	
 	private function get_y ():Float {
 		
-		return matrix.ty;
+		return __matrix.ty;
 		
 	}
 	
@@ -535,7 +598,7 @@ class Tile {
 		
 		__transformDirty = true;
 		__setRenderDirty ();
-		return matrix.ty = value;
+		return __matrix.ty = value;
 		
 	}
 	

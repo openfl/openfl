@@ -56,29 +56,26 @@ class CanvasTilemap {
 		var alpha, visible, tileset, id, tileData, bitmapData;
 		
 		var tileArray = tilemap.__tileArray;
-		var count = tileArray.length;
 		
-		tileArray.position = 0;
-		
-		var tileTransform = Matrix.__pool.get ();
+		var tileTransform;
 		var tileRect = Rectangle.__pool.get ();
 		
-		for (i in 0...count) {
+		for (tile in tileArray) {
 			
-			tileArray.position = i;
-			alpha = tileArray.alpha;
-			visible = tileArray.visible;
+			alpha = tile.alpha;
+			visible = tile.visible;
 			if (!visible || alpha <= 0) continue;
 			
-			tileset = tileArray.tileset;
+			tileset = tile.tileset;
 			if (tileset == null) tileset = defaultTileset;
 			if (tileset == null) continue;
 			
-			id = tileArray.id;
+			id = tile.id;
 			
 			if (id == -1) {
 				
-				tileArray.getRect (tileRect);
+				tileRect.copyFrom (tile.rect);
+				if (tileRect.width <= 0 || tileRect.height <= 0) continue;
 				
 			} else {
 				
@@ -107,7 +104,7 @@ class CanvasTilemap {
 			
 			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
-			tileArray.getMatrix(tileTransform);
+			tileTransform = tile.matrix;
 			tileTransform.concat (transform);
 			
 			if (roundPixels) {
@@ -138,7 +135,6 @@ class CanvasTilemap {
 		
 		Rectangle.__pool.release (rect);
 		Rectangle.__pool.release (tileRect);
-		Matrix.__pool.release (tileTransform);
 		
 		#end
 		

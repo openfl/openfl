@@ -956,14 +956,26 @@ class TextEngine {
 		
 		inline function alignBaseline ():Void {
 			
+			// since nextFormatRange may not have been called, have to update these manually
+			if (ascent > maxAscent) {
+				
+				maxAscent = ascent;
+				
+			}
+			
+			if (heightValue > maxHeightValue) {
+				
+				maxHeightValue = heightValue;
+				
+			}
+			
 			for (lg in layoutGroups) {
 				
 				if (lg.lineIndex < lineIndex) continue;
 				if (lg.lineIndex > lineIndex) break;
 				
-				if (lg.ascent == maxAscent) continue;
-				
-				lg.offsetY += maxAscent - lg.ascent;
+				lg.ascent = maxAscent;
+				lg.height = maxHeightValue;
 				
 			}
 			
@@ -1000,29 +1012,50 @@ class TextEngine {
 					
 				}
 				
-				if (i == 0) i = 1;
+				if (i == 0 && tempWidth > width - 4) {
+					// if the textfield is smaller than a single character
+					
+					i = text.length;
+					
+				}
 				
-				nextLayoutGroup(textIndex, textIndex + i);
-				layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
-				layoutGroup.offsetX = offsetX;
-				layoutGroup.ascent = ascent;
-				layoutGroup.descent = descent;
-				layoutGroup.leading = leading;
-				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getAdvancesWidth(layoutGroup.advances);
-				layoutGroup.height = heightValue;
+				if (i == 0) {
+					// if a single character in a new format made the line too long
+					
+					offsetX = 2;
+					offsetY += layoutGroup.height;
+					++lineIndex;
+					
+					break;
+					
+				}
 				
-				layoutGroup = null;
+				else {
+					
+					nextLayoutGroup(textIndex, textIndex + i);
+					layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = getAdvancesWidth(layoutGroup.advances);
+					layoutGroup.height = heightValue;
+					
+					layoutGroup = null;
+					
+					alignBaseline();
+					
+					textIndex += i;
+					
+					advances = getAdvances(text, textIndex, endIndex);
+					widthValue = getAdvancesWidth(advances);
+					
+					tempWidth = widthValue;
+					
+				}
 				
-				alignBaseline();
-				
-				textIndex += i;
-				
-				advances = getAdvances(text, textIndex, endIndex);
-				widthValue = getAdvancesWidth(advances);
-				
-				tempWidth = widthValue;
 			}
 			
 		}
@@ -1041,7 +1074,9 @@ class TextEngine {
 				if (textIndex <= breakIndex) {
 					
 					if (wordWrap && previousSpaceIndex <= textIndex) {
+						
 						breakLongWords(breakIndex);
+						
 					}
 					
 					nextLayoutGroup (textIndex, breakIndex);
@@ -1071,23 +1106,6 @@ class TextEngine {
 					
 					nextFormatRange ();
 					lineFormat = formatRange.format;
-					
-				}
-				
-				else {
-					
-					// since nextFormatRange may not have been called, have to update these manually
-					if (ascent > maxAscent) {
-						
-						maxAscent = ascent;
-						
-					}
-					
-					if (heightValue > maxHeightValue) {
-						
-						maxHeightValue = heightValue;
-						
-					}
 					
 				}
 				
@@ -1146,7 +1164,6 @@ class TextEngine {
 					
 					advances = getAdvances (text, textIndex, endIndex);
 					widthValue = getAdvancesWidth (advances);
-					
 					
 					if (lineFormat.align == JUSTIFY) {
 						
@@ -1316,19 +1333,6 @@ class TextEngine {
 						
 					} else {
 						
-						// since nextFormatRange may not have been called, have to update these manually
-						if (ascent > maxAscent) {
-							
-							maxAscent = ascent;
-							
-						}
-						
-						if (heightValue > maxHeightValue) {
-							
-							maxHeightValue = heightValue;
-							
-						}
-						
 						// Check if we can continue wrapping this line until the next line-break or end-of-String.
 						// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
 						
@@ -1370,7 +1374,9 @@ class TextEngine {
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
 					
 					if (wordWrap) {
+						
 						breakLongWords(formatRange.end);
+						
 					}
 					
 					advances = getAdvances (text, textIndex, formatRange.end);

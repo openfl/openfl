@@ -1008,7 +1008,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					}
 					
 				} else {
+					
+					__cacheBitmap = null;
+					__cacheBitmapData = null;
 					return;
+					
 				}
 				
 			}
