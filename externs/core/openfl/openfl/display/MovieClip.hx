@@ -8,7 +8,7 @@ package openfl.display; #if (display || !flash)
  *
  * Unlike the Sprite object, a MovieClip object has a timeline.
  *
- * >In Flash Professional, the methods for the MovieClip class provide the
+ * In Flash Professional, the methods for the MovieClip class provide the
  * same functionality as actions that target movie clips. Some additional
  * methods do not have equivalent actions in the Actions toolbox in the
  * Actions panel in the Flash authoring tool. 
@@ -36,7 +36,7 @@ package openfl.display; #if (display || !flash)
  * MovieClip.opaqueBackground property for a suitable device, define
  * FEATURE_BITMAPCACHE in your project.
  */
-extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
+extern class MovieClip extends Sprite {
 	
 	
 	/**
