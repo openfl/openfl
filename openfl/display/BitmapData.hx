@@ -66,6 +66,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __isValid:Bool;
 	private var __offsetX:Float = 0.0;
 	private var __offsetY:Float = 0.0;
+	private var __padding:Float = 0.0;
 	private var __scaleX:Float = 1.0;
 	private var __scaleY:Float = 1.0;
 	private var __texture:GLTexture;

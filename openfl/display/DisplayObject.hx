@@ -730,6 +730,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__cachedBitmapBounds = new Rectangle ();
 		}
 
+		var padding:Int = 1;
+
 		__getRenderBounds (__cachedBitmapBounds);
 		var renderToLocal = Matrix.__temp;
 		renderToLocal.copyFrom (__renderTransform);
@@ -753,13 +755,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
-		@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width * renderScaleX), Math.ceil (__cachedBitmapBounds.height * renderScaleY));
+		@:privateAccess __cachedBitmap.__resize (
+			Math.ceil (__cachedBitmapBounds.width * renderScaleX) + 2 * padding,
+			Math.ceil (__cachedBitmapBounds.height * renderScaleY) + 2 * padding
+			);
 
 		var m = Matrix.pool.get();
 		m.identity ();
 		m.a = renderScaleX;
 		m.d = renderScaleY;
-		m.translate (-__cachedBitmapBounds.x * renderScaleX, -__cachedBitmapBounds.y * renderScaleY);
+		m.translate (-__cachedBitmapBounds.x * renderScaleX + padding, -__cachedBitmapBounds.y * renderScaleY + padding);
 
 		var m2:Matrix = null;
 
@@ -807,6 +812,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		@:privateAccess __cachedBitmap.__offsetX = __cachedBitmapBounds.x;
 		@:privateAccess __cachedBitmap.__offsetY = __cachedBitmapBounds.y;
+		@:privateAccess __cachedBitmap.__padding = padding;
 
 		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
 			symbol.uniqueSharedCachedBitmap = __cachedBitmap;

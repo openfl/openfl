@@ -43,7 +43,7 @@ class CanvasGraphics {
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
-	private static var padding:Int = 50;
+	private static var padding:Int = 1;
 
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
@@ -762,6 +762,7 @@ class CanvasGraphics {
 
 				bitmap.__offsetX = bounds.x * scaleX;
 				bitmap.__offsetY = bounds.y * scaleY;
+				bitmap.__padding = padding;
 
 				graphics.__bitmap = bitmap;
 
