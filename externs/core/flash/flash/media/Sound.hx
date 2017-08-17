@@ -1,10 +1,17 @@
 package flash.media; #if (!display && flash)
 
 
+import lime.app.Future;
+import lime.app.Promise;
 import lime.media.AudioBuffer;
 import openfl.events.EventDispatcher;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.events.ProgressEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
+
+@:access(lime.media.AudioBuffer)
 
 
 extern class Sound extends EventDispatcher {
@@ -29,10 +36,46 @@ extern class Sound extends EventDispatcher {
 	@:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
 	
-	public static function fromAudioBuffer (buffer:AudioBuffer):Sound;
-	public static function fromFile (path:String):Sound;
+	
+	public static inline function fromAudioBuffer (buffer:AudioBuffer):Sound {
+		
+		return buffer.__srcSound;
+		
+	}
+	
+	
+	public static inline function fromFile (path:String):Sound {
+		
+		return null;
+		
+	}
+	
+	
 	public function load (stream:URLRequest, context:SoundLoaderContext = null):Void;
 	@:require(flash11) public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int, forcePlayAsMusic:Bool = false):Void;
+	
+	
+	public static inline function loadFromFile (path:String):Future<Sound> {
+		
+		var promise = new Promise<Sound> ();
+		
+		var sound = new Sound ();
+		sound.addEventListener (Event.COMPLETE, function (e) {
+			promise.complete (sound);
+		});
+		sound.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+			promise.error (e.text);
+		});
+		sound.addEventListener (ProgressEvent.PROGRESS, function (e) {
+			promise.progress (e.bytesLoaded, e.bytesTotal);
+		});
+		sound.load (new URLRequest (path));
+		
+		return promise.future;
+		
+	}
+	
+	
 	@:require(flash11) public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void;
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel;
 	
