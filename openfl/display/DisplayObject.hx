@@ -767,6 +767,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			#end
 		}
 
+		__cleanupIntermediateTextures();
+
 		Matrix.pool.put (filterTransform);
 
 		@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
@@ -813,6 +815,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return stack;
 		}
 	#end
+
+	private function __cleanupIntermediateTextures() {
+		__disposeGraphicsBitmap();
+	}
 
 	private function setStage (stage:Stage):Stage {
 		if (this.stage != stage) {
@@ -893,6 +899,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if ( __objectTransform != null) {
 			Transform.pool.put(__objectTransform);
 			__objectTransform = null;
+		}
+	}
+
+	private function __disposeGraphicsBitmap() {
+		if (__graphics != null) {
+			@:privateAccess __graphics.__disposeBitmap();
 		}
 	}
 
@@ -1177,7 +1189,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateFilters = __filters != null && __filters.length > 0;
 
 		if (__graphics != null) {
-			__graphics.__dirty = true;
+			__graphics.dirty = true;
 		}
 	}
 

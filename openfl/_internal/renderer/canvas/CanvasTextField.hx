@@ -116,7 +116,7 @@ class CanvasTextField {
 
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
-				textField.__graphics.__dirty = false;
+				textField.__graphics.dirty = false;
 				if( textField.__graphics.__bitmap != null ) {
 					textField.__graphics.__bitmap.dispose();
 				}
@@ -344,7 +344,7 @@ class CanvasTextField {
 
 				graphics.__bitmap = BitmapData.fromCanvas (textField.__graphics.__canvas, scaleX, scaleY);
 				textField.__dirty = false;
-				graphics.__dirty = false;
+				graphics.dirty = false;
 
 				Rectangle.pool.put(bounds);
 

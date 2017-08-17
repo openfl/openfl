@@ -446,7 +446,7 @@ class CanvasGraphics {
 
 		#if (js && html5)
 
-		if (graphics.__dirty) {
+		if (graphics.dirty) {
 
 			hitTesting = false;
 
@@ -477,7 +477,7 @@ class CanvasGraphics {
 					if (cachedBitmapData != null) {
 
 						graphics.__bitmap = cachedBitmapData;
-						graphics.__dirty = false;
+						graphics.dirty = false;
 
 						Rectangle.pool.put(scaled_bounds);
 
@@ -770,7 +770,7 @@ class CanvasGraphics {
 
 			}
 
-			graphics.__dirty = false;
+			graphics.dirty = false;
 
 		}
 
