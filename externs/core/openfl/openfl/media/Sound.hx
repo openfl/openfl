@@ -1,6 +1,7 @@
 package openfl.media; #if (display || !flash)
 
 
+import lime.app.Future;
 import lime.media.AudioBuffer;
 import openfl.events.EventDispatcher;
 import openfl.net.URLRequest;
