@@ -257,9 +257,23 @@ class HtmlParser {
 
         }
 
+        #if dom
+        // Should work for other platforms as well, but since I cannot test I keep it in dom only
+        value = _removeTrailingBreakLines(value);
+		#end
+
         return value;
 
     }
+
+	#if dom
+    private static function _removeTrailingBreakLines (value:String):String {
+        while (value.length > 0 && (value.charAt(value.length-1) == "\n")) {
+            value = value.substring(0, value.length-1);
+        }
+        return value;
+    }
+    #end
 
     private static function __getAttributeMatch (regex:EReg):String {
 

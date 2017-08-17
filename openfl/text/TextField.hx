@@ -1286,7 +1286,7 @@ class TextField extends InteractiveObject {
 
 			if (__isHTML) {
 
-				__updateText (HtmlParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
+				__updateText (HtmlParser.parse(__rawHtmlText, __textFormat, __textEngine.textFormatRanges));
 
 			}
 
@@ -1356,7 +1356,7 @@ class TextField extends InteractiveObject {
 
 				if (__isHTML && __rawHtmlText != null) {
 
-					__updateText (__rawHtmlText);
+					__updateText (__text);
 					__dirty = true;
 					__layoutDirty = true;
 					__setRenderDirty ();
@@ -1793,8 +1793,12 @@ class TextField extends InteractiveObject {
 	
 	
 	private function get_htmlText ():String {
-		
+
+		#if (js && html5 && dom)
+		return	__rawHtmlText;
+		#else
 		return __text;
+		#end
 		
 	}
 	
@@ -1828,22 +1832,11 @@ class TextField extends InteractiveObject {
 		var range = __textEngine.textFormatRanges[0];
 		range.format = __textFormat;
 		range.start = 0;
-
-		if (__renderedOnCanvasWhileOnDOM) {
-
-			range.end = value.length;
-			__updateText (value);
-
-		} else {
-
-			range.end = __rawHtmlText.length;
-			__updateText (__rawHtmlText);
-
-		}
-		#else
-		__updateText (value);
+		range.end = value.length;
 		#end
-		
+
+		__updateText (value);
+
 		return value;
 		
 	}

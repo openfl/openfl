@@ -245,7 +245,7 @@ class TextEngine {
 		var ascent:Float, descent:Float, leading:Int;
 		
 		#if (js && html5)
-		
+
 		__context.font = getFont (format);
 		
 		if (format.__ascent != null) {
@@ -256,12 +256,15 @@ class TextEngine {
 		} else {
 			
 			ascent = format.size;
+			#if dom
+			descent = 3;
+			#else
 			descent = format.size * 0.185;
-			
+			#end
 		}
-		
+
 		leading = format.leading;
-		
+
 		#elseif (lime_cffi)
 		
 		var font = getFontInstance (format);
@@ -580,7 +583,7 @@ class TextEngine {
 		maxScrollH = 0;
 		
 		for (group in layoutGroups) {
-			
+
 			while (group.lineIndex > numLines - 1) {
 				
 				lineAscents.push (currentLineAscent);
@@ -626,9 +629,9 @@ class TextEngine {
 				textWidth = currentLineWidth;
 				
 			}
-			
-			textHeight = group.offsetY - 2 + group.ascent + group.descent;
-			
+
+			textHeight = group.offsetY - 2 + group.ascent + group.descent #if dom + group.leading #end;
+
 		}
 		
 		lineAscents.push (currentLineAscent);
@@ -740,7 +743,7 @@ class TextEngine {
 				
 				for (i in startIndex...endIndex) {
 					
-					width = __context.measureText (text.substring (startIndex, i + 1)).width;
+					width = measureTextWidth (text.substring (startIndex, i + 1));
 					
 					advances.push (width - previousWidth);
 					
@@ -757,13 +760,13 @@ class TextEngine {
 					if (i < text.length-1) {
 						
 						// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-						var nextWidth = __context.measureText (text.charAt (i + 1)).width;
-						var twoWidths = __context.measureText (text.substr (i,  2)).width;
+						var nextWidth = measureTextWidth (text.charAt (i + 1));
+						var twoWidths = measureTextWidth (text.substr (i,  2));
 						advance = twoWidths - nextWidth;
 						
 					} else {
 						
-						advance = __context.measureText (text.charAt (i)).width;
+						advance = measureTextWidth (text.charAt (i));
 						
 					}
 					
@@ -819,12 +822,32 @@ class TextEngine {
 			return width;
 			
 		}
-		
+
+		inline function getCharIndexAtWidth (advances:Array<Float>, width:Float):Int {
+
+			var charIndex = 0;
+			var currentWidth = 0.0;
+
+			for (i in 0...advances.length) {
+
+				currentWidth += advances[i];
+				if (currentWidth > width) {
+					break;
+				} else {
+					charIndex = i;
+				}
+
+			}
+
+			return charIndex;
+
+		}
+
 		inline function getTextWidth (text:String):Float {
 			
 			#if (js && html5)
 			
-			return __context.measureText (text).width;
+			return measureTextWidth (text);
 			
 			#else
 			
@@ -860,7 +883,7 @@ class TextEngine {
 		}
 		
 		inline function nextLayoutGroup (startIndex, endIndex):Void {
-			
+
 			if (layoutGroup == null || layoutGroup.startIndex != layoutGroup.endIndex) {
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, startIndex, endIndex);
@@ -885,9 +908,9 @@ class TextEngine {
 				currentFormat.__merge (formatRange.format);
 				
 				#if (js && html5)
-				
+
 				__context.font = getFont (currentFormat);
-				
+
 				if (currentFormat.__ascent != null) {
 					
 					ascent = currentFormat.__ascent;
@@ -896,14 +919,17 @@ class TextEngine {
 				} else {
 					
 					ascent = currentFormat.size;
+					#if dom
+					descent = this.textField.__renderedOnCanvasWhileOnDOM ? currentFormat.size * 0.185 : 3;
+					#else
 					descent = currentFormat.size * 0.185;
-					
+					#end
 				}
 				
 				leading = currentFormat.leading;
-				
+
 				heightValue = ascent + descent + leading;
-				
+
 				#elseif (lime_cffi)
 				
 				font = getFontInstance (currentFormat);
@@ -926,13 +952,13 @@ class TextEngine {
 				}
 				
 				leading = currentFormat.leading;
-				
+
 				heightValue = ascent + descent + leading;
 				
 				#end
-				
+
 			}
-			
+
 		}
 		
 		nextFormatRange ();
@@ -947,18 +973,20 @@ class TextEngine {
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
 				if (textIndex <= breakIndex) {
-					
-					nextLayoutGroup (textIndex, breakIndex);
-					
-					layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
-					layoutGroup.offsetX = offsetX;
-					layoutGroup.ascent = ascent;
-					layoutGroup.descent = descent;
-					layoutGroup.leading = leading;
-					layoutGroup.lineIndex = lineIndex;
-					layoutGroup.offsetY = offsetY;
-					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-					layoutGroup.height = heightValue;
+
+					if (textIndex < breakIndex) {
+						nextLayoutGroup (textIndex, breakIndex);
+
+						layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
+						layoutGroup.offsetX = offsetX;
+						layoutGroup.ascent = ascent;
+						layoutGroup.descent = descent;
+						layoutGroup.leading = leading;
+						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.offsetY = offsetY;
+						layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+						layoutGroup.height = heightValue;
+					}
 					
 					layoutGroup = null;
 					
@@ -994,12 +1022,13 @@ class TextEngine {
 				}
 				
 				wrap = false;
-				
+				var shouldWrapWord = false;
+
 				while (true) {
 					
 					if (textIndex == formatRange.end) break;
 					
-					var endIndex = spaceIndex == -1? (breakIndex == -1? formatRange.end : breakIndex) : (spaceIndex + 1) > formatRange.end? formatRange.end : spaceIndex + 1;
+					var endIndex = spaceIndex == -1? (breakIndex == -1? formatRange.end : breakIndex) : (spaceIndex + 1) > formatRange.end? formatRange.end : shouldWrapWord && (spaceIndex + 1) > breakIndex? breakIndex : spaceIndex + 1;
 					
 					advances = getAdvances (text, textIndex, endIndex);
 					widthValue = getAdvancesWidth (advances);
@@ -1031,89 +1060,116 @@ class TextEngine {
 					}
 					
 					if (wordWrap) {
-						
+
 						if (offsetX + widthValue > width) {
-							
+
 							wrap = true;
-							
+
 						}
 						
 					}
 					
 					if (wrap) {
-						
-						if (lineFormat.align != JUSTIFY && (layoutGroup != null || layoutGroups.length > 0)) {
-							
+
+						if (lineFormat.align != JUSTIFY && (layoutGroup != null || layoutGroups.length	> 0)) {
+
 							var previous = layoutGroup;
 							if (previous == null) {
 								previous = layoutGroups[layoutGroups.length - 1];
 							}
-							
+
 							// For correct selection rectangles and alignment, trim the trailing space of the previous line:
 							previous.width -= previous.advances[previous.advances.length - 1];
 							previous.endIndex--;
-							
+
 						}
-						
-						offsetY += heightValue;
-						
+
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
-						
+
 						while (true) {
-							
+
 							layoutGroup = layoutGroups[i];
-							
+
 							if (i > 0 && layoutGroup.startIndex > previousSpaceIndex) {
-								
+
 								offsetCount++;
-								
+
 							} else {
-								
+
 								break;
-								
+
 							}
-							
+
 							i--;
-							
+
 						}
-						
-						lineIndex++;
-						
-						offsetX = 2;
-						
-						if (offsetCount > 0) {
-							
-							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
-							
-							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
-								
-								layoutGroup = layoutGroups[i];
-								layoutGroup.offsetX -= bumpX;
-								layoutGroup.offsetY = offsetY;
-								layoutGroup.lineIndex = lineIndex;
-								offsetX += layoutGroup.width;
-								
+
+						// This loop wraps countineous words which are occupaing one or more lines
+						while (true) {
+
+							offsetY += heightValue;
+
+							lineIndex++;
+
+							offsetX = 2;
+
+							if (offsetCount > 0) {
+
+								var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
+
+								for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
+
+									layoutGroup = layoutGroups[i];
+									layoutGroup.offsetX -= bumpX;
+									layoutGroup.offsetY = offsetY;
+									layoutGroup.lineIndex = lineIndex;
+									offsetX += layoutGroup.width;
+
+								}
+
+								offsetCount = 0; // Do offset only in first pass
+
 							}
-							
+
+							var groupEndIndex = endIndex;
+							if (widthValue > width) { // If we have a contineous word which occupies more then one line
+
+								groupEndIndex = textIndex + getCharIndexAtWidth (advances, width);
+								advances = getAdvances (text, textIndex, groupEndIndex);
+								widthValue = getAdvancesWidth (advances);
+
+							}
+
+							nextLayoutGroup (textIndex, groupEndIndex);
+
+							layoutGroup.advances = advances;
+							layoutGroup.offsetX = offsetX;
+							layoutGroup.ascent = ascent;
+							layoutGroup.descent = descent;
+							layoutGroup.leading = leading;
+							layoutGroup.lineIndex = lineIndex;
+							layoutGroup.offsetY = offsetY;
+							layoutGroup.width = widthValue;
+							layoutGroup.height = heightValue;
+
+							offsetX += widthValue;
+
+							textIndex = groupEndIndex;
+
+							if (groupEndIndex != endIndex) {
+
+								advances = getAdvances (text, textIndex, endIndex);
+								widthValue = getAdvancesWidth (advances);
+
+							} else {
+
+								break;
+
+							}
+
 						}
-						
-						nextLayoutGroup (textIndex, endIndex);
-						
-						layoutGroup.advances = advances;
-						layoutGroup.offsetX = offsetX;
-						layoutGroup.ascent = ascent;
-						layoutGroup.descent = descent;
-						layoutGroup.leading = leading;
-						layoutGroup.lineIndex = lineIndex;
-						layoutGroup.offsetY = offsetY;
-						layoutGroup.width = widthValue;
-						layoutGroup.height = heightValue;
-						
-						offsetX += widthValue;
-						
-						textIndex = endIndex;
-						
+
 						wrap = false;
 						
 					} else {
@@ -1156,9 +1212,10 @@ class TextEngine {
 						textIndex = endIndex;
 						
 					}
-					
+
 					var nextSpaceIndex = text.indexOf (" ", textIndex);
-					
+					shouldWrapWord = wordWrap && breakIndex > -1 && nextSpaceIndex > breakIndex && textIndex < breakIndex && (offsetX + getAdvancesWidth (getAdvances (text, textIndex, breakIndex)) > width);
+
 					if (formatRange.end <= previousSpaceIndex) {
 						
 						layoutGroup = null;
@@ -1190,10 +1247,10 @@ class TextEngine {
 						
 					}
 					
-					if ((breakIndex > -1 && (spaceIndex > breakIndex || spaceIndex == -1 && breakIndex <= textIndex)) || textIndex > text.length || spaceIndex > formatRange.end) {
-						
+					if ((breakIndex > -1 && (spaceIndex > breakIndex || spaceIndex == -1 && breakIndex <= textIndex) && !shouldWrapWord) || textIndex > text.length || spaceIndex > formatRange.end) {
+
 						break;
-						
+
 					}
 					
 				}
@@ -1256,7 +1313,24 @@ class TextEngine {
 		#end
 		
 	}
-	
+
+	#if (js && html5)
+	inline private function measureTextWidth (value:String):Float {
+		#if dom
+		if (this.textField.__renderedOnCanvasWhileOnDOM) {
+
+			return __context.measureText(value).width;
+
+		}
+		// This measure for DOM is not perfect but it is close to it. The best would be to measure it on DOM like
+		// hiddenDivElement.innerHTML=value then hiddenDivElement.clientWidth, but this is way too slow compared to
+		// measuring it on canvas
+		return Math.round(__context.measureText(value).width);
+		#else
+		return __context.measureText(value).width;
+		#end
+	}
+	#end
 	
 	private function setTextAlignment ():Void {
 		
@@ -1459,6 +1533,6 @@ class TextEngine {
 		return text;
 		
 	}
-	
-	
+
+
 }
