@@ -125,9 +125,7 @@ class CanvasTextField {
 			} else {
 
 				var bounds = Rectangle.pool.get();
-				bounds.copyFrom( textEngine.bounds );
-				bounds.width *= scaleX;
-				bounds.height *= scaleY;
+				textField.__getRenderBounds (bounds);
 
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 
