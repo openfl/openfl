@@ -47,13 +47,13 @@ class BitmapData implements IBitmapDrawable {
 
 	private static var __isGLES:Null<Bool> = null;
 
-	public var height (get, never):Float;
+	public var height (default, null):Float;
 	public var image (default, null):Image;
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
-	public var width (get, never):Float;
+	public var width (default, null):Float;
 
 	public var __cacheAsBitmap:Bool;
 	public var __renderAlpha:Float;
@@ -66,7 +66,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __isValid:Bool;
 	private var __offsetX:Float = 0.0;
 	private var __offsetY:Float = 0.0;
-	private var __padding:Float = 0.0;
+	private var __padding:Int = 0;
 	private var __scaleX:Float = 1.0;
 	private var __scaleY:Float = 1.0;
 	private var __texture:GLTexture;
@@ -364,6 +364,8 @@ class BitmapData implements IBitmapDrawable {
 
 		image = null;
 
+		width = 0;
+		height = 0;
 		physicalWidth = 0;
 		physicalHeight = 0;
 		rect = null;
@@ -503,13 +505,14 @@ class BitmapData implements IBitmapDrawable {
 
 
 	#if (js && html5)
-	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, scaleX:Float = 1.0, scaleY:Float = 1.0):BitmapData {
+	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, width:Float, height:Float, padding:Int, scaleX:Float, scaleY:Float):BitmapData {
 
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__fromImage (Image.fromCanvas (canvas));
+		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height);
 		bitmapData.image.transparent = transparent;
+		bitmapData.__padding = padding;
 		bitmapData.__scaleX = scaleX;
 		bitmapData.__scaleY = scaleY;
 		return bitmapData;
@@ -532,7 +535,7 @@ class BitmapData implements IBitmapDrawable {
 		if (image == null || image.buffer == null) return null;
 
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__fromImage (image);
+		bitmapData.__fromImage (image, image.width, image.height);
 		bitmapData.image.transparent = transparent;
 		return bitmapData;
 
@@ -1051,10 +1054,9 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private static function __asRenderTexture (width:Int = 0, height:Int = 0):BitmapData {
+	private static function __asRenderTexture ():BitmapData {
 
 		var b = new BitmapData (0, 0);
-		b.__resize (width, height);
 
 		return b;
 	}
@@ -1076,8 +1078,10 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 	private function __pushFrameBuffer(renderSession:RenderSession, smoothing:Bool = false, clearBuffer:Bool = false, powerOfTwo:Bool = true) {
-
-		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
+		var physicalRect = Rectangle.pool.get ();
+		getPhysicalRect (physicalRect);
+		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, physicalRect, smoothing, transparent, clearBuffer, powerOfTwo);
+		Rectangle.pool.put (physicalRect);
 	}
 
 
@@ -1106,7 +1110,7 @@ class BitmapData implements IBitmapDrawable {
 
 		Image.fromBase64 (base64, type, function (image) {
 
-			__fromImage (image);
+			__fromImage (image, image.width, image.height);
 
 			if (onload != null) {
 
@@ -1123,7 +1127,7 @@ class BitmapData implements IBitmapDrawable {
 
 		Image.fromBytes (bytes, function (image) {
 
-			__fromImage (image);
+			__fromImage (image, image.width, image.height);
 
 			if (rawAlpha != null) {
 
@@ -1159,7 +1163,7 @@ class BitmapData implements IBitmapDrawable {
 
 		Image.fromFile (path, function (image) {
 
-			__fromImage (image);
+			__fromImage (image, image.width, image.height);
 
 			if (onload != null) {
 
@@ -1172,7 +1176,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private function __fromImage (image:Image):Void {
+	private function __fromImage (image:Image, width:Float, height:Float):Void {
 
 		if (image != null && image.buffer != null) {
 
@@ -1180,7 +1184,11 @@ class BitmapData implements IBitmapDrawable {
 
 			physicalWidth = image.width;
 			physicalHeight = image.height;
-			rect = new Rectangle (0, 0, image.width, image.height);
+
+			this.width = width;
+			this.height = height;
+
+			rect = new Rectangle (0, 0, width, height);
 
 			#if sys
 			image.format = BGRA32;
@@ -1200,22 +1208,27 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	function __resize (width:Int, height:Int, scaleX:Float = 1.0, scaleY:Float = 1.0) {
+	function __resize (width:Float, height:Float, padding:Int, scaleX:Float = 1.0, scaleY:Float = 1.0) {
 
-		physicalWidth = width;
-		physicalHeight = height;
+		this.__padding = padding;
+		this.width = width;
+		this.height = height;
+
 		this.rect.width = width;
 		this.rect.height = height;
 
 		__scaleX = scaleX;
 		__scaleY = scaleY;
 
+		physicalWidth = Math.ceil (width * scaleX) + 2 * padding;
+		physicalHeight = Math.ceil (height * scaleY) + 2 * padding;
+
 	}
 
 
 	function __resizeTo (bd:BitmapData) {
 
-		__resize (bd.physicalWidth, bd.physicalHeight, bd.__scaleX, bd.__scaleY);
+		__resize (bd.width, bd.height, bd.__padding, bd.__scaleX, bd.__scaleY);
 
 	}
 
@@ -1245,18 +1258,6 @@ class BitmapData implements IBitmapDrawable {
 
 	public function __updateTransforms ():Void {
 		__worldTransform.identity ();
-	}
-
-	public inline function get_width ():Float {
-
-		return physicalWidth / __scaleX;
-
-	}
-
-	public inline function get_height ():Float {
-
-		return physicalHeight / __scaleY;
-
 	}
 
 
@@ -1295,6 +1296,12 @@ class BitmapData implements IBitmapDrawable {
 		@:privateAccess matrix.setTo (1.0, 0.0, 0.0, 1.0, __offsetX - __padding / __scaleX, __offsetY - __padding / __scaleY);
 	}
 
+	private function getPhysicalRect (physicalRect:Rectangle):Void {
+		physicalRect.x = rect.x * __scaleX - __padding;
+		physicalRect.y = rect.y * __scaleY - __padding;
+		physicalRect.width = Math.ceil (rect.width * __scaleX + 2 * __padding);
+		physicalRect.height = Math.ceil (rect.height * __scaleY + 2 * __padding);
+	}
 
 	#if (dev && js)
 	public static function __init__ () {

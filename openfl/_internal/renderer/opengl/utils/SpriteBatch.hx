@@ -189,7 +189,7 @@ class SpriteBatch {
 	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
 
-		renderBitmapDataEx(bitmapData, bitmapData.width, bitmapData.height, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
+		renderBitmapDataEx(bitmapData, bitmapData.physicalWidth / bitmapData.__scaleX, bitmapData.physicalHeight / bitmapData.__scaleY, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
 	}
 
 	public function renderBitmapDataEx(bitmapData:BitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Bool, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {

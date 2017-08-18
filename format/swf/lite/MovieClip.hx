@@ -704,13 +704,14 @@ class MovieClip extends flash.display.MovieClip {
 
 			bounds.x *= scaleX;
 			bounds.y *= scaleY;
-			bounds.width *= scaleX;
-			bounds.height *= scaleY;
 
 			var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 
 			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			@:privateAccess bitmap.__resize (Math.ceil (bounds.width), Math.ceil (bounds.height));
+			@:privateAccess bitmap.__resize (bounds.width, bounds.height, 1, scaleX, scaleY);
+
+			@:privateAccess bitmap.__scaleX = 1.0;
+			@:privateAccess bitmap.__scaleY = 1.0;
 
 			var renderTransform = Matrix.pool.get ();
 			renderTransform.identity ();

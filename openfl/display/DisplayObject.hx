@@ -754,11 +754,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 		}
 
-		// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
-		@:privateAccess __cachedBitmap.__resize (
-			Math.ceil (__cachedBitmapBounds.width * renderScaleX) + 2 * padding,
-			Math.ceil (__cachedBitmapBounds.height * renderScaleY) + 2 * padding
-			);
+		@:privateAccess __cachedBitmap.__resize (__cachedBitmapBounds.width, __cachedBitmapBounds.height, padding, renderScaleX, renderScaleY);
 
 		var m = Matrix.pool.get();
 		m.identity ();
@@ -806,9 +802,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				__applyFiltersCountMap.set(profileId, (__applyFiltersCountMap.exists(profileId) ? __applyFiltersCountMap.get(profileId) + 1 : 1));
 			#end
 		}
-
-		@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
-		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
 
 		@:privateAccess __cachedBitmap.__offsetX = __cachedBitmapBounds.x;
 		@:privateAccess __cachedBitmap.__offsetY = __cachedBitmapBounds.y;

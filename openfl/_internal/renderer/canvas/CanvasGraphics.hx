@@ -752,9 +752,8 @@ class CanvasGraphics {
 
 				drawCommandReaderPool.put (data);
 
-				var bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
-
 				var bounds = graphics.__bounds;
+				var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, padding, scaleX, scaleY);
 
 				if (graphics.snapCoordinates) {
 					throw ":TODO: handle snapCoordinates";
@@ -762,7 +761,6 @@ class CanvasGraphics {
 
 				bitmap.__offsetX = bounds.x;
 				bitmap.__offsetY = bounds.y;
-				bitmap.__padding = padding;
 
 				graphics.__bitmap = bitmap;
 
