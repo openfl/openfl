@@ -211,7 +211,7 @@ class SpriteBatch {
 		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
 		var localMatrix = Matrix.pool.get ();
 
-		localMatrix.setTo (1.0, 0.0, 0.0, 1.0, bitmapData.__offsetX - bitmapData.__padding / bitmapData.__scaleX, bitmapData.__offsetY - bitmapData.__padding / bitmapData.__scaleY);
+		bitmapData.getLocalTransform (localMatrix);
 		localMatrix.concat (matrix);
 		localMatrix.concat (renderTargetBaseTransform);
 

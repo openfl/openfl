@@ -1291,6 +1291,11 @@ class BitmapData implements IBitmapDrawable {
 
 	}
 
+	public function getLocalTransform (matrix:Matrix):Void {
+		@:privateAccess matrix.setTo (1.0, 0.0, 0.0, 1.0, __offsetX - __padding / __scaleX, __offsetY - __padding / __scaleY);
+	}
+
+
 	#if (dev && js)
 	public static function __init__ () {
 		untyped $global.Tools = $global.Tools || {};

@@ -109,25 +109,24 @@ class GLMaskManager extends AbstractMaskManager {
 				@:privateAccess mask.__isMask = true;
 				@:privateAccess mask.__renderable = false;
 			}
-			
+
 			bitmap = @:privateAccess mask.__cachedBitmap;
 
 		}
 
 		if (bitmap != null)
-        {
-            maskMatrix = Matrix.pool.get();
-            var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
-            maskMatrix.identity ();
-            maskMatrix.translate (@:privateAccess mask.__cachedBitmapBounds.x / mask.renderScaleX, @:privateAccess mask.__cachedBitmapBounds.y / mask.renderScaleY);
-            maskMatrix.concat (@:privateAccess mask.__renderTransform);
-            maskMatrix.concat (renderTargetBaseTransform);
-            maskMatrix.invert ();
-            maskMatrix.scale ( 1.0 / bitmap.width, 1.0 / bitmap.height );
-            ++maskCount;
-        }
+		{
+			var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
+			maskMatrix = Matrix.pool.get();
+			bitmap.getLocalTransform(maskMatrix);
+			maskMatrix.concat (@:privateAccess mask.__renderTransform);
+			maskMatrix.concat (renderTargetBaseTransform);
+			maskMatrix.invert ();
+			maskMatrix.scale ( 1.0 / bitmap.width, 1.0 / bitmap.height );
+			++maskCount;
+		}
 
-        maskBitmapTable.push(bitmap);
+		maskBitmapTable.push(bitmap);
 		maskMatrixTable.push(maskMatrix);
 
 		renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
