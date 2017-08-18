@@ -760,8 +760,8 @@ class CanvasGraphics {
 					throw ":TODO: handle snapCoordinates";
 				}
 
-				bitmap.__offsetX = bounds.x * scaleX;
-				bitmap.__offsetY = bounds.y * scaleY;
+				bitmap.__offsetX = bounds.x;
+				bitmap.__offsetY = bounds.y;
 				bitmap.__padding = padding;
 
 				graphics.__bitmap = bitmap;
