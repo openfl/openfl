@@ -911,7 +911,7 @@ class SWFLiteExporter {
 		}
 		
 		// root symbol is a special case
-		if (data2 == null && ~/_fla\.MainTimeline$/.match(symbol.name)) {
+		if (data2 == null && (~/_fla\.MainTimeline$/.match(symbol.name) || symbol.tagId == 0)) {
 			data2 = swfLite.root;
 		}
 
