@@ -38,7 +38,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var isPlaying (get, never):Bool;
 	public var totalFrames (get, never):Int;
 	
-	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
@@ -359,13 +358,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
 	private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
 		
-		if (__activeInstances != null) return;
-		
+		if (__activeInstancesByFrameObjectID != null) return;
+
 		__swf = swf;
 		__symbol = symbol;
-		
-		__activeInstances = [];
+
 		__activeInstancesByFrameObjectID = new Map ();
+		var __activeInstances:Array<FrameSymbolInstance> = [];
 		__currentFrame = 1;
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
