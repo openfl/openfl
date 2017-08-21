@@ -765,9 +765,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				var profileId = getProfileId();
 				__applyFiltersCountMap.set(profileId, (__applyFiltersCountMap.exists(profileId) ? __applyFiltersCountMap.get(profileId) + 1 : 1));
 			#end
+		} else {
+			__cleanupIntermediateTextures();
 		}
-
-		__cleanupIntermediateTextures();
 
 		Matrix.pool.put (filterTransform);
 
