@@ -1821,20 +1821,6 @@ class TextField extends InteractiveObject {
 		
 		value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 
-		#if (js && html5 && dom)
-
-		if (__textEngine.textFormatRanges.length > 1) {
-
-			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-
-		}
-
-		var range = __textEngine.textFormatRanges[0];
-		range.format = __textFormat;
-		range.start = 0;
-		range.end = value.length;
-		#end
-
 		__updateText (value);
 
 		return value;
