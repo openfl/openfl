@@ -42,6 +42,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private static var __worldTransformDirty = 0;
 	private static var __worldBranchDirty = 0;
 	private static var __isCachingAsMask:Bool;
+	private static var __cachedBitmapPadding = 1;
 
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
@@ -731,7 +732,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__cachedBitmapBounds = new Rectangle ();
 		}
 
-		var padding:Int = 1;
+		var padding:Int = __cachedBitmapPadding;
 
 		__getRenderBounds (__cachedBitmapBounds);
 		var renderToLocal = Matrix.__temp;
