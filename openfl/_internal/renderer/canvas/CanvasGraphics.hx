@@ -17,6 +17,7 @@ import openfl.geom.Rectangle;
 import openfl.Lib;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+import format.swf.lite.symbols.ShapeSymbol;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -56,6 +57,40 @@ class CanvasGraphics {
 	private static var startY = 0.0;
 	private static var currentTransform = new Matrix ();
 	private static var snapCoordinates:Bool = false;
+
+	#if profile
+		private static var totalFromCanvasCount = 0;
+		private static var currentFromCanvasCount = 0;
+		private static var fromCanvasTable:Map<ShapeSymbol, Int> = new Map ();
+	#end
+
+	#if profile
+		#if js
+			public static function __init__ () {
+				untyped $global.Profile = $global.Profile || {};
+				untyped $global.Profile.CanvasGraphics = {};
+				untyped $global.Profile.CanvasGraphics.logStatistics = logStatistics;
+				untyped $global.Profile.CanvasGraphics.clear = clear;
+			}
+		#end
+
+		public static function logStatistics (threshold:Int = 0) {
+			trace ('Generated graphics:');
+			trace ('  current count: $currentFromCanvasCount,  total since beginning: ${totalFromCanvasCount}');
+
+			trace ('entries: ');
+			for (entry in fromCanvasTable.keys()) {
+				if (fromCanvasTable.get(entry) >= threshold)
+					trace('  $entry, ${fromCanvasTable.get(entry)}');
+			}
+		}
+
+		public static function clear() {
+			currentFromCanvasCount = 0;
+			fromCanvasTable = new Map ();
+		}
+
+	#end
 
 	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>  = new ObjectPool<DrawCommandReader>(
 		function()
@@ -760,6 +795,18 @@ class CanvasGraphics {
 
 				drawCommandReaderPool.put (data);
 
+				#if profile
+					if (  graphics.__symbol != null ) {
+						if ( fromCanvasTable.exists(graphics.__symbol) ) {
+							var value = fromCanvasTable.get(graphics.__symbol);
+							fromCanvasTable.set(graphics.__symbol, ++value);
+						} else {
+							fromCanvasTable.set(graphics.__symbol, 1);
+						}
+					}
+					totalFromCanvasCount++;
+					currentFromCanvasCount++;
+				#end
 				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
 
 				if (graphics.__symbol != null) {
