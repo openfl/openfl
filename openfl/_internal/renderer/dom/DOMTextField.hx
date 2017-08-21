@@ -272,15 +272,6 @@ class DOMTextField {
 					textField.__div.innerHTML = new EReg ("\n", "g").replace (textField.__div.innerHTML, "<br>");
 					textField.__div.innerHTML = new EReg ("\r", "g").replace (textField.__div.innerHTML, "<br>");
 
-					var scrollTo = 0;
-					for (i in 0...textField.scrollV - 1) {
-
-						scrollTo += Math.ceil(textEngine.lineHeights[i]);
-
-					}
-
-					textField.__div.scrollTop = scrollTo;
-
 					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
 
 					textField.__textFormat.size = unscaledSize;
@@ -324,7 +315,16 @@ class DOMTextField {
 					}
 					
 					textField.__dirty = false;
-					
+
+					var scrollTo = 0;
+					for (i in 0...textField.scrollV - 1) {
+
+						scrollTo += Math.ceil(textEngine.lineHeights[i]);
+
+					}
+
+					textField.__div.scrollTop = scrollTo;
+
 				} else {
 					
 					if (textField.__div != null) {
