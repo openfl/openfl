@@ -1,9 +1,16 @@
 package openfl.filters;
 
 
+import lime.graphics.utils.ImageDataUtil;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.geom.ColorTransform;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+@:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 @:final class GlowFilter extends BitmapFilter {
@@ -12,8 +19,8 @@ import openfl.geom.Rectangle;
 	private static var __glowShader = new GlowShader ();
 	
 	public var alpha:Float;
-	public var blurX:Float;
-	public var blurY:Float;
+	public var blurX (default, set):Float;
+	public var blurY (default, set):Float;
 	public var color:Int;
 	public var inner:Bool;
 	public var knockout (default, set):Bool;
@@ -38,6 +45,7 @@ import openfl.geom.Rectangle;
 		this.knockout = knockout;
 		
 		__cacheObject = true;
+		__filterRequiresCopy = true;
 		
 	}
 	
@@ -45,6 +53,27 @@ import openfl.geom.Rectangle;
 	public override function clone ():BitmapFilter {
 		
 		return new GlowFilter (color, alpha, blurX, blurY, strength, quality, inner, knockout);
+		
+	}
+	
+	
+	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
+		
+		// TODO: Support knockout, inner
+		
+		// TODO: Remove need for clone
+		var original = sourceBitmapData.clone ();
+		var r = (color >> 16) & 0xFF;
+		var g = (color >> 8) & 0xFF;
+		var b = color & 0xFF;
+		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, 1, r, g, b, alpha * 0xFF));
+		
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality, strength);
+		
+		var finalBitmapData = (finalImage == bitmapData.image) ? bitmapData : sourceBitmapData;
+		finalBitmapData.draw (original);
+		
+		return finalBitmapData;
 		
 	}
 	
@@ -82,6 +111,22 @@ import openfl.geom.Rectangle;
 	// Get & Set Methods
 	
 	
+	
+	
+	private function set_blurX (value:Float):Float {
+		
+		if (value > 0) __leftExtension = __rightExtension = Math.ceil (value);
+		return this.blurX = value;
+		
+	}
+	
+	
+	private function set_blurY (value:Float):Float {
+		
+		if (value > 0) __topExtension = __bottomExtension = Math.ceil (value);
+		return this.blurY = value;
+		
+	}
 	
 	
 	private function set_knockout (value:Bool):Bool {

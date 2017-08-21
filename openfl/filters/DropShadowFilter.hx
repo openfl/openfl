@@ -1,29 +1,43 @@
 package openfl.filters;
 
 
+import lime.graphics.utils.ImageDataUtil;
+import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.geom.ColorTransform;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+@:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 @:final class DropShadowFilter extends BitmapFilter {
 	
 	
 	public var alpha:Float;
-	public var angle:Float;
-	public var blurX:Float;
-	public var blurY:Float;
+	public var angle (default, set):Float = 45;
+	public var blurX (default, set):Float = 0;
+	public var blurY (default, set):Float = 0;
 	public var color:Int;
-	public var distance:Float;
+	public var distance (default, set):Float = 4;
 	public var hideObject (default, set):Bool;
 	public var inner:Bool;
 	public var knockout (default, set):Bool;
 	public var quality (default, set):Int;
 	public var strength:Float;
 	
+	private var __offsetX:Float;
+	private var __offsetY:Float;
+	
 	
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false) {
 		
 		super ();
+		
+		__offsetX = 0;
+		__offsetY = 0;
 		
 		this.distance = distance;
 		this.angle = angle;
@@ -37,6 +51,8 @@ import openfl.geom.Rectangle;
 		this.knockout = knockout;
 		this.hideObject = hideObject;
 		
+		__filterRequiresCopy = true;
+		
 	}
 	
 	
@@ -47,11 +63,86 @@ import openfl.geom.Rectangle;
 	}
 	
 	
+	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
+		
+		// TODO: Support knockout, inner
+		
+		// TODO: Remove need for clone
+		var original = null;
+		if (!hideObject) original = sourceBitmapData.clone ();
+		
+		var a = (color >> 24) & 0xFF;
+		var r = (color >> 16) & 0xFF;
+		var g = (color >> 8) & 0xFF;
+		var b = color & 0xFF;
+		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, 1, r, g, b, a));
+		
+		destPoint.x += __offsetX;
+		destPoint.y += __offsetY;
+		
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality, strength);
+		
+		var finalBitmapData = (finalImage == bitmapData.image) ? bitmapData : sourceBitmapData;
+		if (!hideObject) finalBitmapData.draw (original);
+		
+		return finalBitmapData;
+		
+	}
+	
+	
+	private function __updateSize ():Void {
+		
+		__offsetX = Std.int (distance * Math.cos (angle * Math.PI / 180));
+		__offsetY = Std.int (distance * Math.sin (angle * Math.PI / 180));
+		__topExtension = Math.ceil ((__offsetY < 0 ? -__offsetY : 0) + blurY);
+		__bottomExtension = Math.ceil ((__offsetY > 0 ? __offsetY : 0) + blurY);
+		__leftExtension = Math.ceil ((__offsetX < 0 ? -__offsetX : 0) + blurX);
+		__rightExtension = Math.ceil ((__offsetX > 0 ? __offsetX : 0) + blurX);
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods
 	
 	
+	
+	
+	private function set_angle (value:Float):Float {
+		
+		this.angle = value;
+		__updateSize ();
+		return value;
+		
+	}
+	
+	
+	private function set_blurX (value:Float):Float {
+		
+		this.blurX = value;
+		__updateSize ();
+		return value;
+		
+	}
+	
+	
+	private function set_blurY (value:Float):Float {
+		
+		this.blurY = value;
+		__updateSize ();
+		return value;
+		
+	}
+	
+	
+	private function set_distance (value:Float):Float {
+		
+		this.distance = value;
+		__updateSize ();
+		return value;
+		
+	}
 	
 	
 	private function set_knockout (value:Bool):Bool {
