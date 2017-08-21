@@ -223,15 +223,16 @@ class DOMTextField {
 					
 					untyped textField.__textFormat.size = scaledSize;
 					
-					var text = textEngine.text;
+					var text = "";
 					var adjustment:Float = 0;
 					
 					if (!textField.__isHTML) {
-						
-						text = StringTools.htmlEscape (text);
+
+						text = StringTools.htmlEscape (textEngine.text);
 						
 					} else {
-						
+
+						text = textField.__rawHtmlText;
 						var matchText = text;
 						while (__regexFont.match (matchText)) {
 							
@@ -271,7 +272,7 @@ class DOMTextField {
 							}
 							
 							text = StringTools.replace( text, fontText, "<span style='" + style + "'>" );
-							
+
 							matchText = __regexFont.matchedRight();
 						}
 						
@@ -331,7 +332,17 @@ class DOMTextField {
 					}
 					
 					textField.__dirty = false;
-					
+
+
+					var scrollTo = 0;
+					for (i in 0...textField.scrollV - 1) {
+
+						scrollTo += Math.ceil(textEngine.lineHeights[i]);
+
+					}
+
+					textField.__div.scrollTop = scrollTo;
+
 				} else {
 					
 					if (textField.__div != null) {
