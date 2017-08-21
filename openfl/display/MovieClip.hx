@@ -1,14 +1,23 @@
 package openfl.display;
 
+
 import lime.utils.Log;
 import openfl._internal.swf.SWFLite;
+import openfl._internal.symbols.BitmapSymbol;
+import openfl._internal.symbols.ButtonSymbol;
+import openfl._internal.symbols.DynamicTextSymbol;
+import openfl._internal.symbols.FontSymbol;
+import openfl._internal.symbols.ShapeSymbol;
 import openfl._internal.symbols.SpriteSymbol;
+import openfl._internal.symbols.StaticTextSymbol;
 import openfl._internal.symbols.SWFSymbol;
 import openfl._internal.timeline.Frame;
 import openfl._internal.timeline.FrameObject;
 import openfl._internal.timeline.FrameObjectType;
 import openfl.errors.ArgumentError;
+import openfl.events.Event;
 import openfl.filters.*;
+import openfl.text.TextField;
 
 #if hscript
 import hscript.Interp;
