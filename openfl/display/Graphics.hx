@@ -61,7 +61,6 @@ import js.html.CanvasRenderingContext2D;
 
 	@:s private var __bounds:Rectangle;
 	@:s private var __commands:DrawCommandBuffer;
-	@:s private var __padding:Int;
 	@:s private var __positionX:Float;
 	@:s private var __positionY:Float;
 	@:s private var __strokePadding:Float;
