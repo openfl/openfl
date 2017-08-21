@@ -527,6 +527,32 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __getFilterBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		// TODO: Should this be __getRenderBounds, to account for scrollRect?
+		
+		__getBounds (rect, matrix);
+		
+		if (__filters != null && __filters.length > 0) {
+			
+			var extension = Rectangle.__pool.get ();
+			
+			for (filter in __filters) {
+				extension.__expand (-filter.__leftExtension, -filter.__topExtension, filter.__leftExtension + filter.__rightExtension, filter.__topExtension + filter.__bottomExtension);
+			}
+			
+			rect.width += extension.width;
+			rect.height += extension.height;
+			rect.x += extension.x;
+			rect.y += extension.y;
+			
+			Rectangle.__pool.release (extension);
+			
+		}
+		
+	}
+	
+	
 	private function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
 		return false;
@@ -973,18 +999,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
+			var hasFilters = (__filters != null && __filters.length > 0);
 			
-			if (updateTransform) {
+			if (updateTransform || hasFilters) {
 				
 				matrix = Matrix.__pool.get ();
 				rect = Rectangle.__pool.get ();
 				matrix.identity ();
 				
-				__getBounds (rect, matrix);
+				__getFilterBounds (rect, matrix);
 				
 			}
 			
-			// TODO: Update rect size based on filter dimensions
+			if (hasFilters && (__cacheBitmap != null && (rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height))) {
+				needRender = true;
+			}
 			
 			if (needRender) {
 				
@@ -1045,11 +1074,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
 				
-				if (__filters != null && __filters.length > 0) {
+				if (hasFilters) {
+					
+					var filtersRequireCopy = false;
+					for (filter in __filters) {
+						if (filter.__filterRequiresCopy) {
+							filtersRequireCopy = true;
+							break;
+						}
+					}
 					
 					var bitmapData = __cacheBitmapData;
-					var bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+					var bitmapData2 = null;
 					var cacheBitmap;
+					
+					if (filtersRequireCopy) {
+						bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+					} else {
+						bitmapData2 = bitmapData;
+					}
 					
 					var sourceRect = bitmapData.rect;
 					var destPoint = new Point (); // TODO: ObjectPool
@@ -1059,7 +1102,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
-						if (lastBitmap == bitmapData2) {
+						if (filtersRequireCopy && lastBitmap == bitmapData2) {
 							
 							cacheBitmap = bitmapData;
 							bitmapData = bitmapData2;

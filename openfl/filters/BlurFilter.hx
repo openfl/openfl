@@ -19,8 +19,8 @@ import openfl.geom.Rectangle;
 	
 	private static var __blurShader = new BlurShader ();
 	
-	public var blurX:Float;
-	public var blurY:Float;
+	public var blurX (default, set):Float;
+	public var blurY (default, set):Float;
 	public var quality (default, set):Int;
 	
 	private var horizontalPasses:Int;
@@ -84,6 +84,22 @@ import openfl.geom.Rectangle;
 	// Get & Set Methods
 	
 	
+	
+	
+	private function set_blurX (value:Float):Float {
+		
+		if (value > 0) __leftExtension = __rightExtension = Math.ceil (value);
+		return this.blurX = value;
+		
+	}
+	
+	
+	private function set_blurY (value:Float):Float {
+		
+		if (value > 0) __topExtension = __bottomExtension = Math.ceil (value);
+		return this.blurY = value;
+		
+	}
 	
 	
 	private function set_quality (value:Int):Int {
