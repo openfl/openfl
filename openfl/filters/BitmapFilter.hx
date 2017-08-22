@@ -17,6 +17,7 @@ class BitmapFilter {
 	private var __filterRequiresCopy:Bool;
 	private var __leftExtension:Int;
 	private var __numShaderPasses:Int;
+	private var __renderDirty:Bool;
 	private var __rightExtension:Int;
 	private var __topExtension:Int;
 	

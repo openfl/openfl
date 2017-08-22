@@ -88,16 +88,26 @@ import openfl.geom.Rectangle;
 	
 	private function set_blurX (value:Float):Float {
 		
-		if (value > 0) __leftExtension = __rightExtension = Math.ceil (value);
-		return this.blurX = value;
+		if (value != blurX) {
+			this.blurX = value;
+			__renderDirty = true;
+			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__rightExtension = __leftExtension;
+		}
+		return value;
 		
 	}
 	
 	
 	private function set_blurY (value:Float):Float {
 		
-		if (value > 0) __topExtension = __bottomExtension = Math.ceil (value);
-		return this.blurY = value;
+		if (value != blurY) {
+			this.blurY = value;
+			__renderDirty = true;
+			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__rightExtension = __leftExtension;
+		}
+		return value;
 		
 	}
 	
@@ -111,7 +121,8 @@ import openfl.geom.Rectangle;
 		
 		__numShaderPasses = horizontalPasses + verticalPasses;
 		
-		return quality = value;
+		if (value != quality) __renderDirty = true;
+		return this.quality = value;
 		
 	}
 	

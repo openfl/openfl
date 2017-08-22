@@ -18,14 +18,14 @@ import openfl.geom.Rectangle;
 	
 	private static var __glowShader = new GlowShader ();
 	
-	public var alpha:Float;
+	public var alpha (default, set):Float;
 	public var blurX (default, set):Float;
 	public var blurY (default, set):Float;
-	public var color:Int;
-	public var inner:Bool;
+	public var color (default, set):Int;
+	public var inner (default, set):Bool;
 	public var knockout (default, set):Bool;
 	public var quality (default, set):Int;
-	public var strength:Float;
+	public var strength (default, set):Float;
 	
 	private var horizontalPasses:Int;
 	private var verticalPasses:Int;
@@ -113,25 +113,60 @@ import openfl.geom.Rectangle;
 	
 	
 	
+	private function set_alpha (value:Float):Float {
+		
+		if (value != alpha) __renderDirty = true;
+		return this.alpha = value;
+		
+	}
+	
+	
 	private function set_blurX (value:Float):Float {
 		
-		if (value > 0) __leftExtension = __rightExtension = Math.ceil (value);
-		return this.blurX = value;
+		if (value != blurX) {
+			this.blurX = value;
+			__renderDirty = true;
+			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__rightExtension = __leftExtension;
+		}
+		return value;
 		
 	}
 	
 	
 	private function set_blurY (value:Float):Float {
 		
-		if (value > 0) __topExtension = __bottomExtension = Math.ceil (value);
-		return this.blurY = value;
+		if (value != blurY) {
+			this.blurY = value;
+			__renderDirty = true;
+			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__rightExtension = __leftExtension;
+		}
+		return value;
+		
+	}
+	
+	
+	private function set_color (value:Int):Int {
+		
+		if (value != color) __renderDirty = true;
+		return this.color = value;
+		
+	}
+	
+	
+	private function set_inner (value:Bool):Bool {
+		
+		if (value != inner) __renderDirty = true;
+		return this.inner = value;
 		
 	}
 	
 	
 	private function set_knockout (value:Bool):Bool {
 		
-		return knockout = value;
+		if (value != knockout) __renderDirty = true;
+		return this.knockout = value;
 		
 	}
 	
@@ -145,7 +180,16 @@ import openfl.geom.Rectangle;
 		
 		__numShaderPasses = horizontalPasses + verticalPasses;
 		
-		return quality = value;
+		if (value != quality) __renderDirty = true;
+		return this.quality = value;
+		
+	}
+	
+	
+	private function set_strength (value:Float):Float {
+		
+		if (value != strength) __renderDirty = true;
+		return this.strength = value;
 		
 	}
 	

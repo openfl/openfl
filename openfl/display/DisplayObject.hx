@@ -1011,8 +1011,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			if (hasFilters && (__cacheBitmap != null && (rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height))) {
-				needRender = true;
+			if (hasFilters) {
+				
+				if (__cacheBitmap != null && (rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height)) {
+					
+					needRender = true;
+					
+				} else {
+					
+					for (filter in __filters) {
+						if (filter.__renderDirty) {
+							needRender = true;
+							break;
+						}
+					}
+					
+				}
+				
 			}
 			
 			if (needRender) {
@@ -1101,6 +1116,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					for (filter in __filters) {
 						
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
+						filter.__renderDirty = false;
 						
 						if (filtersRequireCopy && lastBitmap == bitmapData2) {
 							

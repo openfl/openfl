@@ -16,17 +16,17 @@ import openfl.geom.Rectangle;
 @:final class DropShadowFilter extends BitmapFilter {
 	
 	
-	public var alpha:Float;
+	public var alpha (default, set):Float;
 	public var angle (default, set):Float = 45;
 	public var blurX (default, set):Float = 0;
 	public var blurY (default, set):Float = 0;
-	public var color:Int;
+	public var color (default, set):Int;
 	public var distance (default, set):Float = 4;
 	public var hideObject (default, set):Bool;
-	public var inner:Bool;
+	public var inner (default, set):Bool;
 	public var knockout (default, set):Bool;
 	public var quality (default, set):Int;
-	public var strength:Float;
+	public var strength (default, set):Float;
 	
 	private var __offsetX:Float;
 	private var __offsetY:Float;
@@ -38,6 +38,7 @@ import openfl.geom.Rectangle;
 		
 		__offsetX = 0;
 		__offsetY = 0;
+		__updateSize ();
 		
 		this.distance = distance;
 		this.angle = angle;
@@ -109,10 +110,21 @@ import openfl.geom.Rectangle;
 	
 	
 	
+	private function set_alpha (value:Float):Float {
+		
+		if (value != alpha) __renderDirty = true;
+		return this.alpha = value;
+		
+	}
+	
+	
 	private function set_angle (value:Float):Float {
 		
-		this.angle = value;
-		__updateSize ();
+		if (value != angle) {
+			this.angle = value;
+			__renderDirty = true;
+			__updateSize ();
+		}
 		return value;
 		
 	}
@@ -120,8 +132,11 @@ import openfl.geom.Rectangle;
 	
 	private function set_blurX (value:Float):Float {
 		
-		this.blurX = value;
-		__updateSize ();
+		if (value != blurX) {
+			this.blurX = value;
+			__renderDirty = true;
+			__updateSize ();
+		}
 		return value;
 		
 	}
@@ -129,39 +144,72 @@ import openfl.geom.Rectangle;
 	
 	private function set_blurY (value:Float):Float {
 		
-		this.blurY = value;
-		__updateSize ();
+		if (value != blurY) {
+			this.blurY = value;
+			__renderDirty = true;
+			__updateSize ();
+		}
 		return value;
+		
+	}
+	
+	
+	private function set_color (value:Int):Int {
+		
+		if (value != color) __renderDirty = true;
+		return this.color = value;
 		
 	}
 	
 	
 	private function set_distance (value:Float):Float {
 		
-		this.distance = value;
-		__updateSize ();
+		if (value != distance) {
+			this.distance = value;
+			__renderDirty = true;
+			__updateSize ();
+		}
 		return value;
-		
-	}
-	
-	
-	private function set_knockout (value:Bool):Bool {
-		
-		return knockout = value;
 		
 	}
 	
 	
 	private function set_hideObject (value:Bool):Bool {
 		
-		return hideObject = value;
+		if (value != hideObject) __renderDirty = true;
+		return this.hideObject = value;
+		
+	}
+	
+	
+	private function set_inner (value:Bool):Bool {
+		
+		if (value != inner) __renderDirty = true;
+		return this.inner = value;
+		
+	}
+	
+	
+	private function set_knockout (value:Bool):Bool {
+		
+		if (value != knockout) __renderDirty = true;
+		return this.knockout = value;
 		
 	}
 	
 	
 	private function set_quality (value:Int):Int {
 		
-		return quality = value;
+		if (value != quality) __renderDirty = true;
+		return this.quality = value;
+		
+	}
+	
+	
+	private function set_strength (value:Float):Float {
+		
+		if (value != strength) __renderDirty = true;
+		return this.strength = value;
 		
 	}
 	
