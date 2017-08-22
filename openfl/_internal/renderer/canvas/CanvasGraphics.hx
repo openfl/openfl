@@ -48,6 +48,7 @@ class CanvasGraphics {
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
+	private static var canvasFillRule:CanvasWindingRule = CanvasWindingRule.EVENODD;
 	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
@@ -195,7 +196,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+		if (!hitTesting) context.fill(canvasFillRule);
 		return canvas;
 		#end
 		
@@ -244,6 +245,7 @@ class CanvasGraphics {
 		context.beginPath ();
 		playCommands (fillCommands, false);
 		fillCommands.clear ();
+		canvasFillRule = CanvasWindingRule.EVENODD;
 		#end
 		
 	}
@@ -256,6 +258,7 @@ class CanvasGraphics {
 		playCommands (strokeCommands, true);
 		context.closePath ();
 		strokeCommands.clear ();
+		canvasFillRule = CanvasWindingRule.EVENODD;
 		#end
 		
 	}
@@ -889,12 +892,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+					if (!hitTesting) context.fill(canvasFillRule);
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+					if (!hitTesting) context.fill(canvasFillRule);
 					
 				}
 				
@@ -1125,6 +1128,11 @@ class CanvasGraphics {
 							
 							hasLineStyle = c.thickness != null;
 							strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+							
+						case NON_ZERO:
+						
+							data.readNonZero ();
+							canvasFillRule = CanvasWindingRule.NONZERO;
 						
 						case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 							
@@ -1313,7 +1321,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+									if (!hitTesting) context.fill(canvasFillRule);
 									i += 3;
 									continue;
 									
