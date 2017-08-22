@@ -1007,7 +1007,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				rect = Rectangle.__pool.get ();
 				matrix.identity ();
 				
-				__getFilterBounds (rect, matrix);
+				__getFilterBounds (rect, __renderTransform);
 				
 			}
 			
@@ -1065,14 +1065,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				
-				matrix.tx = Math.round (rect.x);
-				matrix.ty = Math.round (rect.y);
-				
-				__cacheBitmap.__renderTransform.copyFrom (matrix);
-				__cacheBitmap.__renderTransform.concat (__renderTransform);
-				
-				matrix.tx *= -1;
-				matrix.ty *= -1;
+				__cacheBitmap.__renderTransform.identity();
+				__cacheBitmap.__renderTransform.tx = rect.x;
+				__cacheBitmap.__renderTransform.ty = rect.y;
+
+				matrix.concat( __renderTransform );
+				matrix.tx -= Math.round (rect.x);
+				matrix.ty -= Math.round (rect.y);
+
 				
 			}
 			
