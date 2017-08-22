@@ -44,8 +44,8 @@ import openfl.geom.Rectangle;
 		this.inner = inner;
 		this.knockout = knockout;
 		
-		__cacheObject = true;
-		__filterRequiresCopy = true;
+		__needSecondBitmapData = true;
+		__preserveObject = true;
 		
 	}
 	
@@ -61,8 +61,6 @@ import openfl.geom.Rectangle;
 		
 		// TODO: Support knockout, inner
 		
-		// TODO: Remove need for clone
-		var original = sourceBitmapData.clone ();
 		var r = (color >> 16) & 0xFF;
 		var g = (color >> 8) & 0xFF;
 		var b = color & 0xFF;
@@ -70,10 +68,8 @@ import openfl.geom.Rectangle;
 		
 		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality, strength);
 		
-		var finalBitmapData = (finalImage == bitmapData.image) ? bitmapData : sourceBitmapData;
-		finalBitmapData.draw (original);
-		
-		return finalBitmapData;
+		if (finalImage == bitmapData.image) return bitmapData;
+		return sourceBitmapData;
 		
 	}
 	

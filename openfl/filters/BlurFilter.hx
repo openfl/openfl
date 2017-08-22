@@ -35,7 +35,8 @@ import openfl.geom.Rectangle;
 		this.blurY = blurY;
 		this.quality = quality;
 		
-		__filterRequiresCopy = true;
+		__needSecondBitmapData = true;
+		__preserveObject = false;
 		
 	}
 	

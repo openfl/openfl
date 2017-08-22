@@ -1091,34 +1091,52 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (hasFilters) {
 					
-					var filtersRequireCopy = false;
+					var needSecondBitmapData = false;
+					var needCopyOfOriginal = false;
+					
 					for (filter in __filters) {
-						if (filter.__filterRequiresCopy) {
-							filtersRequireCopy = true;
-							break;
+						if (filter.__needSecondBitmapData) {
+							needSecondBitmapData = true;
+						}
+						if (filter.__preserveObject) {
+							needCopyOfOriginal = true;
 						}
 					}
 					
 					var bitmapData = __cacheBitmapData;
 					var bitmapData2 = null;
-					var cacheBitmap;
+					var bitmapData3 = null;
 					
-					if (filtersRequireCopy) {
+					// TODO: Cache if used repeatedly
+					
+					if (needSecondBitmapData) {
 						bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
 					} else {
 						bitmapData2 = bitmapData;
 					}
 					
+					if (needCopyOfOriginal) {
+						bitmapData3 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+					}
+					
 					var sourceRect = bitmapData.rect;
 					var destPoint = new Point (); // TODO: ObjectPool
-					var lastBitmap;
+					var cacheBitmap, lastBitmap;
 					
 					for (filter in __filters) {
 						
+						if (filter.__preserveObject) {
+							bitmapData3.copyPixels (bitmapData, bitmapData.rect, destPoint);
+						}
+						
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
+						
+						if (filter.__preserveObject) {
+							lastBitmap.draw (bitmapData3);
+						}
 						filter.__renderDirty = false;
 						
-						if (filtersRequireCopy && lastBitmap == bitmapData2) {
+						if (needSecondBitmapData && lastBitmap == bitmapData2) {
 							
 							cacheBitmap = bitmapData;
 							bitmapData = bitmapData2;

@@ -52,7 +52,8 @@ import openfl.geom.Rectangle;
 		this.knockout = knockout;
 		this.hideObject = hideObject;
 		
-		__filterRequiresCopy = true;
+		__needSecondBitmapData = true;
+		__preserveObject = !hideObject;
 		
 	}
 	
@@ -68,10 +69,6 @@ import openfl.geom.Rectangle;
 		
 		// TODO: Support knockout, inner
 		
-		// TODO: Remove need for clone
-		var original = null;
-		if (!hideObject) original = sourceBitmapData.clone ();
-		
 		var a = (color >> 24) & 0xFF;
 		var r = (color >> 16) & 0xFF;
 		var g = (color >> 8) & 0xFF;
@@ -83,10 +80,8 @@ import openfl.geom.Rectangle;
 		
 		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality, strength);
 		
-		var finalBitmapData = (finalImage == bitmapData.image) ? bitmapData : sourceBitmapData;
-		if (!hideObject) finalBitmapData.draw (original);
-		
-		return finalBitmapData;
+		if (finalImage == bitmapData.image) return bitmapData;
+		return sourceBitmapData;
 		
 	}
 	
@@ -176,7 +171,10 @@ import openfl.geom.Rectangle;
 	
 	private function set_hideObject (value:Bool):Bool {
 		
-		if (value != hideObject) __renderDirty = true;
+		if (value != hideObject) {
+			__renderDirty = true;
+			__preserveObject = !value;
+		}
 		return this.hideObject = value;
 		
 	}
