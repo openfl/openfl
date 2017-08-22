@@ -49,6 +49,7 @@ import haxe.io.Path;
 class TextEngine {
 
 
+	private static inline var GUTTER = 2.0;
 	private static inline var UTF8_TAB = 9;
 	private static inline var UTF8_ENDLINE = 10;
 	private static inline var UTF8_SPACE = 32;
@@ -201,28 +202,28 @@ class TextEngine {
 	private static function findFont (name:String):Font {
 
 		#if (lime_cffi)
-		
+
 		for (registeredFont in Font.__registeredFonts) {
-			
+
 			if (registeredFont == null) continue;
-			
+
 			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || registeredFont.__fontPathWithoutDirectory == name))) {
-				
+
 				return registeredFont;
-				
+
 			}
-			
+
 		}
-		
+
 		var font = Font.fromFile (name);
-		
+
 		if (font != null) {
-			
+
 			Font.__registeredFonts.push (font);
 			return font;
-			
+
 		}
-		
+
 		#end
 
 		return null;
@@ -595,7 +596,7 @@ class TextEngine {
 
 				numLines++;
 
-				if (textHeight <= height - 2) {
+				if (textHeight <= height - GUTTER) {
 
 					bottomScrollV++;
 
@@ -617,7 +618,7 @@ class TextEngine {
 			}
 
 			currentLineHeight = Math.max (currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - 2 + group.width;
+			currentLineWidth = group.offsetX - GUTTER + group.width;
 
 			if (currentLineWidth > textWidth) {
 
@@ -625,7 +626,7 @@ class TextEngine {
 
 			}
 
-			currentTextHeight = group.offsetY - 2 + group.ascent + group.descent;
+			currentTextHeight = group.offsetY - GUTTER + group.ascent + group.descent;
 
 			#if dom
 				if (!this.textField.__renderedOnCanvasWhileOnDOM) {
@@ -659,7 +660,7 @@ class TextEngine {
 
 			}
 
-		} else if (textHeight <= height - 2) {
+		} else if (textHeight <= height - GUTTER) {
 
 			bottomScrollV++;
 
@@ -713,19 +714,18 @@ class TextEngine {
 		var currentFormat = TextField.__defaultTextFormat.clone ();
 
 		var leading = 0;
-		var ascent = 0.0;
+		var ascent = 0.0, maxAscent = 0.0;
 		var descent = 0.0;
 
 		var layoutGroup:TextLayoutGroup = null, advances = null;
-		var widthValue = 0.0, heightValue = 0.0;
-
+		var widthValue = 0.0, heightValue = 0.0, maxHeightValue = 0.0;
 
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = getLineBreakIndex ();
 
-		var offsetX = 2.0;
-		var offsetY = 2.0;
+		var offsetX = GUTTER;
+		var offsetY = GUTTER;
 		var textIndex = 0;
 		var lineIndex = 0;
 		var lineFormat = null;
@@ -833,7 +833,7 @@ class TextEngine {
 
 		}
 
-		inline function getCharIndexAtWidth (advances:Array<Float>, width:Float):Int {
+		inline function getCharOffsetAtWidth (advances:Array<Float>, width:Float):Int {
 
 			var charIndex = 0;
 			var currentWidth = 0.0;
@@ -969,6 +969,100 @@ class TextEngine {
 
 			}
 
+			if (heightValue > maxHeightValue) {
+
+				maxHeightValue = heightValue;
+
+			}
+
+			if (ascent > maxAscent) {
+
+				maxAscent = ascent;
+
+			}
+
+		}
+
+		inline function alignBaseline ():Void {
+
+			// since nextFormatRange may not have been called, have to update these manually
+			if (ascent > maxAscent) {
+
+				maxAscent = ascent;
+
+			}
+
+			if (heightValue > maxHeightValue) {
+
+				maxHeightValue = heightValue;
+
+			}
+
+			var i = layoutGroups.length;
+			while (--i > -1) {
+				var lg = layoutGroups[i];
+				if (lg.lineIndex > lineIndex) continue;
+				if (lg.lineIndex < lineIndex) break;
+
+				lg.ascent = maxAscent;
+				lg.height = maxHeightValue;
+			}
+
+			offsetY += maxHeightValue;
+
+			maxAscent = 0.0;
+			maxHeightValue = 0.0;
+
+			++lineIndex;
+			offsetX = GUTTER;
+
+		}
+
+		inline function breakLongWords (endIndex:Int):Void {
+
+			var groupEndIndex = endIndex;
+			while (offsetX + widthValue > width - GUTTER) {
+				var wrapCharOffset = getCharOffsetAtWidth (advances, width - offsetX - GUTTER);
+				groupEndIndex = textIndex + wrapCharOffset;
+				if (groupEndIndex == textIndex) {
+					if (advances.length > 0 && advances[0] > width - 2 * GUTTER) {
+						// if the textfield is smaller than a single character and
+						groupEndIndex = endIndex + 1;
+
+					} else {
+						// if a single character in a new format made the line too long
+						offsetX = GUTTER;
+						offsetY += layoutGroup.height;
+						++lineIndex;
+					}
+
+					break;
+				} else {
+					nextLayoutGroup(textIndex, groupEndIndex);
+
+					layoutGroup.advances = advances.slice(0, wrapCharOffset);
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = getAdvancesWidth(layoutGroup.advances);
+					layoutGroup.height = heightValue;
+
+					layoutGroup = null;
+
+					alignBaseline();
+
+					advances = advances.slice(wrapCharOffset, endIndex - textIndex);
+					widthValue = getAdvancesWidth(advances);
+
+					textIndex = groupEndIndex;
+
+					groupEndIndex = endIndex;
+				}
+			}
+
 		}
 
 		nextFormatRange ();
@@ -980,19 +1074,30 @@ class TextEngine {
 		while (textIndex < maxLoops) {
 
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
+				// if a line break is the next thing that needs to be dealt with
 
 				if (textIndex <= breakIndex) {
 
+
+					advances = getAdvances (text, textIndex, breakIndex);
+					widthValue = getAdvancesWidth (advances);
+
+					if (wordWrap && previousSpaceIndex <= textIndex) {
+
+						breakLongWords(breakIndex);
+
+					}
+
 					nextLayoutGroup (textIndex, breakIndex);
 
-					layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
+					layoutGroup.advances = advances;
 					layoutGroup.offsetX = offsetX;
 					layoutGroup.ascent = ascent;
 					layoutGroup.descent = descent;
 					layoutGroup.leading = leading;
 					layoutGroup.lineIndex = lineIndex;
 					layoutGroup.offsetY = offsetY;
-					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					layoutGroup.width = widthValue;
 					layoutGroup.height = heightValue;
 
 					layoutGroup = null;
@@ -1006,10 +1111,6 @@ class TextEngine {
 
 				}
 
-				offsetY += heightValue;
-
-				offsetX = 2;
-
 				if (formatRange.end == breakIndex) {
 
 					nextFormatRange ();
@@ -1017,10 +1118,20 @@ class TextEngine {
 
 				}
 
+				if (breakIndex >= text.length - 1) {
+
+					// Trailing line breaks do not add to textHeight (offsetY), but they do add to numLines (lineIndex)
+					offsetY -= maxHeightValue;
+
+				}
+
+				alignBaseline();
+
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
-				lineIndex++;
+
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
+				// if a space is the next thing that needs to be dealt with
 
 				if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
 
@@ -1029,13 +1140,36 @@ class TextEngine {
 				}
 
 				wrap = false;
-				var shouldWrapWord = false;
 
 				while (true) {
 
 					if (textIndex == formatRange.end) break;
 
-					var endIndex = spaceIndex == -1? (breakIndex == -1? formatRange.end : breakIndex) : (spaceIndex + 1) > formatRange.end? formatRange.end : shouldWrapWord && (spaceIndex + 1) > breakIndex? breakIndex : spaceIndex + 1;
+					var endIndex = -1;
+
+					if (spaceIndex == -1) {
+
+						endIndex = breakIndex;
+
+					}
+
+					else {
+
+						endIndex = spaceIndex + 1;
+
+						if (breakIndex > -1 && breakIndex < endIndex) {
+
+							endIndex = breakIndex;
+
+						}
+
+					}
+
+					if (endIndex == -1 || endIndex > formatRange.end) {
+
+						endIndex = formatRange.end;
+
+					}
 
 					advances = getAdvances (text, textIndex, endIndex);
 					widthValue = getAdvancesWidth (advances);
@@ -1067,7 +1201,7 @@ class TextEngine {
 
 					if (wordWrap) {
 
-						if (offsetX + widthValue > width) {
+						if (offsetX + widthValue > width - GUTTER) {
 
 							wrap = true;
 
@@ -1111,70 +1245,47 @@ class TextEngine {
 
 						}
 
-						// This loop wraps countineous words which are occupaing one or more lines
-						while (true) {
+						if (textIndex == previousSpaceIndex + 1) {
 
-							offsetY += heightValue;
+							alignBaseline();
 
-							lineIndex++;
+						}
 
-							offsetX = 2;
+						offsetX = GUTTER;
 
-							if (offsetCount > 0) {
+						if (offsetCount > 0) {
 
-								var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
+							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
 
-								for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
+							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
 
-									layoutGroup = layoutGroups[i];
-									layoutGroup.offsetX -= bumpX;
-									layoutGroup.offsetY = offsetY;
-									layoutGroup.lineIndex = lineIndex;
-									offsetX += layoutGroup.width;
-
-								}
-
-								offsetCount = 0; // Do offset only in first pass
-
-							}
-
-							var groupEndIndex = endIndex;
-							if (offsetX + widthValue > width) { // If we have a contineous word which occupies more then one line
-
-								groupEndIndex = textIndex + getCharIndexAtWidth (advances, width - offsetX);
-								advances = getAdvances (text, textIndex, groupEndIndex);
-								widthValue = getAdvancesWidth (advances);
-
-							}
-
-							nextLayoutGroup (textIndex, groupEndIndex);
-
-							layoutGroup.advances = advances;
-							layoutGroup.offsetX = offsetX;
-							layoutGroup.ascent = ascent;
-							layoutGroup.descent = descent;
-							layoutGroup.leading = leading;
-							layoutGroup.lineIndex = lineIndex;
-							layoutGroup.offsetY = offsetY;
-							layoutGroup.width = widthValue;
-							layoutGroup.height = heightValue;
-
-							offsetX += widthValue;
-
-							textIndex = groupEndIndex;
-
-							if (groupEndIndex != endIndex) {
-
-								advances = getAdvances (text, textIndex, endIndex);
-								widthValue = getAdvancesWidth (advances);
-
-							} else {
-
-								break;
+								layoutGroup = layoutGroups[i];
+								layoutGroup.offsetX -= bumpX;
+								layoutGroup.offsetY = offsetY;
+								layoutGroup.lineIndex = lineIndex;
+								offsetX += layoutGroup.width;
 
 							}
 
 						}
+
+						breakLongWords(endIndex);
+
+						nextLayoutGroup (textIndex, endIndex);
+
+						layoutGroup.advances = advances;
+						layoutGroup.offsetX = offsetX;
+						layoutGroup.ascent = ascent;
+						layoutGroup.descent = descent;
+						layoutGroup.leading = leading;
+						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.offsetY = offsetY;
+						layoutGroup.width = widthValue;
+						layoutGroup.height = heightValue;
+
+						offsetX += widthValue;
+
+						textIndex = endIndex;
 
 						wrap = false;
 
@@ -1185,6 +1296,8 @@ class TextEngine {
 							if (lineFormat.align != JUSTIFY) {
 
 								layoutGroup.endIndex = spaceIndex;
+								layoutGroup.advances = layoutGroup.advances.concat (advances);
+								layoutGroup.width += widthValue;
 
 							}
 
@@ -1220,7 +1333,6 @@ class TextEngine {
 					}
 
 					var nextSpaceIndex = text.indexOf (" ", textIndex);
-					shouldWrapWord = wordWrap && breakIndex > -1 && nextSpaceIndex > breakIndex && textIndex < breakIndex && (offsetX + getAdvancesWidth (getAdvances (text, textIndex, breakIndex)) > width);
 
 					if (formatRange.end <= previousSpaceIndex) {
 
@@ -1253,7 +1365,7 @@ class TextEngine {
 
 					}
 
-					if ((breakIndex > -1 && (spaceIndex > breakIndex || spaceIndex == -1 && breakIndex <= textIndex) && !shouldWrapWord) || textIndex > text.length || (spaceIndex > formatRange.end && !shouldWrapWord)) {
+					if ((breakIndex > -1 && breakIndex <= textIndex && (spaceIndex > breakIndex || spaceIndex == -1)) || textIndex > text.length || spaceIndex > formatRange.end) {
 
 						break;
 
@@ -1273,27 +1385,23 @@ class TextEngine {
 					advances = getAdvances (text, textIndex, formatRange.end);
 					widthValue = getAdvancesWidth (advances);
 
-					if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
+					if (wordWrap) {
 
-						layoutGroup.advances = layoutGroup.advances.concat (advances);
-						layoutGroup.width += widthValue;
-						layoutGroup.endIndex = formatRange.end;
-
-					} else {
-
-						nextLayoutGroup (textIndex, formatRange.end);
-
-						layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
-						layoutGroup.offsetX = offsetX;
-						layoutGroup.ascent = ascent;
-						layoutGroup.descent = descent;
-						layoutGroup.leading = leading;
-						layoutGroup.lineIndex = lineIndex;
-						layoutGroup.offsetY = offsetY;
-						layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-						layoutGroup.height = heightValue;
+						breakLongWords(formatRange.end);
 
 					}
+
+					nextLayoutGroup (textIndex, formatRange.end);
+
+					layoutGroup.advances = advances;
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = widthValue;
+					layoutGroup.height = heightValue;
 
 					offsetX += widthValue;
 					textIndex = formatRange.end;
@@ -1304,6 +1412,8 @@ class TextEngine {
 
 				if (textIndex == formatRange.end) {
 
+					alignBaseline();
+
 					textIndex++;
 					break;
 
@@ -1313,17 +1423,6 @@ class TextEngine {
 
 		}
 
-		#if dom
-		// Don't display the trailing break line
-		if (this.textField.__isHTML && text.charAt(text.length - 1) == "\n" && layoutGroups.length > 0) {
-			var last = layoutGroups[layoutGroups.length - 1];
-			if (last.endIndex == last.startIndex) {
-
-				last.offsetY = 0;
-
-			}
-		}
-		#end
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups) {
 			trace("LG", lg.advances.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
