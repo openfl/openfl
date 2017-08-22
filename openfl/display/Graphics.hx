@@ -402,6 +402,8 @@ import js.html.CanvasRenderingContext2D;
 		
 		var dataIndex = 0;
 		
+		if( winding == GraphicsPathWinding.NON_ZERO) __commands.nonZero();
+		
 		for (command in commands) {
 			
 			switch (command) {
@@ -441,6 +443,8 @@ import js.html.CanvasRenderingContext2D;
 			}
 			
 		}
+		
+		//if( winding == GraphicsPathWinding.NON_ZERO) __commands.oddEven(); maybe needs to be added later
 		
 	}
 	
