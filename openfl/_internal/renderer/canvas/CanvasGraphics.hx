@@ -48,15 +48,15 @@ class CanvasGraphics {
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
-	private static var canvasFillRule:CanvasWindingRule = CanvasWindingRule.EVENODD;
-	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer ();
+	private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
 	
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
@@ -196,7 +196,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill(canvasFillRule);
+		if (!hitTesting) context.fill (windingRule);
 		return canvas;
 		#end
 		
@@ -245,7 +245,6 @@ class CanvasGraphics {
 		context.beginPath ();
 		playCommands (fillCommands, false);
 		fillCommands.clear ();
-		canvasFillRule = CanvasWindingRule.EVENODD;
 		#end
 		
 	}
@@ -258,7 +257,6 @@ class CanvasGraphics {
 		playCommands (strokeCommands, true);
 		context.closePath ();
 		strokeCommands.clear ();
-		canvasFillRule = CanvasWindingRule.EVENODD;
 		#end
 		
 	}
@@ -571,6 +569,7 @@ class CanvasGraphics {
 		var startY = 0.0;
 		var setStart = false;
 		
+		windingRule = CanvasWindingRule.EVENODD;
 		setSmoothing (true);
 		
 		var data = new DrawCommandReader (commands);
@@ -853,6 +852,14 @@ class CanvasGraphics {
 						
 					}
 				
+				case WINDING_EVEN_ODD:
+					
+					windingRule = CanvasWindingRule.EVENODD;
+				
+				case WINDING_NON_ZERO:
+					
+					windingRule = CanvasWindingRule.NONZERO;
+				
 				default:
 					
 					data.skip (type);
@@ -892,12 +899,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill(canvasFillRule);
+					if (!hitTesting) context.fill (windingRule);
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					if (!hitTesting) context.fill(canvasFillRule);
+					if (!hitTesting) context.fill (windingRule);
 					
 				}
 				
@@ -998,6 +1005,8 @@ class CanvasGraphics {
 				var hasLineStyle = false;
 				var initStrokeX = 0.0;
 				var initStrokeY = 0.0;
+				
+				windingRule = CanvasWindingRule.EVENODD;
 				
 				var data = new DrawCommandReader (graphics.__commands);
 				
@@ -1128,11 +1137,6 @@ class CanvasGraphics {
 							
 							hasLineStyle = c.thickness != null;
 							strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-							
-						case NON_ZERO:
-						
-							data.readNonZero ();
-							canvasFillRule = CanvasWindingRule.NONZERO;
 						
 						case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 							
@@ -1197,7 +1201,6 @@ class CanvasGraphics {
 							var c = data.readDrawRoundRect ();
 							fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 							
-							
 							if (hasLineStyle) {
 								
 								strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
@@ -1205,6 +1208,8 @@ class CanvasGraphics {
 							}
 						
 						case DRAW_TRIANGLES:
+							
+							// TODO: Move to playCommands
 							
 							endFill ();
 							endStroke ();
@@ -1321,7 +1326,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									if (!hitTesting) context.fill(canvasFillRule);
+									if (!hitTesting) context.fill (windingRule);
 									i += 3;
 									continue;
 									
@@ -1366,6 +1371,18 @@ class CanvasGraphics {
 								i += 3;
 								
 							}
+						
+						case WINDING_EVEN_ODD:
+							
+							data.readWindingEvenOdd ();
+							fillCommands.windingEvenOdd ();
+							windingRule = CanvasWindingRule.EVENODD;
+						
+						case WINDING_NON_ZERO:
+							
+							data.readWindingNonZero ();
+							fillCommands.windingNonZero ();
+							windingRule = CanvasWindingRule.NONZERO;
 						
 						default:
 							

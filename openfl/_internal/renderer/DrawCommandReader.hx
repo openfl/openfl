@@ -100,10 +100,6 @@ class DrawCommandReader {
 			case END_FILL:
 				
 				//no parameters
-				
-			case EVEN_ODD:
-				
-				//no parameters
 			
 			case LINE_BITMAP_STYLE:
 				
@@ -131,15 +127,14 @@ class DrawCommandReader {
 			case MOVE_TO:
 				
 				fPos += 2; //x, y
-				
-			case NON_ZERO:
-				
-				//no parameters
-								
 			
 			case OVERRIDE_MATRIX:
 				
 				oPos += 1; //matrix
+			
+			case WINDING_EVEN_ODD, WINDING_NON_ZERO:
+				
+				//no parameters
 			
 			default:
 				
@@ -210,14 +205,14 @@ class DrawCommandReader {
 	public inline function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
 	public inline function readDrawTriangles ():DrawTrianglesView { advance (); prev = DRAW_TRIANGLES; return new DrawTrianglesView (this); }
 	public inline function readEndFill ():EndFillView { advance (); prev = END_FILL; return new EndFillView (this); }
-	public inline function readEvenOdd ():EvenOddView { advance (); prev = EVEN_ODD; return new EvenOddView (this); }
 	public inline function readLineBitmapStyle ():LineBitmapStyleView { advance (); prev = LINE_BITMAP_STYLE; return new LineBitmapStyleView (this); }
 	public inline function readLineGradientStyle ():LineGradientStyleView { advance (); prev = LINE_GRADIENT_STYLE; return new LineGradientStyleView (this); }
 	public inline function readLineStyle ():LineStyleView { advance (); prev = LINE_STYLE; return new LineStyleView (this); }
 	public inline function readLineTo ():LineToView { advance (); prev = LINE_TO; return new LineToView (this); }
 	public inline function readMoveTo ():MoveToView { advance (); prev = MOVE_TO; return new MoveToView (this); }
-	public inline function readNonZero ():NonZeroView { advance (); prev = NON_ZERO; return new NonZeroView (this); }
 	public inline function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
+	public inline function readWindingEvenOdd ():WindingEvenOddView { advance (); prev = WINDING_EVEN_ODD; return new WindingEvenOddView (this); }
+	public inline function readWindingNonZero ():WindingNonZeroView { advance (); prev = WINDING_NON_ZERO; return new WindingNonZeroView (this); }
 	
 	
 	public function reset ():Void {
@@ -360,13 +355,6 @@ abstract EndFillView (DrawCommandReader) {
 }
 
 
-abstract EvenOddView (DrawCommandReader) {
-	
-	public inline function new (d:DrawCommandReader) { this = d; }
-	
-}
-
-
 abstract LineBitmapStyleView (DrawCommandReader) { 
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
@@ -426,16 +414,23 @@ abstract MoveToView (DrawCommandReader) {
 }
 
 
-abstract NonZeroView (DrawCommandReader) {
+abstract OverrideMatrixView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
+	
+}
+
+
+abstract WindingEvenOddView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
 	
 }
 
 
-abstract OverrideMatrixView (DrawCommandReader) {
+abstract WindingNonZeroView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
 	
 }

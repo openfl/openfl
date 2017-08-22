@@ -402,7 +402,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		var dataIndex = 0;
 		
-		if( winding == GraphicsPathWinding.NON_ZERO) __commands.nonZero();
+		if (winding == GraphicsPathWinding.NON_ZERO) __commands.windingNonZero ();
 		
 		for (command in commands) {
 			
@@ -444,7 +444,8 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		//if( winding == GraphicsPathWinding.NON_ZERO) __commands.oddEven(); maybe needs to be added later
+		// TODO: Reset to EVEN_ODD after current path is filled?
+		//if (winding == GraphicsPathWinding.NON_ZERO) __commands.windingEvenOdd ();
 		
 	}
 	

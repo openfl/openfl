@@ -50,8 +50,7 @@ class CairoGraphics {
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
-	private static var cairoFillRule:CairoFillRule = CairoFillRule.EVEN_ODD;
-	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var fillPattern:CairoPattern;
 	private static var fillPatternMatrix:Matrix;
 	private static var graphics:Graphics;
@@ -60,7 +59,7 @@ class CairoGraphics {
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var strokePattern:CairoPattern;
 	
 	
@@ -226,7 +225,6 @@ class CairoGraphics {
 		cairo.newPath ();
 		playCommands (fillCommands, false);
 		fillCommands.clear ();
-		cairoFillRule = CairoFillRule.EVEN_ODD;
 		
 	}
 	
@@ -237,7 +235,6 @@ class CairoGraphics {
 		playCommands (strokeCommands, true);
 		cairo.closePath ();
 		strokeCommands.clear ();
-		cairoFillRule = CairoFillRule.EVEN_ODD;
 		
 	}
 	
@@ -527,7 +524,7 @@ class CairoGraphics {
 		var startY = 0.0;
 		var setStart = false;
 		
-		cairo.fillRule = cairoFillRule;
+		cairo.fillRule = EVEN_ODD;
 		cairo.antialias = SUBPIXEL;
 		
 		var hasPath:Bool = false;
@@ -951,6 +948,16 @@ class CairoGraphics {
 						
 					}
 				
+				case WINDING_EVEN_ODD:
+					
+					data.readWindingEvenOdd ();
+					cairo.fillRule = EVEN_ODD;
+				
+				case WINDING_NON_ZERO:
+					
+					data.readWindingNonZero ();
+					cairo.fillRule = WINDING;
+				
 				default:
 					
 					data.skip (type);
@@ -1185,11 +1192,6 @@ class CairoGraphics {
 							initStrokeY = c.y;
 							
 						}
-						
-					case NON_ZERO:
-						
-						data.readNonZero ();
-						cairoFillRule = CairoFillRule.WINDING;
 					
 					case END_FILL:
 						
@@ -1324,6 +1326,16 @@ class CairoGraphics {
 						
 						var c = data.readDrawTriangles ();
 						fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
+					
+					case WINDING_EVEN_ODD:
+						
+						data.readWindingEvenOdd ();
+						fillCommands.windingEvenOdd ();
+					
+					case WINDING_NON_ZERO:
+						
+						data.readWindingNonZero ();
+						fillCommands.windingNonZero ();
 					
 					default:
 						
