@@ -3,6 +3,7 @@ package openfl._internal.renderer.cairo;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoFillRule;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
@@ -49,6 +50,7 @@ class CairoGraphics {
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
+	private static var cairoFillRule:CairoFillRule = CairoFillRule.EVEN_ODD;
 	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var fillPattern:CairoPattern;
 	private static var fillPatternMatrix:Matrix;
@@ -224,6 +226,7 @@ class CairoGraphics {
 		cairo.newPath ();
 		playCommands (fillCommands, false);
 		fillCommands.clear ();
+		cairoFillRule = CairoFillRule.EVEN_ODD;
 		
 	}
 	
@@ -234,6 +237,7 @@ class CairoGraphics {
 		playCommands (strokeCommands, true);
 		cairo.closePath ();
 		strokeCommands.clear ();
+		cairoFillRule = CairoFillRule.EVEN_ODD;
 		
 	}
 	
@@ -523,7 +527,7 @@ class CairoGraphics {
 		var startY = 0.0;
 		var setStart = false;
 		
-		cairo.fillRule = EVEN_ODD;
+		cairo.fillRule = cairoFillRule;
 		cairo.antialias = SUBPIXEL;
 		
 		var hasPath:Bool = false;
@@ -1181,6 +1185,11 @@ class CairoGraphics {
 							initStrokeY = c.y;
 							
 						}
+						
+					case NON_ZERO:
+						
+						data.readNonZero ();
+						cairoFillRule = CairoFillRule.WINDING;
 					
 					case END_FILL:
 						
