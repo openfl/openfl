@@ -97,11 +97,13 @@ class DrawCommandBuffer {
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 				case END_FILL: var c = data.readEndFill (); endFill ();
+				case EVEN_ODD: var c = data.readEvenOdd (); evenOdd ();
 				case LINE_BITMAP_STYLE: var c = data.readLineBitmapStyle (); lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
 				case LINE_GRADIENT_STYLE: var c = data.readLineGradientStyle (); lineGradientStyle (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 				case LINE_STYLE: var c = data.readLineStyle (); lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 				case LINE_TO: var c = data.readLineTo (); lineTo (c.x, c.y);
 				case MOVE_TO: var c = data.readMoveTo (); moveTo (c.x, c.y);
+				case NON_ZERO: var c = data.readNonZero (); nonZero ();
 				case OVERRIDE_MATRIX: var c = data.readOverrideMatrix (); overrideMatrix (c.matrix);
 				default:
 				
@@ -297,6 +299,15 @@ class DrawCommandBuffer {
 	}
 	
 	
+	public function evenOdd ():Void {
+		
+		prepareWrite ();
+		
+		types.push (EVEN_ODD);
+		
+	}
+	
+	
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
 		
 		prepareWrite ();
@@ -362,6 +373,15 @@ class DrawCommandBuffer {
 		types.push (MOVE_TO);
 		f.push (x);
 		f.push (y);
+		
+	}
+	
+	
+	public function nonZero ():Void {
+		
+		prepareWrite ();
+		
+		types.push (NON_ZERO);
 		
 	}
 	
