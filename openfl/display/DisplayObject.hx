@@ -41,6 +41,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 	private static var __worldBranchDirty = 0;
+	private static var __isCachingAsMask:Bool;
 
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
@@ -605,7 +606,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__graphics != null) {
 
 			#if (js && html5)
-			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask);
+			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask || DisplayObject.__isCachingAsMask);
 			#end
 
 			GLRenderer.renderBitmap (this, renderSession);

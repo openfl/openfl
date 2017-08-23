@@ -101,12 +101,14 @@ class GLMaskManager extends AbstractMaskManager {
 
 				@:privateAccess mask.__visible = true;
 				@:privateAccess mask.__isMask = false;
+				@:privateAccess DisplayObject.__isCachingAsMask = true;
 				mask.__update (true, false);
 
 				mask.__updateCachedBitmapFn (renderSession, maskBitmapTable.last (), maskMatrixTable.last ());
 
-				@:privateAccess mask.__visible = false;
+				@:privateAccess DisplayObject.__isCachingAsMask = false;
 				@:privateAccess mask.__isMask = true;
+				@:privateAccess mask.__visible = false;
 				@:privateAccess mask.__renderable = false;
 			}
 			
