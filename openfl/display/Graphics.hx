@@ -141,7 +141,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 		__commands.beginFill (color & 0xFFFFFF, alpha);
 
-		if (alpha > 0) __visible = true;
+		__visible = true;
 
 	}
 
