@@ -231,8 +231,11 @@ class DOMTextField {
 						text = StringTools.htmlEscape (textEngine.text);
 						
 					} else {
-
+						#if dom
 						text = textField.__rawHtmlText;
+						#else
+						text = textField.text;
+						#end
 						var matchText = text;
 						while (__regexFont.match (matchText)) {
 							
