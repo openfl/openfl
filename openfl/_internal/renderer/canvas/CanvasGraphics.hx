@@ -1142,7 +1142,7 @@ class CanvasGraphics {
 	private inline static function beginFill(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readBeginFill ();
-		if (c.alpha < 0.005) {
+		if (c.alpha < 0.005 && !isMask) {
 
 			hasFill = false;
 
