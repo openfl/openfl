@@ -21,6 +21,8 @@ class MorphShape extends Shape {
 		super ();
 
 		__symbol = symbol;
+		@:privateAccess this.graphics.__symbol = symbol;
+
 		__swf = swf;
 
 		if ( __symbol.cachedHandlers == null ) {
@@ -69,73 +71,7 @@ class MorphShape extends Shape {
 
 			var graphics = this.graphics;
 			graphics.clear();
-
-			for (command in handler.commands) {
-
-				switch (command) {
-
-					case BeginFill (color, alpha):
-
-
-						graphics.beginFill (color, alpha);
-
-					case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-
-						#if openfl
-						var bitmap:BitmapSymbol = cast __swf.symbols.get (bitmapID);
-
-						if (bitmap != null && bitmap.path != "") {
-
-							graphics.beginBitmapFill (openfl.display.BitmapData.getFromSymbol(bitmap), matrix, repeat, smooth);
-
-						}
-
-						#end
-
-					case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-
-						#if (cpp || neko)
-						this.cacheAsBitmap = true;
-						#end
-						graphics.beginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-
-					case CurveTo (controlX, controlY, anchorX, anchorY):
-
-						#if (cpp || neko)
-						this.cacheAsBitmap = true;
-						#end
-						graphics.curveTo (controlX, controlY, anchorX, anchorY);
-
-					case EndFill:
-
-						graphics.endFill ();
-
-					case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-
-						if (thickness != null) {
-
-							graphics.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
-
-						} else {
-
-							graphics.lineStyle ();
-
-						}
-
-					case LineTo (x, y):
-
-						graphics.lineTo (x, y);
-
-					case MoveTo (x, y):
-
-						graphics.moveTo (x, y);
-
-					case DrawImage (bitmapID, matrix, smooth):
-
-						graphics.drawImageWithId (bitmapID, matrix, smooth);
-
-				}
-			}
+			graphics.processCommands(handler.commands);
 		}
 
 		super.__update(transformOnly, updateChildren);

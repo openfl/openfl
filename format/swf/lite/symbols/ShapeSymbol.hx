@@ -103,56 +103,7 @@ class ShapeSymbol extends SWFSymbol {
 	{
 		graphics = @:privateAccess new Graphics();
 
-		for (command in shapeCommands) {
-
-			switch (command) {
-
-				case BeginFill (color, alpha):
-
-					graphics.beginFill (color, alpha);
-
-				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-
-					graphics.beginBitmapFillWithId (bitmapID, matrix, repeat, smooth);
-
-				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-
-					graphics.beginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-
-				case CurveTo (controlX, controlY, anchorX, anchorY):
-
-					graphics.curveTo (controlX, controlY, anchorX, anchorY);
-
-				case DrawImage (bitmapID, matrix, smooth):
-
-					graphics.drawImageWithId (bitmapID, matrix, smooth);
-
-				case EndFill:
-
-					graphics.endFill ();
-
-				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-
-					if (thickness != null) {
-
-						graphics.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
-
-					} else {
-
-						graphics.lineStyle ();
-
-					}
-
-				case LineTo (x, y):
-
-					graphics.lineTo (x, y);
-
-				case MoveTo (x, y):
-
-					graphics.moveTo (x, y);
-
-			}
-		}
+		graphics.processCommands(shapeCommands);
 
 		graphics.readOnly = true;
 	}

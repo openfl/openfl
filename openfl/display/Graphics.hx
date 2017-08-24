@@ -3,6 +3,9 @@ package openfl.display; #if !openfl_legacy
 
 import lime.graphics.Image;
 import lime.graphics.GLRenderContext;
+import format.swf.exporters.core.ShapeCommand;
+import format.swf.lite.symbols.ShapeSymbol;
+import format.swf.lite.symbols.SWFSymbol;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.opengl.utils.RenderTexture;
@@ -72,7 +75,7 @@ import js.html.CanvasRenderingContext2D;
 	#end
 
 	private var __bitmap(default, set):BitmapData;
-	@:s private var __symbol:format.swf.lite.symbols.ShapeSymbol;
+	@:s private var __symbol:SWFSymbol;
 
 	private function new (?initCommands = true) {
 
@@ -88,6 +91,59 @@ import js.html.CanvasRenderingContext2D;
 		}
 		#end
 
+	}
+
+	public function processCommands(shapeCommands:Array<ShapeCommand>) {
+		for (command in shapeCommands) {
+
+			switch (command) {
+
+				case BeginFill (color, alpha):
+
+					beginFill (color, alpha);
+
+				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
+
+					beginBitmapFillWithId (bitmapID, matrix, repeat, smooth);
+
+				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+
+					beginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+
+				case CurveTo (controlX, controlY, anchorX, anchorY):
+
+					curveTo (controlX, controlY, anchorX, anchorY);
+
+				case DrawImage (bitmapID, matrix, smooth):
+
+					drawImageWithId (bitmapID, matrix, smooth);
+
+				case EndFill:
+
+					endFill ();
+
+				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+
+					if (thickness != null) {
+
+						lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
+
+					} else {
+
+						lineStyle ();
+
+					}
+
+				case LineTo (x, y):
+
+					lineTo (x, y);
+
+				case MoveTo (x, y):
+
+					moveTo (x, y);
+
+			}
+		}
 	}
 
 
@@ -766,7 +822,7 @@ import js.html.CanvasRenderingContext2D;
 
 	private function set___bitmap (value:BitmapData):BitmapData {
 
-		if (__bitmap != null && (__symbol == null || !__symbol.useBitmapCache)) {
+		if (__bitmap != null && (__symbol == null || !Std.is(__symbol, ShapeSymbol) || !cast(__symbol, ShapeSymbol).useBitmapCache)) {
 
 			__bitmap.dispose ();
 
@@ -778,7 +834,7 @@ import js.html.CanvasRenderingContext2D;
 
 	public inline function get_snapCoordinates ():Bool {
 
-		return __symbol != null && __symbol.snapCoordinates;
+		return __symbol != null && Std.is(__symbol, ShapeSymbol) && cast(__symbol, ShapeSymbol).snapCoordinates;
 
 	}
 
