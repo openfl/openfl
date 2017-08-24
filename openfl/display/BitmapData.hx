@@ -1222,6 +1222,10 @@ class BitmapData implements IBitmapDrawable {
 		__scaleX = scaleX;
 		__scaleY = scaleY;
 
+		if ( image != null ) {
+			image.resize(width, height);
+		}
+
 	}
 
 
