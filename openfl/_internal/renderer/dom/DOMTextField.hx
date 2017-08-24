@@ -223,19 +223,19 @@ class DOMTextField {
 					
 					untyped textField.__textFormat.size = scaledSize;
 					
-					var text = "";
+					var text = textEngine.text;
 					var adjustment:Float = 0;
 					
 					if (!textField.__isHTML) {
 
-						text = StringTools.htmlEscape (textEngine.text);
+						text = StringTools.htmlEscape (text);
 						
 					} else {
+					
 						#if dom
 						text = textField.__rawHtmlText;
-						#else
-						text = textField.text;
 						#end
+
 						var matchText = text;
 						while (__regexFont.match (matchText)) {
 							
