@@ -1312,7 +1312,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 			if (__isHTML) {
 
-				__updateText (HtmlParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
+				__updateText (HtmlParser.parse(__rawHtmlText, __textFormat, __textEngine.textFormatRanges));
 
 			}
 
@@ -1377,7 +1377,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 				if (__isHTML && __rawHtmlText != null) {
 
-					__updateText (__rawHtmlText);
+					__updateText (__text);
 					__dirty = true;
 					__layoutDirty = true;
 					__setRenderDirty ();
@@ -1838,8 +1838,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private function get_htmlText ():String {
-		
+
+		#if (js && html5 && dom)
+		return	__rawHtmlText;
+		#else
 		return __text;
+		#end
 		
 	}
 	
@@ -1862,33 +1866,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 
-		#if (js && html5 && dom)
-
-		if (__textEngine.textFormatRanges.length > 1) {
-
-			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-
-		}
-
-		var range = __textEngine.textFormatRanges[0];
-		range.format = __textFormat;
-		range.start = 0;
-
-		if (__renderedOnCanvasWhileOnDOM) {
-
-			range.end = value.length;
-			__updateText (value);
-
-		} else {
-
-			range.end = __rawHtmlText.length;
-			__updateText (__rawHtmlText);
-
-		}
-		#else
 		__updateText (value);
-		#end
-		
+
 		return value;
 		
 	}

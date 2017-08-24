@@ -223,15 +223,16 @@ class DOMTextField {
 					
 					untyped textField.__textFormat.size = scaledSize;
 					
-					var text = textEngine.text;
+					var text = "";
 					var adjustment:Float = 0;
 					
 					if (!textField.__isHTML) {
-						
-						text = StringTools.htmlEscape (text);
+
+						text = StringTools.htmlEscape (textEngine.text);
 						
 					} else {
-						
+
+						text = textField.__rawHtmlText;
 						var matchText = text;
 						while (__regexFont.match (matchText)) {
 							
@@ -271,7 +272,7 @@ class DOMTextField {
 							}
 							
 							text = StringTools.replace( text, fontText, "<span style='" + style + "'>" );
-							
+
 							matchText = __regexFont.matchedRight();
 						}
 						
@@ -287,9 +288,9 @@ class DOMTextField {
 					textField.__div.innerHTML = new EReg ("\r\n", "g").replace (text, "<br>");
 					textField.__div.innerHTML = new EReg ("\n", "g").replace (textField.__div.innerHTML, "<br>");
 					textField.__div.innerHTML = new EReg ("\r", "g").replace (textField.__div.innerHTML, "<br>");
-					
+
 					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
-					
+
 					textField.__textFormat.size = unscaledSize;
 					textField.__textFormat.leading = unscaledLeading;
 					
@@ -331,14 +332,23 @@ class DOMTextField {
 					}
 					
 					textField.__dirty = false;
-					
+
+					var scrollTo = 0;
+					for (i in 0...textField.scrollV - 1) {
+
+						scrollTo += Math.ceil(textEngine.lineHeights[i]);
+
+					}
+
+					textField.__div.scrollTop = scrollTo;
+
 				} else {
 					
 					if (textField.__div != null) {
-						
+
 						renderSession.element.removeChild (textField.__div);
 						textField.__div = null;
-						
+
 					}
 					
 				}
@@ -367,7 +377,7 @@ class DOMTextField {
 		}
 		
 		#end
-		
+
 	}
 
 
@@ -377,5 +387,4 @@ class DOMTextField {
 		
 	}
 	
-
 }
