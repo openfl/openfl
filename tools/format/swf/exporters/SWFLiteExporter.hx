@@ -1513,6 +1513,13 @@ class SWFLiteExporter {
 								js += ind() + "}";
 							}
 							if(_force_close) js += ind() + "// force close due to same bracket close collision, double-check statements";
+
+							// take care of common replacements
+							js = js.replace(" int(", " parseInt(");
+							js = js.replace("flash_", "openfl_");
+							js = js.replace("flash.", "openfl.");
+							js = js.replace ("fl_motion", "wwlib_graphics");
+
 							LogHelper.info ("", "javascript:\n"+js);
 
 							LogHelper.info("", Std.string(pcodes));
