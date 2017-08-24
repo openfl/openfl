@@ -12,15 +12,25 @@ import openfl.geom.Rectangle;
 class BitmapFilter {
 	
 	
-	private var __cacheObject:Bool;
-	private var __filterRequiresCopy:Bool;
+	private var __bottomExtension:Int;
+	private var __leftExtension:Int;
+	private var __needSecondBitmapData:Bool;
 	private var __numShaderPasses:Int;
+	private var __preserveObject:Bool;
+	private var __renderDirty:Bool;
+	private var __rightExtension:Int;
+	private var __topExtension:Int;
 	
 	
 	public function new () {
 		
-		__filterRequiresCopy = true;
+		__bottomExtension = 0;
+		__leftExtension = 0;
+		__needSecondBitmapData = true;
 		__numShaderPasses = 0;
+		__preserveObject = false;
+		__rightExtension = 0;
+		__topExtension = 0;
 		
 	}
 	

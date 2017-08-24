@@ -127,11 +127,14 @@ class DrawCommandReader {
 			case MOVE_TO:
 				
 				fPos += 2; //x, y
-				
 			
 			case OVERRIDE_MATRIX:
 				
 				oPos += 1; //matrix
+			
+			case WINDING_EVEN_ODD, WINDING_NON_ZERO:
+				
+				//no parameters
 			
 			default:
 				
@@ -208,6 +211,8 @@ class DrawCommandReader {
 	public inline function readLineTo ():LineToView { advance (); prev = LINE_TO; return new LineToView (this); }
 	public inline function readMoveTo ():MoveToView { advance (); prev = MOVE_TO; return new MoveToView (this); }
 	public inline function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
+	public inline function readWindingEvenOdd ():WindingEvenOddView { advance (); prev = WINDING_EVEN_ODD; return new WindingEvenOddView (this); }
+	public inline function readWindingNonZero ():WindingNonZeroView { advance (); prev = WINDING_NON_ZERO; return new WindingNonZeroView (this); }
 	
 	
 	public function reset ():Void {
@@ -413,5 +418,19 @@ abstract OverrideMatrixView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
+	
+}
+
+
+abstract WindingEvenOddView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
+	
+}
+
+
+abstract WindingNonZeroView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
 	
 }

@@ -107,10 +107,7 @@ extern class Loader extends DisplayObjectContainer {
 	 */
 	public var contentLoaderInfo (default, null):LoaderInfo;
 	
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
-	#end
+	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
 	
 	
 	/**

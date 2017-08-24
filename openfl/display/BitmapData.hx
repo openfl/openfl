@@ -528,6 +528,7 @@ class BitmapData implements IBitmapDrawable {
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
 			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
+			renderSession.blendModeManager.setBlendMode(blendMode);
 			
 			if (!smoothing) {
 				
@@ -617,6 +618,7 @@ class BitmapData implements IBitmapDrawable {
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
+			renderSession.blendModeManager.setBlendMode(blendMode);
 			
 			if (clipRect != null) {
 				

@@ -103,6 +103,8 @@ class DrawCommandBuffer {
 				case LINE_TO: var c = data.readLineTo (); lineTo (c.x, c.y);
 				case MOVE_TO: var c = data.readMoveTo (); moveTo (c.x, c.y);
 				case OVERRIDE_MATRIX: var c = data.readOverrideMatrix (); overrideMatrix (c.matrix);
+				case WINDING_EVEN_ODD: var c = data.readWindingEvenOdd (); windingEvenOdd ();
+				case WINDING_NON_ZERO: var c = data.readWindingNonZero (); windingNonZero ();
 				default:
 				
 			}
@@ -391,6 +393,24 @@ class DrawCommandBuffer {
 		
 		types.push (OVERRIDE_MATRIX);
 		o.push (matrix);
+		
+	}
+	
+	
+	public function windingEvenOdd ():Void {
+		
+		prepareWrite ();
+		
+		types.push (WINDING_EVEN_ODD);
+		
+	}
+	
+	
+	public function windingNonZero ():Void {
+		
+		prepareWrite ();
+		
+		types.push (WINDING_NON_ZERO);
 		
 	}
 	

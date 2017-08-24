@@ -3,6 +3,7 @@ package openfl._internal.renderer.cairo;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoFillRule;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
@@ -49,7 +50,7 @@ class CairoGraphics {
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
-	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var fillPattern:CairoPattern;
 	private static var fillPatternMatrix:Matrix;
 	private static var graphics:Graphics;
@@ -58,7 +59,7 @@ class CairoGraphics {
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var strokePattern:CairoPattern;
 	
 	
@@ -947,6 +948,16 @@ class CairoGraphics {
 						
 					}
 				
+				case WINDING_EVEN_ODD:
+					
+					data.readWindingEvenOdd ();
+					cairo.fillRule = EVEN_ODD;
+				
+				case WINDING_NON_ZERO:
+					
+					data.readWindingNonZero ();
+					cairo.fillRule = WINDING;
+				
 				default:
 					
 					data.skip (type);
@@ -1315,6 +1326,16 @@ class CairoGraphics {
 						
 						var c = data.readDrawTriangles ();
 						fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
+					
+					case WINDING_EVEN_ODD:
+						
+						data.readWindingEvenOdd ();
+						fillCommands.windingEvenOdd ();
+					
+					case WINDING_NON_ZERO:
+						
+						data.readWindingNonZero ();
+						fillCommands.windingNonZero ();
 					
 					default:
 						
