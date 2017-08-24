@@ -2,6 +2,7 @@ package openfl.display; #if !openfl_legacy
 
 
 import lime.graphics.Image;
+import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.opengl.utils.RenderTexture;
@@ -634,6 +635,14 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.moveTo (x, y);
 
+	}
+
+
+	public function createTextures(gl:GLRenderContext):Void {
+		var bitmapDatas = @:privateAccess __commands.bd;
+		for(bitmapData in bitmapDatas) {
+			bitmapData.getTexture(gl);
+		}
 	}
 
 
