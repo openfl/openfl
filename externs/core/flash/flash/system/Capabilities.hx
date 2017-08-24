@@ -22,6 +22,11 @@ package flash.system; #if (!display && flash)
 	public static var isDebugger (default, null):Bool;
 	@:require(flash10) public static var isEmbeddedInAcrobat (default, null):Bool;
 	public static var language (default, null):String;
+	
+	#if air
+	public static var languages (default, never):Array<Dynamic>;
+	#end
+	
 	public static var localFileReadDisable (default, null):Bool;
 	public static var manufacturer (default, null):String;
 	@:require(flash10) public static var maxLevelIDC (default, null):Int;

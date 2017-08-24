@@ -56,6 +56,10 @@ extern class TouchEvent extends Event {
 	public var isRelatedObjectInaccessible:Bool;
 	#end
 	
+	#if air
+	public var isTouchPointCanceled:Bool;
+	#end
+	
 	public var localX:Float;
 	public var localY:Float;
 	public var pressure:Float;
@@ -65,9 +69,21 @@ extern class TouchEvent extends Event {
 	public var sizeY:Float;
 	public var stageX:Float;
 	public var stageY:Float;
+	
+	#if air
+	public var timestamp:Float;
+	public var touchIntent:TouchEventIntent;
+	#end
+	
 	public var touchPointID:Int;
 	
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null, samples:ByteArray = null, isTouchPointCanceled:Bool = false);
+	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null, samples:ByteArray = null, isTouchPointCanceled:Bool = false #if air , commandKey : Bool=false, controlKey : Bool=false, ?timestamp : Float, ?touchIntent : TouchEventIntent, ?samples : flash.utils.ByteArray, isTouchPointCanceled : Bool=false #end);
+	
+	#if air
+	public function getSamples (buffer:ByteArray, append:Bool = false):Int;
+	public function isToolButtonDown (index:Int):Bool;
+	#end
+	
 	public function updateAfterEvent ():Void;
 	
 	

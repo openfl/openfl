@@ -9,10 +9,10 @@ extern class ProgressEvent extends Event {
 	public var bytesLoaded:Float;
 	public var bytesTotal:Float;
 	
-	#if (flash && air)
-	public static var STANDARD_ERROR_DATA : String;
-	public static var STANDARD_INPUT_PROGRESS : String;
-	public static var STANDARD_OUTPUT_DATA : String;
+	#if air
+	public static var STANDARD_ERROR_DATA (default, never):String;
+	public static var STANDARD_INPUT_PROGRESS (default, never):String;
+	public static var STANDARD_OUTPUT_DATA (default, never):String;
 	#end
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0);

@@ -11,6 +11,11 @@ extern class FileReference extends EventDispatcher {
 	public var creationDate (default, null):Date;
 	public var creator (default, null):String;
 	@:require(flash10) public var data (default, null):ByteArray;
+	
+	#if air
+	public var extension (default, never):String;
+	#end
+	
 	public var modificationDate (default, null):Date;
 	public var name (default, null):String;
 	public var size (default, null):Int;
@@ -25,6 +30,9 @@ extern class FileReference extends EventDispatcher {
 	@:require(flash10) public function save (data:Dynamic, defaultFileName:String = null):Void;
 	public function upload (request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void;
 	
+	#if air
+	public function uploadUnencoded (request:URLRequest):Void;
+	#end
 	
 }
 

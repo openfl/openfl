@@ -13,6 +13,8 @@ extern class InteractiveObject extends DisplayObject {
 	
 	#if flash
 	public var contextMenu:flash.ui.ContextMenu;
+	#elseif air
+	public var contextMenu:flash.display.NativeMenu;
 	#end
 	
 	public var doubleClickEnabled:Bool;

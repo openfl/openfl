@@ -30,6 +30,10 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	private inline function get_application ():Application { return Lib.application; }
 	
+	#if air
+	public var autoOrients:Bool;
+	#end
+	
 	#if flash
 	@:require(flash15) public var browserZoomFactor (default, null):Float;
 	#end
@@ -55,11 +59,6 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var displayState:StageDisplayState;
 	public var focus:InteractiveObject;
 	public var frameRate:Float;
-	
-	#if (flash && air)
-	public var nativeWindow(default,null) : NativeWindow;
-	#end
-	
 	public var fullScreenHeight (default, null):UInt;
 	
 	#if flash
@@ -70,6 +69,11 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	#if flash
 	@:require(flash11_2) public var mouseLock:Bool;
+	#end
+	
+	#if air
+	public var nativeWindow (default, never):NativeWindow;
+	public var orientation (default, never):StageOrientation;
 	#end
 	
 	public var quality:StageQuality;
@@ -89,6 +93,11 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	public var stageWidth (default, null):Int;
+	
+	#if air
+	public var supportedOrientations (default, never):Vector<StageOrientation>;
+	#end
+	
 	public var window (get, never):Window;
 	
 	private inline function get_window ():Window { return Lib.application.window; }
@@ -103,11 +112,20 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	
-	public function invalidate ():Void;
+	#if air
+	public function assignFocus (objectToFocus:InteractiveObject, direction:FocusDirection):Void;
+	#end
 	
+	public function invalidate ():Void;
 	
 	#if flash
 	public function isFocusInaccessible ():Bool;
+	#end
+	
+	#if air
+	public function setAspectRatio (newAspectRatio:StageAspectRatio):Void;
+	public function setOrientation (newOrientation:StageOrientation):Void;
+	public static var supportsOrientationChange (default, never):Bool;
 	#end
 	
 	
