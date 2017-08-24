@@ -1,6 +1,5 @@
 package openfl.display;
 
-
 import lime.utils.Log;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
@@ -47,31 +46,39 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var isPlaying (get, never):Bool;
 	public var totalFrames (get, never):Int;
 	
-	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
+	private var __cachedChildFrameSymbolInstancesByFrameObjectId:Map<Int, FrameSymbolInstance>;
+	private var __cachedChildFrameSymbolInstancesByDisplayObject:Map<DisplayObject, Array<FrameSymbolInstance>>;
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
 	private var __currentLabel:String;
 	private var __currentLabels:Array<FrameLabel>;
 	private var __frameScripts:Map<Int, Void->Void>;
-	private var __frameTime:Int;
-	private var __lastFrameScriptEval:Int;
 	private var __lastFrameUpdate:Int;
 	private var __playing:Bool;
 	private var __swf:SWFLite;
 	private var __symbol:SpriteSymbol;
+	#if (!swflite_parent_fps && !swf_parent_fps)
+	private var __frameTime:Int;
 	private var __timeElapsed:Int;
+	#end
 	private var __totalFrames:Int;
-	
-	
+
+
 	public function new () {
-		
+
 		super ();
 		
 		__currentFrame = 1;
+		__lastFrameUpdate = -1;
 		__currentLabels = [];
 		__totalFrames = 0;
 		enabled = true;
-		
+			
+		#if (!swflite_parent_fps && !swf_parent_fps)
+		__frameTime = Std.int(1000 / 24); // default; overridden later by play()
+		__timeElapsed = 0;
+		#end
+			
 		if (__initSymbol != null) {
 			
 			__swf = __initSWF;
@@ -112,7 +119,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
-		
+		trace(__name + " gotoAndPlay frame "+ frame);
 		play ();
 		__goto (__resolveFrameReference (frame));
 		
@@ -120,23 +127,25 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
-		
-		stop ();
+		trace(__name + " gotoAndStop frame "+ frame);
+
+		play ();
 		__goto (__resolveFrameReference (frame));
-		
+		stop ();
 	}
 	
 	
 	public function nextFrame ():Void {
-		
-		stop ();
-		__goto (__currentFrame + 1);
+		trace(__name + " nextFrame "+ (__currentFrame + 1));
+
+		gotoAndStop (__currentFrame + 1);
 		
 	}
 	
 	
 	public function play ():Void {
-		
+		trace(__name + " play "+ (__currentFrame));
+
 		if (__symbol == null || __playing || __totalFrames < 2) return;
 		
 		__playing = true;
@@ -150,232 +159,333 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	public function prevFrame ():Void {
-		
-		stop ();
-		__goto (__currentFrame - 1);
+		trace(__name + " nextFrame "+ (__currentFrame - 1));
+
+		gotoAndStop (__currentFrame - 1);
 		
 	}
 	
 	
 	public function stop ():Void {
-		
+		trace(__name + " stop");
+
 		__playing = false;
 		
 	}
-	
-	
+
 	public override function __enterFrame (deltaTime:Int):Void {
-		
-		if (__symbol != null && __playing) {
-			
-			var nextFrame = __getNextFrame (deltaTime);
-			
-			if (__lastFrameScriptEval == nextFrame) {
-				
-				return;
-				
-			}
-			
-			if (__frameScripts != null) {
-				
-				if (nextFrame < __currentFrame) {
-					
-					__evaluateFrameScripts (__totalFrames);
-					__currentFrame = 1;
-					
-				}
-				
-				__evaluateFrameScripts (nextFrame);
-				
-			} else {
-				
-				__currentFrame = nextFrame;
-				
-			}
-			
+		// calculate what the current frame should be
+		var __targetFrame: Int = __getNextFrame (deltaTime);
+
+		// __lastFrameUpdate represents the last target frame that completed
+		// all the inbetween FrameObject updates don't matter those are just compositions
+		// leading up to the final target frame
+		// the exception to this is if a frame script stops playback
+
+		// play forward through frame scripts up to and including the current frame,
+		// taking looping into account
+		var frameIndex:Int = __lastFrameUpdate == -1 ? 0 : __lastFrameUpdate; // will be +1'ed soon
+		var frame:Frame;
+		var clearChildren:Bool = false;
+		if (-1 == __lastFrameUpdate) {
+			// clear once before compositing frames 1...__targetFrame
+			clearChildren = true;
 		}
-		
-		if (__symbol != null && __currentFrame != __lastFrameUpdate) {
-			
-			__updateFrameLabel ();
-			
-			var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
-			
-			var frame:Int;
-			var frameData:Frame;
-			var instance:FrameSymbolInstance;
-			
-			// TODO: Handle updates only from previous frame?
-			
-			for (i in 0...__currentFrame) {
-				
-				frame = i + 1;
-				frameData = __symbol.frames[i];
-				
-				if (frameData.objects == null) continue;
-				
-				for (frameObject in frameData.objects) {
-					
-					switch (frameObject.type) {
-						
-						case CREATE:
-							
-							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-							
-							if (instance != null) {
-								
-								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
-								
-							}
-						
-						case UPDATE:
-							
-							instance = currentInstancesByFrameObjectID.get (frameObject.id);
-							
-							if (instance != null && instance.displayObject != null) {
-								
-								__updateDisplayObject (instance.displayObject, frameObject);
-								
-							}
-						
-						case DESTROY:
-							
-							currentInstancesByFrameObjectID.remove (frameObject.id);
-						
-					}
-					
-				}
-				
-			}
-			
-			// TODO: Less garbage?
-			
-			var currentInstances = new Array<FrameSymbolInstance> ();
-			var currentMasks = new Array<FrameSymbolInstance> ();
-			
-			for (instance in currentInstancesByFrameObjectID) {
-				
-				if (currentInstances.indexOf (instance) == -1) {
-					
-					if (instance.clipDepth > 0) {
-						
-						currentMasks.push (instance);
-						
-					} else {
-						
-						currentInstances.push (instance);
-						
-					}
-					
-				}
-				
-			}
-			
-			currentInstances.sort (__sortDepths);
-			
-			var existingChild:DisplayObject;
-			var targetDepth:Int;
-			var targetChild:DisplayObject;
-			var child:DisplayObject;
-			var maskApplied:Bool;
-			
-			for (i in 0...currentInstances.length) {
-				
-				existingChild = __children[i];
-				instance = currentInstances[i];
-				
-				targetDepth = instance.depth;
-				targetChild = instance.displayObject;
-				
-				if (existingChild != targetChild) {
-					
-					child = targetChild;
-					addChildAt (targetChild, i);
-					
-				} else {
-					
-					child = __children[i];
-					
-				}
-				
-				maskApplied = false;
-				
-				for (mask in currentMasks) {
-					
-					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
-						
-						child.mask = mask.displayObject;
-						maskApplied = true;
-						break;
-						
-					}
-					
-				}
-				
-				if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
-					
-					child.mask = null;
-					
-				}
-				
-			}
-			
-			// TODO: Do not remove manually added children
-			
-			while (__children.length > currentInstances.length) {
-				
-				removeChild (__children[__children.length - 1]);
-				
-			}
-			
-			__lastFrameUpdate = __currentFrame;
-			
-		}
-		
-		super.__enterFrame (deltaTime);
-		
-	}
-	
-	
-	private function __evaluateFrameScripts (advanceToFrame:Int):Void {
-		
-		for (frame in __currentFrame...advanceToFrame + 1) {
-			
-			if (frame == __lastFrameScriptEval) continue;
-			
-			__lastFrameScriptEval = frame;
-			__currentFrame = frame;
-			
-			if (__frameScripts.exists (frame)) {
-				
-				var script = __frameScripts.get (frame);
-				script ();
-				
-			}
-			
-			if (!__playing) {
-				
+		while (frameIndex != __targetFrame)
+		{
+			// nothing here to draw or animate
+			if (null == __symbol)
+			{
 				break;
-				
 			}
-			
+
+			if (!__playing && __lastFrameUpdate != -1) {
+				// if we're not playing
+				// and we've drawn at least one target frame
+				// then abort
+
+				// also catches the case where a frame script
+				// called stop();
+				break;
+			}
+
+			frameIndex = frameIndex + 1;
+			if (frameIndex > __totalFrames) {
+				frameIndex = frameIndex - __totalFrames;
+
+				// clear this frame because we've looped
+				clearChildren = true;
+			}
+
+			if (clearChildren)
+			{
+				// remove non-manual children
+				// TODO: this is so nasty but first priority is making it work according to spec right now
+				var i = __children.length;
+				while (--i >= 0)
+				{
+					var child:DisplayObject = __children[i];
+					if (__cachedChildFrameSymbolInstancesByDisplayObject.exists(child)) {
+						removeChildAt(i);
+					}
+				}
+			}
+			clearChildren = false;
+
+
+
+
+			// update FrameSymbolInstances with reference to current child index
+			// detect any children which were manually added since last frame
+			// we do this linkedlist thing to try to avoid multiple for...loops later
+			var onScreenFrameSymbolInstances:Array<FrameSymbolInstance> = new Array();
+			var onScreenframeSymbolInstancesByFrameObjectId: Map<Int, FrameSymbolInstance> = new Map();
+			for (i in 0...__children.length)
+			{
+				// TODO: move above loop for gc optimization?
+				var child:DisplayObject = __children[i];
+				var frameSymbolInstances:Array<FrameSymbolInstance> = __cachedChildFrameSymbolInstancesByDisplayObject.get(child);
+				if (null != frameSymbolInstances) {
+					for (ii in 0...frameSymbolInstances.length) {
+						var frameSymbolInstance = frameSymbolInstances[ii];
+						// link the list (ignoring off-screen links which will become disjointed)
+						if (ii > 0) {
+							var lastFrameSymbolInstance = frameSymbolInstances[ii-1];
+							frameSymbolInstance.prevFrameSymbolInstance = lastFrameSymbolInstance;
+							lastFrameSymbolInstance.nextFrameSymbolInstance = frameSymbolInstance;
+						}
+						frameSymbolInstance.childIndex = i;
+						onScreenFrameSymbolInstances.push(frameSymbolInstance);
+						onScreenframeSymbolInstancesByFrameObjectId.set(frameSymbolInstance.frameObject.id, frameSymbolInstance);
+					}
+				}
+				else {
+					// manually added child
+					new FrameSymbolInstance(child, null);
+				}
+			}
+
+			// perform PlaceObject/RemoveObject operations on child list since last frame arrangement
+			var currentMasks = new Array<FrameSymbolInstance> ();
+			frame = __symbol.frames[frameIndex-1]; // .frames[] is 0-indexed
+			if (frame.objects != null)
+			{
+				for (frameObject in frame.objects)
+				{
+					// get reference to child from cache
+					// NOTICE: this means child instances are preserved between being added/removed during animation
+					// TODO: move these outside loop
+					var instance:FrameSymbolInstance = __cachedChildFrameSymbolInstancesByFrameObjectId.get (frameObject.id);
+					// TODO: this only happens if __createObject fails to instantiate the DisplayObject child (e.g., missing baseClassName implementation)
+					if (instance == null) continue;
+					var isOnScreen:Bool = onScreenframeSymbolInstancesByFrameObjectId.exists (frameObject.id);
+					switch (frameObject.type) {
+
+						case CREATE:
+							__updateDisplayObject (instance.displayObject, frameObject);
+
+							// if child is in the list
+							if (isOnScreen) {
+								// leave it; do nothing more
+							} else {
+								// if its a mask
+								if (instance.frameObject.clipDepth > 0) {
+									// add it to the mask list and do nothing here
+									currentMasks.push (instance);
+								}
+								else {
+									// calculate new child insertion index (aka. Ferrets in a Mason Jar)
+									var targetIndex: Int;
+
+									// TODO:
+									// find first non-manual child already on screen which would overlap this child (depth)
+									//
+									// if one, insert behind it
+									//
+									// if none,
+									//   find first non-manual child already on screen which this child would overlap (depth)
+									//
+									//   if one, insert after it + any manual children following it
+									//   if none,
+									//     insert top-most (.push())
+									//
+									// go to next child
+									//
+
+									var nearestMatch: FrameSymbolInstance = null;
+									// assumes array is ordered by bg to fg; which it is
+									var i = onScreenFrameSymbolInstances.length;
+									while (--i >= 0)
+									{
+										var onScreenFSI:FrameSymbolInstance = onScreenFrameSymbolInstances[i];
+										if (onScreenFSI.frameObject.depth > instance.frameObject.depth) {
+											//onScreenFSI.childIndex = i; // could do this here instead of for loop above
+
+											// i'm afraid it seems there is no earlier opportunity to join loops here
+											// because even if we index by depth, the depths shown have gaps, and the
+											// next-nearest depth to this depth can't be predicted in a single loop?
+											// at some point its a cross join of what's in the frameObject list
+											// and what is on screen (two for...loops)
+
+											nearestMatch = onScreenFSI;
+										}
+										// if they are ever equal it is a duplicate and should have been
+										// filtered out by prior operations before now
+										// therefore the only other case is less than
+										else {
+											// went far enough; can stop
+											break;
+										}
+									}
+									// first non-manual child already on screen which would overlap this child (depth)
+									if (null != nearestMatch)
+									{
+										targetIndex = nearestMatch.childIndex; // insert behind
+									}
+									// no child on screen that would appear on top of me
+									else {
+										for (i in 0...onScreenFrameSymbolInstances.length)
+										{
+											var onScreenFSI:FrameSymbolInstance = onScreenFrameSymbolInstances[i];
+											if (onScreenFSI.frameObject.depth < instance.frameObject.depth) {
+												nearestMatch = onScreenFSI;
+											}
+											else {
+												// went far enough; can stop
+												break;
+											}
+										}
+										// first non-manual child already on screen which this child would overlap (depth)
+										if (null != nearestMatch)
+										{
+											// count the number of manual children appearing after this one
+											targetIndex = nearestMatch.childIndex;
+											while (++targetIndex < __children.length)
+											{
+												if (__cachedChildFrameSymbolInstancesByDisplayObject.exists(__children[targetIndex])) {
+													break;
+												}
+											}
+											// will end up inserting overlapping the last non manual child in a row
+										}
+										else
+										{
+											// assumes placeobjects are processed in order
+											// of background to foregound, which they are
+											targetIndex = __children.length; // insert top-most
+										}
+									}
+
+									// TODO: need a way to composite the frames without triggering events, etc.
+									// my old way of collecting changes into an array is probably necessary here
+									addChildAt(instance.displayObject, targetIndex);
+
+									// clear old masks
+									instance.displayObject.mask = null;
+									// apply mask within clipDepth range
+									var targetDepth:Int = instance.frameObject.depth;
+									var maskApplied:Bool = false;
+									if (currentMasks.length > 0) {
+										for (mask in currentMasks) {
+											if (targetDepth > mask.frameObject.depth && targetDepth <= mask.frameObject.clipDepth) {
+												instance.displayObject.mask = mask.displayObject;
+												maskApplied = true;
+												break;
+											}
+										}
+									}
+								}
+							}
+
+						case UPDATE:
+							// TODO: categorize each type of update to only apply its last value (e.g., last x value)
+							__updateDisplayObject (instance.displayObject, frameObject);
+
+							// if child is in the list
+							if (isOnScreen) {
+								// leave it; update it
+							} else {
+								// someone manually removed! leave removed
+							}
+
+						case DESTROY:
+							// if child is in the list
+							if (isOnScreen) {
+								// remove it
+
+								// TODO: if we remove first in a separate loop
+								// we might optimize (depends on if frameobject loop
+								// is shorter than displayed children. probably)
+								removeChild(instance.displayObject);
+							} else {
+								// someone manually removed! leave removed
+							}
+					}
+				}
+			}
+
+			// now its time to apply frame scripts
+
+			// we only need to do this if we're processing a range
+			// however if we're skipping to a frame (indicated by __lastFrameUpdate == -1)
+			// and this is not the targetFrame, then we can skip evaluation of all
+			// frame scripts inbetween
+			if (-1 == __lastFrameUpdate && frameIndex != __targetFrame) {
+				continue;
+			}
+
+			// first we need to setup the environment for them
+			// so they can query and get current information about
+			// what frame they are evaluating on, etc.
+
+			// calculate the current frame label, in case it changed since last frame
+			__updateFrameLabel ();
+
+			// set this for the frame scripts' (and recursive callee) sake
+			__currentFrame = frameIndex;
+
+			// no frame scripts defined for this movieclip instance
+			// or no frame script on this particular frame
+			if (__frameScripts != null && __frameScripts.exists (__currentFrame)) {
+				// finally, evaluate the frame script for the current frame!
+				var script = __frameScripts.get (__currentFrame);
+				script ();
+			}
+
+			// remember what the last frame we started processing was (to avoid duplication)
+			__lastFrameUpdate = frameIndex;
 		}
-		
+
+
+
+		// the implicit else case of the above while statement:
+		// the current frame is not the one we evaluated last time
+		// not enough time has passed to advance to the next frame
+		// or, we've already drawn the children for this frame once
+		// (we need to do this at least once, even if !__playing)
+		// so a frozen frame can be rendered with correct children
+
+		// see if the superclass (DisplayObject) wants to do anything
+		// currently an empty function;
+		// won't do anything meaningful unless someone customizes
+		super.__enterFrame (deltaTime);
+
+
 	}
-	
+
+	@:access(openfl._internal.swf.SWFLiteLibrary.id)
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
 	private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
 		
-		if (__activeInstancesByFrameObjectID != null) return;
+		if (__cachedChildFrameSymbolInstancesByFrameObjectId != null) return;
 
 		__swf = swf;
 		__symbol = symbol;
 
-		__activeInstancesByFrameObjectID = new Map ();
+		__cachedChildFrameSymbolInstancesByFrameObjectId = new Map ();
+		__cachedChildFrameSymbolInstancesByDisplayObject = new Map ();
 		var __activeInstances:Array<FrameSymbolInstance> = [];
 		__currentFrame = 1;
-		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
 		__totalFrames = __symbol.frames.length;
 		
@@ -455,11 +565,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							} while (null != (p = p.parent));
 							name.reverse();
 							trace ("Error evaluating frame script\n" + 
-								"swf: "+ this.__swf.library.rootPath +"\n" +
-								"symbol path: "+ name.join('.') +"\n" +
-								e + "\n" + 
-								haxe.CallStack.exceptionStack ().map (function (a) { return untyped a[2]; }).join ("\n") + "\n" + 
-								e.stack + "\n" + untyped script.toString ());
+								"swf library rootPath: "+ this.__swf.library.rootPath +"\n" +
+								"swf library id: "+ this.__swf.library.id +"\n" +
+								"symbol hierarchy: "+ name.join('.') +"\n" +
+								"error: "+	e.toString() + "\n" +
+								"frame script:\n"+
+								untyped script.toString ());
 							
 						}
 						
@@ -507,7 +618,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				if (frameObject.type == FrameObjectType.CREATE) {
 					
-					if (__activeInstancesByFrameObjectID.exists (frameObject.id)) {
+					if (__cachedChildFrameSymbolInstancesByFrameObjectId.exists (frameObject.id)) {
 						
 						continue;
 						
@@ -518,7 +629,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						
 						for (activeInstance in __activeInstances) {
 							
-							if (activeInstance.displayObject != null && activeInstance.characterID == frameObject.symbol && activeInstance.depth == frameObject.depth) {
+							if (activeInstance.displayObject != null &&
+								activeInstance.frameObject.symbol == frameObject.symbol && // aka characterID
+								activeInstance.frameObject.depth == frameObject.depth) {
 								
 								// TODO: Fix duplicates in exporter
 								instance = activeInstance;
@@ -538,23 +651,50 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						if (symbol != null) {
 							
 							displayObject = symbol.__createObject (__swf);
-							
+
 							if (displayObject != null) {
-								
+
 								displayObject.parent = this;
 								displayObject.stage = stage;
-								instance = new FrameSymbolInstance (frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject.clipDepth);
-								
+								instance = new FrameSymbolInstance (displayObject, frameObject);
+								var a: Array<FrameSymbolInstance>;
+								if (!__cachedChildFrameSymbolInstancesByDisplayObject.exists(displayObject)) {
+									a = new Array();
+									a.push(instance);
+									__cachedChildFrameSymbolInstancesByDisplayObject.set(displayObject, a);
+								}
+								else {
+									a = __cachedChildFrameSymbolInstancesByDisplayObject.get(displayObject);
+									a.push(instance);
+								}
 							}
-							
+							else
+							{
+								trace("failed to __createObject MovieClip child"
+									+" symbol className: "+ __symbol.className
+									+", symbol baseClassName: "+ __symbol.baseClassName
+									+", SWF rootPath :"+ __swf.library.rootPath
+									+", SWF id: "+ __swf.library.id
+								);
+
+							}
+
+
 						}
-						
+						else {
+
+							// TODO: prevent this from happening. happens on MorphShape tags (ie. HUDAssets.swf)
+							trace("failed to __createObject MovieClip child. symbol/characterId id "
+								+ frameObject.symbol +" not found among MovieClip __swf.symbols");
+
+						}
+
 					}
-					
+
 					if (instance != null) {
-						
-						__activeInstancesByFrameObjectID.set (frameObject.id, instance);
-						
+
+						__cachedChildFrameSymbolInstancesByFrameObjectId.set (frameObject.id, instance);
+
 						if (!duplicate) {
 							
 							__activeInstances.push (instance);
@@ -563,14 +703,26 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						}
 						
 					}
+
+					if (instance == null)
+					{
+						trace("failed to initialize MovieClip child"
+							+" frameObject id: "+ frameObject.id
+							+", characterId: "+ frameObject.symbol
+							+", depth: "+ frameObject.depth
+							+", SWF rootPath :"+ __swf.library.rootPath
+							+", SWF id: "+ __swf.library.id
+						);
+					}
+
 					
 				}/* else if (frameObject.type == FrameObjectType.UPDATE) {
 					
 					instance = null;
 					
-					if (__activeInstancesByFrameObjectID.exists (frameObject.id)) {
+					if (__cachedChildFrameSymbolInstancesByFrameObjectId.exists (frameObject.id)) {
 						
-						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+						instance = __cachedChildFrameSymbolInstancesByFrameObjectId.get (frameObject.id);
 						
 					}
 					
@@ -605,12 +757,16 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		if (__totalFrames > 1) {
 			
-			play ();
+			gotoAndPlay (0);
 			
 		}
-		
-		__enterFrame (0);
-		
+		else {
+
+			gotoAndStop (0);
+
+		}
+
+
 		#if !openfl_dynamic
 		for (field in Type.getInstanceFields (Type.getClass (this))) {
 			
@@ -633,15 +789,16 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function __getNextFrame (deltaTime:Int):Int {
 		
 		#if (!swflite_parent_fps && !swf_parent_fps)
-		
 		__timeElapsed += deltaTime;
 		var nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
+		if (0 == __totalFrames) return 1;
 		if (nextFrame < 1) nextFrame = 1;
 		if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
 		__timeElapsed = (__timeElapsed % __frameTime);
 		
 		#else
 		
+		if (0 == __frames.length) return 1;
 		var nextFrame = __currentFrame + (__lastFrameScriptEval == __currentFrame ? 1 : 0);
 		if (nextFrame > __frames.length) nextFrame = 1;
 		
@@ -660,6 +817,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		else if (frame > __totalFrames) frame = __totalFrames;
 		
 		__currentFrame = frame;
+		__lastFrameUpdate = -1;
 		__enterFrame (0);
 		
 	}
@@ -697,7 +855,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	private function __sortDepths (a:FrameSymbolInstance, b:FrameSymbolInstance):Int {
 		
-		return a.depth - b.depth;
+		return a.frameObject.depth - b.frameObject.depth;
 		
 	}
 	
@@ -792,11 +950,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function __updateFrameLabel ():Void {
 		
 		__currentFrameLabel = __symbol.frames[__currentFrame - 1].label;
-		
+
+		// either on a frame with a label
 		if (__currentFrameLabel != null) {
 			
 			__currentLabel = __currentFrameLabel;
-			
+
+		// or occurring after a frame with a label
+		// (eg. last label applies to this frame as its a range between last and next label)
+		// i don't think that's actually true in flash but its used here for whatever reason
 		} else {
 			
 			__currentLabel = null;
@@ -846,25 +1008,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 private class FrameSymbolInstance {
 	
-	
-	public var characterID:Int;
-	public var clipDepth:Int;
-	public var depth:Int;
 	public var displayObject:DisplayObject;
-	public var initFrame:Int;
-	public var initFrameObjectID:Int; // TODO: Multiple frame object IDs may refer to the same instance
-	
-	
-	public function new (initFrame:Int, initFrameObjectID:Int, characterID:Int, depth:Int, displayObject:DisplayObject, clipDepth:Int) {
+	public var frameObject:FrameObject;
+	public var nextFrameSymbolInstance: FrameSymbolInstance;
+	public var prevFrameSymbolInstance: FrameSymbolInstance;
+	public var childIndex: Int;
 
-		this.initFrame = initFrame;
-		this.initFrameObjectID = initFrameObjectID;
-		this.characterID = characterID;
-		this.depth = depth;
-		this.displayObject = displayObject;
-		this.clipDepth = clipDepth;
-		
+	public function isManualChild(): Bool {
+		return null == frameObject;
 	}
-	
-	
+
+	public function new (displayObject:DisplayObject, frameObject:FrameObject) {
+
+		this.displayObject = displayObject;
+		this.frameObject = frameObject;
+
+	}
+
 }
