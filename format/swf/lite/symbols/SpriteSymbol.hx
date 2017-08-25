@@ -20,16 +20,18 @@ class SpriteSymbol extends SWFSymbol {
 
 	}
 
-	public function findNeededShapesSymbolId(result:Map<Int, ShapeSymbol>, swflite:SWFLite):Void {
+	public function findDependentSymbols(swflite:SWFLite, shapes:Map<Int, ShapeSymbol>, simpleSprites:Map<Int, SimpleSpriteSymbol> = null):Void {
 		for(frame in frames) {
 			for(frameObject in frame.objects) {
 				if(frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
 					var symbol = swflite.symbols.get(frameObject.symbol);
 
 					if(Std.is(symbol, SpriteSymbol)) {
-						cast(symbol, SpriteSymbol).findNeededShapesSymbolId(result, swflite);
-					} else if(Std.is(symbol, ShapeSymbol)) {
-						result.set(frameObject.symbol, cast symbol);
+						cast(symbol, SpriteSymbol).findDependentSymbols(swflite, shapes, simpleSprites);
+					} else if(shapes != null && Std.is(symbol, ShapeSymbol)) {
+						shapes.set(frameObject.symbol, cast symbol);
+					} else if(simpleSprites != null && Std.is(symbol, SimpleSpriteSymbol)) {
+						simpleSprites.set(frameObject.symbol, cast symbol);
 					}
 				}
 			}
@@ -38,30 +40,17 @@ class SpriteSymbol extends SWFSymbol {
 
 	public function createNeededTextures(gl:GLRenderContext, swflite:SWFLite):Void {
 		var shapes = new Map();
+		var simpleSprites = new Map();
 
-		__findNeededShapesAndCreateSimpleSpriteTextures(shapes, gl, swflite);
+		findDependentSymbols(swflite, shapes, simpleSprites);
 
 		for(s in shapes) {
 			s.graphics.createTextures(gl);
 		}
-	}
 
-	private function __findNeededShapesAndCreateSimpleSpriteTextures(result:Map<Int, ShapeSymbol>, gl:GLRenderContext, swflite:SWFLite):Void {
-		for(frame in frames) {
-			for(frameObject in frame.objects) {
-				if(frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
-					var symbol = swflite.symbols.get(frameObject.symbol);
-
-					if(Std.is(symbol, SpriteSymbol)) {
-						cast(symbol, SpriteSymbol).__findNeededShapesAndCreateSimpleSpriteTextures(result, gl, swflite);
-					} else if(Std.is(symbol, ShapeSymbol)) {
-						result.set(frameObject.symbol, cast symbol);
-					} else if(Std.is(symbol, SimpleSpriteSymbol)) {
-						var bitmapData = Assets.getBitmapData(cast(swflite.symbols.get(cast(symbol, SimpleSpriteSymbol).bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
-						bitmapData.getTexture(gl);
-					}
-				}
-			}
+		for(s in simpleSprites) {
+			var bitmapData = Assets.getBitmapData(cast(swflite.symbols.get(s.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
+			bitmapData.getTexture(gl);
 		}
 	}
 
