@@ -311,7 +311,7 @@ class SpriteBatch {
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 
-		if (writtenVertexBytes > (vertexArraySize * 0.5)) {
+		if (writtenVertexBytes > (vertexArraySize >> 1)) {
 			vertexArray.upload(positions);
 		} else {
 			vertexArray.upload(positions.subarray(0, writtenVertexBytes));
