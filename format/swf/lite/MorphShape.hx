@@ -3,10 +3,9 @@ package format.swf.lite;
 import openfl.geom.Rectangle;
 import format.swf.lite.symbols.MorphShapeSymbol;
 import flash.display.Shape;
-import flash.display.Graphics;
 
 import format.swf.exporters.ShapeCommandExporter;
-import format.swf.lite.symbols.BitmapSymbol;
+import format.swf.lite.symbols.ShapeSymbol;
 
 class MorphShape extends Shape {
 
@@ -32,12 +31,12 @@ class MorphShape extends Shape {
 
 	}
 
-	
+
 	private override function __getRenderBounds (rect:Rectangle):Void {
 		__update(true, false);
 		super.__getRenderBounds(rect);
 	}
-	
+
 
 	override public function getSymbol():format.swf.lite.symbols.SWFSymbol{
 		return __symbol;
@@ -71,7 +70,7 @@ class MorphShape extends Shape {
 
 			var graphics = this.graphics;
 			graphics.clear();
-			graphics.processCommands(handler.commands);
+			ShapeSymbol.processCommands(graphics, handler.commands);
 		}
 
 		super.__update(transformOnly, updateChildren);

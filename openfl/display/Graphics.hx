@@ -93,60 +93,6 @@ import js.html.CanvasRenderingContext2D;
 
 	}
 
-	public function processCommands(shapeCommands:Array<ShapeCommand>) {
-		for (command in shapeCommands) {
-
-			switch (command) {
-
-				case BeginFill (color, alpha):
-
-					beginFill (color, alpha);
-
-				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-
-					beginBitmapFillWithId (bitmapID, matrix, repeat, smooth);
-
-				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-
-					beginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-
-				case CurveTo (controlX, controlY, anchorX, anchorY):
-
-					curveTo (controlX, controlY, anchorX, anchorY);
-
-				case DrawImage (bitmapID, matrix, smooth):
-
-					drawImageWithId (bitmapID, matrix, smooth);
-
-				case EndFill:
-
-					endFill ();
-
-				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-
-					if (thickness != null) {
-
-						lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
-
-					} else {
-
-						lineStyle ();
-
-					}
-
-				case LineTo (x, y):
-
-					lineTo (x, y);
-
-				case MoveTo (x, y):
-
-					moveTo (x, y);
-
-			}
-		}
-	}
-
-
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 
 		if ( readOnly ) {
