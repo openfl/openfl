@@ -439,7 +439,7 @@ class BitmapData implements IBitmapDrawable {
 				src_display_object.__update(false, true);
 			}
 		}
-		__drawGL ( renderSession, source, matrix, clipRect, smoothing, !__usingPingPongTexture, false, true);
+		__drawGL ( renderSession, source, matrix, clipRect, smoothing, !__usingPingPongTexture, false, false);
 		if ( Std.is( source, DisplayObject ) && !cached_visible ) {
 			cast(source,DisplayObject).visible = cached_visible;
 		}
