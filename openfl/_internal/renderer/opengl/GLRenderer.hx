@@ -322,14 +322,8 @@ class GLRenderer extends AbstractRenderer {
 
 		var matrix = openfl.geom.Matrix.__temp;
 
-		matrix.identity ();
-
 		var bitmap = shape.__graphics.__bitmap;
-		var bounds:Rectangle = Rectangle.pool.get();
-		shape.__getRenderBounds(bounds);
-		matrix.translate (bounds.x, bounds.y);
-		Rectangle.pool.put(bounds);
-		matrix.concat (shape.__renderTransform);
+		matrix.copyFrom (shape.__renderTransform);
 
 		var round_pixels = PixelSnapping.AUTO;
 		if ( renderSession.roundPixels == true ) {
@@ -353,6 +347,7 @@ class GLRenderer extends AbstractRenderer {
 
 			}
 		}
+
 		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode, null, round_pixels );
 
 	}

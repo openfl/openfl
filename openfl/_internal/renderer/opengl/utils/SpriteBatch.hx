@@ -211,7 +211,8 @@ class SpriteBatch {
 		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
 		var localMatrix = Matrix.pool.get ();
 
-		localMatrix.copyFrom (matrix);
+		bitmapData.getLocalTransform (localMatrix);
+		localMatrix.concat (matrix);
 		localMatrix.concat (renderTargetBaseTransform);
 
 		var index = batchedSprites * 4 * elementsPerVertex;

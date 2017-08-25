@@ -716,10 +716,10 @@ class MovieClip extends flash.display.MovieClip {
 			renderTransform.identity ();
 			renderTransform.a = scaleX;
 			renderTransform.d = scaleY;
-			renderTransform.translate(-bounds.x, -bounds.y);
+			renderTransform.translate (-bounds.x, -bounds.y);
 
 			renderSession.maskManager.pushMask (null);
-			@:privateAccess bitmap.__drawGL(renderSession, this, renderTransform);
+			@:privateAccess bitmap.__drawGL (renderSession, this, renderTransform);
 			renderSession.maskManager.popMask ();
 			Matrix.pool.put (renderTransform);
 			Rectangle.pool.put (bounds);

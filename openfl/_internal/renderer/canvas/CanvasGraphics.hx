@@ -45,6 +45,7 @@ class CanvasGraphics {
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
+	private static var padding:Int = 1;
 
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
@@ -478,6 +479,7 @@ class CanvasGraphics {
 
 	}
 
+
 	public static function render (graphics:Graphics, renderSession:RenderSession, scaleX:Float = 1.0, scaleY:Float = 1.0, isMask : Bool = false):Void {
 
 		#if (js && html5)
@@ -496,15 +498,8 @@ class CanvasGraphics {
 
 			} else {
 
-				var scaled_bounds:Rectangle = Rectangle.pool.get();
-
-				scaled_bounds.copyFrom(graphics.__bounds);
-				scaled_bounds.width *= scaleX;
-				scaled_bounds.height *= scaleY;
-
-				var padding = graphics.__padding;
-				var width:Int = Math.ceil (scaled_bounds.width) + 2 * padding;
-				var height:Int = Math.ceil (scaled_bounds.height) + 2 * padding;
+				var width = Math.ceil (graphics.__bounds.width * scaleX) + 2 * padding;
+				var height = Math.ceil (graphics.__bounds.height * scaleY) + 2 * padding;
 
 				if (graphics.__symbol != null) {
 
@@ -518,8 +513,6 @@ class CanvasGraphics {
 
 						graphics.__bitmap = cachedBitmapData;
 						graphics.dirty = false;
-
-						Rectangle.pool.put(scaled_bounds);
 
 						return;
 
@@ -547,18 +540,17 @@ class CanvasGraphics {
 					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, padding, padding);
 					var matrix = Matrix.pool.get ();
 					// :TODO: optimize this
-					matrix.setTo (1.0, 0.0, 0.0, 1.0, -scaled_bounds.x, -scaled_bounds.y);
+					matrix.setTo (1.0, 0.0, 0.0, 1.0, -graphics.__bounds.x, -graphics.__bounds.y);
 					currentTransform.preTransform (matrix);
 					Matrix.pool.put (matrix);
 
 				} else {
 
 					context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
-					context.translate (-scaled_bounds.x, -scaled_bounds.y);
+					context.translate (-graphics.__bounds.x, -graphics.__bounds.y);
 
 				}
 
-				Rectangle.pool.put (scaled_bounds);
 
 				beginRenderStep ();
 
@@ -812,7 +804,20 @@ class CanvasGraphics {
 					totalFromCanvasCount++;
 					currentFromCanvasCount++;
 				#end
-				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
+
+				var bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
+
+				var bounds = graphics.__bounds;
+
+				if (graphics.snapCoordinates) {
+					throw ":TODO: handle snapCoordinates";
+				}
+
+				bitmap.__offsetX = bounds.x;
+				bitmap.__offsetY = bounds.y;
+				bitmap.__padding = padding;
+
+				graphics.__bitmap = bitmap;
 
 				if (graphics.__symbol != null) {
 
