@@ -18,6 +18,7 @@ import openfl.Lib;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 import format.swf.lite.symbols.ShapeSymbol;
+import format.swf.lite.symbols.SWFSymbol;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -61,7 +62,7 @@ class CanvasGraphics {
 	#if profile
 		private static var totalFromCanvasCount = 0;
 		private static var currentFromCanvasCount = 0;
-		private static var fromCanvasTable:Map<ShapeSymbol, Int> = new Map ();
+		private static var fromCanvasTable:Map<SWFSymbol, Int> = new Map ();
 	#end
 
 	#if profile
@@ -507,7 +508,11 @@ class CanvasGraphics {
 
 				if (graphics.__symbol != null) {
 
-					var cachedBitmapData:BitmapData = graphics.__symbol.getCachedBitmapData (width, height);
+					var cachedBitmapData:BitmapData = null;
+
+					if ( Std.is(graphics.__symbol, ShapeSymbol) ) {
+						cachedBitmapData = cast(graphics.__symbol, ShapeSymbol).getCachedBitmapData (width, height);
+					}
 
 					if (cachedBitmapData != null) {
 
@@ -811,7 +816,8 @@ class CanvasGraphics {
 
 				if (graphics.__symbol != null) {
 
-					graphics.__symbol.setCachedBitmapData (graphics.__bitmap);
+					if ( Std.is(graphics.__symbol, ShapeSymbol) )
+						cast(graphics.__symbol, ShapeSymbol).setCachedBitmapData (graphics.__bitmap);
 
 				}
 

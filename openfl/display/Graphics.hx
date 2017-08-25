@@ -3,6 +3,9 @@ package openfl.display; #if !openfl_legacy
 
 import lime.graphics.Image;
 import lime.graphics.GLRenderContext;
+import format.swf.exporters.core.ShapeCommand;
+import format.swf.lite.symbols.ShapeSymbol;
+import format.swf.lite.symbols.SWFSymbol;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.opengl.utils.RenderTexture;
@@ -72,7 +75,7 @@ import js.html.CanvasRenderingContext2D;
 	#end
 
 	private var __bitmap(default, set):BitmapData;
-	@:s private var __symbol:format.swf.lite.symbols.ShapeSymbol;
+	@:s private var __symbol:SWFSymbol;
 
 	private function new (?initCommands = true) {
 
@@ -89,7 +92,6 @@ import js.html.CanvasRenderingContext2D;
 		#end
 
 	}
-
 
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 
@@ -766,7 +768,7 @@ import js.html.CanvasRenderingContext2D;
 
 	private function set___bitmap (value:BitmapData):BitmapData {
 
-		if (__bitmap != null && (__symbol == null || !__symbol.useBitmapCache)) {
+		if (__bitmap != null && (__symbol == null || !Std.is(__symbol, ShapeSymbol) || !cast(__symbol, ShapeSymbol).useBitmapCache)) {
 
 			__bitmap.dispose ();
 
@@ -778,7 +780,7 @@ import js.html.CanvasRenderingContext2D;
 
 	public inline function get_snapCoordinates ():Bool {
 
-		return __symbol != null && __symbol.snapCoordinates;
+		return __symbol != null && Std.is(__symbol, ShapeSymbol) && cast(__symbol, ShapeSymbol).snapCoordinates;
 
 	}
 
