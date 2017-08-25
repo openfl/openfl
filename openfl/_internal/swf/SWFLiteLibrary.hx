@@ -114,6 +114,7 @@ import openfl.utils.ByteArray;
 						__copyChannel (image, alpha);
 						
 						cachedImages.set (id, image);
+						cachedImages.remove (bitmapSymbol.alpha);
 						alphaCheck.set (id, true);
 						
 						return image;
@@ -255,6 +256,7 @@ import openfl.utils.ByteArray;
 								__copyChannel (image, alpha);
 								
 								cachedImages.set (id, image);
+								cachedImages.remove (bitmapSymbol.alpha);
 								alphaCheck.set (id, true);
 								
 								promise.complete (image);
