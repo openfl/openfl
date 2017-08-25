@@ -1,3 +1,31 @@
+6.1.0 (08/25/2017)
+------------------
+
+* Added official support for Adobe AIR
+* Added initial support for blur, glow and drop shadow filters
+* Added `Sound.loadFromFile` for consistency with other asset types
+* Added support for setting `Mouse.cursor` to a `lime.ui.MouseCursor` value
+* Added initial support for `tile.rect` for custom `Tile` source rectangles
+* Improved the (beta) `TileArray` API with support for iterating in a loop
+* Improved the (beta) `TileArray` API with a shared `ITile` interface
+* Improved the memory used for SWF libraries that use JPEG alpha channels
+* Improved `GameInput` to dispatch `DEVICE_ADDED` for pre-existing devices
+* Improved code completion support when using `-Dopenfl-dynamic`
+* Improved support for winding rules in `graphics.drawPath`
+* Fixed multiple issues affecting `Tilemap` behavior and rendering
+* Fixed multiple issues affecting `TextField` rendering and layout
+* Fixed support for using `blendMode` in `bitmapData.draw`
+* Fixed scissor coordinates in Stage3D render-to-texture
+* Fixed handling of "rcp" AGAL code in support of Away3D
+* Fixed issue when setting `lineStyle` at certain times in vector draw instructions
+* Fixed automatic removal of manually added `MovieClip` children
+* Fixed missing scroll event when scrolling a `Textfield`
+* Fixed possible duplication of property names in generated SWF classes
+* Fixed missing `stage` reference on `MovieClip` creation
+* Fixed missing `Loader.uncaughtErrorEvents` reference
+* Fixed GLSL issue on Raspberry Pi devices
+
+
 6.0.1 (08/03/2017)
 ------------------
 
