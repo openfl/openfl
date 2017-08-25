@@ -159,9 +159,9 @@ class SpriteBatch {
 
 		gl = null;
 	}
-	
+
 	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null, ?maskBitmap:BitmapData, ?maskMatrix:Matrix):Void {
-		
+
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
 		start(clipRect, maskBitmap, maskMatrix);
@@ -311,11 +311,7 @@ class SpriteBatch {
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 
-		if (writtenVertexBytes > (vertexArraySize >> 1)) {
-			vertexArray.upload(positions);
-		} else {
-			vertexArray.upload(positions.subarray(0, writtenVertexBytes));
-		}
+		vertexArray.upload(positions.subarray(0, writtenVertexBytes));
 
 		setNextVertexBufferContext();
 
