@@ -1356,17 +1356,19 @@ class BitmapData implements IBitmapDrawable {
 				});
 	}
 
-	private static function viewTexture(id:Int) {
-		var data = lime.graphics.opengl.GL.getTextureData (id);
-		viewGLTexture (data.texture, data.width, data.height);
-	}
-
-	private static function viewAllTextures() {
-		var table = @:privateAccess lime.graphics.opengl.GL.textureDataTable;
-		for (data in table.iterator()) {
-			viewGLTexture(data.texture, data.width, data.height);
+		#if profile
+		private static function viewTexture(id:Int) {
+			var data = lime.graphics.opengl.GL.getTextureData (id);
+			viewGLTexture (data.texture, data.width, data.height);
 		}
-	}
+
+		private static function viewAllTextures() {
+			var table = @:privateAccess lime.graphics.opengl.GL.textureDataTable;
+			for (data in table.iterator()) {
+				viewGLTexture(data.texture, data.width, data.height);
+			}
+		}
+		#end
 	#end
 }
 
