@@ -527,6 +527,32 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __getFilterBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		// TODO: Should this be __getRenderBounds, to account for scrollRect?
+		
+		__getBounds (rect, matrix);
+		
+		if (__filters != null && __filters.length > 0) {
+			
+			var extension = Rectangle.__pool.get ();
+			
+			for (filter in __filters) {
+				extension.__expand (-filter.__leftExtension, -filter.__topExtension, filter.__leftExtension + filter.__rightExtension, filter.__topExtension + filter.__bottomExtension);
+			}
+			
+			rect.width += extension.width;
+			rect.height += extension.height;
+			rect.x += extension.x;
+			rect.y += extension.y;
+			
+			Rectangle.__pool.release (extension);
+			
+		}
+		
+	}
+	
+	
 	private function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
 		return false;
@@ -973,18 +999,36 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
+			var hasFilters = (__filters != null && __filters.length > 0);
 			
-			if (updateTransform) {
+			if (updateTransform || hasFilters) {
 				
 				matrix = Matrix.__pool.get ();
 				rect = Rectangle.__pool.get ();
 				matrix.identity ();
 				
-				__getBounds (rect, matrix);
+				__getFilterBounds (rect, __renderTransform);
 				
 			}
 			
-			// TODO: Update rect size based on filter dimensions
+			if (hasFilters) {
+				
+				if (__cacheBitmap != null && (rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height)) {
+					
+					needRender = true;
+					
+				} else {
+					
+					for (filter in __filters) {
+						if (filter.__renderDirty) {
+							needRender = true;
+							break;
+						}
+					}
+					
+				}
+				
+			}
 			
 			if (needRender) {
 				
@@ -1017,18 +1061,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			if (updateTransform) {
+			if (updateTransform || needRender) {
 				
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				
-				matrix.tx = Math.round (rect.x);
-				matrix.ty = Math.round (rect.y);
-				
-				__cacheBitmap.__renderTransform.copyFrom (matrix);
-				__cacheBitmap.__renderTransform.concat (__renderTransform);
-				
-				matrix.tx *= -1;
-				matrix.ty *= -1;
+				__cacheBitmap.__renderTransform.identity();
+				__cacheBitmap.__renderTransform.tx = rect.x;
+				__cacheBitmap.__renderTransform.ty = rect.y;
+
+				matrix.concat( __renderTransform );
+				matrix.tx -= Math.round (rect.x);
+				matrix.ty -= Math.round (rect.y);
+
 				
 			}
 			
@@ -1045,21 +1089,54 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
 				
-				if (__filters != null && __filters.length > 0) {
+				if (hasFilters) {
+					
+					var needSecondBitmapData = false;
+					var needCopyOfOriginal = false;
+					
+					for (filter in __filters) {
+						if (filter.__needSecondBitmapData) {
+							needSecondBitmapData = true;
+						}
+						if (filter.__preserveObject) {
+							needCopyOfOriginal = true;
+						}
+					}
 					
 					var bitmapData = __cacheBitmapData;
-					var bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
-					var cacheBitmap;
+					var bitmapData2 = null;
+					var bitmapData3 = null;
+					
+					// TODO: Cache if used repeatedly
+					
+					if (needSecondBitmapData) {
+						bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+					} else {
+						bitmapData2 = bitmapData;
+					}
+					
+					if (needCopyOfOriginal) {
+						bitmapData3 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+					}
 					
 					var sourceRect = bitmapData.rect;
 					var destPoint = new Point (); // TODO: ObjectPool
-					var lastBitmap;
+					var cacheBitmap, lastBitmap;
 					
 					for (filter in __filters) {
 						
+						if (filter.__preserveObject) {
+							bitmapData3.copyPixels (bitmapData, bitmapData.rect, destPoint);
+						}
+						
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
-						if (lastBitmap == bitmapData2) {
+						if (filter.__preserveObject) {
+							lastBitmap.draw (bitmapData3);
+						}
+						filter.__renderDirty = false;
+						
+						if (needSecondBitmapData && lastBitmap == bitmapData2) {
 							
 							cacheBitmap = bitmapData;
 							bitmapData = bitmapData2;

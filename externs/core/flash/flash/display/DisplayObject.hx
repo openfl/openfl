@@ -24,6 +24,11 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	#end
 	
 	public var cacheAsBitmap:Bool;
+	
+	#if air
+	public var cacheAsBitmapMatrix:flash.geom.Matrix;
+	#end
+	
 	public var filters:Array<BitmapFilter>;
 	public var height:Float;
 	public var loaderInfo (default, null):LoaderInfo;
@@ -79,7 +84,6 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public function hitTestObject (obj:DisplayObject):Bool;
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool;
 	public function localToGlobal (point:Point):Point;
-	
 	
 	#if flash
 	@:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;

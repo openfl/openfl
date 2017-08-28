@@ -13,6 +13,10 @@ extern class Clipboard {
 	
 	public var formats (default, null):Array<ClipboardFormats>;
 	
+	#if air
+	public var supportsFilePromise (default, never):Bool;
+	#end
+	
 	public function clear ():Void;
 	public function clearData (format:ClipboardFormats):Void;
 	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Object;

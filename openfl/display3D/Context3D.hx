@@ -1330,6 +1330,8 @@ import openfl.profiler.Telemetry;
 		GLUtils.CheckGLError ();
 		
 		var height = 0;
+		var offsetX = 0;
+		var offsetY = 0;
 		
 		if (__renderToTexture != null) {
 		
@@ -1348,11 +1350,13 @@ import openfl.profiler.Telemetry;
 		} else {
 			
 			height = backBufferHeight;
+			offsetX = Std.int (__stage3D.x);
+			offsetY = Std.int (__stage3D.y);
 			
 		}
 		
-		GL.scissor (Std.int (__scissorRectangle.x) + Std.int (__stage3D.x),
-			Std.int (height - Std.int (__scissorRectangle.y) - Std.int (__scissorRectangle.height)) + Std.int (__stage3D.y),
+		GL.scissor (Std.int (__scissorRectangle.x) + offsetX,
+			height - Std.int (__scissorRectangle.y) - Std.int (__scissorRectangle.height) + offsetY,
 			Std.int (__scissorRectangle.width),
 			Std.int (__scissorRectangle.height)
 		);

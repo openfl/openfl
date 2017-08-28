@@ -14,6 +14,12 @@ extern class IOErrorEvent extends ErrorEvent {
 	public static var NETWORK_ERROR (default, never):String;
 	#end
 	
+	#if air
+	public static var STANDARD_ERROR_IO_ERROR (default, never):String;
+	public static var STANDARD_INPUT_IO_ERROR (default, never):String;
+	public static var STANDARD_OUTPUT_IO_ERROR (default, never):String;
+	#end
+	
 	#if flash
 	public static var VERIFY_ERROR (default, never):String;
 	#end
