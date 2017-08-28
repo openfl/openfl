@@ -135,8 +135,8 @@ import openfl.geom.Rectangle;
 		if (value != blurY) {
 			this.blurY = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
-			__rightExtension = __leftExtension;
+			__topExtension = (value > 0 ? Math.ceil (value) : 0);
+			__bottomExtension = __topExtension;
 		}
 		return value;
 		
