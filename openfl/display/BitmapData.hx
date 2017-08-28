@@ -1305,8 +1305,10 @@ class BitmapData implements IBitmapDrawable {
 		untyped $global.Tools = $global.Tools || {};
 		untyped $global.Tools.viewBitmapData = viewBitmapData;
 		untyped $global.Tools.viewGLTexture = viewGLTexture;
-        untyped $global.Tools.viewTexture = viewTexture;
-		untyped $global.Tools.viewAllTextures = viewAllTextures;
+		#if profile
+			untyped $global.Tools.viewTexture = viewTexture;
+			untyped $global.Tools.viewAllTextures = viewAllTextures;
+		#end
 	}
 
 	private static function viewBitmapData(bitmapData:BitmapData) {
