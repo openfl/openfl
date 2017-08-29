@@ -51,7 +51,6 @@ class BitmapData implements IBitmapDrawable {
 	public var image (default, null):Image;
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
-	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Float;
 
@@ -93,7 +92,6 @@ class BitmapData implements IBitmapDrawable {
 
 		physicalWidth = width;
 		physicalHeight = height;
-		rect = new Rectangle (0, 0, width, height);
 
 		if (width > 0 && height > 0) {
 
@@ -368,7 +366,6 @@ class BitmapData implements IBitmapDrawable {
 		height = 0;
 		physicalWidth = 0;
 		physicalHeight = 0;
-		rect = null;
 		__isValid = false;
 
 		var renderer = @:privateAccess Lib.current.stage.__renderer;
@@ -610,7 +607,12 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixels (rect:Rectangle):ByteArray {
 
 		if (!__isValid) return null;
-		if (rect == null) rect = this.rect;
+
+		if (rect == null) {
+			rect = @:privateAccess Rectangle.__temp;
+			getPhysicalRect (rect);
+		}
+
 		return ByteArray.fromBytes (image.getPixels (rect.__toLimeRectangle (), ARGB32));
 
 	}
@@ -768,17 +770,18 @@ class BitmapData implements IBitmapDrawable {
 			var x = Std.int (secondPoint.x - firstPoint.x);
 			var y = Std.int (secondPoint.y - firstPoint.y);
 
-			if (rect.contains (x, y)) {
+			throw ":TODO: compute rect";
+			// if (rect.contains (x, y)) {
 
-				var pixel = getPixel32 (x, y);
+			// 	var pixel = getPixel32 (x, y);
 
-				if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+			// 	if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
 
-					return true;
+			// 		return true;
 
-				}
+			// 	}
 
-			}
+			// }
 
 		} else if (Std.is (secondObject, BitmapData)) {
 
@@ -797,35 +800,36 @@ class BitmapData implements IBitmapDrawable {
 
 			}
 
-			if (rect.contains (x, y)) {
+			throw ":TODO: compute rect";
+			// if (rect.contains (x, y)) {
 
-				var hitRect = Rectangle.__temp;
-				hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
+			// 	var hitRect = Rectangle.__temp;
+			// 	hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
 
-				var pixels = getPixels (hitRect);
+			// 	var pixels = getPixels (hitRect);
 
-				hitRect.offset (-x, -y);
-				var testPixels = secondBitmapData.getPixels (hitRect);
+			// 	hitRect.offset (-x, -y);
+			// 	var testPixels = secondBitmapData.getPixels (hitRect);
 
-				var length = Std.int (hitRect.width * hitRect.height);
-				var pixel, testPixel;
+			// 	var length = Std.int (hitRect.width * hitRect.height);
+			// 	var pixel, testPixel;
 
-				for (i in 0...length) {
+			// 	for (i in 0...length) {
 
-					pixel = pixels.readUnsignedInt ();
-					testPixel = testPixels.readUnsignedInt ();
+			// 		pixel = pixels.readUnsignedInt ();
+			// 		testPixel = testPixels.readUnsignedInt ();
 
-					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
+			// 		if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
 
-						return true;
+			// 			return true;
 
-					}
+			// 		}
 
-				}
+			// 	}
 
-				return false;
+			// 	return false;
 
-			}
+			// }
 
 		} else if (Std.is (secondObject, Rectangle)) {
 
@@ -1188,8 +1192,6 @@ class BitmapData implements IBitmapDrawable {
 			this.width = width;
 			this.height = height;
 
-			rect = new Rectangle (0, 0, width, height);
-
 			#if sys
 			image.format = BGRA32;
 			image.premultiplied = true;
@@ -1213,9 +1215,6 @@ class BitmapData implements IBitmapDrawable {
 		this.__padding = padding;
 		this.width = width;
 		this.height = height;
-
-		this.rect.width = width;
-		this.rect.height = height;
 
 		__scaleX = scaleX;
 		__scaleY = scaleY;
@@ -1297,10 +1296,10 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 	private function getPhysicalRect (physicalRect:Rectangle):Void {
-		physicalRect.x = rect.x * __scaleX - __padding;
-		physicalRect.y = rect.y * __scaleY - __padding;
-		physicalRect.width = Math.ceil (rect.width * __scaleX + 2 * __padding);
-		physicalRect.height = Math.ceil (rect.height * __scaleY + 2 * __padding);
+		physicalRect.x = 0;
+		physicalRect.y = 0;
+		physicalRect.width = physicalWidth;
+		physicalRect.height = physicalHeight;
 	}
 
 	#if (dev && js)
