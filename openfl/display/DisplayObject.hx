@@ -417,7 +417,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private inline function __getTransformedBounds (rect:Rectangle, matrix:Matrix):Void {
 
 		__getBounds (rect);
-		rect.__transform (rect, matrix);
+
+		if (!rect.isEmpty ()) {
+			rect.__transform (rect, matrix);
+		}
 
 	}
 
@@ -469,17 +472,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__scrollRect == null) {
 
-			if (__graphics != null) {
-
-				__graphics.__getBounds (rect);
-				rect.__transform (rect, __renderTransform);
-
-			} else {
-
-				rect.setEmpty ();
-
-			}
-
+			__getTransformedBounds (rect, __renderTransform);
 			__getChildrenRenderBounds (rect);
 
 			if (__filters != null) {
