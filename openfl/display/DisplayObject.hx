@@ -959,6 +959,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!__transformDirty) {
 
+			// :TODO: should apply to all descendants graphics
+
+			if (__graphics != null) {
+				__graphics.__dirty = true;
+			}
+
 			__transformDirty = true;
 			__setRenderDirtyNoCachedBitmap();
 			__worldTransformDirty++;

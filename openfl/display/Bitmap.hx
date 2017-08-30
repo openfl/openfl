@@ -68,7 +68,6 @@ class Bitmap extends DisplayObject {
 
 		if (bitmapData != null) {
 
-			// handle offset and padding
 			rect.setTo (0, 0, bitmapData.width, bitmapData.height);
 			rect.__transform (rect, __renderTransform);
 

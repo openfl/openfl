@@ -228,6 +228,8 @@ class ShapeSymbol extends SWFSymbol {
 }
 
 
+// :TODO: account for offset if desired
+
 private class CacheEntry {
 
 	public var bitmapData:BitmapData;

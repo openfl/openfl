@@ -495,19 +495,17 @@ class CanvasGraphics {
 				graphics.__canvas.height = height;
 				snapCoordinates = graphics.snapCoordinates;
 
+				var owner_render_transform = graphics.__owner.__renderTransform;
+				var tx = owner_render_transform.tx - Math.ffloor (owner_render_transform.tx);
+				var ty = owner_render_transform.ty - Math.ffloor (owner_render_transform.ty);
+
 				if (snapCoordinates) {
 
-					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, padding, padding);
-					var matrix = Matrix.pool.get ();
-					// :TODO: optimize this
-					matrix.setTo (1.0, 0.0, 0.0, 1.0, -graphics.__bounds.x, -graphics.__bounds.y);
-					currentTransform.preTransform (matrix);
-					Matrix.pool.put (matrix);
+					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, - graphics.__bounds.x * scaleX + padding + tx, - graphics.__bounds.y * scaleY + padding + ty);
 
 				} else {
 
-					context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
-					context.translate (-graphics.__bounds.x, -graphics.__bounds.y);
+					context.setTransform (scaleX, 0.0, 0.0, scaleY, - graphics.__bounds.x * scaleX + padding + tx, - graphics.__bounds.y * scaleY + padding + ty);
 
 				}
 
@@ -759,8 +757,8 @@ class CanvasGraphics {
 					throw ":TODO: handle snapCoordinates";
 				}
 
-				bitmap.__offsetX = bounds.x;
-				bitmap.__offsetY = bounds.y;
+				bitmap.__offsetX = bounds.x - tx / scaleX;
+				bitmap.__offsetY = bounds.y - ty / scaleY;
 
 				graphics.__bitmap = bitmap;
 
