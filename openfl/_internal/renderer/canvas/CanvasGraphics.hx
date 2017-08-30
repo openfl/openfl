@@ -535,9 +535,15 @@ class CanvasGraphics {
 				graphics.__canvas.height = height;
 				snapCoordinates = graphics.snapCoordinates;
 
-				var owner_render_transform = graphics.__owner.__renderTransform;
-				var tx = owner_render_transform.tx - Math.ffloor (owner_render_transform.tx);
-				var ty = owner_render_transform.ty - Math.ffloor (owner_render_transform.ty);
+				var tx:Float = 0.0;
+				var ty:Float = 0.0;
+				var owner = graphics.__owner;
+
+				if (owner != null) {
+					var owner_render_transform = graphics.__owner.__renderTransform;
+					tx = owner_render_transform.tx - Math.ffloor (owner_render_transform.tx);
+					ty = owner_render_transform.ty - Math.ffloor (owner_render_transform.ty);
+				}
 
 				if (snapCoordinates) {
 
