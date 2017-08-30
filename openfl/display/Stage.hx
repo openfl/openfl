@@ -94,6 +94,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var allowsFullScreenInteractive (default, null):Bool;
 	public var application (default, null):Application;
 	public var color (get, set):Int;
+	public var contentsScaleFactor (get, never):Float;
 	public var displayState (get, set):StageDisplayState;
 	public var focus (get, set):InteractiveObject;
 	public var frameRate (get, set):Float;
@@ -114,6 +115,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __color:Int;
 	private var __colorSplit:Array<Float>;
 	private var __colorString:String;
+	private var __contentsScaleFactor:Float;
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
 	private var __displayMatrix:Matrix;
@@ -169,6 +171,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		this.name = null;
 		
+		__contentsScaleFactor = window.scale;
 		__deltaTime = 0;
 		__displayState = NORMAL;
 		__mouseX = 0;
@@ -1925,6 +1928,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
 		
 		return __color = value;
+		
+	}
+	
+	
+	private function get_contentsScaleFactor ():Float {
+		
+		return __contentsScaleFactor;
 		
 	}
 	

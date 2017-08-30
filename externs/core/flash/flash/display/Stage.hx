@@ -48,9 +48,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	@:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
 	#end
 	
-	#if flash
-	@:require(flash11_4) public var contentsScaleFactor (default, null):Float;
-	#end
+	@:require(flash11_4) public var contentsScaleFactor (default, never):Float;
 	
 	#if flash
 	@:require(flash11) public var displayContextInfo (default, null):String;
