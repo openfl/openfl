@@ -190,6 +190,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			numTiles--;
 		}
 		
+		if (numTiles <= 0 && __tileArray != null) {
+			__tileArray.length = 0;
+		}
+		
 		#if !flash
 		__setRenderDirty ();
 		#end
@@ -221,6 +225,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		__tileArrayDirty = true;
 		numTiles = __tiles.length;
+		
+		if (numTiles == 0 && __tileArray != null) {
+			__tileArray.length = 0;
+		}
 		
 		#if !flash
 		__setRenderDirty ();
