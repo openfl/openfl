@@ -1,12 +1,17 @@
 package flash.text; #if (!display && flash)
 
 
+import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
 import openfl.geom.Rectangle;
 
 
 extern class TextField extends InteractiveObject {
 	
+	
+	#if flash
+	public var alwaysShowSelection:Bool;
+	#end
 	
 	public var antiAliasType:AntiAliasType;
 	public var autoSize:TextFieldAutoSize;
@@ -16,6 +21,11 @@ extern class TextField extends InteractiveObject {
 	public var borderColor:Int;
 	public var bottomScrollV (default, null):Int;
 	public var caretIndex (default, null):Int;
+	
+	#if flash
+	public var condenseWhite:Bool;
+	#end
+	
 	public var defaultTextFormat:TextFormat;
 	public var displayAsPassword:Bool;
 	public var embedFonts:Bool;
@@ -35,11 +45,26 @@ extern class TextField extends InteractiveObject {
 	public var selectionBeginIndex (default, null):Int;
 	public var selectionEndIndex:Int;
 	public var sharpness:Float;
+	
+	#if flash
+	public var styleSheet:StyleSheet;
+	#end
+	
 	public var text:String;
 	public var textColor:Int;
 	public var textHeight (default, null):Float;
+	
+	#if flash
+	@:require(flash11) public var textInteractionMode:String;
+	#end
+	
 	public var textWidth (default, null):Float;
 	public var type:TextFieldType;
+	
+	#if flash
+	public var useRichTextClipboard:Bool;
+	#end
+	
 	public var wordWrap:Bool;
 	
 	public function new ();
@@ -47,6 +72,11 @@ extern class TextField extends InteractiveObject {
 	public function getCharBoundaries (charIndex:Int):Rectangle;
 	public function getCharIndexAtPoint (x:Float, y:Float):Int;
 	public function getFirstCharInParagraph (charIndex:Int):Int;
+	
+	#if flash
+	public function getImageReference (id:String):DisplayObject;
+	#end
+	
 	public function getLineIndexAtPoint (x:Float, y:Float):Int;
 	public function getLineIndexOfChar (charIndex:Int):Int;
 	public function getLineLength (lineIndex:Int):Int;
@@ -55,6 +85,11 @@ extern class TextField extends InteractiveObject {
 	public function getLineText (lineIndex:Int):String;
 	public function getParagraphLength (charIndex:Int):Int;
 	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat;
+	
+	#if flash
+	@:require(flash10) public static function isFontCompatible (fontName:String, fontStyle:FontStyle):Bool;
+	#end
+	
 	public function replaceSelectedText (value:String):Void;
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void;
 	public function setSelection (beginIndex:Int, endIndex:Int):Void;
