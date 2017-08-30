@@ -59,7 +59,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline function join (sep:String):String {
+	public inline function join (sep:String = ","):String {
 		
 		return this.join (sep);
 		
@@ -83,6 +83,13 @@ abstract Vector<T>(IVector<T>) {
 	public inline function push (x:T):Int {
 		
 		return this.push (x);
+		
+	}
+	
+	
+	public inline function removeAt (index:Int):T {
+		
+		return this.removeAt (index);
 		
 	}
 	
@@ -387,7 +394,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -436,6 +443,19 @@ abstract Vector<T>(IVector<T>) {
 			return __array.length;
 			
 		}
+		
+	}
+	
+	
+	public function removeAt (index:Int):Bool {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return false;
 		
 	}
 	
@@ -676,7 +696,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -725,6 +745,19 @@ abstract Vector<T>(IVector<T>) {
 			return __array.length;
 			
 		}
+		
+	}
+	
+	
+	public function removeAt (index:Int):Float {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return 0;
 		
 	}
 	
@@ -974,7 +1007,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -1023,6 +1056,19 @@ abstract Vector<T>(IVector<T>) {
 			return __array.length;
 			
 		}
+		
+	}
+	
+	
+	public function removeAt (index:Int):Function {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return null;
 		
 	}
 	
@@ -1264,7 +1310,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -1313,6 +1359,19 @@ abstract Vector<T>(IVector<T>) {
 			return __array.length;
 			
 		}
+		
+	}
+	
+	
+	public function removeAt (index:Int):Int {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return 0;
 		
 	}
 	
@@ -1553,7 +1612,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -1602,6 +1661,19 @@ abstract Vector<T>(IVector<T>) {
 			return __array.length;
 			
 		}
+		
+	}
+	
+	
+	public function removeAt (index:Int):T {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return null;
 		
 	}
 	
@@ -1753,10 +1825,11 @@ abstract Vector<T>(IVector<T>) {
 	public function indexOf (x:T, ?from:Int = 0):Int;
 	public function insertAt (index:Int, element:T):Void;
 	public function iterator<T> ():Iterator<T>;
-	public function join (sep:String):String;
+	public function join (sep:String = ","):String;
 	public function lastIndexOf (x:T, ?from:Int = 0):Int;
 	public function pop ():Null<T>;
 	public function push (x:T):Int;
+	public function removeAt (index:Int):T;
 	public function reverse ():IVector<T>;
 	public function set (index:Int, value:T):T;
 	public function shift ():Null<T>;
@@ -1838,9 +1911,11 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public function insertAt (index:Int, element:T):Void {
 		
+		#if flash19
+		this.insertAt (index, element);
+		#else
 		Reflect.callMethod (this.splice, this.splice, [ index, 0, element ]);
-		//this.splice (index, 0, element);
-		//this.insertAt (index, element);
+		#end
 		
 	}
 	
@@ -1852,7 +1927,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	public inline function join (sep:String):String {
+	public inline function join (sep:String = ","):String {
 		
 		return this.join (sep);
 		
@@ -1876,6 +1951,17 @@ abstract Vector<T>(VectorData<T>) {
 	public inline function push (x:T):Int {
 		
 		return this.push (x);
+		
+	}
+	
+	
+	public function removeAt (index:Int):T {
+		
+		#if flash19
+		return this.removeAt (index);
+		#else
+		return Reflect.callMethod (this.splice, this.splice, [ index, 1 ])[0];
+		#end
 		
 	}
 	
