@@ -3,6 +3,8 @@ package format.swf.lite.symbols;
 
 import format.swf.lite.timeline.Frame;
 import format.swf.lite.timeline.FrameObjectType;
+import lime.graphics.GLRenderContext;
+import openfl.Assets;
 
 class SpriteSymbol extends SWFSymbol {
 
@@ -18,20 +20,38 @@ class SpriteSymbol extends SWFSymbol {
 
 	}
 
-	public function findNeededShapesSymbolId(result:Map<Int, ShapeSymbol>, swflite:SWFLite):Void {
+	public function findDependentSymbols(swflite:SWFLite, shapes:Map<Int, ShapeSymbol>, simpleSprites:Map<Int, SimpleSpriteSymbol> = null):Void {
 		for(frame in frames) {
 			for(frameObject in frame.objects) {
 				if(frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
 					var symbol = swflite.symbols.get(frameObject.symbol);
 
 					if(Std.is(symbol, SpriteSymbol)) {
-						cast(symbol, SpriteSymbol).findNeededShapesSymbolId(result, swflite);
-					}
-					else if(Std.is(symbol, ShapeSymbol)) {
-						result.set(frameObject.symbol, cast symbol);
+						cast(symbol, SpriteSymbol).findDependentSymbols(swflite, shapes, simpleSprites);
+					} else if(shapes != null && Std.is(symbol, ShapeSymbol)) {
+						shapes.set(frameObject.symbol, cast symbol);
+					} else if(simpleSprites != null && Std.is(symbol, SimpleSpriteSymbol)) {
+						simpleSprites.set(frameObject.symbol, cast symbol);
 					}
 				}
 			}
 		}
 	}
+
+	public function createNeededTextures(gl:GLRenderContext, swflite:SWFLite):Void {
+		var shapes = new Map();
+		var simpleSprites = new Map();
+
+		findDependentSymbols(swflite, shapes, simpleSprites);
+
+		for(s in shapes) {
+			s.graphics.createTextures(gl);
+		}
+
+		for(s in simpleSprites) {
+			var bitmapData = Assets.getBitmapData(cast(swflite.symbols.get(s.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
+			bitmapData.getTexture(gl);
+		}
+	}
+
 }

@@ -29,5 +29,8 @@ import openfl.display.BitmapData;
 		return poolable = value;
 	}
 
+	public function toString():String {
+		return 'SWFSymbol[id: $id, name: $className] ';
+	}
 
 }

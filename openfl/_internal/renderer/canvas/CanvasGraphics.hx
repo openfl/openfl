@@ -17,6 +17,8 @@ import openfl.geom.Rectangle;
 import openfl.Lib;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+import format.swf.lite.symbols.ShapeSymbol;
+import format.swf.lite.symbols.SWFSymbol;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -57,6 +59,40 @@ class CanvasGraphics {
 	private static var startY = 0.0;
 	private static var currentTransform = new Matrix ();
 	private static var snapCoordinates:Bool = false;
+
+	#if profile
+		private static var totalFromCanvasCount = 0;
+		private static var currentFromCanvasCount = 0;
+		private static var fromCanvasTable:Map<SWFSymbol, Int> = new Map ();
+	#end
+
+	#if profile
+		#if js
+			public static function __init__ () {
+				untyped $global.Profile = $global.Profile || {};
+				untyped $global.Profile.CanvasGraphics = {};
+				untyped $global.Profile.CanvasGraphics.logStatistics = logStatistics;
+				untyped $global.Profile.CanvasGraphics.clear = clear;
+			}
+		#end
+
+		public static function logStatistics (threshold:Int = 0) {
+			trace ('Generated graphics:');
+			trace ('  current count: $currentFromCanvasCount,  total since beginning: ${totalFromCanvasCount}');
+
+			trace ('entries: ');
+			for (entry in fromCanvasTable.keys()) {
+				if (fromCanvasTable.get(entry) >= threshold)
+					trace('  $entry, ${fromCanvasTable.get(entry)}');
+			}
+		}
+
+		public static function clear() {
+			currentFromCanvasCount = 0;
+			fromCanvasTable = new Map ();
+		}
+
+	#end
 
 	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>  = new ObjectPool<DrawCommandReader>(
 		function()
@@ -448,7 +484,7 @@ class CanvasGraphics {
 
 		#if (js && html5)
 
-		if (graphics.__dirty) {
+		if (graphics.dirty) {
 
 			hitTesting = false;
 
@@ -467,12 +503,16 @@ class CanvasGraphics {
 
 				if (graphics.__symbol != null) {
 
-					var cachedBitmapData:BitmapData = graphics.__symbol.getCachedBitmapData (width, height);
+					var cachedBitmapData:BitmapData = null;
+
+					if ( Std.is(graphics.__symbol, ShapeSymbol) ) {
+						cachedBitmapData = cast(graphics.__symbol, ShapeSymbol).getCachedBitmapData (width, height);
+					}
 
 					if (cachedBitmapData != null) {
 
 						graphics.__bitmap = cachedBitmapData;
-						graphics.__dirty = false;
+						graphics.dirty = false;
 
 						return;
 
@@ -750,6 +790,19 @@ class CanvasGraphics {
 
 				drawCommandReaderPool.put (data);
 
+				#if profile
+					if (  graphics.__symbol != null ) {
+						if ( fromCanvasTable.exists(graphics.__symbol) ) {
+							var value = fromCanvasTable.get(graphics.__symbol);
+							fromCanvasTable.set(graphics.__symbol, ++value);
+						} else {
+							fromCanvasTable.set(graphics.__symbol, 1);
+						}
+					}
+					totalFromCanvasCount++;
+					currentFromCanvasCount++;
+				#end
+
 				var bounds = graphics.__bounds;
 				var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, padding, scaleX, scaleY);
 
@@ -764,13 +817,14 @@ class CanvasGraphics {
 
 				if (graphics.__symbol != null) {
 
-					graphics.__symbol.setCachedBitmapData (graphics.__bitmap);
+					if ( Std.is(graphics.__symbol, ShapeSymbol) )
+						cast(graphics.__symbol, ShapeSymbol).setCachedBitmapData (graphics.__bitmap);
 
 				}
 
 			}
 
-			graphics.__dirty = false;
+			graphics.dirty = false;
 
 		}
 
@@ -1095,7 +1149,7 @@ class CanvasGraphics {
 	private inline static function beginFill(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readBeginFill ();
-		if (c.alpha < 0.005) {
+		if (c.alpha < 0.005 && !isMask) {
 
 			hasFill = false;
 

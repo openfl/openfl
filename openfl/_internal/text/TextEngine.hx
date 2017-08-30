@@ -832,7 +832,7 @@ class TextEngine {
 			}
 
 			// :NOTE: For justify, we have to account for a minimum space width here.
-			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - OFFSET_START ) {
+			if ( nextBreakIndex - textIndex > 1 && wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - OFFSET_START ) {
 				// :NOTE: Special case. words that should be broken without ' ', '-' or '\n'
 				var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
 				if ( layoutGroup.offsetX == OFFSET_START && Math.floor( layoutGroup.offsetX + wordWidth ) > width - OFFSET_START ) {

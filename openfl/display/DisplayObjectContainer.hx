@@ -707,6 +707,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 	}
 
+	private override function __cleanupIntermediateTextures() {
+		super.__cleanupIntermediateTextures();
+		for (child in __children) {
+			child.__cleanupIntermediateTextures();
+		}
+	}
+
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		super.__update (transformOnly, updateChildren);
@@ -804,7 +811,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		return result;
 
 	}
-
 
 }
 

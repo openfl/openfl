@@ -41,6 +41,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 	private static var __worldBranchDirty = 0;
+	private static var __isCachingAsMask:Bool;
+	private static var __cachedBitmapPadding = 1;
 
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
@@ -632,7 +634,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__graphics != null) {
 
 			#if (js && html5)
-			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask);
+			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask || DisplayObject.__isCachingAsMask);
 			#end
 
 			GLRenderer.renderBitmap (this, renderSession);
@@ -723,7 +725,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__cachedBitmapBounds = new Rectangle ();
 		}
 
-		var padding:Int = 1;
+		var padding:Int = __cachedBitmapPadding;
 
 		__getRenderBounds (__cachedBitmapBounds);
 		var renderToLocal = Matrix.__temp;
@@ -794,6 +796,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				var profileId = getProfileId();
 				__applyFiltersCountMap.set(profileId, (__applyFiltersCountMap.exists(profileId) ? __applyFiltersCountMap.get(profileId) + 1 : 1));
 			#end
+		} else {
+			__cleanupIntermediateTextures();
 		}
 
 		@:privateAccess __cachedBitmap.__offsetX = __cachedBitmapBounds.x;
@@ -840,6 +844,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return stack;
 		}
 	#end
+
+	private function __cleanupIntermediateTextures() {
+		__disposeGraphicsBitmap();
+	}
 
 	private function setStage (stage:Stage):Stage {
 		if (this.stage != stage) {
@@ -920,6 +928,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if ( __objectTransform != null) {
 			Transform.pool.put(__objectTransform);
 			__objectTransform = null;
+		}
+	}
+
+	private function __disposeGraphicsBitmap() {
+		if (__graphics != null) {
+			@:privateAccess __graphics.__disposeBitmap();
 		}
 	}
 
@@ -1189,7 +1203,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateFilters = __filters != null && __filters.length > 0;
 
 		if (__graphics != null) {
-			__graphics.__dirty = true;
+			__graphics.dirty = true;
 		}
 	}
 

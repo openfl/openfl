@@ -426,7 +426,7 @@ class BitmapData implements IBitmapDrawable {
 				src_display_object.__update(false, true);
 			}
 		}
-		__drawGL ( renderSession, source, matrix, clipRect, smoothing, !__usingPingPongTexture, false, true);
+		__drawGL ( renderSession, source, matrix, clipRect, smoothing, !__usingPingPongTexture, false, false);
 		if ( Std.is( source, DisplayObject ) && !cached_visible ) {
 			cast(source,DisplayObject).visible = cached_visible;
 		}
@@ -1222,6 +1222,10 @@ class BitmapData implements IBitmapDrawable {
 		physicalWidth = Math.ceil (width * scaleX) + 2 * padding;
 		physicalHeight = Math.ceil (height * scaleY) + 2 * padding;
 
+		if ( image != null ) {
+			image.resize (physicalWidth, physicalHeight);
+		}
+
 	}
 
 
@@ -1306,14 +1310,22 @@ class BitmapData implements IBitmapDrawable {
 	public static function __init__ () {
 		untyped $global.Tools = $global.Tools || {};
 		untyped $global.Tools.viewBitmapData = viewBitmapData;
+		untyped $global.Tools.viewGLTexture = viewGLTexture;
+		#if profile
+			untyped $global.Tools.viewTexture = viewTexture;
+			untyped $global.Tools.viewAllTextures = viewAllTextures;
+		#end
 	}
 
 	private static function viewBitmapData(bitmapData:BitmapData) {
 		var gl = @:privateAccess Lib.current.stage.__renderer.renderSession.gl;
 		var texture = bitmapData.getTexture(gl);
-		var width = bitmapData.physicalWidth;
-		var height = bitmapData.physicalHeight;
 
+		viewGLTexture(texture, bitmapData.physicalWidth, bitmapData.physicalHeight);
+	}
+
+	private static function viewGLTexture(texture:GLTexture, width:Int, height:Int) {
+		var gl = @:privateAccess Lib.current.stage.__renderer.renderSession.gl;
 		var framebuffer = gl.createFramebuffer();
 		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
@@ -1332,13 +1344,18 @@ class BitmapData implements IBitmapDrawable {
 
 		var theTitle = "Preview: " + width + "x" + height;
 
-		untyped $(canvas)
+		var container = untyped $("<div></div>")
+			.css({
+				"background-color": "#EEEEEE"
+				})
+			.append(canvas);
+		untyped $(container)
 			.dialog({
 				title: theTitle,
-				width: width,
-				height: height,
+				width: width + 30,
 				resizable: false
 				})
+			.children().first().css({width: "" + width + "px", height: "" + height + "px", "min-width": 0, "min-height": 0})
 			.parent()
 			.draggable({
 				cancel:'',
@@ -1346,8 +1363,24 @@ class BitmapData implements IBitmapDrawable {
 				containment: false
 				});
 	}
+
+		#if profile
+		private static function viewTexture(id:Int) {
+			var data = lime.graphics.opengl.GL.getTextureData (id);
+			viewGLTexture (data.texture, data.width, data.height);
+		}
+
+		private static function viewAllTextures() {
+			var table = @:privateAccess lime.graphics.opengl.GL.textureDataTable;
+			for (data in table.iterator()) {
+				viewGLTexture(data.texture, data.width, data.height);
+			}
+		}
+		#end
 	#end
 }
+
+
 
 
 class TextureUvs {

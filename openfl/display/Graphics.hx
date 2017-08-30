@@ -2,6 +2,10 @@ package openfl.display; #if !openfl_legacy
 
 
 import lime.graphics.Image;
+import lime.graphics.GLRenderContext;
+import format.swf.exporters.core.ShapeCommand;
+import format.swf.lite.symbols.ShapeSymbol;
+import format.swf.lite.symbols.SWFSymbol;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.opengl.utils.RenderTexture;
@@ -53,14 +57,15 @@ import js.html.CanvasRenderingContext2D;
 
 	public var readOnly:Bool;
 	public var snapCoordinates (get, never):Bool;
+	public var dirty (get, set):Bool;
 
 	@:s private var __bounds:Rectangle;
 	@:s private var __commands:DrawCommandBuffer;
-	@:s private var __dirty (default, set):Bool = true;
 	@:s private var __positionX:Float;
 	@:s private var __positionY:Float;
 	@:s private var __strokePadding:Float;
 	@:s private var __visible:Bool;
+	private var __dirty:Bool = true;
 	private var __owner:DisplayObject;
 
 	#if (js && html5)
@@ -69,7 +74,7 @@ import js.html.CanvasRenderingContext2D;
 	#end
 
 	private var __bitmap(default, set):BitmapData;
-	@:s private var __symbol:format.swf.lite.symbols.ShapeSymbol;
+	@:s private var __symbol:SWFSymbol;
 
 	private function new (?initCommands = true) {
 
@@ -85,7 +90,6 @@ import js.html.CanvasRenderingContext2D;
 		#end
 
 	}
-
 
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 
@@ -138,7 +142,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 		__commands.beginFill (color & 0xFFFFFF, alpha);
 
-		if (alpha > 0) __visible = true;
+		__visible = true;
 
 	}
 
@@ -176,7 +180,7 @@ import js.html.CanvasRenderingContext2D;
 
 		if (__bounds != null) {
 
-			__dirty = true;
+			dirty = true;
 			__bounds = null;
 
 		}
@@ -203,7 +207,7 @@ import js.html.CanvasRenderingContext2D;
 			__commands = sourceGraphics.__commands.copy ();
 
 		}
-		__dirty = true;
+		dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
 		__positionX = sourceGraphics.__positionX;
 		__positionY = sourceGraphics.__positionY;
@@ -282,7 +286,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.cubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -324,7 +328,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.curveTo (controlX, controlY, anchorX, anchorY);
 
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -338,7 +342,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawCircle (x, y, radius);
 
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -352,7 +356,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawEllipse (x, y, width, height);
 
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -481,7 +485,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawRect (x, y, width, height);
 
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -495,7 +499,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawRoundRect (x, y, width, height, ellipseWidth, ellipseHeight);
 
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -554,7 +558,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (maxX, maxY);
 		__commands.drawTriangles (vertices, indices, uvtData, culling);
 
-		__dirty = true;
+		dirty = true;
 		__visible = true;
 
 	}
@@ -619,7 +623,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.lineTo (x, y);
 
-		__dirty = true;
+		dirty = true;
 
 	}
 
@@ -631,6 +635,14 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.moveTo (x, y);
 
+	}
+
+
+	public function createTextures(gl:GLRenderContext):Void {
+		var bitmapDatas = @:privateAccess __commands.bd;
+		for(bitmapData in bitmapDatas) {
+			bitmapData.getTexture(gl);
+		}
 	}
 
 
@@ -721,6 +733,11 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 	public function dispose ():Void {
+		__disposeBitmap();
+		dirty = true;
+	}
+
+	private inline function __disposeBitmap():Void {
 		__bitmap = null;
 		__dirty = true;
 	}
@@ -731,7 +748,7 @@ import js.html.CanvasRenderingContext2D;
 
 
 
-	private function set___dirty (value:Bool):Bool {
+	private function set_dirty (value:Bool):Bool {
 
 		if (value && __owner != null) {
 
@@ -743,9 +760,13 @@ import js.html.CanvasRenderingContext2D;
 
 	}
 
+	private function get_dirty():Bool {
+		return __dirty;
+	}
+
 	private function set___bitmap (value:BitmapData):BitmapData {
 
-		if (__bitmap != null && (__symbol == null || !__symbol.useBitmapCache)) {
+		if (__bitmap != null && (__symbol == null || !Std.is(__symbol, ShapeSymbol) || !cast(__symbol, ShapeSymbol).useBitmapCache)) {
 
 			__bitmap.dispose ();
 
@@ -757,7 +778,7 @@ import js.html.CanvasRenderingContext2D;
 
 	public inline function get_snapCoordinates ():Bool {
 
-		return __symbol != null && __symbol.snapCoordinates;
+		return __symbol != null && Std.is(__symbol, ShapeSymbol) && cast(__symbol, ShapeSymbol).snapCoordinates;
 
 	}
 
