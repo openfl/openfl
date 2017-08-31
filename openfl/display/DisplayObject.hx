@@ -751,11 +751,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		@:privateAccess __cachedBitmap.__resize (__cachedBitmapBounds.width, __cachedBitmapBounds.height, padding, renderScaleX, renderScaleY);
 
+		var tx = -__cachedBitmapBounds.x * renderScaleX;
+		var ty = -__cachedBitmapBounds.y * renderScaleY;
 		var m = Matrix.pool.get();
 		m.identity ();
 		m.a = renderScaleX;
 		m.d = renderScaleY;
-		m.translate (-__cachedBitmapBounds.x * renderScaleX + padding, -__cachedBitmapBounds.y * renderScaleY + padding);
+		m.translate ( tx + padding, ty + padding);
 
 		var m2:Matrix = null;
 
@@ -800,8 +802,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__cleanupIntermediateTextures();
 		}
 
-		@:privateAccess __cachedBitmap.__offsetX = __cachedBitmapBounds.x;
-		@:privateAccess __cachedBitmap.__offsetY = __cachedBitmapBounds.y;
+		@:privateAccess __cachedBitmap.__offsetX = - tx / renderScaleX;
+		@:privateAccess __cachedBitmap.__offsetY = - ty / renderScaleY;
 
 		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
 			symbol.uniqueSharedCachedBitmap = __cachedBitmap;
