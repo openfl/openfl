@@ -584,13 +584,6 @@ class TextField extends InteractiveObject {
 	}
 
 
-	private override function __getRenderBounds (rect:Rectangle):Void {
-
-		__getBounds (rect);
-		rect.__transform (rect, __renderTransform);
-
-	}
-
 	private override function __getBounds (rect:Rectangle):Void {
 
 		__updateLayout ();

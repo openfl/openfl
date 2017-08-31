@@ -125,7 +125,8 @@ class CanvasTextField {
 			} else {
 
 				var bounds = Rectangle.pool.get();
-				textField.__getRenderBounds (bounds);
+				textField.__getBounds (bounds);
+				@:privateAccess bounds.__transform (bounds, textField.__renderTransform);
 
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 
