@@ -535,23 +535,24 @@ class CanvasGraphics {
 				graphics.__canvas.height = height;
 				snapCoordinates = graphics.snapCoordinates;
 
-				var tx:Float = 0.0;
-				var ty:Float = 0.0;
+				var bound = graphics.__bounds;
+				var tx = -bounds.x * scaleX;
+				var ty = -bounds.y * scaleY;
 				var owner = graphics.__owner;
 
 				if (owner != null) {
 					var owner_render_transform = graphics.__owner.__renderTransform;
-					tx = owner_render_transform.tx - Math.ffloor (owner_render_transform.tx);
-					ty = owner_render_transform.ty - Math.ffloor (owner_render_transform.ty);
+					tx += owner_render_transform.tx - Math.ffloor (owner_render_transform.tx);
+					ty += owner_render_transform.ty - Math.ffloor (owner_render_transform.ty);
 				}
 
 				if (snapCoordinates) {
 
-					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, - graphics.__bounds.x * scaleX + padding + tx, - graphics.__bounds.y * scaleY + padding + ty);
+					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, padding + tx, padding + ty);
 
 				} else {
 
-					context.setTransform (scaleX, 0.0, 0.0, scaleY, - graphics.__bounds.x * scaleX + padding + tx, - graphics.__bounds.y * scaleY + padding + ty);
+					context.setTransform (scaleX, 0.0, 0.0, scaleY, padding + tx, padding + ty);
 
 				}
 
@@ -809,17 +810,7 @@ class CanvasGraphics {
 					currentFromCanvasCount++;
 				#end
 
-				var bounds = graphics.__bounds;
-				var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, padding, scaleX, scaleY);
-
-				if (graphics.snapCoordinates) {
-					throw ":TODO: handle snapCoordinates";
-				}
-
-				bitmap.__offsetX = bounds.x - tx / scaleX;
-				bitmap.__offsetY = bounds.y - ty / scaleY;
-
-				graphics.__bitmap = bitmap;
+				graphics.__bitmap = BitmapData.fromGraphics (graphics, padding, scaleX, scaleY, tx, ty);
 
 				if (graphics.__symbol != null) {
 

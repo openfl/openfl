@@ -517,6 +517,26 @@ class BitmapData implements IBitmapDrawable {
 	}
 	#end
 
+	public static function fromGraphics (graphics:Graphics, transparent:Bool = true, padding:Int, scaleX:Float, scaleY:Float, offsetX:Float, offsetY:Float):BitmapData {
+
+		#if (js && html5)
+			if (graphics.snapCoordinates) {
+				throw ":TODO: handle snapCoordinates";
+			}
+
+			var bounds = graphics.__bounds;
+			var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, padding, scaleX, scaleY);
+
+			bitmap.__offsetX = - offsetX / scaleX;
+			bitmap.__offsetY = - offsetY / scaleY;
+
+			return bitmap;
+		#else
+			throw ":TODO:";
+			return null;
+		#end
+
+	}
 
 	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
 
@@ -1210,7 +1230,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	function __resize (width:Float, height:Float, padding:Int, scaleX:Float = 1.0, scaleY:Float = 1.0) {
+	function __resize (width:Float, height:Float, padding:Int = 0, scaleX:Float = 1.0, scaleY:Float = 1.0) {
 
 		this.__padding = padding;
 		this.width = width;
@@ -1297,6 +1317,14 @@ class BitmapData implements IBitmapDrawable {
 
 	public function getLocalTransform (matrix:Matrix):Void {
 		@:privateAccess matrix.setTo (1.0, 0.0, 0.0, 1.0, __offsetX - __padding / __scaleX, __offsetY - __padding / __scaleY);
+	}
+
+	public inline function getPaddedLogicalWidth ():Float {
+		return physicalWidth / __scaleX;
+	}
+
+	public inline function getPaddedLogicalHeight ():Float {
+		return physicalHeight / __scaleY;
 	}
 
 	private function getPhysicalRect (physicalRect:Rectangle):Void {

@@ -802,7 +802,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		@:privateAccess __cachedBitmap.__offsetX = __cachedBitmapBounds.x;
 		@:privateAccess __cachedBitmap.__offsetY = __cachedBitmapBounds.y;
-		@:privateAccess __cachedBitmap.__padding = padding;
 
 		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
 			symbol.uniqueSharedCachedBitmap = __cachedBitmap;
