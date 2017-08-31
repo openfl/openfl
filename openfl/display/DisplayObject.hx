@@ -974,12 +974,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!__transformDirty) {
 
-			// :TODO: should apply to all descendants graphics
-
-			if (__graphics != null) {
-				__graphics.__dirty = true;
-			}
-
 			__transformDirty = true;
 			__setRenderDirtyNoCachedBitmap();
 			__worldTransformDirty++;
@@ -1131,10 +1125,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		var wt = __worldTransform;
-		var old_world_transform_a = wt.a;
-		var old_world_transform_b = wt.b;
-		var old_world_transform_c = wt.c;
-		var old_world_transform_d = wt.d;
+		var old_world_transform = Matrix.pool.get ();
+		old_world_transform.copyFrom (wt);
 
 		if (parent != null) {
 
@@ -1175,12 +1167,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		if (!__isCachingAsBitmap &&
-			(old_world_transform_a != wt.a ||
-			old_world_transform_d != wt.d ||
-			old_world_transform_b != wt.b ||
-			old_world_transform_c != wt.c)) {
-			_onWorldTransformScaleRotationChanged ();
+		if (!__isCachingAsBitmap && !old_world_transform.equals (wt)) {
+			_onWorldTransformChanged ();
 		}
 
 
@@ -1199,7 +1187,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}
 
-	public function _onWorldTransformScaleRotationChanged ():Void {
+	public function _onWorldTransformChanged ():Void {
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
 
