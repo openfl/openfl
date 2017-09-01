@@ -643,8 +643,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		#else
 		
-		var nextFrame = __currentFrame + (__lastFrameScriptEval == __currentFrame ? 1 : 0);
-		if (nextFrame > __frames.length) nextFrame = 1;
+		var nextFrame = __currentFrame + 1;
+		if (nextFrame > __totalFrames) nextFrame = 1;
 		
 		#end
 		
