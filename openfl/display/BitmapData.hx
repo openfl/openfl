@@ -73,6 +73,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __textureImage:Image;
 	private var __pingPongTexture:PingPongTexture;
 	private var __usingPingPongTexture:Bool = false;
+	private var __imageShouldBeSynced:Bool = false;
 	private var __uvData:TextureUvs;
 	private var __image:Image;
 
@@ -1092,6 +1093,10 @@ class BitmapData implements IBitmapDrawable {
 
 		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
 
+		if ( !readPixels ) {
+			__imageShouldBeSynced = true;
+		}
+
 		var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
 		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
 
@@ -1263,11 +1268,11 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 	public function get_image ():Image {
-		if ( __usingPingPongTexture ) {
+		if ( __imageShouldBeSynced ) {
 			var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
 			this.__pushFrameBuffer(renderSession);
 			this.__popFrameBuffer(renderSession, true);
-			__usingPingPongTexture = false;
+			__imageShouldBeSynced = false;
 		}
 		return __image;
 	}
