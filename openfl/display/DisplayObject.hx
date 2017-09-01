@@ -751,8 +751,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		@:privateAccess __cachedBitmap.__resize (__cachedBitmapBounds.width, __cachedBitmapBounds.height, padding, renderScaleX, renderScaleY);
 
-		var tx = -__cachedBitmapBounds.x * renderScaleX;
-		var ty = -__cachedBitmapBounds.y * renderScaleY;
+		var tx = -Math.fceil (__cachedBitmapBounds.x * renderScaleX);
+		var ty = -Math.fceil (__cachedBitmapBounds.y * renderScaleY);
+		tx += __renderTransform.tx - Math.ffloor (__renderTransform.tx);
+		ty += __renderTransform.ty - Math.ffloor (__renderTransform.ty);
 		var m = Matrix.pool.get();
 		m.identity ();
 		m.a = renderScaleX;

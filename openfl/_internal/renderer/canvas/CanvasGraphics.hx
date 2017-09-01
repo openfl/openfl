@@ -498,8 +498,8 @@ class CanvasGraphics {
 
 			} else {
 
-				var width = Math.ceil (graphics.__bounds.width * scaleX) + 2 * padding;
-				var height = Math.ceil (graphics.__bounds.height * scaleY) + 2 * padding;
+				var width = Math.ceil (bounds.width * scaleX) + 2 * padding;
+				var height = Math.ceil (bounds.height * scaleY) + 2 * padding;
 
 				if (graphics.__symbol != null) {
 
@@ -535,9 +535,8 @@ class CanvasGraphics {
 				graphics.__canvas.height = height;
 				snapCoordinates = graphics.snapCoordinates;
 
-				var bound = graphics.__bounds;
-				var tx = -bounds.x * scaleX;
-				var ty = -bounds.y * scaleY;
+				var tx = - Math.fceil (bounds.x * scaleX);
+				var ty = - Math.fceil (bounds.y * scaleY);
 				var owner = graphics.__owner;
 
 				if (owner != null) {
