@@ -3,7 +3,7 @@ package openfl.display3D.textures;
 
 import haxe.Timer;
 import lime.graphics.opengl.GL;
-import lime.utils.ArrayBufferView;
+import lime.utils.DataPointer;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
@@ -107,7 +107,7 @@ import openfl.utils.ByteArray;
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, side);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).bytes.getData(), side);
 			return;
 			
 		}
@@ -118,9 +118,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void {
-		
-		if (data == null) return;
+	public function uploadFromTypedArray (data:DataPointer, side:UInt, miplevel:UInt = 0):Void {
 		
 		var size = __size >> miplevel;
 		if (size == 0) return;

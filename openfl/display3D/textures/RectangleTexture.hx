@@ -2,7 +2,7 @@ package openfl.display3D.textures;
 
 
 import lime.graphics.opengl.GL;
-import lime.utils.ArrayBufferView;
+import lime.utils.DataPointer;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
@@ -55,7 +55,7 @@ import openfl.utils.ByteArray;
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).bytes.getData());
 			return;
 			
 		}
@@ -66,7 +66,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:Null<DataPointer>):Void {
 		
 		//if (__format != Context3DTextureFormat.BGRA) {
 			//

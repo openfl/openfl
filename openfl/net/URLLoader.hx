@@ -13,7 +13,6 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.net.URLRequestMethod;
-import openfl.utils.ByteArray;
 
 
 class URLLoader extends EventDispatcher {
@@ -60,13 +59,13 @@ class URLLoader extends EventDispatcher {
 		#if !macro
 		if (dataFormat == BINARY) {
 			
-			var httpRequest = new HTTPRequest<ByteArray> ();
+			var httpRequest = new HTTPRequest<Bytes> ();
 			__prepareRequest (httpRequest, request);
 			
 			httpRequest.load ()
 				.onProgress (httpRequest_onProgress)
 				.onError (httpRequest_onError)
-				.onComplete (function (data:ByteArray):Void {
+				.onComplete (function (data:Bytes):Void {
 					
 					__dispatchStatus ();
 					this.data = data;

@@ -48,8 +48,6 @@ import haxe.io.Bytes;
 		
 		GL.bindTexture (__textureTarget, null);
 		
-		uploadFromTypedArray (null);
-		
 	}
 	
 	
@@ -133,7 +131,7 @@ import haxe.io.Bytes;
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, miplevel);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).bytes.getData(), miplevel);
 			return;
 			
 		}
@@ -144,9 +142,7 @@ import haxe.io.Bytes;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
-		
-		if (data == null) return;
+	public function uploadFromTypedArray (data:lime.utils.DataPointer, miplevel:UInt = 0):Void {
 		
 		var width = __width >> miplevel;
 		var height = __height >> miplevel;

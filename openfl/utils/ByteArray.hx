@@ -48,7 +48,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#elseif flash
 		return this[index];
 		#else
-		return this.get (index);
+		return this.bytes.get (index);
 		#end
 		
 	}
@@ -61,7 +61,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		this[index] = value;
 		#else
 		this.__resize (index + 1);
-		this.set (index, value);
+		this.bytes.set (index, value);
 		#end
 		return value;
 		
@@ -148,11 +148,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if display
 		return null;
 		#elseif js
-		return (byteArray:ByteArrayData).getData ();
+		return (byteArray:ByteArrayData).bytes.getData ();
 		#elseif flash
 		return Bytes.ofData (byteArray);
 		#else
-		return (byteArray:ByteArrayData);
+		return (byteArray:ByteArrayData).bytes;
 		#end
 		
 	}
@@ -161,7 +161,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	@:to @:noCompletion private static function toBytePointer (byteArray:ByteArray):BytePointer {
 		
 		#if !display
-		__bytePointer.set (#if flash byteArray #else (byteArray:ByteArrayData) #end, byteArray.position);
+		__bytePointer.set (#if flash byteArray #else (byteArray:ByteArrayData).bytes #end, byteArray.position);
 		#end
 		return __bytePointer;
 		
@@ -172,7 +172,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
 		
 		#if !display
-		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
+		__bytePointer.set ((byteArray:ByteArrayData).bytes, byteArray.position);
 		#end
 		return __bytePointer;
 		
@@ -187,7 +187,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#elseif flash
 		return Bytes.ofData (byteArray);
 		#else
-		return (byteArray:ByteArrayData);
+		return (byteArray:ByteArrayData).bytes;
 		#end
 		
 	}
@@ -201,7 +201,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#elseif flash
 		return byteArray;
 		#else
-		return (byteArray:ByteArrayData).getData ();
+		return (byteArray:ByteArrayData).bytes.getData ();
 		#end
 		
 	}
@@ -261,7 +261,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 
-@:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
+@:noCompletion @:dox(hide) class ByteArrayData implements IDataInput implements IDataOutput {
 	
 	
 	private static var __defaultEndian:Endian = null;
@@ -272,12 +272,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public var position:Int;
 	
 	private var __endian:Endian;
-	private var __length:Int;
+	private var length:Int;
+
+	private var bytes:Bytes;
 	
 	
 	public function new (length:Int = 0) {
 		
-		var bytes = Bytes.alloc (length);
+		bytes = Bytes.alloc (length);
 		
 		#if sys
 		if (length > 0) {
@@ -286,14 +288,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		}
 		#end
-		
-		#if js
-		super (bytes.b.buffer);
-		#else
-		super (length, bytes.b);
-		#end
-		
-		__length = length;
 		
 		if (__defaultEndian == null) {
 			
@@ -331,12 +325,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
 		#if (js && html5)
-		if (__length > length) {
+		if (bytes.length > length) {
 			
 			var cacheLength = length;
-			this.length = __length;
+			this.length = bytes.length;
 			var data = Bytes.alloc (cacheLength);
-			data.blit (0, this, 0, cacheLength);
+			data.blit (0, this.bytes, 0, cacheLength);
 			__setData (data);
 			this.length = cacheLength;
 			
@@ -345,9 +339,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.compress (this);
-			case CompressionAlgorithm.LZMA: LZMA.compress (this);
-			default: Zlib.compress (this);
+			case CompressionAlgorithm.DEFLATE: Deflate.compress (this.bytes);
+			case CompressionAlgorithm.LZMA: LZMA.compress (this.bytes);
+			default: Zlib.compress (this.bytes);
 			
 		}
 		
@@ -355,7 +349,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 			__setData (bytes);
 			
-			length = __length;
+			length = bytes.length;
 			position = length;
 			
 		}
@@ -385,12 +379,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 	}
 	
-	
 	public function readBoolean ():Bool {
 		
 		if (position < length) {
 			
-			return (get (position++) != 0);
+			return (bytes.get (position++) != 0);
 			
 		} else {
 			
@@ -435,7 +428,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		}
 		
-		(bytes:ByteArrayData).blit (offset, this, position, length);
+		(bytes:ByteArrayData).bytes.blit (offset, this.bytes, position, length);
 		position += length;
 		
 	}
@@ -527,7 +520,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (position < length) {
 			
-			return get (position++);
+			return bytes.get (position++);
 			
 		} else {
 			
@@ -596,7 +589,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		position += length;
 		
 		
-		return getString (position - length, length);
+		return bytes.getString (position - length, length);
 		
 	}
 	
@@ -604,12 +597,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
 		#if (js && html5)
-		if (__length > length) {
+		if (bytes.length > length) {
 			
 			var cacheLength = length;
-			this.length = __length;
+			this.length = bytes.length;
 			var data = Bytes.alloc (cacheLength);
-			data.blit (0, this, 0, cacheLength);
+			data.blit (0, this.bytes, 0, cacheLength);
 			__setData (data);
 			this.length = cacheLength;
 			
@@ -618,9 +611,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this);
-			case CompressionAlgorithm.LZMA: LZMA.decompress (this);
-			default: Zlib.decompress (this);
+			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this.bytes);
+			case CompressionAlgorithm.LZMA: LZMA.decompress (this.bytes);
+			default: Zlib.decompress (this.bytes);
 			
 		};
 		
@@ -628,7 +621,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 			__setData (bytes);
 			
-			length = __length;
+			length = bytes.length;
 			
 		}
 		
@@ -647,7 +640,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeByte (value:Int):Void {
 		
 		__resize (position + 1);
-		set (position++, value & 0xFF);
+		bytes.set (position++, value & 0xFF);
 		
 	}
 	
@@ -658,7 +651,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (length == 0) length = bytes.length - offset;
 		
 		__resize (position + length);
-		blit (position, (bytes:ByteArrayData), offset, length);
+		this.bytes.blit (position, (bytes:ByteArrayData).bytes, offset, length);
 		
 		position += length;
 		
@@ -689,7 +682,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (endian == LITTLE_ENDIAN) {
 			
 			__resize (position + 4);
-			setFloat (position, value);
+			bytes.setFloat (position, value);
 			position += 4;
 			
 		} else {
@@ -708,17 +701,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (endian == LITTLE_ENDIAN) {
 			
-			set (position++, value & 0xFF);
-			set (position++, (value >> 8) & 0xFF);
-			set (position++, (value >> 16) & 0xFF);
-			set (position++, (value >> 24) & 0xFF);
+			bytes.set (position++, value & 0xFF);
+			bytes.set (position++, (value >> 8) & 0xFF);
+			bytes.set (position++, (value >> 16) & 0xFF);
+			bytes.set (position++, (value >> 24) & 0xFF);
 			
 		} else {
 			
-			set (position++, (value >> 24) & 0xFF);
-			set (position++, (value >> 16) & 0xFF);
-			set (position++, (value >> 8) & 0xFF);
-			set (position++, value & 0xFF);
+			bytes.set (position++, (value >> 24) & 0xFF);
+			bytes.set (position++, (value >> 16) & 0xFF);
+			bytes.set (position++, (value >> 8) & 0xFF);
+			bytes.set (position++, value & 0xFF);
 			
 		}
 		
@@ -738,13 +731,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (endian == LITTLE_ENDIAN) {
 			
-			set (position++, value);
-			set (position++, value >> 8);
+			bytes.set (position++, value);
+			bytes.set (position++, value >> 8);
 			
 		} else {
 			
-			set (position++, value >> 8);
-			set (position++, value);
+			bytes.set (position++, value >> 8);
+			bytes.set (position++, value);
 			
 		}
 		
@@ -786,16 +779,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private function __resize (size:Int) {
 		
-		if (size > __length) {
-			
+		if (size > bytes.length) {
+
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
 			#if sys
 			bytes.fill (length, size, 0);
 			#end
-			var cacheLength = length;
-			length = __length;
-			bytes.blit (0, this, 0, __length);
-			length = cacheLength;
+			bytes.blit (0, this.bytes, 0, this.length);
+			this.length = size;
 			__setData (bytes);
 			
 		}
@@ -810,23 +801,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	private inline function __setData (bytes:Bytes):Void {
-		
-		b = bytes.b;
-		__length = bytes.length;
-		
-		#if js
-		data = bytes.data;
-		#end
-		
+
+		this.bytes = bytes;
+
 	}
 	
 	
 	
 	
 	// Get & Set Methods
-	
-	
-	
 	
 	@:noCompletion private inline function get_bytesAvailable ():Int {
 		
@@ -847,8 +830,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		return __endian = value;
 		
 	}
+
 	
-	
+	// openfl.utils.ByteArray once extended haxe.io.Bytes, keep these rather common functions for backward compatibility
+
+	@:deprecated("get: openfl.utils.ByteArray no longer derives from haxe.io.Bytes")
+	public function get( pos : Int ) : Int {
+		return bytes.get(pos);
+	}
+	@:deprecated("set: openfl.utils.ByteArray no longer derives from haxe.io.Bytes")
+	public function set( pos : Int, v : Int ) : Void {
+		bytes.set(pos, v);
+	}
+	@:deprecated("toString: openfl.utils.ByteArray no longer derives from haxe.io.Bytes")
+	public function toString() : String {
+		return bytes.toString();
+	}
 }
 
 
