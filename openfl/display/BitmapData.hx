@@ -48,7 +48,7 @@ class BitmapData implements IBitmapDrawable {
 	private static var __isGLES:Null<Bool> = null;
 
 	public var height (get, never):Float;
-	public var image (default, null):Image;
+	public var image (get, null):Image;
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
 	public var rect (default, null):Rectangle;
@@ -73,7 +73,10 @@ class BitmapData implements IBitmapDrawable {
 	private var __textureImage:Image;
 	private var __pingPongTexture:PingPongTexture;
 	private var __usingPingPongTexture:Bool = false;
+	private var __imageShouldBeSynced:Bool = false;
 	private var __uvData:TextureUvs;
+	private var __image:Image;
+
 
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
 
@@ -118,18 +121,18 @@ class BitmapData implements IBitmapDrawable {
 			buffer.format = BGRA32;
 			buffer.premultiplied = true;
 
-			image = new Image (buffer, 0, 0, width, height);
+			__image = new Image (buffer, 0, 0, width, height);
 
 			if (fillColor != 0) {
 
-				image.fillRect (image.rect, fillColor);
+				__image.fillRect (__image.rect, fillColor);
 
 			}
 			#else
-			image = new Image (null, 0, 0, width, height, fillColor);
+			__image = new Image (null, 0, 0, width, height, fillColor);
 			#end
 
-			image.transparent = transparent;
+			__image.transparent = transparent;
 			__isValid = true;
 
 		}
@@ -151,9 +154,6 @@ class BitmapData implements IBitmapDrawable {
 		ImageCanvasUtil.createImageData (image);
 		ImageCanvasUtil.convertToCanvas (sourceBitmapData.image);
 		ImageCanvasUtil.createImageData (sourceBitmapData.image);
-		#end
-
-		#if (js && html5)
 		filter.__applyFilter (image.buffer.__srcImageData, sourceBitmapData.image.buffer.__srcImageData, sourceRect, destPoint);
 		#end
 
@@ -172,7 +172,7 @@ class BitmapData implements IBitmapDrawable {
 
 		} else {
 
-			cloned = BitmapData.fromImage (image.clone (), transparent);
+			cloned = BitmapData.fromImage (__image.clone (), transparent);
 
 		}
 
@@ -355,14 +355,14 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || sourceBitmapData == null) return;
 
 		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
-		__usingPingPongTexture = false;
 
+		__usingPingPongTexture = false;
 	}
 
 
 	public function dispose ():Void {
 
-		image = null;
+		__image = null;
 
 		physicalWidth = 0;
 		physicalHeight = 0;
@@ -509,7 +509,7 @@ class BitmapData implements IBitmapDrawable {
 
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__fromImage (Image.fromCanvas (canvas));
-		bitmapData.image.transparent = transparent;
+		bitmapData.__image.transparent = transparent;
 		bitmapData.__scaleX = scaleX;
 		bitmapData.__scaleY = scaleY;
 		return bitmapData;
@@ -533,7 +533,7 @@ class BitmapData implements IBitmapDrawable {
 
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__fromImage (image);
-		bitmapData.image.transparent = transparent;
+		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 
 	}
@@ -631,15 +631,15 @@ class BitmapData implements IBitmapDrawable {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-			image.dirty = true;
+			__image.dirty = true;
 
 		}
 
-		if (image != null && image.dirty) {
+		if (__image != null && __image.dirty) {
 
 			var internalFormat, format;
 
-			if (image.buffer.bitsPerPixel == 1) {
+			if (__image.buffer.bitsPerPixel == 1) {
 
 				internalFormat = gl.ALPHA;
 				format = gl.ALPHA;
@@ -674,7 +674,7 @@ class BitmapData implements IBitmapDrawable {
 
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 
-			var textureImage = image;
+			var textureImage = __image;
 
 			#if (!js)
 				if ((!textureImage.premultiplied && textureImage.transparent) ) {
@@ -705,7 +705,7 @@ class BitmapData implements IBitmapDrawable {
 				#end
 			#end
 
-			image.dirty = false;
+			__image.dirty = false;
 
 		}
 
@@ -1091,7 +1091,11 @@ class BitmapData implements IBitmapDrawable {
 
 	private inline function __popFrameBuffer (renderSession:RenderSession, readPixels:Bool = false) {
 
-		GLBitmap.popFramebuffer(renderSession, readPixels ? image : null);
+		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
+
+		if ( !readPixels ) {
+			__imageShouldBeSynced = true;
+		}
 
 		var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
 		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
@@ -1176,7 +1180,7 @@ class BitmapData implements IBitmapDrawable {
 
 		if (image != null && image.buffer != null) {
 
-			this.image = image;
+			this.__image = image;
 
 			physicalWidth = image.width;
 			physicalHeight = image.height;
@@ -1210,8 +1214,8 @@ class BitmapData implements IBitmapDrawable {
 		__scaleX = scaleX;
 		__scaleY = scaleY;
 
-		if ( image != null ) {
-			image.resize(width, height);
+		if ( __image != null ) {
+			__image.resize(width, height);
 		}
 
 	}
@@ -1261,6 +1265,16 @@ class BitmapData implements IBitmapDrawable {
 
 		return physicalHeight / __scaleY;
 
+	}
+
+	public function get_image ():Image {
+		if ( __imageShouldBeSynced ) {
+			var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
+			this.__pushFrameBuffer(renderSession);
+			this.__popFrameBuffer(renderSession, true);
+			__imageShouldBeSynced = false;
+		}
+		return __image;
 	}
 
 
