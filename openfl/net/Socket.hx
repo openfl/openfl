@@ -616,6 +616,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			newInput.position = 0;
 			
 			__input = newInput;
+			__input.endian = __endian;
 			__inputBuffer.clear ();
 			
 			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0));
@@ -717,6 +718,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			if (rl > 0) newInput.blit (0, __input, __input.position, rl);
 			newInput.blit (rl, newData, 0, newData.length);
 			__input = newInput;
+			__input.endian = __endian;
 			
 			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newData.length, 0));
 			
