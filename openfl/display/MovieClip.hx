@@ -126,7 +126,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		__currentFrame = frame;
 		__lastFrameUpdate = -1;
-		__enterFrame (0);
 
 	}
 
@@ -489,19 +488,24 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			// set this for the frame scripts' (and recursive callee) sake
 			__currentFrame = frameIndex;
 
+			// remember what the last frame we started processing was (to avoid duplication)
+			// NOTICE: this is also a tricky trick to determine whether a __goto() was called
+			// by the evaluated frame script below. if so, we abort this loop and wait for
+			// deltatime to increment before resuming at the new location;
+			// the purpose of this is to avoid recursion and stack overflow resulting from
+			// an infinite loop if two frames were to try to __goto each other back and forth.
+			__lastFrameUpdate = frameIndex;
+
 			// no frame scripts defined for this movieclip instance
 			// or no frame script on this particular frame
 			if (__frameScripts != null && __frameScripts.exists (__currentFrame)) {
 				// finally, evaluate the frame script for the current frame!
 				var script = __frameScripts.get (__currentFrame);
 				script ();
+				// if a __goto() was called
+				if (-1 == __lastFrameUpdate) break;
 			}
-
-			// remember what the last frame we started processing was (to avoid duplication)
-			__lastFrameUpdate = frameIndex;
 		}
-
-
 
 		// the implicit else case of the above while statement:
 		// the current frame is not the one we evaluated last time
@@ -803,6 +807,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			gotoAndStop (0);
 
 		}
+		
+		__enterFrame(0);
 
 
 		#if !openfl_dynamic
