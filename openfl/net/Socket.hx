@@ -19,6 +19,7 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
+import js.html.WebSocket;
 import js.Browser;
 #end
 
@@ -134,13 +135,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		var __webHost = urlReg.matched (2);
 		var __webPath = urlReg.matched (3);
 		
-		__socket = untyped __js__("new WebSocket(schema + \"://\" + __webHost + \":\" + port + \"/\" + __webPath)");
-		
+		__socket = new WebSocket (schema + "://" + __webHost + ":" + port + "/" + __webPath);
+		__socket.binaryType = "arraybuffer";
 		__socket.onopen = socket_onOpen;
 		__socket.onmessage = socket_onMessage;
 		__socket.onclose = socket_onClose;
 		__socket.onerror = socket_onError;
-		__socket.binaryType = "arraybuffer";
 		
 		#else
 		
@@ -564,7 +564,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 	
 	
-	private function socket_onError (_):Void {
+	private function socket_onError (e):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		
