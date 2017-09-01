@@ -157,7 +157,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public function play ():Void {
 //		trace(__name + " play "+ (__currentFrame));
 
-		if (__symbol == null || __playing || __totalFrames < 2) return;
+		if (__symbol == null || __playing || __totalFrames < 1) return;
 
 		__playing = true;
 
