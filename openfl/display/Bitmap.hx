@@ -64,22 +64,6 @@ class Bitmap extends DisplayObject {
 	}
 
 
-	private override function __getRenderBounds (rect:Rectangle):Void {
-
-		if (bitmapData != null) {
-
-			rect.setTo (0, 0, bitmapData.width, bitmapData.height);
-			rect.__transform (rect, __renderTransform);
-
-		} else {
-
-			rect.setEmpty ();
-
-		}
-
-	}
-
-
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
 		if (!__mustEvaluateHitTest() || !hitObject.visible || __isMask || bitmapData == null) return false;

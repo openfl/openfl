@@ -93,8 +93,8 @@ class BitmapData implements IBitmapDrawable {
 		height = height < 0 ? 0 : height;
 		#end
 
-		physicalWidth = width;
-		physicalHeight = height;
+		this.width = physicalWidth = width;
+		this.height = physicalHeight = height;
 
 		if (width > 0 && height > 0) {
 
