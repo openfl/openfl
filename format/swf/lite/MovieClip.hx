@@ -977,7 +977,11 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		__maskDataDirty = true;
+		if ( frame.objects.length > 0 ) {
+			__setRenderDirty();
+			__maskDataDirty = true;
+		}
+
 
 		var label = __symbol.frames[index].label;
 
@@ -1057,11 +1061,6 @@ class MovieClip extends flash.display.MovieClip {
 					}
 				}
 			}
-
-			#if (!flash && openfl && !openfl_legacy)
-			__setRenderDirty();
-			#end
-
 		}
 
 	}
