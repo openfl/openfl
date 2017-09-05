@@ -708,10 +708,7 @@ class MovieClip extends flash.display.MovieClip {
 			var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 
 			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			@:privateAccess bitmap.__resize (bounds.width, bounds.height, 1, scaleX, scaleY);
-
-			@:privateAccess bitmap.__scaleX = 1.0;
-			@:privateAccess bitmap.__scaleY = 1.0;
+			@:privateAccess bitmap.__resize (bounds.width, bounds.height, 0, scaleX, scaleY);
 
 			var renderTransform = Matrix.pool.get ();
 			renderTransform.identity ();
@@ -726,8 +723,6 @@ class MovieClip extends flash.display.MovieClip {
 			Rectangle.pool.put (bounds);
 
 			__9SliceBitmap = bitmap;
-			@:privateAccess __9SliceBitmap.__scaleX = scaleX;
-			@:privateAccess __9SliceBitmap.__scaleY = scaleY;
 			__updating9SliceBitmap = false;
 
 			renderScaleX = savedRenderScaleX;
