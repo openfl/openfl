@@ -484,7 +484,7 @@ class TextEngine {
 		var object:Dynamic = {};
 		object.ascent = format.size * fontData.ascent;
 		object.descent = format.size * fontData.descent;
-		object.leading = format.leading / 20;
+		object.leading = format.leading;
 
 		object.height = object.ascent + object.descent + object.leading;
 
