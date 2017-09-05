@@ -1260,7 +1260,7 @@ class TextEngine {
 							
 						}
 						
-						breakLongWords(endIndex);
+						if (width > 0) breakLongWords(endIndex);
 						
 						nextLayoutGroup (textIndex, endIndex);
 						
@@ -1373,7 +1373,7 @@ class TextEngine {
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
 					
-					if (wordWrap) {
+					if (wordWrap && width > 0) {
 						
 						breakLongWords(formatRange.end);
 						
