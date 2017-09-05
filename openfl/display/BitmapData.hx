@@ -49,8 +49,8 @@ class BitmapData implements IBitmapDrawable {
 
 	public var height (default, null):Float;
 	public var image (get, null):Image;
-	public var physicalHeight (default, null):Int;
-	public var physicalWidth (default, null):Int;
+	public var physicalHeight (get, never):Int;
+	public var physicalWidth (get, never):Int;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Float;
 
@@ -93,8 +93,8 @@ class BitmapData implements IBitmapDrawable {
 		height = height < 0 ? 0 : height;
 		#end
 
-		this.width = physicalWidth = width;
-		this.height = physicalHeight = height;
+		this.width = width;
+		this.height = height;
 
 		if (width > 0 && height > 0) {
 
@@ -364,8 +364,6 @@ class BitmapData implements IBitmapDrawable {
 
 		width = 0;
 		height = 0;
-		physicalWidth = 0;
-		physicalHeight = 0;
 		__isValid = false;
 
 		var renderer = @:privateAccess Lib.current.stage.__renderer;
@@ -507,11 +505,8 @@ class BitmapData implements IBitmapDrawable {
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height);
+		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height, padding, scaleX, scaleY);
 		bitmapData.__image.transparent = transparent;
-		bitmapData.__padding = padding;
-		bitmapData.__scaleX = scaleX;
-		bitmapData.__scaleY = scaleY;
 		return bitmapData;
 
 	}
@@ -1204,17 +1199,18 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private function __fromImage (image:Image, width:Float, height:Float):Void {
+	private function __fromImage (image:Image, width:Float, height:Float, padding:Int = 0, scaleX:Float = 1.0, scaleY:Float = 1.0):Void {
 
 		if (image != null && image.buffer != null) {
 
 			this.__image = image;
 
-			physicalWidth = image.width;
-			physicalHeight = image.height;
-
 			this.width = width;
 			this.height = height;
+
+			__padding = padding;
+			__scaleX = scaleX;
+			__scaleY = scaleY;
 
 			#if sys
 			image.format = BGRA32;
@@ -1242,9 +1238,6 @@ class BitmapData implements IBitmapDrawable {
 
 		__scaleX = scaleX;
 		__scaleY = scaleY;
-
-		physicalWidth = Math.ceil (width * scaleX) + 2 * padding;
-		physicalHeight = Math.ceil (height * scaleY) + 2 * padding;
 
 		if ( __image != null ) {
 			__image.resize (physicalWidth, physicalHeight);
@@ -1296,6 +1289,16 @@ class BitmapData implements IBitmapDrawable {
 			__imageShouldBeSynced = false;
 		}
 		return __image;
+	}
+
+
+	public inline function get_physicalWidth ():Int {
+		return Math.ceil (width * __scaleX) + 2 * __padding;
+	}
+
+
+	public inline function get_physicalHeight():Int {
+		return Math.ceil (height * __scaleY) + 2 * __padding;
 	}
 
 

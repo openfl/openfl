@@ -125,8 +125,9 @@ class CanvasTextField {
 			} else {
 
 				var bounds = Rectangle.pool.get();
+				var renderBounds = Rectangle.pool.get();
 				textField.__getBounds (bounds);
-				@:privateAccess bounds.__transform (bounds, textField.__renderTransform);
+				@:privateAccess bounds.__transform (renderBounds, textField.__renderTransform);
 
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 
@@ -138,14 +139,14 @@ class CanvasTextField {
 
 					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
 					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");
-					textField.__graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
+					textField.__graphics.__bounds = new Rectangle (0, 0, renderBounds.width, renderBounds.height);
 
 				}
 
 				var graphics = textField.__graphics;
 				var context = graphics.__context;
-				graphics.__canvas.width = Math.ceil (bounds.width);
-				graphics.__canvas.height = Math.ceil (bounds.height);
+				graphics.__canvas.width = Math.ceil (renderBounds.width);
+				graphics.__canvas.height = Math.ceil (renderBounds.height);
 
 				context.setTransform (scaleX, 0, 0, scaleY, 0, 0);
 
@@ -179,7 +180,7 @@ class CanvasTextField {
 
 					if (textEngine.border || textEngine.background) {
 
-						context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
+						context.rect (0.5, 0.5, renderBounds.width - 1, renderBounds.height - 1);
 
 						if (textEngine.background) {
 
@@ -313,11 +314,11 @@ class CanvasTextField {
 
 						if (textEngine.border) {
 
-							context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
+							context.rect (0.5, 0.5, renderBounds.width - 1, renderBounds.height - 1);
 
 						} else {
 
-							context.rect (0, 0, bounds.width, bounds.height);
+							context.rect (0, 0, renderBounds.width, renderBounds.height);
 
 						}
 
@@ -341,10 +342,11 @@ class CanvasTextField {
 
 				}
 
-				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, graphics.__bounds.width, graphics.__bounds.height, 0, scaleX, scaleY);
+				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, 0, scaleX, scaleY);
 				textField.__dirty = false;
 				graphics.dirty = false;
 
+				Rectangle.pool.put(renderBounds);
 				Rectangle.pool.put(bounds);
 
 			}
