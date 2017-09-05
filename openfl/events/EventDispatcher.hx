@@ -3,6 +3,7 @@ package openfl.events; #if !openfl_legacy
 
 import openfl.events.EventPhase;
 import openfl.events.IEventDispatcher;
+import haxe.Constraints;
 
 @:access(openfl.events.Event)
 
@@ -27,7 +28,7 @@ class EventDispatcher implements IEventDispatcher {
 	}
 
 
-	public function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
+	public function addEventListener (type:String, listener:Function, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
 
 		if (__eventMap == null) {
 
@@ -78,7 +79,7 @@ class EventDispatcher implements IEventDispatcher {
 		}
 
 		onEventListenerAdded (type);
-		
+
 	}
 
 
@@ -116,7 +117,7 @@ class EventDispatcher implements IEventDispatcher {
 	}
 
 
-	public function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
+	public function removeEventListener (type:String, listener:Function, useCapture:Bool = false):Void {
 
 		if (__eventMap == null) return;
 
@@ -259,7 +260,7 @@ class EventDispatcher implements IEventDispatcher {
 				if (listener.useCapture == capture) {
 
 					//listener.callback (event.clone ());
-					listener.callback (event);
+					listener.callCallback (event);
 
 					if (event.__isCanceledNow) {
 
@@ -329,13 +330,18 @@ class EventDispatcher implements IEventDispatcher {
 private class Listener {
 
 
-	public var callback:Dynamic->Void;
+	public var callback:Function;
 	public var priority:Int;
 	public var useCapture:Bool;
 
 
-	public function new (callback:Dynamic->Void, useCapture:Bool, priority:Int) {
+	public function new (callback:Function, useCapture:Bool, priority:Int) {
 
+		#if dev
+			if ( !Reflect.isFunction(callback) ) {
+				throw "EventDispatcher callback must be a function.";
+			}
+		#end
 		this.callback = callback;
 		this.useCapture = useCapture;
 		this.priority = priority;
@@ -343,10 +349,19 @@ private class Listener {
 	}
 
 
-	public function match (callback:Dynamic->Void, useCapture:Bool) {
+	public function match (callback:Function, useCapture:Bool) {
 
+		#if dev
+			if ( !Reflect.isFunction(callback) ) {
+				throw "EventDispatcher callback must be a function.";
+			}
+		#end
 		return (Reflect.compareMethods (this.callback, callback) && this.useCapture == useCapture);
 
+	}
+
+	public function callCallback(?args:Dynamic) {
+		Reflect.callMethod(this, callback, [args]);
 	}
 
 
