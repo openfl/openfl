@@ -3,7 +3,6 @@ package openfl.display; #if !openfl_legacy
 
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
