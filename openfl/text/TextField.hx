@@ -1914,7 +1914,19 @@ class TextField extends InteractiveObject {
 
 				if (__selectionIndex == __caretIndex && __caretIndex > 0) {
 
-					__selectionIndex = __caretIndex - 1;
+					if ( modifier.ctrlKey ) {
+
+						__selectionIndex = __findFirstSpace(true, __caretIndex - 1);
+
+						if ( __selectionIndex != 0 ) {
+							__selectionIndex += 1;
+						}
+
+					} else {
+
+						__selectionIndex = __caretIndex - 1;
+
+					}
 
 				}
 
@@ -1931,7 +1943,15 @@ class TextField extends InteractiveObject {
 
 				if (__selectionIndex == __caretIndex && __caretIndex < __textEngine.text.length) {
 
-					__selectionIndex = __caretIndex + 1;
+					if ( modifier.ctrlKey ) {
+
+						__selectionIndex = __findFirstSpace(false, __caretIndex);
+
+					} else {
+
+						__selectionIndex = __caretIndex + 1;
+
+					}
 
 				}
 
