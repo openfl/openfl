@@ -1545,7 +1545,7 @@ class TextField extends InteractiveObject {
 	}
 
 
-	private function get_text ():String {
+	private inline function get_text ():String {
 
 		return __textEngine.text;
 
@@ -1855,25 +1855,47 @@ class TextField extends InteractiveObject {
 
 	}
 
+	private function __findFirstSpace(left:Bool, startIndex:Int):Int {
+		var char = this.text.charAt(startIndex);
+		if (left) {
+			// First, strip out current spaces.
+			while(startIndex > 0 && ( char == " " || char == "-" ) ) {
+				--startIndex;
+				char = this.text.charAt(startIndex);
+			}
+			while(startIndex > 0 && char != " " && char != "-" ) {
+				--startIndex;
+				char = this.text.charAt(startIndex);
+			}
+		} else {
+			var length = this.text.length;
+			// First, strip out current spaces.
+			while(startIndex < length && ( char == " " || char == "-" ) ) {
+				++startIndex;
+				char = this.text.charAt(startIndex);
+			}
+			while(startIndex < length && char != " " && char != "-" ) {
+				++startIndex;
+				char = this.text.charAt(startIndex);
+			}
+		}
+
+		return startIndex;
+	}
+
 	private function __selectWord() {
 		__caretIndex = __getPosition(mouseX, mouseY);
 		__selectionIndex = __caretIndex;
 		dirty = true;
 
 		var char = this.text.charAt(__caretIndex);
-		while(__caretIndex > 0 && char != " " && char != "-" ) {
-			--__caretIndex;
-			char = this.text.charAt(__caretIndex);
-		}
+		__caretIndex = __findFirstSpace(true, __caretIndex);
+		var char = this.text.charAt(__caretIndex);
+
 		if ( char == " " || char == "-" ) {
 			++__caretIndex;
 		}
-		var length = this.text.length;
-		char = this.text.charAt(__selectionIndex);
-		while(__selectionIndex < length && char != " " && char != "-" ) {
-			++__selectionIndex;
-			char = this.text.charAt(__selectionIndex);
-		}
+		__selectionIndex = __findFirstSpace(false, __selectionIndex);
 	}
 
 	private function __selectAll() {
