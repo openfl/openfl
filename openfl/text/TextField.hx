@@ -934,12 +934,12 @@ class TextField extends InteractiveObject {
 
 			}
 
-			if ( __caretIndex > __textEngine.text.length ) {
-				__caretIndex = __textEngine.text.length - 1;
+			if ( __caretIndex > text.length ) {
+				__caretIndex = Std.int(Math.max(0, text.length - 1));
 			}
 
-			if ( __selectionIndex > __textEngine.text.length ) {
-				__selectionIndex = __textEngine.text.length - 1;
+			if ( __selectionIndex > text.length ) {
+				__selectionIndex = Std.int(Math.max(0, text.length - 1));
 			}
 
 			__layoutDirty = false;
