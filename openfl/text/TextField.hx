@@ -1944,7 +1944,29 @@ class TextField extends InteractiveObject {
 
 			case LEFT:
 
-				if (modifier.shiftKey) {
+				if (modifier.shiftKey && modifier.ctrlKey) {
+
+					__caretIndex = __findFirstSpace(true, __caretIndex - 1);
+
+					if ( caretIndex != 0 ) {
+
+						__caretIndex += 1;
+
+					}
+
+				} else if (modifier.ctrlKey) {
+
+					__caretIndex = __findFirstSpace(true, __caretIndex - 1);
+
+					if ( caretIndex != 0 ) {
+
+						__caretIndex += 1;
+
+					}
+
+					__selectionIndex = __caretIndex;
+
+				} else if (modifier.shiftKey) {
 
 					if (__caretIndex > 0) {
 
@@ -1977,9 +1999,30 @@ class TextField extends InteractiveObject {
 
 			case RIGHT:
 
-				if (modifier.shiftKey) {
+				if (modifier.shiftKey && modifier.ctrlKey) {
 
-					if (__caretIndex < __textEngine.text.length) {
+					__caretIndex = __findFirstSpace(false, Std.int(Math.min(__caretIndex + 1, text.length)));
+
+					if ( caretIndex < text.length ) {
+
+						__caretIndex += 1;
+
+					}
+
+				} else if (modifier.ctrlKey) {
+
+					__caretIndex = __findFirstSpace(false, Std.int(Math.min(__caretIndex + 1, text.length)));
+
+					if ( caretIndex < text.length ) {
+
+						__caretIndex += 1;
+
+					}
+					__selectionIndex = __caretIndex;
+
+				} else if (modifier.shiftKey) {
+
+					if (__caretIndex < text.length) {
 
 						__caretIndex++;
 
