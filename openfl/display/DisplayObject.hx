@@ -32,7 +32,6 @@ import js.html.Element;
 @:access(openfl.display.Stage)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
-@:access(openfl.geom.Rectangle)
 
 @:keepSub
 class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {

@@ -8,6 +8,7 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
@@ -124,10 +125,12 @@ class CanvasTextField {
 
 			} else {
 
-				var bounds = Rectangle.pool.get();
 				var renderBounds = Rectangle.pool.get();
+				var bounds = Rectangle.pool.get();
+
+				var renderTransform = textField.__renderTransform;
 				textField.__getBounds (bounds);
-				@:privateAccess bounds.__transform (renderBounds, textField.__renderTransform);
+				bounds.__transform (renderBounds, renderTransform);
 
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 

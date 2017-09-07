@@ -268,7 +268,7 @@ class Rectangle implements hxbit.Serializable {
 	}
 
 
-	private function __transform (rect:Rectangle, m:Matrix):Void {
+	public function __transform (rect:Rectangle, m:Matrix):Void {
 
 		var tx0 = m.a * x + m.c * y;
 		var tx1 = tx0;
