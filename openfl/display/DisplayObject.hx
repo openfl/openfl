@@ -632,7 +632,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__graphics != null) {
 
 			#if (js && html5)
-			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask || DisplayObject.__isCachingAsMask);
+			CanvasGraphics.render (__graphics, renderSession, __renderTransform, __isMask || DisplayObject.__isCachingAsMask);
 			#end
 
 			GLRenderer.renderBitmap (this, renderSession);
@@ -801,9 +801,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		} else {
 			__cleanupIntermediateTextures();
 		}
-
-		@:privateAccess __cachedBitmap.__offsetX = - tx / renderScaleX;
-		@:privateAccess __cachedBitmap.__offsetY = - ty / renderScaleY;
 
 		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
 			symbol.uniqueSharedCachedBitmap = __cachedBitmap;

@@ -49,8 +49,8 @@ class BitmapData implements IBitmapDrawable {
 
 	public var height (default, null):Float;
 	public var image (get, null):Image;
-	public var physicalHeight (get, never):Int;
-	public var physicalWidth (get, never):Int;
+	public var physicalHeight (default, null):Int;
+	public var physicalWidth (default, null):Int;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Float;
 
@@ -63,11 +63,10 @@ class BitmapData implements IBitmapDrawable {
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
 	private var __isValid:Bool;
-	private var __offsetX:Float = 0.0;
-	private var __offsetY:Float = 0.0;
 	private var __padding:Int = 0;
 	private var __scaleX:Float = 1.0;
 	private var __scaleY:Float = 1.0;
+	private var __renderToLocalMatrix:Matrix = new Matrix();
 	private var __texture:GLTexture;
 	private var __textureImage:Image;
 	private var __pingPongTexture:PingPongTexture;
@@ -500,19 +499,19 @@ class BitmapData implements IBitmapDrawable {
 
 
 	#if (js && html5)
-	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, width:Float, height:Float, padding:Int, scaleX:Float, scaleY:Float):BitmapData {
+	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, width:Float, height:Float, padding:Int, renderToLocalMatrix:Matrix):BitmapData {
 
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height, padding, scaleX, scaleY);
+		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height, padding, renderToLocalMatrix);
 		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 
 	}
 	#end
 
-	public static function fromGraphics (graphics:Graphics, transparent:Bool = true, padding:Int, scaleX:Float, scaleY:Float, offsetX:Float, offsetY:Float):BitmapData {
+	public static function fromGraphics (graphics:Graphics, transparent:Bool = true, padding:Int, renderToLocalMatrix:Matrix):BitmapData {
 
 		#if (js && html5)
 			if (graphics.snapCoordinates) {
@@ -520,10 +519,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 
 			var bounds = graphics.__bounds;
-			var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, padding, scaleX, scaleY);
-
-			bitmap.__offsetX = - offsetX / scaleX;
-			bitmap.__offsetY = - offsetY / scaleY;
+			var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, padding, renderToLocalMatrix);
 
 			return bitmap;
 		#else
@@ -1199,7 +1195,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private function __fromImage (image:Image, width:Float, height:Float, padding:Int = 0, scaleX:Float = 1.0, scaleY:Float = 1.0):Void {
+	private function __fromImage (image:Image, width:Float, height:Float, padding:Int = 0, ?renderToLocalMatrix:Matrix):Void {
 
 		if (image != null && image.buffer != null) {
 
@@ -1207,10 +1203,11 @@ class BitmapData implements IBitmapDrawable {
 
 			this.width = width;
 			this.height = height;
+			physicalWidth = image.width;
+			physicalHeight = image.height;
 
 			__padding = padding;
-			__scaleX = scaleX;
-			__scaleY = scaleY;
+			__renderToLocalMatrix.copyFrom (renderToLocalMatrix != null ? renderToLocalMatrix : Matrix.__identity);
 
 			#if sys
 			image.format = BGRA32;
@@ -1292,16 +1289,6 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	public inline function get_physicalWidth ():Int {
-		return Math.ceil (width * __scaleX) + 2 * __padding;
-	}
-
-
-	public inline function get_physicalHeight():Int {
-		return Math.ceil (height * __scaleY) + 2 * __padding;
-	}
-
-
 	public static function getFromSymbol (symbol:BitmapSymbol):BitmapData {
 
 		if (Assets.cache.hasBitmapData (symbol.path)) {
@@ -1334,7 +1321,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 	public function getLocalTransform (matrix:Matrix):Void {
-		@:privateAccess matrix.setTo (1.0, 0.0, 0.0, 1.0, __offsetX - __padding / __scaleX, __offsetY - __padding / __scaleY);
+		matrix.copyFrom (__renderToLocalMatrix);
 	}
 
 	public inline function getPaddedLogicalWidth ():Float {

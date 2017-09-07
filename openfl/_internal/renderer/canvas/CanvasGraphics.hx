@@ -480,7 +480,7 @@ class CanvasGraphics {
 	}
 
 
-	public static function render (graphics:Graphics, renderSession:RenderSession, scaleX:Float = 1.0, scaleY:Float = 1.0, isMask : Bool = false):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, renderTransform:Matrix, isMask : Bool = false):Void {
 
 		#if (js && html5)
 
@@ -498,8 +498,10 @@ class CanvasGraphics {
 
 			} else {
 
-				var width = Math.ceil (bounds.width * scaleX) + 2 * padding;
-				var height = Math.ceil (bounds.height * scaleY) + 2 * padding;
+				var renderBounds = Rectangle.pool.get ();
+				bounds.__transform (renderBounds, renderTransform);
+				var width = Math.ceil (renderBounds.width) + 2 * padding;
+				var height = Math.ceil (renderBounds.height) + 2 * padding;
 
 				if (graphics.__symbol != null) {
 
@@ -535,23 +537,20 @@ class CanvasGraphics {
 				graphics.__canvas.height = height;
 				snapCoordinates = graphics.snapCoordinates;
 
-				var tx = - Math.fceil (bounds.x * scaleX);
-				var ty = - Math.fceil (bounds.y * scaleY);
-				var owner = graphics.__owner;
+				var transform = Matrix.pool.get ();
+				transform.copyFrom (renderTransform);
+				transform.translate (padding - Math.ffloor(renderBounds.x), padding - Math.ffloor(renderBounds.y));
 
-				if (owner != null) {
-					var owner_render_transform = graphics.__owner.__renderTransform;
-					tx += owner_render_transform.tx - Math.ffloor (owner_render_transform.tx);
-					ty += owner_render_transform.ty - Math.ffloor (owner_render_transform.ty);
-				}
+				Rectangle.pool.put (renderBounds);
 
 				if (snapCoordinates) {
 
-					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, padding + tx, padding + ty);
+					throw ":TODO:";
+					currentTransform.setTo (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				} else {
 
-					context.setTransform (scaleX, 0.0, 0.0, scaleY, padding + tx, padding + ty);
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				}
 
@@ -809,7 +808,12 @@ class CanvasGraphics {
 					currentFromCanvasCount++;
 				#end
 
-				graphics.__bitmap = BitmapData.fromGraphics (graphics, padding, scaleX, scaleY, tx, ty);
+				var renderToLocalMatrix = Matrix.pool.get ();
+				renderToLocalMatrix.copyFrom (transform);
+				renderToLocalMatrix.invert ();
+				graphics.__bitmap = BitmapData.fromGraphics (graphics, padding, renderToLocalMatrix);
+				Matrix.pool.put (renderToLocalMatrix);
+				Matrix.pool.put (transform);
 
 				if (graphics.__symbol != null) {
 
