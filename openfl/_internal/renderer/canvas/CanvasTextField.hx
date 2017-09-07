@@ -109,8 +109,6 @@ class CanvasTextField {
 
 			var textEngine = textField.__textEngine;
 
- 			var scaleX = textField.renderScaleX;
- 			var scaleY = textField.renderScaleY;
 			textField.__updateLayout ();
 
 			if (!textField.__showCursor && ((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
@@ -142,7 +140,7 @@ class CanvasTextField {
 
 					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
 					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");
-					textField.__graphics.__bounds = new Rectangle (0, 0, renderBounds.width, renderBounds.height);
+					textField.__graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
 
 				}
 
@@ -151,7 +149,10 @@ class CanvasTextField {
 				graphics.__canvas.width = Math.ceil (renderBounds.width);
 				graphics.__canvas.height = Math.ceil (renderBounds.height);
 
-				context.setTransform (scaleX, 0, 0, scaleY, 0, 0);
+				var transform = Matrix.pool.get ();
+				transform.copyFrom (renderTransform);
+				transform.translate (- Math.ffloor(renderBounds.x), - Math.ffloor(renderBounds.y));
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
 
@@ -345,10 +346,15 @@ class CanvasTextField {
 
 				}
 
-				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, 0, scaleX, scaleY);
+				var renderToLocalMatrix = Matrix.pool.get ();
+				renderToLocalMatrix.copyFrom (transform);
+				renderToLocalMatrix.invert ();
+				graphics.__bitmap = BitmapData.fromGraphics (graphics, renderToLocalMatrix);
 				textField.__dirty = false;
 				graphics.dirty = false;
 
+				Matrix.pool.put (transform);
+				Matrix.pool.put (renderToLocalMatrix);
 				Rectangle.pool.put(renderBounds);
 				Rectangle.pool.put(bounds);
 

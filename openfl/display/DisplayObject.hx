@@ -747,7 +747,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 		}
 
-		@:privateAccess __cachedBitmap.__resize (__cachedBitmapBounds.width, __cachedBitmapBounds.height, padding, renderScaleX, renderScaleY);
+		@:privateAccess __cachedBitmap.__resize (__cachedBitmapBounds.width, __cachedBitmapBounds.height, renderScaleX, renderScaleY);
 
 		var tx = -Math.fceil (__cachedBitmapBounds.x * renderScaleX);
 		var ty = -Math.fceil (__cachedBitmapBounds.y * renderScaleY);

@@ -708,7 +708,7 @@ class MovieClip extends flash.display.MovieClip {
 			var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 
 			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			@:privateAccess bitmap.__resize (bounds.width, bounds.height, 0, scaleX, scaleY);
+			@:privateAccess bitmap.__resize (bounds.width, bounds.height, scaleX, scaleY);
 
 			var renderTransform = Matrix.pool.get ();
 			renderTransform.identity ();

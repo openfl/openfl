@@ -811,7 +811,7 @@ class CanvasGraphics {
 				var renderToLocalMatrix = Matrix.pool.get ();
 				renderToLocalMatrix.copyFrom (transform);
 				renderToLocalMatrix.invert ();
-				graphics.__bitmap = BitmapData.fromGraphics (graphics, padding, renderToLocalMatrix);
+				graphics.__bitmap = BitmapData.fromGraphics (graphics, renderToLocalMatrix);
 				Matrix.pool.put (renderToLocalMatrix);
 				Matrix.pool.put (transform);
 

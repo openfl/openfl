@@ -63,7 +63,6 @@ class BitmapData implements IBitmapDrawable {
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
 	private var __isValid:Bool;
-	private var __padding:Int = 0;
 	private var __scaleX:Float = 1.0;
 	private var __scaleY:Float = 1.0;
 	private var __renderToLocalMatrix:Matrix = new Matrix();
@@ -499,19 +498,19 @@ class BitmapData implements IBitmapDrawable {
 
 
 	#if (js && html5)
-	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, width:Float, height:Float, padding:Int, renderToLocalMatrix:Matrix):BitmapData {
+	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, width:Float, height:Float, renderToLocalMatrix:Matrix):BitmapData {
 
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height, padding, renderToLocalMatrix);
+		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height, renderToLocalMatrix);
 		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 
 	}
 	#end
 
-	public static function fromGraphics (graphics:Graphics, transparent:Bool = true, padding:Int, renderToLocalMatrix:Matrix):BitmapData {
+	public static function fromGraphics (graphics:Graphics, transparent:Bool = true, renderToLocalMatrix:Matrix):BitmapData {
 
 		#if (js && html5)
 			if (graphics.snapCoordinates) {
@@ -519,7 +518,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 
 			var bounds = graphics.__bounds;
-			var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, padding, renderToLocalMatrix);
+			var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, renderToLocalMatrix);
 
 			return bitmap;
 		#else
@@ -1195,7 +1194,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private function __fromImage (image:Image, width:Float, height:Float, padding:Int = 0, ?renderToLocalMatrix:Matrix):Void {
+	private function __fromImage (image:Image, width:Float, height:Float, ?renderToLocalMatrix:Matrix):Void {
 
 		if (image != null && image.buffer != null) {
 
@@ -1206,7 +1205,6 @@ class BitmapData implements IBitmapDrawable {
 			physicalWidth = image.width;
 			physicalHeight = image.height;
 
-			__padding = padding;
 			__renderToLocalMatrix.copyFrom (renderToLocalMatrix != null ? renderToLocalMatrix : Matrix.__identity);
 
 			#if sys
@@ -1227,9 +1225,8 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	function __resize (width:Float, height:Float, padding:Int = 0, scaleX:Float = 1.0, scaleY:Float = 1.0) {
+	function __resize (width:Float, height:Float, scaleX:Float = 1.0, scaleY:Float = 1.0) {
 
-		this.__padding = padding;
 		this.width = width;
 		this.height = height;
 
@@ -1245,7 +1242,7 @@ class BitmapData implements IBitmapDrawable {
 
 	function __resizeTo (bd:BitmapData) {
 
-		__resize (bd.width, bd.height, bd.__padding, bd.__scaleX, bd.__scaleY);
+		__resize (bd.width, bd.height, bd.__scaleX, bd.__scaleY);
 
 	}
 
