@@ -1869,7 +1869,7 @@ class TextField extends InteractiveObject {
 				char = this.text.charAt(startIndex);
 			}
 		} else {
-			var length = this.text.length;
+			var length = this.text.length - 1 ;
 			if ( skipSpaces ) {
 				while(startIndex < length && ( char == " " || char == "-" ) ) {
 					++startIndex;
@@ -1945,7 +1945,7 @@ class TextField extends InteractiveObject {
 
 					if ( modifier.ctrlKey ) {
 
-						__selectionIndex = __findFirstSpace(false, __caretIndex);
+						__selectionIndex = __findFirstSpace(false, __caretIndex) + 1;
 
 					} else {
 
