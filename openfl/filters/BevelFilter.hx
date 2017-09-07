@@ -1,12 +1,6 @@
 package openfl.filters; #if !openfl_legacy
 
-
-import openfl.display.BitmapData;
 import openfl.filters.commands.*;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-
 
 @:final class BevelFilter extends GradientBevelFilter {
 

@@ -91,8 +91,8 @@ class BitmapData implements IBitmapDrawable {
 		height = height < 0 ? 0 : height;
 		#end
 
-		this.width = width;
-		this.height = height;
+		this.width = physicalWidth = width;
+		this.height = physicalHeight = height;
 
 		if (width > 0 && height > 0) {
 
@@ -1225,13 +1225,15 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	function __resize (width:Float, height:Float, scaleX:Float = 1.0, scaleY:Float = 1.0) {
+	function __resize (width:Float, height:Float, physicalWidth:Int, physicalHeight:Int) {
 
 		this.width = width;
 		this.height = height;
 
-		__scaleX = scaleX;
-		__scaleY = scaleY;
+		this.physicalWidth = physicalWidth;
+		this.physicalHeight = physicalHeight;
+
+		__renderToLocalMatrix.identity ();
 
 		if ( __image != null ) {
 			__image.resize (physicalWidth, physicalHeight);
@@ -1242,7 +1244,7 @@ class BitmapData implements IBitmapDrawable {
 
 	function __resizeTo (bd:BitmapData) {
 
-		__resize (bd.width, bd.height, bd.__scaleX, bd.__scaleY);
+		__resize (bd.width, bd.height, bd.physicalWidth, bd.physicalHeight);
 
 	}
 
