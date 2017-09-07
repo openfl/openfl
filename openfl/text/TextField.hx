@@ -935,11 +935,11 @@ class TextField extends InteractiveObject {
 			}
 
 			if ( __caretIndex > text.length ) {
-				__caretIndex = Std.int(Math.max(0, text.length - 1));
+				__caretIndex = text.length;
 			}
 
 			if ( __selectionIndex > text.length ) {
-				__selectionIndex = Std.int(Math.max(0, text.length - 1));
+				__selectionIndex = text.length;
 			}
 
 			__layoutDirty = false;
