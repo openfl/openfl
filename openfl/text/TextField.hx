@@ -934,12 +934,12 @@ class TextField extends InteractiveObject {
 
 			}
 
-			if ( __caretIndex > __textEngine.text.length ) {
-				__caretIndex = __textEngine.text.length - 1;
+			if ( __caretIndex > text.length ) {
+				__caretIndex = text.length;
 			}
 
-			if ( __selectionIndex > __textEngine.text.length ) {
-				__selectionIndex = __textEngine.text.length - 1;
+			if ( __selectionIndex > text.length ) {
+				__selectionIndex = text.length;
 			}
 
 			__layoutDirty = false;
@@ -1545,7 +1545,7 @@ class TextField extends InteractiveObject {
 	}
 
 
-	private function get_text ():String {
+	private inline function get_text ():String {
 
 		return __textEngine.text;
 
@@ -1855,25 +1855,49 @@ class TextField extends InteractiveObject {
 
 	}
 
+	private function __findFirstSpace(left:Bool, startIndex:Int, skipSpaces:Bool = true):Int {
+		var char = this.text.charAt(startIndex);
+		if (left) {
+			if ( skipSpaces ) {
+				while(startIndex > 0 && ( char == " " || char == "-" ) ) {
+					--startIndex;
+					char = this.text.charAt(startIndex);
+				}
+			}
+			while(startIndex > 0 && char != " " && char != "-" ) {
+				--startIndex;
+				char = this.text.charAt(startIndex);
+			}
+		} else {
+			var length = this.text.length - 1 ;
+			if ( skipSpaces ) {
+				while(startIndex < length && ( char == " " || char == "-" ) ) {
+					++startIndex;
+					char = this.text.charAt(startIndex);
+				}
+			}
+			while(startIndex < length && char != " " && char != "-" ) {
+				++startIndex;
+				char = this.text.charAt(startIndex);
+			}
+		}
+
+		return startIndex;
+	}
+
 	private function __selectWord() {
 		__caretIndex = __getPosition(mouseX, mouseY);
 		__selectionIndex = __caretIndex;
 		dirty = true;
 
 		var char = this.text.charAt(__caretIndex);
-		while(__caretIndex > 0 && char != " " && char != "-" ) {
-			--__caretIndex;
-			char = this.text.charAt(__caretIndex);
-		}
+		__caretIndex = __findFirstSpace(true, __caretIndex, false);
+		var char = this.text.charAt(__caretIndex);
+
 		if ( char == " " || char == "-" ) {
 			++__caretIndex;
 		}
-		var length = this.text.length;
-		char = this.text.charAt(__selectionIndex);
-		while(__selectionIndex < length && char != " " && char != "-" ) {
-			++__selectionIndex;
-			char = this.text.charAt(__selectionIndex);
-		}
+		__selectionIndex = __findFirstSpace(false, __selectionIndex, false);
 	}
 
 	private function __selectAll() {
@@ -1890,7 +1914,19 @@ class TextField extends InteractiveObject {
 
 				if (__selectionIndex == __caretIndex && __caretIndex > 0) {
 
-					__selectionIndex = __caretIndex - 1;
+					if ( modifier.ctrlKey ) {
+
+						__selectionIndex = __findFirstSpace(true, __caretIndex - 1);
+
+						if ( __selectionIndex != 0 ) {
+							__selectionIndex += 1;
+						}
+
+					} else {
+
+						__selectionIndex = __caretIndex - 1;
+
+					}
 
 				}
 
@@ -1907,7 +1943,15 @@ class TextField extends InteractiveObject {
 
 				if (__selectionIndex == __caretIndex && __caretIndex < __textEngine.text.length) {
 
-					__selectionIndex = __caretIndex + 1;
+					if ( modifier.ctrlKey ) {
+
+						__selectionIndex = __findFirstSpace(false, __caretIndex) + 1;
+
+					} else {
+
+						__selectionIndex = __caretIndex + 1;
+
+					}
 
 				}
 
@@ -1922,7 +1966,29 @@ class TextField extends InteractiveObject {
 
 			case LEFT:
 
-				if (modifier.shiftKey) {
+				if (modifier.shiftKey && modifier.ctrlKey) {
+
+					__caretIndex = __findFirstSpace(true, __caretIndex - 1);
+
+					if ( caretIndex != 0 ) {
+
+						__caretIndex += 1;
+
+					}
+
+				} else if (modifier.ctrlKey) {
+
+					__caretIndex = __findFirstSpace(true, __caretIndex - 1);
+
+					if ( caretIndex != 0 ) {
+
+						__caretIndex += 1;
+
+					}
+
+					__selectionIndex = __caretIndex;
+
+				} else if (modifier.shiftKey) {
 
 					if (__caretIndex > 0) {
 
@@ -1955,9 +2021,30 @@ class TextField extends InteractiveObject {
 
 			case RIGHT:
 
-				if (modifier.shiftKey) {
+				if (modifier.shiftKey && modifier.ctrlKey) {
 
-					if (__caretIndex < __textEngine.text.length) {
+					__caretIndex = __findFirstSpace(false, Std.int(Math.min(__caretIndex + 1, text.length)));
+
+					if ( caretIndex < text.length ) {
+
+						__caretIndex += 1;
+
+					}
+
+				} else if (modifier.ctrlKey) {
+
+					__caretIndex = __findFirstSpace(false, Std.int(Math.min(__caretIndex + 1, text.length)));
+
+					if ( caretIndex < text.length ) {
+
+						__caretIndex += 1;
+
+					}
+					__selectionIndex = __caretIndex;
+
+				} else if (modifier.shiftKey) {
+
+					if (__caretIndex < text.length) {
 
 						__caretIndex++;
 
