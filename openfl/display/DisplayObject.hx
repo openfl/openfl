@@ -617,7 +617,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__graphics != null) {
 
 			#if (js && html5)
-			CanvasGraphics.render (__graphics, renderSession, __renderTransform, __isMask || DisplayObject.__isCachingAsMask);
+			var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
+			var localMatrix = Matrix.pool.get ();
+
+			localMatrix.copyFrom (__renderTransform);
+			localMatrix.concat (renderTargetBaseTransform);
+
+			CanvasGraphics.render (__graphics, renderSession, localMatrix, __isMask || DisplayObject.__isCachingAsMask);
+			Matrix.pool.put (localMatrix);
 			#end
 
 			GLRenderer.renderBitmap (this, renderSession);

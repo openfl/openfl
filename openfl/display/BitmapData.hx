@@ -63,8 +63,6 @@ class BitmapData implements IBitmapDrawable {
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
 	private var __isValid:Bool;
-	private var __scaleX:Float = 1.0;
-	private var __scaleY:Float = 1.0;
 	private var __renderToLocalMatrix:Matrix = new Matrix();
 	private var __texture:GLTexture;
 	private var __textureImage:Image;
@@ -171,9 +169,6 @@ class BitmapData implements IBitmapDrawable {
 			cloned = BitmapData.fromImage (__image.clone (), transparent);
 
 		}
-
-		cloned.__scaleX = __scaleX;
-		cloned.__scaleY = __scaleY;
 
 		return cloned;
 
@@ -1321,14 +1316,6 @@ class BitmapData implements IBitmapDrawable {
 
 	public function getLocalTransform (matrix:Matrix):Void {
 		matrix.copyFrom (__renderToLocalMatrix);
-	}
-
-	public inline function getPaddedLogicalWidth ():Float {
-		return physicalWidth / __scaleX;
-	}
-
-	public inline function getPaddedLogicalHeight ():Float {
-		return physicalHeight / __scaleY;
 	}
 
 	private function getPhysicalRect (physicalRect:Rectangle):Void {
