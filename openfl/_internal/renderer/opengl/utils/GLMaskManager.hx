@@ -124,7 +124,7 @@ class GLMaskManager extends AbstractMaskManager {
 			maskMatrix.concat (@:privateAccess mask.__renderTransform);
 			maskMatrix.concat (renderTargetBaseTransform);
 			maskMatrix.invert ();
-			maskMatrix.scale ( 1.0 / bitmap.width, 1.0 / bitmap.height );
+			maskMatrix.scale ( 1.0 / bitmap.physicalWidth, 1.0 / bitmap.physicalHeight );
 			++maskCount;
 		}
 
