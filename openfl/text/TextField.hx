@@ -955,6 +955,11 @@ class TextField extends InteractiveObject {
 	}
 
 
+	override function __update(transformOnly:Bool, updateChildren:Bool):Void {
+		__updateLayout();
+		super.__update(transformOnly, updateChildren);
+	}
+
 
 	// Getters & Setters
 
