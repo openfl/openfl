@@ -23,7 +23,7 @@ import openfl.geom.Rectangle;
 		
 		this.matrix = matrix;
 		
-		// __numPasses = 1;
+		// __numShaderPasses = 1;
 		__numShaderPasses = 0;
 		
 	}
