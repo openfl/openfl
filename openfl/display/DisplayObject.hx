@@ -90,6 +90,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __isMask:Bool;
 	private var __mask:DisplayObject;
 	private var __maskCached:Bool = false;
+	private var __mustRefreshGraphics:Bool = false;
 	private var __name:String = "";
 	private var __objectTransform:Transform;
 	private var __offset:Point;
@@ -1154,7 +1155,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!__isCachingAsBitmap && !old_world_transform.equals (wt)) {
 			_onWorldTransformChanged ();
-		}
+        } else {
+
+            if (__mustRefreshGraphics) {
+
+                if (__graphics != null) {
+
+                    __graphics.dirty = true;
+
+                }
+
+                __mustRefreshGraphics = false;
+            }
+
+        }
 
 
 		if (__cacheAsBitmapMatrix != null) {
@@ -1176,9 +1190,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
 
-		if (__graphics != null) {
-			__graphics.dirty = true;
-		}
+		__mustRefreshGraphics = true;
 	}
 
 	private function __updateRecursiveMouseListenerCount(amount:Int=0) {
