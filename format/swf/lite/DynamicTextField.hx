@@ -120,7 +120,9 @@ class DynamicTextField extends TextField {
 	}
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
-		if ( _variableName != null && _variableName.length > 0 ) {
+		var hasVariableName = _variableName != null && _variableName.length > 0;
+		if ( hasVariableName ) {
+
 			var local_parent = this.parent;
 			while ( local_parent != null ) {
 				if ( Reflect.hasField(local_parent, _variableName) ) {
@@ -132,6 +134,9 @@ class DynamicTextField extends TextField {
 			}
 		}
 		super.__update(transformOnly, updateChildren);
+		if ( hasVariableName ) {
+			__updateDirty = true;
+		}
 	}
 
 }
