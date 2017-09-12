@@ -85,6 +85,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private static inline var __bufferStride = 26;
 	private static var __supportsBGRA:Null<Bool> = null;
+	private static var __tempVector:Vector2 = new Vector2 ();
 	private static var __textureFormat:Int;
 	private static var __textureInternalFormat:Int;
 	
@@ -398,7 +399,14 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable || sourceBitmapData == null) return;
 		
-		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
+		if (alphaPoint != null) {
+			
+			__tempVector.x = alphaPoint.x;
+			__tempVector.y = alphaPoint.y;
+			
+		}
+		
+		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? __tempVector : null, mergeAlpha);
 		
 	}
 	
