@@ -181,12 +181,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				if (nextFrame < __currentFrame) {
 					
-					__evaluateFrameScripts (__totalFrames);
+					if (!__evaluateFrameScripts (__totalFrames)) {
+						
+						return;
+						
+					}
+					
 					__currentFrame = 1;
 					
 				}
 				
-				__evaluateFrameScripts (nextFrame);
+				if (!__evaluateFrameScripts (nextFrame)) {
+					
+					return;
+					
+				}
 				
 			} else {
 				
@@ -347,7 +356,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __evaluateFrameScripts (advanceToFrame:Int):Void {
+	private function __evaluateFrameScripts (advanceToFrame:Int):Bool {
 		
 		for (frame in __currentFrame...advanceToFrame + 1) {
 			
@@ -361,6 +370,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				var script = __frameScripts.get (frame);
 				script ();
 				
+				if (__currentFrame != frame) {
+					
+					return false;
+					
+				}
+				
 			}
 			
 			if (!__playing) {
@@ -370,6 +385,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			
 		}
+		
+		return true;
 		
 	}
 	
