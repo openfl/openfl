@@ -21,8 +21,8 @@ import js.html.ImageElement;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-
 
 class Bitmap extends DisplayObject implements IShaderDrawable {
 	
@@ -193,6 +193,8 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
+		__updateMaskBitmap( renderSession, false );
+
 		GLBitmap.render (this, renderSession);
 		
 	}
@@ -222,6 +224,124 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 	}
 	
+	override private function __updateMaskBitmap (renderSession:RenderSession, force:Bool):Void {
+		
+		if (__maskBitmapRender)  {
+			return;
+		}
+
+		if (__mask != null || __parentMask != null) {
+
+			var matrix = null, rect = null;
+			// Get the correct mask this mask or the parent
+			var theMask = __mask != null ? __mask : __parentMask;
+			
+			theMask.__getWorldTransform ();
+			theMask.__update (false, true);
+			
+			var needRender = (__maskBitmap == null || theMask.__renderDirty || (__renderDirty && (force || (__children != null && __children.length > 0))));
+			var updateTransform = (needRender || (!__maskBitmap.__worldTransform.equals (__worldTransform)));
+			
+			if (updateTransform) {
+				
+				matrix = Matrix.__pool.get ();
+				matrix.identity ();
+				
+				rect = Rectangle.__pool.get ();
+				__getBounds( rect, new Matrix() );
+				
+			}
+			
+			if (__maskBitmap != null && rect!=null || updateTransform ) {
+					
+				needRender = true;
+				
+			} 
+			
+			if (needRender) {
+				
+				if (rect.width >= 0.5 && rect.height >= 0.5) {
+					
+					if (__maskBitmap == null || rect.width != __maskBitmap.width || rect.height != __maskBitmap.height) {
+						
+						__maskBitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, 0x0);
+						
+						if (__maskBitmap == null) __maskBitmap = new Bitmap ();
+						__maskBitmap.bitmapData = __maskBitmapData;
+						
+					} else {
+						
+						__maskBitmapData.fillRect (__maskBitmapData.rect, 0x0);
+						
+					}
+					
+				} else {
+					
+					__maskBitmap = null;
+					__maskBitmapData = null;
+					return;
+					
+				}
+				
+			}
+			
+			if (needRender) {
+				
+				__maskBitmap.__worldTransform.copyFrom (__worldTransform);
+				
+				__maskBitmap.__renderTransform.identity();
+				__maskBitmap.__renderTransform.tx = rect.x;
+				__maskBitmap.__renderTransform.ty = rect.y;
+				
+				matrix.concat( theMask.__renderTransform );
+
+				var m = Matrix.__pool.get ();
+				m.copyFrom (__worldTransform);
+				m.invert();
+				matrix.concat( m );
+				Matrix.__pool.release (m);
+
+			}
+			
+			__maskBitmap.smoothing = renderSession.allowSmoothing;
+			__maskBitmap.__renderable = __renderable;
+			__maskBitmap.__worldAlpha = __worldAlpha;
+			__maskBitmap.__worldBlendMode = __worldBlendMode;
+			__maskBitmap.__scrollRect = __scrollRect;
+			
+			if (needRender) {
+				
+				__maskBitmapRender = true;
+				
+				@:privateAccess __maskBitmapData.__draw (theMask, matrix, null, null, null, renderSession.allowSmoothing);
+				
+				__maskBitmapRender = false;
+
+			}
+			
+			if (updateTransform) {
+				
+				theMask.__update (false, true);
+				
+				Matrix.__pool.release (matrix);
+				Rectangle.__pool.release (rect);
+
+			}
+			
+		} else if (__maskBitmap != null) {
+			
+			#if dom
+			__maskBitmap.__renderDOMClear (renderSession);
+			#end
+			
+			__maskBitmap = null;
+			__maskBitmapData = null;
+			
+		}
+		
+	}
+
+
 	
 	
 	// Get & Set Methods

@@ -22,7 +22,7 @@ class GLDisplayObject {
 	public static inline function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
 		
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
+		if (!displayObject.__renderable || displayObject.__isMask || displayObject.__worldAlpha <= 0) return;
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			

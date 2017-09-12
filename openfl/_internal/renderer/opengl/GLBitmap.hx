@@ -4,12 +4,14 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.display.Shader;
 
 #if !openfl_debug
 @:fileXml(' tags="haxe,release" ')
 @:noDebug
 #end
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Stage)
@@ -34,11 +36,20 @@ class GLBitmap {
 			
 			renderSession.filterManager.pushObject (bitmap);
 			
-			var shader = renderSession.shaderManager.initShader (bitmap.shader);
+			var shader:Shader;
+			shader = renderSession.shaderManager.initShader ( (bitmap.mask != null || bitmap.__parentMask != null) ? GLMaskManager.maskShader : bitmap.shader );
 			renderSession.shaderManager.setShader (shader);
 			
 			shader.data.uImage0.input = bitmap.bitmapData;
 			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
+			
+			if  (  bitmap.mask != null || bitmap.__parentMask != null ) {
+			
+				shader.data.uImage1.input = bitmap.__maskBitmapData;
+				shader.data.uImage1.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
+			
+			}
+
 			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
 			
 			var useColorTransform = !bitmap.__worldColorTransform.__isDefault ();

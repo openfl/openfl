@@ -4,9 +4,11 @@ package openfl._internal.renderer.opengl;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractMaskManager;
 import openfl.display.DisplayObject;
+import openfl.display.Shader;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -23,6 +25,8 @@ import openfl.geom.Rectangle;
 
 class GLMaskManager extends AbstractMaskManager {
 	
+	
+	@:allow(openfl._internal.renderer.opengl) private static var maskShader = new GLMaskShader ();
 	
 	private var clipRects:Array<Rectangle>;
 	private var gl:GLRenderContext;
@@ -43,15 +47,6 @@ class GLMaskManager extends AbstractMaskManager {
 	}
 	
 	
-	public override function pushMask (mask:DisplayObject):Void {
-		
-		// TODO: Handle true mask shape, as well as alpha test
-		
-		pushRect (mask.getBounds (mask), mask.__getRenderTransform ());
-		
-	}
-	
-	
 	public override function pushObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
@@ -66,6 +61,11 @@ class GLMaskManager extends AbstractMaskManager {
 			
 		}
 		
+		if (object.__parentMask != null) {
+			
+			pushMask (object.__parentMask);
+			
+		}
 	}
 	
 	
@@ -105,13 +105,6 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		scissorRect (clipRect);
 		numClipRects++;
-		
-	}
-	
-	
-	public override function popMask ():Void {
-		
-		popRect ();
 		
 	}
 	
@@ -180,6 +173,46 @@ class GLMaskManager extends AbstractMaskManager {
 			gl.disable (gl.SCISSOR_TEST);
 			
 		}
+		
+	}
+	
+	
+}
+
+
+class GLMaskShader extends Shader {
+	
+		
+	@:glFragmentSource(
+
+		"varying float vAlpha;
+		varying vec2 vTexCoord;
+		uniform sampler2D uImage0;
+		uniform sampler2D uImage1;
+		
+		
+		void main(void) {
+			
+			vec4 color = texture2D (uImage0, vTexCoord);
+			vec4 mask = texture2D (uImage1, vTexCoord);
+			
+			if (color.a == 0.0 || mask.a == 0.0) {
+				
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+				
+			} else {
+				
+				gl_FragColor = color.rgba * vAlpha;
+				
+			}
+			
+		}"
+	)
+
+
+	public function new (code:ByteArray = null) {
+		
+		super (code);
 		
 	}
 	
