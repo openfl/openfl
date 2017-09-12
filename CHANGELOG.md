@@ -1,3 +1,21 @@
+6.1.1 (09/12/2017)
+------------------
+
+* Added missing `vector.removeAt` method
+* Added missing `stage.contentsScaleFactor` property
+* Improved the error messages on HTML5
+* Fixed the default separator value for `vector.join`
+* Fixed support for certain kinds of recursion in `eventDispatcher.dispatchEvent`
+* Fixed a regression in dimensions for glow and blur filters
+* Fixed the behavior of `tilemap.removeTiles()` with no arguments
+* Fixed missing properties on Flash `openfl.text.TextField` extern
+* Fixed the default endianness of `Socket` and `XMLSocket`
+* Fixed a possible infinite loop in `TextField` layout
+* Fixed some issues with `MovieClip` frame scripts that skip frames
+* Fixed the behavior of alpha images in `bitmapData.copyPixels`
+* Fixed endianness issues in `bitmapData.getPixels` and `bitmapData.setPixels`
+
+
 6.1.0 (08/25/2017)
 ------------------
 
