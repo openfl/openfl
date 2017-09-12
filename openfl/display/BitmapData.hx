@@ -32,6 +32,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
+import openfl.errors.Error;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
 import openfl.filters.BitmapFilter;
@@ -1021,7 +1022,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable) return null;
 		if (rect == null) rect = this.rect;
-		return ByteArray.fromBytes (image.getPixels (rect.__toLimeRectangle (), ARGB32));
+		var byteArray = ByteArray.fromBytes (image.getPixels (rect.__toLimeRectangle (), ARGB32));
+		// TODO: System endian order
+		byteArray.endian = BIG_ENDIAN;
+		return byteArray;
 		
 	}
 	
@@ -1529,7 +1533,11 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
 		
 		if (!readable || rect == null) return;
-		image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32);
+		
+		var length = (rect.width * rect.height * 4);
+		if (byteArray.bytesAvailable < length) throw new Error ("End of file was encountered.", 2030);
+		
+		image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32, byteArray.endian);
 		
 	}
 	
