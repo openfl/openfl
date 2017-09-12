@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "6.1.0",
-	"releasenote": "Official support for Adobe AIR, improvements to Tilemap and TileArray",
+	"version": "6.1.1",
+	"releasenote": "Improved HTML5 error messages, minor improvements",
 	"contributors": [ "singmajesty" ]
 }
