@@ -1,3 +1,10 @@
+6.1.2 (09/13/2017)
+------------------
+
+* Fixed regression in color order when processing SWF assets
+* Fixed an issue with MovieClip children being removed improperly
+
+
 6.1.1 (09/12/2017)
 ------------------
 
