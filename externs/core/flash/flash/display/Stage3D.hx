@@ -13,7 +13,7 @@ import openfl.Vector;
 extern class Stage3D extends EventDispatcher {
 	
 	
-	public var context3D (default, null):Context3D;
+	public var context3D (default, never):Context3D;
 	public var visible:Bool;
 	public var x:Float;
 	public var y:Float;
