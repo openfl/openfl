@@ -21,6 +21,7 @@ class TagJPEGTables implements ITag
 		version = 1;
 		level = 1;
 		jpegTables = new ByteArray();
+		jpegTables.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

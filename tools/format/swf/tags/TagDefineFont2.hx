@@ -56,6 +56,7 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 		languageCode = data.readLANGCODE();
 		var fontNameLen:Int = data.readUI8();
 		var fontNameRaw:ByteArray = new ByteArray();
+		fontNameRaw.endian = BIG_ENDIAN;
 		data.readBytes(fontNameRaw, 0, fontNameLen);
 		#if (cpp || neko)
 		fontName = fontNameRaw.readUTFBytes(fontNameLen - 1);
@@ -110,6 +111,7 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 		body.writeUI8(flags);
 		body.writeLANGCODE(languageCode);
 		var fontNameRaw:ByteArray = new ByteArray();
+		fontNameRaw.endian = BIG_ENDIAN;
 		fontNameRaw.writeUTFBytes(fontName);
 		body.writeUI8(fontNameRaw.length);
 		body.writeBytes(fontNameRaw);
