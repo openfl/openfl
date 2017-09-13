@@ -4,10 +4,10 @@ import format.swf.SWFData;
 
 class SWFShapeRecordCurvedEdge extends SWFShapeRecord
 {
-	@:s public var controlDeltaX:Int;
-	@:s public var controlDeltaY:Int;
-	@:s public var anchorDeltaX:Int;
-	@:s public var anchorDeltaY:Int;
+	@:s public var controlDeltaX:Float;
+	@:s public var controlDeltaY:Float;
+	@:s public var anchorDeltaX:Float;
+	@:s public var anchorDeltaY:Float;
 
 	@:s private var numBits:Int;
 
@@ -24,13 +24,15 @@ class SWFShapeRecordCurvedEdge extends SWFShapeRecord
 	}
 
 	override public function publish(data:SWFData = null, level:Int = 1):Void {
-		numBits = data.calculateMaxBits(true, [controlDeltaX, controlDeltaY, anchorDeltaX, anchorDeltaY]);
-		if(numBits < 2) { numBits = 2; }
-		data.writeUB(4, numBits - 2);
-		data.writeSB(numBits, controlDeltaX);
-		data.writeSB(numBits, controlDeltaY);
-		data.writeSB(numBits, anchorDeltaX);
-		data.writeSB(numBits, anchorDeltaY);
+		throw ":TODO:";
+
+		// numBits = data.calculateMaxBits(true, [controlDeltaX, controlDeltaY, anchorDeltaX, anchorDeltaY]);
+		// if(numBits < 2) { numBits = 2; }
+		// data.writeUB(4, numBits - 2);
+		// data.writeSB(numBits, controlDeltaX);
+		// data.writeSB(numBits, controlDeltaY);
+		// data.writeSB(numBits, anchorDeltaX);
+		// data.writeSB(numBits, anchorDeltaY);
 	}
 
 	override public function clone():SWFShapeRecord {
