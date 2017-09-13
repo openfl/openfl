@@ -4,9 +4,6 @@ package flash.ui; #if (!display && flash)
 @:final extern class Keyboard {
 	
 	
-	// TODO: Add additional Flash values
-	
-	
 	public static inline var NUMBER_0 = 48;
 	public static inline var NUMBER_1 = 49;
 	public static inline var NUMBER_2 = 50;
@@ -109,7 +106,7 @@ package flash.ui; #if (!display && flash)
 	public static inline var RIGHTBRACKET = 221;
 	public static inline var QUOTE = 222;
 	
-	#if air
+	#if flash
 	public static inline var NEXT = 0x0100000E;
 	public static inline var BACK = 0x01000016;
 	public static inline var SEARCH = 0x0100001F;
@@ -118,7 +115,186 @@ package flash.ui; #if (!display && flash)
 	
 	public static var capsLock (default, null):Bool;
 	public static var numLock (default, null):Bool;
+	
+	#if flash
+	@:require(flash10_1) public static var hasVirtualKeyboard (default, never):Bool;
+	@:require(flash10_1) public static var physicalKeyboardType (default, never):KeyboardType;
+	#end
+	
 	public static function isAccessible ():Bool;
+	
+	#if flash
+	@:require(flash10_2) private static var AUDIO (default, never):UInt;
+	@:require(flash10_2) private static var BLUE (default, never):UInt;
+	@:require(flash10_2) private static var CHANNEL_DOWN (default, never):UInt;
+	@:require(flash10_2) private static var CHANNEL_UP (default, never):UInt;
+	@:require(flash10_1) private static var CharCodeStrings (default, never):Array<Dynamic>;
+	@:require(flash10_2) private static var DVR (default, never):UInt;
+	@:require(flash10_2) private static var EXIT (default, never):UInt;
+	@:require(flash10_2) private static var FAST_FORWARD (default, never):UInt;
+	@:require(flash10_2) private static var GREEN (default, never):UInt;
+	@:require(flash10_2) private static var GUIDE (default, never):UInt;
+	@:require(flash10_2) private static var INFO (default, never):UInt;
+	@:require(flash10_2) private static var INPUT (default, never):UInt;
+	@:require(flash10_1) private static var KEYNAME_BEGIN (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_BREAK (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_CLEARDISPLAY (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_CLEARLINE (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_DELETE (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_DELETECHAR (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_DELETELINE (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_DOWNARROW (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_END (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_EXECUTE (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F1 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F10 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F11 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F12 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F13 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F14 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F15 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F16 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F17 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F18 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F19 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F2 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F20 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F21 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F22 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F23 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F24 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F25 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F26 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F27 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F28 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F29 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F3 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F30 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F31 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F32 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F33 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F34 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F35 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F4 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F5 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F6 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F7 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F8 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_F9 (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_FIND (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_HELP (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_HOME (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_INSERT (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_INSERTCHAR (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_INSERTLINE (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_LEFTARROW (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_MENU (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_MODESWITCH (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_NEXT (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_PAGEDOWN (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_PAGEUP (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_PAUSE (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_PREV (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_PRINT (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_PRINTSCREEN (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_REDO (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_RESET (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_RIGHTARROW (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_SCROLLLOCK (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_SELECT (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_STOP (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_SYSREQ (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_SYSTEM (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_UNDO (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_UPARROW (default, never):String;
+	@:require(flash10_1) private static var KEYNAME_USER (default, never):String;
+	@:require(flash10_2) private static var LAST (default, never):UInt;
+	@:require(flash10_2) private static var LIVE (default, never):UInt;
+	@:require(flash10_2) private static var MASTER_SHELL (default, never):UInt;
+	@:require(flash10_2) private static var PAUSE (default, never):UInt;
+	@:require(flash10_2) private static var RECORD (default, never):UInt;
+	@:require(flash10_2) private static var RED (default, never):UInt;
+	@:require(flash10_2) private static var REWIND (default, never):UInt;
+	@:require(flash10_2) private static var SETUP (default, never):UInt;
+	@:require(flash10_2) private static var SKIP_BACKWARD (default, never):UInt;
+	@:require(flash10_2) private static var SKIP_FORWARD (default, never):UInt;
+	@:require(flash10_2) private static var STOP (default, never):UInt;
+	@:require(flash10_1) private static var STRING_BEGIN (default, never):String;
+	@:require(flash10_1) private static var STRING_BREAK (default, never):String;
+	@:require(flash10_1) private static var STRING_CLEARDISPLAY (default, never):String;
+	@:require(flash10_1) private static var STRING_CLEARLINE (default, never):String;
+	@:require(flash10_1) private static var STRING_DELETE (default, never):String;
+	@:require(flash10_1) private static var STRING_DELETECHAR (default, never):String;
+	@:require(flash10_1) private static var STRING_DELETELINE (default, never):String;
+	@:require(flash10_1) private static var STRING_DOWNARROW (default, never):String;
+	@:require(flash10_1) private static var STRING_END (default, never):String;
+	@:require(flash10_1) private static var STRING_EXECUTE (default, never):String;
+	@:require(flash10_1) private static var STRING_F1 (default, never):String;
+	@:require(flash10_1) private static var STRING_F10 (default, never):String;
+	@:require(flash10_1) private static var STRING_F11 (default, never):String;
+	@:require(flash10_1) private static var STRING_F12 (default, never):String;
+	@:require(flash10_1) private static var STRING_F13 (default, never):String;
+	@:require(flash10_1) private static var STRING_F14 (default, never):String;
+	@:require(flash10_1) private static var STRING_F15 (default, never):String;
+	@:require(flash10_1) private static var STRING_F16 (default, never):String;
+	@:require(flash10_1) private static var STRING_F17 (default, never):String;
+	@:require(flash10_1) private static var STRING_F18 (default, never):String;
+	@:require(flash10_1) private static var STRING_F19 (default, never):String;
+	@:require(flash10_1) private static var STRING_F2 (default, never):String;
+	@:require(flash10_1) private static var STRING_F20 (default, never):String;
+	@:require(flash10_1) private static var STRING_F21 (default, never):String;
+	@:require(flash10_1) private static var STRING_F22 (default, never):String;
+	@:require(flash10_1) private static var STRING_F23 (default, never):String;
+	@:require(flash10_1) private static var STRING_F24 (default, never):String;
+	@:require(flash10_1) private static var STRING_F25 (default, never):String;
+	@:require(flash10_1) private static var STRING_F26 (default, never):String;
+	@:require(flash10_1) private static var STRING_F27 (default, never):String;
+	@:require(flash10_1) private static var STRING_F28 (default, never):String;
+	@:require(flash10_1) private static var STRING_F29 (default, never):String;
+	@:require(flash10_1) private static var STRING_F3 (default, never):String;
+	@:require(flash10_1) private static var STRING_F30 (default, never):String;
+	@:require(flash10_1) private static var STRING_F31 (default, never):String;
+	@:require(flash10_1) private static var STRING_F32 (default, never):String;
+	@:require(flash10_1) private static var STRING_F33 (default, never):String;
+	@:require(flash10_1) private static var STRING_F34 (default, never):String;
+	@:require(flash10_1) private static var STRING_F35 (default, never):String;
+	@:require(flash10_1) private static var STRING_F4 (default, never):String;
+	@:require(flash10_1) private static var STRING_F5 (default, never):String;
+	@:require(flash10_1) private static var STRING_F6 (default, never):String;
+	@:require(flash10_1) private static var STRING_F7 (default, never):String;
+	@:require(flash10_1) private static var STRING_F8 (default, never):String;
+	@:require(flash10_1) private static var STRING_F9 (default, never):String;
+	@:require(flash10_1) private static var STRING_FIND (default, never):String;
+	@:require(flash10_1) private static var STRING_HELP (default, never):String;
+	@:require(flash10_1) private static var STRING_HOME (default, never):String;
+	@:require(flash10_1) private static var STRING_INSERT (default, never):String;
+	@:require(flash10_1) private static var STRING_INSERTCHAR (default, never):String;
+	@:require(flash10_1) private static var STRING_INSERTLINE (default, never):String;
+	@:require(flash10_1) private static var STRING_LEFTARROW (default, never):String;
+	@:require(flash10_1) private static var STRING_MENU (default, never):String;
+	@:require(flash10_1) private static var STRING_MODESWITCH (default, never):String;
+	@:require(flash10_1) private static var STRING_NEXT (default, never):String;
+	@:require(flash10_1) private static var STRING_PAGEDOWN (default, never):String;
+	@:require(flash10_1) private static var STRING_PAGEUP (default, never):String;
+	@:require(flash10_1) private static var STRING_PAUSE (default, never):String;
+	@:require(flash10_1) private static var STRING_PREV (default, never):String;
+	@:require(flash10_1) private static var STRING_PRINT (default, never):String;
+	@:require(flash10_1) private static var STRING_PRINTSCREEN (default, never):String;
+	@:require(flash10_1) private static var STRING_REDO (default, never):String;
+	@:require(flash10_1) private static var STRING_RESET (default, never):String;
+	@:require(flash10_1) private static var STRING_RIGHTARROW (default, never):String;
+	@:require(flash10_1) private static var STRING_SCROLLLOCK (default, never):String;
+	@:require(flash10_1) private static var STRING_SELECT (default, never):String;
+	@:require(flash10_1) private static var STRING_STOP (default, never):String;
+	@:require(flash10_1) private static var STRING_SYSREQ (default, never):String;
+	@:require(flash10_1) private static var STRING_SYSTEM (default, never):String;
+	@:require(flash10_1) private static var STRING_UNDO (default, never):String;
+	@:require(flash10_1) private static var STRING_UPARROW (default, never):String;
+	@:require(flash10_1) private static var STRING_USER (default, never):String;
+	@:require(flash10_2) private static var SUBTITLE (default, never):UInt;
+	@:require(flash10_2) private static var VOD (default, never):UInt;
+	@:require(flash10_2) private static var YELLOW (default, never):UInt;
+	#end
 	
 	
 }
