@@ -331,19 +331,29 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 			}
 			
-			var child, length = __children.length;
+			var child;
+			var i = currentInstances.length;
+			var length = __children.length;
 			
-			for (i in currentInstances.length...length) {
+			while (i < length) {
 				
 				child = __children[i];
 				
 				// TODO: Faster method of determining if this was automatically added?
 				
 				for (instance in __activeInstances) {
+					
 					if (instance.displayObject == child) {
+						
 						removeChild (child);
+						i--;
+						length--;
+						
 					}
+					
 				}
+				
+				i++;
 				
 			}
 			
