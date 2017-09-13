@@ -30,7 +30,7 @@ class MorphShapeSymbol extends SWFSymbol {
 	public function getShape(ratio:Float):SWFShape {
 		var j:Int = 0;
 		var exportShape:SWFShape = new SWFShape();
-
+		var lastStartStyleChange:SWFShapeRecordStyleChange = null;
 		var numEdges:Int = startEdges.records.length;
 		for(i in 0...numEdges) {
 			var startRecord:SWFShapeRecord = startEdges.records[i];
@@ -56,8 +56,24 @@ class MorphShapeSymbol extends SWFSymbol {
 				startRecord = convertToCurvedEdge(cast (startRecord, SWFShapeRecordStraightEdge));
 			}
 
+			if (endRecord.type == SWFShapeRecord.TYPE_STYLECHANGE
+				&& startRecord.type != SWFShapeRecord.TYPE_STYLECHANGE) {
+
+				var startStyleChange:SWFShapeRecordStyleChange = cast lastStartStyleChange.clone();
+				var endStyleChange:SWFShapeRecordStyleChange = cast endRecord;
+
+				startStyleChange.stateMoveTo = true;
+				startStyleChange.moveDeltaX += (endStyleChange.moveDeltaX - startStyleChange.moveDeltaX) * ratio;
+				startStyleChange.moveDeltaY += (endStyleChange.moveDeltaY - startStyleChange.moveDeltaY) * ratio;
+				++j;
+
+				exportShape.records.push(startStyleChange);
+				continue;
+			}
+
 			switch(startRecord.type) {
 				case SWFShapeRecord.TYPE_STYLECHANGE:
+					lastStartStyleChange = cast startRecord;
 					var startStyleChange:SWFShapeRecordStyleChange = cast startRecord.clone();
 					startStyleChange.stateMoveTo = true;
 					if (endRecord.type == SWFShapeRecord.TYPE_STYLECHANGE) {
