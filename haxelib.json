@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "6.1.1",
-	"releasenote": "Improved HTML5 error messages, minor improvements",
+	"version": "6.1.2",
+	"releasenote": "Fixed a minor regression in SWF processing",
 	"contributors": [ "singmajesty" ]
 }
