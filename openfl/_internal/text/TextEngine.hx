@@ -47,8 +47,9 @@ import haxe.io.Path;
 
 
 class TextEngine {
-	
-	
+
+
+	private static inline var GUTTER = 2.0;
 	private static inline var UTF8_TAB = 9;
 	private static inline var UTF8_ENDLINE = 10;
 	private static inline var UTF8_SPACE = 32;
@@ -256,8 +257,11 @@ class TextEngine {
 		} else {
 			
 			ascent = format.size;
+			#if dom
+			descent = 3;
+			#else
 			descent = format.size * 0.185;
-			
+			#end
 		}
 		
 		leading = format.leading;
@@ -542,17 +546,13 @@ class TextEngine {
 	
 	public function getLineBreakIndex (startIndex:Int = 0):Int {
 
-		var br = text.indexOf ("<br>", startIndex);
 		var cr = text.indexOf ("\n", startIndex);
 		var lf = text.indexOf ("\r", startIndex);
-		
-		if (cr == -1 && br == -1) return lf;
-		if (lf == -1 && br == -1) return cr;
-		if (lf == -1 && cr == -1) return br;
 
-		if (cr == -1) return Std.int(Math.min(br, lf));
-		if (lf == -1) return Std.int(Math.min(br, cr));
-		if (br == -1) return Std.int(Math.min(cr, lf));
+		if (cr == -1) return lf;
+		if (lf == -1) return cr;
+
+		return cr < lf ? cr : lf;
 
 		return Std.int(Math.min(Math.min(cr, lf), br));
 		
@@ -598,7 +598,7 @@ class TextEngine {
 				
 				numLines++;
 				
-				if (textHeight <= height - 2) {
+				if (textHeight <= height - GUTTER) {
 					
 					bottomScrollV++;
 					
@@ -620,7 +620,7 @@ class TextEngine {
 			}
 			
 			currentLineHeight = Math.max (currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - 2 + group.width;
+			currentLineWidth = group.offsetX - GUTTER + group.width;
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -628,8 +628,16 @@ class TextEngine {
 				
 			}
 			
-			currentTextHeight = group.offsetY - 2 + group.ascent + group.descent;
-			
+			currentTextHeight = group.offsetY - GUTTER + group.ascent + group.descent;
+
+			#if dom
+				if (!this.textField.__renderedOnCanvasWhileOnDOM) {
+
+					currentTextHeight += group.leading;
+
+				}
+			#end
+
 			if (currentTextHeight > textHeight) {
 				
 				textHeight = currentTextHeight;
@@ -654,7 +662,7 @@ class TextEngine {
 				
 			}
 			
-		} else if (textHeight <= height - 2) {
+		} else if (textHeight <= height - GUTTER) {
 			
 			bottomScrollV++;
 			
@@ -718,8 +726,8 @@ class TextEngine {
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = getLineBreakIndex ();
 		
-		var offsetX = 2.0;
-		var offsetY = 2.0;
+		var offsetX = GUTTER;
+		var offsetY = GUTTER;
 		var textIndex = 0;
 		var lineIndex = 0;
 		var lineFormat = null;
@@ -747,7 +755,7 @@ class TextEngine {
 				
 				for (i in startIndex...endIndex) {
 					
-					width = __context.measureText (text.substring (startIndex, i + 1)).width;
+					width = measureTextWidth (text.substring (startIndex, i + 1));
 					
 					advances.push (width - previousWidth);
 					
@@ -764,14 +772,14 @@ class TextEngine {
 					if (i < text.length-1) {
 						
 						// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-						var nextWidth = __context.measureText (text.charAt (i + 1)).width;
-						var twoWidths = __context.measureText (text.substr (i,  2)).width;
+						var nextWidth = measureTextWidth (text.charAt (i + 1));
+						var twoWidths = measureTextWidth (text.substr (i,  2));
 						advance = twoWidths - nextWidth;
 						
 					} else {
-						
-						advance = __context.measureText (text.charAt (i)).width;
-						
+
+						advance = measureTextWidth (text.charAt (i));
+
 					}
 					
 					advances.push (advance);
@@ -826,13 +834,33 @@ class TextEngine {
 			return width;
 			
 		}
-		
+
+		inline function getCharOffsetAtWidth (advances:Array<Float>, width:Float):Int {
+
+			var charIndex = 0;
+			var currentWidth = 0.0;
+
+			for (i in 0...advances.length) {
+
+				currentWidth += advances[i];
+				if (currentWidth > width) {
+					break;
+				} else {
+					charIndex = i;
+				}
+
+			}
+
+			return charIndex;
+
+		}
+
 		inline function getTextWidth (text:String):Float {
 			
 			#if (js && html5)
-			
-			return __context.measureText (text).width;
-			
+
+			return measureTextWidth (text);
+
 			#else
 			
 			if (__textLayout == null) {
@@ -903,8 +931,11 @@ class TextEngine {
 				} else {
 					
 					ascent = currentFormat.size;
+					#if dom
+					descent = this.textField.__renderedOnCanvasWhileOnDOM ? currentFormat.size * 0.185 : 3;
+					#else
 					descent = currentFormat.size * 0.185;
-					
+					#end
 				}
 				
 				leading = currentFormat.leading;
@@ -968,15 +999,15 @@ class TextEngine {
 				maxHeightValue = heightValue;
 				
 			}
-			
-			for (lg in layoutGroups) {
-				
-				if (lg.lineIndex < lineIndex) continue;
-				if (lg.lineIndex > lineIndex) break;
-				
+
+			var i = layoutGroups.length;
+			while (--i > -1) {
+				var lg = layoutGroups[i];
+				if (lg.lineIndex > lineIndex) continue;
+				if (lg.lineIndex < lineIndex) break;
+
 				lg.ascent = maxAscent;
 				lg.height = maxHeightValue;
-				
 			}
 			
 			offsetY += maxHeightValue;
@@ -985,55 +1016,33 @@ class TextEngine {
 			maxHeightValue = 0.0;
 			
 			++lineIndex;
-			offsetX = 2;
+			offsetX = GUTTER;
 			
 		}
 		
 		inline function breakLongWords (endIndex:Int):Void {
-			
-			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
-			
-			while (offsetX + tempWidth > width - 2) {
-				
-				var i = 1;
-				
-				while (textIndex + i < endIndex + 1) {
-					
-					tempWidth = getTextWidth(text.substr(textIndex, i));
-					
-					if (offsetX + tempWidth > width - 2) {
-						
-						i--;
-						break;
-						
+
+			var groupEndIndex = endIndex;
+			while (offsetX + widthValue > width - GUTTER) {
+				var wrapCharOffset = getCharOffsetAtWidth (advances, width - offsetX - GUTTER);
+				groupEndIndex = textIndex + wrapCharOffset;
+				if (groupEndIndex == textIndex) {
+					if (advances.length > 0 && advances[0] > width - 2 * GUTTER) {
+						// if the textfield is smaller than a single character and
+						groupEndIndex = endIndex + 1;
+
+					} else {
+						// if a single character in a new format made the line too long
+						offsetX = GUTTER;
+						offsetY += layoutGroup.height;
+						++lineIndex;
 					}
-					
-					i++;
-					
-				}
-				
-				if (i == 0 && tempWidth > width - 4) {
-					// if the textfield is smaller than a single character
-					
-					i = text.length;
-					
-				}
-				
-				if (i == 0) {
-					// if a single character in a new format made the line too long
-					
-					offsetX = 2;
-					offsetY += layoutGroup.height;
-					++lineIndex;
-					
+
 					break;
-					
-				}
-				
-				else {
-					
-					nextLayoutGroup(textIndex, textIndex + i);
-					layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
+				} else {
+					nextLayoutGroup(textIndex, groupEndIndex);
+
+					layoutGroup.advances = advances.slice(0, wrapCharOffset);
 					layoutGroup.offsetX = offsetX;
 					layoutGroup.ascent = ascent;
 					layoutGroup.descent = descent;
@@ -1046,16 +1055,14 @@ class TextEngine {
 					layoutGroup = null;
 					
 					alignBaseline();
-					
-					textIndex += i;
-					
-					advances = getAdvances(text, textIndex, endIndex);
+
+					advances = advances.slice(wrapCharOffset, endIndex - textIndex);
 					widthValue = getAdvancesWidth(advances);
-					
-					tempWidth = widthValue;
-					
+
+					textIndex = groupEndIndex;
+
+					groupEndIndex = endIndex;
 				}
-				
 			}
 			
 		}
@@ -1072,23 +1079,27 @@ class TextEngine {
 				// if a line break is the next thing that needs to be dealt with
 				
 				if (textIndex <= breakIndex) {
-					
+
+
+					advances = getAdvances (text, textIndex, breakIndex);
+					widthValue = getAdvancesWidth (advances);
+
 					if (wordWrap && previousSpaceIndex <= textIndex && width >= 4) {
-						
+
 						breakLongWords(breakIndex);
 						
 					}
 					
 					nextLayoutGroup (textIndex, breakIndex);
-					
-					layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
+
+					layoutGroup.advances = advances;
 					layoutGroup.offsetX = offsetX;
 					layoutGroup.ascent = ascent;
 					layoutGroup.descent = descent;
 					layoutGroup.leading = leading;
 					layoutGroup.lineIndex = lineIndex;
 					layoutGroup.offsetY = offsetY;
-					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					layoutGroup.width = widthValue;
 					layoutGroup.height = heightValue;
 					
 					layoutGroup = null;
@@ -1192,7 +1203,7 @@ class TextEngine {
 					
 					if (wordWrap) {
 						
-						if (offsetX + widthValue > width - 2) {
+						if (offsetX + widthValue > width - GUTTER) {
 							
 							wrap = true;
 							
@@ -1242,7 +1253,7 @@ class TextEngine {
 							
 						}
 						
-						offsetX = 2;
+						offsetX = GUTTER;
 						
 						if (offsetCount > 0) {
 							
@@ -1259,9 +1270,9 @@ class TextEngine {
 							}
 							
 						}
-						
+
 						if (width >= 4) breakLongWords(endIndex);
-						
+
 						nextLayoutGroup (textIndex, endIndex);
 						
 						layoutGroup.advances = advances;
@@ -1372,26 +1383,26 @@ class TextEngine {
 					break;
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
-					
-					if (wordWrap && width >= 4) {
-						
-						breakLongWords(formatRange.end);
-						
-					}
-					
+
 					advances = getAdvances (text, textIndex, formatRange.end);
 					widthValue = getAdvancesWidth (advances);
-					
+
+					if (wordWrap  && width >= 4) {
+
+						breakLongWords(formatRange.end);
+
+					}
+
 					nextLayoutGroup (textIndex, formatRange.end);
-					
-					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
+
+					layoutGroup.advances = advances;
 					layoutGroup.offsetX = offsetX;
 					layoutGroup.ascent = ascent;
 					layoutGroup.descent = descent;
 					layoutGroup.leading = leading;
 					layoutGroup.lineIndex = lineIndex;
 					layoutGroup.offsetY = offsetY;
-					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					layoutGroup.width = widthValue;
 					layoutGroup.height = heightValue;
 					
 					offsetX += widthValue;
@@ -1419,10 +1430,27 @@ class TextEngine {
 			trace("LG", lg.advances.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
 		}
 		#end
-		
+
 	}
-	
-	
+
+	#if (js && html5)
+	inline private function measureTextWidth (value:String):Float {
+		#if dom
+		if (this.textField.__renderedOnCanvasWhileOnDOM) {
+
+			return __context.measureText(value).width;
+
+		}
+		// This measure for DOM is not perfect but it is close to it. The best would be to measure it on DOM like
+		// hiddenDivElement.innerHTML=value then hiddenDivElement.clientWidth, but this is way too slow compared to
+		// measuring it on canvas
+		return Math.round(__context.measureText(value).width);
+		#else
+		return __context.measureText(value).width;
+		#end
+	}
+	#end
+
 	private function setTextAlignment ():Void {
 		
 		var lineIndex = -1;

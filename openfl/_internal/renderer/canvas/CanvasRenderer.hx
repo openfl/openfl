@@ -15,13 +15,13 @@ import js.Browser;
 
 
 class CanvasRenderer extends AbstractRenderer {
-	
-	
+
+	//devicePixelRatio scaling
 	public static var scale (default, null):Float = 1;
 	
 	private var context:CanvasRenderContext;
-	
-	
+
+
 	public function new (stage:Stage, context:CanvasRenderContext) {
 		
 		super (stage);
@@ -46,11 +46,11 @@ class CanvasRenderer extends AbstractRenderer {
 			scale = untyped window.devicePixelRatio || 1;
 			
 		}
-		#end
-		
+ 	 	#end
+
 	}
-	
-	
+
+
 	public override function clear ():Void {
 		
 		renderSession.blendModeManager.setBlendMode (NORMAL);

@@ -20,20 +20,20 @@ class DOMShape {
 	
 	
 	public static function clear (shape:DisplayObject, renderSession:RenderSession):Void {
-		
+
 		#if (js && html5)
 		if (shape.__canvas != null) {
-			
+
 			renderSession.element.removeChild (shape.__canvas);
 			shape.__canvas = null;
 			shape.__style = null;
-			
+
 		}
 		#end
-		
+
 	}
-	
-	
+
+
 	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
 		
 		#if (js && html5)

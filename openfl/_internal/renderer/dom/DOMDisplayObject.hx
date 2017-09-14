@@ -41,6 +41,6 @@ class DOMDisplayObject {
 		#end
 		
 	}
-	
+
 	
 }

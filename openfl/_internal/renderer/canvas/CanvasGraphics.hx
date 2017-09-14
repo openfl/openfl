@@ -877,11 +877,13 @@ class CanvasGraphics {
 			
 			if (hasFill && closeGap) {
 				
+				trace ("1");
 				context.lineTo (startX - offsetX, startY - offsetY);
 				closePath (false);
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
+				trace ("2");
 				closePath (false);
 				
 			}
@@ -960,20 +962,20 @@ class CanvasGraphics {
 				var scaledHeight = Std.int (height * scale);
 				
 				#if dom
-				
+
 				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
-					
+
 					context.clearRect (0, 0, scaledWidth, scaledHeight);
-					
+
 				} else {
-				
+
 					canvas.width = scaledWidth;
 					canvas.height = scaledHeight;
 					canvas.style.width = width + "px";
 					canvas.style.height = height + "px";
-					
+
 				}
-				
+
 				var transform = graphics.__renderTransform;
 				context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
 				
@@ -984,16 +986,16 @@ class CanvasGraphics {
 					context.clearRect (0, 0, scaledWidth, scaledHeight);
 					
 				} else {
-					
+
 					canvas.width  = width;
 					canvas.height = height;
 					
 				}
 				
 				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-				
+
 				#end
-				
+
 				fillCommands.clear ();
 				strokeCommands.clear ();
 				

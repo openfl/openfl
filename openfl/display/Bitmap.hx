@@ -172,7 +172,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 	}
 	
-	
+
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
@@ -180,7 +180,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		#end
 		
 	}
-	
+
 	
 	private override function __renderDOMClear (renderSession: RenderSession):Void {
 		

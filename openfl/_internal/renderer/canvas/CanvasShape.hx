@@ -54,12 +54,12 @@ class CanvasShape {
 						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 						
 					}
-					
+
 					#if dom
 					var reverseScale = 1 / CanvasRenderer.scale;
 					context.scale (reverseScale, reverseScale);
 					#end
-					
+
 					context.drawImage (graphics.__canvas, 0, 0);
 					
 					renderSession.maskManager.popObject (shape);

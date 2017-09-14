@@ -161,7 +161,7 @@ class CanvasTextField {
 				#if dom
 					
 					var scale = CanvasRenderer.scale;
-					
+
 					graphics.__canvas.width = Std.int (width * scale);
 					graphics.__canvas.height = Std.int (height * scale);
 					graphics.__canvas.style.width = width + "px";

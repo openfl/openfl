@@ -1012,23 +1012,23 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 		if (!found) {
-			
+
 			var alpha = ~/[^a-zA-Z]+/;
-			
+
 			for (font in Font.enumerateFonts ()) {
-				
+
 				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
-					
+
 					format.font = font.fontName;
 					found = true;
 					break;
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		if (found) {
 			
 			embedFonts = true;
@@ -1298,7 +1298,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
-		
+
 		// TODO: Better DOM workaround on cacheAsBitmap
 		#if (js && html5 && dom)
 		if (!__renderedOnCanvasWhileOnDOM) {
@@ -1312,7 +1312,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 			if (__isHTML) {
 
-				__updateText (HtmlParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
+				__updateText (HtmlParser.parse(__rawHtmlText, __textFormat, __textEngine.textFormatRanges));
 
 			}
 
@@ -1322,7 +1322,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 		}
 		#end
-		
+
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
@@ -1364,20 +1364,20 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
 		__forceCachedBitmapUpdate = false;
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
-			
+
 			__renderDOMClear (renderSession);
 			__cacheBitmap.stage = stage;
-			
+
 			DOMBitmap.render (__cacheBitmap, renderSession);
-			
+
 		} else {
 			if (__renderedOnCanvasWhileOnDOM) {
-			
+
 				__renderedOnCanvasWhileOnDOM = false;
 
 				if (__isHTML && __rawHtmlText != null) {
 
-					__updateText (__rawHtmlText);
+					__updateText (__text);
 					__dirty = true;
 					__layoutDirty = true;
 					__setRenderDirty ();
@@ -1387,15 +1387,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			}
 
 			DOMTextField.render (this, renderSession);
-			
+
 		}
 		#end
-		
+
 	}
-	
-	
+
+
 	private override function __renderDOMClear (renderSession:RenderSession):Void {
-		
+
 		#if dom
 		DOMTextField.clear (this, renderSession);
 		#end
@@ -1474,7 +1474,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__disableInput ();
 
 		}
-		
+
 	}
 	
 	
@@ -1709,14 +1709,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private override function get_cacheAsBitmap ():Bool {
-		
+
 		// HACK
 		if (__filters != null && __filters.length == 1 && Std.is (__filters[0], GlowFilter)) return false;
 		return super.get_cacheAsBitmap ();
-		
+
 	}
-	
-	
+
+
 	private function get_caretIndex ():Int {
 		
 		return __caretIndex;
@@ -1838,8 +1838,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private function get_htmlText ():String {
-		
+
+		#if (js && html5 && dom)
+		return	__rawHtmlText;
+		#else
 		return __text;
+		#end
 		
 	}
 	
@@ -1862,33 +1866,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 
-		#if (js && html5 && dom)
-
-		if (__textEngine.textFormatRanges.length > 1) {
-
-			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-
-		}
-
-		var range = __textEngine.textFormatRanges[0];
-		range.format = __textFormat;
-		range.start = 0;
-
-		if (__renderedOnCanvasWhileOnDOM) {
-
-			range.end = value.length;
-			__updateText (value);
-
-		} else {
-
-			range.end = __rawHtmlText.length;
-			__updateText (__rawHtmlText);
-
-		}
-		#else
 		__updateText (value);
-		#end
-		
+
 		return value;
 		
 	}
@@ -2025,7 +2004,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__dirty = true;
 			__setRenderDirty ();
 			dispatchEvent(new Event(Event.SCROLL));
-			
+
 		}
 		
 		return __textEngine.scrollH = value;
@@ -2052,7 +2031,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__dirty = true;
 			__setRenderDirty ();
 			dispatchEvent(new Event(Event.SCROLL));
-			
+
 		}
 		
 		return __textEngine.scrollV = value;
@@ -2369,7 +2348,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					__forceCachedBitmapUpdate = true;
 				}
 				#end
-				
+
 			}
 			
 		}

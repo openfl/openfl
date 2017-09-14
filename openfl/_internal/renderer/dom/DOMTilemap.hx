@@ -17,20 +17,20 @@ class DOMTilemap {
 	
 	
 	public static function clear (tilemap:Tilemap, renderSession:RenderSession):Void {
-		
+
 		#if (js && html5)
 		if (tilemap.__canvas != null) {
-			
+
 			renderSession.element.removeChild (tilemap.__canvas);
 			tilemap.__canvas = null;
 			tilemap.__style = null;
-			
+
 		}
 		#end
-		
+
 	}
-	
-	
+
+
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
@@ -68,5 +68,5 @@ class DOMTilemap {
 	}
 	
 	
-	
+
 }
