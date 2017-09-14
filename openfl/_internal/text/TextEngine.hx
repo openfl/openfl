@@ -553,9 +553,6 @@ class TextEngine {
 		if (lf == -1) return cr;
 
 		return cr < lf ? cr : lf;
-
-		return Std.int(Math.min(Math.min(cr, lf), br));
-		
 	}
 	
 	
