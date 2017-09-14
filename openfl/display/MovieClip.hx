@@ -471,15 +471,18 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					
 				} catch (e:Dynamic) {
 					
-					if (__symbol.className != null) {
-						
-						Log.warn ("Unable to evaluate frame script source for symbol \"" + __symbol.className + "\" frame " + frame + "\n" + frameData.scriptSource);
-						
-					} else {
-						
-						Log.warn ("Unable to evaluate frame script source:\n" + frameData.scriptSource);
-						
-					}
+					var p: DisplayObjectContainer = this;
+					var name: Array<String> = new Array();
+					do {
+						name.push(p.__name);
+					} while (null != (p = p.parent));
+					
+					Log.warn ("Unable to evaluate frame script source\n" +
+						"swf: "+ this.__swf.library.rootPath +"\n" +
+						"symbol path: "+ name.join('.') +"\n" +
+						"symbol: "+ (__symbol.className == null ? "null " : "\"" + __symbol.className + "\"") + "\n" +
+						"frame: " + frame + "\n" +
+						frameData.scriptSource);
 					
 				}
 				
