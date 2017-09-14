@@ -54,6 +54,34 @@ class MorphShape extends Shape {
 		return ratio = _ratio;
 	}
 
+	#if profile
+		private static var __updateCount:Map<String, Int> = new Map<String, Int>();
+
+		public static function __init__ () {
+			#if js
+				untyped $global.Profile = $global.Profile || {};
+				untyped $global.Profile.MorphShapeInfo = {};
+				untyped $global.Profile.MorphShapeInfo.resetStatistics = resetStatistics;
+				untyped $global.Profile.MorphShapeInfo.logStatistics = logStatistics;
+			#end
+		}
+
+		public static function resetStatistics () {
+			__updateCount = new Map<String, Int> ();
+		}
+
+		public static function logStatistics(?threshold = 0) {
+
+			for( id in __updateCount.keys () ) {
+				var value = __updateCount[id];
+				if(value < threshold) {
+					continue;
+				}
+				trace (' ${id} => created x${value}');
+			}
+		}
+	#end
+
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if(__renderDirty){
@@ -71,6 +99,13 @@ class MorphShape extends Shape {
 			var graphics = this.graphics;
 			graphics.clear();
 			ShapeSymbol.processCommands(graphics, handler.commands);
+
+			#if(profile && js)
+			var profileId = getProfileId();
+            var value = __updateCount.get(profileId);
+            value = value != null ? value : 0;
+			__updateCount.set(profileId, value + 1);
+			#end
 		}
 
 		super.__update(transformOnly, updateChildren);

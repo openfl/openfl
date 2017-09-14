@@ -21,3 +21,6 @@ haxedoc.xml
 .temp
 .setupExecuted
 *.n
+.ctags
+/tags
+
