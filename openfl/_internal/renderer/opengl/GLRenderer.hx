@@ -348,8 +348,15 @@ class GLRenderer extends AbstractRenderer {
 			}
 		}
 
+        #if(js && profile)
+            untyped $global.Profile.BitmapDataUpload.currentProfileId = shape.getProfileId();
+        #end
+
 		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode, null, round_pixels );
 
+        #if(js && profile)
+            untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+        #end
 	}
 
 
