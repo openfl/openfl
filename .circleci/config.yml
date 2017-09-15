@@ -104,6 +104,9 @@ jobs:
          name: Rebuild HXCPP static libraries
          command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
      - run:
+         name: Rebuild HXCPP standard libraries
+         command: haxelib run lime rebuild hxcpp linux -release -64 -nocffi
+     - run:
          name: Rebuild Lime Desktop Binary
          command: haxelib run lime rebuild linux -release -64 -nocffi
      - run:
@@ -144,6 +147,9 @@ jobs:
      - run:
          name: Rebuild HXCPP static libraries
          command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
+     - run:
+         name: Rebuild HXCPP standard libraries
+         command: haxelib run lime rebuild hxcpp linux -release -64 -nocffi
      - run:
          name: Rebuild Lime Desktop Binary
          command: haxelib run lime rebuild linux -release -64 -nocffi
