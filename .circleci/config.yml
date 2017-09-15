@@ -3,7 +3,7 @@ jobs:
 
   Setup (Haxe 3.2.1):
     docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.1
+     - image: openfl/openfl-tests-unit-3.2:0.0.3
     working_directory: /workspace/openfl
     steps:
      - checkout
@@ -34,7 +34,7 @@ jobs:
   
   Setup (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.2
+     - image: openfl/openfl-tests-unit-3.4:0.0.4
     working_directory: /workspace/openfl
     steps:
      - checkout
