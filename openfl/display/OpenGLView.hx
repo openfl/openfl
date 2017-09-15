@@ -2,6 +2,8 @@ package openfl.display;
 
 
 import lime.graphics.opengl.GL;
+import lime.graphics.GLRenderContext;
+
 #if !flash
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.RenderSession;
@@ -15,10 +17,17 @@ import js.html.CanvasElement;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+@:access(lime._backend.html5.HTML5GLRenderContext)
+@:access(lime._backend.native.NativeGLRenderContext)
 @:access(lime.graphics.opengl.GL)
 
 
-class OpenGLView extends DirectRenderer {
+@:replacementPlanned class OpenGLView extends DirectRenderer {
 	
 	
 	public static inline var CONTEXT_LOST = "glcontextlost";
@@ -34,7 +43,7 @@ class OpenGLView extends DirectRenderer {
 		
 		super ("OpenGLView");
 		
-		#if html5
+		#if (js && html5)
 		#if dom
 		if (!__initialized) {
 			
@@ -43,29 +52,25 @@ class OpenGLView extends DirectRenderer {
 			__canvas.height = Lib.current.stage.stageHeight;
 			
 			var window = Lib.current.stage.window;
+			
 			var options = {
 				
-				alpha: false, 
-				premultipliedAlpha: false, 
-				antialias: false, 
-				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
-				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
+				alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
+				antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
+				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
+				premultipliedAlpha: true,
+				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false,
+				preserveDrawingBuffer: false
 				
-			}
+			};
 			
-			__context = cast __canvas.getContext ("webgl", options);
+			__context = cast __canvas.getContextWebGL (options);
 			
-			if (__context == null) {
-				
-				__context = cast __canvas.getContext ("experimental-webgl", options);
-				
-			}
-			
-			#if debug
+			#if webgl_debug
 			__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 			#end
 			
-			GL.context = cast __context;
+			GL.context = new GLRenderContext (cast __context);
 			__initialized = true;
 			
 		}
@@ -85,7 +90,16 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		if (__render != null) __setRenderDirty ();
+		
+	}
+	#end
+	
+	
+	#if !flash
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		/*if (!__added) {
 			
@@ -101,7 +115,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
@@ -122,7 +136,7 @@ class OpenGLView extends DirectRenderer {
 						
 					}
 					
-					#if debug
+					#if webgl_debug
 					__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 					#end
 					
@@ -144,13 +158,13 @@ class OpenGLView extends DirectRenderer {
 				
 				var rect = null;
 				
-				if (scrollRect == null) {
+				if (__scrollRect == null) {
 					
 					rect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
 					
 				} else {
 					
-					rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+					rect = new Rectangle (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
 					
 				}
 				
@@ -177,19 +191,19 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (stage != null && __renderable) {
 			
 			var rect = null;
 			
-			if (scrollRect == null) {
+			if (__scrollRect == null) {
 				
 				rect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
 				
 			} else {
 				
-				rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+				rect = new Rectangle (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
 				
 			}
 			
@@ -257,7 +271,7 @@ class OpenGLView extends DirectRenderer {
 	}
 	
 	
-	#if (html5 && dom)
+	#if (js && html5 && dom)
 	private override function set_width (value:Float):Float {
 		
 		super.set_width (value);

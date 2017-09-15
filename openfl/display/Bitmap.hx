@@ -14,22 +14,29 @@ import openfl.geom.Rectangle;
 import js.html.ImageElement;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Rectangle)
 
 
-class Bitmap extends DisplayObject {
+class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	
 	public var bitmapData (default, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
+	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	
 	#if (js && html5)
 	private var __image:ImageElement;
 	#end
+	
+	private var __imageVersion:Int;
 	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
@@ -49,15 +56,34 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		#if (!js || !dom)
+		if (bitmapData != null && bitmapData.image != null) {
+			
+			var image = bitmapData.image;
+			if (bitmapData.image.version != __imageVersion) {
+				__setRenderDirty ();
+				__imageVersion = image.version;
+			}
+			
+		}
+		#end
+		
+	}
+	
+	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (bitmapData != null) {
 			
-			var bounds = Rectangle.__temp;
+			var bounds = Rectangle.__pool.get ();
 			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
 			bounds.__transform (bounds, matrix);
 			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+			
+			Rectangle.__pool.release (bounds);
 			
 		}
 		
@@ -69,12 +95,18 @@ class Bitmap extends DisplayObject {
 		if (!hitObject.visible || __isMask || bitmapData == null) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		__getWorldTransform ();
+		__getRenderTransform ();
 		
-		var px = __worldTransform.__transformInverseX (x, y);
-		var py = __worldTransform.__transformInverseY (x, y);
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (px > 0 && py > 0 && px <= bitmapData.width && py <= bitmapData.height) {
+			
+			if (__scrollRect != null && !__scrollRect.contains (px, py)) {
+				
+				return false;
+				
+			}
 			
 			if (stack != null && !interactiveOnly) {
 				
@@ -95,10 +127,10 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData == null) return false;
 		
-		__getWorldTransform ();
+		__getRenderTransform ();
 		
-		var px = __worldTransform.__transformInverseX (x, y);
-		var py = __worldTransform.__transformInverseY (x, y);
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (px > 0 && py > 0 && px <= bitmapData.width && py <= bitmapData.height) {
 			
@@ -111,42 +143,55 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		CairoBitmap.render (this, renderSession);
+		#end
 		
 	}
 	
 	
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		renderSession.cairo.rectangle (0, 0, width, height);
 		
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasBitmap.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		renderSession.context.rect (0, 0, width, height);
 		
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if dom
 		DOMBitmap.render (this, renderSession);
+		#end
 		
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderDOMClear (renderSession: RenderSession):Void {
+		
+		#if dom
+		DOMBitmap.clear (this, renderSession);
+		#end
+		
+	}
+	
+	
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLBitmap.render (this, renderSession);
 		
@@ -187,12 +232,17 @@ class Bitmap extends DisplayObject {
 	private function set_bitmapData (value:BitmapData):BitmapData {
 		
 		bitmapData = value;
+		smoothing = false;
+		
+		__setRenderDirty ();
 		
 		if (__filters != null && __filters.length > 0) {
 			
 			//__updateFilters = true;
 			
 		}
+		
+		__imageVersion = -1;
 		
 		return bitmapData;
 		
@@ -203,7 +253,7 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			return bitmapData.height * scaleY;
+			return bitmapData.height * Math.abs (scaleY);
 			
 		}
 		
@@ -218,6 +268,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.height) {
 				
+				__setRenderDirty ();
 				scaleY = value / bitmapData.height;
 				
 			}
@@ -235,7 +286,7 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			return bitmapData.width * scaleX;
+			return bitmapData.width * Math.abs (__scaleX);
 			
 		}
 		
@@ -250,6 +301,7 @@ class Bitmap extends DisplayObject {
 			
 			if (value != bitmapData.width) {
 				
+				__setRenderDirty ();
 				scaleX = value / bitmapData.width;
 				
 			}

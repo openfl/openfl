@@ -16,6 +16,21 @@ import js.Browser;
 class DOMTilemap {
 	
 	
+	public static function clear (tilemap:Tilemap, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		if (tilemap.__canvas != null) {
+			
+			renderSession.element.removeChild (tilemap.__canvas);
+			tilemap.__canvas = null;
+			tilemap.__style = null;
+			
+		}
+		#end
+		
+	}
+	
+	
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
@@ -40,22 +55,18 @@ class DOMTilemap {
 			
 			renderSession.context = null;
 			
+			DOMRenderer.updateClip (tilemap, renderSession);
 			DOMRenderer.applyStyle (tilemap, renderSession, true, false, true);
 			
 		} else {
 			
-			if (tilemap.__canvas != null) {
-				
-				renderSession.element.removeChild (tilemap.__canvas);
-				tilemap.__canvas = null;
-				tilemap.__style = null;
-				
-			}
+			clear (tilemap, renderSession);
 			
 		}
 		#end
 		
 	}
+	
 	
 	
 }

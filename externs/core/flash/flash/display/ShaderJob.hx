@@ -1,4 +1,4 @@
-package openfl.display; #if (!display && flash)
+package flash.display; #if (!display && flash)
 
 
 import openfl.events.EventDispatcher;
@@ -9,7 +9,7 @@ extern class ShaderJob extends EventDispatcher {
 	
 	public var width:Int;
 	public var height:Int;
-	public var progress (default, null):Float;
+	public var progress (default, never):Float;
 	public var shader:Shader;
 	public var target:Dynamic;
 	

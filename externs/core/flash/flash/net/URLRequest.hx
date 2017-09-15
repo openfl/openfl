@@ -4,6 +4,11 @@ package flash.net; #if (!display && flash)
 @:final extern class URLRequest {
 	
 	
+	#if air
+	public var authenticate:Bool;
+	public var cacheResponse:Bool;
+	#end
+	
 	public var contentType:String;
 	public var data:Dynamic;
 	
@@ -11,10 +16,20 @@ package flash.net; #if (!display && flash)
 	public var digest:String;
 	#end
 	
+	#if air
+	public var followRedirects:Bool;
+	public var idleTimeout:Float;
+	public var manageCookies:Bool;
+	#end
+	
 	public var method:String;
 	public var requestHeaders:Array<URLRequestHeader>;
 	public var url:String;
-	//public var userAgent:String;
+	
+	#if air
+	public var useCache:Bool;
+	public var userAgent:String;
+	#end
 	
 	public function new (url:String = null);
 	

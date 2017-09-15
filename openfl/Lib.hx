@@ -1,4 +1,4 @@
-package openfl; #if !macro
+package openfl;
 
 
 import haxe.PosInfos;
@@ -9,8 +9,21 @@ import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
 
+#if swf
+#if flash
+import openfl._internal.swf.SWFLibrary;
+#else
+import openfl._internal.swf.SWFLiteLibrary; // workaround
+#end
+#end
+
 #if (js && html5)
 import js.Browser;
+#end
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
 #end
 
 
@@ -20,7 +33,7 @@ import js.Browser;
 	public static var application:Application;
 	
 	#if !flash
-	public static var current (default, null):MovieClip = new MovieClip ();
+	public static var current (default, null):MovieClip #if !macro = new MovieClip () #end;
 	#else
 	public static var current (get, set):MovieClip;
 	#end
@@ -48,16 +61,6 @@ import js.Browser;
 		#end
 		
 	}
-	
-	
-	#if (js && html5)
-	@:keep @:expose("openfl.embed")
-	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
-		
-		System.embed (elementName, width, height, background, assetsPrefix);
-		
-	}
-	#end
 	
 	
 	#if flash
@@ -97,12 +100,10 @@ import js.Browser;
 			
 		}
 		
-		#if (js && html5)
-		Browser.window.open (request.url, target);
-		#elseif flash
+		#if flash
 		return flash.Lib.getURL (request, target);
-		#elseif desktop
-		lime.tools.helpers.ProcessHelper.openURL (request.url);
+		#else
+		System.openURL (request.url, target);
 		#end
 		
 	}
@@ -176,31 +177,3 @@ import js.Browser;
 	
 	
 }
-
-
-#else
-
-
-import haxe.macro.Compiler;
-import haxe.macro.Context;
-
-
-class Lib {
-	
-	
-	public static function includeExterns ():Void {
-		
-		var childPath = Context.resolvePath ("extern/openfl");
-		
-		var parts = StringTools.replace (childPath, "\\", "/").split ("/");
-		parts.pop ();
-		
-		Compiler.addClassPath (parts.join ("/"));
-		
-	}
-	
-	
-}
-
-
-#end

@@ -5,7 +5,7 @@ package openfl.text; #if (display || !flash)
  * The TextLineMetrics class contains information about the text position and
  * measurements of a line of text within a text field. All measurements are in
  * pixels. Objects of this class are returned by the 
- * <code>flash.text.TextField.getLineMetrics()</code> method.
+ * `flash.text.TextField.getLineMetrics()` method.
  */
 extern class TextLineMetrics {
 	

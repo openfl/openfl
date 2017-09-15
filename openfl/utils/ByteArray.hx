@@ -3,11 +3,15 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import haxe.io.FPHelper;
+import lime.system.System;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
+import lime.utils.BytePointer;
 import lime.utils.Bytes in LimeBytes;
+import lime.utils.DataPointer;
 import openfl.errors.EOFError;
 
 @:access(haxe.io.Bytes)
@@ -19,6 +23,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public static var defaultObjectEncoding:UInt;
+	
+	private static var __bytePointer = new BytePointer ();
 	
 	public var length (get, set):Int;
 	
@@ -64,6 +70,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
+		if (buffer == null) return null;
+		
 		#if display
 		return null;
 		#elseif js
@@ -78,6 +86,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	@:from @:noCompletion public static function fromBytes (bytes:Bytes):ByteArray {
+		
+		if (bytes == null) return null;
 		
 		#if display
 		
@@ -106,6 +116,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromBytesData (bytesData:BytesData):ByteArray {
 		
+		if (bytesData == null) return null;
+		
 		#if display
 		return null;
 		#elseif flash
@@ -113,6 +125,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#else
 		return ByteArrayData.fromBytes (Bytes.ofData (bytesData));
 		#end
+		
+	}
+	
+	
+	public static function fromFile (path:String):ByteArray {
+		
+		return LimeBytes.fromFile (path);
+		
+	}
+	
+	
+	@:from @:noCompletion public static function fromLimeBytes (bytes:LimeBytes):ByteArray {
+		
+		return fromBytes (bytes);
 		
 	}
 	
@@ -130,6 +156,28 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 	}
+	
+	
+	@:to @:noCompletion private static function toBytePointer (byteArray:ByteArray):BytePointer {
+		
+		#if !display
+		__bytePointer.set (#if flash byteArray #else (byteArray:ByteArrayData) #end, byteArray.position);
+		#end
+		return __bytePointer;
+		
+	}
+	
+	
+	#if (sys || display)
+	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
+		
+		#if !display
+		__bytePointer.set ((byteArray:ByteArrayData), byteArray.position);
+		#end
+		return __bytePointer;
+		
+	}
+	#end
 	
 	
 	@:to @:noCompletion private static function toBytes (byteArray:ByteArray):Bytes {
@@ -162,13 +210,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:to @:noCompletion private static function toLimeBytes (byteArray:ByteArray):LimeBytes {
 		
-		#if display
-		return null;
-		#elseif flash
-		return LimeBytes.ofData (byteArray);
-		#else
-		return new LimeBytes (byteArray.length, (byteArray:ByteArrayData).getData ());
-		#end
+		return fromBytes (byteArray);
 		
 	}
 	
@@ -217,10 +259,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
-@:autoBuild(lime.Assets.embedByteArray())
+@:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
+	
+	private static var __defaultEndian:Endian = null;
 	
 	public var bytesAvailable (get, never):UInt;
 	public var endian (get, set):Endian;
@@ -235,6 +279,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = Bytes.alloc (length);
 		
+		#if sys
+		if (length > 0) {
+			
+			bytes.fill (0, length, 0);
+			
+		}
+		#end
+		
 		#if js
 		super (bytes.b.buffer);
 		#else
@@ -242,7 +294,27 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 		__length = length;
+		
+		if (__defaultEndian == null) {
+			
+			if (System.endianness == LITTLE_ENDIAN) {
+				
+				__defaultEndian = LITTLE_ENDIAN;
+				
+			} else {
+				
+				__defaultEndian = BIG_ENDIAN;
+				
+			}
+			
+		}
+		
+		#if openfl_big_endian
 		endian = BIG_ENDIAN;
+		#else
+		endian = __defaultEndian;
+		#end
+		
 		position = 0;
 		
 	}
@@ -371,28 +443,25 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		if (position + 8 > length) {
+		var ch1 = readInt ();
+		var ch2 = readInt ();
+		
+		if (endian == LITTLE_ENDIAN) {
 			
-			throw new EOFError ();
+			return FPHelper.i64ToDouble (ch1, ch2);
+			
+		} else {
+			
+			return FPHelper.i64ToDouble (ch2, ch1);
 			
 		}
-		
-		position += 8;
-		return getDouble (position - 8);
 		
 	}
 	
 	
 	public function readFloat ():Float {
 		
-		if (position + 4 > length) {
-			
-			throw new EOFError ();
-			
-		}
-		
-		position += 4;
-		return getFloat (position - 4);
+		return FPHelper.i32ToFloat (readInt ());
 		
 	}
 	
@@ -526,6 +595,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		position += length;
 		
+		
 		return getString (position - length, length);
 		
 	}
@@ -559,9 +629,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			__setData (bytes);
 			
 			length = __length;
-			position = __length;
 			
 		}
+		
+		position = 0;
 		
 	}
 	
@@ -596,18 +667,37 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function writeDouble (value:Float):Void {
 		
-		__resize (position + 8);
-		setDouble (position, value);
-		position += 8;
+		var int64 = FPHelper.doubleToI64 (value);
+		
+		if (endian == LITTLE_ENDIAN) {
+			
+			writeInt (int64.low);
+			writeInt (int64.high);
+			
+		} else {
+			
+			writeInt (int64.high);
+			writeInt (int64.low);
+			
+		}
 		
 	}
 	
 	
 	public function writeFloat (value:Float):Void {
 		
-		__resize (position + 4);
-		setFloat (position, value);
-		position += 4;
+		if (endian == LITTLE_ENDIAN) {
+			
+			__resize (position + 4);
+			setFloat (position, value);
+			position += 4;
+			
+		} else {
+			
+			var int = FPHelper.floatToI32 (value);
+			writeInt (int);
+			
+		}
 		
 	}
 	
@@ -618,17 +708,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (endian == LITTLE_ENDIAN) {
 			
-			set (position++, value);
-			set (position++, value >> 8);
-			set (position++, value >> 16);
-			set (position++, value >> 24);
+			set (position++, value & 0xFF);
+			set (position++, (value >> 8) & 0xFF);
+			set (position++, (value >> 16) & 0xFF);
+			set (position++, (value >> 24) & 0xFF);
 			
 		} else {
 			
-			set (position++, value >> 24);
-			set (position++, value >> 16);
-			set (position++, value >> 8);
-			set (position++, value);
+			set (position++, (value >> 24) & 0xFF);
+			set (position++, (value >> 16) & 0xFF);
+			set (position++, (value >> 8) & 0xFF);
+			set (position++, value & 0xFF);
 			
 		}
 		
@@ -699,6 +789,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (size > __length) {
 			
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
+			#if sys
+			bytes.fill (length, size, 0);
+			#end
 			var cacheLength = length;
 			length = __length;
 			bytes.blit (0, this, 0, __length);
@@ -766,28 +859,28 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
  * The ByteArray class provides methods and properties to optimize reading,
  * writing, and working with binary data.
  *
- * <p><i>Note:</i> The ByteArray class is for advanced developers who need to
- * access data on the byte level.</p>
+ * _Note:_ The ByteArray class is for advanced developers who need to
+ * access data on the byte level.
  *
- * <p>In-memory data is a packed array(the most compact representation for
+ * In-memory data is a packed array(the most compact representation for
  * the data type) of bytes, but an instance of the ByteArray class can be
- * manipulated with the standard <code>[]</code>(array access) operators. It
+ * manipulated with the standard `[]`(array access) operators. It
  * also can be read and written to as an in-memory file, using methods similar
- * to those in the URLStream and Socket classes.</p>
+ * to those in the URLStream and Socket classes.
  *
- * <p>In addition, zlib compression and decompression are supported, as well
- * as Action Message Format(AMF) object serialization.</p>
+ * In addition, zlib compression and decompression are supported, as well
+ * as Action Message Format(AMF) object serialization.
  *
- * <p>Possible uses of the ByteArray class include the following:
- * <ul>
- *   <li>Creating a custom protocol to connect to a server.</li>
- *   <li>Writing your own URLEncoder/URLDecoder.</li>
- *   <li>Writing your own AMF/Remoting packet.</li>
- *   <li>Optimizing the size of your data by using data types.</li>
- *   <li>Working with binary data loaded from a file in Adobe<sup>®</sup>
- * AIR<sup>®</sup>.</li>
- * </ul>
- * </p>
+ * Possible uses of the ByteArray class include the following:
+ * 
+ *  * Creating a custom protocol to connect to a server.
+ *  * Writing your own URLEncoder/URLDecoder.
+ *  * Writing your own AMF/Remoting packet.
+ *  * Optimizing the size of your data by using data types.
+ *  * Working with binary data loaded from a file in Adobe<sup>®</sup>
+ * AIR<sup>®</sup>.
+ * 
+ * 
  */
 
 #if flash
@@ -801,13 +894,13 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * Denotes the default object encoding for the ByteArray class to use for a
 	 * new ByteArray instance. When you create a new ByteArray instance, the
 	 * encoding on that instance starts with the value of
-	 * <code>defaultObjectEncoding</code>. The <code>defaultObjectEncoding</code>
-	 * property is initialized to <code>ObjectEncoding.AMF3</code>.
+	 * `defaultObjectEncoding`. The `defaultObjectEncoding`
+	 * property is initialized to `ObjectEncoding.AMF3`.
 	 *
-	 * <p>When an object is written to or read from binary data, the
-	 * <code>objectEncoding</code> value is used to determine whether the
+	 * When an object is written to or read from binary data, the
+	 * `objectEncoding` value is used to determine whether the
 	 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
-	 * used. The value is a constant from the ObjectEncoding class.</p>
+	 * used. The value is a constant from the ObjectEncoding class.
 	 */
 	public static var defaultObjectEncoding:UInt;
 	
@@ -815,19 +908,19 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * The number of bytes of data available for reading from the current
 	 * position in the byte array to the end of the array.
 	 *
-	 * <p>Use the <code>bytesAvailable</code> property in conjunction with the
+	 * Use the `bytesAvailable` property in conjunction with the
 	 * read methods each time you access a ByteArray object to ensure that you
-	 * are reading valid data.</p>
+	 * are reading valid data.
 	 */
 	#if (flash && !display)
-	public var bytesAvailable (default, null):UInt;
+	public var bytesAvailable (default, never):UInt;
 	#else
 	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
 	#end
 	
 	/**
 	 * Changes or reads the byte order for the data; either
-	 * <code>Endian.BIG_ENDIAN</code> or <code>Endian.LITTLE_ENDIAN</code>.
+	 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 	 */
 	#if (flash && !display)
 	public var endian:Endian;
@@ -841,11 +934,11 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * The length of the ByteArray object, in bytes.
 	 *
-	 * <p>If the length is set to a value that is larger than the current length,
-	 * the right side of the byte array is filled with zeros.</p>
+	 * If the length is set to a value that is larger than the current length,
+	 * the right side of the byte array is filled with zeros.
 	 *
-	 * <p>If the length is set to a value that is smaller than the current
-	 * length, the byte array is truncated.</p>
+	 * If the length is set to a value that is smaller than the current
+	 * length, the byte array is truncated.
 	 */
 	public var length:UInt;
 	
@@ -887,8 +980,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	
 	
 	/**
-	 * Clears the contents of the byte array and resets the <code>length</code>
-	 * and <code>position</code> properties to 0. Calling this method explicitly
+	 * Clears the contents of the byte array and resets the `length`
+	 * and `position` properties to 0. Calling this method explicitly
 	 * frees up the memory used by the ByteArray instance.
 	 * 
 	 */
@@ -899,56 +992,54 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * Compresses the byte array. The entire byte array is compressed. For
 	 * content running in Adobe AIR, you can specify a compression algorithm by
 	 * passing a value(defined in the CompressionAlgorithm class) as the
-	 * <code>algorithm</code> parameter. Flash Player supports only the default
+	 * `algorithm` parameter. Flash Player supports only the default
 	 * algorithm, zlib.
 	 *
-	 * <p>After the call, the <code>length</code> property of the ByteArray is
-	 * set to the new length. The <code>position</code> property is set to the
-	 * end of the byte array.</p>
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to the
+	 * end of the byte array.
 	 *
-	 * <p>The zlib compressed data format is described at <a
-	 * href="http://www.ietf.org/rfc/rfc1950.txt"
-	 * scope="external">http://www.ietf.org/rfc/rfc1950.txt</a>.</p>
+	 * The zlib compressed data format is described at 
+	 * [http://www.ietf.org/rfc/rfc1950.txt](http://www.ietf.org/rfc/rfc1950.txt).
 	 *
-	 * <p>The deflate compression algorithm is described at <a
-	 * href="http://www.ietf.org/rfc/rfc1951.txt"
-	 * scope="external">http://www.ietf.org/rfc/rfc1951.txt</a>.</p>
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
 	 *
-	 * <p>The deflate compression algorithm is used in several compression
+	 * The deflate compression algorithm is used in several compression
 	 * formats, such as zlib, gzip, some zip implementations, and others. When
 	 * data is compressed using one of those compression formats, in addition to
 	 * storing the compressed version of the original data, the compression
 	 * format data(for example, the .zip file) includes metadata information.
 	 * Some examples of the types of metadata included in various file formats
 	 * are file name, file modification date/time, original file size, optional
-	 * comments, checksum data, and more.</p>
+	 * comments, checksum data, and more.
 	 *
-	 * <p>For example, when a ByteArray is compressed using the zlib algorithm,
+	 * For example, when a ByteArray is compressed using the zlib algorithm,
 	 * the resulting ByteArray is structured in a specific format. Certain bytes
 	 * contain metadata about the compressed data, while other bytes contain the
 	 * actual compressed version of the original ByteArray data. As defined by
 	 * the zlib compressed data format specification, those bytes(that is, the
 	 * portion containing the compressed version of the original data) are
 	 * compressed using the deflate algorithm. Consequently those bytes are
-	 * identical to the result of calling <code>compress(<ph
-	 * outputclass="javascript">air.CompressionAlgorithm.DEFLATE)</code> on the
-	 * original ByteArray. However, the result from <code>compress(<ph
-	 * outputclass="javascript">air.CompressionAlgorithm.ZLIB)</code> includes
+	 * identical to the result of calling `compress(<ph
+	 * outputclass="javascript">air.CompressionAlgorithm.DEFLATE)` on the
+	 * original ByteArray. However, the result from `compress(<ph
+	 * outputclass="javascript">air.CompressionAlgorithm.ZLIB)` includes
 	 * the extra metadata, while the
-	 * <code>compress(CompressionAlgorithm.DEFLATE)</code> result includes only
+	 * `compress(CompressionAlgorithm.DEFLATE)` result includes only
 	 * the compressed version of the original ByteArray data and nothing
-	 * else.</p>
+	 * else.
 	 *
-	 * <p>In order to use the deflate format to compress a ByteArray instance's
+	 * In order to use the deflate format to compress a ByteArray instance's
 	 * data in a specific format such as gzip or zip, you cannot simply call
-	 * <code>compress(CompressionAlgorithm.DEFLATE)</code>. You must create a
+	 * `compress(CompressionAlgorithm.DEFLATE)`. You must create a
 	 * ByteArray structured according to the compression format's specification,
 	 * including the appropriate metadata as well as the compressed data obtained
 	 * using the deflate format. Likewise, in order to decode data compressed in
 	 * a format such as gzip or zip, you can't simply call
-	 * <code>uncompress(CompressionAlgorithm.DEFLATE)</code> on that data. First,
+	 * `uncompress(CompressionAlgorithm.DEFLATE)` on that data. First,
 	 * you must separate the metadata from the compressed data, and you can then
-	 * use the deflate format to decompress the compressed data.</p>
+	 * use the deflate format to decompress the compressed data.
 	 * 
 	 */
 	public function compress (algorithm:CompressionAlgorithm = null):Void;
@@ -958,23 +1049,22 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * Compresses the byte array using the deflate compression algorithm. The
 	 * entire byte array is compressed.
 	 *
-	 * <p>After the call, the <code>length</code> property of the ByteArray is
-	 * set to the new length. The <code>position</code> property is set to the
-	 * end of the byte array.</p>
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to the
+	 * end of the byte array.
 	 *
-	 * <p>The deflate compression algorithm is described at <a
-	 * href="http://www.ietf.org/rfc/rfc1951.txt"
-	 * scope="external">http://www.ietf.org/rfc/rfc1951.txt</a>.</p>
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
 	 *
-	 * <p>In order to use the deflate format to compress a ByteArray instance's
+	 * In order to use the deflate format to compress a ByteArray instance's
 	 * data in a specific format such as gzip or zip, you cannot simply call
-	 * <code>deflate()</code>. You must create a ByteArray structured according
+	 * `deflate()`. You must create a ByteArray structured according
 	 * to the compression format's specification, including the appropriate
 	 * metadata as well as the compressed data obtained using the deflate format.
 	 * Likewise, in order to decode data compressed in a format such as gzip or
-	 * zip, you can't simply call <code>inflate()</code> on that data. First, you
+	 * zip, you can't simply call `inflate()` on that data. First, you
 	 * must separate the metadata from the compressed data, and you can then use
-	 * the deflate format to decompress the compressed data.</p>
+	 * the deflate format to decompress the compressed data.
 	 * 
 	 */
 	public function deflate ():Void;
@@ -984,20 +1074,19 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * Decompresses the byte array using the deflate compression algorithm. The
 	 * byte array must have been compressed using the same algorithm.
 	 *
-	 * <p>After the call, the <code>length</code> property of the ByteArray is
-	 * set to the new length. The <code>position</code> property is set to 0.</p>
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to 0.
 	 *
-	 * <p>The deflate compression algorithm is described at <a
-	 * href="http://www.ietf.org/rfc/rfc1951.txt"
-	 * scope="external">http://www.ietf.org/rfc/rfc1951.txt</a>.</p>
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
 	 *
-	 * <p>In order to decode data compressed in a format that uses the deflate
+	 * In order to decode data compressed in a format that uses the deflate
 	 * compression algorithm, such as data in gzip or zip format, it will not
-	 * work to simply call <code>inflate()</code> on a ByteArray containing the
+	 * work to simply call `inflate()` on a ByteArray containing the
 	 * compression formation data. First, you must separate the metadata that is
 	 * included as part of the compressed data format from the actual compressed
-	 * data. For more information, see the <code>compress()</code> method
-	 * description.</p>
+	 * data. For more information, see the `compress()` method
+	 * description.
 	 * 
 	 * @throws IOError The data is not valid compressed data; it was not
 	 *                 compressed with the same compression algorithm used to
@@ -1008,11 +1097,11 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	
 	/**
 	 * Reads a Boolean value from the byte stream. A single byte is read, and
-	 * <code>true</code> is returned if the byte is nonzero, <code>false</code>
+	 * `true` is returned if the byte is nonzero, `false`
 	 * otherwise.
 	 * 
-	 * @return Returns <code>true</code> if the byte is nonzero,
-	 *         <code>false</code> otherwise.
+	 * @return Returns `true` if the byte is nonzero,
+	 *         `false` otherwise.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
 	public function readBoolean ():Bool;
@@ -1021,7 +1110,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Reads a signed byte from the byte stream.
 	 *
-	 * <p>The returned value is in the range -128 to 127.</p>
+	 * The returned value is in the range -128 to 127.
 	 * 
 	 * @return An integer between -128 and 127.
 	 * @throws EOFError There is not sufficient data available to read.
@@ -1030,14 +1119,14 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	
 	
 	/**
-	 * Reads the number of data bytes, specified by the <code>length</code>
+	 * Reads the number of data bytes, specified by the `length`
 	 * parameter, from the byte stream. The bytes are read into the ByteArray
-	 * object specified by the <code>bytes</code> parameter, and the bytes are
+	 * object specified by the `bytes` parameter, and the bytes are
 	 * written into the destination ByteArray starting at the position specified
-	 * by <code>offset</code>.
+	 * by `offset`.
 	 * 
 	 * @param bytes  The ByteArray object to read data into.
-	 * @param offset The offset(position) in <code>bytes</code> at which the
+	 * @param offset The offset(position) in `bytes` at which the
 	 *               read data should be written.
 	 * @param length The number of bytes to read. The default value of 0 causes
 	 *               all available data to be read.
@@ -1071,7 +1160,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Reads a signed 32-bit integer from the byte stream.
 	 *
-	 * <p>The returned value is in the range -2147483648 to 2147483647.</p>
+	 * The returned value is in the range -2147483648 to 2147483647.
 	 * 
 	 * @return A 32-bit signed integer between -2147483648 and 2147483647.
 	 * @throws EOFError There is not sufficient data available to read.
@@ -1086,21 +1175,21 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * @param length  The number of bytes from the byte stream to read.
 	 * @param charSet The string denoting the character set to use to interpret
 	 *                the bytes. Possible character set strings include
-	 *                <code>"shift-jis"</code>, <code>"cn-gb"</code>,
-	 *                <code>"iso-8859-1"</code>, and others. For a complete list,
+	 *                `"shift-jis"`, `"cn-gb"`,
+	 *                `"iso-8859-1"`, and others. For a complete list,
 	 *                see <a href="../../charset-codes.html">Supported Character
 	 *                Sets</a>.
 	 *
-	 *                <p><b>Note:</b> If the value for the <code>charSet</code>
+	 *                **Note:** If the value for the `charSet`
 	 *                parameter is not recognized by the current system, the
 	 *                application uses the system's default code page as the
 	 *                character set. For example, a value for the
-	 *                <code>charSet</code> parameter, as in
-	 *                <code>myTest.readMultiByte(22, "iso-8859-01")</code> that
-	 *                uses <code>01</code> instead of <code>1</code> might work
+	 *                `charSet` parameter, as in
+	 *                `myTest.readMultiByte(22, "iso-8859-01")` that
+	 *                uses `01` instead of `1` might work
 	 *                on your development system, but not on another system. On
 	 *                the other system, the application will use the system's
-	 *                default code page.</p>
+	 *                default code page.
 	 * @return UTF-8 encoded string.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
@@ -1121,7 +1210,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Reads a signed 16-bit integer from the byte stream.
 	 *
-	 * <p>The returned value is in the range -32768 to 32767.</p>
+	 * The returned value is in the range -32768 to 32767.
 	 * 
 	 * @return A 16-bit signed integer between -32768 and 32767.
 	 * @throws EOFError There is not sufficient data available to read.
@@ -1140,7 +1229,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	
 	
 	/**
-	 * Reads a sequence of UTF-8 bytes specified by the <code>length</code>
+	 * Reads a sequence of UTF-8 bytes specified by the `length`
 	 * parameter from the byte stream and returns a string.
 	 * 
 	 * @param length An unsigned short indicating the length of the UTF-8 bytes.
@@ -1153,7 +1242,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Reads an unsigned byte from the byte stream.
 	 *
-	 * <p>The returned value is in the range 0 to 255. </p>
+	 * The returned value is in the range 0 to 255. 
 	 * 
 	 * @return A 32-bit unsigned integer between 0 and 255.
 	 * @throws EOFError There is not sufficient data available to read.
@@ -1164,7 +1253,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Reads an unsigned 32-bit integer from the byte stream.
 	 *
-	 * <p>The returned value is in the range 0 to 4294967295. </p>
+	 * The returned value is in the range 0 to 4294967295. 
 	 * 
 	 * @return A 32-bit unsigned integer between 0 and 4294967295.
 	 * @throws EOFError There is not sufficient data available to read.
@@ -1175,7 +1264,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Reads an unsigned 16-bit integer from the byte stream.
 	 *
-	 * <p>The returned value is in the range 0 to 65535. </p>
+	 * The returned value is in the range 0 to 65535. 
 	 * 
 	 * @return A 16-bit unsigned integer between 0 and 65535.
 	 * @throws EOFError There is not sufficient data available to read.
@@ -1186,8 +1275,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Converts the byte array to a string. If the data in the array begins with
 	 * a Unicode byte order mark, the application will honor that mark when
-	 * converting to a string. If <code>System.useCodePage</code> is set to
-	 * <code>true</code>, the application will treat the data in the array as
+	 * converting to a string. If `System.useCodePage` is set to
+	 * `true`, the application will treat the data in the array as
 	 * being in the current system code page when converting.
 	 * 
 	 * @return The string representation of the byte array.
@@ -1198,28 +1287,26 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Decompresses the byte array. For content running in Adobe AIR, you can
 	 * specify a compression algorithm by passing a value(defined in the
-	 * CompressionAlgorithm class) as the <code>algorithm</code> parameter. The
+	 * CompressionAlgorithm class) as the `algorithm` parameter. The
 	 * byte array must have been compressed using the same algorithm. Flash
 	 * Player supports only the default algorithm, zlib.
 	 *
-	 * <p>After the call, the <code>length</code> property of the ByteArray is
-	 * set to the new length. The <code>position</code> property is set to 0.</p>
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to 0.
 	 *
-	 * <p>The zlib compressed data format is described at <a
-	 * href="http://www.ietf.org/rfc/rfc1950.txt"
-	 * scope="external">http://www.ietf.org/rfc/rfc1950.txt</a>.</p>
+	 * The zlib compressed data format is described at 
+	 * [http://www.ietf.org/rfc/rfc1950.txt](http://www.ietf.org/rfc/rfc1950.txt).
 	 *
-	 * <p>The deflate compression algorithm is described at <a
-	 * href="http://www.ietf.org/rfc/rfc1951.txt"
-	 * scope="external">http://www.ietf.org/rfc/rfc1951.txt</a>.</p>
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
 	 *
-	 * <p>In order to decode data compressed in a format that uses the deflate
+	 * In order to decode data compressed in a format that uses the deflate
 	 * compression algorithm, such as data in gzip or zip format, it will not
-	 * work to call <code>uncompress(CompressionAlgorithm.DEFLATE)</code> on a
+	 * work to call `uncompress(CompressionAlgorithm.DEFLATE)` on a
 	 * ByteArray containing the compression formation data. First, you must
 	 * separate the metadata that is included as part of the compressed data
 	 * format from the actual compressed data. For more information, see the
-	 * <code>compress()</code> method description.</p>
+	 * `compress()` method description.
 	 * 
 	 * @throws IOError The data is not valid compressed data; it was not
 	 *                 compressed with the same compression algorithm used to
@@ -1230,12 +1317,12 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	
 	/**
 	 * Writes a Boolean value. A single byte is written according to the
-	 * <code>value</code> parameter, either 1 if <code>true</code> or 0 if
-	 * <code>false</code>.
+	 * `value` parameter, either 1 if `true` or 0 if
+	 * `false`.
 	 * 
 	 * @param value A Boolean value determining which byte is written. If the
-	 *              parameter is <code>true</code>, the method writes a 1; if
-	 *              <code>false</code>, the method writes a 0.
+	 *              parameter is `true`, the method writes a 1; if
+	 *              `false`, the method writes a 0.
 	 */
 	public function writeBoolean (value:Bool):Void;
 	
@@ -1243,8 +1330,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	/**
 	 * Writes a byte to the byte stream.
 	 *
-	 * <p>The low 8 bits of the parameter are used. The high 24 bits are ignored.
-	 * </p>
+	 * The low 8 bits of the parameter are used. The high 24 bits are ignored.
+	 * 
 	 * 
 	 * @param value A 32-bit integer. The low 8 bits are written to the byte
 	 *              stream.
@@ -1253,17 +1340,17 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	
 	
 	/**
-	 * Writes a sequence of <code>length</code> bytes from the specified byte
-	 * array, <code>bytes</code>, starting <code>offset</code>(zero-based index)
+	 * Writes a sequence of `length` bytes from the specified byte
+	 * array, `bytes`, starting `offset`(zero-based index)
 	 * bytes into the byte stream.
 	 *
-	 * <p>If the <code>length</code> parameter is omitted, the default length of
+	 * If the `length` parameter is omitted, the default length of
 	 * 0 is used; the method writes the entire buffer starting at
-	 * <code>offset</code>. If the <code>offset</code> parameter is also omitted,
-	 * the entire buffer is written. </p>
+	 * `offset`. If the `offset` parameter is also omitted,
+	 * the entire buffer is written. 
 	 *
-	 * <p>If <code>offset</code> or <code>length</code> is out of range, they are
-	 * clamped to the beginning and end of the <code>bytes</code> array.</p>
+	 * If `offset` or `length` is out of range, they are
+	 * clamped to the beginning and end of the `bytes` array.
 	 * 
 	 * @param bytes  The ByteArray object.
 	 * @param offset A zero-based index indicating the position into the array to
@@ -1306,8 +1393,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * 
 	 * @param value   The string value to be written.
 	 * @param charSet The string denoting the character set to use. Possible
-	 *                character set strings include <code>"shift-jis"</code>,
-	 *                <code>"cn-gb"</code>, <code>"iso-8859-1"</code>, and
+	 *                character set strings include `"shift-jis"`,
+	 *                `"cn-gb"`, `"iso-8859-1"`, and
 	 *                others. For a complete list, see <a
 	 *                href="../../charset-codes.html">Supported Character
 	 *                Sets</a>.
@@ -1348,7 +1435,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	
 	/**
 	 * Writes a UTF-8 string to the byte stream. Similar to the
-	 * <code>writeUTF()</code> method, but <code>writeUTFBytes()</code> does not
+	 * `writeUTF()` method, but `writeUTFBytes()` does not
 	 * prefix the string with a 16-bit length word.
 	 * 
 	 * @param value The string value to be written.

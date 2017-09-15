@@ -15,13 +15,7 @@ class XMLSocket extends EventDispatcher {
 	public var connected (default, null):Bool;
 	public var timeout:Int;
 	
-	// TODO: Use openfl.net.Socket for all targets
-	
-	#if (js && html5)
-	private var __socket:Dynamic;
-	#else
 	private var __socket:Socket;
-	#end
 	
 	
 	public function new (host:String = null, port:Int = 80) {
@@ -39,10 +33,10 @@ class XMLSocket extends EventDispatcher {
 	
 	public function close ():Void {
 		
-		#if (!js || !html5)
-		__socket.removeEventListener (Event.CONNECT, onOpenHandler);
-		__socket.removeEventListener (ProgressEvent.SOCKET_DATA, onMessageHandler);
-		#end
+		__socket.removeEventListener (Event.CLOSE, __onClose);
+		__socket.removeEventListener (Event.CONNECT, __onConnect);
+		__socket.removeEventListener (IOErrorEvent.IO_ERROR, __onError);
+		__socket.removeEventListener (ProgressEvent.SOCKET_DATA, __onSocketData);
 		
 		__socket.close ();
 		
@@ -51,53 +45,25 @@ class XMLSocket extends EventDispatcher {
 	
 	public function connect (host:String, port:Int):Void {
 		
-		connectWithProto (host, port, null);
-		
-	}
-	
-	
-	@:dox(hide) public function connectWithProto (host:String, port:Int, protocol:String):Void {
-		
-		// TODO: Remove this method
-		
 		connected = false;
 		
-		#if (js && html5)
-		if (protocol == null) {
-			
-			__socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
-			
-		} else {
-			
-			__socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port, protocol)");
-			
-		}
-		
-		__socket.onopen = onOpenHandler;
-		__socket.onmessage = onMessageHandler;
-		__socket.onclose = onCloseHandler;
-		__socket.onerror = onErrorHandler;
-		#else
-		
 		__socket = new Socket ();
+		
+		__socket.addEventListener (Event.CLOSE, __onClose);
+		__socket.addEventListener (Event.CONNECT, __onConnect);
+		__socket.addEventListener (IOErrorEvent.IO_ERROR, __onError);
+		__socket.addEventListener (ProgressEvent.SOCKET_DATA, __onSocketData);
+		
 		__socket.connect (host, port);
-		
-		__socket.addEventListener (Event.CONNECT, onOpenHandler);
-		__socket.addEventListener (ProgressEvent.SOCKET_DATA, onMessageHandler);
-		
-		#end
 		
 	}
 	
 	
 	public function send (object:Dynamic):Void {
 		
-		#if (js && html5)
-		__socket.send (object);
-		#else
-		__socket.writeUTFBytes (object);
+		__socket.writeUTFBytes (Std.string (object));
 		__socket.writeByte (0);
-		#end
+		__socket.flush ();
 		
 	}
 	
@@ -109,35 +75,32 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	
-	private function onCloseHandler (_):Void {
+	private function __onClose (_):Void {
 		
+		connected = false;
 		dispatchEvent (new Event (Event.CLOSE));
 		
 	}
 	
 	
-	private function onErrorHandler (_):Void {
+	private function __onConnect (_):Void {
+		
+		connected = true;
+		dispatchEvent (new Event (Event.CONNECT));
+		
+	}
+	
+	
+	private function __onError (_):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		
 	}
 	
 	
-	private function onMessageHandler (e:#if (js && html5) Dynamic #else ProgressEvent #end):Void {
+	private function __onSocketData (_):Void {
 		
-		#if (js && html5)
-		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, e.data));
-		#else
 		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, __socket.readUTFBytes (__socket.bytesAvailable)));
-		#end
-		
-	}
-	
-	
-	private function onOpenHandler (_):Void {
-		
-		connected = true;
-		dispatchEvent (new Event (Event.CONNECT));
 		
 	}
 	

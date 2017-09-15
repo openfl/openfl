@@ -4,9 +4,9 @@ package flash.ui; #if (!display && flash)
 @:final extern class Mouse {
 	
 	
-	@:require(flash10) public static var cursor:String;
-	@:require(flash10_1) public static var supportsCursor (default, null):Bool;
-	@:require(flash11) public static var supportsNativeCursor (default, null):Bool;
+	@:require(flash10) public static var cursor:MouseCursor;
+	@:require(flash10_1) public static var supportsCursor (default, never):Bool;
+	@:require(flash11) public static var supportsNativeCursor (default, never):Bool;
 	
 	
 	public static function hide ():Void;

@@ -7,11 +7,13 @@ package openfl.media;
 @:final class SoundMixer {
 	
 	
+	private static inline var MAX_ACTIVE_CHANNELS = 32;
+	
 	public static var bufferTime:Int;
 	public static var soundTransform (get, set):SoundTransform;
 	
 	private static var __soundChannels = new Array<SoundChannel> ();
-	private static var __soundTransform = new SoundTransform ();
+	private static var __soundTransform = #if mute_sound new SoundTransform (0) #else new SoundTransform () #end;
 	
 	
 	public static function areSoundsInaccessible ():Bool {

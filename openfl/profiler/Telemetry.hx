@@ -1,7 +1,7 @@
 package openfl.profiler;
 
 
-#if ((cpp || neko) && hxtelemetry)
+#if ((cpp || neko) && hxtelemetry && !macro)
 import hxtelemetry.HxTelemetry;
 #end
 
@@ -14,7 +14,7 @@ import hxtelemetry.HxTelemetry;
 	public static var connected (get, never):Bool;
 	public static var spanMarker (default, null) = 0.0;
 	
-	#if ((cpp || neko) && hxtelemetry)
+	#if ((cpp || neko) && hxtelemetry && !macro)
 	private static var telemetry:HxTelemetry;
 	#end
 	
@@ -49,7 +49,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __advanceFrame ():Void {
 		
-		#if ((cpp || neko) && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.advance_frame ();
 		#end
 		
@@ -58,7 +58,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __endTiming (name:String):Void {
 		
-		#if ((cpp || neko) && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.end_timing (name);
 		#end
 		
@@ -67,7 +67,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __initialize ():Void {
 		
-		#if ((cpp || neko) && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry && !macro)
 		var config:hxtelemetry.Config = (Lib.application.config:Dynamic).telemetry;
 		config.activity_descriptors = [ { name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc }, { name: TelemetryCommandName.RENDER, description: "Rendering", color:0x66aa66 } ];
 		telemetry = new HxTelemetry (config);
@@ -78,7 +78,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __rewindStack (stack:String):Void {
 		
-		#if ((cpp || neko) && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.rewind_stack (stack);
 		#end
 		
@@ -87,7 +87,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __startTiming (name:String):Void {
 		
-		#if ((cpp || neko) && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.start_timing (name);
 		#end
 		
@@ -96,7 +96,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __unwindStack ():String {
 		
-		#if ((cpp || neko) && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry && !macro)
 		return telemetry.unwind_stack ();
 		#else
 		return "";
@@ -114,7 +114,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static function get_connected ():Bool {
 		
-		#if ((cpp || neko) && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry && !macro)
 		return true;
 		#else
 		return false;

@@ -4,6 +4,11 @@ package openfl.text;
 import lime.text.Font in LimeFont;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Font extends LimeFont {
 	
@@ -34,7 +39,7 @@ class Font extends LimeFont {
 		var font = new Font ();
 		font.__fromBytes (bytes);
 		
-		#if (lime_cffi)
+		#if lime_cffi
 		return (font.src != null) ? font : null;
 		#else
 		return font;
@@ -48,7 +53,7 @@ class Font extends LimeFont {
 		var font = new Font ();
 		font.__fromFile (path);
 		
-		#if (lime_cffi)
+		#if lime_cffi
 		return (font.src != null) ? font : null;
 		#else
 		return font;

@@ -19,6 +19,8 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
+import js.html.WebSocket;
+import js.Browser;
 #end
 
 #if sys
@@ -30,9 +32,9 @@ import sys.net.Socket in SysSocket;
 class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	public var bytesAvailable (get, never) : Int;
-	public var bytesPending (get, never) : Int;
-	public var connected (get, never): Bool;
+	public var bytesAvailable (get, never):Int;
+	public var bytesPending (get, never):Int;
+	public var connected (get, never):Bool;
 	public var objectEncoding:UInt;
 	public var secure:Bool;
 	public var timeout:Int;
@@ -121,19 +123,24 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		
 		#if (js && html5)
 		
+		if (Browser.location.protocol == "https:") {
+			
+			secure = true;
+			
+		}
+		
 		var schema = secure ? "wss" : "ws";
 		var urlReg = ~/^(.*:\/\/)?([A-Za-z0-9\-\.]+)\/?(.*)/g;
 		urlReg.match (host);
 		var __webHost = urlReg.matched (2);
 		var __webPath = urlReg.matched (3);
 		
-		__socket = untyped __js__("new WebSocket(schema + \"://\" + __webHost + \":\" + port + \"/\" + __webPath)");
-		
+		__socket = new WebSocket (schema + "://" + __webHost + ":" + port + "/" + __webPath);
+		__socket.binaryType = "arraybuffer";
 		__socket.onopen = socket_onOpen;
 		__socket.onmessage = socket_onMessage;
 		__socket.onclose = socket_onClose;
 		__socket.onerror = socket_onError;
-		__socket.binaryType = "arraybuffer";
 		
 		#else
 		
@@ -535,8 +542,9 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			__socket.close ();
 			
 		} catch (e:Dynamic) {}
-		
+
 		__socket = null;
+		__connected = false;
 		Lib.current.removeEventListener (Event.ENTER_FRAME, this_onEnterFrame);
 		
 	}
@@ -556,7 +564,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 	
 	
-	private function socket_onError (_):Void {
+	private function socket_onError (e):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		
@@ -566,8 +574,19 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private function socket_onMessage (msg:Dynamic):Void {
 		
 		#if (js && html5)
-		var newData:ByteArray = (msg.data:ArrayBuffer);
-		newData.readBytes (__inputBuffer, __inputBuffer.length);
+		if (Std.is (msg.data, String)) {
+
+			__inputBuffer.position = __inputBuffer.length;
+			var cachePosition = __inputBuffer.position;
+			__inputBuffer.writeUTFBytes (msg.data);
+			__inputBuffer.position = cachePosition;
+			
+		} else {
+			
+			var newData:ByteArray = (msg.data:ArrayBuffer);
+			newData.readBytes (__inputBuffer, __inputBuffer.length);
+			
+		}
 		#end
 		
 	}
@@ -597,6 +616,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			newInput.position = 0;
 			
 			__input = newInput;
+			__input.endian = __endian;
 			__inputBuffer.clear ();
 			
 			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0));
@@ -670,14 +690,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		
 		if (doClose && connected) {
 			
-			__connected = false;
 			__cleanSocket ();
 			
 			dispatchEvent (new Event (Event.CLOSE));
 			
 		} else if (doClose) {
 			
-			__connected = false;
 			__cleanSocket ();
 			
 			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR, true, false, "Connection failed"));
@@ -700,6 +718,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			if (rl > 0) newInput.blit (0, __input, __input.position, rl);
 			newInput.blit (rl, newData, 0, newData.length);
 			__input = newInput;
+			__input.endian = __endian;
 			
 			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newData.length, 0));
 			

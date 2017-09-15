@@ -7,10 +7,10 @@ import openfl.events.EventDispatcher;
 extern class Timer extends EventDispatcher {
 	
 	
-	public var currentCount (default, null):Int;
+	public var currentCount (default, never):Int;
 	public var delay:Float;
 	public var repeatCount:Int;
-	public var running (default, null):Bool;
+	public var running (default, never):Bool;
 	
 	public function new (delay:Float, repeatCount:Int = 0);
 	public function reset ():Void;

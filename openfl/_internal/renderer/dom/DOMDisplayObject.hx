@@ -11,13 +11,23 @@ import openfl.display.DisplayObject;
 class DOMDisplayObject {
 	
 	
+	public static function clear (displayObject:DisplayObject, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		DOMShape.clear (displayObject, renderSession);
+		#end
+		
+	}
+	
+	
 	public static inline function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 		
-		if (displayObject.opaqueBackground != null && displayObject.width > 0 && displayObject.height > 0) {
+		//if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
+		//if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
+		
+		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
 			//renderSession.maskManager.pushObject (displayObject);
 			
@@ -27,11 +37,7 @@ class DOMDisplayObject {
 			
 		}
 		
-		if (displayObject.__graphics != null) {
-			
-			DOMShape.render (displayObject, renderSession);
-			
-		}
+		DOMShape.render (displayObject, renderSession);
 		#end
 		
 	}

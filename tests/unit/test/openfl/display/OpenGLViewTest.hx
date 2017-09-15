@@ -9,7 +9,7 @@ class OpenGLViewTest {
 	
 	@Test public function isSupported () {
 		
-		#if (flash || console || (js && html5 && (dom || canvas)))
+		#if (flash || console || (js && html5 && canvas))
 		Assert.isFalse (OpenGLView.isSupported);
 		#else
 		Assert.isTrue (OpenGLView.isSupported);

@@ -3,6 +3,11 @@ package openfl._internal.renderer.cairo;
 
 import openfl.display.DisplayObject;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
@@ -20,12 +25,13 @@ class CairoShape {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderSession, shape.__worldTransform);
+			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
 			
 			var bounds = graphics.__bounds;
 			
 			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1 && graphics.__height >= 1) {
 				
+				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 				renderSession.maskManager.pushObject (shape);
 				
 				var cairo = renderSession.cairo;

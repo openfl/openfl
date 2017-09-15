@@ -18,10 +18,35 @@ import js.Browser;
 class DOMBitmap {
 	
 	
+	public static function clear (bitmap:Bitmap, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		if (bitmap.__image != null) {
+			
+			renderSession.element.removeChild (bitmap.__image);
+			bitmap.__image = null;
+			bitmap.__style = null;
+			
+		}
+		
+		if (bitmap.__canvas != null) {
+			
+			renderSession.element.removeChild (bitmap.__canvas);
+			bitmap.__canvas = null;
+			bitmap.__style = null;
+			
+		}
+		#end
+		
+	}
+	
+	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
+			
+			renderSession.maskManager.pushObject (bitmap);
 			
 			if (bitmap.bitmapData.image.buffer.__srcImage != null) {
 				
@@ -33,23 +58,11 @@ class DOMBitmap {
 				
 			}
 			
+			renderSession.maskManager.popObject (bitmap);
+			
 		} else {
 			
-			if (bitmap.__image != null) {
-				
-				renderSession.element.removeChild (bitmap.__image);
-				bitmap.__image = null;
-				bitmap.__style = null;
-				
-			}
-			
-			if (bitmap.__canvas != null) {
-				
-				renderSession.element.removeChild (bitmap.__canvas);
-				bitmap.__canvas = null;
-				bitmap.__style = null;
-				
-			}
+			clear (bitmap, renderSession);
 			
 		}
 		#end
@@ -71,6 +84,7 @@ class DOMBitmap {
 			
 			bitmap.__canvas = cast Browser.document.createElement ("canvas");
 			bitmap.__context = bitmap.__canvas.getContext ("2d");
+			bitmap.__imageVersion = -1;
 			
 			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				
@@ -85,17 +99,23 @@ class DOMBitmap {
 			
 		}
 		
-		// TODO: Cache if the image.version is the same as before
+		if (bitmap.__imageVersion != bitmap.bitmapData.image.version) {
+			
+			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
+			
+			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
+			bitmap.__canvas.width = bitmap.bitmapData.width + 1;
+			
+			bitmap.__canvas.width = bitmap.bitmapData.width;
+			bitmap.__canvas.height = bitmap.bitmapData.height;
+			
+			bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
+			bitmap.__imageVersion = bitmap.bitmapData.image.version;
+			
+		}
 		
-		ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
-		
-		bitmap.__canvas.width = bitmap.bitmapData.width;
-		bitmap.__canvas.height = bitmap.bitmapData.height;
-		
-		bitmap.__context.globalAlpha = bitmap.__worldAlpha;
-		bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
-		
-		DOMRenderer.applyStyle (bitmap, renderSession, true, false, true);
+		DOMRenderer.updateClip (bitmap, renderSession);
+		DOMRenderer.applyStyle (bitmap, renderSession, true, true, true);
 		#end
 		
 	}
@@ -114,11 +134,13 @@ class DOMBitmap {
 		if (bitmap.__image == null) {
 			
 			bitmap.__image = cast Browser.document.createElement ("img");
+			bitmap.__image.crossOrigin = "Anonymous";
 			bitmap.__image.src = bitmap.bitmapData.image.buffer.__srcImage.src;
 			DOMRenderer.initializeElement (bitmap, bitmap.__image, renderSession);
 			
 		}
 		
+		DOMRenderer.updateClip (bitmap, renderSession);
 		DOMRenderer.applyStyle (bitmap, renderSession, true, true, true);
 		#end
 		

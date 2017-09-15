@@ -4,6 +4,10 @@ package openfl._internal.renderer.canvas;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 
+#if (js && html5 && dom)
+import js.Browser;
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
@@ -21,7 +25,7 @@ class CanvasShape {
 		
 		if (graphics != null) {
 			
-			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform);
+			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
 			
 			var bounds = graphics.__bounds;
 			var width = graphics.__width;
@@ -30,10 +34,11 @@ class CanvasShape {
 			if (graphics.__canvas != null) {
 				
 				var context = renderSession.context;
-				var scrollRect = shape.scrollRect;
+				var scrollRect = shape.__scrollRect;
 				
 				if (width > 0 && height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
 					
+					renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 					renderSession.maskManager.pushObject (shape);
 					
 					context.globalAlpha = shape.__worldAlpha;
@@ -49,6 +54,11 @@ class CanvasShape {
 						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 						
 					}
+					
+					#if dom
+					var reverseScale = 1 / CanvasRenderer.scale;
+					context.scale (reverseScale, reverseScale);
+					#end
 					
 					context.drawImage (graphics.__canvas, 0, 0);
 					

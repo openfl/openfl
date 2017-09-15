@@ -1,8 +1,13 @@
 package openfl._internal.stage3D.assembler;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 class Opcode {
-	
 	
 	
 	public var a:FS;

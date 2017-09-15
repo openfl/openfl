@@ -5,29 +5,29 @@ package openfl.events; #if (display || !flash)
  * An object dispatches an ErrorEvent object when an error causes an
  * asynchronous operation to fail.
  *
- * <p>The ErrorEvent class defines only one type of <code>error</code> event:
- * <code>ErrorEvent.ERROR</code>. The ErrorEvent class also serves as the base
+ * The ErrorEvent class defines only one type of `error` event:
+ * `ErrorEvent.ERROR`. The ErrorEvent class also serves as the base
  * class for several other error event classes, including the AsyncErrorEvent,
  * IOErrorEvent, SecurityErrorEvent, SQLErrorEvent, and UncaughtErrorEvent
- * classes.</p>
+ * classes.
  *
- * <p>You can check for <code>error</code> events that do not have any
- * listeners by registering a listener for the <code>uncaughtError</code>
- * (UncaughtErrorEvent.UNCAUGHT_ERROR) event.</p>
+ * You can check for `error` events that do not have any
+ * listeners by registering a listener for the `uncaughtError`
+ * (UncaughtErrorEvent.UNCAUGHT_ERROR) event.
  *
- * <p>An uncaught error also causes an error dialog box displaying the error
+ * An uncaught error also causes an error dialog box displaying the error
  * event to appear when content is running in the debugger version of Flash
- * Player or the AIR Debug Launcher(ADL) application.</p>
+ * Player or the AIR Debug Launcher(ADL) application.
  * 
  */
 extern class ErrorEvent extends TextEvent {
 	
 	
 	/**
-	 * Defines the value of the <code>type</code> property of an
-	 * <code>error</code> event object.
+	 * Defines the value of the `type` property of an
+	 * `error` event object.
 	 *
-	 * <p>This event has the following properties:</p>
+	 * This event has the following properties:
 	 */
 	public static inline var ERROR = "error";
 	
@@ -35,7 +35,7 @@ extern class ErrorEvent extends TextEvent {
 	/**
 	 * Contains the reference number associated with the specific error. For a
 	 * custom ErrorEvent object, this number is the value from the
-	 * <code>id</code> parameter supplied in the constructor.
+	 * `id` parameter supplied in the constructor.
 	 */
 	public var errorID (default, null):Int;
 	
@@ -45,18 +45,18 @@ extern class ErrorEvent extends TextEvent {
 	 * Event objects are passed as parameters to event listeners.
 	 * 
 	 * @param type       The type of the event. Event listeners can access this
-	 *                   information through the inherited <code>type</code>
+	 *                   information through the inherited `type`
 	 *                   property. There is only one type of error event:
-	 *                   <code>ErrorEvent.ERROR</code>.
+	 *                   `ErrorEvent.ERROR`.
 	 * @param bubbles    Determines whether the Event object bubbles. Event
 	 *                   listeners can access this information through the
-	 *                   inherited <code>bubbles</code> property.
+	 *                   inherited `bubbles` property.
 	 * @param cancelable Determines whether the Event object can be canceled.
 	 *                   Event listeners can access this information through the
-	 *                   inherited <code>cancelable</code> property.
+	 *                   inherited `cancelable` property.
 	 * @param text       Text to be displayed as an error message. Event
 	 *                   listeners can access this information through the
-	 *                   <code>text</code> property.
+	 *                   `text` property.
 	 * @param id         A reference number to associate with the specific error
 	 *                  (supported in Adobe AIR only).
 	 */

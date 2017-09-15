@@ -21,13 +21,14 @@ class CanvasBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
+			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap, false);
 			
 			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
 			
 			context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__worldTransform;
-			var scrollRect = bitmap.scrollRect;
+			var transform = bitmap.__renderTransform;
+			var scrollRect = bitmap.__scrollRect;
 			
 			if (renderSession.roundPixels) {
 				

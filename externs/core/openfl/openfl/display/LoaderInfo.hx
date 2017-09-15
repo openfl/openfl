@@ -14,57 +14,57 @@ import openfl.utils.ByteArray;
  * URLs of the loader and loaded content, the number of bytes total for the
  * media, and the nominal height and width of the media.
  *
- * <p>You can access LoaderInfo objects in two ways: </p>
+ * You can access LoaderInfo objects in two ways: 
  *
- * <ul>
- *   <li>The <code>contentLoaderInfo</code> property of a flash.display.Loader
- * object -  The <code>contentLoaderInfo</code> property is always available
+ * 
+ *  * The `contentLoaderInfo` property of a flash.display.Loader
+ * object -  The `contentLoaderInfo` property is always available
  * for any Loader object. For a Loader object that has not called the
- * <code>load()</code> or <code>loadBytes()</code> method, or that has not
+ * `load()` or `loadBytes()` method, or that has not
  * sufficiently loaded, attempting to access many of the properties of the
- * <code>contentLoaderInfo</code> property throws an error.</li>
- *   <li>The <code>loaderInfo</code> property of a display object. </li>
- * </ul>
+ * `contentLoaderInfo` property throws an error.
+ *  * The `loaderInfo` property of a display object. 
+ * 
  *
- * <p>The <code>contentLoaderInfo</code> property of a Loader object provides
+ * The `contentLoaderInfo` property of a Loader object provides
  * information about the content that the Loader object is loading, whereas
- * the <code>loaderInfo</code> property of a DisplayObject provides
- * information about the root SWF file for that display object. </p>
+ * the `loaderInfo` property of a DisplayObject provides
+ * information about the root SWF file for that display object. 
  *
- * <p>When you use a Loader object to load a display object(such as a SWF
- * file or a bitmap), the <code>loaderInfo</code> property of the display
- * object is the same as the <code>contentLoaderInfo</code> property of the
- * Loader object(<code>DisplayObject.loaderInfo =
- * Loader.contentLoaderInfo</code>). Because the instance of the main class of
- * the SWF file has no Loader object, the <code>loaderInfo</code> property is
+ * When you use a Loader object to load a display object(such as a SWF
+ * file or a bitmap), the `loaderInfo` property of the display
+ * object is the same as the `contentLoaderInfo` property of the
+ * Loader object(`DisplayObject.loaderInfo =
+ * Loader.contentLoaderInfo`). Because the instance of the main class of
+ * the SWF file has no Loader object, the `loaderInfo` property is
  * the only way to access the LoaderInfo for the instance of the main class of
- * the SWF file.</p>
+ * the SWF file.
  *
- * <p>The following diagram shows the different uses of the LoaderInfo
+ * The following diagram shows the different uses of the LoaderInfo
  * object - for the instance of the main class of the SWF file, for the
- * <code>contentLoaderInfo</code> property of a Loader object, and for the
- * <code>loaderInfo</code> property of a loaded object:</p>
+ * `contentLoaderInfo` property of a Loader object, and for the
+ * `loaderInfo` property of a loaded object:
  *
- * <p>When a loading operation is not complete, some properties of the
- * <code>contentLoaderInfo</code> property of a Loader object are not
+ * When a loading operation is not complete, some properties of the
+ * `contentLoaderInfo` property of a Loader object are not
  * available. You can obtain some properties, such as
- * <code>bytesLoaded</code>, <code>bytesTotal</code>, <code>url</code>,
- * <code>loaderURL</code>, and <code>applicationDomain</code>. When the
- * <code>loaderInfo</code> object dispatches the <code>init</code> event, you
- * can access all properties of the <code>loaderInfo</code> object and the
- * loaded image or SWF file.</p>
+ * `bytesLoaded`, `bytesTotal`, `url`,
+ * `loaderURL`, and `applicationDomain`. When the
+ * `loaderInfo` object dispatches the `init` event, you
+ * can access all properties of the `loaderInfo` object and the
+ * loaded image or SWF file.
  *
- * <p><b>Note:</b> All properties of LoaderInfo objects are read-only.</p>
+ * **Note:** All properties of LoaderInfo objects are read-only.
  *
- * <p>The <code>EventDispatcher.dispatchEvent()</code> method is not
- * applicable to LoaderInfo objects. If you call <code>dispatchEvent()</code>
- * on a LoaderInfo object, an IllegalOperationError exception is thrown.</p>
+ * The `EventDispatcher.dispatchEvent()` method is not
+ * applicable to LoaderInfo objects. If you call `dispatchEvent()`
+ * on a LoaderInfo object, an IllegalOperationError exception is thrown.
  * 
  * @event complete   Dispatched when data has loaded successfully. In other
  *                   words, it is dispatched when all the content has been
  *                   downloaded and the loading has finished. The
- *                   <code>complete</code> event is always dispatched after
- *                   the <code>init</code> event. The <code>init</code> event
+ *                   `complete` event is always dispatched after
+ *                   the `init` event. The `init` event
  *                   is dispatched when the object is ready to access, though
  *                   the content may still be downloading.
  * @event httpStatus Dispatched when a network request is made over HTTP and
@@ -72,34 +72,34 @@ import openfl.utils.ByteArray;
  * @event init       Dispatched when the properties and methods of a loaded
  *                   SWF file are accessible and ready for use. The content,
  *                   however, can still be downloading. A LoaderInfo object
- *                   dispatches the <code>init</code> event when the following
+ *                   dispatches the `init` event when the following
  *                   conditions exist:
- *                   <ul>
- *                     <li>All properties and methods associated with the
+ *                   
+ *                    * All properties and methods associated with the
  *                   loaded object and those associated with the LoaderInfo
- *                   object are accessible.</li>
- *                     <li>The constructors for all child objects have
- *                   completed.</li>
- *                     <li>All ActionScript code in the first frame of the
- *                   loaded SWF's main timeline has been executed.</li>
- *                   </ul>
+ *                   object are accessible.
+ *                    * The constructors for all child objects have
+ *                   completed.
+ *                    * All ActionScript code in the first frame of the
+ *                   loaded SWF's main timeline has been executed.
+ *                   
  *
- *                   <p>For example, an <code>Event.INIT</code> is dispatched
+ *                   For example, an `Event.INIT` is dispatched
  *                   when the first frame of a movie or animation is loaded.
  *                   The movie is then accessible and can be added to the
  *                   display list. The complete movie, however, can take
- *                   longer to download. The <code>Event.COMPLETE</code> is
- *                   only dispatched once the full movie is loaded.</p>
+ *                   longer to download. The `Event.COMPLETE` is
+ *                   only dispatched once the full movie is loaded.
  *
- *                   <p>The <code>init</code> event always precedes the
- *                   <code>complete</code> event.</p>
+ *                   The `init` event always precedes the
+ *                   `complete` event.
  * @event ioError    Dispatched when an input or output error occurs that
  *                   causes a load operation to fail.
  * @event open       Dispatched when a load operation starts.
  * @event progress   Dispatched when data is received as the download
  *                   operation progresses.
  * @event unload     Dispatched by a LoaderInfo object whenever a loaded
- *                   object is removed by using the <code>unload()</code>
+ *                   object is removed by using the `unload()`
  *                   method of the Loader object, or when a second load is
  *                   performed by the same Loader object and the original
  *                   content is removed prior to the load beginning.
@@ -114,21 +114,21 @@ extern class LoaderInfo extends EventDispatcher {
 	/**
 	 * When an external SWF file is loaded, all ActionScript 3.0 definitions
 	 * contained in the loaded class are stored in the
-	 * <code>applicationDomain</code> property.
+	 * `applicationDomain` property.
 	 *
-	 * <p>All code in a SWF file is defined to exist in an application domain.
+	 * All code in a SWF file is defined to exist in an application domain.
 	 * The current application domain is where your main application runs. The
 	 * system domain contains all application domains, including the current
-	 * domain and all classes used by Flash Player or Adobe AIR.</p>
+	 * domain and all classes used by Flash Player or Adobe AIR.
 	 *
-	 * <p>All application domains, except the system domain, have an associated
+	 * All application domains, except the system domain, have an associated
 	 * parent domain. The parent domain of your main application's
-	 * <code>applicationDomain</code> is the system domain. Loaded classes are
+	 * `applicationDomain` is the system domain. Loaded classes are
 	 * defined only when their parent doesn't already define them. You cannot
-	 * override a loaded class definition with a newer definition.</p>
+	 * override a loaded class definition with a newer definition.
 	 *
-	 * <p>For usage examples of application domains, see the "Client System
-	 * Environment" chapter in the <i>ActionScript 3.0 Developer's Guide</i>.</p>
+	 * For usage examples of application domains, see the "Client System
+	 * Environment" chapter in the _ActionScript 3.0 Developer's Guide_.
 	 * 
 	 * @throws SecurityError This security sandbox of the caller is not allowed
 	 *                       to access this ApplicationDomain.
@@ -142,47 +142,44 @@ extern class LoaderInfo extends EventDispatcher {
 	 *                       accessing the loaded object due to security
 	 *                       restrictions. This situation can occur, for
 	 *                       instance, when a Loader object attempts to access
-	 *                       the <code>contentLoaderInfo.content</code> property
+	 *                       the `contentLoaderInfo.content` property
 	 *                       and it is not granted security permission to access
 	 *                       the loaded content.
 	 *
-	 *                       <p>For more information related to security, see the
-	 *                       Flash Player Developer Center Topic: <a
-	 *                       href="http://www.adobe.com/go/devnet_security_en"
-	 *                       scope="external">Security</a>.</p>
+	 *                       For more information related to security, see the
+	 *                       Flash Player Developer Center Topic:
+	 *                       [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
 	public var bytes (default, null):ByteArray;
 	
 	/**
 	 * The number of bytes that are loaded for the media. When this number equals
-	 * the value of <code>bytesTotal</code>, all of the bytes are loaded.
+	 * the value of `bytesTotal`, all of the bytes are loaded.
 	 */
 	public var bytesLoaded (default, null):Int;
 	
 	/**
 	 * The number of compressed bytes in the entire media file.
 	 *
-	 * <p>Before the first <code>progress</code> event is dispatched by this
-	 * LoaderInfo object's corresponding Loader object, <code>bytesTotal</code>
-	 * is 0. After the first <code>progress</code> event from the Loader object,
-	 * <code>bytesTotal</code> reflects the actual number of bytes to be
-	 * downloaded.</p>
+	 * Before the first `progress` event is dispatched by this
+	 * LoaderInfo object's corresponding Loader object, `bytesTotal`
+	 * is 0. After the first `progress` event from the Loader object,
+	 * `bytesTotal` reflects the actual number of bytes to be
+	 * downloaded.
 	 */
 	public var bytesTotal (default, null):Int;
 	
 	/**
 	 * Expresses the trust relationship from content(child) to the Loader
-	 * (parent). If the child has allowed the parent access, <code>true</code>;
-	 * otherwise, <code>false</code>. This property is set to <code>true</code>
-	 * if the child object has called the <code>allowDomain()</code> method to
+	 * (parent). If the child has allowed the parent access, `true`;
+	 * otherwise, `false`. This property is set to `true`
+	 * if the child object has called the `allowDomain()` method to
 	 * grant permission to the parent domain or if a URL policy is loaded at the
 	 * child domain that grants permission to the parent domain. If child and
-	 * parent are in the same domain, this property is set to <code>true</code>.
+	 * parent are in the same domain, this property is set to `true`.
 	 *
-	 * <p>For more information related to security, see the Flash Player
-	 * Developer Center Topic: <a
-	 * href="http://www.adobe.com/go/devnet_security_en"
-	 * scope="external">Security</a>.</p>
+	 * For more information related to security, see the Flash Player
+	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 * 
 	 * @throws Error Thrown if the file is not downloaded sufficiently to
 	 *               retrieve the requested information.
@@ -200,27 +197,26 @@ extern class LoaderInfo extends EventDispatcher {
 	 *                       accessing the loaded object due to security
 	 *                       restrictions. This situation can occur, for
 	 *                       instance, when a Loader object attempts to access
-	 *                       the <code>contentLoaderInfo.content</code> property
+	 *                       the `contentLoaderInfo.content` property
 	 *                       and it is not granted security permission to access
 	 *                       the loaded content.
 	 *
-	 *                       <p>For more information related to security, see the
-	 *                       Flash Player Developer Center Topic: <a
-	 *                       href="http://www.adobe.com/go/devnet_security_en"
-	 *                       scope="external">Security</a>.</p>
+	 *                       For more information related to security, see the
+	 *                       Flash Player Developer Center Topic:
+	 *                       [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
 	public var content (default, null):DisplayObject;
 	
 	/**
-	 * The MIME type of the loaded file. The value is <code>null</code> if not
+	 * The MIME type of the loaded file. The value is `null` if not
 	 * enough of the file has loaded in order to determine the type. The
 	 * following list gives the possible values:
-	 * <ul>
-	 *   <li><code>"application/x-shockwave-flash"</code></li>
-	 *   <li><code>"image/jpeg"</code></li>
-	 *   <li><code>"image/gif"</code></li>
-	 *   <li><code>"image/png"</code></li>
-	 * </ul>
+	 * 
+	 *  * `"application/x-shockwave-flash"`
+	 *  * `"image/jpeg"`
+	 *  * `"image/gif"`
+	 *  * `"image/png"`
+	 * 
 	 */
 	public var contentType (default, null):String;
 	
@@ -228,12 +224,12 @@ extern class LoaderInfo extends EventDispatcher {
 	 * The nominal frame rate, in frames per second, of the loaded SWF file. This
 	 * number is often an integer, but need not be.
 	 *
-	 * <p>This value may differ from the actual frame rate in use. Flash Player
+	 * This value may differ from the actual frame rate in use. Flash Player
 	 * or Adobe AIR only uses a single frame rate for all loaded SWF files at any
 	 * one time, and this frame rate is determined by the nominal frame rate of
 	 * the main SWF file. Also, the main frame rate may not be able to be
 	 * achieved, depending on hardware, sound synchronization, and other
-	 * factors.</p>
+	 * factors.
 	 * 
 	 * @throws Error If the file is not downloaded sufficiently to retrieve the
 	 *               requested information.
@@ -257,21 +253,20 @@ extern class LoaderInfo extends EventDispatcher {
 	
 	/**
 	 * The Loader object associated with this LoaderInfo object. If this
-	 * LoaderInfo object is the <code>loaderInfo</code> property of the instance
+	 * LoaderInfo object is the `loaderInfo` property of the instance
 	 * of the main class of the SWF file, no Loader object is associated.
 	 * 
 	 * @throws SecurityError If the object accessing this API is prevented from
 	 *                       accessing the Loader object because of security
 	 *                       restrictions. This can occur, for instance, when a
 	 *                       loaded SWF file attempts to access its
-	 *                       <code>loaderInfo.loader</code> property and it is
+	 *                       `loaderInfo.loader` property and it is
 	 *                       not granted security permission to access the
 	 *                       loading SWF file.
 	 *
-	 *                       <p>For more information related to security, see the
-	 *                       Flash Player Developer Center Topic: <a
-	 *                       href="http://www.adobe.com/go/devnet_security_en"
-	 *                       scope="external">Security</a>.</p>
+	 *                       For more information related to security, see the
+	 *                       Flash Player Developer Center Topic:
+	 *                       [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
 	public var loader (default, null):Loader;
 	
@@ -286,37 +281,35 @@ extern class LoaderInfo extends EventDispatcher {
 	 * An object that contains name-value pairs that represent the parameters
 	 * provided to the loaded SWF file.
 	 *
-	 * <p>You can use a <code>for-in</code> loop to extract all the names and
-	 * values from the <code>parameters</code> object.</p>
+	 * You can use a `for-in` loop to extract all the names and
+	 * values from the `parameters` object.
 	 *
-	 * <p>The two sources of parameters are: the query string in the URL of the
-	 * main SWF file, and the value of the <code>FlashVars</code> HTML parameter
-	 * (this affects only the main SWF file).</p>
+	 * The two sources of parameters are: the query string in the URL of the
+	 * main SWF file, and the value of the `FlashVars` HTML parameter
+	 * (this affects only the main SWF file).
 	 *
-	 * <p>The <code>parameters</code> property replaces the ActionScript 1.0 and
+	 * The `parameters` property replaces the ActionScript 1.0 and
 	 * 2.0 technique of providing SWF file parameters as properties of the main
-	 * timeline.</p>
+	 * timeline.
 	 *
-	 * <p>The value of the <code>parameters</code> property is null for Loader
+	 * The value of the `parameters` property is null for Loader
 	 * objects that contain SWF files that use ActionScript 1.0 or 2.0. It is
 	 * only non-null for Loader objects that contain SWF files that use
-	 * ActionScript 3.0.</p>
+	 * ActionScript 3.0.
 	 */
 	public var parameters (default, null):Dynamic<String>;
 	
 	/**
 	 * Expresses the trust relationship from Loader(parent) to the content
-	 * (child). If the parent has allowed the child access, <code>true</code>;
-	 * otherwise, <code>false</code>. This property is set to <code>true</code>
-	 * if the parent object called the <code>allowDomain()</code> method to grant
+	 * (child). If the parent has allowed the child access, `true`;
+	 * otherwise, `false`. This property is set to `true`
+	 * if the parent object called the `allowDomain()` method to grant
 	 * permission to the child domain or if a URL policy file is loaded at the
 	 * parent domain granting permission to the child domain. If child and parent
-	 * are in the same domain, this property is set to <code>true</code>.
+	 * are in the same domain, this property is set to `true`.
 	 *
-	 * <p>For more information related to security, see the Flash Player
-	 * Developer Center Topic: <a
-	 * href="http://www.adobe.com/go/devnet_security_en"
-	 * scope="external">Security</a>.</p>
+	 * For more information related to security, see the Flash Player
+	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 * 
 	 * @throws Error Thrown if the file is not downloaded sufficiently to
 	 *               retrieve the requested information.
@@ -329,7 +322,7 @@ extern class LoaderInfo extends EventDispatcher {
 	
 	/**
 	 * Expresses the domain relationship between the loader and the content:
-	 * <code>true</code> if they have the same origin domain; <code>false</code>
+	 * `true` if they have the same origin domain; `false`
 	 * otherwise.
 	 * 
 	 * @throws Error Thrown if the file is not downloaded sufficiently to
@@ -341,7 +334,7 @@ extern class LoaderInfo extends EventDispatcher {
 	 * An EventDispatcher instance that can be used to exchange events across
 	 * security boundaries. Even when the Loader object and the loaded content
 	 * originate from security domains that do not trust one another, both can
-	 * access <code>sharedEvents</code> and send and receive events via this
+	 * access `sharedEvents` and send and receive events via this
 	 * object.
 	 */
 	public var sharedEvents (default, null):EventDispatcher;
@@ -351,35 +344,35 @@ extern class LoaderInfo extends EventDispatcher {
 	#end
 	
 	/**
-	 * An object that dispatches an <code>uncaughtError</code> event when an
+	 * An object that dispatches an `uncaughtError` event when an
 	 * unhandled error occurs in code in this LoaderInfo object's SWF file. An
 	 * uncaught error happens when an error is thrown outside of any
-	 * <code>try..catch</code> blocks or when an ErrorEvent object is dispatched
+	 * `try..catch` blocks or when an ErrorEvent object is dispatched
 	 * with no registered listeners.
 	 *
-	 * <p>This property is created when the SWF associated with this LoaderInfo
-	 * has finished loading. Until then the <code>uncaughtErrorEvents</code>
-	 * property is <code>null</code>. In an ActionScript-only project, you can
+	 * This property is created when the SWF associated with this LoaderInfo
+	 * has finished loading. Until then the `uncaughtErrorEvents`
+	 * property is `null`. In an ActionScript-only project, you can
 	 * access this property during or after the execution of the constructor
 	 * function of the main class of the SWF file. For a Flex project, the
-	 * <code>uncaughtErrorEvents</code> property is available after the
-	 * <code>applicationComplete</code> event is dispatched.</p>
+	 * `uncaughtErrorEvents` property is available after the
+	 * `applicationComplete` event is dispatched.
 	 */
 	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
 	
 	/**
 	 * The URL of the media being loaded.
 	 *
-	 * <p>Before the first <code>progress</code> event is dispatched by this
+	 * Before the first `progress` event is dispatched by this
 	 * LoaderInfo object's corresponding Loader object, the value of the
-	 * <code>url</code> property might reflect only the initial URL specified in
-	 * the call to the <code>load()</code> method of the Loader object. After the
-	 * first <code>progress</code> event, the <code>url</code> property reflects
+	 * `url` property might reflect only the initial URL specified in
+	 * the call to the `load()` method of the Loader object. After the
+	 * first `progress` event, the `url` property reflects
 	 * the media's final URL, after any redirects and relative URLs are
-	 * resolved.</p>
+	 * resolved.
 	 *
-	 * <p>In some cases, the value of the <code>url</code> property is truncated;
-	 * see the <code>isURLInaccessible</code> property for details.</p>
+	 * In some cases, the value of the `url` property is truncated;
+	 * see the `isURLInaccessible` property for details.
 	 */
 	public var url (default, null):String;
 	

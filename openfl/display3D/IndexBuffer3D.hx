@@ -3,12 +3,18 @@ package openfl.display3D;
 
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.Int16Array;
 import openfl._internal.stage3D.GLUtils;
 import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:final class IndexBuffer3D {
@@ -61,10 +67,16 @@ import openfl.Vector;
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
+		if (data == null) return;
+		
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data, __usage);
+		#if (js && html5)
+		(GL:WebGLContext).bufferData (GL.ELEMENT_ARRAY_BUFFER, data, __usage);
+		#else
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data.byteLength, data, __usage);
+		#end
 		GLUtils.CheckGLError ();
 		
 		if (data.byteLength != __memoryUsage) {

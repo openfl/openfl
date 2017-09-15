@@ -2,12 +2,19 @@ package openfl.geom;
 
 
 import lime.math.Rectangle in LimeRectangle;
+import lime.utils.ObjectPool;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 class Rectangle {
 	
 	
-	private static var __temp = new Rectangle ();
+	private static var __limeRectangle:LimeRectangle;
+	private static var __pool = new ObjectPool<Rectangle> (function () return new Rectangle (), function (r) r.setTo (0, 0, 0, 0));
 	
 	public var bottom (get, set):Float;
 	public var bottomRight (get, set):Point;
@@ -80,7 +87,8 @@ class Rectangle {
 	
 	public function equals (toCompare:Rectangle):Bool {
 		
-		return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
+		if (toCompare == this) return true;
+		else return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
 		
 	}
 	
@@ -272,7 +280,14 @@ class Rectangle {
 	
 	private function __toLimeRectangle ():LimeRectangle {
 		
-		return new LimeRectangle (x, y, width, height);
+		if (__limeRectangle == null) {
+			
+			__limeRectangle = new LimeRectangle ();
+			
+		}
+		
+		__limeRectangle.setTo (x, y, width, height);
+		return __limeRectangle;
 		
 	}
 	

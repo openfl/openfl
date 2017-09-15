@@ -8,32 +8,31 @@ import openfl.events.EventDispatcher;
  * URL-encoded variables. It is useful for downloading text files, XML, or
  * other information to be used in a dynamic, data-driven application.
  *
- * <p>A URLLoader object downloads all of the data from a URL before making it
+ * A URLLoader object downloads all of the data from a URL before making it
  * available to code in the applications. It sends out notifications about the
  * progress of the download, which you can monitor through the
- * <code>bytesLoaded</code> and <code>bytesTotal</code> properties, as well as
- * through dispatched events.</p>
+ * `bytesLoaded` and `bytesTotal` properties, as well as
+ * through dispatched events.
  *
- * <p>When loading very large video files, such as FLV's, out-of-memory errors
- * may occur. </p>
+ * When loading very large video files, such as FLV's, out-of-memory errors
+ * may occur. 
  *
- * <p>When you use this class in Flash Player and in AIR application content
+ * When you use this class in Flash Player and in AIR application content
  * in security sandboxes other than then application security sandbox,
- * consider the following security model:</p>
+ * consider the following security model:
  *
- * <ul>
- *   <li>A SWF file in the local-with-filesystem sandbox may not load data
- * from, or provide data to, a resource that is in the network sandbox. </li>
- *   <li> By default, the calling SWF file and the URL you load must be in
+ * 
+ *  * A SWF file in the local-with-filesystem sandbox may not load data
+ * from, or provide data to, a resource that is in the network sandbox. 
+ *  *  By default, the calling SWF file and the URL you load must be in
  * exactly the same domain. For example, a SWF file at www.adobe.com can load
  * data only from sources that are also at www.adobe.com. To load data from a
  * different domain, place a URL policy file on the server hosting the
- * data.</li>
- * </ul>
+ * data.
+ * 
  *
- * <p>For more information related to security, see the Flash Player Developer
- * Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
- * scope="external">Security</a>.</p>
+ * For more information related to security, see the Flash Player Developer
+ * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
  * 
  * @event complete           Dispatched after all the received data is decoded
  *                           and placed in the data property of the URLLoader
@@ -50,28 +49,28 @@ import openfl.events.EventDispatcher;
  *                           detect and return the status code for the
  *                           request.(Some browser environments may not be
  *                           able to provide this information.) Note that the
- *                           <code>httpStatus</code> event(if any) is sent
+ *                           `httpStatus` event(if any) is sent
  *                           before(and in addition to) any
- *                           <code>complete</code> or <code>error</code>
+ *                           `complete` or `error`
  *                           event.
  * @event ioError            Dispatched if a call to URLLoader.load() results
  *                           in a fatal error that terminates the download.
  * @event open               Dispatched when the download operation commences
  *                           following a call to the
- *                           <code>URLLoader.load()</code> method.
+ *                           `URLLoader.load()` method.
  * @event progress           Dispatched when data is received as the download
  *                           operation progresses.
  *
- *                           <p>Note that with a URLLoader object, it is not
+ *                           Note that with a URLLoader object, it is not
  *                           possible to access the data until it has been
  *                           received completely. So, the progress event only
  *                           serves as a notification of how far the download
  *                           has progressed. To access the data before it's
- *                           entirely downloaded, use a URLStream object. </p>
+ *                           entirely downloaded, use a URLStream object. 
  * @event securityError      Dispatched if a call to URLLoader.load() attempts
  *                           to load data from a server outside the security
  *                           sandbox. Also dispatched if a call to
- *                           <code>URLLoader.load()</code> attempts to load a
+ *                           `URLLoader.load()` attempts to load a
  *                           SWZ file and the certificate is invalid or the
  *                           digest string does not match the component.
  */
@@ -95,39 +94,39 @@ extern class URLLoader extends EventDispatcher {
 	/**
 	 * The data received from the load operation. This property is populated only
 	 * when the load operation is complete. The format of the data depends on the
-	 * setting of the <code>dataFormat</code> property:
+	 * setting of the `dataFormat` property:
 	 *
-	 * <p>If the <code>dataFormat</code> property is
-	 * <code>URLLoaderDataFormat.TEXT</code>, the received data is a string
-	 * containing the text of the loaded file.</p>
+	 * If the `dataFormat` property is
+	 * `URLLoaderDataFormat.TEXT`, the received data is a string
+	 * containing the text of the loaded file.
 	 *
-	 * <p>If the <code>dataFormat</code> property is
-	 * <code>URLLoaderDataFormat.BINARY</code>, the received data is a ByteArray
-	 * object containing the raw binary data.</p>
+	 * If the `dataFormat` property is
+	 * `URLLoaderDataFormat.BINARY`, the received data is a ByteArray
+	 * object containing the raw binary data.
 	 *
-	 * <p>If the <code>dataFormat</code> property is
-	 * <code>URLLoaderDataFormat.VARIABLES</code>, the received data is a
-	 * URLVariables object containing the URL-encoded variables.</p>
+	 * If the `dataFormat` property is
+	 * `URLLoaderDataFormat.VARIABLES`, the received data is a
+	 * URLVariables object containing the URL-encoded variables.
 	 */
 	public var data:Dynamic;
 	
 	/**
 	 * Controls whether the downloaded data is received as text
-	 * (<code>URLLoaderDataFormat.TEXT</code>), raw binary data
-	 * (<code>URLLoaderDataFormat.BINARY</code>), or URL-encoded variables
-	 * (<code>URLLoaderDataFormat.VARIABLES</code>).
+	 * (`URLLoaderDataFormat.TEXT`), raw binary data
+	 * (`URLLoaderDataFormat.BINARY`), or URL-encoded variables
+	 * (`URLLoaderDataFormat.VARIABLES`).
 	 *
-	 * <p>If the value of the <code>dataFormat</code> property is
-	 * <code>URLLoaderDataFormat.TEXT</code>, the received data is a string
-	 * containing the text of the loaded file.</p>
+	 * If the value of the `dataFormat` property is
+	 * `URLLoaderDataFormat.TEXT`, the received data is a string
+	 * containing the text of the loaded file.
 	 *
-	 * <p>If the value of the <code>dataFormat</code> property is
-	 * <code>URLLoaderDataFormat.BINARY</code>, the received data is a ByteArray
-	 * object containing the raw binary data.</p>
+	 * If the value of the `dataFormat` property is
+	 * `URLLoaderDataFormat.BINARY`, the received data is a ByteArray
+	 * object containing the raw binary data.
 	 *
-	 * <p>If the value of the <code>dataFormat</code> property is
-	 * <code>URLLoaderDataFormat.VARIABLES</code>, the received data is a
-	 * URLVariables object containing the URL-encoded variables.</p>
+	 * If the value of the `dataFormat` property is
+	 * `URLLoaderDataFormat.VARIABLES`, the received data is a
+	 * URLVariables object containing the URL-encoded variables.
 	 * 
 	 * @default URLLoaderDataFormat.TEXT
 	 */
@@ -140,7 +139,7 @@ extern class URLLoader extends EventDispatcher {
 	 * @param request A URLRequest object specifying the URL to download. If this
 	 *                parameter is omitted, no load operation begins. If
 	 *                specified, the load operation begins immediately(see the
-	 *                <code>load</code> entry for more information).
+	 *                `load` entry for more information).
 	 */
 	public function new (request:URLRequest = null);
 	
@@ -157,91 +156,89 @@ extern class URLLoader extends EventDispatcher {
 	/**
 	 * Sends and loads data from the specified URL. The data can be received as
 	 * text, raw binary data, or URL-encoded variables, depending on the value
-	 * you set for the <code>dataFormat</code> property. Note that the default
-	 * value of the <code>dataFormat</code> property is text. If you want to send
-	 * data to the specified URL, you can set the <code>data</code> property in
+	 * you set for the `dataFormat` property. Note that the default
+	 * value of the `dataFormat` property is text. If you want to send
+	 * data to the specified URL, you can set the `data` property in
 	 * the URLRequest object.
 	 *
-	 * <p><b>Note:</b> If a file being loaded contains non-ASCII characters(as
+	 * **Note:** If a file being loaded contains non-ASCII characters(as
 	 * found in many non-English languages), it is recommended that you save the
 	 * file with UTF-8 or UTF-16 encoding as opposed to a non-Unicode format like
-	 * ASCII.</p>
+	 * ASCII.
 	 *
-	 * <p> A SWF file in the local-with-filesystem sandbox may not load data
-	 * from, or provide data to, a resource that is in the network sandbox.</p>
+	 *  A SWF file in the local-with-filesystem sandbox may not load data
+	 * from, or provide data to, a resource that is in the network sandbox.
 	 *
-	 * <p> By default, the calling SWF file and the URL you load must be in
+	 *  By default, the calling SWF file and the URL you load must be in
 	 * exactly the same domain. For example, a SWF file at www.adobe.com can load
 	 * data only from sources that are also at www.adobe.com. To load data from a
 	 * different domain, place a URL policy file on the server hosting the
-	 * data.</p>
+	 * data.
 	 *
-	 * <p>You cannot connect to commonly reserved ports. For a complete list of
-	 * blocked ports, see "Restricting Networking APIs" in the <i>ActionScript
-	 * 3.0 Developer's Guide</i>.</p>
+	 * You cannot connect to commonly reserved ports. For a complete list of
+	 * blocked ports, see "Restricting Networking APIs" in the _ActionScript
+	 * 3.0 Developer's Guide_.
 	 *
-	 * <p> In Flash Player 10 and later, if you use a multipart Content-Type(for
+	 *  In Flash Player 10 and later, if you use a multipart Content-Type(for
 	 * example "multipart/form-data") that contains an upload(indicated by a
 	 * "filename" parameter in a "content-disposition" header within the POST
 	 * body), the POST operation is subject to the security rules applied to
-	 * uploads:</p>
+	 * uploads:
 	 *
-	 * <ul>
-	 *   <li>The POST operation must be performed in response to a user-initiated
-	 * action, such as a mouse click or key press.</li>
-	 *   <li>If the POST operation is cross-domain(the POST target is not on the
+	 * 
+	 *  * The POST operation must be performed in response to a user-initiated
+	 * action, such as a mouse click or key press.
+	 *  * If the POST operation is cross-domain(the POST target is not on the
 	 * same server as the SWF file that is sending the POST request), the target
 	 * server must provide a URL policy file that permits cross-domain
-	 * access.</li>
-	 * </ul>
+	 * access.
+	 * 
 	 *
-	 * <p>Also, for any multipart Content-Type, the syntax must be valid
+	 * Also, for any multipart Content-Type, the syntax must be valid
 	 * (according to the RFC2046 standards). If the syntax appears to be invalid,
 	 * the POST operation is subject to the security rules applied to
-	 * uploads.</p>
+	 * uploads.
 	 *
-	 * <p>For more information related to security, see the Flash Player
-	 * Developer Center Topic: <a
-	 * href="http://www.adobe.com/go/devnet_security_en"
-	 * scope="external">Security</a>.</p>
+	 * For more information related to security, see the Flash Player
+	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 * 
 	 * @param request A URLRequest object specifying the URL to download.
-	 * @throws ArgumentError <code>URLRequest.requestHeader</code> objects may
+	 * @throws ArgumentError `URLRequest.requestHeader` objects may
 	 *                       not contain certain prohibited HTTP request headers.
 	 *                       For more information, see the URLRequestHeader class
 	 *                       description.
 	 * @throws MemoryError   This error can occur for the following reasons: 1)
 	 *                       Flash Player or AIR cannot convert the
-	 *                       <code>URLRequest.data</code> parameter from UTF8 to
+	 *                       `URLRequest.data` parameter from UTF8 to
 	 *                       MBCS. This error is applicable if the URLRequest
-	 *                       object passed to <code>load()</code> is set to
-	 *                       perform a <code>GET</code> operation and if
-	 *                       <code>System.useCodePage</code> is set to
-	 *                       <code>true</code>. 2) Flash Player or AIR cannot
-	 *                       allocate memory for the <code>POST</code> data. This
+	 *                       object passed to `load()` is set to
+	 *                       perform a `GET` operation and if
+	 *                       `System.useCodePage` is set to
+	 *                       `true`. 2) Flash Player or AIR cannot
+	 *                       allocate memory for the `POST` data. This
 	 *                       error is applicable if the URLRequest object passed
-	 *                       to <code>load</code> is set to perform a
-	 *                       <code>POST</code> operation.
+	 *                       to `load` is set to perform a
+	 *                       `POST` operation.
 	 * @throws SecurityError Local untrusted files may not communicate with the
 	 *                       Internet. This may be worked around by reclassifying
 	 *                       this file as local-with-networking or trusted.
 	 * @throws SecurityError You are trying to connect to a commonly reserved
 	 *                       port. For a complete list of blocked ports, see
-	 *                       "Restricting Networking APIs" in the <i>ActionScript
-	 *                       3.0 Developer's Guide</i>.
+	 *                       "Restricting Networking APIs" in the _ActionScript
+	 *                       3.0 Developer's Guide_.
 	 * @throws TypeError     The value of the request parameter or the
-	 *                       <code>URLRequest.url</code> property of the
-	 *                       URLRequest object passed are <code>null</code>.
+	 *                       `URLRequest.url` property of the
+	 *                       URLRequest object passed are `null`.
 	 * @event complete           Dispatched after data has loaded successfully.
-	 * @event httpResponseStatus Dispatched if a call to the <code>load()</code>
+	 * @event httpResponseStatus Dispatched if a call to the `load()`
 	 *                           method attempts to access data over HTTP and
 	 *                           Adobe AIR is able to detect and return the
 	 *                           status code for the request.
 	 * @event httpStatus         If access is over HTTP, and the current Flash
 	 *                           Player environment supports obtaining status
 	 *                           codes, you may receive these events in addition
-	 *                           to any <code>complete</code> or
-	 *                           <code>error</code> event.
+	 *                           to any `complete` or
+	 *                           `error` event.
 	 * @event ioError            The load operation could not be completed.
 	 * @event open               Dispatched when a load operation commences.
 	 * @event progress           Dispatched when data is received as the download

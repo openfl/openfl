@@ -20,20 +20,25 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var blendMode:BlendMode;
 	
 	#if flash
-	@:require(flash10) public var blendShader (null, default):Shader;
+	@:require(flash10) public var blendShader (null, never):Shader;
 	#end
 	
 	public var cacheAsBitmap:Bool;
+	
+	#if air
+	public var cacheAsBitmapMatrix:flash.geom.Matrix;
+	#end
+	
 	public var filters:Array<BitmapFilter>;
 	public var height:Float;
-	public var loaderInfo (default, null):LoaderInfo;
+	public var loaderInfo (default, never):LoaderInfo;
 	public var mask:DisplayObject;
-	public var mouseX (default, null):Float;
-	public var mouseY (default, null):Float;
+	public var mouseX (default, never):Float;
+	public var mouseY (default, never):Float;
 	public var name:String;
 	public var opaqueBackground:Null<UInt>;
-	public var parent (default, null):DisplayObjectContainer;
-	public var root (default, null):DisplayObject;
+	public var parent (default, never):DisplayObjectContainer;
+	public var root (default, never):DisplayObject;
 	public var rotation:Float;
 	
 	#if flash
@@ -57,7 +62,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	#end
 	
 	public var scrollRect:Rectangle;
-	public var stage (default, null):Stage;
+	public var stage (default, never):Stage;
 	public var transform:Transform;
 	public var visible:Bool;
 	public var width:Float;
@@ -79,7 +84,6 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public function hitTestObject (obj:DisplayObject):Bool;
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool;
 	public function localToGlobal (point:Point):Point;
-	
 	
 	#if flash
 	@:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;

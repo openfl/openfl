@@ -201,11 +201,11 @@ class Matrix3DTest {
 		var exists = matrix3D.clone;
 		
 		Assert.isNotNull (exists);
-
+		
 		matrix3D = setupTestMatrix3D();
-
+		
 		var clone = matrix3D.clone();
-
+		
 		assertMatrix3DnearEquals(clone, matrix3D);
 
 	}
@@ -219,15 +219,15 @@ class Matrix3DTest {
 		var exists = matrix3D.copyColumnFrom;
 		
 		Assert.isNotNull (exists);
-
+		
 		matrix3D = setupTestMatrix3D();
 		matrix3D.copyColumnFrom(0, new Vector3D(1,  2,  3,  4) );
 		matrix3D.copyColumnFrom(1, new Vector3D(5,  6,  7,  8) );
 		matrix3D.copyColumnFrom(2, new Vector3D(9, 10, 11, 12) );
 		matrix3D.copyColumnFrom(3, new Vector3D(13, 14, 15, 16) );
-
+		
 		var m2 = new Matrix3D(Vector.ofArray ([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ]));
-
+		
 		assertMatrix3DnearEquals(m2, matrix3D );
 		
 	}
@@ -243,7 +243,7 @@ class Matrix3DTest {
 		Assert.isNotNull (exists);
 		
 		matrix3D = new Matrix3D(Vector.ofArray ([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ]));
-
+		
 		var v0 = new Vector3D();
 		var v1 = new Vector3D();
 		var v2 = new Vector3D();
@@ -252,7 +252,7 @@ class Matrix3DTest {
 		matrix3D.copyColumnTo(1, v1 );
 		matrix3D.copyColumnTo(2, v2 );
 		matrix3D.copyColumnTo(3, v3 );
-
+		
 		// Test the values as expected in Flash
 		assertVector3DnearEquals(new Vector3D(1,  2,  3,  4 ), v0);
 		assertVector3DnearEquals(new Vector3D(5,  6,  7,  8 ), v1);
@@ -270,12 +270,36 @@ class Matrix3DTest {
 		var exists = matrix3D.copyFrom;
 		
 		Assert.isNotNull (exists);
-
+		
 		matrix3D = setupTestMatrix3D();
 		var m2 = new Matrix3D(Vector.ofArray ([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ]));
 		matrix3D.copyFrom(m2 );
-
+		
 		assertMatrix3DnearEquals(m2, matrix3D );
+		
+	}
+	
+	
+	@Test public function copyRawDataFrom () {
+		
+		// TODO: Confirm functionality
+		
+		var matrix3D = new Matrix3D ();
+		var exists = matrix3D.copyRawDataFrom;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function copyRawDataTo () {
+		
+		// TODO: Confirm functionality
+		
+		var matrix3D = new Matrix3D ();
+		var exists = matrix3D.copyRawDataTo;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
@@ -294,12 +318,12 @@ class Matrix3DTest {
 		matrix3D.copyRowFrom(1, new Vector3D(5,  6,  7,  8) );
 		matrix3D.copyRowFrom(2, new Vector3D(9, 10, 11, 12) );
 		matrix3D.copyRowFrom(3, new Vector3D(13, 14, 15, 16) );
-
+		
 		var m2 = new Matrix3D(Vector.ofArray ([ 1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0 ]));
-
+		
 		// Test the values as expected in Flash
 		assertMatrix3DnearEquals(m2, matrix3D );
-
+		
 	}
 	
 	
@@ -311,9 +335,9 @@ class Matrix3DTest {
 		var exists = matrix3D.copyRowTo;
 		
 		Assert.isNotNull (exists);
-
+		
 		matrix3D = new Matrix3D(Vector.ofArray ([ 1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0 ]));
-
+		
 		var v0 = new Vector3D();
 		var v1 = new Vector3D();
 		var v2 = new Vector3D();
@@ -322,13 +346,13 @@ class Matrix3DTest {
 		matrix3D.copyRowTo(1, v1 );
 		matrix3D.copyRowTo(2, v2 );
 		matrix3D.copyRowTo(3, v3 );
-
+		
 		// Test the values as expected in Flash
 		assertVector3DnearEquals(new Vector3D(1,  2,  3,  4 ), v0 );
 		assertVector3DnearEquals(new Vector3D(5,  6,  7,  8 ), v1 );
 		assertVector3DnearEquals(new Vector3D(9, 10, 11, 12 ), v2 );
 		assertVector3DnearEquals(new Vector3D(13, 14, 15, 16 ), v3 );
-
+		
 	}
 	
 	
@@ -342,7 +366,7 @@ class Matrix3DTest {
 		Assert.isNotNull (exists);
 		
 		matrix3D = setupTestMatrix3D();
-
+		
 		var copy = new Matrix3D();
 		matrix3D.copyToMatrix3D(copy);
 

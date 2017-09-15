@@ -6,6 +6,11 @@ import openfl._internal.renderer.AbstractBlendModeManager;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BlendMode;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class CairoBlendModeManager extends AbstractBlendModeManager {
 	
@@ -35,7 +40,7 @@ class CairoBlendModeManager extends AbstractBlendModeManager {
 				
 				renderSession.cairo.operator = CairoOperator.ADD;
 			
-			case ALPHA:
+			//case ALPHA:
 				
 				//TODO;
 			
@@ -47,7 +52,7 @@ class CairoBlendModeManager extends AbstractBlendModeManager {
 				
 				renderSession.cairo.operator = CairoOperator.DIFFERENCE;
 			
-			case ERASE:
+			//case ERASE:
 				
 				//TODO;
 			
@@ -55,7 +60,7 @@ class CairoBlendModeManager extends AbstractBlendModeManager {
 				
 				renderSession.cairo.operator = CairoOperator.HARD_LIGHT;
 			
-			case INVERT:
+			//case INVERT:
 				
 				//TODO
 			
@@ -71,10 +76,6 @@ class CairoBlendModeManager extends AbstractBlendModeManager {
 				
 				renderSession.cairo.operator = CairoOperator.MULTIPLY;
 			
-			case NORMAL:
-				
-				renderSession.cairo.operator = CairoOperator.OVER;
-			
 			case OVERLAY:
 				
 				renderSession.cairo.operator = CairoOperator.OVERLAY;
@@ -83,11 +84,11 @@ class CairoBlendModeManager extends AbstractBlendModeManager {
 				
 				renderSession.cairo.operator = CairoOperator.SCREEN;
 			
-			case SHADER:
+			//case SHADER:
 				
 				//TODO
 			
-			case SUBTRACT:
+			//case SUBTRACT:
 				
 				//TODO;
 			

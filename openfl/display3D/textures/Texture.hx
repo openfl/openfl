@@ -5,6 +5,7 @@ import lime.graphics.opengl.GL;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.events.TimerEvent;
@@ -12,19 +13,21 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 import haxe.Timer;
+import haxe.io.Bytes;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+@:access(openfl._internal.stage3D.SamplerState)
+@:access(openfl.display3D.Context3D)
 
 
 @:final class Texture extends TextureBase {
 	
 	
 	private static var __lowMemoryMode:Bool = false;
-	
-	//private var __format:Context3DTextureFormat;
-	private var __height:Int;
-	private var __miplevel:Int;
-	private var __optimizeForRenderToTexture:Bool;
-	private var __streamingLevels:Int;
-	private var __width:Int;
 	
 	
 	private function new (context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
@@ -36,6 +39,14 @@ import haxe.Timer;
 		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
+		
+		GL.bindTexture (__textureTarget, __textureID);
+		GLUtils.CheckGLError ();
+		
+		GL.texImage2D (__textureTarget, 0, __internalFormat, width, height, 0, __format, GL.UNSIGNED_BYTE, 0);
+		GLUtils.CheckGLError ();
+		
+		GL.bindTexture (__textureTarget, null);
 		
 		uploadFromTypedArray (null);
 		
@@ -92,110 +103,97 @@ import haxe.Timer;
 			}
 			*/
 		
-		__miplevel = miplevel;
+		if (source == null) return;
 		
-		var image = source.image;
+		var width = __width >> miplevel;
+		var height = __height >> miplevel;
 		
-		if (!image.premultiplied && image.transparent) {
+		if (width == 0 && height == 0) return;
+		
+		if (width == 0) width = 1;
+		if (height == 0) height = 1;
+		
+		if (source.width != width || source.height != height) {
 			
-			image = image.clone ();
-			image.premultiplied = true;
+			var copy = new BitmapData (width, height, true, 0);
+			copy.draw (source);
+			source = copy;
 			
 		}
 		
-		uploadFromTypedArray (image.data);
+		var image = __getImage (source);
+		
+		uploadFromTypedArray (image.data, miplevel);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
-		__miplevel = miplevel;
-		
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, miplevel);
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
+		
+		if (data == null) return;
+		
+		var width = __width >> miplevel;
+		var height = __height >> miplevel;
+		
+		if (width == 0 && height == 0) return;
+		
+		if (width == 0) width = 1;
+		if (height == 0) height = 1;
 		
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (__textureTarget, miplevel, __internalFormat, width, height, 0, __format, GL.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
 		GL.bindTexture (__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
-		var memUsage = (__width * __height) * 4;
+		var memUsage = (width * height) * 4;
 		__trackMemoryUsage (memUsage);
 		
 	}
 	
 	
-	private static function __getATFVersion (data:ByteArray):UInt {
+	private override function __setSamplerState (state:SamplerState) {
 		
-		var signature = data.readUTFBytes (3);
-		
-		if (signature != "ATF") {
+		if (!state.equals (__samplerState)) {
 			
-			throw new IllegalOperationError ("ATF signature not found");
-			
-		}
-		
-		var position = data.position;
-		var version = 0;
-		
-		if (data.bytesAvailable >= 5) {
-			
-			var sig = __readUInt32 (data);
-			
-			if (sig == 0xff) {
+			if (state.minFilter != GL.NEAREST && state.minFilter != GL.LINEAR && !state.mipmapGenerated) {
 				
-				version = data.readUnsignedByte ();
+				GL.generateMipmap (GL.TEXTURE_2D);
+				GLUtils.CheckGLError ();
 				
-			} else {
+				state.mipmapGenerated = true;
 				
-				data.position = position;
+			}
+			
+			if (state.maxAniso != 0.0) {
+				
+				GL.texParameterf (GL.TEXTURE_2D, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				GLUtils.CheckGLError ();
 				
 			}
 			
 		}
 		
-		return version;
-		
-	}
-	
-	
-	private static function __readUInt24 (data:ByteArray):UInt {
-		
-		var value:UInt;
-		value = (data.readUnsignedByte () << 16);
-		value |= (data.readUnsignedByte () << 8);
-		value |= data.readUnsignedByte ();
-		return value;
-		
-	}
-	
-	
-	private static function __readUInt32 (data:ByteArray):UInt {
-		
-		var value:UInt;
-		value = (data.readUnsignedByte () << 24);
-		value |= (data.readUnsignedByte () << 16);
-		value |= (data.readUnsignedByte () << 8);
-		value |= data.readUnsignedByte ();
-		return value;
+		super.__setSamplerState (state);
 		
 	}
 	
@@ -203,9 +201,25 @@ import haxe.Timer;
 	private function __uploadATFTextureFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		data.position = byteArrayOffset;
+		var version = 0;
+		var length = 0;
+
+		// When the 6th byte is 0xff, we have one of the new formats
+		if (data[byteArrayOffset+6] == 0xff) {
+			
+			version = data[byteArrayOffset+7];
+			data.position = byteArrayOffset+8;
+			length = __readUInt32 (data);
 		
-		var version = __getATFVersion (data);
-		var length = (version == 0) ? __readUInt24 (data) : __readUInt32 (data);
+		}
+		else {
+			
+			version = 0;
+			data.position = byteArrayOffset+3;
+			length = __readUInt24 (data);
+		
+		}
+		
 		
 		if (cast ((byteArrayOffset + length), Int) > data.length) {
 			
@@ -222,11 +236,15 @@ import haxe.Timer;
 			
 		}
 		
-		//Removing ATF format limitation to allow for multiple format support.
-		//AtfFormat format = (AtfFormat)(tdata & 0x7f);	
-		//if (format != AtfFormat.Block) {
-		//	throw new NotImplementedException("Only ATF block compressed textures are supported");
-		//}
+		// Handle the different texture formats
+		var format:AtfFormat = cast (tdata & 0x7f);	
+		switch (format) {
+			
+			case AtfFormat.RAW_COMPRESSED: __format = TextureBase.__textureFormatCompressed;
+			case AtfFormat.RAW_COMPRESSED_ALPHA: __format = TextureBase.__textureFormatCompressedAlpha;
+			default: throw new IllegalOperationError("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
+		
+		}
 		
 		var width:Int = (1 << cast data.readUnsignedByte ());
 		var height:Int = (1 << cast data.readUnsignedByte ());
@@ -238,36 +256,45 @@ import haxe.Timer;
 		}
 		
 		var mipCount:Int = cast data.readUnsignedByte ();
-		
+
+		// DXT1/5, ETC1, PVRTC4, ETC2
+		// ETC2 is available with ATF version 3 
+		var gpuFormats = (version < 3) ? 3 : 4;
+
 		for (level in 0...mipCount) {
 			
-			for (gpuFormat in 0...3) {
+			for (gpuFormat in 0...gpuFormats) {
 				
 				var blockLength = (version == 0) ? __readUInt24 (data) : __readUInt32 (data);
+
+				if ((data.position + blockLength) > data.length) {
+
+					throw new IllegalOperationError("Block length exceeds ATF file length");
 				
-				/*
-					//TODO: Figure out exceptions
-					if ((data.position + blockLength) > data.length) {
-						throw new System.IO.InvalidDataException("Block length exceeds ATF file length");
-					}*/
+				}
 				
 				if (blockLength > 0) {
 					
-					if (gpuFormat == 1) {
+
+					if (gpuFormat == 0) {
 						
-						//TODO: Removed Monoplatform code
+						// DXT1/5
+
+						var bytes:Bytes = Bytes.alloc(blockLength);
+						data.readBytes(bytes, 0, blockLength);
 						
-					} else if (gpuFormat == 2) {
+						GL.compressedTexImage2D (__textureTarget, level, __format, width>>level, height>>level, 0, blockLength, bytes);
+						GLUtils.CheckGLError ();
+					
+					} else {
+
+						// TODO: Other formats are currently not supported
 						
-						//TODO: Removed Monoplatform code
+						data.position += blockLength;
 						
 					}
 					
-					// TODO handle other formats/platforms
-					
 				}
-				
-				data.position += blockLength;
 				
 			}
 			
@@ -286,11 +313,14 @@ import haxe.Timer;
 	
 }
 
+
 @:enum private abstract AtfFormat(Int) {
 	
 	public var RGB888 = 0;
 	public var RGBA8888 = 1;
-	public var COMPRESSED = 2;
-	public var BLOCK = 5;
+	public var COMPRESSED = 2; // JPEG-XR+LZMA & Block compression
+	public var RAW_COMPRESSED = 3; // Block compression
+	public var COMPRESSED_ALPHA = 4; // JPEG-XR+LZMA & Block compression with Alpha
+	public var RAW_COMPRESSED_ALPHA = 5; // Block compression with Alpha
 	
 }

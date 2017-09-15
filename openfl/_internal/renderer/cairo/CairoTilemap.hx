@@ -11,6 +11,11 @@ import openfl.display.Tilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
@@ -24,17 +29,22 @@ class CairoTilemap {
 	
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
-		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
+		
+		tilemap.__updateTileArray ();
+		
+		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
 		var cairo = renderSession.cairo;
 		
+		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var rect = Rectangle.__temp;
+		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
-		var transform = tilemap.__worldTransform;
+		var transform = tilemap.__renderTransform;
 		var roundPixels = renderSession.roundPixels;
 		
 		var defaultTileset = tilemap.tileset;
@@ -42,33 +52,42 @@ class CairoTilemap {
 		var surface = null;
 		var pattern = null;
 		
-		var tiles, count, tile, alpha, visible, tileset, tileData, bitmapData;
+		var alpha, visible, tileset, id, tileData, bitmapData;
 		
-		tiles = tilemap.__tiles;
-		count = tiles.length;
+		var tileArray = tilemap.__tileArray;
 		
 		var matrix = new Matrix3 ();
-		var tileTransform = Matrix.__temp;
+		var tileTransform, tileRect = null;
 		
-		for (i in 0...count) {
-			
-			tile = tiles[i];
+		for (tile in tileArray) {
 			
 			alpha = tile.alpha;
 			visible = tile.visible;
-			
 			if (!visible || alpha <= 0) continue;
 			
-			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
-			
+			tileset = tile.tileset;
+			if (tileset == null) tileset = defaultTileset;
 			if (tileset == null) continue;
 			
-			tileData = tileset.__data[tile.id];
+			id = tile.id;
 			
-			if (tileData == null) continue;
+			if (id == -1) {
+				
+				tileRect = tile.rect;
+				if (tileRect.width <= 0 || tileRect.height <= 0) continue;
+				
+			} else {
+				
+				tileData = tileset.__data[id];
+				if (tileData == null) continue;
+				
+				rect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
+				tile.rect = rect;
+				tileRect = rect;
+				
+			}
 			
 			bitmapData = tileset.bitmapData;
-			
 			if (bitmapData == null) continue;
 			
 			if (bitmapData != cacheBitmapData) {
@@ -82,8 +101,8 @@ class CairoTilemap {
 				
 			}
 			
-			tileTransform.copyFrom (transform);
-			tileTransform.concat (tile.matrix);
+			tileTransform = tile.matrix;
+			tileTransform.concat (transform);
 			
 			if (roundPixels) {
 				
@@ -94,15 +113,15 @@ class CairoTilemap {
 			
 			cairo.matrix = tileTransform.__toMatrix3 ();
 			
-			matrix.tx = tileData.x;
-			matrix.ty = tileData.y;
+			matrix.tx = tileRect.x;
+			matrix.ty = tileRect.y;
 			pattern.matrix = matrix;
 			cairo.source = pattern;
 			
 			cairo.save ();
 			
 			cairo.newPath ();
-			cairo.rectangle (0, 0, tileData.width, tileData.height);
+			cairo.rectangle (0, 0, tileRect.width, tileRect.height);
 			cairo.clip ();
 			
 			if (tilemap.__worldAlpha == 1 && alpha == 1) {
@@ -121,6 +140,8 @@ class CairoTilemap {
 		
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+		Rectangle.__pool.release (rect);
 		
 	}
 	

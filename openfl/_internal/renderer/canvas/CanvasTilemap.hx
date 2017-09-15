@@ -22,17 +22,22 @@ class CanvasTilemap {
 		
 		#if (js && html5)
 		
-		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
+		
+		tilemap.__updateTileArray ();
+		
+		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
 		var context = renderSession.context;
 		
+		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var rect = Rectangle.__temp;
+		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
-		var transform = tilemap.__worldTransform;
+		var transform = tilemap.__renderTransform;
 		var roundPixels = renderSession.roundPixels;
 		
 		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
@@ -48,32 +53,40 @@ class CanvasTilemap {
 		var cacheBitmapData = null;
 		var source = null;
 		
-		var tiles, count, tile, alpha, visible, tileset, tileData, bitmapData;
+		var alpha, visible, tileset, id, tileData, bitmapData;
 		
-		tiles = tilemap.__tiles;
-		count = tiles.length;
+		var tileArray = tilemap.__tileArray;
 		
-		var tileTransform = Matrix.__temp;
+		var tileTransform;
+		var tileRect = Rectangle.__pool.get ();
 		
-		for (i in 0...count) {
-			
-			tile = tiles[i];
+		for (tile in tileArray) {
 			
 			alpha = tile.alpha;
 			visible = tile.visible;
-			
 			if (!visible || alpha <= 0) continue;
 			
-			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
-			
+			tileset = tile.tileset;
+			if (tileset == null) tileset = defaultTileset;
 			if (tileset == null) continue;
 			
-			tileData = tileset.__data[tile.id];
+			id = tile.id;
 			
-			if (tileData == null) continue;
+			if (id == -1) {
+				
+				tileRect.copyFrom (tile.rect);
+				if (tileRect.width <= 0 || tileRect.height <= 0) continue;
+				
+			} else {
+				
+				tileData = tileset.__data[id];
+				if (tileData == null) continue;
+				
+				tileRect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
+				
+			}
 			
 			bitmapData = tileset.bitmapData;
-			
 			if (bitmapData == null) continue;
 			
 			if (bitmapData != cacheBitmapData) {
@@ -91,8 +104,8 @@ class CanvasTilemap {
 			
 			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
-			tileTransform.copyFrom (transform);
-			tileTransform.concat (tile.matrix);
+			tileTransform = tile.matrix;
+			tileTransform.concat (transform);
 			
 			if (roundPixels) {
 				
@@ -104,7 +117,7 @@ class CanvasTilemap {
 				
 			}
 			
-			context.drawImage (source, tileData.x, tileData.y, tileData.width, tileData.height, 0, 0, tileData.width, tileData.height);
+			context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
 			
 		}
 		
@@ -119,6 +132,9 @@ class CanvasTilemap {
 		
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+		Rectangle.__pool.release (rect);
+		Rectangle.__pool.release (tileRect);
 		
 		#end
 		

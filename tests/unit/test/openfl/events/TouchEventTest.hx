@@ -136,13 +136,7 @@ class TouchEventTest {
 		var touchEvent = new TouchEvent (TouchEvent.TOUCH_BEGIN);
 		var exists = touchEvent.stageX;
 		
-		#if cpp
-		Assert.areEqual (0, exists);
-		#elseif neko
-		Assert.isNull (exists);
-		#else
 		Assert.isNaN (exists);
-		#end
 		
 	}
 	
@@ -154,13 +148,7 @@ class TouchEventTest {
 		var touchEvent = new TouchEvent (TouchEvent.TOUCH_BEGIN);
 		var exists = touchEvent.stageY;
 		
-		#if cpp
-		Assert.areEqual (0, exists);
-		#elseif neko
-		Assert.isNull (exists);
-		#else
 		Assert.isNaN (exists);
-		#end
 		
 	}
 	

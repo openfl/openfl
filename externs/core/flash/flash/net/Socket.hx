@@ -11,11 +11,23 @@ import openfl.utils.IDataOutput;
 extern class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	public var bytesAvailable (default, null):UInt;
-	@:require(flash11) public var bytesPending (default, null):UInt;
-	public var connected (default, null):Bool;
+	public var bytesAvailable (default, never):UInt;
+	@:require(flash11) public var bytesPending (default, never):UInt;
+	public var connected (default, never):Bool;
 	public var endian:Endian;
+	
+	#if air
+	public var localAddress (default, never):String;
+	public var localPort (default, never):Int;
+	#end
+	
 	public var objectEncoding:UInt;
+	
+	#if air
+	public var remoteAddress (default, never):String;
+	public var remotePort (default, never):Int;
+	#end
+	
 	@:require(flash10) public var timeout:UInt;
 	
 	public function new (host:String = null, port:Int = 0);

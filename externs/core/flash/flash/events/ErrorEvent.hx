@@ -6,7 +6,7 @@ extern class ErrorEvent extends TextEvent {
 	
 	public static var ERROR (default, never):String;
 	
-	@:require(flash10_1) public var errorID (default, null):Int;
+	@:require(flash10_1) public var errorID (default, never):Int;
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void;
 	

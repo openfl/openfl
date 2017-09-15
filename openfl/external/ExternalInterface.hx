@@ -10,7 +10,7 @@ import openfl.Lib;
 @:final class ExternalInterface {
 	
 	
-	public static var available (default, null) = true;
+	public static var available (default, null) = #if (js && html5) true #else false #end;
 	public static var marshallExceptions = false;
 	public static var objectID (default, null):String;
 	
@@ -33,34 +33,54 @@ import openfl.Lib;
 		#if (js && html5)
 		var callResponse:Dynamic = null;
 		
-		var thisArg = functionName.split('.').slice(0, -1).join('.');
-		if (thisArg.length > 0) {
-			functionName += '.bind(${thisArg})';
+		if (!~/^\(.+\)$/.match(functionName)) {
+			var thisArg = functionName.split('.').slice(0, -1).join('.');
+			if (thisArg.length > 0) {
+				functionName += '.bind(${thisArg})';
+			}
 		}
-		
+
+		// Flash does not throw an error or attempt to execute
+		// if the function does not exist.
+		var fn:Dynamic;
+		try {
+
+			fn = js.Lib.eval (functionName);
+
+		} catch (e:Dynamic) {
+
+			return null;
+
+		}
+		if (Type.ValueType.TFunction != Type.typeof(fn)) {
+
+			return null;
+
+		}
+
 		if (p1 == null) {
 			
-			callResponse = js.Lib.eval (functionName) ();
+			callResponse = fn ();
 			
 		} else if (p2 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1);
+			callResponse = fn (p1);
 			
 		} else if (p3 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2);
+			callResponse = fn (p1, p2);
 			
 		} else if (p4 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2, p3);
+			callResponse = fn (p1, p2, p3);
 			
 		} else if (p5 == null) {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2, p3, p4);
+			callResponse = fn (p1, p2, p3, p4);
 			
 		} else {
 			
-			callResponse = js.Lib.eval (functionName) (p1, p2, p3, p4, p5);
+			callResponse = fn (p1, p2, p3, p4, p5);
 			
 		}
 		

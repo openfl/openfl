@@ -8,11 +8,11 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public var mouseChildren:Bool;
-	public var numChildren (default, null):Int;
+	public var numChildren (default, never):Int;
 	public var tabChildren:Bool;
 	
 	#if flash
-	public var textSnapshot (default, null):flash.text.TextSnapshot;
+	public var textSnapshot (default, never):flash.text.TextSnapshot;
 	#end
 	
 	

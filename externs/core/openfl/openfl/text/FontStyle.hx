@@ -7,30 +7,30 @@ package openfl.text; #if (display || !flash)
 @:enum abstract FontStyle(Null<Int>) {
 	
 	/**
-	 * Defines the bold style of a font for the <code>fontStyle</code> parameter
-	 * in the <code>setAdvancedAntiAliasingTable()</code> method. Use the syntax
-	 * <code>FontStyle.BOLD</code>.
+	 * Defines the bold style of a font for the `fontStyle` parameter
+	 * in the `setAdvancedAntiAliasingTable()` method. Use the syntax
+	 * `FontStyle.BOLD`.
 	 */
 	public var BOLD = 0;
 	
 	/**
-	 * Defines the italic style of a font for the <code>fontStyle</code>
-	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
-	 * the syntax <code>FontStyle.ITALIC</code>.
+	 * Defines the italic style of a font for the `fontStyle`
+	 * parameter in the `setAdvancedAntiAliasingTable()` method. Use
+	 * the syntax `FontStyle.ITALIC`.
 	 */
 	public var BOLD_ITALIC = 1;
 	
 	/**
-	 * Defines the italic style of a font for the <code>fontStyle</code>
-	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
-	 * the syntax <code>FontStyle.ITALIC</code>.
+	 * Defines the italic style of a font for the `fontStyle`
+	 * parameter in the `setAdvancedAntiAliasingTable()` method. Use
+	 * the syntax `FontStyle.ITALIC`.
 	 */
 	public var ITALIC = 2;
 	
 	/**
-	 * Defines the plain style of a font for the <code>fontStyle</code> parameter
-	 * in the <code>setAdvancedAntiAliasingTable()</code> method. Use the syntax
-	 * <code>FontStyle.REGULAR</code>.
+	 * Defines the plain style of a font for the `fontStyle` parameter
+	 * in the `setAdvancedAntiAliasingTable()` method. Use the syntax
+	 * `FontStyle.REGULAR`.
 	 */
 	public var REGULAR = 3;
 	

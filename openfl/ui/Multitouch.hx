@@ -43,9 +43,13 @@ import openfl.Vector;
 		
 		return false;
 		
-		#else
+		#elseif !mac
 		
 		return true;
+		
+		#else
+		
+		return false;
 		
 		#end
 		

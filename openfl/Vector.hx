@@ -14,7 +14,7 @@ abstract Vector<T>(IVector<T>) {
 	public var length (get, set):Int;
 	
 	
-	public function new (?length:Int, ?fixed:Bool):Void;
+	public function new (?length:Int, ?fixed:Bool /*, ?array:Array<Dynamic>*/):Void;
 	
 	
 	public inline function concat (?a:Vector<T>):Vector<T> {
@@ -59,7 +59,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline function join (sep:String):String {
+	public inline function join (sep:String = ","):String {
 		
 		return this.join (sep);
 		
@@ -87,9 +87,16 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline function reverse ():Void {
+	public inline function removeAt (index:Int):T {
 		
-		this.reverse ();
+		return this.removeAt (index);
+		
+	}
+	
+	
+	public inline function reverse ():Vector<T> {
+		
+		return cast this.reverse ();
 		
 	}
 	
@@ -131,7 +138,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public inline function toString ():String {
 		
-		return this.toString ();
+		return this != null ? this.toString () : null;
 		
 	}
 	
@@ -143,7 +150,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline static function ofArray<T> (a:Array<Dynamic>):Vector<T> {
+	public inline static function ofArray<T> (a:Array<T>):Vector<T> {
 		
 		var vector = new Vector<T> ();
 		
@@ -165,39 +172,39 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool):BoolVector {
+	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):BoolVector {
 		
-		return new BoolVector (length, fixed);
-		
-	}
-	
-	
-	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool):IntVector {
-		
-		return new IntVector (length, fixed);
+		return new BoolVector (length, fixed /*, cast array*/);
 		
 	}
 	
 	
-	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool):FloatVector {
+	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):IntVector {
 		
-		return new FloatVector (length, fixed);
+		return new IntVector (length, fixed /*, cast array*/);
+		
+	}
+	
+	
+	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):FloatVector {
+		
+		return new FloatVector (length, fixed /*, cast array*/);
 		
 	}
 	
 	
 	#if !cs
-	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool):FunctionVector {
+	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):FunctionVector {
 		
-		return new FunctionVector (length, fixed);
+		return new FunctionVector (length, fixed /*, cast array*/);
 		
 	}
 	#end
 	
 	
-	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool):ObjectVector<T> {
+	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):ObjectVector<T> {
 		
-		return new ObjectVector<T> (length, fixed);
+		return new ObjectVector<T> (length, fixed /*, cast array*/);
 		
 	}
 	
@@ -277,6 +284,12 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class BoolVector implements IVector<Bool> {
@@ -381,7 +394,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -434,9 +447,23 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function removeAt (index:Int):Bool {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	public function reverse ():IVector<Bool> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -494,7 +521,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -567,6 +594,12 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class FloatVector implements IVector<Float> {
@@ -663,7 +696,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -716,9 +749,23 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function removeAt (index:Int):Float {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return 0;
+		
+	}
+	
+	
+	public function reverse ():IVector<Float> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -776,7 +823,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -852,6 +899,12 @@ abstract Vector<T>(IVector<T>) {
 
 
 #if !cs
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:dox(hide) private class FunctionVector implements IVector<Function> {
 	
 	
@@ -954,7 +1007,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -1007,9 +1060,23 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function removeAt (index:Int):Function {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
+	public function reverse ():IVector<Function> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -1067,7 +1134,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1141,6 +1208,12 @@ abstract Vector<T>(IVector<T>) {
 #end
 
 
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class IntVector implements IVector<Int> {
@@ -1237,7 +1310,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -1290,9 +1363,23 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function removeAt (index:Int):Int {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return 0;
+		
+	}
+	
+	
+	public function reverse ():IVector<Int> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -1350,7 +1437,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1423,6 +1510,12 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class ObjectVector<T> implements IVector<T> {
@@ -1519,7 +1612,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function join (sep:String):String {
+	public function join (sep:String = ","):String {
 		
 		return __array.join (sep);
 		
@@ -1572,9 +1665,23 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function reverse ():Void {
+	public function removeAt (index:Int):T {
+		
+		if (!fixed || index < __array.length) {
+			
+			return __array.splice (index, 1)[0];
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
+	public function reverse ():IVector<T> {
 		
 		__array.reverse ();
+		return this;
 		
 	}
 	
@@ -1632,7 +1739,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	public function toString ():String {
 		
-		return __array.toString ();
+		return __array != null ? __array.toString () : null;
 		
 	}
 	
@@ -1718,11 +1825,12 @@ abstract Vector<T>(IVector<T>) {
 	public function indexOf (x:T, ?from:Int = 0):Int;
 	public function insertAt (index:Int, element:T):Void;
 	public function iterator<T> ():Iterator<T>;
-	public function join (sep:String):String;
+	public function join (sep:String = ","):String;
 	public function lastIndexOf (x:T, ?from:Int = 0):Int;
 	public function pop ():Null<T>;
 	public function push (x:T):Int;
-	public function reverse ():Void;
+	public function removeAt (index:Int):T;
+	public function reverse ():IVector<T>;
 	public function set (index:Int, value:T):T;
 	public function shift ():Null<T>;
 	public function slice (?pos:Int, ?end:Int):IVector<T>;
@@ -1746,7 +1854,6 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public var fixed (get, set):Bool;
 	public var length (get, set):Int;
-	
 	
 	
 	public inline function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void {
@@ -1804,9 +1911,11 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public function insertAt (index:Int, element:T):Void {
 		
+		#if flash19
+		this.insertAt (index, element);
+		#else
 		Reflect.callMethod (this.splice, this.splice, [ index, 0, element ]);
-		//this.splice (index, 0, element);
-		//this.insertAt (index, element);
+		#end
 		
 	}
 	
@@ -1818,7 +1927,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	public inline function join (sep:String):String {
+	public inline function join (sep:String = ","):String {
 		
 		return this.join (sep);
 		
@@ -1846,9 +1955,20 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	public inline function reverse ():Void {
+	public function removeAt (index:Int):T {
 		
-		this.reverse ();
+		#if flash19
+		return this.removeAt (index);
+		#else
+		return Reflect.callMethod (this.splice, this.splice, [ index, 1 ])[0];
+		#end
+		
+	}
+	
+	
+	public inline function reverse ():Vector<T> {
+		
+		return this.reverse ();
 		
 	}
 	
@@ -1883,7 +2003,7 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public inline function toString ():String {
 		
-		return this.toString ();
+		return this != null ? "[" + this.toString () + "]" : null;
 		
 	}
 	

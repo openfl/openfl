@@ -6,6 +6,11 @@ import openfl.geom.Vector3D;
 import openfl.errors.Error;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Matrix3D {
 	
@@ -19,7 +24,7 @@ class Matrix3D {
 		
 		if (v != null && v.length == 16) {
 			
-			rawData = v;
+			rawData = v.concat ();
 			
 		} else {
 			
