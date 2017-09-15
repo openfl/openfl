@@ -35,7 +35,11 @@ extern class Sound extends EventDispatcher {
 	#if flash
 	@:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
-	
+
+	#if flash
+	public var sampleRate (get, never):Int;
+	private inline function get_sampleRate ():Int { return 44100; }
+	#end		
 	
 	public static inline function fromAudioBuffer (buffer:AudioBuffer):Sound {
 		
