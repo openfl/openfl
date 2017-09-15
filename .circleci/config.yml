@@ -101,6 +101,9 @@ jobs:
      - attach_workspace:
          at: /
      - run:
+         name: Rebuild HXCPP static libraries
+         command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
+     - run:
          name: Rebuild Lime Desktop Binary
          command: haxelib run lime rebuild linux -release -64 -nocffi
      - run:
@@ -117,6 +120,9 @@ jobs:
     steps:
      - attach_workspace:
          at: /
+     - run:
+         name: Rebuild HXCPP static libraries
+         command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
      - run:
          name: Rebuild Lime Desktop Binary
          command: haxelib run lime rebuild linux -release -64 -nocffi
