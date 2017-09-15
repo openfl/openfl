@@ -10,7 +10,7 @@ package openfl._internal.timeline;
 @:keep class Frame {
 	
 	
-	public var label:String;
+	public var labels:Array<String>;
 	public var objects:Array<FrameObject>;
 	public var script:Dynamic;
 	public var scriptSource:String;

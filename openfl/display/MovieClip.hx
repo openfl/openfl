@@ -391,9 +391,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			frame = i + 1;
 			frameData = __symbol.frames[i];
 			
-			if (frameData.label != null) {
-				
-				__currentLabels.push (new FrameLabel (frameData.label, i + 1));
+			if (frameData.labels != null) {
+
+				for (label in frameData.labels) {
+
+					__currentLabels.push (new FrameLabel (label, i + 1));
+
+				}
 				
 			}
 			
@@ -791,10 +795,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 	}
 	
-	
+
 	private function __updateFrameLabel ():Void {
-		
-		__currentFrameLabel = __symbol.frames[__currentFrame - 1].label;
+
+		// NOTE: in flash, the first label on the timeline is the current one
+		__currentFrameLabel = __symbol.frames[__currentFrame - 1].labels[0];
 		
 		if (__currentFrameLabel != null) {
 			

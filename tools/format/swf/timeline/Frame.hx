@@ -9,7 +9,7 @@ class Frame
 	public var frameNumber:Int = 0;
 	public var tagIndexStart:Int = 0;
 	public var tagIndexEnd:Int = 0;
-	public var label:String;
+	public var labels:Array<String>;
 	
 	public var objects(default, null):Map<Int, FrameObject>;
 	private var _objectsSortedByDepth:Array<FrameObject>;
