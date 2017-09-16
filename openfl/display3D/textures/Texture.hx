@@ -131,7 +131,7 @@ import haxe.io.Bytes;
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).bytes.getData(), miplevel);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).bytes.b, miplevel);
 			return;
 			
 		}
@@ -142,8 +142,10 @@ import haxe.io.Bytes;
 	}
 	
 	
-	public function uploadFromTypedArray (data:lime.utils.DataPointer, miplevel:UInt = 0):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
+		if (data == null) return;
+
 		var width = __width >> miplevel;
 		var height = __height >> miplevel;
 		
