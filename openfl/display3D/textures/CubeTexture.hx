@@ -121,6 +121,7 @@ import openfl.utils.ByteArray;
 	public function uploadFromTypedArray (data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
+		
 		var size = __size >> miplevel;
 		if (size == 0) return;
 		

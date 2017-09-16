@@ -145,7 +145,7 @@ import haxe.io.Bytes;
 	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-
+		
 		var width = __width >> miplevel;
 		var height = __height >> miplevel;
 		
