@@ -842,7 +842,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function set( pos : Int, v : Int ) : Void {
 		bytes.set(pos, v);
 	}
-	@:deprecated("toString: openfl.utils.ByteArray no longer derives from haxe.io.Bytes")
+	//@:deprecated("toString: openfl.utils.ByteArray no longer derives from haxe.io.Bytes")
 	public function toString() : String {
 		return bytes.toString();
 	}
