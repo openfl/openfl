@@ -218,12 +218,14 @@ class SpriteBatch {
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, width, height, localMatrix, uvs, color, pixelSnapping);
 
-		var itIsSimpleBlit:Bool = Math.abs (Math.abs (localMatrix.a) * width - bitmapData.physicalWidth) < 0.5
-		&& Math.abs (Math.abs (localMatrix.d) * height - bitmapData.physicalHeight) < 0.5
-		&& Math.abs (localMatrix.b) < 0.001
-		&& Math.abs (localMatrix.c) < 0.001;
+		if (smoothing == null) {
+			smoothing = Math.abs (Math.abs (localMatrix.a) * width - bitmapData.physicalWidth) < 0.5
+				&& Math.abs (Math.abs (localMatrix.d) * height - bitmapData.physicalHeight) < 0.5
+				&& Math.abs (localMatrix.b) < 0.001
+				&& Math.abs (localMatrix.c) < 0.001;
+		}
 
-		setState(batchedSprites, texture, smoothing && !itIsSimpleBlit, blendMode, ct, flashShader);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader);
 
 		batchedSprites++;
 		Matrix.pool.put (localMatrix);

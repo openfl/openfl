@@ -90,7 +90,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __isMask:Bool;
 	private var __mask:DisplayObject;
 	private var __maskCached:Bool = false;
-	private var __mustRefreshGraphics:Bool = false;
+	private var __mustRefreshGraphicsCounter:Int = -1;
 	private var __name:String = "";
 	private var __objectTransform:Transform;
 	private var __offset:Point;
@@ -114,7 +114,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __cacheAsBitmap:Bool = false;
 	private var __isCachingAsBitmap:Bool = false;
 	private var __cacheAsBitmapMatrix:Matrix;
-	private var __cacheAsBitmapSmooth:Bool = true;
+	private var __cacheAsBitmapSmooth:Bool = null;
 	private var __forceCacheAsBitmap:Bool;
 	private var __updateCachedBitmap:Bool;
 	private var __cachedBitmap:BitmapData;
@@ -396,7 +396,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function __enterFrame (deltaTime:Int):Void {
 
-
+		if (__graphics != null && __mustRefreshGraphicsCounter > 0) {
+			if (--__mustRefreshGraphicsCounter == 0) {
+				__graphics.dirty = true;
+			}
+		}
 
 	}
 
@@ -628,7 +632,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			Matrix.pool.put (localMatrix);
 			#end
 
-			GLRenderer.renderBitmap (this, renderSession);
+			GLRenderer.renderBitmap (this, renderSession, __mustRefreshGraphicsCounter > 0);
 
 		}
 
@@ -1155,21 +1159,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!__isCachingAsBitmap && !old_world_transform.equals (wt)) {
 			_onWorldTransformChanged ();
-        } else {
-
-            if (__mustRefreshGraphics) {
-
-                if (__graphics != null) {
-
-                    __graphics.dirty = true;
-
-                }
-
-                __mustRefreshGraphics = false;
-            }
-
         }
-
 
 		if (__cacheAsBitmapMatrix != null) {
 
@@ -1190,7 +1180,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
 
-		__mustRefreshGraphics = true;
+		__mustRefreshGraphicsCounter = 2;
 	}
 
 	private function __updateRecursiveMouseListenerCount(amount:Int=0) {

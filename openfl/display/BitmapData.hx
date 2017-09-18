@@ -1215,7 +1215,7 @@ class BitmapData implements IBitmapDrawable {
 
 	public function __renderGL (renderSession:RenderSession):Void {
 
-		renderSession.spriteBatch.renderBitmapData (this, true, __worldTransform, __renderColorTransform, 1.0, __blendMode, __shader);
+		renderSession.spriteBatch.renderBitmapData (this, null, __worldTransform, __renderColorTransform, 1.0, __blendMode, __shader);
 
 	}
 
