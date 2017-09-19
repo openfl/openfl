@@ -15,7 +15,6 @@ class ShapeSymbol extends SWFSymbol {
 	public var useBitmapCache(default, set):Bool = false;
 	private var cachedTable:Array<CacheEntry>;
 
-	public var forbidCachedBitmapUpdate:Bool = false;
 	public var snapCoordinates:Bool = false;
 
 	static public var shapeSymbolsUsingBitmapCacheMap = new Map<ShapeSymbol, ShapeSymbol>();

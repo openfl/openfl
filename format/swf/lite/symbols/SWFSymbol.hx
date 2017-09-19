@@ -15,6 +15,7 @@ import openfl.display.BitmapData;
 	public var useUniqueSharedBitmapCache = false;
 	public var uniqueSharedCachedBitmap:BitmapData = null;
 	public var pixelPerfectHitTest:Bool = true;
+	public var forbidCachedBitmapUpdate:Bool = false;
 
 	public function new () {
 
