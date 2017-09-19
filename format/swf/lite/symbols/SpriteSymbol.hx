@@ -27,7 +27,7 @@ class SpriteSymbol extends SWFSymbol {
 					var symbol = swflite.symbols.get(frameObject.symbol);
 
 					if(Std.is(symbol, SpriteSymbol)) {
-						cast(symbol, SpriteSymbol).findDependentSymbols(swflite, shapes, simpleSprites);
+						cast(symbol, SpriteSymbol).findDependentSymbols(swflite, shapes, simpleSprites, dynamicTexts);
 					} else if(shapes != null && Std.is(symbol, ShapeSymbol)) {
 						shapes.set(frameObject.symbol, cast symbol);
 					} else if(simpleSprites != null && Std.is(symbol, SimpleSpriteSymbol)) {
