@@ -18,8 +18,8 @@ class ShapeSymbol extends SWFSymbol {
 	public var snapCoordinates:Bool = false;
 
 	static public var shapeSymbolsUsingBitmapCacheMap = new Map<ShapeSymbol, ShapeSymbol>();
-	static private var lastStageWidth:Null<Int>;
-	static private var lastStageHeight:Null<Int>;
+	static private var lastStageWidth:Float;
+	static private var lastStageHeight:Float;
 	static private var eventIsListened:Bool = false;
 
 	public function new () {
@@ -89,8 +89,8 @@ class ShapeSymbol extends SWFSymbol {
 
 			if(!eventIsListened) {
 				var stage = openfl.Lib.current.stage;
-				lastStageWidth = stage.stageWidth;
-				lastStageHeight = stage.stageHeight;
+				lastStageWidth = stage.width;
+				lastStageHeight = stage.height;
 				stage.addEventListener(Event.RESIZE, __clearCachedTables);
 				eventIsListened = true;
 			}
@@ -216,8 +216,8 @@ class ShapeSymbol extends SWFSymbol {
 	}
 
 	private static function __clearCachedTables(e:openfl.events.Event) {
-		var width = e.currentTarget.stageWidth;
-		var height = e.currentTarget.stageHeight;
+		var width = Reflect.getProperty (e.currentTarget, "width");
+		var height = Reflect.getProperty (e.currentTarget, "height");
 
 		if(lastStageWidth != width || lastStageHeight != height) {
 			for(s in shapeSymbolsUsingBitmapCacheMap) {
