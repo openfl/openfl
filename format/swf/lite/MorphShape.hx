@@ -32,9 +32,9 @@ class MorphShape extends Shape {
 	}
 
 
-	private override function __getRenderBounds (rect:Rectangle):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		__update(true, false);
-		super.__getRenderBounds(rect);
+		super.__getBounds(rect);
 	}
 
 

@@ -480,7 +480,7 @@ class CanvasGraphics {
 	}
 
 
-	public static function render (graphics:Graphics, renderSession:RenderSession, scaleX:Float = 1.0, scaleY:Float = 1.0, isMask : Bool = false):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, renderTransform:Matrix, isMask : Bool = false):Void {
 
 		#if (js && html5)
 
@@ -498,8 +498,10 @@ class CanvasGraphics {
 
 			} else {
 
-				var width = Math.ceil (graphics.__bounds.width * scaleX) + 2 * padding;
-				var height = Math.ceil (graphics.__bounds.height * scaleY) + 2 * padding;
+				var renderBounds = Rectangle.pool.get ();
+				bounds.transform (renderBounds, renderTransform);
+				var width = Math.ceil (renderBounds.width) + 2 * padding;
+				var height = Math.ceil (renderBounds.height) + 2 * padding;
 
 				if (graphics.__symbol != null) {
 
@@ -513,6 +515,7 @@ class CanvasGraphics {
 
 						graphics.__bitmap = cachedBitmapData;
 						graphics.dirty = false;
+						Rectangle.pool.put (renderBounds);
 
 						return;
 
@@ -535,19 +538,20 @@ class CanvasGraphics {
 				graphics.__canvas.height = height;
 				snapCoordinates = graphics.snapCoordinates;
 
+				var transform = Matrix.pool.get ();
+				transform.copyFrom (renderTransform);
+				transform.translate (padding - Math.ffloor(renderBounds.x), padding - Math.ffloor(renderBounds.y));
+
+				Rectangle.pool.put (renderBounds);
+
 				if (snapCoordinates) {
 
-					currentTransform.setTo (scaleX, 0.0, 0.0, scaleY, padding, padding);
-					var matrix = Matrix.pool.get ();
-					// :TODO: optimize this
-					matrix.setTo (1.0, 0.0, 0.0, 1.0, -graphics.__bounds.x, -graphics.__bounds.y);
-					currentTransform.preTransform (matrix);
-					Matrix.pool.put (matrix);
+					throw ":TODO:";
+					currentTransform.setTo (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				} else {
 
-					context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
-					context.translate (-graphics.__bounds.x, -graphics.__bounds.y);
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				}
 
@@ -805,19 +809,12 @@ class CanvasGraphics {
 					currentFromCanvasCount++;
 				#end
 
-				var bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
-
-				var bounds = graphics.__bounds;
-
-				if (graphics.snapCoordinates) {
-					throw ":TODO: handle snapCoordinates";
-				}
-
-				bitmap.__offsetX = bounds.x;
-				bitmap.__offsetY = bounds.y;
-				bitmap.__padding = padding;
-
-				graphics.__bitmap = bitmap;
+				var renderToLocalMatrix = Matrix.pool.get ();
+				renderToLocalMatrix.copyFrom (transform);
+				renderToLocalMatrix.invert ();
+				graphics.__bitmap = BitmapData.fromGraphics (graphics, renderToLocalMatrix);
+				Matrix.pool.put (renderToLocalMatrix);
+				Matrix.pool.put (transform);
 
 				if (graphics.__symbol != null) {
 

@@ -3,12 +3,11 @@ package openfl.filters; #if !openfl_legacy
 
 import openfl.display.BitmapData;
 import openfl.filters.commands.*;
-import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 
 @:final class GlowFilter extends BitmapFilter {
-	
+
 	public var alpha:Float;
 	public var blurX:Float;
 	public var blurY:Float;
@@ -17,12 +16,12 @@ import openfl.geom.Rectangle;
 	public var knockout (default, set):Bool;
 	public var quality (default, set):Int;
 	public var strength:Float;
-	
+
 	private var __glowBitmapData:BitmapData;
 	public function new (color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1, inner:Bool = false, knockout:Bool = false) {
-		
+
 		super ();
-		
+
 		if (blurX == 0) {
 			blurX = 1;
 		}
@@ -39,12 +38,12 @@ import openfl.geom.Rectangle;
 		this.inner = inner;
 		this.knockout = knockout;
 	}
-	
-	
+
+
 	public override function clone ():BitmapFilter {
-		
+
 		return new GlowFilter (color, alpha, blurX, blurY, strength, quality, inner, knockout);
-		
+
 	}
 
 	public override function dispose(): Void{
@@ -55,8 +54,8 @@ import openfl.geom.Rectangle;
 	}
 
 
-	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {
-		
+	private override function __growBounds (rect:Rectangle):Void {
+
 		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
 		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 
@@ -65,18 +64,18 @@ import openfl.geom.Rectangle;
 		rect.width += 2.0 * halfBlurX;
 		rect.height += 2.0 * halfBlurY;
 	}
-	
-	
+
+
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
-		
+
 		if(__glowBitmapData==null)
 			__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 
 		var commands:Array<CommandType> = [];
 		var src = bitmap;
-			
+
 		@:privateAccess __glowBitmapData.__resizeTo (bitmap);
-			
+
 		if (inner) {
 			commands.push (ColorTransform (__glowBitmapData, bitmap, BitmapFilter.__inverseAlphaMultipliers, BitmapFilter.__inverseAlphaOffsets));
 
@@ -101,36 +100,36 @@ import openfl.geom.Rectangle;
 
 		}
 		else {
-	
+
 			commands.push (Combine (bitmap, __glowBitmapData, bitmap));
-	
+
 		}
 
 		return commands;
-	
+
 	}
-	
+
 
 
 	// Get & Set Methods
-	
-	
-	
-	
+
+
+
+
 	private function set_knockout (value:Bool):Bool {
-		
+
 		return knockout = value;
-		
+
 	}
-	
-	
+
+
 	private function set_quality (value:Int):Int {
-		
+
 		return quality = value;
-		
+
 	}
-	
-	
+
+
 }
 
 #else

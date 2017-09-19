@@ -1,7 +1,6 @@
 package openfl.filters; #if !openfl_legacy
 
 
-import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
@@ -48,7 +47,7 @@ class BitmapFilter {
 	#end
 
 
-	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, bitmap:BitmapData, transform:Matrix) {
+	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, bitmap:BitmapData) {
 
 		if (!bitmap.__usingPingPongTexture) {
 			throw ":TODO: unsupported mode";
@@ -61,16 +60,16 @@ class BitmapFilter {
 			for (command in commands) {
 				switch (command) {
 					case Blur1D (target, source, blur, quality, horizontal, strength, distance, angle) :
-						var transformedOffset = Point.pool.get ();
-						_getTransformedOffset(transformedOffset, distance, angle, transform);
-						Blur1DCommand.apply (renderSession, target, source, blur, quality, horizontal, strength, transformedOffset);
-						Point.pool.put (transformedOffset);
+						var offset = Point.pool.get ();
+						__getOffset (offset, distance, angle);
+						Blur1DCommand.apply (renderSession, target, source, blur, quality, horizontal, strength, offset);
+						Point.pool.put (offset);
 
 					case Offset (target, source, strength, distance, angle) :
-						var transformedOffset = Point.pool.get ();
-						_getTransformedOffset(transformedOffset, distance, angle, transform);
-						OffsetCommand.apply (renderSession, target, source, strength, transformedOffset);
-						Point.pool.put (transformedOffset);
+						var offset = Point.pool.get ();
+						__getOffset (offset, distance, angle);
+						OffsetCommand.apply (renderSession, target, source, strength, offset);
+						Point.pool.put (offset);
 
 					case Colorize (target, source, color, alpha) :
 						ColorizeCommand.apply (renderSession, target, source, color, alpha);
@@ -111,21 +110,18 @@ class BitmapFilter {
 	}
 
 
-	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, transform:Matrix) {
+	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle) {
 
 		for (filter in filters) {
 
-			filter.__growBounds (rect, transform);
+			filter.__growBounds (rect);
 
 		}
 
 	}
 
 
-	private function __growBounds (rect:Rectangle, transform:Matrix) {
-
-
-
+	private function __growBounds (rect:Rectangle) {
 	}
 
 
@@ -135,21 +131,11 @@ class BitmapFilter {
 
 	}
 
-	private static inline function _getTransformedOffset(transformedOffset:Point, distance:Float, angleInDegrees:Float, transform:Matrix) {
+	private static inline function __getOffset (offset:Point, distance:Float, angleInDegrees:Float) {
 
-		var offset = Point.pool.get ();
 		offset.x = distance * Math.cos (angleInDegrees * Math.PI / 180);
 		offset.y = distance * Math.sin (angleInDegrees * Math.PI / 180);
 
-		if (transform.a != 1.0  || transform.d != 1.0 || transform.b != 0.0 || transform.c != 0.0) {
-
-			transformedOffset.copyFrom (transform.deltaTransformPoint (offset));
-
-		} else {
-			transformedOffset.copyFrom (offset);
-		}
-
-		Point.pool.put (offset);
 	}
 }
 

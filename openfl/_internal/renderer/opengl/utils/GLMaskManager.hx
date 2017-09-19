@@ -55,7 +55,7 @@ class GLMaskManager extends AbstractMaskManager {
 		// correct coords from top-left (OpenFL) to bottom-left (GL)
 		@:privateAccess GLBitmap.flipMatrix (m, renderSession.renderer.viewport.height);
 		var clip = rect.clone ();
-		@:privateAccess clip.__transform (clip, m);
+		clip.transform (clip, m);
 
 		if (currentClip != null /*&& currentClip.intersects(clip)*/) {
 
@@ -124,7 +124,7 @@ class GLMaskManager extends AbstractMaskManager {
 			maskMatrix.concat (@:privateAccess mask.__renderTransform);
 			maskMatrix.concat (renderTargetBaseTransform);
 			maskMatrix.invert ();
-			maskMatrix.scale ( 1.0 / bitmap.width, 1.0 / bitmap.height );
+			maskMatrix.scale ( 1.0 / bitmap.physicalWidth, 1.0 / bitmap.physicalHeight );
 			++maskCount;
 		}
 

@@ -1,6 +1,5 @@
 package openfl.filters;
 
-import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
@@ -29,7 +28,7 @@ class GradientBevelFilter extends GradientFilter {
 			__highlightBitmapData.dispose();
 			__highlightBitmapData = null;
 		}
-		
+
 		if (__shadowBitmapData != null){
 			__shadowBitmapData.dispose();
 			__shadowBitmapData = null;
@@ -37,10 +36,10 @@ class GradientBevelFilter extends GradientFilter {
 	}
 
 
-	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {
+	private override function __growBounds (rect:Rectangle):Void {
 
 		var offset = Point.pool.get ();
-		BitmapFilter._getTransformedOffset(offset, distance, angle, transform);
+		BitmapFilter.__getOffset(offset, distance, angle);
 		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
 		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 		rect.x -= Math.abs (offset.x) + halfBlurX;
@@ -84,15 +83,15 @@ class GradientBevelFilter extends GradientFilter {
 		}
 
 		commands.push ( DestOut( __highlightBitmapData, __highlightBitmapData, __shadowBitmapData));
-		
+
 		if ( knockout && type == BitmapFilterType.FULL) {
 			commands.push ( ColorLookup (bitmap, __highlightBitmapData, __lookupTexture));
-			
+
 			return commands;
 		} else {
 			commands.push ( ColorLookup (__highlightBitmapData, __highlightBitmapData, __lookupTexture));
 		}
-		
+
 
 		switch (type) {
 			case BitmapFilterType.INNER:
@@ -101,14 +100,14 @@ class GradientBevelFilter extends GradientFilter {
 				} else {
 					commands.push (CombineInner (bitmap, bitmap, __highlightBitmapData));
 				}
-				
+
 			case BitmapFilterType.OUTER:
 				if ( knockout ) {
 					commands.push (OuterKnockoutTransparency(bitmap, bitmap, __highlightBitmapData, true ));
 				} else {
 					commands.push (Combine (bitmap, __highlightBitmapData, bitmap));
 				}
-				
+
 			case BitmapFilterType.FULL:
 				if ( knockout ) {
 					throw "knockout && full combination should already have been handled";

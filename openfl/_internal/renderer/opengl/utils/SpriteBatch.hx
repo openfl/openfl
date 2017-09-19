@@ -186,13 +186,13 @@ class SpriteBatch {
 		flush();
 	}
 
-	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
+	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Null<Bool>, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
 
-		renderBitmapDataEx(bitmapData, bitmapData.width, bitmapData.height, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
+		renderBitmapDataEx(bitmapData, bitmapData.physicalWidth, bitmapData.physicalHeight, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
 	}
 
-	public function renderBitmapDataEx(bitmapData:BitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Bool, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {
+	public function renderBitmapDataEx(bitmapData:BitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Null<Bool>, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {
 		var texture = bitmapData.getTexture(gl);
 
 		if (batchedSprites >= maxSprites) {
@@ -218,12 +218,14 @@ class SpriteBatch {
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, width, height, localMatrix, uvs, color, pixelSnapping);
 
-		var itIsSimpleBlit:Bool = Math.abs (Math.abs (localMatrix.a) * width - bitmapData.physicalWidth) < 0.5
-		&& Math.abs (Math.abs (localMatrix.d) * height - bitmapData.physicalHeight) < 0.5
-		&& Math.abs (localMatrix.b) < 0.001
-		&& Math.abs (localMatrix.c) < 0.001;
+		if (smoothing == null) {
+			smoothing = Math.abs (Math.abs (localMatrix.a) * width - bitmapData.physicalWidth) < 0.5
+				&& Math.abs (Math.abs (localMatrix.d) * height - bitmapData.physicalHeight) < 0.5
+				&& Math.abs (localMatrix.b) < 0.001
+				&& Math.abs (localMatrix.c) < 0.001;
+		}
 
-		setState(batchedSprites, texture, smoothing && !itIsSimpleBlit, blendMode, ct, flashShader);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader);
 
 		batchedSprites++;
 		Matrix.pool.put (localMatrix);

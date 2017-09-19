@@ -58,10 +58,10 @@ import openfl.utils.Float32ArrayContainer;
 	}
 
 
-	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {
+	private override function __growBounds (rect:Rectangle):Void {
 
 		var offset = Point.pool.get ();
-		BitmapFilter._getTransformedOffset(offset, distance, angle, transform);
+		BitmapFilter.__getOffset(offset, distance, angle);
 		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
 		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 		rect.x -= Math.abs (offset.x) + halfBlurX;
@@ -105,13 +105,13 @@ import openfl.utils.Float32ArrayContainer;
 		if (inner) {
 
 			if ( knockout || hideObject ) {
-				
+
 				commands.push (InnerKnockout(bitmap, bitmap, __shadowBitmapData));
 
 			} else {
-				
+
 				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
-				
+
 			}
 
 		} else {
@@ -121,13 +121,13 @@ import openfl.utils.Float32ArrayContainer;
 				commands.push (OuterKnockout(bitmap, bitmap, __shadowBitmapData));
 
 			} else if ( !hideObject ) {
-				
+
 				commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
-				
+
 			} else {
-				
+
 				throw "hideObject && !knockout && !inner combination should already have been handled";
-				
+
 			}
 
 		}

@@ -47,13 +47,12 @@ class BitmapData implements IBitmapDrawable {
 
 	private static var __isGLES:Null<Bool> = null;
 
-	public var height (get, never):Float;
+	public var height (default, null):Float;
 	public var image (get, null):Image;
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
-	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
-	public var width (get, never):Float;
+	public var width (default, null):Float;
 
 	public var __cacheAsBitmap:Bool;
 	public var __renderAlpha:Float;
@@ -64,11 +63,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
 	private var __isValid:Bool;
-	private var __offsetX:Float = 0.0;
-	private var __offsetY:Float = 0.0;
-	private var __padding:Float = 0.0;
-	private var __scaleX:Float = 1.0;
-	private var __scaleY:Float = 1.0;
+	private var __renderToLocalMatrix:Matrix = new Matrix();
 	private var __texture:GLTexture;
 	private var __textureImage:Image;
 	private var __pingPongTexture:PingPongTexture;
@@ -94,9 +89,8 @@ class BitmapData implements IBitmapDrawable {
 		height = height < 0 ? 0 : height;
 		#end
 
-		physicalWidth = width;
-		physicalHeight = height;
-		rect = new Rectangle (0, 0, width, height);
+		this.width = physicalWidth = width;
+		this.height = physicalHeight = height;
 
 		if (width > 0 && height > 0) {
 
@@ -175,9 +169,6 @@ class BitmapData implements IBitmapDrawable {
 			cloned = BitmapData.fromImage (__image.clone (), transparent);
 
 		}
-
-		cloned.__scaleX = __scaleX;
-		cloned.__scaleY = __scaleY;
 
 		return cloned;
 
@@ -364,9 +355,8 @@ class BitmapData implements IBitmapDrawable {
 
 		__image = null;
 
-		physicalWidth = 0;
-		physicalHeight = 0;
-		rect = null;
+		width = 0;
+		height = 0;
 		__isValid = false;
 
 		var renderer = @:privateAccess Lib.current.stage.__renderer;
@@ -503,20 +493,35 @@ class BitmapData implements IBitmapDrawable {
 
 
 	#if (js && html5)
-	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, scaleX:Float = 1.0, scaleY:Float = 1.0):BitmapData {
+	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, width:Float, height:Float, renderToLocalMatrix:Matrix):BitmapData {
 
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__fromImage (Image.fromCanvas (canvas));
+		bitmapData.__fromImage (Image.fromCanvas (canvas), width, height, renderToLocalMatrix);
 		bitmapData.__image.transparent = transparent;
-		bitmapData.__scaleX = scaleX;
-		bitmapData.__scaleY = scaleY;
 		return bitmapData;
 
 	}
 	#end
 
+	public static function fromGraphics (graphics:Graphics, transparent:Bool = true, renderToLocalMatrix:Matrix):BitmapData {
+
+		#if (js && html5)
+			if (graphics.snapCoordinates) {
+				throw ":TODO: handle snapCoordinates";
+			}
+
+			var bounds = graphics.__bounds;
+			var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, renderToLocalMatrix);
+
+			return bitmap;
+		#else
+			throw ":TODO:";
+			return null;
+		#end
+
+	}
 
 	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
 
@@ -532,7 +537,7 @@ class BitmapData implements IBitmapDrawable {
 		if (image == null || image.buffer == null) return null;
 
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__fromImage (image);
+		bitmapData.__fromImage (image, image.width, image.height);
 		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 
@@ -607,7 +612,12 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixels (rect:Rectangle):ByteArray {
 
 		if (!__isValid) return null;
-		if (rect == null) rect = this.rect;
+
+		if (rect == null) {
+			rect = @:privateAccess Rectangle.__temp;
+			getPhysicalRect (rect);
+		}
+
 		return ByteArray.fromBytes (image.getPixels (rect.__toLimeRectangle (), ARGB32));
 
 	}
@@ -765,17 +775,18 @@ class BitmapData implements IBitmapDrawable {
 			var x = Std.int (secondPoint.x - firstPoint.x);
 			var y = Std.int (secondPoint.y - firstPoint.y);
 
-			if (rect.contains (x, y)) {
+			throw ":TODO: compute rect";
+			// if (rect.contains (x, y)) {
 
-				var pixel = getPixel32 (x, y);
+			// 	var pixel = getPixel32 (x, y);
 
-				if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+			// 	if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
 
-					return true;
+			// 		return true;
 
-				}
+			// 	}
 
-			}
+			// }
 
 		} else if (Std.is (secondObject, BitmapData)) {
 
@@ -794,35 +805,36 @@ class BitmapData implements IBitmapDrawable {
 
 			}
 
-			if (rect.contains (x, y)) {
+			throw ":TODO: compute rect";
+			// if (rect.contains (x, y)) {
 
-				var hitRect = Rectangle.__temp;
-				hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
+			// 	var hitRect = Rectangle.__temp;
+			// 	hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
 
-				var pixels = getPixels (hitRect);
+			// 	var pixels = getPixels (hitRect);
 
-				hitRect.offset (-x, -y);
-				var testPixels = secondBitmapData.getPixels (hitRect);
+			// 	hitRect.offset (-x, -y);
+			// 	var testPixels = secondBitmapData.getPixels (hitRect);
 
-				var length = Std.int (hitRect.width * hitRect.height);
-				var pixel, testPixel;
+			// 	var length = Std.int (hitRect.width * hitRect.height);
+			// 	var pixel, testPixel;
 
-				for (i in 0...length) {
+			// 	for (i in 0...length) {
 
-					pixel = pixels.readUnsignedInt ();
-					testPixel = testPixels.readUnsignedInt ();
+			// 		pixel = pixels.readUnsignedInt ();
+			// 		testPixel = testPixels.readUnsignedInt ();
 
-					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
+			// 		if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
 
-						return true;
+			// 			return true;
 
-					}
+			// 		}
 
-				}
+			// 	}
 
-				return false;
+			// 	return false;
 
-			}
+			// }
 
 		} else if (Std.is (secondObject, Rectangle)) {
 
@@ -1051,10 +1063,9 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private static function __asRenderTexture (width:Int = 0, height:Int = 0):BitmapData {
+	private static function __asRenderTexture ():BitmapData {
 
 		var b = new BitmapData (0, 0);
-		b.__resize (width, height);
 
 		return b;
 	}
@@ -1076,8 +1087,10 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 	private function __pushFrameBuffer(renderSession:RenderSession, smoothing:Bool = false, clearBuffer:Bool = false, powerOfTwo:Bool = true) {
-
-		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
+		var physicalRect = Rectangle.pool.get ();
+		getPhysicalRect (physicalRect);
+		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, physicalRect, smoothing, transparent, clearBuffer, powerOfTwo);
+		Rectangle.pool.put (physicalRect);
 	}
 
 
@@ -1110,7 +1123,7 @@ class BitmapData implements IBitmapDrawable {
 
 		Image.fromBase64 (base64, type, function (image) {
 
-			__fromImage (image);
+			__fromImage (image, image.width, image.height);
 
 			if (onload != null) {
 
@@ -1127,7 +1140,7 @@ class BitmapData implements IBitmapDrawable {
 
 		Image.fromBytes (bytes, function (image) {
 
-			__fromImage (image);
+			__fromImage (image, image.width, image.height);
 
 			if (rawAlpha != null) {
 
@@ -1163,7 +1176,7 @@ class BitmapData implements IBitmapDrawable {
 
 		Image.fromFile (path, function (image) {
 
-			__fromImage (image);
+			__fromImage (image, image.width, image.height);
 
 			if (onload != null) {
 
@@ -1176,15 +1189,18 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	private function __fromImage (image:Image):Void {
+	private function __fromImage (image:Image, width:Float, height:Float, ?renderToLocalMatrix:Matrix):Void {
 
 		if (image != null && image.buffer != null) {
 
 			this.__image = image;
 
+			this.width = width;
+			this.height = height;
 			physicalWidth = image.width;
 			physicalHeight = image.height;
-			rect = new Rectangle (0, 0, image.width, image.height);
+
+			__renderToLocalMatrix.copyFrom (renderToLocalMatrix != null ? renderToLocalMatrix : Matrix.__identity);
 
 			#if sys
 			image.format = BGRA32;
@@ -1199,23 +1215,23 @@ class BitmapData implements IBitmapDrawable {
 
 	public function __renderGL (renderSession:RenderSession):Void {
 
-		renderSession.spriteBatch.renderBitmapData (this, true, __worldTransform, __renderColorTransform, 1.0, __blendMode, __shader);
+		renderSession.spriteBatch.renderBitmapData (this, null, __worldTransform, __renderColorTransform, 1.0, __blendMode, __shader);
 
 	}
 
 
-	function __resize (width:Int, height:Int, scaleX:Float = 1.0, scaleY:Float = 1.0) {
+	function __resize (width:Float, height:Float, physicalWidth:Int, physicalHeight:Int) {
 
-		physicalWidth = width;
-		physicalHeight = height;
-		this.rect.width = width;
-		this.rect.height = height;
+		this.width = width;
+		this.height = height;
 
-		__scaleX = scaleX;
-		__scaleY = scaleY;
+		this.physicalWidth = physicalWidth;
+		this.physicalHeight = physicalHeight;
+
+		__renderToLocalMatrix.identity ();
 
 		if ( __image != null ) {
-			__image.resize(width, height);
+			__image.resize (physicalWidth, physicalHeight);
 		}
 
 	}
@@ -1223,7 +1239,7 @@ class BitmapData implements IBitmapDrawable {
 
 	function __resizeTo (bd:BitmapData) {
 
-		__resize (bd.physicalWidth, bd.physicalHeight, bd.__scaleX, bd.__scaleY);
+		__resize (bd.width, bd.height, bd.physicalWidth, bd.physicalHeight);
 
 	}
 
@@ -1255,17 +1271,6 @@ class BitmapData implements IBitmapDrawable {
 		__worldTransform.identity ();
 	}
 
-	public inline function get_width ():Float {
-
-		return physicalWidth / __scaleX;
-
-	}
-
-	public inline function get_height ():Float {
-
-		return physicalHeight / __scaleY;
-
-	}
 
 	public function get_image ():Image {
 		if ( __imageShouldBeSynced ) {
@@ -1310,9 +1315,15 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 	public function getLocalTransform (matrix:Matrix):Void {
-		@:privateAccess matrix.setTo (1.0, 0.0, 0.0, 1.0, __offsetX - __padding / __scaleX, __offsetY - __padding / __scaleY);
+		matrix.copyFrom (__renderToLocalMatrix);
 	}
 
+	private function getPhysicalRect (physicalRect:Rectangle):Void {
+		physicalRect.x = 0;
+		physicalRect.y = 0;
+		physicalRect.width = physicalWidth;
+		physicalRect.height = physicalHeight;
+	}
 
 	#if (dev && js)
 	public static function __init__ () {

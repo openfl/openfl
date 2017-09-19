@@ -58,6 +58,7 @@ import lime.math.color.RGBA;
 import openfl.display.PNGEncoderOptions;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 class SWFLiteExporter {
 
@@ -294,13 +295,14 @@ class SWFLiteExporter {
 			} else {
 
 				var bitmapData = new BitmapData (data.bitmapWidth, data.bitmapHeight, transparent);
+				var rect = new Rectangle (0, 0, data.bitmapWidth, data.bitmapHeight);
 
 				bitmapData.image.buffer.premultiplied = false;
-				bitmapData.setPixels (bitmapData.rect, buffer);
+				bitmapData.setPixels (rect, buffer);
 				bitmapData.image.buffer.premultiplied = true;
 				bitmapData.image.premultiplied = false;
 
-				byteArray = bitmapData.encode (bitmapData.rect, new PNGEncoderOptions ());
+				byteArray = bitmapData.encode (rect, new PNGEncoderOptions ());
 				type = BitmapType.PNG;
 
 			}

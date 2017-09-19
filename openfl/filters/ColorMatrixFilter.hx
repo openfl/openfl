@@ -4,8 +4,6 @@ package openfl.filters;
 
 import openfl.display.BitmapData;
 import openfl.filters.commands.*;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
 import lime.utils.Float32Array;
 import openfl.utils.Float32ArrayContainer;
 

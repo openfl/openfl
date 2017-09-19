@@ -8,6 +8,7 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
@@ -108,8 +109,6 @@ class CanvasTextField {
 
 			var textEngine = textField.__textEngine;
 
- 			var scaleX = textField.renderScaleX;
- 			var scaleY = textField.renderScaleY;
 			textField.__updateLayout ();
 
 			if (!textField.__showCursor && ((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
@@ -124,8 +123,12 @@ class CanvasTextField {
 
 			} else {
 
+				var renderBounds = Rectangle.pool.get();
 				var bounds = Rectangle.pool.get();
-				textField.__getRenderBounds (bounds);
+
+				var renderTransform = textField.__renderTransform;
+				textField.__getBounds (bounds);
+				bounds.transform (renderBounds, renderTransform);
 
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 
@@ -143,10 +146,13 @@ class CanvasTextField {
 
 				var graphics = textField.__graphics;
 				var context = graphics.__context;
-				graphics.__canvas.width = Math.ceil (bounds.width);
-				graphics.__canvas.height = Math.ceil (bounds.height);
+				graphics.__canvas.width = Math.ceil (renderBounds.width);
+				graphics.__canvas.height = Math.ceil (renderBounds.height);
 
-				context.setTransform (scaleX, 0, 0, scaleY, 0, 0);
+				var transform = Matrix.pool.get ();
+				transform.copyFrom (renderTransform);
+				transform.translate (- Math.ffloor(renderBounds.x), - Math.ffloor(renderBounds.y));
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
 
@@ -178,7 +184,7 @@ class CanvasTextField {
 
 					if (textEngine.border || textEngine.background) {
 
-						context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
+						context.rect (0.5, 0.5, renderBounds.width - 1, renderBounds.height - 1);
 
 						if (textEngine.background) {
 
@@ -312,11 +318,11 @@ class CanvasTextField {
 
 						if (textEngine.border) {
 
-							context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
+							context.rect (0.5, 0.5, renderBounds.width - 1, renderBounds.height - 1);
 
 						} else {
 
-							context.rect (0, 0, bounds.width, bounds.height);
+							context.rect (0, 0, renderBounds.width, renderBounds.height);
 
 						}
 
@@ -340,10 +346,16 @@ class CanvasTextField {
 
 				}
 
-				graphics.__bitmap = BitmapData.fromCanvas (textField.__graphics.__canvas, scaleX, scaleY);
+				var renderToLocalMatrix = Matrix.pool.get ();
+				renderToLocalMatrix.copyFrom (transform);
+				renderToLocalMatrix.invert ();
+				graphics.__bitmap = BitmapData.fromGraphics (graphics, renderToLocalMatrix);
 				textField.__dirty = false;
 				graphics.dirty = false;
 
+				Matrix.pool.put (transform);
+				Matrix.pool.put (renderToLocalMatrix);
+				Rectangle.pool.put(renderBounds);
 				Rectangle.pool.put(bounds);
 
 			}

@@ -53,6 +53,8 @@ class MovieClip extends flash.display.MovieClip {
 	#end
 
 	private var __9SliceBitmap:BitmapData;
+	private var __9SliceBitmapScaleX:Float = 0.0;
+	private var __9SliceBitmapScaleY:Float = 0.0;
 	private var __scale9Rect:Rectangle;
 	private var __updating9SliceBitmap:Bool = false;
 	private var __maskDataDirty:Bool = false;
@@ -657,13 +659,16 @@ class MovieClip extends flash.display.MovieClip {
 		var scaleY = Math.max(1.0, renderScaleY);
 
 		if (__9SliceBitmap != null
-			&& (scaleX != @:privateAccess __9SliceBitmap.__scaleX || scaleY != @:privateAccess __9SliceBitmap.__scaleY)
+			&& (Math.abs (scaleX - __9SliceBitmapScaleX) > 0.00001
+				|| Math.abs (scaleY - __9SliceBitmapScaleY) > 0.00001)
 			) {
 			__9SliceBitmap.dispose ();
 			__9SliceBitmap = null;
 		}
 
 		if (__9SliceBitmap == null) {
+			__9SliceBitmapScaleX = scaleX;
+			__9SliceBitmapScaleY = scaleY;
 			__updating9SliceBitmap = true;
 			var bounds:Rectangle = Rectangle.pool.get();
 			__getBounds (bounds);
@@ -682,6 +687,7 @@ class MovieClip extends flash.display.MovieClip {
 			if ( !__scale9Rect.intersects(bounds) ) {
 				__9SliceBitmap = null;
 				__updating9SliceBitmap = false;
+				Rectangle.pool.put (bounds);
 				return;
 			}
 
@@ -702,31 +708,25 @@ class MovieClip extends flash.display.MovieClip {
 				child.renderScaleY = scaleY;
 			}
 
-			bounds.x *= scaleX;
-			bounds.y *= scaleY;
-			bounds.width *= scaleX;
-			bounds.height *= scaleY;
-
 			var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 
 			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			@:privateAccess bitmap.__resize (Math.ceil (bounds.width), Math.ceil (bounds.height));
+			@:privateAccess bitmap.__resize (bounds.width, bounds.height, Math.ceil (bounds.width * scaleX), Math.ceil (bounds.height * scaleY));
 
 			var renderTransform = Matrix.pool.get ();
 			renderTransform.identity ();
 			renderTransform.a = scaleX;
 			renderTransform.d = scaleY;
-			renderTransform.translate (-bounds.x, -bounds.y);
+			renderTransform.translate (-bounds.x * scaleX, -bounds.y * scaleY);
 
 			renderSession.maskManager.pushMask (null);
 			@:privateAccess bitmap.__drawGL (renderSession, this, renderTransform);
 			renderSession.maskManager.popMask ();
+
 			Matrix.pool.put (renderTransform);
 			Rectangle.pool.put (bounds);
 
 			__9SliceBitmap = bitmap;
-			@:privateAccess __9SliceBitmap.__scaleX = scaleX;
-			@:privateAccess __9SliceBitmap.__scaleY = scaleY;
 			__updating9SliceBitmap = false;
 
 			renderScaleX = savedRenderScaleX;
