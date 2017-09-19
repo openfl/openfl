@@ -499,7 +499,7 @@ class CanvasGraphics {
 			} else {
 
 				var renderBounds = Rectangle.pool.get ();
-				bounds.__transform (renderBounds, renderTransform);
+				bounds.transform (renderBounds, renderTransform);
 				var width = Math.ceil (renderBounds.width) + 2 * padding;
 				var height = Math.ceil (renderBounds.height) + 2 * padding;
 
@@ -515,6 +515,7 @@ class CanvasGraphics {
 
 						graphics.__bitmap = cachedBitmapData;
 						graphics.dirty = false;
+						Rectangle.pool.put (renderBounds);
 
 						return;
 

@@ -41,6 +41,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private static var __worldBranchDirty = 0;
 	private static var __isCachingAsMask:Bool;
 	private static var __cachedBitmapPadding = 1;
+	private static var __dirtyGraphicsDelay = 2;
 
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
@@ -424,7 +425,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__getBounds (rect);
 
 		if (!rect.isEmpty ()) {
-			rect.__transform (rect, matrix);
+			rect.transform (rect, matrix);
 		}
 
 	}
@@ -1180,7 +1181,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
 
-		__mustRefreshGraphicsCounter = 2;
+		__mustRefreshGraphicsCounter = __dirtyGraphicsDelay;
 	}
 
 	private function __updateRecursiveMouseListenerCount(amount:Int=0) {

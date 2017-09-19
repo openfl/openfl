@@ -55,7 +55,7 @@ class GLMaskManager extends AbstractMaskManager {
 		// correct coords from top-left (OpenFL) to bottom-left (GL)
 		@:privateAccess GLBitmap.flipMatrix (m, renderSession.renderer.viewport.height);
 		var clip = rect.clone ();
-		clip.__transform (clip, m);
+		clip.transform (clip, m);
 
 		if (currentClip != null /*&& currentClip.intersects(clip)*/) {
 

@@ -128,7 +128,7 @@ class CanvasTextField {
 
 				var renderTransform = textField.__renderTransform;
 				textField.__getBounds (bounds);
-				bounds.__transform (renderBounds, renderTransform);
+				bounds.transform (renderBounds, renderTransform);
 
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 
