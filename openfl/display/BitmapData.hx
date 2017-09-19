@@ -710,8 +710,13 @@ class BitmapData implements IBitmapDrawable {
 					gl.texImage2DWeb (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, glCompatibleBuffer);
 				}
 
-				#if profile
+				#if(profile)
 					@:privateAccess lime._backend.html5.HTML5Application.__uploadCount++;
+                    var currentProfileId = untyped $global.Profile.BitmapDataUpload.currentProfileId;
+                    var map = lime._backend.html5.HTML5Application.__uploadMap;
+                    var value = map.get(currentProfileId);
+                    value = (value != null ? value : 0);
+                    map.set(currentProfileId, value + 1);
 				#end
 			#end
 
