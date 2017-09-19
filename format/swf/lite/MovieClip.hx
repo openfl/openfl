@@ -403,6 +403,8 @@ class MovieClip extends flash.display.MovieClip {
 
 					displayObject = new DisplayObject();
 				}
+
+                displayObject.__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 			}
 
 			Reflect.setField( displayObject, "symbolId", symbol.id );
@@ -432,7 +434,6 @@ class MovieClip extends flash.display.MovieClip {
 	private function __createShape (symbol:ShapeSymbol):Shape {
 
 		var shape = new Shape ();
-		shape.__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 
 		if ( @:privateAccess symbol.graphics.__owner != null ) {
 			@:privateAccess shape.__graphics = new Graphics(false);
