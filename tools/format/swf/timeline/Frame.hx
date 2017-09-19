@@ -10,6 +10,7 @@ class Frame
 	public var tagIndexStart:Int = 0;
 	public var tagIndexEnd:Int = 0;
 	public var labels:Array<String>;
+	public var label:String;
 	
 	public var objects(default, null):Map<Int, FrameObject>;
 	private var _objectsSortedByDepth:Array<FrameObject>;
@@ -100,6 +101,11 @@ class Frame
 			"Start: " + tagIndexStart + ", " +
 			"Length: " + tagCount;
 		if(label != null && label != "") { str += ", Label: " + label; }
+		if (labels != null) {
+			for (label in labels)
+				if(label != null && label != "") { str += ", Label: " + label; }
+		}
+
 		if(characters.length > 0) {
 			str += "\n" + StringUtils.repeat(indent + 2) + "Defined CharacterIDs: " + characters.join(", ");
 		}

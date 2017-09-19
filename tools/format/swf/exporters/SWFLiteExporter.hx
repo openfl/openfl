@@ -123,6 +123,7 @@ class SWFLiteExporter {
 				
 				var sprite = new SpriteSymbol ();
 				var frame = new Frame ();
+				frame.labels = [];
 				frame.objects = [];
 				
 				for (i in 0...records.length) {
@@ -447,6 +448,7 @@ class SWFLiteExporter {
 			var symbol = new SpriteSymbol ();
 			var frame = new Frame ();
 			frame.objects = [];
+			frame.labels = [];
 			var bitmap, frameObject;
 			
 			for (i in 0...bitmaps.length) {
@@ -536,15 +538,26 @@ class SWFLiteExporter {
 		var zeroCharacter = -1;
 		
 		var frame, frameObject, frameData, placeTag:TagPlaceObject;
-		
 		for (frameData in tag.frames) {
 			
 			frame = new Frame ();
-			
+
 			if (frameData.label != null) {
-				
+
 				frame.label = frameData.label;
+
+			}
+
+			if (frameData.labels != null) {
+
+				frame.labels = frameData.labels;
 				
+			}
+
+			else {
+
+				frame.labels = [];
+
 			}
 			
 			instances.splice (0, instances.length);

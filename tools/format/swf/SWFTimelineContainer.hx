@@ -415,7 +415,13 @@ class SWFTimelineContainer extends SWFEventDispatcher
 				}
 			case TagFrameLabel.TYPE:
 				var tagFrameLabel:TagFrameLabel = cast tag;
+				if (currentFrame.labels == null) {
+					currentFrame.labels = [];
+				}
 				currentFrame.labels.push (tagFrameLabel.frameName);
+				if (currentFrame.label != null && currentFrame.labels.indexOf(currentFrame.label) == -1) {
+					currentFrame.labels.push(currentFrame.label);
+				}
 				var a:Array<String> = frameLabels.get (currentFrame.frameNumber);
 				if (null == a) {
 					a = new Array();
