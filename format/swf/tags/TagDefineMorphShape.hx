@@ -121,6 +121,7 @@ class TagDefineMorphShape implements IDefinitionTag
 	public function export(ratio:Float = 0):Void {
 		var j:Int = 0;
 		//var exportShape:SWFShape = new SWFShape();
+		throw ":TODO: floating point interpolated records";
 
 		exportShape.records.splice(0, exportShape.records.length);
 		exportShape.fillStyles.splice(0, exportShape.fillStyles.length);

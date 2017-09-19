@@ -11,8 +11,8 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 	@:s public var stateFillStyle0:Bool;
 	@:s public var stateMoveTo:Bool;
 
-	@:s public var moveDeltaX:Int = 0;
-	@:s public var moveDeltaY:Int = 0;
+	@:s public var moveDeltaX:Float = 0;
+	@:s public var moveDeltaY:Float = 0;
 	@:s public var fillStyle0:Int = 0;
 	@:s public var fillStyle1:Int = 0;
 	@:s public var lineStyle:Int = 0;
@@ -64,33 +64,35 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 	}
 
 	override public function publish(data:SWFData = null, level:Int = 1):Void {
-		if(stateMoveTo) {
-			var moveBits:Int = data.calculateMaxBits(true, [moveDeltaX, moveDeltaY]);
-			data.writeUB(5, moveBits);
-			data.writeSB(moveBits, moveDeltaX);
-			data.writeSB(moveBits, moveDeltaY);
-		}
-		if(stateFillStyle0) { data.writeUB(numFillBits, fillStyle0); }
-		if(stateFillStyle1) { data.writeUB(numFillBits, fillStyle1); }
-		if(stateLineStyle) { data.writeUB(numLineBits, lineStyle); }
-		if (stateNewStyles) {
-			data.resetBitsPending();
-			var fillStylesLen:Int = fillStyles.length;
-			writeStyleArrayLength(data, fillStylesLen, level);
-			for (i in 0...fillStylesLen) {
-				fillStyles[i].publish(data, level);
-			}
-			var lineStylesLen:Int = lineStyles.length;
-			writeStyleArrayLength(data, lineStylesLen, level);
-			for (i in 0...lineStylesLen) {
-				lineStyles[i].publish(data, level);
-			}
-			numFillBits = data.calculateMaxBits(false, [fillStylesLen]);
-			numLineBits = data.calculateMaxBits(false, [lineStylesLen]);
-			data.resetBitsPending();
-			data.writeUB(4, numFillBits);
-			data.writeUB(4, numLineBits);
-		}
+		throw ":TODO:";
+
+		// if(stateMoveTo) {
+		// 	var moveBits:Int = data.calculateMaxBits(true, [moveDeltaX, moveDeltaY]);
+		// 	data.writeUB(5, moveBits);
+		// 	data.writeSB(moveBits, moveDeltaX);
+		// 	data.writeSB(moveBits, moveDeltaY);
+		// }
+		// if(stateFillStyle0) { data.writeUB(numFillBits, fillStyle0); }
+		// if(stateFillStyle1) { data.writeUB(numFillBits, fillStyle1); }
+		// if(stateLineStyle) { data.writeUB(numLineBits, lineStyle); }
+		// if (stateNewStyles) {
+		// 	data.resetBitsPending();
+		// 	var fillStylesLen:Int = fillStyles.length;
+		// 	writeStyleArrayLength(data, fillStylesLen, level);
+		// 	for (i in 0...fillStylesLen) {
+		// 		fillStyles[i].publish(data, level);
+		// 	}
+		// 	var lineStylesLen:Int = lineStyles.length;
+		// 	writeStyleArrayLength(data, lineStylesLen, level);
+		// 	for (i in 0...lineStylesLen) {
+		// 		lineStyles[i].publish(data, level);
+		// 	}
+		// 	numFillBits = data.calculateMaxBits(false, [fillStylesLen]);
+		// 	numLineBits = data.calculateMaxBits(false, [lineStylesLen]);
+		// 	data.resetBitsPending();
+		// 	data.writeUB(4, numFillBits);
+		// 	data.writeUB(4, numLineBits);
+		// }
 	}
 
 	private function readStyleArrayLength(data:SWFData, level:Int = 1):Int {

@@ -542,8 +542,12 @@ class SWFShape implements hxbit.Serializable
 						} else {
 							var edge = findNextEdgeInCoordMap(prevEdge);
 							if (edge != null) {
-								for (i in 0...subPath.length) {
-									if (subPath[i] == edge) idx = i;
+								var i = subPath.length;
+								while (--i >= 0) {
+									if (subPath[i] == edge) {
+										idx = i;
+										break;
+									}
 								}
 							} else {
 								idx = 0;
@@ -557,11 +561,18 @@ class SWFShape implements hxbit.Serializable
 		}
 	}
 
+	static private function getCoordMapKey (point:Point):String {
+
+		var key:String = point.x + "_" + point.y;
+		return key;
+
+	}
+
 	private function createCoordMap(path:Array<Edge>):Void {
 		coordMap = new Map<String, Array<Edge>>();
 		for(i in 0...path.length) {
 			var from:Point = path[i].from;
-			var key:String = from.x + "_" + from.y;
+			var key:String = getCoordMapKey (from);
 			var coordMapArray = coordMap.get (key);
 			if(coordMapArray == null) {
 				coordMap.set (key, [ path[i] ]);
@@ -572,7 +583,7 @@ class SWFShape implements hxbit.Serializable
 	}
 
 	private function removeEdgeFromCoordMap(edge:Edge):Void {
-		var key:String = edge.from.x + "_" + edge.from.y;
+		var key:String = getCoordMapKey (edge.from);
 		var coordMapArray = coordMap.get (key);
 		if (coordMapArray != null) {
 			coordMap.remove (key);
@@ -580,7 +591,7 @@ class SWFShape implements hxbit.Serializable
 	}
 
 	private function findNextEdgeInCoordMap(edge:Edge):Edge {
-		var key:String = edge.to.x + "_" + edge.to.y;
+		var key:String = getCoordMapKey (edge.to);
 		var coordMapArray:Array<Edge> = coordMap.get (key);
 		if(coordMapArray != null && coordMapArray.length > 0) {
 			return cast coordMapArray[0];

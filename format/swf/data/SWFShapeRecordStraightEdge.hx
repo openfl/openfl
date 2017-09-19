@@ -6,8 +6,8 @@ class SWFShapeRecordStraightEdge extends SWFShapeRecord
 {
 	@:s public var generalLineFlag:Bool;
 	@:s public var vertLineFlag:Bool;
-	@:s public var deltaY:Int;
-	@:s public var deltaX:Int;
+	@:s public var deltaY:Float;
+	@:s public var deltaX:Float;
 
 	@:s private var numBits:Int;
 
@@ -24,19 +24,20 @@ class SWFShapeRecordStraightEdge extends SWFShapeRecord
 	}
 
 	override public function publish(data:SWFData = null, level:Int = 1):Void {
-		var deltas:Array<Int> = [];
-		if(generalLineFlag || !vertLineFlag) { deltas.push(deltaX); }
-		if(generalLineFlag || vertLineFlag) { deltas.push(deltaY); }
-		numBits = data.calculateMaxBits(true, deltas);
-		if(numBits < 2) { numBits = 2; }
-		data.writeUB(4, numBits - 2);
-		data.writeUB(1, generalLineFlag ? 1 : 0);
-		if(!generalLineFlag) {
-			data.writeUB(1, vertLineFlag ? 1 : 0);
-		}
-		for(i in 0...deltas.length) {
-			data.writeSB(numBits, Std.int(deltas[i]));
-		}
+		throw ":TODO:";
+		// var deltas:Array<Int> = [];
+		// if(generalLineFlag || !vertLineFlag) { deltas.push(deltaX); }
+		// if(generalLineFlag || vertLineFlag) { deltas.push(deltaY); }
+		// numBits = data.calculateMaxBits(true, deltas);
+		// if(numBits < 2) { numBits = 2; }
+		// data.writeUB(4, numBits - 2);
+		// data.writeUB(1, generalLineFlag ? 1 : 0);
+		// if(!generalLineFlag) {
+		// 	data.writeUB(1, vertLineFlag ? 1 : 0);
+		// }
+		// for(i in 0...deltas.length) {
+		// 	data.writeSB(numBits, Std.int(deltas[i]));
+		// }
 	}
 
 	override public function clone():SWFShapeRecord {
