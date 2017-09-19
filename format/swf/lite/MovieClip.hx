@@ -929,6 +929,8 @@ class MovieClip extends flash.display.MovieClip {
 						displayObject.name = oldObject.name;
 						displayObject.transform.matrix = oldObject.transform.getMatrixNoClone();
 						displayObject.transform.colorTransform = oldObject.transform.colorTransform;
+						displayObject.alpha = oldObject.alpha;
+
 						if ( oldObject.__filters != null ) {
 							displayObject.filters = oldObject.__filters.map(function(bitmapFilter){ return bitmapFilter.clone(); });
 						}
