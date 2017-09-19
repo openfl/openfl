@@ -589,8 +589,10 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (endIndex < beginIndex) return;
 		
-		if (beginIndex == 0 && endIndex == max) {
-			
+		if (beginIndex == 0 && endIndex >= max) {
+
+			// set text format for the whole textfield
+
 			__textFormat.__merge (format);
 			
 			if (__textEngine.textFormatRanges.length > 1) {
@@ -608,22 +610,26 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			var index = __textEngine.textFormatRanges.length;
 			var searchIndex;
-			
+
 			while (index > 0) {
 				
 				index--;
 				range = __textEngine.textFormatRanges[index];
 				
 				if (range.start == beginIndex && range.end == endIndex) {
-					
+
+					// the new incoming text format range matches an existing range exactly, just replace it
+
 					range.format = __defaultTextFormat.clone ();
 					range.format.__merge (format);
 					return;
 					
 				}
 				
-				if (range.start > beginIndex && range.end < endIndex) {
-					
+				if (range.start >= beginIndex && range.end <= endIndex) {
+
+					// the new incoming text format range completely encompasses this existing range, let's remove it
+
 					searchIndex = __textEngine.textFormatRanges.indexOf (range);
 					
 					if (searchIndex > -1) {
@@ -637,31 +643,40 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			}
 			
 			var prevRange = null, nextRange = null;
-			
-			for (i in 0...__textEngine.textFormatRanges.length) {
-				
-				range = __textEngine.textFormatRanges[i];
-				
-				if (beginIndex > 0) {
+
+			// find the ranges before and after the new incoming range
+
+			if (beginIndex > 0) {
+
+				for (i in 0...__textEngine.textFormatRanges.length) {
+
+					range = __textEngine.textFormatRanges[i];
 					
-					if (prevRange == null && range.end >= beginIndex) {
+					if (range.end >= beginIndex) {
 						
 						prevRange = range;
 						
-						// TODO: Since this is sorted, we could break on first match here if we also do the TODO just below.
-						
+						break;
+
 					}
 					
 				}
-				
-				if (endIndex < max) {
-					
+			}
+
+			if (endIndex < max) {
+
+				var ni = __textEngine.textFormatRanges.length;
+
+				while( --ni >= 0 ) {
+
+					range = __textEngine.textFormatRanges[ni];
+
 					if (range.start <= endIndex) {
 						
 						nextRange = range;
 						
-						// TODO: Move to decreasing while loop, then break on first match??
-						
+						break;
+
 					}
 					
 				}
@@ -669,7 +684,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			}
 			
 			if (nextRange == prevRange) {
-				
+
+				// the new incoming text format range is completely within this existing range, let's divide it up
+
 				nextRange = new TextFormatRange (nextRange.format.clone (), nextRange.start, nextRange.end);
 				__textEngine.textFormatRanges.push (nextRange);
 				
@@ -679,39 +696,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				prevRange.end = beginIndex;
 				
-				if (prevRange.end <= prevRange.start) {
-					
-					searchIndex = __textEngine.textFormatRanges.indexOf (prevRange);
-					
-					if (searchIndex > -1) {
-						
-						__textEngine.textFormatRanges.splice (searchIndex, 1);
-						
-					}
-					
-					prevRange = null;
-					
-				}
-				
 			}
 			
 			if (nextRange != null) {
 				
 				nextRange.start = endIndex;
-				
-				if (nextRange.start >= nextRange.end) {
-					
-					searchIndex = __textEngine.textFormatRanges.indexOf (nextRange);
-					
-					if (searchIndex > -1) {
-						
-						__textEngine.textFormatRanges.splice (searchIndex, 1);
-						
-					}
-					
-					nextRange = null;
-					
-				}
 				
 			}
 			
