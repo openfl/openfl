@@ -1158,8 +1158,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		if (!__isCachingAsBitmap && !old_world_transform.equals (wt)) {
-			_onWorldTransformChanged ();
+		if (!__isCachingAsBitmap)  {
+            if(old_world_transform.a != wt.a ||
+                old_world_transform.d != wt.d ||
+                old_world_transform.b != wt.b ||
+                old_world_transform.c != wt.c) {
+                _onWorldTransformScaleRotationChanged();
+            }
+
+            if(old_world_transform.tx != wt.tx ||
+                old_world_transform.ty != wt.ty) {
+		        __mustRefreshGraphicsCounter = __dirtyGraphicsDelay;
+            }
         }
 
 		if (__cacheAsBitmapMatrix != null) {
@@ -1177,11 +1187,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}
 
-	public function _onWorldTransformChanged ():Void {
+	public function _onWorldTransformScaleRotationChanged():Void {
+
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
 
-		__mustRefreshGraphicsCounter = __dirtyGraphicsDelay;
 	}
 
 	private function __updateRecursiveMouseListenerCount(amount:Int=0) {
