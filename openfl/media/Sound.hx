@@ -12,7 +12,11 @@ import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
-
+#if (js && html5)
+	import lime.media.AudioManager;	
+	import lime.media.WebAudioContext;
+	import openfl.events.SampleDataEvent;
+#end
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
 
@@ -31,7 +35,13 @@ class Sound extends EventDispatcher {
 	
 	private var __buffer:AudioBuffer;
 	
-	
+	#if (js && html5)
+		public var sampleRate(get, never):Int;
+		private var __audioContext:WebAudioContext=null;
+		private var __processor:js.html.audio.ScriptProcessorNode;
+		private var __sampleData:SampleDataEvent;
+	#end
+		
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null) {
 		
 		super (this);
@@ -46,7 +56,16 @@ class Sound extends EventDispatcher {
 			load (stream, context);
 			
 		}
-		
+
+		#if (js && html5)
+			if (stream == null) {
+				switch(AudioManager.context) {
+					case WEB (context):
+						__audioContext = context;
+						default:
+				}
+			}
+		#end		
 	}
 	
 	
@@ -204,12 +223,40 @@ class Sound extends EventDispatcher {
 		position.x = pan;
 		position.z = -1 * Math.sqrt (1 - Math.pow (pan, 2));
 		source.position = position;
-		
+
+		#if (js && html5)
+			if (__audioContext != null && __buffer == null) {
+				__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
+				dispatchEvent(__sampleData);
+				__processor = __audioContext.createScriptProcessor(@:privateAccess __sampleData.getBufferSize(), 0, 2);
+				__processor.connect(__audioContext.destination);
+				__processor.onaudioprocess = onSample;				
+			}
+		#end
+			
 		return new SoundChannel (source, sndTransform);
 		
 	}
 	
+	#if (js && html5)	
+	private function onSample(event:js.html.audio.AudioProcessingEvent):Void {
+		@:privateAccess __sampleData.getSamples(event);
+		dispatchEvent(__sampleData);	
+	}
 	
+	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
+		super.removeEventListener(type, listener, useCapture);	
+		if (type == SampleDataEvent.SAMPLE_DATA && __processor != null) {
+			__processor.disconnect();
+			__processor.onaudioprocess = null;
+			__processor = null;
+		}
+	}
+	
+	private function get_sampleRate ():Int {
+		return Std.int(__audioContext.sampleRate);
+	}	
+	#end	
 	
 	
 	// Get & Set Methods

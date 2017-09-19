@@ -135,6 +135,12 @@ extern class Sound extends EventDispatcher {
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 	#end
+
+	/**
+	 * Returns the samplerate which is always 44100 hz for flash but can be different 
+	 * on HTML5.
+	 */
+	public var sampleRate (get, never):Int;	
 	
 	/**
 	 * The length of the current sound in milliseconds.
