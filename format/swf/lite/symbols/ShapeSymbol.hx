@@ -3,6 +3,7 @@ package format.swf.lite.symbols;
 
 import format.swf.exporters.core.ShapeCommand;
 import openfl.geom.Rectangle;
+import openfl.geom.Matrix;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.events.Event;
@@ -101,7 +102,7 @@ class ShapeSymbol extends SWFSymbol {
 		return this.useBitmapCache = useBitmapCache;
 	}
 
-	public function getCachedBitmapData (width:Int, height:Int):BitmapData {
+	public function getCachedBitmapData (renderTransform:Matrix):BitmapData {
 
 		if (useBitmapCache) {
 
@@ -111,13 +112,23 @@ class ShapeSymbol extends SWFSymbol {
 
 			for (entry in cachedTable) {
 
-				if (entry.bitmapData.physicalWidth == width && entry.bitmapData.physicalHeight == height) {
+				if (entry.renderTransform.a == renderTransform.a
+				&& entry.renderTransform.b == renderTransform.b
+				&& entry.renderTransform.c == renderTransform.c
+				&& entry.renderTransform.d == renderTransform.d) {
 
 					return entry.bitmapData;
 
 				}
 
 			}
+
+			#if profile
+			var missedCount = missedCountCachedMap[id];
+			missedCount = missedCount != null ? missedCount : 0;
+			++missedCount;
+			missedCountCachedMap.set (id, missedCount);
+		#end
 
 		}
 
@@ -129,7 +140,7 @@ class ShapeSymbol extends SWFSymbol {
 
 			if (continuousLogEnabled) {
 
-				trace ('Shape id:$id; Missed count: $missedCount');
+				trace ('Shape id:$id; useBitmapCache: $useBitmapCache; Missed count: $missedCount;');
 
 			}
 		#end
@@ -139,7 +150,7 @@ class ShapeSymbol extends SWFSymbol {
 	}
 
 
-	public function setCachedBitmapData (bitmapData:BitmapData) {
+	public function setCachedBitmapData (bitmapData:BitmapData, renderTransform:Matrix) {
 
 		if (!useBitmapCache) {
 
@@ -147,7 +158,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
-		cachedTable.push (new CacheEntry (bitmapData));
+		cachedTable.push (new CacheEntry (bitmapData, renderTransform.clone()));
 
 	}
 
@@ -162,6 +173,7 @@ class ShapeSymbol extends SWFSymbol {
 
 	#if profile
 		private static var missedCountMap = new Map<Int, Int> ();
+		private static var missedCountCachedMap = new Map<Int, Int> ();
 		private static var continuousLogEnabled:Bool = false;
 
 		public static function __init__ () {
@@ -172,6 +184,10 @@ class ShapeSymbol extends SWFSymbol {
 				untyped __js__ ("$global.Profile.ShapeInfo.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatistics" );
 				untyped __js__ ("$global.Profile.ShapeInfo.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatistics" );
 				untyped __js__ ("$global.Profile.ShapeInfo.enableContinuousLog = format_swf_lite_symbols_ShapeSymbol.enableContinuousLog" );
+
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached = $global.Profile.ShapeInfo.Cached || {}" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatisticsCached" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatisticsCached" );
 			#end
 
 		}
@@ -182,10 +198,28 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
+		public static function resetStatisticsCached () {
+
+			missedCountCachedMap = new Map<Int, Int> ();
+
+		}
+
 		public static function logStatistics (?threshold = 0) {
 
 			for( id in missedCountMap.keys () ) {
 				var value = missedCountMap[id];
+				if(value < threshold) {
+					continue;
+				}
+				trace ('Shape id:$id; Missed count: ${value}');
+			}
+
+		}
+
+		public static function logStatisticsCached (?threshold = 0) {
+
+			for( id in missedCountCachedMap.keys () ) {
+				var value = missedCountCachedMap[id];
 				if(value < threshold) {
 					continue;
 				}
@@ -236,10 +270,12 @@ class ShapeSymbol extends SWFSymbol {
 private class CacheEntry {
 
 	public var bitmapData:BitmapData;
+	public var renderTransform:Matrix;
 
-	public function new (bitmapData:BitmapData) {
+	public function new (bitmapData:BitmapData, renderTransform:Matrix) {
 
 		this.bitmapData = bitmapData;
+		this.renderTransform = renderTransform;
 
 	}
 
