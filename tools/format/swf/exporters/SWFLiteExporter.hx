@@ -1554,7 +1554,9 @@ class SWFLiteExporter {
 			
 			if (Std.is (tag, TagDefineSprite)) {
 				
-				return addSprite (cast tag);
+				var data2 = addSprite (cast tag);
+				data2.className = "Sprite" + data2.id;
+				return data2;
 				
 			} else if (Std.is (tag, TagDefineBits) || Std.is (tag, TagDefineBitsJPEG2) || Std.is (tag, TagDefineBitsLossless)) {
 				
