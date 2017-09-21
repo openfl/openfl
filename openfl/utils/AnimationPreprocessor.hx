@@ -28,7 +28,7 @@ class AnimationPreprocessor {
                 var symbol = @:privateAccess cast(entry.graphics.__symbol, ShapeSymbol);
                 symbol.useBitmapCache = true;
                 openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
-                @:privateAccess symbol.cachedTable[0].bitmapData.getTexture(gl);
+                @:privateAccess entry.graphics.__bitmap.getTexture(gl);
             }
         }
 
