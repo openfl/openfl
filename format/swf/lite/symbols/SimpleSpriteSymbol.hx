@@ -11,6 +11,7 @@ class SimpleSpriteSymbol extends SWFSymbol {
 	@:s public var bitmapID:Int;
 	@:s public var matrix:Matrix;
 	@:s public var bounds:Rectangle;
+	@:s public var smooth:Bool;
 
 	public function new () {
 		super ();
