@@ -22,7 +22,6 @@ class RenderSession {
 	public var context:CanvasRenderContext;
 	public var gl:GLRenderContext;
 	public var renderer:AbstractRenderer;
-	public var roundPixels:Bool;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;
 	public var vendorPrefix:String;

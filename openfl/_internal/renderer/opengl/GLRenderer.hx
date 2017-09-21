@@ -126,10 +126,6 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.defaultFramebuffer = this.defaultFramebuffer;
 		renderSession.projectionMatrix = this.projectionMatrix;
 
-        #if noPixelSnap
-        renderSession.roundPixels = false;
-        #end
-
 		maskManager = new GLMaskManager (renderSession);
 		renderSession.maskManager = maskManager;
 
@@ -325,18 +321,11 @@ class GLRenderer extends AbstractRenderer {
 		var bitmap = shape.__graphics.__bitmap;
 		matrix.copyFrom (shape.__renderTransform);
 
-		var round_pixels = PixelSnapping.AUTO;
-		if ( renderSession.roundPixels == true ) {
-			round_pixels = PixelSnapping.ALWAYS;
-		} else if ( renderSession.roundPixels == false ) {
-			round_pixels = PixelSnapping.NEVER;
-		}
-
         #if(js && profile)
             untyped $global.Profile.BitmapDataUpload.currentProfileId = shape.getProfileId();
         #end
 
-		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode, null, round_pixels );
+		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode);
         #if(js && profile)
             untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
         #end
