@@ -208,6 +208,26 @@ class SpriteBatch {
 		//enableAttributes(color);
 		enableAttributes(0);
 
+		if (pixelSnapping == AUTO) {
+
+			if ( matrix.b == 0
+				&& matrix.c == 0
+				&& Math.abs(1.0 - matrix.a) < 0.001
+				&& Math.abs(1.0 - matrix.d) < 0.001
+				) {
+
+				matrix.a = 1.0;
+				matrix.d = 1.0;
+				pixelSnapping = ALWAYS;
+
+			} else {
+
+				pixelSnapping = NEVER;
+
+			}
+
+		}
+
 		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
 		var localMatrix = Matrix.pool.get ();
 
