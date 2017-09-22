@@ -528,7 +528,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
 		
-		if (vertices == null || indices == null || uvtData == null) return;
+		if (vertices == null) return;
 		
 		var vlen = Std.int (vertices.length / 2);
 		
