@@ -269,7 +269,8 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
-		
+
+		var windingRule = CanvasWindingRule.EVENODD;
 		bounds = graphics.__bounds;
 		CanvasGraphics.graphics = graphics;
 		
@@ -359,7 +360,7 @@ class CanvasGraphics {
 						endFill ();
 						endStroke ();
 						
-						if (hasFill && context.isPointInPath (x, y)) {
+						if (hasFill && context.isPointInPath (x, y, windingRule)) {
 							
 							data.destroy ();
 							graphics.__canvas = cacheCanvas;
@@ -385,7 +386,7 @@ class CanvasGraphics {
 						endFill ();
 						endStroke ();
 						
-						if (hasFill && context.isPointInPath (x, y)) {
+						if (hasFill && context.isPointInPath (x, y, windingRule)) {
 							
 							data.destroy ();
 							graphics.__canvas = cacheCanvas;
@@ -469,7 +470,7 @@ class CanvasGraphics {
 			
 			data.destroy ();
 			
-			if (hasFill && context.isPointInPath (x, y)) {
+			if (hasFill && context.isPointInPath (x, y, windingRule)) {
 				
 				graphics.__canvas = cacheCanvas;
 				graphics.__context = cacheContext;
