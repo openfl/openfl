@@ -328,7 +328,6 @@ class CairoGraphics {
 						
 						data.readEndFill ();
 						endFill ();
-						endStroke ();
 						
 						if (hasFill && cairo.inFill (x, y)) {
 							
@@ -336,6 +335,8 @@ class CairoGraphics {
 							return true;
 							
 						}
+						
+						endStroke ();
 						
 						if (hasStroke && cairo.inStroke (x, y)) {
 							
@@ -350,7 +351,6 @@ class CairoGraphics {
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 						
 						endFill ();
-						endStroke ();
 						
 						if (hasFill && cairo.inFill (x, y)) {
 							
@@ -358,6 +358,8 @@ class CairoGraphics {
 							return true;
 							
 						}
+						
+						endStroke ();
 						
 						if (hasStroke && cairo.inStroke (x, y)) {
 							
@@ -428,9 +430,17 @@ class CairoGraphics {
 				
 			}
 			
+			var hitTest = false;
+			
 			if (fillCommands.length > 0) {
 				
 				endFill ();
+				
+			}
+			
+			if (hasFill && cairo.inFill (x, y)) {
+				
+				hitTest = true;
 				
 			}
 			
@@ -440,19 +450,15 @@ class CairoGraphics {
 				
 			}
 			
-			data.destroy ();
-			
-			if (hasFill && cairo.inFill (x, y)) {
-				
-				return true;
-				
-			}
-			
 			if (hasStroke && cairo.inStroke (x, y)) {
 				
-				return true;
+				hitTest = true;
 				
 			}
+			
+			data.destroy ();
+			
+			return hitTest;
 			
 		}
 		#end
