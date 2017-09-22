@@ -2,6 +2,7 @@ package openfl.utils;
 
 import format.swf.lite.symbols.ShapeSymbol;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Graphics;
 import openfl.display.MovieClip;
 import openfl.geom.Matrix;
@@ -13,51 +14,51 @@ class AnimationPreprocessor {
         var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
         var gl:lime.graphics.GLRenderContext = renderSession.gl;
         // :NOTE: update all parent transforms
+        @:privateAccess movieclip.__getWorldTransform();
+
+        var containerToProcessTable = new UnshrinkableArray<DisplayObjectContainer>();
+        var graphicsToProcessTable = new Array<CacheInfo>();
+
         var cachedVisible = movieclip.visible;
         movieclip.visible = true;
-        @:privateAccess movieclip.__getWorldTransform();
 
         for(currentFrame in 0...movieclip.totalFrames) {
             movieclip.gotoAndStop(currentFrame);
             movieclip.__update(true, true);
 
-            var allObjects = new Array<CacheInfo>();
-            getAllObjectsWithGraphics(movieclip, allObjects);
+            containerToProcessTable.clear ();
+            containerToProcessTable.push (movieclip);
 
-            for (entry in allObjects) {
-                var symbol = @:privateAccess cast(entry.graphics.__symbol, ShapeSymbol);
-                symbol.useBitmapCache = true;
-                openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
-                @:privateAccess entry.graphics.__bitmap.getTexture(gl);
-            }
-        }
+            while (containerToProcessTable.length > 0) {
+                var container = containerToProcessTable.pop ();
 
-        for( child in @:privateAccess movieclip.__children ) {
-            if ( Std.is(child, MovieClip) ) {
-                renderCompleteAnimation(cast child);
+                for( child in @:privateAccess container.__children ) {
+                    var graphics = @:privateAccess child.__graphics;
+                    if ( graphics != null ) {
+                        // :TODO: get transform from pool (or store coefficients manually)
+                        graphicsToProcessTable.push({ graphics: graphics, transform: child.__renderTransform.clone() });
+                    }
+
+                    if ( Std.is(child, DisplayObjectContainer) ) {
+                        containerToProcessTable.push (cast child);
+                    }
+                }
             }
         }
 
         movieclip.visible = cachedVisible;
 
-    }
-
-    static private function getAllObjectsWithGraphics(displayObject: DisplayObject, container: Array<CacheInfo>) {
-        var children = @:privateAccess displayObject.__children;
-        if ( children != null ) {
-            for( child in children ) {
-                getAllObjectsWithGraphics(child, container);
-            }
+        for (entry in graphicsToProcessTable) {
+            var symbol = @:privateAccess cast(entry.graphics.__symbol, ShapeSymbol);
+            symbol.useBitmapCache = true;
+            entry.graphics.dirty = true;
+            openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
+            @:privateAccess entry.graphics.__bitmap.getTexture(gl);
         }
 
-        var graphics = @:privateAccess  displayObject.__graphics;
-        if ( graphics != null ) {
-            container.push({ graphics: graphics, transform: displayObject.__renderTransform.clone() });
-        }
     }
-
-
 }
+
 
 typedef CacheInfo = {
     graphics: Graphics,
