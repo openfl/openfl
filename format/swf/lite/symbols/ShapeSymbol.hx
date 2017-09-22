@@ -18,10 +18,11 @@ class ShapeSymbol extends SWFSymbol {
 
 	public var snapCoordinates:Bool = false;
 
-	static public var shapeSymbolsUsingBitmapCacheMap = new Map<ShapeSymbol, ShapeSymbol>();
 	static private var lastStageWidth:Float;
 	static private var lastStageHeight:Float;
 	static private var eventIsListened:Bool = false;
+
+	static public var shapeSymbolsUsingBitmapCacheMap = new Map<Int, ShapeSymbol>();
 
 	public function new () {
 
@@ -86,7 +87,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		if (useBitmapCache && cachedTable == null) {
 			cachedTable = new Array<CacheEntry> ();
-			shapeSymbolsUsingBitmapCacheMap.set(this, this);
+			shapeSymbolsUsingBitmapCacheMap.set(id, this);
 
 			if(!eventIsListened) {
 				var stage = openfl.Lib.current.stage;
@@ -96,7 +97,7 @@ class ShapeSymbol extends SWFSymbol {
 				eventIsListened = true;
 			}
 		} else if ( !useBitmapCache ) {
-			shapeSymbolsUsingBitmapCacheMap.remove(this);
+			shapeSymbolsUsingBitmapCacheMap.remove(id);
 		}
 
 		return this.useBitmapCache = useBitmapCache;
@@ -188,6 +189,8 @@ class ShapeSymbol extends SWFSymbol {
 				untyped __js__ ("$global.Profile.ShapeInfo.Cached = $global.Profile.ShapeInfo.Cached || {}" );
 				untyped __js__ ("$global.Profile.ShapeInfo.Cached.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatisticsCached" );
 				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatisticsCached" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logCachedSymbolInfo" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logAllCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logAllCachedSymbolInfo" );
 			#end
 
 		}
@@ -228,6 +231,33 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
+		private static inline function _logCachedSymbolInfo (symbol:ShapeSymbol) {
+
+			trace ('Shape id:${symbol.id} (cached count:${symbol.cachedTable.length})');
+
+			for( cached in symbol.cachedTable ) {
+				trace ('    transform:${cached.renderTransform}');
+			}
+
+		}
+
+		public static function logCachedSymbolInfo (symbolId:Int) {
+
+			var symbol = shapeSymbolsUsingBitmapCacheMap[symbolId];
+			_logCachedSymbolInfo (symbol);
+
+		}
+
+		public static function logAllCachedSymbolInfo (?threshold = 0) {
+
+			for(symbol in shapeSymbolsUsingBitmapCacheMap) {
+				if (symbol.cachedTable.length >= threshold) {
+					_logCachedSymbolInfo (symbol);
+				}
+			}
+
+		}
+
 		public static function enableContinuousLog (value:Bool) {
 
 			continuousLogEnabled = value;
@@ -257,6 +287,7 @@ class ShapeSymbol extends SWFSymbol {
 			for(s in shapeSymbolsUsingBitmapCacheMap) {
 				s.__clearCachedTable();
 			}
+
 			lastStageWidth = width;
 			lastStageHeight = height;
 		}
