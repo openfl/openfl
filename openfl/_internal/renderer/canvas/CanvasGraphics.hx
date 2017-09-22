@@ -269,8 +269,7 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
-
-		var windingRule = CanvasWindingRule.EVENODD;
+		
 		bounds = graphics.__bounds;
 		CanvasGraphics.graphics = graphics;
 		
@@ -308,6 +307,8 @@ class CanvasGraphics {
 			hasStroke = false;
 			bitmapFill = null;
 			bitmapRepeat = false;
+			
+			windingRule = CanvasWindingRule.EVENODD;
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
@@ -447,6 +448,14 @@ class CanvasGraphics {
 						var c = data.readDrawRoundRect ();
 						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+					
+					case WINDING_EVEN_ODD:
+						
+						windingRule = CanvasWindingRule.EVENODD;
+					
+					case WINDING_NON_ZERO:
+						
+						windingRule = CanvasWindingRule.NONZERO;
 					
 					default:
 						

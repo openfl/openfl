@@ -277,6 +277,7 @@ class CairoGraphics {
 			strokePattern = null;
 			
 			cairo.newPath ();
+			cairo.fillRule = EVEN_ODD;
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
@@ -408,6 +409,16 @@ class CairoGraphics {
 						var c = data.readDrawRoundRect ();
 						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+					
+					case WINDING_EVEN_ODD:
+						
+						data.readWindingEvenOdd ();
+						cairo.fillRule = EVEN_ODD;
+					
+					case WINDING_NON_ZERO:
+						
+						data.readWindingNonZero ();
+						cairo.fillRule = WINDING;
 					
 					default:
 						
