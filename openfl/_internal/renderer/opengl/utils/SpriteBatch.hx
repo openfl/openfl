@@ -215,15 +215,38 @@ class SpriteBatch {
 		localMatrix.concat (matrix);
 		localMatrix.concat (renderTargetBaseTransform);
 
-		var index = batchedSprites * 4 * elementsPerVertex;
-		fillVertices(index, width, height, localMatrix, uvs, color, pixelSnapping);
 
 		if (smoothing == null) {
-			smoothing = Math.abs (Math.abs (localMatrix.a) * width - bitmapData.physicalWidth) < 0.5
+			smoothing = !(Math.abs (Math.abs (localMatrix.a) * width - bitmapData.physicalWidth) < 0.5
 				&& Math.abs (Math.abs (localMatrix.d) * height - bitmapData.physicalHeight) < 0.5
 				&& Math.abs (localMatrix.b) < 0.001
-				&& Math.abs (localMatrix.c) < 0.001;
+				&& Math.abs (localMatrix.c) < 0.001);
 		}
+
+		if (pixelSnapping == AUTO) {
+
+
+			// :NOTE: NEAREST + Snapping might result in offsets.
+			if ( smoothing && matrix.b == 0
+				&& matrix.c == 0
+				&& Math.abs(1.0 - matrix.a) < 0.001
+				&& Math.abs(1.0 - matrix.d) < 0.001
+				) {
+
+				matrix.a = 1.0;
+				matrix.d = 1.0;
+				pixelSnapping = ALWAYS;
+
+			} else {
+
+				pixelSnapping = NEVER;
+
+			}
+
+		}
+
+		var index = batchedSprites * 4 * elementsPerVertex;
+		fillVertices(index, width, height, localMatrix, uvs, color, pixelSnapping);
 
 		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader);
 

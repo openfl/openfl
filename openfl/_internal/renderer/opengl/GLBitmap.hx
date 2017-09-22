@@ -57,33 +57,7 @@ class GLBitmap {
 		var renderTransform = Matrix.pool.get ();
 		renderTransform.copyFrom (bitmap.__renderTransform);
 
-		var resolvedPixelSnapping:PixelSnapping;
-
-		if (bitmap.pixelSnapping == AUTO) {
-
-			if ( renderTransform.b == 0
-				&& renderTransform.c == 0
-				&& Math.abs(1.0 - renderTransform.a) < 0.001
-				&& Math.abs(1.0 - renderTransform.d) < 0.001
-				) {
-
-				renderTransform.a = 1.0;
-				renderTransform.d = 1.0;
-				resolvedPixelSnapping = ALWAYS;
-
-			} else {
-
-				resolvedPixelSnapping = NEVER;
-
-			}
-
-		} else {
-
-			resolvedPixelSnapping = bitmap.pixelSnapping;
-
-		}
-
-		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__renderColorTransform, bitmap.__renderAlpha, bitmap.__blendMode, bitmap.__shader, resolvedPixelSnapping);
+		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__renderColorTransform, bitmap.__renderAlpha, bitmap.__blendMode, bitmap.__shader, bitmap.pixelSnapping);
 
 		Matrix.pool.put (renderTransform);
 	}

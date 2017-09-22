@@ -649,6 +649,7 @@ class SWFLiteExporter {
 
 		var foundBitmapID = null;
 		var foundMatrix = null;
+		var foundSmooth = null;
 
 		var handler = new ShapeCommandExporter ();
 		tag.export (handler);
@@ -657,11 +658,12 @@ class SWFLiteExporter {
 
 			switch (command) {
 
-				case BeginBitmapFill (bitmapID, matrix, _, _):
+				case BeginBitmapFill (bitmapID, matrix, _, smooth):
 
 					processTag (cast data.getCharacter (bitmapID));
 					foundBitmapID = bitmapID;
 					foundMatrix = matrix;
+					foundSmooth = smooth;
 
 				default:
 
@@ -679,6 +681,7 @@ class SWFLiteExporter {
 			var symbol = new SimpleSpriteSymbol ();
 			symbol.id = tag.characterId;
 			symbol.matrix = foundMatrix;
+			symbol.smooth = foundSmooth;
 			symbol.bitmapID = foundBitmapID;
 			symbol.bounds = tag.shapeBounds.rect;
 

@@ -1191,6 +1191,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
+		if ( __graphics != null ) {
+			__graphics.dirty = true;
+		}
 
 	}
 

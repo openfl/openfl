@@ -9,77 +9,69 @@ import openfl.display.Bitmap;
 
 
 class CanvasBitmap {
-	
-	
+
+
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
-		
+
 		#if (js && html5)
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
-		
+
 		var context = renderSession.context;
-		
+
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
-			
+
 			if (bitmap.__mask != null) {
-				
+
 				renderSession.maskManager.pushMask (bitmap.__mask);
-				
+
 			}
-			
+
 			bitmap.bitmapData.__sync ();
-			
+
 			context.globalAlpha = bitmap.__renderAlpha;
 			var transform = bitmap.__renderTransform;
 			var scrollRect = bitmap.scrollRect;
-			
-			if (renderSession.roundPixels) {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-				
-			} else {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-				
-			}
-			
+
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+
 			if (!bitmap.smoothing) {
-				
+
 				untyped (context).mozImageSmoothingEnabled = false;
 				//untyped (context).webkitImageSmoothingEnabled = false;
 				untyped (context).msImageSmoothingEnabled = false;
 				untyped (context).imageSmoothingEnabled = false;
-				
+
 			}
-			
+
 			if (scrollRect == null) {
-				
+
 				context.drawImage (bitmap.bitmapData.image.src, 0, 0);
-				
+
 			} else {
-				
+
 				context.drawImage (bitmap.bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-				
+
 			}
-			
+
 			if (!bitmap.smoothing) {
-				
+
 				untyped (context).mozImageSmoothingEnabled = true;
 				//untyped (context).webkitImageSmoothingEnabled = true;
 				untyped (context).msImageSmoothingEnabled = true;
 				untyped (context).imageSmoothingEnabled = true;
-				
+
 			}
-			
+
 			if (bitmap.__mask != null) {
-				
+
 				renderSession.maskManager.popMask ();
-				
+
 			}
-			
+
 		}
 		#end
-		
+
 	}
-	
-	
+
+
 }
