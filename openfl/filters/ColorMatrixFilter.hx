@@ -25,6 +25,7 @@ import openfl.geom.Rectangle;
 		
 		// __numShaderPasses = 1;
 		__numShaderPasses = 0;
+		__needSecondBitmapData = false;
 		
 	}
 	
@@ -39,10 +40,8 @@ import openfl.geom.Rectangle;
 	private override function __applyFilter (destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
 		#if (js && html5)
-		ImageCanvasUtil.convertToCanvas (sourceBitmapData.image);
-		ImageCanvasUtil.createImageData (sourceBitmapData.image);
-		ImageCanvasUtil.convertToCanvas (destBitmapData.image);
-		ImageCanvasUtil.createImageData (destBitmapData.image);
+		ImageCanvasUtil.convertToData (sourceBitmapData.image);
+		ImageCanvasUtil.convertToData (destBitmapData.image);
 		#end
 		
 		var source = sourceBitmapData.image.data;
@@ -68,8 +67,10 @@ import openfl.geom.Rectangle;
 				var srcB = source[sourceOffset + 2];
 				var srcA = source[sourceOffset + 3];
 				
-				target[targetOffset] = Std.int ((matrix[0]  * srcR) + (matrix[1]  * srcG) + (matrix[2]  * srcB) + (matrix[3]  * srcA) + matrix[4]);
-				target[targetOffset + 1] = Std.int ((matrix[5]  * srcR) + (matrix[6]  * srcG) + (matrix[7]  * srcB) + (matrix[8]  * srcA) + matrix[9]);
+				// TODO: srcA == 0 optimization?
+				
+				target[targetOffset] = Std.int ((matrix[0] * srcR) + (matrix[1] * srcG) + (matrix[2] * srcB) + (matrix[3] * srcA) + matrix[4]);
+				target[targetOffset + 1] = Std.int ((matrix[5] * srcR) + (matrix[6] * srcG) + (matrix[7] * srcB) + (matrix[8] * srcA) + matrix[9]);
 				target[targetOffset + 2] = Std.int ((matrix[10] * srcR) + (matrix[11] * srcG) + (matrix[12] * srcB) + (matrix[13] * srcA) + matrix[14]);
 				target[targetOffset + 3] = Std.int ((matrix[15] * srcR) + (matrix[16] * srcG) + (matrix[17] * srcB) + (matrix[18] * srcA) + matrix[19]);
 				

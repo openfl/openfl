@@ -21,6 +21,7 @@ import js.html.ImageElement;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 
 
@@ -146,7 +147,17 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		CairoBitmap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			CairoBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			CairoBitmap.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -161,7 +172,17 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		CanvasBitmap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			CanvasBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			CanvasBitmap.render (this, renderSession);
+			
+		}
 		
 	}
 	
@@ -176,7 +197,20 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		DOMBitmap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			__renderDOMClear (renderSession);
+			__cacheBitmap.stage = stage;
+			
+			DOMBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			DOMBitmap.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -193,7 +227,25 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		GLBitmap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			GLBitmap.render (this, renderSession);
+			
+		}
+		
+	}
+	
+	
+	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
+		
+		if (filters == null) return;
+		super.__updateCacheBitmap (renderSession, force);
 		
 	}
 	
