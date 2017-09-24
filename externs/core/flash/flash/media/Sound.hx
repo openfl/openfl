@@ -29,6 +29,13 @@ extern class Sound extends EventDispatcher {
 	public var length (default, never):Float;
 	public var url (default, never):String;
 	
+	#if flash
+	public var sampleRate (get, never):Int;
+	
+	private inline function get_sampleRate ():Int { return 44100; }
+	#end
+	
+	
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null);
 	public function close ():Void;
 	
