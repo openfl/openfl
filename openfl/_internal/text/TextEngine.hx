@@ -592,9 +592,9 @@ class TextEngine {
 
 		}
 
-		if (textWidth > width - 4) {
+		if (textWidth > width - 2 * OFFSET_START) {
 
-			maxScrollH = Std.int (textWidth - width + 4);
+			maxScrollH = Std.int (textWidth - width + 2 * OFFSET_START);
 
 		} else {
 
@@ -928,9 +928,9 @@ class TextEngine {
 
 						case CENTER:
 
-							if (lineWidths[lineIndex] < realWidth - 4) {
+							if (lineWidths[lineIndex] < realWidth - 2 * OFFSET_START) {
 
-								offsetX = Math.round ((realWidth - 4 - lineWidths[lineIndex]) / 2);
+								offsetX = Math.round ((realWidth - 2 * OFFSET_START - lineWidths[lineIndex]) / 2);
 
 							} else {
 
@@ -940,9 +940,9 @@ class TextEngine {
 
 						case RIGHT:
 
-							if (lineWidths[lineIndex] < realWidth - 4) {
+							if (lineWidths[lineIndex] < realWidth - 2 * OFFSET_START) {
 
-								offsetX = Math.round (realWidth - 4 - lineWidths[lineIndex]);
+								offsetX = Math.round (realWidth - 2 * OFFSET_START - lineWidths[lineIndex]);
 
 							} else {
 
@@ -952,12 +952,12 @@ class TextEngine {
 
 						case JUSTIFY:
 
-							if (lineWidths[lineIndex] < realWidth - 4) {
+							if (lineWidths[lineIndex] < realWidth - 2 * OFFSET_START) {
 								if ( groups.length > 1 ) {
 									group = groups[groups.length-1];
 									if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
 
-										offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);
+										offsetX = (realWidth - 2 * OFFSET_START - lineWidths[lineIndex]) / (groups.length - 1);
 									} else {
 										#if (js && html5)
 										offsetX = __context.measureText (" ").width;
