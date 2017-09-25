@@ -114,9 +114,13 @@ extern class MouseEvent extends Event {
 	 */
 	public static inline var MOUSE_WHEEL = "mouseWheel";
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public static var RELEASE_OUTSIDE:String;
-	#end
+	/**
+	 * Defines the value of the `type` property of a
+	 * `releaseOutside` event object.
+	 *
+	 * This event has the following properties:
+	 */
+	public static inline var RELEASE_OUTSIDE = "releaseOutside";
 	
 	/**
 	 * Defines the value of the `type` property of a
@@ -192,9 +196,7 @@ extern class MouseEvent extends Event {
 	 */
 	public var delta:Int;
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
-	#end
+	public var isRelatedObjectInaccessible:Bool;
 	
 	/**
 	 * The horizontal coordinate at which the event occurred relative to the
