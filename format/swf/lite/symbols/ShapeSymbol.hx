@@ -111,12 +111,12 @@ class ShapeSymbol extends SWFSymbol {
 				return cachedTable[0].bitmapData;
 			}
 
+			// :TODO: pool
+			var fixedRenderTransform = new DiscretizedTransform (renderTransform);
+
 			for (entry in cachedTable) {
 
-				if (entry.renderTransform.a == renderTransform.a
-				&& entry.renderTransform.b == renderTransform.b
-				&& entry.renderTransform.c == renderTransform.c
-				&& entry.renderTransform.d == renderTransform.d) {
+				if (entry.renderTransform.equals (fixedRenderTransform)) {
 
 					return entry.bitmapData;
 
@@ -159,7 +159,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
-		cachedTable.push (new CacheEntry (bitmapData, renderTransform.clone()));
+		cachedTable.push (new CacheEntry (bitmapData, renderTransform));
 
 	}
 
@@ -250,11 +250,24 @@ class ShapeSymbol extends SWFSymbol {
 
 		public static function logAllCachedSymbolInfo (?threshold = 0) {
 
+			var totalCached = 0;
+			var approximateSize = 0;
+
 			for(symbol in shapeSymbolsUsingBitmapCacheMap) {
-				if (symbol.cachedTable.length >= threshold) {
+				var count = symbol.cachedTable.length;
+
+				totalCached += count;
+
+				if ( count >= threshold) {
 					_logCachedSymbolInfo (symbol);
 				}
+
+				for( cached in symbol.cachedTable ) {
+					approximateSize += cached.bitmapData.physicalWidth * cached.bitmapData.physicalHeight * 4;
+				}
 			}
+
+			trace ('Total cached: $totalCached ; Approximate memory used: $approximateSize');
 
 		}
 
@@ -295,18 +308,53 @@ class ShapeSymbol extends SWFSymbol {
 
 }
 
+private abstract FixedPointNumber(Int) {
+	public function new (value:Int) {
+		this = value;
+	}
 
-// :TODO: account for offset if desired
+	@:from
+	public static function fromFloat(float:Float) {
+		return new FixedPointNumber (Std.int (float * 100));
+	}
+}
+
+private class DiscretizedTransform {
+	private var a:FixedPointNumber;
+	private var b:FixedPointNumber;
+	private var c:FixedPointNumber;
+	private var d:FixedPointNumber;
+	private var tx:FixedPointNumber;
+	private var ty:FixedPointNumber;
+
+	public function new (from:Matrix) {
+		a = from.a;
+		b = from.b;
+		c = from.c;
+		d = from.d;
+		tx = from.tx;
+		ty = from.ty;
+	}
+
+	// :TODO: account for offset if desired
+	public function equals (other:DiscretizedTransform) {
+		return a == other.a
+			&& d == other.d
+			&& b == other.b
+			&& c == other.c;
+	}
+}
+
 
 private class CacheEntry {
 
 	public var bitmapData:BitmapData;
-	public var renderTransform:Matrix;
+	public var renderTransform:DiscretizedTransform;
 
 	public function new (bitmapData:BitmapData, renderTransform:Matrix) {
 
 		this.bitmapData = bitmapData;
-		this.renderTransform = renderTransform;
+		this.renderTransform = new DiscretizedTransform (renderTransform);
 
 	}
 
