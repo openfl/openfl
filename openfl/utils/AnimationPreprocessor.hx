@@ -78,7 +78,9 @@ class AnimationPreprocessor {
             var entry = graphicsToProcessTable [index];
             entry.graphics.dirty = true;
             openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
-            @:privateAccess entry.graphics.__bitmap.getTexture(gl);
+            if(@:privateAccess entry.graphics.__bitmap != null) {
+                @:privateAccess entry.graphics.__bitmap.getTexture(gl);
+            }
         }
 
         graphicsToProcessIndex += count;
