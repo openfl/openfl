@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "6.1.2",
-	"releasenote": "Fixed a minor regression in SWF processing",
+	"version": "6.2.0",
+	"releasenote": "Added openfl.utils.Function, MouseEvent.RELEASE_OUTSIDE, additional improvements",
 	"contributors": [ "singmajesty" ]
 }
