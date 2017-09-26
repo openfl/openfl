@@ -47,7 +47,7 @@ class BitmapFilter {
 	#end
 
 	public function equals(filter:BitmapFilter) {
-		return true;
+		return false;
 	}
 
 
