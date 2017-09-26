@@ -309,7 +309,7 @@ class ShapeSymbol extends SWFSymbol {
 }
 
 private abstract FixedPointNumber(Int) {
-	public function new (value:Int) {
+	private function new (value:Int) {
 		this = value;
 	}
 

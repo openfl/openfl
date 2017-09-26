@@ -13,7 +13,7 @@ class AnimationPreprocessor {
     static var graphicsToProcessIndex:Int = 0;
 
     static public function renderCompleteAnimation(movieclip : MovieClip, useDelay:Bool) {
-        // :NOTE: update all parent transforms
+        // :NOTE: update hierarchy transforms
         @:privateAccess movieclip.__getWorldTransform();
 
         if (graphicsToProcessTable == null) {
@@ -29,7 +29,6 @@ class AnimationPreprocessor {
             movieclip.gotoAndStop(currentFrame);
             movieclip.__update(true, true);
 
-            containerToProcessTable.clear ();
             containerToProcessTable.push (movieclip);
 
             while (containerToProcessTable.length > 0) {
