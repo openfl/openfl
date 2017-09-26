@@ -47,7 +47,7 @@ class Transform {
 	public function resetColorTransform() {
 		if( __colorTransform.reset() ) {
 			__displayObject.alpha = __colorTransform.alphaMultiplier;
-			__displayObject.__setRenderDirty ();
+			__displayObject.__setRenderDirtyNoCachedBitmap ();
 		}
 	}
 
@@ -78,7 +78,7 @@ class Transform {
 
 			}
 
-			__displayObject.__setRenderDirty ();
+			__displayObject.__setRenderDirtyNoCachedBitmap ();
 
 		}
 
