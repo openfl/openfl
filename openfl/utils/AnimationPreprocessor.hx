@@ -78,7 +78,15 @@ class AnimationPreprocessor {
             entry.graphics.dirty = true;
             openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
             if(@:privateAccess entry.graphics.__bitmap != null) {
+                #if(js && profile)
+                    untyped $global.Profile.BitmapDataUpload.currentProfileId = @:privateAccess entry.graphics.__symbol.id + " (preprocessed)";
+                #end
+
                 @:privateAccess entry.graphics.__bitmap.getTexture(gl);
+
+                #if(js && profile)
+                    untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                #end
             }
         }
 
