@@ -12,7 +12,7 @@ class AnimationPreprocessor {
     static var graphicsToProcessTable:Array<CacheInfo> = null;
     static var graphicsToProcessIndex:Int = 0;
 
-    static public function renderCompleteAnimation(movieclip : MovieClip) {
+    static public function renderCompleteAnimation(movieclip : MovieClip, useDelay:Bool) {
         // :NOTE: update all parent transforms
         @:privateAccess movieclip.__getWorldTransform();
 
@@ -56,10 +56,14 @@ class AnimationPreprocessor {
             symbol.useBitmapCache = true;
         }
 
-        haxe.Timer.delay (cacheGraphics, 16);
+        if(useDelay) {
+            haxe.Timer.delay (function() { cacheGraphics(); }, 16);
+        } else {
+            cacheGraphics(false);
+        }
     }
 
-    static public function cacheGraphics() {
+    static public function cacheGraphics(useDelay:Bool = true) {
         if (graphicsToProcessTable == null) {
             return;
         }
@@ -81,7 +85,11 @@ class AnimationPreprocessor {
             graphicsToProcessTable = null;
             graphicsToProcessIndex = 0;
         } else {
-            haxe.Timer.delay (cacheGraphics, 16);
+            if(useDelay) {
+                haxe.Timer.delay (function() { cacheGraphics(); }, 16);
+            } else {
+                cacheGraphics(false);
+            }
         }
     }
 }
