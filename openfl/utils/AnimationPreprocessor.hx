@@ -9,15 +9,18 @@ import openfl.geom.Matrix;
 
 class AnimationPreprocessor {
 
-    // :NOTE: This implementation is not perfect! we might not account for movieclips in movieclips!?
+    static var graphicsToProcessTable:Array<CacheInfo> = null;
+    static var graphicsToProcessIndex:Int = 0;
+
     static public function renderCompleteAnimation(movieclip : MovieClip) {
-        var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-        var gl:lime.graphics.GLRenderContext = renderSession.gl;
         // :NOTE: update all parent transforms
         @:privateAccess movieclip.__getWorldTransform();
 
+        if (graphicsToProcessTable == null) {
+            graphicsToProcessTable = new Array<CacheInfo>();
+        }
+
         var containerToProcessTable = new UnshrinkableArray<DisplayObjectContainer>();
-        var graphicsToProcessTable = new Array<CacheInfo>();
 
         var cachedVisible = movieclip.visible;
         movieclip.visible = true;
@@ -51,11 +54,35 @@ class AnimationPreprocessor {
         for (entry in graphicsToProcessTable) {
             var symbol = @:privateAccess cast(entry.graphics.__symbol, ShapeSymbol);
             symbol.useBitmapCache = true;
+        }
+
+        haxe.Timer.delay (cacheGraphics, 16);
+    }
+
+    static public function cacheGraphics() {
+        if (graphicsToProcessTable == null) {
+            return;
+        }
+
+        var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
+        var gl:lime.graphics.GLRenderContext = renderSession.gl;
+        var count = Std.int (Math.min (graphicsToProcessTable.length - graphicsToProcessIndex, 20));
+
+        for (index in graphicsToProcessIndex...graphicsToProcessIndex + count) {
+            var entry = graphicsToProcessTable [index];
             entry.graphics.dirty = true;
             openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
             @:privateAccess entry.graphics.__bitmap.getTexture(gl);
         }
 
+        graphicsToProcessIndex += count;
+
+        if (graphicsToProcessIndex == graphicsToProcessTable.length) {
+            graphicsToProcessTable = null;
+            graphicsToProcessIndex = 0;
+        } else {
+            haxe.Timer.delay (cacheGraphics, 16);
+        }
     }
 }
 
