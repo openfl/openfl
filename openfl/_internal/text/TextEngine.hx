@@ -832,10 +832,10 @@ class TextEngine {
 			}
 
 			// :NOTE: For justify, we have to account for a minimum space width here.
-			if ( nextBreakIndex - textIndex > 1 && wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - OFFSET_START ) {
+			if ( nextBreakIndex - textIndex > 1 && wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 * OFFSET_START ) {
 				// :NOTE: Special case. words that should be broken without ' ', '-' or '\n'
 				var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
-				if ( layoutGroup.offsetX == OFFSET_START && Math.floor( layoutGroup.offsetX + wordWidth ) > width - OFFSET_START ) {
+				if ( layoutGroup.offsetX == OFFSET_START && Math.floor( layoutGroup.offsetX + wordWidth ) > width - 2 * OFFSET_START ) {
 					// compute the actual breakindex
 					if ( advances == null || advances.length == 0 ) {
 						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
@@ -844,13 +844,13 @@ class TextEngine {
 					for(i in 0...advances.length) {
 						var value = advances[i];
 						subWordWidth += value;
-						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - OFFSET_START ) {
+						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - 2 * OFFSET_START ) {
 							textIndex = layoutGroup.startIndex + i;
 							advances.splice(textIndex - layoutGroup.startIndex, nextBreakIndex - textIndex);
 							break;
 						}
 					}
-					widthValue = width - OFFSET_START;
+					widthValue = width - 2 * OFFSET_START;
 				}
 				pushNewLine(textIndex);
 				continue;
