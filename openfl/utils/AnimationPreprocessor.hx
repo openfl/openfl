@@ -52,8 +52,10 @@ class AnimationPreprocessor {
         movieclip.visible = cachedVisible;
 
         for (entry in graphicsToProcessTable) {
-            var symbol = @:privateAccess cast(entry.graphics.__symbol, ShapeSymbol);
-            symbol.useBitmapCache = true;
+            if(Std.is(@:privateAccess entry.graphics.__symbol, ShapeSymbol)) {
+                var symbol = @:privateAccess cast(entry.graphics.__symbol, ShapeSymbol);
+                symbol.useBitmapCache = true;
+            }
         }
 
         if(useDelay) {
