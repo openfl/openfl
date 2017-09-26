@@ -31,6 +31,11 @@ class ShaderFilter extends BitmapFilter {
 		return f;
 	}
 
+	public override function equals(filter:BitmapFilter) {
+		// :TODO: Implement shader equal
+		return false;
+	}
+
 	override function __growBounds (rect:Rectangle) {
 
 		rect.x += -leftExtension;

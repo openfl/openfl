@@ -53,6 +53,16 @@ import openfl.geom.Rectangle;
 		}
 	}
 
+	public override function equals(filter:BitmapFilter) {
+		if ( Std.is(filter, GlowFilter) ) {
+			var otherFilter:GlowFilter = cast filter;
+			return this.color == otherFilter.color && this.alpha == otherFilter.alpha && this.blurX == otherFilter.blurX
+				&& this.blurY == otherFilter.blurY && this.strength == otherFilter.strength && this.quality == otherFilter.quality
+				&& this.inner == otherFilter.inner && this.knockout && otherFilter.knockout;
+		}
+		return false;
+	}
+
 
 	private override function __growBounds (rect:Rectangle):Void {
 

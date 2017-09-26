@@ -1348,6 +1348,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
 
+		if ( __filters != null && value != null && value.length == __filters.length ) {
+			var same = true;
+			for ( index in 0...__filters.length ) {
+				if ( !__filters[index].equals(value[index]) ) {
+					same = false;
+					break;
+				}
+			}
+			if ( same ) {
+				return value;
+			}
+
+		}
 		if (__filters != null){
 			for( filter in __filters ){
 				filter.dispose();

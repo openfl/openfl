@@ -57,6 +57,16 @@ import openfl.utils.Float32ArrayContainer;
 		}
 	}
 
+	public override function equals(filter:BitmapFilter) {
+		if ( Std.is(filter, DropShadowFilter) ) {
+			var otherFilter:DropShadowFilter = cast filter;
+			return this.distance == otherFilter.distance && this.angle == otherFilter.angle && this.color == otherFilter.color && this.alpha == otherFilter.alpha
+				&& this.blurX == otherFilter.blurX && this.blurY == otherFilter.blurY && this.strength == otherFilter.strength && this.quality == otherFilter.quality
+				&& this.inner == otherFilter.inner && this.knockout && otherFilter.knockout && this.hideObject == otherFilter.hideObject;
+		}
+		return false;
+	}
+
 
 	private override function __growBounds (rect:Rectangle):Void {
 

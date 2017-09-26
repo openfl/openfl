@@ -46,6 +46,10 @@ class BitmapFilter {
 	}
 	#end
 
+	public function equals(filter:BitmapFilter) {
+		return false;
+	}
+
 
 	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, bitmap:BitmapData) {
 

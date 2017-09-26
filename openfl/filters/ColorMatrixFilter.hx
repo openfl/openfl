@@ -14,8 +14,6 @@ import js.html.ImageData;
 
 @:final class ColorMatrixFilter extends BitmapFilter {
 
-
-	public var matrix (default, set):Array<Float>;
 	public var multipliers:Float32Array;
 	public var offsets:Float32Array;
 
@@ -43,27 +41,29 @@ import js.html.ImageData;
 
 	}
 
+	public override function equals(filter:BitmapFilter) {
+		if ( Std.is(filter, ColorMatrixFilter) ) {
+			var otherFilter:ColorMatrixFilter = cast filter;
+			for ( index in 0...multipliers.length ) {
+				if ( multipliers[index] != otherFilter.multipliers[index] ) {
+					return false;
+				}
+			}
+			for ( index in 0...offsets.length ) {
+				if ( offsets[index] != otherFilter.offsets[index] ) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 
 		return [ColorTransform (bitmap, bitmap, multipliers, offsets)];
 
 	}
-
-
-	// Get & Set Methods
-
-
-	private function set_matrix (value:Array<Float>):Array<Float> {
-
-		if (value == null)
-		{
-			value = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
-		}
-
-		return matrix = value;
-
-	}
-
 
 }
 
