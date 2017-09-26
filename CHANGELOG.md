@@ -1,3 +1,19 @@
+6.2.0 (09/26/2017)
+------------------
+
+* Added `openfl.utils.Function`
+* Added support for `MouseEvent.RELEASE_OUTSIDE`
+* Added missing `mouseEvent.isRelatedObjectInaccessible` property
+* Changed recommended Haxe version to 3.4.3
+* Changed some `Dynamic` values to use Haxe `Any` type (Haxe 3.4+)
+* Improved hit testing in `graphics` to support winding rules
+* Improved timing of `ProgressEvent.SOCKET_DATA` when using web sockets
+* Fixed use of filters on `Bitmap` or `Tilemap` objects
+* Fixed hit testing when using `graphics.lineStyle` in some cases
+* Fixed support for `graphics.drawTriangles` when omitting optional parameters
+* Fixed some cases where display object positions were not updated
+
+
 6.1.2 (09/13/2017)
 ------------------
 
