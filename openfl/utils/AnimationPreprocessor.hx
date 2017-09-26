@@ -94,6 +94,16 @@ class AnimationPreprocessor {
             }
         }
     }
+    static public function renderCompleteInstant(clipId:String)
+    {
+        var tempClip = Assets.getMovieClip(clipId);
+
+        Lib.current.stage.addChild(tempClip);
+
+        renderCompleteAnimation(tempClip, false);
+
+        Lib.current.stage.removeChild(tempClip);
+    }
 }
 
 
