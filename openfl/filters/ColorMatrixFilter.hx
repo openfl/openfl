@@ -41,13 +41,27 @@ import js.html.ImageData;
 
 	}
 
+	public override function equals(filter:BitmapFilter) {
+		if ( Std.is(filter, ColorMatrixFilter) ) {
+			var otherFilter:ColorMatrixFilter = cast filter;
+			for ( index in 0...multipliers.length ) {
+				if ( multipliers[index] != otherFilter.multipliers[index] ) {
+					return false;
+				}
+			}
+			for ( index in 0...offsets.length ) {
+				if ( offsets[index] != otherFilter.offsets[index] ) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 
 		return [ColorTransform (bitmap, bitmap, multipliers, offsets)];
-
-	}
-
-
 
 	}
 

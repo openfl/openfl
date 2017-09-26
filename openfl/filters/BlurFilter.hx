@@ -31,6 +31,14 @@ import openfl.geom.Rectangle;
 
 	}
 
+	public override function equals(filter:BitmapFilter) {
+		if ( Std.is(filter, BlurFilter) ) {
+			var otherFilter:BlurFilter = cast filter;
+			return this.blurX == otherFilter.blurX && this.blurY == otherFilter.blurY && this.quality == otherFilter.quality;
+		}
+		return false;
+	}
+
 
 	private override function __growBounds (rect:Rectangle):Void {
 

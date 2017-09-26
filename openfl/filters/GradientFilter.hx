@@ -17,7 +17,7 @@ class GradientFilter extends BitmapFilter {
 	public var knockout:Bool;
 	public var quality:Int;
 	public var strength:Float;
-	
+
 	private var __lookupTextureIsDirty:Bool = true;
 	private var __lookupTexture:BitmapData;
 
@@ -44,6 +44,31 @@ class GradientFilter extends BitmapFilter {
 
 	public override function dispose(): Void{
 
+	}
+
+	public override function equals(filter:BitmapFilter) {
+		if ( Std.is(filter, GradientFilter) ) {
+			var otherFilter:GradientFilter = cast filter;
+			for ( index in 0...colors.length ) {
+				if ( colors[index] != otherFilter.colors[index] ) {
+					return false;
+				}
+			}
+			for ( index in 0...alphas.length ) {
+				if ( alphas[index] != otherFilter.alphas[index] ) {
+					return false;
+				}
+			}
+			for ( index in 0...ratios.length ) {
+				if ( ratios[index] != otherFilter.ratios[index] ) {
+					return false;
+				}
+			}
+			return this.distance == otherFilter.distance && this.angle == otherFilter.angle && this.blurX == otherFilter.blurX
+				&& this.blurY == otherFilter.blurY && this.strength == otherFilter.strength && this.quality == otherFilter.quality
+				&& this.type == otherFilter.type && this.knockout == otherFilter.knockout;
+		}
+		return false;
 	}
 
 	private function updateLookupTexture():Void {
@@ -146,7 +171,7 @@ class GradientFilter extends BitmapFilter {
 	}
 
 	private function getHash():Int
-	{ 
+	{
 		var buffer = new Float32Array(colors.length + alphas.length + ratios.length);
 		var startIndex = 0;
 
@@ -161,7 +186,7 @@ class GradientFilter extends BitmapFilter {
 		}
 
 		startIndex += alphas.length;
-		
+
 		for(i in 0...ratios.length) {
 			buffer[startIndex + i] = ratios[i];
 		}
