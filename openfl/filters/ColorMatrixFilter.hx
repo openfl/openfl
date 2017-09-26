@@ -14,8 +14,6 @@ import js.html.ImageData;
 
 @:final class ColorMatrixFilter extends BitmapFilter {
 
-
-	public var matrix (default, set):Array<Float>;
 	public var multipliers:Float32Array;
 	public var offsets:Float32Array;
 
@@ -50,20 +48,8 @@ import js.html.ImageData;
 	}
 
 
-	// Get & Set Methods
-
-
-	private function set_matrix (value:Array<Float>):Array<Float> {
-
-		if (value == null)
-		{
-			value = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
-		}
-
-		return matrix = value;
 
 	}
-
 
 }
 
