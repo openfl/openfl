@@ -38,7 +38,6 @@ class GradientFilter extends BitmapFilter {
 		this.quality = quality;
 		this.type = type;
 		this.knockout = knockout;
-
 	}
 
 
@@ -49,18 +48,12 @@ class GradientFilter extends BitmapFilter {
 	public override function equals(filter:BitmapFilter) {
 		if ( Std.is(filter, GradientFilter) ) {
 			var otherFilter:GradientFilter = cast filter;
+			// :NOTE: From the spec, colors, alphas and ratios have the same length.
+			if ( this.colors.length != otherFilter.colors.length ) {
+				return false;
+			}
 			for ( index in 0...colors.length ) {
-				if ( colors[index] != otherFilter.colors[index] ) {
-					return false;
-				}
-			}
-			for ( index in 0...alphas.length ) {
-				if ( alphas[index] != otherFilter.alphas[index] ) {
-					return false;
-				}
-			}
-			for ( index in 0...ratios.length ) {
-				if ( ratios[index] != otherFilter.ratios[index] ) {
+				if ( colors[index] != otherFilter.colors[index] || alphas[index] != otherFilter.alphas[index] || ratios[index] != otherFilter.ratios[index] ) {
 					return false;
 				}
 			}

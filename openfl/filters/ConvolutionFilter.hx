@@ -42,6 +42,9 @@ class ConvolutionFilter extends BitmapFilter {
 	public override function equals(filter:BitmapFilter) {
 		if ( Std.is(filter, ConvolutionShader) ) {
 			var otherFilter:ConvolutionShader = cast filter;
+			if ( matrix.length != otherFilter.matrix.length ) {
+				return false;
+			}
 			for ( index in 0...matrix.length ) {
 				if ( matrix[index] != otherFilter.matrix[index] ) {
 					return false;
