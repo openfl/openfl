@@ -722,6 +722,13 @@ class BitmapData implements IBitmapDrawable {
 
 			__image.dirty = false;
 
+
+            #if(js && dev)
+            if(untyped $global.Tools.viewUploadedTextures) {
+                var currentProfileId = untyped $global.Profile.BitmapDataUpload.currentProfileId;
+                BitmapData.viewBitmapData(this, currentProfileId);
+            }
+            #end
 		}
 
 		return __texture;
@@ -1333,6 +1340,7 @@ class BitmapData implements IBitmapDrawable {
 	#if (dev && js)
 	public static function __init__ () {
 		untyped $global.Tools = $global.Tools || {};
+		untyped $global.Tools.viewUploadedTextures = false;
 		untyped $global.Tools.viewBitmapData = viewBitmapData;
 		untyped $global.Tools.viewGLTexture = viewGLTexture;
 		#if profile
@@ -1341,21 +1349,24 @@ class BitmapData implements IBitmapDrawable {
 		#end
 	}
 
-	private static function viewBitmapData(bitmapData:BitmapData) {
+	private static function viewBitmapData(bitmapData:BitmapData, ?title:String = "") {
 		var gl = @:privateAccess Lib.current.stage.__renderer.renderSession.gl;
 		var texture = bitmapData.getTexture(gl);
 
-		viewGLTexture(texture, bitmapData.physicalWidth, bitmapData.physicalHeight);
+		viewGLTexture(texture, bitmapData.physicalWidth, bitmapData.physicalHeight, title);
 	}
 
-	private static function viewGLTexture(texture:GLTexture, width:Int, height:Int) {
+	private static function viewGLTexture(texture:GLTexture, width:Int, height:Int, ?extraTitle:String = "") {
 		var gl = @:privateAccess Lib.current.stage.__renderer.renderSession.gl;
+
+        var currentFrameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
 		var framebuffer = gl.createFramebuffer();
 		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 		var data = new js.html.Uint8Array(width * height * 4);
 		gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 		gl.deleteFramebuffer(framebuffer);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, currentFrameBuffer);
 
 		var canvas = untyped $global.document.createElement('canvas');
 		canvas.width = width;
@@ -1366,7 +1377,7 @@ class BitmapData implements IBitmapDrawable {
 		imageData.data.set(data);
 		context.putImageData(imageData, 0, 0);
 
-		var theTitle = "Preview: " + width + "x" + height;
+		var theTitle = extraTitle + " (" + width + "x" + height + ")";
 
 		var container = untyped $("<div></div>")
 			.css({
@@ -1377,7 +1388,8 @@ class BitmapData implements IBitmapDrawable {
 			.dialog({
 				title: theTitle,
 				width: width + 30,
-				resizable: false
+				resizable: false,
+                position: { my:"right bottom", at:"right bottom", of:window }
 				})
 			.children().first().css({width: "" + width + "px", height: "" + height + "px", "min-width": 0, "min-height": 0})
 			.parent()
