@@ -134,9 +134,18 @@ class Bitmap extends DisplayObject {
 			return;
 		}
 		__preRenderGL (renderSession);
-		GLBitmap.render (this, renderSession);
-		__postRenderGL (renderSession);
 
+        #if(js && profile)
+            untyped $global.Profile.BitmapDataUpload.currentProfileId = getProfileId();
+        #end
+
+		GLBitmap.render (this, renderSession);
+
+        #if(js && profile)
+            untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+        #end
+
+		__postRenderGL (renderSession);
 	}
 
 	// :TODO:
