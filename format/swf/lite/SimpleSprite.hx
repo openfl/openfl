@@ -9,8 +9,12 @@ import openfl.utils.UnshrinkableArray;
 
 class SimpleSprite extends flash.display.MovieClip
 {
+    private var _symbol:SimpleSpriteSymbol;
+
     public function new(swf:SWFLite, symbol:SimpleSpriteSymbol)
     {
+        _symbol = symbol;
+
         super();
 
         var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
@@ -25,5 +29,9 @@ class SimpleSprite extends flash.display.MovieClip
             return false;
         }
         return super.__hitTest(x,y,shapeFlag,stack,interactiveOnly,hitObject);
+    }
+
+    public override function getSymbol():format.swf.lite.symbols.SWFSymbol{
+        return _symbol;
     }
 }
