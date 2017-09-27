@@ -1,18 +1,17 @@
 package openfl.utils;
 
 import format.swf.lite.symbols.ShapeSymbol;
-import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Graphics;
 import openfl.display.MovieClip;
 import openfl.geom.Matrix;
 
-class AnimationPreprocessor {
+class MovieClipPreprocessor {
 
     static var graphicsToProcessTable:Array<CacheInfo> = null;
     static var graphicsToProcessIndex:Int = 0;
 
-    static public function renderCompleteAnimation(movieclip : MovieClip, useDelay:Bool) {
+    static public function process(movieclip : MovieClip, useDelay:Bool, timeSliceMillisecondCount:Int = 5) {
         // :NOTE: update hierarchy transforms
         @:privateAccess movieclip.__getWorldTransform();
 
@@ -58,23 +57,23 @@ class AnimationPreprocessor {
         }
 
         if(useDelay) {
-            haxe.Timer.delay (function() { cacheGraphics(); }, 16);
+            haxe.Timer.delay (function() { cacheGraphics(true, timeSliceMillisecondCount); }, 16);
         } else {
-            cacheGraphics(false);
+            cacheGraphics(false, timeSliceMillisecondCount);
         }
     }
 
-    static public function cacheGraphics(useDelay:Bool = true) {
+    static private function cacheGraphics(useDelay:Bool, timeSliceMillisecondCount:Int) {
         if (graphicsToProcessTable == null) {
             return;
         }
 
         var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
         var gl:lime.graphics.GLRenderContext = renderSession.gl;
-        var count = Std.int (Math.min (graphicsToProcessTable.length - graphicsToProcessIndex, 20));
+        var startTime = haxe.Timer.stamp () * 1000;
 
-        for (index in graphicsToProcessIndex...graphicsToProcessIndex + count) {
-            var entry = graphicsToProcessTable [index];
+        while (graphicsToProcessIndex < graphicsToProcessTable.length && (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount) {
+            var entry = graphicsToProcessTable [graphicsToProcessIndex];
             entry.graphics.dirty = true;
             openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
             if(@:privateAccess entry.graphics.__bitmap != null) {
@@ -88,28 +87,29 @@ class AnimationPreprocessor {
                     untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
                 #end
             }
-        }
 
-        graphicsToProcessIndex += count;
+            ++graphicsToProcessIndex;
+        }
 
         if (graphicsToProcessIndex == graphicsToProcessTable.length) {
             graphicsToProcessTable = null;
             graphicsToProcessIndex = 0;
         } else {
             if(useDelay) {
-                haxe.Timer.delay (function() { cacheGraphics(); }, 16);
+                haxe.Timer.delay (function() { cacheGraphics(true, timeSliceMillisecondCount); }, 16);
             } else {
-                cacheGraphics(false);
+                cacheGraphics(false, timeSliceMillisecondCount);
             }
         }
     }
+
     static public function renderCompleteInstant(clipId:String)
     {
         var tempClip = Assets.getMovieClip(clipId);
 
         Lib.current.stage.addChild(tempClip);
 
-        renderCompleteAnimation(tempClip, false);
+        process(tempClip, false);
 
         Lib.current.stage.removeChild(tempClip);
     }
