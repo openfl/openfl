@@ -128,7 +128,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __worldTransform:Matrix;
 	private var __worldVisible:Bool;
 	private var __worldVisibleChanged:Bool;
-	private var __worldTransformInvalidated:Bool;
+	private var __worldTransformInvalid:Bool;
 	private var __worldZ:Int;
 	
 	#if (js && html5)
@@ -607,7 +607,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __getWorldTransform ():Matrix {
 
-		var transformDirty = __transformDirty || __worldTransformInvalidated;
+		var transformDirty = __transformDirty || __worldTransformInvalid;
 
 		if (transformDirty) {
 
@@ -635,7 +635,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 
 				current = list[i];
 				current.__update (true, false);
-				current.__worldTransformInvalidated = false;
+				current.__worldTransformInvalid = false;
 
 			}
 				
@@ -706,13 +706,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return false;
-		
-	}
-	
-	
-	private function __invalidateWorldTransform ():Void {
-		
-		__worldTransformInvalidated = true;
 		
 	}
 	
@@ -878,10 +871,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__transformDirty = true;
 			
-			__invalidateWorldTransform ();
+			__setWorldTransformInvalid ();
 			__setParentRenderDirty ();
 			
 		}
+		
+	}
+	
+	
+	private function __setWorldTransformInvalid ():Void {
+		
+		__worldTransformInvalid = true;
 		
 	}
 	

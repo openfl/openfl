@@ -594,27 +594,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __invalidateWorldTransform ():Void {
-		
-		if (!__worldTransformInvalidated) {
-			
-			__worldTransformInvalidated = true;
-			
-			if (__children != null) {
-				
-				for (child in __children) {
-					
-					child.__invalidateWorldTransform ();
-					
-				}
-				
-			}
-			
-		}
-		
-	}
-	
-	
 	private override function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
 		
 		super.__readGraphicsData (graphicsData, recurse);
@@ -902,6 +881,27 @@ class DisplayObjectContainer extends InteractiveObject {
 			for (child in __children) {
 				
 				child.__setStageReference (stage);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private override function __setWorldTransformInvalid ():Void {
+		
+		if (!__worldTransformInvalid) {
+			
+			__worldTransformInvalid = true;
+			
+			if (__children != null) {
+				
+				for (child in __children) {
+					
+					child.__setWorldTransformInvalid ();
+					
+				}
 				
 			}
 			
