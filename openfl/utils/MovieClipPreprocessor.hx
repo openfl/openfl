@@ -8,25 +8,86 @@ import openfl.geom.Matrix;
 
 class MovieClipPreprocessor {
 
-    static var graphicsToProcessTable:Array<CacheInfo> = null;
-    static var graphicsToProcessIndex:Int = 0;
+    static var jobTable = new Array<JobContext> ();
+    static var currentJob:JobContext = null;
 
     static public function process(movieclip : MovieClip, useDelay:Bool, timeSliceMillisecondCount:Int = 5) {
         // :NOTE: update hierarchy transforms
-        @:privateAccess movieclip.__getWorldTransform();
+        var worldTransform = @:privateAccess movieclip.__getWorldTransform();
 
-        if (graphicsToProcessTable == null) {
-            graphicsToProcessTable = new Array<CacheInfo>();
+        jobTable.push (new JobContext (movieclip, worldTransform, useDelay, timeSliceMillisecondCount) );
+
+        processNextJob ();
+    }
+
+    static private function processNextJob() {
+        if (currentJob == null || currentJob.done) {
+            if (jobTable.length > 0) {
+                currentJob = jobTable.splice (0, 1)[0];
+                currentJob.process ();
+            } else {
+                currentJob = null;
+            }
         }
+    }
 
-        var containerToProcessTable = new UnshrinkableArray<DisplayObjectContainer>();
+    static public function renderCompleteInstant(clipId:String)
+    {
+        var tempClip = Assets.getMovieClip(clipId);
 
+        Lib.current.stage.addChild(tempClip);
+
+        process(tempClip, false);
+
+        Lib.current.stage.removeChild(tempClip);
+    }
+}
+
+
+typedef CacheInfo = {
+    graphics: Graphics,
+    transform: Matrix
+};
+
+class JobContext {
+    private var containerToProcessTable = new UnshrinkableArray<DisplayObjectContainer> ();
+    private var frameIndex: Int = 0;
+    private var graphicsToProcessTable = new Array<CacheInfo> ();
+    private var graphicsToProcessIndex: Int = 0;
+    private var initialWorldTransform: Matrix;
+    private var movieclip: MovieClip;
+    private var timeSliceMillisecondCount:Int;
+    private var useDelay:Bool;
+
+    public var done(default, null):Bool = false;
+
+    public function new (movieclip:MovieClip, worldTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int) {
+        initialWorldTransform = worldTransform.clone ();
+        this.movieclip = movieclip;
+        this.useDelay = useDelay;
+        this.timeSliceMillisecondCount = timeSliceMillisecondCount;
+    }
+
+    private inline function validate () {
+        #if dev
+            if (!movieclip.__worldTransform.equals (initialWorldTransform)) {
+                throw "movie clip preprocessing should be finished before updating clip transform";
+            }
+        #end
+    }
+
+    public function process () {
+        validate ();
+
+        var startTime = haxe.Timer.stamp () * 1000;
+
+        var cachedFrameIndex = movieclip.currentFrame;
         var cachedVisible = movieclip.visible;
         movieclip.visible = true;
 
-        for(currentFrame in 0...movieclip.totalFrames) {
-            movieclip.gotoAndStop(currentFrame);
-            movieclip.__update(true, true);
+        while (frameIndex < movieclip.totalFrames && (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount) {
+            movieclip.gotoAndStop (frameIndex);
+            movieclip.__update (true, true);
 
             containerToProcessTable.push (movieclip);
 
@@ -36,8 +97,13 @@ class MovieClipPreprocessor {
                 for( child in @:privateAccess container.__children ) {
                     var graphics = @:privateAccess child.__graphics;
                     if ( graphics != null ) {
+                        if(Std.is(@:privateAccess graphics.__symbol, ShapeSymbol)) {
+                            var symbol = @:privateAccess cast(graphics.__symbol, ShapeSymbol);
+                            symbol.useBitmapCache = true;
+                        }
+
                         // :TODO: get transform from pool (or store coefficients manually)
-                        graphicsToProcessTable.push({ graphics: graphics, transform: child.__renderTransform.clone() });
+                        graphicsToProcessTable.push ({ graphics: graphics, transform: child.__renderTransform.clone() });
                     }
 
                     if ( Std.is(child, DisplayObjectContainer) ) {
@@ -45,29 +111,23 @@ class MovieClipPreprocessor {
                     }
                 }
             }
+
+            ++frameIndex;
         }
 
+        movieclip.gotoAndStop (cachedFrameIndex);
         movieclip.visible = cachedVisible;
 
-        for (entry in graphicsToProcessTable) {
-            if(Std.is(@:privateAccess entry.graphics.__symbol, ShapeSymbol)) {
-                var symbol = @:privateAccess cast(entry.graphics.__symbol, ShapeSymbol);
-                symbol.useBitmapCache = true;
-            }
-        }
+        var callback = (frameIndex == movieclip.totalFrames) ? cacheGraphics : process;
 
         if(useDelay) {
-            haxe.Timer.delay (function() { cacheGraphics(true, timeSliceMillisecondCount); }, 16);
+            haxe.Timer.delay (callback, 16);
         } else {
-            cacheGraphics(false, timeSliceMillisecondCount);
+            callback ();
         }
     }
 
-    static private function cacheGraphics(useDelay:Bool, timeSliceMillisecondCount:Int) {
-        if (graphicsToProcessTable == null) {
-            return;
-        }
-
+    private function cacheGraphics () {
         var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
         var gl:lime.graphics.GLRenderContext = renderSession.gl;
         var startTime = haxe.Timer.stamp () * 1000;
@@ -92,31 +152,14 @@ class MovieClipPreprocessor {
         }
 
         if (graphicsToProcessIndex == graphicsToProcessTable.length) {
-            graphicsToProcessTable = null;
-            graphicsToProcessIndex = 0;
+            done = true;
+            @:privateAccess MovieClipPreprocessor.processNextJob ();
         } else {
             if(useDelay) {
-                haxe.Timer.delay (function() { cacheGraphics(true, timeSliceMillisecondCount); }, 16);
+                haxe.Timer.delay (cacheGraphics, 16);
             } else {
-                cacheGraphics(false, timeSliceMillisecondCount);
+                cacheGraphics();
             }
         }
     }
-
-    static public function renderCompleteInstant(clipId:String)
-    {
-        var tempClip = Assets.getMovieClip(clipId);
-
-        Lib.current.stage.addChild(tempClip);
-
-        process(tempClip, false);
-
-        Lib.current.stage.removeChild(tempClip);
-    }
 }
-
-
-typedef CacheInfo = {
-    graphics: Graphics,
-    transform: Matrix
-};
