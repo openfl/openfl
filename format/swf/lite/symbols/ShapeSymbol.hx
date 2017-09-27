@@ -235,9 +235,13 @@ class ShapeSymbol extends SWFSymbol {
 
 			trace ('Shape id:${symbol.id} (cached count:${symbol.cachedTable.length})');
 
-			for( cached in symbol.cachedTable ) {
-				trace ('    transform:${cached.renderTransform}');
-			}
+			#if js
+				var console =  untyped __js__("window.console");
+
+				for( cached in symbol.cachedTable ) {
+						console.debug('    transform:${cached.renderTransform}');
+				}
+			#end
 
 		}
 
