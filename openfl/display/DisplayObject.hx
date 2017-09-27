@@ -720,6 +720,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __invalidateWorldTransform ():Void {
+		
+		__worldTransformInvalidated = true;
+		
+	}
+	
+	
 	private function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
 		
 		if (__graphics != null) {
@@ -880,7 +887,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (!__transformDirty) {
 			
 			__transformDirty = true;
-			__worldTransformInvalidated = true;
+			
+			__invalidateWorldTransform ();
 			__setParentRenderDirty ();
 			
 		}
