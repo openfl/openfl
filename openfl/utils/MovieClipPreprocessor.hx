@@ -1,5 +1,7 @@
 package openfl.utils;
 
+import format.swf.lite.SWFLite;
+import format.swf.lite.symbols.SpriteSymbol;
 import format.swf.lite.symbols.ShapeSymbol;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Graphics;
@@ -13,7 +15,18 @@ class MovieClipPreprocessor {
 
     static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null) {
         // :NOTE: update hierarchy transforms
-        var worldTransform = @:privateAccess movieclip.__getWorldTransform();
+        var worldTransform = @:privateAccess movieclip.__getWorldTransform ();
+        var shapeTable = new Map<Int, ShapeSymbol> ();
+        var symbol = movieclip.getSymbol ();
+
+        if (symbol != null) {
+            var swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
+            cast (symbol, SpriteSymbol).findDependentSymbols (swf, shapeTable);
+
+            for ( shape in shapeTable ) {
+                shape.useBitmapCache = true;
+            }
+        }
 
         jobTable.push (new JobContext (movieclip, worldTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision) );
 
@@ -107,10 +120,9 @@ class JobContext {
                             var symbol = @:privateAccess cast(graphics.__symbol, ShapeSymbol);
                             symbol.cachePrecision = cachePrecision;
                             symbol.useBitmapCache = true;
+                            // :TODO: get transform from pool (or store coefficients manually)
+                            graphicsToProcessTable.push ({ graphics: graphics, transform: child.__renderTransform.clone() });
                         }
-
-                        // :TODO: get transform from pool (or store coefficients manually)
-                        graphicsToProcessTable.push ({ graphics: graphics, transform: child.__renderTransform.clone() });
                     }
 
                     if ( Std.is(child, DisplayObjectContainer) ) {
@@ -122,6 +134,7 @@ class JobContext {
             ++frameIndex;
         }
 
+        // :TODO: should restore play state but will be refactored to not invalidate display hierarchy
         movieclip.gotoAndStop (cachedFrameIndex);
         movieclip.visible = cachedVisible;
 
