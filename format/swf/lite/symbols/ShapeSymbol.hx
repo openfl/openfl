@@ -15,6 +15,7 @@ class ShapeSymbol extends SWFSymbol {
 
 	public var useBitmapCache(default, set):Bool = false;
 	private var cachedTable:Array<CacheEntry>;
+    public var cachePrecision:Int = 100;
 
 	public var snapCoordinates:Bool = false;
 
@@ -112,7 +113,7 @@ class ShapeSymbol extends SWFSymbol {
 			}
 
 			// :TODO: pool
-			var fixedRenderTransform = new DiscretizedTransform (renderTransform);
+			var fixedRenderTransform = new DiscretizedTransform (renderTransform, cachePrecision);
 
 			for (entry in cachedTable) {
 
@@ -159,7 +160,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
-		cachedTable.push (new CacheEntry (bitmapData, renderTransform));
+		cachedTable.push (new CacheEntry (bitmapData, renderTransform, cachePrecision));
 
 	}
 
@@ -312,32 +313,21 @@ class ShapeSymbol extends SWFSymbol {
 
 }
 
-private abstract FixedPointNumber(Int) {
-	private function new (value:Int) {
-		this = value;
-	}
-
-	@:from
-	public static function fromFloat(float:Float) {
-		return new FixedPointNumber (Std.int (float * 100));
-	}
-}
-
 private class DiscretizedTransform {
-	private var a:FixedPointNumber;
-	private var b:FixedPointNumber;
-	private var c:FixedPointNumber;
-	private var d:FixedPointNumber;
-	private var tx:FixedPointNumber;
-	private var ty:FixedPointNumber;
+	private var a:Int;
+	private var b:Int;
+	private var c:Int;
+	private var d:Int;
+	private var tx:Int;
+	private var ty:Int;
 
-	public function new (from:Matrix) {
-		a = from.a;
-		b = from.b;
-		c = from.c;
-		d = from.d;
-		tx = from.tx;
-		ty = from.ty;
+	public function new (from:Matrix, precision:Int) {
+		a = Std.int(from.a * precision);
+		b = Std.int(from.b * precision);
+		c = Std.int(from.c * precision);
+		d = Std.int(from.d * precision);
+		tx = Std.int(from.tx * precision);
+		ty = Std.int(from.ty * precision);
 	}
 
 	// :TODO: account for offset if desired
@@ -355,10 +345,10 @@ private class CacheEntry {
 	public var bitmapData:BitmapData;
 	public var renderTransform:DiscretizedTransform;
 
-	public function new (bitmapData:BitmapData, renderTransform:Matrix) {
+	public function new (bitmapData:BitmapData, renderTransform:Matrix, cachePrecision:Int) {
 
 		this.bitmapData = bitmapData;
-		this.renderTransform = new DiscretizedTransform (renderTransform);
+		this.renderTransform = new DiscretizedTransform (renderTransform, cachePrecision);
 
 	}
 

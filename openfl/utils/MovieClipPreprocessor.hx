@@ -11,11 +11,11 @@ class MovieClipPreprocessor {
     static var jobTable = new Array<JobContext> ();
     static var currentJob:JobContext = null;
 
-    static public function process(movieclip : MovieClip, useDelay:Bool, timeSliceMillisecondCount:Int = 5) {
+    static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null) {
         // :NOTE: update hierarchy transforms
         var worldTransform = @:privateAccess movieclip.__getWorldTransform();
 
-        jobTable.push (new JobContext (movieclip, worldTransform, useDelay, timeSliceMillisecondCount) );
+        jobTable.push (new JobContext (movieclip, worldTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision) );
 
         processNextJob ();
     }
@@ -31,13 +31,13 @@ class MovieClipPreprocessor {
         }
     }
 
-    static public function renderCompleteInstant(clipId:String)
+    static public function renderCompleteInstant(clipId:String, cachePrecision:Int = 100)
     {
         var tempClip = Assets.getMovieClip(clipId);
 
         Lib.current.stage.addChild(tempClip);
 
-        process(tempClip, false);
+        process(tempClip, cachePrecision);
 
         Lib.current.stage.removeChild(tempClip);
     }
@@ -58,14 +58,16 @@ class JobContext {
     private var movieclip: MovieClip;
     private var timeSliceMillisecondCount:Int;
     private var useDelay:Bool;
+    private var cachePrecision:Int;
 
     public var done(default, null):Bool = false;
 
-    public function new (movieclip:MovieClip, worldTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int) {
+    public function new (movieclip:MovieClip, worldTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int) {
         initialWorldTransform = worldTransform.clone ();
         this.movieclip = movieclip;
         this.useDelay = useDelay;
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
+        this.cachePrecision = cachePrecision;
     }
 
     private inline function validate () {
@@ -99,6 +101,7 @@ class JobContext {
                     if ( graphics != null ) {
                         if(Std.is(@:privateAccess graphics.__symbol, ShapeSymbol)) {
                             var symbol = @:privateAccess cast(graphics.__symbol, ShapeSymbol);
+                            symbol.cachePrecision = cachePrecision;
                             symbol.useBitmapCache = true;
                         }
 
