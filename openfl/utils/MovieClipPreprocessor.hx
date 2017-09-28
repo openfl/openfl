@@ -1,10 +1,10 @@
 package openfl.utils;
 
+import format.swf.lite.timeline.FrameObjectType;
 import format.swf.lite.SWFLite;
 import format.swf.lite.symbols.SpriteSymbol;
 import format.swf.lite.symbols.ShapeSymbol;
 import openfl.display.DisplayObjectContainer;
-import openfl.display.Graphics;
 import openfl.display.MovieClip;
 import openfl.geom.Matrix;
 
@@ -14,21 +14,7 @@ class MovieClipPreprocessor {
     static var currentJob:JobContext = null;
 
     static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null) {
-        // :NOTE: update hierarchy transforms
-        var worldTransform = @:privateAccess movieclip.__getWorldTransform ();
-        var shapeTable = new Map<Int, ShapeSymbol> ();
-        var symbol = movieclip.getSymbol ();
-
-        if (symbol != null) {
-            var swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
-            cast (symbol, SpriteSymbol).findDependentSymbols (swf, shapeTable);
-
-            for ( shape in shapeTable ) {
-                shape.useBitmapCache = true;
-            }
-        }
-
-        jobTable.push (new JobContext (movieclip, worldTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision) );
+        jobTable.push (new JobContext (movieclip, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision) );
 
         processNextJob ();
     }
@@ -57,21 +43,18 @@ class MovieClipPreprocessor {
         process(tempClip, cachePrecision);
 
         parent.removeChild(tempClip);
+        // :TODO: reset parent if there was one
     }
 }
 
-
 typedef CacheInfo = {
-    graphics: Graphics,
+    symbol: ShapeSymbol,
     transform: Matrix
 };
 
 class JobContext {
-    private var containerToProcessTable = new UnshrinkableArray<DisplayObjectContainer> ();
-    private var frameIndex: Int = 0;
-    private var graphicsToProcessTable = new Array<CacheInfo> ();
-    private var graphicsToProcessIndex: Int = 0;
-    private var initialWorldTransform: Matrix;
+    private var shapeToProcessTable = new Array<CacheInfo> ();
+    private var shapeToProcessIndex: Int = 0;
     private var movieclip: MovieClip;
     private var timeSliceMillisecondCount:Int;
     private var useDelay:Bool;
@@ -79,104 +62,97 @@ class JobContext {
 
     public var done(default, null):Bool = false;
 
-    public function new (movieclip:MovieClip, worldTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int) {
-        initialWorldTransform = worldTransform.clone ();
+    public function new (movieclip:MovieClip, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int) {
         this.movieclip = movieclip;
         this.useDelay = useDelay;
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
         this.cachePrecision = cachePrecision;
+
+        init ();
     }
 
-    private inline function validate () {
-        #if dev
-            if (!movieclip.__worldTransform.equals (initialWorldTransform)) {
-                throw "movie clip preprocessing should be finished before updating clip transform";
+    private function init () {
+        var symbol = movieclip.getSymbol ();
+
+        // :NOTE: update hierarchy transforms
+        @:privateAccess movieclip.__getWorldTransform ();
+
+        if (symbol != null) {
+            var swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
+            findDependentSymbols (shapeToProcessTable, cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform);
+
+            for (entry in shapeToProcessTable) {
+                var shapeSymbol = entry.symbol;
+                shapeSymbol.cachePrecision = cachePrecision;
+                shapeSymbol.useBitmapCache = true;
             }
-        #end
+        }
     }
 
     public function process () {
-        validate ();
-
-        var startTime = haxe.Timer.stamp () * 1000;
-
-        var cachedFrameIndex = movieclip.currentFrame;
-        var cachedVisible = movieclip.visible;
-        movieclip.visible = true;
-
-        while (frameIndex < movieclip.totalFrames && (!useDelay || (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount)) {
-            movieclip.gotoAndStop (frameIndex);
-            movieclip.__update (true, true);
-
-            containerToProcessTable.push (movieclip);
-
-            while (containerToProcessTable.length > 0) {
-                var container = containerToProcessTable.pop ();
-
-                for( child in @:privateAccess container.__children ) {
-                    var graphics = @:privateAccess child.__graphics;
-                    if ( graphics != null ) {
-                        if(Std.is(@:privateAccess graphics.__symbol, ShapeSymbol)) {
-                            var symbol = @:privateAccess cast(graphics.__symbol, ShapeSymbol);
-                            symbol.cachePrecision = cachePrecision;
-                            symbol.useBitmapCache = true;
-                            // :TODO: get transform from pool (or store coefficients manually)
-                            graphicsToProcessTable.push ({ graphics: graphics, transform: child.__renderTransform.clone() });
-                        }
-                    }
-
-                    if ( Std.is(child, DisplayObjectContainer) ) {
-                        containerToProcessTable.push (cast child);
-                    }
-                }
-            }
-
-            ++frameIndex;
-        }
-
-        // :TODO: should restore play state but will be refactored to not invalidate display hierarchy
-        movieclip.gotoAndStop (cachedFrameIndex);
-        movieclip.visible = cachedVisible;
-
-        if(useDelay) {
-            var callback = (frameIndex == movieclip.totalFrames) ? cacheGraphics : process;
-            haxe.Timer.delay (callback, 16);
-        } else {
-            cacheGraphics();
-        }
-    }
-
-    private function cacheGraphics () {
         var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
         var gl:lime.graphics.GLRenderContext = renderSession.gl;
         var startTime = haxe.Timer.stamp () * 1000;
 
-        while (graphicsToProcessIndex < graphicsToProcessTable.length && (!useDelay || (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount)) {
-            var entry = graphicsToProcessTable [graphicsToProcessIndex];
-            entry.graphics.dirty = true;
-            openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
-            if(@:privateAccess entry.graphics.__bitmap != null) {
+        while (shapeToProcessIndex < shapeToProcessTable.length && (!useDelay || (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount)) {
+            var entry = shapeToProcessTable [shapeToProcessIndex];
+            var graphics = entry.symbol.graphics;
+            graphics.dirty = true;
+            openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false);
+
+            if(@:privateAccess graphics.__bitmap != null) {
                 #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = @:privateAccess entry.graphics.__symbol.id + " (preprocessed)";
+                    untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
                 #end
 
-                @:privateAccess entry.graphics.__bitmap.getTexture(gl);
+                @:privateAccess graphics.__bitmap.getTexture (gl);
 
                 #if(js && profile)
                     untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
                 #end
             }
 
-            ++graphicsToProcessIndex;
+            ++shapeToProcessIndex;
         }
 
-        if (graphicsToProcessIndex == graphicsToProcessTable.length) {
+        if (shapeToProcessIndex == shapeToProcessTable.length) {
             done = true;
             @:privateAccess MovieClipPreprocessor.processNextJob ();
         } else {
             if(useDelay) {
-                haxe.Timer.delay (cacheGraphics, 16);
+                haxe.Timer.delay (process, 16);
             }
         }
+    }
+
+    static private function findDependentSymbols(shapeTable:Array<CacheInfo>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix):Void {
+        var previousRenderTransformMap = new Map<Int,Matrix> ();
+        var renderTransform:Matrix = Matrix.pool.get ();
+
+        for (frame in symbol.frames) {
+            for (frameObject in frame.objects) {
+                if (frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
+                    var symbol = swflite.symbols.get(frameObject.symbol);
+
+                    if (frameObject.matrix != null) {
+                        renderTransform.copyFrom (frameObject.matrix);
+                        renderTransform.concat (transform);
+                    } else {
+                        var cached = previousRenderTransformMap[frameObject.depth];
+                        renderTransform.copyFrom (cached != null ? cached : transform);
+                    }
+
+                    previousRenderTransformMap[frameObject.depth] = renderTransform;
+
+                    if (Std.is (symbol, SpriteSymbol)) {
+                        findDependentSymbols (shapeTable, cast symbol, swflite, renderTransform);
+                    } else if (Std.is(symbol, ShapeSymbol)) {
+                        shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
+                    }
+                }
+            }
+        }
+
+        Matrix.pool.put (renderTransform);
     }
 }
