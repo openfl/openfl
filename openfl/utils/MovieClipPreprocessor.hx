@@ -85,7 +85,7 @@ class JobContext {
         var cachedVisible = movieclip.visible;
         movieclip.visible = true;
 
-        while (frameIndex < movieclip.totalFrames && (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount) {
+        while (frameIndex < movieclip.totalFrames && (!useDelay || (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount)) {
             movieclip.gotoAndStop (frameIndex);
             movieclip.__update (true, true);
 
@@ -118,12 +118,11 @@ class JobContext {
         movieclip.gotoAndStop (cachedFrameIndex);
         movieclip.visible = cachedVisible;
 
-        var callback = (frameIndex == movieclip.totalFrames) ? cacheGraphics : process;
-
         if(useDelay) {
+            var callback = (frameIndex == movieclip.totalFrames) ? cacheGraphics : process;
             haxe.Timer.delay (callback, 16);
         } else {
-            callback ();
+            cacheGraphics();
         }
     }
 
@@ -132,7 +131,7 @@ class JobContext {
         var gl:lime.graphics.GLRenderContext = renderSession.gl;
         var startTime = haxe.Timer.stamp () * 1000;
 
-        while (graphicsToProcessIndex < graphicsToProcessTable.length && (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount) {
+        while (graphicsToProcessIndex < graphicsToProcessTable.length && (!useDelay || (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount)) {
             var entry = graphicsToProcessTable [graphicsToProcessIndex];
             entry.graphics.dirty = true;
             openfl._internal.renderer.canvas.CanvasGraphics.render(entry.graphics, renderSession, entry.transform, false);
@@ -157,8 +156,6 @@ class JobContext {
         } else {
             if(useDelay) {
                 haxe.Timer.delay (cacheGraphics, 16);
-            } else {
-                cacheGraphics();
             }
         }
     }
