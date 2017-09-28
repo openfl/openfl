@@ -242,6 +242,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (value > 0) {
 			
 			this.__resize (value);
+			if (value < this.position) this.position = value;
 			
 		}
 		
