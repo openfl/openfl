@@ -31,15 +31,19 @@ class MovieClipPreprocessor {
         }
     }
 
-    static public function renderCompleteInstant(clipId:String, cachePrecision:Int = 100)
+    static public function renderCompleteInstant(clipId:String, cachePrecision:Int = 100, ?parent:DisplayObjectContainer = null)
     {
         var tempClip = Assets.getMovieClip(clipId);
 
-        Lib.current.stage.addChild(tempClip);
+        if(parent == null) {
+            parent = Lib.current.stage;
+        }
+
+        parent.addChild(tempClip);
 
         process(tempClip, cachePrecision);
 
-        Lib.current.stage.removeChild(tempClip);
+        parent.removeChild(tempClip);
     }
 }
 
