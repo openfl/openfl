@@ -126,29 +126,34 @@ class JobContext {
     }
 
     static private function findDependentSymbols(shapeTable:Array<CacheInfo>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix):Void {
-        var previousRenderTransformMap = new Map<Int,Matrix> ();
+        var depthRenderTransformMap = new Map<Int,Matrix> ();
+        var depthSymbolMap = new Map<Int,Int> ();
         var renderTransform:Matrix = Matrix.pool.get ();
 
         for (frame in symbol.frames) {
             for (frameObject in frame.objects) {
-                if (frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
+                if (frameObject.type != FrameObjectType.DESTROY) {
                     var symbol = swflite.symbols.get(frameObject.symbol);
 
                     if (frameObject.matrix != null) {
                         renderTransform.copyFrom (frameObject.matrix);
                         renderTransform.concat (transform);
                     } else {
-                        var cached = previousRenderTransformMap[frameObject.depth];
+                        var cached = depthRenderTransformMap[frameObject.depth];
                         renderTransform.copyFrom (cached != null ? cached : transform);
                     }
 
-                    previousRenderTransformMap[frameObject.depth] = renderTransform;
 
                     if (Std.is (symbol, SpriteSymbol)) {
                         findDependentSymbols (shapeTable, cast symbol, swflite, renderTransform);
                     } else if (Std.is(symbol, ShapeSymbol)) {
-                        shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
+                        if (frameObject.symbol != depthSymbolMap[frameObject.depth] || !renderTransform.equals (depthRenderTransformMap[frameObject.depth])) {
+                            shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
+                        }
                     }
+
+                    depthRenderTransformMap[frameObject.depth] = renderTransform.clone ();
+                    depthSymbolMap[frameObject.depth] = frameObject.symbol;
                 }
             }
         }
