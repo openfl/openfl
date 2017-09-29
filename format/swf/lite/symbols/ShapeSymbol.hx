@@ -3,6 +3,7 @@ package format.swf.lite.symbols;
 
 import format.swf.exporters.core.ShapeCommand;
 import openfl.geom.Rectangle;
+import openfl.geom.Matrix;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.events.Event;
@@ -14,13 +15,15 @@ class ShapeSymbol extends SWFSymbol {
 
 	public var useBitmapCache(default, set):Bool = false;
 	private var cachedTable:Array<CacheEntry>;
+    public var cachePrecision:Int = 100;
 
 	public var snapCoordinates:Bool = false;
 
-	static public var shapeSymbolsUsingBitmapCacheMap = new Map<ShapeSymbol, ShapeSymbol>();
 	static private var lastStageWidth:Float;
 	static private var lastStageHeight:Float;
 	static private var eventIsListened:Bool = false;
+
+	static public var shapeSymbolsUsingBitmapCacheMap = new Map<Int, ShapeSymbol>();
 
 	public function new () {
 
@@ -85,7 +88,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		if (useBitmapCache && cachedTable == null) {
 			cachedTable = new Array<CacheEntry> ();
-			shapeSymbolsUsingBitmapCacheMap.set(this, this);
+			shapeSymbolsUsingBitmapCacheMap.set(id, this);
 
 			if(!eventIsListened) {
 				var stage = openfl.Lib.current.stage;
@@ -95,13 +98,13 @@ class ShapeSymbol extends SWFSymbol {
 				eventIsListened = true;
 			}
 		} else if ( !useBitmapCache ) {
-			shapeSymbolsUsingBitmapCacheMap.remove(this);
+			shapeSymbolsUsingBitmapCacheMap.remove(id);
 		}
 
 		return this.useBitmapCache = useBitmapCache;
 	}
 
-	public function getCachedBitmapData (width:Int, height:Int):BitmapData {
+	public function getCachedBitmapData (renderTransform:Matrix):BitmapData {
 
 		if (useBitmapCache) {
 
@@ -109,15 +112,25 @@ class ShapeSymbol extends SWFSymbol {
 				return cachedTable[0].bitmapData;
 			}
 
+			// :TODO: pool
+			var fixedRenderTransform = new DiscretizedTransform (renderTransform, cachePrecision);
+
 			for (entry in cachedTable) {
 
-				if (entry.bitmapData.physicalWidth == width && entry.bitmapData.physicalHeight == height) {
+				if (entry.renderTransform.equals (fixedRenderTransform)) {
 
 					return entry.bitmapData;
 
 				}
 
 			}
+
+			#if profile
+			var missedCount = missedCountCachedMap[id];
+			missedCount = missedCount != null ? missedCount : 0;
+			++missedCount;
+			missedCountCachedMap.set (id, missedCount);
+		#end
 
 		}
 
@@ -129,7 +142,7 @@ class ShapeSymbol extends SWFSymbol {
 
 			if (continuousLogEnabled) {
 
-				trace ('Shape id:$id; Missed count: $missedCount');
+				trace ('Shape id:$id; useBitmapCache: $useBitmapCache; Missed count: $missedCount;');
 
 			}
 		#end
@@ -139,7 +152,7 @@ class ShapeSymbol extends SWFSymbol {
 	}
 
 
-	public function setCachedBitmapData (bitmapData:BitmapData) {
+	public function setCachedBitmapData (bitmapData:BitmapData, renderTransform:Matrix) {
 
 		if (!useBitmapCache) {
 
@@ -147,7 +160,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
-		cachedTable.push (new CacheEntry (bitmapData));
+		cachedTable.push (new CacheEntry (bitmapData, renderTransform, cachePrecision));
 
 	}
 
@@ -162,6 +175,7 @@ class ShapeSymbol extends SWFSymbol {
 
 	#if profile
 		private static var missedCountMap = new Map<Int, Int> ();
+		private static var missedCountCachedMap = new Map<Int, Int> ();
 		private static var continuousLogEnabled:Bool = false;
 
 		public static function __init__ () {
@@ -172,6 +186,12 @@ class ShapeSymbol extends SWFSymbol {
 				untyped __js__ ("$global.Profile.ShapeInfo.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatistics" );
 				untyped __js__ ("$global.Profile.ShapeInfo.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatistics" );
 				untyped __js__ ("$global.Profile.ShapeInfo.enableContinuousLog = format_swf_lite_symbols_ShapeSymbol.enableContinuousLog" );
+
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached = $global.Profile.ShapeInfo.Cached || {}" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatisticsCached" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatisticsCached" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logCachedSymbolInfo" );
+				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logAllCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logAllCachedSymbolInfo" );
 			#end
 
 		}
@@ -179,6 +199,12 @@ class ShapeSymbol extends SWFSymbol {
 		public static function resetStatistics () {
 
 			missedCountMap = new Map<Int, Int> ();
+
+		}
+
+		public static function resetStatisticsCached () {
+
+			missedCountCachedMap = new Map<Int, Int> ();
 
 		}
 
@@ -191,6 +217,62 @@ class ShapeSymbol extends SWFSymbol {
 				}
 				trace ('Shape id:$id; Missed count: ${value}');
 			}
+
+		}
+
+		public static function logStatisticsCached (?threshold = 0) {
+
+			for( id in missedCountCachedMap.keys () ) {
+				var value = missedCountCachedMap[id];
+				if(value < threshold) {
+					continue;
+				}
+				trace ('Shape id:$id; Missed count: ${value}');
+			}
+
+		}
+
+		private static inline function _logCachedSymbolInfo (symbol:ShapeSymbol) {
+
+			trace ('Shape id:${symbol.id} (cached count:${symbol.cachedTable.length})');
+
+			#if js
+				var console =  untyped __js__("window.console");
+
+				for( cached in symbol.cachedTable ) {
+						console.debug('    transform:${cached.renderTransform}');
+				}
+			#end
+
+		}
+
+		public static function logCachedSymbolInfo (symbolId:Int) {
+
+			var symbol = shapeSymbolsUsingBitmapCacheMap[symbolId];
+			_logCachedSymbolInfo (symbol);
+
+		}
+
+		public static function logAllCachedSymbolInfo (?threshold = 0) {
+
+			var totalCached = 0;
+			var approximateSize = 0;
+
+			for(symbol in shapeSymbolsUsingBitmapCacheMap) {
+				var count = symbol.cachedTable.length;
+
+				totalCached += count;
+
+				if ( count >= threshold) {
+					_logCachedSymbolInfo (symbol);
+				}
+
+				for( cached in symbol.cachedTable ) {
+					approximateSize += cached.bitmapData.physicalWidth * cached.bitmapData.physicalHeight * 4;
+				}
+			}
+
+			trace ('Total cached: $totalCached ; Approximate memory used: $approximateSize');
 
 		}
 
@@ -223,6 +305,7 @@ class ShapeSymbol extends SWFSymbol {
 			for(s in shapeSymbolsUsingBitmapCacheMap) {
 				s.__clearCachedTable();
 			}
+
 			lastStageWidth = width;
 			lastStageHeight = height;
 		}
@@ -230,16 +313,42 @@ class ShapeSymbol extends SWFSymbol {
 
 }
 
+private class DiscretizedTransform {
+	private var a:Int;
+	private var b:Int;
+	private var c:Int;
+	private var d:Int;
+	private var tx:Int;
+	private var ty:Int;
 
-// :TODO: account for offset if desired
+	public function new (from:Matrix, precision:Int) {
+		a = Std.int(from.a * precision);
+		b = Std.int(from.b * precision);
+		c = Std.int(from.c * precision);
+		d = Std.int(from.d * precision);
+		tx = Std.int(from.tx * precision);
+		ty = Std.int(from.ty * precision);
+	}
+
+	// :TODO: account for offset if desired
+	public function equals (other:DiscretizedTransform) {
+		return a == other.a
+			&& d == other.d
+			&& b == other.b
+			&& c == other.c;
+	}
+}
+
 
 private class CacheEntry {
 
 	public var bitmapData:BitmapData;
+	public var renderTransform:DiscretizedTransform;
 
-	public function new (bitmapData:BitmapData) {
+	public function new (bitmapData:BitmapData, renderTransform:Matrix, cachePrecision:Int) {
 
 		this.bitmapData = bitmapData;
+		this.renderTransform = new DiscretizedTransform (renderTransform, cachePrecision);
 
 	}
 

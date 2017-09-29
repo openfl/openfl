@@ -508,7 +508,7 @@ class CanvasGraphics {
 					var cachedBitmapData:BitmapData = null;
 
 					if ( Std.is(graphics.__symbol, ShapeSymbol) ) {
-						cachedBitmapData = cast(graphics.__symbol, ShapeSymbol).getCachedBitmapData (width, height);
+						cachedBitmapData = cast(graphics.__symbol, ShapeSymbol).getCachedBitmapData (renderTransform);
 					}
 
 					if (cachedBitmapData != null) {
@@ -819,7 +819,7 @@ class CanvasGraphics {
 				if (graphics.__symbol != null) {
 
 					if ( Std.is(graphics.__symbol, ShapeSymbol) )
-						cast(graphics.__symbol, ShapeSymbol).setCachedBitmapData (graphics.__bitmap);
+						cast(graphics.__symbol, ShapeSymbol).setCachedBitmapData (graphics.__bitmap, renderTransform);
 
 				}
 
