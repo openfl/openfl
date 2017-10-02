@@ -167,6 +167,7 @@ class ShapeSymbol extends SWFSymbol {
 	public function fillDrawCommandBuffer(shapeCommands:Array<ShapeCommand>)
 	{
 		graphics = @:privateAccess new Graphics();
+		@:privateAccess graphics.__symbol = this;
 
 		processCommands(graphics, shapeCommands);
 
