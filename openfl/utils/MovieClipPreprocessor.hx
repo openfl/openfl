@@ -22,7 +22,7 @@ class MovieClipPreprocessor {
     static private function processNextJob() {
         if (currentJob == null || currentJob.done) {
             if (jobTable.length > 0) {
-                currentJob = jobTable.splice (0, 1)[0];
+                currentJob = jobTable.shift();
                 currentJob.process ();
             } else {
                 currentJob = null;
