@@ -113,9 +113,9 @@ class JobContext {
     public function process () {
         var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
         var gl:lime.graphics.GLRenderContext = renderSession.gl;
-        var startTime = haxe.Timer.stamp () * 1000;
+        var startTime = openfl.Lib.getTimer ();
 
-        while (shapeToProcessIndex < shapeToProcessTable.length && (!useDelay || (haxe.Timer.stamp () * 1000 - startTime) < timeSliceMillisecondCount)) {
+        while (shapeToProcessIndex < shapeToProcessTable.length && (!useDelay || (openfl.Lib.getTimer () - startTime) < timeSliceMillisecondCount)) {
             var entry = shapeToProcessTable [shapeToProcessIndex];
             var graphics = entry.symbol.graphics;
             graphics.dirty = true;
