@@ -6,6 +6,7 @@ import flash.display.Shape;
 
 import format.swf.exporters.ShapeCommandExporter;
 import format.swf.lite.symbols.ShapeSymbol;
+import openfl._internal.renderer.RenderSession;
 
 class MorphShape extends Shape {
 
@@ -14,6 +15,8 @@ class MorphShape extends Shape {
 
 	public var ratio(default, set) : Float;
 
+    private var mustCache:Bool = false;
+
 
 	public function new (swf:SWFLite, symbol:MorphShapeSymbol) {
 
@@ -21,6 +24,10 @@ class MorphShape extends Shape {
 
 		__symbol = symbol;
 		@:privateAccess this.graphics.__symbol = symbol;
+
+        if(symbol.useBitmapCache) {
+            graphics.keepBitmapData = true;
+        }
 
 		__swf = swf;
 
@@ -84,31 +91,54 @@ class MorphShape extends Shape {
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
+        __updateTransforms();
+
 		if(__renderDirty){
+            var cacheEntry = __symbol.getCacheEntry(__renderTransform, ratio);
 
-			var twips_ratio = Math.floor(ratio*65535);
-			var handler = __symbol.cachedHandlers.get(twips_ratio);
-			if ( handler == null ) {
-				var swf_shape = __symbol.getShape(ratio);
+            if(cacheEntry == null) {
+                var twips_ratio = Math.floor(ratio*65535);
+                var handler = __symbol.cachedHandlers.get(twips_ratio);
+                if ( handler == null ) {
+                    var swf_shape = __symbol.getShape(ratio);
 
-				handler = new ShapeCommandExporter ();
-				swf_shape.export (handler);
-				__symbol.cachedHandlers.set(twips_ratio, handler);
-			}
+                    handler = new ShapeCommandExporter ();
+                    swf_shape.export (handler);
+                    __symbol.cachedHandlers.set(twips_ratio, handler);
+                }
 
-			var graphics = this.graphics;
-			graphics.clear();
-			ShapeSymbol.processCommands(graphics, handler.commands);
+                graphics.clear();
+                ShapeSymbol.processCommands(graphics, handler.commands);
 
-			#if(profile && js)
-			var profileId = getProfileId();
-            var value = __updateCount.get(profileId);
-            value = value != null ? value : 0;
-			__updateCount.set(profileId, value + 1);
-			#end
-		}
+                #if(profile && js)
+                    var profileId = getProfileId();
+                    var value = __updateCount.get(profileId);
+                    value = value != null ? value : 0;
+                    __updateCount.set(profileId, value + 1);
+                #end
+
+                mustCache = true;
+
+            } else {
+                Reflect.setField(graphics, "__bitmap", cacheEntry.bitmapData);
+                Reflect.setField(graphics, "__dirty", false);
+                @:privateAccess graphics.__bounds = cacheEntry.bounds;
+            }
+	    }
 
 		super.__update(transformOnly, updateChildren);
+    }
+
+	public override function __renderGL (renderSession:RenderSession):Void {
+
+        super.__renderGL(renderSession);
+
+        if(mustCache) {
+            if(@:privateAccess graphics.__bitmap != null) {
+                __symbol.addCacheEntry(@:privateAccess graphics.__bitmap, @:privateAccess graphics.__bounds, __renderTransform, ratio);
+            }
+            mustCache = false;
+        }
 	}
 
 }
