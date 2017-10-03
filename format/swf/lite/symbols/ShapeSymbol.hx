@@ -16,7 +16,7 @@ class ShapeSymbol extends SWFSymbol {
 	public var useBitmapCache(default, set):Bool = false;
 	private var cachedTable:Array<CacheEntry>;
     public var cachePrecision:Int = 100;
-    public var forbidClearCache:Bool = false;
+    public var forbidClearCacheOnResize:Bool = false;
 
 	public var snapCoordinates:Bool = false;
 
@@ -305,7 +305,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		if(lastStageWidth != width || lastStageHeight != height) {
 			for(s in shapeSymbolsUsingBitmapCacheMap) {
-                if(!s.forbidClearCache) {
+                if(!s.forbidClearCacheOnResize) {
 				    s.__clearCachedTable();
                 }
 			}
