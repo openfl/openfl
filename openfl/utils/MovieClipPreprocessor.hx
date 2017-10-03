@@ -12,6 +12,7 @@ class MovieClipPreprocessor {
 
     static var jobTable = new Array<JobContext> ();
     static var currentJob:JobContext = null;
+    public static var globalTimeSliceMillisecondCount = 10;
 
     static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null) {
         jobTable.push (new JobContext (movieclip, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision) );
@@ -41,6 +42,26 @@ class MovieClipPreprocessor {
         parent.addChild(tempClip);
 
         process(tempClip, cachePrecision);
+
+        parent.removeChild(tempClip);
+        // :TODO: reset parent if there was one
+    }
+
+    static public function renderComplete(clipId:String, cachePrecision:Int = 100, ?parent:DisplayObjectContainer = null, timeSliceMillisecondCount = null)
+    {
+        if ( timeSliceMillisecondCount == null ) {
+            timeSliceMillisecondCount = globalTimeSliceMillisecondCount;
+        }
+
+        var tempClip = Assets.getMovieClip(clipId);
+
+        if(parent == null) {
+            parent = Lib.current.stage;
+        }
+
+        parent.addChild(tempClip);
+
+        process(tempClip, cachePrecision, timeSliceMillisecondCount);
 
         parent.removeChild(tempClip);
         // :TODO: reset parent if there was one
