@@ -14,8 +14,9 @@ class MovieClipPreprocessor {
     static var currentJob:JobContext = null;
     public static var globalTimeSliceMillisecondCount = 10;
 
-    static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null) {
-        jobTable.push (new JobContext (movieclip, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision) );
+    static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null, priority:Int = 0) {
+        jobTable.push (new JobContext (movieclip, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision, priority) );
+        jobTable.sort (function (first:JobContext, second:JobContext) { return @:privateAccess second.priority - @:privateAccess first.priority; });
 
         processNextJob ();
     }
@@ -80,14 +81,16 @@ class JobContext {
     private var timeSliceMillisecondCount:Int;
     private var useDelay:Bool;
     private var cachePrecision:Int;
+    private var priority:Int;
 
     public var done(default, null):Bool = false;
 
-    public function new (movieclip:MovieClip, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int) {
+    public function new (movieclip:MovieClip, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, priority:Int) {
         this.movieclip = movieclip;
         this.useDelay = useDelay;
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
         this.cachePrecision = cachePrecision;
+        this.priority = priority;
 
         init ();
     }
