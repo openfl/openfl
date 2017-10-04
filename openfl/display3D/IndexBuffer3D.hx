@@ -3,7 +3,7 @@ package openfl.display3D;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
-import openfl._internal.renderer.opengl.GLIndexBuffer3D;
+import openfl._internal.stage3D.opengl.GLIndexBuffer3D;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 

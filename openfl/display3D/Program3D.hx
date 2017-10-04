@@ -7,7 +7,7 @@ import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.GLRenderContext;
 import lime.utils.BytePointer;
 import lime.utils.Float32Array;
-import openfl._internal.renderer.opengl.GLProgram3D;
+import openfl._internal.stage3D.opengl.GLProgram3D;
 import openfl._internal.stage3D.SamplerState;
 import openfl.utils.ByteArray;
 import openfl.Vector;
