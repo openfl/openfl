@@ -280,7 +280,7 @@ abstract Vector<T>(IVector<T>) {
 		
 	}
 	
-
+	
 }
 
 
@@ -519,6 +519,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
 	public function toString ():String {
 		
 		return __array != null ? __array.toString () : null;
@@ -535,21 +542,15 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-
-
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<Bool> {
-		return __array;
-	}
-	#end
-
-
-
+	
+	
+	
+	
 	// Getters & Setters
 	
 	
-
-
+	
+	
 	@:noCompletion private function get_length ():Int {
 		
 		return __array.length;
@@ -827,6 +828,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
 	public function toString ():String {
 		
 		return __array != null ? __array.toString () : null;
@@ -843,13 +851,8 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-
-
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<Float> {
-		return __array;
-	}
-	#end
+	
+	
 	
 	
 	// Getters & Setters
@@ -1139,6 +1142,13 @@ abstract Vector<T>(IVector<T>) {
 	public function splice (pos:Int, len:Int):IVector<Function> {
 		
 		return new FunctionVector (__array.splice (pos, len));
+		
+	}
+	
+	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
 		
 	}
 	
@@ -1446,6 +1456,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
 	public function toString ():String {
 		
 		return __array != null ? __array.toString () : null;
@@ -1462,15 +1479,10 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-
-
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<Int> {
-		return __array;
-	}
-	#end
-
-
+	
+	
+	
+	
 	// Getters & Setters
 	
 	
@@ -1753,6 +1765,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
 	public function toString ():String {
 		
 		return __array != null ? __array.toString () : null;
@@ -1769,15 +1788,9 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-
-
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<T> {
-		return __array;
-	}
-	#end
-
-
+	
+	
+	
 	
 	// Getters & Setters
 	
