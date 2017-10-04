@@ -379,11 +379,6 @@ class ByteArrayTest {
 		// an empty ByteArray and doesn't crash
 		testString = data.readUTFBytes(data.length);
 		Assert.areEqual( 0, testString.length );
-		
-		// Test toString as well just in case it gets changed
-		// to not just call readUTFBytes
-		testString = data.toString();
-		Assert.areEqual( 0, testString.length );
 	}
 	
 	
@@ -604,6 +599,22 @@ class ByteArrayTest {
 			
 		}
 		
+	}
+
+	@Test public function testCompressUncompress() {
+		var data:ByteArray = new ByteArray();
+		var str:String = "Hello WorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorldWorld!";
+		data.writeUTFBytes(str);
+		
+		Assert.areEqual(str.length, data.length);
+
+		data.compress();
+
+		Assert.isTrue(data.length < str.length, "compressed data should be smaller");
+
+		data.uncompress();
+
+		Assert.areEqual(str.length, data.length);
 	}
 	
 	/*static private function serializeByteArray(ba:ByteArray):String {

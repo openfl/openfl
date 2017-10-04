@@ -107,7 +107,7 @@ import openfl.utils.ByteArray;
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, side);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).bytes.b, side);
 			return;
 			
 		}
