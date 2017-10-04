@@ -35,14 +35,14 @@ class TextureBase extends EventDispatcher {
 	private static var __textureFormatCompressedAlpha:Int;
 
 	private var __alphaTexture:Texture;
-	private var __compressedMemoryUsage:Int;
+	// private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
 	private var __format:Int;
 	private var __height:Int;
 	private var __internalFormat:Int;
-	private var __memoryUsage:Int;
+	// private var __memoryUsage:Int;
 	private var __optimizeForRenderToTexture:Bool;
-	private var __outputTextureMemoryUsage:Bool = false;
+	// private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
 	private var __streamingLevels:Int;
 	private var __textureContext:GLRenderContext;
@@ -121,8 +121,8 @@ class TextureBase extends EventDispatcher {
 		__internalFormat = __textureInternalFormat;
 		__format = __textureFormat;
 		
-		__memoryUsage = 0;
-		__compressedMemoryUsage = 0;
+		// __memoryUsage = 0;
+		// __compressedMemoryUsage = 0;
 		
 	}
 	
@@ -137,39 +137,39 @@ class TextureBase extends EventDispatcher {
 		
 		GL.deleteTexture (__textureID);
 		
-		if (__compressedMemoryUsage > 0) {
+		// if (__compressedMemoryUsage > 0) {
 			
-			__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
-			var currentCompressedMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, __compressedMemoryUsage);
+		// 	__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
+		// 	var currentCompressedMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, __compressedMemoryUsage);
 			
-			#if debug
-			if (__outputTextureMemoryUsage) {
+		// 	#if debug
+		// 	if (__outputTextureMemoryUsage) {
 				
-				trace (" - Texture Compressed GPU Memory (-" + __compressedMemoryUsage + ") - Current Compressed Memory : " + currentCompressedMemory);
+		// 		trace (" - Texture Compressed GPU Memory (-" + __compressedMemoryUsage + ") - Current Compressed Memory : " + currentCompressedMemory);
 				
-			}
-			#end
+		// 	}
+		// 	#end
 			
-			__compressedMemoryUsage = 0;
+		// 	__compressedMemoryUsage = 0;
 			
-		}
+		// }
 		
-		if (__memoryUsage > 0) {
+		// if (__memoryUsage > 0) {
 			
-			__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
-			var currentMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE, __memoryUsage);
+		// 	__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
+		// 	var currentMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE, __memoryUsage);
 			
-			#if debug
-			if (__outputTextureMemoryUsage) {
+		// 	#if debug
+		// 	if (__outputTextureMemoryUsage) {
 				
-				trace (" - Texture GPU Memory (-" + __memoryUsage + ") - Current Memory : " + currentMemory);
+		// 		trace (" - Texture GPU Memory (-" + __memoryUsage + ") - Current Memory : " + currentMemory);
 				
-			}
-			#end
+		// 	}
+		// 	#end
 			
-			__memoryUsage = 0;
+		// 	__memoryUsage = 0;
 			
-		}
+		// }
 		
 	}
 	
@@ -328,50 +328,50 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
-	private function __trackCompressedMemoryUsage (memory:Int):Void {
+	// private function __trackCompressedMemoryUsage (memory:Int):Void {
 		
-		if (__compressedMemoryUsage == 0) {
+	// 	if (__compressedMemoryUsage == 0) {
 			
-			__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
+	// 		__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
 			
-		}
+	// 	}
 		
-		__compressedMemoryUsage += memory;
-		var currentCompressedMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, memory);
+	// 	__compressedMemoryUsage += memory;
+	// 	var currentCompressedMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, memory);
 		
-		#if debug
-		if (__outputTextureMemoryUsage) {
+	// 	#if debug
+	// 	if (__outputTextureMemoryUsage) {
 			
-			trace (" + Texture Compressed GPU Memory (+" + memory + ") - Current Compressed Memory : " + currentCompressedMemory);
+	// 		trace (" + Texture Compressed GPU Memory (+" + memory + ") - Current Compressed Memory : " + currentCompressedMemory);
 			
-		}
-		#end
+	// 	}
+	// 	#end
 		
-		__trackMemoryUsage (memory);
+	// 	__trackMemoryUsage (memory);
 		
-	}
+	// }
 	
 	
-	private function __trackMemoryUsage (memory:Int):Void {
+	// private function __trackMemoryUsage (memory:Int):Void {
 		
-		if (__memoryUsage == 0) {
+	// 	if (__memoryUsage == 0) {
 			
-			__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
+	// 		__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
 			
-		}
+	// 	}
 		
-		__memoryUsage += memory;
-		var currentMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE, memory);
+	// 	__memoryUsage += memory;
+	// 	var currentMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE, memory);
 		
-		#if debug
-		if (__outputTextureMemoryUsage) {
+	// 	#if debug
+	// 	if (__outputTextureMemoryUsage) {
 			
-			trace (" + Texture GPU Memory (+" + memory + ") - Current Memory : " + currentMemory);
+	// 		trace (" + Texture GPU Memory (+" + memory + ") - Current Memory : " + currentMemory);
 			
-		}
-		#end
+	// 	}
+	// 	#end
 		
-	}
+	// }
 	
 	
 }

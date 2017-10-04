@@ -83,8 +83,8 @@ import openfl.utils.ByteArray;
 		GL.bindTexture (__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
-		var memUsage = (__width * __height) * 4;
-		__trackMemoryUsage (memUsage);
+		// var memUsage = (__width * __height) * 4;
+		// __trackMemoryUsage (memUsage);
 		
 	}
 	

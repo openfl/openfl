@@ -165,8 +165,8 @@ import haxe.io.Bytes;
 		GL.bindTexture (__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
-		var memUsage = (width * height) * 4;
-		__trackMemoryUsage (memUsage);
+		// var memUsage = (width * height) * 4;
+		// __trackMemoryUsage (memUsage);
 		
 	}
 	

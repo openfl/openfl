@@ -148,8 +148,8 @@ import openfl.utils.ByteArray;
 		
 		__uploadedSides |= 1 << side;
 		
-		var memUsage = (__size * __size) * 4;
-		__trackMemoryUsage (memUsage);
+		// var memUsage = (__size * __size) * 4;
+		// __trackMemoryUsage (memUsage);
 		
 	}
 	
