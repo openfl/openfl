@@ -612,6 +612,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		width = Std.int (width * window.scale);
 		height = Std.int( height * window.scale);
 
+		var oldScaleX = this.scaleX;
+		var oldScaleY = this.scaleY;
+
 		var aspect_ratio = stageWidth / stageHeight;
 		var new_aspect_ratio = width / height;
 		if ( aspect_ratio == new_aspect_ratio && scaleMode != StageScaleMode.NO_SCALE ) {
@@ -663,8 +666,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		var event = Event.__create (Event.RESIZE);
-		__broadcastFromStage (event, false);
+		if ( oldScaleX != scaleX || oldScaleY != scaleY ) {
+			var event = Event.__create (Event.RESIZE);
+			__broadcastFromStage (event, false);
+		}
 
 	}
 
