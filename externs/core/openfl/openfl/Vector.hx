@@ -14,7 +14,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	public var length (get, set):Int;
 	
 	
-	public function new (?length:Int, ?fixed:Bool /*, ?array:Array<Dynamic>*/):Void;
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void;
 	
 	
 	public inline function concat (?a:Vector<T>):Vector<T> {
@@ -173,39 +173,39 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 	
 	
-	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool> (t:AbstractVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):AbstractVector<Bool> {
+	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool> (t:AbstractVector<T>, length:Int, fixed:Bool, array:Array<T>):AbstractVector<T> {
 		
-		return new AbstractVector<Bool> (new BoolVector (length, fixed /*, cast array*/));
-		
-	}
-	
-	
-	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int> (t:AbstractVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):AbstractVector<Int> {
-		
-		return new AbstractVector<Int> (new IntVector (length, fixed /*, cast array*/));
+		return new AbstractVector<T> (cast new BoolVector (length, fixed), array);
 		
 	}
 	
 	
-	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:AbstractVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):AbstractVector<Float> {
+	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int> (t:AbstractVector<T>, length:Int, fixed:Bool, array:Array<T>):AbstractVector<T> {
 		
-		return new AbstractVector<Float> (new FloatVector (length, fixed /*, cast array*/));
+		return new AbstractVector<T> (cast new IntVector (length, fixed), array);
+		
+	}
+	
+	
+	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:AbstractVector<T>, length:Int, fixed:Bool, array:Array<T>):AbstractVector<T> {
+		
+		return new AbstractVector<T> (cast new FloatVector (length, fixed), array);
 		
 	}
 	
 	
 	#if !cs
-	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:AbstractVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):AbstractVector<Function> {
+	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:AbstractVector<T>, length:Int, fixed:Bool, array:Array<T>):AbstractVector<T> {
 		
-		return new AbstractVector<Function> (new FunctionVector (length, fixed /*, cast array*/));
+		return new AbstractVector<T> (cast new FunctionVector (length, fixed), array);
 		
 	}
 	#end
 	
 	
-	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:AbstractVector<T>, length:Int, fixed:Bool /*, array:Array<Dynamic>*/):AbstractVector<T> {
+	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:AbstractVector<T>, length:Int, fixed:Bool, array:Array<T>):AbstractVector<T> {
 		
-		return cast new AbstractVector<T> (new ObjectVector<T> (length, fixed /*, cast array*/));
+		return cast new AbstractVector<T> (cast new ObjectVector<T> (length, fixed), array);
 		
 	}
 	
@@ -266,9 +266,24 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	public var data:IVector<T>;
 	
 	
-	public function new (data:IVector<T>) {
+	public function new (data:IVector<T>, ?array:Array<T>) {
 		
 		this.data = data;
+		
+		if (array != null) {
+			
+			var cacheFixed = data.fixed;
+			data.fixed = false;
+			
+			for (i in 0...array.length) {
+				
+				data.set (i, cast array[i]);
+				
+			}
+			
+			data.fixed = cacheFixed;
+			
+		}
 		
 	}
 	
@@ -1888,6 +1903,9 @@ abstract Vector<T>(VectorData<T>) {
 		if (array != null) {
 			
 			this = VectorData.ofArray (array);
+			
+			//if (length != null) this.length = length;
+			//if (fixed != null) this.fixed = fixed;
 			
 		} else {
 			
