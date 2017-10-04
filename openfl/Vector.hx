@@ -280,7 +280,7 @@ abstract Vector<T>(IVector<T>) {
 		
 	}
 	
-	
+
 }
 
 
@@ -535,15 +535,21 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-	
-	
-	
-	
+
+
+	#if js
+	@:noCompletion @:keep private function toJSON(): Array<Bool> {
+		return __array;
+	}
+	#end
+
+
+
 	// Getters & Setters
 	
 	
-	
-	
+
+
 	@:noCompletion private function get_length ():Int {
 		
 		return __array.length;
@@ -837,8 +843,13 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-	
-	
+
+
+	#if js
+	@:noCompletion @:keep private function toJSON(): Array<Float> {
+		return __array;
+	}
+	#end
 	
 	
 	// Getters & Setters
@@ -1451,10 +1462,15 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-	
-	
-	
-	
+
+
+	#if js
+	@:noCompletion @:keep private function toJSON(): Array<Int> {
+		return __array;
+	}
+	#end
+
+
 	// Getters & Setters
 	
 	
@@ -1753,9 +1769,15 @@ abstract Vector<T>(IVector<T>) {
 		}
 		
 	}
-	
-	
-	
+
+
+	#if js
+	@:noCompletion @:keep private function toJSON(): Array<T> {
+		return __array;
+	}
+	#end
+
+
 	
 	// Getters & Setters
 	
@@ -1808,7 +1830,7 @@ abstract Vector<T>(IVector<T>) {
 		
 	}
 	
-	
+
 }
 
 
