@@ -18,6 +18,8 @@ class Sound extends EventDispatcher {
 
 	#if html5
 	private static var __registeredSounds = new Map<String, Bool> ();
+	private var numberOfLoopsRemaining:Int;
+	private var data:Dynamic;
 	#end
 
 	public var bytesLoaded (default, null):Int;
@@ -30,8 +32,7 @@ class Sound extends EventDispatcher {
 	private var __buffer:AudioBuffer;
 
 	#if html5
-	private var __sound:SoundJSInstance;
-	private var __soundID:String;
+	private var __sound:Howl;
 	#end
 
 
@@ -66,12 +67,12 @@ class Sound extends EventDispatcher {
 
 		#else
 
-		if (__registeredSounds.exists (__soundID)) {
+	/*	if (__registeredSounds.exists (__soundID)) {
 
 			SoundJS.removeSound (__soundID);
 
 		}
-
+*/
 		#end
 
 	}
@@ -100,23 +101,18 @@ class Sound extends EventDispatcher {
 		AudioBuffer.fromURL (stream.url, AudioBuffer_onURLLoad);
 
 		#else
-
-		url = stream.url;
-		__soundID = Path.withoutExtension (stream.url);
-
-		if (!__registeredSounds.exists (__soundID)) {
-
-			__registeredSounds.set (__soundID, true);
-			SoundJS.addEventListener ("fileload", SoundJS_onFileLoad);
-			SoundJS.addEventListener ("fileerror", SoundJS_onFileError);
-			SoundJS.registerSound (url, __soundID);
-
-		} else {
-
-			dispatchEvent (Event.__create (Event.COMPLETE));
-
-		}
-
+		__sound = new Howl({
+			src:stream.url,
+			sprite : {
+				background : [1000, 21000],
+			},
+			onload:function() {
+				dispatchEvent (Event.__create (Event.COMPLETE));
+			},
+			onloaderror:function() {
+				dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
+			}
+		});
 		#end
 
 	}
@@ -180,29 +176,41 @@ class Sound extends EventDispatcher {
 
 		// Hack to fix sound balance
 
-		if (pan == 0) pan = -0.0000001;
+		if (pan != 0) {
+			throw ":TODO: use spacial plugin";
+		} 
+		this.numberOfLoopsRemaining = loops;
+		__sound.volume(sndTransform.volume);
+		__sound.loop(loops > 1);
+		__sound.on("end", onEndSound);
+		__sound.seek(Std.int (startTime));
+		__sound.play('background');
 
-		var instance =
-		if (loops > 1)
-			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), loops - 1, sndTransform.volume, pan);
-		else
-			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), 0, sndTransform.volume, pan);
-
-		return SoundChannel.__create (instance);
+		return SoundChannel.__create (__sound);
 
 		#end
 
 	}
 
+	#if html5
+	public function onEndSound() {
+		if(this.numberOfLoopsRemaining == 1)
+			__sound.stop();
+		else
+			this.numberOfLoopsRemaining -= 1;
+
+	}
+	#end
+
 
 	#if html5
 	private static function __init__ ():Void {
 
-		if (untyped window.createjs != null) {
-
+		/*if (untyped window.createjs != null) {
+ls
 			SoundJS.alternateExtensions = [ "m4a" ];
 
-		}
+		}*/ // ???????? :TODO: check this
 
 	}
 	#end
@@ -270,7 +278,7 @@ class Sound extends EventDispatcher {
 
 
 	#if html5
-	private function SoundJS_onFileLoad (event:Dynamic):Void {
+	/*private function SoundJS_onFileLoad (event:Dynamic):Void {
 
 		if (event.id == __soundID) {
 
@@ -292,7 +300,7 @@ class Sound extends EventDispatcher {
 
 		}
 
-	}
+	}*/
 	#end
 
 
@@ -300,6 +308,38 @@ class Sound extends EventDispatcher {
 
 
 #if html5
+
+@:native("Howl") extern class Howl {
+	public function new (o:Dynamic): Void;
+	public function load (): Howl;
+	public function play (spriteOrId:Dynamic = null): Int;
+	public function pause (id:Int = null): Howl;
+	public function stop (id:Int = null): Howl;
+	public function mute (muted:Bool, id:Int = null): Howl;
+	public function volume (vol:Float = null, id:Int = null): Dynamic;
+	public function fade (from:Float, to:Float, len:Int, id:Int = null): Howl;
+	public function loop (loop:Bool = null, id:Int = null): Dynamic;
+	public function rate (rate:Int = null, id:Int = null): Dynamic;
+	public function seek (rate:Int = null, id:Int = null): Dynamic;
+	public function playing (id:Int = null): Bool;
+	public function duration (id:Int = null): Int;
+	public function unload (): Void;
+	public function on (event:String, fct:Dynamic, id:Int = null, once:Int = null): Howl;
+	public function off (event:String, fct:Dynamic, id:Int = null): Howl;
+	public function once (event:String, fct:Dynamic, id:Int = null): Howl;
+
+
+}
+
+@:native("Howler") extern class Howler {
+	public function new (): Void;
+	public function volume (vol:Float): Dynamic;
+	public function mute (muted:Bool): Void;
+	public function unload (): Howler;
+	public function codecs (ext:String): Bool;
+
+}
+/*
 @:native("createjs.Sound") extern class SoundJS {
 
 	public static function addEventListener (type:String, listener:Dynamic, ?useCapture:Bool):Dynamic;
@@ -401,7 +441,7 @@ class Sound extends EventDispatcher {
 	public function removeEventListener(type:String, listener:Dynamic, ?useCapture:Bool):Void;
 	public function toString ():String;
 
-}
+}*/
 #end
 
 

@@ -19,13 +19,14 @@ import openfl.media.Sound;
 	private var __source:AudioSource;
 
 	#if html5
-	private var __soundInstance:SoundJSInstance;
+	//private var __soundInstance:SoundJSInstance;
+	private var __soundInstance:Howl;
 	#end
 
 	private static var pool : ObjectPool<SoundChannel> = new ObjectPool<SoundChannel>(function() { return new SoundChannel();});
 
 
-	private function new (#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end = null):Void {
+	private function new (#if !html5 source:AudioSource #else soundInstance:Howl #end = null):Void {
 
 		super (this);
 
@@ -34,7 +35,7 @@ import openfl.media.Sound;
 
 	}
 
-	public static function __create(#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end) {
+	public static function __create(#if !html5 source:AudioSource #else soundInstance:Howl #end) {
 		var channel = pool.get();
 		#if !html5
 
@@ -53,7 +54,7 @@ import openfl.media.Sound;
 			if (soundInstance != null) {
 
 				channel.__soundInstance = soundInstance;
-				channel.__soundInstance.addEventListener ("complete", channel.source_onComplete);
+				channel.__soundInstance.on("stop",channel.source_onComplete);
 				channel.__isValid = true;
 
 			}
@@ -110,7 +111,7 @@ import openfl.media.Sound;
 		#if !html5
 		return (__source.currentTime + __source.offset) / 1000;
 		#else
-		return __soundInstance.getPosition ();
+		return __soundInstance.seek();
 		#end
 
 	}
@@ -124,8 +125,8 @@ import openfl.media.Sound;
 		__source.currentTime = Std.int (value * 1000) - __source.offset;
 		return value;
 		#else
-		__soundInstance.setPosition (Std.int (value));
-		return __soundInstance.getPosition ();
+		__soundInstance.seek(Std.int (value));
+		return __soundInstance.seek();
 		#end
 
 	}
@@ -140,7 +141,7 @@ import openfl.media.Sound;
 		#if !html5
 		return new SoundTransform (__source.gain, 0);
 		#else
-		return new SoundTransform (__soundInstance.getVolume (), __soundInstance.getPan ());
+		return new SoundTransform (__soundInstance.volume(), /*__soundInstance.getPan ()*/0); // :TODO: handle pan
 		#end
 
 	}
@@ -157,8 +158,8 @@ import openfl.media.Sound;
 
 		return value;
 		#else
-		__soundInstance.setVolume (value.volume);
-		__soundInstance.setPan (value.pan);
+		__soundInstance.volume(value.volume);
+		//__soundInstance.setPan (value.pan); :TODO: handle pan
 
 		return value;
 		#end
