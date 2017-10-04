@@ -72,7 +72,7 @@ class GLVertexBuffer3D {
 		GLUtils.CheckGLError ();
 		
 		#if (js && html5)
-		(GL:WebGLContext).bufferData (gl.ARRAY_BUFFER, data, vertexBuffer.__usage);
+		(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, data, vertexBuffer.__usage);
 		#else
 		gl.bufferData (gl.ARRAY_BUFFER, data.byteLength, data, vertexBuffer.__usage);
 		#end
