@@ -13,6 +13,7 @@ import openfl.display3D.textures.VideoTexture;
 #end
 
 @:access(openfl.display3D.textures.VideoTexture)
+@:access(openfl.net.NetStream)
 
 
 class GLVideoTexture {
@@ -32,7 +33,9 @@ class GLVideoTexture {
 		
 		if (!videoTexture.__netStream.__video.paused) {
 			
-			gl.bindTexture (videoTexture.__textureTarget, __textureID);
+			var gl = renderSession.gl;
+			
+			gl.bindTexture (videoTexture.__textureTarget, videoTexture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			(gl:WebGLContext).texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, videoTexture.__netStream.__video);
