@@ -152,7 +152,7 @@ class JobContext {
             var entry = simpleSpritesToProcessTable [simpleSpriteToProcessIndex];
             var bitmapData = Assets.getBitmapData(cast(swf.symbols.get(entry.symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
 
-            if(@:privateAccess bitmapData != null) {
+            if(bitmapData != null) {
                 #if(js && profile)
                     untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
                 #end
