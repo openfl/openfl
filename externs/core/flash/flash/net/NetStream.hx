@@ -17,7 +17,7 @@ extern class NetStream extends EventDispatcher {
 	@:require(flash10) public static var DIRECT_CONNECTIONS (default, never):String;
 	#end
 	
-	public var audioCodec (default, null):Int;
+	public var audioCodec (default, never):Int;
 	
 	#if flash
 	@:require(flash10_1) public var audioReliable:Bool;
@@ -28,38 +28,38 @@ extern class NetStream extends EventDispatcher {
 	#end
 	
 	#if flash
-	@:require(flash10_1) public var backBufferLength (default, null):Float;
+	@:require(flash10_1) public var backBufferLength (default, never):Float;
 	#end
 	
 	#if flash
 	@:require(flash10_1) public var backBufferTime:Float;
 	#end
 	
-	public var bufferLength (default, null):Float;
+	public var bufferLength (default, never):Float;
 	public var bufferTime:Float;
 	
 	#if flash
 	@:require(flash10_1) public var bufferTimeMax:Float;
 	#end
 	
-	public var bytesLoaded (default, null):UInt;
-	public var bytesTotal (default, null):UInt;
+	public var bytesLoaded (default, never):UInt;
+	public var bytesTotal (default, never):UInt;
 	public var checkPolicyFile:Bool;
 	public var client:Dynamic;
-	public var currentFPS (default, null):Float;
+	public var currentFPS (default, never):Float;
 	
 	#if flash
 	@:require(flash10_1) public var dataReliable:Bool;
 	#end
 	
-	public var decodedFrames (default, null):UInt;
+	public var decodedFrames (default, never):UInt;
 	
 	#if flash
-	@:require(flash10) public var farID (default, null):String;
+	@:require(flash10) public var farID (default, never):String;
 	#end
 	
 	#if flash
-	@:require(flash10) public var farNonce (default, null):String;
+	@:require(flash10) public var farNonce (default, never):String;
 	#end
 	
 	#if flash
@@ -67,10 +67,10 @@ extern class NetStream extends EventDispatcher {
 	#end
 	
 	#if flash
-	@:require(flash10) public var info (default, null):flash.net.NetStreamInfo;
+	@:require(flash10) public var info (default, never):flash.net.NetStreamInfo;
 	#end
 	
-	public var liveDelay (default, null):Float;
+	public var liveDelay (default, never):Float;
 	
 	#if flash
 	@:require(flash10) public var maxPauseBufferTime:Float;
@@ -89,7 +89,7 @@ extern class NetStream extends EventDispatcher {
 	#end
 	
 	#if flash
-	@:require(flash10_1) public var multicastInfo (default, null):flash.net.NetStreamMulticastInfo;
+	@:require(flash10_1) public var multicastInfo (default, never):flash.net.NetStreamMulticastInfo;
 	#end
 	
 	#if flash
@@ -105,18 +105,18 @@ extern class NetStream extends EventDispatcher {
 	#end
 	
 	#if flash
-	@:require(flash10) public var nearNonce (default, null):String;
+	@:require(flash10) public var nearNonce (default, never):String;
 	#end
 	
-	public var objectEncoding (default, null):UInt;
+	public var objectEncoding (default, never):UInt;
 	
 	#if flash
-	@:require(flash10) public var peerStreams (default, null):Array<Dynamic>;
+	@:require(flash10) public var peerStreams (default, never):Array<Dynamic>;
 	#end
 	
 	public var soundTransform:SoundTransform;
 	//public var speed (get, set):Float;
-	public var time (default, null):Float;
+	public var time (default, never):Float;
 	
 	#if flash
 	@:require(flash11) public var useHardwareDecoder:Bool;
@@ -126,7 +126,7 @@ extern class NetStream extends EventDispatcher {
 	@:require(flash11_3) public var useJitterBuffer:Bool;
 	#end
 	
-	public var videoCodec (default, null):UInt;
+	public var videoCodec (default, never):UInt;
 	
 	#if flash
 	@:require(flash10_1) public var videoReliable:Bool;

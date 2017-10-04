@@ -343,7 +343,7 @@ import openfl.profiler.Telemetry;
 	}
 	
 	
-	public function dispose ():Void {
+	public function dispose (recreate:Bool = true):Void {
 		
 		// TODO
 		

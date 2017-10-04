@@ -1,3 +1,44 @@
+6.2.0 (09/26/2017)
+------------------
+
+* Added `openfl.utils.Function`
+* Added support for `MouseEvent.RELEASE_OUTSIDE`
+* Added missing `mouseEvent.isRelatedObjectInaccessible` property
+* Changed recommended Haxe version to 3.4.3
+* Changed some `Dynamic` values to use Haxe `Any` type (Haxe 3.4+)
+* Improved hit testing in `graphics` to support winding rules
+* Improved timing of `ProgressEvent.SOCKET_DATA` when using web sockets
+* Fixed use of filters on `Bitmap` or `Tilemap` objects
+* Fixed hit testing when using `graphics.lineStyle` in some cases
+* Fixed support for `graphics.drawTriangles` when omitting optional parameters
+* Fixed some cases where display object positions were not updated
+
+
+6.1.2 (09/13/2017)
+------------------
+
+* Fixed regression in color order when processing SWF assets
+* Fixed an issue with MovieClip children being removed improperly
+
+
+6.1.1 (09/12/2017)
+------------------
+
+* Added missing `vector.removeAt` method
+* Added missing `stage.contentsScaleFactor` property
+* Improved the error messages on HTML5
+* Fixed the default separator value for `vector.join`
+* Fixed support for certain kinds of recursion in `eventDispatcher.dispatchEvent`
+* Fixed a regression in dimensions for glow and blur filters
+* Fixed the behavior of `tilemap.removeTiles()` with no arguments
+* Fixed missing properties on Flash `openfl.text.TextField` extern
+* Fixed the default endianness of `Socket` and `XMLSocket`
+* Fixed a possible infinite loop in `TextField` layout
+* Fixed some issues with `MovieClip` frame scripts that skip frames
+* Fixed the behavior of alpha images in `bitmapData.copyPixels`
+* Fixed endianness issues in `bitmapData.getPixels` and `bitmapData.setPixels`
+
+
 6.1.0 (08/25/2017)
 ------------------
 

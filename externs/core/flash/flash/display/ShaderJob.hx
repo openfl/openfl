@@ -9,7 +9,7 @@ extern class ShaderJob extends EventDispatcher {
 	
 	public var width:Int;
 	public var height:Int;
-	public var progress (default, null):Float;
+	public var progress (default, never):Float;
 	public var shader:Shader;
 	public var target:Dynamic;
 	

@@ -24,6 +24,7 @@ class TagDoABC implements ITag
 		version = 9;
 		level = 1;
 		bytes = new ByteArray();
+		bytes.endian = BIG_ENDIAN;
 	}
 	
 	public static function create(abcData:ByteArray = null, aName:String = "", aLazyInitializeFlag:Bool = true):TagDoABC {

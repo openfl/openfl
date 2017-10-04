@@ -94,6 +94,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var allowsFullScreenInteractive (default, null):Bool;
 	public var application (default, null):Application;
 	public var color (get, set):Int;
+	public var contentsScaleFactor (get, never):Float;
 	public var displayState (get, set):StageDisplayState;
 	public var focus (get, set):InteractiveObject;
 	public var frameRate (get, set):Float;
@@ -114,6 +115,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __color:Int;
 	private var __colorSplit:Array<Float>;
 	private var __colorString:String;
+	private var __contentsScaleFactor:Float;
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
 	private var __displayMatrix:Matrix;
@@ -169,6 +171,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		this.name = null;
 		
+		__contentsScaleFactor = window.scale;
 		__deltaTime = 0;
 		__displayState = NORMAL;
 		__mouseX = 0;
@@ -1204,6 +1207,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#elseif neko
 			neko.Lib.rethrow (e);
 			#elseif js
+			var exc = @:privateAccess haxe.CallStack.lastException;
+			if (exc != null && exc.stack != null && exc.stack != "") {
+				untyped __js__ ("console.log") (exc.stack);
+				e.stack = exc.stack;
+			} else {
+				var msg = CallStack.toString (CallStack.callStack ());
+				untyped __js__ ("console.log") (msg);
+			}
 			untyped __js__ ("throw e");
 			#elseif cs
 			throw e;
@@ -1336,21 +1347,27 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			case MouseEvent.MOUSE_UP:
 				
-				if (__mouseDownLeft == target) {
+				if (__mouseDownLeft != null) {
 					
-					clickType = MouseEvent.CLICK;
+					if (__mouseX < 0 || __mouseY < 0) {
+						
+						__dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
+						
+					} else if (__mouseDownLeft == target) {
+						
+						clickType = MouseEvent.CLICK;
+						
+					}
 					
+					__mouseDownLeft = null;
 					
 				}
-				
-				__mouseDownLeft = null;
 			
 			case MouseEvent.MIDDLE_MOUSE_UP:
 				
 				if (__mouseDownMiddle == target) {
 					
 					clickType = MouseEvent.MIDDLE_CLICK;
-					
 					
 				}
 				
@@ -1925,6 +1942,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
 		
 		return __color = value;
+		
+	}
+	
+	
+	private function get_contentsScaleFactor ():Float {
+		
+		return __contentsScaleFactor;
 		
 	}
 	

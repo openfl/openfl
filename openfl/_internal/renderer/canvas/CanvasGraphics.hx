@@ -308,6 +308,8 @@ class CanvasGraphics {
 			bitmapFill = null;
 			bitmapRepeat = false;
 			
+			windingRule = CanvasWindingRule.EVENODD;
+			
 			var data = new DrawCommandReader (graphics.__commands);
 			
 			for (type in graphics.__commands.types) {
@@ -357,9 +359,8 @@ class CanvasGraphics {
 						
 						data.readEndFill ();
 						endFill ();
-						endStroke ();
 						
-						if (hasFill && context.isPointInPath (x, y)) {
+						if (hasFill && context.isPointInPath (x, y, windingRule)) {
 							
 							data.destroy ();
 							graphics.__canvas = cacheCanvas;
@@ -367,6 +368,8 @@ class CanvasGraphics {
 							return true;
 							
 						}
+						
+						endStroke ();
 						
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 							
@@ -383,9 +386,8 @@ class CanvasGraphics {
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 						
 						endFill ();
-						endStroke ();
 						
-						if (hasFill && context.isPointInPath (x, y)) {
+						if (hasFill && context.isPointInPath (x, y, windingRule)) {
 							
 							data.destroy ();
 							graphics.__canvas = cacheCanvas;
@@ -393,6 +395,8 @@ class CanvasGraphics {
 							return true;
 							
 						}
+						
+						endStroke ();
 						
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 							
@@ -447,6 +451,14 @@ class CanvasGraphics {
 						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					
+					case WINDING_EVEN_ODD:
+						
+						windingRule = CanvasWindingRule.EVENODD;
+					
+					case WINDING_NON_ZERO:
+						
+						windingRule = CanvasWindingRule.NONZERO;
+					
 					default:
 						
 						data.skip (type);
@@ -455,9 +467,17 @@ class CanvasGraphics {
 				
 			}
 			
+			var hitTest = false;
+			
 			if (fillCommands.length > 0) {
 				
 				endFill ();
+				
+			}
+			
+			if (hasFill && context.isPointInPath (x, y, windingRule)) {
+				
+				hitTest = true;
 				
 			}
 			
@@ -467,26 +487,17 @@ class CanvasGraphics {
 				
 			}
 			
-			data.destroy ();
-			
-			if (hasFill && context.isPointInPath (x, y)) {
-				
-				graphics.__canvas = cacheCanvas;
-				graphics.__context = cacheContext;
-				return true;
-				
-			}
-			
 			if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 				
-				graphics.__canvas = cacheCanvas;
-				graphics.__context = cacheContext;
-				return true;
+				hitTest = true;
 				
 			}
+			
+			data.destroy ();
 			
 			graphics.__canvas = cacheCanvas;
 			graphics.__context = cacheContext;
+			return hitTest;
 			
 		}
 		

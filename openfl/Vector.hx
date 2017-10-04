@@ -519,6 +519,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
 	public function toString ():String {
 		
 		return __array != null ? __array.toString () : null;
@@ -817,6 +824,13 @@ abstract Vector<T>(IVector<T>) {
 	public function splice (pos:Int, len:Int):IVector<Float> {
 		
 		return new FloatVector (__array.splice (pos, len));
+		
+	}
+	
+	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
 		
 	}
 	
@@ -1132,6 +1146,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
 	public function toString ():String {
 		
 		return __array != null ? __array.toString () : null;
@@ -1431,6 +1452,13 @@ abstract Vector<T>(IVector<T>) {
 	public function splice (pos:Int, len:Int):IVector<Int> {
 		
 		return new IntVector (__array.splice (pos, len));
+		
+	}
+	
+	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
 		
 	}
 	
@@ -1737,6 +1765,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
 	public function toString ():String {
 		
 		return __array != null ? __array.toString () : null;
@@ -1808,7 +1843,7 @@ abstract Vector<T>(IVector<T>) {
 		
 	}
 	
-	
+
 }
 
 

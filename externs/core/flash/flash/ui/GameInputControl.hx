@@ -7,11 +7,11 @@ import openfl.events.EventDispatcher;
 extern class GameInputControl extends EventDispatcher implements Dynamic {
 	
 	
-	public var device (default, null):GameInputDevice;
-	public var id (default, null):String;
-	public var maxValue (default, null):Float;
-	public var minValue (default, null):Float;
-	public var value (default, null):Float;
+	public var device (default, never):GameInputDevice;
+	public var id (default, never):String;
+	public var maxValue (default, never):Float;
+	public var minValue (default, never):Float;
+	public var value (default, never):Float;
 	
 	private function new (device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0);
 	

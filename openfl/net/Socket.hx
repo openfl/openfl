@@ -19,6 +19,7 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
+import js.html.WebSocket;
 import js.Browser;
 #end
 
@@ -134,13 +135,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		var __webHost = urlReg.matched (2);
 		var __webPath = urlReg.matched (3);
 		
-		__socket = untyped __js__("new WebSocket(schema + \"://\" + __webHost + \":\" + port + \"/\" + __webPath)");
-		
+		__socket = new WebSocket (schema + "://" + __webHost + ":" + port + "/" + __webPath);
+		__socket.binaryType = "arraybuffer";
 		__socket.onopen = socket_onOpen;
 		__socket.onmessage = socket_onMessage;
 		__socket.onclose = socket_onClose;
 		__socket.onerror = socket_onError;
-		__socket.binaryType = "arraybuffer";
 		
 		#else
 		
@@ -564,7 +564,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 	
 	
-	private function socket_onError (_):Void {
+	private function socket_onError (e):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		
@@ -587,6 +587,25 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			newData.readBytes (__inputBuffer, __inputBuffer.length);
 			
 		}
+		
+		if (__inputBuffer.bytesAvailable > 0) {
+			
+			var newInput = new ByteArray ();
+			var newDataLength = __inputBuffer.bytesAvailable;
+			
+			__input.readBytes (newInput, 0, __input.bytesAvailable);
+			__inputBuffer.position = 0;
+			__inputBuffer.readBytes (newInput, newInput.position, __inputBuffer.length);
+			
+			newInput.position = 0;
+			
+			__input = newInput;
+			__input.endian = __endian;
+			__inputBuffer.clear ();
+			
+			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0));
+			
+		}
 		#end
 		
 	}
@@ -603,24 +622,6 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private function this_onEnterFrame (event:Event):Void {
 		
 		#if (js && html5)
-		
-		if (__inputBuffer.bytesAvailable > 0) {
-			
-			var newInput = new ByteArray ();
-			var newDataLength = __inputBuffer.bytesAvailable;
-			
-			__input.readBytes (newInput, 0, __input.bytesAvailable);
-			__inputBuffer.position = 0;
-			__inputBuffer.readBytes (newInput, newInput.position, __inputBuffer.length);
-			
-			newInput.position = 0;
-			
-			__input = newInput;
-			__inputBuffer.clear ();
-			
-			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0));
-			
-		}
 		
 		if (__socket != null) {
 			
@@ -717,6 +718,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			if (rl > 0) newInput.blit (0, __input, __input.position, rl);
 			newInput.blit (rl, newData, 0, newData.length);
 			__input = newInput;
+			__input.endian = __endian;
 			
 			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newData.length, 0));
 			

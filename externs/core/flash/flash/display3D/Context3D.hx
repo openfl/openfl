@@ -6,6 +6,7 @@ import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.VideoTexture;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
@@ -16,33 +17,14 @@ import openfl.Vector;
 @:final extern class Context3D extends EventDispatcher {
 	
 	
-	#if flash
-	@:require(flash15) public static var supportsVideoTexture (default, null):Bool;
-	#end
-	
-	#if flash
-	@:require(flash15) public var backBufferHeight (default, null):Int;
-	#end
-	
-	#if flash
-	@:require(flash15) public var backBufferWidth (default, null):Int;
-	#end
-	
-	public var driverInfo (default, null):String;
+	@:require(flash15) public static var supportsVideoTexture (default, never):Bool;
+	@:require(flash15) public var backBufferHeight (default, never):Int;
+	@:require(flash15) public var backBufferWidth (default, never):Int;
+	public var driverInfo (default, never):String;
 	public var enableErrorChecking:Bool;
-	
-	#if flash
 	@:require(flash15) public var maxBackBufferHeight:Int;
-	#end
-	
-	#if flash
 	@:require(flash15) public var maxBackBufferWidth:Int;
-	#end
-	
-	#if flash
-	@:require(flash12) public var profile (default, null):String;
-	#end
-	
+	@:require(flash12) public var profile (default, never):String;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = 0xFFFFFFFF):Void;
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void;
@@ -57,11 +39,7 @@ import openfl.Vector;
 	
 	public function createTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture;
 	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int, ?bufferUsage:Context3DBufferUsage):VertexBuffer3D;
-	
-	#if flash
-	@:require(flash15) public function createVideoTexture ():flash.display3D.textures.VideoTexture;
-	#end
-	
+	@:require(flash15) public function createVideoTexture ():VideoTexture;
 	public function dispose (recreate:Bool = true):Void;
 	public function drawToBitmapData (destination:BitmapData):Void;
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void;
@@ -71,7 +49,7 @@ import openfl.Vector;
 	public function setCulling (triangleFaceToCull:Context3DTriangleFace):Void;
 	public function setDepthTest (depthMask:Bool, passCompareMode:Context3DCompareMode):Void;
 	
-	#if flash
+	#if air
 	@:require(flash16) public function setFillMode (fillMode:flash.display3D.Context3DFillMode):Void;
 	#end
 	

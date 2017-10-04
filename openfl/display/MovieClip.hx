@@ -47,6 +47,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var isPlaying (get, never):Bool;
 	public var totalFrames (get, never):Int;
 	
+	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
@@ -111,7 +112,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
+	public function gotoAndPlay (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
 		
 		play ();
 		__goto (__resolveFrameReference (frame));
@@ -119,7 +120,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
+	public function gotoAndStop (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
 		
 		stop ();
 		__goto (__resolveFrameReference (frame));
@@ -180,12 +181,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				if (nextFrame < __currentFrame) {
 					
-					__evaluateFrameScripts (__totalFrames);
+					if (!__evaluateFrameScripts (__totalFrames)) {
+						
+						return;
+						
+					}
+					
 					__currentFrame = 1;
 					
 				}
 				
-				__evaluateFrameScripts (nextFrame);
+				if (!__evaluateFrameScripts (nextFrame)) {
+					
+					return;
+					
+				}
 				
 			} else {
 				
@@ -321,11 +331,29 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 			}
 			
-			// TODO: Do not remove manually added children
+			var child;
+			var i = currentInstances.length;
+			var length = __children.length;
 			
-			while (__children.length > currentInstances.length) {
+			while (i < length) {
 				
-				removeChild (__children[__children.length - 1]);
+				child = __children[i];
+				
+				// TODO: Faster method of determining if this was automatically added?
+				
+				for (instance in __activeInstances) {
+					
+					if (instance.displayObject == child) {
+						
+						removeChild (child);
+						i--;
+						length--;
+						
+					}
+					
+				}
+				
+				i++;
 				
 			}
 			
@@ -338,7 +366,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __evaluateFrameScripts (advanceToFrame:Int):Void {
+	private function __evaluateFrameScripts (advanceToFrame:Int):Bool {
 		
 		for (frame in __currentFrame...advanceToFrame + 1) {
 			
@@ -352,6 +380,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				var script = __frameScripts.get (frame);
 				script ();
 				
+				if (__currentFrame != frame) {
+					
+					return false;
+					
+				}
+				
 			}
 			
 			if (!__playing) {
@@ -362,6 +396,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
+		return true;
+		
 	}
 	
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
@@ -371,9 +407,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		__swf = swf;
 		__symbol = symbol;
-
+		
+		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map ();
-		var __activeInstances:Array<FrameSymbolInstance> = [];
 		__currentFrame = 1;
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
@@ -658,8 +694,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		#else
 		
-		var nextFrame = __currentFrame + (__lastFrameScriptEval == __currentFrame ? 1 : 0);
-		if (nextFrame > __frames.length) nextFrame = 1;
+		var nextFrame = __currentFrame + 1;
+		if (nextFrame > __totalFrames) nextFrame = 1;
 		
 		#end
 		
@@ -681,7 +717,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __resolveFrameReference (frame:Dynamic):Int {
+	private function __resolveFrameReference (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int {
 		
 		if (Std.is (frame, Int)) {
 			

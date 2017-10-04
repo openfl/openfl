@@ -889,17 +889,17 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __setTransformDirty ():Void {
+	private override function __setWorldTransformInvalid ():Void {
 		
-		if (!__transformDirty) {
+		if (!__worldTransformInvalid) {
 			
-			super.__setTransformDirty ();
+			__worldTransformInvalid = true;
 			
 			if (__children != null) {
 				
 				for (child in __children) {
 					
-					child.__setTransformDirty ();
+					child.__setWorldTransformInvalid ();
 					
 				}
 				

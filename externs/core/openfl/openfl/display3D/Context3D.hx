@@ -6,6 +6,7 @@ import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.VideoTexture;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
@@ -34,11 +35,7 @@ import openfl.Vector;
 	public function createRectangleTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool):RectangleTexture;
 	public function createTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture;
 	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int, ?bufferUsage:Context3DBufferUsage):VertexBuffer3D;
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public function createVideoTexture ():flash.display3D.textures.VideoTexture;
-	#end
-	
+	public function createVideoTexture ():VideoTexture;
 	public function dispose (recreate:Bool = true):Void;
 	public function drawToBitmapData (destination:BitmapData):Void;
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void;

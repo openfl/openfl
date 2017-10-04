@@ -19,19 +19,19 @@ extern class NetConnection extends EventDispatcher {
 	#end
 	
 	#if flash
-	public var connected (default, null):Bool;
+	public var connected (default, never):Bool;
 	#end
 	
 	#if flash
-	public var connectedProxyType (default, null):String;
+	public var connectedProxyType (default, never):String;
 	#end
 	
 	#if flash
-	@:require(flash10) public var farID (default, null):String;
+	@:require(flash10) public var farID (default, never):String;
 	#end
 	
 	#if flash
-	@:require(flash10) public var farNonce (default, null):String;
+	@:require(flash10) public var farNonce (default, never):String;
 	#end
 	
 	#if flash
@@ -39,11 +39,11 @@ extern class NetConnection extends EventDispatcher {
 	#end
 	
 	#if flash
-	@:require(flash10) public var nearID (default, null):String;
+	@:require(flash10) public var nearID (default, never):String;
 	#end
 	
 	#if flash
-	@:require(flash10) public var nearNonce (default, null):String;
+	@:require(flash10) public var nearNonce (default, never):String;
 	#end
 	
 	#if flash
@@ -51,7 +51,7 @@ extern class NetConnection extends EventDispatcher {
 	#end
 	
 	#if flash
-	@:require(flash10) public var protocol (default, null):String;
+	@:require(flash10) public var protocol (default, never):String;
 	#end
 	
 	#if flash
@@ -59,15 +59,15 @@ extern class NetConnection extends EventDispatcher {
 	#end
 	
 	#if flash
-	@:require(flash10) public var unconnectedPeerStreams (default, null):Array<Dynamic>;
+	@:require(flash10) public var unconnectedPeerStreams (default, never):Array<Dynamic>;
 	#end
 	
 	#if flash
-	public var uri (default, null):String;
+	public var uri (default, never):String;
 	#end
 	
 	#if flash
-	public var usingTLS (default, null):Bool;
+	public var usingTLS (default, never):Bool;
 	#end
 	
 	

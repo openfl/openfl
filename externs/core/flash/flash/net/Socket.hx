@@ -11,9 +11,9 @@ import openfl.utils.IDataOutput;
 extern class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	public var bytesAvailable (default, null):UInt;
-	@:require(flash11) public var bytesPending (default, null):UInt;
-	public var connected (default, null):Bool;
+	public var bytesAvailable (default, never):UInt;
+	@:require(flash11) public var bytesPending (default, never):UInt;
+	public var connected (default, never):Bool;
 	public var endian:Endian;
 	
 	#if air

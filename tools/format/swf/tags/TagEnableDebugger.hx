@@ -21,6 +21,7 @@ class TagEnableDebugger implements ITag
 		version = 5;
 		level = 1;
 		password = new ByteArray();
+		password.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

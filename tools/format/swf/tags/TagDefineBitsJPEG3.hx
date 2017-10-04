@@ -21,6 +21,7 @@ class TagDefineBitsJPEG3 extends TagDefineBitsJPEG2 implements IDefinitionTag
 		version = 3;
 		level = 3;
 		bitmapAlphaData = new ByteArray();
+		bitmapAlphaData.endian = BIG_ENDIAN;
 	}
 	
 	override public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

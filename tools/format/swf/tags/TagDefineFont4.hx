@@ -28,6 +28,7 @@ class TagDefineFont4 implements IDefinitionTag
 		version = 10;
 		level = 1;
 		fontData = new ByteArray();
+		fontData.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

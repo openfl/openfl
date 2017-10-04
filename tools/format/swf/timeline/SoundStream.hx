@@ -18,6 +18,7 @@ class SoundStream
 	public function new()
 	{
 		data = new ByteArray();
+		data.endian = BIG_ENDIAN;
 	}
 	
 	public function toString():String {

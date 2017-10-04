@@ -242,6 +242,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (value > 0) {
 			
 			this.__resize (value);
+			if (value < this.position) this.position = value;
 			
 		}
 		
@@ -913,7 +914,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * are reading valid data.
 	 */
 	#if (flash && !display)
-	public var bytesAvailable (default, null):UInt;
+	public var bytesAvailable (default, never):UInt;
 	#else
 	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
 	#end
