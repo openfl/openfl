@@ -4,6 +4,7 @@ import format.swf.lite.timeline.FrameObjectType;
 import format.swf.lite.SWFLite;
 import format.swf.lite.symbols.SpriteSymbol;
 import format.swf.lite.symbols.ShapeSymbol;
+import format.swf.lite.symbols.SimpleSpriteSymbol;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.MovieClip;
 import openfl.geom.Matrix;
@@ -69,19 +70,27 @@ class MovieClipPreprocessor {
     }
 }
 
-typedef CacheInfo = {
+typedef ShapeCacheInfo = {
     symbol: ShapeSymbol,
     transform: Matrix
 };
 
+typedef SimpleSpriteCacheInfo = {
+    symbol: SimpleSpriteSymbol,
+    transform: Matrix
+};
+
 class JobContext {
-    private var shapeToProcessTable = new Array<CacheInfo> ();
+    private var shapeToProcessTable = new Array<ShapeCacheInfo> ();
+    private var simpleSpritesToProcessTable = new Array<SimpleSpriteCacheInfo> ();
     private var shapeToProcessIndex: Int = 0;
+    private var simpleSpriteToProcessIndex: Int = 0;
     private var movieclip: MovieClip;
     private var timeSliceMillisecondCount:Int;
     private var useDelay:Bool;
     private var cachePrecision:Int;
     private var priority:Int;
+    private var swf:SWFLite;
 
     public var done(default, null):Bool = false;
 
@@ -102,8 +111,8 @@ class JobContext {
         @:privateAccess movieclip.__getWorldTransform ();
 
         if (symbol != null) {
-            var swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
-            findDependentSymbols (shapeToProcessTable, cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform);
+            swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
+            findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform);
 
             for (entry in shapeToProcessTable) {
                 var shapeSymbol = entry.symbol;
@@ -139,7 +148,26 @@ class JobContext {
             ++shapeToProcessIndex;
         }
 
-        if (shapeToProcessIndex == shapeToProcessTable.length) {
+        while (simpleSpriteToProcessIndex < simpleSpritesToProcessTable.length && (!useDelay || (openfl.Lib.getTimer() - startTime) < timeSliceMillisecondCount)) {
+            var entry = simpleSpritesToProcessTable [simpleSpriteToProcessIndex];
+            var bitmapData = Assets.getBitmapData(cast(swf.symbols.get(entry.symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
+
+            if(bitmapData != null) {
+                #if(js && profile)
+                    untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
+                #end
+
+                @:privateAccess bitmapData.getTexture (gl);
+
+                #if(js && profile)
+                    untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                #end
+            }
+
+            ++simpleSpriteToProcessIndex;
+        }
+
+        if (shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length) {
             done = true;
             @:privateAccess MovieClipPreprocessor.processNextJob ();
         } else {
@@ -149,7 +177,7 @@ class JobContext {
         }
     }
 
-    static private function findDependentSymbols(shapeTable:Array<CacheInfo>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix):Void {
+    static private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteCacheInfo>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix):Void {
         var depthRenderTransformMap = new Map<Int,Matrix> ();
         var depthSymbolMap = new Map<Int,Int> ();
         var renderTransform:Matrix = Matrix.pool.get ();
@@ -169,10 +197,14 @@ class JobContext {
 
 
                     if (Std.is (symbol, SpriteSymbol)) {
-                        findDependentSymbols (shapeTable, cast symbol, swflite, renderTransform);
+                        findDependentSymbols (shapeTable, simpleSpritesToProcessTable, cast symbol, swflite, renderTransform);
                     } else if (Std.is(symbol, ShapeSymbol)) {
                         if (frameObject.symbol != depthSymbolMap[frameObject.depth] || !renderTransform.equals (depthRenderTransformMap[frameObject.depth])) {
                             shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
+                        }
+                    } else if (Std.is(symbol, SimpleSpriteSymbol)) {
+                        if (frameObject.symbol != depthSymbolMap[frameObject.depth] || !renderTransform.equals (depthRenderTransformMap[frameObject.depth])) {
+                            simpleSpritesToProcessTable.push({symbol: cast symbol, transform: renderTransform.clone () });
                         }
                     }
 
