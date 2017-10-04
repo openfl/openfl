@@ -73,6 +73,7 @@ import js.html.CanvasRenderingContext2D;
 	private var __context:CanvasRenderingContext2D;
 	#end
 
+    public var keepBitmapData = false;
 	private var __bitmap(default, set):BitmapData;
 	@:s private var __symbol:SWFSymbol;
 
@@ -766,7 +767,7 @@ import js.html.CanvasRenderingContext2D;
 
 	private function set___bitmap (value:BitmapData):BitmapData {
 
-		if (__bitmap != null && (__symbol == null || !Std.is(__symbol, ShapeSymbol) || !cast(__symbol, ShapeSymbol).useBitmapCache)) {
+		if (__bitmap != null && !keepBitmapData && (__symbol == null || !Std.is(__symbol, ShapeSymbol) || !cast(__symbol, ShapeSymbol).useBitmapCache)) {
 
 			__bitmap.dispose ();
 

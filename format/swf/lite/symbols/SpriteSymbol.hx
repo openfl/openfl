@@ -20,7 +20,7 @@ class SpriteSymbol extends SWFSymbol {
 
 	}
 
-	public function findDependentSymbols(swflite:SWFLite, shapes:Map<Int, ShapeSymbol> = null, simpleSprites:Map<Int, SimpleSpriteSymbol> = null, dynamicTexts:Map<Int, DynamicTextSymbol> = null):Void {
+	public function findDependentSymbols(swflite:SWFLite, shapes:Map<Int, ShapeSymbol> = null, simpleSprites:Map<Int, SimpleSpriteSymbol> = null, dynamicTexts:Map<Int, DynamicTextSymbol> = null, morphShapes:Map<Int, MorphShapeSymbol> = null):Void {
 		for(frame in frames) {
 			for(frameObject in frame.objects) {
 				if(frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
@@ -30,6 +30,8 @@ class SpriteSymbol extends SWFSymbol {
 						cast(symbol, SpriteSymbol).findDependentSymbols(swflite, shapes, simpleSprites, dynamicTexts);
 					} else if(shapes != null && Std.is(symbol, ShapeSymbol)) {
 						shapes.set(frameObject.symbol, cast symbol);
+					} else if(morphShapes != null && Std.is(symbol, MorphShapeSymbol)) {
+						morphShapes.set(frameObject.symbol, cast symbol);
 					} else if(simpleSprites != null && Std.is(symbol, SimpleSpriteSymbol)) {
 						simpleSprites.set(frameObject.symbol, cast symbol);
 					} else if(dynamicTexts != null && Std.is(symbol, DynamicTextSymbol)) {
