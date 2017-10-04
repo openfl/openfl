@@ -112,7 +112,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	public function gotoAndPlay (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
+	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
 		
 		play ();
 		__goto (__resolveFrameReference (frame));
@@ -120,7 +120,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	public function gotoAndStop (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
+	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
 		
 		stop ();
 		__goto (__resolveFrameReference (frame));
@@ -717,7 +717,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __resolveFrameReference (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int {
+	private function __resolveFrameReference (frame:Dynamic):Int {
 		
 		if (Std.is (frame, Int)) {
 			
