@@ -341,7 +341,9 @@ class MovieClip extends flash.display.MovieClip {
 				skipChildrenCache = true;
 
 				if(symbol.pool.size > 0) {
-					return symbol.pool.get();
+                    var obj = symbol.pool.get();
+                    obj.reset();
+					return obj;
 				}
 			}
 
