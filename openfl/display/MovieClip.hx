@@ -525,7 +525,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					do {
 						name.push(p.__name);
 					} while (null != (p = p.parent));
-					
+					name.reverse();
 					Log.warn ("Unable to evaluate frame script source\n" +
 						"swf: "+ this.__swf.library.rootPath +"\n" +
 						"symbol path: "+ name.join('.') +"\n" +
@@ -716,7 +716,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 	}
 	
-	
+	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
 	private function __resolveFrameReference (frame:Dynamic):Int {
 		
 		if (Std.is (frame, Int)) {
@@ -735,8 +735,19 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					
 				}
 			}
-			
-			throw new ArgumentError ("Error #2109: Frame label " + label + " not found in scene.");
+
+			var p: DisplayObjectContainer = this;
+			var name: Array<String> = new Array();
+			do {
+				name.push(p.__name);
+			} while (null != (p = p.parent));
+			name.reverse();
+			Log.warn ("Error #2109: Frame label " + label + " not found in scene.\n" +
+				"swf: "+ this.__swf.library.rootPath +"\n" +
+				"symbol path: "+ name.join('.') +"\n" +
+				"symbol: "+ (__symbol.className == null ? "null " : "\"" + __symbol.className + "\"") + "\n" +
+				"frame: " + frame);
+			return 1;
 			
 		} else {
 			
