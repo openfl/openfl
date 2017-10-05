@@ -338,6 +338,17 @@ class GLContext3D {
 		
 		if (Context3D.__stateCache.updateCullingMode (triangleFaceToCull)) {
 			
+			// if (triangleFaceToCull == NONE) {
+				
+			// 	gl.disable (gl.CULL_FACE);
+				
+			// } else {
+				
+			// 	gl.enable (gl.CULL_FACE);
+			// 	gl.cullFace (__getGLTriangleFace (triangleFaceToCull));
+				
+			// }
+			
 			switch (triangleFaceToCull) {
 				
 				case Context3DTriangleFace.NONE:
@@ -886,7 +897,7 @@ class GLContext3D {
 		GLContext3D.gl = context.__renderSession.gl;
 		
 		context.__stencilCompareMode = compareMode;
-		gl.stencilOp (__getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnDepthPassStencilFail), __getGLStencilAction (actionOnBothPass));
+		gl.stencilOpSeparate (__getGLTriangleFace (triangleFace), __getGLStencilAction (actionOnDepthPassStencilFail), __getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnBothPass));
 		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 		
 	}
@@ -1035,6 +1046,21 @@ class GLContext3D {
 			case NEVER: gl.NEVER;
 			case NOT_EQUAL: gl.NOTEQUAL;
 			default: gl.EQUAL;
+			
+		}
+		
+	}
+	
+	
+	private static function __getGLTriangleFace (triangleFace:Context3DTriangleFace):Int {
+		
+		return switch (triangleFace) {
+			
+			case FRONT: gl.FRONT;
+			case BACK: gl.BACK;
+			case FRONT_AND_BACK: gl.FRONT_AND_BACK;
+			case NONE: gl.NONE;
+			default: gl.FRONT_AND_BACK;
 			
 		}
 		
