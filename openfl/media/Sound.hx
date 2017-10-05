@@ -101,12 +101,12 @@ class Sound extends EventDispatcher {
 		AudioBuffer.fromURL (stream.url, AudioBuffer_onURLLoad);
 
 		#else
-
+		
+		var soundData = lime.Assets.getSoundData(stream.url);
 		__sound = new Howl({
 			src:stream.url,
 			sprite : {
-				background : [lime.Assets.getSoundData(stream.url).start,
-						      lime.Assets.getSoundData(stream.url).duration],
+				background : [soundData.start, soundData.duration],
 			},
 			onload:function() {
 				dispatchEvent (Event.__create (Event.COMPLETE));
