@@ -589,17 +589,17 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __invalidateWorldTransform ():Void {
+	private override function __setWorldTransformInvalid ():Void {
 		
-		if (!__worldTransformInvalidated) {
-			
-			__worldTransformInvalidated = true;
+		if (!__worldTransformInvalid) {
+
+			__worldTransformInvalid = true;
 			
 			if (__children != null) {
 				
 				for (child in __children) {
 					
-					child.__invalidateWorldTransform ();
+					child.__setWorldTransformInvalid ();
 					
 				}
 				
