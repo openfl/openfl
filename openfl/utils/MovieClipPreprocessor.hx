@@ -16,10 +16,16 @@ class MovieClipPreprocessor {
     public static var globalTimeSliceMillisecondCount = 10;
 
     static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null, priority:Int = 0) {
-        jobTable.push (new JobContext (movieclip, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision, priority) );
-        jobTable.sort (function (first:JobContext, second:JobContext) { return @:privateAccess second.priority - @:privateAccess first.priority; });
+        var symbol = movieclip.getSymbol ();
 
-        processNextJob ();
+        if (symbol != null) {
+            var swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
+            @:privateAccess movieclip.__getWorldTransform ();
+            jobTable.push (new JobContext (cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision, priority) );
+            jobTable.sort (function (first:JobContext, second:JobContext) { return @:privateAccess second.priority - @:privateAccess first.priority; });
+
+            processNextJob ();
+        }
     }
 
     static private function processNextJob() {
@@ -85,49 +91,44 @@ class JobContext {
     private var simpleSpritesToProcessTable = new Array<SimpleSpriteCacheInfo> ();
     private var shapeToProcessIndex: Int = 0;
     private var simpleSpriteToProcessIndex: Int = 0;
-    private var movieclip: MovieClip;
+    private var frameToProcessIndex: Int = 0;
+    private var symbol: SpriteSymbol;
     private var timeSliceMillisecondCount:Int;
     private var useDelay:Bool;
     private var cachePrecision:Int;
     private var priority:Int;
     private var swf:SWFLite;
+    private var startTime:Int;
+    private var baseTransform:Matrix;
 
     public var done(default, null):Bool = false;
 
-    public function new (movieclip:MovieClip, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, priority:Int) {
-        this.movieclip = movieclip;
+    public function new (symbol:SpriteSymbol, swf:SWFLite, baseTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, priority:Int) {
+        this.symbol= symbol;
+        this.swf= swf;
+        this.baseTransform = baseTransform.clone ();
         this.useDelay = useDelay;
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
         this.cachePrecision = cachePrecision;
         this.priority = priority;
 
-        init ();
     }
 
-    private function init () {
-        var symbol = movieclip.getSymbol ();
-
-        // :NOTE: update hierarchy transforms
-        @:privateAccess movieclip.__getWorldTransform ();
-
-        if (symbol != null) {
-            swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
-            findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform);
-
-            for (entry in shapeToProcessTable) {
-                var shapeSymbol = entry.symbol;
-                shapeSymbol.cachePrecision = cachePrecision;
-                shapeSymbol.useBitmapCache = true;
-            }
-        }
+    private inline function timedOut ():Bool {
+        return useDelay && (openfl.Lib.getTimer () - startTime) >= timeSliceMillisecondCount;
     }
 
     public function process () {
         var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
         var gl:lime.graphics.GLRenderContext = renderSession.gl;
-        var startTime = openfl.Lib.getTimer ();
 
-        while (shapeToProcessIndex < shapeToProcessTable.length && (!useDelay || (openfl.Lib.getTimer () - startTime) < timeSliceMillisecondCount)) {
+        startTime = openfl.Lib.getTimer ();
+
+        if (frameToProcessIndex < symbol.frames.length) {
+            frameToProcessIndex = findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, symbol, swf, baseTransform, frameToProcessIndex);
+        }
+
+        while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
             var entry = shapeToProcessTable [shapeToProcessIndex];
             var graphics = entry.symbol.graphics;
             graphics.dirty = true;
@@ -148,7 +149,7 @@ class JobContext {
             ++shapeToProcessIndex;
         }
 
-        while (simpleSpriteToProcessIndex < simpleSpritesToProcessTable.length && (!useDelay || (openfl.Lib.getTimer() - startTime) < timeSliceMillisecondCount)) {
+        while (simpleSpriteToProcessIndex < simpleSpritesToProcessTable.length && !timedOut ()) {
             var entry = simpleSpritesToProcessTable [simpleSpriteToProcessIndex];
             var bitmapData = Assets.getBitmapData(cast(swf.symbols.get(entry.symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
 
@@ -167,7 +168,7 @@ class JobContext {
             ++simpleSpriteToProcessIndex;
         }
 
-        if (shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length) {
+        if (frameToProcessIndex == symbol.frames.length && shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length) {
             done = true;
             @:privateAccess MovieClipPreprocessor.processNextJob ();
         } else {
@@ -177,12 +178,13 @@ class JobContext {
         }
     }
 
-    static private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteCacheInfo>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix):Void {
+    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteCacheInfo>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
         var depthRenderTransformMap = new Map<Int,Matrix> ();
         var depthSymbolMap = new Map<Int,Int> ();
         var renderTransform:Matrix = Matrix.pool.get ();
 
-        for (frame in symbol.frames) {
+        while (frameIndex < symbol.frames.length && !timedOut ()) {
+            var frame =  symbol.frames[frameIndex];
             for (frameObject in frame.objects) {
                 if (frameObject.type != FrameObjectType.DESTROY) {
                     var symbol = swflite.symbols.get(frameObject.symbol);
@@ -197,7 +199,7 @@ class JobContext {
 
 
                     if (Std.is (symbol, SpriteSymbol)) {
-                        findDependentSymbols (shapeTable, simpleSpritesToProcessTable, cast symbol, swflite, renderTransform);
+                        findDependentSymbols (shapeTable, simpleSpritesToProcessTable, cast symbol, swflite, renderTransform, 0);
                     } else if (Std.is(symbol, ShapeSymbol)) {
                         if (frameObject.symbol != depthSymbolMap[frameObject.depth] || !renderTransform.equals (depthRenderTransformMap[frameObject.depth])) {
                             shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
@@ -212,8 +214,20 @@ class JobContext {
                     depthSymbolMap[frameObject.depth] = frameObject.symbol;
                 }
             }
+
+            ++frameIndex;
         }
 
         Matrix.pool.put (renderTransform);
+
+        if (frameIndex == symbol.frames.length && symbol == this.symbol) {
+            for (entry in shapeTable) {
+                var shapeSymbol = entry.symbol;
+                shapeSymbol.cachePrecision = cachePrecision;
+                shapeSymbol.useBitmapCache = true;
+            }
+        }
+
+        return frameIndex;
     }
 }
