@@ -13,13 +13,16 @@ class ShapeSymbol extends SWFSymbol {
 	@:s public var bounds:Rectangle;
 	@:s public var graphics:Graphics;
 
-	public var useBitmapCache(default, set):Bool = false;
+	private var __cachePrecision:Null<Int> = null;
 	private var cachedTable:Array<CacheEntry>;
-    public var cachePrecision:Int = 100;
-    public var forbidClearCacheOnResize:Bool = false;
+
+	public var useBitmapCache(default, set):Bool = false;
+	public var cachePrecision(get, set):Int;
+	public var forbidClearCacheOnResize:Bool = false;
 
 	public var snapCoordinates:Bool = false;
 
+	static private var DefaultCachePrecision:Int = 100;
 	static private var lastStageWidth:Float;
 	static private var lastStageHeight:Float;
 	static private var eventIsListened:Bool = false;
@@ -313,6 +316,22 @@ class ShapeSymbol extends SWFSymbol {
 			lastStageWidth = width;
 			lastStageHeight = height;
 		}
+	}
+
+	public function get_cachePrecision ():Int {
+		if (__cachePrecision == null) {
+			__cachePrecision = DefaultCachePrecision;
+		}
+
+		return __cachePrecision;
+	}
+
+	public function set_cachePrecision (value:Int):Int {
+		if (__cachePrecision != null && __cachePrecision != value) {
+			trace (':WARNING: ignoring cache precision change for symbol($id) from $__cachePrecision to $value');
+		}
+
+		return __cachePrecision = value;
 	}
 
 }
