@@ -618,7 +618,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	public inline function __drawGraphicsGL (renderSession:RenderSession):Void {
+	public function __drawGraphicsGL (renderSession:RenderSession):Void {
 
 		if (__graphics != null) {
 

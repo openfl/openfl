@@ -105,7 +105,9 @@ class CanvasTextField {
 	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 
 		#if (js && html5)
-		if (textField.__dirty || textField.__graphics == null || textField.__graphics.__bitmap == null) {
+		var graphics = textField.__graphics;
+
+		if (textField.__dirty || graphics == null || graphics.dirty || graphics.__bitmap == null) {
 
 			var textEngine = textField.__textEngine;
 
@@ -113,11 +115,11 @@ class CanvasTextField {
 
 			if (!textField.__showCursor && ((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 
-				textField.__graphics.__canvas = null;
-				textField.__graphics.__context = null;
-				textField.__graphics.dirty = false;
-				if( textField.__graphics.__bitmap != null ) {
-					textField.__graphics.__bitmap.dispose();
+				graphics.__canvas = null;
+				graphics.__context = null;
+				graphics.dirty = false;
+				if( graphics.__bitmap != null ) {
+					graphics.__bitmap.dispose();
 				}
 				textField.__dirty = false;
 
@@ -130,21 +132,21 @@ class CanvasTextField {
 				textField.__getBounds (bounds);
 				bounds.transform (renderBounds, renderTransform);
 
-				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
+				if (graphics == null || graphics.__canvas == null) {
 
-					if (textField.__graphics == null) {
+					if (graphics == null) {
 
 						textField.__graphics = new Graphics (false);
+						graphics = textField.__graphics;
 
 					}
 
-					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
-					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");
-					textField.__graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
+					graphics.__canvas = cast Browser.document.createElement ("canvas");
+					graphics.__context = graphics.__canvas.getContext ("2d");
+					graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
 
 				}
 
-				var graphics = textField.__graphics;
 				var context = graphics.__context;
 				graphics.__canvas.width = Math.ceil (renderBounds.width);
 				graphics.__canvas.height = Math.ceil (renderBounds.height);

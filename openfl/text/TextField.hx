@@ -771,21 +771,10 @@ class TextField extends InteractiveObject {
 	}
 
 
-	public override function __renderGL (renderSession:RenderSession):Void {
-
-		if (__cacheAsBitmap) {
-			__isCachingAsBitmap = true;
-			__cacheGL(renderSession);
-			__isCachingAsBitmap = false;
-			return;
-		}
-
-		__preRenderGL(renderSession);
+	public override function __drawGraphicsGL (renderSession:RenderSession):Void {
 
 		CanvasTextField.render (this, renderSession);
-		GLRenderer.renderBitmap (this, renderSession, __textEngine.antiAliasType != ADVANCED || __textEngine.gridFitType != PIXEL);
-
-		__postRenderGL(renderSession);
+		GLRenderer.renderBitmap (this, renderSession, __mustRefreshGraphicsCounter > 0);
 
 	}
 
@@ -942,8 +931,15 @@ class TextField extends InteractiveObject {
 	}
 
 	public override function _onWorldTransformScaleRotationChanged():Void {
+		var wasDirty = __graphics.__dirty;
 		super._onWorldTransformScaleRotationChanged();
-		dirty = true;
+
+		// :TRICKY: revert graphics.dirty if it was set because of scale/rotation change
+		if (!wasDirty) {
+			__graphics.dirty = false;
+			__mustRefreshGraphicsCounter = DisplayObject.__dirtyGraphicsDelay;
+		}
+
 		__layoutDirty = true;
 	}
 
