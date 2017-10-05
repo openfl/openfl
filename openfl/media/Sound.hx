@@ -4,6 +4,7 @@ package openfl.media; #if (!openfl_legacy || disable_legacy_audio)
 import haxe.io.Path;
 import lime.audio.AudioBuffer;
 import lime.audio.AudioSource;
+import lime.Assets;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
@@ -19,7 +20,6 @@ class Sound extends EventDispatcher {
 	#if html5
 	private static var __registeredSounds = new Map<String, Bool> ();
 	private var numberOfLoopsRemaining:Int;
-	private var data:Dynamic;
 	#end
 
 	public var bytesLoaded (default, null):Int;
@@ -101,10 +101,12 @@ class Sound extends EventDispatcher {
 		AudioBuffer.fromURL (stream.url, AudioBuffer_onURLLoad);
 
 		#else
+
 		__sound = new Howl({
 			src:stream.url,
 			sprite : {
-				background : [1000, 21000],
+				background : [lime.Assets.getSoundData(stream.url).start,
+						      lime.Assets.getSoundData(stream.url).duration],
 			},
 			onload:function() {
 				dispatchEvent (Event.__create (Event.COMPLETE));
