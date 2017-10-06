@@ -1185,6 +1185,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__renderTransform.copyFrom (wt);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
+
+
+        Matrix.pool.put(old_world_transform);
 	}
 
 	public function _onWorldTransformScaleRotationChanged():Void {
