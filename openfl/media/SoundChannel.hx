@@ -19,7 +19,6 @@ import openfl.media.Sound;
 	private var __source:AudioSource;
 
 	#if html5
-	//private var __soundInstance:SoundJSInstance;
 	private var __soundInstance:Howl;
 	#end
 
@@ -141,7 +140,7 @@ import openfl.media.Sound;
 		#if !html5
 		return new SoundTransform (__source.gain, 0);
 		#else
-		return new SoundTransform (__soundInstance.volume(), /*__soundInstance.getPan ()*/0); // :TODO: handle pan
+		return new SoundTransform (__soundInstance.volume(), 0);
 		#end
 
 	}
@@ -159,8 +158,6 @@ import openfl.media.Sound;
 		return value;
 		#else
 		__soundInstance.volume(value.volume);
-		//__soundInstance.setPan (value.pan); :TODO: handle pan
-
 		return value;
 		#end
 
