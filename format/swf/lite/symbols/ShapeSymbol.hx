@@ -330,16 +330,17 @@ private class DiscretizedTransform {
 		b = Std.int(from.b * precision);
 		c = Std.int(from.c * precision);
 		d = Std.int(from.d * precision);
-		tx = Std.int(from.tx * precision);
-		ty = Std.int(from.ty * precision);
+		tx = Std.int((from.tx - Math.ffloor(from.tx)) * precision);
+		ty = Std.int((from.ty - Math.ffloor(from.ty)) * precision);
 	}
 
-	// :TODO: account for offset if desired
 	public function equals (other:DiscretizedTransform) {
 		return a == other.a
 			&& d == other.d
 			&& b == other.b
-			&& c == other.c;
+			&& c == other.c
+			&& tx == other.tx
+			&& ty == other.ty;
 	}
 }
 
