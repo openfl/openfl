@@ -7,6 +7,7 @@ import openfl.geom.Matrix;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.events.Event;
+import haxe.io.Int32Array;
 
 class ShapeSymbol extends SWFSymbol {
 
@@ -113,12 +114,12 @@ class ShapeSymbol extends SWFSymbol {
 				return cachedTable[0].bitmapData;
 			}
 
-			// :TODO: pool
-			var fixedRenderTransform = new DiscretizedTransform (renderTransform, cachePrecision);
+
+            var hash = CacheEntry.getHash(renderTransform, cachePrecision);
 
 			for (entry in cachedTable) {
 
-				if (entry.renderTransform.equals (fixedRenderTransform)) {
+				if (entry.hash == hash) {
 
 					return entry.bitmapData;
 
@@ -127,11 +128,11 @@ class ShapeSymbol extends SWFSymbol {
 			}
 
 			#if profile
-			var missedCount = missedCountCachedMap[id];
-			missedCount = missedCount != null ? missedCount : 0;
-			++missedCount;
-			missedCountCachedMap.set (id, missedCount);
-		#end
+                var missedCount = missedCountCachedMap[id];
+                missedCount = missedCount != null ? missedCount : 0;
+                ++missedCount;
+                missedCountCachedMap.set (id, missedCount);
+            #end
 
 		}
 
@@ -161,7 +162,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
-		cachedTable.push (new CacheEntry (bitmapData, renderTransform, cachePrecision));
+		cachedTable.push (new CacheEntry (bitmapData, CacheEntry.getHash(renderTransform, cachePrecision)));
 
 	}
 
@@ -242,7 +243,7 @@ class ShapeSymbol extends SWFSymbol {
 				var console =  untyped __js__("window.console");
 
 				for( cached in symbol.cachedTable ) {
-						console.debug('    transform:${cached.renderTransform}');
+						console.debug('    hash:${cached.hash}');
 				}
 			#end
 
@@ -317,43 +318,28 @@ class ShapeSymbol extends SWFSymbol {
 
 }
 
-private class DiscretizedTransform {
-	private var a:Int;
-	private var b:Int;
-	private var c:Int;
-	private var d:Int;
-	private var tx:Int;
-	private var ty:Int;
-
-	public function new (from:Matrix, precision:Int) {
-		a = Std.int(from.a * precision);
-		b = Std.int(from.b * precision);
-		c = Std.int(from.c * precision);
-		d = Std.int(from.d * precision);
-		tx = Std.int(from.tx * precision);
-		ty = Std.int(from.ty * precision);
-	}
-
-	// :TODO: account for offset if desired
-	public function equals (other:DiscretizedTransform) {
-		return a == other.a
-			&& d == other.d
-			&& b == other.b
-			&& c == other.c;
-	}
-}
-
-
 private class CacheEntry {
 
-	public var bitmapData:BitmapData;
-	public var renderTransform:DiscretizedTransform;
+    public var bitmapData:BitmapData;
+    public var hash:Int;
 
-	public function new (bitmapData:BitmapData, renderTransform:Matrix, cachePrecision:Int) {
+    public function new (bitmapData:BitmapData, hash:Int) {
+        this.bitmapData = bitmapData;
+        this.hash = hash;
+    }
 
-		this.bitmapData = bitmapData;
-		this.renderTransform = new DiscretizedTransform (renderTransform, cachePrecision);
+    static private var __buffer = new Int32Array(6);
 
-	}
+    static public function getHash(matrix:Matrix, cachePrecision:Int):Int {
+        var buffer = __buffer;
 
+        buffer[0] = Std.int(matrix.a * cachePrecision);
+        buffer[1] = Std.int(matrix.b * cachePrecision);
+        buffer[2] = Std.int(matrix.c * cachePrecision);
+        buffer[3] = Std.int(matrix.d * cachePrecision);
+        buffer[4] = Std.int((matrix.tx - Math.ffloor(matrix.tx)) * cachePrecision);
+        buffer[5] = Std.int((matrix.ty - Math.ffloor(matrix.ty)) * cachePrecision);
+
+        return haxe.crypto.Crc32.make(buffer.view.buffer);
+    }
 }
