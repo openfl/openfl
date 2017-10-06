@@ -1096,7 +1096,11 @@ class TextEngine {
 				} else if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
 					
 					// Trim the last space from the line width, for correct TextFormatAlign.RIGHT alignment
-					layoutGroup.width -= layoutGroup.advances[layoutGroup.advances.length - 1];
+					if (layoutGroup.endIndex == spaceIndex) {
+						
+						layoutGroup.width -= layoutGroup.advances[layoutGroup.advances.length - 1];
+						
+					}
 					
 					layoutGroup = null;
 					
