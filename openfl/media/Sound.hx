@@ -95,14 +95,14 @@ class Sound extends EventDispatcher {
 
 		#else
 		
-		var spritOptions = lime.Assets.getExtraSoundOptions(stream.url);
+		var spriteOptions = lime.Assets.getExtraSoundOptions(stream.url);
 		var data:Dynamic = null;
-		if(spritOptions != null)
+		if(spriteOptions != null)
 		{
 			itHasSoundSprite = true;
 			data = {
 				src:stream.url, 
-				sprite:{clip : [spritOptions.start, spritOptions.duration]},
+				sprite:{clip : [spriteOptions.start, spriteOptions.duration]},
 				onload:howler_onFileLoad,
 				onloaderror:howler_onFileError
 			};
