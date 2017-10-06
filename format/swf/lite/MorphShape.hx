@@ -38,7 +38,7 @@ class MorphShape extends Shape {
 
 	}
 
-    public override function reset() {
+    private override function __reset() {
         ratio = 0;
     }
 

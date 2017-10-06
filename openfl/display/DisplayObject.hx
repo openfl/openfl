@@ -183,7 +183,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cachedParent = null;
 	}
 
-    public function reset() {
+    private function __reset() {
 
     }
 

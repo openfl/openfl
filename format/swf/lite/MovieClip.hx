@@ -342,7 +342,7 @@ class MovieClip extends flash.display.MovieClip {
 
 				if(symbol.pool.size > 0) {
                     var obj = symbol.pool.get();
-                    obj.reset();
+                    obj.__reset();
 					return obj;
 				}
 			}
