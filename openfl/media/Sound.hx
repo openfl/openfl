@@ -107,7 +107,11 @@ class Sound extends EventDispatcher {
 				onloaderror:howler_onFileError
 			};
 		}else {
-			data = {src:stream.url, onload:howler_onFileLoad,onloaderror:howler_onFileError};
+			data = {
+				src:stream.url, 
+				onload:howler_onFileLoad,
+				onloaderror:howler_onFileError
+			};
 		}
 		__sound = new Howl(data);
 		#end
@@ -249,7 +253,13 @@ class Sound extends EventDispatcher {
 
 			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
 
+		} else {
+
+			__buffer = buffer;
+			dispatchEvent (Event.__create (Event.COMPLETE));
+
 		}
+
 	}
 
 	#if html5
