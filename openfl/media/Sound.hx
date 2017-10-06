@@ -20,6 +20,8 @@ class Sound extends EventDispatcher {
 	#if html5
 	private static var __registeredSounds = new Map<String, Bool> ();
 	private var numberOfLoopsRemaining:Int;
+	private var __sound:Howl;
+	private var itHasSoundSprite:Bool = false;
 	#end
 
 	public var bytesLoaded (default, null):Int;
@@ -30,11 +32,6 @@ class Sound extends EventDispatcher {
 	public var url (default, null):String;
 
 	private var __buffer:AudioBuffer;
-
-	#if html5
-	private var __sound:Howl;
-	private var haveSprite:Bool = false;
-	#end
 
 
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null) {
@@ -59,13 +56,16 @@ class Sound extends EventDispatcher {
 	public function close ():Void {
 
 		#if !html5
-
 		if (__buffer != null) {
 
 			__buffer.dispose ();
 
 		}
-
+		#else
+		
+		if(__sound != null) {
+			__sound.unload();
+		}
 		#end
 
 	}
@@ -95,17 +95,19 @@ class Sound extends EventDispatcher {
 
 		#else
 		
-		var spiritOptions = lime.Assets.getExtraSoundOptions(stream.url);
-		var data:Dynamic = {src:stream.url, onload:howler_onFileLoad,onloaderror:howler_onFileError};
-		if(spiritOptions != null)
+		var spritOptions = lime.Assets.getExtraSoundOptions(stream.url);
+		var data:Dynamic = null;
+		if(spritOptions != null)
 		{
-			haveSprite = true;
+			itHasSoundSprite = true;
 			data = {
 				src:stream.url, 
-				sprite:{clip : [spiritOptions.start, spiritOptions.duration]},
+				sprite:{clip : [spritOptions.start, spritOptions.duration]},
 				onload:howler_onFileLoad,
 				onloaderror:howler_onFileError
 			};
+		}else {
+			data = {src:stream.url, onload:howler_onFileLoad,onloaderror:howler_onFileError};
 		}
 		__sound = new Howl(data);
 		#end
@@ -174,12 +176,12 @@ class Sound extends EventDispatcher {
 		if (pan != 0) {
 			throw ":TODO: use spacial plugin";
 		} 
-		this.numberOfLoopsRemaining = loops - 1;
+		this.numberOfLoopsRemaining = loops;
 		__sound.volume(sndTransform.volume);
 		__sound.loop(loops > 1);
 		__sound.on("end", onEndSound);
 		__sound.seek(Std.int (startTime)); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
-		if(haveSprite) {
+		if(itHasSoundSprite) {
 			__sound.play('clip');
 		}else {
 			__sound.play();
@@ -193,19 +195,15 @@ class Sound extends EventDispatcher {
 
 	#if html5
 	public function onEndSound() {
+		this.numberOfLoopsRemaining--;
 		if(this.numberOfLoopsRemaining == 0) {
 			__sound.stop();
-		}else {
-			this.numberOfLoopsRemaining -= 1;
 		}
 	}
 	#end
 
 
 	// Get & Set Methods
-
-
-
 
 	private function get_id3 ():ID3Info {
 
@@ -233,17 +231,17 @@ class Sound extends EventDispatcher {
 			}
 		#end
 
+		#if html5
+		if(__sound != null) {
+				return __sound.duration();
+			}
+		#end
+
 		return 0;
 
 	}
 
-
-
-
 	// Event Handlers
-
-
-
 
 	private function AudioBuffer_onURLLoad (buffer:AudioBuffer):Void {
 
@@ -251,13 +249,7 @@ class Sound extends EventDispatcher {
 
 			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
 
-		} else {
-
-			__buffer = buffer;
-			dispatchEvent (Event.__create (Event.COMPLETE));
-
 		}
-
 	}
 
 	#if html5
@@ -282,6 +274,8 @@ class Sound extends EventDispatcher {
 	public function loop (loop:Bool = null, id:Int = null): Dynamic;
 	public function seek (rate:Int = null, id:Int = null): Dynamic;
 	public function on (event:String, fct:Dynamic, id:Int = null, once:Int = null): Howl;
+	public function unload (): Void;
+	public function duration (id:Int = null): Int;
 }
 #end
 
