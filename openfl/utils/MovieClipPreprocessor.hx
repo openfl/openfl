@@ -146,6 +146,7 @@ class JobContext {
                 #end
             }
 
+            graphics.dirty = true;
             ++shapeToProcessIndex;
         }
 
