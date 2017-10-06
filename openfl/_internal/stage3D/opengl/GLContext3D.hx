@@ -157,7 +157,7 @@ class GLContext3D {
 		var renderer = gl.getParameter (gl.RENDERER);
 		GLUtils.CheckGLError ();
 		
-		var glslVersion = #if (js && html5) gl.getParameter (gl.SHADING_LANGUAGE_VERSION); #else "<unknown>"; #end
+		var glslVersion = gl.getParameter (gl.SHADING_LANGUAGE_VERSION);
 		GLUtils.CheckGLError ();
 		
 		context.driverInfo = "OpenGL" +
