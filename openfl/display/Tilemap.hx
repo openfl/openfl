@@ -311,12 +311,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 	}
 
-	private override function __cleanDOM(renderSession: RenderSession): Void {
-		#if dom
-			DOMTilemap.clean(this, renderSession);
-		#end
-	}
-
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
