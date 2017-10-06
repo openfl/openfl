@@ -22,7 +22,7 @@ class ShapeSymbol extends SWFSymbol {
 
 	public var snapCoordinates:Bool = false;
 
-	static private var DefaultCachePrecision:Int = 100;
+	static private var defaultCachePrecision:Int = 100;
 	static private var lastStageWidth:Float;
 	static private var lastStageHeight:Float;
 	static private var eventIsListened:Bool = false;
@@ -320,16 +320,18 @@ class ShapeSymbol extends SWFSymbol {
 
 	public function get_cachePrecision ():Int {
 		if (__cachePrecision == null) {
-			__cachePrecision = DefaultCachePrecision;
+			__cachePrecision = defaultCachePrecision;
 		}
 
 		return __cachePrecision;
 	}
 
 	public function set_cachePrecision (value:Int):Int {
-		if (__cachePrecision != null && __cachePrecision != value) {
-			trace (':WARNING: ignoring cache precision change for symbol($id) from $__cachePrecision to $value');
-		}
+		#if dev
+			if (__cachePrecision != null && __cachePrecision != value) {
+				trace (':WARNING: ignoring cache precision change for symbol($id) from $__cachePrecision to $value');
+			}
+		#end
 
 		return __cachePrecision = value;
 	}
