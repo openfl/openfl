@@ -81,14 +81,75 @@ typedef ShapeCacheInfo = {
     transform: Matrix
 };
 
-typedef SimpleSpriteCacheInfo = {
-    symbol: SimpleSpriteSymbol,
-    transform: Matrix
-};
+private class Sprite {
+    private var idRenderTransformMap = new Map<Int,Matrix> ();
+    private var idSymbolMap = new Map<Int,Int> ();
+    private var idSpriteMap = new Map<Int, Sprite>();
+    private var symbol:SpriteSymbol;
+
+    public var frameIndex:Int = 0;
+
+    public function new(symbol:SpriteSymbol) {
+        this.symbol = symbol;
+    }
+
+    public function update(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, swflite:SWFLite, transform:Matrix):Void {
+        if(frameIndex >= symbol.frames.length) {
+            frameIndex = 0;
+        }
+        var frame =  symbol.frames[frameIndex];
+        var renderTransform:Matrix = Matrix.pool.get ();
+
+        for (frameObject in frame.objects) {
+            var symbol = swflite.symbols.get(frameObject.symbol);
+            var isSprite = Std.is(symbol, SpriteSymbol);
+
+            if (frameObject.type != FrameObjectType.DESTROY) {
+
+                if (frameObject.matrix != null) {
+                    renderTransform.copyFrom (frameObject.matrix);
+                    renderTransform.concat (transform);
+                } else {
+                    var cached = idRenderTransformMap[frameObject.id];
+                    renderTransform.copyFrom (cached != null ? cached : transform);
+                }
+
+                if (isSprite) {
+                    var sprite = idSpriteMap.get(frameObject.id);
+                    if(sprite == null || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
+                        sprite = new Sprite(cast symbol);
+                        idSpriteMap.set(frameObject.id, sprite);
+                    }
+                    sprite.update(shapeTable, simpleSpritesToProcessTable, swflite, renderTransform);
+                } else if (Std.is(symbol, ShapeSymbol)) {
+                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !renderTransform.equals (idRenderTransformMap[frameObject.id])) {
+                        shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
+                    }
+                } else if (Std.is(symbol, SimpleSpriteSymbol)) {
+                    if (frameObject.symbol != idSymbolMap[frameObject.id]) {
+                        simpleSpritesToProcessTable.push(cast symbol);
+                    }
+                }
+
+                idRenderTransformMap[frameObject.id] = renderTransform.clone ();
+                idSymbolMap[frameObject.id] = frameObject.symbol;
+            } else {
+                if(isSprite) {
+                    idSpriteMap.remove(frameObject.id);
+                }
+
+                idSymbolMap.remove(frameObject.id);
+            }
+        }
+
+        ++frameIndex;
+        Matrix.pool.put(renderTransform);
+    }
+}
 
 class JobContext {
     private var shapeToProcessTable = new Array<ShapeCacheInfo> ();
-    private var simpleSpritesToProcessTable = new Array<SimpleSpriteCacheInfo> ();
+    private var simpleSpritesToProcessTable = new Array<SimpleSpriteSymbol> ();
     private var shapeToProcessIndex: Int = 0;
     private var simpleSpriteToProcessIndex: Int = 0;
     private var frameToProcessIndex: Int = 0;
@@ -111,7 +172,6 @@ class JobContext {
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
         this.cachePrecision = cachePrecision;
         this.priority = priority;
-
     }
 
     private inline function timedOut ():Bool {
@@ -151,12 +211,12 @@ class JobContext {
         }
 
         while (simpleSpriteToProcessIndex < simpleSpritesToProcessTable.length && !timedOut ()) {
-            var entry = simpleSpritesToProcessTable [simpleSpriteToProcessIndex];
-            var bitmapData = Assets.getBitmapData(cast(swf.symbols.get(entry.symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
+            var symbol = simpleSpritesToProcessTable[simpleSpriteToProcessIndex];
+            var bitmapData = Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
 
             if(bitmapData != null) {
                 #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
+                    untyped $global.Profile.BitmapDataUpload.currentProfileId = symbol.id + " (preprocessed)";
                 #end
 
                 @:privateAccess bitmapData.getTexture (gl);
@@ -179,47 +239,14 @@ class JobContext {
         }
     }
 
-    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteCacheInfo>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
-        var depthRenderTransformMap = new Map<Int,Matrix> ();
-        var depthSymbolMap = new Map<Int,Int> ();
-        var renderTransform:Matrix = Matrix.pool.get ();
+    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
+        var mainSprite = new Sprite(symbol);
 
         while (frameIndex < symbol.frames.length && !timedOut ()) {
-            var frame =  symbol.frames[frameIndex];
-            for (frameObject in frame.objects) {
-                if (frameObject.type != FrameObjectType.DESTROY) {
-                    var symbol = swflite.symbols.get(frameObject.symbol);
-
-                    if (frameObject.matrix != null) {
-                        renderTransform.copyFrom (frameObject.matrix);
-                        renderTransform.concat (transform);
-                    } else {
-                        var cached = depthRenderTransformMap[frameObject.depth];
-                        renderTransform.copyFrom (cached != null ? cached : transform);
-                    }
-
-
-                    if (Std.is (symbol, SpriteSymbol)) {
-                        findDependentSymbols (shapeTable, simpleSpritesToProcessTable, cast symbol, swflite, renderTransform, 0);
-                    } else if (Std.is(symbol, ShapeSymbol)) {
-                        if (frameObject.symbol != depthSymbolMap[frameObject.depth] || !renderTransform.equals (depthRenderTransformMap[frameObject.depth])) {
-                            shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
-                        }
-                    } else if (Std.is(symbol, SimpleSpriteSymbol)) {
-                        if (frameObject.symbol != depthSymbolMap[frameObject.depth] || !renderTransform.equals (depthRenderTransformMap[frameObject.depth])) {
-                            simpleSpritesToProcessTable.push({symbol: cast symbol, transform: renderTransform.clone () });
-                        }
-                    }
-
-                    depthRenderTransformMap[frameObject.depth] = renderTransform.clone ();
-                    depthSymbolMap[frameObject.depth] = frameObject.symbol;
-                }
-            }
+            mainSprite.update(shapeTable, simpleSpritesToProcessTable, swflite, transform);
 
             ++frameIndex;
         }
-
-        Matrix.pool.put (renderTransform);
 
         if (frameIndex == symbol.frames.length && symbol == this.symbol) {
             for (entry in shapeTable) {
