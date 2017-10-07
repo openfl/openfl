@@ -25,6 +25,7 @@ class ATFReader {
 	var data: ByteArray;
 
 	var version = 0;
+	var cubeMap:Bool;
 	var width:Int;
 	var height:Int;
 	var mipCount:Int;
@@ -89,6 +90,8 @@ class ATFReader {
 			
 		}
 
+		this.cubeMap = cubeMap;
+
 		var atfFormat:ATFFormat = cast (tdata & 0x7f);
 		
 		width = (1 << cast data.readUnsignedByte ());
@@ -112,7 +115,7 @@ class ATFReader {
 		// DXT1/5, ETC1, PVRTC4, ETC2
 		// ETC2 is available with ATF version 3 
 		var gpuFormats = (version < 3) ? 3 : 4;
-		var sideCount = 1; // preparation for cube textures
+		var sideCount = cubeMap ? 6 : 1; // a cubemap has 6 sides
 
 		for (side in 0...sideCount) {
 			for (level in 0...mipCount) {
