@@ -5,11 +5,12 @@ import haxe.io.Bytes;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.stage3D.atf.ATFReader;
 import openfl._internal.stage3D.atf.ATFFormat;
-import openfl._internal.stage3D.atf.ATFType;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.Texture;
+import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
@@ -49,31 +50,35 @@ class GLTexture {
 	
 	public static function uploadCompressedTextureFromByteArray (texture:Texture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
 		
+		var reader = new ATFReader(data, byteArrayOffset);
+		var atfFormat = reader.readHeader (texture.__width, texture.__height, false);
+
+		// Handle the different texture formats
+		switch (atfFormat) {
+			
+			case ATFFormat.RAW_COMPRESSED: texture.__format = GLTextureBase.__textureFormatCompressed;
+			case ATFFormat.RAW_COMPRESSED_ALPHA: texture.__format = GLTextureBase.__textureFormatCompressedAlpha;
+			default: throw new IllegalOperationError("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
+		
+		}
+
 		var gl = renderSession.gl;
 		
-		data.position = byteArrayOffset;
-		var signature:String = data.readUTFBytes (3);
-		data.position = byteArrayOffset;
-		
-		if (signature == "ATF") {
-			
-			gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		GLUtils.CheckGLError ();
+
+		reader.readTextures (function(target, level, width, height, blockLength, bytes) {
+
+			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__format, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();
-			
-			__uploadATFTextureFromByteArray (texture, renderSession, data, byteArrayOffset);
-			
-			gl.bindTexture (texture.__textureTarget, null);
-			GLUtils.CheckGLError ();
-			
-		} else {
-			
-			// trackCompressedMemoryUsage(dataLength); // TODO: Figure out where dataLength comes from
-			
-			gl.bindTexture (texture.__textureTarget, null);
-			GLUtils.CheckGLError ();
-			
-		}
-		
+
+			// __trackCompressedMemoryUsage (blockLength);
+
+		});
+
+		gl.bindTexture (texture.__textureTarget, null);
+		GLUtils.CheckGLError ();
+
 	}
 	
 	
@@ -183,111 +188,6 @@ class GLTexture {
 		}
 		
 		GLTextureBase.setSamplerState (texture, renderSession, state);
-		
-	}
-	
-	
-	private static function __uploadATFTextureFromByteArray (texture:Texture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
-		
-		var gl = renderSession.gl;
-		
-		data.position = byteArrayOffset;
-		var version = 0;
-		var length = 0;
-		
-		// When the 6th byte is 0xff, we have one of the new formats
-		if (data[byteArrayOffset+6] == 0xff) {
-			
-			version = data[byteArrayOffset+7];
-			data.position = byteArrayOffset+8;
-			length = texture.__readUInt32 (data);
-		
-		}
-		else {
-			
-			version = 0;
-			data.position = byteArrayOffset+3;
-			length = texture.__readUInt24 (data);
-		
-		}
-		
-		if (cast ((byteArrayOffset + length), Int) > data.length) {
-			
-			throw new IllegalOperationError ("ATF length exceeds byte array length");
-			
-		}
-		
-		var tdata = data.readUnsignedByte();
-		var type:ATFType = cast (tdata >> 7);
-		
-		if (type != ATFType.NORMAL) {
-			
-			throw new IllegalOperationError ("ATF Cube maps are not supported");
-			
-		}
-		
-		// Handle the different texture formats
-		var format:ATFFormat = cast (tdata & 0x7f);	
-		switch (format) {
-			
-			case ATFFormat.RAW_COMPRESSED: texture.__format = GLTextureBase.__textureFormatCompressed;
-			case ATFFormat.RAW_COMPRESSED_ALPHA: texture.__format = GLTextureBase.__textureFormatCompressedAlpha;
-			default: throw new IllegalOperationError ("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
-		
-		}
-		
-		var width:Int = (1 << cast data.readUnsignedByte ());
-		var height:Int = (1 << cast data.readUnsignedByte ());
-		
-		if (width != texture.__width || height != texture.__height) {
-			
-			throw new IllegalOperationError ("ATF width and height dont match");
-			
-		}
-		
-		var mipCount:Int = cast data.readUnsignedByte ();
-		
-		// DXT1/5, ETC1, PVRTC4, ETC2
-		// ETC2 is available with ATF version 3 
-		var gpuFormats = (version < 3) ? 3 : 4;
-		
-		for (level in 0...mipCount) {
-			
-			for (gpuFormat in 0...gpuFormats) {
-				
-				var blockLength = (version == 0) ? texture.__readUInt24 (data) : texture.__readUInt32 (data);
-				
-				if ((data.position + blockLength) > data.length) {
-					
-					throw new IllegalOperationError ("Block length exceeds ATF file length");
-					
-				}
-				
-				if (blockLength > 0) {
-					
-					if (gpuFormat == 0) {
-						
-						// DXT1/5
-						
-						var bytes:Bytes = Bytes.alloc (blockLength);
-						data.readBytes (bytes, 0, blockLength);
-						
-						gl.compressedTexImage2D (texture.__textureTarget, level, texture.__format, width >> level, height >> level, 0, blockLength, bytes);
-						GLUtils.CheckGLError ();
-					
-					} else {
-						
-						// TODO: Other formats are currently not supported
-						
-						data.position += blockLength;
-						
-					}
-					
-				}
-				
-			}
-			
-		}
 		
 	}
 	
