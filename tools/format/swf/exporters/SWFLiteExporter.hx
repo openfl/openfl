@@ -1677,7 +1677,7 @@ class AVM2 {
 			case NName(nameIndex, nsIndex): // a.k.a. QName
 				var nameSpace = abcData.getNameSpaceByIndex(nsIndex);
 				switch (nameSpace) {
-					case NPublic(nsNameIndex) | NInternal(nsNameIndex) | NPrivate(nsNameIndex): // a.k.a. PackageNamespace, PackageInternalNS
+					case NPublic(nsNameIndex) | NInternal(nsNameIndex) | NPrivate(nsNameIndex) | NProtected(nsNameIndex): // a.k.a. PackageNamespace, PackageInternalNS
 						return {
 							name: abcData.getStringByIndex(nameIndex),
 							nameIndex: i,
@@ -1685,7 +1685,7 @@ class AVM2 {
 							nameSpaceName: abcData.getStringByIndex(nsNameIndex)
 						}
 					case _:
-						LogHelper.info ("", "other type of namespace");
+						LogHelper.warn ("", "other type of namespace " + nameSpace);
 				}
 			case NMulti(nameIndex, nsIndexSet):
 				return {
@@ -1702,7 +1702,7 @@ class AVM2 {
 					nameSpaceName: null
 				}
 			case _:
-				LogHelper.info ("", "other type of name");
+				LogHelper.warn ("", "other type of name " + multiName);
 		}
 		return null;
 	}
@@ -1804,7 +1804,7 @@ class AVM2 {
 					}
 				case _:
 					// TODO: throw() on unsupported namespaces
-					LogHelper.info ("", "unsupported namespace "+ prop.nameSpace);
+					LogHelper.warn ("", "unsupported namespace "+ prop.nameSpace);
 			}
 		}
 
