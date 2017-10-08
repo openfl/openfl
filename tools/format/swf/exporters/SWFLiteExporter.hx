@@ -1784,6 +1784,8 @@ class AVM2 {
 			switch (prop.nameSpace) {
 				case NPublic(_) if ("" != prop.nameSpaceName):
 					js = prop.nameSpaceName.replace(".", "_") +"_"+ prop.name;
+				case NProtected(_) if ("" != prop.nameSpaceName):
+					js = prop.nameSpaceName.replace(".", "_") +"_"+ prop.name;
 				case NInternal(_) if (cls.name == prop.nameIndex):
 					js = "this." + prop.name;
 				case NPublic(_):
@@ -1802,6 +1804,9 @@ class AVM2 {
 							js = prop.name;
 //						}
 					}
+				case NPrivate(_) | NInternal(_) | NProtected(_) :
+					LogHelper.info ("", "Namespace "+ prop.nameSpace + " " + prop.name);
+					js = prop.name;
 				case _:
 					// TODO: throw() on unsupported namespaces
 					LogHelper.warn ("", "unsupported namespace "+ prop.nameSpace);
