@@ -961,7 +961,7 @@ class SWFLiteExporter {
 				switch (field.kind) {
 					case FMethod(idx, _, _, _):
 						var methodName = data.abcData.resolveMultiNameByIndex(field.name);
-						if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
+						if (methodName != null && AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
 							LogHelper.info ("", "frame script #"+ frameNumOneIndexed);
 							var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
