@@ -800,8 +800,8 @@ class CairoGraphics {
 							
 							for (i in 0...(Std.int (v.length / 2))) {
 								
-								uvt.push (v[i * 2] / bitmapFill.width);
-								uvt.push (v[i * 2 + 1] / bitmapFill.height);
+								uvt.push (v[i * 2] - offsetX / bitmapFill.width);
+								uvt.push (v[i * 2 + 1] - offsetY / bitmapFill.height);
 								
 							}
 							
@@ -855,12 +855,12 @@ class CairoGraphics {
 						icx = ind[c_] * 2;
 						icy = ind[c_] * 2 + 1;
 						
-						x1 = v[iax];
-						y1 = v[iay];
-						x2 = v[ibx];
-						y2 = v[iby];
-						x3 = v[icx];
-						y3 = v[icy];
+						x1 = v[iax] - offsetX;
+						y1 = v[iay] - offsetY;
+						x2 = v[ibx] - offsetX;
+						y2 = v[iby] - offsetY;
+						x3 = v[icx] - offsetX;
+						y3 = v[icy] - offsetY;
 						
 						switch (c.culling) {
 							
