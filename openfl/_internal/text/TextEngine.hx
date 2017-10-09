@@ -1075,7 +1075,7 @@ class TextEngine {
 					
 					if (wordWrap && previousSpaceIndex <= textIndex && width >= 4) {
 						
-						breakLongWords(breakIndex);
+						breakLongWords (breakIndex);
 						
 					}
 					
@@ -1199,6 +1199,21 @@ class TextEngine {
 						if (offsetX + widthValue > width - 2) {
 							
 							wrap = true;
+							
+							if (positions.length > 0 && endIndex == spaceIndex + 1) {
+								
+								// if last letter is a space, avoid word wrap if possible
+								
+								var lastPosition = positions[positions.length - 1];
+								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
+								
+								if (offsetX + widthValue - spaceWidth <= width - 2) {
+									
+									wrap = false;
+									
+								}
+								
+							}
 							
 						}
 						
