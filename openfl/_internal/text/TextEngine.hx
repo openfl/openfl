@@ -1203,6 +1203,7 @@ class TextEngine {
 							if (positions.length > 0 && endIndex == spaceIndex + 1) {
 								
 								// if last letter is a space, avoid word wrap if possible
+								// TODO: Handle multiple spaces
 								
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
