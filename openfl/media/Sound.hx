@@ -97,7 +97,7 @@ class Sound extends EventDispatcher {
 		
 		var spriteOptions = lime.Assets.getExtraSoundOptions(stream.url);
 		var data:Dynamic = null;
-		if(spriteOptions != null && spriteOptions.duration != null)
+		if(spriteOptions != null)
 		{
 			itHasSoundSprite = true;
 			data = {
