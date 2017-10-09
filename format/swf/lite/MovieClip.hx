@@ -406,7 +406,7 @@ class MovieClip extends flash.display.MovieClip {
 					displayObject = new DisplayObject();
 				}
 
-                displayObject.__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
+                displayObject.forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 			}
 
 			Reflect.setField( displayObject, "symbolId", symbol.id );
