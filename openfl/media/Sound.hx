@@ -95,7 +95,8 @@ class Sound extends EventDispatcher {
 
 		#else
 		
-		var spriteOptions = lime.Assets.getExtraSoundOptions((stream.url).substring(1));
+		var logicalPath = lime.Assets.getLogicalPath(stream.url);
+		var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
 		var data:Dynamic = null;
 		if(spriteOptions != null)
 		{
