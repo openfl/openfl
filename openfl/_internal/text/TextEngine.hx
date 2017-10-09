@@ -1081,7 +1081,6 @@ class TextEngine {
 					
 					nextLayoutGroup (textIndex, breakIndex);
 					
-					trace (text.substring(textIndex, breakIndex));
 					layoutGroup.positions = getPositions (text, textIndex, breakIndex);
 					layoutGroup.offsetX = offsetX;
 					layoutGroup.ascent = ascent;
@@ -1167,7 +1166,6 @@ class TextEngine {
 						
 					}
 					
-					trace (text.substring(textIndex, endIndex));
 					positions = getPositions (text, textIndex, endIndex);
 					widthValue = getPositionsWidth (positions);
 					
