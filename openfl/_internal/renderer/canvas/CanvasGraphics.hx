@@ -935,7 +935,7 @@ class CanvasGraphics {
 			CanvasGraphics.graphics = graphics;
 			CanvasGraphics.allowSmoothing = renderSession.allowSmoothing;
 			bounds = graphics.__bounds;
-			
+
 			var width = graphics.__width;
 			var height = graphics.__height;
 			
@@ -946,7 +946,10 @@ class CanvasGraphics {
 				graphics.__bitmap = null;
 				
 			} else {
-				
+
+				var offsetX = bounds.x;
+				var offsetY = bounds.y;
+
 				if (graphics.__canvas == null) {
 					
 					graphics.__canvas = cast Browser.document.createElement ("canvas");
@@ -1242,8 +1245,8 @@ class CanvasGraphics {
 									
 									for (i in 0...(Std.int (v.length / 2))) {
 										
-										uvt.push (v[i * 2] / bitmapFill.width);
-										uvt.push (v[i * 2 + 1] / bitmapFill.height);
+										uvt.push ((v[i * 2]  - offsetX) / bitmapFill.width);
+										uvt.push ((v[i * 2 + 1] - offsetY) / bitmapFill.height);
 										
 									}
 									
@@ -1290,12 +1293,12 @@ class CanvasGraphics {
 								icx = ind[c_] * 2;
 								icy = ind[c_] * 2 + 1;
 								
-								x1 = v[iax];
-								y1 = v[iay];
-								x2 = v[ibx];
-								y2 = v[iby];
-								x3 = v[icx];
-								y3 = v[icy];
+								x1 = v[iax] - offsetX;
+								y1 = v[iay] - offsetY;
+								x2 = v[ibx] - offsetX;
+								y2 = v[iby] - offsetY;
+								x3 = v[icx] - offsetX;
+								y3 = v[icy] - offsetY;
 								
 								switch (c.culling) {
 									
