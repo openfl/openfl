@@ -1,6 +1,7 @@
 package openfl._internal.text;
 
 
+import lime.text.GlyphPosition;
 import openfl.text.TextFormat;
 
 #if !openfl_debug
@@ -15,7 +16,6 @@ import openfl.text.TextFormat;
 class TextLayoutGroup {
 	
 	
-	public var advances:Array<Float>;
 	public var ascent:Float;
 	public var descent:Float;
 	public var endIndex:Int;
@@ -25,6 +25,11 @@ class TextLayoutGroup {
 	public var lineIndex:Int;
 	public var offsetX:Float;
 	public var offsetY:Float;
+	#if (js && html5)
+	public var positions:Array<Float>; // TODO: Make consistent with native?
+	#else
+	public var positions:Array<GlyphPosition>;
+	#end
 	public var startIndex:Int;
 	public var width:Float;
 	
@@ -34,6 +39,17 @@ class TextLayoutGroup {
 		this.format = format;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
+		
+	}
+	
+	
+	public inline function getAdvance (index:Int):Float {
+		
+		#if (js && html5)
+		return positions[index];
+		#else
+		return positions[index].advance.x;
+		#end
 		
 	}
 	

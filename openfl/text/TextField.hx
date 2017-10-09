@@ -184,11 +184,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				for (i in 0...(charIndex - group.startIndex)) {
 					
-					x += group.advances[i];
+					x += group.getAdvance (i);
 					
 				}
 				
-				return new Rectangle (x, group.offsetY, group.advances[charIndex - group.startIndex], group.ascent + group.descent);
+				// TODO: Is this actually right for combining characters?
+				var lastPosition = group.getAdvance (charIndex - group.startIndex);
+				
+				return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
 				
 			}
 			
@@ -221,9 +224,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 					var advance = 0.0;
 					
-					for (i in 0...group.advances.length) {
+					for (i in 0...group.positions.length) {
 						
-						advance += group.advances[i];
+						advance += group.getAdvance (i);
 						
 						if (x <= group.offsetX + advance) {
 							
@@ -1061,7 +1064,18 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		//autoSize = (tag.autoSize) ? TextFieldAutoSize.LEFT : TextFieldAutoSize.NONE;
 		
 	}
-
+	
+	
+	private inline function __getAdvance (position):Float {
+		
+		#if (js && html5)
+		return position;
+		#else
+		return position.advance.x;
+		#end
+		
+	}
+	
 	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
@@ -1095,7 +1109,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				for (i in 0...(charIndex - group.startIndex)) {
 					
-					x += group.advances[i];
+					x += group.getAdvance (i);
 					
 				}
 				
@@ -1205,13 +1219,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		var advance = 0.0;
 		
-		for (i in 0...group.advances.length) {
+		for (i in 0...group.positions.length) {
 			
-			advance += group.advances[i];
+			advance += group.getAdvance (i);
 			
 			if (x <= group.offsetX + advance) {
 				
-				if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+				if (x <= group.offsetX + (advance - group.getAdvance (i)) + (group.getAdvance (i) / 2)) {
 					
 					return group.startIndex + i;
 					
