@@ -22,6 +22,7 @@ class TagDebugID implements ITag
 		version = 6;
 		level = 1;
 		uuid = new ByteArray();
+		uuid.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

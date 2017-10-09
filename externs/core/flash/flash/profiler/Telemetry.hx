@@ -7,8 +7,8 @@ package flash.profiler; #if (!display && flash)
 @:final extern class Telemetry {
 	
 	
-	public static var connected (default, null):Bool;
-	public static var spanMarker (default, null):Float;
+	public static var connected (default, never):Bool;
+	public static var spanMarker (default, never):Float;
 	
 	public static function registerCommandHandler (commandName:String, handler:Dynamic):Bool;
 	public static function sendMetric (metric:String, value:Dynamic):Void;

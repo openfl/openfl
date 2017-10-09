@@ -109,6 +109,7 @@ class GLTilemap {
 			
 			tileset = tileArray.tileset;
 			if (tileset == null) tileset = defaultTileset;
+			if (tileset == null) continue;
 			
 			if (tileset.bitmapData != cacheBitmapData && cacheBitmapData != null) {
 				

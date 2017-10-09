@@ -35,6 +35,7 @@ class TagDefineSound implements IDefinitionTag
 		version = 1;
 		level = 1;
 		soundData = new ByteArray();
+		soundData.endian = BIG_ENDIAN;
 	}
 	
 	public static function create(id:Int, soundFormat:Int = SoundCompression.MP3, rate:Int = SoundRate.KHZ_44, size:Int = SoundSize.BIT_16, type:Int = SoundType.STEREO, sampleCount:Int = 0, aSoundData:ByteArray = null):TagDefineSound {
@@ -174,6 +175,7 @@ class TagDefineSound implements IDefinitionTag
 		// Clear ByteArray
 		//soundData.length = 0;
 		soundData = new ByteArray ();
+		soundData.endian = BIG_ENDIAN;
 		// Write SeekSamples (here always 0)
 		soundData.writeShort(0);
 		// Write raw MP3 (without ID3 metadata)

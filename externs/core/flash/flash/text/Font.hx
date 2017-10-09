@@ -8,9 +8,9 @@ import openfl.utils.ByteArray;
 extern class Font extends LimeFont {
 	
 	
-	public var fontName (default, null):String;
-	public var fontStyle (default, null):FontStyle;
-	public var fontType (default, null):FontType;
+	public var fontName (default, never):String;
+	public var fontStyle (default, never):FontStyle;
+	public var fontType (default, never):FontType;
 	
 	public function new (#if (!flash || display) name:String = null #end);
 	public static function enumerateFonts (enumerateDeviceFonts:Bool = false):Array<Font>;

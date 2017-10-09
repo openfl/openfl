@@ -7,7 +7,7 @@ import openfl.events.EventDispatcher;
 extern class FileReferenceList extends EventDispatcher {
 	
 	
-	public var fileList (default, null):Array<FileReference>;
+	public var fileList (default, never):Array<FileReference>;
 	
 	
 	public function new ();

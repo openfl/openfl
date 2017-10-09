@@ -21,6 +21,7 @@ class TagSoundStreamBlock implements ITag
 		version = 1;
 		level = 1;
 		soundData = new ByteArray();
+		soundData.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

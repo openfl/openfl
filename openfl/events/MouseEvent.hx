@@ -19,6 +19,7 @@ class MouseEvent extends Event {
 	public static inline var MOUSE_OVER = "mouseOver";
 	public static inline var MOUSE_UP = "mouseUp";
 	public static inline var MOUSE_WHEEL = "mouseWheel";
+	public static inline var RELEASE_OUTSIDE = "releaseOutside";
 	public static inline var RIGHT_CLICK = "rightClick";
 	public static inline var RIGHT_MOUSE_DOWN = "rightMouseDown";
 	public static inline var RIGHT_MOUSE_UP = "rightMouseUp";
@@ -37,6 +38,7 @@ class MouseEvent extends Event {
 	public var clickCount:Int;
 	public var ctrlKey:Bool;
 	public var delta:Int;
+	public var isRelatedObjectInaccessible:Bool;
 	public var localX:Float;
 	public var localY:Float;
 	public var relatedObject:InteractiveObject;
@@ -61,6 +63,7 @@ class MouseEvent extends Event {
 		this.commandKey = commandKey;
 		this.clickCount = clickCount;
 		
+		isRelatedObjectInaccessible = false;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
 		
@@ -74,12 +77,10 @@ class MouseEvent extends Event {
 			case MouseEvent.MOUSE_DOWN:
 				
 				__buttonDown = true;
-				
-			case MouseEvent.MOUSE_UP:
-				
-				__buttonDown = false;
 			
 			default:
+				
+				__buttonDown = false;
 			
 		}
 		

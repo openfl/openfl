@@ -4,8 +4,8 @@ package flash.display; #if (!display && flash)
 @:final extern class ShaderParameter<T> implements Dynamic {
 	
 	
-	public var index (default, null):Int;
-	public var type (default, null):ShaderParameterType;
+	public var index (default, never):Int;
+	public var type (default, never):ShaderParameterType;
 	public var value:Array<T>;
 	
 	public function new ();

@@ -10,9 +10,9 @@ import openfl.utils.ByteArray;
 extern class Loader extends DisplayObjectContainer {
 	
 	
-	public var content (default, null):DisplayObject;
-	public var contentLoaderInfo (default, null):LoaderInfo;
-	@:require(flash10_1) public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
+	public var content (default, never):DisplayObject;
+	public var contentLoaderInfo (default, never):LoaderInfo;
+	@:require(flash10_1) public var uncaughtErrorEvents (default, never):UncaughtErrorEvents;
 	
 	public function new ();
 	public function close ():Void;

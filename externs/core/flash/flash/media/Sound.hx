@@ -17,17 +17,17 @@ import openfl.utils.ByteArray;
 extern class Sound extends EventDispatcher {
 	
 	
-	public var bytesLoaded (default, null):Int;
-	public var bytesTotal (default, null):Int;
-	public var id3 (default, null):ID3Info;
-	public var isBuffering (default, null):Bool;
+	public var bytesLoaded (default, never):Int;
+	public var bytesTotal (default, never):Int;
+	public var id3 (default, never):ID3Info;
+	public var isBuffering (default, never):Bool;
 	
 	#if flash
-	@:require(flash10_1) public var isURLInaccessible (default, null):Bool;
+	@:require(flash10_1) public var isURLInaccessible (default, never):Bool;
 	#end
 	
-	public var length (default, null):Float;
-	public var url (default, null):String;
+	public var length (default, never):Float;
+	public var url (default, never):String;
 	
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null);
 	public function close ():Void;

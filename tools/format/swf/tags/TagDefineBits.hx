@@ -30,6 +30,7 @@ class TagDefineBits implements IDefinitionTag
 		version = 1;
 		level = 1;
 		bitmapData = new ByteArray();
+		bitmapData.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

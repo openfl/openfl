@@ -32,6 +32,7 @@ class TagDefineBitsLossless implements IDefinitionTag
 		version = 2;
 		level = 1;
 		zlibBitmapData = new ByteArray();
+		zlibBitmapData.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

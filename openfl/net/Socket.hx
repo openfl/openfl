@@ -587,22 +587,6 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			newData.readBytes (__inputBuffer, __inputBuffer.length);
 			
 		}
-		#end
-		
-	}
-	
-	
-	private function socket_onOpen (_):Void {
-		
-		__connected = true;
-		dispatchEvent (new Event (Event.CONNECT));
-		
-	}
-	
-	
-	private function this_onEnterFrame (event:Event):Void {
-		
-		#if (js && html5)
 		
 		if (__inputBuffer.bytesAvailable > 0) {
 			
@@ -622,6 +606,22 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0));
 			
 		}
+		#end
+		
+	}
+	
+	
+	private function socket_onOpen (_):Void {
+		
+		__connected = true;
+		dispatchEvent (new Event (Event.CONNECT));
+		
+	}
+	
+	
+	private function this_onEnterFrame (event:Event):Void {
+		
+		#if (js && html5)
 		
 		if (__socket != null) {
 			

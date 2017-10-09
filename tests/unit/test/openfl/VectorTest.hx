@@ -1,6 +1,7 @@
 package openfl;
 
 
+import openfl.errors.Error;
 import massive.munit.Assert;
 
 
@@ -438,6 +439,80 @@ class VectorTest {
 		Assert.areEqual (1, vector.length);
 		Assert.areEqual (100, vector[0]);
 		
+	}
+	
+	
+	#if (!html5 && !flash) @Ignore #end @Test public function intVectorStringify () {
+		// Testing if we have the same stringify behavior in JS and flash
+		var expected: String = "[1,2]";
+		var stringyfied: String = null;
+		var vector: Vector<Int> = new Vector<Int> ();
+		
+		vector.push(1);
+		vector.push(2);
+		
+		stringyfied = haxe.Json.stringify(vector);
+		
+		Assert.areEqual (expected, stringyfied);
+	}
+	
+	
+	#if (!html5 && !flash) @Ignore #end @Test public function boolVectorStringify () {
+		// Testing if we have the same stringify behavior in JS and flash
+		var expected: String = "[false,true]";
+		var stringyfied: String = null;
+		var vector: Vector<Bool> = new Vector<Bool> ();
+		
+		vector.push(false);
+		vector.push(true);
+		
+		stringyfied = haxe.Json.stringify(vector);
+		
+		Assert.areEqual (expected, stringyfied);
+	}
+	
+	
+	#if (!html5 && !flash) @Ignore #end @Test public function floatVectorStringify () {
+		// Testing if we have the same stringify behavior in JS and flash
+		var expected: String = "[1.1,2.2]";
+		var stringyfied: String = null;
+		var vector: Vector<Float> = new Vector<Float> ();
+		
+		vector.push(1.1);
+		vector.push(2.2);
+		
+		stringyfied = haxe.Json.stringify(vector);
+		
+		Assert.areEqual (expected, stringyfied);
+	}
+	
+	
+	#if (!html5 && !flash) @Ignore #end @Test public function objectVectorStringify () {
+		// Testing if we have the same stringify behavior in JS and flash
+		var expected: String = null;
+		var stringyfied: String = null;
+		var obj: Error = new Error("Message", 1);
+		var strObj: String = haxe.Json.stringify(obj);
+		var vector: Vector<Error> = new Vector<Error> ();
+		
+		vector.push(obj);
+		
+		stringyfied = haxe.Json.stringify(vector);
+		expected = "[" + strObj + "]";
+		
+		Assert.areEqual (expected, stringyfied);
+		
+		// Testing stringify inside object
+		var obj: Dynamic = {id: 5, errors: vector};
+		
+		stringyfied = haxe.Json.stringify(obj);
+		
+		// Testing if stringify inside object is still the same as outside
+		Assert.isTrue (stringyfied.indexOf(expected) != -1);
+		
+		// Check lengh and __array aren't stringified
+		Assert.areEqual(stringyfied.indexOf("length"), -1);
+		Assert.areEqual(stringyfied.indexOf("__array"), -1);
 	}
 	
 	

@@ -9,8 +9,8 @@ import openfl.events.EventDispatcher;
 extern class Accelerometer extends EventDispatcher {
 	
 	
-	public static var isSupported (default, null):Bool;
-	public var muted (default, null):Bool;
+	public static var isSupported (default, never):Bool;
+	public var muted (default, never):Bool;
 	
 	public function new ();
 	public function setRequestedUpdateInterval (interval:Int):Void;

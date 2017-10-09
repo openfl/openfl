@@ -7,6 +7,7 @@ import openfl.events.IOErrorEvent;
 import openfl.events.EventDispatcher;
 import openfl.events.ProgressEvent;
 import openfl.net.Socket;
+import openfl.utils.ByteArray;
 
 
 class XMLSocket extends EventDispatcher {
@@ -15,12 +16,19 @@ class XMLSocket extends EventDispatcher {
 	public var connected (default, null):Bool;
 	public var timeout:Int;
 	
+	#if !js
+	private var __inputBuffer:ByteArray;
+	#end
 	private var __socket:Socket;
 	
 	
 	public function new (host:String = null, port:Int = 80) {
 		
 		super ();
+		
+		#if !js
+		__inputBuffer = new ByteArray ();
+		#end
 		
 		if (host != null) {
 			
@@ -100,7 +108,31 @@ class XMLSocket extends EventDispatcher {
 	
 	private function __onSocketData (_):Void {
 		
+		#if !js
+		var bytesAvailable = __socket.bytesAvailable;
+		var byte, data;
+		
+		for (i in 0...bytesAvailable) {
+			
+			byte = __socket.readByte ();
+			__inputBuffer.writeByte (byte);
+			
+			if (byte == 0) {
+				
+				__inputBuffer.endian = __socket.endian;
+				__inputBuffer.position = 0;
+				data = __inputBuffer.readUTFBytes (__inputBuffer.bytesAvailable);
+				__inputBuffer.position = 0;
+				__inputBuffer.length = 0;
+				
+				dispatchEvent (new DataEvent (DataEvent.DATA, false, false, data));
+				
+			}
+			
+		}
+		#else
 		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, __socket.readUTFBytes (__socket.bytesAvailable)));
+		#end
 		
 	}
 	
