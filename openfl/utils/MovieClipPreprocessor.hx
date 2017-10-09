@@ -1,7 +1,11 @@
 package openfl.utils;
 
+import format.swf.exporters.ShapeCommandExporter;
+import openfl.display.Graphics;
+import format.swf.lite.MorphShape;
 import format.swf.lite.timeline.FrameObjectType;
 import format.swf.lite.SWFLite;
+import format.swf.lite.symbols.MorphShapeSymbol;
 import format.swf.lite.symbols.SpriteSymbol;
 import format.swf.lite.symbols.ShapeSymbol;
 import format.swf.lite.symbols.SimpleSpriteSymbol;
@@ -94,8 +98,15 @@ typedef ShapeCacheInfo = {
     transform: Matrix
 };
 
+typedef MorphShapeCacheInfo = {
+    symbol: MorphShapeSymbol,
+    transform: Matrix,
+    ratio: Float
+};
+
 private class Sprite {
     private var idRenderTransformMap = new Map<Int,Matrix> ();
+    private var idRatiosMap = new Map<Int,Array<Float>> ();
     private var idSymbolMap = new Map<Int,Int> ();
     private var idSpriteMap = new Map<Int, Sprite>();
     private var symbol:SpriteSymbol;
@@ -106,7 +117,7 @@ private class Sprite {
         this.symbol = symbol;
     }
 
-    public function update(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, swflite:SWFLite, transform:Matrix):Void {
+    public function update(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, morphShapeToProcessTable:Array<MorphShapeCacheInfo>, swflite:SWFLite, transform:Matrix):Void {
         if(frameIndex >= symbol.frames.length) {
             frameIndex = 0;
         }
@@ -133,14 +144,27 @@ private class Sprite {
                         sprite = new Sprite(cast symbol);
                         idSpriteMap.set(frameObject.id, sprite);
                     }
-                    sprite.update(shapeTable, simpleSpritesToProcessTable, swflite, renderTransform);
-                } else if (Std.is(symbol, ShapeSymbol)) {
-                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !renderTransform.equals (idRenderTransformMap[frameObject.id])) {
-                        shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
+                    sprite.update(shapeTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swflite, renderTransform);
+                } else if (Std.is(symbol, MorphShapeSymbol)) {
+                    if ( !idRatiosMap.exists(frameObject.id) ) {
+                        idRatiosMap.set(frameObject.id, []);
+                    }
+                    var patchedRatio = frameObject.ratio == null ? 0 : frameObject.ratio;
+                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !renderTransform.equals (idRenderTransformMap[frameObject.id]) || idRatiosMap[frameObject.id].indexOf(patchedRatio) == -1) {
+                        idRatiosMap.get(frameObject.id).push(patchedRatio);
+                        var morphShapeSymbol = cast(symbol, MorphShapeSymbol);
+                        if ( morphShapeSymbol.cachedHandlers == null ) {
+                            morphShapeSymbol.cachedHandlers = new Map<Int, ShapeCommandExporter>();
+                        }
+                        morphShapeToProcessTable.push ({ symbol: morphShapeSymbol, transform: renderTransform.clone (), ratio: patchedRatio });
                     }
                 } else if (Std.is(symbol, SimpleSpriteSymbol)) {
                     if (frameObject.symbol != idSymbolMap[frameObject.id]) {
                         simpleSpritesToProcessTable.push(cast symbol);
+                    }
+                } else if (Std.is(symbol, ShapeSymbol)) {
+                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !renderTransform.equals (idRenderTransformMap[frameObject.id])) {
+                        shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
                     }
                 }
 
@@ -162,9 +186,11 @@ private class Sprite {
 
 class JobContext {
     private var shapeToProcessTable = new Array<ShapeCacheInfo> ();
+    private var morphShapeToProcessTable = new Array<MorphShapeCacheInfo>();
     private var simpleSpritesToProcessTable = new Array<SimpleSpriteSymbol> ();
     private var shapeToProcessIndex: Int = 0;
     private var simpleSpriteToProcessIndex: Int = 0;
+    private var morphShapeToProcessIndex: Int = 0;
     private var frameToProcessIndex: Int = 0;
     private var symbol: SpriteSymbol;
     private var timeSliceMillisecondCount:Int;
@@ -200,7 +226,7 @@ class JobContext {
         startTime = openfl.Lib.getTimer ();
 
         if (frameToProcessIndex < symbol.frames.length) {
-            frameToProcessIndex = findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, swf, baseTransform, frameToProcessIndex);
+            frameToProcessIndex = findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swf, baseTransform, frameToProcessIndex);
         }
 
         while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
@@ -244,6 +270,18 @@ class JobContext {
             ++simpleSpriteToProcessIndex;
         }
 
+        while (morphShapeToProcessIndex < morphShapeToProcessTable.length && !timedOut()) {
+            var entry = morphShapeToProcessTable[morphShapeToProcessIndex];
+            var graphics = @:privateAccess new Graphics();
+            if ( @:privateAccess MorphShape.__updateMorphShape(entry.symbol, entry.ratio, entry.transform, graphics) ) {
+                openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false);
+                if ( @:privateAccess graphics.__bitmap != null ) {
+                    entry.symbol.addCacheEntry(@:privateAccess graphics.__bitmap, @:privateAccess graphics.__bounds, entry.transform, entry.ratio);
+                }
+            }
+            ++morphShapeToProcessIndex;
+        }
+
         if (frameToProcessIndex == symbol.frames.length && shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length) {
             done = true;
             @:privateAccess MovieClipPreprocessor.processNextJob ();
@@ -254,10 +292,12 @@ class JobContext {
         }
     }
 
-    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
+    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, morphShapeToProcessTable: Array<MorphShapeCacheInfo>, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
+        var mainSprite = new Sprite(symbol);
 
         while (frameIndex < symbol.frames.length && !timedOut ()) {
-            mainSprite.update(shapeTable, simpleSpritesToProcessTable, swflite, transform);
+            mainSprite.update(shapeTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swflite, transform);
+
             ++frameIndex;
         }
 
