@@ -174,6 +174,7 @@ class JobContext {
     private var swf:SWFLite;
     private var startTime:Int;
     private var baseTransform:Matrix;
+    private var mainSprite:Sprite;
 
     public var done(default, null):Bool = false;
 
@@ -185,6 +186,7 @@ class JobContext {
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
         this.cachePrecision = cachePrecision;
         this.priority = priority;
+        mainSprite = new Sprite(symbol);
     }
 
     private inline function timedOut ():Bool {
@@ -198,7 +200,7 @@ class JobContext {
         startTime = openfl.Lib.getTimer ();
 
         if (frameToProcessIndex < symbol.frames.length) {
-            frameToProcessIndex = findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, symbol, swf, baseTransform, frameToProcessIndex);
+            frameToProcessIndex = findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, swf, baseTransform, frameToProcessIndex);
         }
 
         while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
@@ -252,12 +254,10 @@ class JobContext {
         }
     }
 
-    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, symbol:SpriteSymbol, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
-        var mainSprite = new Sprite(symbol);
+    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
 
         while (frameIndex < symbol.frames.length && !timedOut ()) {
             mainSprite.update(shapeTable, simpleSpritesToProcessTable, swflite, transform);
-
             ++frameIndex;
         }
 
