@@ -183,6 +183,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cachedParent = null;
 	}
 
+    private function __reset() {
+
+    }
+
 	public function resolve (fieldName:String):DisplayObject {
 
 		return null;
@@ -1185,6 +1189,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__renderTransform.copyFrom (wt);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
+
+
+        Matrix.pool.put(old_world_transform);
 	}
 
 	public function _onWorldTransformScaleRotationChanged():Void {

@@ -665,7 +665,10 @@ import js.html.CanvasRenderingContext2D;
 
 	private function __getBounds (rect:Rectangle):Void {
 
-		if (__bounds == null) return;
+        if (__bounds == null) {
+            rect.setEmpty();
+            return;
+        }
 
 		rect.copyFrom (__bounds);
 	}

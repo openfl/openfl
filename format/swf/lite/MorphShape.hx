@@ -38,6 +38,10 @@ class MorphShape extends Shape {
 
 	}
 
+    private override function __reset() {
+        ratio = 0;
+    }
+
 
 	private override function __getBounds (rect:Rectangle):Void {
 		__update(true, false);
