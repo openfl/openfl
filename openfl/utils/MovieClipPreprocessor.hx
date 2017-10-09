@@ -39,6 +39,21 @@ class MovieClipPreprocessor {
         }
     }
 
+    static public function renderCompleteFromSymbol(spriteSymbol:SpriteSymbol, swflite:SWFLite, cachePrecision:Int = 100, ?parent:DisplayObjectContainer, timeSliceMillisecondCount = null)
+    {
+        var tempClip = new format.swf.lite.MovieClip (swflite, spriteSymbol);
+
+        if(parent == null) {
+            parent = Lib.current.stage;
+        }
+
+        parent.addChild(tempClip);
+
+        process(tempClip, cachePrecision, timeSliceMillisecondCount);
+
+        parent.removeChild(tempClip);
+    }
+
     static public function renderCompleteInstant(clipId:String, cachePrecision:Int = 100, ?parent:DisplayObjectContainer = null)
     {
         var tempClip = Assets.getMovieClip(clipId);
@@ -52,7 +67,6 @@ class MovieClipPreprocessor {
         process(tempClip, cachePrecision);
 
         parent.removeChild(tempClip);
-        // :TODO: reset parent if there was one
     }
 
     static public function renderComplete(clipId:String, cachePrecision:Int = 100, ?parent:DisplayObjectContainer = null, timeSliceMillisecondCount = null)
@@ -72,7 +86,6 @@ class MovieClipPreprocessor {
         process(tempClip, cachePrecision, timeSliceMillisecondCount);
 
         parent.removeChild(tempClip);
-        // :TODO: reset parent if there was one
     }
 }
 
