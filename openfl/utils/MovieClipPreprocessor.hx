@@ -110,13 +110,15 @@ private class Sprite {
     private var idRatiosMap = new Map<Int,Array<Float>> ();
     private var idSymbolMap = new Map<Int,Int> ();
     private var idSpriteMap = new Map<Int, Sprite>();
+    private var children = new Array<Sprite>();
     private var symbol:SpriteSymbol;
 
     public var frameIndex:Int = 0;
-    public var renderTransform:Matrix = new Matrix();
+    public var renderTransform:Matrix;
 
     public function new(symbol:SpriteSymbol) {
         this.symbol = symbol;
+        renderTransform = Matrix.pool.get();
     }
 
     public function update(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, morphShapeToProcessTable:Array<MorphShapeCacheInfo>, swflite:SWFLite):Void {
@@ -156,6 +158,7 @@ private class Sprite {
                     if(sprite == null || frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
                         sprite = new Sprite(cast symbol);
                         idSpriteMap.set(frameObject.id, sprite);
+                        children.push(sprite);
                     }
                     sprite.renderTransform.copyFrom(childRenderTransform);
             } else if (Std.is(symbol, MorphShapeSymbol)) {
@@ -180,12 +183,23 @@ private class Sprite {
                     }
                 }
 
-                idTransformMap[frameObject.id] = localTransform.clone ();
-                idRenderTransformMap[frameObject.id] = childRenderTransform.clone ();
+                if(!idTransformMap.exists(frameObject.id)) {
+                    idTransformMap[frameObject.id] = Matrix.pool.get();
+                }
+
+                if(!idRenderTransformMap.exists(frameObject.id)) {
+                    idRenderTransformMap[frameObject.id] = Matrix.pool.get();
+                }
+
+                idTransformMap[frameObject.id].copyFrom(localTransform.clone ());
+                idRenderTransformMap[frameObject.id].copyFrom(childRenderTransform.clone ());
                 idSymbolMap[frameObject.id] = frameObject.symbol;
             } else {
                 if(isSprite) {
+                    var sprite = idSpriteMap.get(frameObject.id);
+                    sprite.dispose();
                     idSpriteMap.remove(frameObject.id);
+                    children.remove(sprite);
                 }
 
                 idSymbolMap.remove(frameObject.id);
@@ -193,13 +207,23 @@ private class Sprite {
 
         }
 
-        for(sprite in idSpriteMap) {
+        for(sprite in children) {
             sprite.update(shapeTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swflite);
         }
 
         ++frameIndex;
         Matrix.pool.put(childRenderTransform);
         Matrix.pool.put(localTransform);
+    }
+
+    public function dispose() {
+        Matrix.pool.put(renderTransform);
+        for(t in idTransformMap) {
+            Matrix.pool.put(t);
+        }
+        for(t in idRenderTransformMap) {
+            Matrix.pool.put(t);
+        }
     }
 }
 
@@ -229,6 +253,7 @@ class JobContext {
         this.cachePrecision = cachePrecision;
         this.priority = priority;
         mainSprite = new Sprite(symbol);
+        mainSprite.dispose();
         mainSprite.renderTransform = baseTransform.clone();
     }
 
