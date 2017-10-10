@@ -158,19 +158,18 @@ private class Sprite {
                         idSpriteMap.set(frameObject.id, sprite);
                     }
                     sprite.renderTransform.copyFrom(childRenderTransform);
-                } else if (Std.is(symbol, MorphShapeSymbol)) {
-                    if ( !idRatiosMap.exists(frameObject.id) ) {
-                        idRatiosMap.set(frameObject.id, []);
+            } else if (Std.is(symbol, MorphShapeSymbol)) {
+                if ( !idRatiosMap.exists(frameObject.id) ) {
+                    idRatiosMap.set(frameObject.id, []);
+                }
+                var patchedRatio = frameObject.ratio == null ? 0 : frameObject.ratio;
+                    var morphShapeSymbol = cast(symbol, MorphShapeSymbol);
+                    if ( morphShapeSymbol.cachedHandlers == null ) {
+                        morphShapeSymbol.useBitmapCache = true;
+                        morphShapeSymbol.cachedHandlers = new Map<Int, ShapeCommandExporter>();
                     }
-                    var patchedRatio = frameObject.ratio == null ? 0 : frameObject.ratio;
-                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !childRenderTransform.equals (idTransformMap[frameObject.id]) || idRatiosMap[frameObject.id].indexOf(patchedRatio) == -1) {
-                        idRatiosMap.get(frameObject.id).push(patchedRatio);
-                        var morphShapeSymbol = cast(symbol, MorphShapeSymbol);
-                        if ( morphShapeSymbol.cachedHandlers == null ) {
-                            morphShapeSymbol.cachedHandlers = new Map<Int, ShapeCommandExporter>();
-                        }
-                        morphShapeToProcessTable.push ({ symbol: morphShapeSymbol, transform: childRenderTransform.clone (), ratio: patchedRatio });
-                    }
+                    morphShapeToProcessTable.push ({ symbol: morphShapeSymbol, transform: childRenderTransform.clone (), ratio: patchedRatio });
+
                 } else if (Std.is(symbol, SimpleSpriteSymbol)) {
                     if (frameObject.symbol != idSymbolMap[frameObject.id]) {
                         simpleSpritesToProcessTable.push(cast symbol);
@@ -244,7 +243,7 @@ class JobContext {
         startTime = openfl.Lib.getTimer ();
 
         if (mainSprite.frameIndex < symbol.frames.length) {
-            updateMainSprite(shapeToProcessTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swf );
+            updateMainSprite(shapeToProcessTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swf);
         }
 
         while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
@@ -291,9 +290,18 @@ class JobContext {
         while (morphShapeToProcessIndex < morphShapeToProcessTable.length && !timedOut()) {
             var entry = morphShapeToProcessTable[morphShapeToProcessIndex];
             var graphics = @:privateAccess new Graphics();
+            graphics.keepBitmapData = true;
             if ( @:privateAccess MorphShape.__updateMorphShape(entry.symbol, entry.ratio, entry.transform, graphics) ) {
                 openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false);
                 if ( @:privateAccess graphics.__bitmap != null ) {
+                    #if(js && profile)
+                        untyped $global.Profile.BitmapDataUpload.currentProfileId = symbol.id + " (preprocessed)";
+                    #end
+                    @:privateAccess graphics.__bitmap.getTexture (gl);
+                    #if(js && profile)
+                        untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                    #end
+
                     entry.symbol.addCacheEntry(@:privateAccess graphics.__bitmap, @:privateAccess graphics.__bounds, entry.transform, entry.ratio);
                 }
             }
