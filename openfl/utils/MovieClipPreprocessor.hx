@@ -324,6 +324,12 @@ class JobContext {
         }
 
         if (mainSprite.frameIndex == symbol.frames.length && symbol == this.symbol) {
+            #if dev
+                trace("Preprocessing MovieClip " + symbol.id + ":");
+                trace("    Shapes x" + shapeTable.length);
+                trace("    SimpleSprites x" + simpleSpritesToProcessTable.length);
+                trace("    MorphShapes x" + morphShapeToProcessTable.length);
+            #end
             for (entry in shapeTable) {
                 var shapeSymbol = entry.symbol;
                 shapeSymbol.cachePrecision = cachePrecision;
