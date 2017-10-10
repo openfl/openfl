@@ -165,7 +165,6 @@ class JobContext {
     private var simpleSpritesToProcessTable = new Array<SimpleSpriteSymbol> ();
     private var shapeToProcessIndex: Int = 0;
     private var simpleSpriteToProcessIndex: Int = 0;
-    private var frameToProcessIndex: Int = 0;
     private var symbol: SpriteSymbol;
     private var timeSliceMillisecondCount:Int;
     private var useDelay:Bool;
@@ -199,8 +198,8 @@ class JobContext {
 
         startTime = openfl.Lib.getTimer ();
 
-        if (frameToProcessIndex < symbol.frames.length) {
-            frameToProcessIndex = findDependentSymbols (shapeToProcessTable, simpleSpritesToProcessTable, swf, baseTransform, frameToProcessIndex);
+        if (mainSprite.frameIndex < symbol.frames.length) {
+            updateMainSprite(shapeToProcessTable, simpleSpritesToProcessTable, swf, baseTransform);
         }
 
         while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
@@ -244,7 +243,7 @@ class JobContext {
             ++simpleSpriteToProcessIndex;
         }
 
-        if (frameToProcessIndex == symbol.frames.length && shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length) {
+        if (mainSprite.frameIndex == symbol.frames.length && shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length) {
             done = true;
             @:privateAccess MovieClipPreprocessor.processNextJob ();
         } else {
@@ -254,21 +253,18 @@ class JobContext {
         }
     }
 
-    private function findDependentSymbols(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, swflite:SWFLite, transform:Matrix, frameIndex:Int):Int {
+    private function updateMainSprite(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, swflite:SWFLite, transform:Matrix):Void {
 
-        while (frameIndex < symbol.frames.length && !timedOut ()) {
+        while (mainSprite.frameIndex < symbol.frames.length && !timedOut ()) {
             mainSprite.update(shapeTable, simpleSpritesToProcessTable, swflite, transform);
-            ++frameIndex;
         }
 
-        if (frameIndex == symbol.frames.length && symbol == this.symbol) {
+        if (mainSprite.frameIndex == symbol.frames.length && symbol == this.symbol) {
             for (entry in shapeTable) {
                 var shapeSymbol = entry.symbol;
                 shapeSymbol.cachePrecision = cachePrecision;
                 shapeSymbol.useBitmapCache = true;
             }
         }
-
-        return frameIndex;
     }
 }
