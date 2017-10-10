@@ -281,7 +281,7 @@ class JobContext {
             ++morphShapeToProcessIndex;
         }
 
-        if (mainSprite.frameIndex == symbol.frames.length && shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length) {
+        if (mainSprite.frameIndex == symbol.frames.length && shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length && morphShapeToProcessIndex == morphShapeToProcessTable.length) {
             done = true;
             @:privateAccess MovieClipPreprocessor.processNextJob ();
         } else {
