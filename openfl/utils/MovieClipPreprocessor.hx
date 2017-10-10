@@ -39,6 +39,9 @@ class MovieClipPreprocessor {
                 currentJob.process ();
             } else {
                 currentJob = null;
+                #if dev
+                    trace("No more job.");
+                #end
             }
         }
     }
