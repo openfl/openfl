@@ -74,7 +74,7 @@ class Preloader extends LimePreloader {
 			var sound = new Sound ();
 			sound.addEventListener (Event.COMPLETE, sound_onComplete);
 			sound.addEventListener (IOErrorEvent.IO_ERROR, sound_onIOError);
-			sound.load (new URLRequest (soundName + ".m4a"));
+			sound.load (new URLRequest (soundName + ".m4a"), null, true);
 			
 		}
 		

@@ -10,6 +10,7 @@ import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
+import openfl.ObjectPool;
 
 @:autoBuild(openfl.Assets.embedSound())
 
@@ -18,8 +19,9 @@ class Sound extends EventDispatcher {
 
 
 	#if html5
-	private static var __registeredSounds = new Map<String, Bool> ();
+	private static var __registeredSounds = new Map<String, ObjectPool<Howl>> ();
 	private var numberOfLoopsRemaining:Int;
+	private var soundName:String;
 	private var __sound:Howl;
 	private var itHasSoundSprite:Bool = false;
 	#end
@@ -87,7 +89,7 @@ class Sound extends EventDispatcher {
 	}
 
 
-	public function load (stream:URLRequest, context:SoundLoaderContext = null):Void {
+	public function load (stream:URLRequest, context:SoundLoaderContext = null, preload:Bool = false):Void {
 
 		#if !html5
 
@@ -95,26 +97,48 @@ class Sound extends EventDispatcher {
 
 		#else
 		
-		var logicalPath = lime.Assets.getLogicalPath(stream.url);
+		soundName = stream.url;
+		if ( !__registeredSounds.exists(soundName) ) {
+			__registeredSounds[soundName] = new ObjectPool<Howl>(function() { return null;});
+		} else if (!preload) {
+			#if dev
+				if ( __sound != null ) {
+					throw ":TODO:";
+				}
+			#end
+			__sound = __registeredSounds[soundName].get();
+		}
+
+		if ( __sound == null ) {
+
+			var logicalPath = lime.Assets.getLogicalPath(soundName);
 		var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
 		var data:Dynamic = null;
 		if(spriteOptions != null)
 		{
 			itHasSoundSprite = true;
 			data = {
-				src:stream.url, 
+					src:soundName,
 				sprite:{clip : [spriteOptions.start, spriteOptions.duration]},
 				onload:howler_onFileLoad,
 				onloaderror:howler_onFileError
 			};
 		}else {
 			data = {
-				src:stream.url, 
+					src:soundName,
 				onload:howler_onFileLoad,
 				onloaderror:howler_onFileError
 			};
 		}
 		__sound = new Howl(data);
+			if ( preload ) {
+				Reflect.setField(__sound, "__itIsInPool", true);
+				onStop();
+			} else {
+				Reflect.setField(__sound, "__itIsInPool", false);
+			}
+
+		}
 		#end
 
 	}
@@ -183,8 +207,9 @@ class Sound extends EventDispatcher {
 		} 
 		this.numberOfLoopsRemaining = loops;
 		__sound.volume(sndTransform.volume);
-		__sound.loop(loops > 1);
+		__sound.loop(true);
 		__sound.on("end", onEndSound);
+		__sound.on("stop", onStop);
 		__sound.seek(Std.int (startTime)); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
 		if(itHasSoundSprite) {
 			__sound.play('clip');
@@ -201,8 +226,15 @@ class Sound extends EventDispatcher {
 	#if html5
 	public function onEndSound() {
 		this.numberOfLoopsRemaining--;
-		if(this.numberOfLoopsRemaining == 0) {
-			__sound.stop();
+		if(this.numberOfLoopsRemaining <= 0) {
+			Reflect.setField(__sound, "__itIsInPool", true);
+			__sound.pause();
+		}
+	}
+
+	public function onStop() {
+		if ( Reflect.field(__sound, "__itIsInPool") == true ) {
+			__registeredSounds[soundName].put(__sound);
 		}
 	}
 	#end
@@ -280,6 +312,7 @@ class Sound extends EventDispatcher {
 @:native("Howl") extern class Howl {
 	public function new (o:Dynamic): Void;
 	public function play (spriteOrId:Dynamic = null): Int;
+	public function pause (id:Int = null): Howl;
 	public function stop (id:Int = null): Howl;
 	public function volume (vol:Float = null, id:Int = null): Dynamic;
 	public function loop (loop:Bool = null, id:Int = null): Dynamic;
