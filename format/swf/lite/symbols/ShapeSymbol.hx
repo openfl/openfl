@@ -15,15 +15,18 @@ class ShapeSymbol extends SWFSymbol {
 	@:s public var graphics:Graphics;
 
 	private var __cachePrecision:Null<Int> = null;
+	private var __translationCachePrecision:Null<Int> = null;
 	private var cachedTable:Array<CacheEntry>;
 
 	public var useBitmapCache(default, set):Bool = false;
 	public var cachePrecision(get, set):Int;
+	public var translationCachePrecision(get, set):Int;
 	public var forbidClearCacheOnResize:Bool = false;
 
 	public var snapCoordinates:Bool = false;
 
 	static private var defaultCachePrecision:Int = 100;
+	static private var defaultTranslationCachePrecision:Int = 100;
 	static private var lastStageWidth:Float;
 	static private var lastStageHeight:Float;
 	static private var eventIsListened:Bool = false;
@@ -117,8 +120,7 @@ class ShapeSymbol extends SWFSymbol {
 				return cachedTable[0].bitmapData;
 			}
 
-
-            var hash = CacheEntry.getHash(renderTransform, cachePrecision);
+            var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
 
 			for (entry in cachedTable) {
 
@@ -165,7 +167,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
-		cachedTable.push (new CacheEntry (bitmapData, CacheEntry.getHash(renderTransform, cachePrecision)));
+		cachedTable.push (new CacheEntry (bitmapData, CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision)));
 
 	}
 
@@ -337,6 +339,23 @@ class ShapeSymbol extends SWFSymbol {
 		return __cachePrecision = value;
 	}
 
+	public function get_translationCachePrecision ():Int {
+		if (__translationCachePrecision == null) {
+			__translationCachePrecision = defaultTranslationCachePrecision;
+		}
+
+		return __translationCachePrecision;
+	}
+
+	public function set_translationCachePrecision (value:Int):Int {
+		#if dev
+			if (__translationCachePrecision != null && __translationCachePrecision != value) {
+				trace (':WARNING: ignoring cache precision change for symbol($id) from $__translationCachePrecision to $value');
+			}
+		#end
+
+		return __translationCachePrecision = value;
+	}
 }
 
 private class CacheEntry {
@@ -351,15 +370,15 @@ private class CacheEntry {
 
     static private var __buffer = new Int32Array(6);
 
-    static public function getHash(matrix:Matrix, cachePrecision:Int):Int {
+    static public function getHash(matrix:Matrix, cachePrecision:Int, translationCachePrecision):Int {
         var buffer = __buffer;
 
         buffer[0] = Std.int(matrix.a * cachePrecision);
         buffer[1] = Std.int(matrix.b * cachePrecision);
         buffer[2] = Std.int(matrix.c * cachePrecision);
         buffer[3] = Std.int(matrix.d * cachePrecision);
-        buffer[4] = Std.int((matrix.tx - Math.ffloor(matrix.tx)) * cachePrecision);
-        buffer[5] = Std.int((matrix.ty - Math.ffloor(matrix.ty)) * cachePrecision);
+        buffer[4] = Std.int((matrix.tx - Math.ffloor(matrix.tx)) * translationCachePrecision);
+        buffer[5] = Std.int((matrix.ty - Math.ffloor(matrix.ty)) * translationCachePrecision);
 
         return haxe.crypto.Crc32.make(buffer.view.buffer);
     }
