@@ -168,7 +168,6 @@ private class Sprite {
                 var patchedRatio = frameObject.ratio == null ? 0 : frameObject.ratio;
                     var morphShapeSymbol = cast(symbol, MorphShapeSymbol);
                     if ( morphShapeSymbol.cachedHandlers == null ) {
-                        morphShapeSymbol.useBitmapCache = true;
                         morphShapeSymbol.cachedHandlers = new Map<Int, ShapeCommandExporter>();
                     }
                     morphShapeToProcessTable.push ({ symbol: morphShapeSymbol, transform: childRenderTransform.clone (), ratio: patchedRatio });
@@ -359,6 +358,11 @@ class JobContext {
                 var shapeSymbol = entry.symbol;
                 shapeSymbol.cachePrecision = cachePrecision;
                 shapeSymbol.useBitmapCache = true;
+            }
+            for (entry in morphShapeToProcessTable) {
+                var symbol = entry.symbol;
+                symbol.cachePrecision = cachePrecision;
+                symbol.useBitmapCache = true;
             }
         }
     }
