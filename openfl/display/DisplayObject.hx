@@ -49,6 +49,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var cacheAsBitmapMatrix (get, set):Matrix;
 	public var cacheAsBitmapSmooth (get, set):Bool;
 	public var filters (get, set):Array<BitmapFilter>;
+	public var forbidCachedBitmapUpdate (default, set):Bool;
 	public var height (get, set):Float;
 	public var loaderInfo (get, null):LoaderInfo;
 	public var mask (get, set):DisplayObject;
@@ -125,7 +126,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __clipDepth : Int;
 	private var __clippedAt : Null<Int>;
 	private var __useSeparateRenderScaleTransform = true;
-	private var __forbidCachedBitmapUpdate = false;
 	private var __mouseListenerCount:Int = 0;
 	private var __recursiveMouseListenerCount:Int = 0;
 	static private inline var NO_MOUSE_LISTENER_BRANCH_DEPTH = 9999;
@@ -737,7 +737,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if(symbol != null && symbol.useUniqueSharedBitmapCache && symbol.uniqueSharedCachedBitmap != null) {
 			__cachedBitmap = symbol.uniqueSharedCachedBitmap;
-			__forbidCachedBitmapUpdate = true;
+			forbidCachedBitmapUpdate = true;
 			return;
 		}
 
@@ -807,7 +807,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
-		if ( ( __updateCachedBitmap || __updateFilters ) && ( !__forbidCachedBitmapUpdate || __cachedBitmap == null ) ) {
+		if ( ( __updateCachedBitmap || __updateFilters ) && ( !forbidCachedBitmapUpdate || __cachedBitmap == null ) ) {
 
  			__updateCachedBitmapFn (renderSession);
 
@@ -1301,6 +1301,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if(cacheAsBitmap != __cacheAsBitmap) __setRenderDirty ();
 
 		return __cacheAsBitmap = __forceCacheAsBitmap ? true : cacheAsBitmap;
+
+	}
+
+
+
+	private function set_forbidCachedBitmapUpdate (value:Bool):Bool {
+
+		#if dev
+			if (value) {
+				openfl.utils.DisplayObjectUtils.applyToAllChildren( this, function (displayObject) {
+					if (Reflect.field (displayObject, "__playing") == true) {
+						throw 'cannot set forbidCachedBitmapUpdate flag on playing movieclip ${displayObject.getSymbol ()}';
+					}});
+			}
+		#end
+
+		return forbidCachedBitmapUpdate = value;
 
 	}
 
