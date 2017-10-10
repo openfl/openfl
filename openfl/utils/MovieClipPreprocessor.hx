@@ -105,6 +105,7 @@ typedef MorphShapeCacheInfo = {
 };
 
 private class Sprite {
+    private var idTransformMap = new Map<Int,Matrix> ();
     private var idRenderTransformMap = new Map<Int,Matrix> ();
     private var idRatiosMap = new Map<Int,Array<Float>> ();
     private var idSymbolMap = new Map<Int,Int> ();
@@ -112,17 +113,19 @@ private class Sprite {
     private var symbol:SpriteSymbol;
 
     public var frameIndex:Int = 0;
+    public var renderTransform:Matrix = new Matrix();
 
     public function new(symbol:SpriteSymbol) {
         this.symbol = symbol;
     }
 
-    public function update(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, morphShapeToProcessTable:Array<MorphShapeCacheInfo>, swflite:SWFLite, transform:Matrix):Void {
+    public function update(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, morphShapeToProcessTable:Array<MorphShapeCacheInfo>, swflite:SWFLite):Void {
         if(frameIndex >= symbol.frames.length) {
             frameIndex = 0;
         }
         var frame =  symbol.frames[frameIndex];
-        var renderTransform:Matrix = Matrix.pool.get ();
+        var childRenderTransform:Matrix = Matrix.pool.get ();
+        var localTransform:Matrix = Matrix.pool.get ();
 
         for (frameObject in frame.objects) {
             var symbol = swflite.symbols.get(frameObject.symbol);
@@ -131,12 +134,22 @@ private class Sprite {
             if (frameObject.type != FrameObjectType.DESTROY) {
 
                 if (frameObject.matrix != null) {
-                    renderTransform.copyFrom (frameObject.matrix);
-                    renderTransform.concat (transform);
+                    localTransform.copyFrom(frameObject.matrix);
+
                 } else {
-                    var cached = idRenderTransformMap[frameObject.id];
-                    renderTransform.copyFrom (cached != null ? cached : transform);
+
+                    var cached = idTransformMap[frameObject.id];
+
+                    if(cached != null) {
+                        localTransform.copyFrom (cached);
+                    }
+                    else {
+                        localTransform.identity();
+                    }
                 }
+
+                childRenderTransform.copyFrom(localTransform);
+                childRenderTransform.concat (renderTransform);
 
                 if (isSprite) {
                     var sprite = idSpriteMap.get(frameObject.id);
@@ -144,31 +157,32 @@ private class Sprite {
                         sprite = new Sprite(cast symbol);
                         idSpriteMap.set(frameObject.id, sprite);
                     }
-                    sprite.update(shapeTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swflite, renderTransform);
+                    sprite.renderTransform.copyFrom(childRenderTransform);
                 } else if (Std.is(symbol, MorphShapeSymbol)) {
                     if ( !idRatiosMap.exists(frameObject.id) ) {
                         idRatiosMap.set(frameObject.id, []);
                     }
                     var patchedRatio = frameObject.ratio == null ? 0 : frameObject.ratio;
-                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !renderTransform.equals (idRenderTransformMap[frameObject.id]) || idRatiosMap[frameObject.id].indexOf(patchedRatio) == -1) {
+                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !childRenderTransform.equals (idTransformMap[frameObject.id]) || idRatiosMap[frameObject.id].indexOf(patchedRatio) == -1) {
                         idRatiosMap.get(frameObject.id).push(patchedRatio);
                         var morphShapeSymbol = cast(symbol, MorphShapeSymbol);
                         if ( morphShapeSymbol.cachedHandlers == null ) {
                             morphShapeSymbol.cachedHandlers = new Map<Int, ShapeCommandExporter>();
                         }
-                        morphShapeToProcessTable.push ({ symbol: morphShapeSymbol, transform: renderTransform.clone (), ratio: patchedRatio });
+                        morphShapeToProcessTable.push ({ symbol: morphShapeSymbol, transform: childRenderTransform.clone (), ratio: patchedRatio });
                     }
                 } else if (Std.is(symbol, SimpleSpriteSymbol)) {
                     if (frameObject.symbol != idSymbolMap[frameObject.id]) {
                         simpleSpritesToProcessTable.push(cast symbol);
                     }
                 } else if (Std.is(symbol, ShapeSymbol)) {
-                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !renderTransform.equals (idRenderTransformMap[frameObject.id])) {
-                        shapeTable.push ({ symbol: cast symbol, transform: renderTransform.clone () });
+                    if (frameObject.symbol != idSymbolMap[frameObject.id] || !childRenderTransform.equals (idRenderTransformMap[frameObject.id])) {
+                        shapeTable.push ({ symbol: cast symbol, transform: childRenderTransform.clone () });
                     }
                 }
 
-                idRenderTransformMap[frameObject.id] = renderTransform.clone ();
+                idTransformMap[frameObject.id] = localTransform.clone ();
+                idRenderTransformMap[frameObject.id] = childRenderTransform.clone ();
                 idSymbolMap[frameObject.id] = frameObject.symbol;
             } else {
                 if(isSprite) {
@@ -177,10 +191,16 @@ private class Sprite {
 
                 idSymbolMap.remove(frameObject.id);
             }
+
+        }
+
+        for(sprite in idSpriteMap) {
+            sprite.update(shapeTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swflite);
         }
 
         ++frameIndex;
-        Matrix.pool.put(renderTransform);
+        Matrix.pool.put(childRenderTransform);
+        Matrix.pool.put(localTransform);
     }
 }
 
@@ -198,7 +218,6 @@ class JobContext {
     private var priority:Int;
     private var swf:SWFLite;
     private var startTime:Int;
-    private var baseTransform:Matrix;
     private var mainSprite:Sprite;
 
     public var done(default, null):Bool = false;
@@ -206,12 +225,12 @@ class JobContext {
     public function new (symbol:SpriteSymbol, swf:SWFLite, baseTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, priority:Int) {
         this.symbol= symbol;
         this.swf= swf;
-        this.baseTransform = baseTransform.clone ();
         this.useDelay = useDelay;
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
         this.cachePrecision = cachePrecision;
         this.priority = priority;
         mainSprite = new Sprite(symbol);
+        mainSprite.renderTransform = baseTransform.clone();
     }
 
     private inline function timedOut ():Bool {
@@ -225,7 +244,7 @@ class JobContext {
         startTime = openfl.Lib.getTimer ();
 
         if (mainSprite.frameIndex < symbol.frames.length) {
-            updateMainSprite(shapeToProcessTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swf, baseTransform);
+            updateMainSprite(shapeToProcessTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swf );
         }
 
         while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
@@ -291,9 +310,9 @@ class JobContext {
         }
     }
 
-    private function updateMainSprite(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, morphShapeToProcessTable:Array<MorphShapeCacheInfo>, swflite:SWFLite, transform:Matrix):Void {
+    private function updateMainSprite(shapeTable:Array<ShapeCacheInfo>, simpleSpritesToProcessTable:Array<SimpleSpriteSymbol>, morphShapeToProcessTable:Array<MorphShapeCacheInfo>, swflite:SWFLite):Void {
         while (mainSprite.frameIndex < symbol.frames.length && !timedOut ()) {
-            mainSprite.update(shapeTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swflite, transform);
+            mainSprite.update(shapeTable, simpleSpritesToProcessTable, morphShapeToProcessTable, swflite);
         }
 
         if (mainSprite.frameIndex == symbol.frames.length && symbol == this.symbol) {
