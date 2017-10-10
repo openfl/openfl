@@ -64,7 +64,7 @@ class Sound extends EventDispatcher {
 
 		}
 		#else
-		
+
 		if(__sound != null) {
 			__sound.unload();
 		}
@@ -96,7 +96,7 @@ class Sound extends EventDispatcher {
 		AudioBuffer.fromURL (stream.url, AudioBuffer_onURLLoad);
 
 		#else
-		
+
 		soundName = stream.url;
 		if ( !__registeredSounds.exists(soundName) ) {
 			__registeredSounds[soundName] = new ObjectPool<Howl>(function() { return null;});
@@ -112,25 +112,28 @@ class Sound extends EventDispatcher {
 		if ( __sound == null ) {
 
 			var logicalPath = lime.Assets.getLogicalPath(soundName);
-		var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
-		var data:Dynamic = null;
-		if(spriteOptions != null)
-		{
-			itHasSoundSprite = true;
-			data = {
-					src:soundName,
-				sprite:{clip : [spriteOptions.start, spriteOptions.duration]},
-				onload:howler_onFileLoad,
-				onloaderror:howler_onFileError
-			};
-		}else {
-			data = {
-					src:soundName,
-				onload:howler_onFileLoad,
-				onloaderror:howler_onFileError
-			};
-		}
-		__sound = new Howl(data);
+			var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
+			var data:Dynamic = null;
+
+			if ( spriteOptions != null && spriteOptions.start != null && spriteOptions.duration != null )
+			{
+				itHasSoundSprite = true;
+				data = {
+						src:soundName,
+					sprite:{clip : [spriteOptions.start, spriteOptions.duration]},
+					onload:howler_onFileLoad,
+					onloaderror:howler_onFileError
+				};
+			}else {
+				data = {
+						src:soundName,
+					onload:howler_onFileLoad,
+					onloaderror:howler_onFileError
+				};
+			}
+
+			__sound = new Howl(data);
+
 			if ( preload ) {
 				Reflect.setField(__sound, "__itIsInPool", true);
 				onStop();
@@ -204,7 +207,7 @@ class Sound extends EventDispatcher {
 
 		if (pan != 0) {
 			throw ":TODO: use spacial plugin";
-		} 
+		}
 		this.numberOfLoopsRemaining = loops;
 		__sound.volume(sndTransform.volume);
 		__sound.loop(true);
