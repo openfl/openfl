@@ -203,8 +203,6 @@ class Sound extends EventDispatcher {
 
 		var pan = sndTransform.pan;
 
-		// Hack to fix sound balance
-
 		if (pan != 0) {
 			throw ":TODO: use spacial plugin";
 		}
@@ -273,8 +271,8 @@ class Sound extends EventDispatcher {
 
 		#if html5
 		if(__sound != null) {
-				return __sound.duration();
-			}
+			return __sound.duration();
+		}
 		#end
 
 		return 0;
