@@ -721,40 +721,52 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __updateCachedBitmapFn (renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
 
-		if (__cachedBitmapBounds == null) {
-			__cachedBitmapBounds = new Rectangle ();
+		var symbol = getSymbol();
+
+		if (symbol != null && symbol.useUniqueSharedBitmapCache && symbol.uniqueSharedCachedBitmap != null) {
+
+			__cachedBitmap = symbol.uniqueSharedCachedBitmap;
+			forbidCachedBitmapUpdate = true;
+
+		} else {
+
+			if (__cachedBitmapBounds == null) {
+				__cachedBitmapBounds = new Rectangle ();
+			}
+
+			if (__cachedBitmap == null) {
+				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			}
+
+			__cacheBitmapFn (__cachedBitmap, __cachedBitmapBounds, renderSession, maskBitmap, maskMatrix);
+
+			if(symbol != null && symbol.useUniqueSharedBitmapCache) {
+				symbol.uniqueSharedCachedBitmap = __cachedBitmap;
+			}
 		}
+
+	}
+
+	public function __cacheBitmapFn (cachedBitmapData:BitmapData, cachedBitmapBounds:Rectangle, renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
 
 		var padding:Int = __cachedBitmapPadding;
 
-		__getRenderBounds (__cachedBitmapBounds);
+		__getRenderBounds (cachedBitmapBounds);
 
-		if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
+		if (cachedBitmapBounds.width <= 0 && cachedBitmapBounds.height <= 0) {
 			return;
-		}
-
-		var symbol = getSymbol();
-
-		if(symbol != null && symbol.useUniqueSharedBitmapCache && symbol.uniqueSharedCachedBitmap != null) {
-			__cachedBitmap = symbol.uniqueSharedCachedBitmap;
-			forbidCachedBitmapUpdate = true;
-			return;
-		}
-
-		if (__cachedBitmap == null) {
-			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 		}
 
 		var bounds = Rectangle.pool.get ();
 		__getBounds (bounds);
-		var width = Math.ceil (__cachedBitmapBounds.width) + 2 * padding;
-		var height = Math.ceil (__cachedBitmapBounds.height) + 2 * padding;
-		@:privateAccess __cachedBitmap.__resize (bounds.width, bounds.height, width, height);
+		var width = Math.ceil (cachedBitmapBounds.width) + 2 * padding;
+		var height = Math.ceil (cachedBitmapBounds.height) + 2 * padding;
+		@:privateAccess cachedBitmapData.__resize (bounds.width, bounds.height, width, height);
 		Rectangle.pool.put (bounds);
 
 		var transform = Matrix.pool.get ();
 		transform.copyFrom (__renderTransform);
-		transform.translate (padding - Math.ffloor(__cachedBitmapBounds.x), padding - Math.ffloor(__cachedBitmapBounds.y));
+		transform.translate (padding - Math.ffloor(cachedBitmapBounds.x), padding - Math.ffloor(cachedBitmapBounds.y));
 
 		var maskTransform:Matrix = null;
 
@@ -770,7 +782,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var shader = __shader;
 		this.__shader = null;
 		renderSession.maskManager.pushMask (null);
-		@:privateAccess __cachedBitmap.__drawGL (renderSession, this, transform, true, false, true, maskBitmap, maskTransform);
+		@:privateAccess cachedBitmapData.__drawGL (renderSession, this, transform, true, false, true, maskBitmap, maskTransform);
 		renderSession.maskManager.popMask ();
 
 		if (maskMatrix != null) {
@@ -782,7 +794,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateCachedBitmap = false;
 
 		if (__updateFilters) {
-			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap);
+			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, cachedBitmapData);
 			__updateFilters = false;
 
 			#if(profile && js)
@@ -796,20 +808,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var renderToLocalMatrix = Matrix.pool.get ();
 		renderToLocalMatrix.copyFrom (transform);
 		renderToLocalMatrix.invert ();
-		@:privateAccess __cachedBitmap.__renderToLocalMatrix.copyFrom (renderToLocalMatrix);
+		@:privateAccess cachedBitmapData.__renderToLocalMatrix.copyFrom (renderToLocalMatrix);
 		Matrix.pool.put (renderToLocalMatrix);
 		Matrix.pool.put (transform);
-
-		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
-			symbol.uniqueSharedCachedBitmap = __cachedBitmap;
-		}
 	}
 
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if ( ( __updateCachedBitmap || __updateFilters ) && ( !forbidCachedBitmapUpdate || __cachedBitmap == null ) ) {
 
- 			__updateCachedBitmapFn (renderSession);
+			__updateCachedBitmapFn (renderSession);
 
 		}
 
