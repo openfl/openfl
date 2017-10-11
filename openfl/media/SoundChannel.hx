@@ -85,7 +85,6 @@ import openfl.media.Sound;
 		#if !html5
 		__source.dispose ();
 		#else
-		__soundInstance.stop ();
 		__soundInstance = null;
 		#end
 

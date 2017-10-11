@@ -109,22 +109,25 @@ class Sound extends EventDispatcher {
 			__sound = __registeredSounds[soundName].get();
 		}
 
+		var logicalPath = lime.Assets.getLogicalPath(soundName);
+		var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
+		var data:Dynamic = null;
+
+		if ( spriteOptions != null && spriteOptions.start != null && spriteOptions.duration != null )
+		{
+			itHasSoundSprite = true;
+		}
+
 		if ( __sound == null ) {
 
-			var logicalPath = lime.Assets.getLogicalPath(soundName);
-			var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
-			var data:Dynamic = null;
-
-			if ( spriteOptions != null && spriteOptions.start != null && spriteOptions.duration != null )
-			{
-				itHasSoundSprite = true;
+			if ( itHasSoundSprite ) {
 				data = {
 						src:soundName,
 					sprite:{clip : [spriteOptions.start, spriteOptions.duration]},
 					onload:howler_onFileLoad,
 					onloaderror:howler_onFileError
 				};
-			}else {
+			} else {
 				data = {
 						src:soundName,
 					onload:howler_onFileLoad,
@@ -139,6 +142,7 @@ class Sound extends EventDispatcher {
 				onStop();
 			} else {
 				Reflect.setField(__sound, "__itIsInPool", false);
+				trace('Loading sound at runtime! $soundName');
 			}
 
 		}
@@ -209,6 +213,8 @@ class Sound extends EventDispatcher {
 		this.numberOfLoopsRemaining = loops;
 		__sound.volume(sndTransform.volume);
 		__sound.loop(true);
+		__sound.off("end");
+		__sound.off("stop");
 		__sound.on("end", onEndSound);
 		__sound.on("stop", onStop);
 		__sound.seek(Std.int (startTime)); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
@@ -229,7 +235,7 @@ class Sound extends EventDispatcher {
 		this.numberOfLoopsRemaining--;
 		if(this.numberOfLoopsRemaining <= 0) {
 			Reflect.setField(__sound, "__itIsInPool", true);
-			__sound.pause();
+			__sound.stop();
 		}
 	}
 
@@ -318,7 +324,8 @@ class Sound extends EventDispatcher {
 	public function volume (vol:Float = null, id:Int = null): Dynamic;
 	public function loop (loop:Bool = null, id:Int = null): Dynamic;
 	public function seek (rate:Int = null, id:Int = null): Dynamic;
-	public function on (event:String, fct:Dynamic, id:Int = null, once:Int = null): Howl;
+	public function on (event:String, fct:Dynamic, id:Int = null): Howl;
+	public function off (event:String, fct:Dynamic = null, id:Int = null): Howl;
 	public function unload (): Void;
 	public function duration (id:Int = null): Int;
 }
