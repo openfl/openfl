@@ -1315,7 +1315,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 			if (__isHTML) {
 
-				__updateText (HtmlParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
+				__updateText (HTMLParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
 
 			}
 
