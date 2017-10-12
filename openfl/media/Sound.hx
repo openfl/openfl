@@ -107,6 +107,9 @@ class Sound extends EventDispatcher {
 				}
 			#end
 			__sound = __registeredSounds[soundName].get();
+			if ( __sound != null ) {
+				Reflect.setField(__sound, "__itIsInPool", false);
+			}
 		}
 
 		var logicalPath = lime.Assets.getLogicalPath(soundName);
@@ -122,7 +125,7 @@ class Sound extends EventDispatcher {
 
 			if ( itHasSoundSprite ) {
 				data = {
-						src:soundName,
+					src:soundName,
 					sprite:{clip : [spriteOptions.start, spriteOptions.duration]},
 					onload:howler_onFileLoad,
 					onloaderror:howler_onFileError
@@ -138,10 +141,10 @@ class Sound extends EventDispatcher {
 			__sound = new Howl(data);
 
 			if ( preload ) {
-				Reflect.setField(__sound, "__itIsInPool", true);
+				Reflect.setField(__sound, "__itShouldBePooled", true);
 				onStop();
 			} else {
-				Reflect.setField(__sound, "__itIsInPool", false);
+				Reflect.setField(__sound, "__itShouldBePooled", false);
 				trace('Loading sound at runtime! $soundName');
 			}
 
@@ -234,13 +237,15 @@ class Sound extends EventDispatcher {
 	public function onEndSound() {
 		this.numberOfLoopsRemaining--;
 		if(this.numberOfLoopsRemaining <= 0) {
-			Reflect.setField(__sound, "__itIsInPool", true);
+			Reflect.setField(__sound, "__itShouldBePooled", true);
 			__sound.stop();
 		}
 	}
 
 	public function onStop() {
-		if ( Reflect.field(__sound, "__itIsInPool") == true ) {
+		if ( Reflect.field(__sound, "__itShouldBePooled") && !Reflect.field(__sound, "__itIsInPool")) {
+			Reflect.setField(__sound, "__itIsInPool", true);
+			Reflect.setField(__sound, "__itShouldBePooled", false);
 			__registeredSounds[soundName].put(__sound);
 		}
 	}
