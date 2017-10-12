@@ -190,8 +190,8 @@ private class Sprite {
                     idRenderTransformMap[frameObject.id] = Matrix.pool.get();
                 }
 
-                idTransformMap[frameObject.id].copyFrom(localTransform.clone ());
-                idRenderTransformMap[frameObject.id].copyFrom(childRenderTransform.clone ());
+                idTransformMap[frameObject.id].copyFrom(localTransform);
+                idRenderTransformMap[frameObject.id].copyFrom(childRenderTransform);
                 idSymbolMap[frameObject.id] = frameObject.symbol;
             } else {
                 if(isSprite) {
