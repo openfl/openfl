@@ -753,7 +753,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__getRenderBounds (cachedBitmapBounds);
 
-		if (cachedBitmapBounds.width <= 0 && cachedBitmapBounds.height <= 0) {
+		if (cachedBitmapBounds.width <= 0 || cachedBitmapBounds.height <= 0) {
 			return;
 		}
 
