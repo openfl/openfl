@@ -19,13 +19,13 @@ class MovieClipPreprocessor {
     static var currentJob:JobContext = null;
     public static var globalTimeSliceMillisecondCount = 10;
 
-    static public function process(movieclip : MovieClip, cachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null, priority:Int = 0) {
+    static public function process(movieclip : MovieClip, cachePrecision:Int = 100, translationCachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null, priority:Int = 0) {
         var symbol = movieclip.getSymbol ();
 
         if (symbol != null) {
             var swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
             @:privateAccess movieclip.__getWorldTransform ();
-            jobTable.push (new JobContext (cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision, priority) );
+            jobTable.push (new JobContext (cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision, translationCachePrecision, priority) );
             jobTable.sort (function (first:JobContext, second:JobContext) { return @:privateAccess second.priority - @:privateAccess first.priority; });
 
             processNextJob ();
@@ -39,11 +39,14 @@ class MovieClipPreprocessor {
                 currentJob.process ();
             } else {
                 currentJob = null;
+                #if dev
+                    trace("No more job.");
+                #end
             }
         }
     }
 
-    static public function renderCompleteFromSymbol(spriteSymbol:SpriteSymbol, swflite:SWFLite, cachePrecision:Int = 100, ?parent:DisplayObjectContainer, timeSliceMillisecondCount = null)
+    static public function renderCompleteFromSymbol(spriteSymbol:SpriteSymbol, swflite:SWFLite, cachePrecision:Int = 100, translationCachePrecision:Int = 100, ?parent:DisplayObjectContainer, timeSliceMillisecondCount = null)
     {
         var tempClip = new format.swf.lite.MovieClip (swflite, spriteSymbol);
 
@@ -53,12 +56,12 @@ class MovieClipPreprocessor {
 
         parent.addChild(tempClip);
 
-        process(tempClip, cachePrecision, timeSliceMillisecondCount);
+        process(tempClip, cachePrecision, translationCachePrecision, timeSliceMillisecondCount);
 
         parent.removeChild(tempClip);
     }
 
-    static public function renderCompleteInstant(clipId:String, cachePrecision:Int = 100, ?parent:DisplayObjectContainer = null)
+    static public function renderCompleteInstant(clipId:String, cachePrecision:Int = 100, translationCachePrecision:Int = 100, ?parent:DisplayObjectContainer = null)
     {
         var tempClip = Assets.getMovieClip(clipId);
 
@@ -68,12 +71,12 @@ class MovieClipPreprocessor {
 
         parent.addChild(tempClip);
 
-        process(tempClip, cachePrecision);
+        process(tempClip, cachePrecision, translationCachePrecision);
 
         parent.removeChild(tempClip);
     }
 
-    static public function renderComplete(clipId:String, cachePrecision:Int = 100, ?parent:DisplayObjectContainer = null, timeSliceMillisecondCount = null)
+    static public function renderComplete(clipId:String, cachePrecision:Int = 100, translationCachePrecision:Int = 100, ?parent:DisplayObjectContainer = null, timeSliceMillisecondCount = null)
     {
         if ( timeSliceMillisecondCount == null ) {
             timeSliceMillisecondCount = globalTimeSliceMillisecondCount;
@@ -87,7 +90,7 @@ class MovieClipPreprocessor {
 
         parent.addChild(tempClip);
 
-        process(tempClip, cachePrecision, timeSliceMillisecondCount);
+        process(tempClip, cachePrecision, translationCachePrecision, timeSliceMillisecondCount);
 
         parent.removeChild(tempClip);
     }
@@ -237,6 +240,7 @@ class JobContext {
     private var timeSliceMillisecondCount:Int;
     private var useDelay:Bool;
     private var cachePrecision:Int;
+    private var translationCachePrecision:Int;
     private var priority:Int;
     private var swf:SWFLite;
     private var startTime:Int;
@@ -244,12 +248,13 @@ class JobContext {
 
     public var done(default, null):Bool = false;
 
-    public function new (symbol:SpriteSymbol, swf:SWFLite, baseTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, priority:Int) {
+    public function new (symbol:SpriteSymbol, swf:SWFLite, baseTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, translationCachePrecision:Int, priority:Int) {
         this.symbol= symbol;
         this.swf= swf;
         this.useDelay = useDelay;
         this.timeSliceMillisecondCount = timeSliceMillisecondCount;
         this.cachePrecision = cachePrecision;
+        this.translationCachePrecision = translationCachePrecision;
         this.priority = priority;
         mainSprite = new Sprite(symbol);
         mainSprite.dispose();
@@ -357,6 +362,7 @@ class JobContext {
             for (entry in shapeTable) {
                 var shapeSymbol = entry.symbol;
                 shapeSymbol.cachePrecision = cachePrecision;
+                shapeSymbol.translationCachePrecision = translationCachePrecision;
                 shapeSymbol.useBitmapCache = true;
             }
             for (entry in morphShapeToProcessTable) {
