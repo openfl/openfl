@@ -1,3 +1,13 @@
+6.2.2 (10/12/2017)
+------------------
+
+* Fixed support for using static initialization with bitmap filters
+* Fixed world transform values when nesting `cacheAsBitmap` objects
+* Fixed the behavior of using `tilemap.addTile` multiple times with the same tile
+* Fixed the rendering of `Tilemap` using HTML5 -Ddom rendering
+* Fixed conversion of SWF assets if a SWF class name is not found
+
+
 6.2.1 (10/10/2017)
 ------------------
 
