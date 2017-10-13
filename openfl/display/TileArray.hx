@@ -214,6 +214,13 @@ import openfl.Vector;
 				
 				if (id > -1) {
 					
+					if (id >= tileset.__data.length) {
+						
+						__skipTile (i, offset);
+						continue;
+						
+					}
+					
 					tileData = tileset.__data[id];
 					
 					if (tileData == null) {
@@ -233,6 +240,14 @@ import openfl.Vector;
 				} else {
 					
 					tileRect = this.rect;
+					
+					if (tileRect == null) {
+						
+						__skipTile (i, offset);
+						continue;
+						
+					}
+					
 					tileWidth = tileRect.width;
 					tileHeight = tileRect.height;
 					
