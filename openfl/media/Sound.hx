@@ -10,20 +10,22 @@ import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
-import openfl.ObjectPool;
 
 @:autoBuild(openfl.Assets.embedSound())
-
+@:allow(openfl.media.SoundChannel)
 
 class Sound extends EventDispatcher {
 
 
 	#if html5
-	private static var __registeredSounds = new Map<String, ObjectPool<Howl>> ();
+	private static var __registeredSounds = new Map<String, Howl> ();
 	private var numberOfLoopsRemaining:Int;
 	private var soundName:String;
 	private var __sound:Howl;
 	private var itHasSoundSprite:Bool = false;
+	private var __soundId:Int;
+	#else
+	private var __sound:AudioSource;
 	#end
 
 	public var bytesLoaded (default, null):Int;
@@ -34,7 +36,6 @@ class Sound extends EventDispatcher {
 	public var url (default, null):String;
 
 	private var __buffer:AudioBuffer;
-
 
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null) {
 
@@ -89,7 +90,7 @@ class Sound extends EventDispatcher {
 	}
 
 
-	public function load (stream:URLRequest, context:SoundLoaderContext = null, preload:Bool = false):Void {
+	public function load (stream:URLRequest, context:SoundLoaderContext = null, poolAmount:Int=5, preloader:Bool=false):Void {
 
 		#if !html5
 
@@ -98,18 +99,15 @@ class Sound extends EventDispatcher {
 		#else
 
 		soundName = stream.url;
-		if ( !__registeredSounds.exists(soundName) ) {
-			__registeredSounds[soundName] = new ObjectPool<Howl>(function() { return null;});
-		} else if (!preload) {
+		if ( __registeredSounds.exists(soundName) ) {
 			#if dev
 				if ( __sound != null ) {
 					throw ":TODO:";
 				}
 			#end
-			__sound = __registeredSounds[soundName].get();
-			if ( __sound != null ) {
-				Reflect.setField(__sound, "__itIsInPool", false);
-			}
+			__sound = __registeredSounds[soundName];
+		} else if ( !preloader ) {
+			throw "All sounds should have been registered in preloader!";
 		}
 
 		var logicalPath = lime.Assets.getLogicalPath(soundName);
@@ -128,26 +126,21 @@ class Sound extends EventDispatcher {
 					src:soundName,
 					sprite:{clip : [spriteOptions.start, spriteOptions.duration]},
 					onload:howler_onFileLoad,
-					onloaderror:howler_onFileError
+					onloaderror:howler_onFileError,
+					pool:poolAmount
 				};
 			} else {
 				data = {
-						src:soundName,
+					src:soundName,
 					onload:howler_onFileLoad,
-					onloaderror:howler_onFileError
+					onloaderror:howler_onFileError,
+					pool:poolAmount
 				};
 			}
 
 			__sound = new Howl(data);
 
-			if ( preload ) {
-				Reflect.setField(__sound, "__itShouldBePooled", true);
-				onStop();
-			} else {
-				Reflect.setField(__sound, "__itShouldBePooled", false);
-				trace('Loading sound at runtime! $soundName');
-			}
-
+			__registeredSounds[soundName] = __sound;
 		}
 		#end
 
@@ -198,7 +191,8 @@ class Sound extends EventDispatcher {
 		source.offset = Std.int (startTime * 1000);
 		if (loops > 1) source.loops = loops - 1;
 		if (sndTransform != null) source.gain = sndTransform.volume;
-		return SoundChannel.__create (source);
+		__sound = source;
+		return SoundChannel.__create (this);
 
 		#else
 
@@ -214,39 +208,44 @@ class Sound extends EventDispatcher {
 			throw ":TODO: use spacial plugin";
 		}
 		this.numberOfLoopsRemaining = loops;
-		__sound.volume(sndTransform.volume);
-		__sound.loop(true);
-		__sound.off("end");
-		__sound.off("stop");
-		__sound.on("end", onEndSound);
-		__sound.on("stop", onStop);
-		__sound.seek(Std.int (startTime)); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
 		if(itHasSoundSprite) {
-			__sound.play('clip');
+			__soundId = __sound.play('clip');
 		}else {
-			__sound.play();
+			__soundId = __sound.play();
 		}
 
-		return SoundChannel.__create (__sound);
+		__sound.volume(sndTransform.volume, __soundId);
+		__sound.loop(loops > 1, __soundId);
+		__sound.on("end", onEnd, __soundId);
+		__sound.seek(Std.int (startTime), __soundId); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
+
+
+		return SoundChannel.__create (this);
 
 		#end
 
 	}
 
-	#if html5
-	public function onEndSound() {
-		this.numberOfLoopsRemaining--;
-		if(this.numberOfLoopsRemaining <= 0) {
-			Reflect.setField(__sound, "__itShouldBePooled", true);
-			__sound.stop();
-		}
+	public function stop() {
+		__sound.stop();
 	}
 
-	public function onStop() {
-		if ( Reflect.field(__sound, "__itShouldBePooled") && !Reflect.field(__sound, "__itIsInPool")) {
-			Reflect.setField(__sound, "__itIsInPool", true);
-			Reflect.setField(__sound, "__itShouldBePooled", false);
-			__registeredSounds[soundName].put(__sound);
+	public function dispose() {
+		#if !html5
+		__sound.dispose ();
+		#else
+		__sound.off("end", null, __soundId);
+		__sound.off("stop", null, __soundId);
+		__sound = null;
+		__soundId = -1;
+		#end
+	}
+
+	#if html5
+	public function onEnd() {
+		this.numberOfLoopsRemaining--;
+		if(this.numberOfLoopsRemaining <= 0) {
+			__sound.stop(__soundId);
 		}
 	}
 	#end
@@ -282,7 +281,7 @@ class Sound extends EventDispatcher {
 
 		#if html5
 		if(__sound != null) {
-			return __sound.duration();
+			return __sound.duration(__soundId);
 		}
 		#end
 
@@ -330,6 +329,7 @@ class Sound extends EventDispatcher {
 	public function loop (loop:Bool = null, id:Int = null): Dynamic;
 	public function seek (rate:Int = null, id:Int = null): Dynamic;
 	public function on (event:String, fct:Dynamic, id:Int = null): Howl;
+	public function once (event:String, fct:Dynamic, id:Int = null): Howl;
 	public function off (event:String, fct:Dynamic = null, id:Int = null): Howl;
 	public function unload (): Void;
 	public function duration (id:Int = null): Int;

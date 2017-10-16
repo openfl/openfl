@@ -74,20 +74,16 @@ class Preloader extends LimePreloader {
 			var patchedSoundName = soundName + ".m4a";
 			var logicalName = lime.Assets.getLogicalPath(patchedSoundName);
 			var soundOptions = lime.Assets.getExtraSoundOptions(logicalName);
-			var loopCount = 1;
+			var preloadCount = 5;
 			if ( soundOptions != null ) {
 				if ( soundOptions.preload != null ) {
-					loopCount = soundOptions.preload;
-					total += loopCount - 1;
+					preloadCount = soundOptions.preload;
 				}
 			}
-			for(i in 0...loopCount) {
-				var sound = new Sound ();
-				sound.addEventListener (Event.COMPLETE, sound_onComplete);
-				sound.addEventListener (IOErrorEvent.IO_ERROR, sound_onIOError);
-
-				sound.load (new URLRequest (patchedSoundName), null, true);
-			}
+			var sound = new Sound ();
+			sound.addEventListener (Event.COMPLETE, sound_onComplete);
+			sound.addEventListener (IOErrorEvent.IO_ERROR, sound_onIOError);
+			sound.load (new URLRequest (patchedSoundName), null, preloadCount, true);
 
 		}
 
@@ -145,7 +141,7 @@ class Preloader extends LimePreloader {
 
 
 	#if (js && html5)
-	@:noCompletion private function sound_onComplete (event:Event):Void {
+	@:noCompletion private function sound_onComplete ():Void {
 
 		loaded++;
 
