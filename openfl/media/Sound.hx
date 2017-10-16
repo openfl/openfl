@@ -110,6 +110,10 @@ class Sound extends EventDispatcher {
 			throw "All sounds should have been registered in preloader!";
 		}
 
+		if ( poolAmount < 5 ) {
+			poolAmount = 5;
+		}
+
 		var logicalPath = lime.Assets.getLogicalPath(soundName);
 		var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
 		var data:Dynamic = null;
@@ -217,7 +221,9 @@ class Sound extends EventDispatcher {
 		__sound.volume(sndTransform.volume, __soundId);
 		__sound.loop(loops > 1, __soundId);
 		__sound.on("end", onEnd, __soundId);
-		__sound.seek(Std.int (startTime), __soundId); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
+		if ( startTime != 0 ) {
+			__sound.seek(Std.int (startTime), __soundId); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
+		}
 
 
 		return SoundChannel.__create (this);
@@ -227,7 +233,7 @@ class Sound extends EventDispatcher {
 	}
 
 	public function stop() {
-		__sound.stop();
+		__sound.stop(__soundId);
 	}
 
 	public function dispose() {
@@ -236,8 +242,6 @@ class Sound extends EventDispatcher {
 		#else
 		__sound.off("end", null, __soundId);
 		__sound.off("stop", null, __soundId);
-		__sound = null;
-		__soundId = -1;
 		#end
 	}
 

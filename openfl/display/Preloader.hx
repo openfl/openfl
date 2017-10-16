@@ -9,6 +9,7 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.Lib;
+import openfl.media.SoundTransform;
 
 
 class Preloader extends LimePreloader {
@@ -69,12 +70,13 @@ class Preloader extends LimePreloader {
 
 		}
 
+		var mutedTransform = new SoundTransform(0);
 		for (soundName in sounds) {
 
 			var patchedSoundName = soundName + ".m4a";
 			var logicalName = lime.Assets.getLogicalPath(patchedSoundName);
 			var soundOptions = lime.Assets.getExtraSoundOptions(logicalName);
-			var preloadCount = 5;
+			var preloadCount = null;
 			if ( soundOptions != null ) {
 				if ( soundOptions.preload != null ) {
 					preloadCount = soundOptions.preload;
@@ -84,7 +86,11 @@ class Preloader extends LimePreloader {
 			sound.addEventListener (Event.COMPLETE, sound_onComplete);
 			sound.addEventListener (IOErrorEvent.IO_ERROR, sound_onIOError);
 			sound.load (new URLRequest (patchedSoundName), null, preloadCount, true);
-
+			if ( preloadCount != null ) {
+				for(i in 0...preloadCount) {
+					sound.play(mutedTransform);
+				}
+			}
 		}
 
 		#end
