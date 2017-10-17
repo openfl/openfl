@@ -403,6 +403,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__graphics != null && __mustRefreshGraphicsCounter > 0) {
 			if (--__mustRefreshGraphicsCounter == 0) {
+				__setRenderDirty ();
 				__graphics.dirty = true;
 			}
 		}
