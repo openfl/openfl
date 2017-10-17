@@ -740,6 +740,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			__cacheBitmapFn (__cachedBitmap, __cachedBitmapBounds, renderSession, maskBitmap, maskMatrix);
 
+			__updateCachedBitmap = false;
+			__updateFilters = false;
+
 			if(symbol != null && symbol.useUniqueSharedBitmapCache) {
 				symbol.uniqueSharedCachedBitmap = __cachedBitmap;
 			}
@@ -791,11 +794,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		this.__shader = shader;
 
-		__updateCachedBitmap = false;
-
 		if (__updateFilters) {
 			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, cachedBitmapData);
-			__updateFilters = false;
 
 			#if(profile && js)
 				var profileId = getProfileId();
