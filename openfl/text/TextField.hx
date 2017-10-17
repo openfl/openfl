@@ -987,7 +987,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			default:
 				
 				for (font in Font.enumerateFonts ()) {
-					
+
 					if (font.fontName == format.font) {
 						
 						found = true;
@@ -1003,12 +1003,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			// perform inexact font match
 			// enables shared font class names to match human-friendly names
 
-			var alpha = ~/[^a-zA-Z]+/;
+			var alpha = ~/[^a-zA-Z]+/g;
 
 			var sanitizedSymbolFontName = alpha.replace (symbol.fontName, "").toLowerCase ();
 			
 			for (font in Font.enumerateFonts ()) {
-				
+
 				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length).toLowerCase() == sanitizedSymbolFontName) {
 					
 					format.font = font.fontName;
