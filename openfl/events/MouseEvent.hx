@@ -3,7 +3,7 @@ package openfl.events; #if !openfl_legacy
 
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
-
+import openfl.display.Stage;
 
 class MouseEvent extends Event {
 
@@ -44,6 +44,8 @@ class MouseEvent extends Event {
 	public var shiftKey:Bool;
 	public var stageX:Float;
 	public var stageY:Float;
+	public var scaledStageX:Float;
+	public var scaledStageY:Float;
 
 
 	private function new (type:String = "unset", bubbles:Bool = true, cancelable:Bool = false) {
@@ -51,7 +53,7 @@ class MouseEvent extends Event {
 	}
 
 
-	public static function __create (type:String, stageX:Float = 0, stageY:Float = 0, local:Point = null, target:InteractiveObject = null, delta:Int = 0):MouseEvent {
+	public static function __create (type:String, stageX:Float = 0, stageY:Float = 0, local:Point = null, target:InteractiveObject = null, stage:Stage = null, delta:Int = 0):MouseEvent {
 
 		switch (type) {
 
@@ -91,6 +93,10 @@ class MouseEvent extends Event {
 		event.clickCount = 0;
 		event.stageX = stageX;
 		event.stageY = stageY;
+		if ( stage != null ) {
+			event.scaledStageX = stageX * stage.scaleX;
+			event.scaledStageY = stageY * stage.scaleY;
+		}
 		event.target = target;
 
 		return event;
