@@ -1140,7 +1140,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
 						if (filter.__preserveObject) {
-							lastBitmap.draw (bitmapData3);
+							lastBitmap.draw (bitmapData3, null, transform.colorTransform);
 						}
 						filter.__renderDirty = false;
 						
