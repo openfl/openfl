@@ -1005,7 +1005,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (!found) {
 			
-			var alpha = ~/[^a-zA-Z]+/;
+			var alpha = ~/[^a-zA-Z]+/g;
 			
 			for (font in Font.enumerateFonts ()) {
 				
