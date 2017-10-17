@@ -44,8 +44,15 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
     }
 
     public function concat(a:UnshrinkableArray<T>):UnshrinkableArray<T> {
-        this._items.concat(a.getInternalArray().slice(0, a.length));
+        var remainingCount = this._items.length - this._length;
+
+        for (i in 0...remainingCount) {
+            this._items[this._length + i] = a[i];
+        }
+
+        this._items = this._items.concat(a.getInternalArray ().slice(remainingCount));
         this._length += a.length;
+
         return cast this;
     }
 

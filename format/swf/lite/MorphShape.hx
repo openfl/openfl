@@ -1,5 +1,7 @@
 package format.swf.lite;
 
+import openfl.display.Graphics;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import format.swf.lite.symbols.MorphShapeSymbol;
 import flash.display.Shape;
@@ -98,40 +100,49 @@ class MorphShape extends Shape {
         __updateTransforms();
 
 		if(__renderDirty){
-            var cacheEntry = __symbol.getCacheEntry(__renderTransform, ratio);
+			var result = __updateMorphShape(__symbol, ratio, __renderTransform, graphics);
 
-            if(cacheEntry == null) {
-                var twips_ratio = Math.floor(ratio*65535);
-                var handler = __symbol.cachedHandlers.get(twips_ratio);
-                if ( handler == null ) {
-                    var swf_shape = __symbol.getShape(ratio);
-
-                    handler = new ShapeCommandExporter ();
-                    swf_shape.export (handler);
-                    __symbol.cachedHandlers.set(twips_ratio, handler);
-                }
-
-                graphics.clear();
-                ShapeSymbol.processCommands(graphics, handler.commands);
-
-                #if(profile && js)
-                    var profileId = getProfileId();
-                    var value = __updateCount.get(profileId);
-                    value = value != null ? value : 0;
-                    __updateCount.set(profileId, value + 1);
-                #end
-
-                mustCache = true;
-
-            } else {
-                Reflect.setField(graphics, "__bitmap", cacheEntry.bitmapData);
-                Reflect.setField(graphics, "__dirty", false);
-                @:privateAccess graphics.__bounds = cacheEntry.bounds;
-            }
+			if ( result ) {
+				mustCache = true;
+			#if(profile && js)
+				var profileId = getProfileId();
+				var value = __updateCount.get(profileId);
+				value = value != null ? value : 0;
+				__updateCount.set(profileId, value + 1);
+			#end
+			}
 	    }
 
 		super.__update(transformOnly, updateChildren);
     }
+
+	private static function __updateMorphShape(symbol:MorphShapeSymbol, ratio:Float, renderTransform:Matrix, graphics:Graphics) {
+		var cacheEntry = symbol.getCacheEntry(renderTransform, ratio);
+
+		if(cacheEntry == null) {
+			var twips_ratio = Math.floor(ratio*65535);
+			var handler = symbol.cachedHandlers.get(twips_ratio);
+			if ( handler == null ) {
+				var swf_shape = symbol.getShape(ratio);
+
+				handler = new ShapeCommandExporter ();
+				swf_shape.export (handler);
+				symbol.cachedHandlers.set(twips_ratio, handler);
+			}
+
+			graphics.clear();
+			ShapeSymbol.processCommands(graphics, handler.commands);
+
+			return true;
+
+		} else {
+			Reflect.setField(graphics, "__bitmap", cacheEntry.bitmapData);
+			Reflect.setField(graphics, "__dirty", false);
+			@:privateAccess graphics.__bounds = cacheEntry.bounds;
+
+			return false;
+		}
+	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 
