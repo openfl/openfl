@@ -73,14 +73,7 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		return new IntMap<V> ();
 		
 	}
-
 	
-	@:to static inline function toFloatMap<K:Float,V> (t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V> {
-		
-		return new FloatMap<K, V> ();
-		
-	}
-
 	
 	@:to static function toFloatMap<K:Float,V> (t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V> {
 		
@@ -130,13 +123,6 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		
 	}
 	
-
-	@:from static inline function fromFloatMap<K:Float, V> (map:FloatMap<K, V>):Dictionary<K, V> {
-		
-		return cast map;
-		
-	}
-
 	
 	@:from static inline function fromFloatMap<K:Float, V> (map:FloatMap<K, V>):Dictionary<K, V> {
 		

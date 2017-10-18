@@ -109,13 +109,14 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
-			child.__dispatchWithCapture(event);
+			child.__dispatchWithCapture (event);
 			
 			if (addedToStage) {
-
-				var addToStageEvent: Event = new Event (Event.ADDED_TO_STAGE, false, false);
-				child.__dispatchWithCapture(addToStageEvent);
-				child.__dispatchChildren(addToStageEvent);
+				
+				var event = new Event (Event.ADDED_TO_STAGE, false, false);
+				child.__dispatchWithCapture (event);
+				child.__dispatchChildren (event);
+				
 			}
 			
 		}
@@ -202,8 +203,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
 			__setRenderDirty();
-
-			var event: Event = new Event (Event.REMOVED, true);
+			
+			var event = new Event (Event.REMOVED, true);
 			child.__dispatchWithCapture (event);
 			
 			if (stage != null) {
@@ -213,9 +214,10 @@ class DisplayObjectContainer extends InteractiveObject {
 					stage.focus = null;
 					
 				}
-				var  removedFromStageEvent: Event = new Event (Event.REMOVED_FROM_STAGE, false, false);
-				child.__dispatchWithCapture(removedFromStageEvent);
-				child.__dispatchChildren(removedFromStageEvent);
+				
+				var event = new Event (Event.REMOVED_FROM_STAGE, false, false);
+				child.__dispatchWithCapture (event);
+				child.__dispatchChildren (event);
 				child.__setStageReference (null);
 				
 			}
@@ -347,21 +349,25 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __dispatchChildren (event:Event):Void {
+		
 		if (__children != null) {
 			
 			for (child in __children) {
-
+				
 				event.target = child;
-
-				if (!child.__dispatchWithCapture(event)) {
+				
+				if (!child.__dispatchWithCapture (event)) {
 					
 					break;
+					
 				}
-				child.__dispatchChildren(event);
+				
+				child.__dispatchChildren (event);
 				
 			}
 			
 		}
+		
 	}
 	
 	

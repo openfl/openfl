@@ -59,8 +59,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
-	private static var __displayObjectStackPool = new ObjectPool<Array<DisplayObject>>(function () return new Array<DisplayObject> (), function (stack) stack.splice (0, stack.length));
-
+	private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
+	
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
@@ -214,8 +214,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			touchEvent.stageY = __getRenderTransform ().__transformY (touchEvent.localX, touchEvent.localY);
 			
 		}
-
-		return __dispatchWithCapture(event);
+		
+		return __dispatchWithCapture (event);
 		
 	}
 	
@@ -369,53 +369,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchWithCapture (event:Event): Bool {
-
-		if (event.target == null) {
-			event.target = this;
-		}
-		
-		if (parent != null) {
-			
-			event.eventPhase = CAPTURING_PHASE;
-			
-			if (parent == stage) {
-				
-				parent.__dispatch (event);
-				
-			} else {
-				
-				var stack: Array<DisplayObject> = __displayObjectStackPool.get();
-				var parent = parent;
-				var i = 0;
-				
-				while (parent != null) {
-
-					stack[i] = parent;
-					parent = parent.parent;
-					i++;
-					
-				}
-				
-				for (j in 0...i) {
-
-					stack[i - j - 1].__dispatch (event);
-					
-				}
-
-				__displayObjectStackPool.release(stack);
-
-			}
-
-		}
-
-		event.eventPhase = AT_TARGET;
-
-		return __dispatchEvent(event);
-
-	}
-
 	private function __dispatchChildren (event:Event):Void {
+		
+		
+		
 	}
 	
 	
@@ -508,6 +465,55 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 		}
+		
+	}
+	
+	
+	private function __dispatchWithCapture (event:Event):Bool {
+		
+		if (event.target == null) {
+			
+			event.target = this;
+			
+		}
+		
+		if (parent != null) {
+			
+			event.eventPhase = CAPTURING_PHASE;
+			
+			if (parent == stage) {
+				
+				parent.__dispatch (event);
+				
+			} else {
+				
+				var stack = __tempStack.get ();
+				var parent = parent;
+				var i = 0;
+				
+				while (parent != null) {
+					
+					stack[i] = parent;
+					parent = parent.parent;
+					i++;
+					
+				}
+				
+				for (j in 0...i) {
+					
+					stack[i - j - 1].__dispatch (event);
+					
+				}
+				
+				__tempStack.release (stack);
+				
+			}
+			
+		}
+		
+		event.eventPhase = AT_TARGET;
+		
+		return __dispatchEvent (event);
 		
 	}
 	
