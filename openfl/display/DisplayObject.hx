@@ -3,6 +3,7 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
+import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -58,7 +59,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
-	
+	private static var __displayObjectStackPool = new ObjectPool<Array<DisplayObject>>(function () return new Array<DisplayObject> (), function (stack) stack.splice (0, stack.length));
+
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
@@ -158,14 +160,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();
-		
+		__renderTransform = new Matrix ();		
 		#if dom
 		__worldVisible = true;
 		#end
-		
+
 		name = "instance" + (++__instanceCount);
-		
+
 	}
 	
 	
@@ -213,8 +214,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			touchEvent.stageY = __getRenderTransform ().__transformY (touchEvent.localX, touchEvent.localY);
 			
 		}
-		
-		return super.dispatchEvent (event);
+
+		return __dispatchWithCapture(event);
 		
 	}
 	
@@ -368,9 +369,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
-		
-		event.target = this;
+	private function __dispatchWithCapture (event:Event): Bool {
+
+		if (event.target == null) {
+			event.target = this;
+		}
 		
 		if (parent != null) {
 			
@@ -378,15 +381,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (parent == stage) {
 				
-				parent.__dispatchEvent (event);
+				parent.__dispatch (event);
 				
 			} else {
 				
+				var stack: Array<DisplayObject> = __displayObjectStackPool.get();
 				var parent = parent;
 				var i = 0;
 				
 				while (parent != null) {
-					
+
 					stack[i] = parent;
 					parent = parent.parent;
 					i++;
@@ -394,24 +398,29 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				}
 				
 				for (j in 0...i) {
-					
-					stack[i - j - 1].__dispatchEvent (event);
+
+					stack[i - j - 1].__dispatch (event);
 					
 				}
-				
+
+				__displayObjectStackPool.release(stack);
+
 			}
-			
+
 		}
-		
+
 		event.eventPhase = AT_TARGET;
-		
-		return __dispatchEvent (event);
-		
+
+		return __dispatchEvent(event);
+
+	}
+
+	private function __dispatchChildren (event:Event):Void {
 	}
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-		
+
 		var result = super.__dispatchEvent (event);
 		
 		if (event.__isCanceled) {
