@@ -1003,7 +1003,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var matrix = null, rect = null;
 			
-			__getWorldTransform ();
+			if (!renderSession.lockTransform) __getWorldTransform ();
 			__update (false, true);
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
@@ -1146,7 +1146,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
 						if (filter.__preserveObject) {
-							lastBitmap.draw (bitmapData3);
+							lastBitmap.draw (bitmapData3, null, transform.colorTransform);
 						}
 						filter.__renderDirty = false;
 						

@@ -16,7 +16,7 @@ import openfl.geom.Rectangle;
 @:final class GlowFilter extends BitmapFilter {
 	
 	
-	private static var __glowShader = new GlowShader ();
+	//private static var __glowShader = new GlowShader ();
 	
 	public var alpha (default, set):Float;
 	public var blurX (default, set):Float;
@@ -76,28 +76,30 @@ import openfl.geom.Rectangle;
 	
 	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
-		var data = __glowShader.data;
+		// var data = __glowShader.data;
 		
-		if (pass <= horizontalPasses) {
+		// if (pass <= horizontalPasses) {
 			
-			var scale = Math.pow (0.5, pass >> 1);
-			data.uRadius.value[0] = blurX * scale;
-			data.uRadius.value[1] = 0;
+		// 	var scale = Math.pow (0.5, pass >> 1);
+		// 	data.uRadius.value[0] = blurX * scale;
+		// 	data.uRadius.value[1] = 0;
 			
-		} else {
+		// } else {
 			
-			var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
-			data.uRadius.value[0] = 0;
-			data.uRadius.value[1] = blurY * scale;
+		// 	var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
+		// 	data.uRadius.value[0] = 0;
+		// 	data.uRadius.value[1] = blurY * scale;
 			
-		}
+		// }
 		
-		data.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-		data.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-		data.uColor.value[2] = (color & 0xFF) / 255;
-		data.uColor.value[3] = alpha;
+		// data.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+		// data.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+		// data.uColor.value[2] = (color & 0xFF) / 255;
+		// data.uColor.value[3] = alpha;
 		
-		return __glowShader;
+		// return __glowShader;
+		
+		return null;
 		
 	}
 	

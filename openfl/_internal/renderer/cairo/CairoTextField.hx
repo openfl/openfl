@@ -6,6 +6,7 @@ import lime.graphics.cairo.CairoAntialias;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.cairo.CairoFontOptions;
 import lime.graphics.cairo.CairoFTFontFace;
+import lime.graphics.cairo.CairoGlyph;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoHintStyle;
 import lime.graphics.cairo.CairoImageSurface;
@@ -282,14 +283,11 @@ class CairoTextField {
 						var y:Float = group.offsetY + group.ascent + scrollY;
 						var j = 0;
 						
-						for (i in group.startIndex...group.endIndex) {
+						for (position in group.positions) {
 							
-							glyphs.push (new lime.graphics.cairo.CairoGlyph (font.getGlyph (text.charAt (i)), x + 0.5, y + 0.5));
-							
-							if (group.advances.length > j) {
-								x += group.advances[j];
-								j++;
-							}
+							if (position == null || position.glyph == 0) continue;
+							glyphs.push (new CairoGlyph (position.glyph, x + 0.5, y + 0.5));
+							x += position.advance.x;
 							
 						}
 						
@@ -308,8 +306,8 @@ class CairoTextField {
 								
 								for (i in 0...(textField.__caretIndex - group.startIndex)) {
 									
-									if (group.advances.length <= i) break;
-									advance += group.advances[i];
+									if (group.positions.length <= i) break;
+									advance += group.getAdvance (i);
 									
 								}
 								

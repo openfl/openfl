@@ -144,6 +144,12 @@ package openfl.net; #if (display || !flash)
 	@:noCompletion @:dox(hide) public var digest:String;
 	#end
 	
+	public var followRedirects:Bool;
+	
+	public var idleTimeout:Float;
+	
+	public var manageCookies:Bool;
+	
 	/**
 	 * Controls the HTTP form submission method.
 	 *
@@ -238,7 +244,7 @@ package openfl.net; #if (display || !flash)
 	 */
 	public var url:String;
 	
-	//public var userAgent:String;
+	public var userAgent:String;
 	
 	
 	/**

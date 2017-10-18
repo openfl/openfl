@@ -17,7 +17,7 @@ import openfl.geom.Rectangle;
 @:final class BlurFilter extends BitmapFilter {
 	
 	
-	private static var __blurShader = new BlurShader ();
+	//private static var __blurShader = new BlurShader ();
 	
 	public var blurX (default, set):Float;
 	public var blurY (default, set):Float;
@@ -59,23 +59,25 @@ import openfl.geom.Rectangle;
 	
 	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
-		var data = __blurShader.data;
+		// var data = __blurShader.data;
 		
-		if (pass <= horizontalPasses) {
+		// if (pass <= horizontalPasses) {
 			
-			var scale = Math.pow (0.5, pass >> 1);
-			data.uRadius.value[0] = blurX * scale;
-			data.uRadius.value[1] = 0;
+		// 	var scale = Math.pow (0.5, pass >> 1);
+		// 	data.uRadius.value[0] = blurX * scale;
+		// 	data.uRadius.value[1] = 0;
 			
-		} else {
+		// } else {
 			
-			var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
-			data.uRadius.value[0] = 0;
-			data.uRadius.value[1] = blurY * scale;
+		// 	var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
+		// 	data.uRadius.value[0] = 0;
+		// 	data.uRadius.value[1] = blurY * scale;
 			
-		}
+		// }
 		
-		return __blurShader;
+		// return __blurShader;
+		
+		return null;
 		
 	}
 	

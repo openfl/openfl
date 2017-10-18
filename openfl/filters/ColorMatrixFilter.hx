@@ -13,7 +13,7 @@ import openfl.geom.Rectangle;
 @:final class ColorMatrixFilter extends BitmapFilter {
 	
 	
-	private static var __colorMatrixShader = new ColorMatrixShader ();
+	//private static var __colorMatrixShader = new ColorMatrixShader ();
 	
 	public var matrix (default, set):Array<Float>;
 	
@@ -100,8 +100,9 @@ import openfl.geom.Rectangle;
 	
 	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
-		__colorMatrixShader.init (matrix);
-		return __colorMatrixShader;
+		return null;
+		//__colorMatrixShader.init (matrix);
+		//return __colorMatrixShader;
 		
 	}
 	
