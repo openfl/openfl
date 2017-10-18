@@ -105,6 +105,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __maskBitmap:Bitmap;
 	private var __maskBitmapData:BitmapData;
 	private var __maskBitmapRender:Bool;
+	private var __maskTransform:Matrix;
 	private var __name:String;
 	private var __objectTransform:Transform;
 	private var __parentMask:DisplayObject;
@@ -149,6 +150,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__alpha = 1;
 		__blendMode = NORMAL;
 		__cacheAsBitmap = false;
+		__maskTransform = new Matrix ();
 		__transform = new Matrix ();
 		__visible = true;
 		
@@ -1255,7 +1257,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			theMask.__update (false, true);
 			
 			var needRender = (__maskBitmap == null || theMask.__renderDirty || (__renderDirty && (force || (__children != null && __children.length > 0))));
-			var updateTransform = (needRender || (!__maskBitmap.__worldTransform.equals (__worldTransform)));
+			var updateTransform = (needRender || (!__maskBitmap.__worldTransform.equals (__worldTransform)) || (!__maskBitmap.__maskTransform.equals (theMask.__worldTransform)));
 			
 			if (updateTransform) {
 				
@@ -1307,7 +1309,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			if (needRender) {
 				
 				__maskBitmap.__worldTransform.copyFrom (__worldTransform);
-				
+				__maskBitmap.__maskTransform.copyFrom( theMask.__worldTransform );
+
 				__maskBitmap.__renderTransform.identity();
 				__maskBitmap.__renderTransform.tx = rect.x;
 				__maskBitmap.__renderTransform.ty = rect.y;
