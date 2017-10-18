@@ -48,7 +48,10 @@ class NetStream extends EventDispatcher {
 		
 		#if (js && html5)
 		__video = cast Browser.document.createElement ("video");
-		
+
+		__video.setAttribute("playsinline", "");
+		__video.setAttribute("webkit-playsinline", "");
+
 		__video.addEventListener ("error", video_onError, false);
 		__video.addEventListener ("waiting", video_onWaiting, false);
 		__video.addEventListener ("ended", video_onEnd, false);
