@@ -71,12 +71,21 @@ class InteractiveObjectTest {
 	
 	@Test public function tabEnabled () {
 		
-		// TODO: Confirm functionality
-		
 		var sprite = new Sprite ();
-		var exists = sprite.tabEnabled;
+		Assert.isFalse (sprite.tabEnabled);
 		
-		Assert.isFalse (exists);
+		sprite.buttonMode = true;
+		Assert.isTrue (sprite.tabEnabled);
+		
+		sprite.tabEnabled = false;
+		Assert.isFalse (sprite.tabEnabled);
+		
+		sprite.buttonMode = false;
+		sprite.buttonMode = true;
+		Assert.isFalse (sprite.tabEnabled);
+		
+		sprite.tabEnabled = true;
+		Assert.isTrue (sprite.tabEnabled);
 		
 	}
 	

@@ -1,0 +1,29 @@
+digraph graphname {
+	node [shape=plaintext];
+n17319[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(17319) BKConditional</td></tr>
+	<tr><td port="e0" align="left">return null</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n17318[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(17318) BKConditional</td></tr>
+	<tr><td port="e0" align="left">return this.value</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n17317[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(17317) BKFunctionEnd</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n17316[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(17316) BKFunctionBegin</td></tr>
+	<tr><td port="e0" align="left">this.ready(waitTime)</td></tr>
+	<tr><td port="e1" align="left">var tmp = this.isComplete</td></tr>
+	<tr><td port="e2" align="left">@:cond-branch tmp</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n1[label=<<table BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<tr><td port="in" bgcolor="lightgray">(1) BKRoot</td></tr>
+	<tr><td port="out"></td></tr>
+</table>>];
+n1:out -> n17316:in[label="CFGFunction"];
+}

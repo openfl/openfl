@@ -1325,7 +1325,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			case MouseEvent.MOUSE_DOWN:
 				
-				if (target.tabEnabled) {
+				if (target.__allowMouseFocus ()) {
 					
 					focus = target;
 					

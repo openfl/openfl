@@ -395,6 +395,28 @@ class TextFieldTest {
 	}
 	
 	
+	@Test public function tabEnabled () {
+		
+		var textField = new TextField ();
+		Assert.isFalse (textField.tabEnabled);
+		
+		textField.type = INPUT;
+		Assert.isTrue (textField.tabEnabled);
+		
+		textField.tabEnabled = false;
+		Assert.isFalse (textField.tabEnabled);
+		
+		textField.type = DYNAMIC;
+		textField.type = INPUT;
+		Assert.isFalse (textField.tabEnabled);
+		
+		textField.type = DYNAMIC;
+		textField.tabEnabled = true;
+		Assert.isTrue (textField.tabEnabled);
+		
+	}
+	
+	
 	@Test public function text () {
 		
 		// TODO: Confirm functionality

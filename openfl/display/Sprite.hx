@@ -178,7 +178,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	private override function get_tabEnabled ():Bool {
 		
-		return (__tabEnabled || buttonMode);
+		return (__tabEnabled == null ? buttonMode : __tabEnabled);
 		
 	}
 	
