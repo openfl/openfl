@@ -90,7 +90,10 @@ class TextField extends InteractiveObject {
 	private var __clickTimer:haxe.Timer;
 	private var __firstDownPos:Point;
 
+	private var __savedScaleAtRefreshGraphics:Point = null;
+
 	private static var __moveDelta:Int = 10;
+	private static var __maxScaleDifferenceBetweenRefreshGraphics:Float = 0.1;
 
 	#if (js && html5)
 	private var __div:DivElement;
@@ -774,7 +777,7 @@ class TextField extends InteractiveObject {
 	public override function __drawGraphicsGL (renderSession:RenderSession):Void {
 
 		CanvasTextField.render (this, renderSession);
-		GLRenderer.renderBitmap (this, renderSession, __mustRefreshGraphicsCounter > 0);
+		GLRenderer.renderBitmap (this, renderSession, __graphics.mustRefreshGraphicsCounter > 0);
 
 	}
 
@@ -930,16 +933,28 @@ class TextField extends InteractiveObject {
 
 	}
 
-	public override function _onWorldTransformScaleRotationChanged():Void {
-		var wasDirty = __graphics.__dirty;
-		super._onWorldTransformScaleRotationChanged();
+	private override function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
+		super.delayGraphicsRefresh(translationChanged, scaleRotationChanged);
+		if ( scaleRotationChanged ) {
+			if ( __savedScaleAtRefreshGraphics == null ) {
+				__savedScaleAtRefreshGraphics = new Point(this.renderScaleX, this.renderScaleY);
+			}
+			var currentScale = Point.pool.get();
+			currentScale.setTo(this.renderScaleX, this.renderScaleY);
+			if ( Math.abs(__savedScaleAtRefreshGraphics.x - currentScale.x) > __maxScaleDifferenceBetweenRefreshGraphics
+			  || Math.abs(__savedScaleAtRefreshGraphics.y - currentScale.y) > __maxScaleDifferenceBetweenRefreshGraphics ) {
+				__savedScaleAtRefreshGraphics.copyFrom(currentScale);
+				__graphics.clearGraphicsCounter();
+			} else {
+				__graphics.resetGraphicsCounter();
+			}
 
-		// :TRICKY: revert graphics.dirty if it was set because of scale/rotation change
-		if (!wasDirty) {
-			__graphics.dirty = false;
-			__mustRefreshGraphicsCounter = DisplayObject.__dirtyGraphicsDelay;
+			Point.pool.put(currentScale);
 		}
+	}
 
+	public override function _onWorldTransformScaleRotationChanged():Void {
+		super._onWorldTransformScaleRotationChanged();
 		__layoutDirty = true;
 	}
 
