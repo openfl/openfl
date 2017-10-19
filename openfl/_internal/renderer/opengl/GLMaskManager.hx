@@ -187,6 +187,10 @@ class GLMaskShader extends Shader {
 
 		"varying float vAlpha;
 		varying vec2 vTexCoord;
+		varying mat4 vColorMultipliers;
+		varying vec4 vColorOffsets;
+
+		uniform bool uColorTransform;
 		uniform sampler2D uImage0;
 		uniform sampler2D uImage1;
 		
@@ -200,9 +204,16 @@ class GLMaskShader extends Shader {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 				
+			} else if (uColorTransform) {
+				
+				color = vec4 (color.rgb / color.a, color.a);
+				color = vColorOffsets + (color * vColorMultipliers);
+				
+				gl_FragColor = vec4 (color.rgb * color.a * vAlpha, color.a * vAlpha);
+				
 			} else {
 				
-				gl_FragColor = color.rgba * vAlpha;
+				gl_FragColor = color * vAlpha;
 				
 			}
 			
