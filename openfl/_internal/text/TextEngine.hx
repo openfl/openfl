@@ -554,8 +554,6 @@ class TextEngine {
 		if (cr == -1) return lf;
 		if (lf == -1) return cr;
 
-        if (cr == -1) return Std.int(Math.min(br, lf));
-
 		return cr < lf ? cr : lf;
 
 	}
@@ -1429,7 +1427,7 @@ class TextEngine {
 
 					nextLayoutGroup (textIndex, formatRange.end);
 					
-					layoutGroup.advances = positions;
+					layoutGroup.positions = positions;
 					layoutGroup.offsetX = offsetX;
 					layoutGroup.ascent = ascent;
 					layoutGroup.descent = descent;

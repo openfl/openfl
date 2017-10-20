@@ -1860,7 +1860,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
         #end
 
     }
-	
+
 	
 	private function set_htmlText (value:String):String {
 		
