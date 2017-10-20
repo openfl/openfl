@@ -1034,7 +1034,7 @@ class TextEngine {
 
                 if (groupEndIndex == textIndex) {
 
-                    if (positions.length > 0 && positions[0] > width - 2 * GUTTER) {
+                    if (positions.length > 0 && #if (js && html5) positions[0] #else positions[0].advance.x #end > width - 2 * GUTTER) {
 
                         // if the textfield is smaller than a single character and
                         groupEndIndex = endIndex + 1;
@@ -1094,7 +1094,7 @@ class TextEngine {
 				if (textIndex <= breakIndex) {
 
                     positions = getPositions (text, textIndex, breakIndex);
-                    widthValue = getPositionsWidth (advances);
+                    widthValue = getPositionsWidth (positions);
 
                     if (wordWrap && previousSpaceIndex <= textIndex && width >= 4) {
 
