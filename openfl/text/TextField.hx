@@ -93,7 +93,7 @@ class TextField extends InteractiveObject {
 	private var __savedScaleAtRefreshGraphics:Point = null;
 
 	private static var __moveDelta:Int = 10;
-	private static var __maxScaleDifferenceBetweenRefreshGraphics:Float = 0.1;
+	private static var __maxScaleDifferenceBetweenRefreshGraphics:Float = 0.4;
 
 	#if (js && html5)
 	private var __div:DivElement;

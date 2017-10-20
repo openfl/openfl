@@ -1189,7 +1189,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				if ( __graphics != null ) {
 					graphicsWasDirty = @:privateAccess __graphics.__dirty;
 				}
-				if(scaleRotationChanged) {
+				if ( scaleRotationChanged ) {
 					_onWorldTransformScaleRotationChanged();
 				}
 
@@ -1205,8 +1205,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	private function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
-		if ( translationChanged && __graphics != null ) {
-			__graphics.resetGraphicsCounter();
+		if ( __graphics != null ) {
+			if ( scaleRotationChanged ) {
+				if ( __graphics != null ) {
+					__graphics.dirty = true;
+				}
+			} else if ( translationChanged ) {
+				__graphics.resetGraphicsCounter();
+			}
 		}
 	}
 
@@ -1214,9 +1220,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
-		if ( __graphics != null ) {
-			__graphics.dirty = true;
-		}
 
 	}
 
