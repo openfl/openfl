@@ -594,7 +594,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 			__textFormat.__merge (format);
 			
-			if (__textEngine.textFormatRanges.length > 1) {
+			if (__textEngine.textFormatRanges.length > 0) {
 				
 				__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
 				

@@ -89,7 +89,7 @@ class HtmlParser {
 
                     if (tagName.toLowerCase () == "p" && textFormatRanges.length > 0) {
 
-                        value += "\n";
+//                        value += "\n";
                         noLineBreak = true;
 
                     }
