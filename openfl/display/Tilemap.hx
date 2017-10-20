@@ -9,9 +9,17 @@ import openfl.geom.Rectangle;
 import openfl.Vector;
 
 #if !flash
+import openfl._internal.renderer.cairo.CairoBitmap;
+import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTilemap;
+import openfl._internal.renderer.canvas.CanvasBitmap;
+import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTilemap;
+import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.dom.DOMTilemap;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLTilemap;
 #end
 
@@ -22,6 +30,7 @@ import openfl._internal.renderer.opengl.GLTilemap;
 
 @:access(openfl.display.Tile)
 @:access(openfl.display.TileArray)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 
 
@@ -70,6 +79,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public function addTile (tile:Tile):Tile {
 		
+		if (tile == null) return null;
+		
+		if (tile.parent == this) {
+			
+			removeTile (tile);
+			
+		}
+		
 		__tiles[numTiles] = tile;
 		tile.parent = this;
 		numTiles++;
@@ -84,12 +101,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public function addTileAt (tile:Tile, index:Int):Tile {
 		
-		var cacheLength = __tiles.length;
+		if (tile == null) return null;
 		
-		removeTile (tile);
-		
-		if (cacheLength > __tiles.length) {
-			index--;
+		if (tile.parent == this) {
+			
+			var cacheLength = __tiles.length;
+			
+			removeTile (tile);
+			
+			if (cacheLength > __tiles.length) {
+				index--;
+			}
+			
 		}
 		
 		__tiles.insertAt (index, tile);
@@ -190,6 +213,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			numTiles--;
 		}
 		
+		if (numTiles <= 0 && __tileArray != null) {
+			__tileArray.length = 0;
+		}
+		
 		#if !flash
 		__setRenderDirty ();
 		#end
@@ -221,6 +248,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		__tileArrayDirty = true;
 		numTiles = __tiles.length;
+		
+		if (numTiles == 0 && __tileArray != null) {
+			__tileArray.length = 0;
+		}
 		
 		#if !flash
 		__setRenderDirty ();
@@ -289,8 +320,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		super.__renderCairo (renderSession);
-		CairoTilemap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			CairoBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			CairoDisplayObject.render (this, renderSession);
+			CairoTilemap.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -298,8 +339,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		super.__renderCanvas (renderSession);
-		CanvasTilemap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			CanvasBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			CanvasDisplayObject.render (this, renderSession);
+			CanvasTilemap.render (this, renderSession);
+			
+		}
 		
 	}
 	
@@ -307,8 +358,21 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
-		super.__renderDOM (renderSession);
-		DOMTilemap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			__renderDOMClear (renderSession);
+			__cacheBitmap.stage = stage;
+			
+			DOMBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			DOMDisplayObject.render (this, renderSession);
+			DOMTilemap.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -334,8 +398,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		super.__renderGL (renderSession);
-		GLTilemap.render (this, renderSession);
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			GLDisplayObject.render (this, renderSession);
+			GLTilemap.render (this, renderSession);
+			
+		}
 		
 	}
 	#end
@@ -344,7 +418,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
 		
-		return;
+		if (filters == null) return;
+		super.__updateCacheBitmap (renderSession, force);
 		
 	}
 	#end

@@ -24,14 +24,18 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	public var align:StageAlign;
-	@:require(flash10_2) public var allowsFullScreen (default, null):Bool;
-	@:require(flash11_3) public var allowsFullScreenInteractive (default, null):Bool;
+	@:require(flash10_2) public var allowsFullScreen (default, never):Bool;
+	@:require(flash11_3) public var allowsFullScreenInteractive (default, never):Bool;
 	public var application (get, never):Application;
 	
 	private inline function get_application ():Application { return Lib.application; }
 	
+	#if air
+	public var autoOrients:Bool;
+	#end
+	
 	#if flash
-	@:require(flash15) public var browserZoomFactor (default, null):Float;
+	@:require(flash15) public var browserZoomFactor (default, never):Float;
 	#end
 	
 	@:require(flash10_2) public var color:UInt;
@@ -41,35 +45,33 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	#if flash
-	@:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
+	@:require(flash10) public var colorCorrectionSupport (default, never):flash.display.ColorCorrectionSupport;
 	#end
 	
-	#if flash
-	@:require(flash11_4) public var contentsScaleFactor (default, null):Float;
-	#end
+	@:require(flash11_4) public var contentsScaleFactor (default, never):Float;
 	
 	#if flash
-	@:require(flash11) public var displayContextInfo (default, null):String;
+	@:require(flash11) public var displayContextInfo (default, never):String;
 	#end
 	
 	public var displayState:StageDisplayState;
 	public var focus:InteractiveObject;
 	public var frameRate:Float;
-	
-	#if (flash && air)
-	public var nativeWindow(default,null) : NativeWindow;
-	#end
-	
-	public var fullScreenHeight (default, null):UInt;
+	public var fullScreenHeight (default, never):UInt;
 	
 	#if flash
 	public var fullScreenSourceRect:Rectangle;
 	#end
 	
-	public var fullScreenWidth (default, null):UInt;
+	public var fullScreenWidth (default, never):UInt;
 	
 	#if flash
 	@:require(flash11_2) public var mouseLock:Bool;
+	#end
+	
+	#if air
+	public var nativeWindow (default, never):NativeWindow;
+	public var orientation (default, never):StageOrientation;
 	#end
 	
 	public var quality:StageQuality;
@@ -77,24 +79,29 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var showDefaultContextMenu:Bool;
 	
 	#if flash
-	@:require(flash11) public var softKeyboardRect (default, null):Rectangle;
+	@:require(flash11) public var softKeyboardRect (default, never):Rectangle;
 	#end
 	
-	public var stage3Ds (default, null):Vector<Stage3D>;
+	public var stage3Ds (default, never):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
-	public var stageHeight (default, null):Int;
+	public var stageHeight (default, never):Int;
 	
 	#if flash
-	@:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
+	@:require(flash10_2) public var stageVideos (default, never):Vector<flash.media.StageVideo>;
 	#end
 	
-	public var stageWidth (default, null):Int;
+	public var stageWidth (default, never):Int;
+	
+	#if air
+	public var supportedOrientations (default, never):Vector<StageOrientation>;
+	#end
+	
 	public var window (get, never):Window;
 	
 	private inline function get_window ():Window { return Lib.application.window; }
 	
 	#if flash
-	@:require(flash10_1) public var wmodeGPU (default, null):Bool;
+	@:require(flash10_1) public var wmodeGPU (default, never):Bool;
 	#end
 	
 	
@@ -103,11 +110,20 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	
-	public function invalidate ():Void;
+	#if air
+	public function assignFocus (objectToFocus:InteractiveObject, direction:FocusDirection):Void;
+	#end
 	
+	public function invalidate ():Void;
 	
 	#if flash
 	public function isFocusInaccessible ():Bool;
+	#end
+	
+	#if air
+	public function setAspectRatio (newAspectRatio:StageAspectRatio):Void;
+	public function setOrientation (newOrientation:StageOrientation):Void;
+	public static var supportsOrientationChange (default, never):Bool;
 	#end
 	
 	

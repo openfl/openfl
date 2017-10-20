@@ -17,7 +17,7 @@ import openfl.geom.Rectangle;
 class FlashTilemap {
 	
 	
-	private static var colorTransform = new ColorTransform ();
+	private static var defaultColorTransform = new ColorTransform ();
 	private static var destPoint = new Point ();
 	private static var sourceRect = new Rectangle ();
 	
@@ -39,10 +39,11 @@ class FlashTilemap {
 		
 		var smoothing = tilemap.smoothing;
 		
-		var alpha, visible, tileset, id, tileData, sourceBitmapData;
+		var alpha, visible, colorTransform;
+		var tileset, id, tileData, sourceBitmapData;
 		
 		var tileArray = tilemap.__tileArray;
-		var tileMatrix;
+		var tileMatrix, cacheAlpha;
 		
 		for (tile in tileArray) {
 			
@@ -74,20 +75,30 @@ class FlashTilemap {
 			sourceBitmapData = tileData.__bitmapData;
 			if (sourceBitmapData == null) continue;
 			
+			colorTransform = tile.colorTransform;
 			tileMatrix = tile.matrix;
 			
-			if (alpha == 1 && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
+			if (alpha == 1 && colorTransform == null && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
 				
 				destPoint.x = tileMatrix.tx;
 				destPoint.y = tileMatrix.ty;
 				
 				bitmapData.copyPixels (sourceBitmapData, sourceBitmapData.rect, destPoint, null, null, true);
 				
-			} else {
+			} else if (colorTransform != null) {
 				
-				colorTransform.alphaMultiplier = alpha;
+				cacheAlpha = colorTransform.alphaMultiplier;
+				colorTransform.alphaMultiplier *= alpha;
 				
 				bitmapData.draw (sourceBitmapData, tileMatrix, colorTransform, null, null, smoothing);
+				
+				colorTransform.alphaMultiplier = cacheAlpha;
+				
+			} else {
+				
+				defaultColorTransform.alphaMultiplier = alpha;
+				
+				bitmapData.draw (sourceBitmapData, tileMatrix, defaultColorTransform, null, null, smoothing);
 				
 			}
 			

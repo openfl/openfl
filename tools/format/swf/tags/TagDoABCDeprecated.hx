@@ -21,6 +21,7 @@ class TagDoABCDeprecated implements ITag
 		version = 9;
 		level = 1;
 		bytes = new ByteArray();
+		bytes.endian = BIG_ENDIAN;
 		
 		//trace("Hello " + name);
 	}

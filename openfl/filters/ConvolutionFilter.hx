@@ -12,7 +12,7 @@ import openfl.geom.Rectangle;
 class ConvolutionFilter extends BitmapFilter {
 	
 	
-	private static var __convolutionShader = new ConvolutionShader ();
+	//private static var __convolutionShader = new ConvolutionShader ();
 	
 	public var alpha:Float;
 	public var bias:Float;
@@ -39,8 +39,8 @@ class ConvolutionFilter extends BitmapFilter {
 		this.color = color;
 		this.alpha = alpha;
 		
-		// __numPasses = 1;
-		__numPasses = 0;
+		// __numShaderPasses = 1;
+		__numShaderPasses = 0;
 		
 	}
 	
@@ -54,14 +54,16 @@ class ConvolutionFilter extends BitmapFilter {
 	
 	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
-		var data = __convolutionShader.data;
+		// var data = __convolutionShader.data;
 		
-		data.uConvoMatrix.value = matrix;
-		data.uDivisor.value[0] = divisor;
-		data.uBias.value[0] = bias;
-		data.uPreserveAlpha.value[0] = preserveAlpha;
+		// data.uConvoMatrix.value = matrix;
+		// data.uDivisor.value[0] = divisor;
+		// data.uBias.value[0] = bias;
+		// data.uPreserveAlpha.value[0] = preserveAlpha;
 		
-		return __convolutionShader;
+		// return __convolutionShader;
+		
+		return null;
 		
 	}
 	

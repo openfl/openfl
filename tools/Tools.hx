@@ -745,7 +745,7 @@ class Tools {
 			
 			if (type == "swf" || type == "swf_lite" || type == "swflite") {
 				
-				if (project.target == Platform.FLASH) {
+				if (project.target == Platform.FLASH || project.target == Platform.AIR) {
 					
 					if (!FileSystem.exists (library.sourcePath)) {
 						
@@ -786,12 +786,7 @@ class Tools {
 					asset.id = "libraries/" + library.name + ".json";
 					asset.library = library.name;
 					asset.data = data.serialize ();
-					
-					if (library.embed != null) {
-						
-						asset.embed = library.embed;
-						
-					}
+					asset.embed = embed;
 					
 					output.assets.push (asset);
 					

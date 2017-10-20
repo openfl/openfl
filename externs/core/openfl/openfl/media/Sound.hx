@@ -1,6 +1,7 @@
 package openfl.media; #if (display || !flash)
 
 
+import lime.app.Future;
 import lime.media.AudioBuffer;
 import openfl.events.EventDispatcher;
 import openfl.net.URLRequest;
@@ -296,6 +297,9 @@ extern class Sound extends EventDispatcher {
 	
 	
 	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int, forcePlayAsMusic:Bool = false):Void;
+	
+	
+	public static function loadFromFile (path:String):Future<Sound>;
 	
 	
 	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void;

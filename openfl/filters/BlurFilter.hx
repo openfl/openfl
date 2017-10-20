@@ -17,10 +17,10 @@ import openfl.geom.Rectangle;
 @:final class BlurFilter extends BitmapFilter {
 	
 	
-	private static var __blurShader = new BlurShader ();
+	//private static var __blurShader = new BlurShader ();
 	
-	public var blurX:Float;
-	public var blurY:Float;
+	public var blurX (default, set):Float;
+	public var blurY (default, set):Float;
 	public var quality (default, set):Int;
 	
 	private var horizontalPasses:Int;
@@ -35,7 +35,8 @@ import openfl.geom.Rectangle;
 		this.blurY = blurY;
 		this.quality = quality;
 		
-		__filterRequiresCopy = true;
+		__needSecondBitmapData = true;
+		__preserveObject = false;
 		
 	}
 	
@@ -58,23 +59,25 @@ import openfl.geom.Rectangle;
 	
 	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
-		var data = __blurShader.data;
+		// var data = __blurShader.data;
 		
-		if (pass <= horizontalPasses) {
+		// if (pass <= horizontalPasses) {
 			
-			var scale = Math.pow (0.5, pass >> 1);
-			data.uRadius.value[0] = blurX * scale;
-			data.uRadius.value[1] = 0;
+		// 	var scale = Math.pow (0.5, pass >> 1);
+		// 	data.uRadius.value[0] = blurX * scale;
+		// 	data.uRadius.value[1] = 0;
 			
-		} else {
+		// } else {
 			
-			var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
-			data.uRadius.value[0] = 0;
-			data.uRadius.value[1] = blurY * scale;
+		// 	var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
+		// 	data.uRadius.value[0] = 0;
+		// 	data.uRadius.value[1] = blurY * scale;
 			
-		}
+		// }
 		
-		return __blurShader;
+		// return __blurShader;
+		
+		return null;
 		
 	}
 	
@@ -86,6 +89,32 @@ import openfl.geom.Rectangle;
 	
 	
 	
+	private function set_blurX (value:Float):Float {
+		
+		if (value != blurX) {
+			this.blurX = value;
+			__renderDirty = true;
+			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__rightExtension = __leftExtension;
+		}
+		return value;
+		
+	}
+	
+	
+	private function set_blurY (value:Float):Float {
+		
+		if (value != blurY) {
+			this.blurY = value;
+			__renderDirty = true;
+			__topExtension = (value > 0 ? Math.ceil (value) : 0);
+			__bottomExtension = __topExtension;
+		}
+		return value;
+		
+	}
+	
+	
 	private function set_quality (value:Int):Int {
 		
 		// TODO: Quality effect with fewer passes?
@@ -95,7 +124,8 @@ import openfl.geom.Rectangle;
 		
 		__numShaderPasses = horizontalPasses + verticalPasses;
 		
-		return quality = value;
+		if (value != quality) __renderDirty = true;
+		return this.quality = value;
 		
 	}
 	

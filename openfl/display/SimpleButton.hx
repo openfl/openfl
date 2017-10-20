@@ -64,6 +64,7 @@ class SimpleButton extends InteractiveObject {
 		addEventListener (MouseEvent.MOUSE_OVER, __this_onMouseOver);
 		addEventListener (MouseEvent.MOUSE_UP, __this_onMouseUp);
 		
+		__tabEnabled = true;
 		__currentState = this.upState;
 		
 		if (__initSymbol != null) {

@@ -15,6 +15,7 @@ class TagEnableTelemetry implements ITag
 	
 	public function new() {
 		password = new ByteArray();
+		password.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

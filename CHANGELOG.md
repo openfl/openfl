@@ -1,3 +1,105 @@
+6.2.2 (10/12/2017)
+------------------
+
+* Fixed support for using static initialization with bitmap filters
+* Fixed world transform values when nesting `cacheAsBitmap` objects
+* Fixed the behavior of using `tilemap.addTile` multiple times with the same tile
+* Fixed the rendering of `Tilemap` using HTML5 -Ddom rendering
+* Fixed conversion of SWF assets if a SWF class name is not found
+
+
+6.2.1 (10/10/2017)
+------------------
+
+* Updated Lime to 5.7.*
+* Added initial Dockerfile script
+* Added initial support for ATF cubemap textures
+* Improved native `TextField` rendering to use native text layouts directly
+* Improved support for combining characters in native `TextField` rendering
+* Improved word-wrapping when the final character in a line is a space
+* Improved the performance of `cacheAsBitmap` objects significantly
+* Improved `Vector` to support `new Vector<Int>([1,2,3])` initialization
+* Fixed incorrect trimming of final line character when "\n" is used
+* Fixed the color order of `ColorMatrixFilter` on certain targets
+* Fixed the position of `graphics.drawTriangles` shape rendering
+* Fixed casting of `Vector<T>` to `Vector<Dynamic>` on C++ target
+* Fixed proper serialization of `openfl.Vector` on HTML5
+* Fixed setting of `byteArray.position` value if `byteArray.length` is smaller
+* Fixed `XMLSocket` to send `DataEvent` based on `String` message boundaries
+* Fixed some issues in `textField.setTextFormat`
+* Fixed the behavior of `context3D.setStencilActions` on OpenGL
+* Fixed minor build issues when using Haxe 4 prerelease builds
+
+
+6.2.0 (09/26/2017)
+------------------
+
+* Added `openfl.utils.Function`
+* Added support for `MouseEvent.RELEASE_OUTSIDE`
+* Added missing `mouseEvent.isRelatedObjectInaccessible` property
+* Changed recommended Haxe version to 3.4.3
+* Changed some `Dynamic` values to use Haxe `Any` type (Haxe 3.4+)
+* Improved hit testing in `graphics` to support winding rules
+* Improved timing of `ProgressEvent.SOCKET_DATA` when using web sockets
+* Fixed use of filters on `Bitmap` or `Tilemap` objects
+* Fixed hit testing when using `graphics.lineStyle` in some cases
+* Fixed support for `graphics.drawTriangles` when omitting optional parameters
+* Fixed some cases where display object positions were not updated
+
+
+6.1.2 (09/13/2017)
+------------------
+
+* Fixed regression in color order when processing SWF assets
+* Fixed an issue with MovieClip children being removed improperly
+
+
+6.1.1 (09/12/2017)
+------------------
+
+* Added missing `vector.removeAt` method
+* Added missing `stage.contentsScaleFactor` property
+* Improved the error messages on HTML5
+* Fixed the default separator value for `vector.join`
+* Fixed support for certain kinds of recursion in `eventDispatcher.dispatchEvent`
+* Fixed a regression in dimensions for glow and blur filters
+* Fixed the behavior of `tilemap.removeTiles()` with no arguments
+* Fixed missing properties on Flash `openfl.text.TextField` extern
+* Fixed the default endianness of `Socket` and `XMLSocket`
+* Fixed a possible infinite loop in `TextField` layout
+* Fixed some issues with `MovieClip` frame scripts that skip frames
+* Fixed the behavior of alpha images in `bitmapData.copyPixels`
+* Fixed endianness issues in `bitmapData.getPixels` and `bitmapData.setPixels`
+
+
+6.1.0 (08/25/2017)
+------------------
+
+* Added official support for Adobe AIR
+* Added initial support for blur, glow and drop shadow filters
+* Added `Sound.loadFromFile` for consistency with other asset types
+* Added support for setting `Mouse.cursor` to a `lime.ui.MouseCursor` value
+* Added initial support for `tile.rect` for custom `Tile` source rectangles
+* Improved the (beta) `TileArray` API with support for iterating in a loop
+* Improved the (beta) `TileArray` API with a shared `ITile` interface
+* Improved the memory used for SWF libraries that use JPEG alpha channels
+* Improved `GameInput` to dispatch `DEVICE_ADDED` for pre-existing devices
+* Improved code completion support when using `-Dopenfl-dynamic`
+* Improved support for winding rules in `graphics.drawPath`
+* Fixed multiple issues affecting `Tilemap` behavior and rendering
+* Fixed multiple issues affecting `TextField` rendering and layout
+* Fixed support for using `blendMode` in `bitmapData.draw`
+* Fixed scissor coordinates in Stage3D render-to-texture
+* Fixed handling of "rcp" AGAL code in support of Away3D
+* Fixed issue when setting `lineStyle` at certain times in vector draw instructions
+* Fixed automatic removal of manually added `MovieClip` children
+* Fixed missing scroll event when scrolling a `Textfield`
+* Fixed possible duplication of property names in generated SWF classes
+* Fixed missing `stage` reference on `MovieClip` creation
+* Fixed missing `Loader.uncaughtErrorEvents` reference
+* Fixed GLSL issue on Raspberry Pi devices
+
+
 6.0.1 (08/03/2017)
 ------------------
 

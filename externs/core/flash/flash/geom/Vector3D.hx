@@ -8,8 +8,8 @@ extern class Vector3D {
 	public static var Y_AXIS (default, never):Vector3D;
 	public static var Z_AXIS (default, never):Vector3D;
 	
-	public var length (default, null):Float;
-	public var lengthSquared (default, null):Float;
+	public var length (default, never):Float;
+	public var lengthSquared (default, never):Float;
 	public var w:Float;
 	public var x:Float;
 	public var y:Float;

@@ -8,7 +8,7 @@ import openfl.utils.ByteArray;
 @:noDebug
 #end
 
-#if (!cs || display) @:final #end
+#if ((!cs && !java) || display) @:final #end
 
 
 class ShaderData implements Dynamic {

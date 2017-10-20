@@ -36,9 +36,14 @@ extern class Event {
 	@:require(flash10) public static var COPY (default, never):String;
 	@:require(flash10) public static var CUT (default, never):String;
 	public static var DEACTIVATE (default, never):String;
+	
+	#if air
+	public static var DISPLAYING (default, never):String;
+	#end
+	
 	public static var ENTER_FRAME (default, never):String;
 	
-	#if (flash && air)
+	#if air
 	public static var EXITING (default, never):String;
 	#end
 	
@@ -46,16 +51,33 @@ extern class Event {
 	@:require(flash10) public static var FRAME_CONSTRUCTED (default, never):String;
 	@:require(flash11_3) public static var FRAME_LABEL (default, never):String;
 	public static var FULLSCREEN (default, never):String;
+	
+	#if air
+	public static var HTML_BOUNDS_CHANGE (default, never):String;
+	public static var HTML_DOM_INITIALIZE (default, never):String;
+	public static var HTML_RENDER (default, never):String;
+	#end
+	
 	public static var ID3 (default, never):String;
 	public static var INIT (default, never):String;
+	
+	#if air
+	public static var LOCATION_CHANGE (default, never):String;
+	#end
+	
 	public static var MOUSE_LEAVE (default, never):String;
 	
-	#if (flash && air)
+	#if air
 	public static var NETWORK_CHANGE (default, never):String;
 	#end
 	
 	public static var OPEN (default, never):String;
 	@:require(flash10) public static var PASTE (default, never):String;
+	
+	#if air
+	public static var PREPARING (default, never):String;
+	#end
+	
 	public static var REMOVED (default, never):String;
 	public static var REMOVED_FROM_STAGE (default, never):String;
 	public static var RENDER (default, never):String;
@@ -65,7 +87,9 @@ extern class Event {
 	@:require(flash10) public static var SELECT_ALL (default, never):String;
 	public static var SOUND_COMPLETE (default, never):String;
 	
-	#if (flash && air)
+	#if air
+	public static var STANDARD_ERROR_CLOSE (default, never):String;
+	public static var STANDARD_INPUT_CLOSE (default, never):String;
 	public static var STANDARD_OUTPUT_CLOSE (default, never):String;
 	#end
 	
@@ -84,6 +108,11 @@ extern class Event {
 	
 	public static var UNLOAD (default, never):String;
 	
+	#if air
+	public static var USER_IDLE (default, never):String;
+	public static var USER_PRESENT (default, never):String;
+	#end
+	
 	#if flash
 	public static var VIDEO_FRAME (default, never):String;
 	#end
@@ -94,9 +123,9 @@ extern class Event {
 	
 	public var bubbles (default, null):Bool;
 	public var cancelable (default, null):Bool;
-	public var currentTarget (default, null):Dynamic;
+	public var currentTarget (default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 	public var eventPhase (default, null):EventPhase;
-	public var target (default, null):Dynamic;
+	public var target (default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 	public var type (default, null):String;
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false);

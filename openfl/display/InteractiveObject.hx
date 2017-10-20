@@ -21,7 +21,7 @@ class InteractiveObject extends DisplayObject {
 	public var tabEnabled (get, set):Bool;
 	public var tabIndex:Int;
 	
-	private var __tabEnabled:Bool;
+	private var __tabEnabled:Null<Bool>;
 	
 	
 	public function new () {
@@ -31,7 +31,7 @@ class InteractiveObject extends DisplayObject {
 		doubleClickEnabled = false;
 		mouseEnabled = true;
 		needsSoftKeyboard = false;
-		__tabEnabled = false;
+		__tabEnabled = null;
 		tabIndex = -1;
 		
 	}
@@ -42,6 +42,13 @@ class InteractiveObject extends DisplayObject {
 		openfl.Lib.notImplemented ();
 		
 		return false;
+		
+	}
+	
+	
+	private function __allowMouseFocus ():Bool {
+		
+		return tabEnabled;
 		
 	}
 	
@@ -82,7 +89,7 @@ class InteractiveObject extends DisplayObject {
 	
 	private function get_tabEnabled ():Bool {
 		
-		return __tabEnabled;
+		return __tabEnabled == true ? true : false;
 		
 	}
 	

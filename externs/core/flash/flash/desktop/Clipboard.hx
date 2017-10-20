@@ -9,9 +9,13 @@ import openfl.utils.Object;
 extern class Clipboard {
 	
 	
-	public static var generalClipboard (default, null):Clipboard;
+	public static var generalClipboard (default, never):Clipboard;
 	
-	public var formats (default, null):Array<ClipboardFormats>;
+	public var formats (default, never):Array<ClipboardFormats>;
+	
+	#if air
+	public var supportsFilePromise (default, never):Bool;
+	#end
 	
 	public function clear ():Void;
 	public function clearData (format:ClipboardFormats):Void;

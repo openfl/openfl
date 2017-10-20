@@ -15,10 +15,10 @@ extern class SharedObject extends EventDispatcher {
 	#end
 	
 	public var client:Dynamic;
-	public var data (default, null):Dynamic;
-	public var fps (null, default):Float;
+	public var data (default, never):Dynamic;
+	public var fps (never, default):Float;
 	public var objectEncoding:UInt;
-	public var size (default, null):UInt;
+	public var size (default, never):UInt;
 	
 	private function new ();
 	public function clear ():Void;

@@ -242,6 +242,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (value > 0) {
 			
 			this.__resize (value);
+			if (value < this.position) this.position = value;
 			
 		}
 		
@@ -290,7 +291,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if js
 		super (bytes.b.buffer);
 		#else
-		super (length, bytes.b);
+		super (length, bytes.getData ());
 		#end
 		
 		__length = length;
@@ -811,7 +812,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private inline function __setData (bytes:Bytes):Void {
 		
+		#if eval
+		// TODO: Not quite correct, but this will probably
+		// not be called while in a macro
+		var count = bytes.length < length ? bytes.length : length;
+		for (i in 0...count) set (i, bytes.get (i));
+		#else
 		b = bytes.b;
+		#end
+		
 		__length = bytes.length;
 		
 		#if js
@@ -913,7 +922,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * are reading valid data.
 	 */
 	#if (flash && !display)
-	public var bytesAvailable (default, null):UInt;
+	public var bytesAvailable (default, never):UInt;
 	#else
 	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
 	#end

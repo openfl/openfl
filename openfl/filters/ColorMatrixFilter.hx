@@ -2,6 +2,7 @@ package openfl.filters;
 
 
 import lime.graphics.utils.ImageCanvasUtil;
+import lime.math.color.RGBA;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
@@ -12,7 +13,7 @@ import openfl.geom.Rectangle;
 @:final class ColorMatrixFilter extends BitmapFilter {
 	
 	
-	private static var __colorMatrixShader = new ColorMatrixShader ();
+	//private static var __colorMatrixShader = new ColorMatrixShader ();
 	
 	public var matrix (default, set):Array<Float>;
 	
@@ -23,8 +24,9 @@ import openfl.geom.Rectangle;
 		
 		this.matrix = matrix;
 		
-		// __numPasses = 1;
+		// __numShaderPasses = 1;
 		__numShaderPasses = 0;
+		__needSecondBitmapData = false;
 		
 	}
 	
@@ -38,40 +40,53 @@ import openfl.geom.Rectangle;
 	
 	private override function __applyFilter (destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
+		var sourceImage = sourceBitmapData.image; 
+		var image = destBitmapData.image;
+		
 		#if (js && html5)
-		ImageCanvasUtil.convertToCanvas (sourceBitmapData.image);
-		ImageCanvasUtil.createImageData (sourceBitmapData.image);
-		ImageCanvasUtil.convertToCanvas (destBitmapData.image);
-		ImageCanvasUtil.createImageData (destBitmapData.image);
+		ImageCanvasUtil.convertToData (sourceImage);
+		ImageCanvasUtil.convertToData (image);
 		#end
 		
-		var source = sourceBitmapData.image.data;
-		var target = destBitmapData.image.data;
+		var sourceData = sourceImage.data;
+		var destData = image.data;
 		
 		var offsetX = Std.int (destPoint.x - sourceRect.x);
 		var offsetY = Std.int (destPoint.y - sourceRect.y);
 		var sourceStride = sourceBitmapData.width * 4;
-		var targetStride = destBitmapData.width * 4;
+		var destStride = destBitmapData.width * 4;
 		
-		var sourceOffset:Int;
-		var targetOffset:Int;
+		var sourceFormat = sourceImage.buffer.format;
+		var destFormat = image.buffer.format;
+		var sourcePremultiplied = sourceImage.buffer.premultiplied;
+		var destPremultiplied = image.buffer.premultiplied;
+		
+		var sourcePixel:RGBA, destPixel:RGBA = 0;
+		var sourceOffset:Int, destOffset:Int;
 		
 		for (row in Std.int (sourceRect.y)...Std.int (sourceRect.height)) {
 			
 			for (column in Std.int (sourceRect.x)...Std.int (sourceRect.width)) {
 				
 				sourceOffset = (row * sourceStride) + (column * 4);
-				targetOffset = ((row + offsetX) * targetStride) + ((column + offsetY) * 4);
+				destOffset = ((row + offsetX) * destStride) + ((column + offsetY) * 4);
 				
-				var srcR = source[sourceOffset];
-				var srcG = source[sourceOffset + 1];
-				var srcB = source[sourceOffset + 2];
-				var srcA = source[sourceOffset + 3];
+				sourcePixel.readUInt8 (sourceData, sourceOffset, sourceFormat, sourcePremultiplied);
 				
-				target[targetOffset] = Std.int ((matrix[0]  * srcR) + (matrix[1]  * srcG) + (matrix[2]  * srcB) + (matrix[3]  * srcA) + matrix[4]);
-				target[targetOffset + 1] = Std.int ((matrix[5]  * srcR) + (matrix[6]  * srcG) + (matrix[7]  * srcB) + (matrix[8]  * srcA) + matrix[9]);
-				target[targetOffset + 2] = Std.int ((matrix[10] * srcR) + (matrix[11] * srcG) + (matrix[12] * srcB) + (matrix[13] * srcA) + matrix[14]);
-				target[targetOffset + 3] = Std.int ((matrix[15] * srcR) + (matrix[16] * srcG) + (matrix[17] * srcB) + (matrix[18] * srcA) + matrix[19]);
+				if (sourcePixel.a == 0) {
+					
+					destPixel = 0;
+					
+				} else {
+					
+					destPixel.r = Std.int ((matrix[0] * sourcePixel.r) + (matrix[1] * sourcePixel.g) + (matrix[2] * sourcePixel.b) + (matrix[3] * sourcePixel.a) + matrix[4]);
+					destPixel.g = Std.int ((matrix[5] * sourcePixel.r) + (matrix[6] * sourcePixel.g) + (matrix[7] * sourcePixel.b) + (matrix[8] * sourcePixel.a) + matrix[9]);
+					destPixel.b = Std.int ((matrix[10] * sourcePixel.r) + (matrix[11] * sourcePixel.g) + (matrix[12] * sourcePixel.b) + (matrix[13] * sourcePixel.a) + matrix[14]);
+					destPixel.a = Std.int ((matrix[15] * sourcePixel.r) + (matrix[16] * sourcePixel.g) + (matrix[17] * sourcePixel.b) + (matrix[18] * sourcePixel.a) + matrix[19]);
+					
+				}
+				
+				destPixel.writeUInt8 (destData, destOffset, destFormat, destPremultiplied);
 				
 			}
 			
@@ -85,8 +100,9 @@ import openfl.geom.Rectangle;
 	
 	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
-		__colorMatrixShader.init (matrix);
-		return __colorMatrixShader;
+		return null;
+		//__colorMatrixShader.init (matrix);
+		//return __colorMatrixShader;
 		
 	}
 	

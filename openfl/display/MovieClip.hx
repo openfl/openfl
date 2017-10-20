@@ -112,7 +112,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
+	public function gotoAndPlay (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
 		
 		play ();
 		__goto (__resolveFrameReference (frame));
@@ -120,7 +120,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
+	public function gotoAndStop (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
 		
 		stop ();
 		__goto (__resolveFrameReference (frame));
@@ -181,12 +181,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				if (nextFrame < __currentFrame) {
 					
-					__evaluateFrameScripts (__totalFrames);
+					if (!__evaluateFrameScripts (__totalFrames)) {
+						
+						return;
+						
+					}
+					
 					__currentFrame = 1;
 					
 				}
 				
-				__evaluateFrameScripts (nextFrame);
+				if (!__evaluateFrameScripts (nextFrame)) {
+					
+					return;
+					
+				}
 				
 			} else {
 				
@@ -322,19 +331,29 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 			}
 			
-			var child, length = __children.length;
+			var child;
+			var i = currentInstances.length;
+			var length = __children.length;
 			
-			for (i in currentInstances.length...length) {
+			while (i < length) {
 				
 				child = __children[i];
 				
 				// TODO: Faster method of determining if this was automatically added?
 				
 				for (instance in __activeInstances) {
+					
 					if (instance.displayObject == child) {
+						
 						removeChild (child);
+						i--;
+						length--;
+						
 					}
+					
 				}
+				
+				i++;
 				
 			}
 			
@@ -347,7 +366,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __evaluateFrameScripts (advanceToFrame:Int):Void {
+	private function __evaluateFrameScripts (advanceToFrame:Int):Bool {
 		
 		for (frame in __currentFrame...advanceToFrame + 1) {
 			
@@ -361,6 +380,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				var script = __frameScripts.get (frame);
 				script ();
 				
+				if (__currentFrame != frame) {
+					
+					return false;
+					
+				}
+				
 			}
 			
 			if (!__playing) {
@@ -370,6 +395,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			
 		}
+		
+		return true;
 		
 	}
 	
@@ -643,8 +670,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		#else
 		
-		var nextFrame = __currentFrame + (__lastFrameScriptEval == __currentFrame ? 1 : 0);
-		if (nextFrame > __frames.length) nextFrame = 1;
+		var nextFrame = __currentFrame + 1;
+		if (nextFrame > __totalFrames) nextFrame = 1;
 		
 		#end
 		
@@ -666,7 +693,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __resolveFrameReference (frame:Dynamic):Int {
+	private function __resolveFrameReference (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int {
 		
 		if (Std.is (frame, Int)) {
 			
@@ -763,6 +790,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 			displayObject.filters = filters;
 			
+		} else {
+
+			displayObject.filters = null;
+
 		}
 		
 		if (frameObject.visible != null) {

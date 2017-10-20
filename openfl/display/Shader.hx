@@ -103,8 +103,14 @@ class Shader {
 				color = vec4 (color.rgb / color.a, color.a);
 				color = vColorOffsets + (color * vColorMultipliers);
 				
-				if(color.a > 0.0){
+				if (color.a > 0.0) {
+					
 					gl_FragColor = vec4 (color.rgb * color.a * vAlpha, color.a * vAlpha);
+					
+				} else {
+					
+					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+					
 				}
 				
 			} else {

@@ -7,9 +7,9 @@ import openfl.events.EventDispatcher;
 @:final extern class SoundChannel extends EventDispatcher {
 	
 	
-	public var leftPeak (default, null):Float;
-	public var position (default, null):Float;
-	public var rightPeak (default, null):Float;
+	public var leftPeak (default, never):Float;
+	public var position (default, never):Float;
+	public var rightPeak (default, never):Float;
 	public var soundTransform:SoundTransform;
 	
 	#if flash

@@ -1,24 +1,31 @@
 package openfl.filters;
 
 
+import lime.graphics.utils.ImageDataUtil;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.geom.ColorTransform;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+@:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 @:final class GlowFilter extends BitmapFilter {
 	
 	
-	private static var __glowShader = new GlowShader ();
+	//private static var __glowShader = new GlowShader ();
 	
-	public var alpha:Float;
-	public var blurX:Float;
-	public var blurY:Float;
-	public var color:Int;
-	public var inner:Bool;
+	public var alpha (default, set):Float;
+	public var blurX (default, set):Float;
+	public var blurY (default, set):Float;
+	public var color (default, set):Int;
+	public var inner (default, set):Bool;
 	public var knockout (default, set):Bool;
 	public var quality (default, set):Int;
-	public var strength:Float;
+	public var strength (default, set):Float;
 	
 	private var horizontalPasses:Int;
 	private var verticalPasses:Int;
@@ -37,7 +44,8 @@ import openfl.geom.Rectangle;
 		this.inner = inner;
 		this.knockout = knockout;
 		
-		__cacheObject = true;
+		__needSecondBitmapData = true;
+		__preserveObject = true;
 		
 	}
 	
@@ -49,30 +57,49 @@ import openfl.geom.Rectangle;
 	}
 	
 	
+	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
+		
+		// TODO: Support knockout, inner
+		
+		var r = (color >> 16) & 0xFF;
+		var g = (color >> 8) & 0xFF;
+		var b = color & 0xFF;
+		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, 1, r, g, b, alpha * 0xFF));
+		
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality, strength);
+		
+		if (finalImage == bitmapData.image) return bitmapData;
+		return sourceBitmapData;
+		
+	}
+	
+	
 	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
-		var data = __glowShader.data;
+		// var data = __glowShader.data;
 		
-		if (pass <= horizontalPasses) {
+		// if (pass <= horizontalPasses) {
 			
-			var scale = Math.pow (0.5, pass >> 1);
-			data.uRadius.value[0] = blurX * scale;
-			data.uRadius.value[1] = 0;
+		// 	var scale = Math.pow (0.5, pass >> 1);
+		// 	data.uRadius.value[0] = blurX * scale;
+		// 	data.uRadius.value[1] = 0;
 			
-		} else {
+		// } else {
 			
-			var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
-			data.uRadius.value[0] = 0;
-			data.uRadius.value[1] = blurY * scale;
+		// 	var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
+		// 	data.uRadius.value[0] = 0;
+		// 	data.uRadius.value[1] = blurY * scale;
 			
-		}
+		// }
 		
-		data.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-		data.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-		data.uColor.value[2] = (color & 0xFF) / 255;
-		data.uColor.value[3] = alpha;
+		// data.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+		// data.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+		// data.uColor.value[2] = (color & 0xFF) / 255;
+		// data.uColor.value[3] = alpha;
 		
-		return __glowShader;
+		// return __glowShader;
+		
+		return null;
 		
 	}
 	
@@ -84,9 +111,60 @@ import openfl.geom.Rectangle;
 	
 	
 	
+	private function set_alpha (value:Float):Float {
+		
+		if (value != alpha) __renderDirty = true;
+		return this.alpha = value;
+		
+	}
+	
+	
+	private function set_blurX (value:Float):Float {
+		
+		if (value != blurX) {
+			this.blurX = value;
+			__renderDirty = true;
+			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__rightExtension = __leftExtension;
+		}
+		return value;
+		
+	}
+	
+	
+	private function set_blurY (value:Float):Float {
+		
+		if (value != blurY) {
+			this.blurY = value;
+			__renderDirty = true;
+			__topExtension = (value > 0 ? Math.ceil (value) : 0);
+			__bottomExtension = __topExtension;
+		}
+		return value;
+		
+	}
+	
+	
+	private function set_color (value:Int):Int {
+		
+		if (value != color) __renderDirty = true;
+		return this.color = value;
+		
+	}
+	
+	
+	private function set_inner (value:Bool):Bool {
+		
+		if (value != inner) __renderDirty = true;
+		return this.inner = value;
+		
+	}
+	
+	
 	private function set_knockout (value:Bool):Bool {
 		
-		return knockout = value;
+		if (value != knockout) __renderDirty = true;
+		return this.knockout = value;
 		
 	}
 	
@@ -100,7 +178,16 @@ import openfl.geom.Rectangle;
 		
 		__numShaderPasses = horizontalPasses + verticalPasses;
 		
-		return quality = value;
+		if (value != quality) __renderDirty = true;
+		return this.quality = value;
+		
+	}
+	
+	
+	private function set_strength (value:Float):Float {
+		
+		if (value != strength) __renderDirty = true;
+		return this.strength = value;
 		
 	}
 	

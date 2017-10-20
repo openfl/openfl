@@ -299,8 +299,8 @@ class CanvasTextField {
 									
 									for (i in 0...(textField.__caretIndex - group.startIndex)) {
 										
-										if (group.advances.length <= i) break;
-										advance += group.advances[i];
+										if (group.positions.length <= i) break;
+										advance += group.getAdvance (i);
 										
 									}
 									

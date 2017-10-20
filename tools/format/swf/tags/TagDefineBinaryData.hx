@@ -23,6 +23,7 @@ class TagDefineBinaryData implements IDefinitionTag
 		version = 9;
 		level = 1;
 		binaryData = new ByteArray();
+		binaryData.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

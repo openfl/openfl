@@ -17,7 +17,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
-import openfl._internal.text.HtmlParser;
+import openfl._internal.text.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
@@ -133,7 +133,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__layoutDirty = true;
 		__offsetX = 0;
 		__offsetY = 0;
-		__tabEnabled = true;
 		__mouseWheelEnabled = true;
 		__text = "";
 		
@@ -184,11 +183,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				for (i in 0...(charIndex - group.startIndex)) {
 					
-					x += group.advances[i];
+					x += group.getAdvance (i);
 					
 				}
 				
-				return new Rectangle (x, group.offsetY, group.advances[charIndex - group.startIndex], group.ascent + group.descent);
+				// TODO: Is this actually right for combining characters?
+				var lastPosition = group.getAdvance (charIndex - group.startIndex);
+
+				return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
 				
 			}
 			
@@ -221,9 +223,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 					var advance = 0.0;
 					
-					for (i in 0...group.advances.length) {
+					for (i in 0...group.positions.length) {
 						
-						advance += group.advances[i];
+						advance += group.getAdvance (i);
 						
 						if (x <= group.offsetX + advance) {
 							
@@ -589,7 +591,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (endIndex < beginIndex) return;
 		
-		if (beginIndex == 0 && endIndex == max) {
+		if (beginIndex == 0 && endIndex >= max) {
+
+			// set text format for the whole textfield
 			
 			__textFormat.__merge (format);
 			
@@ -616,13 +620,17 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				if (range.start == beginIndex && range.end == endIndex) {
 					
+					// the new incoming text format range matches an existing range exactly, just replace it
+
 					range.format = __defaultTextFormat.clone ();
 					range.format.__merge (format);
 					return;
 					
 				}
 				
-				if (range.start > beginIndex && range.end < endIndex) {
+				if (range.start >= beginIndex && range.end <= endIndex) {
+
+					// the new incoming text format range completely encompasses this existing range, let's remove it
 					
 					searchIndex = __textEngine.textFormatRanges.indexOf (range);
 					
@@ -638,29 +646,38 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			var prevRange = null, nextRange = null;
 			
-			for (i in 0...__textEngine.textFormatRanges.length) {
-				
-				range = __textEngine.textFormatRanges[i];
-				
-				if (beginIndex > 0) {
+			// find the ranges before and after the new incoming range
+
+			if (beginIndex > 0) {
+
+				for (i in 0...__textEngine.textFormatRanges.length) {
+
+					range = __textEngine.textFormatRanges[i];
 					
-					if (prevRange == null && range.end >= beginIndex) {
+					if (range.end >= beginIndex) {
 						
 						prevRange = range;
 						
-						// TODO: Since this is sorted, we could break on first match here if we also do the TODO just below.
+						break;
 						
 					}
 					
 				}
-				
-				if (endIndex < max) {
+			}
+
+			if (endIndex < max) {
+
+				var ni = __textEngine.textFormatRanges.length;
+
+				while (--ni >= 0 ) {
 					
+					range = __textEngine.textFormatRanges[ni];
+
 					if (range.start <= endIndex) {
 						
 						nextRange = range;
 						
-						// TODO: Move to decreasing while loop, then break on first match??
+						break;
 						
 					}
 					
@@ -670,6 +687,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			if (nextRange == prevRange) {
 				
+				// the new incoming text format range is completely within this existing range, let's divide it up
+
 				nextRange = new TextFormatRange (nextRange.format.clone (), nextRange.start, nextRange.end);
 				__textEngine.textFormatRanges.push (nextRange);
 				
@@ -678,41 +697,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			if (prevRange != null) {
 				
 				prevRange.end = beginIndex;
-				
-				if (prevRange.end <= prevRange.start) {
-					
-					searchIndex = __textEngine.textFormatRanges.indexOf (prevRange);
-					
-					if (searchIndex > -1) {
-						
-						__textEngine.textFormatRanges.splice (searchIndex, 1);
-						
-					}
-					
-					prevRange = null;
-					
-				}
-				
+
 			}
 			
 			if (nextRange != null) {
 				
 				nextRange.start = endIndex;
-				
-				if (nextRange.start >= nextRange.end) {
-					
-					searchIndex = __textEngine.textFormatRanges.indexOf (nextRange);
-					
-					if (searchIndex > -1) {
-						
-						__textEngine.textFormatRanges.splice (searchIndex, 1);
-						
-					}
-					
-					nextRange = null;
-					
-				}
-				
+
 			}
 			
 			var textFormat = __defaultTextFormat.clone ();
@@ -745,6 +736,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __allowMouseFocus ():Bool {
+
+		return __textEngine.type == INPUT || tabEnabled;
+
+	}
+
+
 	private function __caretBeginningOfLine ():Void {
 		
 		if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex) {
@@ -1013,7 +1011,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (!found) {
 			
-			var alpha = ~/[^a-zA-Z]+/;
+			var alpha = ~/[^a-zA-Z]+/g;
 			
 			for (font in Font.enumerateFonts ()) {
 				
@@ -1074,6 +1072,17 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 
 	
+	private inline function __getAdvance (position):Float {
+
+		#if (js && html5)
+		return position;
+		#else
+		return position.advance.x;
+		#end
+
+	}
+
+
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		__updateLayout ();
@@ -1106,7 +1115,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				for (i in 0...(charIndex - group.startIndex)) {
 					
-					x += group.advances[i];
+					x += group.getAdvance (i);
 					
 				}
 				
@@ -1216,13 +1225,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		var advance = 0.0;
 		
-		for (i in 0...group.advances.length) {
+		for (i in 0...group.positions.length) {
 			
-			advance += group.advances[i];
+			advance += group.getAdvance (i);
 			
 			if (x <= group.offsetX + advance) {
 				
-				if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+				if (x <= group.offsetX + (advance - group.getAdvance (i)) + (group.getAdvance (i) / 2)) {
 					
 					return group.startIndex + i;
 					
@@ -1312,7 +1321,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 			if (__isHTML) {
 
-				__updateText (HtmlParser.parse(__rawHtmlText, __textFormat, __textEngine.textFormatRanges));
+				__updateText (HTMLParser.parse(__rawHtmlText, __textFormat, __textEngine.textFormatRanges));
 
 			}
 
@@ -1834,7 +1843,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					__forceCachedBitmapUpdate = true;
 				}
 			#end
-			
+
 		}
 		
 		return __textEngine.height * Math.abs (scaleY);
@@ -1844,13 +1853,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function get_htmlText ():String {
 
-		#if (js && html5 && dom)
-		return	__rawHtmlText;
-		#else
-		return __text;
-		#end
-		
-	}
+        #if (js && html5 && dom)
+        return	__rawHtmlText;
+        #else
+        return __text;
+        #end
+
+    }
 	
 	
 	private function set_htmlText (value:String):String {
@@ -1869,7 +1878,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__rawHtmlText = value;
 		#end
 		
-		value = HtmlParser.parse(value, __textFormat, __textEngine.textFormatRanges);
+		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 
 		__updateText (value);
 
@@ -2107,6 +2116,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function get_tabEnabled ():Bool {
+
+		return (__tabEnabled == null ? __textEngine.type == INPUT : __tabEnabled);
+
+	}
+
+
 	private function get_text ():String {
 		
 		return __text;
@@ -2168,7 +2184,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					__forceCachedBitmapUpdate = true;
 				}
 			#end
-			
+
 		}
 		
 		for (range in __textEngine.textFormatRanges) {
@@ -2262,7 +2278,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					__forceCachedBitmapUpdate = true;
 				}
 			#end
-			
+
 		}
 		
 		return __textEngine.width * Math.abs (__scaleX);
@@ -2290,7 +2306,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					__forceCachedBitmapUpdate = true;
 				}
 			#end
-			
+
 		}
 		
 		return __textEngine.wordWrap = value;

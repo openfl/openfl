@@ -11,47 +11,47 @@ extern class LoaderInfo extends EventDispatcher {
 	
 	
 	#if flash
-	public var actionScriptVersion (default, null):flash.display.ActionScriptVersion;
+	public var actionScriptVersion (default, never):flash.display.ActionScriptVersion;
 	#end
 	
-	public var applicationDomain (default, null):ApplicationDomain;
-	public var bytes (default, null):ByteArray;
-	public var bytesLoaded (default, null):Int;
-	public var bytesTotal (default, null):Int;
-	public var childAllowsParent (default, null):Bool;
+	public var applicationDomain (default, never):ApplicationDomain;
+	public var bytes (default, never):ByteArray;
+	public var bytesLoaded (default, never):Int;
+	public var bytesTotal (default, never):Int;
+	public var childAllowsParent (default, never):Bool;
 	
 	#if flash
 	@:require(flash11_4) public var childSandboxBridge:Dynamic;
 	#end
 	
-	public var content (default, null):DisplayObject;
-	public var contentType (default, null):String;
-	public var frameRate (default, null):Float;
-	public var height (default, null):Int;
+	public var content (default, never):DisplayObject;
+	public var contentType (default, never):String;
+	public var frameRate (default, never):Float;
+	public var height (default, never):Int;
 	
 	#if flash
-	@:require(flash10_1) public var isURLInaccessible (default, null):Bool;
+	@:require(flash10_1) public var isURLInaccessible (default, never):Bool;
 	#end
 	
-	public var loader (default, null):Loader;
-	public var loaderURL (default, null):String;
-	public var parameters (default, null):Dynamic<String>;
-	public var parentAllowsChild (default, null):Bool;
+	public var loader (default, never):Loader;
+	public var loaderURL (default, never):String;
+	public var parameters (default, never):Dynamic<String>;
+	public var parentAllowsChild (default, never):Bool;
 	
 	#if flash
 	@:require(flash11_4) public var parentSandboxBridge:Dynamic;
 	#end
 	
-	public var sameDomain (default, null):Bool;
-	public var sharedEvents (default, null):EventDispatcher;
+	public var sameDomain (default, never):Bool;
+	public var sharedEvents (default, never):EventDispatcher;
 	
 	#if flash
-	public var swfVersion (default, null):UInt;
+	public var swfVersion (default, never):UInt;
 	#end
 	
-	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
-	public var url (default, null):String;
-	public var width (default, null):Int;
+	public var uncaughtErrorEvents (default, never):UncaughtErrorEvents;
+	public var url (default, never):String;
+	public var width (default, never):Int;
 	
 	private function new ();
 	

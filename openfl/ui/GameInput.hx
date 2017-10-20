@@ -32,6 +32,23 @@ import openfl.events.GameInputEvent;
 	}
 	
 	
+	public override function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
+		
+		super.addEventListener (type, listener, useCapture, priority, useWeakReference);
+		
+		if (type == GameInputEvent.DEVICE_ADDED) {
+			
+			for (device in __deviceList) {
+				
+				dispatchEvent (new GameInputEvent (GameInputEvent.DEVICE_ADDED, device));
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	public static function getDeviceAt (index:Int):GameInputDevice {
 		
 		if (index >= 0 && index < __deviceList.length) {

@@ -12,6 +12,10 @@ extern class FocusEvent extends Event {
 	public static var KEY_FOCUS_CHANGE (default, never):String;
 	public static var MOUSE_FOCUS_CHANGE (default, never):String;
 	
+	#if air
+	public var direction:flash.display.FocusDirection;
+	#end
+	
 	#if flash
 	@:require(flash10) public var isRelatedObjectInaccessible:Bool;
 	#end

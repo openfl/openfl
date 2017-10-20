@@ -19,6 +19,7 @@ class TagNameCharacter implements ITag
 	
 	public function new() {
 		binaryData = new ByteArray();
+		binaryData.endian = BIG_ENDIAN;
 	}
 	
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {

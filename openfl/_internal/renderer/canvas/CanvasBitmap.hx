@@ -19,7 +19,7 @@ class CanvasBitmap {
 		
 		var context = renderSession.context;
 		
-		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
+		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid && bitmap.bitmapData.readable) {
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap, false);
