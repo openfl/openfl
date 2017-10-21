@@ -6,7 +6,7 @@ import lime.utils.UInt8Array;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.atf.ATFReader;
-import openfl._internal.stage3D.atf.ATFFormat;
+import openfl._internal.stage3D.atf.ATFGPUFormat;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.CubeTexture;
@@ -41,25 +41,18 @@ class GLCubeTexture {
 	public static function uploadCompressedTextureFromByteArray (cubeTexture:CubeTexture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var reader = new ATFReader(data, byteArrayOffset);
-		var atfFormat = reader.readHeader (cubeTexture.__size, cubeTexture.__size, true);
-
-		// Handle the different texture formats
-		switch (atfFormat) {
-			
-			case ATFFormat.RAW_COMPRESSED: cubeTexture.__format = GLTextureBase.__textureFormatCompressed;
-			case ATFFormat.RAW_COMPRESSED_ALPHA: cubeTexture.__format = GLTextureBase.__textureFormatCompressedAlpha;
-			default: throw new IllegalOperationError("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
-		
-		}
+		var alpha = reader.readHeader (cubeTexture.__size, cubeTexture.__size, true);
 
 		var gl = renderSession.gl;
 		
 		gl.bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureID);
 		GLUtils.CheckGLError ();
 
-		reader.readTextures (function(side, level, width, height, blockLength, bytes) {
+		reader.readTextures (function(side, level, gpuFormat, width, height, blockLength, bytes) {
 
 			var target = __sideToTarget(gl, side);
+
+			cubeTexture.__format = GLTextureBase.__compressedTextureFormats.toTextureFormat(alpha, gpuFormat);
 
 			gl.compressedTexImage2D (target, level, cubeTexture.__format, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();

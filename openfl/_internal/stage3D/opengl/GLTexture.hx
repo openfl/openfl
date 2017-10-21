@@ -6,7 +6,6 @@ import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.atf.ATFReader;
-import openfl._internal.stage3D.atf.ATFFormat;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.Texture;
@@ -53,21 +52,14 @@ class GLTexture {
 		var reader = new ATFReader(data, byteArrayOffset);
 		var atfFormat = reader.readHeader (texture.__width, texture.__height, false);
 
-		// Handle the different texture formats
-		switch (atfFormat) {
-			
-			case ATFFormat.RAW_COMPRESSED: texture.__format = GLTextureBase.__textureFormatCompressed;
-			case ATFFormat.RAW_COMPRESSED_ALPHA: texture.__format = GLTextureBase.__textureFormatCompressedAlpha;
-			default: throw new IllegalOperationError("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
-		
-		}
-
 		var gl = renderSession.gl;
 		
 		gl.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 
-		reader.readTextures (function(target, level, width, height, blockLength, bytes) {
+		reader.readTextures (function(target, level, gpuFormat, width, height, blockLength, bytes) {
+
+			texture.__format = GLTextureBase.__compressedTextureFormats.toTextureFormat(atfFormat, gpuFormat);
 
 			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__format, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();
