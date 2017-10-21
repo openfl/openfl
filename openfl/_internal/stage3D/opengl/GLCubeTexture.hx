@@ -42,26 +42,26 @@ class GLCubeTexture {
 		
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader (cubeTexture.__size, cubeTexture.__size, true);
-
+		
 		var gl = renderSession.gl;
 		
 		gl.bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureID);
 		GLUtils.CheckGLError ();
-
+		
 		reader.readTextures (function(side, level, gpuFormat, width, height, blockLength, bytes) {
-
+			
 			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat(alpha, gpuFormat);
 			if (format == 0) return;
-
+			
 			var target = __sideToTarget(gl, side);
-
+			
 			cubeTexture.__format = format;
-
+			
 			gl.compressedTexImage2D (target, level, cubeTexture.__format, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();
-
+			
 			// __trackCompressedMemoryUsage (blockLength);
-
+			
 		});
 
 		gl.bindTexture (cubeTexture.__textureTarget, null);

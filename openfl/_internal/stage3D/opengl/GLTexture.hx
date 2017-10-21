@@ -56,19 +56,19 @@ class GLTexture {
 		
 		gl.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
-
+		
 		reader.readTextures (function(target, level, gpuFormat, width, height, blockLength, bytes) {
-
+			
 			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat(alpha, gpuFormat);
 			if (format == 0) return;
-
+			
 			texture.__format = format;
-
+			
 			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__format, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();
-
+			
 			// __trackCompressedMemoryUsage (blockLength);
-
+			
 		});
 
 		gl.bindTexture (texture.__textureTarget, null);
