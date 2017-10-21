@@ -50,9 +50,12 @@ class GLCubeTexture {
 
 		reader.readTextures (function(side, level, gpuFormat, width, height, blockLength, bytes) {
 
+			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat(alpha, gpuFormat);
+			if (format == 0) return;
+
 			var target = __sideToTarget(gl, side);
 
-			cubeTexture.__format = GLTextureBase.__compressedTextureFormats.toTextureFormat(alpha, gpuFormat);
+			cubeTexture.__format = format;
 
 			gl.compressedTexImage2D (target, level, cubeTexture.__format, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();

@@ -50,7 +50,7 @@ class GLTexture {
 	public static function uploadCompressedTextureFromByteArray (texture:Texture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var reader = new ATFReader(data, byteArrayOffset);
-		var atfFormat = reader.readHeader (texture.__width, texture.__height, false);
+		var alpha = reader.readHeader (texture.__width, texture.__height, false);
 
 		var gl = renderSession.gl;
 		
@@ -59,7 +59,10 @@ class GLTexture {
 
 		reader.readTextures (function(target, level, gpuFormat, width, height, blockLength, bytes) {
 
-			texture.__format = GLTextureBase.__compressedTextureFormats.toTextureFormat(atfFormat, gpuFormat);
+			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat(alpha, gpuFormat);
+			if (format == 0) return;
+
+			texture.__format = format;
 
 			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__format, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();
