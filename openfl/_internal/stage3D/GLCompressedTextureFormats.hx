@@ -47,6 +47,26 @@ class GLCompressedTextureFormats {
 
 	public function checkETC1( gl: GLRenderContext ) {
 
+		#if (js && html5)
+
+		var compressedExtension = gl.getExtension ("WEBGL_compressed_texture_etc1");
+		if (compressedExtension != null) {
+
+			__formatMap[ATFGPUFormat.ETC1] = compressedExtension.COMPRESSED_RGB_ETC1_WEBGL;
+			
+		}
+
+		#else
+
+		var compressedExtension = gl.getExtension ("OES_compressed_ETC1_RGB8_texture");
+		if (compressedExtension != null) {
+
+			__formatMap[ATFGPUFormat.ETC1] = compressedExtension.ETC1_RGB8_OES;
+			
+		}
+
+		#end
+
 	}
 
 
@@ -55,6 +75,9 @@ class GLCompressedTextureFormats {
 		#if (js && html5)
 		// WEBGL_compressed_texture_pvrtc is not available on iOS Safari
 		var compressedExtension = gl.getExtension ("WEBKIT_WEBGL_compressed_texture_pvrtc");
+		#else
+		var compressedExtension = gl.getExtension ("IMG_texture_compression_pvrtc");
+		#end
 		
 		if (compressedExtension != null) {
 
@@ -62,7 +85,6 @@ class GLCompressedTextureFormats {
 			__formatMapAlpha[ATFGPUFormat.PVRTC] = compressedExtension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 			
 		}
-		#end
 
 	}
 
