@@ -89,18 +89,18 @@ class ATFReader {
 			throw new IllegalOperationError ("ATF Cube map expected");
 			
 		}
-
+		
 		this.cubeMap = cubeMap;
-
+		
 		var atfFormat:ATFFormat = cast (tdata & 0x7f);
-
+		
 		// Make sure it is one of the supported formats
 		if (atfFormat != ATFFormat.RAW_COMPRESSED && atfFormat != ATFFormat.RAW_COMPRESSED_ALPHA) {
 			
 			throw new IllegalOperationError("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
 		
 		}
-
+		
 		
 		width = (1 << cast data.readUnsignedByte ());
 		height = (1 << cast data.readUnsignedByte ());
@@ -112,9 +112,9 @@ class ATFReader {
 		}
 		
 		mipCount = cast data.readUnsignedByte ();
-
+		
 		return (atfFormat == openfl._internal.stage3D.atf.ATFFormat.RAW_COMPRESSED);
-
+		
 	}
 	
 	
@@ -124,16 +124,16 @@ class ATFReader {
 		// ETC2 is available with ATF version 3 
 		var gpuFormats = (version < 3) ? 3 : 4;
 		var sideCount = cubeMap ? 6 : 1; // a cubemap has 6 sides
-
+		
 		for (side in 0...sideCount) {
 			for (level in 0...mipCount) {
 				
 				for (gpuFormat in 0...gpuFormats) {
 					
 					var blockLength = (version == 0) ? __readUInt24 (data) : __readUInt32 (data);
-
+					
 					if ((data.position + blockLength) > data.length) {
-
+						
 						throw new IllegalOperationError("Block length exceeds ATF file length");
 					
 					}
