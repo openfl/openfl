@@ -21,8 +21,8 @@ class GLCompressedTextureFormats {
 	public function new( gl: GLRenderContext ) {
 
 		checkDXT (gl);
-		checkPVRTC (gl);
 		checkETC1 (gl);
+		checkPVRTC (gl);
 
 	}
 
