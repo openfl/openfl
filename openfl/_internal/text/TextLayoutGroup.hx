@@ -48,7 +48,7 @@ class TextLayoutGroup {
 		#if (js && html5)
 		return positions[index];
 		#else
-		return positions[index].advance.x;
+		return (index >= 0 && index < positions.length) ? positions[index].advance.x : 0;
 		#end
 		
 	}
