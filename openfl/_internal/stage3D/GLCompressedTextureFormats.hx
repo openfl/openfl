@@ -20,6 +20,15 @@ class GLCompressedTextureFormats {
 
 	public function new( gl: GLRenderContext ) {
 
+		checkDXT (gl);
+		checkPVRTC (gl);
+		checkETC1 (gl);
+
+	}
+
+
+	public function checkDXT( gl: GLRenderContext ) {
+		
 		#if (js && html5)
 		var compressedExtension = gl.getExtension ("WEBGL_compressed_texture_s3tc");
 		#else
@@ -35,6 +44,27 @@ class GLCompressedTextureFormats {
 
 	}
 
+
+	public function checkETC1( gl: GLRenderContext ) {
+
+	}
+
+
+	public function checkPVRTC( gl: GLRenderContext ) {
+
+		#if (js && html5)
+		// WEBGL_compressed_texture_pvrtc is not available on iOS Safari
+		var compressedExtension = gl.getExtension ("WEBKIT_WEBGL_compressed_texture_pvrtc");
+		
+		if (compressedExtension != null) {
+
+			__formatMap[ATFGPUFormat.PVRTC] = compressedExtension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+			__formatMapAlpha[ATFGPUFormat.PVRTC] = compressedExtension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+			
+		}
+		#end
+
+	}
 
 
 	public function toTextureFormat( alpha:Bool, gpuFormat: ATFGPUFormat ):Int {
