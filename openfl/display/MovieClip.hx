@@ -109,6 +109,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
+
+		if (index == 0 && method != null) method();
 	}
 	
 	
