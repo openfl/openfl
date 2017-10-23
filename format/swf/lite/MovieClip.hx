@@ -443,7 +443,7 @@ class MovieClip extends flash.display.MovieClip {
 			return shape;
 		}
 
-		@:privateAccess symbol.graphics.__owner = this;
+		@:privateAccess symbol.graphics.__owner = shape;
 		@:privateAccess shape.__graphics = symbol.graphics;
 		shape.graphics.__symbol = symbol;
 
@@ -512,14 +512,19 @@ class MovieClip extends flash.display.MovieClip {
 			var label:String = cast frame;
 
 			if ( __symbol != null ) {
+				var found = false;
 				for (i in 0...__symbol.frames.length) {
 
 					if (__symbol.frames[i].label == label) {
 
 						index = i + 1;
+						found = true;
 						break;
 					}
 
+				}
+				if ( !found ) {
+					index = __currentFrame;
 				}
 			}
 		}

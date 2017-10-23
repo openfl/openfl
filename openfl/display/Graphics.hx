@@ -34,6 +34,7 @@ import js.html.CanvasRenderingContext2D;
 
 @:final class Graphics implements hxbit.Serializable {
 
+	private static var __dirtyGraphicsDelay = 2;
 
 	public static inline var TILE_SCALE = 0x0001;
 	public static inline var TILE_ROTATION = 0x0002;
@@ -58,6 +59,7 @@ import js.html.CanvasRenderingContext2D;
 	public var readOnly:Bool;
 	public var snapCoordinates (get, never):Bool;
 	public var dirty (get, set):Bool;
+	public var mustRefreshGraphicsCounter(default, null):Int = -1;
 
 	@:s private var __bounds:Rectangle;
 	@:s private var __commands:DrawCommandBuffer;
@@ -143,7 +145,9 @@ import js.html.CanvasRenderingContext2D;
 		}
 		__commands.beginFill (color & 0xFFFFFF, alpha);
 
-		__visible = true;
+		if ( alpha > 0 ) {
+			__visible = true;
+		}
 
 	}
 
@@ -778,6 +782,21 @@ import js.html.CanvasRenderingContext2D;
 
 		return __bitmap = value;
 
+	}
+
+	public inline function clearGraphicsCounter() {
+		mustRefreshGraphicsCounter = 1;
+	}
+
+	public inline function resetGraphicsCounter() {
+		mustRefreshGraphicsCounter = __dirtyGraphicsDelay;
+		dirty = false;
+	}
+
+	public function __enterFrame() {
+		if ( mustRefreshGraphicsCounter > 0 && --mustRefreshGraphicsCounter == 0) {
+			dirty = true;
+		}
 	}
 
 	public inline function get_snapCoordinates ():Bool {

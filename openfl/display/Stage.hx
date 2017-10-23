@@ -141,6 +141,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 
 		super ();
+		__worldTransform = new Matrix ();
+
 		__branchDepth = 0;
 
 		this.application = window.application;

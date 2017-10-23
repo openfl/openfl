@@ -41,7 +41,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private static var __worldBranchDirty = 0;
 	private static var __isCachingAsMask:Bool;
 	private static var __cachedBitmapPadding = 1;
-	private static var __dirtyGraphicsDelay = 2;
 
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
@@ -92,7 +91,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __isMask:Bool;
 	private var __mask:DisplayObject;
 	private var __maskCached:Bool = false;
-	private var __mustRefreshGraphicsCounter:Int = -1;
 	private var __name:String = "";
 	private var __objectTransform:Transform;
 	private var __offset:Point;
@@ -174,7 +172,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__worldAlpha = 1;
 		__renderAlpha = 1;
-		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderColorTransform = new ColorTransform ();
 
@@ -401,11 +398,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function __enterFrame (deltaTime:Int):Void {
 
-		if (__graphics != null && __mustRefreshGraphicsCounter > 0) {
-			if (--__mustRefreshGraphicsCounter == 0) {
-				__setRenderDirty ();
-				__graphics.dirty = true;
-			}
+		if (__graphics != null ) {
+			__graphics.__enterFrame();
 		}
 
 	}
@@ -638,7 +632,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			Matrix.pool.put (localMatrix);
 			#end
 
-			GLRenderer.renderBitmap (this, renderSession, __mustRefreshGraphicsCounter > 0);
+			GLRenderer.renderBitmap (this, renderSession, __graphics.mustRefreshGraphicsCounter > 0);
 
 		}
 
@@ -722,40 +716,55 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __updateCachedBitmapFn (renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
 
-		if (__cachedBitmapBounds == null) {
-			__cachedBitmapBounds = new Rectangle ();
+		var symbol = getSymbol();
+
+		if (symbol != null && symbol.useUniqueSharedBitmapCache && symbol.uniqueSharedCachedBitmap != null) {
+
+			__cachedBitmap = symbol.uniqueSharedCachedBitmap;
+			forbidCachedBitmapUpdate = true;
+
+		} else {
+
+			if (__cachedBitmapBounds == null) {
+				__cachedBitmapBounds = new Rectangle ();
+			}
+
+			if (__cachedBitmap == null) {
+				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			}
+
+			__cacheBitmapFn (__cachedBitmap, __cachedBitmapBounds, renderSession, maskBitmap, maskMatrix);
+
+			__updateCachedBitmap = false;
+			__updateFilters = false;
+
+			if(symbol != null && symbol.useUniqueSharedBitmapCache) {
+				symbol.uniqueSharedCachedBitmap = __cachedBitmap;
+			}
 		}
+
+	}
+
+	public function __cacheBitmapFn (cachedBitmapData:BitmapData, cachedBitmapBounds:Rectangle, renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
 
 		var padding:Int = __cachedBitmapPadding;
 
-		__getRenderBounds (__cachedBitmapBounds);
+		__getRenderBounds (cachedBitmapBounds);
 
-		if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
+		if (cachedBitmapBounds.width <= 0 || cachedBitmapBounds.height <= 0) {
 			return;
-		}
-
-		var symbol = getSymbol();
-
-		if(symbol != null && symbol.useUniqueSharedBitmapCache && symbol.uniqueSharedCachedBitmap != null) {
-			__cachedBitmap = symbol.uniqueSharedCachedBitmap;
-			forbidCachedBitmapUpdate = true;
-			return;
-		}
-
-		if (__cachedBitmap == null) {
-			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 		}
 
 		var bounds = Rectangle.pool.get ();
 		__getBounds (bounds);
-		var width = Math.ceil (__cachedBitmapBounds.width) + 2 * padding;
-		var height = Math.ceil (__cachedBitmapBounds.height) + 2 * padding;
-		@:privateAccess __cachedBitmap.__resize (bounds.width, bounds.height, width, height);
+		var width = Math.ceil (cachedBitmapBounds.width) + 2 * padding;
+		var height = Math.ceil (cachedBitmapBounds.height) + 2 * padding;
+		@:privateAccess cachedBitmapData.__resize (bounds.width, bounds.height, width, height);
 		Rectangle.pool.put (bounds);
 
 		var transform = Matrix.pool.get ();
 		transform.copyFrom (__renderTransform);
-		transform.translate (padding - Math.ffloor(__cachedBitmapBounds.x), padding - Math.ffloor(__cachedBitmapBounds.y));
+		transform.translate (padding - Math.ffloor(cachedBitmapBounds.x), padding - Math.ffloor(cachedBitmapBounds.y));
 
 		var maskTransform:Matrix = null;
 
@@ -771,7 +780,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var shader = __shader;
 		this.__shader = null;
 		renderSession.maskManager.pushMask (null);
-		@:privateAccess __cachedBitmap.__drawGL (renderSession, this, transform, true, false, true, maskBitmap, maskTransform);
+		@:privateAccess cachedBitmapData.__drawGL (renderSession, this, transform, true, false, true, maskBitmap, maskTransform);
 		renderSession.maskManager.popMask ();
 
 		if (maskMatrix != null) {
@@ -780,11 +789,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		this.__shader = shader;
 
-		__updateCachedBitmap = false;
-
 		if (__updateFilters) {
-			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap);
-			__updateFilters = false;
+			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, cachedBitmapData);
 
 			#if(profile && js)
 				var profileId = getProfileId();
@@ -797,20 +803,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var renderToLocalMatrix = Matrix.pool.get ();
 		renderToLocalMatrix.copyFrom (transform);
 		renderToLocalMatrix.invert ();
-		@:privateAccess __cachedBitmap.__renderToLocalMatrix.copyFrom (renderToLocalMatrix);
+		@:privateAccess cachedBitmapData.__renderToLocalMatrix.copyFrom (renderToLocalMatrix);
 		Matrix.pool.put (renderToLocalMatrix);
 		Matrix.pool.put (transform);
-
-		if(symbol != null && symbol.useUniqueSharedBitmapCache) {
-			symbol.uniqueSharedCachedBitmap = __cachedBitmap;
-		}
 	}
 
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if ( ( __updateCachedBitmap || __updateFilters ) && ( !forbidCachedBitmapUpdate || __cachedBitmap == null ) ) {
 
- 			__updateCachedBitmapFn (renderSession);
+			__updateCachedBitmapFn (renderSession);
 
 		}
 
@@ -1114,15 +1116,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		var local =__transform;
 
-		if (__worldTransform == null) {
-
-			__worldTransform = new Matrix ();
-
-		}
-
-		var wt = __worldTransform;
-		var old_world_transform = Matrix.pool.get ();
-		old_world_transform.copyFrom (wt);
+		var wt = Matrix.pool.get();
 
 		if (parent != null) {
 
@@ -1163,20 +1157,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		if (!__isCachingAsBitmap)  {
-            if(old_world_transform.a != wt.a ||
-                old_world_transform.d != wt.d ||
-                old_world_transform.b != wt.b ||
-                old_world_transform.c != wt.c) {
-                _onWorldTransformScaleRotationChanged();
-            }
-
-            if(old_world_transform.tx != wt.tx ||
-                old_world_transform.ty != wt.ty) {
-		        __mustRefreshGraphicsCounter = __dirtyGraphicsDelay;
-            }
-        }
-
 		if (__cacheAsBitmapMatrix != null) {
 
 			trace(":TODO: fill renderScaleX, renderScaleY and use __cacheAsBitmapMatrix where appropriate");
@@ -1191,17 +1171,55 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderTransform.copyFrom (wt);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 
+		if (__worldTransform == null) {
 
-        Matrix.pool.put(old_world_transform);
+			__worldTransform = new Matrix ();
+
+		} else {
+			if (!__isCachingAsBitmap)  {
+				var old_transform = __worldTransform;
+				var translationChanged = old_transform.tx != wt.tx ||
+					old_transform.ty != wt.ty;
+				var scaleRotationChanged = old_transform.a != wt.a ||
+					old_transform.d != wt.d ||
+					old_transform.b != wt.b ||
+					old_transform.c != wt.c;
+
+				var graphicsWasDirty = false;
+				if ( __graphics != null ) {
+					graphicsWasDirty = @:privateAccess __graphics.__dirty;
+				}
+				if ( scaleRotationChanged ) {
+					_onWorldTransformScaleRotationChanged();
+				}
+
+				if ( !graphicsWasDirty ) {
+					delayGraphicsRefresh(translationChanged, scaleRotationChanged);
+				}
+			}
+		}
+
+		__worldTransform.copyFrom (wt);
+
+		Matrix.pool.put(wt);
+	}
+
+	private function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
+		if ( __graphics != null ) {
+			if ( scaleRotationChanged ) {
+				if ( __graphics != null ) {
+					__graphics.dirty = true;
+				}
+			} else if ( translationChanged ) {
+				__graphics.resetGraphicsCounter();
+			}
+		}
 	}
 
 	public function _onWorldTransformScaleRotationChanged():Void {
 
 		__updateCachedBitmap = true;
 		__updateFilters = __filters != null && __filters.length > 0;
-		if ( __graphics != null ) {
-			__graphics.dirty = true;
-		}
 
 	}
 

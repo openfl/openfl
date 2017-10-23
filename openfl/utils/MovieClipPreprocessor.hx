@@ -164,11 +164,11 @@ private class Sprite {
                         children.push(sprite);
                     }
                     sprite.renderTransform.copyFrom(childRenderTransform);
-            } else if (Std.is(symbol, MorphShapeSymbol)) {
-                if ( !idRatiosMap.exists(frameObject.id) ) {
-                    idRatiosMap.set(frameObject.id, []);
-                }
-                var patchedRatio = frameObject.ratio == null ? 0 : frameObject.ratio;
+                } else if (Std.is(symbol, MorphShapeSymbol)) {
+                    if ( !idRatiosMap.exists(frameObject.id) ) {
+                        idRatiosMap.set(frameObject.id, []);
+                    }
+                    var patchedRatio = frameObject.ratio == null ? 0 : frameObject.ratio;
                     var morphShapeSymbol = cast(symbol, MorphShapeSymbol);
                     if ( morphShapeSymbol.cachedHandlers == null ) {
                         morphShapeSymbol.cachedHandlers = new Map<Int, ShapeCommandExporter>();
