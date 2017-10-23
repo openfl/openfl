@@ -443,7 +443,7 @@ class MovieClip extends flash.display.MovieClip {
 			return shape;
 		}
 
-		@:privateAccess symbol.graphics.__owner = this;
+		@:privateAccess symbol.graphics.__owner = shape;
 		@:privateAccess shape.__graphics = symbol.graphics;
 		shape.graphics.__symbol = symbol;
 
