@@ -88,7 +88,7 @@ class Preloader extends LimePreloader {
 			sound.load (new URLRequest (patchedSoundName), null, preloadCount, true);
 			if ( preloadCount != null ) {
 				for(i in 0...preloadCount) {
-					sound.play(mutedTransform);
+					sound.prePlayHTML5(mutedTransform);
 				}
 			}
 		}

@@ -232,6 +232,15 @@ class Sound extends EventDispatcher {
 
 	}
 
+	#if html5
+	public function prePlayHTML5(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
+		if ( @:privateAccess !__sound._webAudio ) {
+			return this.play(startTime, loops, sndTransform);
+		}
+		return null;
+	}
+	#end
+
 	public function stop() {
 		#if html5
 		__sound.stop(__soundId);
@@ -341,6 +350,7 @@ class Sound extends EventDispatcher {
 	public function off (event:String, fct:Dynamic = null, id:Int = null): Howl;
 	public function unload (): Void;
 	public function duration (id:Int = null): Int;
+	private var _webAudio:Bool;
 }
 #end
 
