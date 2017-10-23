@@ -827,6 +827,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 			displayObject.filters = filters;
 			
+		} else {
+
+			displayObject.filters = null;
+
 		}
 		
 		if (frameObject.visible != null) {

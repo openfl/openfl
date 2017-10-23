@@ -6,6 +6,7 @@ import lime.graphics.cairo.CairoAntialias;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.cairo.CairoFontOptions;
 import lime.graphics.cairo.CairoFTFontFace;
+import lime.graphics.cairo.CairoGlyph;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoHintStyle;
 import lime.graphics.cairo.CairoImageSurface;
@@ -231,25 +232,6 @@ class CairoTextField {
 					cairo.setFontSize (size);
 					
 					cairo.moveTo (group.offsetX + scrollX, group.offsetY + group.ascent + scrollY);
-					//cairo.translate (0, 0);
-					//
-					//var glyphs = [];
-					//var x:Float = group.offsetX + scrollX;
-					//var y:Float = group.offsetY + group.ascent + scrollY;
-					//var j = 0;
-					//
-					//for (i in group.startIndex...group.endIndex) {
-						//
-						//glyphs.push (new lime.graphics.cairo.CairoGlyph (font.getGlyph (text.charAt (i)), x + 0.5, y + 0.5));
-						//
-						//if (group.advances.length > j) {
-							//x += group.advances[j];
-							//j++;
-						//}
-						//
-					//}
-					//
-					//cairo.showGlyphs (glyphs);
 					
 					var usedHack = false;
 					
@@ -288,7 +270,29 @@ class CairoTextField {
 					
 					if (!usedHack) {
 						
+						#if openfl_cairo_show_text
 						cairo.showText (text.substring (group.startIndex, group.endIndex));
+						#else
+						
+						// TODO: Improve performance
+						
+						cairo.translate (0, 0);
+						
+						var glyphs = [];
+						var x:Float = group.offsetX + scrollX;
+						var y:Float = group.offsetY + group.ascent + scrollY;
+						var j = 0;
+						
+						for (position in group.positions) {
+							
+							if (position == null || position.glyph == 0) continue;
+							glyphs.push (new CairoGlyph (position.glyph, x + 0.5, y + 0.5));
+							x += position.advance.x;
+							
+						}
+						
+						cairo.showGlyphs (glyphs);
+						#end
 						
 					}
 					
@@ -302,8 +306,8 @@ class CairoTextField {
 								
 								for (i in 0...(textField.__caretIndex - group.startIndex)) {
 									
-									if (group.advances.length <= i) break;
-									advance += group.advances[i];
+									if (group.positions.length <= i) break;
+									advance += group.getAdvance (i);
 									
 								}
 								

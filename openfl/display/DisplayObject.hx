@@ -3,6 +3,7 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
+import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -58,6 +59,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
+	private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
 	
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
@@ -90,7 +92,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __cacheAsBitmap:Bool;
 	private var __cacheAsBitmapMatrix:Matrix;
 	private var __cacheBitmap:Bitmap;
-	private var __cacheBitmapBackground:Int;
+	private var __cacheBitmapBackground:Null<Int>;
 	private var __cacheBitmapColorTransform:ColorTransform;
 	private var __cacheBitmapData:BitmapData;
 	private var __cacheBitmapRender:Bool;
@@ -159,7 +161,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderTransform = new Matrix ();
-		
 		#if dom
 		__worldVisible = true;
 		#end
@@ -214,7 +215,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		return super.dispatchEvent (event);
+		return __dispatchWithCapture (event);
 		
 	}
 	
@@ -368,44 +369,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
+	private function __dispatchChildren (event:Event):Void {
 		
-		event.target = this;
 		
-		if (parent != null) {
-			
-			event.eventPhase = CAPTURING_PHASE;
-			
-			if (parent == stage) {
-				
-				parent.__dispatchEvent (event);
-				
-			} else {
-				
-				var parent = parent;
-				var i = 0;
-				
-				while (parent != null) {
-					
-					stack[i] = parent;
-					parent = parent.parent;
-					i++;
-					
-				}
-				
-				for (j in 0...i) {
-					
-					stack[i - j - 1].__dispatchEvent (event);
-					
-				}
-				
-			}
-			
-		}
-		
-		event.eventPhase = AT_TARGET;
-		
-		return __dispatchEvent (event);
 		
 	}
 	
@@ -499,6 +465,55 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 		}
+		
+	}
+	
+	
+	private function __dispatchWithCapture (event:Event):Bool {
+		
+		if (event.target == null) {
+			
+			event.target = this;
+			
+		}
+		
+		if (parent != null) {
+			
+			event.eventPhase = CAPTURING_PHASE;
+			
+			if (parent == stage) {
+				
+				parent.__dispatch (event);
+				
+			} else {
+				
+				var stack = __tempStack.get ();
+				var parent = parent;
+				var i = 0;
+				
+				while (parent != null) {
+					
+					stack[i] = parent;
+					parent = parent.parent;
+					i++;
+					
+				}
+				
+				for (j in 0...i) {
+					
+					stack[i - j - 1].__dispatch (event);
+					
+				}
+				
+				__tempStack.release (stack);
+				
+			}
+			
+		}
+		
+		event.eventPhase = AT_TARGET;
+		
+		return __dispatchEvent (event);
 		
 	}
 	
@@ -997,12 +1012,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var matrix = null, rect = null;
 			
-			__getWorldTransform ();
+			//if (!renderSession.lockTransform) __getWorldTransform ();
 			__update (false, true);
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = (__filters != null && __filters.length > 0);
+			
+			var bitmapWidth = 0, bitmapHeight = 0;
 			
 			if (updateTransform || hasFilters) {
 				
@@ -1012,11 +1029,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__getFilterBounds (rect, __renderTransform);
 				
+				bitmapWidth = Math.ceil (rect.width);
+				bitmapHeight = Math.ceil (rect.height);
+				
 			}
 			
 			if (hasFilters) {
 				
-				if (__cacheBitmap != null && (rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height)) {
+				if (__cacheBitmap != null && (bitmapWidth != __cacheBitmap.width || bitmapHeight != __cacheBitmap.height)) {
 					
 					needRender = true;
 					
@@ -1040,9 +1060,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (rect.width >= 0.5 && rect.height >= 0.5) {
 					
-					if (__cacheBitmap == null || rect.width != __cacheBitmap.width || rect.height != __cacheBitmap.height) {
+					if (__cacheBitmap == null || bitmapWidth != __cacheBitmap.width || bitmapHeight != __cacheBitmap.height) {
 						
-						__cacheBitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, color);
+						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						//__cacheBitmapData.disposeImage ();
 						
 						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
@@ -1135,7 +1155,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
 						if (filter.__preserveObject) {
-							lastBitmap.draw (bitmapData3);
+							lastBitmap.draw (bitmapData3, null, transform.colorTransform);
 						}
 						filter.__renderDirty = false;
 						

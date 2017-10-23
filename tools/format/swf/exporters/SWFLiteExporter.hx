@@ -914,6 +914,8 @@ class SWFLiteExporter {
 			data2.className = symbol.name;
 		}
 		
+		// TODO: Move to separate FrameScriptExporter class
+		
 		// TODO: guard the rest of this code with appropriate macro
 		//       cuz not everyone wants to do it this way
 
@@ -942,7 +944,10 @@ class SWFLiteExporter {
 		// find the as3 class definition
 		var cls = data.abcData.findClassByName(symbol.name);
 		
+		if (cls != null) {
+			
 		// get base class
+			if (cls.superclass != null) {
 		var superClsName = data.abcData.resolveMultiNameByIndex(cls.superclass);
 		switch (superClsName.nameSpace) {
 			case NPublic(_) if (!~/^flash\./.match(superClsName.nameSpaceName)):
@@ -955,6 +960,7 @@ class SWFLiteExporter {
 				LogHelper.info ("", "data.className: " + symbol.name + ", baseClass: " + spriteSymbol.baseClassName);
 			case _:
 		}
+			}
 		
 		// get frame scripts
 		if (cls.fields.length > 0) {
@@ -1544,6 +1550,9 @@ class SWFLiteExporter {
 				}
 			}
 		}
+			
+		}
+		
 	}
 	
 	

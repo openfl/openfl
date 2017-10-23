@@ -6,6 +6,9 @@ package openfl.net;
 	
 	public var contentType:String;
 	public var data:Dynamic;
+	public var followRedirects:Bool;
+	public var idleTimeout:Float;
+	public var manageCookies:Bool;
 	public var method:String;
 	public var requestHeaders:Array<URLRequestHeader>;
 	public var url:String;
@@ -20,9 +23,12 @@ package openfl.net;
 			
 		}
 		
-		requestHeaders = [];
-		method = URLRequestMethod.GET;
 		contentType = null; // "application/x-www-form-urlencoded";
+		followRedirects = true;
+		idleTimeout = 30000;
+		manageCookies = true;
+		method = URLRequestMethod.GET;
+		requestHeaders = [];
 		
 	}
 	

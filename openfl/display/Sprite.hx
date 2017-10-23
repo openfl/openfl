@@ -71,6 +71,49 @@ class Sprite extends DisplayObjectContainer {
 	
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		if (mask != null && !mask.__hitTestMask (x, y)) return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		
+		if (__scrollRect != null) {
+			
+			var point = Point.__pool.get ();
+			point.setTo (x, y);
+			__getRenderTransform ().__transformInversePoint (point);
+			
+			if (!__scrollRect.containsPoint (point)) {
+				
+				Point.__pool.release (point);
+				return __hitTestHitArea (x, y, shapeFlag, stack, true, hitObject);
+				
+			}
+			
+			Point.__pool.release (point);
+			
+		}
+		
+		if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
+			
+			return interactiveOnly;
+			
+		} else if (hitArea == null && (!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
+			
+			if (stack != null) {
+				
+				stack.push (hitObject);
+				
+			}
+			
+			return true;
+			
+		}
+		
+		return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		
+	}
+	
+	
+	private function __hitTestHitArea (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+		
 		if (hitArea != null) {
 			
 			if (!hitArea.mouseEnabled) {
@@ -89,45 +132,7 @@ class Sprite extends DisplayObjectContainer {
 				
 			}
 			
-		} else {
-			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
-			if (mask != null && !mask.__hitTestMask (x, y)) return false;
-			
-			if (__scrollRect != null) {
-				
-				var point = Point.__pool.get ();
-				point.setTo (x, y);
-				__getRenderTransform ().__transformInversePoint (point);
-				
-				if (!__scrollRect.containsPoint (point)) {
-					
-					Point.__pool.release (point);
-					return false;
-					
-				}
-				
-				Point.__pool.release (point);
-				
-			}
-			
-			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
-				
-				return interactiveOnly;
-				
-			} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
-				
-				if (stack != null) {
-					
-					stack.push (hitObject);
-					
-				}
-				
-				return true;
-				
-			}
-			
-		}
+		} 
 		
 		return false;
 		
@@ -173,7 +178,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	private override function get_tabEnabled ():Bool {
 		
-		return (__tabEnabled || buttonMode);
+		return (__tabEnabled == null ? buttonMode : __tabEnabled);
 		
 	}
 	

@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl;
+package openfl._internal.stage3D.opengl;
 
 
 import openfl._internal.renderer.RenderSession;

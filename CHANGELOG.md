@@ -1,3 +1,36 @@
+6.2.2 (10/12/2017)
+------------------
+
+* Fixed support for using static initialization with bitmap filters
+* Fixed world transform values when nesting `cacheAsBitmap` objects
+* Fixed the behavior of using `tilemap.addTile` multiple times with the same tile
+* Fixed the rendering of `Tilemap` using HTML5 -Ddom rendering
+* Fixed conversion of SWF assets if a SWF class name is not found
+
+
+6.2.1 (10/10/2017)
+------------------
+
+* Updated Lime to 5.7.*
+* Added initial Dockerfile script
+* Added initial support for ATF cubemap textures
+* Improved native `TextField` rendering to use native text layouts directly
+* Improved support for combining characters in native `TextField` rendering
+* Improved word-wrapping when the final character in a line is a space
+* Improved the performance of `cacheAsBitmap` objects significantly
+* Improved `Vector` to support `new Vector<Int>([1,2,3])` initialization
+* Fixed incorrect trimming of final line character when "\n" is used
+* Fixed the color order of `ColorMatrixFilter` on certain targets
+* Fixed the position of `graphics.drawTriangles` shape rendering
+* Fixed casting of `Vector<T>` to `Vector<Dynamic>` on C++ target
+* Fixed proper serialization of `openfl.Vector` on HTML5
+* Fixed setting of `byteArray.position` value if `byteArray.length` is smaller
+* Fixed `XMLSocket` to send `DataEvent` based on `String` message boundaries
+* Fixed some issues in `textField.setTextFormat`
+* Fixed the behavior of `context3D.setStencilActions` on OpenGL
+* Fixed minor build issues when using Haxe 4 prerelease builds
+
+
 6.2.0 (09/26/2017)
 ------------------
 

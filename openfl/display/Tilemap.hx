@@ -79,6 +79,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public function addTile (tile:Tile):Tile {
 		
+		if (tile == null) return null;
+		
+		if (tile.parent == this) {
+			
+			removeTile (tile);
+			
+		}
+		
 		__tiles[numTiles] = tile;
 		tile.parent = this;
 		numTiles++;
@@ -93,12 +101,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public function addTileAt (tile:Tile, index:Int):Tile {
 		
-		var cacheLength = __tiles.length;
+		if (tile == null) return null;
 		
-		removeTile (tile);
-		
-		if (cacheLength > __tiles.length) {
-			index--;
+		if (tile.parent == this) {
+			
+			var cacheLength = __tiles.length;
+			
+			removeTile (tile);
+			
+			if (cacheLength > __tiles.length) {
+				index--;
+			}
+			
 		}
 		
 		__tiles.insertAt (index, tile);

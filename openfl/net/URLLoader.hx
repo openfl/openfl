@@ -177,6 +177,14 @@ class URLLoader extends EventDispatcher {
 			
 		}
 		
+		__httpRequest.followRedirects = request.followRedirects;
+		__httpRequest.timeout = Std.int (request.idleTimeout);
+		__httpRequest.withCredentials = request.manageCookies;
+		
+		// TODO: Better user agent?
+		var userAgent = request.userAgent;
+		if (userAgent == null) userAgent = "Mozilla/5.0 (Windows; U; en) AppleWebKit/420+ (KHTML, like Gecko) OpenFL/1.0";
+		
 		__httpRequest.userAgent = request.userAgent;
 		__httpRequest.enableResponseHeaders = true;
 		
