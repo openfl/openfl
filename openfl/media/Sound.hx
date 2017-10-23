@@ -209,7 +209,7 @@ class Sound extends EventDispatcher {
 		var pan = sndTransform.pan;
 
 		if (pan != 0) {
-			throw ":TODO: use spacial plugin";
+			throw ":TODO: use spatial plugin";
 		}
 		this.numberOfLoopsRemaining = loops;
 		if(itHasSoundSprite) {
