@@ -233,7 +233,11 @@ class Sound extends EventDispatcher {
 	}
 
 	public function stop() {
+		#if html5
 		__sound.stop(__soundId);
+		#else
+		__sound.stop();
+		#end
 	}
 
 	public function dispose() {

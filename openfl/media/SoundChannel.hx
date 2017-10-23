@@ -148,7 +148,7 @@ import openfl.media.Sound;
 
 	// Event Handlers
 
-	private function soundInstance_onComplete (_):Void {
+	private function soundInstance_onComplete ():Void {
 
 		__dispose ();
 		dispatchEvent (Event.__create (Event.SOUND_COMPLETE));
