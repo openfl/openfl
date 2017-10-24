@@ -1120,7 +1120,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (parent != null) {
 
-			var parentTransform = parent.__worldTransform;
+			var parentTransform:Matrix;
+			if ( parent.__worldTransform != null ) {
+				parentTransform = parent.__worldTransform;
+			} else {
+				parentTransform = parent.__transform;
+			}
 
 			var a = parentTransform.a;
 			var b = parentTransform.b;
