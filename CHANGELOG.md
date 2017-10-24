@@ -1,3 +1,23 @@
+6.3.0 (10/24/2017)
+------------------
+
+* Updated Lime to 5.8.*
+* Added capture phase support for all `DisplayObject` events
+* Added support for `tile.colorTransform` on Flash `Tilemap`
+* Added support for `URLRequest` `followRedirects` and `manageCookies`
+* Added support for `URLRequest` `idleTimeout` and `userAgent`
+* Improved the behavior of `sprite.hitArea` with children
+* Improved the `tabEnabled` and mouse focus behavior
+* Fixed `TileArray` when `tile.id` does not exist in `Tileset`
+* Fixed support for `tile.colorTransform` on OpenGL `Tilemap`
+* Fixed the removal of bitmap filters in `MovieClip` animation where needed
+* Fixed similar font name resolution to better ignore non-alphabetic characters
+* Fixed support for combining bitmap filters with `ColorTransform`
+* Fixed support for videos in mobile Safari
+* Fixed some issues when using the Java target
+* Fixed a regression in HTML5 `openfl.Vector` JSON stringification
+
+
 6.2.2 (10/12/2017)
 ------------------
 
