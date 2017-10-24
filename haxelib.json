@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "6.2.2",
-	"releasenote": "Minor behavior improvements",
+	"version": "6.3.0",
+	"releasenote": "Capture phase improvement, Tilemap colorTransform and URLRequest improvements",
 	"contributors": [ "singmajesty" ]
 }
