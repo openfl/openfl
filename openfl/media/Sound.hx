@@ -110,10 +110,6 @@ class Sound extends EventDispatcher {
 			throw "All sounds should have been registered in preloader!";
 		}
 
-		if ( poolAmount < 5 ) {
-			poolAmount = 5;
-		}
-
 		var logicalPath = lime.Assets.getLogicalPath(soundName);
 		var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
 		var data:Dynamic = null;
