@@ -297,6 +297,11 @@ class TextEngine {
 		
 		var font = format.italic ? "italic " : "normal ";
 		font += "normal ";
+		#if (js && html5)
+		if(format.weight != null)
+			font += '${format.weight} ';
+		else
+		#end
 		font += format.bold ? "bold " : "normal ";
 		font += format.size + "px";
 		font += "/" + (format.leading + format.size + 3) + "px ";
@@ -309,7 +314,7 @@ class TextEngine {
 			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace(format.font, '$1') + "'";
 			
 		}
-		
+
 		return font;
 		
 	}

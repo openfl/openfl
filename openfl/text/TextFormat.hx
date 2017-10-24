@@ -28,7 +28,11 @@ class TextFormat {
 	public var target:String;
 	public var underline:Null<Bool>;
 	public var url:String;
-	
+
+	#if ((js && html5) || macro)
+	public var weight:FontWeight;
+	#end
+
 	private var __ascent:Null<Float>;
 	private var __descent:Null<Float>;
 	
@@ -67,6 +71,10 @@ class TextFormat {
 		newFormat.kerning = kerning;
 		newFormat.letterSpacing = letterSpacing;
 		newFormat.tabStops = tabStops;
+
+		#if (js && html5)
+		newFormat.weight = weight;
+		#end
 		
 		newFormat.__ascent = __ascent;
 		newFormat.__descent = __descent;
@@ -96,7 +104,11 @@ class TextFormat {
 		if (format.kerning != null) kerning = format.kerning;
 		if (format.letterSpacing != null) letterSpacing = format.letterSpacing;
 		if (format.tabStops != null) tabStops = format.tabStops;
-		
+
+		#if (js && html5)
+		if (format.weight != null) weight = format.weight;
+		#end
+
 		if (format.__ascent != null) __ascent = format.__ascent;
 		if (format.__descent != null) __descent = format.__descent;
 		
