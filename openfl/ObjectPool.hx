@@ -87,19 +87,18 @@ class ObjectPool<T>
 	**/
 	public inline function get():T
 	{
+		var obj = size > 0 ? mPool.get(--size) : mFactory();
 		#if dev
-			var obj = size > 0 ? mPool.get(--size) : mFactory();
-			if( Reflect.hasField(obj, "__objectPoolUsed") && Reflect.field(obj, "__objectPoolUsed") == true ) {
-					throw 'WOOOOW! Reusing a pooled object multiple times!!';
-			} else {
-				Reflect.setField(obj, "__objectPoolUsed", true);
-				//Reflect.setField(obj, "__objectPoolUsedStack", haxe.CallStack.callStack());
+			if ( obj != null ) {
+				if( Reflect.hasField(obj, "__objectPoolUsed") && Reflect.field(obj, "__objectPoolUsed") == true ) {
+						throw 'WOOOOW! Reusing a pooled object multiple times!!';
+				} else {
+					Reflect.setField(obj, "__objectPoolUsed", true);
+					//Reflect.setField(obj, "__objectPoolUsedStack", haxe.CallStack.callStack());
+				}
 			}
-			return obj;
-
-		#else
-			return size > 0 ? mPool.get(--size) : mFactory();
 		#end
+		return obj;
 	}
 
 	/**

@@ -92,7 +92,7 @@
 			<haxedef name="openfl-html5" />
 			<haxedef name="canvas" unless="webgl || dom" />
 			<haxeflag name="--remap" value="flash:openfl" />
-			<dependency path="dependencies/soundjs.min.js" />
+			<dependency path="dependencies/howler.min.js" />
 			
 		</section>
 		
