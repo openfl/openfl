@@ -73,13 +73,15 @@ class SWFLiteExporter {
 	private var alphaPalette:Bytes;
 	private var data:SWFRoot;
 	private var mergeAlphaChannel:Bool;
+	private var isSimpleSpriteEnabled:Bool;
 	private var excludes:Array<Dynamic>;
 
 
-	public function new (data:SWFRoot, mergeAlphaChannel:Bool, excludes:Array<Dynamic> = null) {
+	public function new (data:SWFRoot, mergeAlphaChannel:Bool, isSimpleSpriteEnabled:Bool, excludes:Array<Dynamic> = null) {
 
 		this.data = data;
 		this.mergeAlphaChannel = mergeAlphaChannel;
+		this.isSimpleSpriteEnabled = isSimpleSpriteEnabled;
 		if ( excludes == null ) {
 			excludes = new Array<Dynamic>();
 		}
@@ -1136,9 +1138,7 @@ class SWFLiteExporter {
 
 	private function isSimpleSprite(commands:Array<ShapeCommand>)
 	{
-
-		return commands.length == 1 && Type.enumConstructor(commands[0]) == "DrawImage";
-
+		return isSimpleSpriteEnabled && commands.length == 1 && Type.enumConstructor(commands[0]) == "DrawImage";
 	}
 }
 
