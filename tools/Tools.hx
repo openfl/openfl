@@ -467,8 +467,9 @@ class Tools {
 					var bytes:ByteArray = File.getBytes (library.sourcePath);
 					var swf = new SWF (bytes);
 
-					var mergeAlphaChannel = project.defines.exists('swf.mergeAlphaChannel') ;
-					var exporter = new SWFLiteExporter (swf.data, mergeAlphaChannel, library.excludes);
+					var mergeAlphaChannel = project.defines.exists('swf.mergeAlphaChannel');
+					var simpleSpriteEnabled = !project.defines.exists('simple_sprite_disabled');
+					var exporter = new SWFLiteExporter (swf.data, mergeAlphaChannel, simpleSpriteEnabled, library.excludes);
 					var swfLite = exporter.swfLite;
 
 					for (id in exporter.bitmaps.keys ()) {
