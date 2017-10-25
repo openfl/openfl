@@ -490,7 +490,7 @@ class CanvasGraphics {
 
 			var bounds = graphics.__bounds;
 
-			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
+			if ((!isMask && !graphics.__visible) || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 
 				graphics.__canvas = null;
 				graphics.__context = null;
