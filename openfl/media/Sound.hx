@@ -218,7 +218,7 @@ class Sound extends EventDispatcher {
 		__sound.loop(loops > 1, __soundId);
 		__sound.on("end", onEnd, __soundId);
 		if ( startTime != 0 ) {
-			__sound.seek(Std.int (startTime), __soundId); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
+			__sound.seek(startTime / 1000, __soundId); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
 		}
 
 
@@ -340,7 +340,7 @@ class Sound extends EventDispatcher {
 	public function stop (id:Int = null): Howl;
 	public function volume (vol:Float = null, id:Int = null): Dynamic;
 	public function loop (loop:Bool = null, id:Int = null): Dynamic;
-	public function seek (rate:Int = null, id:Int = null): Dynamic;
+	public function seek (rate:Float = null, id:Int = null): Dynamic;
 	public function on (event:String, fct:Dynamic, id:Int = null): Howl;
 	public function once (event:String, fct:Dynamic, id:Int = null): Howl;
 	public function off (event:String, fct:Dynamic = null, id:Int = null): Howl;
