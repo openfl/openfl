@@ -804,9 +804,13 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
 
+		var oldCacheAsBitmap = __cacheAsBitmap;
 		var result = super.set_cacheAsBitmap(cacheAsBitmap);
-		for(child in __children){
-			child.updateCachedParent ();
+		if (oldCacheAsBitmap != result) {
+			var cachedParent = cacheAsBitmap ? this : null;
+			for(child in __children){
+				child.updateCachedParent (cachedParent);
+			}
 		}
 		return result;
 
