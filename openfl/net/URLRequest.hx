@@ -26,7 +26,7 @@ package openfl.net;
 		contentType = null; // "application/x-www-form-urlencoded";
 		followRedirects = true;
 		idleTimeout = 30000;
-		manageCookies = true;
+		manageCookies = false;
 		method = URLRequestMethod.GET;
 		requestHeaders = [];
 		
