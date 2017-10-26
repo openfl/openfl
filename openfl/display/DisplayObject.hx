@@ -1352,7 +1352,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_cacheAsBitmap ():Bool {
 		
-		return (__filters == null ? __cacheAsBitmap : true);
+		return false;//(__filters == null ? __cacheAsBitmap : true);
 		
 	}
 	
