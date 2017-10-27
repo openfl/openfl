@@ -303,7 +303,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				if (existingChild != targetChild) {
 					
 					child = targetChild;
-					addChildAt (targetChild, i);
+					addChildAt (targetChild, i);//LC : Manually added instances get pushed to the end here
 					
 				} else {
 					
@@ -343,7 +343,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				// TODO: Faster method of determining if this was automatically added?
 				
-				for (instance in __activeInstances) {
+				for (instance in __activeInstances) {//LC : __activeInstances is the list of frameSymbols (frameSymbol.displayObject is every object on the movie clip not manually added)
+					//LC : we can improve performance by tracking what is manually added by comparing against __activeInstances when something is added rather than here on every enter frame call.
+					//LC : as currently implemented this will loop over everything every enter frame once for every manually added child and once for each child added and removed during the frame
 					
 					if (instance.displayObject == child) {
 						
