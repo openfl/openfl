@@ -46,7 +46,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var framesLoaded (get, never):Int;
 	public var isPlaying (get, never):Bool;
 	public var totalFrames (get, never):Int;
-	
+
+	private var __cachedChildrenFrameSymbolInstacesDisplayObjects:Array<DisplayObject>;
+	private var __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects:Map<DisplayObject, DisplayObject>;
 	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	private var __currentFrame:Int;
@@ -67,7 +69,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public function new () {
 		
 		super ();
-		
+		__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects = new Map();
+		__cachedChildrenFrameSymbolInstacesDisplayObjects = new Array();
 		__currentFrame = 1;
 		__currentLabels = [];
 		__totalFrames = 0;
@@ -165,8 +168,39 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__playing = false;
 		
 	}
-	
-	
+
+	public override function addChildAt (child:DisplayObject, index:Int):DisplayObject{
+		var addedChild : DisplayObject = super.addChildAt(child, index);
+
+		if(addedChild != null) {
+			var cached : Bool = false;
+			if(__cachedChildrenFrameSymbolInstacesDisplayObjects.indexOf(addedChild) >= 0 || __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(addedChild)) {
+				cached = true;
+			}
+			else if(__activeInstances != null) {
+				for (instance in __activeInstances) {
+					if (instance.displayObject == addedChild) {
+						cached = true;
+						__cachedChildrenFrameSymbolInstacesDisplayObjects.push(addedChild);
+						break;
+					}
+				}
+			}
+			if(!cached){
+				var anchor : DisplayObject = index > 0 ? __children[index-1] : null;
+				__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.set(addedChild, anchor);
+			}
+		}
+		return addedChild;
+	}
+
+	public override function removeChild (child:DisplayObject):DisplayObject {
+		if (child != null && child.parent == this) {
+			__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.remove(child);
+		}
+		return super.removeChild(child);
+	}
+
 	public override function __enterFrame (deltaTime:Int):Void {
 		
 		if (__symbol != null && __playing) {
@@ -291,24 +325,36 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			var targetChild:DisplayObject;
 			var child:DisplayObject;
 			var maskApplied:Bool;
-			
-			for (i in 0...currentInstances.length) {
-				
-				existingChild = __children[i];
-				instance = currentInstances[i];
+
+			var length:Int = currentInstances.length;
+			var currentInstancesIndex = 0;
+			var childrenIndex = 0;
+			while (currentInstancesIndex < length) {
+
+				existingChild = __children[childrenIndex];
+				instance = currentInstances[currentInstancesIndex];
 				
 				targetDepth = instance.depth;
 				targetChild = instance.displayObject;
-				
+
 				if (existingChild != targetChild) {
-					
-					child = targetChild;
-					addChildAt (targetChild, i);//LC : Manually added instances get pushed to the end here
-					
+					if(existingChild != null && __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(existingChild)){
+						currentInstancesIndex--;
+						if(childrenIndex > 0 && __children[childrenIndex-1] != __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects[existingChild]){// if the anchored object is missing then move index to zero to replicate as3 behavior
+							__children.remove(existingChild);
+							addChildAt(existingChild, 0);
+						}
+						child = existingChild;
+					}
+					else{
+						child = targetChild;
+						addChildAt (targetChild, currentInstancesIndex);
+					}
+
 				} else {
-					
-					child = __children[i];
-					
+
+					child = __children[currentInstancesIndex];
+
 				}
 				
 				maskApplied = false;
@@ -330,35 +376,24 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					child.mask = null;
 					
 				}
-				
+				childrenIndex++;
+				currentInstancesIndex++;
 			}
-			
-			var child;
-			var i = currentInstances.length;
-			var length = __children.length;
-			
-			while (i < length) {
-				
-				child = __children[i];
-				
-				// TODO: Faster method of determining if this was automatically added?
-				
-				for (instance in __activeInstances) {//LC : __activeInstances is the list of frameSymbols (frameSymbol.displayObject is every object on the movie clip not manually added)
-					//LC : we can improve performance by tracking what is manually added by comparing against __activeInstances when something is added rather than here on every enter frame call.
-					//LC : as currently implemented this will loop over everything every enter frame once for every manually added child and once for each child added and removed during the frame
-					
-					if (instance.displayObject == child) {
-						
-						removeChild (child);
-						i--;
-						length--;
-						
+
+			while (childrenIndex < __children.length) {
+				child = __children[childrenIndex];
+
+				if(child != null && __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(child)){
+					if(childrenIndex > 0 && __children[childrenIndex-1] != __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects[child]){
+						__children.remove(child);// if the anchored object is missing then move index to zero to replicate as3 behavior
+						addChildAt(child, 0);
 					}
-					
 				}
-				
-				i++;
-				
+				else{
+					removeChild(child);
+					childrenIndex--;
+				}
+				childrenIndex++;
 			}
 			
 			__lastFrameUpdate = __currentFrame;
