@@ -1336,6 +1336,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 				
 				__mouseDownLeft = target;
+				MouseEvent.__buttonDown = true;
 			
 			case MouseEvent.MIDDLE_MOUSE_DOWN:
 				
@@ -1348,6 +1349,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case MouseEvent.MOUSE_UP:
 				
 				if (__mouseDownLeft != null) {
+					
+					MouseEvent.__buttonDown = false;
 					
 					if (__mouseX < 0 || __mouseY < 0) {
 						
