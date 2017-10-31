@@ -1,7 +1,7 @@
 package openfl._internal.stage3D.atf;
 
 
-@:enum abstract ATFGPUFormat(Int) from Int {
+@:enum abstract ATFGPUFormat(Int) from Int to Int {
 	
 	public var DXT = 0; //DXT1/DXT5 depending on alpha
 	public var PVRTC = 1;

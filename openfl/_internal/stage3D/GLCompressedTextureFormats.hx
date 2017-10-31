@@ -1,7 +1,6 @@
 package openfl._internal.stage3D;
 
 
-import haxe.ds.IntMap;
 import lime.graphics.opengl.GL;
 import lime.graphics.GLRenderContext;
 import openfl._internal.stage3D.atf.ATFGPUFormat;
@@ -15,8 +14,8 @@ import openfl.errors.IllegalOperationError;
 class GLCompressedTextureFormats {
 
 
-	private var __formatMap = new IntMap<ATFGPUFormat, Int>();
-	private var __formatMapAlpha = new IntMap<ATFGPUFormat, Int>();
+	private var __formatMap = new Map<Int, Int>();
+	private var __formatMapAlpha = new Map<Int, Int>();
 
 
 	public function new( gl: GLRenderContext ) {
