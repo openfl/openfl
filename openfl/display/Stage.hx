@@ -127,6 +127,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
 	private var __invalidated:Bool;
+	private var __isFullscreen:Bool;
 	private var __lastClickTime:Int;
 	private var __logicalWidth:Int;
 	private var __logicalHeight:Int;
@@ -867,9 +868,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__resize ();
 			
-			if (__displayState == NORMAL) {
+			if (!__isFullscreen) {
 				
-				__displayState = FULL_SCREEN_INTERACTIVE;
+				__isFullscreen = true;
+				if (__displayState == NORMAL) __displayState = FULL_SCREEN_INTERACTIVE;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 				
 			}
@@ -934,8 +936,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderDirty = true;
 			__resize ();
 			
-			if (__displayState != NORMAL && !window.fullscreen) {
+			if (__isFullscreen && !window.fullscreen) {
 				
+				__isFullscreen = false;
 				__displayState = NORMAL;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 				
