@@ -127,7 +127,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
 	private var __invalidated:Bool;
-	private var __isFullscreen:Bool;
 	private var __lastClickTime:Int;
 	private var __logicalWidth:Int;
 	private var __logicalHeight:Int;
@@ -145,6 +144,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __stack:Array<DisplayObject>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
+	private var __wasFullscreen:Bool;
 	
 	private var __touchData:Map<Int, TouchData>;
 	
@@ -182,6 +182,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
 		__renderDirty = true;
+		__wasFullscreen = window.fullscreen;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -868,9 +869,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__resize ();
 			
-			if (!__isFullscreen) {
+			if (!__wasFullscreen) {
 				
-				__isFullscreen = true;
+				__wasFullscreen = true;
 				if (__displayState == NORMAL) __displayState = FULL_SCREEN_INTERACTIVE;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 				
@@ -936,9 +937,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderDirty = true;
 			__resize ();
 			
-			if (__isFullscreen && !window.fullscreen) {
+			if (__wasFullscreen && !window.fullscreen) {
 				
-				__isFullscreen = false;
+				__wasFullscreen = false;
 				__displayState = NORMAL;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 				
