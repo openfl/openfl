@@ -1211,14 +1211,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#elseif neko
 			neko.Lib.rethrow (e);
 			#elseif js
-			var exc = @:privateAccess haxe.CallStack.lastException;
-			if (exc != null && exc.stack != null && exc.stack != "") {
-				untyped __js__ ("console.log") (exc.stack);
-				e.stack = exc.stack;
-			} else {
-				var msg = CallStack.toString (CallStack.callStack ());
-				untyped __js__ ("console.log") (msg);
-			}
+			try {
+				var exc = @:privateAccess haxe.CallStack.lastException;
+				if (exc != null && Reflect.hasField (exc, "stack") && exc.stack != null && exc.stack != "") {
+					untyped __js__ ("console.log") (exc.stack);
+					e.stack = exc.stack;
+				} else {
+					var msg = CallStack.toString (CallStack.callStack ());
+					untyped __js__ ("console.log") (msg);
+				}
+			} catch (e2:Dynamic) {}
 			untyped __js__ ("throw e");
 			#elseif cs
 			throw e;
