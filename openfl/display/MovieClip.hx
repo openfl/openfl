@@ -48,7 +48,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var totalFrames (get, never):Int;
 
 	private var __cachedChildrenFrameSymbolInstacesDisplayObjects:Array<DisplayObject>;
-	private var __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects:Map<DisplayObject, DisplayObject>;
+	private var __cachedManuallyAddedDisplayObjects:Array<DisplayObject>;
 	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	private var __currentFrame:Int;
@@ -69,7 +69,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public function new () {
 		
 		super ();
-		__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects = new Map();
+		__cachedManuallyAddedDisplayObjects = new Array();
 		__cachedChildrenFrameSymbolInstacesDisplayObjects = new Array();
 		__currentFrame = 1;
 		__currentLabels = [];
@@ -174,7 +174,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		if(addedChild != null) {
 			var cached : Bool = false;
-			if(__cachedChildrenFrameSymbolInstacesDisplayObjects.indexOf(addedChild) >= 0 || __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(addedChild)) {
+			if(__cachedChildrenFrameSymbolInstacesDisplayObjects.indexOf(addedChild) >= 0 || __cachedManuallyAddedDisplayObjects.indexOf(addedChild) >= 0) {
 				cached = true;
 			}
 			else if(__activeInstances != null) {
@@ -187,8 +187,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				}
 			}
 			if(!cached){
-				var anchor : DisplayObject = index > 0 ? __children[index-1] : null;
-				__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.set(addedChild, anchor);  // do we really need nulls in here? : yes, they key matters the most so we know to re-add it. a null anchor just means it should fall to index 0 in the child list.
+				__cachedManuallyAddedDisplayObjects.push(addedChild);
 			}
 		}
 		return addedChild;
@@ -196,7 +195,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	public override function removeChild (child:DisplayObject):DisplayObject {
 		if (child != null && child.parent == this) {
-			__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.remove(child);  // do we need to remove also on movieclip loop? maybe put in __getNextFrame? anywhere else? : removeChild is what it was calling in those cases before. I left it there because it does things like setRenderDirty which doing a simple remove on the array would not do
+			__cachedManuallyAddedDisplayObjects.remove(child);
 		}
 		return super.removeChild(child);
 	}
@@ -329,6 +328,32 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			var length:Int = currentInstances.length;
 			var currentInstancesIndex = 0;
 			var childrenIndex = 0;
+			
+			while (childrenIndex < __children.length) {
+				child = __children[childrenIndex];
+
+				if(child != null && __cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
+					//keep manually added child where it is at
+				}
+				else {
+					var shouldRemove = true;
+					for(instance in currentInstances){
+						if(child == instance.displayObject){
+							shouldRemove = false;
+							break;
+						}
+					}
+					if(shouldRemove){
+						removeChild(child);
+						childrenIndex--;
+					}
+				}
+				childrenIndex++;
+			}
+			
+			currentInstancesIndex = 0;
+			childrenIndex = 0;
+			
 			while (currentInstancesIndex < length) {
 
 				// based on further tests in Flash, I think what it actually does is first remove anything that doesn't exist now, then leave the manual ones where they are, while adding anything new from the frame
@@ -340,17 +365,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				targetChild = instance.displayObject;
 
 				if (existingChild != targetChild) {
-					if(existingChild != null && __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(existingChild)){
+					if(existingChild != null && __cachedManuallyAddedDisplayObjects.indexOf(existingChild) >= 0){ //keep manually added child where it is at
 						currentInstancesIndex--;
-						if(childrenIndex > 0 && __children[childrenIndex-1] != __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects[existingChild]){// if the anchored object is missing then move index to zero to replicate as3 behavior
-							//__children.remove(existingChild);  // I think this line is unnecessary because addChildAt will remove for you, and we shouldn't fire ADDED events again : think you are right
-							addChildAt(existingChild, 0);
-						}
 						child = existingChild;
 					}
 					else{
 						child = targetChild;
-						addChildAt (targetChild, currentInstancesIndex);
+						addChildAt (targetChild, currentInstancesIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
 					}
 
 				} else {
@@ -380,22 +401,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				}
 				childrenIndex++;
 				currentInstancesIndex++;
-			}
-
-			while (childrenIndex < __children.length) {
-				child = __children[childrenIndex];
-
-				if(child != null && __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(child)){
-					if(childrenIndex > 0 && __children[childrenIndex-1] != __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects[child]){
-						//__children.remove(child);// also remove this I think// if the anchored object is missing then move index to zero to replicate as3 behavior : same here
-						addChildAt(child, 0);
-					}
-				}
-				else{
-					removeChild(child);
-					childrenIndex--;
-				}
-				childrenIndex++;
 			}
 			
 			__lastFrameUpdate = __currentFrame;
