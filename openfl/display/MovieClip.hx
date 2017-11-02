@@ -188,7 +188,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			if(!cached){
 				var anchor : DisplayObject = index > 0 ? __children[index-1] : null;
-				__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.set(addedChild, anchor);  // do we really need nulls in here?
+				__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.set(addedChild, anchor);  // do we really need nulls in here? : yes, they key matters the most so we know to re-add it. a null anchor just means it should fall to index 0 in the child list.
 			}
 		}
 		return addedChild;
@@ -196,7 +196,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	public override function removeChild (child:DisplayObject):DisplayObject {
 		if (child != null && child.parent == this) {
-			__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.remove(child);  // do we need to remove also on movieclip loop? maybe put in __getNextFrame? anywhere else?
+			__cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.remove(child);  // do we need to remove also on movieclip loop? maybe put in __getNextFrame? anywhere else? : removeChild is what it was calling in those cases before. I left it there because it does things like setRenderDirty which doing a simple remove on the array would not do
 		}
 		return super.removeChild(child);
 	}
@@ -343,7 +343,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					if(existingChild != null && __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(existingChild)){
 						currentInstancesIndex--;
 						if(childrenIndex > 0 && __children[childrenIndex-1] != __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects[existingChild]){// if the anchored object is missing then move index to zero to replicate as3 behavior
-							__children.remove(existingChild);  // I think this line is unnecessary because addChildAt will remove for you, and we shouldn't fire ADDED events again
+							//__children.remove(existingChild);  // I think this line is unnecessary because addChildAt will remove for you, and we shouldn't fire ADDED events again : think you are right
 							addChildAt(existingChild, 0);
 						}
 						child = existingChild;
@@ -387,7 +387,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				if(child != null && __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects.exists(child)){
 					if(childrenIndex > 0 && __children[childrenIndex-1] != __cachedManuallyAddedDisplayObjectsToAnchoredInsertObjects[child]){
-						__children.remove(child);// also remove this I think// if the anchored object is missing then move index to zero to replicate as3 behavior
+						//__children.remove(child);// also remove this I think// if the anchored object is missing then move index to zero to replicate as3 behavior : same here
 						addChildAt(child, 0);
 					}
 				}
