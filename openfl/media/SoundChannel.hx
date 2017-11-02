@@ -16,7 +16,10 @@ import openfl.media.Sound;
 	public var soundTransform (get, set):SoundTransform;
 
 	private var __isValid:Bool;
-	private var sound:Sound;
+	private var __sound:Sound;
+	private var __soundId:Int;
+	private var __numberOfLoopsRemaining:Int;
+	private var __looping:Bool;
 
 	private static var pool : ObjectPool<SoundChannel> = new ObjectPool<SoundChannel>(function() { return new SoundChannel();});
 
@@ -30,17 +33,22 @@ import openfl.media.Sound;
 
 	}
 
-	public static function __create(source:Sound) {
+	public static function __create(source:Sound, soundId:Int, numberOfLoops:Int) {
 		var channel = pool.get();
 
 		if (source != null) {
 
-			channel.sound = source;
+			channel.__soundId = soundId;
+			channel.__numberOfLoopsRemaining = numberOfLoops;
+			channel.__looping = numberOfLoops > 1;
+			channel.__sound = source;
 			#if !html5
-			@:privateAccess channel.sound.__sound.onComplete.add (channel.soundInstance_onComplete);
-			channel.sound.__sound.play ();
+			@:privateAccess channel.__sound.__sound.onComplete.add (channel.soundInstance_onComplete);
+			channel.__sound.__sound.play ();
 			#else
-			@:privateAccess channel.sound.__sound.on("stop",channel.soundInstance_onComplete, channel.sound.__soundId);
+			@:privateAccess channel.__sound.__sound.on("stop",channel.soundInstance_onComplete, channel.__soundId);
+			@:privateAccess channel.__sound.__sound.on("end", channel.soundInstance_onEnd, channel.__soundId);
+
 			#end
 			channel.__isValid = true;
 
@@ -55,10 +63,10 @@ import openfl.media.Sound;
 		if (!__isValid) return;
 
 		#if !html5
-		sound.stop ();
+		__sound.stop ();
 		__dispose ();
 		#else
-		sound.stop ();
+		__sound.stop (__soundId);
 		#end
 
 	}
@@ -68,7 +76,7 @@ import openfl.media.Sound;
 
 		if (!__isValid) return;
 
-		sound.dispose();
+		__sound.dispose(__soundId);
 		pool.put(this);
 
 		__isValid = false;
@@ -88,9 +96,9 @@ import openfl.media.Sound;
 		if (!__isValid) return 0;
 
 		#if !html5
-		return (sound.__sound.currentTime + sound.__sound.offset) / 1000;
+		return (__sound.__sound.currentTime + __sound.__sound.offset) / 1000;
 		#else
-		return sound.__sound.seek();
+		return __sound.__sound.seek();
 		#end
 
 	}
@@ -101,11 +109,11 @@ import openfl.media.Sound;
 		if (!__isValid) return 0;
 
 		#if !html5
-		sound.__sound.currentTime = Std.int (value * 1000) - sound.__sound.offset;
+		__sound.__sound.currentTime = Std.int (value * 1000) - __sound.__sound.offset;
 		return value;
 		#else
-		sound.__sound.seek(Std.int (value));
-		return sound.__sound.seek();
+		__sound.__sound.seek(Std.int (value));
+		return __sound.__sound.seek();
 		#end
 
 	}
@@ -118,9 +126,9 @@ import openfl.media.Sound;
 		// TODO: pan
 
 		#if !html5
-		return new SoundTransform (sound.__sound.gain, 0);
+		return new SoundTransform (__sound.__sound.gain, 0);
 		#else
-		return new SoundTransform (@:privateAccess sound.__sound.volume(), 0);
+		return new SoundTransform (@:privateAccess __sound.__sound.volume(), 0);
 		#end
 
 	}
@@ -131,13 +139,13 @@ import openfl.media.Sound;
 		if (!__isValid) return value;
 
 		#if !html5
-		sound.__sound.gain = value.volume;
+		__sound.__sound.gain = value.volume;
 
 		// TODO: pan
 
 		return value;
 		#else
-		sound.__sound.volume(value.volume);
+		__sound.__sound.volume(value.volume);
 		return value;
 		#end
 
@@ -154,6 +162,15 @@ import openfl.media.Sound;
 		dispatchEvent (Event.__create (Event.SOUND_COMPLETE));
 
 	}
+
+	#if html5
+	private function soundInstance_onEnd() {
+		__numberOfLoopsRemaining--;
+		if(__numberOfLoopsRemaining <= 0 && __looping) {
+			__sound.stop(__soundId);
+		}
+	}
+	#end
 
 }
 

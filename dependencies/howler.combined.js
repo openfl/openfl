@@ -44,7 +44,7 @@
       // Public properties.
       self.masterGain = null;
       self.noAudio = false;
-      self.usingWebAudio = true;
+      self.usingWebAudio = false;
       self.autoSuspend = true;
       self.ctx = null;
 
@@ -184,7 +184,7 @@
       var self = this || Howler;
 
       // Keeps track of the suspend/resume state of the AudioContext.
-      self.state = self.ctx ? self.ctx.state || 'running' : 'running';
+      self.state = ( self.usingWebAudio && self.ctx ) ? self.ctx.state || 'running' : 'running';
 
       // Automatically begin the 30-second suspend process
       self._autoSuspend();
@@ -281,7 +281,7 @@
       // Only run this on mobile devices if audio isn't already eanbled.
       var isMobile = /iPhone|iPad|iPod|Android|BlackBerry|BB10|Silk|Mobi/i.test(self._navigator && self._navigator.userAgent);
       var isTouch = !!(('ontouchend' in window) || (self._navigator && self._navigator.maxTouchPoints > 0) || (self._navigator && self._navigator.msMaxTouchPoints > 0));
-      if (self._mobileEnabled || !self.ctx || (!isMobile && !isTouch)) {
+      if (self._mobileEnabled || !self.usingWebAudio || (!isMobile && !isTouch)) {
         return;
       }
 
@@ -352,7 +352,7 @@
     _autoSuspend: function() {
       var self = this;
 
-      if (!self.autoSuspend || !self.ctx || typeof self.ctx.suspend === 'undefined' || !Howler.usingWebAudio) {
+      if (!self.autoSuspend || !self.usingWebAudio || typeof self.ctx.suspend === 'undefined' || !Howler.usingWebAudio) {
         return;
       }
 
@@ -399,7 +399,7 @@
     _autoResume: function() {
       var self = this;
 
-      if (!self.ctx || typeof self.ctx.resume === 'undefined' || !Howler.usingWebAudio) {
+      if (!self.usingWebAudio || typeof self.ctx.resume === 'undefined' || !Howler.usingWebAudio) {
         return;
       }
 
@@ -503,7 +503,7 @@
       self._webAudio = Howler.usingWebAudio && !self._html5;
 
       // Automatically try to enable audio on iOS.
-      if (typeof Howler.ctx !== 'undefined' && Howler.ctx && Howler.mobileAutoEnable) {
+      if (Howler.usingWebAudio && Howler.ctx && Howler.mobileAutoEnable) {
         Howler._enableMobileAudio();
       }
 
@@ -631,22 +631,6 @@
       } else if (typeof sprite === 'undefined') {
         // Use the default sound sprite (plays the full audio length).
         sprite = '__default';
-
-        // Check if there is a single paused sound that isn't ended.
-        // If there is, play that sound. If not, continue as usual.
-        var num = 0;
-        for (var i=0; i<self._sounds.length; i++) {
-          if (self._sounds[i]._paused && !self._sounds[i]._ended) {
-            num++;
-            id = self._sounds[i]._id;
-          }
-        }
-
-        if (num === 1) {
-          sprite = null;
-        } else {
-          id = null;
-        }
       }
 
       // Get the selected node, or get one from the pool.
@@ -702,8 +686,9 @@
       }
 
       // Determine how long to play for and where to start playing.
-      var seek = Math.max(0, sound._seek > 0 ? sound._seek : self._sprite[sprite][0] / 1000);
-      var duration = Math.max(0, ((self._sprite[sprite][0] + self._sprite[sprite][1]) / 1000) - seek);
+      var soundSprite = self._sprite[sprite];
+      var seek = Math.max(0, sound._seek > 0 ? sound._seek : soundSprite[0] / 1000);
+      var duration = Math.max(0, ((soundSprite[0] + soundSprite[1]) / 1000) - seek);
       var timeout = (duration * 1000) / Math.abs(sound._rate);
 
       // Update the parameters of the sound
@@ -711,9 +696,9 @@
       sound._ended = false;
       sound._sprite = sprite;
       sound._seek = seek;
-      sound._start = self._sprite[sprite][0] / 1000;
-      sound._stop = (self._sprite[sprite][0] + self._sprite[sprite][1]) / 1000;
-      sound._loop = !!(sound._loop || self._sprite[sprite][2]);
+      sound._start = soundSprite[0] / 1000;
+      sound._stop = (soundSprite[0] + soundSprite[1]) / 1000;
+      sound._loop = !!(sound._loop || soundSprite[2]);
 
       // Begin the actual playback.
       var node = sound._node;
@@ -1654,16 +1639,16 @@
       var events = self['_on' + event];
 
       // Loop through event store and fire all functions.
-      for (var i=events.length-1; i>=0; i--) {
-        if (!events[i].id || events[i].id === id || event === 'load') {
-          setTimeout(function(fn) {
-            fn.call(this, id, msg);
-          }.bind(self, events[i].fn), 0);
-
+      var eventsCopy = events.slice();
+      for (var i=eventsCopy.length-1; i>=0; i--) {
+        var eventAtId = eventsCopy[i];
+        if (!eventAtId.id || eventAtId.id === id || event === 'load') {
           // If this event was setup with `once`, remove it.
-          if (events[i].once) {
-            self.off(event, events[i].fn, events[i].id);
+          if (eventAtId.once) {
+            self.off(event, eventAtId.fn, eventAtId.id);
           }
+
+          eventAtId.fn.call(this, id, msg);
         }
       }
 
@@ -1774,8 +1759,9 @@
 
       // Loop through all sounds and find the one with this ID.
       for (var i=0; i<self._sounds.length; i++) {
-        if (id === self._sounds[i]._id) {
-          return self._sounds[i];
+        var soundAtI = self._sounds[i];
+        if (id === soundAtI._id) {
+          return soundAtI;
         }
       }
 
@@ -2178,9 +2164,12 @@
     try {
       if (typeof AudioContext !== 'undefined') {
         Howler.ctx = new AudioContext();
+        Howler.usingWebAudio = true;
       } else if (typeof webkitAudioContext !== 'undefined') {
         Howler.ctx = new webkitAudioContext();
+        Howler.usingWebAudio = true;
       } else {
+        Howler.ctx = "DISABLED";
         Howler.usingWebAudio = false;
       }
     } catch(e) {
