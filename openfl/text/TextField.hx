@@ -28,12 +28,14 @@ import openfl.display.IShaderDrawable;
 import openfl.display.Shader;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
+import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
 import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.net.URLRequest;
+import openfl.ui.Keyboard;
 import openfl.Lib;
 
 #if (js && html5)
@@ -152,6 +154,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 		addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+		addEventListener (KeyboardEvent.KEY_DOWN, this_onKeyDown);
 		
 	}
 	
@@ -877,7 +880,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 	}
-
+	
+	
 	private function __disableInput ():Void {
 		
 		if (__inputEnabled && stage != null) {
@@ -892,6 +896,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 	}
+	
 	
 	private override function __dispatch (event:Event):Bool {
 		
@@ -925,33 +930,35 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		return super.__dispatch (event);
 		
 	}
-
+	
+	
 	private function __enableInput ():Void {
-
+		
 		if (stage != null) {
-
+			
 			stage.window.enableTextEvents = true;
-
+			
 			if (!__inputEnabled) {
-
+				
 				stage.window.enableTextEvents = true;
-
+				
 				if (!stage.window.onTextInput.has (window_onTextInput)) {
-
+					
 					stage.window.onTextInput.add (window_onTextInput);
 					stage.window.onKeyDown.add (window_onKeyDown);
-
+					
 				}
-
+				
 				__inputEnabled = true;
 				__startCursorTimer ();
-
+				
 			}
-
+			
 		}
-
+		
 	}
-
+	
+	
 	private function __fromSymbol (swf:SWFLite, symbol:DynamicTextSymbol):Void {
 		
 		__symbol = symbol;
@@ -2460,6 +2467,25 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private function this_onKeyDown (event:KeyboardEvent):Void {
+		
+		if (selectable && type != INPUT && event.keyCode == Keyboard.C) {
+			
+			if (#if mac event.metaKey #elseif js event.metaKey || event.ctrlKey #else event.ctrlKey #end) {
+				
+				if (__caretIndex != __selectionIndex) {
+					
+					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private function this_onMouseDown (event:MouseEvent):Void {
 		
 		if (!selectable) return;
@@ -2664,7 +2690,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
-					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
+					if (__caretIndex != __selectionIndex) {
+						
+						Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
+						
+					}
 					
 				}
 			
@@ -2672,9 +2702,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
-					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
-					
 					if (__caretIndex != __selectionIndex) {
+						
+						Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 						
 						replaceSelectedText ("");
 						dispatchEvent (new Event (Event.CHANGE, true));
