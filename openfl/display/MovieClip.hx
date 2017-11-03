@@ -51,6 +51,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __cachedManuallyAddedDisplayObjects:Array<DisplayObject>;
 	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
+	private var __lastInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
 	private var __currentLabel:String;
@@ -256,15 +257,31 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				if (__symbol != null && __currentFrame != __lastFrameUpdate) {
 					__updateFrameLabel ();
 
-					var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
+					var currentInstancesByFrameObjectID = null;
+					if( __lastInstancesByFrameObjectID != null ) {
+						currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
+					}
+					else {
+						currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
+					}
 
 					var frame:Int;
 					var frameData:Frame;
 					var instance:FrameSymbolInstance;
 
-					// TODO: Handle updates only from previous frame?
-
-					for (i in 0...__currentFrame) {
+					var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
+					if( loopedSinceLastFrameUpdate )
+					{
+						// null out non-manually added/dynamic children
+						var nc = __children.length;
+						while (--nc >= 0) {
+							if (__cachedManuallyAddedDisplayObjects.indexOf(__children[nc]) >= 0) {
+								__children[nc] = null;
+							}
+						}
+					}
+					var updateFrameStart:Int = (loopedSinceLastFrameUpdate || __lastFrameUpdate == -1)? 0 : __lastFrameUpdate;
+					for (i in updateFrameStart...__currentFrame) {
 
 						frame = i + 1;
 						frameData = __symbol.frames[i];
@@ -328,6 +345,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						}
 
 					}
+
+					__lastInstancesByFrameObjectID = currentInstancesByFrameObjectID;
+
 
 					currentInstances.sort (__sortDepths);
 
