@@ -2469,15 +2469,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function this_onKeyDown (event:KeyboardEvent):Void {
 		
-		if (selectable && type != INPUT && event.keyCode == Keyboard.C) {
+		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey)) {
 			
-			if (#if mac event.metaKey #elseif js event.metaKey || event.ctrlKey #else event.ctrlKey #end) {
+			if (__caretIndex != __selectionIndex) {
 				
-				if (__caretIndex != __selectionIndex) {
-					
-					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
-					
-				}
+				Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 				
 			}
 			
