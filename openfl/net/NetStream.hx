@@ -31,6 +31,7 @@ class NetStream extends EventDispatcher {
 	public var speed (get, set):Float;
 	public var time (default, null):Float;
 	public var videoCode (default, null):Int;
+	public var loadPercentage (get, null):Float;
 	
 	private var __connection:NetConnection;
 	private var __timer:Timer;
@@ -65,6 +66,7 @@ class NetStream extends EventDispatcher {
 		__video.addEventListener ("canplay", video_onCanPlay, false);
 		__video.addEventListener ("canplaythrough", video_onCanPlayThrough, false);
 		__video.addEventListener ("loadedmetadata", video_onLoadMetaData, false);
+		__video.addEventListener ("progress", video_onProgress, false);
 		#end
 		
 	}
@@ -321,6 +323,13 @@ class NetStream extends EventDispatcher {
 		__playStatus ("NetStream.Play.waiting");
 		
 	}
+
+
+	private function video_onProgress (event:Dynamic):Void {
+
+		__playStatus ("NetStream.Play.progress");
+
+	}
 	
 	
 	
@@ -349,6 +358,26 @@ class NetStream extends EventDispatcher {
 		return value;
 		#end
 		
+	}
+
+	private function get_loadPercentage ():Float {
+		#if (js && html5)
+		var bf = __video.buffered;
+		if(bf.length > 0) {
+		var range = 0;
+		var time = __video.currentTime;
+		while(!(bf.start(range) <= time && time <= bf.end(range))) {
+        	range += 1;
+    	}
+    	var loadStartPercentage = bf.start(range) / __video.duration;
+    	var loadEndPercentage = bf.end(range) / __video.duration;
+    	return loadEndPercentage - loadStartPercentage;
+    	}
+    	else
+    	return 0;
+		#else
+		return 0;
+		#end
 	}
 	
 	
