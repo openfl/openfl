@@ -304,7 +304,15 @@ class CanvasTextField {
 										
 									}
 									
-									context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
+									var scrollY = 0.0;
+									
+									for (i in 0...textField.scrollV - 1) {
+										
+										scrollY -= textEngine.lineHeights[i];
+										
+									}
+									
+									context.fillRect (group.offsetX + advance, scrollY + 2, 1, TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
 									
 								}
 								
