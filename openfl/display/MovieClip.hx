@@ -209,196 +209,225 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 			nextFrame = __getNextFrame (deltaTime);
 			
-			if (__lastFrameScriptEval == nextFrame) {//maybe we should check deltaTime to make sure this shortcut is okay to take and we haven't made a full loop
+			if (__lastFrameScriptEval == nextFrame) {//maybe we should check deltaTime to make sure this shortcut is okay to take and we haven't made a full loop around and landed on the same frame
 
 				return;
 			}
-			__currentFrame = nextFrame;
 		}
-		
-		if (__symbol != null && __currentFrame != __lastFrameUpdate) {
-			
-			__updateFrameLabel ();
-			
-			var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
-			
-			var frame:Int;
-			var frameData:Frame;
-			var instance:FrameSymbolInstance;
-			
-			// TODO: Handle updates only from previous frame?
-			
-			for (i in 0...__currentFrame) {
-				
-				frame = i + 1;
-				frameData = __symbol.frames[i];
-				
-				if (frameData.objects == null) continue;
-				
-				for (frameObject in frameData.objects) {
-					
-					switch (frameObject.type) {
-						
-						case CREATE:
-							
-							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-							
-							if (instance != null) {
-								
-								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
-								
-							}
-						
-						case UPDATE:
-							
-							instance = currentInstancesByFrameObjectID.get (frameObject.id);
-							
-							if (instance != null && instance.displayObject != null) {
-								
-								__updateDisplayObject (instance.displayObject, frameObject);
-								
-							}
-						
-						case DESTROY:
-							
-							currentInstancesByFrameObjectID.remove (frameObject.id);
-						
-					}
-					
-				}
-				
-			}
-			
-			// TODO: Less garbage?
-			
-			var currentInstances = new Array<FrameSymbolInstance> ();
-			var currentMasks = new Array<FrameSymbolInstance> ();
-			
-			for (instance in currentInstancesByFrameObjectID) {
-				
-				if (currentInstances.indexOf (instance) == -1) {
-					
-					if (instance.clipDepth > 0) {
-						
-						currentMasks.push (instance);
-						
-					} else {
-						
-						currentInstances.push (instance);
-						
-					}
-					
-				}
-				
-			}
-			
-			currentInstances.sort (__sortDepths);
-			
-			var existingChild:DisplayObject;
-			var targetDepth:Int;
-			var targetChild:DisplayObject;
-			var child:DisplayObject;
-			var maskApplied:Bool;
 
-			var length:Int = currentInstances.length;
-			var currentInstancesIndex = 0;
-			var childrenIndex = 0;
-			
-			while (childrenIndex < __children.length) {
-				child = __children[childrenIndex];
+		var updateToFrame : Int = startFrame;
 
-				if(child != null && __cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
-					//keep manually added child where it is at
-				}
-				else {
-					var shouldRemove = true;
-					for(instance in currentInstances){
-						if(child == instance.displayObject){
-							shouldRemove = false;
-							break;
+		if (__symbol != null)
+		{
+			while(updateToFrame != nextFrame) {
+				var isUpdateToFrameSet = false;
+				if(__playing){
+					if(__frameScripts != null){
+						if(nextFrame < updateToFrame) {
+							for(key in __frameScripts.keys()) {
+								if(key > updateToFrame){
+									isUpdateToFrameSet = true;
+									updateToFrame = key;
+									break;
+								}
+							}
+							if(!isUpdateToFrameSet) {
+								updateToFrame = 1;
+							}
+						}
+						if(!isUpdateToFrameSet) {
+							for(key in __frameScripts.keys()) {
+								if(key > updateToFrame && key <= nextFrame){
+									isUpdateToFrameSet = true;
+									updateToFrame = key;
+									break;
+								}
+							}
 						}
 					}
-					if(shouldRemove){
-						removeChild(child);
-						childrenIndex--;
+					if(!isUpdateToFrameSet) {
+						updateToFrame = nextFrame;
 					}
+					__currentFrame = updateToFrame;
 				}
-				childrenIndex++;
-			}
-			
-			currentInstancesIndex = 0;
-			childrenIndex = 0;
-			
-			while (currentInstancesIndex < length) {
+				if(!isUpdateToFrameSet) {
+					updateToFrame = nextFrame;
+				}
+				if (__symbol != null && __currentFrame != __lastFrameUpdate) {
+					__updateFrameLabel ();
 
-				// based on further tests in Flash, I think what it actually does is first remove anything that doesn't exist now, then leave the manual ones where they are, while adding anything new from the frame
+					var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
 
-				existingChild = __children[childrenIndex];
-				instance = currentInstances[currentInstancesIndex];
-				
-				targetDepth = instance.depth;
-				targetChild = instance.displayObject;
+					var frame:Int;
+					var frameData:Frame;
+					var instance:FrameSymbolInstance;
 
-				if (existingChild != targetChild) {
-					if(existingChild != null && __cachedManuallyAddedDisplayObjects.indexOf(existingChild) >= 0){ //keep manually added child where it is at
-						currentInstancesIndex--;
-						child = existingChild;
+					// TODO: Handle updates only from previous frame?
+
+					for (i in 0...__currentFrame) {
+
+						frame = i + 1;
+						frameData = __symbol.frames[i];
+
+						if (frameData.objects == null) continue;
+
+						for (frameObject in frameData.objects) {
+
+							switch (frameObject.type) {
+
+								case CREATE:
+
+									instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+
+									if (instance != null) {
+
+										currentInstancesByFrameObjectID.set (frameObject.id, instance);
+										__updateDisplayObject (instance.displayObject, frameObject);
+
+									}
+
+								case UPDATE:
+
+									instance = currentInstancesByFrameObjectID.get (frameObject.id);
+
+									if (instance != null && instance.displayObject != null) {
+
+										__updateDisplayObject (instance.displayObject, frameObject);
+
+									}
+
+								case DESTROY:
+
+									currentInstancesByFrameObjectID.remove (frameObject.id);
+
+							}
+
+						}
+
 					}
-					else{
-						child = targetChild;
-						addChildAt (targetChild, childrenIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
+
+					// TODO: Less garbage?
+
+					var currentInstances = new Array<FrameSymbolInstance> ();
+					var currentMasks = new Array<FrameSymbolInstance> ();
+
+					for (instance in currentInstancesByFrameObjectID) {
+
+						if (currentInstances.indexOf (instance) == -1) {
+
+							if (instance.clipDepth > 0) {
+
+								currentMasks.push (instance);
+
+							} else {
+
+								currentInstances.push (instance);
+
+							}
+
+						}
+
 					}
 
-				} else {
+					currentInstances.sort (__sortDepths);
 
-					child = existingChild;
+					var existingChild:DisplayObject;
+					var targetDepth:Int;
+					var targetChild:DisplayObject;
+					var child:DisplayObject;
+					var maskApplied:Bool;
 
-				}
-				
-				maskApplied = false;
-				
-				for (mask in currentMasks) {
-					
-					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
-						
-						child.mask = mask.displayObject;
-						maskApplied = true;
-						break;
-						
+					var length:Int = currentInstances.length;
+					var currentInstancesIndex = 0;
+					var childrenIndex = 0;
+
+					while (childrenIndex < __children.length) {
+						child = __children[childrenIndex];
+
+						if(child != null && __cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
+							//keep manually added child where it is at
+						}
+						else {
+							var shouldRemove = true;
+							for(instance in currentInstances){
+								if(child == instance.displayObject){
+									shouldRemove = false;
+									break;
+								}
+							}
+							if(shouldRemove){
+								removeChild(child);
+								childrenIndex--;
+							}
+						}
+						childrenIndex++;
 					}
-					
+
+					currentInstancesIndex = 0;
+					childrenIndex = 0;
+
+					while (currentInstancesIndex < length) {
+
+						// based on further tests in Flash, I think what it actually does is first remove anything that doesn't exist now, then leave the manual ones where they are, while adding anything new from the frame
+
+						existingChild = __children[childrenIndex];
+						instance = currentInstances[currentInstancesIndex];
+
+						targetDepth = instance.depth;
+						targetChild = instance.displayObject;
+
+						if (existingChild != targetChild) {
+							if(existingChild != null && __cachedManuallyAddedDisplayObjects.indexOf(existingChild) >= 0){ //keep manually added child where it is at
+								currentInstancesIndex--;
+								child = existingChild;
+							}
+							else{
+								child = targetChild;
+								addChildAt (targetChild, childrenIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
+							}
+
+						} else {
+
+							child = existingChild;
+
+						}
+
+						maskApplied = false;
+
+						for (mask in currentMasks) {
+
+							if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
+
+								child.mask = mask.displayObject;
+								maskApplied = true;
+								break;
+
+							}
+
+						}
+
+						if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
+
+							child.mask = null;
+
+						}
+						childrenIndex++;
+						currentInstancesIndex++;
+					}
+
+					__lastFrameUpdate = __currentFrame;
+
 				}
-				
-				if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
-					
-					child.mask = null;
-					
-				}
-				childrenIndex++;
-				currentInstancesIndex++;
-			}
-			
-			__lastFrameUpdate = __currentFrame;
-			
-		}
-		if (__symbol != null && __playing) {
+				if (isUpdateToFrameSet &&__symbol != null && __playing) {
 
-			if(__frameScripts != null){
-
-
-				if (nextFrame < startFrame)
-				{
-					if(!__evaluateFrameScripts (startFrame, __totalFrames)) {
+					var currentFrameBeforeScript = __currentFrame;
+					var script = __frameScripts.get (updateToFrame);
+					script ();
+					if (__currentFrame != currentFrameBeforeScript) {
 
 						return;
+
 					}
-					startFrame = 1;
-
-				}
-				if (!__evaluateFrameScripts (startFrame, nextFrame)) {
-
-					return;
 				}
 			}
 		}
