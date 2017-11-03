@@ -544,11 +544,11 @@ class TextEngine {
 		if (lf == -1 && br == -1) return cr;
 		if (lf == -1 && cr == -1) return br;
 
-		if (cr == -1) return Std.int(Math.min(br, lf));
-		if (lf == -1) return Std.int(Math.min(br, cr));
-		if (br == -1) return Std.int(Math.min(cr, lf));
+		if (cr == -1) return Std.int (Math.min (br, lf));
+		if (lf == -1) return Std.int (Math.min (br, cr));
+		if (br == -1) return Std.int (Math.min (cr, lf));
 
-		return Std.int(Math.min(Math.min(cr, lf), br));
+		return Std.int (Math.min (Math.min (cr, lf), br));
 		
 	}
 	
@@ -984,7 +984,7 @@ class TextEngine {
 		
 		inline function breakLongWords (endIndex:Int):Void {
 			
-			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
+			var tempWidth = getTextWidth (text.substring (textIndex, endIndex));
 			
 			while (offsetX + tempWidth > width - 2) {
 				
@@ -992,7 +992,7 @@ class TextEngine {
 				
 				while (textIndex + i < endIndex + 1) {
 					
-					tempWidth = getTextWidth(text.substr(textIndex, i));
+					tempWidth = getTextWidth (text.substr (textIndex, i));
 					
 					if (offsetX + tempWidth > width - 2) {
 						
@@ -1038,12 +1038,12 @@ class TextEngine {
 					
 					layoutGroup = null;
 					
-					alignBaseline();
+					alignBaseline ();
 					
 					textIndex += i;
 					
 					positions = getPositions (text, textIndex, endIndex);
-					widthValue = getPositionsWidth(positions);
+					widthValue = getPositionsWidth (positions);
 					
 					tempWidth = widthValue;
 					
@@ -1113,7 +1113,7 @@ class TextEngine {
 					
 				}
 				
-				alignBaseline();
+				alignBaseline ();
 				
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
