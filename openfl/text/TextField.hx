@@ -150,6 +150,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, 0, 0));
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 		
 	}
 	
@@ -1312,22 +1314,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __removeFocus ():Void {
-		
-		__stopCursorTimer ();
-		__stopTextInput ();
-		
-		if (__selectionIndex != __caretIndex) {
-			
-			__selectionIndex = __caretIndex;
-			__dirty = true;
-			__setRenderDirty ();
-			
-		}
-		
-	}
-	
-	
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
@@ -2287,8 +2273,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			if (value == TextFieldType.INPUT) {
 				
-				addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-				addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 				addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				this_onFocusIn (null);
@@ -2296,8 +2280,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 			} else {
 				
-				removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-				removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 				removeEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				__stopTextInput ();
@@ -2464,7 +2446,16 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function this_onFocusOut (event:FocusEvent):Void {
 		
+		__stopCursorTimer ();
 		__stopTextInput ();
+		
+		if (__selectionIndex != __caretIndex) {
+			
+			__selectionIndex = __caretIndex;
+			__dirty = true;
+			__setRenderDirty ();
+			
+		}
 		
 	}
 	
