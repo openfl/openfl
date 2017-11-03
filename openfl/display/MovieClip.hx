@@ -254,7 +254,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				if(!isUpdateToFrameSet) {
 					updateToFrame = nextFrame;
 				}
-				if (__symbol != null && __currentFrame != __lastFrameUpdate) {
+				if (__currentFrame != __lastFrameUpdate) {
 					__updateFrameLabel ();
 
 					var currentInstancesByFrameObjectID = null;
