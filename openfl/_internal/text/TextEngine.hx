@@ -27,9 +27,6 @@ import openfl.text.TextFormatAlign;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-import js.html.InputElement;
-import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
 #end
 
@@ -120,11 +117,7 @@ class TextEngine {
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
-	#if (js && html5)
-	private var __hiddenInput:InputElement;
-	#end
 	
-
 	public function new (textField:TextField) {
 		
 		this.textField = textField;
