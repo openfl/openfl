@@ -204,30 +204,16 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		var nextFrame : Int = -1;
 		var shouldRunTotalFramesScripts : Bool = false;
+		var startFrame : Int = __currentFrame;
 		if (__symbol != null && __playing) {
 			
 			nextFrame = __getNextFrame (deltaTime);
 			
-			if (__lastFrameScriptEval == nextFrame) {
-				
+			if (__lastFrameScriptEval == nextFrame) {//maybe we should check deltaTime to make sure this shortcut is okay to take and we haven't made a full loop
+
 				return;
-				
 			}
-			if (__frameScripts != null) {
-
-				if (nextFrame < __currentFrame) {
-
-					shouldRunTotalFramesScripts = true;
-					__currentFrame = 1;
-
-				}
-
-
-			} else {
-
-				__currentFrame = nextFrame;
-
-			}
+			__currentFrame = nextFrame;
 		}
 		
 		if (__symbol != null && __currentFrame != __lastFrameUpdate) {
@@ -396,42 +382,45 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			__lastFrameUpdate = __currentFrame;
 			
 		}
-		if(__frameScripts != null){
+		if (__symbol != null && __playing) {
 
-			if(shouldRunTotalFramesScripts)
-			{
-				if(!__evaluateFrameScripts (__totalFrames)) {
+			if(__frameScripts != null){
+
+
+				if (nextFrame < startFrame)
+				{
+					if(!__evaluateFrameScripts (startFrame, __totalFrames)) {
+
+						return;
+					}
+					startFrame = 1;
+
+				}
+				if (!__evaluateFrameScripts (startFrame, nextFrame)) {
 
 					return;
 				}
-
-			}
-			if (!__evaluateFrameScripts (nextFrame)) {
-
-				return;
 			}
 		}
-		
 		super.__enterFrame (deltaTime);
 		
 	}
 	
 	
-	private function __evaluateFrameScripts (advanceToFrame:Int):Bool {
+	private function __evaluateFrameScripts (fromFrame:Int, advanceToFrame:Int):Bool {
 		
-		for (frame in __currentFrame...advanceToFrame + 1) {
+		for (frame in fromFrame...advanceToFrame + 1) {
 			
 			if (frame == __lastFrameScriptEval) continue;
 			
 			__lastFrameScriptEval = frame;
-			__currentFrame = frame;
 			
 			if (__frameScripts.exists (frame)) {
-				
+
+				var currentFrameBeforeScript = __currentFrame;
 				var script = __frameScripts.get (frame);
 				script ();
-				
-				if (__currentFrame != frame) {
+				if (__currentFrame != currentFrameBeforeScript) {
 					
 					return false;
 					
