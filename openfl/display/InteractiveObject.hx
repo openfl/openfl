@@ -80,6 +80,13 @@ class InteractiveObject extends DisplayObject {
 	}
 	
 	
+	private function __removeFocus ():Void {
+		
+		
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods

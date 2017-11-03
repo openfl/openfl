@@ -2014,6 +2014,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (value != __focus) {
 			
 			var oldFocus = __focus;
+			
+			if (__focus != null) {
+				
+				oldFocus.__removeFocus ();
+				
+			}
+			
 			__focus = value;
 			__cacheFocus = value;
 			

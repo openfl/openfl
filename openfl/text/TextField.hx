@@ -120,7 +120,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		private var __rawHtmlText:String;
 		private var __forceCachedBitmapUpdate:Bool = false;
 	#end
-
+	
 	
 	public function new () {
 		
@@ -497,9 +497,22 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (startIndex == endIndex && __text.length == __textEngine.maxChars) return;
 		
+		if (startIndex > __text.length) startIndex = __text.length;
+		if (endIndex > __text.length) endIndex = __text.length;
+		if (endIndex < startIndex) {
+			
+			var cache = endIndex;
+			endIndex = startIndex;
+			startIndex = cache;
+			
+		}
+		if (startIndex < 0) startIndex = 0;
+		
 		replaceText (startIndex, endIndex, value);
 		
 		var i = startIndex + cast (value, UTF8String).length;
+		if (i > __text.length) i = __text.length;
+		
 		setSelection (i, i);
 		
 	}
@@ -741,7 +754,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __allowMouseFocus ():Bool {
 		
-		return __textEngine.type == INPUT || tabEnabled;
+		return __textEngine.type == INPUT || tabEnabled || selectable;
 		
 	}
 	
@@ -864,18 +877,18 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 
 	private function __disableInput ():Void {
-
+		
 		if (__inputEnabled && stage != null) {
-
+			
 			stage.window.enableTextEvents = false;
 			stage.window.onTextInput.remove (window_onTextInput);
 			stage.window.onKeyDown.remove (window_onKeyDown);
-
+			
 			__inputEnabled = false;
 			__stopCursorTimer ();
-
+			
 		}
-
+		
 	}
 	
 	private override function __dispatch (event:Event):Bool {
@@ -1299,6 +1312,22 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __removeFocus ():Void {
+		
+		__stopCursorTimer ();
+		__stopTextInput ();
+		
+		if (__selectionIndex != __caretIndex) {
+			
+			__selectionIndex = __caretIndex;
+			__dirty = true;
+			__setRenderDirty ();
+			
+		}
+		
+	}
+	
+	
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
@@ -1449,14 +1478,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__selectionIndex = __caretIndex;
 			
 		}
-		var enableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
-
+		
+		var enableInput = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
+		
 		if (enableInput) {
-
+			
 			__enableInput ();
-
+			
 		}
-
+		
 	}
 
 	
@@ -1481,13 +1511,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private function __stopTextInput ():Void {
-
+		
 		var disableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
-
+		
 		if (disableInput) {
-
+			
 			__disableInput ();
-
+			
 		}
 		
 	}
@@ -2400,7 +2430,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				__stopCursorTimer ();
 				__startCursorTimer ();
-
+				
 				#if dom
 				if (__renderedOnCanvasWhileOnDOM) {
 					__forceCachedBitmapUpdate = true;
