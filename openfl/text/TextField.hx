@@ -495,10 +495,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 		
+		if (startIndex == endIndex && __text.length == __textEngine.maxChars) return;
+		
 		replaceText (startIndex, endIndex, value);
-
-		var i = startIndex + cast(value, UTF8String).length;
-		setSelection(i,i);
+		
+		var i = startIndex + cast (value, UTF8String).length;
+		setSelection (i, i);
 		
 	}
 	
@@ -508,6 +510,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
 		
 		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
+		if (endIndex > __text.length) endIndex = __text.length;
 		
 		var offset = newText.length - (endIndex - beginIndex);
 		
@@ -1309,26 +1312,28 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		// TODO: Better DOM workaround on cacheAsBitmap
+		
 		#if (js && html5 && dom)
 		if (!__renderedOnCanvasWhileOnDOM) {
+			
 			__renderedOnCanvasWhileOnDOM = true;
-
+			
 			if (type == TextFieldType.INPUT) {
-
-				replaceText(0, __text.length, __text);
-
+				
+				replaceText (0, __text.length, __text);
+				
 			}
-
+			
 			if (__isHTML) {
-
-				__updateText (HTMLParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
-
+				
+				__updateText (HTMLParser.parse (__text, __textFormat, __textEngine.textFormatRanges));
+				
 			}
-
+			
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty ();
-
+			
 		}
 		#end
 		
@@ -1380,21 +1385,22 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			DOMBitmap.render (__cacheBitmap, renderSession);
 			
 		} else {
-			if (__renderedOnCanvasWhileOnDOM) {
 			
+			if (__renderedOnCanvasWhileOnDOM) {
+				
 				__renderedOnCanvasWhileOnDOM = false;
-
+				
 				if (__isHTML && __rawHtmlText != null) {
-
+					
 					__updateText (__rawHtmlText);
 					__dirty = true;
 					__layoutDirty = true;
 					__setRenderDirty ();
-
+					
 				}
-
+				
 			}
-
+			
 			DOMTextField.render (this, renderSession);
 			
 		}
@@ -1530,14 +1536,19 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private function __updateText (value:String):Void {
-
+		
 		#if dom
 		if (__renderedOnCanvasWhileOnDOM) {
+			
 			__forceCachedBitmapUpdate = __text != value;
+			
 		}
 		#end
-
-		__text = value;
+		
+		// applies maxChars and restrict on text
+		
+		__textEngine.text = value;
+		__text = __textEngine.text;
 		
 		if (__text.length < __caretIndex) {
 			
@@ -1927,13 +1938,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (value != __textEngine.maxChars) {
 			
+			__textEngine.maxChars = value;
+			
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty ();
 			
 		}
 		
-		return __textEngine.maxChars = value;
+		return value;
 		
 	}
 	
@@ -1983,6 +1996,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__updateText (__text);
 			__setRenderDirty ();
 			
 		}
@@ -2010,7 +2024,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function set_restrict (value:String):String {
 		
-		return __textEngine.restrict = value;
+		if (__textEngine.restrict != value) {
+			
+			__textEngine.restrict = value;
+			__updateText (__text);
+			
+		}
+		
+		return value;
 		
 	}
 	

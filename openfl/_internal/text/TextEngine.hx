@@ -1617,7 +1617,9 @@ class TextEngine {
 	private function set_text (value:String):String {
 		
 		if (value == null) {
+			
 			return text = value;
+			
 		}
 		
 		if (__restrictRegexp != null) {
