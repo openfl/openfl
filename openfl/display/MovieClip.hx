@@ -347,12 +347,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					}
 					else{
 						child = targetChild;
-						addChildAt (targetChild, currentInstancesIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
+						addChildAt (targetChild, childrenIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
 					}
 
 				} else {
 
-					child = __children[currentInstancesIndex];
+					child = existingChild;
 
 				}
 				
