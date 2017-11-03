@@ -275,7 +275,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						// null out non-manually added/dynamic children
 						var nc = __children.length;
 						while (--nc >= 0) {
-							if (__cachedManuallyAddedDisplayObjects.indexOf(__children[nc]) >= 0) {
+							if (__cachedManuallyAddedDisplayObjects.indexOf(__children[nc]) < 0) {
 								__children[nc] = null;
 							}
 						}
