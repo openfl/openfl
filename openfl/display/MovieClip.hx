@@ -203,6 +203,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public override function __enterFrame (deltaTime:Int):Void {
 
 		var nextFrame : Int = -1;
+		var shouldCallFrameScripts : Bool = false;
+		var shouldRunTotalFramesScripts : Bool = false;
 		if (__symbol != null && __playing) {
 			
 			nextFrame = __getNextFrame (deltaTime);
@@ -211,6 +213,22 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				return;
 				
+			}
+			if (__frameScripts != null) {
+
+				if (nextFrame < __currentFrame) {
+
+					shouldRunTotalFramesScripts = true;
+					__currentFrame = 1;
+
+				}
+
+				shouldCallFrameScripts = true;
+
+			} else {
+
+				__currentFrame = nextFrame;
+
 			}
 		}
 		
@@ -380,32 +398,18 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			__lastFrameUpdate = __currentFrame;
 			
 		}
-		if(nextFrame != -1){
-		
-			if (__frameScripts != null) {
-					
-				if (nextFrame < __currentFrame) {
-					
-					if (!__evaluateFrameScripts (__totalFrames)) {
-						
-						return;
-						
-					}
-					
-					__currentFrame = 1;
-					
-				}
-				
-				if (!__evaluateFrameScripts (nextFrame)) {
-					
+		if(shouldCallFrameScripts){
+
+			if(shouldRunTotalFramesScripts)
+			{
+				if(!__evaluateFrameScripts (__totalFrames)) {
 					return;
-					
 				}
-				
-			} else {
-				
-				__currentFrame = nextFrame;
-				
+
+			}
+			if (!__evaluateFrameScripts (nextFrame)) {
+
+				return;
 			}
 		}
 		
