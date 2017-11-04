@@ -361,6 +361,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					var currentInstancesIndex = 0;
 					var childrenIndex = 0;
 
+					// first remove anything that doesn't exist now
 					while (childrenIndex < __children.length) {
 						child = __children[childrenIndex];
 
@@ -376,7 +377,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 								}
 							}
 							if(shouldRemove){
-								removeChild(child);
+								if( child != null ) {
+									removeChild(child);
+								}
+								else {
+									__children.splice(childrenIndex,1);
+								}
 								childrenIndex--;
 							}
 						}
@@ -386,9 +392,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					currentInstancesIndex = 0;
 					childrenIndex = 0;
 
+					// then leave the manually added dynamic objects where they are, while adding anything new from the frame
 					while (currentInstancesIndex < length) {
-
-						// based on further tests in Flash, I think what it actually does is first remove anything that doesn't exist now, then leave the manual ones where they are, while adding anything new from the frame
 
 						existingChild = __children[childrenIndex];
 						instance = currentInstances[currentInstancesIndex];
