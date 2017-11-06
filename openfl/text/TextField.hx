@@ -1600,7 +1600,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (!multiline && type == INPUT) {
 			
-			__updateLayout ();
+			// TODO: Update only if layout changed?
+			
+			__textEngine.update ();
 			
 			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
 			
