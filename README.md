@@ -1,4 +1,4 @@
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/develop.svg)](https://circleci.com/gh/openfl/openfl)
+[![Backers on Open Collective](https://opencollective.com/openfl/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/openfl/sponsors/badge.svg)](#sponsors) [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/develop.svg)](https://circleci.com/gh/openfl/openfl)
 
 
 <br />
@@ -142,3 +142,33 @@ To return to release builds:
     haxelib dev openfl
 
 You may also need a development build of Lime installed.
+
+## Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute]](CONTRIBUTING.md).
+<a href="graphs/contributors"><img src="https://opencollective.com/openfl/contributors.svg?width=890" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/openfl#backer)]
+
+<a href="https://opencollective.com/openfl#backers" target="_blank"><img src="https://opencollective.com/openfl/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/openfl#sponsor)]
+
+<a href="https://opencollective.com/openfl/sponsor/0/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/1/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/2/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/3/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/4/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/5/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/6/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/7/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/8/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/openfl/sponsor/9/website" target="_blank"><img src="https://opencollective.com/openfl/sponsor/9/avatar.svg"></a>
+
+
