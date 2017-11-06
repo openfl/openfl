@@ -2,6 +2,7 @@ package openfl._internal.stage3D.opengl;
 
 
 import lime.graphics.GLRenderContext;
+import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import openfl._internal.stage3D.GLUtils;
@@ -253,11 +254,9 @@ class GLContext3D {
 		if (window != null) {
 			
 			var image = window.renderer.readPixels ();
-			destination.image.copyPixels (image, image.rect, new Vector2 ());
+			destination.image.copyPixels (image, new LimeRectangle (Std.int (context.__stage3D.x), Std.int (context.__stage3D.y), context.backBufferWidth, context.backBufferHeight), new Vector2 ());
 			
 		}
-		
-		// TODO
 		
 	}
 	
