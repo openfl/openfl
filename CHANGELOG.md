@@ -1,3 +1,19 @@
+6.4.0 (11/06/2017)
+------------------
+
+* Added initial support for compressed textures for Stage3D
+* Added support for `Ctrl`+`C`/`Cmd`+`C` copying from selectable `TextField`
+* Added initial auto `textField.scrollH` support on single-line input `TextField`
+* Improved `urlRequest.manageCookies` to default to `false` for better CORS behavior
+* Improved uncaught error event handling on HTML5
+* Improved support for `textField.restrict` and `maxChars`
+* Improved support for switching focus to/from multiple TextFields
+* Fixed the size of the cursor in `TextField` to be more consistent
+* Fixed `mouseEvent.buttonDown` to accurately reflect the state of the left button
+* Fixed `FullScreenEvent` to behave more consistently on HTML5
+* Fixed the coordinates used for `context3D.drawToBitmapData`
+
+
 6.3.0 (10/24/2017)
 ------------------
 
