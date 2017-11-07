@@ -48,13 +48,19 @@ class GLShape {
 				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 				renderSession.maskManager.pushObject (shape);
 				
-				var shader = renderSession.filterManager.pushObject (shape);
-				
-				//var shader = renderSession.shaderManager.initShader (shape.shader);
-				renderSession.shaderManager.setShader (shader);
+				var shader = (shape.mask != null || shape.__parentMask != null) ? GLMaskManager.maskShader : renderSession.filterManager.pushObject (shape);
+				renderSession.shaderManager.setShader ( shader );
 				
 				shader.data.uImage0.input = graphics.__bitmap;
 				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
+				
+				if ( shape.mask != null || shape.__parentMask != null ) {
+
+					shader.data.uImage1.input = shape.__maskBitmap != null ? shape.__maskBitmapData : shape.__mask.__graphics.__bitmap ;
+					shader.data.uImage1.smoothing = renderSession.allowSmoothing;
+
+				}
+
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
 				
 				var useColorTransform = !shape.__worldColorTransform.__isDefault ();

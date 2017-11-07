@@ -15,7 +15,7 @@ class CanvasDisplayObject {
 		
 		#if (js && html5)
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
+		if ((!displayObject.__renderable && !displayObject.__isMask)|| displayObject.__worldAlpha <= 0) return;
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
