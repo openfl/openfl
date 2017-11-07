@@ -14,6 +14,7 @@ import openfl.display.Shader;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
@@ -45,7 +46,7 @@ class GLBitmap {
 			
 			if  (  bitmap.mask != null || bitmap.__parentMask != null ) {
 			
-				shader.data.uImage1.input = bitmap.__maskBitmapData;
+				shader.data.uImage1.input = bitmap.__maskBitmap != null ? bitmap.__maskBitmapData : bitmap.__mask.__graphics.__bitmap ;
 				shader.data.uImage1.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			
 			}

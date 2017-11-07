@@ -1280,11 +1280,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				matrix.identity ();
 				
 				rect = Rectangle.__pool.get ();
-				if (__graphics != null) {
-					__graphics.__getBounds( rect, new Matrix() );
-					rect.x += __renderTransform.tx;
-					rect.y += __renderTransform.ty;
-				}
+				__getBounds(  rect, new Matrix() );
+
+				rect.x += __renderTransform.tx;
+				rect.y += __renderTransform.ty;
 				
 			}
 			
