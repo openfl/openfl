@@ -27,9 +27,6 @@ import openfl.text.TextFormatAlign;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-import js.html.InputElement;
-import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
 #end
 
@@ -120,11 +117,7 @@ class TextEngine {
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
-	#if (js && html5)
-	private var __hiddenInput:InputElement;
-	#end
 	
-
 	public function new (textField:TextField) {
 		
 		this.textField = textField;
@@ -551,11 +544,11 @@ class TextEngine {
 		if (lf == -1 && br == -1) return cr;
 		if (lf == -1 && cr == -1) return br;
 
-		if (cr == -1) return Std.int(Math.min(br, lf));
-		if (lf == -1) return Std.int(Math.min(br, cr));
-		if (br == -1) return Std.int(Math.min(cr, lf));
+		if (cr == -1) return Std.int (Math.min (br, lf));
+		if (lf == -1) return Std.int (Math.min (br, cr));
+		if (br == -1) return Std.int (Math.min (cr, lf));
 
-		return Std.int(Math.min(Math.min(cr, lf), br));
+		return Std.int (Math.min (Math.min (cr, lf), br));
 		
 	}
 	
@@ -991,7 +984,7 @@ class TextEngine {
 		
 		inline function breakLongWords (endIndex:Int):Void {
 			
-			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
+			var tempWidth = getTextWidth (text.substring (textIndex, endIndex));
 			
 			while (offsetX + tempWidth > width - 2) {
 				
@@ -999,7 +992,7 @@ class TextEngine {
 				
 				while (textIndex + i < endIndex + 1) {
 					
-					tempWidth = getTextWidth(text.substr(textIndex, i));
+					tempWidth = getTextWidth (text.substr (textIndex, i));
 					
 					if (offsetX + tempWidth > width - 2) {
 						
@@ -1045,12 +1038,12 @@ class TextEngine {
 					
 					layoutGroup = null;
 					
-					alignBaseline();
+					alignBaseline ();
 					
 					textIndex += i;
 					
 					positions = getPositions (text, textIndex, endIndex);
-					widthValue = getPositionsWidth(positions);
+					widthValue = getPositionsWidth (positions);
 					
 					tempWidth = widthValue;
 					
@@ -1120,7 +1113,7 @@ class TextEngine {
 					
 				}
 				
-				alignBaseline();
+				alignBaseline ();
 				
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
@@ -1624,7 +1617,9 @@ class TextEngine {
 	private function set_text (value:String):String {
 		
 		if (value == null) {
+			
 			return text = value;
+			
 		}
 		
 		if (__restrictRegexp != null) {

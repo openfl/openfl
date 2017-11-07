@@ -3,6 +3,7 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
+import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -58,6 +59,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
+	private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
 	
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
@@ -164,14 +166,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();
-		
+		__renderTransform = new Matrix ();		
 		#if dom
 		__worldVisible = true;
 		#end
-		
+
 		name = "instance" + (++__instanceCount);
-		
+
 	}
 	
 	
@@ -220,7 +221,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		return super.dispatchEvent (event);
+		return __dispatchWithCapture (event);
 		
 	}
 	
@@ -374,50 +375,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
+	private function __dispatchChildren (event:Event):Void {
 		
-		event.target = this;
 		
-		if (parent != null) {
-			
-			event.eventPhase = CAPTURING_PHASE;
-			
-			if (parent == stage) {
-				
-				parent.__dispatchEvent (event);
-				
-			} else {
-				
-				var parent = parent;
-				var i = 0;
-				
-				while (parent != null) {
-					
-					stack[i] = parent;
-					parent = parent.parent;
-					i++;
-					
-				}
-				
-				for (j in 0...i) {
-					
-					stack[i - j - 1].__dispatchEvent (event);
-					
-				}
-				
-			}
-			
-		}
-		
-		event.eventPhase = AT_TARGET;
-		
-		return __dispatchEvent (event);
 		
 	}
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-		
+
 		var result = super.__dispatchEvent (event);
 		
 		if (event.__isCanceled) {
@@ -505,6 +471,55 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 		}
+		
+	}
+	
+	
+	private function __dispatchWithCapture (event:Event):Bool {
+		
+		if (event.target == null) {
+			
+			event.target = this;
+			
+		}
+		
+		if (parent != null) {
+			
+			event.eventPhase = CAPTURING_PHASE;
+			
+			if (parent == stage) {
+				
+				parent.__dispatch (event);
+				
+			} else {
+				
+				var stack = __tempStack.get ();
+				var parent = parent;
+				var i = 0;
+				
+				while (parent != null) {
+					
+					stack[i] = parent;
+					parent = parent.parent;
+					i++;
+					
+				}
+				
+				for (j in 0...i) {
+					
+					stack[i - j - 1].__dispatch (event);
+					
+				}
+				
+				__tempStack.release (stack);
+				
+			}
+			
+		}
+		
+		event.eventPhase = AT_TARGET;
+		
+		return __dispatchEvent (event);
 		
 	}
 	
@@ -1005,7 +1020,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var matrix = null, rect = null;
 			
-			if (!renderSession.lockTransform) __getWorldTransform ();
+			//if (!renderSession.lockTransform) __getWorldTransform ();
 			__update (false, true);
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));

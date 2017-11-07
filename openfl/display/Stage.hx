@@ -144,6 +144,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __stack:Array<DisplayObject>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
+	private var __wasFullscreen:Bool;
 	
 	private var __touchData:Map<Int, TouchData>;
 	
@@ -181,6 +182,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
 		__renderDirty = true;
+		__wasFullscreen = window.fullscreen;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -867,9 +869,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__resize ();
 			
-			if (__displayState == NORMAL) {
+			if (!__wasFullscreen) {
 				
-				__displayState = FULL_SCREEN_INTERACTIVE;
+				__wasFullscreen = true;
+				if (__displayState == NORMAL) __displayState = FULL_SCREEN_INTERACTIVE;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 				
 			}
@@ -934,8 +937,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderDirty = true;
 			__resize ();
 			
-			if (__displayState != NORMAL && !window.fullscreen) {
+			if (__wasFullscreen && !window.fullscreen) {
 				
+				__wasFullscreen = false;
 				__displayState = NORMAL;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 				
@@ -1207,14 +1211,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#elseif neko
 			neko.Lib.rethrow (e);
 			#elseif js
-			var exc = @:privateAccess haxe.CallStack.lastException;
-			if (exc != null && exc.stack != null && exc.stack != "") {
-				untyped __js__ ("console.log") (exc.stack);
-				e.stack = exc.stack;
-			} else {
-				var msg = CallStack.toString (CallStack.callStack ());
-				untyped __js__ ("console.log") (msg);
-			}
+			try {
+				var exc = @:privateAccess haxe.CallStack.lastException;
+				if (exc != null && Reflect.hasField (exc, "stack") && exc.stack != null && exc.stack != "") {
+					untyped __js__ ("console.log") (exc.stack);
+					e.stack = exc.stack;
+				} else {
+					var msg = CallStack.toString (CallStack.callStack ());
+					untyped __js__ ("console.log") (msg);
+				}
+			} catch (e2:Dynamic) {}
 			untyped __js__ ("throw e");
 			#elseif cs
 			throw e;
@@ -1325,7 +1331,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			case MouseEvent.MOUSE_DOWN:
 				
-				if (target.tabEnabled) {
+				if (target.__allowMouseFocus ()) {
 					
 					focus = target;
 					
@@ -1336,6 +1342,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 				
 				__mouseDownLeft = target;
+				MouseEvent.__buttonDown = true;
 			
 			case MouseEvent.MIDDLE_MOUSE_DOWN:
 				
@@ -1348,6 +1355,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case MouseEvent.MOUSE_UP:
 				
 				if (__mouseDownLeft != null) {
+					
+					MouseEvent.__buttonDown = false;
 					
 					if (__mouseX < 0 || __mouseY < 0) {
 						

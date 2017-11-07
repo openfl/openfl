@@ -288,6 +288,13 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 	
 	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return @:privateAccess data.toJSON ();
+		
+	}
+	
+	
 }
 
 
@@ -1880,6 +1887,8 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	public function splice (pos:Int, len:Int):IVector<T>;
 	public function toString ():String;
 	public function unshift (x:T):Void;
+	
+	@:noCompletion private function toJSON ():Dynamic;
 	
 }
 
