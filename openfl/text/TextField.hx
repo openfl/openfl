@@ -170,6 +170,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__updateText (__text + text);
 		
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
+		__updateScrollH ();
 		
 	}
 	
@@ -572,6 +573,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			}
 			
 		}
+		
+		__updateScrollH ();
 		
 		__dirty = true;
 		__layoutDirty = true;
@@ -1558,6 +1561,30 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private function __updateScrollH ():Void {
+		
+		if (!multiline && type == INPUT) {
+			
+			__layoutDirty = true;
+			__updateLayout ();
+			
+			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
+			
+			if (offsetX > 0) {
+				
+				scrollH = Math.ceil (offsetX);
+				
+			} else {
+				
+				scrollH = 0;
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private function __updateText (value:String):Void {
 		
 		#if dom
@@ -1570,7 +1597,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		// applies maxChars and restrict on text
 		
-		var cacheText = __textEngine.text;
 		__textEngine.text = value;
 		__text = __textEngine.text;
 		
@@ -1596,26 +1622,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			}
 			
 			__textEngine.text = mask;
-			
-		}
-		
-		if (!multiline && type == INPUT && cacheText != __text) {
-			
-			// TODO: Update only if layout changed?
-			
-			__textEngine.update ();
-			
-			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
-			
-			if (offsetX > 0) {
-				
-				scrollH = Math.ceil (offsetX);
-				
-			} else {
-				
-				scrollH = 0;
-				
-			}
 			
 		}
 		
@@ -2041,6 +2047,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__dirty = true;
 			__layoutDirty = true;
 			__updateText (__text);
+			__updateScrollH ();
 			__setRenderDirty ();
 			
 		}
@@ -2388,7 +2395,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__updateLayout ();
 			
-			var position = __getPosition (mouseX, mouseY);
+			var position = __getPosition (mouseX + scrollH, mouseY);
 			
 			if (position != __caretIndex) {
 				
@@ -2424,7 +2431,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			var px = __worldTransform.__transformInverseX (x, y);
 			var py = __worldTransform.__transformInverseY (x, y);
 			
-			var upPos:Int = __getPosition (mouseX, mouseY);
+			var upPos:Int = __getPosition (mouseX + scrollH, mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 			
@@ -2522,7 +2529,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		__updateLayout ();
 		
-		__caretIndex = __getPosition (mouseX, mouseY);
+		__caretIndex = __getPosition (mouseX + scrollH, mouseY);
 		__selectionIndex = __caretIndex;
 		#if !dom
 		__dirty = true;

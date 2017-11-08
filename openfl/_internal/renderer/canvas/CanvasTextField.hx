@@ -281,7 +281,7 @@ class CanvasTextField {
 								if (start != null && end != null) {
 									
 									context.fillStyle = "#000000";
-									context.fillRect (start.x, start.y, end.x - start.x, group.height);
+									context.fillRect (start.x + scrollX, start.y + scrollY, end.x - start.x, group.height);
 									context.fillStyle = "#FFFFFF";
 									
 									// TODO: fill only once

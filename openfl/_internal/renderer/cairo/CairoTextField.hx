@@ -361,7 +361,7 @@ class CairoTextField {
 							if (start != null && end != null) {
 								
 								cairo.setSourceRGB (0, 0, 0);
-								cairo.rectangle (start.x, start.y, end.x - start.x, group.height);
+								cairo.rectangle (scrollX + start.x, start.y + scrollY, end.x - start.x, group.height);
 								cairo.fill ();
 								cairo.setSourceRGB (1, 1, 1);
 								
