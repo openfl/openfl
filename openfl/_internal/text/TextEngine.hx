@@ -1553,7 +1553,7 @@ class TextEngine {
 	
 	private function update ():Void {
 		
-		if (text == null || text == "" || textFormatRanges.length == 0) {
+		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0) {
 			
 			lineAscents.length = 0;
 			lineBreaks.length = 0;
