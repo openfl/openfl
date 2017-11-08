@@ -1570,6 +1570,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		// applies maxChars and restrict on text
 		
+		var cacheText = __textEngine.text;
 		__textEngine.text = value;
 		__text = __textEngine.text;
 		
@@ -1598,7 +1599,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
-		if (!multiline && type == INPUT) {
+		if (!multiline && type == INPUT && cacheText != __text) {
 			
 			// TODO: Update only if layout changed?
 			
@@ -2475,9 +2476,17 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		__stopCursorTimer ();
 		
+		// TODO: Better system
+		
 		if (event.relatedObject == null || !Std.is (event.relatedObject, TextField)) {
 			
 			__stopTextInput ();
+			
+		} else {
+			
+			stage.window.onTextInput.remove (window_onTextInput);
+			stage.window.onKeyDown.remove (window_onKeyDown);
+			__inputEnabled = false;
 			
 		}
 		
