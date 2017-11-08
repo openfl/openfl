@@ -127,9 +127,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
-		
-		stop ();
+
+		play ();
 		__goto (__resolveFrameReference (frame));
+		stop ();
 		
 	}
 	
