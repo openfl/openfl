@@ -223,8 +223,8 @@ class GLTilemap {
 			
 			if (flush) {
 				
-				cacheShader.data.uImage0.input = cacheBitmapData;
-				renderSession.shaderManager.updateShader (cacheShader);
+				shader.data.uImage0.input = cacheBitmapData;
+				renderSession.shaderManager.updateShader (shader);
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
