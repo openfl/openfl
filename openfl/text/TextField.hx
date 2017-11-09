@@ -1456,6 +1456,19 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		CanvasTextField.render (this, renderSession, __worldTransform);
+		#elseif lime_cairo
+		CairoTextField.render (this, renderSession, __worldTransform);
+		#end
+		
+		super.__renderGLMask (renderSession);
+		
+	}
+	
+	
 	private function __startCursorTimer ():Void {
 		
 		__cursorTimer = Timer.delay (__startCursorTimer, 600);

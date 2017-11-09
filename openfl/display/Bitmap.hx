@@ -242,6 +242,23 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.renderMask (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			GLBitmap.renderMask (this, renderSession);
+			
+		}
+		
+	}
+	
+	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
 		
 		if (filters == null) return;

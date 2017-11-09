@@ -215,6 +215,13 @@ import js.Browser;
 		}
 		
 	}
+	
+	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		
+		
+	}
 	#end
 	
 	

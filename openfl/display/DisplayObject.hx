@@ -848,6 +848,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __renderGLMask (renderSession:RenderSession):Void {
+		
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.renderMask (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			GLDisplayObject.renderMask (this, renderSession);
+			
+		}
+		
+	}
+	
+	
 	private function __setParentRenderDirty ():Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
@@ -1088,14 +1105,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				
-				__cacheBitmap.__renderTransform.identity();
+				__cacheBitmap.__renderTransform.identity ();
 				__cacheBitmap.__renderTransform.tx = rect.x;
 				__cacheBitmap.__renderTransform.ty = rect.y;
-
-				matrix.concat( __renderTransform );
+				
+				matrix.concat (__renderTransform);
 				matrix.tx -= Math.round (rect.x);
 				matrix.ty -= Math.round (rect.y);
-
 				
 			}
 			

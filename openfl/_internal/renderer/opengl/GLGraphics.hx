@@ -193,4 +193,17 @@ class GLGraphics {
 	}
 	
 	
+	public static function renderMask (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
+		
+		// TODO: Support invisible shapes
+		
+		#if (js && html5)
+		CanvasGraphics.render (graphics, renderSession, parentTransform);
+		#elseif lime_cairo
+		CairoGraphics.render (graphics, renderSession, parentTransform);
+		#end
+		
+	}
+	
+	
 }

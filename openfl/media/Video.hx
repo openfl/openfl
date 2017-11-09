@@ -368,6 +368,13 @@ class Video extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		GLVideo.renderMask (this, renderSession);
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods

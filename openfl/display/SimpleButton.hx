@@ -335,6 +335,15 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		if (__currentState == null) return;
+		
+		__currentState.__renderGLMask (renderSession);
+		
+	}
+	
+	
 	private override function __setStageReference (stage:Stage):Void {
 		
 		super.__setStageReference (stage);
