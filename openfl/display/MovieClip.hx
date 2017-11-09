@@ -271,16 +271,19 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					var instance:FrameSymbolInstance;
 
 					var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
+
 					if( loopedSinceLastFrameUpdate )
 					{
 						// null out non-manually added/dynamic children
 						var nc = __children.length;
 						while (--nc >= 0) {
-							if (__cachedManuallyAddedDisplayObjects.indexOf(__children[nc]) < 0) {
-								__children[nc] = null;
+							if (__cachedManuallyAddedDisplayObjects.indexOf(__children[nc]) < 0){
+								removeChild(__children[nc]);//removeChild so cleanup can happen appropriately
+								__children.insert(nc, null);//insert placeholder null
 							}
 						}
 					}
+
 					var updateFrameStart:Int = (loopedSinceLastFrameUpdate || __lastFrameUpdate == -1)? 0 : __lastFrameUpdate;
 					for (i in updateFrameStart...__currentFrame) {
 
@@ -366,25 +369,22 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					while (childrenIndex < __children.length) {
 						child = __children[childrenIndex];
 
-						if(child != null && __cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
-							//keep manually added child where it is at
-						}
-						else {
-							var shouldRemove = true;
-							for(instance in currentInstances){
-								if(child == instance.displayObject){
-									shouldRemove = false;
-									break;
-								}
+						if(child != null){
+							if(__cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
+								//keep manually added child where it is at
 							}
-							if(shouldRemove){
-								if( child != null ) {
+							else {
+								var shouldRemove = true;
+								for(instance in currentInstances){
+									if(child == instance.displayObject){
+										shouldRemove = false;
+										break;
+									}
+								}
+								if(shouldRemove && child != null){
 									removeChild(child);
+									__children.insert(childrenIndex, null);//insert placeholder null
 								}
-								else {
-									__children.splice(childrenIndex,1);
-								}
-								childrenIndex--;
 							}
 						}
 						childrenIndex++;
@@ -409,6 +409,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							}
 							else{
 								child = targetChild;
+								if(existingChild == null)
+								{
+									__children.splice(childrenIndex, 1);//remove placeholder null
+								}
 								addChildAt (targetChild, childrenIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
 							}
 
@@ -439,6 +443,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						}
 						childrenIndex++;
 						currentInstancesIndex++;
+					}
+					//remove any left over null children
+					childrenIndex = 0;
+					while(childrenIndex < __children.length){
+						if(__children[childrenIndex] == null) {
+							__children.splice(childrenIndex,1);
+							childrenIndex--;
+						}
+						childrenIndex++;
 					}
 
 					__lastFrameUpdate = __currentFrame;
