@@ -1018,6 +1018,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
+		if (updateChildren && mask != null) {
+			
+			mask.__update (transformOnly, true, maskGraphics);
+			
+		}
+		
 	}
 	
 	
@@ -1501,6 +1507,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (__mask != null) {
 			
 			__mask.__isMask = false;
+			__mask.__renderParent = null;
 			__mask.__setTransformDirty ();
 			__mask.__setRenderDirty ();
 			
@@ -1509,6 +1516,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (value != null) {
 			
 			value.__isMask = true;
+			value.__renderParent = this;
 			
 		}
 		
