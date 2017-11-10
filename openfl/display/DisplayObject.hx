@@ -104,6 +104,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __isMask:Bool;
 	private var __loaderInfo:LoaderInfo;
 	private var __mask:DisplayObject;
+	private var __maskTarget:DisplayObject;
 	private var __name:String;
 	private var __objectTransform:Transform;
 	private var __renderable:Bool;
@@ -928,6 +929,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
+		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms ();
 		
@@ -1018,7 +1020,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		if (updateChildren && mask != null) {
+		if (updateChildren && mask != null && mask.parent == null) {
 			
 			mask.__update (transformOnly, true, maskGraphics);
 			
@@ -1507,7 +1509,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (__mask != null) {
 			
 			__mask.__isMask = false;
-			__mask.__renderParent = null;
+			__mask.__maskTarget = null;
 			__mask.__setTransformDirty ();
 			__mask.__setRenderDirty ();
 			
@@ -1516,7 +1518,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (value != null) {
 			
 			value.__isMask = true;
-			value.__renderParent = this;
+			value.__maskTarget = this;
 			
 		}
 		
