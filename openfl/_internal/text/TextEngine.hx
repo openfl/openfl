@@ -319,6 +319,7 @@ class TextEngine {
 		var bold = format.bold;
 		var italic = format.italic;
 		
+		if (fontName == null) fontName = "_serif";
 		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
 		
 		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
@@ -336,6 +337,22 @@ class TextEngine {
 			
 			fontName = fontNamePrefix + " Italic";
 			italic = false;
+			
+		} else {
+			
+			// Prevent "extra" bold and italic fonts
+			
+			if (bold && (fontName.indexOf (" Bold ") > -1 || StringTools.endsWith (fontName, " Bold"))) {
+				
+				bold = false;
+				
+			}
+			
+			if (italic && (fontName.indexOf (" Italic ") > -1 || StringTools.endsWith (fontName, " Italic"))) {
+				
+				italic = false;
+				
+			}
 			
 		}
 		
