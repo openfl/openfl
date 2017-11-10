@@ -69,7 +69,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:from @:noCompletion public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
+	@:from public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
 		if (buffer == null) return null;
 		
@@ -86,7 +86,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:from @:noCompletion public static function fromBytes (bytes:Bytes):ByteArray {
+	@:from public static function fromBytes (bytes:Bytes):ByteArray {
 		
 		if (bytes == null) return null;
 		
