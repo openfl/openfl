@@ -224,6 +224,33 @@ class TextEngine {
 	}
 	
 	
+	private static function findFontVariant (format:TextFormat):Font {
+		
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			return findFont (fontNamePrefix + " Bold Italic");
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			return findFont (fontNamePrefix + " Bold");
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			return findFont (fontNamePrefix + " Italic");
+			
+		}
+		
+		return findFont (fontName);
+		
+	}
+	
+	
 	private function getBounds ():Void {
 		
 		var padding = border ? 1 : 0;
@@ -288,18 +315,42 @@ class TextEngine {
 	
 	public static function getFont (format:TextFormat):String {
 		
-		var font = format.italic ? "italic " : "normal ";
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			fontName = fontNamePrefix + " Bold Italic";
+			bold = false;
+			italic = false;
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			fontName = fontNamePrefix + " Bold";
+			bold = false;
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			fontName = fontNamePrefix + " Italic";
+			italic = false;
+			
+		}
+		
+		var font = italic ? "italic " : "normal ";
 		font += "normal ";
-		font += format.bold ? "bold " : "normal ";
+		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
 		font += "/" + (format.leading + format.size + 3) + "px ";
 		
-		font += "" + switch (format.font) {
+		font += "" + switch (fontName) {
 			
 			case "_sans": "sans-serif";
 			case "_serif": "serif";
 			case "_typewriter": "monospace";
-			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace(format.font, '$1') + "'";
+			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace (fontName, '$1') + "'";
 			
 		}
 		
@@ -323,7 +374,7 @@ class TextEngine {
 				
 			}
 			
-			instance = findFont (format.font);
+			instance = findFontVariant (format);
 			if (instance != null) return instance;
 			
 			var systemFontDirectory = System.fontsDirectory;
