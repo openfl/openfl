@@ -1,3 +1,16 @@
+6.5.0 (11/10/2017)
+------------------
+
+* Added initial support for OpenGL masking using stencil buffer
+* Added missing `ByteArray.loadFromBytes`/`ByteArray.loadFromFile` methods
+* Added initial support for switching within font families for `TextField` rendering
+* Fixed a regression in `graphics.drawTriangles` support on native
+* Fixed a case where `scrollH` updating in `TextField` could be one character off
+* Fixed a problem where two `TextField` instances could both receive input at once
+* Fixed measurement value of `textField.textHeight` when a field is empty
+* Fixed support for `<window color-depth="32" />` for HTML5 template
+
+
 6.4.0 (11/06/2017)
 ------------------
 
