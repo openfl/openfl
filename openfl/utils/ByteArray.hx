@@ -4,6 +4,7 @@ package openfl.utils;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
+import lime.app.Future;
 import lime.system.System;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
@@ -132,6 +133,30 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public static function fromFile (path:String):ByteArray {
 		
 		return LimeBytes.fromFile (path);
+		
+	}
+	
+	
+	public static function loadFromBytes (bytes:Bytes):Future<ByteArray> {
+		
+		return LimeBytes.loadFromBytes (bytes).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromFile (path:String):Future<ByteArray> {
+		
+		return LimeBytes.loadFromFile (path).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
 		
 	}
 	

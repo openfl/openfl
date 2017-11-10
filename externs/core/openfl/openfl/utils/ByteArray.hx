@@ -4,6 +4,7 @@ package openfl.utils;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
+import lime.app.Future;
 import lime.system.System;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
@@ -136,6 +137,30 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
+	public static function loadFromBytes (bytes:Bytes):Future<ByteArray> {
+		
+		return LimeBytes.loadFromBytes (bytes).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromFile (path:String):Future<ByteArray> {
+		
+		return LimeBytes.loadFromFile (path).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
+		
+	}
+	
+	
 	@:from @:noCompletion public static function fromLimeBytes (bytes:LimeBytes):ByteArray {
 		
 		return fromBytes (bytes);
@@ -242,6 +267,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (value > 0) {
 			
 			this.__resize (value);
+			if (value < this.position) this.position = value;
 			
 		}
 		
@@ -290,7 +316,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if js
 		super (bytes.b.buffer);
 		#else
-		super (length, bytes.b);
+		super (length, bytes.getData ());
 		#end
 		
 		__length = length;
@@ -811,7 +837,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private inline function __setData (bytes:Bytes):Void {
 		
+		#if eval
+		// TODO: Not quite correct, but this will probably
+		// not be called while in a macro
+		var count = bytes.length < length ? bytes.length : length;
+		for (i in 0...count) set (i, bytes.get (i));
+		#else
 		b = bytes.b;
+		#end
+		
 		__length = bytes.length;
 		
 		#if js
