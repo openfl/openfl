@@ -446,12 +446,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					}
 					//remove any left over null children
 					childrenIndex = 0;
-					while(childrenIndex < __children.length){
+					while(childrenIndex < __children.length){  // rely on haxe to javascript not caching length variable in while loop
 						if(__children[childrenIndex] == null) {
 							__children.splice(childrenIndex,1);
-							childrenIndex--;
 						}
-						childrenIndex++;
+						else {
+							childrenIndex++;
+						}
 					}
 
 					__lastFrameUpdate = __currentFrame;
