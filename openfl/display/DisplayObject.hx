@@ -1020,7 +1020,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		if (updateChildren && mask != null && mask.parent == null) {
+		if (updateChildren && mask != null) {
 			
 			mask.__update (transformOnly, true, maskGraphics);
 			
@@ -1519,6 +1519,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			value.__isMask = true;
 			value.__maskTarget = this;
+			value.__setWorldTransformInvalid ();
 			
 		}
 		
