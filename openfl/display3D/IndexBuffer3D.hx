@@ -24,6 +24,7 @@ import openfl.Vector;
 	private var __elementType:Int;
 	private var __id:GLBuffer;
 	private var __memoryUsage:Int;
+	private var __tempInt16Array:Int16Array;
 	private var __numIndices:Int;
 	private var __usage:Int;
 	
@@ -65,24 +66,27 @@ import openfl.Vector;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
 		if (data == null) return;
 		
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		
+		if (byteLength == -1) {
+			byteLength = data.byteLength;
+		}
 		#if (js && html5)
 		(GL:WebGLContext).bufferData (GL.ELEMENT_ARRAY_BUFFER, data, __usage);
 		#else
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data.byteLength, data, __usage);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, byteLength, data, __usage);
 		#end
 		GLUtils.CheckGLError ();
 		
-		if (data.byteLength != __memoryUsage) {
+		if (byteLength != __memoryUsage) {
 			
-			__context.__statsAdd (Context3D.Context3DTelemetry.MEM_INDEX_BUFFER, data.byteLength - __memoryUsage);
-			__memoryUsage = data.byteLength;
+			__context.__statsAdd (Context3D.Context3DTelemetry.MEM_INDEX_BUFFER, byteLength - __memoryUsage);
+			__memoryUsage = byteLength;
 			
 		}
 		
@@ -94,16 +98,29 @@ import openfl.Vector;
 		// TODO: Optimize more
 		
 		var length = startOffset + count;
+		var byteLength = count * 2;
 		
-		var buffer = new Int16Array (count);
+		var existingInt16Array: Int16Array = __tempInt16Array;
 		
-		for (i in startOffset...length) {
+		if (__tempInt16Array == null || __tempInt16Array.length < count) {
 			
-			buffer[i - startOffset] = data[i];
+			__tempInt16Array = new Int16Array(count);
+			
+			if (existingInt16Array != null) {
+				
+				__tempInt16Array.set(existingInt16Array);
+				
+			}
 			
 		}
 		
-		uploadFromTypedArray (buffer);
+		for (i in startOffset...length) {
+			
+			__tempInt16Array[i - startOffset] = data[i];
+			
+		}
+		
+		uploadFromTypedArray (__tempInt16Array, byteLength);
 		
 	}
 	
