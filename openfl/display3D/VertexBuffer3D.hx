@@ -28,6 +28,7 @@ class VertexBuffer3D {
 	private var __numVertices:Int;
 	private var __stride:Int;
 	private var __tempBytes:Bytes;
+	private var __tempFloat32Array:Float32Array;
 	private var __usage:Int;
 	private var __vertexSize:Int;
 	
@@ -72,24 +73,30 @@ class VertexBuffer3D {
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
 		if (data == null) return;
-		
+
 		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
-		
+
+		if (byteLength == -1) {
+
+			byteLength = data.byteLength;
+
+		}
+
 		#if (js && html5)
 		(GL:WebGLContext).bufferData (GL.ARRAY_BUFFER, data, __usage);
 		#else
-		GL.bufferData (GL.ARRAY_BUFFER, data.byteLength, data, __usage);
+		GL.bufferData (GL.ARRAY_BUFFER, byteLength, data, __usage);
 		#end
 		GLUtils.CheckGLError ();
 		
-		if (data.byteLength != __memoryUsage) {
+		if (byteLength != __memoryUsage) {
 			
-			__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, data.byteLength - __memoryUsage);
-			__memoryUsage = data.byteLength;
+			__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, byteLength - __memoryUsage);
+			__memoryUsage = byteLength;
 			
 		}
 		
@@ -107,16 +114,28 @@ class VertexBuffer3D {
 		var length = start + count;
 		
 		#if (js && html5)
-		
-		var buffer = new Float32Array (count);
-		
+		var byteLength = count * 4;
+		var existingFloat32Array: Float32Array = __tempFloat32Array;
+
+		if (__tempFloat32Array == null || __tempFloat32Array.length < count) {
+
+			__tempFloat32Array = new Float32Array(count);
+
+			if (existingFloat32Array != null) {
+
+                __tempFloat32Array.set(existingFloat32Array);
+
+            }
+
+		}
+
 		for (i in start...length) {
 			
-			buffer[i - start] = data[i];
+			__tempFloat32Array[i - start] = data[i];
 			
 		}
 		
-		uploadFromTypedArray (buffer);
+		uploadFromTypedArray (__tempFloat32Array, byteLength);
 		
 		#else
 		
