@@ -90,17 +90,32 @@ class GLIndexBuffer3D {
 		
 		// TODO: Optimize more
 		
+		if (data == null) return;
+		var gl = renderSession.gl;
+		
 		var length = startOffset + count;
 		
-		var buffer = new Int16Array (count);
+		var existingInt16Array: Int16Array = indexBuffer.__tempInt16Array;
 		
-		for (i in startOffset...length) {
+		if (indexBuffer.__tempInt16Array == null || indexBuffer.__tempInt16Array.length < count) {
 			
-			buffer[i - startOffset] = data[i];
+			indexBuffer.__tempInt16Array = new Int16Array(count);
+			
+			if (existingInt16Array != null) {
+				
+				indexBuffer.__tempInt16Array.set(existingInt16Array);
+				
+			}
 			
 		}
 		
-		uploadFromTypedArray (indexBuffer, renderSession, buffer);
+		for (i in startOffset...length) {
+			
+			indexBuffer.__tempInt16Array[i - startOffset] = data[i];
+			
+		}
+		
+		uploadFromTypedArray (indexBuffer, renderSession, indexBuffer.__tempInt16Array);
 		
 	}
 	
