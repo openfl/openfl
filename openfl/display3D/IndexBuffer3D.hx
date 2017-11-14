@@ -22,6 +22,7 @@ import openfl.Vector;
 	private var __elementType:Int;
 	private var __id:GLBuffer;
 	private var __memoryUsage:Int;
+	private var __tempInt16Array:Int16Array;
 	private var __numIndices:Int;
 	private var __usage:Int;
 	
@@ -50,7 +51,7 @@ import openfl.Vector;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
 		GLIndexBuffer3D.uploadFromTypedArray (this, __context.__renderSession, data);
 		
