@@ -6,6 +6,7 @@ import lime.graphics.opengl.GLFramebuffer;
 import lime.math.Matrix4;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl.display.BitmapData;
+import openfl.display.Graphics;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 
@@ -15,6 +16,7 @@ import openfl.geom.Matrix;
 #end
 
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
 @:access(openfl.display3D.Context3D)
@@ -52,6 +54,12 @@ class GLRenderer extends AbstractRenderer {
 		this.gl = gl;
 		this.defaultRenderTarget = defaultRenderTarget;
 		this.flipped = (defaultRenderTarget == null);
+		
+		if (Graphics.maxTextureWidth == null) {
+			
+			Graphics.maxTextureWidth = Graphics.maxTextureHeight = gl.getInteger (gl.MAX_TEXTURE_SIZE);
+			
+		}
 		
 		matrix = new Matrix4 ();
 		values = new Array ();

@@ -17,6 +17,7 @@ class Font extends LimeFont {
 	public var fontStyle:FontStyle;
 	public var fontType:FontType;
 	
+	private static var __fontByName = new Map<String, Font> ();
 	private static var __registeredFonts = new Array<Font> ();
 	
 	
@@ -75,6 +76,7 @@ class Font extends LimeFont {
 			}*/
 			
 			__registeredFonts.push (instance);
+			__fontByName[instance.name] = instance;
 			
 		}
 		

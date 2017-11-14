@@ -41,6 +41,9 @@ import js.html.CanvasRenderingContext2D;
 @:final class Graphics {
 	
 	
+	private static var maxTextureHeight:Null<Int> = null;
+	private static var maxTextureWidth:Null<Int> = null;
+	
 	private var __bounds:Rectangle;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
@@ -528,7 +531,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
 		
-		if (vertices == null || indices == null || uvtData == null) return;
+		if (vertices == null) return;
 		
 		var vlen = Std.int (vertices.length / 2);
 		
@@ -971,6 +974,20 @@ import js.html.CanvasRenderingContext2D;
 			__width  = 0;
 			__height = 0;
 			return;
+			
+		}
+		
+		if (maxTextureWidth != null && width > maxTextureWidth) {
+			
+			width = maxTextureWidth;
+			scaleX = maxTextureWidth / __bounds.width;
+			
+		}
+		
+		if (maxTextureWidth != null && height > maxTextureHeight) {
+			
+			height = maxTextureHeight;
+			scaleY = maxTextureHeight / __bounds.height;
 			
 		}
 		

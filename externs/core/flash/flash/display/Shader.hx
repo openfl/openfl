@@ -9,7 +9,7 @@ import openfl.utils.ByteArray;
 extern class Shader {
 	
 	
-	public var byteCode (null, default):ByteArray;
+	public var byteCode (never, default):ByteArray;
 	public var data:ShaderData;
 	public var glFragmentSource (get, set):String;
 	public var glProgram (get, never):Dynamic;

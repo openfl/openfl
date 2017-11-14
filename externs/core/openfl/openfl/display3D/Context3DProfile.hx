@@ -8,6 +8,7 @@ package openfl.display3D; #if (display || !flash)
 	public var BASELINE_EXTENDED = 2;
 	public var STANDARD = 3;
 	public var STANDARD_CONSTRAINED = 4;
+	public var STANDARD_EXTENDED = 5;
 	
 	@:from private static function fromString (value:String):Context3DProfile {
 		
@@ -18,6 +19,7 @@ package openfl.display3D; #if (display || !flash)
 			case "baselineExtended": BASELINE_EXTENDED;
 			case "standard": STANDARD;
 			case "standardConstrained": STANDARD_CONSTRAINED;
+			case "standardExtended": STANDARD_EXTENDED;
 			default: null;
 			
 		}
@@ -33,6 +35,7 @@ package openfl.display3D; #if (display || !flash)
 			case Context3DProfile.BASELINE_EXTENDED: "baselineExtended";
 			case Context3DProfile.STANDARD: "standard";
 			case Context3DProfile.STANDARD_CONSTRAINED: "standardConstrained";
+			case Context3DProfile.STANDARD_EXTENDED: "standardExtended";
 			default: null;
 			
 		}

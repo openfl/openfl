@@ -147,6 +147,17 @@ class Sound extends EventDispatcher {
 	}
 	
 	
+	public static function loadFromFiles (paths:Array<String>):Future<Sound> {
+		
+		return AudioBuffer.loadFromFiles (paths).then (function (audioBuffer) {
+			
+			return Future.withValue (fromAudioBuffer (audioBuffer));
+			
+		});
+		
+	}
+	
+	
 	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void {
 		
 		if (bytes == null) {

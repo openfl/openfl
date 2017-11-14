@@ -9,8 +9,8 @@ extern class Sprite extends DisplayObjectContainer {
 	
 	
 	public var buttonMode:Bool;
-	public var dropTarget (default, null):DisplayObject;
-	public var graphics (default, null):Graphics;
+	public var dropTarget (default, never):DisplayObject;
+	public var graphics (default, never):Graphics;
 	public var hitArea:Sprite;
 	
 	#if flash

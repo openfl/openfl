@@ -88,4 +88,50 @@ class GLVideo {
 	}
 	
 	
+	public static function renderMask (video:Video, renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		if (video.__stream == null) return;
+		
+		if (video.__stream.__video != null) {
+			
+			var renderer:GLRenderer = cast renderSession.renderer;
+			var gl = renderSession.gl;
+			
+			var shader = GLMaskManager.maskShader;
+			renderSession.shaderManager.setShader (shader);
+			
+			//shader.data.uImage0.input = bitmap.bitmapData;
+			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
+			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
+			
+			renderSession.shaderManager.updateShader (shader);
+			
+			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (gl));
+			
+			// if (video.smoothing) {
+				
+			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				
+			// } else {
+				
+			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+				
+			// }
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl, video.__worldAlpha, video.__worldColorTransform));
+			
+			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			
+			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			
+		}
+		#end
+		
+	}
+	
+	
 }

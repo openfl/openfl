@@ -1,4 +1,6 @@
 package openfl.display3D;
+
+
 import openfl._internal.utils.NullUtils;
 
 
@@ -9,6 +11,7 @@ import openfl._internal.utils.NullUtils;
 	public var BASELINE_EXTENDED = 2;
 	public var STANDARD = 3;
 	public var STANDARD_CONSTRAINED = 4;
+	public var STANDARD_EXTENDED = 5;
 	
 	@:from private static function fromString (value:String):Context3DProfile {
 		
@@ -19,6 +22,7 @@ import openfl._internal.utils.NullUtils;
 			case "baselineExtended": BASELINE_EXTENDED;
 			case "standard": STANDARD;
 			case "standardConstrained": STANDARD_CONSTRAINED;
+			case "standardExtended": STANDARD_EXTENDED;
 			default: null;
 			
 		}
@@ -34,6 +38,7 @@ import openfl._internal.utils.NullUtils;
 			case Context3DProfile.BASELINE_EXTENDED: "baselineExtended";
 			case Context3DProfile.STANDARD: "standard";
 			case Context3DProfile.STANDARD_CONSTRAINED: "standardConstrained";
+			case Context3DProfile.STANDARD_EXTENDED: "standardExtended";
 			default: null;
 			
 		}

@@ -73,4 +73,32 @@ class GLBitmap {
 	}
 	
 	
+	public static function renderMask (bitmap:Bitmap, renderSession:RenderSession):Void {
+		
+		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
+			
+			var renderer:GLRenderer = cast renderSession.renderer;
+			var gl = renderSession.gl;
+			
+			var shader = GLMaskManager.maskShader;
+			renderSession.shaderManager.setShader (shader);
+			
+			shader.data.uImage0.input = bitmap.bitmapData;
+			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
+			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
+			
+			renderSession.shaderManager.updateShader (shader);
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.bitmapData.getBuffer (gl, bitmap.__worldAlpha, bitmap.__worldColorTransform));
+			
+			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			
+			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			
+		}
+		
+	}
+	
+	
 }

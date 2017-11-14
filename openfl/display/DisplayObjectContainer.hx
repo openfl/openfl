@@ -9,6 +9,7 @@ import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
 import openfl.events.Event;
+import openfl.events.EventPhase;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -34,7 +35,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var tabChildren:Bool;
 	
 	private var __removedChildren:Vector<DisplayObject>;
-	private var __tempStack:Vector<DisplayObject>;
 	
 	
 	private function new () {
@@ -45,7 +45,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__children = new Array<DisplayObject> ();
 		__removedChildren = new Vector<DisplayObject> ();
-		__tempStack = new Vector<DisplayObject> ();
+
 		
 	}
 	
@@ -109,12 +109,13 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
-			child.__dispatchEvent (event);
+			child.__dispatchWithCapture (event);
 			
 			if (addedToStage) {
 				
-				child.__dispatchChildren (new Event (Event.ADDED_TO_STAGE, false, false), __tempStack);
-				__tempStack.length = 0;
+				var event = new Event (Event.ADDED_TO_STAGE, false, false);
+				child.__dispatchWithCapture (event);
+				child.__dispatchChildren (event);
 				
 			}
 			
@@ -203,7 +204,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setRenderDirty ();
 			__setRenderDirty();
 			
-			child.__dispatchEvent (new Event (Event.REMOVED, true));
+			var event = new Event (Event.REMOVED, true);
+			child.__dispatchWithCapture (event);
 			
 			if (stage != null) {
 				
@@ -213,9 +215,9 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 				}
 				
-				child.__dispatchChildren (new Event (Event.REMOVED_FROM_STAGE, false, false), __tempStack);
-				__tempStack.length = 0;
-				
+				var event = new Event (Event.REMOVED_FROM_STAGE, false, false);
+				child.__dispatchWithCapture (event);
+				child.__dispatchChildren (event);
 				child.__setStageReference (null);
 				
 			}
@@ -346,25 +348,25 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
+	private override function __dispatchChildren (event:Event):Void {
 		
-		var success = super.__dispatchChildren (event, stack);
-		
-		if (success && __children != null) {
+		if (__children != null) {
 			
 			for (child in __children) {
 				
-				if (!child.__dispatchChildren (event, stack)) {
+				event.target = child;
+				
+				if (!child.__dispatchWithCapture (event)) {
 					
-					return false;
+					break;
 					
 				}
+				
+				child.__dispatchChildren (event);
 				
 			}
 			
 		}
-		
-		return success;
 		
 	}
 	
@@ -830,25 +832,29 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
-		renderSession.filterManager.pushObject (this);
-		
-		if (renderSession.clearRenderDirty) {
+		if (__children.length > 0) {
 			
-			for (child in __children) {
+			renderSession.maskManager.pushObject (this);
+			renderSession.filterManager.pushObject (this);
+			
+			if (renderSession.clearRenderDirty) {
 				
-				child.__renderGL (renderSession);
-				child.__renderDirty = false;
+				for (child in __children) {
+					
+					child.__renderGL (renderSession);
+					child.__renderDirty = false;
+					
+				}
 				
-			}
-			
-			__renderDirty = false;
-			
-		} else {
-			
-			for (child in __children) {
+				__renderDirty = false;
 				
-				child.__renderGL (renderSession);
+			} else {
+				
+				for (child in __children) {
+					
+					child.__renderGL (renderSession);
+					
+				}
 				
 			}
 			
@@ -866,8 +872,54 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.filterManager.popObject (this);
-		renderSession.maskManager.popObject (this);
+		if (__children.length > 0) {
+			
+			renderSession.filterManager.popObject (this);
+			renderSession.maskManager.popObject (this);
+			
+		}
+		
+	}
+	
+	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		super.__renderGLMask (renderSession);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
+		if (renderSession.clearRenderDirty) {
+			
+			for (child in __children) {
+				
+				child.__renderGLMask (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderGLMask (renderSession);
+				
+			}
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
+		
+		__removedChildren.length = 0;
 		
 	}
 	
@@ -889,17 +941,17 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __setTransformDirty ():Void {
+	private override function __setWorldTransformInvalid ():Void {
 		
-		if (!__transformDirty) {
+		if (!__worldTransformInvalid) {
 			
-			super.__setTransformDirty ();
+			__worldTransformInvalid = true;
 			
 			if (__children != null) {
 				
 				for (child in __children) {
 					
-					child.__setTransformDirty ();
+					child.__setWorldTransformInvalid ();
 					
 				}
 				

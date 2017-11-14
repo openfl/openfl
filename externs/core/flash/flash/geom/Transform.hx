@@ -8,8 +8,8 @@ extern class Transform {
 	
 	
 	public var colorTransform:ColorTransform;
-	public var concatenatedColorTransform (default, null):ColorTransform;
-	public var concatenatedMatrix (default, null):Matrix;
+	public var concatenatedColorTransform (default, never):ColorTransform;
+	public var concatenatedMatrix (default, never):Matrix;
 	public var matrix:Matrix;
 	@:require(flash10) public var matrix3D:Matrix3D;
 	
@@ -17,7 +17,7 @@ extern class Transform {
 	@:require(flash10) public var perspectiveProjection:PerspectiveProjection;
 	#end
 	
-	public var pixelBounds (default, null):Rectangle;
+	public var pixelBounds (default, never):Rectangle;
 	
 	public function new (displayObject:DisplayObject);
 	

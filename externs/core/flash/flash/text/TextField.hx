@@ -19,8 +19,8 @@ extern class TextField extends InteractiveObject {
 	public var backgroundColor:Int;
 	public var border:Bool;
 	public var borderColor:Int;
-	public var bottomScrollV (default, null):Int;
-	public var caretIndex (default, null):Int;
+	public var bottomScrollV (default, never):Int;
+	public var caretIndex (default, never):Int;
 	
 	#if flash
 	public var condenseWhite:Bool;
@@ -31,18 +31,18 @@ extern class TextField extends InteractiveObject {
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var htmlText:String;
-	public var length (default, null):Int;
+	public var length (default, never):Int;
 	public var maxChars:Int;
-	public var maxScrollH (default, null):Int;
-	public var maxScrollV (default, null):Int;
+	public var maxScrollH (default, never):Int;
+	public var maxScrollV (default, never):Int;
 	public var mouseWheelEnabled:Bool;
 	public var multiline:Bool;
-	public var numLines (default, null):Int;
+	public var numLines (default, never):Int;
 	public var restrict:String;
 	public var scrollH:Int;
 	public var scrollV:Int;
 	public var selectable:Bool;
-	public var selectionBeginIndex (default, null):Int;
+	public var selectionBeginIndex (default, never):Int;
 	public var selectionEndIndex:Int;
 	public var sharpness:Float;
 	
@@ -52,13 +52,13 @@ extern class TextField extends InteractiveObject {
 	
 	public var text:String;
 	public var textColor:Int;
-	public var textHeight (default, null):Float;
+	public var textHeight (default, never):Float;
 	
 	#if flash
 	@:require(flash11) public var textInteractionMode:String;
 	#end
 	
-	public var textWidth (default, null):Float;
+	public var textWidth (default, never):Float;
 	public var type:TextFieldType;
 	
 	#if flash

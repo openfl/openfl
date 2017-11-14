@@ -1,10 +1,10 @@
--swf build/flash/release/bin/TestMain.swf
+-swf build/flash/bin/TestMain.swf
 -swf-version 9
 --no-output
 -cmd haxelib run openfl build flash
 
 --next
 
--js build/html5/release/bin/TestMain.js
+-js build/html5/bin/TestMain.js
 --no-output
 -cmd haxelib run openfl build html5

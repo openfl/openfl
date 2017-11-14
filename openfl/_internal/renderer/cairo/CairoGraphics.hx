@@ -277,6 +277,7 @@ class CairoGraphics {
 			strokePattern = null;
 			
 			cairo.newPath ();
+			cairo.fillRule = EVEN_ODD;
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
@@ -327,7 +328,6 @@ class CairoGraphics {
 						
 						data.readEndFill ();
 						endFill ();
-						endStroke ();
 						
 						if (hasFill && cairo.inFill (x, y)) {
 							
@@ -335,6 +335,8 @@ class CairoGraphics {
 							return true;
 							
 						}
+						
+						endStroke ();
 						
 						if (hasStroke && cairo.inStroke (x, y)) {
 							
@@ -349,7 +351,6 @@ class CairoGraphics {
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 						
 						endFill ();
-						endStroke ();
 						
 						if (hasFill && cairo.inFill (x, y)) {
 							
@@ -357,6 +358,8 @@ class CairoGraphics {
 							return true;
 							
 						}
+						
+						endStroke ();
 						
 						if (hasStroke && cairo.inStroke (x, y)) {
 							
@@ -409,6 +412,16 @@ class CairoGraphics {
 						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					
+					case WINDING_EVEN_ODD:
+						
+						data.readWindingEvenOdd ();
+						cairo.fillRule = EVEN_ODD;
+					
+					case WINDING_NON_ZERO:
+						
+						data.readWindingNonZero ();
+						cairo.fillRule = WINDING;
+					
 					default:
 						
 						data.skip (type);
@@ -417,9 +430,17 @@ class CairoGraphics {
 				
 			}
 			
+			var hitTest = false;
+			
 			if (fillCommands.length > 0) {
 				
 				endFill ();
+				
+			}
+			
+			if (hasFill && cairo.inFill (x, y)) {
+				
+				hitTest = true;
 				
 			}
 			
@@ -429,19 +450,15 @@ class CairoGraphics {
 				
 			}
 			
-			data.destroy ();
-			
-			if (hasFill && cairo.inFill (x, y)) {
-				
-				return true;
-				
-			}
-			
 			if (hasStroke && cairo.inStroke (x, y)) {
 				
-				return true;
+				hitTest = true;
 				
 			}
+			
+			data.destroy ();
+			
+			return hitTest;
 			
 		}
 		#end
@@ -800,8 +817,8 @@ class CairoGraphics {
 							
 							for (i in 0...(Std.int (v.length / 2))) {
 								
-								uvt.push (v[i * 2] / bitmapFill.width);
-								uvt.push (v[i * 2 + 1] / bitmapFill.height);
+								uvt.push (v[i * 2] - offsetX / bitmapFill.width);
+								uvt.push (v[i * 2 + 1] - offsetY / bitmapFill.height);
 								
 							}
 							
@@ -854,12 +871,12 @@ class CairoGraphics {
 						icx = ind[c_] * 2;
 						icy = ind[c_] * 2 + 1;
 						
-						x1 = v[iax];
-						y1 = v[iay];
-						x2 = v[ibx];
-						y2 = v[iby];
-						x3 = v[icx];
-						y3 = v[icy];
+						x1 = v[iax] - offsetX;
+						y1 = v[iay] - offsetY;
+						x2 = v[ibx] - offsetX;
+						y2 = v[iby] - offsetY;
+						x3 = v[icx] - offsetX;
+						y3 = v[icy] - offsetY;
 						
 						switch (c.culling) {
 							

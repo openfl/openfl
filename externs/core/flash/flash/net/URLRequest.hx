@@ -16,10 +16,25 @@ package flash.net; #if (!display && flash)
 	public var digest:String;
 	#end
 	
-	#if air
+	#if (air || !flash)
 	public var followRedirects:Bool;
 	public var idleTimeout:Float;
+	#else
+	public var followRedirects(get, set):Bool;
+	private inline function get_followRedirects ():Bool { return true; }
+	private inline function set_followRedirects (value:Bool):Bool { return value; }
+	
+	public var idleTimeout(get, set):Float;
+	private inline function get_idleTimeout ():Float { return 30000; }
+	private inline function set_idleTimeout (value:Float):Float { return value; }
+	#end
+	
+	#if (air || !flash)
 	public var manageCookies:Bool;
+	#else
+	public var manageCookies(get, set):Bool;
+	private inline function get_manageCookies ():Bool { return true; }
+	private inline function set_manageCookies (value:Bool):Bool { return value; }
 	#end
 	
 	public var method:String;
@@ -28,7 +43,14 @@ package flash.net; #if (!display && flash)
 	
 	#if air
 	public var useCache:Bool;
+	#end
+	
+	#if (air || !flash)
 	public var userAgent:String;
+	#else
+	public var userAgent(get, set):String;
+	private inline function get_userAgent ():String { return null; }
+	private inline function set_userAgent (value:String):String { return value; }
 	#end
 	
 	public function new (url:String = null);

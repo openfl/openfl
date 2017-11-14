@@ -1,3 +1,101 @@
+6.5.0 (11/10/2017)
+------------------
+
+* Added initial support for OpenGL masking using stencil buffer
+* Added missing `ByteArray.loadFromBytes`/`ByteArray.loadFromFile` methods
+* Added initial support for switching within font families for `TextField` rendering
+* Fixed a regression in `graphics.drawTriangles` support on native
+* Fixed a case where `scrollH` updating in `TextField` could be one character off
+* Fixed a problem where two `TextField` instances could both receive input at once
+* Fixed measurement value of `textField.textHeight` when a field is empty
+* Fixed support for `<window color-depth="32" />` for HTML5 template
+
+
+6.4.0 (11/06/2017)
+------------------
+
+* Added initial support for compressed textures for Stage3D
+* Added support for `Ctrl`+`C`/`Cmd`+`C` copying from selectable `TextField`
+* Added initial auto `textField.scrollH` support on single-line input `TextField`
+* Improved `urlRequest.manageCookies` to default to `false` for better CORS behavior
+* Improved uncaught error event handling on HTML5
+* Improved support for `textField.restrict` and `maxChars`
+* Improved support for switching focus to/from multiple TextFields
+* Fixed the size of the cursor in `TextField` to be more consistent
+* Fixed `mouseEvent.buttonDown` to accurately reflect the state of the left button
+* Fixed `FullScreenEvent` to behave more consistently on HTML5
+* Fixed the coordinates used for `context3D.drawToBitmapData`
+
+
+6.3.0 (10/24/2017)
+------------------
+
+* Updated Lime to 5.8.*
+* Added capture phase support for all `DisplayObject` events
+* Added support for `tile.colorTransform` on Flash `Tilemap`
+* Added support for `URLRequest` `followRedirects` and `manageCookies`
+* Added support for `URLRequest` `idleTimeout` and `userAgent`
+* Improved the behavior of `sprite.hitArea` with children
+* Improved the `tabEnabled` and mouse focus behavior
+* Fixed `TileArray` when `tile.id` does not exist in `Tileset`
+* Fixed support for `tile.colorTransform` on OpenGL `Tilemap`
+* Fixed the removal of bitmap filters in `MovieClip` animation where needed
+* Fixed similar font name resolution to better ignore non-alphabetic characters
+* Fixed support for combining bitmap filters with `ColorTransform`
+* Fixed support for videos in mobile Safari
+* Fixed some issues when using the Java target
+* Fixed a regression in HTML5 `openfl.Vector` JSON stringification
+
+
+6.2.2 (10/12/2017)
+------------------
+
+* Fixed support for using static initialization with bitmap filters
+* Fixed world transform values when nesting `cacheAsBitmap` objects
+* Fixed the behavior of using `tilemap.addTile` multiple times with the same tile
+* Fixed the rendering of `Tilemap` using HTML5 -Ddom rendering
+* Fixed conversion of SWF assets if a SWF class name is not found
+
+
+6.2.1 (10/10/2017)
+------------------
+
+* Updated Lime to 5.7.*
+* Added initial Dockerfile script
+* Added initial support for ATF cubemap textures
+* Improved native `TextField` rendering to use native text layouts directly
+* Improved support for combining characters in native `TextField` rendering
+* Improved word-wrapping when the final character in a line is a space
+* Improved the performance of `cacheAsBitmap` objects significantly
+* Improved `Vector` to support `new Vector<Int>([1,2,3])` initialization
+* Fixed incorrect trimming of final line character when "\n" is used
+* Fixed the color order of `ColorMatrixFilter` on certain targets
+* Fixed the position of `graphics.drawTriangles` shape rendering
+* Fixed casting of `Vector<T>` to `Vector<Dynamic>` on C++ target
+* Fixed proper serialization of `openfl.Vector` on HTML5
+* Fixed setting of `byteArray.position` value if `byteArray.length` is smaller
+* Fixed `XMLSocket` to send `DataEvent` based on `String` message boundaries
+* Fixed some issues in `textField.setTextFormat`
+* Fixed the behavior of `context3D.setStencilActions` on OpenGL
+* Fixed minor build issues when using Haxe 4 prerelease builds
+
+
+6.2.0 (09/26/2017)
+------------------
+
+* Added `openfl.utils.Function`
+* Added support for `MouseEvent.RELEASE_OUTSIDE`
+* Added missing `mouseEvent.isRelatedObjectInaccessible` property
+* Changed recommended Haxe version to 3.4.3
+* Changed some `Dynamic` values to use Haxe `Any` type (Haxe 3.4+)
+* Improved hit testing in `graphics` to support winding rules
+* Improved timing of `ProgressEvent.SOCKET_DATA` when using web sockets
+* Fixed use of filters on `Bitmap` or `Tilemap` objects
+* Fixed hit testing when using `graphics.lineStyle` in some cases
+* Fixed support for `graphics.drawTriangles` when omitting optional parameters
+* Fixed some cases where display object positions were not updated
+
+
 6.1.2 (09/13/2017)
 ------------------
 

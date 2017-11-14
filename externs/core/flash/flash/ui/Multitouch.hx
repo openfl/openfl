@@ -13,10 +13,10 @@ import openfl.Vector;
 	public static var mapTouchToMouse:Bool;
 	#end
 	
-	public static var maxTouchPoints (default, null):Int;
-	public static var supportedGestures (default, null):Vector<String>;
-	public static var supportsGestureEvents (default, null):Bool;
-	public static var supportsTouchEvents (default, null):Bool;
+	public static var maxTouchPoints (default, never):Int;
+	public static var supportedGestures (default, never):Vector<String>;
+	public static var supportsGestureEvents (default, never):Bool;
+	public static var supportsTouchEvents (default, never):Bool;
 	
 	
 }

@@ -17,7 +17,7 @@ import openfl.utils.Object;
 extern class BitmapData implements IBitmapDrawable {
 	
 	
-	public var height (default, null):Int;
+	public var height (default, never):Int;
 	
 	public var image (get, never):Image;
 	private inline function get_image ():Image { return null; }
@@ -25,9 +25,9 @@ extern class BitmapData implements IBitmapDrawable {
 	public var readable (get, never):Bool;
 	private inline function get_readable ():Bool { return true; }
 	
-	public var rect (default, null):Rectangle;
-	public var transparent (default, null):Bool;
-	public var width (default, null):Int;
+	public var rect (default, never):Rectangle;
+	public var transparent (default, never):Bool;
+	public var width (default, never):Int;
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF);
 	public function applyFilter (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void;

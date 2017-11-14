@@ -72,6 +72,7 @@ class DOMRenderer extends AbstractRenderer {
 		#end
 		
 		renderSession.maskManager = new DOMMaskManager (renderSession);
+		renderSession.blendModeManager = new DOMBlendModeManager (renderSession);
 		
 		renderSession.renderer = this;
 		#end
