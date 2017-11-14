@@ -72,7 +72,7 @@ import openfl.Vector;
 		
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
-
+		
 		if (byteLength == -1) {
 			byteLength = data.byteLength;
 		}
@@ -99,23 +99,23 @@ import openfl.Vector;
 		
 		var length = startOffset + count;
 		var byteLength = count * 2;
-
+		
 		var existingInt16Array: Int16Array = __tempInt16Array;
-
+		
 		if (__tempInt16Array == null || __tempInt16Array.length < count) {
-
+			
 			__tempInt16Array = new Int16Array(count);
-
+			
 			if (existingInt16Array != null) {
-
+				
 				__tempInt16Array.set(existingInt16Array);
-
+				
 			}
-
+			
 		}
-
+		
 		for (i in startOffset...length) {
-
+			
 			__tempInt16Array[i - startOffset] = data[i];
 			
 		}

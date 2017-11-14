@@ -76,16 +76,16 @@ class VertexBuffer3D {
 	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
 		if (data == null) return;
-
+		
 		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
-
+		
 		if (byteLength == -1) {
-
+			
 			byteLength = data.byteLength;
-
+			
 		}
-
+		
 		#if (js && html5)
 		(GL:WebGLContext).bufferData (GL.ARRAY_BUFFER, data, __usage);
 		#else
@@ -116,19 +116,19 @@ class VertexBuffer3D {
 		#if (js && html5)
 		var byteLength = count * 4;
 		var existingFloat32Array: Float32Array = __tempFloat32Array;
-
+		
 		if (__tempFloat32Array == null || __tempFloat32Array.length < count) {
-
+			
 			__tempFloat32Array = new Float32Array(count);
-
+			
 			if (existingFloat32Array != null) {
-
-                __tempFloat32Array.set(existingFloat32Array);
-
-            }
-
+				
+				__tempFloat32Array.set(existingFloat32Array);
+				
+			}
+			
 		}
-
+		
 		for (i in start...length) {
 			
 			__tempFloat32Array[i - start] = data[i];
