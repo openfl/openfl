@@ -224,22 +224,28 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			while(updateToFrame != nextFrame) {
 				var isUpdateToFrameSet = false;
 				if(__playing){
-					if(__frameScripts != null){
-						if(nextFrame < updateToFrame) {
+					if (__frameScripts != null){
+						// if we looped around
+						if (nextFrame < updateToFrame) {
+							// scan for any framescripts on keyframes to run after our current starting point (stored in updateToFrame) before we restart at the beginning
 							for(key in __frameScripts.keys()) {
-								if(key > updateToFrame){
+								if (key > updateToFrame){
+									// found one, let's run this framescript
 									isUpdateToFrameSet = true;
 									updateToFrame = key;
 									break;
 								}
 							}
-							if(!isUpdateToFrameSet) {
-								updateToFrame = 1;
+							if (!isUpdateToFrameSet) {
+								// there were none, so restart at the beginning (at 0 just in case nextFrame is 1)
+								updateToFrame = 0;
 							}
 						}
-						if(!isUpdateToFrameSet) {
+						if (!isUpdateToFrameSet) {
+							// we did not loop or we restarted at the beginning, so find the next keyframe
 							for(key in __frameScripts.keys()) {
-								if(key > updateToFrame && key <= nextFrame){
+								if (key > updateToFrame && key <= nextFrame){
+									// found one, let's run this framescript
 									isUpdateToFrameSet = true;
 									updateToFrame = key;
 									break;
@@ -247,12 +253,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							}
 						}
 					}
-					if(!isUpdateToFrameSet) {
+					if (!isUpdateToFrameSet) {
+						// we still did not find any keyframes, so we're done, jump to the end
 						updateToFrame = nextFrame;
 					}
 					__currentFrame = updateToFrame;
 				}
-				if(!isUpdateToFrameSet) {
+				if (!isUpdateToFrameSet) {
+					// we still did not find any keyframes, so we're done, jump to the end
 					updateToFrame = nextFrame;
 				}
 				if (__currentFrame != __lastFrameUpdate) {
@@ -458,7 +466,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					__lastFrameUpdate = __currentFrame;
 
 				}
-				if (isUpdateToFrameSet &&__symbol != null && __playing) {
+				if (isUpdateToFrameSet && __symbol != null && __playing) {
 
 					var currentFrameBeforeScript = __currentFrame;
 					var script = __frameScripts.get (updateToFrame);
@@ -472,40 +480,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 		}
 		super.__enterFrame (deltaTime);
-		
-	}
-	
-	
-	private function __evaluateFrameScripts (fromFrame:Int, advanceToFrame:Int):Bool {
-		
-		for (frame in fromFrame...advanceToFrame + 1) {
-			
-			if (frame == __lastFrameScriptEval) continue;
-			
-			__lastFrameScriptEval = frame;
-			
-			if (__frameScripts.exists (frame)) {
-
-				var currentFrameBeforeScript = __currentFrame;
-				var script = __frameScripts.get (frame);
-				script ();
-				if (__currentFrame != currentFrameBeforeScript) {
-					
-					return false;
-					
-				}
-				
-			}
-			
-			if (!__playing) {
-				
-				break;
-				
-			}
-			
-		}
-		
-		return true;
 		
 	}
 	
