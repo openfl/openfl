@@ -266,18 +266,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				if (__currentFrame != __lastFrameUpdate) {
 					__updateFrameLabel ();
 
-					var currentInstancesByFrameObjectID = null;
-					if( __lastInstancesByFrameObjectID != null ) {
-						currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
-					}
-					else {
-						currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
-					}
-
-					var frame:Int;
-					var frameData:Frame;
-					var instance:FrameSymbolInstance;
-
 					var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
 
 					if( loopedSinceLastFrameUpdate )
@@ -291,6 +279,18 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							}
 						}
 					}
+
+					var currentInstancesByFrameObjectID = null;
+					if( __lastInstancesByFrameObjectID != null && !loopedSinceLastFrameUpdate ) {
+						currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
+					}
+					else {
+						currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
+					}
+
+					var frame:Int;
+					var frameData:Frame;
+					var instance:FrameSymbolInstance;
 
 					var updateFrameStart:Int = (loopedSinceLastFrameUpdate || __lastFrameUpdate == -1)? 0 : __lastFrameUpdate;
 					for (i in updateFrameStart...__currentFrame) {
