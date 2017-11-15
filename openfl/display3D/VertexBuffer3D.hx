@@ -5,6 +5,7 @@ import haxe.io.Bytes;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
+import lime.utils.Float32Array;
 import openfl._internal.stage3D.opengl.GLVertexBuffer3D;
 import openfl.utils.ByteArray;
 import openfl.Vector;
