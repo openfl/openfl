@@ -259,8 +259,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					}
 					__currentFrame = updateToFrame;
 				}
-				if (!isUpdateToFrameSet) {
-					// we still did not find any keyframes, so we're done, jump to the end
+				else if (!isUpdateToFrameSet) {
+					// we are not playing, so we're done, jump to the end
 					updateToFrame = nextFrame;
 				}
 				if (__currentFrame != __lastFrameUpdate) {
@@ -404,7 +404,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					// then leave the manually added dynamic objects where they are, while adding anything new from the frame
 					while (currentInstancesIndex < length) {
 
-						existingChild = __children[childrenIndex];
+						existingChild = childrenIndex >= __children.length ? null : __children[childrenIndex];
 						instance = currentInstances[currentInstancesIndex];
 
 						targetDepth = instance.depth;
@@ -417,7 +417,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							}
 							else{
 								child = targetChild;
-								if(existingChild == null)
+								if(existingChild == null && childrenIndex < __children.length)
 								{
 									__children.splice(childrenIndex, 1);//remove placeholder null
 								}
