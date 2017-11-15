@@ -94,16 +94,15 @@ class GLIndexBuffer3D {
 		var gl = renderSession.gl;
 		
 		var length = startOffset + count;
-		
-		var existingInt16Array: Int16Array = indexBuffer.__tempInt16Array;
+		var existingInt16Array = indexBuffer.__tempInt16Array;
 		
 		if (indexBuffer.__tempInt16Array == null || indexBuffer.__tempInt16Array.length < count) {
 			
-			indexBuffer.__tempInt16Array = new Int16Array(count);
+			indexBuffer.__tempInt16Array = new Int16Array (count);
 			
 			if (existingInt16Array != null) {
 				
-				indexBuffer.__tempInt16Array.set(existingInt16Array);
+				indexBuffer.__tempInt16Array.set (existingInt16Array);
 				
 			}
 			

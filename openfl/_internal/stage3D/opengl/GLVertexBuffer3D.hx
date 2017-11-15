@@ -99,15 +99,15 @@ class GLVertexBuffer3D {
 		var count = numVertices * vertexBuffer.__vertexSize;
 		var length = start + count;
 		
-		var existingFloat32Array: Float32Array = vertexBuffer.__tempFloat32Array;
+		var existingFloat32Array = vertexBuffer.__tempFloat32Array;
 		
 		if (vertexBuffer.__tempFloat32Array == null || vertexBuffer.__tempFloat32Array.length < count) {
 			
-			vertexBuffer.__tempFloat32Array = new Float32Array(count);
+			vertexBuffer.__tempFloat32Array = new Float32Array (count);
 			
 			if (existingFloat32Array != null) {
 				
-				vertexBuffer.__tempFloat32Array.set(existingFloat32Array);
+				vertexBuffer.__tempFloat32Array.set (existingFloat32Array);
 				
 			}
 			

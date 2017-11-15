@@ -22,8 +22,8 @@ import openfl.Vector;
 	private var __elementType:Int;
 	private var __id:GLBuffer;
 	private var __memoryUsage:Int;
-	private var __tempInt16Array:Int16Array;
 	private var __numIndices:Int;
+	private var __tempInt16Array:Int16Array;
 	private var __usage:Int;
 	
 	
