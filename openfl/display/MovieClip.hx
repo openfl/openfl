@@ -72,7 +72,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		super ();
 		__cachedManuallyAddedDisplayObjects = new Array();
 		__cachedChildrenFrameSymbolInstacesDisplayObjects = new Array();
-		__currentFrame = 1;
+		__currentFrame = 0;
 		__currentLabels = [];
 		__totalFrames = 0;
 		enabled = true;
@@ -112,9 +112,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			__frameScripts.remove (frame);
 			
 		}
-		
 
-		if (index == 0 && method != null) method();
+
+		if (index == 0 && method != null) method();//call the framescript that should have been called during construction from fromSymbol's enterFrame call
 	}
 	
 	
@@ -207,13 +207,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		var nextFrame : Int = -1;
 		var shouldRunTotalFramesScripts : Bool = false;
 		var startFrame : Int = __currentFrame;
-		if (__symbol != null && __playing) {
-			
-			nextFrame = __getNextFrame (deltaTime);
-			
-			if (__lastFrameScriptEval == nextFrame) {//maybe we should check deltaTime to make sure this shortcut is okay to take and we haven't made a full loop around and landed on the same frame
+		if (__symbol != null) {
 
-				return;
+			if(__playing){
+
+				nextFrame = __getNextFrame (deltaTime);
+
+				if (__lastFrameScriptEval == nextFrame) {//maybe we should check deltaTime to make sure this shortcut is okay to take and we haven't made a full loop around and landed on the same frame
+
+					return;
+				}
+			}
+			else
+			{
+				//current theory: enter frame called while __playing is false means first frame needs to be initialized.
+				nextFrame = 1;
 			}
 		}
 
@@ -253,16 +261,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							}
 						}
 					}
-					if (!isUpdateToFrameSet) {
-						// we still did not find any keyframes, so we're done, jump to the end
-						updateToFrame = nextFrame;
-					}
-					__currentFrame = updateToFrame;
 				}
-				else if (!isUpdateToFrameSet) {
-					// we are not playing, so we're done, jump to the end
+
+				if (!isUpdateToFrameSet) {
+					// no keyframes to run, so we're done, jump to the end
 					updateToFrame = nextFrame;
 				}
+
+				__currentFrame = updateToFrame;
+
 				if (__currentFrame != __lastFrameUpdate) {
 					__updateFrameLabel ();
 
@@ -458,6 +465,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				}
 				if (isUpdateToFrameSet && __symbol != null && __playing) {
 
+					//a frame script on frame one is not called here the first time because __frameScripts is null during construction. It is called in addFrameScript instead.
 					var currentFrameBeforeScript = __currentFrame;
 					var script = __frameScripts.get (updateToFrame);
 					script ();
@@ -483,7 +491,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map ();
-		__currentFrame = 1;
+		__currentFrame = 0;
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
 		__totalFrames = __symbol.frames.length;
@@ -734,7 +742,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
-		__enterFrame (0);
+		__enterFrame (0);//frame scripts are not called here because they get attached after the constructor is completed.
+		//but this call is still needed to initialize the frame objects/children
 		
 		#if !openfl_dynamic
 		for (field in Type.getInstanceFields (Type.getClass (this))) {
