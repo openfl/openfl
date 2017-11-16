@@ -268,19 +268,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 					var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
 
-					if( loopedSinceLastFrameUpdate )
-					{
-						// null out non-manually added/dynamic children
-						var nc = __children.length;
-						while (--nc >= 0) {
-							if (__cachedManuallyAddedDisplayObjects.indexOf(__children[nc]) < 0){
-								removeChild(__children[nc]);//removeChild so cleanup can happen appropriately
-								__children.insert(nc, null);//insert placeholder null
-							}
-						}
-					}
-
-					var currentInstancesByFrameObjectID = null;
+					var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
 					if( __lastInstancesByFrameObjectID != null && !loopedSinceLastFrameUpdate ) {
 						currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
 					}
@@ -391,7 +379,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 								}
 								if(shouldRemove && child != null){
 									removeChild(child);
-									__children.insert(childrenIndex, null);//insert placeholder null
+									if( !loopedSinceLastFrameUpdate ) {
+										__children.insert(childrenIndex, null);//insert placeholder null
+									}
 								}
 							}
 						}
