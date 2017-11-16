@@ -220,8 +220,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			else
 			{
-				//current theory: enter frame called while __playing is false means first frame needs to be initialized.
-				nextFrame = 1;
+				//if initializing we need to run the first frame, otherwise stay at the current frame (where we stopped)
+				nextFrame = __currentFrame == 0 ? 1 : __currentFrame;
 			}
 		}
 
@@ -469,7 +469,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					var currentFrameBeforeScript = __currentFrame;
 					var script = __frameScripts.get (updateToFrame);
 					script ();
-					if (__currentFrame != currentFrameBeforeScript) {
+					if (__currentFrame != currentFrameBeforeScript || !__playing) {
 
 						return;
 
