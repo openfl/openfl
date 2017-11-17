@@ -130,14 +130,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		stop ();
 		__goto (__resolveFrameReference (frame));
-		
 	}
 	
 	
 	public function nextFrame ():Void {
-		
-		stop ();
+
 		__goto (__currentFrame + 1);
+		stop ();
 		
 	}
 	
@@ -269,11 +268,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				__currentFrame = updateToFrame;
 
-				if (__currentFrame != __lastFrameUpdate) {
+				__updateFrameObjectsAndChildren();
 
-					__updateFrameObjectsAndChildren();
-
-				}
 				if (isUpdateToFrameSet && __symbol != null && __playing) {
 
 					//a frame script on frame one is not called here the first time because __frameScripts is null during construction. It is called in addFrameScript instead.
@@ -293,13 +289,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 
 	private function __updateFrameObjectsAndChildren()	{
+		if (__currentFrame == __lastFrameUpdate)
+			return;
 
 		__updateFrameLabel ();
 
 		var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
 
 		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
-		if( __lastInstancesByFrameObjectID != null && !loopedSinceLastFrameUpdate ) {
+		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate != -1 &&  __lastInstancesByFrameObjectID != null) {
 			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
 		}
 		else {
@@ -797,16 +795,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		if (frame < 1) frame = 1;
 		else if (frame > __totalFrames) frame = __totalFrames;
-		
-		__currentFrame = frame;
-		//updating objects to this frame
-		__updateFrameObjectsAndChildren();
 
-		//check if there is a framescript and run it for this frame
-		if(__frameScripts != null && __frameScripts.exists(frame)) {
-			var script = __frameScripts.get (frame);
-			script ();
+		if(__currentFrame != frame)
+		{
+			__currentFrame = frame;
+			__lastFrameUpdate = -1;
+			//updating objects to this frame starting from scratch
+			__updateFrameObjectsAndChildren();
+
+			//check if there is a framescript and run it for this frame
+			if(__frameScripts != null && __frameScripts.exists(frame)) {
+				var script = __frameScripts.get (frame);
+				script ();
+			}
 		}
+		super.__enterFrame (0);
 	}
 	
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
