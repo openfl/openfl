@@ -2,6 +2,7 @@ package openfl; #if (!flash || display)
 
 
 import haxe.Constraints.Function;
+import lime.utils.Float32Array;
 import openfl.utils.ByteArray;
 
 @:multiType(T)
@@ -189,7 +190,8 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:AbstractVector<T>, length:Int, fixed:Bool, array:Array<T>):AbstractVector<T> {
 		
-		return new AbstractVector<T> (cast new FloatVector (length, fixed), array);
+		//return new AbstractVector<T> (cast new FloatVector (length, fixed), array);
+		return new AbstractVector<T> (cast new Float32ArrayVector (length, fixed), array);
 		
 	}
 	
@@ -1858,6 +1860,437 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 	
 
+}
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
+@:dox(hide) @:generic private class Float32ArrayVector implements IVector<Float> {
+	
+	
+	public var fixed:Bool;
+	public var length (get, set):Int;
+	
+	private var __array:Float32Array;
+	private var __length:Int;
+	
+	
+	public function new (?length:Int, ?fixed:Bool, ?array:Float32Array):Void {
+		
+		if (array == null) {
+			
+			array = new Float32Array (length > 128 ? length : 128);
+			__length = length != null ? length : 0;
+			
+		} else {
+			
+			__length = array.length;
+			
+		}
+		
+		__array = array;
+		
+		this.fixed = (fixed == true);
+		
+	}
+	
+	
+	public function concat (?a:IVector<Float>):IVector<Float> {
+		
+		if (a == null) {
+			
+			var array = new Float32Array (__array.length);
+			array.set (__array);
+			return new Float32ArrayVector (__length, false, array);
+			
+		} else {
+			
+			var other:Float32ArrayVector = cast a;
+			var array = new Float32Array (__length + other.__length);
+			array.set (__array);
+			array.set (other.__array, __length);
+			return new Float32ArrayVector (array);
+			
+		}
+		
+	}
+	
+	
+	public function copy ():IVector<Float> {
+		
+		var array = new Float32Array (__array.length);
+		array.set (__array);
+		return new Float32ArrayVector (__length, fixed, array);
+		
+	}
+	
+	
+	public function get (index:Int):Float {
+		
+		return __array[index];
+		
+	}
+	
+	
+	public function indexOf (x:Float, ?from:Int = 0):Int {
+		
+		for (i in from...__length) {
+			
+			if (__array[i] == x) {
+				
+				return i;
+				
+			}
+			
+		}
+		
+		return -1;
+		
+	}
+	
+	
+	public function insertAt (index:Int, element:Float):Void {
+		
+		if (!fixed || index < __length) {
+			
+			__resize (__length + 1);
+			
+			var i = __length - 1;
+			
+			while (i >= index) {
+				
+				__array[i + 1] = __array[i];
+				i--;
+				
+			}
+			
+			__array[index] = element;
+			
+		}
+		
+	}
+	
+	
+	public function iterator<Float> ():Iterator<Float> {
+		
+		// TODO: Create custom iterator
+		
+		var array = new Array<Float> ();
+		
+		// for (i in 0...__length) {
+			
+		// 	array[i] = __array[i];
+			
+		// }
+		
+		return cast array.iterator ();
+		
+	}
+	
+	
+	public function join (sep:String = ","):String {
+		
+		// TODO: Is building a String more efficient?
+		
+		var array = new Array<Float> ();
+		
+		for (i in 0...__length) {
+			
+			array[i] = __array[i];
+			
+		}
+		
+		return array.join (sep);
+		
+	}
+	
+	
+	public function lastIndexOf (x:Float, ?from:Int = 0):Int {
+		
+		var i = __length - 1;
+		
+		while (i >= from) {
+			
+			if (__array[i] == x) return i;
+			i--;
+			
+		}
+		
+		return -1;
+		
+	}
+	
+	
+	public function pop ():Null<Float> {
+		
+		if (!fixed && __length > 0) {
+			
+			__length--;
+			return __array[__length];
+			
+		} else {
+			
+			return null;
+			
+		}
+		
+	}
+	
+	
+	public function push (x:Float):Int {
+		
+		if (!fixed) {
+			
+			__resize (__length + 1);
+			__array[__length - 1] = x;
+			return __length;
+			
+		} else {
+			
+			return __length;
+			
+		}
+		
+	}
+	
+	
+	public function removeAt (index:Int):Float {
+		
+		if (!fixed || index < __length) {
+			
+			var value = __array[index];
+			
+			for (i in index...(__length - 1)) {
+				
+				__array[i] = __array[i + 1];
+				
+			}
+			
+			__length--;
+			return value;
+			
+		}
+		
+		return 0;
+		
+	}
+	
+	
+	public function reverse ():IVector<Float> {
+		
+		var array = new Float32Array (__array.length);
+		var index = __length - 1;
+		
+		for (i in 0...__length) {
+			
+			array[i] = __array[index];
+			index--;
+			
+		}
+		
+		__array = array;
+		return this;
+		
+	}
+	
+	
+	public function set (index:Int, value:Float):Float {
+		
+		if (!fixed || index < __length) {
+			
+			if (index == __length + 1) __resize (__length + 1);
+			if (__length > __array.length) trace (__length, __array.length);
+			return __array[index] = value;
+			
+		} else {
+			
+			return value;
+			
+		}
+		
+	}
+	
+	
+	public function shift ():Null<Float> {
+		
+		if (!fixed) {
+			
+			var value = __array[0];
+			
+			for (i in 0...__length - 2) {
+				
+				__array[i] = __array[i + 1];
+				
+			}
+			
+			return value;
+			
+		} else {
+			
+			return null;
+			
+		}
+		
+	}
+	
+	
+	public function slice (?startIndex:Int = 0, ?endIndex:Int = 16777215):IVector<Float> {
+		
+		// TODO: Better implementation
+		
+		var array = new Array<Float> ();
+		
+		for (i in 0...__length) {
+			
+			array[i] = __array[i];
+			
+		}
+		
+		var array = array.slice (startIndex, endIndex);
+		var __array = new Float32Array (array.length);
+		
+		for (i in 0...__length) {
+			
+			__array[i] = array[i];
+			
+		}
+		
+		return new Float32ArrayVector (__array);
+		
+	}
+	
+	
+	public function sort (f:Float->Float->Int):Void {
+		
+		// TODO: Better implementation
+		
+		var array = new Array<Float> ();
+		
+		for (i in 0...__length) {
+			
+			array[i] = __array[i];
+			
+		}
+		
+		array.sort (f);
+		
+		for (i in 0...__length) {
+			
+			__array[i] = array[i];
+			
+		}
+		
+	}
+	
+	
+	public function splice (pos:Int, len:Int):IVector<Float> {
+		
+		// TODO: Better implementation
+		
+		var array = new Array<Float> ();
+		
+		for (i in 0...__length) {
+			
+			array[i] = __array[i];
+			
+		}
+		
+		var __array = new Float32Array (array.length);
+		
+		for (i in 0...__length) {
+			
+			__array[i] = array[i];
+			
+		}
+		
+		return new Float32ArrayVector (__array);
+		
+	}
+	
+	
+	@:noCompletion @:keep private function toJSON () {
+		
+		return __array;
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return __array != null ? Std.string (__array) : null;
+		
+	}
+	
+	
+	public function unshift (x:Float):Void {
+		
+		if (!fixed) {
+			
+			__resize (__length + 1);
+			var index = __length - 2;
+			
+			while (index > 0) {
+				
+				__array[index + 1] = __array[index];
+				index--;
+				
+			}
+			
+			__array[0] = x;
+			
+		}
+		
+	}
+	
+	
+	private function __resize (newLength:Int):Void {
+		
+		if (newLength > __array.length) {
+			
+			// TODO: Larger data size intervals?
+			
+			var array = new Float32Array (newLength);
+			array.set (__array);
+			__array = array;
+			
+		}
+		
+		__length = newLength;
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	@:noCompletion private function get_length ():Int {
+		
+		return __length;
+		
+	}
+	
+	
+	@:noCompletion private function set_length (value:Int):Int {
+		
+		if (!fixed) {
+			
+			__resize (value);
+			
+		}
+		
+		return __length;
+		
+	}
+	
+	
 }
 
 
