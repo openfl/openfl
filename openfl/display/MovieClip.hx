@@ -271,196 +271,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				__currentFrame = updateToFrame;
 
 				if (__currentFrame != __lastFrameUpdate) {
-					__updateFrameLabel ();
 
-					var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
-
-					var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
-					if( __lastInstancesByFrameObjectID != null && !loopedSinceLastFrameUpdate ) {
-						currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
-					}
-					else {
-						currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
-					}
-
-					var frame:Int;
-					var frameData:Frame;
-					var instance:FrameSymbolInstance;
-
-					var updateFrameStart:Int = (loopedSinceLastFrameUpdate || __lastFrameUpdate == -1)? 0 : __lastFrameUpdate;
-					for (i in updateFrameStart...__currentFrame) {
-
-						frame = i + 1;
-						frameData = __symbol.frames[i];
-
-						if (frameData.objects == null) continue;
-
-						for (frameObject in frameData.objects) {
-
-							switch (frameObject.type) {
-
-								case CREATE:
-
-									instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-
-									if (instance != null) {
-
-										currentInstancesByFrameObjectID.set (frameObject.id, instance);
-										__updateDisplayObject (instance.displayObject, frameObject);
-
-									}
-
-								case UPDATE:
-
-									instance = currentInstancesByFrameObjectID.get (frameObject.id);
-
-									if (instance != null && instance.displayObject != null) {
-
-										__updateDisplayObject (instance.displayObject, frameObject);
-
-									}
-
-								case DESTROY:
-
-									currentInstancesByFrameObjectID.remove (frameObject.id);
-
-							}
-
-						}
-
-					}
-
-					// TODO: Less garbage?
-
-					var currentInstances = new Array<FrameSymbolInstance> ();
-					var currentMasks = new Array<FrameSymbolInstance> ();
-
-					for (instance in currentInstancesByFrameObjectID) {
-
-						if (currentInstances.indexOf (instance) == -1) {
-
-							if (instance.clipDepth > 0) {
-
-								currentMasks.push (instance);
-
-							} else {
-
-								currentInstances.push (instance);
-
-							}
-
-						}
-
-					}
-
-					__lastInstancesByFrameObjectID = currentInstancesByFrameObjectID;
-
-
-					currentInstances.sort (__sortDepths);
-
-					var existingChild:DisplayObject;
-					var targetDepth:Int;
-					var targetChild:DisplayObject;
-					var child:DisplayObject;
-					var maskApplied:Bool;
-
-					var length:Int = currentInstances.length;
-					var currentInstancesIndex = 0;
-					var childrenIndex = 0;
-
-					// first remove anything that doesn't exist now
-					while (childrenIndex < __children.length) {
-						child = __children[childrenIndex];
-
-						if(child != null){
-							if(__cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
-								//keep manually added child where it is at
-							}
-							else {
-								var shouldRemove = true;
-								for(instance in currentInstances){
-									if(child == instance.displayObject){
-										shouldRemove = false;
-										break;
-									}
-								}
-								if(shouldRemove && child != null){
-									removeChild(child);
-									if( !loopedSinceLastFrameUpdate ) {
-										__children.insert(childrenIndex, null);//insert placeholder null
-									}
-								}
-							}
-						}
-						childrenIndex++;
-					}
-
-					currentInstancesIndex = 0;
-					childrenIndex = 0;
-
-					// then leave the manually added dynamic objects where they are, while adding anything new from the frame
-					while (currentInstancesIndex < length) {
-
-						existingChild = childrenIndex >= __children.length ? null : __children[childrenIndex];
-						instance = currentInstances[currentInstancesIndex];
-
-						targetDepth = instance.depth;
-						targetChild = instance.displayObject;
-
-						if (existingChild != targetChild) {
-							if(existingChild != null && __cachedManuallyAddedDisplayObjects.indexOf(existingChild) >= 0){ //keep manually added child where it is at
-								currentInstancesIndex--;
-								child = existingChild;
-							}
-							else{
-								child = targetChild;
-								if(existingChild == null && childrenIndex < __children.length)
-								{
-									__children.splice(childrenIndex, 1);//remove placeholder null
-								}
-								addChildAt (targetChild, childrenIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
-							}
-
-						} else {
-
-							child = existingChild;
-
-						}
-
-						maskApplied = false;
-
-						for (mask in currentMasks) {
-
-							if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
-
-								child.mask = mask.displayObject;
-								maskApplied = true;
-								break;
-
-							}
-
-						}
-
-						if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
-
-							child.mask = null;
-
-						}
-						childrenIndex++;
-						currentInstancesIndex++;
-					}
-					//remove any left over null children
-					childrenIndex = 0;
-					while(childrenIndex < __children.length){  // rely on haxe to javascript not caching length variable in while loop
-						if(__children[childrenIndex] == null) {
-							__children.splice(childrenIndex,1);
-						}
-						else {
-							childrenIndex++;
-						}
-					}
-
-					__lastFrameUpdate = __currentFrame;
+					__updateFrameObjectsAndChildren();
 
 				}
 				if (isUpdateToFrameSet && __symbol != null && __playing) {
@@ -479,6 +291,200 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		}
 		super.__enterFrame (deltaTime);
 		
+	}
+
+	private function __updateFrameObjectsAndChildren()	{
+
+		__updateFrameLabel ();
+
+		var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
+
+		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
+		if( __lastInstancesByFrameObjectID != null && !loopedSinceLastFrameUpdate ) {
+			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
+		}
+		else {
+			currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
+		}
+
+		var frame:Int;
+		var frameData:Frame;
+		var instance:FrameSymbolInstance;
+
+		var updateFrameStart:Int = (loopedSinceLastFrameUpdate || __lastFrameUpdate == -1)? 0 : __lastFrameUpdate;
+		for (i in updateFrameStart...__currentFrame) {
+
+			frame = i + 1;
+			frameData = __symbol.frames[i];
+
+			if (frameData.objects == null) continue;
+
+			for (frameObject in frameData.objects) {
+
+				switch (frameObject.type) {
+
+					case CREATE:
+
+						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+
+						if (instance != null) {
+
+							currentInstancesByFrameObjectID.set (frameObject.id, instance);
+							__updateDisplayObject (instance.displayObject, frameObject);
+
+						}
+
+					case UPDATE:
+
+						instance = currentInstancesByFrameObjectID.get (frameObject.id);
+
+						if (instance != null && instance.displayObject != null) {
+
+							__updateDisplayObject (instance.displayObject, frameObject);
+
+						}
+
+					case DESTROY:
+
+						currentInstancesByFrameObjectID.remove (frameObject.id);
+
+				}
+
+			}
+
+		}
+
+		// TODO: Less garbage?
+
+		var currentInstances = new Array<FrameSymbolInstance> ();
+		var currentMasks = new Array<FrameSymbolInstance> ();
+
+		for (instance in currentInstancesByFrameObjectID) {
+
+			if (currentInstances.indexOf (instance) == -1) {
+
+				if (instance.clipDepth > 0) {
+
+					currentMasks.push (instance);
+
+				} else {
+
+					currentInstances.push (instance);
+
+				}
+
+			}
+
+		}
+
+		__lastInstancesByFrameObjectID = currentInstancesByFrameObjectID;
+
+
+		currentInstances.sort (__sortDepths);
+
+		var existingChild:DisplayObject;
+		var targetDepth:Int;
+		var targetChild:DisplayObject;
+		var child:DisplayObject;
+		var maskApplied:Bool;
+
+		var length:Int = currentInstances.length;
+		var currentInstancesIndex = 0;
+		var childrenIndex = 0;
+
+		// first remove anything that doesn't exist now
+		while (childrenIndex < __children.length) {
+			child = __children[childrenIndex];
+
+			if(child != null){
+				if(__cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
+					//keep manually added child where it is at
+				}
+				else {
+					var shouldRemove = true;
+					for(instance in currentInstances){
+						if(child == instance.displayObject){
+							shouldRemove = false;
+							break;
+						}
+					}
+					if(shouldRemove && child != null){
+						removeChild(child);
+						if( !loopedSinceLastFrameUpdate ) {
+							__children.insert(childrenIndex, null);//insert placeholder null
+						}
+					}
+				}
+			}
+			childrenIndex++;
+		}
+
+		currentInstancesIndex = 0;
+		childrenIndex = 0;
+
+		// then leave the manually added dynamic objects where they are, while adding anything new from the frame
+		while (currentInstancesIndex < length) {
+
+			existingChild = childrenIndex >= __children.length ? null : __children[childrenIndex];
+			instance = currentInstances[currentInstancesIndex];
+
+			targetDepth = instance.depth;
+			targetChild = instance.displayObject;
+
+			if (existingChild != targetChild) {
+				if(existingChild != null && __cachedManuallyAddedDisplayObjects.indexOf(existingChild) >= 0){ //keep manually added child where it is at
+					currentInstancesIndex--;
+					child = existingChild;
+				}
+				else{
+					child = targetChild;
+					if(existingChild == null && childrenIndex < __children.length)
+					{
+						__children.splice(childrenIndex, 1);//remove placeholder null
+					}
+					addChildAt (targetChild, childrenIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
+				}
+
+			} else {
+
+				child = existingChild;
+
+			}
+
+			maskApplied = false;
+
+			for (mask in currentMasks) {
+
+				if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
+
+					child.mask = mask.displayObject;
+					maskApplied = true;
+					break;
+
+				}
+
+			}
+
+			if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
+
+				child.mask = null;
+
+			}
+			childrenIndex++;
+			currentInstancesIndex++;
+		}
+		//remove any left over null children
+		childrenIndex = 0;
+		while(childrenIndex < __children.length){  // rely on haxe to javascript not caching length variable in while loop
+			if(__children[childrenIndex] == null) {
+				__children.splice(childrenIndex,1);
+			}
+			else {
+				childrenIndex++;
+			}
+		}
+
+		__lastFrameUpdate = __currentFrame;
 	}
 	
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
@@ -794,8 +800,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		else if (frame > __totalFrames) frame = __totalFrames;
 		
 		__currentFrame = frame;
-		__enterFrame (0);
-		
+		//updating objects to this frame
+		__updateFrameObjectsAndChildren();
+
+		//check if there is a framescript and run it for this frame
+		if(__frameScripts != null && __frameScripts.exists(frame)) {
+			var script = __frameScripts.get (frame);
+			script ();
+		}
 	}
 	
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
