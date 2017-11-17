@@ -487,7 +487,7 @@ class VectorTest {
 		
 		//
 		
-		var sort = function (a:Int, b:Int):Int {
+		var sort = function (a:Float, b:Float):Int {
 			
 			return a - b;
 			
