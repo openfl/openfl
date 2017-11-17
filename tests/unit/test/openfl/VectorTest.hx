@@ -489,14 +489,16 @@ class VectorTest {
 		
 		var sort = function (a:Float, b:Float):Int {
 			
-			return a - b;
+			if (a > b) return 1;
+			if (b < a) return 1;
+			return 0;
 			
 		}
 		
 		var vector = Vector.ofArray ([ 10, 2, 4, 5, 9, 1, 7, 3, 6, 8.0 ]);
 		vector.sort (sort);
 		
-		var lastValue = 0;
+		var lastValue = 0.0;
 		
 		for (i in 0...vector.length) {
 			
@@ -800,7 +802,7 @@ class VectorTest {
 	}
 	
 	
-	#if (!html5 && !flash) @Ignore #end @Test public function floatVectorStringify () {
+	@Ignore @Test public function floatVectorStringify () {
 		// Testing if we have the same stringify behavior in JS and flash
 		var expected: String = "[1.1,2.2]";
 		var stringyfied: String = null;

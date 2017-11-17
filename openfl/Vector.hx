@@ -1888,7 +1888,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 		} else {
 			
-			__length = array.length;
+			__length = length != null ? length : array.length;
 			
 		}
 		
@@ -1911,8 +1911,21 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 			var other:Float32ArrayVector = cast a;
 			var array = new Float32Array (__length + other.__length);
-			array.set (__array);
-			array.set (other.__array, __length);
+			
+			for (i in 0...__length) {
+				
+				array[i] = __array[i];
+				
+			}
+			
+			var index = __length;
+			for (i in 0...other.__length) {
+				
+				array[index] = other.__array[i];
+				index++;
+				
+			}
+			
 			return new Float32ArrayVector (array);
 			
 		}
@@ -1981,11 +1994,11 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		
 		var array = new Array<Float> ();
 		
-		// for (i in 0...__length) {
+		for (i in 0...__length) {
 			
-		// 	array[i] = __array[i];
+			array[i] = cast __array[i];
 			
-		// }
+		}
 		
 		return cast array.iterator ();
 		
@@ -2102,8 +2115,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		
 		if (!fixed || index < __length) {
 			
-			if (index == __length + 1) __resize (__length + 1);
-			if (__length > __array.length) trace (__length, __array.length);
+			if (index == __length) { __resize (__length + 1); }
 			return __array[index] = value;
 			
 		} else {
@@ -2127,6 +2139,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 				
 			}
 			
+			__length--;
 			return value;
 			
 		} else {
@@ -2199,11 +2212,21 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 		}
 		
-		var __array = new Float32Array (array.length);
+		var returnArray = array.splice (pos, len);
+		
+		__length = array.length;
 		
 		for (i in 0...__length) {
 			
 			__array[i] = array[i];
+			
+		}
+		
+		var __array = new Float32Array (returnArray.length);
+		
+		for (i in 0...__length) {
+			
+			__array[i] = returnArray[i];
 			
 		}
 		
@@ -2214,7 +2237,17 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	@:noCompletion @:keep private function toJSON () {
 		
-		return __array;
+		// TODO: Better implementation
+		
+		var array = new Array<Float> ();
+		
+		for (i in 0...__length) {
+			
+			array[i] = cast __array[i];
+			
+		}
+		
+		return array;
 		
 	}
 	
