@@ -254,7 +254,9 @@ class GLContext3D {
 		if (window != null) {
 			
 			var image = window.renderer.readPixels ();
-			destination.image.copyPixels (image, new LimeRectangle (Std.int (context.__stage3D.x), Std.int (context.__stage3D.y), context.backBufferWidth, context.backBufferHeight), new Vector2 ());
+			var heightOffset = image.height - context.backBufferHeight;
+			
+			destination.image.copyPixels (image, new LimeRectangle (Std.int (context.__stage3D.x), Std.int (context.__stage3D.y + heightOffset), context.backBufferWidth, context.backBufferHeight), new Vector2 ());
 			
 		}
 		
