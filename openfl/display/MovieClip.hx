@@ -72,7 +72,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		super ();
 		__cachedManuallyAddedDisplayObjects = new Array();
 		__cachedChildrenFrameSymbolInstacesDisplayObjects = new Array();
-		__currentFrame = 0;
+		__currentFrame = 1;
 		__currentLabels = [];
 		__totalFrames = 0;
 		enabled = true;
@@ -218,8 +218,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			else
 			{
-				//if initializing we need to run the first frame, otherwise stay at the current frame (where we stopped)
-				nextFrame = __currentFrame == 0 ? 1 : __currentFrame;
+				// stopped, just build (and run script if any) at the current frame
+				nextFrame = __currentFrame;
 			}
 		}
 
@@ -227,7 +227,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		if (__symbol != null)
 		{
-			while(updateToFrame != nextFrame) {
+			while(updateToFrame != nextFrame || __lastFrameUpdate == -1) {
 				var isUpdateToFrameSet = false;
 				if(__playing){
 					if (__frameScripts != null){
@@ -495,7 +495,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map ();
-		__currentFrame = 0;
+		__currentFrame = 1;
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
 		__totalFrames = __symbol.frames.length;
