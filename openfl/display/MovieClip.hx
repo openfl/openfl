@@ -278,6 +278,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					script ();
 					if (__currentFrame != currentFrameBeforeScript || !__playing) {
 
+						super.__enterFrame (deltaTime);
 						return;
 
 					}
