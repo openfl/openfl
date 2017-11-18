@@ -58,7 +58,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __currentLabels:Array<FrameLabel>;
 	private var __frameScripts:Map<Int, Void->Void>;
 	private var __frameTime:Int;
-	private var __lastFrameScriptEval:Int;
 	private var __lastFrameUpdate:Int;
 	private var __playing:Bool;
 	private var __swf:SWFLite;
@@ -210,11 +209,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			if(__playing){
 
 				nextFrame = __getNextFrame (deltaTime);
-
-				if (__lastFrameScriptEval == nextFrame) {//maybe we should check deltaTime to make sure this shortcut is okay to take and we haven't made a full loop around and landed on the same frame
-
-					return;
-				}
 			}
 			else
 			{
@@ -496,7 +490,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map ();
 		__currentFrame = 1;
-		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
 		__totalFrames = __symbol.frames.length;
 		
