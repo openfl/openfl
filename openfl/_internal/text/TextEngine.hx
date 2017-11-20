@@ -767,6 +767,8 @@ class TextEngine {
 		
 		layoutGroups.length = 0;
 		
+		if (text == null || text == "") return;
+		
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
 		var font = null;
