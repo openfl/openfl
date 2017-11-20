@@ -111,9 +111,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			__frameScripts.remove (frame);
 			
 		}
-
-
-		if (index == 0 && method != null) method();//call the framescript that should have been called during construction from fromSymbol's enterFrame call
 	}
 	
 	
@@ -212,7 +209,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			else
 			{
-				// stopped, just build (and run script if any) at the current frame
+				// stopped, just build frameobjects (and run script if any) at the current frame
 				nextFrame = __currentFrame;
 			}
 		}
@@ -738,10 +735,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			play ();
 			
 		}
-		
-		__enterFrame (0);//frame scripts are not called here because they get attached after the constructor is completed.
-		//but this call is still needed to initialize the frame objects/children
-		
+	}
+
+	// designed to be called from SpriteSymbol after display hierarchy is set up for this movieclip
+	private function __initialEnterFrame():Void {
+
+		__enterFrame(0);  // calls __enterFrame on all children too
+
 		#if !openfl_dynamic
 		for (field in Type.getInstanceFields (Type.getClass (this))) {
 			
@@ -757,7 +757,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		#end
-		
+
 	}
 	
 	
@@ -786,24 +786,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function __goto (frame:Int) {
 		
 		if (__symbol == null) return;
+		if (__currentFrame == frame ) return;
 		
 		if (frame < 1) frame = 1;
 		else if (frame > __totalFrames) frame = __totalFrames;
 
-		if(__currentFrame != frame)
-		{
-			__currentFrame = frame;
-			__lastFrameUpdate = -1;
-			//updating objects to this frame starting from scratch
-			__updateFrameObjectsAndChildren();
-
-			//check if there is a framescript and run it for this frame
-			if(__frameScripts != null && __frameScripts.exists(frame)) {
-				var script = __frameScripts.get (frame);
-				script ();
-			}
-		}
-		super.__enterFrame (0);
+		// go to the target frame and let enterFrame handle building frameobjects and running script next time it runs
+		__currentFrame = frame;
+		__lastFrameUpdate = -1;
 	}
 	
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)

@@ -31,6 +31,7 @@ class SpriteSymbol extends SWFSymbol {
 	
 
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
+	@:access(openfl.display.MovieClip.__initialEnterFrame)
 	private override function __createObject (swf:SWFLite):MovieClip {
 		
 		#if !macro
@@ -74,7 +75,10 @@ class SpriteSymbol extends SWFSymbol {
 			movieClip = new MovieClip ();
 			
 		}
-		
+
+		// now that all symbols have been constructed and framescripts have been added, run the initial enterFrame to set up initial children and call the first framescript
+		movieClip.__initialEnterFrame();
+
 		return movieClip;
 		
 	}
