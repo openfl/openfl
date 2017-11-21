@@ -19,29 +19,29 @@ import js.Browser;
 
 class DOMTextField {
 	
-
+	
 	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
 	private static var __regexFont = ~/<font ([^>]+)>/gi;
 	private static var __regexCloseFont = new EReg("</font>", "gi");
 	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
 	
-
+	
 	public static function clear (textField:TextField, renderSession:RenderSession):Void {
-
+		
 		#if (js && html5)
 		if (textField.__div != null) {
-
+			
 			renderSession.element.removeChild (textField.__div);
 			textField.__div = null;
 			textField.__style = null;
-
+			
 		}
 		#end
-
+		
 	}
-
-
+	
+	
 	public static function measureText (textField:TextField):Void {
 		
 	 	#if (js && html5)
@@ -225,13 +225,13 @@ class DOMTextField {
 					
 					var text = textEngine.text;
 					var adjustment:Float = 0;
-
+					
 					if (!textField.__isHTML) {
-
+						
 						text = StringTools.htmlEscape (text);
-
+						
 					} else {
-
+						
 						#if dom
 						text = textField.__rawHtmlText;
 						#end
@@ -275,7 +275,7 @@ class DOMTextField {
 							}
 							
 							text = StringTools.replace( text, fontText, "<span style='" + style + "'>" );
-
+							
 							matchText = __regexFont.matchedRight();
 						}
 						
@@ -291,9 +291,9 @@ class DOMTextField {
 					textField.__div.innerHTML = new EReg ("\r\n", "g").replace (text, "<br>");
 					textField.__div.innerHTML = new EReg ("\n", "g").replace (textField.__div.innerHTML, "<br>");
 					textField.__div.innerHTML = new EReg ("\r", "g").replace (textField.__div.innerHTML, "<br>");
-
+					
 					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
-
+					
 					textField.__textFormat.size = unscaledSize;
 					textField.__textFormat.leading = unscaledLeading;
 					
@@ -335,23 +335,24 @@ class DOMTextField {
 					}
 					
 					textField.__dirty = false;
-
+					
+					
 					var scrollTo = 0;
 					for (i in 0...textField.scrollV - 1) {
-
-						scrollTo += Math.ceil(textEngine.lineHeights[i]);
-
+						
+						scrollTo += Math.ceil (textEngine.lineHeights[i]);
+						
 					}
-
+					
 					textField.__div.scrollTop = scrollTo;
-
+					
 				} else {
 					
 					if (textField.__div != null) {
-
+						
 						renderSession.element.removeChild (textField.__div);
 						textField.__div = null;
-
+						
 					}
 					
 				}
@@ -380,14 +381,15 @@ class DOMTextField {
 		}
 		
 		#end
-
+		
 	}
-
-
+	
+	
 	private static function __getAttributeMatch (regex:EReg):String {
 		
 		return regex.matched (2) != null ? regex.matched (2) : regex.matched (3);
 		
 	}
+	
 	
 }
