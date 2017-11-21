@@ -857,7 +857,6 @@ class CairoGraphics {
 					var matrix = new Matrix3 ();
 					
 					cairo.antialias = NONE;
-					cairo.source = fillPattern;
 					
 					while (i < l) {
 						
@@ -959,6 +958,7 @@ class CairoGraphics {
 						
 						matrix.setTo (t1, t2, t3, t4, dx, dy);
 						cairo.matrix = matrix;
+						cairo.source = fillPattern;
 						if (!hitTesting) cairo.fill ();
 						
 						i += 3;

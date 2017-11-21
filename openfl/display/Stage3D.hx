@@ -103,10 +103,12 @@ class Stage3D extends EventDispatcher {
 			__canvas.height = stage.stageHeight;
 			
 			var window = stage.window;
+			var transparentBackground = Reflect.hasField (window.config, "background") && window.config.background == null;
+			var colorDepth = Reflect.hasField (window.config, "colorDepth") ? window.config.colorDepth : 16;
 			
 			var options = {
 				
-				alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
+				alpha: (transparentBackground || colorDepth > 16) ? true : false,
 				antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
 				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
 				premultipliedAlpha: true,

@@ -412,6 +412,24 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 	}
+	
+	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.renderMask (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			GLDisplayObject.renderMask (this, renderSession);
+			GLTilemap.renderMask (this, renderSession);
+			
+		}
+		
+	}
 	#end
 	
 	

@@ -27,9 +27,6 @@ import openfl.text.TextFormatAlign;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-import js.html.InputElement;
-import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
 #end
 
@@ -48,7 +45,7 @@ import haxe.io.Path;
 
 
 class TextEngine {
-
+	
 	private static inline var GUTTER = 2.0;
 	private static inline var UTF8_TAB = 9;
 	private static inline var UTF8_ENDLINE = 10;
@@ -120,11 +117,7 @@ class TextEngine {
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
-	#if (js && html5)
-	private var __hiddenInput:InputElement;
-	#end
 	
-
 	public function new (textField:TextField) {
 		
 		this.textField = textField;
@@ -231,6 +224,33 @@ class TextEngine {
 	}
 	
 	
+	private static function findFontVariant (format:TextFormat):Font {
+		
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			return findFont (fontNamePrefix + " Bold Italic");
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			return findFont (fontNamePrefix + " Bold");
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			return findFont (fontNamePrefix + " Italic");
+			
+		}
+		
+		return findFont (fontName);
+		
+	}
+	
+	
 	private function getBounds ():Void {
 		
 		var padding = border ? 1 : 0;
@@ -299,18 +319,59 @@ class TextEngine {
 	
 	public static function getFont (format:TextFormat):String {
 		
-		var font = format.italic ? "italic " : "normal ";
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		if (fontName == null) fontName = "_serif";
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			fontName = fontNamePrefix + " Bold Italic";
+			bold = false;
+			italic = false;
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			fontName = fontNamePrefix + " Bold";
+			bold = false;
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			fontName = fontNamePrefix + " Italic";
+			italic = false;
+			
+		} else {
+			
+			// Prevent "extra" bold and italic fonts
+			
+			if (bold && (fontName.indexOf (" Bold ") > -1 || StringTools.endsWith (fontName, " Bold"))) {
+				
+				bold = false;
+				
+			}
+			
+			if (italic && (fontName.indexOf (" Italic ") > -1 || StringTools.endsWith (fontName, " Italic"))) {
+				
+				italic = false;
+				
+			}
+			
+		}
+		
+		var font = italic ? "italic " : "normal ";
 		font += "normal ";
-		font += format.bold ? "bold " : "normal ";
+		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
 		font += "/" + (format.leading + format.size + 3) + "px ";
 		
-		font += "" + switch (format.font) {
+		font += "" + switch (fontName) {
 			
 			case "_sans": "sans-serif";
 			case "_serif": "serif";
 			case "_typewriter": "monospace";
-			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace(format.font, '$1') + "'";
+			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace (fontName, '$1') + "'";
 			
 		}
 		
@@ -334,7 +395,7 @@ class TextEngine {
 				
 			}
 			
-			instance = findFont (format.font);
+			instance = findFontVariant (format);
 			if (instance != null) return instance;
 			
 			var systemFontDirectory = System.fontsDirectory;
@@ -546,15 +607,15 @@ class TextEngine {
 	
 	
 	public function getLineBreakIndex (startIndex:Int = 0):Int {
-
+		
 		var cr = text.indexOf ("\n", startIndex);
 		var lf = text.indexOf ("\r", startIndex);
-
+		
 		if (cr == -1) return lf;
 		if (lf == -1) return cr;
-
+		
 		return cr < lf ? cr : lf;
-
+		
 	}
 	
 	
@@ -628,13 +689,13 @@ class TextEngine {
 			}
 			
 			currentTextHeight = group.offsetY - GUTTER + group.ascent + group.descent;
-
+			
 			#if dom
 			if (!this.textField.__renderedOnCanvasWhileOnDOM) {
 				currentTextHeight += group.leading;
 			}
 			#end
-
+			
 			if (currentTextHeight > textHeight) {
 				
 				textHeight = currentTextHeight;
@@ -784,9 +845,9 @@ class TextEngine {
 				}
 				
 			}
-
+			
 			return positions;
-
+			
 			#else
 			
 			if (__textLayout == null) {
@@ -810,7 +871,7 @@ class TextEngine {
 			return __textLayout.positions;
 			
 			#end
-
+			
 		}
 		
 		inline function getPositionsWidth (positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float {
@@ -818,7 +879,7 @@ class TextEngine {
 			var width = 0.0;
 			
 			for (position in positions) {
-
+				
 				#if (js && html5)
 				width += position;
 				#else
@@ -830,14 +891,14 @@ class TextEngine {
 			return width;
 			
 		}
-
+		
 		inline function getCharIndexAtWidth (positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end, width:Float):Int {
-
+			
 			var charIndex = -1;
 			var currentWidth = 0.0;
-
+			
 			for (i in 0...positions.length) {
-
+				
 				#if (js && html5)
 				currentWidth += positions[i];
 				#else
@@ -848,13 +909,13 @@ class TextEngine {
 				} else {
 					charIndex = i;
 				}
-
+				
 			}
-
+			
 			return charIndex;
-
+			
 		}
-
+		
 		inline function getTextWidth (text:String):Float {
 			
 			#if (js && html5)
@@ -999,17 +1060,17 @@ class TextEngine {
 				maxHeightValue = heightValue;
 				
 			}
-
+			
 			var i = layoutGroups.length;
 			while (--i > -1) {
-
+				
 				var lg = layoutGroups[i];
 				if (lg.lineIndex > lineIndex) continue;
 				if (lg.lineIndex < lineIndex) break;
-
+				
 				lg.ascent = maxAscent;
 				lg.height = maxHeightValue;
-
+				
 			}
 			
 			offsetY += maxHeightValue;
@@ -1023,39 +1084,39 @@ class TextEngine {
 		}
 		
 		inline function breakLongWords (endIndex:Int):Void {
-
+			
 			var groupEndIndex = endIndex;
-
+			
 			while (offsetX + widthValue > width - GUTTER) {
-
+				
 				var charIndex = getCharIndexAtWidth (positions, width - offsetX - GUTTER);
 				// Since the charIndex is zero-based, we add 1 to get the char offset
 				var wrapCharOffset = charIndex + 1;
 				groupEndIndex = textIndex + wrapCharOffset;
-
+				
 				if (groupEndIndex == textIndex) {
-
+					
 					if (positions.length > 0 && #if (js && html5) positions[0] #else positions[0].advance.x #end > width - 2 * GUTTER) {
-
+						
 						// if the textfield is smaller than a single character and
 						groupEndIndex = endIndex + 1;
-
+						
 					} else {
-
+						
 						// if a single character in a new format made the line too long
 						offsetX = GUTTER;
 						offsetY += layoutGroup.height;
 						++lineIndex;
-
+						
 					}
-
+					
 					break;
-
+					
 				} else {
 					
 					nextLayoutGroup (textIndex, groupEndIndex);
-
-					layoutGroup.positions = positions.slice(0, wrapCharOffset);
+					
+					layoutGroup.positions = positions.slice (0, wrapCharOffset);
 					layoutGroup.offsetX = offsetX;
 					layoutGroup.ascent = ascent;
 					layoutGroup.descent = descent;
@@ -1067,9 +1128,9 @@ class TextEngine {
 					
 					layoutGroup = null;
 					
-					alignBaseline();
+					alignBaseline ();
 
-					positions = positions.slice(wrapCharOffset, endIndex - textIndex);
+					positions = positions.slice (wrapCharOffset, endIndex - textIndex);
 					widthValue = getPositionsWidth(positions);
 
 					textIndex = groupEndIndex;
@@ -1093,14 +1154,14 @@ class TextEngine {
 				// if a line break is the next thing that needs to be dealt with
 				
 				if (textIndex <= breakIndex) {
-
+					
 					positions = getPositions (text, textIndex, breakIndex);
 					widthValue = getPositionsWidth (positions);
-
+					
 					if (wordWrap && previousSpaceIndex <= textIndex && width >= 4) {
-
+						
 						breakLongWords (breakIndex);
-
+						
 					}
 					
 					nextLayoutGroup (textIndex, breakIndex);
@@ -1121,9 +1182,9 @@ class TextEngine {
 					
 					// Trim the last space from the line width, for correct TextFormatAlign.RIGHT alignment
 					if (layoutGroup.endIndex == spaceIndex) {
-
+						
 						layoutGroup.width -= layoutGroup.getAdvance (layoutGroup.positions.length - 1);
-
+						
 					}
 					
 					layoutGroup = null;
@@ -1144,7 +1205,7 @@ class TextEngine {
 					
 				}
 				
-				alignBaseline();
+				alignBaseline ();
 				
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
@@ -1223,23 +1284,23 @@ class TextEngine {
 						if (offsetX + widthValue > width - GUTTER) {
 							
 							wrap = true;
-
+							
 							if (positions.length > 0 && endIndex == spaceIndex + 1) {
-
+								
 								// if last letter is a space, avoid word wrap if possible
 								// TODO: Handle multiple spaces
-
+								
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
-
+								
 								if (offsetX + widthValue - spaceWidth <= width - 2) {
-
+									
 									wrap = false;
-
+									
 								}
-
+								
 							}
-
+							
 						}
 						
 					}
@@ -1419,13 +1480,13 @@ class TextEngine {
 
 					positions = getPositions (text, textIndex, formatRange.end);
 					widthValue = getPositionsWidth (positions);
-
+					
 					if (wordWrap && width >= 4) {
-
-						breakLongWords(formatRange.end);
-
+						
+						breakLongWords (formatRange.end);
+						
 					}
-
+					
 					nextLayoutGroup (textIndex, formatRange.end);
 					
 					layoutGroup.positions = positions;
@@ -1465,16 +1526,16 @@ class TextEngine {
 		#end
 		
 	}
-
-
+	
+	
 	#if (js && html5)
 	inline private function measureTextWidth (value:String):Float {
-
+		
 		#if dom
 		if (this.textField.__renderedOnCanvasWhileOnDOM) {
-
+			
 			return __context.measureText(value).width;
-
+			
 		}
 		// This measure for DOM is not perfect but it is close to it. The best would be to measure it on DOM like
 		// hiddenDivElement.innerHTML=value then hiddenDivElement.clientWidth, but this is way too slow compared to
@@ -1483,11 +1544,11 @@ class TextEngine {
 		#else
 		return __context.measureText(value).width;
 		#end
-
+		
 	}
 	#end
-
-
+	
+	
 	private function setTextAlignment ():Void {
 		
 		var lineIndex = -1;
@@ -1605,7 +1666,7 @@ class TextEngine {
 	
 	private function update ():Void {
 		
-		if (text == null || text == "" || textFormatRanges.length == 0) {
+		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0) {
 			
 			lineAscents.length = 0;
 			lineBreaks.length = 0;
@@ -1669,7 +1730,9 @@ class TextEngine {
 	private function set_text (value:String):String {
 		
 		if (value == null) {
+			
 			return text = value;
+			
 		}
 		
 		if (__restrictRegexp != null) {

@@ -4,6 +4,7 @@ package openfl.utils;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
+import lime.app.Future;
 import lime.system.System;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
@@ -68,7 +69,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:from @:noCompletion public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
+	@:from public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
 		if (buffer == null) return null;
 		
@@ -85,7 +86,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:from @:noCompletion public static function fromBytes (bytes:Bytes):ByteArray {
+	@:from public static function fromBytes (bytes:Bytes):ByteArray {
 		
 		if (bytes == null) return null;
 		
@@ -132,6 +133,30 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public static function fromFile (path:String):ByteArray {
 		
 		return LimeBytes.fromFile (path);
+		
+	}
+	
+	
+	public static function loadFromBytes (bytes:Bytes):Future<ByteArray> {
+		
+		return LimeBytes.loadFromBytes (bytes).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromFile (path:String):Future<ByteArray> {
+		
+		return LimeBytes.loadFromFile (path).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
 		
 	}
 	
@@ -242,6 +267,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (value > 0) {
 			
 			this.__resize (value);
+			if (value < this.position) this.position = value;
 			
 		}
 		
@@ -290,7 +316,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if js
 		super (bytes.b.buffer);
 		#else
-		super (length, bytes.b);
+		super (length, bytes.getData ());
 		#end
 		
 		__length = length;
@@ -811,7 +837,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private inline function __setData (bytes:Bytes):Void {
 		
+		#if eval
+		// TODO: Not quite correct, but this will probably
+		// not be called while in a macro
+		var count = bytes.length < length ? bytes.length : length;
+		for (i in 0...count) set (i, bytes.get (i));
+		#else
 		b = bytes.b;
+		#end
+		
 		__length = bytes.length;
 		
 		#if js

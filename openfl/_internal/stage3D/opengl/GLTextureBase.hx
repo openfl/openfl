@@ -5,6 +5,7 @@ import lime.graphics.utils.ImageCanvasUtil;
 import lime.graphics.Image;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.GLCompressedTextureFormats;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.TextureBase;
 import openfl.display.BitmapData;
@@ -26,9 +27,7 @@ class GLTextureBase {
 	public static var __textureFormat:Int;
 	public static var __textureInternalFormat:Int;
 
-	public static var __supportsCompressed:Null<Bool> = null;
-	public static var __textureFormatCompressed:Int;
-	public static var __textureFormatCompressedAlpha:Int;
+	public static var __compressedTextureFormats:Null<GLCompressedTextureFormats> = null;
 	
 	
 	public static function create (textureBase:TextureBase, renderSession:RenderSession):Void {
@@ -73,26 +72,9 @@ class GLTextureBase {
 			
 		}
 
-		if (__supportsCompressed == null) {
-			
-			#if (js && html5)
-			var compressedExtension = gl.getExtension ("WEBGL_compressed_texture_s3tc");
-			#else
-			var compressedExtension = gl.getExtension ("EXT_texture_compression_s3tc");
-			#end
-			
-			if (compressedExtension != null) {
+		if (__compressedTextureFormats == null) {
 
-				__supportsCompressed = true;
-				__textureFormatCompressed = compressedExtension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-				__textureFormatCompressedAlpha = compressedExtension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
-
-			} else {
-
-				__supportsCompressed = false;
-
-			}
-			
+			__compressedTextureFormats = new GLCompressedTextureFormats (gl);
 		}
 		
 		textureBase.__internalFormat = __textureInternalFormat;
