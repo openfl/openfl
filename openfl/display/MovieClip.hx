@@ -241,7 +241,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						if (!isUpdateToFrameSet) {
 							// we did not loop or we restarted at the beginning, so find the next keyframe
 							for(key in __frameScripts.keys()) {
-								if (key > updateToFrame && key <= nextFrame){
+								if( ( (__lastFrameUpdate == -1 && key == updateToFrame) || key > updateToFrame ) && key <= nextFrame ){
 									// found one, let's run this framescript
 									isUpdateToFrameSet = true;
 									updateToFrame = key;
@@ -784,16 +784,26 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	private function __goto (frame:Int) {
-		
+
 		if (__symbol == null) return;
-		if (__currentFrame == frame ) return;
-		
+
 		if (frame < 1) frame = 1;
 		else if (frame > __totalFrames) frame = __totalFrames;
 
-		// go to the target frame and let enterFrame handle building frameobjects and running script next time it runs
-		__currentFrame = frame;
-		__lastFrameUpdate = -1;
+		if(__currentFrame != frame)
+		{
+			__currentFrame = frame;
+			__lastFrameUpdate = -1;
+			//updating objects to this frame starting from scratch
+			__updateFrameObjectsAndChildren();
+
+			//check if there is a framescript and run it for this frame
+			if(__frameScripts != null && __frameScripts.exists(frame)) {
+				var script = __frameScripts.get (frame);
+				script ();
+			}
+		}
+		super.__enterFrame (0);
 	}
 	
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
