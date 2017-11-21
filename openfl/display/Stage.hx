@@ -146,6 +146,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __wasDirty:Bool;
 	
 	private var __touchData:Map<Int, TouchData>;
+
+	public static var frameID:UInt = 1;
 	
 	public function new (window:Window, color:Null<Int> = null) {
 		
@@ -1914,6 +1916,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			} #end
 			
 		}
+
+		frameID++;
 		
 	}
 	

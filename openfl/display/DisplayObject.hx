@@ -867,6 +867,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__renderDirty = true;
 			__setParentRenderDirty ();
+
+			setRequiresRedraw();
 			
 		}
 		
@@ -888,7 +890,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__setWorldTransformInvalid ();
 			__setParentRenderDirty ();
-			
+			setRequiresRedraw();
 		}
 		
 	}
@@ -906,10 +908,41 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		
 	}
+
+	public var _lastParentOrSelfChangeFrameID : UInt; // TODO: Default value?
+	public var _lastChildChangeFrameID : UInt; // TODO: Default value?
+	public var _hasVisibleArea : Bool = false;
+	public var requiresRedraw(get, never):Bool;
+
+	public function setRequiresRedraw():Void
+	{
+		var p : DisplayObjectContainer = this.parent;
+		var frameID : UInt = Stage.frameID;
+
+		_lastParentOrSelfChangeFrameID = frameID;
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		_hasVisibleArea = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
+
+		while (p != null && p._lastChildChangeFrameID != frameID)
+		{
+			p._lastChildChangeFrameID = frameID;
+			p = p.parent;
+		}
+
+	}
+
+	private function get_requiresRedraw():Bool
+	{
+		var frameID:UInt = Stage.frameID;
+		return _lastParentOrSelfChangeFrameID == frameID || _lastChildChangeFrameID == frameID;
+	}
 	
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
-		
+//		if (!requiresRedraw)
+//		{
+//			return;
+//		}
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms ();

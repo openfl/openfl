@@ -926,15 +926,27 @@ class DisplayObjectContainer extends InteractiveObject {
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		super.__update (transformOnly, updateChildren, maskGraphics);
-		
-		if (updateChildren) {
-			
-			for (child in __children) {
-				
-				child.__update (transformOnly, true, maskGraphics);
-				
-			}
-			
+
+		if (!updateChildren)
+		{
+			return;
+		}
+
+		var frameID:UInt = Stage.frameID;
+		var selfOrParentChanged = _lastParentOrSelfChangeFrameID == frameID;
+
+		for (child in __children) {
+//			if (child._hasVisibleArea)
+//			{
+				if (selfOrParentChanged)
+				{
+					child._lastParentOrSelfChangeFrameID = frameID;
+				}
+				if (child._lastParentOrSelfChangeFrameID == frameID || child._lastChildChangeFrameID == frameID)
+				{
+					child.__update (transformOnly, true, maskGraphics);
+				}
+//			}
 		}
 		
 	}
