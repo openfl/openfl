@@ -867,10 +867,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__renderDirty = true;
 			__setParentRenderDirty ();
-
-			setRequiresRedraw();
 			
 		}
+
+		setRequiresRedraw();
 		
 	}
 	
@@ -890,8 +890,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__setWorldTransformInvalid ();
 			__setParentRenderDirty ();
-			setRequiresRedraw();
 		}
+
+		setRequiresRedraw();
 		
 	}
 	
