@@ -9,7 +9,6 @@
 	<haxelib name="openfl" />
 	<haxelib name="munit" />
 	<haxelib name="mlib" />
-	<haxelib name="hamcrest" />
 	<haxelib name="format" />
 	
 </project>

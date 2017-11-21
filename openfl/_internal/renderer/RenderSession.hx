@@ -30,7 +30,7 @@ class RenderSession {
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl:GLRenderContext;
-	public var lockTransform:Bool;
+	// public var lockTransform:Bool;
 	public var renderer:AbstractRenderer;
 	public var roundPixels:Bool;
 	public var transformProperty:String;

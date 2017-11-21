@@ -4,7 +4,7 @@ package flash.display; #if (!display && flash)
 extern class Shape extends DisplayObject {
 	
 	
-	public var graphics (default, null):Graphics;
+	public var graphics (default, never):Graphics;
 	
 	public function new ();
 	

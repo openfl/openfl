@@ -59,8 +59,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
-	private static var __displayObjectStackPool = new ObjectPool<Array<DisplayObject>>(function () return new Array<DisplayObject> (), function (stack) stack.splice (0, stack.length));
-
+	private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
+	
 	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
@@ -104,6 +104,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __isMask:Bool;
 	private var __loaderInfo:LoaderInfo;
 	private var __mask:DisplayObject;
+	private var __maskTarget:DisplayObject;
 	private var __name:String;
 	private var __objectTransform:Transform;
 	private var __renderable:Bool;
@@ -160,14 +161,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();
-		
+		__renderTransform = new Matrix ();		
 		#if dom
 		__worldVisible = true;
 		#end
-		
+
 		name = "instance" + (++__instanceCount);
-		
+
 	}
 	
 	
@@ -215,8 +215,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			touchEvent.stageY = __getRenderTransform ().__transformY (touchEvent.localX, touchEvent.localY);
 			
 		}
-
-		return __dispatchWithCapture(event);
+		
+		return __dispatchWithCapture (event);
 		
 	}
 	
@@ -370,57 +370,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchWithCapture (event:Event): Bool {
-
-		if (event.target == null) {
-			event.target = this;
-		}
-		
-		if (parent != null) {
-			
-			event.eventPhase = CAPTURING_PHASE;
-			
-			if (parent == stage) {
-				
-				parent.__dispatch (event);
-				
-			} else {
-				
-				var stack: Array<DisplayObject> = __displayObjectStackPool.get();
-				var parent = parent;
-				var i = 0;
-				
-				while (parent != null) {
-					
-					stack[i] = parent;
-					parent = parent.parent;
-					i++;
-					
-				}
-				
-				for (j in 0...i) {
-					
-					stack[i - j - 1].__dispatch (event);
-					
-				}
-
-				__displayObjectStackPool.release (stack);
-			}
-			
-		}
-		
-		event.eventPhase = AT_TARGET;
-		
-		return __dispatchEvent (event);
-		
-	}
-
 	private function __dispatchChildren (event:Event):Void {
+		
+		
+		
 	}
-
+	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-		
+
 		var result = super.__dispatchEvent (event);
 		
 		if (event.__isCanceled) {
@@ -508,6 +466,55 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 		}
+		
+	}
+	
+	
+	private function __dispatchWithCapture (event:Event):Bool {
+		
+		if (event.target == null) {
+			
+			event.target = this;
+			
+		}
+		
+		if (parent != null) {
+			
+			event.eventPhase = CAPTURING_PHASE;
+			
+			if (parent == stage) {
+				
+				parent.__dispatch (event);
+				
+			} else {
+				
+				var stack = __tempStack.get ();
+				var parent = parent;
+				var i = 0;
+				
+				while (parent != null) {
+					
+					stack[i] = parent;
+					parent = parent.parent;
+					i++;
+					
+				}
+				
+				for (j in 0...i) {
+					
+					stack[i - j - 1].__dispatch (event);
+					
+				}
+				
+				__tempStack.release (stack);
+				
+			}
+			
+		}
+		
+		event.eventPhase = AT_TARGET;
+		
+		return __dispatchEvent (event);
 		
 	}
 	
@@ -842,6 +849,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __renderGLMask (renderSession:RenderSession):Void {
+		
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.renderMask (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			GLDisplayObject.renderMask (this, renderSession);
+			
+		}
+		
+	}
+	
+	
 	private function __setParentRenderDirty ():Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
@@ -905,6 +929,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
+		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms ();
 		
@@ -995,6 +1020,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
+		if (updateChildren && mask != null && mask.parent == null) {
+			
+			mask.__update (transformOnly, true, maskGraphics);
+			
+		}
+		
 	}
 	
 	
@@ -1006,15 +1037,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var matrix = null, rect = null;
 			
-		//	if (!renderSession.lockTransform) __getWorldTransform ();
+			//if (!renderSession.lockTransform) __getWorldTransform ();
 			__update (false, true);
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = (__filters != null && __filters.length > 0);
-
+			
 			var bitmapWidth = 0, bitmapHeight = 0;
-
+			
 			if (updateTransform || hasFilters) {
 				
 				matrix = Matrix.__pool.get ();
@@ -1025,7 +1056,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				bitmapWidth = Math.ceil (rect.width);
 				bitmapHeight = Math.ceil (rect.height);
-
+				
 			}
 			
 			if (hasFilters) {
@@ -1055,7 +1086,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				if (rect.width >= 0.5 && rect.height >= 0.5) {
 					
 					if (__cacheBitmap == null || bitmapWidth != __cacheBitmap.width || bitmapHeight != __cacheBitmap.height) {
-
+						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						//__cacheBitmapData.disposeImage ();
 						
@@ -1082,14 +1113,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				
-				__cacheBitmap.__renderTransform.identity();
+				__cacheBitmap.__renderTransform.identity ();
 				__cacheBitmap.__renderTransform.tx = rect.x;
 				__cacheBitmap.__renderTransform.ty = rect.y;
-
-				matrix.concat( __renderTransform );
+				
+				matrix.concat (__renderTransform);
 				matrix.tx -= Math.round (rect.x);
 				matrix.ty -= Math.round (rect.y);
-
 				
 			}
 			
@@ -1149,7 +1179,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
 						if (filter.__preserveObject) {
-							lastBitmap.draw (bitmapData3);
+							lastBitmap.draw (bitmapData3, null, transform.colorTransform);
 						}
 						filter.__renderDirty = false;
 						
@@ -1479,6 +1509,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (__mask != null) {
 			
 			__mask.__isMask = false;
+			__mask.__maskTarget = null;
 			__mask.__setTransformDirty ();
 			__mask.__setRenderDirty ();
 			
@@ -1487,6 +1518,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (value != null) {
 			
 			value.__isMask = true;
+			value.__maskTarget = this;
 			
 		}
 		

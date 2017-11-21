@@ -4,7 +4,7 @@ package flash.geom; #if (!display && flash)
 extern class Point {
 	
 	
-	public var length (default, null):Float;
+	public var length (default, never):Float;
 	public var x:Float;
 	public var y:Float;
 	

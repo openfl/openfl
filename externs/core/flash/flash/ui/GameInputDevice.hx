@@ -12,9 +12,9 @@ import openfl.utils.ByteArray;
 	public static var MAX_BUFFER_SIZE (default, never):Int;
 	
 	public var enabled:Bool;
-	public var id (default, null):String;
-	public var name (default, null):String;
-	public var numControls (default, null):Int;
+	public var id (default, never):String;
+	public var name (default, never):String;
+	public var numControls (default, never):Int;
 	public var sampleInterval:Int;
 	
 	public function getCachedSamples (data:ByteArray, append:Bool = false):Int;

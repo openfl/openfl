@@ -9,16 +9,16 @@ import openfl.utils.Object;
 	
 	
 	#if flash
-	@:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH (default, null):UInt;
+	@:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH (default, never):UInt;
 	#end
 	
-	public static var currentDomain (default, null):ApplicationDomain;
+	public static var currentDomain (default, never):ApplicationDomain;
 	
 	#if flash
 	@:require(flash10) public var domainMemory:ByteArray;
 	#end
 	
-	public var parentDomain (default, null):ApplicationDomain;
+	public var parentDomain (default, never):ApplicationDomain;
 	
 	public function new (parentDomain:ApplicationDomain = null);
 	public function getDefinition (name:String):Dynamic;

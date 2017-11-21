@@ -269,8 +269,7 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
-
-		var windingRule = CanvasWindingRule.EVENODD;
+		
 		bounds = graphics.__bounds;
 		CanvasGraphics.graphics = graphics;
 		
@@ -308,7 +307,9 @@ class CanvasGraphics {
 			hasStroke = false;
 			bitmapFill = null;
 			bitmapRepeat = false;
-
+			
+			windingRule = CanvasWindingRule.EVENODD;
+			
 			var data = new DrawCommandReader (graphics.__commands);
 			
 			for (type in graphics.__commands.types) {
@@ -358,8 +359,7 @@ class CanvasGraphics {
 						
 						data.readEndFill ();
 						endFill ();
-						endStroke ();
-
+						
 						if (hasFill && context.isPointInPath (x, y, windingRule)) {
 							
 							data.destroy ();
@@ -368,7 +368,9 @@ class CanvasGraphics {
 							return true;
 							
 						}
-
+						
+						endStroke ();
+						
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 							
 							data.destroy ();
@@ -384,8 +386,7 @@ class CanvasGraphics {
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 						
 						endFill ();
-						endStroke ();
-
+						
 						if (hasFill && context.isPointInPath (x, y, windingRule)) {
 							
 							data.destroy ();
@@ -394,7 +395,9 @@ class CanvasGraphics {
 							return true;
 							
 						}
-
+						
+						endStroke ();
+						
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 							
 							data.destroy ();
@@ -447,7 +450,15 @@ class CanvasGraphics {
 						var c = data.readDrawRoundRect ();
 						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-
+					
+					case WINDING_EVEN_ODD:
+						
+						windingRule = CanvasWindingRule.EVENODD;
+					
+					case WINDING_NON_ZERO:
+						
+						windingRule = CanvasWindingRule.NONZERO;
+					
 					default:
 						
 						data.skip (type);
@@ -455,39 +466,38 @@ class CanvasGraphics {
 				}
 				
 			}
-
+			
+			var hitTest = false;
+			
 			if (fillCommands.length > 0) {
 				
 				endFill ();
 				
 			}
-
+			
+			if (hasFill && context.isPointInPath (x, y, windingRule)) {
+				
+				hitTest = true;
+				
+			}
+			
 			if (strokeCommands.length > 0) {
 				
 				endStroke ();
 				
 			}
-
+			
+			if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
+				
+				hitTest = true;
+				
+			}
+			
 			data.destroy ();
 			
-			if (hasFill && context.isPointInPath (x, y, windingRule)) {
-
-				graphics.__canvas = cacheCanvas;
-				graphics.__context = cacheContext;
-				return true;
-
-			}
-
-			if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-
-				graphics.__canvas = cacheCanvas;
-				graphics.__context = cacheContext;
-				return true;
-
-			}
-
 			graphics.__canvas = cacheCanvas;
 			graphics.__context = cacheContext;
+			return hitTest;
 			
 		}
 		
@@ -792,62 +802,62 @@ class CanvasGraphics {
 					hasFill = true;
 				
 				case DRAW_TRIANGLES:
-
+					
 					// endFill ();
 					// endStroke ();
-
+					
 					var c = data.readDrawTriangles ();
-
+					
 					var v = c.vertices;
 					var ind = c.indices;
 					var uvt = c.uvtData;
 					var pattern:CanvasElement = null;
 					var colorFill = bitmapFill == null;
-
+					
 					if (colorFill && uvt != null) {
-
+						
 						// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
 						break;
-
+						
 					}
-
+					
 					if (!colorFill) {
-
+						
 						//TODO move this to Graphics?
-
+						
 						if (uvt == null) {
-
+							
 							uvt = new Vector<Float> ();
-
+							
 							for (i in 0...(Std.int (v.length / 2))) {
-
+								
 								uvt.push (v[i * 2] - offsetX / bitmapFill.width);
 								uvt.push (v[i * 2 + 1] - offsetY / bitmapFill.height);
-
+								
 							}
-
+							
 						}
-
+						
 						var skipT = uvt.length != v.length;
 						var normalizedUVT = normalizeUVT (uvt, skipT);
 						var maxUVT = normalizedUVT.max;
 						uvt = normalizedUVT.uvt;
-
+						
 						if (maxUVT > 1) {
-
+							
 							pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, Std.int (bounds.width), Std.int (bounds.height));
-
+							
 						} else {
-
+							
 							pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
-
+							
 						}
-
+						
 					}
-
+					
 					var i = 0;
 					var l = ind.length;
-
+					
 					var a_:Int, b_:Int, c_:Int;
 					var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
 					var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
@@ -855,54 +865,54 @@ class CanvasGraphics {
 					var denom:Float;
 					var t1:Float, t2:Float, t3:Float, t4:Float;
 					var dx:Float, dy:Float;
-
+					
 					while (i < l) {
-
+						
 						a_ = i;
 						b_ = i + 1;
 						c_ = i + 2;
-
+						
 						iax = ind[a_] * 2;
 						iay = ind[a_] * 2 + 1;
 						ibx = ind[b_] * 2;
 						iby = ind[b_] * 2 + 1;
 						icx = ind[c_] * 2;
 						icy = ind[c_] * 2 + 1;
-
+						
 						x1 = v[iax] - offsetX;
 						y1 = v[iay] - offsetY;
 						x2 = v[ibx] - offsetX;
 						y2 = v[iby] - offsetY;
 						x3 = v[icx] - offsetX;
 						y3 = v[icy] - offsetY;
-
+						
 						switch (c.culling) {
-
+							
 							case POSITIVE:
-
+								
 								if (!isCCW (x1, y1, x2, y2, x3, y3)) {
-
+									
 									i += 3;
 									continue;
-
+									
 								}
-
+							
 							case NEGATIVE:
-
+								
 								if (isCCW (x1, y1, x2, y2, x3, y3)) {
-
+									
 									i += 3;
 									continue;
-
+									
 								}
-
+							
 							default:
-
-
+								
+							
 						}
-
+						
 						if (colorFill) {
-
+							
 							context.beginPath ();
 							context.moveTo (x1, y1);
 							context.lineTo (x2, y2);
@@ -911,49 +921,49 @@ class CanvasGraphics {
 							if (!hitTesting) context.fill (windingRule);
 							i += 3;
 							continue;
-
-						}
-
+							
+						} 
+						
 						context.save ();
 						context.beginPath ();
 						context.moveTo (x1, y1);
 						context.lineTo (x2, y2);
 						context.lineTo (x3, y3);
 						context.closePath ();
-
+						
 						context.clip ();
-
+						
 						uvx1 = uvt[iax] * pattern.width;
 						uvx2 = uvt[ibx] * pattern.width;
 						uvx3 = uvt[icx] * pattern.width;
 						uvy1 = uvt[iay] * pattern.height;
 						uvy2 = uvt[iby] * pattern.height;
 						uvy3 = uvt[icy] * pattern.height;
-
+						
 						denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
-
+						
 						if (denom == 0) {
-
+							
 							i += 3;
 							continue;
-
+							
 						}
-
+						
 						t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
 						t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
 						t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
 						t4 = - (uvx2 * y3 + uvx1 * (y2 - y3) - uvx3 * y2 + (uvx3 - uvx2) * y1) / denom;
 						dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
 						dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
-
+						
 						context.transform (t1, t2, t3, t4, dx, dy);
 						context.drawImage (pattern, 0, 0);
 						context.restore ();
-
+						
 						i += 3;
-
+						
 					}
-
+				
 				case DRAW_RECT:
 					
 					var c = data.readDrawRect ();
@@ -1372,7 +1382,7 @@ class CanvasGraphics {
 							}
 						
 						case DRAW_TRIANGLES:
-
+							
 							var c = data.readDrawTriangles ();
 							fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 						

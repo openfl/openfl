@@ -51,9 +51,9 @@ class Event {
 	
 	public var bubbles (default, null):Bool;
 	public var cancelable (default, null):Bool;
-	public var currentTarget (default, null):IEventDispatcher;
+	public var currentTarget (default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 	public var eventPhase (default, null):EventPhase;
-	public var target (default, null):IEventDispatcher;
+	public var target (default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 	public var type (default, null):String;
 	
 	private var __isCanceled:Bool;

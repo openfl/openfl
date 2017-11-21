@@ -17,14 +17,14 @@ import openfl.Vector;
 @:final extern class Context3D extends EventDispatcher {
 	
 	
-	@:require(flash15) public static var supportsVideoTexture (default, null):Bool;
-	@:require(flash15) public var backBufferHeight (default, null):Int;
-	@:require(flash15) public var backBufferWidth (default, null):Int;
-	public var driverInfo (default, null):String;
+	@:require(flash15) public static var supportsVideoTexture (default, never):Bool;
+	@:require(flash15) public var backBufferHeight (default, never):Int;
+	@:require(flash15) public var backBufferWidth (default, never):Int;
+	public var driverInfo (default, never):String;
 	public var enableErrorChecking:Bool;
 	@:require(flash15) public var maxBackBufferHeight:Int;
 	@:require(flash15) public var maxBackBufferWidth:Int;
-	@:require(flash12) public var profile (default, null):String;
+	@:require(flash12) public var profile (default, never):String;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = 0xFFFFFFFF):Void;
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void;
@@ -49,7 +49,7 @@ import openfl.Vector;
 	public function setCulling (triangleFaceToCull:Context3DTriangleFace):Void;
 	public function setDepthTest (depthMask:Bool, passCompareMode:Context3DCompareMode):Void;
 	
-	#if flash
+	#if air
 	@:require(flash16) public function setFillMode (fillMode:flash.display3D.Context3DFillMode):Void;
 	#end
 	

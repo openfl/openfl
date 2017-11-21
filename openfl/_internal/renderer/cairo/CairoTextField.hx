@@ -6,6 +6,7 @@ import lime.graphics.cairo.CairoAntialias;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.cairo.CairoFontOptions;
 import lime.graphics.cairo.CairoFTFontFace;
+import lime.graphics.cairo.CairoGlyph;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoHintStyle;
 import lime.graphics.cairo.CairoImageSurface;
@@ -231,25 +232,6 @@ class CairoTextField {
 					cairo.setFontSize (size);
 					
 					cairo.moveTo (group.offsetX + scrollX, group.offsetY + group.ascent + scrollY);
-					//cairo.translate (0, 0);
-					//
-					//var glyphs = [];
-					//var x:Float = group.offsetX + scrollX;
-					//var y:Float = group.offsetY + group.ascent + scrollY;
-					//var j = 0;
-					//
-					//for (i in group.startIndex...group.endIndex) {
-						//
-						//glyphs.push (new lime.graphics.cairo.CairoGlyph (font.getGlyph (text.charAt (i)), x + 0.5, y + 0.5));
-						//
-						//if (group.advances.length > j) {
-							//x += group.advances[j];
-							//j++;
-						//}
-						//
-					//}
-					//
-					//cairo.showGlyphs (glyphs);
 					
 					var usedHack = false;
 					
@@ -288,7 +270,29 @@ class CairoTextField {
 					
 					if (!usedHack) {
 						
+						#if openfl_cairo_show_text
 						cairo.showText (text.substring (group.startIndex, group.endIndex));
+						#else
+						
+						// TODO: Improve performance
+						
+						cairo.translate (0, 0);
+						
+						var glyphs = [];
+						var x:Float = group.offsetX + scrollX;
+						var y:Float = group.offsetY + group.ascent + scrollY;
+						var j = 0;
+						
+						for (position in group.positions) {
+							
+							if (position == null || position.glyph == 0) continue;
+							glyphs.push (new CairoGlyph (position.glyph, x + 0.5, y + 0.5));
+							x += position.advance.x;
+							
+						}
+						
+						cairo.showGlyphs (glyphs);
+						#end
 						
 					}
 					
@@ -302,14 +306,22 @@ class CairoTextField {
 								
 								for (i in 0...(textField.__caretIndex - group.startIndex)) {
 									
-									if (group.advances.length <= i) break;
-									advance += group.advances[i];
+									if (group.positions.length <= i) break;
+									advance += group.getAdvance (i);
 									
 								}
 								
-								cairo.moveTo (Math.floor (group.offsetX + advance) + 0.5, group.offsetY - 2 + 0.5);
+								var scrollY = 0.0;
+								
+								for (i in 0...textField.scrollV - 1) {
+									
+									scrollY -= textEngine.lineHeights[i];
+									
+								}
+								
+								cairo.moveTo (Math.floor (group.offsetX + advance) + 0.5 - textField.scrollH, scrollY + 2.5);
 								cairo.lineWidth = 1;
-								cairo.lineTo (Math.floor (group.offsetX + advance) + 0.5, group.offsetY - 2 + group.height - 1);
+								cairo.lineTo (Math.floor (group.offsetX + advance) + 0.5 - textField.scrollH, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
 								cairo.stroke ();
 								
 							}
@@ -349,7 +361,7 @@ class CairoTextField {
 							if (start != null && end != null) {
 								
 								cairo.setSourceRGB (0, 0, 0);
-								cairo.rectangle (start.x, start.y, end.x - start.x, group.height);
+								cairo.rectangle (scrollX + start.x, start.y + scrollY, end.x - start.x, group.height);
 								cairo.fill ();
 								cairo.setSourceRGB (1, 1, 1);
 								

@@ -6,6 +6,7 @@ import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
+import lime.text.GlyphPosition;
 import lime.text.TextLayout;
 import lime.text.UTF8String;
 import openfl.Vector;
@@ -26,9 +27,6 @@ import openfl.text.TextFormatAlign;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-import js.html.InputElement;
-import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
 #end
 
@@ -47,8 +45,7 @@ import haxe.io.Path;
 
 
 class TextEngine {
-
-
+	
 	private static inline var GUTTER = 2.0;
 	private static inline var UTF8_TAB = 9;
 	private static inline var UTF8_ENDLINE = 10;
@@ -120,11 +117,7 @@ class TextEngine {
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
-	#if (js && html5)
-	private var __hiddenInput:InputElement;
-	#end
 	
-
 	public function new (textField:TextField) {
 		
 		this.textField = textField;
@@ -231,6 +224,33 @@ class TextEngine {
 	}
 	
 	
+	private static function findFontVariant (format:TextFormat):Font {
+		
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			return findFont (fontNamePrefix + " Bold Italic");
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			return findFont (fontNamePrefix + " Bold");
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			return findFont (fontNamePrefix + " Italic");
+			
+		}
+		
+		return findFont (fontName);
+		
+	}
+	
+	
 	private function getBounds ():Void {
 		
 		var padding = border ? 1 : 0;
@@ -298,18 +318,59 @@ class TextEngine {
 	
 	public static function getFont (format:TextFormat):String {
 		
-		var font = format.italic ? "italic " : "normal ";
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		if (fontName == null) fontName = "_serif";
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			fontName = fontNamePrefix + " Bold Italic";
+			bold = false;
+			italic = false;
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			fontName = fontNamePrefix + " Bold";
+			bold = false;
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			fontName = fontNamePrefix + " Italic";
+			italic = false;
+			
+		} else {
+			
+			// Prevent "extra" bold and italic fonts
+			
+			if (bold && (fontName.indexOf (" Bold ") > -1 || StringTools.endsWith (fontName, " Bold"))) {
+				
+				bold = false;
+				
+			}
+			
+			if (italic && (fontName.indexOf (" Italic ") > -1 || StringTools.endsWith (fontName, " Italic"))) {
+				
+				italic = false;
+				
+			}
+			
+		}
+		
+		var font = italic ? "italic " : "normal ";
 		font += "normal ";
-		font += format.bold ? "bold " : "normal ";
+		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
 		font += "/" + (format.leading + format.size + 3) + "px ";
 		
-		font += "" + switch (format.font) {
+		font += "" + switch (fontName) {
 			
 			case "_sans": "sans-serif";
 			case "_serif": "serif";
 			case "_typewriter": "monospace";
-			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace(format.font, '$1') + "'";
+			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace (fontName, '$1') + "'";
 			
 		}
 		
@@ -333,7 +394,7 @@ class TextEngine {
 				
 			}
 			
-			instance = findFont (format.font);
+			instance = findFontVariant (format);
 			if (instance != null) return instance;
 			
 			var systemFontDirectory = System.fontsDirectory;
@@ -716,7 +777,7 @@ class TextEngine {
 		var ascent = 0.0, maxAscent = 0.0;
 		var descent = 0.0;
 		
-		var layoutGroup:TextLayoutGroup = null, advances = null;
+		var layoutGroup:TextLayoutGroup = null, positions = null;
 		var widthValue = 0.0, heightValue = 0.0, maxHeightValue = 0.0;
 		
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
@@ -729,11 +790,11 @@ class TextEngine {
 		var lineIndex = 0;
 		var lineFormat = null;
 		
-		inline function getAdvances (text:UTF8String, startIndex:Int, endIndex:Int):Array<Float> {
+		inline function getPositions (text:UTF8String, startIndex:Int, endIndex:Int) {
 			
 			// TODO: optimize
 			
-			var advances = [];
+			var positions = [];
 			
 			#if (js && html5)
 			
@@ -754,7 +815,7 @@ class TextEngine {
 					
 					width = measureTextWidth (text.substring (startIndex, i + 1));
 					
-					advances.push (width - previousWidth);
+					positions.push (width - previousWidth);
 					
 					previousWidth = width;
 					
@@ -779,11 +840,13 @@ class TextEngine {
 
 					}
 					
-					advances.push (advance);
+					positions.push (advance);
 					
 				}
 				
 			}
+			
+			return positions;
 			
 			#else
 			
@@ -805,26 +868,23 @@ class TextEngine {
 			}
 			
 			__textLayout.text = text.substring (startIndex, endIndex);
-			
-			for (position in __textLayout.positions) {
-				
-				advances.push (position.advance.x);
-				
-			}
+			return __textLayout.positions;
 			
 			#end
 			
-			return advances;
-			
 		}
 		
-		inline function getAdvancesWidth (advances:Array<Float>):Float {
+		inline function getPositionsWidth (positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float {
 			
 			var width = 0.0;
 			
-			for (advance in advances) {
+			for (position in positions) {
 				
-				width += advance;
+				#if (js && html5)
+				width += position;
+				#else
+				width += position.advance.x;
+				#end
 				
 			}
 			
@@ -1005,6 +1065,7 @@ class TextEngine {
 
 				lg.ascent = maxAscent;
 				lg.height = maxHeightValue;
+				
 			}
 			
 			offsetY += maxHeightValue;
@@ -1060,6 +1121,7 @@ class TextEngine {
 
 					groupEndIndex = endIndex;
 				}
+				
 			}
 			
 		}
@@ -1083,7 +1145,7 @@ class TextEngine {
 
 					if (wordWrap && previousSpaceIndex <= textIndex && width >= 4) {
 
-						breakLongWords(breakIndex);
+						breakLongWords (breakIndex);
 						
 					}
 					
@@ -1104,7 +1166,11 @@ class TextEngine {
 				} else if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex) {
 					
 					// Trim the last space from the line width, for correct TextFormatAlign.RIGHT alignment
-					layoutGroup.width -= layoutGroup.advances[layoutGroup.advances.length - 1];
+					if (layoutGroup.endIndex == spaceIndex) {
+						
+						layoutGroup.width -= layoutGroup.getAdvance (layoutGroup.positions.length - 1);
+						
+					}
 					
 					layoutGroup = null;
 					
@@ -1124,7 +1190,7 @@ class TextEngine {
 					
 				}
 				
-				alignBaseline();
+				alignBaseline ();
 				
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
@@ -1170,28 +1236,28 @@ class TextEngine {
 						
 					}
 					
-					advances = getAdvances (text, textIndex, endIndex);
-					widthValue = getAdvancesWidth (advances);
+					positions = getPositions (text, textIndex, endIndex);
+					widthValue = getPositionsWidth (positions);
 					
 					if (lineFormat.align == JUSTIFY) {
 						
-						if (advances.length > 0 && textIndex == previousSpaceIndex) {
+						if (positions.length > 0 && textIndex == previousSpaceIndex) {
 							
 							// Trim left space of this word
 							textIndex++;
 							
-							var spaceWidth = advances.shift();
+							var spaceWidth = #if (js && html5) positions.shift () #else positions.shift ().advance.x #end;
 							widthValue -= spaceWidth;
 							offsetX += spaceWidth;
 							
 						}
 						
-						if (advances.length > 0 && endIndex == spaceIndex+1) {
+						if (positions.length > 0 && endIndex == spaceIndex+1) {
 							
 							// Trim right space of this word
 							endIndex--;
 							
-							var spaceWidth = advances.pop();
+							var spaceWidth = #if (js && html5) positions.pop () #else positions.pop ().advance.x #end;
 							widthValue -= spaceWidth;
 							
 						}
@@ -1203,6 +1269,22 @@ class TextEngine {
 						if (offsetX + widthValue > width - GUTTER) {
 							
 							wrap = true;
+							
+							if (positions.length > 0 && endIndex == spaceIndex + 1) {
+								
+								// if last letter is a space, avoid word wrap if possible
+								// TODO: Handle multiple spaces
+								
+								var lastPosition = positions[positions.length - 1];
+								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
+								
+								if (offsetX + widthValue - spaceWidth <= width - 2) {
+									
+									wrap = false;
+									
+								}
+								
+							}
 							
 						}
 						
@@ -1218,7 +1300,7 @@ class TextEngine {
 							}
 							
 							// For correct selection rectangles and alignment, trim the trailing space of the previous line:
-							previous.width -= previous.advances[previous.advances.length - 1];
+							previous.width -= previous.getAdvance (previous.positions.length - 1);
 							previous.endIndex--;
 							
 						}
@@ -1267,12 +1349,12 @@ class TextEngine {
 							}
 							
 						}
-
+						
 						if (width >= 4) breakLongWords(endIndex);
-
+						
 						nextLayoutGroup (textIndex, endIndex);
 						
-						layoutGroup.advances = advances;
+						layoutGroup.positions = positions;
 						layoutGroup.offsetX = offsetX;
 						layoutGroup.ascent = ascent;
 						layoutGroup.descent = descent;
@@ -1295,7 +1377,7 @@ class TextEngine {
 							if (lineFormat.align != JUSTIFY) {
 								
 								layoutGroup.endIndex = spaceIndex;
-								layoutGroup.advances = layoutGroup.advances.concat (advances);
+								layoutGroup.positions = layoutGroup.positions.concat (positions);
 								layoutGroup.width += widthValue;
 								
 							}
@@ -1304,7 +1386,7 @@ class TextEngine {
 							
 							nextLayoutGroup (textIndex, endIndex);
 							
-							layoutGroup.advances = advances;
+							layoutGroup.positions = positions;
 							layoutGroup.offsetX = offsetX;
 							layoutGroup.ascent = ascent;
 							layoutGroup.descent = descent;
@@ -1317,7 +1399,7 @@ class TextEngine {
 						} else {
 							
 							layoutGroup.endIndex = endIndex;
-							layoutGroup.advances = layoutGroup.advances.concat (advances);
+							layoutGroup.positions = layoutGroup.positions.concat (positions);
 							layoutGroup.width += widthValue;
 							
 							// If next char is newline, process it immediately and prevent useless extra layout groups
@@ -1348,14 +1430,14 @@ class TextEngine {
 							
 							layoutGroup.endIndex = breakIndex;
 							
-							if (breakIndex - layoutGroup.startIndex - layoutGroup.advances.length < 0) {
+							if (breakIndex - layoutGroup.startIndex - layoutGroup.positions.length < 0) {
 								
 								// Newline has no size
-								layoutGroup.advances.push (0.0);
+								layoutGroup.positions.push (#if (js && html5) 0.0 #else null #end);
 								
 							}
 							
-							textIndex = breakIndex+1;
+							textIndex = breakIndex + 1;
 							
 						}
 						
@@ -1424,7 +1506,7 @@ class TextEngine {
 		
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups) {
-			trace("LG", lg.advances.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
+			trace("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
 		}
 		#end
 
@@ -1565,7 +1647,7 @@ class TextEngine {
 	
 	private function update ():Void {
 		
-		if (text == null || text == "" || textFormatRanges.length == 0) {
+		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0) {
 			
 			lineAscents.length = 0;
 			lineBreaks.length = 0;
@@ -1629,7 +1711,9 @@ class TextEngine {
 	private function set_text (value:String):String {
 		
 		if (value == null) {
+			
 			return text = value;
+			
 		}
 		
 		if (__restrictRegexp != null) {

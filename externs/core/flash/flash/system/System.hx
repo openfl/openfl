@@ -5,30 +5,30 @@ package flash.system; #if (!display && flash)
 	
 	
 	#if flash
-	@:require(flash10_1) public static var freeMemory (default, null):Float;
+	@:require(flash10_1) public static var freeMemory (default, never):Float;
 	#end
 	
 	#if flash
-	public static var ime (default, null):flash.system.IME;
+	public static var ime (default, never):flash.system.IME;
 	#end
 	
 	#if flash
-	@:require(flash10_1) public static var privateMemory (default, null):Float;
+	@:require(flash10_1) public static var privateMemory (default, never):Float;
 	#end
 	
 	#if flash
-	@:require(flash11) public static var processCPUUsage (default, null):Float;
+	@:require(flash11) public static var processCPUUsage (default, never):Float;
 	#end
 	
-	public static var totalMemory (default, null):Int;
+	public static var totalMemory (default, never):Int;
 	
 	#if flash
-	@:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
+	@:require(flash10_1) public static var totalMemoryNumber (default, never):Float;
 	#end
 	
 	public static var useCodePage:Bool;
 	
-	public static var vmVersion (default, null):String;
+	public static var vmVersion (default, never):String;
 	
 	#if flash
 	@:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;

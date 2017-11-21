@@ -7,8 +7,8 @@ import openfl.net.NetStream;
 @:final extern class VideoTexture extends TextureBase {
 	
 	
-	public var videoHeight (default, null):Int;
-	public var videoWidth (default, null):Int;
+	public var videoHeight (default, never):Int;
+	public var videoWidth (default, never):Int;
 	
 	#if flash
 	public function attachCamera (theCamera:flash.media.Camera):Void;

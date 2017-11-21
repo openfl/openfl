@@ -71,6 +71,20 @@ class SimpleButtonTest {
 	}
 	
 	
+	@Test public function tabEnabled () {
+		
+		var simpleButton = new SimpleButton ();
+		Assert.isTrue (simpleButton.tabEnabled);
+		
+		simpleButton.tabEnabled = false;
+		Assert.isFalse (simpleButton.tabEnabled);
+		
+		simpleButton.tabEnabled = true;
+		Assert.isTrue (simpleButton.tabEnabled);
+		
+	}
+	
+	
 	@Test public function trackAsMenu () {
 		
 		// TODO: Confirm functionality

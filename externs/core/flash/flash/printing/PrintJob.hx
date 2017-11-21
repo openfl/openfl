@@ -16,7 +16,7 @@ extern class PrintJob {
 	#if flash
 	@:require(flash10_1)
 	#end
-	public static var isSupported (default, null):Bool;
+	public static var isSupported (default, never):Bool;
 	
 	#if air
 	static var printers (default, never):Vector<String>;
@@ -33,15 +33,15 @@ extern class PrintJob {
 	#end
 	
 	public var orientation:PrintJobOrientation;
-	public var pageHeight (default, null):Int;
-	public var pageWidth (default, null):Int;
+	public var pageHeight (default, never):Int;
+	public var pageWidth (default, never):Int;
 	
 	#if air
 	public var paperArea (default, never):flash.geom.Rectangle;
 	#end
 	
-	public var paperHeight (default, null):Int;
-	public var paperWidth (default, null):Int;
+	public var paperHeight (default, never):Int;
+	public var paperWidth (default, never):Int;
 	
 	#if air
 	public var printableArea (default, never):flash.geom.Rectangle;

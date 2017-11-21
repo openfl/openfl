@@ -19,19 +19,19 @@ import openfl.display.MovieClip;
 	
 	public static function fromBytes (bytes:ByteArray, rootPath:String = null):AssetLibrary {
 		
-		return fromManifest (AssetManifest.fromBytes (bytes, rootPath));
+		return cast fromManifest (AssetManifest.fromBytes (bytes, rootPath));
 		
 	}
 	
 	
 	public static function fromFile (path:String, rootPath:String = null):AssetLibrary {
 		
-		return fromManifest (AssetManifest.fromFile (path, rootPath));
+		return cast fromManifest (AssetManifest.fromFile (path, rootPath));
 		
 	}
 	
 	
-	public static function fromManifest (manifest:AssetManifest):AssetLibrary {
+	public static function fromManifest (manifest:AssetManifest):#if java LimeAssetLibrary #else AssetLibrary #end {
 		
 		var library = LimeAssetLibrary.fromManifest (manifest);
 		
@@ -55,7 +55,7 @@ import openfl.display.MovieClip;
 	}
 	
 	
-	public static function loadFromBytes (bytes:ByteArray, rootPath:String = null):Future<AssetLibrary> {
+	public static function loadFromBytes (bytes:ByteArray, rootPath:String = null):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
 		return AssetManifest.loadFromBytes (bytes, rootPath).then (function (manifest) {
 			
@@ -66,7 +66,7 @@ import openfl.display.MovieClip;
 	}
 	
 	
-	public static function loadFromFile (path:String, rootPath:String = null):Future<AssetLibrary> {
+	public static function loadFromFile (path:String, rootPath:String = null):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
 		return AssetManifest.loadFromFile (path, rootPath).then (function (manifest) {
 			
@@ -77,9 +77,9 @@ import openfl.display.MovieClip;
 	}
 	
 	
-	public static function loadFromManifest (manifest:AssetManifest):Future<AssetLibrary> {
+	public static function loadFromManifest (manifest:AssetManifest):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
-		var library = fromManifest (manifest);
+		var library:AssetLibrary = cast fromManifest (manifest);
 		
 		if (library != null && Std.is (library, AssetLibrary)) {
 			

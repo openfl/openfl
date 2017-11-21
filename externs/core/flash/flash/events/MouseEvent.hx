@@ -23,11 +23,7 @@ extern class MouseEvent extends Event {
 	public static var MOUSE_OVER (default, never):String;
 	public static var MOUSE_UP (default, never):String;
 	public static var MOUSE_WHEEL (default, never):String;
-	
-	#if flash
 	@:require(flash11_3) public static var RELEASE_OUTSIDE (default, never):String;
-	#end
-	
 	@:require(flash11_2) public static var RIGHT_CLICK (default, never):String;
 	@:require(flash11_2) public static var RIGHT_MOUSE_DOWN (default, never):String;
 	@:require(flash11_2) public static var RIGHT_MOUSE_UP (default, never):String;
@@ -40,11 +36,7 @@ extern class MouseEvent extends Event {
 	public var commandKey:Bool;
 	public var ctrlKey:Bool;
 	public var delta:Int;
-	
-	#if flash
 	@:require(flash10) public var isRelatedObjectInaccessible:Bool;
-	#end
-	
 	public var localX:Float;
 	public var localY:Float;
 	
