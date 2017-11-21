@@ -1,8 +1,7 @@
 package openfl.display3D;
 
 
-import haxe.io.Bytes;
-import lime.graphics.opengl.GL;
+import lime.utils.Float32Array;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import openfl._internal.stage3D.opengl.GLVertexBuffer3D;
@@ -26,7 +25,7 @@ class VertexBuffer3D {
 	private var __memoryUsage:Int;
 	private var __numVertices:Int;
 	private var __stride:Int;
-	private var __tempBytes:Bytes;	
+	private var __tempFloat32Array:Float32Array;	
 	private var __usage:Int;
 	private var __vertexSize:Int;
 	
