@@ -558,13 +558,6 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 
 
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<Bool> {
-		return __array;
-	}
-	#end
-
-
 
 	// Getters & Setters
 	
@@ -873,12 +866,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 
 
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<Float> {
-		return __array;
-	}
-	#end
-	
+		
 	
 	// Getters & Setters
 	
@@ -1506,12 +1494,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 
 
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<Int> {
-		return __array;
-	}
-	#end
-
+	
 
 	// Getters & Setters
 	
@@ -1818,14 +1801,6 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		}
 		
 	}
-
-
-	#if js
-	@:noCompletion @:keep private function toJSON(): Array<T> {
-		return __array;
-	}
-	#end
-
 
 	
 	// Getters & Setters
