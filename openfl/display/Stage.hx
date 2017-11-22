@@ -159,7 +159,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		this.application = window.application;
 		this.window = window;
 		
-		if (color == null) {
+		if (color == null || window.config.colorDepth > 16) {
 			
 			__transparent = true;
 			this.color = 0x000000;
