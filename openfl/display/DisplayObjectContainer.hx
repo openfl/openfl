@@ -302,13 +302,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function setChildIndex (child:DisplayObject, index:Int):Void {
-		
-		if (index >= 0 && index <= __children.length && child.parent == this) {
-			
-			__children.remove (child);
-			__children.insert (index, child);
-			
+
+		if (index < 0 || index > __children.length || child.parent != this || __children[index] == child) {
+			return;
 		}
+
+		__children.remove (child);
+		__children.insert (index, child);
 		
 	}
 	
@@ -950,17 +950,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 	}
-	
+
+	public override function __forceUpdateTransforms():Void {
+		super.__forceUpdateTransforms();
+		for (child in __children) {
+			child.__forceUpdateTransforms();
+		}
+	}
 	
 	public override function __updateChildren (transformOnly:Bool):Void {
 		
 		super.__updateChildren (transformOnly);
 		
-		for (child in __children) {
-			
-			child.__update (transformOnly, true);
-			
-		}
+		__forceUpdateTransforms();
 		
 	}
 	

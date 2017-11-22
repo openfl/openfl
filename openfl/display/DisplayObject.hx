@@ -893,7 +893,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 
 		setRequiresRedraw();
-		
 	}
 	
 	
@@ -917,6 +916,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 
 	public function setRequiresRedraw():Void
 	{
+
 		var p : DisplayObjectContainer = this.parent;
 		var frameID : UInt = Stage.frameID;
 
@@ -937,13 +937,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		var frameID:UInt = Stage.frameID;
 		return _lastParentOrSelfChangeFrameID == frameID || _lastChildChangeFrameID == frameID;
 	}
-	
+
+	public function __forceUpdateTransforms():Void {
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
+		__updateTransforms();
+		__transformDirty = false;
+	}
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
-//		if (!requiresRedraw)
-//		{
-//			return;
-//		}
+
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms ();
