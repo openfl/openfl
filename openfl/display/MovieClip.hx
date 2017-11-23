@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import Type.ValueType;
 import lime.utils.Log;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
@@ -129,8 +128,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
 
-		stop ();
 		__goto (__resolveFrameReference (frame));
+		stop ();
 	}
 
 
@@ -170,96 +169,36 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	}
 
-	public override function getChildAt (index:Int):DisplayObject {
-		__initializeSelf();
-		var child : DisplayObject = super.getChildAt(index);
-		__initializeChild(child);
-		return child;
-	}
-	public override function getChildByName (name:String):DisplayObject {
-		__initializeSelf();
-		var child : DisplayObject = super.getChildByName(name);
-		__initializeChild(child);
-		return child;
-	}
-		public override function getChildIndex (child:DisplayObject):Int {
-		__initializeSelfAndChild(child);
-		return super.getChildIndex(child);
-	}
-	public override function setChildIndex (child:DisplayObject, index:Int):Void {
-		__initializeSelfAndChild(child);
-		super.setChildIndex(child, index);
+	private override function __addChildAtInternal(child:DisplayObject, index:Int):DisplayObject{
+		var addedChild : DisplayObject = super.__addChildAtInternal(child, index);
+
+		__cacheChild(addedChild);
+
+		return addedChild;
 	}
 
-	public override function swapChildren (child1:DisplayObject, child2:DisplayObject):Void {
-		__initializeSelfAndChild(child1);
-		__initializeChild(child2);
-		super.swapChildren(child1, child2);
-	}
-	public override function swapChildrenAt (index1:Int, index2:Int):Void {
-		__initializeSelf();
-		super.swapChildrenAt(index1, index2);
-		getChildAt(index1);//will initialize child if need be
-		getChildAt(index2);//will initialize child if need be
-	}
-	public override function addChild (child:DisplayObject):DisplayObject {
 
-		__initializeSelfAndChild(child);
-
-		return super.addChild(child);
-
-	}
-
-	private function __addChildAtInternal(child:DisplayObject, index:Int):DisplayObject{
-		var addedChild : DisplayObject = super.addChildAt(child, index);
-
-		if(addedChild != null) {
+	public function __cacheChild(child:DisplayObject){
+		if(child != null) {
 			var cached : Bool = false;
-			if(__cachedChildrenFrameSymbolInstacesDisplayObjects.indexOf(addedChild) >= 0 || __cachedManuallyAddedDisplayObjects.indexOf(addedChild) >= 0) {
+			if(__cachedChildrenFrameSymbolInstacesDisplayObjects.indexOf(child) >= 0 || __cachedManuallyAddedDisplayObjects.indexOf(child) >= 0) {
 				cached = true;
 			}
 			else if(__activeInstances != null) {
 				for (instance in __activeInstances) {
-					if (instance.displayObject == addedChild) {
+					if (instance.displayObject == child) {
 						cached = true;
-						__cachedChildrenFrameSymbolInstacesDisplayObjects.push(addedChild);
+						__cachedChildrenFrameSymbolInstacesDisplayObjects.push(child);
 						break;
 					}
 				}
 			}
 			if(!cached){
-				__cachedManuallyAddedDisplayObjects.push(addedChild);
-			}
-		}
-		return addedChild;
-	}
-
-	public override function addChildAt (child:DisplayObject, index:Int):DisplayObject{
-
-		__initializeSelfAndChild(child);
-
-		return __addChildAtInternal(child, index);
-	}
-
-	private function __initializeSelf() : Void{
-		if (__lastFrameUpdate == -2){
-			__enterFrame(0);
-		}
-	}
-	private function __initializeChild(child : DisplayObject) : Void{
-		if(Type.enumEq(Type.typeof(child),  ValueType.TClass(MovieClip))){
-			var movieClip : MovieClip = (cast child : MovieClip);
-			if(movieClip.__lastFrameUpdate == -2)
-			{
-				movieClip.__enterFrame(0);
+				__cachedManuallyAddedDisplayObjects.push(child);
 			}
 		}
 	}
-	private function __initializeSelfAndChild (child : DisplayObject){
 
-		__initializeSelf();
-		__initializeChild(child);
-	}
 
 	public override function removeChild (child:DisplayObject):DisplayObject {
 		if (child != null && child.parent == this) {
@@ -283,7 +222,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		}
 		else
 		{
-			// stopped, just build (and run script if any) at the current frame
 			nextFrame = __currentFrame;
 		}
 
@@ -294,7 +232,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			runInitScript = true;
 		}
 		while(updateToFrame != nextFrame || __lastFrameUpdate < 0) {
-			var isUpdateToFrameSet = false;
+			var shouldRunScriptAtFrame = false;
 			if(__playing){
 				if (__frameScripts != null){
 					// if we looped around
@@ -303,31 +241,35 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						for(key in __frameScripts.keys()) {
 							if (key > updateToFrame){
 								// found one, let's run this framescript
-								isUpdateToFrameSet = true;
+								shouldRunScriptAtFrame = true;
 								updateToFrame = key;
 								break;
 							}
 						}
-						if (!isUpdateToFrameSet) {
+						if (!shouldRunScriptAtFrame) {
 							// there were none, so restart at the beginning (at 0 just in case nextFrame is 1)
 							updateToFrame = 0;
 						}
 					}
-					if (!isUpdateToFrameSet) {
+					if (!shouldRunScriptAtFrame) {
 						// we did not loop or we restarted at the beginning, so find the next keyframe
 						for(key in __frameScripts.keys()) {
 							if (key > updateToFrame && key <= nextFrame){
 								// found one, let's run this framescript
-								isUpdateToFrameSet = true;
+								shouldRunScriptAtFrame = true;
 								updateToFrame = key;
 								break;
 							}
 						}
 					}
 				}
+			} else if (runInitScript)
+			{
+				shouldRunScriptAtFrame = true;
+				updateToFrame = 1;
 			}
 
-			if (!isUpdateToFrameSet) {
+			if (!shouldRunScriptAtFrame) {
 				// no keyframes to run, so we're done, jump to the end
 				updateToFrame = nextFrame;
 			}
@@ -345,10 +287,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				}
 			}
 
-			if ((isUpdateToFrameSet && __playing) || runScriptOverride) {
+			if ((shouldRunScriptAtFrame && __playing) || runScriptOverride) {
 
 				var currentFrameBeforeScript = __currentFrame;
-				//a frame script on frame one is not called here the first time because __frameScripts is null during construction. It is called in addFrameScript instead.
 				var script = __frameScripts.get (updateToFrame);
 				script ();
 				if (__currentFrame != currentFrameBeforeScript || !__playing) {
@@ -362,13 +303,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		if(runInitScript){
 			runInitScript = false;
 			__setupInstanceFields();
-//			if(__frameScripts != null){
-//				if(__frameScripts.exists(1))
-//				{
-//					var script = __frameScripts.get (1);
-//					script ();
-//				}
-//			}
 		}
 		super.__enterFrame (deltaTime);
 	}
