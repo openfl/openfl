@@ -24,11 +24,12 @@ package openfl.net;
 		}
 		
 		contentType = null; // "application/x-www-form-urlencoded";
-		followRedirects = true;
-		idleTimeout = 30000;
-		manageCookies = false;
+		followRedirects = URLRequestDefaults.followRedirects;
+		idleTimeout = URLRequestDefaults.idleTimeout > 0 ? URLRequestDefaults.idleTimeout : 30000;
+		manageCookies = URLRequestDefaults.manageCookies;
 		method = URLRequestMethod.GET;
 		requestHeaders = [];
+		userAgent = URLRequestDefaults.userAgent;
 		
 	}
 	

@@ -28,6 +28,7 @@ Currently, OpenFL supports the following platforms:
  * Linux
  * WebAssembly
  * Flash
+ * AIR
 
 There is also a community effort to bring OpenFL to consoles, OpenFL is running on:
 
@@ -60,7 +61,7 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
  * [HaxeFlixel](https://github.com/haxeflixel/flixel)
  * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
 
-OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3.
+OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/).
 
 
 Code Editors
@@ -68,8 +69,8 @@ Code Editors
 
 Plugins have been written for many [code editors](http://haxe.org/documentation/introduction/editors-and-ides.html), but the most popular editors used for Haxe and OpenFL development are:
 
- * [HaxeDevelop](http://haxedevelop.org/)
  * [Visual Studio Code](https://code.visualstudio.com/) (with [plugin](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension))
+ * [HaxeDevelop](http://haxedevelop.org/)
  * [Sublime Text](http://www.sublimetext.com) (with [plugin](https://github.com/clemos/haxe-sublime-bundle))
  * [IntelliJ IDEA](http://www.jetbrains.com/idea/) (with [plugin](http://plugins.jetbrains.com/plugin/6873?pr=))
 

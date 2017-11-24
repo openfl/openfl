@@ -282,6 +282,8 @@ import openfl.utils.ByteArray;
 	
 	public override function unload ():Void {
 		
+		if (swf == null) return;
+		
 		var bitmap:BitmapSymbol;
 		
 		for (symbol in swf.symbols) {

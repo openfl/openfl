@@ -185,18 +185,22 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
 				
-				var x = group.offsetX;
-				
-				for (i in 0...(charIndex - group.startIndex)) {
+				try {
 					
-					x += group.getAdvance (i);
+					var x = group.offsetX;
 					
-				}
-				
-				// TODO: Is this actually right for combining characters?
-				var lastPosition = group.getAdvance (charIndex - group.startIndex);
-				
-				return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
+					for (i in 0...(charIndex - group.startIndex)) {
+						
+						x += group.getAdvance (i);
+						
+					}
+					
+					// TODO: Is this actually right for combining characters?
+					var lastPosition = group.getAdvance (charIndex - group.startIndex);
+					
+					return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
+					
+				} catch (e:Dynamic) {}
 				
 			}
 			
@@ -587,7 +591,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		__selectionIndex = beginIndex;
 		__caretIndex = endIndex;
-		
+		__stopCursorTimer ();
+		__startCursorTimer ();
+
 	}
 	
 	

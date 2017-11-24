@@ -157,6 +157,7 @@ import openfl.net.Socket;
 import openfl.net.URLLoader;
 import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
+import openfl.net.URLRequestDefaults;
 import openfl.net.URLRequestHeader;
 import openfl.net.URLRequestMethod;
 import openfl.net.URLStream;
