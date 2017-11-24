@@ -1705,7 +1705,16 @@ class BitmapData implements IBitmapDrawable {
 			var matrixCache = source.__worldTransform;
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
+			
+			var oldRenderable = untyped source.__renderable;
+			if (untyped source.__isMask) {
+				
+				untyped source.__renderable = true;
+				
+			}
+			
 			source.__renderCanvas (renderSession);
+			untyped source.__renderable = oldRenderable;
 			source.__updateTransforms (matrixCache);
 			source.__updateChildren (true);
 			
