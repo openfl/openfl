@@ -1123,6 +1123,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
+			if (__mask != null && __cacheBitmap.mask != __mask) {
+				
+				__cacheBitmap.mask = __mask;
+				
+			}
+			
 			__cacheBitmap.smoothing = renderSession.allowSmoothing;
 			__cacheBitmap.__renderable = __renderable;
 			__cacheBitmap.__worldAlpha = __worldAlpha;
@@ -1519,6 +1525,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			value.__isMask = true;
 			value.__maskTarget = this;
+			
+		}
+		
+		if (__cacheBitmap != null && __cacheBitmap.mask != value) {
+			
+			__cacheBitmap.mask = value;
 			
 		}
 		

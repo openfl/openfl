@@ -137,7 +137,7 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (stencilReference == 0) return;
 		
-		if (stencilReference > 10) {
+		if (stencilReference > 1) {
 			
 			gl.stencilOp (gl.KEEP, gl.KEEP, gl.DECR);
 			gl.stencilFunc (gl.EQUAL, stencilReference, 0xFF);
