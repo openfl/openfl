@@ -48,7 +48,7 @@ class CanvasMaskManager extends AbstractMaskManager {
 			
 		}
 		
-		if (object.__mask != null) {
+		if (!object.__cacheBitmapRender && object.__mask != null) {
 			
 			pushMask (object.__mask);
 			
