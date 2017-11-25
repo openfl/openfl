@@ -1291,6 +1291,8 @@ class TextEngine {
 				
 				while (true) {
 					
+					if (textIndex >= text.length) break;
+					
 					var endIndex = -1;
 					
 					if (spaceIndex == -1) {
