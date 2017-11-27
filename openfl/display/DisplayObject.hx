@@ -1123,18 +1123,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			if (__mask != null && __cacheBitmap.mask != __mask) {
-				
-				__cacheBitmap.mask = __mask;
-				
-			}
-			
 			__cacheBitmap.smoothing = renderSession.allowSmoothing;
 			__cacheBitmap.__renderable = __renderable;
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
 			__cacheBitmap.__scrollRect = __scrollRect;
 			//__cacheBitmap.filters = filters;
+			__cacheBitmap.mask = __mask;
 			
 			if (needRender) {
 				
