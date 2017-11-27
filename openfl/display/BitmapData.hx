@@ -107,7 +107,9 @@ class BitmapData implements IBitmapDrawable {
 	private var __bufferData:Float32Array;
 	private var __framebuffer:GLFramebuffer;
 	private var __framebufferContext:GLRenderContext;
+	private var __isMask:Bool;
 	private var __isValid:Bool;
+	private var __renderable:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
@@ -190,6 +192,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
+		__renderable = true;
 		
 	}
 	
@@ -1706,15 +1709,16 @@ class BitmapData implements IBitmapDrawable {
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
 			
-			var oldRenderable = untyped source.__renderable;
-			if (untyped source.__isMask) {
+			var cacheRenderable = source.__renderable;
+			if (source.__isMask) {
 				
-				untyped source.__renderable = true;
+				source.__renderable = true;
 				
 			}
 			
 			source.__renderCanvas (renderSession);
-			untyped source.__renderable = oldRenderable;
+			source.__renderable = cacheRenderable;
+			
 			source.__updateTransforms (matrixCache);
 			source.__updateChildren (true);
 			
@@ -1795,7 +1799,19 @@ class BitmapData implements IBitmapDrawable {
 			var matrixCache = source.__worldTransform;
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
+			
+			// TODO: Force renderable using render session?
+			
+			var cacheRenderable = source.__renderable;
+			if (source.__isMask) {
+				
+				source.__renderable = true;
+				
+			}
+			
 			source.__renderCairo (renderSession);
+			source.__renderable = cacheRenderable;
+			
 			source.__updateTransforms (matrixCache);
 			source.__updateChildren (true);
 			
