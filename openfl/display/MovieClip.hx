@@ -222,6 +222,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		}
 		else
 		{
+			// stopped, just build frameobjects (and run script if any) at the current frame
 			nextFrame = __currentFrame;
 		}
 
