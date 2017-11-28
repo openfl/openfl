@@ -936,17 +936,14 @@ class DisplayObjectContainer extends InteractiveObject {
 		var selfOrParentChanged = _lastParentOrSelfChangeFrameID == frameID;
 
 		for (child in __children) {
-//			if (child._hasVisibleArea)
-//			{
-				if (selfOrParentChanged)
-				{
-					child._lastParentOrSelfChangeFrameID = frameID;
-				}
-				if (child._lastParentOrSelfChangeFrameID == frameID || child._lastChildChangeFrameID == frameID)
-				{
-					child.__update (transformOnly, true, maskGraphics);
-				}
-//			}
+			if (selfOrParentChanged)
+			{
+				child._lastParentOrSelfChangeFrameID = frameID;
+			}
+			if (child._lastParentOrSelfChangeFrameID == frameID || child._lastChildChangeFrameID == frameID)
+			{
+				child.__update (transformOnly, true, maskGraphics);
+			}
 		}
 		
 	}
