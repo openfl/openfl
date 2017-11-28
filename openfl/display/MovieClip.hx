@@ -254,7 +254,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					if (!shouldRunScriptAtFrame) {
 						// we did not loop or we restarted at the beginning, so find the next keyframe
 						for(key in __frameScripts.keys()) {
-							if (key > updateToFrame && key <= nextFrame){
+							if( ( (__lastFrameUpdate < 0 && key == updateToFrame) || key > updateToFrame ) && key <= nextFrame ){
 								// found one, let's run this framescript
 								shouldRunScriptAtFrame = true;
 								updateToFrame = key;
