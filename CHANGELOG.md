@@ -1,3 +1,17 @@
+6.5.1 (11/29/2017)
+------------------
+
+* Updated Lime to 5.9.*
+* Added support for improved CSS font embedding in Lime 5.9.0
+* Fixed support for rendering multiple masking levels in OpenGL masks
+* Fixed some issues with rendering masks with `cacheAsBitmap`
+* Fixed a possible crash in `TextField` and in `Loader`
+* Fixed the height offset when using `context3D.drawToBitmapData`
+* Fixed OpenGL rendering for masks with a different parent than the masked object
+* Fixed `ColorMatrixFilter` so that values are constrained between 0 and 255
+* Fixed a crash error on `textField.getCharBoundaries` when the char is not available
+
+
 6.5.0 (11/10/2017)
 ------------------
 
