@@ -177,7 +177,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	private function __initializeChild(child : DisplayObject) : Void{
 
-		var fun = Reflect.field(child,"__enterFrame");
+		var fun = Reflect.field(child,"__initializeSelf");
 		if(Reflect.isFunction(fun))
 		{
 			Reflect.callMethod(child, fun, [0]);
