@@ -13,8 +13,9 @@ interface IBitmapDrawable {
 	private var __isMask:Bool;
 	private var __renderable:Bool;
 	private var __transform:Matrix;
-	private var __worldTransform:Matrix;
+	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
+	private var __worldTransform:Matrix;
 	
 	private function __getBounds (rect:Rectangle, matrix:Matrix):Void;
 	private function __renderCairo (renderSession:RenderSession):Void;

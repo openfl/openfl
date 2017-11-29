@@ -115,6 +115,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
 	private var __transform:Matrix;
+	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
 	
@@ -1716,8 +1717,12 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
+			var cacheAlpha = source.__worldAlpha;
+ 			source.__worldAlpha = 1;
+ 			
 			source.__renderCanvas (renderSession);
 			source.__renderable = cacheRenderable;
+			source.__worldAlpha = cacheAlpha;
 			
 			source.__updateTransforms (matrixCache);
 			source.__updateChildren (true);
@@ -1809,8 +1814,12 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
+			var cacheAlpha = source.__worldAlpha;
+ 			source.__worldAlpha = 1;
+ 			
 			source.__renderCairo (renderSession);
 			source.__renderable = cacheRenderable;
+			source.__worldAlpha = cacheAlpha;
 			
 			source.__updateTransforms (matrixCache);
 			source.__updateChildren (true);
