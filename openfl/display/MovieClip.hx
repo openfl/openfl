@@ -128,8 +128,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
 
-		__goto (__resolveFrameReference (frame));
 		stop ();
+		__goto (__resolveFrameReference (frame));
 	}
 
 
@@ -764,6 +764,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		}
 
+		__updateFrameObjectsAndChildren();
+		__currentFrame = 1;
+		__lastFrameUpdate = -2;
 //		__enterFrame (0);//frame scripts are not called here because they get attached after the constructor is completed.
 //		//but this call is still needed to initialize the frame objects/children
 

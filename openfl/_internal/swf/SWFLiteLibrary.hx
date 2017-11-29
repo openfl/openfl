@@ -133,8 +133,16 @@ import openfl.utils.ByteArray;
 	
 	
 	public override function getMovieClip (id:String):MovieClip {
-		
-		return (swf != null) ? swf.createMovieClip (id) : null;
+		var mc : MovieClip = (swf != null) ? swf.createMovieClip (id) : null;
+		if(mc != null){
+			mc.__enterFrame(0);
+//			var fields : Array<String>  = Reflect.fields(mc);
+//			for(field in fields)
+//			{
+//
+//			}
+		}
+		return mc;
 		
 	}
 	
