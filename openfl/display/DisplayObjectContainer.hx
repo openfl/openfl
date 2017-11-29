@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import Type.ValueType;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -51,78 +52,83 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function addChild (child:DisplayObject):DisplayObject {
-		
+
 		return addChildAt (child, numChildren);
 		
 	}
-	
-	
-	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
-		
+
+	private function __addChildAtInternal (child:DisplayObject, index:Int):DisplayObject {
 		if (child == null) {
-			
+
 			var error = new TypeError ("Error #2007: Parameter child must be non-null.");
 			error.errorID = 2007;
 			throw error;
-			
+
 		}
-		
 		if (index > __children.length || index < 0) {
-			
+
 			throw "Invalid index position " + index;
-			
+
 		}
-		
+
 		if (child.parent == this) {
-			
+
 			if (__children[index] != child) {
-				
+
 				__children.remove (child);
 				__children.insert (index, child);
-				
+
 				__setRenderDirty ();
-				
+
 			}
-			
+
 		} else {
-			
+
 			if (child.parent != null) {
-				
+
 				child.parent.removeChild (child);
-				
+
 			}
-			
+
 			__children.insert (index, child);
 			child.parent = this;
-			
+
 			var addedToStage = (stage != null && child.stage == null);
-			
+
 			if (addedToStage) {
-				
+
 				this.__setStageReference (stage);
-				
+
 			}
-			
+
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
 			__setRenderDirty();
-			
+
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
 			child.__dispatchWithCapture (event);
-			
+
 			if (addedToStage) {
-				
+
 				var event = new Event (Event.ADDED_TO_STAGE, false, false);
 				child.__dispatchWithCapture (event);
 				child.__dispatchChildren (event);
-				
+
 			}
-			
+
 		}
-		
+
+		__initializeChild(child);
+
 		return child;
-		
+	}
+
+	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
+
+		__initializeSelf(); //make sure children are initialized
+
+		return __addChildAtInternal(child, index);
 	}
 	
 	
@@ -147,26 +153,48 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function getChildAt (index:Int):DisplayObject {
-		
+
+		__initializeSelf();//make sure children are initialized
 		if (index >= 0 && index < __children.length) {
-			
-			return __children[index];
+			var child =  __children[index];
+			return child;
 			
 		}
 		
 		return null;
 		
 	}
-	
+
+
+	private function __initializeSelfAndChild (child : DisplayObject){
+
+		__initializeSelf();
+		__initializeChild(child);
+	}
+
+	private function __initializeSelf() : Void{
+			__enterFrame(0);
+	}
+	private function __initializeChild(child : DisplayObject) : Void{
+
+		var fun = Reflect.field(child,"__initializeSelf");
+		if(Reflect.isFunction(fun))
+		{
+			Reflect.callMethod(child, fun, [0]);
+		}
+	}
 	
 	public function getChildByName (name:String):DisplayObject {
-		
+
+		__initializeSelf();
 		for (child in __children) {
 			
-			if (child.name == name) return child;
+			if (child.name == name) {
+				return child;
+			}
 			
 		}
-		
+
 		return null;
 		
 	}
@@ -174,7 +202,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function getChildIndex (child:DisplayObject):Int {
-		
+
+		__initializeSelfAndChild(child);
 		for (i in 0...__children.length) {
 			
 			if (__children[i] == child) return i;
@@ -303,9 +332,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function setChildIndex (child:DisplayObject, index:Int):Void {
 
-		if (index < 0 || index > __children.length || child.parent != this || __children[index] == child) {
+		__initializeSelfAndChild(child);
+		if (index < 0 || index > __children.length || child.parent != this || __children[index] == child)
 			return;
-		}
 
 		__children.remove (child);
 		__children.insert (index, child);
@@ -321,7 +350,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void {
-		
+
+		__initializeSelfAndChild(child1);
+		__initializeChild(child2);
 		if (child1.parent == this && child2.parent == this) {
 			
 			var index1 = __children.indexOf (child1);
@@ -338,7 +369,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function swapChildrenAt (index1:Int, index2:Int):Void {
-		
+
+		__initializeSelf();
 		var swap:DisplayObject = __children[index1];
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
@@ -372,7 +404,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __enterFrame (deltaTime:Int):Void {
-		
+		if(__children == null) return;
 		for (child in __children) {
 			
 			child.__enterFrame (deltaTime);
@@ -881,9 +913,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (__children != null) {
 			
 			for (child in __children) {
-				
-				child.__setStageReference (stage);
-				
+
+				if(child != null) {
+
+					child.__setStageReference (stage);
+
+				}
+
 			}
 			
 		}
