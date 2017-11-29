@@ -118,7 +118,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 //		if (index == 0 && method != null) method();//call the framescript that should have been called during construction from fromSymbol's enterFrame call
 	}
 
-		public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
+	private override function __initializeSelf() : Void{
+		if (__lastFrameUpdate == -2){
+			__enterFrame(0);
+		}
+	}
+
+	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
 
 		play ();
 		__goto (__resolveFrameReference (frame));

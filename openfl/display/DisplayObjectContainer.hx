@@ -373,9 +373,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		__initializeSelf();
 		var swap:DisplayObject = __children[index1];
-		__initializeChild(swap);//TODO:LC probably redundant
 		__children[index1] = __children[index2];
-		__initializeChild(__children[index1]);//TODO:LC probably redundant
 		__children[index2] = swap;
 		swap = null;
 		__setRenderDirty ();
