@@ -166,12 +166,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	private function __initializeSelfAndChild (child : DisplayObject){
-
-		__initializeSelf();
-		__initializeChild(child);
-	}
-
 	private function __initializeSelf() : Void{
 			__enterFrame(0);
 	}
@@ -203,7 +197,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function getChildIndex (child:DisplayObject):Int {
 
-		__initializeSelfAndChild(child);
+		__initializeSelf();
 		for (i in 0...__children.length) {
 			
 			if (__children[i] == child) return i;
@@ -332,10 +326,10 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function setChildIndex (child:DisplayObject, index:Int):Void {
 
-		__initializeSelfAndChild(child);
+		__initializeSelf();
 		if (index < 0 || index > __children.length || child.parent != this || __children[index] == child)
 			return;
-
+		__initializeChild(child);
 		__children.remove (child);
 		__children.insert (index, child);
 		
@@ -351,8 +345,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void {
 
-		__initializeSelfAndChild(child1);
-		__initializeChild(child2);
+		__initializeSelf();
 		if (child1.parent == this && child2.parent == this) {
 			
 			var index1 = __children.indexOf (child1);
