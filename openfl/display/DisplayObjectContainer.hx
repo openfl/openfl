@@ -53,7 +53,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function addChild (child:DisplayObject):DisplayObject {
 
-		__initializeSelf();//TODO:LC probably redundant
 		return addChildAt (child, numChildren);
 		
 	}
@@ -158,7 +157,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		__initializeSelf();//make sure children are initialized
 		if (index >= 0 && index < __children.length) {
 			var child =  __children[index];
-			__initializeChild(child);//TODO:LC probably redundant. done during add child
 			return child;
 			
 		}
@@ -175,11 +173,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 	private function __initializeSelf() : Void{
-//		if (__lastFrameUpdate == -2){
 			__enterFrame(0);
-//		}
 	}
-//	@:access(openfl.display.MovieClip.__lastFrameUpdate)
 	private function __initializeChild(child : DisplayObject) : Void{
 
 		var fun = Reflect.field(child,"__enterFrame");
@@ -187,13 +182,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		{
 			Reflect.callMethod(child, fun, [0]);
 		}
-//		if(Type.enumEq(Type.typeof(child),  ValueType.TClass(DisplayObjectContainer))){
-//			var movieClip : DisplayObjectContainer = (cast child : DisplayObjectContainer);
-////			if(movieClip.__lastFrameUpdate == -2)
-////			{
-//				movieClip.__enterFrame(0);
-////			}
-//		}
 	}
 	
 	public function getChildByName (name:String):DisplayObject {
@@ -202,7 +190,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		for (child in __children) {
 			
 			if (child.name == name) {
-				__initializeChild(child);//TODO:LC probably redundant. done during add child
 				return child;
 			}
 			
