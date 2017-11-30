@@ -34,7 +34,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var mouseChildren:Bool;
 	public var numChildren (get, never):Int;
 	public var tabChildren:Bool;
-	
+
+	private var __isInitialized:Bool;
 	private var __removedChildren:Vector<DisplayObject>;
 	
 	
@@ -43,7 +44,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		super ();
 		
 		mouseChildren = true;
-		
+		__isInitialized = false;
 		__children = new Array<DisplayObject> ();
 		__removedChildren = new Vector<DisplayObject> ();
 
@@ -167,7 +168,10 @@ class DisplayObjectContainer extends InteractiveObject {
 
 
 	private function __initializeSelf() : Void{
+		if(!__isInitialized) {
+			__isInitialized = true;
 			__enterFrame(0);
+		}
 	}
 	private function __initializeChild(child : DisplayObject) : Void{
 
@@ -329,7 +333,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		__initializeSelf();
 		if (index < 0 || index > __children.length || child.parent != this || __children[index] == child)
 			return;
-		__initializeChild(child);
 		__children.remove (child);
 		__children.insert (index, child);
 		

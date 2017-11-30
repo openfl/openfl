@@ -114,8 +114,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 
-
-//		if (index == 0 && method != null) method();//call the framescript that should have been called during construction from fromSymbol's enterFrame call
 	}
 
 	private override function __initializeSelf() : Void{
@@ -770,12 +768,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		}
 
-		__updateFrameObjectsAndChildren();
+		__updateFrameObjectsAndChildren();//frame scripts are not called here because they get attached after the constructor is completed.
+		//but this call is still needed to initialize the frame objects/children so that dynamic fields refer to the right object in the event there are multiple of the same name.
+
 		__currentFrame = 1;
 		__lastFrameUpdate = -2;
-//		__enterFrame (0);//frame scripts are not called here because they get attached after the constructor is completed.
-//		//but this call is still needed to initialize the frame objects/children
-
 	}
 
 	private function __setupInstanceFields() {
