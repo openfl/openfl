@@ -1033,7 +1033,35 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function get_framesLoaded ():Int { return __totalFrames; }
 	private function get_isPlaying ():Bool { return __playing; }
 	private function get_totalFrames ():Int { return __totalFrames; }
-	
+	private override function get_width():Float
+	{
+		if(__swf != null && __swf.frameSizeMaxPixel != null)
+		{
+			var thisWidth = super.width;
+			var frameSizeWidth = __swf.frameSizeMaxPixel.x - __swf.frameSizeMinPixel.x;
+			if(frameSizeWidth > thisWidth)
+				return frameSizeWidth;
+			else
+				return thisWidth;
+		}
+		else
+			return super.width;
+	}
+
+	private override function get_height():Float
+	{
+		if(__swf != null && __swf.frameSizeMaxPixel != null)
+		{
+			var thisHeight = super.height;
+			var frameSizeHeight = __swf.frameSizeMaxPixel.y - __swf.frameSizeMinPixel.y;
+			if(frameSizeHeight > thisHeight)
+				return frameSizeHeight;
+			else
+				return thisHeight;
+		}
+		else
+			return super.height;
+	}
 	
 }
 

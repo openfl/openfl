@@ -1,6 +1,7 @@
 package format.swf.exporters;
 
 
+import openfl.geom.Point;
 import flash.display.BitmapData;
 import flash.text.TextFormatAlign;
 import flash.utils.ByteArray;
@@ -87,6 +88,8 @@ class SWFLiteExporter {
 		
 		swfLite = new SWFLite ();
 		swfLite.frameRate = data.frameRate;
+		swfLite.frameSizeMinPixel = new Point(data.frameSize.xmin * (1/20), data.frameSize.ymin * (1/20));
+        swfLite.frameSizeMaxPixel = new Point(data.frameSize.xmax * (1/20), data.frameSize.ymax * (1/20));
 		
 		addSprite (data, true);
 		
@@ -1559,7 +1562,6 @@ class SWFLiteExporter {
 	private function processTag (tag:IDefinitionTag):SWFSymbol {
 		
 		if (tag == null) return null;
-		
 		if (!swfLite.symbols.exists (tag.characterId)) {
 			
 			if (Std.is (tag, TagDefineSprite)) {
