@@ -15,7 +15,7 @@ class URLRequestDefaults {
 	
 	// public static function setLoginCredentialsForHost (hostname:String, user:String, password:String):Dynamic {
 		
-	// 	openfl.Lib.notImplemented ();
+	// 	openfl._internal.Lib.notImplemented ();
 	// 	return null;
 		
 	// }

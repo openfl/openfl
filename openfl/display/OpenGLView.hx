@@ -8,9 +8,9 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.RenderSession;
 #end
+import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
-import openfl.Lib;
 
 #if (js && html5)
 import js.html.CanvasElement;

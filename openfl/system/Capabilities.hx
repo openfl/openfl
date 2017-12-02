@@ -3,6 +3,7 @@ package openfl.system;
 
 import haxe.macro.Compiler;
 import lime.system.Locale;
+import openfl._internal.Lib;
 
 
 @:final class Capabilities {

@@ -3,7 +3,8 @@ package openfl.display;
 
 import lime.app.Application in LimeApplication;
 import lime.app.Config;
-import openfl.Lib;
+import openfl._internal.Lib;
+import openfl.display.MovieClip;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -37,6 +38,7 @@ class Application extends LimeApplication {
 		backend.create (config);
 		
 		#if (!flash && !macro)
+		if (Lib.current == null) Lib.current = new MovieClip ();
 		Lib.current.__loaderInfo = LoaderInfo.create (null);
 		Lib.current.__loaderInfo.content = Lib.current;
 		#end

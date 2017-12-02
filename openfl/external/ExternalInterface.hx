@@ -1,7 +1,7 @@
 package openfl.external;
 
 
-import openfl.Lib;
+import openfl._internal.Lib;
 
 @:access(openfl.display.Stage)
 @:access(lime.ui.Window)

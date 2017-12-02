@@ -5,7 +5,6 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractMaskManager;
 import openfl.display.DisplayObject;
 import openfl.display.Shader;
-import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
@@ -17,7 +16,6 @@ import openfl.utils.ByteArray;
 
 @:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.Stage)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:keep
@@ -96,8 +94,6 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function pushRect (rect:Rectangle, transform:Matrix):Void {
 		
 		// TODO: Handle rotation?
-		
-		var stage = openfl.Lib.current.stage;
 		
 		if (numClipRects == clipRects.length) {
 			

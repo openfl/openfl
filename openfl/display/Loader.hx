@@ -56,7 +56,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public function close ():Void {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		
 	}
 	

@@ -2,7 +2,6 @@ package openfl.ui;
 
 
 import lime.ui.Mouse in LimeMouse;
-import openfl.Lib;
 
 @:access(openfl.display.Stage)
 

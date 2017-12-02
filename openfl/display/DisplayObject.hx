@@ -16,6 +16,7 @@ import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
 import openfl.events.Event;
@@ -29,7 +30,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
-import openfl.Lib;
 import openfl.Vector;
 
 #if (js && html5)

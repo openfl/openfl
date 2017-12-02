@@ -25,7 +25,7 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl.Lib;
+// import openfl.Lib;
 import openfl._internal.renderer.canvas.CanvasBlendModeManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
@@ -492,11 +492,11 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, this);
+				var renderer = new GLRenderer (null, gl, this);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearRenderDirty = false;
-				renderSession.shaderManager = cast(Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
@@ -1637,11 +1637,11 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, this);
+				var renderer = new GLRenderer (null, gl, this);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearRenderDirty = true;
-				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
