@@ -576,6 +576,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 	}
 	
+	private function __getMouseFlag ():Bool {
+		
+		return false;
+		
+	}
+	
 	
 	private function __getLocalBounds (rect:Rectangle):Void {
 		
@@ -683,7 +689,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
 		if (__graphics != null) {
 			
@@ -692,7 +698,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (__graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 				
-				if (stack != null && !interactiveOnly) {
+				if (stack != null && !interactiveOnly && !hitTestWhenMouseDisabled) {
 					
 					stack.push (hitObject);
 					
