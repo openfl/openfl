@@ -313,15 +313,16 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 
 	private function __updateFrameObjectsAndChildren()	{
+
 		if (__currentFrame == __lastFrameUpdate)
 			return;
 
 		__updateFrameLabel ();
 
-		var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
+		var loopedSinceLastFrameUpdate:Bool = ( __lastFrameUpdate > __currentFrame );
 
 		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
-		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >=0 &&  __lastInstancesByFrameObjectID != null) {
+		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >= 0 &&  __lastInstancesByFrameObjectID != null) {
 			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
 		}
 		else {
@@ -652,6 +653,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		var duplicate:Bool;
 		var symbol:SWFSymbol;
 		var displayObject:DisplayObject;
+		var lastObjectToHavePlacementData:FrameObject = null;
 
 		// TODO: Create later?
 
@@ -674,6 +676,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						instance = null;
 						duplicate = false;
+
+						if(frameData.objects.length <= 2)	//for create and destroy
+						{
+							if(frameObject.name != null || frameObject.matrix != null || frameObject.colorTransform != null || frameObject.filters != null) {
+								lastObjectToHavePlacementData = frameObject.lastFrameObjectWithPlacementData = frameObject;
+							}
+							else if(lastObjectToHavePlacementData != null)
+								frameObject.lastFrameObjectWithPlacementData = lastObjectToHavePlacementData;
+						}
 
 						for (activeInstance in __activeInstances) {
 
@@ -906,30 +917,32 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject):Void {
 		
 		if (displayObject == null) return;
+
+		var currFrameObject = frameObject.lastFrameObjectWithPlacementData != null?frameObject.lastFrameObjectWithPlacementData:frameObject;
 		
-		if (frameObject.name != null) {
+		if (currFrameObject.name != null) {
 			
-			displayObject.name = frameObject.name;
+			displayObject.name = currFrameObject.name;
 			
 		}
 		
-		if (frameObject.matrix != null) {
+		if (currFrameObject.matrix != null) {
 			
-			displayObject.transform.matrix = frameObject.matrix;
-			
-		}
-		
-		if (frameObject.colorTransform != null) {
-			
-			displayObject.transform.colorTransform = frameObject.colorTransform;
+			displayObject.transform.matrix = currFrameObject.matrix;
 			
 		}
 		
-		if (frameObject.filters != null) {
+		if (currFrameObject.colorTransform != null) {
+			
+			displayObject.transform.colorTransform = currFrameObject.colorTransform;
+			
+		}
+		
+		if (currFrameObject.filters != null) {
 			
 			var filters:Array<BitmapFilter> = [];
 			
-			for (filter in frameObject.filters) {
+			for (filter in currFrameObject.filters) {
 				
 				switch (filter) {
 					
@@ -961,21 +974,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		}
 		
-		if (frameObject.visible != null) {
+		if (currFrameObject.visible != null) {
 			
-			displayObject.visible = frameObject.visible;
-			
-		}
-		
-		if (frameObject.blendMode != null) {
-			
-			displayObject.blendMode = frameObject.blendMode;
+			displayObject.visible = currFrameObject.visible;
 			
 		}
 		
-		if (frameObject.cacheAsBitmap != null) {
+		if (currFrameObject.blendMode != null) {
 			
-			//displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;
+			displayObject.blendMode = currFrameObject.blendMode;
+			
+		}
+		
+		if (currFrameObject.cacheAsBitmap != null) {
+			
+			//displayObject.cacheAsBitmap = currFrameObject.cacheAsBitmap;
 			
 		}
 		
