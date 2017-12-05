@@ -1,4 +1,4 @@
 -main RunScript
 -neko ../run.n
--D nocffi
 -lib lime
+-D disable_cffi
