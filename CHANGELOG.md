@@ -1,3 +1,12 @@
+6.5.2 (12/05/2017)
+------------------
+
+* Fixed issue where run script required Lime CFFI before Lime was installed
+* Fixed invalidation of `cacheAsBitmap` when `graphics` is dirty
+* Fixed a static initialization order issue in Canvas `graphics`
+* Fixed circular dependency issues in anticipation of ES5 module support
+
+
 6.5.1 (11/29/2017)
 ------------------
 
