@@ -37,6 +37,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	private var __removedChildren:Vector<DisplayObject>;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (DisplayObjectContainer.prototype, "numChildren", { get: DisplayObjectContainer.prototype.get_numChildren });
+		
+	}
+	#end
+	
+	
 	private function new () {
 		
 		super ();

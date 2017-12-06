@@ -30,6 +30,15 @@ class Accelerometer extends EventDispatcher {
 	private var timer:Timer;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Accelerometer, "isSupported", { get: Accelerometer.isSupported });
+		
+	}
+	#end
+	
+	
 	public function new () {
 		
 		super ();

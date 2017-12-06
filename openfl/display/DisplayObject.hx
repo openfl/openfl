@@ -141,7 +141,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	#end
 	
 	
-	#if (js && html5)
+	#if openfljs
 	private static function __init__ () {
 		
 		var p = untyped DisplayObject.prototype;

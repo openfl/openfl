@@ -30,20 +30,40 @@ class SimpleButton extends InteractiveObject {
 	private static var __initSWF:SWFLite;
 	private static var __initSymbol:ButtonSymbol;
 	
-	public var downState (default, set):DisplayObject;
+	public var downState (get, set):DisplayObject;
 	public var enabled:Bool;
-	public var hitTestState (default, set):DisplayObject;
-	public var overState (default, set):DisplayObject;
+	public var hitTestState (get, set):DisplayObject;
+	public var overState (get, set):DisplayObject;
 	public var soundTransform (get, set):SoundTransform;
 	public var trackAsMenu:Bool;
-	public var upState (default, set):DisplayObject;
+	public var upState (get, set):DisplayObject;
 	public var useHandCursor:Bool;
 	
 	private var __currentState (default, set):DisplayObject;
+	private var __downState:DisplayObject;
+	private var __hitTestState:DisplayObject;
 	private var __ignoreEvent:Bool;
+	private var __overState:DisplayObject;
 	private var __previousStates:Vector<DisplayObject>;
 	private var __soundTransform:SoundTransform;
 	private var __symbol:ButtonSymbol;
+	private var __upState:DisplayObject;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped SimpleButton.prototype;
+		untyped Object.defineProperties (p, {
+			"downState": { get: p.get_downState, set: p.set_downState },
+			"hitTestState": { get: p.get_hitTestState, set: p.set_hitTestState },
+			"overState": { get: p.get_overState, set: p.set_overState },
+			"soundTransform": { get: p.get_soundTransform, set: p.set_soundTransform },
+			"upState": { get: p.get_upState, set: p.set_upState }
+		});
+		
+	}
+	#end
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
@@ -54,10 +74,10 @@ class SimpleButton extends InteractiveObject {
 		trackAsMenu = false;
 		useHandCursor = true;
 		
-		this.upState = (upState != null) ? upState : new DisplayObject ();
-		this.overState = overState;
-		this.downState = downState;
-		this.hitTestState = (hitTestState != null) ? hitTestState : new DisplayObject ();
+		__upState = (upState != null) ? upState : new DisplayObject ();
+		__overState = overState;
+		__downState = downState;
+		__hitTestState = (hitTestState != null) ? hitTestState : new DisplayObject ();
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, __this_onMouseDown);
 		addEventListener (MouseEvent.MOUSE_OUT, __this_onMouseOut);
@@ -65,7 +85,7 @@ class SimpleButton extends InteractiveObject {
 		addEventListener (MouseEvent.MOUSE_UP, __this_onMouseUp);
 		
 		__tabEnabled = true;
-		__currentState = this.upState;
+		__currentState = __upState;
 		
 		if (__initSymbol != null) {
 			
@@ -450,26 +470,40 @@ class SimpleButton extends InteractiveObject {
 	
 	
 	
+	private function get_downState ():DisplayObject {
+		
+		return __downState;
+		
+	}
+	
+	
 	private function set_downState (downState:DisplayObject):DisplayObject {
 		
-		if (this.downState != null && __currentState == this.downState) {
+		if (__downState != null && __currentState == __downState) {
 			
-			__currentState = downState;
+			__currentState = __downState;
 			
 		}
 		
-		return this.downState = downState;
+		return __downState = downState;
+		
+	}
+	
+	
+	private function get_hitTestState ():DisplayObject {
+		
+		return __hitTestState;
 		
 	}
 	
 	
 	private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
 		
-		if (this.hitTestState != null && this.hitTestState != hitTestState) {
+		if (__hitTestState != null && __hitTestState != hitTestState) {
 			
-			if (this.hitTestState != downState && this.hitTestState != upState && this.hitTestState != overState) {
+			if (__hitTestState != downState && __hitTestState != upState && __hitTestState != overState) {
 				
-				this.hitTestState.__renderParent = null;
+				__hitTestState.__renderParent = null;
 				
 			}
 			
@@ -482,20 +516,27 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		return this.hitTestState = hitTestState;
+		return __hitTestState = hitTestState;
+		
+	}
+	
+	
+	private function get_overState ():DisplayObject {
+		
+		return __overState;
 		
 	}
 	
 	
 	private function set_overState (overState:DisplayObject):DisplayObject {
 		
-		if (this.overState != null && __currentState == this.overState) {
+		if (__overState != null && __currentState == __overState) {
 			
 			__currentState = overState;
 			
 		}
 		
-		return this.overState = overState;
+		return __overState = overState;
 		
 	}
 	
@@ -521,15 +562,22 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
+	private function get_upState ():DisplayObject {
+		
+		return __upState;
+		
+	}
+	
+	
 	private function set_upState (upState:DisplayObject):DisplayObject {
 		
-		if (this.upState != null && __currentState == this.upState) {
+		if (__upState != null && __currentState == __upState) {
 			
 			__currentState = upState;
 			
 		}
 		
-		return this.upState = upState;
+		return __upState = upState;
 		
 	}
 	

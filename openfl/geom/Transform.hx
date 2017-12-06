@@ -28,6 +28,21 @@ class Transform {
 	private var __hasMatrix3D:Bool;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Transform.prototype;
+		untyped Object.defineProperties (p, {
+			"colorTransform": { get: p.get_colorTransform, set: p.set_colorTransform },
+			"concatenatedMatrix": { get: p.get_concatenatedMatrix },
+			"matrix": { get: p.get_matrix, set: p.set_matrix },
+			"matrix3D": { get: p.get_matrix3D, set: p.set_matrix3D }
+		});
+		
+	}
+	#end
+	
+	
 	public function new (displayObject:DisplayObject) {
 		
 		__colorTransform = new ColorTransform ();

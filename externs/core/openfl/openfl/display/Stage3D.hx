@@ -13,8 +13,8 @@ extern class Stage3D extends EventDispatcher {
 	
 	public var context3D (default, null):Context3D;
 	public var visible:Bool;
-	public var x:Float;
-	public var y:Float;
+	public var x (get, set):Float;
+	public var y (get, set):Float;
 	
 	
 	public function requestContext3D (?context3DRenderMode:Context3DRenderMode, ?profile:Context3DProfile):Void;

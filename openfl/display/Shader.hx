@@ -48,6 +48,20 @@ class Shader {
 	private var __uniformMatrix4:Float32Array;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Shader.prototype;
+		untyped Object.defineProperties (p, {
+			"data": { get: p.get_data, set: p.set_data },
+			"glFragmentSource": { get: p.get_glFragmentSource, set: p.set_glFragmentSource },
+			"glVertexSource": { get: p.get_glVertexSource, set: p.set_glVertexSource }
+		});
+		
+	}
+	#end
+	
+	
 	@:glFragmentSource(
 		
 		#if emscripten

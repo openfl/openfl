@@ -40,6 +40,16 @@ class NetStream extends EventDispatcher {
 	#end
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped NetStream.prototype;
+		untyped Object.defineProperty (p, "speed", { get: p.get_speed, set: p.set_speed });
+		
+	}
+	#end
+	
+	
 	public function new (connection:NetConnection, peerID:String = null):Void {
 		
 		super ();

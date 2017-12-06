@@ -22,6 +22,19 @@ import openfl.media.Sound;
 	private var __source:AudioSource;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped SoundChannel.prototype;
+		untyped Object.defineProperties (p, {
+			"position": { get: p.get_position, set: p.set_position },
+			"soundTransform": { get: p.get_soundTransform, set: p.set_soundTransform }
+		});
+		
+	}
+	#end
+	
+	
 	private function new (source:AudioSource = null, soundTransform:SoundTransform = null):Void {
 		
 		super (this);

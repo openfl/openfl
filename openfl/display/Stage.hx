@@ -36,6 +36,7 @@ import openfl._internal.renderer.console.ConsoleRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.TouchData;
 import openfl.display.DisplayObjectContainer;
 import openfl.errors.Error;
 import openfl.events.Event;
@@ -57,7 +58,6 @@ import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-import openfl.utils.TouchData;
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -83,7 +83,6 @@ import js.Browser;
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
-@:access(openfl.utils.TouchData)
 
 
 class Stage extends DisplayObjectContainer implements IModule {
@@ -142,11 +141,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __rendering:Bool;
 	private var __rollOutStack:Array<DisplayObject>;
 	private var __stack:Array<DisplayObject>;
+	private var __touchData:Map<Int, TouchData>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	private var __wasFullscreen:Bool;
 	
-	private var __touchData:Map<Int, TouchData>;
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Stage.prototype;
+		untyped Object.defineProperties (p, {
+			"color": { get: p.get_color, set: p.set_color },
+			"contentsScaleFactor": { get: p.get_contentsScaleFactor },
+			"displayState": { get: p.get_displayState, set: p.set_displayState },
+			"focus": { get: p.get_focus, set: p.set_focus },
+			"frameRate": { get: p.get_frameRate, set: p.set_frameRate },
+			"fullScreenHeight": { get: p.get_fullScreenHeight },
+			"fullScreenWidth": { get: p.get_fullScreenWidth }
+		});
+		
+	}
+	#end
 	
 	public function new (window:Window, color:Null<Int> = null) {
 		
@@ -1620,16 +1636,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var touchId:Int = touch.id;
 		var touchData:TouchData = null;
 		
-		if (__touchData.exists(touchId)) {
+		if (__touchData.exists (touchId)) {
 			
-			touchData = __touchData.get(touchId);
+			touchData = __touchData.get (touchId);
 			
 		} else {
 			
 			touchData = TouchData.__pool.get ();
-			touchData.reset();
+			touchData.reset ();
 			touchData.touch = touch;
-			__touchData.set(touchId, touchData);
+			__touchData.set (touchId, touchData);
 			
 		}
 		
@@ -1754,8 +1770,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (releaseTouchData) {
 			
-			__touchData.remove(touchId);
-			touchData.reset();
+			__touchData.remove (touchId);
+			touchData.reset ();
 			TouchData.__pool.release (touchData);
 			
 		}

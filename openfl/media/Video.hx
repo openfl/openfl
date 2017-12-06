@@ -51,6 +51,19 @@ class Video extends DisplayObject implements IShaderDrawable {
 	private var __width:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Video.prototype;
+		untyped Object.defineProperties (p, {
+			"videoHeight": { get: p.get_videoHeight },
+			"videoWidth": { get: p.get_videoWidth }
+		});
+		
+	}
+	#end
+	
+	
 	public function new (width:Int = 320, height:Int = 240):Void {
 		
 		super ();

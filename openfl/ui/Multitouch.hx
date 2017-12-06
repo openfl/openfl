@@ -14,6 +14,17 @@ import openfl.Vector;
 	public static var supportsTouchEvents (get, never):Bool;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Multitouch, {
+			"supportsTouchEvents": { get: Multitouch.get_supportsTouchEvents }
+		});
+		
+	}
+	#end
+	
+	
 	public static function __init__ () {
 		
 		maxTouchPoints = 2;

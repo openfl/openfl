@@ -38,6 +38,18 @@ import js.Browser;
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Lib, {
+			"application": { get: Lib.get_application },
+			"current": { get: Lib.get_current }
+		});
+		
+	}
+	#end
+	
+	
 	public static function as<T> (v:Dynamic, c:Class<T>):Null<T> {
 		
 		#if flash

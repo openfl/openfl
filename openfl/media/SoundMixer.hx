@@ -16,6 +16,15 @@ package openfl.media;
 	private static var __soundTransform = #if mute_sound new SoundTransform (0) #else new SoundTransform () #end;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (SoundMixer, "soundTransform", { get: SoundMixer.get_soundTransform, set: SoundMixer.set_soundTransform });
+		
+	}
+	#end
+	
+	
 	public static function areSoundsInaccessible ():Bool {
 		
 		return false;

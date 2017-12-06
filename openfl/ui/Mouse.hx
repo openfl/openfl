@@ -16,6 +16,15 @@ import lime.ui.Mouse in LimeMouse;
 	private static var __cursor:MouseCursor = MouseCursor.AUTO;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Mouse, "cursor", { get: Mouse.get_cursor, set: Mouse.set_cursor });
+		
+	}
+	#end
+	
+	
 	public static function hide ():Void {
 		
 		LimeMouse.hide ();

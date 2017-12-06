@@ -285,6 +285,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
+// TODO: Export as "ByteArray" in OpenFL-JS
+
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
@@ -299,6 +301,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private var __endian:Endian;
 	private var __length:Int;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped ByteArrayData.prototype;
+		untyped Object.defineProperties (p, {
+			"bytesAvailable": { get: p.get_bytesAvailable, set: p.set_byteAvailable },
+			"endian": { get: p.get_endian, set: p.set_endian },
+			//"length": { get: p.get_length, set: p.set_length }
+		});
+		
+	}
+	#end
 	
 	
 	public function new (length:Int = 0) {

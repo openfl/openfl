@@ -41,6 +41,16 @@ class SharedObject extends EventDispatcher {
 	private var __name:String;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped SharedObject.prototype;
+		untyped Object.defineProperty (p, "size", { get: p.get_size });
+		
+	}
+	#end
+	
+	
 	private function new () {
 		
 		super ();

@@ -52,6 +52,21 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private var __timestamp:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Socket.prototype;
+		untyped Object.defineProperties (p, {
+			"bytesAvailable": { get: p.get_bytesAvailable },
+			"bytesPending": { get: p.get_bytesPending },
+			"connected": { get: p.get_connected },
+			"endian": { get: p.get_endian, set: p.set_endian }
+		});
+		
+	}
+	#end
+	
+	
 	public function new (host:String = null, port:Int = 0) {
 		
 		super ();

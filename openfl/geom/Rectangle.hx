@@ -29,6 +29,24 @@ class Rectangle {
 	public var y:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Rectangle.prototype;
+		untyped Object.defineProperties (p, {
+			"bottom": { get: p.get_bottom, set: p.set_bottom },
+			"bottomRight": { get: p.get_bottomRight, set: p.set_bottomRight },
+			"left": { get: p.get_left, set: p.set_left },
+			"right": { get: p.get_right, set: p.set_right },
+			"size": { get: p.get_size, set: p.set_size },
+			"top": { get: p.get_top, set: p.set_top },
+			"topLeft": { get: p.get_topLeft, set: p.set_topLeft }
+		});
+		
+	}
+	#end
+	
+	
 	public function new (x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void {
 		
 		this.x = x;
