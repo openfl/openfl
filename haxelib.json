@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "6.5.2",
-	"releasenote": "Fixed setup issue, preparation for ES5 module support",
+	"version": "6.5.3",
+	"releasenote": "Fixed a regression in Flash Player support",
 	"contributors": [ "singmajesty" ]
 }
