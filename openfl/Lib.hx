@@ -9,6 +9,7 @@ import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
+import openfl.net.URLVariables;
 
 #if swf
 #if flash
@@ -99,7 +100,33 @@ import js.Browser;
 		#if flash
 		return flash.Lib.getURL (request, target);
 		#else
-		System.openURL (request.url, target);
+		var uri = request.url;
+		
+		if (Std.is (request.data, URLVariables)) {
+			
+			var query = "";
+			var fields = Reflect.fields (request.data);
+			
+			for (field in fields) {
+				
+				if (query.length > 0) query += "&";
+				query += StringTools.urlEncode (field) + "=" + StringTools.urlEncode (Std.string (Reflect.field (request.data, field)));
+				
+			}
+			
+			if (uri.indexOf ("?") > -1) {
+				
+				uri += "&" + query;
+				
+			} else {
+				
+				uri += "?" + query;
+				
+			}
+			
+		}
+		
+		System.openURL (uri, target);
 		#end
 		
 	}
