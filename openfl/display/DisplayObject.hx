@@ -141,6 +141,38 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	#end
 	
 	
+	#if (js && html5)
+	private static function __init__ () {
+		
+		var p = untyped DisplayObject.prototype;
+		untyped Object.defineProperties (p, {
+			"alpha": { get: p.get_alpha, set: p.set_alpha },
+			"blendMode": { get: p.get_blendMode, set: p.set_blendMode },
+			"cacheAsBitmap": { get: p.get_cacheAsBitmap, set: p.set_cacheAsBitmap },
+			"cacheAsBitmapMatrix": { get: p.get_cacheAsBitmapMatrix, set: p.set_cacheAsBitmapMatrix },
+			"filters": { get: p.get_filters, set: p.set_filters },
+			"height": { get: p.get_height, set: p.set_height },
+			"loaderInfo": { get: p.get_loaderInfo },
+			"mask": { get: p.get_mask, set: p.set_mask },
+			"mouseX": { get: p.get_mouseX },
+			"mouseY": { get: p.get_mouseY },
+			"name": { get: p.get_name, set: p.set_name },
+			"root": { get: p.get_root },
+			"rotation": { get: p.get_rotation, set: p.set_rotation },
+			"scaleX": { get: p.get_scaleX, set: p.set_scaleX },
+			"scaleY": { get: p.get_scaleY, set: p.set_scaleY },
+			"scrollRect": { get: p.get_scrollRect, set: p.set_scrollRect },
+			"transform": { get: p.get_transform, set: p.set_transform },
+			"visible": { get: p.get_visible, set: p.set_visible },
+			"width": { get: p.get_width, set: p.set_width },
+			"x": { get: p.get_x, set: p.set_x },
+			"y": { get: p.get_y, set: p.set_y }
+		});
+		
+	}
+	#end
+	
+	
 	private function new () {
 		
 		super ();
@@ -1090,8 +1122,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						//__cacheBitmapData.disposeImage ();
 						
+						#if !openfljs
 						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 						__cacheBitmap.bitmapData = __cacheBitmapData;
+						#end
 						
 					} else {
 						

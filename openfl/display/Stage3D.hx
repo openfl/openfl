@@ -40,11 +40,13 @@ class Stage3D extends EventDispatcher {
 	
 	public var context3D (default, null):Context3D;
 	public var visible:Bool;
-	public var x (default, set):Float;
-	public var y (default, set):Float;
+	public var x (get, set):Float;
+	public var y (get, set):Float;
 	
 	private var __contextRequested:Bool;
 	private var __stage:Stage;
+	private var __x:Float;
+	private var __y:Float;
 	
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -58,8 +60,8 @@ class Stage3D extends EventDispatcher {
 		
 		super ();
 		
-		this.x = 0;
-		this.y = 0;
+		__x = 0;
+		__y = 0;
 		
 		visible = true;
 		
@@ -272,11 +274,18 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
+	private function get_x ():Float {
+		
+		return __x;
+		
+	}
+	
+	
 	private function set_x (value:Float):Float {
 		
-		if (this.x == value) return value;
+		if (__x == value) return value;
 		
-		this.x = value;
+		__x = value;
 		
 		if (context3D != null) {
 			
@@ -289,11 +298,18 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
+	private function get_y ():Float {
+		
+		return __y;
+		
+	}
+	
+	
 	private function set_y (value:Float):Float {
 		
-		if (this.y == value) return value;
+		if (__y == value) return value;
 		
-		this.y = value;
+		__y = value;
 		
 		if (context3D != null) {
 			
