@@ -197,7 +197,7 @@ class Clipboard {
 	
 	public function setDataHandler (format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		return false;
 		
 	}

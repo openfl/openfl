@@ -6,11 +6,11 @@ import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
 import lime.system.System;
+import openfl._internal.Lib;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.net.SharedObjectFlushStatus;
 import openfl.utils.Object;
-import openfl.Lib;
 
 #if (js && html5)
 import js.html.Storage;
@@ -93,7 +93,7 @@ class SharedObject extends EventDispatcher {
 	
 	public function connect (myConnection:NetConnection, params:String = null):Void {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		
 	}
 	
@@ -257,7 +257,7 @@ class SharedObject extends EventDispatcher {
 	
 	public static function getRemote (name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		
 		return null;
 		
@@ -266,7 +266,7 @@ class SharedObject extends EventDispatcher {
 	
 	public function send (args:Array<Dynamic>):Void {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		
 	}
 	

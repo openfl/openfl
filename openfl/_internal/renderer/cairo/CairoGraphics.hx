@@ -24,7 +24,6 @@ import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.Lib;
 import openfl.Vector;
 
 #if !openfl_debug

@@ -99,48 +99,27 @@ class GLVertexBuffer3D {
 		var count = numVertices * vertexBuffer.__vertexSize;
 		var length = start + count;
 		
-		#if (js && html5)
+		var existingFloat32Array = vertexBuffer.__tempFloat32Array;
 		
-		var buffer = new Float32Array (count);
-		
-		for (i in start...length) {
+		if (vertexBuffer.__tempFloat32Array == null || vertexBuffer.__tempFloat32Array.length < count) {
 			
-			buffer[i - start] = data[i];
+			vertexBuffer.__tempFloat32Array = new Float32Array (count);
 			
-		}
-		
-		uploadFromTypedArray (vertexBuffer, renderSession, buffer);
-		
-		#else
-		
-		var byteLength = length * 4;
-		
-		if (vertexBuffer.__tempBytes == null || vertexBuffer.__tempBytes.length < byteLength) {
-			
-			vertexBuffer.__tempBytes = Bytes.alloc (byteLength);
+			if (existingFloat32Array != null) {
+				
+				vertexBuffer.__tempFloat32Array.set (existingFloat32Array);
+				
+			}
 			
 		}
 		
 		for (i in start...length) {
 			
-			vertexBuffer.__tempBytes.setFloat ((i - start) * 4, data[i]);
+			vertexBuffer.__tempFloat32Array[i - start] = data[i];
 			
 		}
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer.__id);
-		GLUtils.CheckGLError ();
-		
-		gl.bufferData (gl.ARRAY_BUFFER, byteLength, vertexBuffer.__tempBytes, vertexBuffer.__usage);
-		GLUtils.CheckGLError ();
-		
-		// if (byteLength != __memoryUsage) {
-			
-		// 	__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, byteLength - __memoryUsage);
-		// 	__memoryUsage = byteLength;
-			
-		// }
-		
-		#end
+		uploadFromTypedArray (vertexBuffer, renderSession, vertexBuffer.__tempFloat32Array);
 		
 	}
 	

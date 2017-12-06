@@ -1,3 +1,32 @@
+6.5.3 (12/05/2017)
+------------------
+
+* Fixed a regression that caused an immediate runtime error on Flash Player
+
+
+6.5.2 (12/05/2017)
+------------------
+
+* Fixed issue where run script required Lime CFFI before Lime was installed
+* Fixed invalidation of `cacheAsBitmap` when `graphics` is dirty
+* Fixed a static initialization order issue in Canvas `graphics`
+* Fixed circular dependency issues in anticipation of ES5 module support
+
+
+6.5.1 (11/29/2017)
+------------------
+
+* Updated Lime to 5.9.*
+* Added support for improved CSS font embedding in Lime 5.9.0
+* Fixed support for rendering multiple masking levels in OpenGL masks
+* Fixed some issues with rendering masks with `cacheAsBitmap`
+* Fixed a possible crash in `TextField` and in `Loader`
+* Fixed the height offset when using `context3D.drawToBitmapData`
+* Fixed OpenGL rendering for masks with a different parent than the masked object
+* Fixed `ColorMatrixFilter` so that values are constrained between 0 and 255
+* Fixed a crash error on `textField.getCharBoundaries` when the char is not available
+
+
 6.5.0 (11/10/2017)
 ------------------
 

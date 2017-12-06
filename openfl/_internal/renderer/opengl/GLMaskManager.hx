@@ -5,7 +5,6 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractMaskManager;
 import openfl.display.DisplayObject;
 import openfl.display.Shader;
-import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
@@ -17,7 +16,6 @@ import openfl.utils.ByteArray;
 
 @:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.Stage)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:keep
@@ -97,8 +95,6 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		// TODO: Handle rotation?
 		
-		var stage = openfl.Lib.current.stage;
-		
 		if (numClipRects == clipRects.length) {
 			
 			clipRects[numClipRects] = new Rectangle ();
@@ -137,7 +133,7 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (stencilReference == 0) return;
 		
-		if (stencilReference > 10) {
+		if (stencilReference > 1) {
 			
 			gl.stencilOp (gl.KEEP, gl.KEEP, gl.DECR);
 			gl.stencilFunc (gl.EQUAL, stencilReference, 0xFF);

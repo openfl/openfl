@@ -5,6 +5,8 @@ package openfl.profiler;
 import hxtelemetry.HxTelemetry;
 #end
 
+import openfl._internal.Lib;
+
 @:allow(openfl.display.Stage)
 
 

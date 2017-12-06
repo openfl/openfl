@@ -4,6 +4,7 @@ package openfl;
 import haxe.PosInfos;
 import lime.system.System;
 import lime.utils.Log;
+import openfl._internal.Lib in InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
@@ -30,13 +31,8 @@ import js.Browser;
 @:access(openfl.display.Stage) class Lib {
 	
 	
-	public static var application:Application;
-	
-	#if !flash
-	public static var current (default, null):MovieClip #if !macro = new MovieClip () #end;
-	#else
-	public static var current (get, set):MovieClip;
-	#end
+	public static var application (get, never):Application;
+	public static var current (get, never):MovieClip;
 	
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
 	
@@ -160,20 +156,30 @@ import js.Browser;
 	
 	
 	
-	#if flash
+	@:noCompletion private static function get_application ():Application {
+		
+		return InternalLib.application;
+		
+	}
+	
+	
 	@:noCompletion private static function get_current ():MovieClip {
 		
+		#if flash
 		return cast flash.Lib.current;
+		#else
+		if (InternalLib.current == null) InternalLib.current = new MovieClip ();
+		return InternalLib.current;
+		#end
 		
 	}
 	
 	
-	@:noCompletion private static function set_current (current:MovieClip):MovieClip {
+	// @:noCompletion private static function set_current (current:MovieClip):MovieClip {
 		
-		return cast flash.Lib.current = cast current;
+	// 	return cast flash.Lib.current = cast current;
 		
-	}
-	#end
+	// }
 	
 	
 }

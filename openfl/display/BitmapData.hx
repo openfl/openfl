@@ -25,7 +25,7 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl.Lib;
+// import openfl.Lib;
 import openfl._internal.renderer.canvas.CanvasBlendModeManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
@@ -107,12 +107,15 @@ class BitmapData implements IBitmapDrawable {
 	private var __bufferData:Float32Array;
 	private var __framebuffer:GLFramebuffer;
 	private var __framebufferContext:GLRenderContext;
+	private var __isMask:Bool;
 	private var __isValid:Bool;
+	private var __renderable:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
 	private var __transform:Matrix;
+	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
 	
@@ -190,6 +193,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
+		__renderable = true;
 		
 	}
 	
@@ -488,11 +492,11 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, this);
+				var renderer = new GLRenderer (null, gl, this);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearRenderDirty = false;
-				renderSession.shaderManager = cast(Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
@@ -1633,11 +1637,11 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
-				var renderer = new GLRenderer (Lib.current.stage, gl, this);
+				var renderer = new GLRenderer (null, gl, this);
 				
 				var renderSession = renderer.renderSession;
 				renderSession.clearRenderDirty = true;
-				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
@@ -1705,7 +1709,21 @@ class BitmapData implements IBitmapDrawable {
 			var matrixCache = source.__worldTransform;
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
+			
+			var cacheRenderable = source.__renderable;
+			if (source.__isMask) {
+				
+				source.__renderable = true;
+				
+			}
+			
+			var cacheAlpha = source.__worldAlpha;
+ 			source.__worldAlpha = 1;
+ 			
 			source.__renderCanvas (renderSession);
+			source.__renderable = cacheRenderable;
+			source.__worldAlpha = cacheAlpha;
+			
 			source.__updateTransforms (matrixCache);
 			source.__updateChildren (true);
 			
@@ -1786,7 +1804,23 @@ class BitmapData implements IBitmapDrawable {
 			var matrixCache = source.__worldTransform;
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
+			
+			// TODO: Force renderable using render session?
+			
+			var cacheRenderable = source.__renderable;
+			if (source.__isMask) {
+				
+				source.__renderable = true;
+				
+			}
+			
+			var cacheAlpha = source.__worldAlpha;
+ 			source.__worldAlpha = 1;
+ 			
 			source.__renderCairo (renderSession);
+			source.__renderable = cacheRenderable;
+			source.__worldAlpha = cacheAlpha;
+			
 			source.__updateTransforms (matrixCache);
 			source.__updateChildren (true);
 			

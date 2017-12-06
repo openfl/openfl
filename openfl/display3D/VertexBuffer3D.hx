@@ -5,6 +5,7 @@ import haxe.io.Bytes;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
+import lime.utils.Float32Array;
 import openfl._internal.stage3D.opengl.GLVertexBuffer3D;
 import openfl.utils.ByteArray;
 import openfl.Vector;
@@ -26,7 +27,7 @@ class VertexBuffer3D {
 	private var __memoryUsage:Int;
 	private var __numVertices:Int;
 	private var __stride:Int;
-	private var __tempBytes:Bytes;
+	private var __tempFloat32Array:Float32Array;
 	private var __usage:Int;
 	private var __vertexSize:Int;
 	
@@ -56,7 +57,7 @@ class VertexBuffer3D {
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
 		GLVertexBuffer3D.uploadFromTypedArray (this, __context.__renderSession, data);
 		

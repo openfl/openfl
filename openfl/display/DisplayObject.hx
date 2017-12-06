@@ -16,6 +16,7 @@ import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
 import openfl.events.Event;
@@ -29,7 +30,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
-import openfl.Lib;
 import openfl.Vector;
 
 #if (js && html5)
@@ -1027,7 +1027,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		if (updateChildren && mask != null && mask.parent == null) {
+		if (updateChildren && mask != null) {
 			
 			mask.__update (transformOnly, true, maskGraphics);
 			
@@ -1047,7 +1047,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			//if (!renderSession.lockTransform) __getWorldTransform ();
 			__update (false, true);
 			
-			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
+			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics!= null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = (__filters != null && __filters.length > 0);
 			
@@ -1136,6 +1136,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
 			__cacheBitmap.__scrollRect = __scrollRect;
 			//__cacheBitmap.filters = filters;
+			__cacheBitmap.mask = __mask;
 			
 			if (needRender) {
 				
@@ -1526,6 +1527,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			value.__isMask = true;
 			value.__maskTarget = this;
+			value.__setWorldTransformInvalid ();
+			
+		}
+		
+		if (__cacheBitmap != null && __cacheBitmap.mask != value) {
+			
+			__cacheBitmap.mask = value;
 			
 		}
 		

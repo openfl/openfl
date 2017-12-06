@@ -1,10 +1,10 @@
 package openfl.display;
 
 
+import openfl._internal.Lib;
 import openfl.display.IGraphicsData;
 import openfl.display.IGraphicsFill;
 import openfl.geom.Matrix;
-import openfl.Lib;
 
 
 @:final class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {

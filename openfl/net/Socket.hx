@@ -5,6 +5,7 @@ import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import haxe.io.Error;
 import haxe.Timer;
+import openfl._internal.Lib;
 import openfl.errors.IOError;
 import openfl.errors.SecurityError;
 import openfl.events.Event;
@@ -15,7 +16,6 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
-import openfl.Lib;
 
 #if (js && html5)
 import js.html.ArrayBuffer;

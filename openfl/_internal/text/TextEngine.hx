@@ -202,7 +202,11 @@ class TextEngine {
 			
 			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || registeredFont.__fontPathWithoutDirectory == name))) {
 				
-				return registeredFont;
+				if (registeredFont.__initialize ()) {
+					
+					return registeredFont;
+					
+				}
 				
 			}
 			
@@ -762,6 +766,8 @@ class TextEngine {
 	private function getLayoutGroups ():Void {
 		
 		layoutGroups.length = 0;
+		
+		if (text == null || text == "") return;
 		
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
