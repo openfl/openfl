@@ -442,6 +442,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	private override function __getMouseAllowed ():Bool {
+		
+		return mouseEnabled || mouseChildren;
+		
+	}
+	
+	
 	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__scrollRect != null) {
@@ -535,7 +542,7 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 					interactive = __children[i].__getInteractive (null);
 					
-					var childHitTestWhenMouseDisabled = hitTestWhenMouseDisabled || (interactive && !__children[i].__getMouseFlag ()) || (!interactive && !mouseEnabled);
+					var childHitTestWhenMouseDisabled = hitTestWhenMouseDisabled || (interactive && !__children[i].__getMouseAllowed ()) || (!interactive && !mouseEnabled);
 					
 					if (interactive || (mouseEnabled && !hitTest) || childHitTestWhenMouseDisabled) {
 						
@@ -557,7 +564,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				if (hitTest) {
 					
-					if (!hitTestWhenMouseDisabled) {
+					if (!hitTestWhenMouseDisabled && mouseEnabled) {
 						
 						stack.insert (length, hitObject);
 						
@@ -602,11 +609,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 	
-	private override function __getMouseFlag ():Bool {
-		
-		return mouseEnabled || mouseChildren;
-		
-	}
 	
 	private override function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
 		

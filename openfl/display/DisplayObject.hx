@@ -576,12 +576,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 	}
 	
-	private function __getMouseFlag ():Bool {
-		
-		return false;
-		
-	}
-	
 	
 	private function __getLocalBounds (rect:Rectangle):Void {
 		
@@ -596,6 +590,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		rect.x -= __transform.tx;
 		rect.y -= __transform.ty;
+		
+	}
+	
+	
+	private function __getMouseAllowed ():Bool {
+		
+		return false;
 		
 	}
 	

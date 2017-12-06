@@ -71,11 +71,13 @@ class InteractiveObject extends DisplayObject {
 		
 	}
 	
-	private override function __getMouseFlag ():Bool {
+	
+	private override function __getMouseAllowed ():Bool {
 		
 		return mouseEnabled;
 		
 	}
+	
 	
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		

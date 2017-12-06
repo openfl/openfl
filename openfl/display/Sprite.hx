@@ -110,9 +110,9 @@ class Sprite extends DisplayObjectContainer {
 			
 			return interactiveOnly;
 			
-		} else if (hitArea == null && (!interactiveOnly || mouseEnabled || hitTestWhenMouseDisabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
+		} else if (hitArea == null && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 			
-			if (stack != null && !hitTestWhenMouseDisabled) {
+			if (stack != null && !hitTestWhenMouseDisabled && (!interactiveOnly || mouseEnabled)) {
 				
 				stack.push (hitObject);
 				
