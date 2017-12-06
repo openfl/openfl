@@ -1,3 +1,9 @@
+6.5.3 (12/05/2017)
+------------------
+
+* Fixed a regression that caused an immediate runtime error on Flash Player
+
+
 6.5.2 (12/05/2017)
 ------------------
 
