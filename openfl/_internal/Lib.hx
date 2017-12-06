@@ -11,7 +11,7 @@ class Lib {
 	
 	
 	public static var application:Application;
-	public static var current:MovieClip;
+	public static var current:MovieClip #if flash = flash.Lib.current #end;
 	
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
 	
