@@ -175,15 +175,15 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
 		var hitTest = false;
 		
 		if (hitTestState != null) {
 			
-			if (hitTestState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
+			if (hitTestState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled)) {
 				
-				if (stack != null) {
+				if (stack != null && !hitTestWhenMouseDisabled) {
 					
 					if (stack.length == 0) {
 						
@@ -203,10 +203,10 @@ class SimpleButton extends InteractiveObject {
 			
 		} else if (__currentState != null) {
 			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+			if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
-			if (__currentState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
+			if (__currentState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled)) {
 				
 				hitTest = interactiveOnly;
 				
@@ -217,7 +217,7 @@ class SimpleButton extends InteractiveObject {
 		// TODO: Better fix?
 		// (this is caused by the "hitObject" logic in hit testing)
 		
-		if (stack != null) {
+		if (stack != null && !hitTestWhenMouseDisabled) {
 			
 			while (stack.length > 1 && stack[stack.length - 1] == stack[stack.length - 2]) {
 				
