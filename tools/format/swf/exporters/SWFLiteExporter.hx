@@ -1542,6 +1542,7 @@ class SWFLiteExporter {
 							js = js.replace("flash_", "openfl_");
 							js = js.replace("flash.", "openfl.");
 							js = js.replace ("fl_motion", "wwlib_graphics");
+							js = js.replace ("this.console", "console");  // hack to get trace statements working
 
 							LogHelper.info ("", "javascript:\n"+js);
 
