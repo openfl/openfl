@@ -34,6 +34,11 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -285,6 +290,9 @@ class GLContext3D {
 		gl.drawElements (gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
 		GLUtils.CheckGLError ();
 		
+		#if gl_stats
+			GLStats.incrementDrawCall (DrawCallContext.STAGE3D);
+		#end
 		// __statsIncrement (Context3DTelemetry.DRAW_CALLS);
 		
 	}

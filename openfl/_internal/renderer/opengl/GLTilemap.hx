@@ -10,6 +10,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -124,6 +129,10 @@ class GLTilemap {
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
+				#if gl_stats
+					GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				#end
+				
 				flush = false;
 				lastIndex = i;
 				
@@ -156,6 +165,10 @@ class GLTilemap {
 				shader.data.uImage0.input = tileset.bitmapData;
 				renderSession.shaderManager.updateShader (shader);
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
+				
+				#if gl_stats
+					GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				#end
 				
 			}
 			
@@ -228,6 +241,10 @@ class GLTilemap {
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
+				#if gl_stats
+					GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				#end
+				
 				flush = false;
 				lastIndex = i;
 				
@@ -240,6 +257,10 @@ class GLTilemap {
 				shader.data.uImage0.input = tileset.bitmapData;
 				renderSession.shaderManager.updateShader (shader);
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
+				
+				#if gl_stats
+					GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				#end
 				
 			}
 			

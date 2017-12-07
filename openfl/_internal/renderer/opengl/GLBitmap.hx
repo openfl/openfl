@@ -5,6 +5,11 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml(' tags="haxe,release" ')
 @:noDebug
@@ -65,6 +70,10 @@ class GLBitmap {
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
+			#if gl_stats
+				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			#end
+			
 			renderSession.filterManager.popObject (bitmap);
 			renderSession.maskManager.popObject (bitmap);
 			
@@ -95,6 +104,10 @@ class GLBitmap {
 			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			
+			#if gl_stats
+				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			#end
 			
 		}
 		
