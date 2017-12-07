@@ -52,7 +52,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	private var __lastInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
-	private var __lastFrameObjectByFrameObjectID:Map<Int, FrameObject>;
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
 	private var __currentLabel:String;
@@ -66,22 +65,19 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __timeElapsed:Int;
 	private var __totalFrames:Int;
 	private var __isInstanceFieldsSetup:Bool;
-	private var __keyFrames:Array<Int>;
 	
 	
 	public function new () {
 		
 		super ();
-		__lastFrameObjectByFrameObjectID = new Map();
 		__cachedManuallyAddedDisplayObjects = new Array();
 		__cachedChildrenFrameSymbolInstacesDisplayObjects = new Array();
-		__keyFrames = new Array();
 		__currentFrame = 1;
 		__currentLabels = [];
 		__totalFrames = 0;
 		__isInstanceFieldsSetup = false;
 		enabled = true;
-
+		
 		if (__initSymbol != null) {
 			
 			__swf = __initSWF;
@@ -116,10 +112,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 			__frameScripts.remove (frame);
 			
-		}
-		if(__keyFrames.indexOf(frame) < 0)
-		{
-			__keyFrames.push(frame);
 		}
 
 	}
@@ -320,16 +312,17 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		super.__enterFrame (deltaTime);
 	}
 
-	private function __updateFrameObjectsAndChildren(shouldUpdateManuallyModifiedDisplayObjects = true)	{
+	private function __updateFrameObjectsAndChildren()	{
+
 		if (__currentFrame == __lastFrameUpdate)
 			return;
 
 		__updateFrameLabel ();
 
-		var loopedSinceLastFrameUpdate:Bool = (__lastFrameUpdate > __currentFrame );
+		var loopedSinceLastFrameUpdate:Bool = ( __lastFrameUpdate > __currentFrame );
 
 		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
-		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >=0 &&  __lastInstancesByFrameObjectID != null) {
+		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >= 0 &&  __lastInstancesByFrameObjectID != null) {
 			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
 		}
 		else {
@@ -358,14 +351,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						if (instance != null) {
 
-							var lastFrameFrameObject : FrameObject = __lastFrameObjectByFrameObjectID.get(frameObject.id);
-							if(lastFrameFrameObject == null)
-							{
-								lastFrameFrameObject = new FrameObject();
-								__lastFrameObjectByFrameObjectID.set(frameObject.id, lastFrameFrameObject);
-							}
 							currentInstancesByFrameObjectID.set (frameObject.id, instance);
-							__updateDisplayObject (instance.displayObject, frameObject, lastFrameFrameObject, shouldUpdateManuallyModifiedDisplayObjects);
+							__updateDisplayObject (instance.displayObject, frameObject);
+
 						}
 
 					case UPDATE:
@@ -374,8 +362,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						if (instance != null && instance.displayObject != null) {
 
-							var lastFrameFrameObject : FrameObject = __lastFrameObjectByFrameObjectID.get(frameObject.id);
-							__updateDisplayObject (instance.displayObject, frameObject, lastFrameFrameObject, shouldUpdateManuallyModifiedDisplayObjects);
+							__updateDisplayObject (instance.displayObject, frameObject);
+
 						}
 
 					case DESTROY:
@@ -575,7 +563,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				}
 
 				__frameScripts.set (frame, frameData.script);
-				__keyFrames.push(frame);
 
 			} else if (frameData.scriptSource != null) {
 
@@ -607,7 +594,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					};
 
 					__frameScripts.set (frame, script);
-					__keyFrames.push(frame);
 
 					#elseif js
 
@@ -637,7 +623,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					}
 
 					__frameScripts.set (frame, wrapper);
-					__keyFrames.push(frame);
 
 					#end
 
@@ -668,6 +653,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		var duplicate:Bool;
 		var symbol:SWFSymbol;
 		var displayObject:DisplayObject;
+		var lastObjectToHavePlacementData:FrameObject = null;
 
 		// TODO: Create later?
 
@@ -677,7 +663,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			frameData = __symbol.frames[i];
 
 			if (frameData.objects == null) continue;
-
 
 			for (frameObject in frameData.objects) {
 
@@ -691,6 +676,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						instance = null;
 						duplicate = false;
+
+						if(frameData.objects.length <= 2)	//for create and destroy
+						{
+							if(frameObject.name != null || frameObject.matrix != null || frameObject.colorTransform != null || frameObject.filters != null) {
+								lastObjectToHavePlacementData = frameObject.lastFrameObjectWithPlacementData = frameObject;
+							}
+							else if(lastObjectToHavePlacementData != null)
+								frameObject.lastFrameObjectWithPlacementData = lastObjectToHavePlacementData;
+						}
 
 						for (activeInstance in __activeInstances) {
 
@@ -708,6 +702,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					}
 
 					if (instance == null) {
+
 						symbol = __swf.symbols.get (frameObject.symbol);
 
 						if (symbol != null) {
@@ -732,18 +727,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						if (!duplicate) {
 
-							if(__keyFrames.indexOf(frame) < 0)
-							{
-								__keyFrames.push(frame);
-							}
 							__activeInstances.push (instance);
-							var lastFrameFrameObject : FrameObject = __lastFrameObjectByFrameObjectID.get(frameObject.id);
-							if(lastFrameFrameObject == null)
-							{
-								lastFrameFrameObject = new FrameObject();
-								__lastFrameObjectByFrameObjectID.set(frameObject.id, lastFrameFrameObject);
-							}
-							__updateDisplayObject (instance.displayObject, frameObject, lastFrameFrameObject);
+							__updateDisplayObject (instance.displayObject, frameObject);
 
 						}
 
@@ -861,7 +846,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			__currentFrame = frame;
 			__lastFrameUpdate = -1;
 			//updating objects to this frame starting from scratch
-			__updateFrameObjectsAndChildren(__keyFrames.indexOf(frame) >= 0);//if not going to keyframe then don't rebuild objects from scratch
+			__updateFrameObjectsAndChildren();
 
 			//check if there is a framescript and run it for this frame
 			if(__frameScripts != null && __frameScripts.exists(frame)) {
@@ -929,34 +914,35 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject, lastFrameFrameObject:FrameObject, shouldUpdateManuallyModifiedDisplayObjects = true):Void {
+	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject):Void {
 		
 		if (displayObject == null) return;
+
+		var currFrameObject = frameObject.lastFrameObjectWithPlacementData != null?frameObject.lastFrameObjectWithPlacementData:frameObject;
 		
-		if (frameObject.name != null) {
+		if (currFrameObject.name != null) {
 			
-			displayObject.name = frameObject.name;
+			displayObject.name = currFrameObject.name;
 			
 		}
 		
-		if (frameObject.matrix != null && (shouldUpdateManuallyModifiedDisplayObjects || lastFrameFrameObject.matrix == displayObject.transform.matrix)) {
+		if (currFrameObject.matrix != null) {
 			
-			displayObject.transform.matrix = frameObject.matrix;
-			lastFrameFrameObject.matrix = frameObject.matrix;
+			displayObject.transform.matrix = currFrameObject.matrix;
 			
 		}
 		
-		if (frameObject.colorTransform != null && (shouldUpdateManuallyModifiedDisplayObjects || lastFrameFrameObject.colorTransform == displayObject.transform.colorTransform)) {
+		if (currFrameObject.colorTransform != null) {
 			
-			displayObject.transform.colorTransform = frameObject.colorTransform;
-			lastFrameFrameObject.colorTransform = frameObject.colorTransform;
+			displayObject.transform.colorTransform = currFrameObject.colorTransform;
+			
 		}
 		
-		if (frameObject.filters != null) {
+		if (currFrameObject.filters != null) {
 			
 			var filters:Array<BitmapFilter> = [];
 			
-			for (filter in frameObject.filters) {
+			for (filter in currFrameObject.filters) {
 				
 				switch (filter) {
 					
@@ -988,21 +974,21 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		}
 		
-		if (frameObject.visible != null && (shouldUpdateManuallyModifiedDisplayObjects || lastFrameFrameObject.visible == displayObject.visible)) {
+		if (currFrameObject.visible != null) {
 			
-			displayObject.visible = frameObject.visible;
-			lastFrameFrameObject.visible = frameObject.visible;
+			displayObject.visible = currFrameObject.visible;
+			
 		}
 		
-		if (frameObject.blendMode != null && (shouldUpdateManuallyModifiedDisplayObjects || lastFrameFrameObject.blendMode == displayObject.blendMode)) {
+		if (currFrameObject.blendMode != null) {
 			
-			displayObject.blendMode = frameObject.blendMode;
-			lastFrameFrameObject.visible = frameObject.visible;
+			displayObject.blendMode = currFrameObject.blendMode;
+			
 		}
 		
-		if (frameObject.cacheAsBitmap != null) {
+		if (currFrameObject.cacheAsBitmap != null) {
 			
-			//displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;
+			//displayObject.cacheAsBitmap = currFrameObject.cacheAsBitmap;
 			
 		}
 		

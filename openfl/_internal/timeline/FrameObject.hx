@@ -21,12 +21,14 @@ class FrameObject {
 	public var colorTransform:ColorTransform;
 	public var depth:Int;
 	public var filters:Array<FilterType>;
-	public var id:Int;
+	public var id:Int;	//Also matches the tag index of the PlaceObject tag that placed this object on the display list
 	public var matrix:Matrix;
 	public var name:String;
 	public var symbol:Int;
 	public var type:FrameObjectType;
 	public var visible:Null<Bool>;
+    public var lastFrameObjectWithPlacementData:FrameObject;
+
 	
 	
 	public function new () {
