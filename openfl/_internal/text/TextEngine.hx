@@ -27,9 +27,6 @@ import openfl.text.TextFormatAlign;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-import js.html.InputElement;
-import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
 #end
 
@@ -120,11 +117,7 @@ class TextEngine {
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
-	#if (js && html5)
-	private var __hiddenInput:InputElement;
-	#end
 	
-
 	public function new (textField:TextField) {
 		
 		this.textField = textField;
@@ -209,7 +202,11 @@ class TextEngine {
 			
 			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || registeredFont.__fontPathWithoutDirectory == name))) {
 				
-				return registeredFont;
+				if (registeredFont.__initialize ()) {
+					
+					return registeredFont;
+					
+				}
 				
 			}
 			
@@ -227,6 +224,33 @@ class TextEngine {
 		#end
 		
 		return null;
+		
+	}
+	
+	
+	private static function findFontVariant (format:TextFormat):Font {
+		
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			return findFont (fontNamePrefix + " Bold Italic");
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			return findFont (fontNamePrefix + " Bold");
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			return findFont (fontNamePrefix + " Italic");
+			
+		}
+		
+		return findFont (fontName);
 		
 	}
 	
@@ -295,18 +319,59 @@ class TextEngine {
 	
 	public static function getFont (format:TextFormat):String {
 		
-		var font = format.italic ? "italic " : "normal ";
+		var fontName = format.font;
+		var bold = format.bold;
+		var italic = format.italic;
+		
+		if (fontName == null) fontName = "_serif";
+		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
+		
+		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
+			
+			fontName = fontNamePrefix + " Bold Italic";
+			bold = false;
+			italic = false;
+			
+		} else if (bold && Font.__fontByName.exists (fontNamePrefix + " Bold")) {
+			
+			fontName = fontNamePrefix + " Bold";
+			bold = false;
+			
+		} else if (italic && Font.__fontByName.exists (fontNamePrefix + " Italic")) {
+			
+			fontName = fontNamePrefix + " Italic";
+			italic = false;
+			
+		} else {
+			
+			// Prevent "extra" bold and italic fonts
+			
+			if (bold && (fontName.indexOf (" Bold ") > -1 || StringTools.endsWith (fontName, " Bold"))) {
+				
+				bold = false;
+				
+			}
+			
+			if (italic && (fontName.indexOf (" Italic ") > -1 || StringTools.endsWith (fontName, " Italic"))) {
+				
+				italic = false;
+				
+			}
+			
+		}
+		
+		var font = italic ? "italic " : "normal ";
 		font += "normal ";
-		font += format.bold ? "bold " : "normal ";
+		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
 		font += "/" + (format.leading + format.size + 3) + "px ";
 		
-		font += "" + switch (format.font) {
+		font += "" + switch (fontName) {
 			
 			case "_sans": "sans-serif";
 			case "_serif": "serif";
 			case "_typewriter": "monospace";
-			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace(format.font, '$1') + "'";
+			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace (fontName, '$1') + "'";
 			
 		}
 		
@@ -330,7 +395,7 @@ class TextEngine {
 				
 			}
 			
-			instance = findFont (format.font);
+			instance = findFontVariant (format);
 			if (instance != null) return instance;
 			
 			var systemFontDirectory = System.fontsDirectory;
@@ -551,11 +616,11 @@ class TextEngine {
 		if (lf == -1 && br == -1) return cr;
 		if (lf == -1 && cr == -1) return br;
 
-		if (cr == -1) return Std.int(Math.min(br, lf));
-		if (lf == -1) return Std.int(Math.min(br, cr));
-		if (br == -1) return Std.int(Math.min(cr, lf));
+		if (cr == -1) return Std.int (Math.min (br, lf));
+		if (lf == -1) return Std.int (Math.min (br, cr));
+		if (br == -1) return Std.int (Math.min (cr, lf));
 
-		return Std.int(Math.min(Math.min(cr, lf), br));
+		return Std.int (Math.min (Math.min (cr, lf), br));
 		
 	}
 	
@@ -701,6 +766,8 @@ class TextEngine {
 	private function getLayoutGroups ():Void {
 		
 		layoutGroups.length = 0;
+		
+		if (text == null || text == "") return;
 		
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
@@ -991,7 +1058,7 @@ class TextEngine {
 		
 		inline function breakLongWords (endIndex:Int):Void {
 			
-			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
+			var tempWidth = getTextWidth (text.substring (textIndex, endIndex));
 			
 			while (offsetX + tempWidth > width - 2) {
 				
@@ -999,7 +1066,7 @@ class TextEngine {
 				
 				while (textIndex + i < endIndex + 1) {
 					
-					tempWidth = getTextWidth(text.substr(textIndex, i));
+					tempWidth = getTextWidth (text.substr (textIndex, i));
 					
 					if (offsetX + tempWidth > width - 2) {
 						
@@ -1045,12 +1112,12 @@ class TextEngine {
 					
 					layoutGroup = null;
 					
-					alignBaseline();
+					alignBaseline ();
 					
 					textIndex += i;
 					
 					positions = getPositions (text, textIndex, endIndex);
-					widthValue = getPositionsWidth(positions);
+					widthValue = getPositionsWidth (positions);
 					
 					tempWidth = widthValue;
 					
@@ -1120,7 +1187,7 @@ class TextEngine {
 					
 				}
 				
-				alignBaseline();
+				alignBaseline ();
 				
 				textIndex = breakIndex + 1;
 				breakIndex = getLineBreakIndex (textIndex);
@@ -1560,7 +1627,7 @@ class TextEngine {
 	
 	private function update ():Void {
 		
-		if (text == null || text == "" || textFormatRanges.length == 0) {
+		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0) {
 			
 			lineAscents.length = 0;
 			lineBreaks.length = 0;
@@ -1624,7 +1691,9 @@ class TextEngine {
 	private function set_text (value:String):String {
 		
 		if (value == null) {
+			
 			return text = value;
+			
 		}
 		
 		if (__restrictRegexp != null) {

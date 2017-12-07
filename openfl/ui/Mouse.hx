@@ -2,7 +2,6 @@ package openfl.ui;
 
 
 import lime.ui.Mouse in LimeMouse;
-import openfl.Lib;
 
 @:access(openfl.display.Stage)
 
@@ -15,6 +14,15 @@ import openfl.Lib;
 	public static var supportsNativeCursor (default, null):Bool = #if !mobile true; #else false; #end
 	
 	private static var __cursor:MouseCursor = MouseCursor.AUTO;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Mouse, "cursor", { get: Mouse.get_cursor, set: Mouse.set_cursor });
+		
+	}
+	#end
 	
 	
 	public static function hide ():Void {

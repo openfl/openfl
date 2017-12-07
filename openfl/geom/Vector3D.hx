@@ -22,6 +22,25 @@ class Vector3D {
 	public var z:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Vector3D, {
+			"X_AXIS": { get: Vector3D.get_X_AXIS },
+			"Y_AXIS": { get: Vector3D.get_Y_AXIS },
+			"Z_AXIS": { get: Vector3D.get_Z_AXIS }
+		});
+		
+		var p = untyped Vector3D.prototype;
+		untyped Object.defineProperties (p, {
+			"length": { get: p.get_length },
+			"lengthSquared": { get: p.get_lengthSquared }
+		});
+		
+	}
+	#end
+	
+	
 	public function new (x:Float = 0, y:Float = 0, z:Float = 0, w:Float = 0) {
 		
 		this.w = w;

@@ -3,6 +3,7 @@ package openfl.system;
 
 import haxe.macro.Compiler;
 import lime.system.Locale;
+import openfl._internal.Lib;
 
 
 @:final class Capabilities {
@@ -43,6 +44,25 @@ import lime.system.Locale;
 	public static var version (get, never):String;
 	
 	private static var __standardDensities = [ 120, 160, 240, 320, 480, 640, 800, 960 ];
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Capabilities, {
+			"cpuArchitecture": { get: Capabilities.get_cpuArchitecture },
+			"language": { get: Capabilities.get_language },
+			"manufacturer": { get: Capabilities.get_manufacturer },
+			"os": { get: Capabilities.get_os },
+			"pixelAspectRatio": { get: Capabilities.get_pixelAspectRatio },
+			"screenDPI": { get: Capabilities.get_screenDPI },
+			"screenResolutionX": { get: Capabilities.get_screenResolutionX },
+			"screenResolutionY": { get: Capabilities.get_screenResolutionY },
+			"version": { get: Capabilities.get_version }
+		});
+		
+	}
+	#end
 	
 	
 	public static function hasMultiChannelAudio (type:String):Bool {

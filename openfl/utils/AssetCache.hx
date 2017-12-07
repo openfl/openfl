@@ -19,6 +19,16 @@ import openfl.text.Font;
 	private var __enabled = true;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped AssetCache.prototype;
+		untyped Object.defineProperty (p, "enabled", { get: p.get_enabled, set: p.set_enabled });
+		
+	}
+	#end
+	
+	
 	public function new () {
 		
 		bitmapData = new Map<String, BitmapData> ();

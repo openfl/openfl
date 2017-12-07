@@ -19,6 +19,18 @@ import cpp.vm.Gc;
 	public static var vmVersion (get, never):String;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (System, {
+			"totalMemory": { get: System.get_totalMemory },
+			"vmVersion": { get: System.get_vmVersion },
+		});
+		
+	}
+	#end
+	
+	
 	public static function exit (code:Int):Void {
 		
 		LimeSystem.exit (code);
@@ -37,14 +49,14 @@ import cpp.vm.Gc;
 	
 	public static function pause ():Void {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		
 	}
 	
 	
 	public static function resume ():Void {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		
 	}
 	

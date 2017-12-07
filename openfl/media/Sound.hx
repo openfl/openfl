@@ -31,6 +31,19 @@ class Sound extends EventDispatcher {
 	public var spriteKey (default, default):String;
 	
 	private var __buffer:AudioBuffer;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Sound.prototype;
+		untyped Object.defineProperties (p, {
+			"id3": { get: p.get_id3 },
+			"length": { get: p.get_length }
+		});
+		
+	}
+	#end
 
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null) {
 		
@@ -140,6 +153,17 @@ class Sound extends EventDispatcher {
 	public static function loadFromFile (path:String):Future<Sound> {
 		
 		return AudioBuffer.loadFromFile (path).then (function (audioBuffer) {
+			
+			return Future.withValue (fromAudioBuffer (audioBuffer));
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromFiles (paths:Array<String>):Future<Sound> {
+		
+		return AudioBuffer.loadFromFiles (paths).then (function (audioBuffer) {
 			
 			return Future.withValue (fromAudioBuffer (audioBuffer));
 			

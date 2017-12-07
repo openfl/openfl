@@ -8,6 +8,11 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -81,8 +86,62 @@ class GLShape {
 				
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				
+				#if gl_stats
+					GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				#end
+				
 				renderSession.filterManager.popObject (shape);
 				renderSession.maskManager.popObject (shape);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	public static inline function renderMask (shape:DisplayObject, renderSession:RenderSession):Void {
+		
+		var graphics = shape.__graphics;
+		
+		if (graphics != null) {
+			
+			// TODO: Support invisible shapes
+			
+			#if (js && html5)
+			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
+			#elseif lime_cairo
+			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
+			#end
+			
+			var bounds = graphics.__bounds;
+			
+			if (graphics.__bitmap != null) {
+				
+				var renderer:GLRenderer = cast renderSession.renderer;
+				var gl = renderSession.gl;
+				
+				var shader = GLMaskManager.maskShader;
+				
+				//var shader = renderSession.shaderManager.initShader (shape.shader);
+				renderSession.shaderManager.setShader (shader);
+				
+				shader.data.uImage0.input = graphics.__bitmap;
+				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
+				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
+				
+				renderSession.shaderManager.updateShader (shader);
+				
+				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha, shape.__worldColorTransform));
+				
+				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+				
+				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+				
+				#if gl_stats
+					GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				#end
 				
 			}
 			

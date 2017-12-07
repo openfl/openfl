@@ -21,12 +21,26 @@ class Timer extends EventDispatcher {
 	
 	public var currentCount (default, null):Int;
 	public var delay (get, set):Float;
-	public var repeatCount (default, set):Int;
+	public var repeatCount (get, set):Int;
 	public var running (default, null):Bool;
 	
 	private var __delay:Float;
+	private var __repeatCount:Int;
 	private var __timer:HaxeTimer;
 	private var __timerID:Int;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Timer.prototype;
+		untyped Object.defineProperties (p, {
+			"delay": { get: p.get_delay, set: p.set_delay },
+			"repeatCount": { get: p.get_repeatCount, set: p.set_repeatCount }
+		});
+		
+	}
+	#end
 	
 	
 	public function new (delay:Float, repeatCount:Int = 0):Void {
@@ -40,7 +54,7 @@ class Timer extends EventDispatcher {
 		super ();
 		
 		__delay = delay;
-		this.repeatCount = repeatCount;
+		__repeatCount = repeatCount;
 		
 		running = false;
 		currentCount = 0;
@@ -132,6 +146,13 @@ class Timer extends EventDispatcher {
 	}
 	
 	
+	private function get_repeatCount ():Int {
+		
+		return __repeatCount;
+		
+	}
+	
+	
 	private function set_repeatCount (v:Int):Int {
 		
 		if (running && v != 0 && v <= currentCount) {
@@ -140,8 +161,7 @@ class Timer extends EventDispatcher {
 			
 		}
 		
-		repeatCount = v;
-		return v;
+		return __repeatCount = v;
 		
 	}
 	
@@ -155,9 +175,9 @@ class Timer extends EventDispatcher {
 	
 	private function timer_onTimer ():Void {
 		
-		currentCount ++;
+		currentCount++;
 		
-		if (repeatCount > 0 && currentCount >= repeatCount) {
+		if (__repeatCount > 0 && currentCount >= __repeatCount) {
 			
 			stop ();
 			dispatchEvent (new TimerEvent (TimerEvent.TIMER));

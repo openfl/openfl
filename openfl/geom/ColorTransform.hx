@@ -26,6 +26,16 @@ class ColorTransform {
 	public var redOffset:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped ColorTransform.prototype;
+		untyped Object.defineProperty (p, "color", { get: p.get_color, set: p.set_color });
+		
+	}
+	#end
+	
+	
 	public function new (redMultiplier:Float = 1, greenMultiplier:Float = 1, blueMultiplier:Float = 1, alphaMultiplier:Float = 1, redOffset:Float = 0, greenOffset:Float = 0, blueOffset:Float = 0, alphaOffset:Float = 0):Void {
 		
 		this.redMultiplier = redMultiplier;

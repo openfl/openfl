@@ -21,6 +21,15 @@ class Point {
 	public var y:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Point.prototype, "length", { get: Point.prototype.get_length });
+		
+	}
+	#end
+	
+	
 	public function new (x:Float = 0, y:Float = 0) {
 		
 		this.x = x;

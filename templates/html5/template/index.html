@@ -27,7 +27,7 @@
 	<style>
 		html,body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 		#openfl-content { background: #000000; width: ::if (WIN_RESIZABLE)::100%::elseif (WIN_WIDTH > 0)::::WIN_WIDTH::px::else::100%::end::; height: ::if (WIN_RESIZABLE)::100%::elseif (WIN_WIDTH > 0)::::WIN_HEIGHT::px::else::100%::end::; }
-		::foreach assets::::if (type == "font")::
+::foreach assets::::if (type == "font")::::if (cssFontFace)::::cssFontFace::::else::
 		@font-face {
 			font-family: '::fontName::';
 			src: url('::targetPath::.eot');
@@ -37,7 +37,7 @@
 			url('::targetPath::.ttf') format('truetype');
 			font-weight: normal;
 			font-style: normal;
-		}::end::::end::
+		}::end::::end::::end::
 	</style>
 	
 </head>

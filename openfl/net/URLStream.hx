@@ -23,6 +23,20 @@ class URLStream extends EventDispatcher implements IDataInput {
 	private var __loader:URLLoader;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped URLStream.prototype;
+		untyped Object.defineProperties (p, {
+			"bytesAvailable": { get: p.get_bytesAvailable },
+			"connected": { get: p.get_connected },
+			"endian": { get: p.get_endian, set: p.set_endian }
+		});
+		
+	}
+	#end
+	
+	
 	public function new () {
 		
 		super ();

@@ -16,7 +16,6 @@ import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.Lib;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -60,6 +59,18 @@ class CanvasGraphics {
 	
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
+	private static var hitTestCanvas:CanvasElement;
+	private static var hitTestContext:CanvasRenderingContext2D;
+	#end
+	
+	
+	#if (js && html5)
+	private static function __init__ ():Void {
+		
+		hitTestCanvas = cast Browser.document.createElement ("canvas");
+		hitTestContext = hitTestCanvas.getContext ("2d");
+		
+	}
 	#end
 	
 	
@@ -261,10 +272,6 @@ class CanvasGraphics {
 		
 	}
 	
-	#if (js && html5)
-	static var hitTestCanvas : js.html.CanvasElement = cast Browser.document.createElement ("canvas");
-	static var hitTestContext = hitTestCanvas.getContext ("2d");
-	#end
 	
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		

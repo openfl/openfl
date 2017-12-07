@@ -61,6 +61,26 @@ import openfl.Vector;
 	private var __visible:Vector<Bool>;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped TileArray.prototype;
+		untyped Object.defineProperties (p, {
+			"alpha": { get: p.get_alpha, set: p.set_alpha },
+			"colorTransform": { get: p.get_colorTransform, set: p.set_colorTransform },
+			"id": { get: p.get_id, set: p.set_id },
+			"length": { get: p.get_length, set: p.set_length },
+			"matrix": { get: p.get_matrix, set: p.set_matrix },
+			"rect": { get: p.get_rect, set: p.set_rect },
+			"shader": { get: p.get_shader, set: p.set_shader },
+			"tileset": { get: p.get_tileset, set: p.set_tileset },
+			"visible": { get: p.get_visible, set: p.set_visible }
+		});
+		
+	}
+	#end
+	
+	
 	public function new (length:Int = 0) {
 		
 		__cacheAlpha = -1;

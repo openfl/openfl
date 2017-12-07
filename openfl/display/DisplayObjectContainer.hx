@@ -39,6 +39,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	private var __removedChildren:Vector<DisplayObject>;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (DisplayObjectContainer.prototype, "numChildren", { get: DisplayObjectContainer.prototype.get_numChildren });
+		
+	}
+	#end
+	
+	
 	private function new () {
 		
 		super ();
@@ -860,25 +869,29 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
-		renderSession.filterManager.pushObject (this);
-		
-		if (renderSession.clearRenderDirty) {
+		if (__children.length > 0) {
 			
-			for (child in __children) {
+			renderSession.maskManager.pushObject (this);
+			renderSession.filterManager.pushObject (this);
+			
+			if (renderSession.clearRenderDirty) {
 				
-				child.__renderGL (renderSession);
-				child.__renderDirty = false;
+				for (child in __children) {
+					
+					child.__renderGL (renderSession);
+					child.__renderDirty = false;
+					
+				}
 				
-			}
-			
-			__renderDirty = false;
-			
-		} else {
-			
-			for (child in __children) {
+				__renderDirty = false;
 				
-				child.__renderGL (renderSession);
+			} else {
+				
+				for (child in __children) {
+					
+					child.__renderGL (renderSession);
+					
+				}
 				
 			}
 			
@@ -896,8 +909,54 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.filterManager.popObject (this);
-		renderSession.maskManager.popObject (this);
+		if (__children.length > 0) {
+			
+			renderSession.filterManager.popObject (this);
+			renderSession.maskManager.popObject (this);
+			
+		}
+		
+	}
+	
+	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		super.__renderGLMask (renderSession);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
+		if (renderSession.clearRenderDirty) {
+			
+			for (child in __children) {
+				
+				child.__renderGLMask (renderSession);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderGLMask (renderSession);
+				
+			}
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
+		
+		__removedChildren.length = 0;
 		
 	}
 	

@@ -5,6 +5,8 @@ package openfl.profiler;
 import hxtelemetry.HxTelemetry;
 #end
 
+import openfl._internal.Lib;
+
 @:allow(openfl.display.Stage)
 
 
@@ -16,6 +18,15 @@ import hxtelemetry.HxTelemetry;
 	
 	#if ((cpp || neko) && hxtelemetry && !macro)
 	private static var telemetry:HxTelemetry;
+	#end
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Telemetry, "connected", { get: Telemetry.get_connected });
+		
+	}
 	#end
 	
 	

@@ -4,7 +4,7 @@ package openfl.display;
 import lime.app.Application;
 import lime.app.Config;
 import lime.ui.Window in LimeWindow;
-import openfl.Lib;
+import openfl._internal.Lib;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

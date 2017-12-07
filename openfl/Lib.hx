@@ -4,10 +4,12 @@ package openfl;
 import haxe.PosInfos;
 import lime.system.System;
 import lime.utils.Log;
+import openfl._internal.Lib in InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
+import openfl.net.URLVariables;
 
 #if swf
 #if flash
@@ -30,15 +32,22 @@ import js.Browser;
 @:access(openfl.display.Stage) class Lib {
 	
 	
-	public static var application:Application;
-	
-	#if !flash
-	public static var current (default, null):MovieClip #if !macro = new MovieClip () #end;
-	#else
-	public static var current (get, set):MovieClip;
-	#end
+	public static var application (get, never):Application;
+	public static var current (get, never):MovieClip;
 	
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Lib, {
+			"application": { get: Lib.get_application },
+			"current": { get: Lib.get_current }
+		});
+		
+	}
+	#end
 	
 	
 	public static function as<T> (v:Dynamic, c:Class<T>):Null<T> {
@@ -103,7 +112,33 @@ import js.Browser;
 		#if flash
 		return flash.Lib.getURL (request, target);
 		#else
-		System.openURL (request.url, target);
+		var uri = request.url;
+		
+		if (Std.is (request.data, URLVariables)) {
+			
+			var query = "";
+			var fields = Reflect.fields (request.data);
+			
+			for (field in fields) {
+				
+				if (query.length > 0) query += "&";
+				query += StringTools.urlEncode (field) + "=" + StringTools.urlEncode (Std.string (Reflect.field (request.data, field)));
+				
+			}
+			
+			if (uri.indexOf ("?") > -1) {
+				
+				uri += "&" + query;
+				
+			} else {
+				
+				uri += "?" + query;
+				
+			}
+			
+		}
+		
+		System.openURL (uri, target);
 		#end
 		
 	}
@@ -160,20 +195,30 @@ import js.Browser;
 	
 	
 	
-	#if flash
+	@:noCompletion private static function get_application ():Application {
+		
+		return InternalLib.application;
+		
+	}
+	
+	
 	@:noCompletion private static function get_current ():MovieClip {
 		
+		#if flash
 		return cast flash.Lib.current;
+		#else
+		if (InternalLib.current == null) InternalLib.current = new MovieClip ();
+		return InternalLib.current;
+		#end
 		
 	}
 	
 	
-	@:noCompletion private static function set_current (current:MovieClip):MovieClip {
+	// @:noCompletion private static function set_current (current:MovieClip):MovieClip {
 		
-		return cast flash.Lib.current = cast current;
+	// 	return cast flash.Lib.current = cast current;
 		
-	}
-	#end
+	// }
 	
 	
 }

@@ -26,8 +26,8 @@ class Tile implements ITile {
 	public var data:Dynamic;
 	public var id (get, set):Int;
 	public var matrix (get, set):Matrix;
-	public var originX (default, set):Float;
-	public var originY (default, set):Float;
+	public var originX (get, set):Float;
+	public var originY (get, set):Float;
 	public var parent (default, null):Tilemap;
 	@:beta public var rect (get, set):Rectangle;
 	public var rotation (get, set):Float;
@@ -45,6 +45,8 @@ class Tile implements ITile {
 	private var __colorTransformDirty:Bool;
 	private var __id:Int;
 	private var __matrix:Matrix;
+	private var __originX:Float;
+	private var __originY:Float;
 	private var __rect:Rectangle;
 	private var __rotation:Null<Float>;
 	private var __rotationCosine:Float;
@@ -60,6 +62,32 @@ class Tile implements ITile {
 	private var __visibleDirty:Bool;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Tile.prototype;
+		untyped Object.defineProperties (p, {
+			"alpha": { get: p.get_alpha, set: p.set_alpha },
+			"colorTransform": { get: p.get_colorTransform, set: p.set_colorTransform },
+			"id": { get: p.get_id, set: p.set_id },
+			"matrix": { get: p.get_matrix, set: p.set_matrix },
+			"originX": { get: p.get_originX, set: p.set_originX },
+			"originY": { get: p.get_originY, set: p.set_originY },
+			"rect": { get: p.get_rect, set: p.set_rect },
+			"rotation": { get: p.get_rotation, set: p.set_rotation },
+			"scaleX": { get: p.get_scaleX, set: p.set_scaleX },
+			"scaleY": { get: p.get_scaleY, set: p.set_scaleY },
+			"shader": { get: p.get_shader, set: p.set_shader },
+			"tileset": { get: p.get_tileset, set: p.set_tileset },
+			"visible": { get: p.get_visible, set: p.set_visible },
+			"x": { get: p.get_x, set: p.set_x },
+			"y": { get: p.get_y, set: p.set_y }
+		});
+		
+	}
+	#end
+	
+	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0) {
 		
 		__id = id;
@@ -70,9 +98,9 @@ class Tile implements ITile {
 		if (scaleX != 1) this.scaleX = scaleX;
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
-		this.originX = originX;
-		this.originY = originY;
 		
+		__originX = originX;
+		__originY = originY;
 		__alpha = 1;
 		__visible = true;
 		
@@ -179,9 +207,9 @@ class Tile implements ITile {
 		
 		if (__transformDirty || forceUpdate) {
 			
-			if (originX != 0 || originY != 0) {
+			if (__originX != 0 || __originY != 0) {
 				
-				__tempMatrix.setTo (1, 0, 0, 1, -originX, -originY);
+				__tempMatrix.setTo (1, 0, 0, 1, -__originX, -__originY);
 				__tempMatrix.concat (__matrix);
 				tileArray.matrix = __tempMatrix;
 				
@@ -329,11 +357,25 @@ class Tile implements ITile {
 	}
 	
 	
+	private function get_originX ():Float {
+		
+		return __originX;
+		
+	}
+	
+	
 	private function set_originX (value:Float):Float {
 		
 		__transformDirty = true;
 		__setRenderDirty ();
-		return this.originX = value;
+		return __originX = value;
+		
+	}
+	
+	
+	private function get_originY ():Float {
+		
+		return __originY;
 		
 	}
 	
@@ -342,7 +384,7 @@ class Tile implements ITile {
 		
 		__transformDirty = true;
 		__setRenderDirty ();
-		return this.originY = value;
+		return __originY = value;
 		
 	}
 	

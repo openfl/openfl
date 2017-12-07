@@ -787,7 +787,7 @@ class Tools {
 					asset.id = "libraries/" + library.name + ".json";
 					asset.library = library.name;
 					asset.data = data.serialize ();
-					asset.embed = embed;
+					asset.embed = true;
 					
 					output.assets.push (asset);
 					

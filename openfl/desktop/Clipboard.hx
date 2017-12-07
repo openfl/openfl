@@ -25,6 +25,16 @@ class Clipboard {
 	private var __text:String;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Clipboard, "generalClipboard", { get: Clipboard.get_generalClipboard });
+		untyped Object.defineProperty (Clipboard.prototype, "formats", { get: Clipboard.prototype.get_formats });
+		
+	}
+	#end
+	
+	
 	private function new () {
 		
 		
@@ -197,7 +207,7 @@ class Clipboard {
 	
 	public function setDataHandler (format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool {
 		
-		openfl.Lib.notImplemented ();
+		openfl._internal.Lib.notImplemented ();
 		return false;
 		
 	}
