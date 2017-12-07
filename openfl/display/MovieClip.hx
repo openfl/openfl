@@ -370,6 +370,40 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						currentInstancesByFrameObjectID.remove (frameObject.id);
 
+					case REPLACE_AT_DEPTH :
+
+						var removeID : Int = -1;
+						for(id in currentInstancesByFrameObjectID.keys()){
+							var frameSymbol : FrameSymbolInstance = currentInstancesByFrameObjectID.get(id);
+							if(frameSymbol.depth == frameObject.depth) {
+								removeID = id;
+								break;
+							}
+						}
+						var oldInstance : FrameSymbolInstance = currentInstancesByFrameObjectID.get(removeID);
+						currentInstancesByFrameObjectID.remove(removeID);
+
+						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+
+						if (instance != null) {
+
+							currentInstancesByFrameObjectID.set (frameObject.id, instance);
+							__updateDisplayObject (instance.displayObject, frameObject);
+
+							if(frameObject.name == null) {
+								instance.displayObject.name = oldInstance.displayObject.name;
+							}
+							if(frameObject.matrix == null) {
+								instance.displayObject.transform.matrix = oldInstance.displayObject.transform.matrix;
+							}
+							if(frameObject.colorTransform == null) {
+								instance.displayObject.transform.colorTransform = oldInstance.displayObject.transform.colorTransform;
+							}
+							if(frameObject.filters == null) {
+								instance.displayObject.filters = oldInstance.displayObject.filters;
+							}
+
+						}
 				}
 
 			}
@@ -918,7 +952,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		if (displayObject == null) return;
 
-		var currFrameObject = frameObject.lastFrameObjectWithPlacementData != null?frameObject.lastFrameObjectWithPlacementData:frameObject;
+		var currFrameObject : FrameObject = frameObject.lastFrameObjectWithPlacementData != null ? frameObject.lastFrameObjectWithPlacementData : frameObject;
 		
 		if (currFrameObject.name != null) {
 			
