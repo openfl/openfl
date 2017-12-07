@@ -528,7 +528,7 @@ class SWFLiteExporter {
 	
 	private function addSprite (tag:SWFTimelineContainer, root:Bool = false):SpriteSymbol {
 		
-		var symbol = new SpriteSymbol ();
+		var symbol : SpriteSymbol = new SpriteSymbol ();
 		
 		if (Std.is (tag, IDefinitionTag)) {
 			
@@ -540,7 +540,7 @@ class SWFLiteExporter {
 		var lastModified = new Map<Int, Int> ();
 		var zeroCharacter = -1;
 		
-		var frame, frameObject, frameData, placeTag:TagPlaceObject;
+		var frame : Frame, frameObject : FrameObject, frameData : Frame, placeTag:TagPlaceObject;
 		for (frameData in tag.frames) {
 			
 			frame = new Frame ();
