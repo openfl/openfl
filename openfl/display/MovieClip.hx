@@ -844,7 +844,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		if(__currentFrame != frame)
 		{
 			__currentFrame = frame;
-			__lastFrameUpdate = -1;
+			__lastFrameUpdate = frame-1;
 			//updating objects to this frame starting from scratch
 			__updateFrameObjectsAndChildren();
 
