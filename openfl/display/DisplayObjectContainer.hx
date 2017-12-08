@@ -550,7 +550,7 @@ class DisplayObjectContainer extends InteractiveObject {
 							
 							hitTest = true;
 							
-							if (interactive) {
+							if (!childHitTestWhenMouseDisabled && interactive) {
 								
 								break;
 								
