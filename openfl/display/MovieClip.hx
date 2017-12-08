@@ -52,6 +52,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	private var __lastInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
+	private var __lastDisplayObjectsByDepth: Map <Int, Int>; //<depth, id>
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
 	private var __currentLabel:String;
@@ -322,11 +323,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		var loopedSinceLastFrameUpdate:Bool = ( __lastFrameUpdate > __currentFrame );
 
 		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
+		var currentFrameObjectIDbyDepth : Map<Int, Int> = null;//<depth, id>
 		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >= 0 &&  __lastInstancesByFrameObjectID != null) {
 			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
+			currentFrameObjectIDbyDepth = __lastDisplayObjectsByDepth;
 		}
 		else {
 			currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
+			currentFrameObjectIDbyDepth = new Map<Int, Int>();
 		}
 
 		var frame:Int;
@@ -349,18 +353,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
 
-						var removeID : Int = -1;
-						for(id in currentInstancesByFrameObjectID.keys()){
-							var frameSymbol : FrameSymbolInstance = currentInstancesByFrameObjectID.get(id);
-							if(frameSymbol.depth == frameObject.depth) {
-								removeID = id;
-								break;
-							}
-						}
-						currentInstancesByFrameObjectID.remove(removeID);
-
 						if (instance != null) {
-
+							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+								currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+							}
+							currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
 							currentInstancesByFrameObjectID.set (frameObject.id, instance);
 							__updateDisplayObject (instance.displayObject, frameObject);
 
@@ -378,39 +375,40 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 					case DESTROY:
 
+						currentFrameObjectIDbyDepth.remove(frameObject.depth);
 						currentInstancesByFrameObjectID.remove (frameObject.id);
 
 					case REPLACE_AT_DEPTH :
 
-						var removeID : Int = -1;
-						for(id in currentInstancesByFrameObjectID.keys()){
-							var frameSymbol : FrameSymbolInstance = currentInstancesByFrameObjectID.get(id);
-							if(frameSymbol.depth == frameObject.depth) {
-								removeID = id;
-								break;
-							}
+						var oldInstance : FrameSymbolInstance = null;
+						if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+
+							oldInstance = currentInstancesByFrameObjectID.get(currentFrameObjectIDbyDepth.get(frameObject.depth));
+							currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+							currentFrameObjectIDbyDepth.remove(frameObject.depth);
 						}
-						var oldInstance : FrameSymbolInstance = currentInstancesByFrameObjectID.get(removeID);
-						currentInstancesByFrameObjectID.remove(removeID);
 
 						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
 
 						if (instance != null) {
 
+							currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
 							currentInstancesByFrameObjectID.set (frameObject.id, instance);
 							__updateDisplayObject (instance.displayObject, frameObject);
 
-							if(frameObject.name == null) {
-								instance.displayObject.name = oldInstance.displayObject.name;
-							}
-							if(frameObject.matrix == null) {
-								instance.displayObject.transform.matrix = oldInstance.displayObject.transform.matrix;
-							}
-							if(frameObject.colorTransform == null) {
-								instance.displayObject.transform.colorTransform = oldInstance.displayObject.transform.colorTransform;
-							}
-							if(frameObject.filters == null) {
-								instance.displayObject.filters = oldInstance.displayObject.filters;
+							if(oldInstance != null) {
+								if(frameObject.name == null) {
+									instance.displayObject.name = oldInstance.displayObject.name;
+								}
+								if(frameObject.matrix == null) {
+									instance.displayObject.transform.matrix = oldInstance.displayObject.transform.matrix;
+								}
+								if(frameObject.colorTransform == null) {
+									instance.displayObject.transform.colorTransform = oldInstance.displayObject.transform.colorTransform;
+								}
+								if(frameObject.filters == null) {
+									instance.displayObject.filters = oldInstance.displayObject.filters;
+								}
 							}
 
 						}
@@ -443,6 +441,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		}
 
+		__lastDisplayObjectsByDepth = currentFrameObjectIDbyDepth;
 		__lastInstancesByFrameObjectID = currentInstancesByFrameObjectID;
 
 
