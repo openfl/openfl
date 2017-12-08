@@ -349,6 +349,16 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
 
+						var removeID : Int = -1;
+						for(id in currentInstancesByFrameObjectID.keys()){
+							var frameSymbol : FrameSymbolInstance = currentInstancesByFrameObjectID.get(id);
+							if(frameSymbol.depth == frameObject.depth) {
+								removeID = id;
+								break;
+							}
+						}
+						currentInstancesByFrameObjectID.remove(removeID);
+
 						if (instance != null) {
 
 							currentInstancesByFrameObjectID.set (frameObject.id, instance);
@@ -700,7 +710,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			for (frameObject in frameData.objects) {
 
-				if (frameObject.type == FrameObjectType.CREATE) {
+				if (frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.REPLACE_AT_DEPTH) {
 
 					if (__activeInstancesByFrameObjectID.exists (frameObject.id)) {
 
