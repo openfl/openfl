@@ -184,7 +184,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (__defaultTextFormat == null) {
 			
-			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
+			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, null, "", TextFormatAlign.LEFT, 0, 0, 0, 0);
 			__defaultTextFormat.blockIndent = 0;
 			__defaultTextFormat.bullet = false;
 			__defaultTextFormat.letterSpacing = 0;
@@ -671,15 +671,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__textFormat.__merge (format);
 			
-			if (__textEngine.textFormatRanges.length > 1) {
-				
-				__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-				
-				range = __textEngine.textFormatRanges[0];
-				range.format = __textFormat;
-				range.start = 0;
-				range.end = max;
-				
+			for (i in 0...__textEngine.textFormatRanges.length) {
+
+				range = __textEngine.textFormatRanges[i];
+				range.format.__merge (__textFormat);
+
 			}
 			
 		} else {
