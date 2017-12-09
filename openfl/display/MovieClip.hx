@@ -349,6 +349,73 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				switch (frameObject.type) {
 
+//					case PLACE_OBJECT:
+//
+//
+//						if(frameObject.hasCharacter && frameObject.hasMove) {
+//							var oldInstance : FrameSymbolInstance = null;
+//							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+//
+//								oldInstance = currentInstancesByFrameObjectID.get(currentFrameObjectIDbyDepth.get(frameObject.depth));
+//								currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+//								currentFrameObjectIDbyDepth.remove(frameObject.depth);
+//							}
+//
+//							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+//
+//							if (instance != null) {
+//
+//								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
+//								currentInstancesByFrameObjectID.set (frameObject.id, instance);
+//								__updateDisplayObject (instance.displayObject, frameObject);
+//
+//								if(oldInstance != null) {
+//									if(frameObject.name == null) {
+//										instance.displayObject.name = oldInstance.displayObject.name;
+//									}
+//									if(frameObject.matrix == null) {
+//										instance.displayObject.transform.matrix = oldInstance.displayObject.transform.matrix;
+//									}
+//									if(frameObject.colorTransform == null) {
+//										instance.displayObject.transform.colorTransform = oldInstance.displayObject.transform.colorTransform;
+//									}
+//									if(frameObject.filters == null) {
+//										instance.displayObject.filters = oldInstance.displayObject.filters;
+//									}
+//								}
+//
+//							}
+//						} else if (frameObject.hasCharacter) {
+//							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+//
+//							if (instance != null) {
+//								if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+//									currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+//								}
+//								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
+//								currentInstancesByFrameObjectID.set (frameObject.id, instance);
+//								__updateDisplayObject (instance.displayObject, frameObject);
+//
+//							}
+//						}else if (frameObject.hasMove) {
+//							instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
+//
+//							if (instance != null) {
+//
+//								__updateDisplayObject (instance.displayObject, frameObject);
+//
+//							}
+//						}
+//
+//
+//					case REMOVE_OBJECT:
+////TODO:LC make destroy work based on depth not frameObject.id. first need to set depth field in SWFLiteExporter
+//						currentFrameObjectIDbyDepth.remove(frameObject.depth);
+
+
+//TODO:LC remove CREATE, UPDATE, DESTROY, REPLACE_AT_DEPTH once assets have been reprocessed with new modifications to SWFLiteExporter to use PLACE_OBJECT and REMOVE_OBJECT
+
+//TODO:LC refactor to make more efficient by just using depth instead frameObject.id in many places throughout this function. also verify __fromSymbol, __enterFrame, and __goto are updated to match wherever necessary
 					case CREATE:
 
 						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
@@ -367,15 +434,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						instance = currentInstancesByFrameObjectID.get (frameObject.id);
 
-						if (instance != null && instance.displayObject != null) {
+						if (instance != null) {
 
 							__updateDisplayObject (instance.displayObject, frameObject);
 
 						}
 
 					case DESTROY:
-
-						currentFrameObjectIDbyDepth.remove(frameObject.depth);
 						currentInstancesByFrameObjectID.remove (frameObject.id);
 
 					case REPLACE_AT_DEPTH :

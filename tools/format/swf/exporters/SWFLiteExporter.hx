@@ -602,6 +602,8 @@ class SWFLiteExporter {
 				
 				frameObject.name = placeTag.instanceName;
 
+				//TODO: frameObject.hasCharacter = placeTag.hasCharacter;
+				//TODO: frameObject.hasMove = placeTag.hasMove;
 				if(placeTag.hasCharacter && placeTag.hasMove) {
 					frameObject.type = FrameObjectType.REPLACE_AT_DEPTH;
 					dontDestroyAtDepths.push(placeTag.depth);
@@ -611,7 +613,7 @@ class SWFLiteExporter {
 					frameObject.type = FrameObjectType.CREATE;
 					
 				} else {
-					
+
 					frameObject.type = FrameObjectType.UPDATE;
 					
 				}
@@ -704,6 +706,7 @@ class SWFLiteExporter {
 
 						frameObject = new FrameObject ();
 						frameObject.id = id;
+						//TODO: frameObject.depth =
 						frameObject.type = FrameObjectType.DESTROY;
 
 						if (frame.objects == null) {
