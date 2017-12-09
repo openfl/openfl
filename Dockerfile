@@ -1,4 +1,4 @@
-ARG LIME_VERSION=develop
+ARG LIME_VERSION=latest
 
 FROM openfl/lime:${LIME_VERSION}
 
