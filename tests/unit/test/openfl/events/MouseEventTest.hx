@@ -102,6 +102,15 @@ class MouseEventTest {
 		grandChild2.y = 200; 
 		child_.addChild(grandChild2);
 		
+		var grandChild2Cover: Sprite = new Sprite();
+		grandChild2Cover.x = -50;
+		grandChild2Cover.y = 200;
+		grandChild2Cover.name = "grandChild2Cover";
+		grandChild2Cover.graphics.beginFill(0x0000FF);
+		grandChild2Cover.graphics.drawRect(0, 0, grandChild2.width, grandChild2.height);
+		grandChild2Cover.graphics.endFill();
+		grandChild2Cover.mouseEnabled = grandChild2Cover.mouseChildren = false;
+		child_.addChild(grandChild2Cover);
 		
 		grandParent.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		parent_.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
