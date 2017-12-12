@@ -23,7 +23,7 @@ import openfl.text.Font;
 	private static function __init__ () {
 		
 		var p = untyped AssetCache.prototype;
-		untyped Object.defineProperty (p, "enabled", { get: p.get_enabled, set: p.set_enabled });
+		untyped global.Object.defineProperty (p, "enabled", { get: p.get_enabled, set: p.set_enabled });
 		
 	}
 	#end

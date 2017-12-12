@@ -307,7 +307,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	private static function __init__ () {
 		
 		var p = untyped ByteArrayData.prototype;
-		untyped window.Object.defineProperties (p, {
+		untyped global.Object.defineProperties (p, {
 			"bytesAvailable": { get: p.get_bytesAvailable, set: p.set_byteAvailable },
 			"endian": { get: p.get_endian, set: p.set_endian },
 			//"length": { get: p.get_length, set: p.set_length }

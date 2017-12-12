@@ -45,7 +45,7 @@ class SharedObject extends EventDispatcher {
 	private static function __init__ () {
 		
 		var p = untyped SharedObject.prototype;
-		untyped window.Object.defineProperty (p, "size", { get: p.get_size });
+		untyped global.Object.defineProperty (p, "size", { get: p.get_size });
 		
 	}
 	#end

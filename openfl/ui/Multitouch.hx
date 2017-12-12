@@ -18,7 +18,7 @@ import openfl.Vector;
 	private static function __init__ () {
 		
 		untyped Object.defineProperties (Multitouch, {
-			"supportsTouchEvents": { get: Multitouch.get_supportsTouchEvents }
+			"supportsTouchEvents": { get: function () { return Multitouch.get_supportsTouchEvents (); } }
 		});
 		
 	}

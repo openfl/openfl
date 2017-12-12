@@ -23,8 +23,8 @@ import cpp.vm.Gc;
 	private static function __init__ () {
 		
 		untyped Object.defineProperties (System, {
-			"totalMemory": { get: System.get_totalMemory },
-			"vmVersion": { get: System.get_vmVersion },
+			"totalMemory": { get: function () { return System.get_totalMemory (); } },
+			"vmVersion": { get: function () { return System.get_vmVersion (); } },
 		});
 		
 	}

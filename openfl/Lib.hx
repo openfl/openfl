@@ -42,8 +42,8 @@ import js.Browser;
 	private static function __init__ () {
 		
 		untyped Object.defineProperties (Lib, {
-			"application": { get: Lib.get_application },
-			"current": { get: Lib.get_current }
+			"application": { get: function () { return Lib.get_application (); } },
+			"current": { get: function () { return Lib.get_current (); } }
 		});
 		
 	}

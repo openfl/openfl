@@ -28,8 +28,8 @@ class Clipboard {
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped window.Object.defineProperty (Clipboard, "generalClipboard", { get: Clipboard.get_generalClipboard });
-		untyped window.Object.defineProperty (Clipboard.prototype, "formats", { get: Clipboard.prototype.get_formats });
+		untyped global.Object.defineProperty (Clipboard, "generalClipboard", { get: function () { return Clipboard.get_generalClipboard (); } });
+		untyped global.Object.defineProperty (Clipboard.prototype, "formats", { get: Clipboard.prototype.get_formats });
 		
 	}
 	#end
