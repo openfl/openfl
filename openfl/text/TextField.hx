@@ -184,7 +184,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (__defaultTextFormat == null) {
 			
-			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, null, "", TextFormatAlign.LEFT, 0, 0, 0, 0);
+			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
 			__defaultTextFormat.blockIndent = 0;
 			__defaultTextFormat.bullet = false;
 			__defaultTextFormat.letterSpacing = 0;
