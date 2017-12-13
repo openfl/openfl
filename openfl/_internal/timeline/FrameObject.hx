@@ -24,6 +24,8 @@ class FrameObject {
 	public var id:Int;	//Also matches the tag index of the PlaceObject tag that placed this object on the display list
 	public var matrix:Matrix;
 	public var name:String;
+	public var hasCharacter:Bool;
+	public var hasMove:Bool;
 	public var symbol:Int;
 	public var type:FrameObjectType;
 	public var visible:Null<Bool>;

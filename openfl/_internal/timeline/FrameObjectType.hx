@@ -6,6 +6,7 @@ enum FrameObjectType {
 	CREATE;
 	UPDATE;
 	DESTROY;
-	REPLACE_AT_DEPTH;
+	PLACE_OBJECT;
+	REMOVE_OBJECT;
 	
 }
