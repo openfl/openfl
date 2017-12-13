@@ -36,7 +36,7 @@ class Accelerometer extends EventDispatcher {
 		
 		var p = untyped Accelerometer.prototype;
 		untyped Object.defineProperty (p, "muted", { get: p.get_muted, set: p.set_muted });
-		untyped Object.defineProperties (Accelerometer, "isSupported", { get: function () { return Accelerometer.get_isSupported (); } });
+		untyped Object.defineProperty (Accelerometer, "isSupported", { get: function () { return Accelerometer.get_isSupported (); } });
 		
 	}
 	#end
