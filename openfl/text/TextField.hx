@@ -962,7 +962,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				var url = group.format.url;
 				
-				if (url != "") {
+				if (url != null && url != "") {
 					
 					if (StringTools.startsWith (url, "event:")) {
 						
