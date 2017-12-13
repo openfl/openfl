@@ -72,6 +72,7 @@ class HTMLParser {
 			}
 			
 			var formatStack = [ textFormat.clone () ];
+			var tagStack = [];
 			var sub:String;
 			var noLineBreak = false;
 			
@@ -87,7 +88,15 @@ class HTMLParser {
 				var format:TextFormat;
 				
 				if (isClosingTag) {
-					
+
+					if (tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase()) {
+
+						trace('Invalid HTML, unexpected closing tag ignored: ' + tagName);
+						continue;
+
+					}
+
+					tagStack.pop();
 					formatStack.pop ();
 					format = formatStack[formatStack.length - 1].clone ();
 					
@@ -231,6 +240,7 @@ class HTMLParser {
 						}
 						
 						formatStack.push (format);
+						tagStack.push(tagName);
 						
 						if (start < segment.length) {
 							
