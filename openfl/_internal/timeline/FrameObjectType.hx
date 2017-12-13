@@ -7,6 +7,4 @@ enum FrameObjectType {
 	UPDATE;
 	DESTROY;
 	PLACE_OBJECT;
-	REMOVE_OBJECT;
-	
 }

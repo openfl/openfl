@@ -566,8 +566,6 @@ class SWFLiteExporter {
 			instances.splice (0, instances.length);
 			
 			frame.objects = [];
-
-			var dontDestroyAtDepths : Array<Int> = new Array();
 			
 			for (object in frameData.getObjectsSortedByDepth ()) {
 				
@@ -605,7 +603,6 @@ class SWFLiteExporter {
 				frameObject.hasCharacter = placeTag.hasCharacter;
 				frameObject.hasMove = placeTag.hasMove;
 				frameObject.type = FrameObjectType.PLACE_OBJECT;
-				dontDestroyAtDepths.push(placeTag.depth);
 				
 				if (placeTag.matrix != null) {
 					
@@ -675,43 +672,6 @@ class SWFLiteExporter {
 				}
 				
 				frame.objects.push (frameObject);
-				
-			}
-			
-			for (id in lastModified.keys ()) {
-				
-				if (instances.indexOf (id) == -1) {
-
-					var depth = -1;
-					var shouldDestroy = true;
-					for(lastFrameObject in symbol.frames[symbol.frames.length -1].objects){
-						if(lastFrameObject.id == id){
-							depth = lastFrameObject.depth;
-							if(dontDestroyAtDepths.indexOf(lastFrameObject.depth) >= 0) {
-								shouldDestroy = false;
-								break;
-							}
-						}
-					}
-
-					if(shouldDestroy) {
-						lastModified.remove (id);
-
-						frameObject = new FrameObject ();
-						frameObject.id = id;
-						frameObject.depth = depth;
-						frameObject.type = FrameObjectType.REMOVE_OBJECT;
-
-						if (frame.objects == null) {
-
-							frame.objects = [];
-
-						}
-
-						frame.objects.push (frameObject);
-					}
-					
-				}
 				
 			}
 			
