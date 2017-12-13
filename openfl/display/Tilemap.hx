@@ -39,13 +39,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public var numTiles (default, null):Int;
 	@:beta public var shader:Shader;
-	public var tileset (default, set):Tileset;
+	public var tileset (get, set):Tileset;
 	
 	#if !flash
 	public var smoothing:Bool;
 	#end
 	
 	private var __tiles:Vector<Tile>;
+	private var __tileset:Tileset;
 	private var __tileArray:TileArray;
 	private var __tileArrayDirty:Bool;
 	
@@ -55,11 +56,21 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		var p = untyped Tilemap.prototype;
+		untyped Object.defineProperty (p, "tileset", { get: p.get_tileset, set: p.set_tileset });
+		
+	}
+	#end
+	
+	
 	public function new (width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true) {
 		
 		super ();
 		
-		this.tileset = tileset;
+		__tileset = tileset;
 		this.smoothing = smoothing;
 		
 		__tiles = new Vector ();
@@ -511,10 +522,17 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
+	private function get_tileset ():Tileset {
+		
+		return __tileset;
+		
+	}
+	
+	
 	private function set_tileset (value:Tileset):Tileset {
 		
 		__tileArrayDirty = true;
-		return this.tileset = value;
+		return __tileset = value;
 		
 	}
 	

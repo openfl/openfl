@@ -65,7 +65,7 @@ class GLTilemap {
 		
 		var tileArray = tilemap.__tileArray;
 		var defaultShader = shader;
-		var defaultTileset = tilemap.tileset;
+		var defaultTileset = tilemap.__tileset;
 		
 		tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
 		
@@ -116,7 +116,7 @@ class GLTilemap {
 			if (tileset == null) tileset = defaultTileset;
 			if (tileset == null) continue;
 			
-			if (tileset.bitmapData != cacheBitmapData && cacheBitmapData != null) {
+			if (tileset.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
 				
 				flush = true;
 				
@@ -158,11 +158,11 @@ class GLTilemap {
 				
 			}
 			
-			cacheBitmapData = tileset.bitmapData;
+			cacheBitmapData = tileset.__bitmapData;
 			
-			if (i == drawCount && tileset.bitmapData != null) {
+			if (i == drawCount && tileset.__bitmapData != null) {
 				
-				shader.data.uImage0.input = tileset.bitmapData;
+				shader.data.uImage0.input = tileset.__bitmapData;
 				renderSession.shaderManager.updateShader (shader);
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
@@ -198,7 +198,7 @@ class GLTilemap {
 		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		
 		var tileArray = tilemap.__tileArray;
-		var defaultTileset = tilemap.tileset;
+		var defaultTileset = tilemap.__tileset;
 		
 		tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
 		
@@ -228,7 +228,7 @@ class GLTilemap {
 			if (tileset == null) tileset = defaultTileset;
 			if (tileset == null) continue;
 			
-			if (tileset.bitmapData != cacheBitmapData && cacheBitmapData != null) {
+			if (tileset.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
 				
 				flush = true;
 				
@@ -250,11 +250,11 @@ class GLTilemap {
 				
 			}
 			
-			cacheBitmapData = tileset.bitmapData;
+			cacheBitmapData = tileset.__bitmapData;
 			
-			if (i == drawCount && tileset.bitmapData != null) {
+			if (i == drawCount && tileset.__bitmapData != null) {
 				
-				shader.data.uImage0.input = tileset.bitmapData;
+				shader.data.uImage0.input = tileset.__bitmapData;
 				renderSession.shaderManager.updateShader (shader);
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				

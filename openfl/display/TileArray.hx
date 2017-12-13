@@ -278,8 +278,8 @@ import openfl.Vector;
 						
 					}
 					
-					bitmapWidth = tileset.bitmapData.width;
-					bitmapHeight = tileset.bitmapData.height;
+					bitmapWidth = tileset.__bitmapData.width;
+					bitmapHeight = tileset.__bitmapData.height;
 					uvX = tileRect.x / bitmapWidth;
 					uvY = tileRect.y / bitmapHeight;
 					uvWidth = tileRect.right / bitmapWidth;

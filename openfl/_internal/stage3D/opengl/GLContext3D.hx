@@ -735,7 +735,7 @@ class GLContext3D {
 		
 		__setViewport (0, 0, width, height);
 		
-		if (context.enableErrorChecking) {
+		if (context.__enableErrorChecking) {
 			
 			var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
 			

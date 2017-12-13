@@ -54,7 +54,7 @@ import openfl.Vector;
 	public var backBufferHeight (default, null):Int = 0;
 	public var backBufferWidth (default, null):Int = 0;
 	public var driverInfo (default, null):String = "OpenGL (Direct blitting)";
-	public var enableErrorChecking (default, set):Bool = false;
+	public var enableErrorChecking (get, set):Bool;
 	public var maxBackBufferHeight (default, null):Int;
 	public var maxBackBufferWidth (default, null):Int;
 	public var profile (default, null):Context3DProfile = BASELINE;
@@ -65,6 +65,7 @@ import openfl.Vector;
 	private var __backBufferWantsBestResolution:Bool;
 	private var __depthRenderBuffer:GLRenderbuffer;
 	private var __depthStencilRenderBuffer:GLRenderbuffer;
+	private var __enableErrorChecking:Bool;
 	private var __fragmentConstants:Float32Array;
 	private var __framebuffer:GLFramebuffer;
 	private var __frameCount:Int;
@@ -356,10 +357,17 @@ import openfl.Vector;
 	
 	
 	
-	public function set_enableErrorChecking (value:Bool):Bool {
+	private function get_enableErrorChecking ():Bool {
+		
+		return __enableErrorChecking;
+		
+	}
+	
+	
+	private function set_enableErrorChecking (value:Bool):Bool {
 		
 		GLContext3D.setEnableErrorChecking (value);
-		return enableErrorChecking = value;
+		return __enableErrorChecking = value;
 		
 	}
 	

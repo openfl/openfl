@@ -1263,7 +1263,7 @@ class BitmapData implements IBitmapDrawable {
 		#if !openfljs
 		if (Std.is (secondObject, Bitmap)) {
 			
-			secondObject = cast (secondObject, Bitmap).bitmapData;
+			secondObject = cast (secondObject, Bitmap).__bitmapData;
 			
 		}
 		#end
