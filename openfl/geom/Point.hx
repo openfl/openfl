@@ -24,7 +24,7 @@ class Point {
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Point.prototype, "length", { get: Point.prototype.get_length });
+		untyped Object.defineProperty (Point.prototype, "length", { get: untyped __js__ ("function () { return this.get_length (); }") });
 		
 	}
 	#end

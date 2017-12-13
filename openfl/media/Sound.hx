@@ -35,10 +35,9 @@ class Sound extends EventDispatcher {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Sound.prototype;
-		untyped Object.defineProperties (p, {
-			"id3": { get: p.get_id3 },
-			"length": { get: p.get_length }
+		untyped Object.defineProperties (Sound.prototype, {
+			"id3": { get: untyped __js__ ("function () { return this.get_id3 (); }") },
+			"length": { get: untyped __js__ ("function () { return this.get_length (); }") },
 		});
 		
 	}

@@ -31,10 +31,9 @@ class Vector3D {
 			"Z_AXIS": { get: function () { return Vector3D.get_Z_AXIS (); } }
 		});
 		
-		var p = untyped Vector3D.prototype;
-		untyped Object.defineProperties (p, {
-			"length": { get: p.get_length },
-			"lengthSquared": { get: p.get_lengthSquared }
+		untyped Object.defineProperties (Vector3D.prototype, {
+			"length": { get: untyped __js__ ("function () { return this.get_length (); }") },
+			"lengthSquared": { get: untyped __js__ ("function () { return this.get_lengthSquared (); }") },
 		});
 		
 	}

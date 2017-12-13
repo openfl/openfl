@@ -42,16 +42,15 @@ import openfl.geom.Rectangle;
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped GlowFilter.prototype;
-		untyped Object.defineProperties (p, {
-			"alpha": { get: p.get_alpha, set: p.set_alpha },
-			"blurX": { get: p.get_blurX, set: p.set_blurY },
-			"blurY": { get: p.get_blurY, set: p.set_blurY },
-			"color": { get: p.get_color, set: p.set_color },
-			"inner": { get: p.get_inner, set: p.set_inner },
-			"knockout": { get: p.get_knockout, set: p.set_knockout },
-			"quality": { get: p.get_quality, set: p.set_quality },
-			"strength": { get: p.get_strength, set: p.set_strength },
+		untyped Object.defineProperties (GlowFilter.prototype, {
+			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+			"blurX": { get: untyped __js__ ("function () { return this.get_blurX (); }"), set: untyped __js__ ("function (v) { return this.set_blurX (v); }") },
+			"blurY": { get: untyped __js__ ("function () { return this.get_blurY (); }"), set: untyped __js__ ("function (v) { return this.set_blurY (v); }") },
+			"color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+			"inner": { get: untyped __js__ ("function () { return this.get_inner (); }"), set: untyped __js__ ("function (v) { return this.set_inner (v); }") },
+			"knockout": { get: untyped __js__ ("function () { return this.get_knockout (); }"), set: untyped __js__ ("function (v) { return this.set_knockout (v); }") },
+			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
+			"strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
 		});
 		
 	}

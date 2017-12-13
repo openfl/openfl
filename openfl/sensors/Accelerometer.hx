@@ -34,8 +34,7 @@ class Accelerometer extends EventDispatcher {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Accelerometer.prototype;
-		untyped Object.defineProperty (p, "muted", { get: p.get_muted, set: p.set_muted });
+		untyped Object.defineProperty (Accelerometer.prototype, "muted", { get: untyped __js__ ("function () { return this.get_muted (); }"), set: untyped __js__ ("function (v) { return this.set_muted (v); }") });
 		untyped Object.defineProperty (Accelerometer, "isSupported", { get: function () { return Accelerometer.get_isSupported (); } });
 		
 	}

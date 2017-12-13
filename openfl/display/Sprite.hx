@@ -33,7 +33,7 @@ class Sprite extends DisplayObjectContainer {
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Sprite.prototype, "graphics", { get: Sprite.prototype.get_graphics });
+		untyped Object.defineProperty (Sprite.prototype, "graphics", { get: untyped __js__ ("function () { return this.get_graphics (); }") });
 		
 	}
 	#end

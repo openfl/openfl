@@ -40,7 +40,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (DisplayObjectContainer.prototype, "numChildren", { get: DisplayObjectContainer.prototype.get_numChildren });
+		untyped Object.defineProperty (DisplayObjectContainer.prototype, "numChildren", { get: untyped __js__ ("function () { return this.get_numChildren (); }") });
 		
 	}
 	#end

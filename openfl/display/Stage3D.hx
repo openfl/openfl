@@ -59,10 +59,9 @@ class Stage3D extends EventDispatcher {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Stage3D.prototype;
-		untyped Object.defineProperties (p, {
-			"x": { get: p.get_x, set: p.set_x },
-			"y": { get: p.get_y, set: p.set_y }
+		untyped Object.defineProperties (Stage3D.prototype, {
+			"x": { get: untyped __js__ ("function () { return this.get_x (); }"), set: untyped __js__ ("function (v) { return this.set_x (v); }") },
+			"y": { get: untyped __js__ ("function () { return this.get_y (); }"), set: untyped __js__ ("function (v) { return this.set_y (v); }") },
 		});
 		
 	}

@@ -25,10 +25,9 @@ import openfl.media.Sound;
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped SoundChannel.prototype;
-		untyped Object.defineProperties (p, {
-			"position": { get: p.get_position, set: p.set_position },
-			"soundTransform": { get: p.get_soundTransform, set: p.set_soundTransform }
+		untyped Object.defineProperties (SoundChannel.prototype, {
+			"position": { get: untyped __js__ ("function () { return this.get_position (); }"), set: untyped __js__ ("function (v) { return this.set_position (v); }") },
+			"soundTransform": { get: untyped __js__ ("function () { return this.get_soundTransform (); }"), set: untyped __js__ ("function (v) { return this.set_soundTransform (v); }") },
 		});
 		
 	}

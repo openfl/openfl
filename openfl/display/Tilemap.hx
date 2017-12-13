@@ -59,8 +59,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Tilemap.prototype;
-		untyped Object.defineProperty (p, "tileset", { get: p.get_tileset, set: p.set_tileset });
+		untyped Object.defineProperty (Tilemap.prototype, "tileset", { get: untyped __js__ ("function () { return this.get_tileset (); }"), set: untyped __js__ ("function (v) { return this.set_tileset (v); }") });
 		
 	}
 	#end

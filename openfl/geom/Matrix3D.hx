@@ -23,10 +23,9 @@ class Matrix3D {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Matrix3D.prototype;
-		untyped Object.defineProperties (p, {
-			"determinant": { get: p.get_determinant },
-			"position": { get: p.get_position, set: p.set_position }
+		untyped Object.defineProperties (Matrix3D.prototype, {
+			"determinant": { get: untyped __js__ ("function () { return this.get_determinant (); }"), set: untyped __js__ ("function (v) { return this.set_determinant (v); }") },
+			"position": { get: untyped __js__ ("function () { return this.get_position (); }"), set: untyped __js__ ("function (v) { return this.set_position (v); }") },
 		});
 		
 	}

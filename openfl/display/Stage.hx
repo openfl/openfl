@@ -154,15 +154,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Stage.prototype;
-		untyped Object.defineProperties (p, {
-			"color": { get: p.get_color, set: p.set_color },
-			"contentsScaleFactor": { get: p.get_contentsScaleFactor },
-			"displayState": { get: p.get_displayState, set: p.set_displayState },
-			"focus": { get: p.get_focus, set: p.set_focus },
-			"frameRate": { get: p.get_frameRate, set: p.set_frameRate },
-			"fullScreenHeight": { get: p.get_fullScreenHeight },
-			"fullScreenWidth": { get: p.get_fullScreenWidth }
+		untyped Object.defineProperties (Stage.prototype, {
+			"color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+			"contentsScaleFactor": { get: untyped __js__ ("function () { return this.get_contentsScaleFactor (); }") },
+			"displayState": { get: untyped __js__ ("function () { return this.get_displayState (); }"), set: untyped __js__ ("function (v) { return this.set_displayState (v); }") },
+			"focus": { get: untyped __js__ ("function () { return this.get_focus (); }"), set: untyped __js__ ("function (v) { return this.set_focus (v); }") },
+			"frameRate": { get: untyped __js__ ("function () { return this.get_frameRate (); }"), set: untyped __js__ ("function (v) { return this.set_frameRate (v); }") },
+			"fullScreenHeight": { get: untyped __js__ ("function () { return this.get_fullScreenHeight (); }") },
+			"fullScreenWidth": { get: untyped __js__ ("function () { return this.get_fullScreenWidth (); }") },
 		});
 		
 	}

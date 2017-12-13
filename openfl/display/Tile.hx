@@ -65,23 +65,22 @@ class Tile implements ITile {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Tile.prototype;
-		untyped Object.defineProperties (p, {
-			"alpha": { get: p.get_alpha, set: p.set_alpha },
-			"colorTransform": { get: p.get_colorTransform, set: p.set_colorTransform },
-			"id": { get: p.get_id, set: p.set_id },
-			"matrix": { get: p.get_matrix, set: p.set_matrix },
-			"originX": { get: p.get_originX, set: p.set_originX },
-			"originY": { get: p.get_originY, set: p.set_originY },
-			"rect": { get: p.get_rect, set: p.set_rect },
-			"rotation": { get: p.get_rotation, set: p.set_rotation },
-			"scaleX": { get: p.get_scaleX, set: p.set_scaleX },
-			"scaleY": { get: p.get_scaleY, set: p.set_scaleY },
-			"shader": { get: p.get_shader, set: p.set_shader },
-			"tileset": { get: p.get_tileset, set: p.set_tileset },
-			"visible": { get: p.get_visible, set: p.set_visible },
-			"x": { get: p.get_x, set: p.set_x },
-			"y": { get: p.get_y, set: p.set_y }
+		untyped Object.defineProperties (Tile.prototype, {
+			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+			"colorTransform": { get: untyped __js__ ("function () { return this.get_colorTransform (); }"), set: untyped __js__ ("function (v) { return this.set_colorTransform (v); }") },
+			"id": { get: untyped __js__ ("function () { return this.get_id (); }"), set: untyped __js__ ("function (v) { return this.set_id (v); }") },
+			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
+			"originX": { get: untyped __js__ ("function () { return this.get_originX (); }"), set: untyped __js__ ("function (v) { return this.set_originX (v); }") },
+			"originY": { get: untyped __js__ ("function () { return this.get_originY (); }"), set: untyped __js__ ("function (v) { return this.set_originY (v); }") },
+			"rect": { get: untyped __js__ ("function () { return this.get_rect (); }"), set: untyped __js__ ("function (v) { return this.set_rect (v); }") },
+			"rotation": { get: untyped __js__ ("function () { return this.get_rotation (); }"), set: untyped __js__ ("function (v) { return this.set_rotation (v); }") },
+			"scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
+			"scaleY": { get: untyped __js__ ("function () { return this.get_scaleY (); }"), set: untyped __js__ ("function (v) { return this.set_scaleY (v); }") },
+			"shader": { get: untyped __js__ ("function () { return this.get_shader (); }"), set: untyped __js__ ("function (v) { return this.set_shader (v); }") },
+			"tileset": { get: untyped __js__ ("function () { return this.get_tileset (); }"), set: untyped __js__ ("function (v) { return this.set_tileset (v); }") },
+			"visible": { get: untyped __js__ ("function () { return this.get_visible (); }"), set: untyped __js__ ("function (v) { return this.set_visible (v); }") },
+			"x": { get: untyped __js__ ("function () { return this.get_x (); }"), set: untyped __js__ ("function (v) { return this.set_x (v); }") },
+			"y": { get: untyped __js__ ("function () { return this.get_y (); }"), set: untyped __js__ ("function (v) { return this.set_y (v); }") },
 		});
 		
 	}

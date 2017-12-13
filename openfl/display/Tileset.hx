@@ -26,8 +26,7 @@ class Tileset {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Tileset.prototype;
-		untyped Object.defineProperty (p, "bitmapData", { get: p.get_bitmapData, set: p.set_bitmapData });
+		untyped Object.defineProperty (Tileset.prototype, "bitmapData", { get: untyped __js__ ("function () { return this.get_bitmapData (); }"), set: untyped __js__ ("function (v) { return this.set_bitmapData (v); }") });
 		
 	}
 	#end

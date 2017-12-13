@@ -27,8 +27,7 @@ class Font extends LimeFont {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Font.prototype;
-		untyped Object.defineProperty (p, "fontName", { get: p.get_fontName, set: p.set_fontName });
+		untyped Object.defineProperty (Font.prototype, "fontName", { get: untyped __js__ ("function () { return this.get_fontName (); }"), set: untyped __js__ ("function (v) { return this.set_fontName (v); }") });
 		
 	}
 	#end

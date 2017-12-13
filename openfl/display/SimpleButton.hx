@@ -53,13 +53,12 @@ class SimpleButton extends InteractiveObject {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped SimpleButton.prototype;
-		untyped Object.defineProperties (p, {
-			"downState": { get: p.get_downState, set: p.set_downState },
-			"hitTestState": { get: p.get_hitTestState, set: p.set_hitTestState },
-			"overState": { get: p.get_overState, set: p.set_overState },
-			"soundTransform": { get: p.get_soundTransform, set: p.set_soundTransform },
-			"upState": { get: p.get_upState, set: p.set_upState }
+		untyped Object.defineProperties (SimpleButton.prototype, {
+			"downState": { get: untyped __js__ ("function () { return this.get_downState (); }"), set: untyped __js__ ("function (v) { return this.set_downState (v); }") },
+			"hitTestState": { get: untyped __js__ ("function () { return this.get_hitTestState (); }"), set: untyped __js__ ("function (v) { return this.set_hitTestState (v); }") },
+			"overState": { get: untyped __js__ ("function () { return this.get_overState (); }"), set: untyped __js__ ("function (v) { return this.set_overState (v); }") },
+			"soundTransform": { get: untyped __js__ ("function () { return this.get_soundTransform (); }"), set: untyped __js__ ("function (v) { return this.set_soundTransform (v); }") },
+			"upState": { get: untyped __js__ ("function () { return this.get_upState (); }"), set: untyped __js__ ("function (v) { return this.set_upState (v); }") },
 		});
 		
 	}

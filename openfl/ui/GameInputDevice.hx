@@ -27,9 +27,8 @@ import openfl.utils.ByteArray;
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped GameInputDevice.prototype;
-		untyped Object.defineProperties (p, {
-			"numControls": { get: p.get_numControls }
+		untyped Object.defineProperties (GameInputDevice.prototype, {
+			"numControls": { get: untyped __js__ ("function () { return this.get_numControls (); }") },
 		});
 		
 	}
