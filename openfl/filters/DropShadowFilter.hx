@@ -71,7 +71,6 @@ import openfl.geom.Rectangle;
 		
 		__offsetX = 0;
 		__offsetY = 0;
-		__updateSize ();
 		
 		__distance = distance;
 		__angle = angle;
@@ -84,6 +83,8 @@ import openfl.geom.Rectangle;
 		__inner = inner;
 		__knockout = knockout;
 		__hideObject = hideObject;
+		
+		__updateSize ();
 		
 		__needSecondBitmapData = true;
 		__preserveObject = !__hideObject;

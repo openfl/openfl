@@ -45,6 +45,7 @@ import js.html.Element;
 #end
 
 @:access(openfl.events.Event)
+@:access(openfl.display.Bitmap)
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
