@@ -465,6 +465,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				if (instance.clipDepth > 0) {
 
 					currentMasks.push (instance);
+					currentInstances.push (instance);
 
 				} else {
 
@@ -553,22 +554,23 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			maskApplied = false;
 
-			for (mask in currentMasks) {
+			if(child == targetChild && instance.clipDepth <= 0) { //dont apply masks to masks
+				for (mask in currentMasks) {
 
-				if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
+					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
 
-					child.mask = mask.displayObject;
-					maskApplied = true;
-					break;
+						child.mask = mask.displayObject;
+						maskApplied = true;
+						break;
+
+					}
 
 				}
+				if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
 
-			}
+					child.mask = null;
 
-			if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
-
-				child.mask = null;
-
+				}
 			}
 			childrenIndex++;
 			currentInstancesIndex++;
@@ -742,6 +744,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				if (instance.clipDepth > 0) {
 
 					currentMasks.push (instance);
+					currentInstances.push (instance);
 
 				} else {
 
@@ -830,22 +833,24 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			maskApplied = false;
 
-			for (mask in currentMasks) {
+			if(child == targetChild && instance.clipDepth <= 0) { //dont apply masks to masks
+				for (mask in currentMasks) {
 
-				if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
+					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
 
-					child.mask = mask.displayObject;
-					maskApplied = true;
-					break;
+						child.mask = mask.displayObject;
+						maskApplied = true;
+						break;
+
+					}
 
 				}
 
-			}
+				if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
 
-			if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
+					child.mask = null;
 
-				child.mask = null;
-
+				}
 			}
 			childrenIndex++;
 			currentInstancesIndex++;
