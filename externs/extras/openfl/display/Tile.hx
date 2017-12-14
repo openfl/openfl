@@ -8,20 +8,20 @@ import openfl.geom.Matrix;
 extern class Tile {
 	
 	
-	public var alpha (default, set):Float;
+	public var alpha (get, set):Float;
 	@:beta public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
-	public var id (default, set):Int;
-	public var matrix (default, set):Matrix;
-	public var originX (default, set):Float;
-	public var originY (default, set):Float;
+	public var id (get, set):Int;
+	public var matrix (get, set):Matrix;
+	public var originX (get, set):Float;
+	public var originY (get, set):Float;
 	public var parent (default, null):Tilemap;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	@:beta public var shader (default, set):Shader;
-	public var tileset (default, set):Tileset;
-	public var visible (default, set):Bool;
+	@:beta public var shader (get, set):Shader;
+	public var tileset (get, set):Tileset;
+	public var visible (get, set):Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	

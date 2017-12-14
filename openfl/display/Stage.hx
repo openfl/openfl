@@ -36,6 +36,7 @@ import openfl._internal.renderer.console.ConsoleRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.TouchData;
 import openfl.display.DisplayObjectContainer;
 import openfl.errors.Error;
 import openfl.events.Event;
@@ -57,10 +58,13 @@ import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-import openfl.utils.TouchData;
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
+#end
+
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
 #end
 
 #if (js && html5)
@@ -83,7 +87,6 @@ import js.Browser;
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
-@:access(openfl.utils.TouchData)
 
 
 class Stage extends DisplayObjectContainer implements IModule {
@@ -142,12 +145,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __rendering:Bool;
 	private var __rollOutStack:Array<DisplayObject>;
 	private var __stack:Array<DisplayObject>;
+	private var __touchData:Map<Int, TouchData>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
-	
-	private var __touchData:Map<Int, TouchData>;
+	private var __wasFullscreen:Bool;
 
 	public static var frameID:UInt = 1;
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Stage.prototype, {
+			"color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+			"contentsScaleFactor": { get: untyped __js__ ("function () { return this.get_contentsScaleFactor (); }") },
+			"displayState": { get: untyped __js__ ("function () { return this.get_displayState (); }"), set: untyped __js__ ("function (v) { return this.set_displayState (v); }") },
+			"focus": { get: untyped __js__ ("function () { return this.get_focus (); }"), set: untyped __js__ ("function (v) { return this.set_focus (v); }") },
+			"frameRate": { get: untyped __js__ ("function () { return this.get_frameRate (); }"), set: untyped __js__ ("function (v) { return this.set_frameRate (v); }") },
+			"fullScreenHeight": { get: untyped __js__ ("function () { return this.get_fullScreenHeight (); }") },
+			"fullScreenWidth": { get: untyped __js__ ("function () { return this.get_fullScreenWidth (); }") },
+		});
+		
+	}
+	#end
 	
 	public function new (window:Window, color:Null<Int> = null) {
 		
@@ -183,6 +202,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
 		__renderDirty = true;
+		__wasFullscreen = window.fullscreen;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -869,9 +889,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__resize ();
 			
-			if (__displayState == NORMAL) {
+			if (!__wasFullscreen) {
 				
-				__displayState = FULL_SCREEN_INTERACTIVE;
+				__wasFullscreen = true;
+				if (__displayState == NORMAL) __displayState = FULL_SCREEN_INTERACTIVE;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 				
 			}
@@ -936,8 +957,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderDirty = true;
 			__resize ();
 			
-			if (__displayState != NORMAL && !window.fullscreen) {
+			if (__wasFullscreen && !window.fullscreen) {
 				
+				__wasFullscreen = false;
 				__displayState = NORMAL;
 				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 				
@@ -980,6 +1002,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			#if hxtelemetry
 			Telemetry.__advanceFrame ();
+			#end
+			
+			#if gl_stats
+				GLStats.resetDrawCalls();
 			#end
 			
 			if (__renderer != null && (Stage3D.__active || stage3Ds[0].__contextRequested)) {
@@ -1209,14 +1235,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#elseif neko
 			neko.Lib.rethrow (e);
 			#elseif js
-			var exc = @:privateAccess haxe.CallStack.lastException;
-			if (exc != null && exc.stack != null && exc.stack != "") {
-				untyped __js__ ("console.log") (exc.stack);
-				e.stack = exc.stack;
-			} else {
-				var msg = CallStack.toString (CallStack.callStack ());
-				untyped __js__ ("console.log") (msg);
-			}
+			try {
+				var exc = @:privateAccess haxe.CallStack.lastException;
+				if (exc != null && Reflect.hasField (exc, "stack") && exc.stack != null && exc.stack != "") {
+					untyped __js__ ("console.log") (exc.stack);
+					e.stack = exc.stack;
+				} else {
+					var msg = CallStack.toString (CallStack.callStack ());
+					untyped __js__ ("console.log") (msg);
+				}
+			} catch (e2:Dynamic) {}
 			untyped __js__ ("throw e");
 			#elseif cs
 			throw e;
@@ -1338,6 +1366,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 				
 				__mouseDownLeft = target;
+				MouseEvent.__buttonDown = true;
 			
 			case MouseEvent.MIDDLE_MOUSE_DOWN:
 				
@@ -1350,6 +1379,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case MouseEvent.MOUSE_UP:
 				
 				if (__mouseDownLeft != null) {
+					
+					MouseEvent.__buttonDown = false;
 					
 					if (__mouseX < 0 || __mouseY < 0) {
 						
@@ -1613,16 +1644,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var touchId:Int = touch.id;
 		var touchData:TouchData = null;
 		
-		if (__touchData.exists(touchId)) {
+		if (__touchData.exists (touchId)) {
 			
-			touchData = __touchData.get(touchId);
+			touchData = __touchData.get (touchId);
 			
 		} else {
 			
 			touchData = TouchData.__pool.get ();
-			touchData.reset();
+			touchData.reset ();
 			touchData.touch = touch;
-			__touchData.set(touchId, touchData);
+			__touchData.set (touchId, touchData);
 			
 		}
 		
@@ -1747,8 +1778,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (releaseTouchData) {
 			
-			__touchData.remove(touchId);
-			touchData.reset();
+			__touchData.remove (touchId);
+			touchData.reset ();
 			TouchData.__pool.release (touchData);
 			
 		}

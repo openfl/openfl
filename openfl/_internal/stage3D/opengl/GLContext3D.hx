@@ -2,6 +2,7 @@ package openfl._internal.stage3D.opengl;
 
 
 import lime.graphics.GLRenderContext;
+import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import openfl._internal.stage3D.GLUtils;
@@ -32,6 +33,11 @@ import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -253,11 +259,11 @@ class GLContext3D {
 		if (window != null) {
 			
 			var image = window.renderer.readPixels ();
-			destination.image.copyPixels (image, image.rect, new Vector2 ());
+			var heightOffset = image.height - context.backBufferHeight;
+			
+			destination.image.copyPixels (image, new LimeRectangle (Std.int (context.__stage3D.x), Std.int (context.__stage3D.y + heightOffset), context.backBufferWidth, context.backBufferHeight), new Vector2 ());
 			
 		}
-		
-		// TODO
 		
 	}
 	
@@ -284,6 +290,9 @@ class GLContext3D {
 		gl.drawElements (gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
 		GLUtils.CheckGLError ();
 		
+		#if gl_stats
+			GLStats.incrementDrawCall (DrawCallContext.STAGE3D);
+		#end
 		// __statsIncrement (Context3DTelemetry.DRAW_CALLS);
 		
 	}
@@ -726,7 +735,7 @@ class GLContext3D {
 		
 		__setViewport (0, 0, width, height);
 		
-		if (context.enableErrorChecking) {
+		if (context.__enableErrorChecking) {
 			
 			var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
 			

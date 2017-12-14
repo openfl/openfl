@@ -16,20 +16,52 @@ import openfl.geom.Rectangle;
 @:final class DropShadowFilter extends BitmapFilter {
 	
 	
-	public var alpha (default, set):Float;
-	public var angle (default, set):Float = 45;
-	public var blurX (default, set):Float = 0;
-	public var blurY (default, set):Float = 0;
-	public var color (default, set):Int;
-	public var distance (default, set):Float = 4;
-	public var hideObject (default, set):Bool;
-	public var inner (default, set):Bool;
-	public var knockout (default, set):Bool;
-	public var quality (default, set):Int;
-	public var strength (default, set):Float;
+	public var alpha (get, set):Float;
+	public var angle (get, set):Float;
+	public var blurX (get, set):Float;
+	public var blurY (get, set):Float;
+	public var color (get, set):Int;
+	public var distance (get, set):Float;
+	public var hideObject (get, set):Bool;
+	public var inner (get, set):Bool;
+	public var knockout (get, set):Bool;
+	public var quality (get, set):Int;
+	public var strength (get, set):Float;
 	
+	private var __alpha:Float;
+	private var __angle:Float;
+	private var __blurX:Float;
+	private var __blurY:Float;
+	private var __color:Int;
+	private var __distance:Float;
+	private var __hideObject:Bool;
+	private var __inner:Bool;
+	private var __knockout:Bool;
 	private var __offsetX:Float;
 	private var __offsetY:Float;
+	private var __quality:Int;
+	private var __strength:Float;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (DropShadowFilter.prototype, {
+			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+			"angle": { get: untyped __js__ ("function () { return this.get_angle (); }"), set: untyped __js__ ("function (v) { return this.set_angle (v); }") },
+			"blurX": { get: untyped __js__ ("function () { return this.get_blurX (); }"), set: untyped __js__ ("function (v) { return this.set_blurX (v); }") },
+			"blurY": { get: untyped __js__ ("function () { return this.get_blurY (); }"), set: untyped __js__ ("function (v) { return this.set_blurY (v); }") },
+			"color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+			"distance": { get: untyped __js__ ("function () { return this.get_distance (); }"), set: untyped __js__ ("function (v) { return this.set_distance (v); }") },
+			"hideObject": { get: untyped __js__ ("function () { return this.get_hideObject (); }"), set: untyped __js__ ("function (v) { return this.set_hideObject (v); }") },
+			"inner": { get: untyped __js__ ("function () { return this.get_inner (); }"), set: untyped __js__ ("function (v) { return this.set_inner (v); }") },
+			"knockout": { get: untyped __js__ ("function () { return this.get_knockout (); }"), set: untyped __js__ ("function (v) { return this.set_knockout (v); }") },
+			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
+			"strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
+		});
+		
+	}
+	#end
 	
 	
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false) {
@@ -38,29 +70,30 @@ import openfl.geom.Rectangle;
 		
 		__offsetX = 0;
 		__offsetY = 0;
+		
+		__distance = distance;
+		__angle = angle;
+		__color = color;
+		__alpha = alpha;
+		__blurX = blurX;
+		__blurY = blurY;
+		__strength = strength;
+		__quality = quality;
+		__inner = inner;
+		__knockout = knockout;
+		__hideObject = hideObject;
+		
 		__updateSize ();
 		
-		this.distance = distance;
-		this.angle = angle;
-		this.color = color;
-		this.alpha = alpha;
-		this.blurX = blurX;
-		this.blurY = blurY;
-		this.strength = strength;
-		this.quality = quality;
-		this.inner = inner;
-		this.knockout = knockout;
-		this.hideObject = hideObject;
-		
 		__needSecondBitmapData = true;
-		__preserveObject = !hideObject;
+		__preserveObject = !__hideObject;
 		
 	}
 	
 	
 	public override function clone ():BitmapFilter {
 		
-		return new DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject);
+		return new DropShadowFilter (__distance, __angle, __color, __alpha, __blurX, __blurY, __strength, __quality, __inner, __knockout, __hideObject);
 		
 	}
 	
@@ -69,16 +102,16 @@ import openfl.geom.Rectangle;
 		
 		// TODO: Support knockout, inner
 		
-		var a = (color >> 24) & 0xFF;
-		var r = (color >> 16) & 0xFF;
-		var g = (color >> 8) & 0xFF;
-		var b = color & 0xFF;
+		var a = (__color >> 24) & 0xFF;
+		var r = (__color >> 16) & 0xFF;
+		var g = (__color >> 8) & 0xFF;
+		var b = __color & 0xFF;
 		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, 1, r, g, b, a));
 		
 		destPoint.x += __offsetX;
 		destPoint.y += __offsetY;
 		
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality, strength);
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality, __strength);
 		
 		if (finalImage == bitmapData.image) return bitmapData;
 		return sourceBitmapData;
@@ -88,12 +121,12 @@ import openfl.geom.Rectangle;
 	
 	private function __updateSize ():Void {
 		
-		__offsetX = Std.int (distance * Math.cos (angle * Math.PI / 180));
-		__offsetY = Std.int (distance * Math.sin (angle * Math.PI / 180));
-		__topExtension = Math.ceil ((__offsetY < 0 ? -__offsetY : 0) + blurY);
-		__bottomExtension = Math.ceil ((__offsetY > 0 ? __offsetY : 0) + blurY);
-		__leftExtension = Math.ceil ((__offsetX < 0 ? -__offsetX : 0) + blurX);
-		__rightExtension = Math.ceil ((__offsetX > 0 ? __offsetX : 0) + blurX);
+		__offsetX = Std.int (__distance * Math.cos (__angle * Math.PI / 180));
+		__offsetY = Std.int (__distance * Math.sin (__angle * Math.PI / 180));
+		__topExtension = Math.ceil ((__offsetY < 0 ? -__offsetY : 0) + __blurY);
+		__bottomExtension = Math.ceil ((__offsetY > 0 ? __offsetY : 0) + __blurY);
+		__leftExtension = Math.ceil ((__offsetX < 0 ? -__offsetX : 0) + __blurX);
+		__rightExtension = Math.ceil ((__offsetX > 0 ? __offsetX : 0) + __blurX);
 		
 	}
 	
@@ -105,62 +138,104 @@ import openfl.geom.Rectangle;
 	
 	
 	
+	private function get_alpha ():Float {
+		
+		return __alpha;
+		
+	}
+	
+	
 	private function set_alpha (value:Float):Float {
 		
-		if (value != alpha) __renderDirty = true;
-		return this.alpha = value;
+		if (value != __alpha) __renderDirty = true;
+		return __alpha = value;
+		
+	}
+	
+	
+	private function get_angle ():Float {
+		
+		return __angle;
 		
 	}
 	
 	
 	private function set_angle (value:Float):Float {
 		
-		if (value != angle) {
-			this.angle = value;
+		if (value != __angle) {
+			__angle = value;
 			__renderDirty = true;
 			__updateSize ();
 		}
 		return value;
+		
+	}
+	
+	
+	private function get_blurX ():Float {
+		
+		return __blurX;
 		
 	}
 	
 	
 	private function set_blurX (value:Float):Float {
 		
-		if (value != blurX) {
-			this.blurX = value;
+		if (value != __blurX) {
+			__blurX = value;
 			__renderDirty = true;
 			__updateSize ();
 		}
 		return value;
+		
+	}
+	
+	
+	private function get_blurY ():Float {
+		
+		return __blurY;
 		
 	}
 	
 	
 	private function set_blurY (value:Float):Float {
 		
-		if (value != blurY) {
-			this.blurY = value;
+		if (value != __blurY) {
+			__blurY = value;
 			__renderDirty = true;
 			__updateSize ();
 		}
 		return value;
+		
+	}
+	
+	
+	private function get_color ():Int {
+		
+		return __color;
 		
 	}
 	
 	
 	private function set_color (value:Int):Int {
 		
-		if (value != color) __renderDirty = true;
-		return this.color = value;
+		if (value != __color) __renderDirty = true;
+		return __color = value;
+		
+	}
+	
+	
+	private function get_distance ():Float {
+		
+		return __distance;
 		
 	}
 	
 	
 	private function set_distance (value:Float):Float {
 		
-		if (value != distance) {
-			this.distance = value;
+		if (value != __distance) {
+			__distance = value;
 			__renderDirty = true;
 			__updateSize ();
 		}
@@ -169,45 +244,80 @@ import openfl.geom.Rectangle;
 	}
 	
 	
+	private function get_hideObject ():Bool {
+		
+		return __hideObject;
+		
+	}
+	
+	
 	private function set_hideObject (value:Bool):Bool {
 		
-		if (value != hideObject) {
+		if (value != __hideObject) {
 			__renderDirty = true;
 			__preserveObject = !value;
 		}
-		return this.hideObject = value;
+		return __hideObject = value;
+		
+	}
+	
+	
+	private function get_inner ():Bool {
+		
+		return __inner;
 		
 	}
 	
 	
 	private function set_inner (value:Bool):Bool {
 		
-		if (value != inner) __renderDirty = true;
-		return this.inner = value;
+		if (value != __inner) __renderDirty = true;
+		return __inner = value;
+		
+	}
+	
+	
+	private function get_knockout ():Bool {
+		
+		return __knockout;
 		
 	}
 	
 	
 	private function set_knockout (value:Bool):Bool {
 		
-		if (value != knockout) __renderDirty = true;
-		return this.knockout = value;
+		if (value != __knockout) __renderDirty = true;
+		return __knockout = value;
+		
+	}
+	
+	
+	private function get_quality ():Int {
+		
+		return __quality;
 		
 	}
 	
 	
 	private function set_quality (value:Int):Int {
 		
-		if (value != quality) __renderDirty = true;
-		return this.quality = value;
+		if (value != __quality) __renderDirty = true;
+		return __quality = value;
+		
+	}
+	
+	
+	private function get_strength ():Float {
+		
+		return __strength;
 		
 	}
 	
 	
 	private function set_strength (value:Float):Float {
 		
-		if (value != strength) __renderDirty = true;
-		return this.strength = value;
+		if (value != __strength) __renderDirty = true;
+		return __strength = value;
 		
 	}
 	

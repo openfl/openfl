@@ -29,6 +29,23 @@ class Rectangle {
 	public var y:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Rectangle.prototype, {
+			"bottom": { get: untyped __js__ ("function () { return this.get_bottom (); }"), set: untyped __js__ ("function (v) { return this.set_bottom (v); }") },
+			"bottomRight": { get: untyped __js__ ("function () { return this.get_bottomRight (); }"), set: untyped __js__ ("function (v) { return this.set_bottomRight (v); }") },
+			"left": { get: untyped __js__ ("function () { return this.get_left (); }"), set: untyped __js__ ("function (v) { return this.set_left (v); }") },
+			"right": { get: untyped __js__ ("function () { return this.get_right (); }"), set: untyped __js__ ("function (v) { return this.set_right (v); }") },
+			"size": { get: untyped __js__ ("function () { return this.get_size (); }"), set: untyped __js__ ("function (v) { return this.set_size (v); }") },
+			"top": { get: untyped __js__ ("function () { return this.get_top (); }"), set: untyped __js__ ("function (v) { return this.set_top (v); }") },
+			"topLeft": { get: untyped __js__ ("function () { return this.get_topLeft (); }"), set: untyped __js__ ("function (v) { return this.set_topLeft (v); }") },
+		});
+		
+	}
+	#end
+	
+	
 	public function new (x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void {
 		
 		this.x = x;

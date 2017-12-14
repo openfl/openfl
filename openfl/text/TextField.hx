@@ -28,12 +28,14 @@ import openfl.display.IShaderDrawable;
 import openfl.display.Shader;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
+import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
 import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.net.URLRequest;
+import openfl.ui.Keyboard;
 import openfl.Lib;
 
 #if (js && html5)
@@ -114,12 +116,55 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	#if (js && html5)
 	private var __div:DivElement;
 	#end
+	
 	#if dom
-		private var __renderedOnCanvasWhileOnDOM:Bool = false;
-		private var __rawHtmlText:String;
-		private var __forceCachedBitmapUpdate:Bool = false;
+	private var __renderedOnCanvasWhileOnDOM:Bool = false;
+	private var __rawHtmlText:String;
+	private var __forceCachedBitmapUpdate:Bool = false;
 	#end
-
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (TextField.prototype, {
+			"antiAliasType": { get: untyped __js__ ("function () { return this.get_antiAliasType (); }"), set: untyped __js__ ("function (v) { return this.set_antiAliasType (v); }") },
+			"autoSize": { get: untyped __js__ ("function () { return this.get_autoSize (); }"), set: untyped __js__ ("function (v) { return this.set_autoSize (v); }") },
+			"background": { get: untyped __js__ ("function () { return this.get_background (); }"), set: untyped __js__ ("function (v) { return this.set_background (v); }") },
+			"backgroundColor": { get: untyped __js__ ("function () { return this.get_backgroundColor (); }"), set: untyped __js__ ("function (v) { return this.set_backgroundColor (v); }") },
+			"border": { get: untyped __js__ ("function () { return this.get_border (); }"), set: untyped __js__ ("function (v) { return this.set_border (v); }") },
+			"borderColor": { get: untyped __js__ ("function () { return this.get_borderColor (); }"), set: untyped __js__ ("function (v) { return this.set_borderColor (v); }") },
+			"bottomScrollV": { get: untyped __js__ ("function () { return this.get_bottomScrollV (); }") },
+			"defaultTextFormat": { get: untyped __js__ ("function () { return this.get_defaultTextFormat (); }"), set: untyped __js__ ("function (v) { return this.set_defaultTextFormat (v); }") },
+			"displayAsPassword": { get: untyped __js__ ("function () { return this.get_displayAsPassword (); }"), set: untyped __js__ ("function (v) { return this.set_displayAsPassword (v); }") },
+			"embedFonts": { get: untyped __js__ ("function () { return this.get_embedFonts (); }"), set: untyped __js__ ("function (v) { return this.set_embedFonts (v); }") },
+			"gridFitType": { get: untyped __js__ ("function () { return this.get_gridFitType (); }"), set: untyped __js__ ("function (v) { return this.set_gridFitType (v); }") },
+			"htmlText": { get: untyped __js__ ("function () { return this.get_htmlText (); }"), set: untyped __js__ ("function (v) { return this.set_htmlText (v); }") },
+			"length": { get: untyped __js__ ("function () { return this.get_length (); }") },
+			"maxChars": { get: untyped __js__ ("function () { return this.get_maxChars (); }"), set: untyped __js__ ("function (v) { return this.set_maxChars (v); }") },
+			"maxScrollH": { get: untyped __js__ ("function () { return this.get_maxScrollH (); }") },
+			"maxScrollV": { get: untyped __js__ ("function () { return this.get_maxScrollV (); }") },
+			"mouseWheelEnabled": { get: untyped __js__ ("function () { return this.get_mouseWheelEnabled (); }"), set: untyped __js__ ("function (v) { return this.set_mouseWheelEnabled (v); }") },
+			"multiline": { get: untyped __js__ ("function () { return this.get_multiline (); }"), set: untyped __js__ ("function (v) { return this.set_multiline (v); }") },
+			"numLines": { get: untyped __js__ ("function () { return this.get_numLines (); }") },
+			"restrict": { get: untyped __js__ ("function () { return this.get_restrict (); }"), set: untyped __js__ ("function (v) { return this.set_restrict (v); }") },
+			"scrollH": { get: untyped __js__ ("function () { return this.get_scrollH (); }"), set: untyped __js__ ("function (v) { return this.set_scrollH (v); }") },
+			"scrollV": { get: untyped __js__ ("function () { return this.get_scrollV (); }"), set: untyped __js__ ("function (v) { return this.set_scrollV (v); }") },
+			"selectable": { get: untyped __js__ ("function () { return this.get_selectable (); }"), set: untyped __js__ ("function (v) { return this.set_selectable (v); }") },
+			"selectionBeginIndex": { get: untyped __js__ ("function () { return this.get_selectionBeginIndex (); }") },
+			"selectionEndIndex": { get: untyped __js__ ("function () { return this.get_selectionEndIndex (); }") },
+			"sharpness": { get: untyped __js__ ("function () { return this.get_sharpness (); }"), set: untyped __js__ ("function (v) { return this.set_sharpness (v); }") },
+			"text": { get: untyped __js__ ("function () { return this.get_text (); }"), set: untyped __js__ ("function (v) { return this.set_text (v); }") },
+			"textColor": { get: untyped __js__ ("function () { return this.get_textColor (); }"), set: untyped __js__ ("function (v) { return this.set_textColor (v); }") },
+			"textHeight": { get: untyped __js__ ("function () { return this.get_textHeight (); }") },
+			"textWidth": { get: untyped __js__ ("function () { return this.get_textWidth (); }") },
+			"type": { get: untyped __js__ ("function () { return this.get_type (); }"), set: untyped __js__ ("function (v) { return this.set_type (v); }") },
+			"wordWrap": { get: untyped __js__ ("function () { return this.get_wordWrap (); }"), set: untyped __js__ ("function (v) { return this.set_wordWrap (v); }") },
+		});
+		
+	}
+	#end
+	
 	
 	public function new () {
 		
@@ -149,6 +194,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, 0, 0));
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+		addEventListener (KeyboardEvent.KEY_DOWN, this_onKeyDown);
 		
 	}
 	
@@ -164,6 +212,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__updateText (__text + text);
 		
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
+		__updateScrollH ();
 		
 	}
 	
@@ -178,18 +227,22 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
 				
-				var x = group.offsetX;
-				
-				for (i in 0...(charIndex - group.startIndex)) {
+				try {
 					
-					x += group.getAdvance (i);
+					var x = group.offsetX;
 					
-				}
-				
-				// TODO: Is this actually right for combining characters?
-				var lastPosition = group.getAdvance (charIndex - group.startIndex);
-				
-				return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
+					for (i in 0...(charIndex - group.startIndex)) {
+						
+						x += group.getAdvance (i);
+						
+					}
+					
+					// TODO: Is this actually right for combining characters?
+					var lastPosition = group.getAdvance (charIndex - group.startIndex);
+					
+					return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
+					
+				} catch (e:Dynamic) {}
 				
 			}
 			
@@ -494,10 +547,25 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 		
+		if (startIndex == endIndex && __textEngine.maxChars > 0 && __text.length == __textEngine.maxChars) return;
+		
+		if (startIndex > __text.length) startIndex = __text.length;
+		if (endIndex > __text.length) endIndex = __text.length;
+		if (endIndex < startIndex) {
+			
+			var cache = endIndex;
+			endIndex = startIndex;
+			startIndex = cache;
+			
+		}
+		if (startIndex < 0) startIndex = 0;
+		
 		replaceText (startIndex, endIndex, value);
-
-		var i = startIndex + cast(value, UTF8String).length;
-		setSelection(i,i);
+		
+		var i = startIndex + cast (value, UTF8String).length;
+		if (i > __text.length) i = __text.length;
+		
+		setSelection (i, i);
 		
 	}
 	
@@ -507,6 +575,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
 		
 		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
+		if (endIndex > __text.length) endIndex = __text.length;
 		
 		var offset = newText.length - (endIndex - beginIndex);
 		
@@ -551,6 +620,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
+		__updateScrollH ();
+		
 		__dirty = true;
 		__layoutDirty = true;
 		__setRenderDirty ();
@@ -562,7 +633,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		__selectionIndex = beginIndex;
 		__caretIndex = endIndex;
-		
+		__stopCursorTimer ();
+		__startCursorTimer ();
+
 	}
 	
 	
@@ -596,15 +669,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 
 			__textFormat.__merge (format);
 			
-			if (__textEngine.textFormatRanges.length > 0) {
-				
-				__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-				
-				range = __textEngine.textFormatRanges[0];
-				range.format = __textFormat;
-				range.start = 0;
-				range.end = max;
-				
+			for (i in 0...__textEngine.textFormatRanges.length) {
+
+				range = __textEngine.textFormatRanges[i];
+				range.format.__merge (__textFormat);
+
 			}
 			
 		} else {
@@ -737,7 +806,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __allowMouseFocus ():Bool {
 		
-		return __textEngine.type == INPUT || tabEnabled;
+		return __textEngine.type == INPUT || tabEnabled || selectable;
 		
 	}
 	
@@ -858,21 +927,23 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 	}
-
+	
+	
 	private function __disableInput ():Void {
-
+		
 		if (__inputEnabled && stage != null) {
-
+			
 			stage.window.enableTextEvents = false;
 			stage.window.onTextInput.remove (window_onTextInput);
 			stage.window.onKeyDown.remove (window_onKeyDown);
-
+			
 			__inputEnabled = false;
 			__stopCursorTimer ();
-
+			
 		}
-
+		
 	}
+	
 	
 	private override function __dispatch (event:Event):Bool {
 		
@@ -885,7 +956,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				var url = group.format.url;
 				
-				if (url != "") {
+				if (url != null && url != "") {
 					
 					if (StringTools.startsWith (url, "event:")) {
 						
@@ -906,33 +977,35 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		return super.__dispatch (event);
 		
 	}
-
+	
+	
 	private function __enableInput ():Void {
-
+		
 		if (stage != null) {
-
+			
 			stage.window.enableTextEvents = true;
-
+			
 			if (!__inputEnabled) {
-
+				
 				stage.window.enableTextEvents = true;
-
+				
 				if (!stage.window.onTextInput.has (window_onTextInput)) {
-
+					
 					stage.window.onTextInput.add (window_onTextInput);
 					stage.window.onKeyDown.add (window_onKeyDown);
-
+					
 				}
-
+				
 				__inputEnabled = true;
 				__startCursorTimer ();
-
+				
 			}
-
+			
 		}
-
+		
 	}
-
+	
+	
 	private function __fromSymbol (swf:SWFLite, symbol:DynamicTextSymbol):Void {
 		
 		__symbol = symbol;
@@ -1310,26 +1383,28 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		// TODO: Better DOM workaround on cacheAsBitmap
+		
 		#if (js && html5 && dom)
 		if (!__renderedOnCanvasWhileOnDOM) {
+			
 			__renderedOnCanvasWhileOnDOM = true;
-
+			
 			if (type == TextFieldType.INPUT) {
-
-				replaceText(0, __text.length, __text);
-
+				
+				replaceText (0, __text.length, __text);
+				
 			}
-
+			
 			if (__isHTML) {
-
-				__updateText (HTMLParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
-
+				
+				__updateText (HTMLParser.parse (__text, __textFormat, __textEngine.textFormatRanges));
+				
 			}
-
+			
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty ();
-
+			
 		}
 		#end
 		
@@ -1381,21 +1456,22 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			DOMBitmap.render (__cacheBitmap, renderSession);
 			
 		} else {
-			if (__renderedOnCanvasWhileOnDOM) {
 			
+			if (__renderedOnCanvasWhileOnDOM) {
+				
 				__renderedOnCanvasWhileOnDOM = false;
-
+				
 				if (__isHTML && __rawHtmlText != null) {
-
+					
 					__updateText (__rawHtmlText);
 					__dirty = true;
 					__layoutDirty = true;
 					__setRenderDirty ();
-
+					
 				}
-
+				
 			}
-
+			
 			DOMTextField.render (this, renderSession);
 			
 		}
@@ -1426,6 +1502,19 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		CanvasTextField.render (this, renderSession, __worldTransform);
+		#elseif lime_cairo
+		CairoTextField.render (this, renderSession, __worldTransform);
+		#end
+		
+		super.__renderGLMask (renderSession);
+		
+	}
+	
+	
 	private function __startCursorTimer ():Void {
 		
 		__cursorTimer = Timer.delay (__startCursorTimer, 600);
@@ -1444,14 +1533,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__selectionIndex = __caretIndex;
 			
 		}
-		var enableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
-
+		
+		var enableInput = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
+		
 		if (enableInput) {
-
+			
 			__enableInput ();
-
+			
 		}
-
+		
 	}
 
 	
@@ -1476,13 +1566,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private function __stopTextInput ():Void {
-
+		
 		var disableInput: Bool = #if dom __renderedOnCanvasWhileOnDOM #else true #end;
-
+		
 		if (disableInput) {
-
+			
 			__disableInput ();
-
+			
 		}
 		
 	}
@@ -1530,15 +1620,44 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private function __updateScrollH ():Void {
+		
+		if (!multiline && type == INPUT) {
+			
+			__layoutDirty = true;
+			__updateLayout ();
+			
+			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
+			
+			if (offsetX > 0) {
+				
+				scrollH = Math.ceil (offsetX);
+				
+			} else {
+				
+				scrollH = 0;
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private function __updateText (value:String):Void {
-
+		
 		#if dom
 		if (__renderedOnCanvasWhileOnDOM) {
+			
 			__forceCachedBitmapUpdate = __text != value;
+			
 		}
 		#end
-
-		__text = value;
+		
+		// applies maxChars and restrict on text
+		
+		__textEngine.text = value;
+		__text = __textEngine.text;
 		
 		if (__text.length < __caretIndex) {
 			
@@ -1928,13 +2047,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (value != __textEngine.maxChars) {
 			
+			__textEngine.maxChars = value;
+			
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty ();
 			
 		}
 		
-		return __textEngine.maxChars = value;
+		return value;
 		
 	}
 	
@@ -1984,6 +2105,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__layoutDirty = true;
+			__updateText (__text);
+			__updateScrollH ();
 			__setRenderDirty ();
 			
 		}
@@ -2011,7 +2134,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function set_restrict (value:String):String {
 		
-		return __textEngine.restrict = value;
+		if (__textEngine.restrict != value) {
+			
+			__textEngine.restrict = value;
+			__updateText (__text);
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -2034,7 +2164,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__setRenderDirty ();
-			dispatchEvent(new Event(Event.SCROLL));
+			dispatchEvent (new Event (Event.SCROLL));
 			
 		}
 		
@@ -2237,8 +2367,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			if (value == TextFieldType.INPUT) {
 				
-				addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-				addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 				addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				this_onFocusIn (null);
@@ -2246,8 +2374,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 			} else {
 				
-				removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-				removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 				removeEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				__stopTextInput ();
@@ -2328,7 +2454,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__updateLayout ();
 			
-			var position = __getPosition (mouseX, mouseY);
+			var position = __getPosition (mouseX + scrollH, mouseY);
 			
 			if (position != __caretIndex) {
 				
@@ -2364,7 +2490,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			var px = __worldTransform.__transformInverseX (x, y);
 			var py = __worldTransform.__transformInverseY (x, y);
 			
-			var upPos:Int = __getPosition (mouseX, mouseY);
+			var upPos:Int = __getPosition (mouseX + scrollH, mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 			
@@ -2380,7 +2506,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				__stopCursorTimer ();
 				__startCursorTimer ();
-
+				
 				#if dom
 				if (__renderedOnCanvasWhileOnDOM) {
 					__forceCachedBitmapUpdate = true;
@@ -2414,7 +2540,44 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function this_onFocusOut (event:FocusEvent):Void {
 		
-		__stopTextInput ();
+		__stopCursorTimer ();
+		
+		// TODO: Better system
+		
+		if (event.relatedObject == null || !Std.is (event.relatedObject, TextField)) {
+			
+			__stopTextInput ();
+			
+		} else {
+			
+			stage.window.onTextInput.remove (window_onTextInput);
+			stage.window.onKeyDown.remove (window_onKeyDown);
+			__inputEnabled = false;
+			
+		}
+		
+		if (__selectionIndex != __caretIndex) {
+			
+			__selectionIndex = __caretIndex;
+			__dirty = true;
+			__setRenderDirty ();
+			
+		}
+		
+	}
+	
+	
+	private function this_onKeyDown (event:KeyboardEvent):Void {
+		
+		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey)) {
+			
+			if (__caretIndex != __selectionIndex) {
+				
+				Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
+				
+			}
+			
+		}
 		
 	}
 	
@@ -2425,7 +2588,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		__updateLayout ();
 		
-		__caretIndex = __getPosition (mouseX, mouseY);
+		__caretIndex = __getPosition (mouseX + scrollH, mouseY);
 		__selectionIndex = __caretIndex;
 		#if !dom
 		__dirty = true;
@@ -2623,7 +2786,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
-					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
+					if (__caretIndex != __selectionIndex) {
+						
+						Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
+						
+					}
 					
 				}
 			
@@ -2631,9 +2798,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
-					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
-					
 					if (__caretIndex != __selectionIndex) {
+						
+						Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 						
 						replaceSelectedText ("");
 						dispatchEvent (new Event (Event.CHANGE, true));

@@ -51,6 +51,18 @@ class Video extends DisplayObject implements IShaderDrawable {
 	private var __width:Float;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Video.prototype, {
+			"videoHeight": { get: untyped __js__ ("function () { return this.get_videoHeight (); }") },
+			"videoWidth": { get: untyped __js__ ("function () { return this.get_videoWidth (); }") },
+		});
+		
+	}
+	#end
+	
+	
 	public function new (width:Int = 320, height:Int = 240):Void {
 		
 		super ();
@@ -364,6 +376,13 @@ class Video extends DisplayObject implements IShaderDrawable {
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLVideo.render (this, renderSession);
+		
+	}
+	
+	
+	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		GLVideo.renderMask (this, renderSession);
 		
 	}
 	

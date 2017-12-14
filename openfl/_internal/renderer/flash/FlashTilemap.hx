@@ -31,7 +31,7 @@ class FlashTilemap {
 		
 		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
-		var defaultTileset = tilemap.tileset;
+		var defaultTileset = tilemap.__tileset;
 		var bitmapData = tilemap.bitmapData;
 		
 		bitmapData.lock ();

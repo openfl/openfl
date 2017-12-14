@@ -13,6 +13,11 @@ import openfl.geom.Matrix;
 import openfl.text.TextField;
 import openfl.Vector;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -181,6 +186,10 @@ class GLFilterManager extends AbstractFilterManager {
 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		
+		#if gl_stats
+			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		#end
 		
 	}
 	

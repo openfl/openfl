@@ -28,7 +28,7 @@ class CairoBitmap {
 		
 		var cairo = renderSession.cairo;
 		
-		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap);
@@ -48,7 +48,7 @@ class CairoBitmap {
 				
 			}
 			
-			var surface = bitmap.bitmapData.getSurface ();
+			var surface = bitmap.__bitmapData.getSurface ();
 			
 			if (surface != null) {
 				

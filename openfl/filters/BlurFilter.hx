@@ -19,21 +19,37 @@ import openfl.geom.Rectangle;
 	
 	//private static var __blurShader = new BlurShader ();
 	
-	public var blurX (default, set):Float;
-	public var blurY (default, set):Float;
-	public var quality (default, set):Int;
+	public var blurX (get, set):Float;
+	public var blurY (get, set):Float;
+	public var quality (get, set):Int;
 	
-	private var horizontalPasses:Int;
-	private var verticalPasses:Int;
+	private var __blurX:Float;
+	private var __blurY:Float;
+	private var __horizontalPasses:Int;
+	private var __quality:Int;
+	private var __verticalPasses:Int;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (BlurFilter.prototype, {
+			"blurX": { get: untyped __js__ ("function () { return this.get_blurX (); }"), set: untyped __js__ ("function (v) { return this.set_blurX (v); }") },
+			"blurY": { get: untyped __js__ ("function () { return this.get_blurY (); }"), set: untyped __js__ ("function (v) { return this.set_blurY (v); }") },
+			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
+		});
+		
+	}
+	#end
 	
 	
 	public function new (blurX:Float = 4, blurY:Float = 4, quality:Int = 1) {
 		
 		super ();
 		
-		this.blurX = blurX;
-		this.blurY = blurY;
-		this.quality = quality;
+		__blurX = blurX;
+		__blurY = blurY;
+		__quality = quality;
 		
 		__needSecondBitmapData = true;
 		__preserveObject = false;
@@ -43,14 +59,14 @@ import openfl.geom.Rectangle;
 	
 	public override function clone ():BitmapFilter {
 		
-		return new BlurFilter (blurX, blurY, quality);
+		return new BlurFilter (__blurX, __blurY, __quality);
 		
 	}
 	
 	
 	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), blurX, blurY, quality);
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality);
 		if (finalImage == bitmapData.image) return bitmapData;
 		return sourceBitmapData;
 		
@@ -89,10 +105,17 @@ import openfl.geom.Rectangle;
 	
 	
 	
+	private function get_blurX ():Float {
+		
+		return __blurX;
+		
+	}
+	
+	
 	private function set_blurX (value:Float):Float {
 		
-		if (value != blurX) {
-			this.blurX = value;
+		if (value != __blurX) {
+			__blurX = value;
 			__renderDirty = true;
 			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
 			__rightExtension = __leftExtension;
@@ -102,10 +125,17 @@ import openfl.geom.Rectangle;
 	}
 	
 	
+	private function get_blurY ():Float {
+		
+		return __blurY;
+		
+	}
+	
+	
 	private function set_blurY (value:Float):Float {
 		
-		if (value != blurY) {
-			this.blurY = value;
+		if (value != __blurY) {
+			__blurY = value;
 			__renderDirty = true;
 			__topExtension = (value > 0 ? Math.ceil (value) : 0);
 			__bottomExtension = __topExtension;
@@ -115,17 +145,24 @@ import openfl.geom.Rectangle;
 	}
 	
 	
+	private function get_quality ():Int {
+		
+		return __quality;
+		
+	}
+	
+	
 	private function set_quality (value:Int):Int {
 		
 		// TODO: Quality effect with fewer passes?
 		
-		horizontalPasses = (blurX <= 0) ? 0 : Math.round (blurX * (value / 4)) + 1;
-		verticalPasses = (blurY <= 0) ? 0 : Math.round (blurY * (value / 4)) + 1;
+		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round (__blurX * (value / 4)) + 1;
+		__verticalPasses = (__blurY <= 0) ? 0 : Math.round (__blurY * (value / 4)) + 1;
 		
-		__numShaderPasses = horizontalPasses + verticalPasses;
+		__numShaderPasses = __horizontalPasses + __verticalPasses;
 		
-		if (value != quality) __renderDirty = true;
-		return this.quality = value;
+		if (value != __quality) __renderDirty = true;
+		return __quality = value;
 		
 	}
 	

@@ -6,6 +6,11 @@ import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -66,6 +71,12 @@ class FPS extends TextField {
 		if (currentCount != cacheCount /*&& visible*/) {
 			
 			text = "FPS: " + currentFPS;
+			
+			#if (gl_stats && !disable_cffi && (!html5 || !canvas))
+				text += "\ntotalDC: " + GLStats.totalDrawCalls();
+				text += "\nstageDC: " + GLStats.contextDrawCalls(DrawCallContext.STAGE);
+				text += "\nstage3DDC: " + GLStats.contextDrawCalls(DrawCallContext.STAGE3D);
+			#end
 			
 		}
 		

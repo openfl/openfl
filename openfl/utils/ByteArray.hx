@@ -4,6 +4,7 @@ package openfl.utils;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.FPHelper;
+import lime.app.Future;
 import lime.system.System;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
@@ -68,7 +69,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:from @:noCompletion public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
+	@:from public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
 		if (buffer == null) return null;
 		
@@ -85,7 +86,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:from @:noCompletion public static function fromBytes (bytes:Bytes):ByteArray {
+	@:from public static function fromBytes (bytes:Bytes):ByteArray {
 		
 		if (bytes == null) return null;
 		
@@ -132,6 +133,30 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public static function fromFile (path:String):ByteArray {
 		
 		return LimeBytes.fromFile (path);
+		
+	}
+	
+	
+	public static function loadFromBytes (bytes:Bytes):Future<ByteArray> {
+		
+		return LimeBytes.loadFromBytes (bytes).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromFile (path:String):Future<ByteArray> {
+		
+		return LimeBytes.loadFromFile (path).then (function (limeBytes:LimeBytes) {
+			
+			var byteArray:ByteArray = limeBytes;
+			return Future.withValue (byteArray);
+			
+		});
 		
 	}
 	
@@ -260,6 +285,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
+// TODO: Export as "ByteArray" in OpenFL-JS
+
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
@@ -274,6 +301,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private var __endian:Endian;
 	private var __length:Int;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped global.Object.defineProperties (ByteArrayData.prototype, {
+			"bytesAvailable": { get: untyped __js__ ("function () { return this.get_bytesAvailable (); }") },
+			"endian": { get: untyped __js__ ("function () { return this.get_endian (); }"), set: untyped __js__ ("function (v) { return this.set_endian (v); }") },
+			//"length": { get: p.get_length, set: p.set_length }
+		});
+		
+	}
+	#end
 	
 	
 	public function new (length:Int = 0) {

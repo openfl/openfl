@@ -44,11 +44,11 @@ class DOMBitmap {
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.bitmapData != null && bitmap.bitmapData.__isValid && bitmap.bitmapData.readable) {
+		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable) {
 			
 			renderSession.maskManager.pushObject (bitmap);
 			
-			if (bitmap.bitmapData.image.buffer.__srcImage != null) {
+			if (bitmap.__bitmapData.image.buffer.__srcImage != null) {
 				
 				renderImage (bitmap, renderSession);
 				
@@ -99,18 +99,18 @@ class DOMBitmap {
 			
 		}
 		
-		if (bitmap.__imageVersion != bitmap.bitmapData.image.version) {
+		if (bitmap.__imageVersion != bitmap.__bitmapData.image.version) {
 			
-			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
+			ImageCanvasUtil.convertToCanvas (bitmap.__bitmapData.image);
 			
 			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
-			bitmap.__canvas.width = bitmap.bitmapData.width + 1;
+			bitmap.__canvas.width = bitmap.__bitmapData.width + 1;
 			
-			bitmap.__canvas.width = bitmap.bitmapData.width;
-			bitmap.__canvas.height = bitmap.bitmapData.height;
+			bitmap.__canvas.width = bitmap.__bitmapData.width;
+			bitmap.__canvas.height = bitmap.__bitmapData.height;
 			
-			bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
-			bitmap.__imageVersion = bitmap.bitmapData.image.version;
+			bitmap.__context.drawImage (bitmap.__bitmapData.image.buffer.__srcCanvas, 0, 0);
+			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
 			
 		}
 		
@@ -135,7 +135,7 @@ class DOMBitmap {
 			
 			bitmap.__image = cast Browser.document.createElement ("img");
 			bitmap.__image.crossOrigin = "Anonymous";
-			bitmap.__image.src = bitmap.bitmapData.image.buffer.__srcImage.src;
+			bitmap.__image.src = bitmap.__bitmapData.image.buffer.__srcImage.src;
 			DOMRenderer.initializeElement (bitmap, bitmap.__image, renderSession);
 			
 		}

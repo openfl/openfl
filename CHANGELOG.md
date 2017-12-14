@@ -1,3 +1,81 @@
+6.5.3 (12/05/2017)
+------------------
+
+* Fixed a regression that caused an immediate runtime error on Flash Player
+
+
+6.5.2 (12/05/2017)
+------------------
+
+* Fixed issue where run script required Lime CFFI before Lime was installed
+* Fixed invalidation of `cacheAsBitmap` when `graphics` is dirty
+* Fixed a static initialization order issue in Canvas `graphics`
+* Fixed circular dependency issues in anticipation of ES5 module support
+
+
+6.5.1 (11/29/2017)
+------------------
+
+* Updated Lime to 5.9.*
+* Added support for improved CSS font embedding in Lime 5.9.0
+* Fixed support for rendering multiple masking levels in OpenGL masks
+* Fixed some issues with rendering masks with `cacheAsBitmap`
+* Fixed a possible crash in `TextField` and in `Loader`
+* Fixed the height offset when using `context3D.drawToBitmapData`
+* Fixed OpenGL rendering for masks with a different parent than the masked object
+* Fixed `ColorMatrixFilter` so that values are constrained between 0 and 255
+* Fixed a crash error on `textField.getCharBoundaries` when the char is not available
+
+
+6.5.0 (11/10/2017)
+------------------
+
+* Added initial support for OpenGL masking using stencil buffer
+* Added missing `ByteArray.loadFromBytes`/`ByteArray.loadFromFile` methods
+* Added initial support for switching within font families for `TextField` rendering
+* Fixed a regression in `graphics.drawTriangles` support on native
+* Fixed a case where `scrollH` updating in `TextField` could be one character off
+* Fixed a problem where two `TextField` instances could both receive input at once
+* Fixed measurement value of `textField.textHeight` when a field is empty
+* Fixed support for `<window color-depth="32" />` for HTML5 template
+
+
+6.4.0 (11/06/2017)
+------------------
+
+* Added initial support for compressed textures for Stage3D
+* Added support for `Ctrl`+`C`/`Cmd`+`C` copying from selectable `TextField`
+* Added initial auto `textField.scrollH` support on single-line input `TextField`
+* Improved `urlRequest.manageCookies` to default to `false` for better CORS behavior
+* Improved uncaught error event handling on HTML5
+* Improved support for `textField.restrict` and `maxChars`
+* Improved support for switching focus to/from multiple TextFields
+* Fixed the size of the cursor in `TextField` to be more consistent
+* Fixed `mouseEvent.buttonDown` to accurately reflect the state of the left button
+* Fixed `FullScreenEvent` to behave more consistently on HTML5
+* Fixed the coordinates used for `context3D.drawToBitmapData`
+
+
+6.3.0 (10/24/2017)
+------------------
+
+* Updated Lime to 5.8.*
+* Added capture phase support for all `DisplayObject` events
+* Added support for `tile.colorTransform` on Flash `Tilemap`
+* Added support for `URLRequest` `followRedirects` and `manageCookies`
+* Added support for `URLRequest` `idleTimeout` and `userAgent`
+* Improved the behavior of `sprite.hitArea` with children
+* Improved the `tabEnabled` and mouse focus behavior
+* Fixed `TileArray` when `tile.id` does not exist in `Tileset`
+* Fixed support for `tile.colorTransform` on OpenGL `Tilemap`
+* Fixed the removal of bitmap filters in `MovieClip` animation where needed
+* Fixed similar font name resolution to better ignore non-alphabetic characters
+* Fixed support for combining bitmap filters with `ColorTransform`
+* Fixed support for videos in mobile Safari
+* Fixed some issues when using the Java target
+* Fixed a regression in HTML5 `openfl.Vector` JSON stringification
+
+
 6.2.2 (10/12/2017)
 ------------------
 

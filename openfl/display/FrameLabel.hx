@@ -14,6 +14,16 @@ import openfl.events.EventDispatcher;
 	private var __name:String;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (FrameLabel.prototype, "frame", { get: untyped __js__ ("function () { return this.get_frame (); }") });
+		untyped Object.defineProperty (FrameLabel.prototype, "name", { get: untyped __js__ ("function () { return this.get_name (); }") });
+		
+	}
+	#end
+	
+	
 	public function new (name:String, frame:Int) {
 		
 		super ();

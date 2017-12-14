@@ -40,11 +40,13 @@ class Stage3D extends EventDispatcher {
 	
 	public var context3D (default, null):Context3D;
 	public var visible:Bool;
-	public var x (default, set):Float;
-	public var y (default, set):Float;
+	public var x (get, set):Float;
+	public var y (get, set):Float;
 	
 	private var __contextRequested:Bool;
 	private var __stage:Stage;
+	private var __x:Float;
+	private var __y:Float;
 	
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -54,12 +56,24 @@ class Stage3D extends EventDispatcher {
 	#end
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Stage3D.prototype, {
+			"x": { get: untyped __js__ ("function () { return this.get_x (); }"), set: untyped __js__ ("function (v) { return this.set_x (v); }") },
+			"y": { get: untyped __js__ ("function () { return this.get_y (); }"), set: untyped __js__ ("function (v) { return this.set_y (v); }") },
+		});
+		
+	}
+	#end
+	
+	
 	private function new () {
 		
 		super ();
 		
-		this.x = 0;
-		this.y = 0;
+		__x = 0;
+		__y = 0;
 		
 		visible = true;
 		
@@ -103,10 +117,12 @@ class Stage3D extends EventDispatcher {
 			__canvas.height = stage.stageHeight;
 			
 			var window = stage.window;
+			var transparentBackground = Reflect.hasField (window.config, "background") && window.config.background == null;
+			var colorDepth = Reflect.hasField (window.config, "colorDepth") ? window.config.colorDepth : 16;
 			
 			var options = {
 				
-				alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
+				alpha: (transparentBackground || colorDepth > 16) ? true : false,
 				antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
 				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
 				premultipliedAlpha: true,
@@ -270,11 +286,18 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
+	private function get_x ():Float {
+		
+		return __x;
+		
+	}
+	
+	
 	private function set_x (value:Float):Float {
 		
-		if (this.x == value) return value;
+		if (__x == value) return value;
 		
-		this.x = value;
+		__x = value;
 		
 		if (context3D != null) {
 			
@@ -287,11 +310,18 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
+	private function get_y ():Float {
+		
+		return __y;
+		
+	}
+	
+	
 	private function set_y (value:Float):Float {
 		
-		if (this.y == value) return value;
+		if (__y == value) return value;
 		
-		this.y = value;
+		__y = value;
 		
 		if (context3D != null) {
 			

@@ -56,7 +56,7 @@ extern class Timer extends EventDispatcher {
 	 * is set to a total that is the same or less then `currentCount`
 	 * the timer stops and will not fire again.
 	 */
-	public var repeatCount (default, set):Int;
+	public var repeatCount (get, set):Int;
 	
 	/**
 	 * The timer's current state; `true` if the timer is running,

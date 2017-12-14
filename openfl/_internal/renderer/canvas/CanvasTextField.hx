@@ -38,76 +38,6 @@ class CanvasTextField {
 	#end
 	
 	
-	public static function disableInputMode (textEngine:TextEngine):Void {
-		
-		//#if (js && html5)
-		//textEngine.this_onRemovedFromStage (null);
-		//#end
-		
-	}
-	
-	
-	public static function enableInputMode (textEngine:TextEngine):Void {
-		
-		#if (js && html5)
-		
-		if (textEngine.__hiddenInput == null) {
-			
-			textEngine.__hiddenInput = cast Browser.document.createElement ('input');
-			var hiddenInput = textEngine.__hiddenInput;
-			hiddenInput.type = 'text';
-			hiddenInput.style.position = 'absolute';
-			hiddenInput.style.opacity = "0";
-			hiddenInput.style.color = "transparent";
-			
-			// TODO: Position for mobile browsers better
-			
-			hiddenInput.style.left = "0px";
-			hiddenInput.style.top = "50%";
-			
-			if (~/(iPad|iPhone|iPod).*OS 8_/gi.match (Browser.window.navigator.userAgent)) {
-				
-				hiddenInput.style.fontSize = "0px";
-				hiddenInput.style.width = '0px';
-				hiddenInput.style.height = '0px';
-				
-			} else {
-				
-				hiddenInput.style.width = '1px';
-				hiddenInput.style.height = '1px';
-				
-			}
-			
-			untyped (hiddenInput.style).pointerEvents = 'none';
-			hiddenInput.style.zIndex = "-10000000";
-			
-			if (textEngine.maxChars > 0) {
-				
-				hiddenInput.maxLength = textEngine.maxChars;
-				
-			}
-			
-			Browser.document.body.appendChild (hiddenInput);
-			hiddenInput.value = textEngine.text;
-			
-		}
-		
-		//if (textField.stage != null) {
-			//
-			//textEngine.this_onAddedToStage (null);
-			//
-		//} else {
-			//
-			//textField.addEventListener (Event.ADDED_TO_STAGE, textEngine.this_onAddedToStage);
-			//textField.addEventListener (Event.REMOVED_FROM_STAGE, textEngine.this_onRemovedFromStage);
-			//
-		//}
-		
-		#end
-		
-	}
-	
-	
 	public static inline function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
 		
 		#if (js && html5)
@@ -252,9 +182,19 @@ class CanvasTextField {
 					var applyHack = ~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent);
 					
 					for (group in textEngine.layoutGroups) {
-						
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
+
+						if (group.format.underline) {
+							context.beginPath();
+							context.strokeStyle = "#000000";
+							context.lineWidth = .5;
+							var x = group.offsetX + scrollX;
+							var y = group.offsetY + offsetY + scrollY + group.ascent;
+							context.moveTo(x, y);
+							context.lineTo(x + group.width, y);
+							context.stroke();
+						}
 						
 						context.font = TextEngine.getFont (group.format);
 						context.fillStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
@@ -304,7 +244,15 @@ class CanvasTextField {
 										
 									}
 									
-									context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
+									var scrollY = 0.0;
+									
+									for (i in 0...textField.scrollV - 1) {
+										
+										scrollY -= textEngine.lineHeights[i];
+										
+									}
+									
+									context.fillRect (group.offsetX + advance - textField.scrollH, scrollY + 2, 1, TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
 									
 								}
 								
@@ -343,7 +291,7 @@ class CanvasTextField {
 								if (start != null && end != null) {
 									
 									context.fillStyle = "#000000";
-									context.fillRect (start.x, start.y, end.x - start.x, group.height);
+									context.fillRect (start.x + scrollX, start.y + scrollY, end.x - start.x, group.height);
 									context.fillStyle = "#FFFFFF";
 									
 									// TODO: fill only once

@@ -22,9 +22,20 @@ import openfl.media.Sound;
 	private var __source:AudioSource;
 	private var __spriteKey:String;
 	
-	
-	private function new (source:AudioSource = null, soundTransform:SoundTransform = null, ?spriteKey:String):Void {
+
+
+	#if openfljs
+	private static function __init__ () {
 		
+		untyped Object.defineProperties (SoundChannel.prototype, {
+			"position": { get: untyped __js__ ("function () { return this.get_position (); }"), set: untyped __js__ ("function (v) { return this.set_position (v); }") },
+			"soundTransform": { get: untyped __js__ ("function () { return this.get_soundTransform (); }"), set: untyped __js__ ("function (v) { return this.set_soundTransform (v); }") },
+		});
+		
+	}
+	#end
+
+	private function new (source:AudioSource = null, soundTransform:SoundTransform = null, ?spriteKey:String):Void {
 		super (this);
 		
 		leftPeak = 1;
