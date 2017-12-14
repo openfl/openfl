@@ -1643,6 +1643,8 @@ class TextEngine {
 			maxScrollH = 0;
 			maxScrollV = 1;
 			bottomScrollV = 1;
+			width = 4;
+			height = 4;
 			
 		} else {
 			
