@@ -710,16 +710,7 @@ class RegisterMap {
 			
 			if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
 				
-				// find how many registers based on the next entry.
-				if (i < mEntries.length - 1) {
-					
-					arrayCount[entry] = mEntries[i + 1].number - entry.number;
-					
-				} else {
-					
-					arrayCount[entry] = 128;
-					
-				}
+				arrayCount[entry] = 128;
 				
 			}
 			
