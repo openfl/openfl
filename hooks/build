@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Build hook for docker hub.
+# $IMAGE_NAME var is injected into the build so the tag is correct.
+
+echo "Build hook running"
+
+if [ "$DOCKER_TAG" == "develop" ]; then
+    LIME_VERSION="develop"
+else
+    LIME_VERSION="latest"
+fi
+
+docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+             --build-arg VCS_REF=`git rev-parse --short HEAD` \
+             --build-arg LIME_VERSION=$LIME_VERSION \
+             -t $IMAGE_NAME .

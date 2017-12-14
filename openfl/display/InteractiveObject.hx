@@ -28,10 +28,9 @@ class InteractiveObject extends DisplayObject {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped InteractiveObject.prototype;
-		untyped Object.defineProperties (p, {
-			"tabEnabled": { get: p.get_tabEnabled, set: p.set_tabEnabled },
-			"tabIndex": { get: p.get_tabIndex, set: p.set_tabIndex }
+		untyped Object.defineProperties (InteractiveObject.prototype, {
+			"tabEnabled": { get: untyped __js__ ("function () { return this.get_tabEnabled (); }"), set: untyped __js__ ("function (v) { return this.set_tabEnabled (v); }") },
+			"tabIndex": { get: untyped __js__ ("function () { return this.get_tabIndex (); }"), set: untyped __js__ ("function (v) { return this.set_tabIndex (v); }") },
 		});
 		
 	}

@@ -15,14 +15,27 @@ import openfl.geom.Rectangle;
 	
 	//private static var __colorMatrixShader = new ColorMatrixShader ();
 	
-	public var matrix (default, set):Array<Float>;
+	public var matrix (get, set):Array<Float>;
+	
+	private var __matrix:Array<Float>;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (ColorMatrixFilter.prototype, {
+			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
+		});
+		
+	}
+	#end
 	
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
 		
-		this.matrix = matrix;
+		__matrix = matrix;
 		
 		// __numShaderPasses = 1;
 		__numShaderPasses = 0;
@@ -33,7 +46,7 @@ import openfl.geom.Rectangle;
 	
 	public override function clone ():BitmapFilter {
 		
-		return new ColorMatrixFilter (matrix);
+		return new ColorMatrixFilter (__matrix);
 		
 	}
 	
@@ -79,10 +92,10 @@ import openfl.geom.Rectangle;
 					
 				} else {
 					
-					destPixel.r = Std.int (Math.min ((matrix[0] * sourcePixel.r) + (matrix[1] * sourcePixel.g) + (matrix[2] * sourcePixel.b) + (matrix[3] * sourcePixel.a) + matrix[4], 255));
-					destPixel.g = Std.int (Math.min ((matrix[5] * sourcePixel.r) + (matrix[6] * sourcePixel.g) + (matrix[7] * sourcePixel.b) + (matrix[8] * sourcePixel.a) + matrix[9], 255));
-					destPixel.b = Std.int (Math.min ((matrix[10] * sourcePixel.r) + (matrix[11] * sourcePixel.g) + (matrix[12] * sourcePixel.b) + (matrix[13] * sourcePixel.a) + matrix[14], 255));
-					destPixel.a = Std.int (Math.min ((matrix[15] * sourcePixel.r) + (matrix[16] * sourcePixel.g) + (matrix[17] * sourcePixel.b) + (matrix[18] * sourcePixel.a) + matrix[19], 255));
+					destPixel.r = Std.int (Math.min ((__matrix[0] * sourcePixel.r) + (__matrix[1] * sourcePixel.g) + (__matrix[2] * sourcePixel.b) + (__matrix[3] * sourcePixel.a) + __matrix[4], 255));
+					destPixel.g = Std.int (Math.min ((__matrix[5] * sourcePixel.r) + (__matrix[6] * sourcePixel.g) + (__matrix[7] * sourcePixel.b) + (__matrix[8] * sourcePixel.a) + __matrix[9], 255));
+					destPixel.b = Std.int (Math.min ((__matrix[10] * sourcePixel.r) + (__matrix[11] * sourcePixel.g) + (__matrix[12] * sourcePixel.b) + (__matrix[13] * sourcePixel.a) + __matrix[14], 255));
+					destPixel.a = Std.int (Math.min ((__matrix[15] * sourcePixel.r) + (__matrix[16] * sourcePixel.g) + (__matrix[17] * sourcePixel.b) + (__matrix[18] * sourcePixel.a) + __matrix[19], 255));
 					
 				}
 				
@@ -114,6 +127,13 @@ import openfl.geom.Rectangle;
 	
 	
 	
+	private function get_matrix ():Array<Float> {
+		
+		return __matrix;
+		
+	}
+	
+	
 	private function set_matrix (value:Array<Float>):Array<Float> {
 		
 		if (value == null) {
@@ -122,7 +142,7 @@ import openfl.geom.Rectangle;
 			
 		}
 		
-		return matrix = value;
+		return __matrix = value;
 		
 	}
 	

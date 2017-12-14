@@ -19,7 +19,7 @@ package openfl.media;
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (SoundMixer, "soundTransform", { get: SoundMixer.get_soundTransform, set: SoundMixer.set_soundTransform });
+		untyped Object.defineProperty (SoundMixer, "soundTransform", { get: function () { return SoundMixer.get_soundTransform (); }, set: function (value) { return SoundMixer.set_soundTransform (value); } });
 		
 	}
 	#end

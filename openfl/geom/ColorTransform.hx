@@ -29,8 +29,7 @@ class ColorTransform {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped ColorTransform.prototype;
-		untyped Object.defineProperty (p, "color", { get: p.get_color, set: p.set_color });
+		untyped Object.defineProperty (ColorTransform.prototype, "color", { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") });
 		
 	}
 	#end

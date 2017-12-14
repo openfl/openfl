@@ -28,7 +28,7 @@ import js.html.ImageElement;
 class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	
-	public var bitmapData (default, set):BitmapData;
+	public var bitmapData (get, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
 	@:beta public var shader:Shader;
 	public var smoothing:Bool;
@@ -37,14 +37,24 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	private var __image:ImageElement;
 	#end
 	
+	private var __bitmapData:BitmapData;
 	private var __imageVersion:Int;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Bitmap.prototype, "bitmapData", { get: untyped __js__ ("function () { return this.get_bitmapData (); }"), set: untyped __js__ ("function (v) { return this.set_bitmapData (v); }") });
+		
+	}
+	#end
 	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
 		
 		super ();
 		
-		this.bitmapData = bitmapData;
+		__bitmapData = bitmapData;
 		this.pixelSnapping = pixelSnapping;
 		this.smoothing = smoothing;
 		
@@ -60,10 +70,10 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	private override function __enterFrame (deltaTime:Int):Void {
 		
 		#if (!js || !dom)
-		if (bitmapData != null && bitmapData.image != null) {
+		if (__bitmapData != null && __bitmapData.image != null) {
 			
-			var image = bitmapData.image;
-			if (bitmapData.image.version != __imageVersion) {
+			var image = __bitmapData.image;
+			if (__bitmapData.image.version != __imageVersion) {
 				__setRenderDirty ();
 				__imageVersion = image.version;
 			}
@@ -76,10 +86,10 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		if (bitmapData != null) {
+		if (__bitmapData != null) {
 			
 			var bounds = Rectangle.__pool.get ();
-			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
+			bounds.setTo (0, 0, __bitmapData.width, __bitmapData.height);
 			bounds.__transform (bounds, matrix);
 			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
@@ -93,7 +103,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
-		if (!hitObject.visible || __isMask || bitmapData == null) return false;
+		if (!hitObject.visible || __isMask || __bitmapData == null) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		__getRenderTransform ();
@@ -101,7 +111,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		var px = __renderTransform.__transformInverseX (x, y);
 		var py = __renderTransform.__transformInverseY (x, y);
 		
-		if (px > 0 && py > 0 && px <= bitmapData.width && py <= bitmapData.height) {
+		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height) {
 			
 			if (__scrollRect != null && !__scrollRect.contains (px, py)) {
 				
@@ -126,14 +136,14 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
-		if (bitmapData == null) return false;
+		if (__bitmapData == null) return false;
 		
 		__getRenderTransform ();
 		
 		var px = __renderTransform.__transformInverseX (x, y);
 		var py = __renderTransform.__transformInverseY (x, y);
 		
-		if (px > 0 && py > 0 && px <= bitmapData.width && py <= bitmapData.height) {
+		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height) {
 			
 			return true;
 			
@@ -269,7 +279,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	public override function __updateMask (maskGraphics:Graphics):Void {
 		
-		if (bitmapData == null) {
+		if (__bitmapData == null) {
 			
 			return;
 			
@@ -277,7 +287,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		maskGraphics.__commands.overrideMatrix (this.__worldTransform);
 		maskGraphics.beginFill (0);
-		maskGraphics.drawRect (0, 0, bitmapData.width, bitmapData.height);
+		maskGraphics.drawRect (0, 0, __bitmapData.width, __bitmapData.height);
 		
 		if (maskGraphics.__bounds == null) {
 			
@@ -293,14 +303,22 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	
 	
+	
 	// Get & Set Methods
 	
 	
 	
 	
+	private function get_bitmapData ():BitmapData {
+		
+		return __bitmapData;
+		
+	}
+	
+	
 	private function set_bitmapData (value:BitmapData):BitmapData {
 		
-		bitmapData = value;
+		__bitmapData = value;
 		smoothing = false;
 		
 		__setRenderDirty ();
@@ -313,16 +331,16 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		__imageVersion = -1;
 		
-		return bitmapData;
+		return __bitmapData;
 		
 	}
 	
 	
 	private override function get_height ():Float {
 		
-		if (bitmapData != null) {
+		if (__bitmapData != null) {
 			
-			return bitmapData.height * Math.abs (scaleY);
+			return __bitmapData.height * Math.abs (scaleY);
 			
 		}
 		
@@ -333,12 +351,12 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function set_height (value:Float):Float {
 		
-		if (bitmapData != null) {
+		if (__bitmapData != null) {
 			
-			if (value != bitmapData.height) {
+			if (value != __bitmapData.height) {
 				
 				__setRenderDirty ();
-				scaleY = value / bitmapData.height;
+				scaleY = value / __bitmapData.height;
 				
 			}
 			
@@ -353,9 +371,9 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function get_width ():Float {
 		
-		if (bitmapData != null) {
+		if (__bitmapData != null) {
 			
-			return bitmapData.width * Math.abs (__scaleX);
+			return __bitmapData.width * Math.abs (__scaleX);
 			
 		}
 		
@@ -366,12 +384,12 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function set_width (value:Float):Float {
 		
-		if (bitmapData != null) {
+		if (__bitmapData != null) {
 			
-			if (value != bitmapData.width) {
+			if (value != __bitmapData.width) {
 				
 				__setRenderDirty ();
-				scaleX = value / bitmapData.width;
+				scaleX = value / __bitmapData.width;
 				
 			}
 			

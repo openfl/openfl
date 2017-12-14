@@ -19,7 +19,7 @@ class Shape extends DisplayObject implements IShaderDrawable {
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Shape.prototype, "graphics", { get: Shape.prototype.get_graphics });
+		untyped Object.defineProperty (Shape.prototype, "graphics", { get: untyped __js__ ("function () { return this.get_graphics (); }") });
 		
 	}
 	#end

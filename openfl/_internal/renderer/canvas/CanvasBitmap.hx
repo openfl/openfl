@@ -19,12 +19,12 @@ class CanvasBitmap {
 		
 		var context = renderSession.context;
 		
-		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid && bitmap.bitmapData.readable) {
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable) {
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap, false);
 			
-			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
+			ImageCanvasUtil.convertToCanvas (bitmap.__bitmapData.image);
 			
 			context.globalAlpha = bitmap.__worldAlpha;
 			var transform = bitmap.__renderTransform;
@@ -51,11 +51,11 @@ class CanvasBitmap {
 			
 			if (scrollRect == null) {
 				
-				context.drawImage (bitmap.bitmapData.image.src, 0, 0);
+				context.drawImage (bitmap.__bitmapData.image.src, 0, 0);
 				
 			} else {
 				
-				context.drawImage (bitmap.bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+				context.drawImage (bitmap.__bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
 				
 			}
 			

@@ -42,7 +42,7 @@ class GLVideo {
 			var shader = renderSession.shaderManager.initShader (video.shader);
 			renderSession.shaderManager.setShader (shader);
 			
-			//shader.data.uImage0.input = bitmap.bitmapData;
+			//shader.data.uImage0.input = bitmap.__bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
 			
@@ -110,7 +110,7 @@ class GLVideo {
 			var shader = GLMaskManager.maskShader;
 			renderSession.shaderManager.setShader (shader);
 			
-			//shader.data.uImage0.input = bitmap.bitmapData;
+			//shader.data.uImage0.input = bitmap.__bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
 			

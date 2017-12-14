@@ -306,10 +306,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped ByteArrayData.prototype;
-		untyped Object.defineProperties (p, {
-			"bytesAvailable": { get: p.get_bytesAvailable, set: p.set_byteAvailable },
-			"endian": { get: p.get_endian, set: p.set_endian },
+		untyped global.Object.defineProperties (ByteArrayData.prototype, {
+			"bytesAvailable": { get: untyped __js__ ("function () { return this.get_bytesAvailable (); }") },
+			"endian": { get: untyped __js__ ("function () { return this.get_endian (); }"), set: untyped __js__ ("function (v) { return this.set_endian (v); }") },
 			//"length": { get: p.get_length, set: p.set_length }
 		});
 		

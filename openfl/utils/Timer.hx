@@ -34,7 +34,7 @@ class Timer extends EventDispatcher {
 	private static function __init__ () {
 		
 		var p = untyped Timer.prototype;
-		untyped Object.defineProperties (p, {
+		untyped global.Object.defineProperties (p, {
 			"delay": { get: p.get_delay, set: p.set_delay },
 			"repeatCount": { get: p.get_repeatCount, set: p.set_repeatCount }
 		});

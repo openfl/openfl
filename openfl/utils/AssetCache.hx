@@ -22,8 +22,7 @@ import openfl.text.Font;
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped AssetCache.prototype;
-		untyped Object.defineProperty (p, "enabled", { get: p.get_enabled, set: p.set_enabled });
+		untyped global.Object.defineProperty (AssetCache.prototype, "enabled", { get: untyped __js__ ("function () { return this.get_enabled (); }"), set: untyped __js__ ("function (v) { return this.set_enabled (v); }") });
 		
 	}
 	#end

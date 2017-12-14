@@ -19,7 +19,7 @@ import lime.ui.Mouse in LimeMouse;
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Mouse, "cursor", { get: Mouse.get_cursor, set: Mouse.set_cursor });
+		untyped Object.defineProperty (Mouse, "cursor", { get: function () { return Mouse.get_cursor (); }, set: function (value) { return Mouse.set_cursor (value); } });
 		
 	}
 	#end

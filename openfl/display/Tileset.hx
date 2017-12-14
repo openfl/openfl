@@ -17,9 +17,19 @@ import openfl.geom.Rectangle;
 class Tileset {
 	
 	
-	public var bitmapData (default, set):BitmapData;
+	public var bitmapData (get, set):BitmapData;
 	
+	private var __bitmapData:BitmapData;
 	private var __data:Array<TileData>;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (Tileset.prototype, "bitmapData", { get: untyped __js__ ("function () { return this.get_bitmapData (); }"), set: untyped __js__ ("function (v) { return this.set_bitmapData (v); }") });
+		
+	}
+	#end
 	
 	
 	// TODO: Add support for adding uniform tile rectangles (margin, spacing, width, height)
@@ -28,7 +38,7 @@ class Tileset {
 		
 		__data = new Array ();
 		
-		this.bitmapData = bitmapData;
+		__bitmapData = bitmapData;
 		
 		if (rects != null) {
 			
@@ -46,7 +56,7 @@ class Tileset {
 		if (rect == null) return -1;
 		
 		var tileData = new TileData (rect);
-		tileData.__update (bitmapData);
+		tileData.__update (__bitmapData);
 		__data.push (tileData);
 		
 		return __data.length - 1;
@@ -56,7 +66,7 @@ class Tileset {
 	
 	public function clone ():Tileset {
 		
-		var tileset = new Tileset (bitmapData, null);
+		var tileset = new Tileset (__bitmapData, null);
 		var rect = #if flash new Rectangle () #else Rectangle.__pool.get () #end;
 		
 		for (tileData in __data) {
@@ -95,12 +105,19 @@ class Tileset {
 	
 	
 	
+	private function get_bitmapData ():BitmapData {
+		
+		return __bitmapData;
+		
+	}
+	
+	
 	private function set_bitmapData (value:BitmapData):BitmapData {
 		
-		bitmapData = value;
+		__bitmapData = value;
 		
 		for (data in __data) {
-			data.__update (bitmapData);
+			data.__update (__bitmapData);
 		}
 		
 		return value;

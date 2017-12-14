@@ -24,7 +24,7 @@ import openfl._internal.Lib;
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Telemetry, "connected", { get: Telemetry.get_connected });
+		untyped Object.defineProperty (Telemetry, "connected", { get: function () { return Telemetry.get_connected (); } });
 		
 	}
 	#end

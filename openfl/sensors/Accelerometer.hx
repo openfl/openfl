@@ -24,16 +24,18 @@ class Accelerometer extends EventDispatcher {
 	private static var supported = false;
 	
 	public static var isSupported (get, never):Bool;
-	public var muted (default, set):Bool;
+	public var muted (get, set):Bool;
 	
-	private var _interval:Int;
-	private var timer:Timer;
+	private var __interval:Int;
+	private var __muted:Bool;
+	private var __timer:Timer;
 	
 	
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Accelerometer, "isSupported", { get: Accelerometer.isSupported });
+		untyped Object.defineProperty (Accelerometer.prototype, "muted", { get: untyped __js__ ("function () { return this.get_muted (); }"), set: untyped __js__ ("function (v) { return this.set_muted (v); }") });
+		untyped Object.defineProperty (Accelerometer, "isSupported", { get: function () { return Accelerometer.get_isSupported (); } });
 		
 	}
 	#end
@@ -45,8 +47,9 @@ class Accelerometer extends EventDispatcher {
 		
 		initialize ();
 		
-		_interval = 0;
-		muted = false;
+		__interval = 0;
+		__muted = false;
+		
 		setRequestedUpdateInterval (defaultInterval);
 		
 	}
@@ -82,29 +85,29 @@ class Accelerometer extends EventDispatcher {
 	
 	public function setRequestedUpdateInterval (interval:Int):Void {
 		
-		_interval = interval;
+		__interval = interval;
 		
-		if (_interval < 0) {
+		if (__interval < 0) {
 			
 			throw new ArgumentError ();
 			
-		} else if (_interval == 0) {
+		} else if (__interval == 0) {
 			
-			_interval = defaultInterval;
+			__interval = defaultInterval;
 			
 		}
 		
-		if (timer != null) {
+		if (__timer != null) {
 			
-			timer.stop ();
-			timer = null;
+			__timer.stop ();
+			__timer = null;
 			
 		}
 		
 		if (supported && !muted) {
 			
-			timer = new Timer (_interval);
-			timer.run = update;
+			__timer = new Timer (__interval);
+			__timer.run = update;
 			
 		}
 		
@@ -157,10 +160,17 @@ class Accelerometer extends EventDispatcher {
 	}
 	
 	
+	private function get_muted ():Bool {
+		
+		return __muted;
+		
+	}
+	
+	
 	private function set_muted (value:Bool):Bool {
 		
-		this.muted = value;
-		setRequestedUpdateInterval (_interval);
+		__muted = value;
+		setRequestedUpdateInterval (__interval);
 		
 		return value;
 		

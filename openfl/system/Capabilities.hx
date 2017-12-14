@@ -50,15 +50,15 @@ import openfl._internal.Lib;
 	private static function __init__ () {
 		
 		untyped Object.defineProperties (Capabilities, {
-			"cpuArchitecture": { get: Capabilities.get_cpuArchitecture },
-			"language": { get: Capabilities.get_language },
-			"manufacturer": { get: Capabilities.get_manufacturer },
-			"os": { get: Capabilities.get_os },
-			"pixelAspectRatio": { get: Capabilities.get_pixelAspectRatio },
-			"screenDPI": { get: Capabilities.get_screenDPI },
-			"screenResolutionX": { get: Capabilities.get_screenResolutionX },
-			"screenResolutionY": { get: Capabilities.get_screenResolutionY },
-			"version": { get: Capabilities.get_version }
+			"cpuArchitecture": { get: function () { return Capabilities.get_cpuArchitecture (); } },
+			"language": { get: function () { return Capabilities.get_language (); } },
+			"manufacturer": { get: function () { return Capabilities.get_manufacturer (); } },
+			"os": { get: function () { return Capabilities.get_os (); } },
+			"pixelAspectRatio": { get: function () { return Capabilities.get_pixelAspectRatio (); } },
+			"screenDPI": { get: function () { return Capabilities.get_screenDPI (); } },
+			"screenResolutionX": { get: function () { return Capabilities.get_screenResolutionX (); } },
+			"screenResolutionY": { get: function () { return Capabilities.get_screenResolutionY (); } },
+			"version": { get: function () { return Capabilities.get_version (); } }
 		});
 		
 	}

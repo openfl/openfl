@@ -26,15 +26,14 @@ class Vector3D {
 	private static function __init__ () {
 		
 		untyped Object.defineProperties (Vector3D, {
-			"X_AXIS": { get: Vector3D.get_X_AXIS },
-			"Y_AXIS": { get: Vector3D.get_Y_AXIS },
-			"Z_AXIS": { get: Vector3D.get_Z_AXIS }
+			"X_AXIS": { get: function () { return Vector3D.get_X_AXIS (); } },
+			"Y_AXIS": { get: function () { return Vector3D.get_Y_AXIS (); } },
+			"Z_AXIS": { get: function () { return Vector3D.get_Z_AXIS (); } }
 		});
 		
-		var p = untyped Vector3D.prototype;
-		untyped Object.defineProperties (p, {
-			"length": { get: p.get_length },
-			"lengthSquared": { get: p.get_lengthSquared }
+		untyped Object.defineProperties (Vector3D.prototype, {
+			"length": { get: untyped __js__ ("function () { return this.get_length (); }") },
+			"lengthSquared": { get: untyped __js__ ("function () { return this.get_lengthSquared (); }") },
 		});
 		
 	}

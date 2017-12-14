@@ -32,15 +32,14 @@ class Rectangle {
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped Rectangle.prototype;
-		untyped Object.defineProperties (p, {
-			"bottom": { get: p.get_bottom, set: p.set_bottom },
-			"bottomRight": { get: p.get_bottomRight, set: p.set_bottomRight },
-			"left": { get: p.get_left, set: p.set_left },
-			"right": { get: p.get_right, set: p.set_right },
-			"size": { get: p.get_size, set: p.set_size },
-			"top": { get: p.get_top, set: p.set_top },
-			"topLeft": { get: p.get_topLeft, set: p.set_topLeft }
+		untyped Object.defineProperties (Rectangle.prototype, {
+			"bottom": { get: untyped __js__ ("function () { return this.get_bottom (); }"), set: untyped __js__ ("function (v) { return this.set_bottom (v); }") },
+			"bottomRight": { get: untyped __js__ ("function () { return this.get_bottomRight (); }"), set: untyped __js__ ("function (v) { return this.set_bottomRight (v); }") },
+			"left": { get: untyped __js__ ("function () { return this.get_left (); }"), set: untyped __js__ ("function (v) { return this.set_left (v); }") },
+			"right": { get: untyped __js__ ("function () { return this.get_right (); }"), set: untyped __js__ ("function (v) { return this.set_right (v); }") },
+			"size": { get: untyped __js__ ("function () { return this.get_size (); }"), set: untyped __js__ ("function (v) { return this.set_size (v); }") },
+			"top": { get: untyped __js__ ("function () { return this.get_top (); }"), set: untyped __js__ ("function (v) { return this.set_top (v); }") },
+			"topLeft": { get: untyped __js__ ("function () { return this.get_topLeft (); }"), set: untyped __js__ ("function (v) { return this.set_topLeft (v); }") },
 		});
 		
 	}

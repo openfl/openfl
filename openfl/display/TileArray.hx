@@ -64,17 +64,16 @@ import openfl.Vector;
 	#if openfljs
 	private static function __init__ () {
 		
-		var p = untyped TileArray.prototype;
-		untyped Object.defineProperties (p, {
-			"alpha": { get: p.get_alpha, set: p.set_alpha },
-			"colorTransform": { get: p.get_colorTransform, set: p.set_colorTransform },
-			"id": { get: p.get_id, set: p.set_id },
-			"length": { get: p.get_length, set: p.set_length },
-			"matrix": { get: p.get_matrix, set: p.set_matrix },
-			"rect": { get: p.get_rect, set: p.set_rect },
-			"shader": { get: p.get_shader, set: p.set_shader },
-			"tileset": { get: p.get_tileset, set: p.set_tileset },
-			"visible": { get: p.get_visible, set: p.set_visible }
+		untyped Object.defineProperties (TileArray.prototype, {
+			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+			"colorTransform": { get: untyped __js__ ("function () { return this.get_colorTransform (); }"), set: untyped __js__ ("function (v) { return this.set_colorTransform (v); }") },
+			"id": { get: untyped __js__ ("function () { return this.get_id (); }"), set: untyped __js__ ("function (v) { return this.set_id (v); }") },
+			"length": { get: untyped __js__ ("function () { return this.get_length (); }"), set: untyped __js__ ("function (v) { return this.set_length (v); }") },
+			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
+			"rect": { get: untyped __js__ ("function () { return this.get_rect (); }"), set: untyped __js__ ("function (v) { return this.set_rect (v); }") },
+			"shader": { get: untyped __js__ ("function () { return this.get_shader (); }"), set: untyped __js__ ("function (v) { return this.set_shader (v); }") },
+			"tileset": { get: untyped __js__ ("function () { return this.get_tileset (); }"), set: untyped __js__ ("function (v) { return this.set_tileset (v); }") },
+			"visible": { get: untyped __js__ ("function () { return this.get_visible (); }"), set: untyped __js__ ("function (v) { return this.set_visible (v); }") },
 		});
 		
 	}
@@ -278,8 +277,8 @@ import openfl.Vector;
 						
 					}
 					
-					bitmapWidth = tileset.bitmapData.width;
-					bitmapHeight = tileset.bitmapData.height;
+					bitmapWidth = tileset.__bitmapData.width;
+					bitmapHeight = tileset.__bitmapData.height;
 					uvX = tileRect.x / bitmapWidth;
 					uvY = tileRect.y / bitmapHeight;
 					uvWidth = tileRect.right / bitmapWidth;
