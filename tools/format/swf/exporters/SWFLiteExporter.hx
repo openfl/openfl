@@ -535,12 +535,11 @@ class SWFLiteExporter {
 			symbol.id = untyped tag.characterId;
 			
 		}
-		
-		var instances = new Array<Int> ();
+
 		var lastModified = new Map<Int, Int> ();
 		var zeroCharacter = -1;
 		
-		var frame : Frame, frameObject : FrameObject, frameData : Frame, placeTag:TagPlaceObject;
+		var frame : Frame, frameObject : FrameObject, placeTag:TagPlaceObject;
 		for (frameData in tag.frames) {
 
 			frame = new Frame ();
@@ -563,16 +562,14 @@ class SWFLiteExporter {
 
 			}
 			
-			instances.splice (0, instances.length);
-			
 			frame.objects = [];
 			
 			for (object in frameData.getObjectsSortedByDepth ()) {
-				
-				instances.push (object.placedAtIndex);
-				
+
+				// if this object was placed at 0 (is the first tag) and the characterId changed
 				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
-					
+
+					// remove 0th index from lastModified, so it will get processed again
 					lastModified.remove (0);
 					zeroCharacter = object.characterId;
 					
