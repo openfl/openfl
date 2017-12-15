@@ -217,6 +217,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			if(!cached){
 				__cachedManuallyAddedDisplayObjects.push(child);
+				//rebuild current children and apply masks now with new dynamically added object.
+				if(__symbol != null) {
+					__lastFrameUpdate = __currentFrame-1;
+					__updateFrameObjectsAndChildren(__currentFrame);
+				}
 			}
 		}
 	}
@@ -571,7 +576,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			maskApplied = false;
 
-			if(child == targetChild && instance.clipDepth <= 0) { //dont apply masks to masks
+			if(child != targetChild || (child == targetChild && instance.clipDepth <= 0)) { //dont apply masks to masks
 				for (mask in currentMasks) {
 
 					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
@@ -646,73 +651,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				switch (frameObject.type) {
 
+
 					case PLACE_OBJECT:
-
-//TODO: compare with frame we are coming from and remove anything not on the new frame
-						if(frameObject.hasCharacter && frameObject.hasMove) {
-							var oldInstance : FrameSymbolInstance = null;
-							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
-
-								oldInstance = currentInstancesByFrameObjectID.get(currentFrameObjectIDbyDepth.get(frameObject.depth));
-								currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
-								currentFrameObjectIDbyDepth.remove(frameObject.depth);
-							}
-
-							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-
-							if (instance != null) {
-
-								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
-
-								if(oldInstance != null) {
-									if(frameObject.name == null) {
-										instance.displayObject.name = oldInstance.displayObject.name;
-									}
-									if(frameObject.matrix == null) {
-										instance.displayObject.transform.matrix = oldInstance.displayObject.transform.matrix;
-									}
-									if(frameObject.colorTransform == null) {
-										instance.displayObject.transform.colorTransform = oldInstance.displayObject.transform.colorTransform;
-									}
-									if(frameObject.filters == null) {
-										instance.displayObject.filters = oldInstance.displayObject.filters;
-									}
-									if (frameObject.visible == null) {
-										instance.displayObject.visible = oldInstance.displayObject.visible;
-									}
-									if (frameObject.blendMode == null) {
-										instance.displayObject.blendMode = oldInstance.displayObject.blendMode;
-									}
-									if (frameObject.cacheAsBitmap == null) {
-										//instance.displayObject.cacheAsBitmap = oldInstance.displayObject.cacheAsBitmap;
-									}
-								}
-
-							}
-						} else if (frameObject.hasCharacter) {
-							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-
-							if (instance != null) {
-								if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
-									currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
-								}
-								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
-
-							}
-						}else if (frameObject.hasMove) {
-							instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
-
-							if (instance != null) {
-
-								__updateDisplayObject (instance.displayObject, frameObject);
-
-							}
-						}
-
 //TODO:LC remove CREATE, UPDATE, DESTROY, REPLACE_AT_DEPTH once assets have been reprocessed with new modifications to SWFLiteExporter to use PLACE_OBJECT and REMOVE_OBJECT
 
 //TODO:LC refactor to make more efficient by just using depth instead frameObject.id in many places throughout this function. also verify __fromSymbol, __enterFrame, and __goto are updated to match wherever necessary
@@ -760,6 +700,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				if (instance.clipDepth > 0) {
 
+					untyped instance.displayObject.__isMask = true;
 					currentMasks.push (instance);
 					currentInstances.push (instance);
 
@@ -783,7 +724,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		var targetDepth:Int;
 		var targetChild:DisplayObject;
 		var child:DisplayObject;
-		var maskApplied:Bool;
 
 		var length:Int = currentInstances.length;
 		var currentInstancesIndex = 0;
@@ -819,13 +759,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		currentInstancesIndex = 0;
 		childrenIndex = 0;
 
+		var lastDepth = 0;
 		// then leave the manually added dynamic objects where they are, while adding anything new from the frame
 		while (currentInstancesIndex < length) {
 
 			existingChild = childrenIndex >= __children.length ? null : __children[childrenIndex];
 			instance = currentInstances[currentInstancesIndex];
 
-			targetDepth = instance.depth;
+			targetDepth = lastDepth = instance.depth;
 			targetChild = instance.displayObject;
 
 			if (existingChild != targetChild) {
@@ -848,29 +789,18 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			}
 
-			maskApplied = false;
-
-			if(child == targetChild && instance.clipDepth <= 0) { //dont apply masks to masks
-				for (mask in currentMasks) {
-
-					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
-
-						child.mask = mask.displayObject;
-						maskApplied = true;
-						break;
-
-					}
-
-				}
-
-				if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
-
-					child.mask = null;
-
-				}
+			if(child != targetChild || (child == targetChild && instance.clipDepth <= 0)) { //dont apply masks to masks
+				__applyMask(currentMasks, targetDepth, child);
 			}
+
 			childrenIndex++;
 			currentInstancesIndex++;
+		}
+		//if any dynamic objects at the end of the __children array check to see if they need masks applied
+		while(childrenIndex < __children.length) {
+			lastDepth++;
+			child = __children[childrenIndex++];
+			__applyMask(currentMasks, lastDepth, child);
 		}
 		//remove any left over null children
 		childrenIndex = 0;
@@ -886,6 +816,23 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__lastFrameUpdate = __currentFrame;
 	}
 
+	private function __applyMask(currentMasks : Array<FrameSymbolInstance>, targetDepth : Int, child : DisplayObject):Void {
+		var maskApplied:Bool = false;
+		for (mask in currentMasks) {
+			if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
+
+				child.mask = mask.displayObject;
+				maskApplied = true;
+				break;
+			}
+		}
+
+		if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
+
+			child.mask = null;
+
+		}
+	}
 	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
 	private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
 
@@ -1091,6 +1038,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 								displayObject.parent = this;
 								displayObject.stage = stage;
+								if(frameObject.clipDepth > 0) {
+									displayObject.isTimelineMask = true;
+								}
 								instance = new FrameSymbolInstance (frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject.clipDepth);
 
 							}
@@ -1472,7 +1422,8 @@ private class FrameSymbolInstance {
 	public var displayObject:DisplayObject;
 	public var initFrame:Int;
 	public var initFrameObjectID:Int; // TODO: Multiple frame object IDs may refer to the same instance
-	
+
+	private var __clipDepth:Int;
 	
 	public function new (initFrame:Int, initFrameObjectID:Int, characterID:Int, depth:Int, displayObject:DisplayObject, clipDepth:Int) {
 
@@ -1482,8 +1433,6 @@ private class FrameSymbolInstance {
 		this.depth = depth;
 		this.displayObject = displayObject;
 		this.clipDepth = clipDepth;
-		
+
 	}
-	
-	
 }
