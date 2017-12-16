@@ -545,13 +545,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		currentInstancesIndex = 0;
 		childrenIndex = 0;
 
+		var lastDepth = 0;
 		// then leave the manually added dynamic objects where they are, while adding anything new from the frame
 		while (currentInstancesIndex < length) {
 
 			existingChild = childrenIndex >= __children.length ? null : __children[childrenIndex];
 			instance = currentInstances[currentInstancesIndex];
 
-			targetDepth = instance.depth;
+			targetDepth = lastDepth = instance.depth;
 			targetChild = instance.displayObject;
 
 			if (existingChild != targetChild) {
@@ -574,28 +575,18 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			}
 
-			maskApplied = false;
-
 			if(child != targetChild || (child == targetChild && instance.clipDepth <= 0)) { //dont apply masks to masks
-				for (mask in currentMasks) {
-
-					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
-
-						child.mask = mask.displayObject;
-						maskApplied = true;
-						break;
-
-					}
-
-				}
-				if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
-
-					child.mask = null;
-
-				}
+				__applyMask(currentMasks, targetDepth, child);
 			}
+
 			childrenIndex++;
 			currentInstancesIndex++;
+		}
+		//if any dynamic objects at the end of the __children array check to see if they need masks applied
+		while(childrenIndex < __children.length) {
+			lastDepth++;
+			child = __children[childrenIndex++];
+			__applyMask(currentMasks, lastDepth, child);
 		}
 		//remove any left over null children
 		childrenIndex = 0;
@@ -700,7 +691,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				if (instance.clipDepth > 0) {
 
-					untyped instance.displayObject.__isMask = true;
 					currentMasks.push (instance);
 					currentInstances.push (instance);
 
