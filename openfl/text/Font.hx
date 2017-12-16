@@ -1,6 +1,7 @@
 package openfl.text;
 
 
+import lime.app.Future;
 import lime.text.Font in LimeFont;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
@@ -71,6 +72,39 @@ class Font extends LimeFont {
 		#else
 		return font;
 		#end
+		
+	}
+	
+	
+	public static function loadFromBytes (bytes:ByteArray):Future<Font> {
+		
+		return LimeFont.loadFromBytes (bytes).then (function (font) {
+			
+			return Future.withValue (Font.__fromLimeFont (font));
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromFile (path:String):Future<Font> {
+		
+		return LimeFont.loadFromFile (path).then (function (font) {
+			
+			return Future.withValue (Font.__fromLimeFont (font));
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromName (path:String):Future<Font> {
+		
+		return LimeFont.loadFromName (path).then (function (font) {
+			
+			return Future.withValue (Font.__fromLimeFont (font));
+			
+		});
 		
 	}
 	
