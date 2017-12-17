@@ -78,10 +78,25 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
-		if (!hitObject.visible || __isMask) return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject);
-		if (mask != null && !mask.__hitTestMask (x, y)) return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		if (!hitObject.visible || __isMask) return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled);
+		
+		if (interactiveOnly && !mouseEnabled && !mouseChildren) { 
+			
+			if (__hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled)) {
+				
+				return true;
+				
+			} else if (!hitTestWhenMouseDisabled) {
+				
+				return false;
+				
+			}
+			
+		}
+		
+		if (mask != null && !mask.__hitTestMask (x, y)) return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled);
 		
 		if (__scrollRect != null) {
 			
@@ -92,7 +107,7 @@ class Sprite extends DisplayObjectContainer {
 			if (!__scrollRect.containsPoint (point)) {
 				
 				Point.__pool.release (point);
-				return __hitTestHitArea (x, y, shapeFlag, stack, true, hitObject);
+				return __hitTestHitArea (x, y, shapeFlag, stack, true, hitObject, hitTestWhenMouseDisabled);
 				
 			}
 			
@@ -100,13 +115,13 @@ class Sprite extends DisplayObjectContainer {
 			
 		}
 		
-		if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
+		if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled)) {
 			
 			return interactiveOnly;
 			
 		} else if (hitArea == null && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 			
-			if (stack != null && (!interactiveOnly || mouseEnabled)) {
+			if (stack != null && !hitTestWhenMouseDisabled && (!interactiveOnly || mouseEnabled)) {
 				
 				stack.push (hitObject);
 				
@@ -116,22 +131,22 @@ class Sprite extends DisplayObjectContainer {
 			
 		}
 		
-		return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		return __hitTestHitArea (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled);
 		
 	}
 	
 	
-	private function __hitTestHitArea (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private function __hitTestHitArea (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
 		if (hitArea != null) {
 			
 			if (!hitArea.mouseEnabled) {
 				
 				hitArea.mouseEnabled = true;
-				var hitTest = hitArea.__hitTest (x, y, shapeFlag, null, true, hitObject);
+				var hitTest = hitArea.__hitTest (x, y, shapeFlag, null, true, hitObject, hitTestWhenMouseDisabled);
 				hitArea.mouseEnabled = false;
 				
-				if (hitTest) {
+				if (hitTest && !hitTestWhenMouseDisabled) {
 					
 					stack[stack.length] = hitObject;
 					

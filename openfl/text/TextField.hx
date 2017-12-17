@@ -1322,9 +1322,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		__getRenderTransform ();
@@ -1335,7 +1335,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (__textEngine.bounds.contains (px, py)) {
 			
-			if (stack != null) {
+			if (stack != null && !hitTestWhenMouseDisabled) {
 				
 				stack.push (hitObject);
 				

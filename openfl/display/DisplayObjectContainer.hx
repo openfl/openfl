@@ -451,6 +451,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	private override function __getMouseAllowed ():Bool {
+		
+		return mouseEnabled || mouseChildren;
+		
+	}
+	
+	
 	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__scrollRect != null) {
@@ -490,9 +497,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+		if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		if (__scrollRect != null) {
@@ -519,9 +526,9 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 					
-					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
+					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i], hitTestWhenMouseDisabled)) {
 						
-						if (stack != null) {
+						if (stack != null && !hitTestWhenMouseDisabled) {
 							
 							stack.push (hitObject);
 							
@@ -544,13 +551,15 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 					interactive = __children[i].__getInteractive (null);
 					
-					if (interactive || (mouseEnabled && !hitTest)) {
+					var childHitTestWhenMouseDisabled = hitTestWhenMouseDisabled || (interactive && !__children[i].__getMouseAllowed ()) || (!interactive && !mouseEnabled);
+					
+					if (interactive || (mouseEnabled && !hitTest) || childHitTestWhenMouseDisabled) {
 						
-						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i])) {
+						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i], childHitTestWhenMouseDisabled)) {
 							
 							hitTest = true;
 							
-							if (interactive) {
+							if (!childHitTestWhenMouseDisabled && interactive) {
 								
 								break;
 								
@@ -564,7 +573,12 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				if (hitTest) {
 					
-					stack.insert (length, hitObject);
+					if (!hitTestWhenMouseDisabled && mouseEnabled) {
+						
+						stack.insert (length, hitObject);
+						
+					}
+					
 					return true;
 					
 				}
