@@ -567,9 +567,11 @@ class SWFLiteExporter {
 			for (object in frameData.getObjectsSortedByDepth ()) {
 
 				// if this object was placed at 0 (is the first tag) and the characterId changed
+				LogHelper.info ("", ">>> frameData.frameNumber:"+frameData.frameNumber+" object.depth:"+object.depth+" object.className:"+object.className+" object.placedAtIndex: " + object.placedAtIndex +
+					" object.characterId:"+object.characterId +" object.lastModifiedAtIndex: " + object.lastModifiedAtIndex + " zeroCharacter:"+zeroCharacter );
 				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
 
-					// remove 0th index from lastModified, so it will get processed again
+					// remove mapping for 0th placedAtIndex (a tag index) from lastModified, so it will get processed again
 					lastModified.remove (0);
 					zeroCharacter = object.characterId;
 					
