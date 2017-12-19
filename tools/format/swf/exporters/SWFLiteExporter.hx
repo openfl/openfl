@@ -567,11 +567,9 @@ class SWFLiteExporter {
 			for (object in frameData.getObjectsSortedByDepth ()) {
 
 				// if this object was placed at 0 (is the first tag) and the characterId changed
-				LogHelper.info ("", ">>> frameData.frameNumber:"+frameData.frameNumber+" object.depth:"+object.depth+" object.className:"+object.className+" object.placedAtIndex: " + object.placedAtIndex +
-					" object.characterId:"+object.characterId +" object.lastModifiedAtIndex: " + object.lastModifiedAtIndex + " zeroCharacter:"+zeroCharacter );
 				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
 
-					// remove mapping for 0th placedAtIndex (a tag index) from lastModified, so it will get processed again
+					// remove first mapping (which always doesn't exist at this point) and set zeroCharacter (which is only used here) so basically do nothing
 					lastModified.remove (0);
 					zeroCharacter = object.characterId;
 					
@@ -585,10 +583,12 @@ class SWFLiteExporter {
 					
 				} else if (object.lastModifiedAtIndex > lastModified.get (object.placedAtIndex)) {
 					
+					// we made this symbol already, but it's been modified, so make a new frameObject
 					placeTag = cast tag.tags[object.lastModifiedAtIndex];
 					
 				} else {
 					
+					// nothing changed in here, no new frameObject needed
 					continue;
 					
 				}
