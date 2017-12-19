@@ -57,6 +57,11 @@ import format.swf.tags.TagDefineSound;
 using StringTools;
 using format.swf.exporters.SWFLiteExporter.AVM2;
 
+typedef TimelineFrameObject = {
+	var placedObject:FrameObject;
+	var frameObject:format.swf.FrameObject;
+}
+
 class SWFLiteExporter {
 	
 	
@@ -537,8 +542,10 @@ class SWFLiteExporter {
 		}
 
 		var lastModified = new Map<Int, Int> ();
+		var workingObjects = new Map<Int, TimelineFrameObject>();
+		var lastFrame : Frame;
 		
-		var frame : Frame, frameObject : FrameObject, placeTag:TagPlaceObject;
+		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
 
 			frame = new Frame ();
@@ -561,38 +568,60 @@ class SWFLiteExporter {
 
 			}
 			
-			frame.objects = [];
-			
-			for (object in frameData.getObjectsSortedByDepth ()) {
-				
-				if (!lastModified.exists (object.placedAtIndex)) {
-					
-					processTag (cast data.getCharacter (object.characterId));
-					
-					placeTag = cast tag.tags[object.placedAtIndex];
-					
-				} else if (object.lastModifiedAtIndex > lastModified.get (object.placedAtIndex)) {
-					
-					// we made this symbol already, but it's been modified, so make a new frameObject
-					placeTag = cast tag.tags[object.lastModifiedAtIndex];
-					
-				} else {
-					
-					// nothing changed in here, no new frameObject needed
-					continue;
-					
+			frame.objects = new Map();
+
+			// check existing working objects and remove any that are gone this frame
+
+			var removeWorkingObjectsDepths:Array<Int> = [];
+			for( workingObject in workingObjects )
+			{
+				frameDataObject = frameData.objects[workingObject.frameObject.depth];
+				if(frameDataObject == null) {
+					// workingObject is getting removed
+					removeWorkingObjectsDepths.push(workingObject.frameObject.depth);
 				}
-				
+			}
+			for( removeDepth in removeWorkingObjectsDepths ) {
+				workingObjects.remove(removeDepth);
+			}
+
+			// update frameObjects to match new frame
+
+			for (object in frameData.getObjectsSortedByDepth ()) {
+
+				if (!lastModified.exists (object.placedAtIndex)) {
+					processTag (cast data.getCharacter (object.characterId));
+				}
+
+				placedAtTag = cast tag.tags[object.placedAtIndex];
+
+				if (object.lastModifiedAtIndex > 0) {
+					lastModifiedTag = cast tag.tags[object.lastModifiedAtIndex];
+				}
+				else {
+					lastModifiedTag = null;
+				}
+
 				frameObject = new FrameObject ();
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
-				
-				frameObject.name = placeTag.instanceName;
+
+				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
+				// finally placedAtTag if it exists
+				//TODO:LYLE this is my best guess, it may be that we do need to check placedAtTag first
+
+				if( lastModifiedTag != null && lastModifiedTag.hasName )
+					frameObject.name = lastModifiedTag.instanceName;
+				else if( workingObject.name != null )
+					frameObject.name = workingObject.name;
+				else if( placedAtTag.hasName )
+					frameObject.name = placedAtTag.instanceName;  //TODO: this may never be hit, might be worth checking later
 
 				frameObject.hasCharacter = placeTag.hasCharacter;
 				frameObject.hasMove = placeTag.hasMove;
 				frameObject.type = FrameObjectType.PLACE_OBJECT;
-				
+
+				//TODO:LYLE check from here down to use lastModifiedTag as needed
 				if (placeTag.matrix != null) {
 					
 					var matrix = placeTag.matrix.matrix;
@@ -627,7 +656,6 @@ class SWFLiteExporter {
 					}
 					
 					frameObject.filters = filters;
-					
 				}
 				
 				frameObject.depth = placeTag.depth;
@@ -661,9 +689,12 @@ class SWFLiteExporter {
 				}
 				
 				frame.objects.push (frameObject);
-				
+
+				//TODO:LYLE
+				// add frameObject to workingObjects
 			}
-			
+
+			lastFrame = frame;
 			symbol.frames.push (frame);
 			
 		}
