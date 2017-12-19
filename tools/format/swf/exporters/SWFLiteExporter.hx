@@ -537,7 +537,6 @@ class SWFLiteExporter {
 		}
 
 		var lastModified = new Map<Int, Int> ();
-		var zeroCharacter = -1;
 		
 		var frame : Frame, frameObject : FrameObject, placeTag:TagPlaceObject;
 		for (frameData in tag.frames) {
@@ -565,15 +564,6 @@ class SWFLiteExporter {
 			frame.objects = [];
 			
 			for (object in frameData.getObjectsSortedByDepth ()) {
-
-				// if this object was placed at 0 (is the first tag) and the characterId changed
-				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
-
-					// remove first mapping (which always doesn't exist at this point) and set zeroCharacter (which is only used here) so basically do nothing
-					lastModified.remove (0);
-					zeroCharacter = object.characterId;
-					
-				}
 				
 				if (!lastModified.exists (object.placedAtIndex)) {
 					
