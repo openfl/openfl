@@ -207,7 +207,7 @@ jobs:
   Documentation (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/docs
+    working_directory: /workspace/openfl/scripts
     steps:
      - attach_workspace:
          at: /
@@ -219,12 +219,12 @@ jobs:
          command: haxelib dev dox ~/dox
      - run:
          name: Generate Documentation
-         command: haxe build.hxml
+         command: haxe docs.hxml
   
   Documentation (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    working_directory: /workspace/openfl/docs
+    working_directory: /workspace/openfl/scripts
     steps:
      - attach_workspace:
          at: /
@@ -236,7 +236,7 @@ jobs:
          command: haxelib dev dox ~/dox
      - run:
          name: Generate Documentation
-         command: haxe build.hxml
+         command: haxe docs.hxml
   
   
   # This is used for local tests, it assumes you already have a working environment
