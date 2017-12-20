@@ -1,6 +1,7 @@
 -main Tools
--neko tools/tools.n
--cp tools
+-neko scripts/tools.n
+-cp scripts
+-cp src
 -lib lime
 -lib format
 -D lime-cairo

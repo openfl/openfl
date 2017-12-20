@@ -32,11 +32,11 @@
 		
 	</section>
 	
-	<template path="templates" />
+	<template path="assets/templates" />
 	
-	<source path="externs/core/flash" if="flash" />
-	<source path="externs/core/openfl" if="display || flash" />
-	<source path="externs/extras" if="display" />
+	<source path="src/externs/core/flash" if="flash" />
+	<source path="src/externs/core/openfl" if="display || flash" />
+	<source path="src/externs/extras" if="display" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
@@ -78,7 +78,7 @@
 			
 			<module name="openfl" if="modular">
 				
-				<source path="" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
+				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
 				
 				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
 				<class remove="lime.graphics.opengl.GLContextType" />

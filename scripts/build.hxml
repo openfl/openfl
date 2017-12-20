@@ -1,0 +1,16 @@
+-js ../lib/_gen/_.js
+ImportAll
+-lib lime
+# -lib openfl
+-cp ../src
+-lib hxgenjs
+# -D hxextern
+# -D tsextern
+-D openfljs
+-D lime-opengl
+-D es5get
+-D html5
+-D tools
+-D commonjs
+-D howlerjs
+--no-inline
