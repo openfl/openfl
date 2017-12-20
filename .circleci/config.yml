@@ -239,6 +239,23 @@ jobs:
          command: haxe docs.hxml
   
   
+  NPM:
+    docker:
+     - image: openfl/ci-openfl-js:0.0.2
+    working_directory: /workspace/openfl
+    steps:
+     - checkout
+     - run:
+         name: Install Dependencies
+         command: npm install
+     - run:
+         name: Build Library
+         command: npm run build
+     - run:
+         name: Run Tests
+         command: npm run test
+  
+  
   # This is used for local tests, it assumes you already have a working environment
   build:
     docker:
@@ -319,6 +336,10 @@ jobs:
 
 workflows:
   version: 2
+  
+  NPM Tests:
+    jobs:
+     - NPM
   
   Tests (Haxe 3.2.1):
     jobs:
