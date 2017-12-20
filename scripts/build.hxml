@@ -8,7 +8,6 @@ ImportAll
 # -D tsextern
 -D openfljs
 -D lime-opengl
--D es5get
 -D html5
 -D tools
 -D commonjs
