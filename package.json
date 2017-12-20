@@ -34,8 +34,9 @@
     "url": "https://github.com/openfl/openfl.git"
   },
   "scripts": {
-    "build": "cd scripts && haxe build.hxml",
+    "build": "npm run build-lib && npm run build-dist",
     "build-dist": "webpack --config webpack.dev.js && webpack --config webpack.prod.js",
+    "build-lib": "cd scripts && haxe build.hxml",
     "build-test-es5": "cd test/es5 && webpack",
     "build-test-es6": "cd test/es6 && webpack",
     "build-test-haxe": "cd test/haxe && haxe build.hxml && webpack",
