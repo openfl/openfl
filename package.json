@@ -1,6 +1,6 @@
 {
   "name": "openfl",
-  "version": "6.5.3-alpha.6",
+  "version": "6.5.3-alpha.7",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "openfl",
@@ -21,18 +21,21 @@
     "Joshua Granick",
     "Other OpenFL contributors"
   ],
-  "main": "lib/openfl/index.js",
+  "main": "dist/openfl.min.js",
+  "module": "lib/openfl/index.js",
   "files": [
+    "dist",
     "lib",
     "scripts",
     "src"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/openfl/openfl-js.git"
+    "url": "https://github.com/openfl/openfl.git"
   },
   "scripts": {
     "build": "cd scripts && haxe build.hxml",
+    "build-dist": "webpack --config webpack.dev.js && webpack --config webpack.prod.js",
     "build-test-es5": "cd test/es5 && webpack",
     "build-test-es6": "cd test/es6 && webpack",
     "build-test-haxe": "cd test/haxe && haxe build.hxml && webpack",
@@ -64,7 +67,9 @@
     "mocha": "^4.0.1",
     "mocha-chrome": "^1.0.2",
     "typescript": "^2.6.2",
-    "webpack": "^3.10.0"
+    "uglifyjs-webpack-plugin": "^1.1.4",
+    "webpack": "^3.10.0",
+    "webpack-merge": "^4.1.1"
   },
   "dependencies": {
     "howler": "^2.0.6",

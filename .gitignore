@@ -17,9 +17,10 @@ test/unit/test/*/TestSuite.hx
 test/unit/test/*/*/ExampleTest.hx
 test/unit/test/*/*/TestMain.hx
 test/unit/test/*/*/TestSuite.hx
-tool/*.n
+dist
 docs
 scripts/xml
+scripts/*.n
 haxedoc.xml
 .temp
 dump
