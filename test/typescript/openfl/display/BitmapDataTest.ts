@@ -246,7 +246,7 @@ describe ("TypeScript | BitmapData", function () {
 		var bitmapData = new BitmapData (50, 50, true, 0xFFFF8800);
 		var bitmapData2 = new BitmapData (50, 50, true, 0xFFCC6600);
 		//var bitmapData2 = new BitmapData (50, 50, true, 0xCCCC6600);
-		var bitmapData3:BitmapData = bitmapData.compare (bitmapData2);
+		var bitmapData3:BitmapData = bitmapData.compare (bitmapData2) as BitmapData;
 		
 		//assert.areEqual (hex (0xFF8800), hex (bitmapData.getPixel (0, 0)));
 		//assert.areEqual (hex (0xFFFF8800), hex (bitmapData.getPixel32 (0, 0)));
@@ -257,7 +257,7 @@ describe ("TypeScript | BitmapData", function () {
 		
 		bitmapData = new BitmapData (50, 50, true, 0xFFFFAA00);
 		bitmapData2 = new BitmapData (50, 50, true, 0xCCFFAA00);
-		bitmapData3 = bitmapData.compare (bitmapData2);
+		bitmapData3 = bitmapData.compare (bitmapData2) as BitmapData;
 		
 		assert.equal (hex (bitmapData3.getPixel32 (0, 0)), hex (0x33FFFFFF));
 		

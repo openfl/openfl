@@ -5,7 +5,7 @@
 		"paths": {
 			"openfl/*": ["../../lib/openfl/*"]
 		},
-		"lib": [ "es2017" ],
+		"lib": [ "dom", "es2017" ],
 		"sourceMap": true
 	},
 	"include": [

@@ -1,17 +1,19 @@
 import Sprite from "./Sprite";
 
+
 declare namespace openfl.display {
-
-export class DOMSprite extends Sprite {
-
-	constructor(element:any);
-	__active:any;
-	__element:any;
-	__renderDOM(renderSession:any):any;
-
-
+	
+	
+	export class DOMSprite extends Sprite {
+		
+		
+		public constructor (element:HTMLElement);
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.display.DOMSprite;
