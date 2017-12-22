@@ -1,19 +1,24 @@
+import TextureBase from "./TextureBase";
+import NetStream from "./../../net/NetStream";
+
 
 declare namespace openfl.display3D.textures {
-
-export class VideoTexture {
-
-	constructor(context:any);
-	videoHeight:any;
-	videoWidth:any;
-	__netStream:any;
-	attachNetStream(netStream:any):any;
-	__getTexture():any;
-	__textureReady():any;
-
-
+	
+	
+	/*@:final*/ export class VideoTexture extends TextureBase {
+		
+		
+		public readonly videoHeight:number;
+		public readonly videoWidth:number;
+		
+		//public function attachCamera (theCamera:Camera):Void;
+		public attachNetStream (netStream:NetStream):void;
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.display3D.textures.VideoTexture;

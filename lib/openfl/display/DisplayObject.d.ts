@@ -406,7 +406,7 @@ declare namespace openfl.display {
 		 *                               on an object that was placed on the timeline
 		 *                               in the Flash authoring tool.
 		 */
-		name:String;
+		name:string;
 		
 		/**
 		 * Specifies whether the display object is opaque with a certain background

@@ -1,26 +1,24 @@
+import ByteArray from "./../utils/ByteArray";
+
+type Vector<T> = any;
+
 
 declare namespace openfl.display3D {
-
-export class VertexBuffer3D {
-
-	constructor(context3D:any, numVertices:any, dataPerVertex:any, bufferUsage:any);
-	__context:any;
-	__data:any;
 	
-	__memoryUsage:any;
-	__numVertices:any;
-	__stride:any;
-	__tempFloat32Array:any;
-	__usage:any;
-	__vertexSize:any;
-	dispose():any;
-	uploadFromByteArray(data:any, byteArrayOffset:any, startVertex:any, numVertices:any):any;
-	uploadFromTypedArray(data:any, byteLength?:any):any;
-	uploadFromVector(data:any, startVertex:any, numVertices:any):any;
-
-
+	
+	export class VertexBuffer3D {
+		
+		
+		public dispose ():void;
+		public uploadFromByteArray (data:ByteArray, byteArrayOffset:number, startVertex:number, numVertices:number):void;
+		public uploadFromTypedArray (data:ArrayBufferView):void;
+		public uploadFromVector (data:Vector<number>, startVertex:number, numVertices:number):void;
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.display3D.VertexBuffer3D;

@@ -1,19 +1,18 @@
+import ByteArray from "./../utils/ByteArray";
 
 
 declare namespace openfl.display {
-
-export class ShaderData {
-
-	constructor(byteArray:any);
-	aAlpha:any;
-	aPosition:any;
-	aTexCoord:any;
-	uImage0:any;
-	uMatrix:any;
-
-
+	
+	
+	/*@:final*/ export class ShaderData /*implements Dynamic*/ {
+		
+		
+		public constructor (byteArray:ByteArray);
+		
+		
+	}
+	
 }
 
-}
 
 export default openfl.display.ShaderData;

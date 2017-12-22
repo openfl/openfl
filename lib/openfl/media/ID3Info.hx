@@ -3,7 +3,7 @@ package openfl.media; #if (display || !flash)
 
 @:jsRequire("openfl/media/ID3Info", "default")
 
-@:final extern class ID3Info implements Dynamic {
+@:final extern class ID3Info {
 	
 	
 	public var album:String;

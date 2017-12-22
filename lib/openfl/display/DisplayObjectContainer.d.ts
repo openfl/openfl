@@ -229,7 +229,7 @@ declare namespace openfl.display {
 		 *                       situation by having the child movie call the
 		 *                       `Security.allowDomain()` method.
 		 */
-		getChildByName (name:String):DisplayObject;
+		getChildByName (name:string):DisplayObject;
 		
 		
 		/**

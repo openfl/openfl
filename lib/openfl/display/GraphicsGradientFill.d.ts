@@ -1,23 +1,34 @@
+import GradientType from "./GradientType";
+import IGraphicsData from "./IGraphicsData";
+import IGraphicsFill from "./IGraphicsFill";
+import InterpolationMethod from "./InterpolationMethod";
+import SpreadMethod from "./SpreadMethod";
+import Matrix from "./../geom/Matrix";
+
 
 declare namespace openfl.display {
-
-export class GraphicsGradientFill {
-
-	constructor(type?:any, colors?:any, alphas?:any, ratios?:any, matrix?:any, spreadMethod?:any, interpolationMethod?:any, focalPointRatio?:any);
-	alphas:any;
-	colors:any;
-	focalPointRatio:any;
-	interpolationMethod:any;
-	matrix:any;
-	ratios:any;
-	spreadMethod:any;
-	type:any;
 	
 	
-
-
+	/*@:final*/ export class GraphicsGradientFill implements IGraphicsData, IGraphicsFill {
+		
+		
+		public alphas:Array<number>;
+		public colors:Array<number>;
+		public focalPointRatio:number;
+		public interpolationMethod:InterpolationMethod;
+		public matrix:Matrix;
+		public ratios:Array<number>;
+		public spreadMethod:SpreadMethod;
+		public type:GradientType;
+		
+		
+		public constructor (type?:GradientType, colors?:Array<number>, alphas?:Array<number>, ratios?:Array<number>, matrix?:Matrix, spreadMethod?:SpreadMethod, interpolationMethod?:InterpolationMethod, focalPointRatio?:number);
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.display.GraphicsGradientFill;

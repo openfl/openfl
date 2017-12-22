@@ -11,9 +11,11 @@ describe ("TypeScript | Shader", function () {
 		
 		// TODO: Confirm functionality
 		
-		var shader = new Shader ();
 		// #if !flash
-		shader.byteCode = new ByteArray ();
+		var shader = new Shader (new ByteArray ());
+		var exists = shader.data;
+		
+		assert.notEqual (exists, null);
 		// #end
 		
 	});

@@ -264,7 +264,7 @@ declare namespace openfl.net {
 		
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:string = null):Void;
+		// @:noCompletion @:dox(hide) public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:boolean = false, pattern:Dynamic = null, replace:string = null):Void;
 		// #end
 		
 		

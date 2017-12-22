@@ -231,7 +231,7 @@ declare namespace openfl.text {
 		 * @param leading     A number that indicates the amount of leading vertical
 		 *                    space between lines.
 		 */
-		constructor (font?:String, size?:number | null, color?:number | null, bold?:boolean | null, italic?:boolean | null, underline?:boolean | null, url?:string, target?:string, align?:TextFormatAlign | null, leftMargin?:number | null, rightMargin?:number | null, indent?:number | null, leading?:number | null);
+		constructor (font?:string, size?:number | null, color?:number | null, bold?:boolean | null, italic?:boolean | null, underline?:boolean | null, url?:string, target?:string, align?:TextFormatAlign | null, leftMargin?:number | null, rightMargin?:number | null, indent?:number | null, leading?:number | null);
 		
 		
 		clone ():TextFormat;

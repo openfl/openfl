@@ -1,36 +1,41 @@
 package openfl.display;
 
 
+import openfl.geom.ColorTransform;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+
 
 @:jsRequire("openfl/display/ITile", "default")
 
-extern class ITile implements Dynamic {
-
+extern interface ITile {
 	
-	function get_alpha():Dynamic;
-	function set_alpha(value:Dynamic):Dynamic;
-	function get_colorTransform():Dynamic;
-	function set_colorTransform(value:Dynamic):Dynamic;
-	function get_id():Dynamic;
-	function set_id(value:Dynamic):Dynamic;
-	function get_matrix():Dynamic;
-	function set_matrix(value:Dynamic):Dynamic;
-	function get_rect():Dynamic;
-	function set_rect(value:Dynamic):Dynamic;
-	function get_shader():Dynamic;
-	function set_shader(value:Dynamic):Dynamic;
-	function get_tileset():Dynamic;
-	function set_tileset(value:Dynamic):Dynamic;
-	function get_visible():Dynamic;
-	function set_visible(value:Dynamic):Dynamic;
-	var alpha:Dynamic;
-	var colorTransform:Dynamic;
-	var id:Dynamic;
-	var matrix:Dynamic;
-	var rect:Dynamic;
-	var shader:Dynamic;
-	var tileset:Dynamic;
-	var visible:Dynamic;
-
-
+	
+	public var alpha:Float;
+	public var colorTransform:ColorTransform;
+	public var id:Int;
+	public var matrix:Matrix;
+	public var rect:Rectangle;
+	public var shader:Shader;
+	public var tileset:Tileset;
+	public var visible:Bool;
+	
+	private function get_alpha ():Float;
+	private function set_alpha (value:Float):Float;
+	private function get_colorTransform ():ColorTransform;
+	private function set_colorTransform (value:ColorTransform):ColorTransform;
+	private function get_id ():Int;
+	private function set_id (value:Int):Int;
+	private function get_matrix ():Matrix;
+	private function set_matrix (value:Matrix):Matrix;
+	private function get_rect ():Rectangle;
+	private function set_rect (value:Rectangle):Rectangle;
+	private function get_shader ():Shader;
+	private function set_shader (value:Shader):Shader;
+	private function get_tileset ():Tileset;
+	private function set_tileset (value:Tileset):Tileset;
+	private function get_visible ():Bool;
+	private function set_visible (value:Bool):Bool;
+	
+	
 }

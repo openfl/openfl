@@ -10,7 +10,7 @@ import openfl.text.Font;
 
 @:dox(hide) interface IAssetCache {
 	
-	public var enabled:Bool;
+	public var enabled (get, set):Bool;
 	
 	public function clear (prefix:String = null):Void;
 	public function getBitmapData (id:String):BitmapData;

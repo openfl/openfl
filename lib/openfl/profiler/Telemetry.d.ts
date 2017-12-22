@@ -1,26 +1,22 @@
-
-
 declare namespace openfl.profiler {
-
-export class Telemetry {
-
-	static connected:any;
-	static spanMarker:any;
-	static registerCommandHandler(commandName:any, handler:any):any;
-	static sendMetric(metric:any, value:any):any;
-	static sendSpanMetric(metric:any, startSpanMarker:any, value?:any):any;
-	static unregisterCommandHandler(commandName:any):any;
-	static __advanceFrame():any;
-	static __endTiming(name:any):any;
-	static __initialize():any;
-	static __rewindStack(stack:any):any;
-	static __startTiming(name:any):any;
-	static __unwindStack():any;
-	static get_connected():any;
-
-
+	
+	
+	/*@:final*/ export class Telemetry {
+		
+		
+		public static readonly connected:boolean;
+		public static readonly spanMarker:number;
+		
+		public static registerCommandHandler (commandName:string, handler:any):boolean;
+		public static sendMetric (metric:string, value:any):void;
+		public static sendSpanMetric (metric:string, startSpanMarker:number, value:any):void;
+		public static unregisterCommandHandler (commandName:string):boolean;
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.profiler.Telemetry;

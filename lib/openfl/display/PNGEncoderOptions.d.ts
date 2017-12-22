@@ -1,15 +1,17 @@
-
-
 declare namespace openfl.display {
-
-export class PNGEncoderOptions {
-
-	constructor(fastCompression?:any);
-	fastCompression:any;
-
-
+	
+	
+	/*@:final*/ export class PNGEncoderOptions {
+		
+		
+		public fastCompression:boolean;
+		
+		public constructor (fastCompression?:boolean);
+		
+		
+	}
+	
 }
 
-}
 
 export default openfl.display.PNGEncoderOptions;

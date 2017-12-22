@@ -125,7 +125,7 @@ declare namespace openfl.display {
 		startDrag (lockCenter?:boolean, bounds?:Rectangle):void;
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
+		// @:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:boolean = false, bounds:Rectangle = null):Void;
 		// #end
 		
 		/**

@@ -1,23 +1,26 @@
+import SoundTransform from "./SoundTransform";
+
 
 declare namespace openfl.media {
-
-export class SoundMixer {
-
-	static MAX_ACTIVE_CHANNELS:any;
-	static bufferTime:any;
-	static soundTransform:any;
-	static __soundChannels:any;
-	static __soundTransform:any;
-	static areSoundsInaccessible():any;
-	static stopAll():any;
-	static __registerSoundChannel(soundChannel:any):any;
-	static __unregisterSoundChannel(soundChannel:any):any;
-	static get_soundTransform():any;
-	static set_soundTransform(value:any):any;
-
-
+	
+	
+	/*@:final*/ export class SoundMixer {
+		
+		public static bufferTime:number;
+		public static soundTransform:SoundTransform;
+		
+		public static areSoundsInaccessible ():boolean;
+		
+		// #if flash
+		// @:noCompletion @:dox(hide) public static function computeSpectrum (outputArray:ByteArray, FFTMode:boolean = false, stretchFactor:Int = 0):Void;
+		// #end
+		
+		public static stopAll ():void;
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.media.SoundMixer;

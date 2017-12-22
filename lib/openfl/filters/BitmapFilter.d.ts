@@ -1,25 +1,36 @@
 
 
 declare namespace openfl.filters {
-
-export class BitmapFilter {
-
-	constructor();
-	__bottomExtension:any;
-	__leftExtension:any;
-	__needSecondBitmapData:any;
-	__numShaderPasses:any;
-	__preserveObject:any;
-	__renderDirty:any;
-	__rightExtension:any;
-	__topExtension:any;
-	clone():any;
-	__applyFilter(bitmapData:any, sourceBitmapData:any, sourceRect:any, destPoint:any):any;
-	__initShader(renderSession:any, pass:any):any;
-
-
+	
+	
+	/**
+	 * The BitmapFilter class is the base class for all image filter effects.
+	 *
+	 * The BevelFilter, BlurFilter, ColorMatrixFilter, ConvolutionFilter,
+	 * DisplacementMapFilter, DropShadowFilter, GlowFilter, GradientBevelFilter,
+	 * and GradientGlowFilter classes all extend the BitmapFilter class. You can
+	 * apply these filter effects to any display object.
+	 *
+	 * You can neither directly instantiate nor extend BitmapFilter.
+	 */
+	export class BitmapFilter {
+		
+		
+		public constructor ();
+		
+		/**
+		 * Returns a BitmapFilter object that is an exact copy of the original
+		 * BitmapFilter object.
+		 * 
+		 * @return A BitmapFilter object.
+		 */
+		public clone ():BitmapFilter;
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.filters.BitmapFilter;

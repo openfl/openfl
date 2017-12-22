@@ -1,21 +1,25 @@
-
-
 declare namespace openfl.media {
-
-export class ID3Info {
-
-	constructor();
-	album:any;
-	artist:any;
-	comment:any;
-	genre:any;
-	songName:any;
-	track:any;
-	year:any;
-
-
+	
+	
+	/*@:final*/ export class ID3Info {
+		
+		
+		public album:string;
+		public artist:string;
+		public comment:string;
+		public genre:string;
+		public songName:string;
+		public track:string;
+		public year:string;
+		
+		
+		public constructor ();
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.media.ID3Info;

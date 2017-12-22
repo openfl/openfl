@@ -1,38 +1,47 @@
+import Shader from "./Shader";
+import Tileset from "./Tileset";
+import ColorTransform from "./../geom/ColorTransform";
+import Matrix from "./../geom/Matrix";
+import Rectangle from "./../geom/Rectangle";
 
 
 declare namespace openfl.display {
-
-export class ITile {
-
 	
-	get_alpha():any;
-	set_alpha(value:any):any;
-	get_colorTransform():any;
-	set_colorTransform(value:any):any;
-	get_id():any;
-	set_id(value:any):any;
-	get_matrix():any;
-	set_matrix(value:any):any;
-	get_rect():any;
-	set_rect(value:any):any;
-	get_shader():any;
-	set_shader(value:any):any;
-	get_tileset():any;
-	set_tileset(value:any):any;
-	get_visible():any;
-	set_visible(value:any):any;
-	alpha:any;
-	colorTransform:any;
-	id:any;
-	matrix:any;
-	rect:any;
-	shader:any;
-	tileset:any;
-	visible:any;
-
-
+	
+	export class ITile {
+		
+		
+		public alpha:number;
+		public colorTransform:ColorTransform;
+		public id:number;
+		public matrix:Matrix;
+		public rect:Rectangle;
+		public shader:Shader;
+		public tileset:Tileset;
+		public visible:boolean;
+		
+		private get_alpha ():number;
+		private set_alpha (value:number):number;
+		private get_colorTransform ():ColorTransform;
+		private set_colorTransform (value:ColorTransform):ColorTransform;
+		private get_id ():number;
+		private set_id (value:number):number;
+		private get_matrix ():Matrix;
+		private set_matrix (value:Matrix):Matrix;
+		private get_rect ():Rectangle;
+		private set_rect (value:Rectangle):Rectangle;
+		private get_shader ():Shader;
+		private set_shader (value:Shader):Shader;
+		private get_tileset ():Tileset;
+		private set_tileset (value:Tileset):Tileset;
+		private get_visible ():boolean;
+		private set_visible (value:boolean):boolean;
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.display.ITile;

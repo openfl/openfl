@@ -208,7 +208,7 @@ package openfl.display; #if (display || !flash)
 	 *                     `miterLimit` parameter to limit the length
 	 *                     of the miter.
 	 */
-		 public function new (thickness:Float = Math.NaN, pixelHinting:Bool = false, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Float = 3, fill:IGraphicsFill = null);
+	public function new (thickness:Float = Math.NaN, pixelHinting:Bool = false, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Float = 3, fill:IGraphicsFill = null);
 	
 	
 }

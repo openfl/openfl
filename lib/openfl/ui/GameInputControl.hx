@@ -6,7 +6,7 @@ import openfl.events.EventDispatcher;
 @:jsRequire("openfl/ui/GameInputControl", "default")
 
 
-extern class GameInputControl extends EventDispatcher implements Dynamic {
+extern class GameInputControl extends EventDispatcher {
 	
 	
 	/**

@@ -101,7 +101,7 @@ import js.Browser;
 	}
 	
 	
-	public static function getURL (request:URLRequest, target:String = null) {
+	public static function getURL (request:URLRequest, target:String = null):Void {
 		
 		if (target == null) {
 			

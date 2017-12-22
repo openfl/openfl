@@ -12,7 +12,7 @@ declare namespace openfl.events {
 		readonly error:any;
 		
 		
-		constructor (type:String, bubbles?:boolean, cancelable?:boolean, error?:any);
+		constructor (type:string, bubbles?:boolean, cancelable?:boolean, error?:any);
 		
 		
 	}

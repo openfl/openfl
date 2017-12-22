@@ -1,28 +1,35 @@
+import ByteArray from "./ByteArray";
+import Endian from "./Endian";
+
+
 declare namespace openfl.utils {
 	
 	
 	export class IDataInput {
-
 		
-		// get_bytesAvailable():any;
-		// get_endian():any;
-		// set_endian(value:any):any;
-		bytesAvailable:any;
-		endian:any;
-		objectEncoding:any;
-		readBoolean():any;
-		readByte():any;
-		readBytes(bytes:any, offset?:any, length?:any):any;
-		readDouble():any;
-		readFloat():any;
-		readInt():any;
-		readMultiByte(length:any, charSet:any):any;
-		readShort():any;
-		readUnsignedByte():any;
-		readUnsignedInt():any;
-		readUnsignedShort():any;
-		readUTF():any;
-		readUTFBytes(length:any):any;
+		
+		public readonly bytesAvailable:number;
+		public endian:Endian;
+		public objectEncoding:number;
+		
+		public readBoolean ():boolean;
+		public readByte ():number;
+		public readBytes (bytes:ByteArray, offset?:number, length?:number):void;
+		public readDouble ():number;
+		public readFloat ():number;
+		public readInt ():number;
+		public readMultiByte (length:number, charSet:string):string;
+		
+		// #if (flash && !display)
+		// public readObject ():Dynamic;
+		// #end
+		
+		public readShort ():number;
+		public readUnsignedByte ():number;
+		public readUnsignedInt ():number;
+		public readUnsignedShort ():number;
+		public readUTF ():string;
+		public readUTFBytes (length:number):string;
 		
 		
 	}

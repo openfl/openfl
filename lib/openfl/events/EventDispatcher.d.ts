@@ -165,7 +165,7 @@ declare namespace openfl.events {
 		 * @throws ArgumentError The `listener` specified is not a
 		 *                       function.
 		 */
-		addEventListener (type:String, listener:(event:object) => void, useCapture?:boolean, priority?:number, useWeakReference?:boolean):void;
+		addEventListener (type:string, listener:(event:object) => void, useCapture?:boolean, priority?:number, useWeakReference?:boolean):void;
 		
 		
 		/**
@@ -206,7 +206,7 @@ declare namespace openfl.events {
 		 * @return A value of `true` if a listener of the specified type
 		 *         is registered; `false` otherwise.
 		 */
-		hasEventListener (type:String):boolean;
+		hasEventListener (type:string):boolean;
 		
 		
 		/**
@@ -224,10 +224,10 @@ declare namespace openfl.events {
 		 *                   to `true`, and another call with
 		 *                   `useCapture()` set to `false`.
 		 */
-		removeEventListener (type:String, listener:(event:object) => void, useCapture?:boolean):void;
+		removeEventListener (type:string, listener:(event:object) => void, useCapture?:boolean):void;
 		
 		
-		toString ():String;
+		toString ():string;
 		
 		
 		/**
@@ -250,7 +250,7 @@ declare namespace openfl.events {
 		 * @return A value of `true` if a listener of the specified type
 		 *         will be triggered; `false` otherwise.
 		 */
-		willTrigger (type:String):boolean;
+		willTrigger (type:string):boolean;
 		
 		
 	}

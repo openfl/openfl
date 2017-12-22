@@ -1,18 +1,26 @@
 package openfl;
 
+
+import openfl.display.Application;
+import openfl.display.MovieClip;
+import openfl.net.URLRequest;
+
+
 @:jsRequire("openfl/Lib", "default")
 
-extern class Lib implements Dynamic {
-
-	static var application:Dynamic;
-	static var current:Dynamic;
-	static function as(v:Dynamic, c:Dynamic):Dynamic;
-	static function attach(name:Dynamic):Dynamic;
-	static function getTimer():Dynamic;
-	static function getURL(request:Dynamic, ?target:Dynamic):Dynamic;
-	static function notImplemented(?posInfo:Dynamic):Dynamic;
-	static function preventDefaultTouchMove():Dynamic;
-	static function trace(arg:Dynamic):Dynamic;
-
-
+extern class Lib {
+	
+	
+	public static var application:Application;
+	public static var current:MovieClip;
+	
+	public static function as<T> (v:Dynamic, c:Class<T>):Null<T>;
+	public static function attach (name:String):MovieClip;
+	public static function getTimer ():Int;
+	public static function getURL (request:URLRequest, target:String = null):Void;
+	// public static function notImplemented (?posInfo:Dynamic):Dynamic;
+	// public static function preventDefaultTouchMove ():Dynamic;
+	public static function trace (arg:Dynamic):Void;
+	
+	
 }

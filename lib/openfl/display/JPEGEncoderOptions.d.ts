@@ -1,15 +1,19 @@
-
-
 declare namespace openfl.display {
-
-export class JPEGEncoderOptions {
-
-	constructor(quality?:any);
-	quality:any;
-
-
+	
+	
+	/*@:final*/ export class JPEGEncoderOptions {
+		
+		
+		public quality:number;
+		
+		
+		public constructor (quality?:number);
+		
+		
+	}
+	
+	
 }
 
-}
 
 export default openfl.display.JPEGEncoderOptions;

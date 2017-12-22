@@ -66,7 +66,7 @@ declare namespace openfl.utils {
 		position:number;
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) @:require(flash11_4) shareable:Bool;
+		// @:noCompletion @:dox(hide) @:require(flash11_4) shareable:boolean;
 		// #end
 		
 		
