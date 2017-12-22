@@ -573,12 +573,13 @@ class SWFLiteExporter {
 			// check existing working objects and remove any that are gone this frame
 
 			var removeWorkingObjectsDepths:Array<Int> = [];
-			for( workingObject in workingObjects )
+			for( workingObjectKey in workingObjects.keys )
 			{
-				frameDataObject = frameData.objects[workingObject.frameObject.depth];
+				var workingObject : TimelineFrameObject = workingObjects[workingObjectKey];
+				var frameDataObject : FrameObject = frameData.objects[workingObject.placedObject.depth];
 				if(frameDataObject == null) {
 					// workingObject is getting removed
-					removeWorkingObjectsDepths.push(workingObject.frameObject.depth);
+					removeWorkingObjectsDepths.push(workingObject.placedObject.depth);
 				}
 			}
 			for( removeDepth in removeWorkingObjectsDepths ) {
@@ -594,14 +595,13 @@ class SWFLiteExporter {
 				}
 
 				placedAtTag = cast tag.tags[object.placedAtIndex];
-
 				if (object.lastModifiedAtIndex > 0) {
 					lastModifiedTag = cast tag.tags[object.lastModifiedAtIndex];
 				}
 				else {
 					lastModifiedTag = null;
 				}
-
+//TODO: JOSH can we collapse lastModifiedTag and placedAtTag into a variable we use for everything below?
 				frameObject = new FrameObject ();
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
@@ -610,21 +610,27 @@ class SWFLiteExporter {
 				// finally placedAtTag if it exists
 				//TODO:LYLE this is my best guess, it may be that we do need to check placedAtTag first
 
+				var workingObject : TimelineFrameObject = workingObjects[lastModifiedTag.depth];//TODO: lastModifiedTag work here?
+				if(workingObject == null){
+
+					workingObject = {placedObject : frameObject, frameObject : null /*not sure where this should come from or where it is necessary*/ };
+					workingObjects[lastModifiedTag.depth] = workingObject//TODO: lastModifiedTag work here?
+				}
 				if( lastModifiedTag != null && lastModifiedTag.hasName )
 					frameObject.name = lastModifiedTag.instanceName;
-				else if( workingObject.name != null )
-					frameObject.name = workingObject.name;
+				else if( workingObject.placedObject.name != null )
+					frameObject.name = workingObject.placedObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;  //TODO: this may never be hit, might be worth checking later
 
-				frameObject.hasCharacter = placeTag.hasCharacter;
-				frameObject.hasMove = placeTag.hasMove;
+				frameObject.hasCharacter = lastModifiedTag.hasCharacter;
+				frameObject.hasMove = lastModifiedTag.hasMove;
 				frameObject.type = FrameObjectType.PLACE_OBJECT;
 
 				//TODO:LYLE check from here down to use lastModifiedTag as needed
-				if (placeTag.matrix != null) {
+				if (lastModifiedTag.matrix != null) {
 					
-					var matrix = placeTag.matrix.matrix;
+					var matrix = lastModifiedTag.matrix.matrix;
 					matrix.tx *= (1 / 20);
 					matrix.ty *= (1 / 20);
 					
@@ -632,17 +638,17 @@ class SWFLiteExporter {
 					
 				}
 				
-				if (placeTag.colorTransform != null) {
+				if (lastModifiedTag.colorTransform != null) {
 					
-					frameObject.colorTransform = placeTag.colorTransform.colorTransform;
+					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
 					
 				}
 				
-				if (placeTag.hasFilterList) {
+				if (lastModifiedTag.hasFilterList) {
 					
 					var filters:Array<FilterType> = [];
 					
-					for (surfaceFilter in placeTag.surfaceFilterList) {
+					for (surfaceFilter in lastModifiedTag.surfaceFilterList) {
 						
 						var type = surfaceFilter.type;
 						
@@ -658,25 +664,25 @@ class SWFLiteExporter {
 					frameObject.filters = filters;
 				}
 				
-				frameObject.depth = placeTag.depth;
-				frameObject.clipDepth = (placeTag.hasClipDepth ? placeTag.clipDepth : 0);
+				frameObject.depth = lastModifiedTag.depth;
+				frameObject.clipDepth = (lastModifiedTag.hasClipDepth ? lastModifiedTag.clipDepth : 0);
 				
-				if (placeTag.hasVisible) {
+				if (lastModifiedTag.hasVisible) {
 					
-					frameObject.visible = placeTag.visible != 0;
+					frameObject.visible = lastModifiedTag.visible != 0;
 					
 				}
 				
-				if (placeTag.hasBlendMode) {
+				if (lastModifiedTag.hasBlendMode) {
 					
-					var blendMode = BlendMode.toString (placeTag.blendMode);
+					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
 					
 				}
 				
-				if (placeTag.hasCacheAsBitmap) {
+				if (lastModifiedTag.hasCacheAsBitmap) {
 					
-					frameObject.cacheAsBitmap = placeTag.bitmapCache != 0;
+					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
 					
 				}
 				
@@ -688,10 +694,8 @@ class SWFLiteExporter {
 					
 				}
 				
-				frame.objects.push (frameObject);
+				frame.objects.set (lastModifiedTag.depth, frameObject);
 
-				//TODO:LYLE
-				// add frameObject to workingObjects
 			}
 
 			lastFrame = frame;
