@@ -49,7 +49,7 @@ class CanvasTilemap {
 			
 		}
 		
-		var defaultTileset = tilemap.tileset;
+		var defaultTileset = tilemap.__tileset;
 		var cacheBitmapData = null;
 		var source = null;
 		

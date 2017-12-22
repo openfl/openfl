@@ -5,6 +5,7 @@ import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import haxe.io.Error;
 import haxe.Timer;
+import openfl._internal.Lib;
 import openfl.errors.IOError;
 import openfl.errors.SecurityError;
 import openfl.events.Event;
@@ -15,7 +16,6 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
-import openfl.Lib;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
@@ -50,6 +50,20 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private var __port:Int;
 	private var __socket:#if sys SysSocket #else Dynamic #end;
 	private var __timestamp:Float;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Socket.prototype, {
+			"bytesAvailable": { get: untyped __js__ ("function () { return this.get_bytesAvailable (); }") },
+			"bytesPending": { get: untyped __js__ ("function () { return this.get_bytesPending (); }") },
+			"connected": { get: untyped __js__ ("function () { return this.get_connected (); }") },
+			"endian": { get: untyped __js__ ("function () { return this.get_endian (); }"), set: untyped __js__ ("function (v) { return this.set_endian (v); }") },
+		});
+		
+	}
+	#end
 	
 	
 	public function new (host:String = null, port:Int = 0) {

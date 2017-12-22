@@ -12,16 +12,26 @@ class PerspectiveProjection {
 	
 	public static inline var TO_RADIAN:Float = 0.01745329251994329577; // Math.PI / 180
 	
-	public var fieldOfView (default, set_fieldOfView):Float;
+	public var fieldOfView (get, set):Float;
 	public var focalLength:Float;
 	public var projectionCenter:Point; // FIXME: does this do anything at all?
 	
+	private var __fieldOfView:Float;
 	private var matrix3D:Matrix3D;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperty (PerspectiveProjection.prototype, "fieldOfView", { get: untyped __js__ ("function () { return this.get_fieldOfView (); }"), set: untyped __js__ ("function (v) { return this.set_fieldOfView (v); }") });
+		
+	}
+	#end
 	
 	
 	public function new () {
 		
-		this.fieldOfView = 0;
+		__fieldOfView = 0;
 		this.focalLength = 0;
 		
 		matrix3D = new Matrix3D ();
@@ -32,7 +42,7 @@ class PerspectiveProjection {
 	
 	public function toMatrix3D ():Matrix3D {
 		
-		if (#if neko fieldOfView == null || #end projectionCenter == null) return null;
+		if (#if neko __fieldOfView == null || #end projectionCenter == null) return null;
 		
 		var _mp = matrix3D.rawData;
 		_mp[0] = focalLength;
@@ -53,13 +63,20 @@ class PerspectiveProjection {
 	
 	
 	
+	private function get_fieldOfView ():Float {
+		
+		return __fieldOfView;
+		
+	}
+	
+	
 	private function set_fieldOfView (fieldOfView:Float):Float {
 		
 		var p_nFovY = fieldOfView * TO_RADIAN;
-		this.fieldOfView = p_nFovY;
+		__fieldOfView = p_nFovY;
 		var cotan = 1 / Math.tan (p_nFovY / 2);
 		this.focalLength = Lib.current.stage.stageWidth * (Lib.current.stage.stageWidth / Lib.current.stage.stageHeight) / 2 * cotan;
-		return fieldOfView;
+		return __fieldOfView;
 		
 	}
 	

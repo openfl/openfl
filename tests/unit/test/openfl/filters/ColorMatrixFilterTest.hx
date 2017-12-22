@@ -11,7 +11,7 @@ class ColorMatrixFilterTest {
 		
 		// TODO: Confirm functionality
 		
-		var colorMatrixFilter = new ColorMatrixFilter ();
+		var colorMatrixFilter = new ColorMatrixFilter ([1, 2, 3]);
 		var exists = colorMatrixFilter.matrix;
 		
 		Assert.isNotNull (exists);

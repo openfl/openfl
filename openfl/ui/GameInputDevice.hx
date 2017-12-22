@@ -24,6 +24,17 @@ import openfl.utils.ByteArray;
 	private var __gamepad:Gamepad;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (GameInputDevice.prototype, {
+			"numControls": { get: untyped __js__ ("function () { return this.get_numControls (); }") },
+		});
+		
+	}
+	#end
+	
+	
 	private function new (id:String, name:String) {
 		
 		this.id = id;

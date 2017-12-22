@@ -54,7 +54,7 @@ class CairoMaskManager extends AbstractMaskManager {
 			
 		}
 		
-		if (object.__mask != null) {
+		if (!object.__cacheBitmapRender && object.__mask != null) {
 			
 			pushMask (object.__mask);
 			
@@ -86,7 +86,7 @@ class CairoMaskManager extends AbstractMaskManager {
 	
 	public override function popObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
-		if (object.__mask != null) {
+		if (!object.__cacheBitmapRender && object.__mask != null) {
 			
 			popMask ();
 			

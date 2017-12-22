@@ -20,6 +20,18 @@ class Matrix3D {
 	public var rawData:Vector<Float>;
 	
 	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Matrix3D.prototype, {
+			"determinant": { get: untyped __js__ ("function () { return this.get_determinant (); }"), set: untyped __js__ ("function (v) { return this.set_determinant (v); }") },
+			"position": { get: untyped __js__ ("function () { return this.get_position (); }"), set: untyped __js__ ("function (v) { return this.set_position (v); }") },
+		});
+		
+	}
+	#end
+	
+	
 	public function new (v:Vector<Float> = null) {
 		
 		if (v != null && v.length == 16) {

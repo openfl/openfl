@@ -1114,8 +1114,8 @@ extern class InteractiveObject extends DisplayObject {
 	 */
 	public var needsSoftKeyboard:Bool;
 	public var softKeyboardInputAreaOfInterest:Rectangle;
-	public var tabEnabled:Bool;
-	public var tabIndex:Int;
+	public var tabEnabled (get, set):Bool;
+	public var tabIndex (get, set):Int;
 	
 	
 	/**

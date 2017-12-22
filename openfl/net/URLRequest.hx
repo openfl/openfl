@@ -1,5 +1,6 @@
 package openfl.net;
 
+import haxe.macro.Compiler;
 
 @:final class URLRequest {
 	
@@ -24,11 +25,12 @@ package openfl.net;
 		}
 		
 		contentType = null; // "application/x-www-form-urlencoded";
-		followRedirects = true;
-		idleTimeout = 30000;
-		manageCookies = false;
+		followRedirects = URLRequestDefaults.followRedirects;
+		idleTimeout = URLRequestDefaults.idleTimeout > 0 ? URLRequestDefaults.idleTimeout : #if lime_default_timeout Std.parseInt (Compiler.getDefine ("lime-default-timeout")) #else 30000 #end;
+		manageCookies = URLRequestDefaults.manageCookies;
 		method = URLRequestMethod.GET;
 		requestHeaders = [];
+		userAgent = URLRequestDefaults.userAgent;
 		
 	}
 	

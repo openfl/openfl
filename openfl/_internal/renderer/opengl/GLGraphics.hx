@@ -7,6 +7,11 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -174,6 +179,10 @@ class GLGraphics {
 			
 								gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 								
+								#if gl_stats
+									GLStats.incrementDrawCall (DrawCallContext.STAGE);
+								#end
+								
 							}
 						
 						default:
@@ -189,6 +198,19 @@ class GLGraphics {
 			graphics.__dirty = false;
 			
 		}
+		
+	}
+	
+	
+	public static function renderMask (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
+		
+		// TODO: Support invisible shapes
+		
+		#if (js && html5)
+		CanvasGraphics.render (graphics, renderSession, parentTransform);
+		#elseif lime_cairo
+		CairoGraphics.render (graphics, renderSession, parentTransform);
+		#end
 		
 	}
 	
