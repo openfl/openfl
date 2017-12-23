@@ -693,8 +693,8 @@ class SWFLiteExporter {
 					frame.objects = [];
 					
 				}
-				
-				frame.objects.set (lastModifiedTag.depth, frameObject);
+				frame.objects.push (frameObject);
+				//TODO:refactor to frame.objects.set (lastModifiedTag.depth, frameObject);
 
 			}
 

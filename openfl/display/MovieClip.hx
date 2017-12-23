@@ -586,7 +586,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		while(childrenIndex < __children.length) {
 			lastDepth++;
 			child = __children[childrenIndex++];
-			__applyMask(currentMasks, lastDepth, child);
+			if(child != null) {
+				__applyMask(currentMasks, lastDepth, child);
+			}
 		}
 		//remove any left over null children
 		childrenIndex = 0;
@@ -790,7 +792,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		while(childrenIndex < __children.length) {
 			lastDepth++;
 			child = __children[childrenIndex++];
-			__applyMask(currentMasks, lastDepth, child);
+			if(child != null) {
+				__applyMask(currentMasks, lastDepth, child);
+			}
 		}
 		//remove any left over null children
 		childrenIndex = 0;
