@@ -59,7 +59,7 @@ using format.swf.exporters.SWFLiteExporter.AVM2;
 
 typedef TimelineFrameObject = {
 	var placedObject:FrameObject;
-	var frameObject:format.swf.FrameObject;
+	//var frameObject:format.swf.FrameObject;
 }
 
 class SWFLiteExporter {
@@ -568,15 +568,16 @@ class SWFLiteExporter {
 
 			}
 			
-			frame.objects = new Map();
+			//TODO: replace on refactor frame.objects = new Map();
+			frame.objects = new Array();
 
 			// check existing working objects and remove any that are gone this frame
 
 			var removeWorkingObjectsDepths:Array<Int> = [];
-			for( workingObjectKey in workingObjects.keys )
+			for( workingObjectKey in workingObjects.keys())
 			{
 				var workingObject : TimelineFrameObject = workingObjects[workingObjectKey];
-				var frameDataObject : FrameObject = frameData.objects[workingObject.placedObject.depth];
+				var frameDataObject : format.swf.timeline.FrameObject = frameData.objects[workingObject.placedObject.depth];
 				if(frameDataObject == null) {
 					// workingObject is getting removed
 					removeWorkingObjectsDepths.push(workingObject.placedObject.depth);
@@ -599,7 +600,7 @@ class SWFLiteExporter {
 					lastModifiedTag = cast tag.tags[object.lastModifiedAtIndex];
 				}
 				else {
-					lastModifiedTag = null;
+					lastModifiedTag = null; //TODO: is this ever hit? if so going to cause problems below if placeAtTag is null as well
 				}
 //TODO: JOSH can we collapse lastModifiedTag and placedAtTag into a variable we use for everything below?
 				frameObject = new FrameObject ();
@@ -610,27 +611,28 @@ class SWFLiteExporter {
 				// finally placedAtTag if it exists
 				//TODO:LYLE this is my best guess, it may be that we do need to check placedAtTag first
 
-				var workingObject : TimelineFrameObject = workingObjects[lastModifiedTag.depth];//TODO: lastModifiedTag work here?
+				var tag : TagPlaceObject = placedAtTag != null ? placedAtTag : lastModifiedTag;
+				var workingObject : TimelineFrameObject = workingObjects[tag.depth];
 				if(workingObject == null){
 
-					workingObject = {placedObject : frameObject, frameObject : null /*not sure where this should come from or where it is necessary*/ };
-					workingObjects[lastModifiedTag.depth] = workingObject//TODO: lastModifiedTag work here?
+					workingObject = {placedObject : frameObject/*, frameObject : null not sure where this should come from or where it is necessary*/ };
+					workingObjects[tag.depth] = workingObject;
 				}
-				if( lastModifiedTag != null && lastModifiedTag.hasName )
+				if( lastModifiedTag != null && lastModifiedTag.hasName )//TODO:should this be lastModifiedTag first?
 					frameObject.name = lastModifiedTag.instanceName;
 				else if( workingObject.placedObject.name != null )
 					frameObject.name = workingObject.placedObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;  //TODO: this may never be hit, might be worth checking later
 
-				frameObject.hasCharacter = lastModifiedTag.hasCharacter;
-				frameObject.hasMove = lastModifiedTag.hasMove;
+				frameObject.hasCharacter = tag.hasCharacter;
+				frameObject.hasMove = tag.hasMove;
 				frameObject.type = FrameObjectType.PLACE_OBJECT;
 
 				//TODO:LYLE check from here down to use lastModifiedTag as needed
-				if (lastModifiedTag.matrix != null) {
+				if (tag.matrix != null) {
 					
-					var matrix = lastModifiedTag.matrix.matrix;
+					var matrix = tag.matrix.matrix;
 					matrix.tx *= (1 / 20);
 					matrix.ty *= (1 / 20);
 					
@@ -638,17 +640,17 @@ class SWFLiteExporter {
 					
 				}
 				
-				if (lastModifiedTag.colorTransform != null) {
+				if (tag.colorTransform != null) {
 					
-					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
+					frameObject.colorTransform = tag.colorTransform.colorTransform;
 					
 				}
 				
-				if (lastModifiedTag.hasFilterList) {
+				if (tag.hasFilterList) {
 					
 					var filters:Array<FilterType> = [];
 					
-					for (surfaceFilter in lastModifiedTag.surfaceFilterList) {
+					for (surfaceFilter in tag.surfaceFilterList) {
 						
 						var type = surfaceFilter.type;
 						
@@ -664,25 +666,25 @@ class SWFLiteExporter {
 					frameObject.filters = filters;
 				}
 				
-				frameObject.depth = lastModifiedTag.depth;
-				frameObject.clipDepth = (lastModifiedTag.hasClipDepth ? lastModifiedTag.clipDepth : 0);
+				frameObject.depth = tag.depth;
+				frameObject.clipDepth = (tag.hasClipDepth ? tag.clipDepth : 0);
 				
-				if (lastModifiedTag.hasVisible) {
+				if (tag.hasVisible) {
 					
-					frameObject.visible = lastModifiedTag.visible != 0;
+					frameObject.visible = tag.visible != 0;
 					
 				}
 				
-				if (lastModifiedTag.hasBlendMode) {
+				if (tag.hasBlendMode) {
 					
-					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
+					var blendMode = BlendMode.toString (tag.blendMode);
 					frameObject.blendMode = blendMode;
 					
 				}
 				
-				if (lastModifiedTag.hasCacheAsBitmap) {
+				if (tag.hasCacheAsBitmap) {
 					
-					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
+					frameObject.cacheAsBitmap = tag.bitmapCache != 0;
 					
 				}
 				
