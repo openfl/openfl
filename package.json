@@ -59,7 +59,11 @@
     "docker-test-es5": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-es5 -s\"",
     "docker-test-es6": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-es6 -s\"",
     "docker-test-haxe": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-haxe -s\"",
-    "docker-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-typescript -s\""
+    "docker-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-typescript -s\"",
+    "prepare": "napa && npm run build"
+  },
+  "config": {
+    "haxe": "3.4.4"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.44",
@@ -67,12 +71,20 @@
     "babel-loader": "^7.1.2",
     "babel-preset-stage-1": "^6.24.1",
     "chai": "^4.1.2",
+    "haxe": "^4.1.0",
     "mocha": "^4.0.1",
     "mocha-chrome": "^1.0.2",
+    "napa": "^3.0.0",
     "typescript": "^2.6.2",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "webpack": "^3.10.0",
     "webpack-merge": "^4.1.1"
+  },
+  "napa": {
+    "hxgenjs": "kevinresol/hxgenjs",
+    "tink_macro": "haxetink/tink_macro#0.15.4",
+    "tink_core": "haxetink/tink_core#1.15.3",
+    "lime": "openfl/lime#develop"
   },
   "dependencies": {
     "howler": "^2.0.6",

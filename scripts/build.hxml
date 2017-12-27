@@ -1,9 +1,15 @@
 -js ../lib/_gen/_.js
 ImportAll
--lib lime
+#-lib lime
+-cp ../node_modules/lime
+-D lime
 # -lib openfl
 -cp ../src
--lib hxgenjs
+#-lib hxgenjs
+-cp ../node_modules/hxgenjs/src
+-cp ../node_modules/tink_macro/src
+-cp ../node_modules/tink_core/src
+--macro genjs.Generator.use()
 # -D hxextern
 # -D tsextern
 -D openfljs
