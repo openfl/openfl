@@ -550,7 +550,7 @@ class DisplayObjectContainer extends InteractiveObject {
 							
 							hitTest = true;
 							
-							if (interactive) {
+							if (interactive && stack.length > length) {
 								
 								break;
 								
