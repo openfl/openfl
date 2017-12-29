@@ -59,8 +59,7 @@
     "docker-test-es5": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-es5 -s\"",
     "docker-test-es6": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-es6 -s\"",
     "docker-test-haxe": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-haxe -s\"",
-    "docker-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-typescript -s\"",
-    "postinstall": "node scripts/postinstall.js"
+    "docker-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-typescript -s\""
   },
   "config": {
     "haxe": "3.4.4"
@@ -72,6 +71,8 @@
     "babel-preset-stage-1": "^6.24.1",
     "chai": "^4.1.2",
     "haxe": "^4.1.0",
+    "hxgenjs": "kevinresol/hxgenjs",
+    "lime": "openfl/lime#develop",
     "mocha": "^4.0.1",
     "mocha-chrome": "^1.0.2",
     "typescript": "^2.6.2",

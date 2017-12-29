@@ -28,9 +28,9 @@ try {
 	process.chdir ("./node_modules");
 	
 	updateLibrary ("lime", "https://github.com/openfl/lime");
-	updateLibrary ("hxgenjs", "https://github.com/kevinresol/hxgenjs");
-	updateLibrary ("tink_macro", "https://github.com/haxetink/tink_macro");
-	updateLibrary ("tink_core", "https://github.com/haxetink/tink_core");
+	// updateLibrary ("hxgenjs", "https://github.com/kevinresol/hxgenjs");
+	// updateLibrary ("tink_macro", "https://github.com/haxetink/tink_macro");
+	// updateLibrary ("tink_core", "https://github.com/haxetink/tink_core");
 	
 } catch (error) {
 	
