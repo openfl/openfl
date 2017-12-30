@@ -40,15 +40,15 @@ class StageTest { public static function __init__ () { Mocha.describe ("Haxe | S
 	});
 	
 	
-	Mocha.it ("application", function () {
+	// Mocha.it ("application", function () {
 		
-		// TODO: Confirm functionality
+	// 	// TODO: Confirm functionality
 		
-		var exists = Lib.current.stage.application;
+	// 	var exists = Lib.current.stage.application;
 		
-		Assert.notEqual (exists, null);
+	// 	Assert.notEqual (exists, null);
 		
-	});
+	// });
 	
 	
 	Mocha.it ("color", function () {
@@ -161,15 +161,15 @@ class StageTest { public static function __init__ () { Mocha.describe ("Haxe | S
 	});
 	
 	
-	Mocha.it ("window", function () {
+	// Mocha.it ("window", function () {
 		
-		// TODO: Confirm functionality
+	// 	// TODO: Confirm functionality
 		
-		var exists = Lib.current.stage.window;
+	// 	var exists = Lib.current.stage.window;
 		
-		Assert.notEqual (exists, null);
+	// 	Assert.notEqual (exists, null);
 		
-	});
+	// });
 	
 	
 	Mocha.it ("invalidate", function () {

@@ -1,7 +1,7 @@
 package openfl;
 
 
-import openfl.display.Application;
+// import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.net.URLRequest;
 
@@ -11,7 +11,7 @@ import openfl.net.URLRequest;
 extern class Lib {
 	
 	
-	public static var application:Application;
+	// public static var application:Application;
 	public static var current:MovieClip;
 	
 	public static function as<T> (v:Dynamic, c:Class<T>):Null<T>;

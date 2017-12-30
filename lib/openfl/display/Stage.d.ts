@@ -1,4 +1,4 @@
-import Application from "./Application";
+// import Application from "./Application";
 import DisplayObjectContainer from "./DisplayObjectContainer";
 import InteractiveObject from "./InteractiveObject";
 import Stage3D from "./Stage3D";
@@ -539,7 +539,7 @@ declare namespace openfl.display {
 		
 		// #if !flash
 		// public function new (window:Window, color:Null<Int> = null);
-		public constructor (width:Int = 0, height:Int = 0);
+		public constructor (width?:number, height?:number);
 		// #end
 		
 		

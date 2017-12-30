@@ -5,6 +5,7 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
+import lime.app.Application;
 import lime.system.System;
 import openfl._internal.Lib;
 import openfl.errors.Error;
@@ -202,7 +203,12 @@ class SharedObject extends EventDispatcher {
 		if (__sharedObjects == null) {
 			
 			__sharedObjects = new Map ();
-			Lib.application.onExit.add (application_onExit);
+			// Lib.application.onExit.add (application_onExit);
+			if (Application.current != null) {
+				
+				Application.current.onExit.add (application_onExit);
+				
+			}
 			
 		}
 		

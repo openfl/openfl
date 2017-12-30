@@ -1,4 +1,4 @@
-import Application from "./display/Application";
+// import Application from "./display/Application";
 import MovieClip from "./display/MovieClip";
 import URLRequest from "./net/URLRequest";
 
@@ -9,7 +9,7 @@ declare namespace openfl {
 	export class Lib {
 		
 		
-		public static application:Application;
+		// public static application:Application;
 		public static current:MovieClip;
 		
 		public static as (v:any, c:any):any;

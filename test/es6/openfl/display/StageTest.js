@@ -38,15 +38,15 @@ describe ("ES6 | Stage", function () {
 	});
 	
 	
-	it ("application", function () {
+	// it ("application", function () {
 		
-		// TODO: Confirm functionality
+	// 	// TODO: Confirm functionality
 		
-		var exists = Lib.current.stage.application;
+	// 	var exists = Lib.current.stage.application;
 		
-		assert.notEqual (exists, null);
+	// 	assert.notEqual (exists, null);
 		
-	});
+	// });
 	
 	
 	it ("color", function () {
@@ -159,15 +159,15 @@ describe ("ES6 | Stage", function () {
 	});
 	
 	
-	it ("window", function () {
+	// it ("window", function () {
 		
-		// TODO: Confirm functionality
+	// 	// TODO: Confirm functionality
 		
-		var exists = Lib.current.stage.window;
+	// 	var exists = Lib.current.stage.window;
 		
-		assert.notEqual (exists, null);
+	// 	assert.notEqual (exists, null);
 		
-	});
+	// });
 	
 	
 	it ("invalidate", function () {

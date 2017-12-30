@@ -2,7 +2,6 @@
 import openfl.desktop.ClipboardFormatsTest;
 import openfl.desktop.ClipboardTest;
 import openfl.desktop.ClipboardTransferModeTest;
-import openfl.display.ApplicationTest;
 import openfl.display.BitmapDataChannelTest;
 import openfl.display.BitmapDataTest;
 import openfl.display.BitmapTest;
@@ -55,7 +54,6 @@ import openfl.display.TilemapTest;
 import openfl.display.TilesetTest;
 import openfl.display.TileTest;
 import openfl.display.TriangleCullingTest;
-import openfl.display.WindowTest;
 import openfl.display3D.Context3DBlendFactorTest;
 import openfl.display3D.Context3DBufferUsageTest;
 import openfl.display3D.Context3DClearMaskTest;
@@ -173,7 +171,7 @@ import openfl.utils.TimerTest;
 
 //
 
-import openfl.display.Application;
+import openfl.display.Stage;
 import openfl.display.Stage3D;
 
 
@@ -184,14 +182,7 @@ class Main {
 		
 		Mocha.before (function () {
 			
-			var app = new Application ();
-			app.create ({
-				windows: [{
-					width: 550,
-					height: 400
-				}]
-			});
-			app.exec ();
+			var stage = new Stage (550, 400);
 			
 		});
 		

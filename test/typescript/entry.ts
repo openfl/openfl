@@ -1,16 +1,9 @@
-import Application from "openfl/display/Application";
+import Stage from "openfl/display/Stage";
 import * as assert from "assert";
 
 
 before (function () {
 	
-	var app = new Application ();
-	app.create ({
-		windows: [{
-			width: 550,
-			height: 400
-		}]
-	});
-	app.exec ();
+	var stage = new Stage (550, 400);
 	
 });
