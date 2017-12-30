@@ -157,7 +157,7 @@ declare namespace openfl.display {
 		 */
 		public readonly allowsFullScreenInteractive:boolean;
 		
-		public readonly application:Application;
+		//public readonly application:Application;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash15) public browserZoomFactor (default, null):Float;
@@ -270,6 +270,8 @@ declare namespace openfl.display {
 		 *                       `true` throws a security error.
 		 */
 		public displayState:StageDisplayState;
+		
+		public readonly element:HTMLElement;
 		
 		/**
 		 * The interactive object with keyboard focus; or `null` if focus
@@ -528,7 +530,7 @@ declare namespace openfl.display {
 		 */
 		public readonly stageWidth:number;
 		
-		public readonly window:Window;
+		//public readonly window:Window;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10_1) public wmodeGPU (default, null):boolean;
@@ -537,6 +539,7 @@ declare namespace openfl.display {
 		
 		// #if !flash
 		// public function new (window:Window, color:Null<Int> = null);
+		public constructor (width:Int = 0, height:Int = 0);
 		// #end
 		
 		

@@ -163,7 +163,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 */
 	public var allowsFullScreenInteractive (default, null):Bool;
 	
-	public var application (default, null):Application;
+	//public var application (default, null):Application;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor (default, null):Float;
@@ -276,6 +276,8 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       `true` throws a security error.
 	 */
 	public var displayState:StageDisplayState;
+	
+	public var element (default, never):js.html.Element;
 	
 	/**
 	 * The interactive object with keyboard focus; or `null` if focus
@@ -534,7 +536,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 */
 	public var stageWidth (default, null):Int;
 	
-	public var window (default, null):Window;
+	//public var window (default, null):Window;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU (default, null):Bool;
@@ -542,7 +544,8 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	
 	
 	#if !flash
-	public function new (window:Window, color:Null<Int> = null);
+	//public function new (window:Window, color:Null<Int> = null);
+	public function new (width:Int = 0, height:Int = 0);
 	#end
 	
 	
