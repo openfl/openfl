@@ -215,20 +215,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 			});
 			window.stage = this;
 			
-			if (Application.current == null) {
+			// if (Application.current == null) {
 				
 				var app = new Application ();
 				app.create ({});
 				app.createWindow (window);
 				app.exec ();
 				
-			} else {
+			// } else {
 				
-				var app = Application.current;
-				app.createWindow (window);
-				app.addModule (this);
+			// 	var app = Application.current;
+			// 	app.createWindow (window);
+			// 	app.addModule (this);
 				
-			}
+			// }
 			
 			// this.color = 0xFFFFFF;
 			this.color = null;
