@@ -6,6 +6,7 @@ import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
+import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
 import openfl.events.Event;
@@ -72,6 +73,12 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var error = new TypeError ("Error #2007: Parameter child must be non-null.");
 			error.errorID = 2007;
+			throw error;
+			
+		} else if (child.stage == child) {
+			
+			var error = new ArgumentError ("Error #3783: A Stage object cannot be added as the child of another object.");
+			error.errorID = 3783;
 			throw error;
 			
 		}
