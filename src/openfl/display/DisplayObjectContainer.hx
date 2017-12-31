@@ -75,7 +75,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			error.errorID = 2007;
 			throw error;
 			
-		} #if ((haxe_ver > "3.2.1") || !cpp) else if (child.stage == child) {
+		} #if ((haxe_ver >= "3.4.0") || !cpp) else if (child.stage == child) {
 			
 			var error = new ArgumentError ("Error #3783: A Stage object cannot be added as the child of another object.");
 			error.errorID = 3783;
