@@ -539,7 +539,7 @@ declare namespace openfl.display {
 		
 		// #if !flash
 		// public function new (window:Window, color:Null<Int> = null);
-		public constructor (width?:number, height?:number);
+		public constructor (width?:number, height?:number, color?:number | null, documentClass?:any);
 		// #end
 		
 		

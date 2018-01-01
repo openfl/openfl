@@ -59,6 +59,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
+	private static var __initStage:Stage;
 	private static var __instanceCount = 0;
 	private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
 	
@@ -176,6 +177,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function new () {
 		
 		super ();
+		
+		if (__initStage != null) {
+			
+			this.stage = __initStage;
+			__initStage = null;
+			
+		}
 		
 		__alpha = 1;
 		__blendMode = NORMAL;

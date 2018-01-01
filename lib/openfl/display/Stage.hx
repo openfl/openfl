@@ -545,7 +545,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	
 	#if !flash
 	//public function new (window:Window, color:Null<Int> = null);
-	public function new (width:Int = 0, height:Int = 0);
+	public function new (width:Int = 0, height:Int = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null);
 	#end
 	
 	

@@ -175,7 +175,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	#end
 	
-	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0 #else window:Window, color:Null<Int> = null #end) {
+	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null #else window:Window, color:Null<Int> = null #end) {
 		
 		#if hxtelemetry
 		Telemetry.__initialize ();
@@ -231,7 +231,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			// }
 			
 			// this.color = 0xFFFFFF;
-			this.color = null;
+			this.color = color;
 			
 		} else {
 			
@@ -304,6 +304,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (!window.config.resizable) {
 			
 			__setLogicalSize (window.config.width, window.config.height);
+			
+		}
+		
+		if (documentClass != null) {
+			
+			DisplayObject.__initStage = this;
+			var sprite:Sprite = cast Type.createInstance (documentClass, []);
+			addChild (sprite);
 			
 		}
 		
