@@ -58,10 +58,6 @@ import format.swf.tags.TagDefineSound;
 using StringTools;
 using format.swf.exporters.SWFLiteExporter.AVM2;
 
-typedef TimelineFrameObject = {
-	var placedObject:FrameObject;
-	var frameObject:format.swf.timeline.FrameObject;
-}
 
 class SWFLiteExporter {
 	
@@ -543,7 +539,7 @@ class SWFLiteExporter {
 		}
 
 		var lastModified = new Map<Int, Int> ();
-		var workingObjects = new Map<Int, TimelineFrameObject>();
+		var workingObjects = new Map<Int, FrameObject>();
 		var lastFrame : Frame;
 		
 		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
@@ -577,11 +573,10 @@ class SWFLiteExporter {
 			var removeWorkingObjectsDepths:Array<Int> = [];
 			for( workingObjectKey in workingObjects.keys())
 			{
-				var workingObject : TimelineFrameObject = workingObjects[workingObjectKey];
-				var frameDataObject : format.swf.timeline.FrameObject = frameData.objects[workingObject.placedObject.depth];
-				if(frameDataObject == null) {
+				var workingObject : FrameObject = workingObjects[workingObjectKey];
+				if(frameData.objects[workingObject.depth] == null) {
 					// workingObject is getting removed
-					removeWorkingObjectsDepths.push(workingObject.placedObject.depth);
+					removeWorkingObjectsDepths.push(workingObject.depth);
 				}
 			}
 			for( removeDepth in removeWorkingObjectsDepths ) {
@@ -597,6 +592,7 @@ class SWFLiteExporter {
 				}
 
 				placedAtTag = cast tag.tags[object.placedAtIndex];
+
 				if (object.lastModifiedAtIndex > 0) {
 					lastModifiedTag = cast tag.tags[object.lastModifiedAtIndex];
 				}
@@ -611,15 +607,17 @@ class SWFLiteExporter {
 				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
 				// finally placedAtTag if it exists
 
-				var workingObject : TimelineFrameObject = workingObjects[object.depth];
+				var workingObject : FrameObject = workingObjects[object.depth];
 				if(workingObject == null) {
-					workingObject = {placedObject : frameObject, frameObject : object };
-					workingObjects[object.depth] = workingObject;
+					workingObject = frameObject;
+					workingObjects[object.depth] = frameObject;
 				}
-				if( lastModifiedTag != null && lastModifiedTag.hasName )  // working objects are not as new as the latest lastModifiedTag
+
+				// lastModifiedTag is the same as or newer than the latest workingObject
+				if( lastModifiedTag != null && lastModifiedTag.hasName )
 					frameObject.name = lastModifiedTag.instanceName;
-				else if( workingObject.placedObject.name != null )
-					frameObject.name = workingObject.placedObject.name;
+				else if( workingObject.name != null )
+					frameObject.name = workingObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;  //TODO: this may never be hit, might be worth checking later
 
@@ -627,15 +625,15 @@ class SWFLiteExporter {
 				frameObject.hasMove = (lastModifiedTag != null)? lastModifiedTag.hasMove : false;
 				frameObject.type = FrameObjectType.PLACE_OBJECT;
 
-				var m:Matrix;
+				var m:Matrix = null;
 				if (lastModifiedTag != null && lastModifiedTag.hasMatrix) {
 					m = lastModifiedTag.matrix.matrix;
 				}
-				else if( workingObject.placedObject.matrix != null ) {
-					m = workingObject.placedObject.matrix;
+				else if( workingObject.matrix != null ) {
+					m = workingObject.matrix;
 				}
 				else if( placedAtTag.hasMatrix ) {
-					LogHelper.warn ("", ">>> used placedAtTag matrix name:"+ symbol.name +" at tagId:"+ symbol.tagId);  // if this is hit, clean this out and clean up duplicate filterList code below, if it is never hit, remove these else if blocks from each placeObject property code block here
+					LogHelper.warn ("", ">>> used placedAtTag matrix name:"+ placedAtTag.name +" with characterId:"+ placedAtTag.characterId);  // if this is hit, clean this out and clean up duplicate filterList code below, if it is never hit, remove these else if blocks from each placeObject property code block here
 					m = placedAtTag.matrix.matrix;
 				}
 
@@ -648,11 +646,11 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasColorTransform) {
 					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
 				}
-				else if( workingObject.placedObject.colorTransform != null ) {
-					frameObject.colorTransform = workingObject.placedObject.colorTransform;
+				else if( workingObject.colorTransform != null ) {
+					frameObject.colorTransform = workingObject.colorTransform;
 				}
 				else if( placedAtTag.hasColorTransform ) {
-					frameObject.colorTransform = placedAtTag.colorTransform;
+					frameObject.colorTransform = placedAtTag.colorTransform.colorTransform;
 				}
 
 
@@ -668,8 +666,8 @@ class SWFLiteExporter {
 					
 					frameObject.filters = filters;
 				}
-				else if( workingObject.placedObject.filters != null ) {
-					frameObject.filters = workingObject.placedObject.filters;
+				else if( workingObject.filters != null ) {
+					frameObject.filters = workingObject.filters;
 				}
 				else if( placedAtTag.hasFilterList ) {
 					// TODO: clean this up once we see whether placedAtTag is ever used via the LogHelper.warn ">>> used placedAtTag matrix" above
@@ -691,8 +689,8 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasVisible) {
 					frameObject.visible = lastModifiedTag.visible != 0;
 				}
-				else if (workingObject.placedObject.visible != null) {
-					frameObject.visible = workingObject.placedObject.visible;
+				else if (workingObject.visible != null) {
+					frameObject.visible = workingObject.visible;
 				}
 				else if (placedAtTag.hasVisible) {
 					frameObject.visible = placedAtTag.visible != 0;
@@ -702,8 +700,8 @@ class SWFLiteExporter {
 					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
 				}
-				else if (workingObject.placedObject.blendMode != null) {
-					frameObject.blendMode = workingObject.placedObject.blendMode;
+				else if (workingObject.blendMode != null) {
+					frameObject.blendMode = workingObject.blendMode;
 				}
 				else if (placedAtTag.hasBlendMode) {
 					var blendMode = BlendMode.toString (placedAtTag.blendMode);
@@ -713,8 +711,8 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasCacheAsBitmap) {
 					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
 				}
-				else if (workingObject.placedObject.cacheAsBitmap != null) {
-					frameObject.cacheAsBitmap = workingObject.placedObject.cacheAsBitmap;
+				else if (workingObject.cacheAsBitmap != null) {
+					frameObject.cacheAsBitmap = workingObject.cacheAsBitmap;
 				}
 				else if (placedAtTag.hasCacheAsBitmap) {
 					frameObject.cacheAsBitmap = placedAtTag.bitmapCache != 0;
