@@ -619,29 +619,32 @@ class SWFLiteExporter {
 				else if( workingObject.name != null )
 					frameObject.name = workingObject.name;
 				else if( placedAtTag.hasName )
-					frameObject.name = placedAtTag.instanceName;  //TODO: this may never be hit, might be worth checking later
+					frameObject.name = placedAtTag.instanceName;
 
 				frameObject.hasCharacter = (lastModifiedTag != null)? lastModifiedTag.hasCharacter : false;
 				frameObject.hasMove = (lastModifiedTag != null)? lastModifiedTag.hasMove : false;
 				frameObject.type = FrameObjectType.PLACE_OBJECT;
 
 				var m:Matrix = null;
+				var doScaleWork:Bool = false;
 				if (lastModifiedTag != null && lastModifiedTag.hasMatrix) {
 					m = lastModifiedTag.matrix.matrix;
+					doScaleWork = true;
 				}
 				else if( workingObject.matrix != null ) {
 					m = workingObject.matrix;
 				}
 				else if( placedAtTag.hasMatrix ) {
-					LogHelper.warn ("", ">>> used placedAtTag matrix name:"+ placedAtTag.name +" with characterId:"+ placedAtTag.characterId);  // if this is hit, clean this out and clean up duplicate filterList code below, if it is never hit, remove these else if blocks from each placeObject property code block here
 					m = placedAtTag.matrix.matrix;
+					doScaleWork = true;
 				}
 
-				m.tx *= (1 / 20);
-				m.ty *= (1 / 20);
+				if( doScaleWork ) {
+					m.tx *= (1 / 20);
+					m.ty *= (1 / 20);
+				}
 
 				frameObject.matrix = m;
-
 
 				if (lastModifiedTag != null && lastModifiedTag.hasColorTransform) {
 					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
@@ -653,26 +656,20 @@ class SWFLiteExporter {
 					frameObject.colorTransform = placedAtTag.colorTransform.colorTransform;
 				}
 
-
+				var convertFilters = false;
 				if (lastModifiedTag != null && lastModifiedTag.hasFilterList) {
-					var filters:Array<FilterType> = [];
-					for (surfaceFilter in lastModifiedTag.surfaceFilterList) {
-						var type = surfaceFilter.type;
-						if (type != null) {
-							filters.push (surfaceFilter.type);
-							//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-						}
-					}
-					
-					frameObject.filters = filters;
+					convertFilters = true;
 				}
 				else if( workingObject.filters != null ) {
 					frameObject.filters = workingObject.filters;
 				}
 				else if( placedAtTag.hasFilterList ) {
-					// TODO: clean this up once we see whether placedAtTag is ever used via the LogHelper.warn ">>> used placedAtTag matrix" above
+					convertFilters = true;
+				}
+
+				if( convertFilters ) {
 					var filters:Array<FilterType> = [];
-					for (surfaceFilter in placedAtTag.surfaceFilterList) {
+					for (surfaceFilter in lastModifiedTag.surfaceFilterList) {
 						var type = surfaceFilter.type;
 						if (type != null) {
 							filters.push (surfaceFilter.type);
@@ -685,7 +682,7 @@ class SWFLiteExporter {
 
 				frameObject.depth = object.depth;
 				frameObject.clipDepth = object.clipDepth;
-				
+
 				if (lastModifiedTag != null && lastModifiedTag.hasVisible) {
 					frameObject.visible = lastModifiedTag.visible != 0;
 				}
@@ -695,7 +692,7 @@ class SWFLiteExporter {
 				else if (placedAtTag.hasVisible) {
 					frameObject.visible = placedAtTag.visible != 0;
 				}
-				
+
 				if (lastModifiedTag != null && lastModifiedTag.hasBlendMode) {
 					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
@@ -707,7 +704,7 @@ class SWFLiteExporter {
 					var blendMode = BlendMode.toString (placedAtTag.blendMode);
 					frameObject.blendMode = blendMode;
 				}
-				
+
 				if (lastModifiedTag != null && lastModifiedTag.hasCacheAsBitmap) {
 					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
 				}
