@@ -7,8 +7,6 @@ import openfl.utils.Future;
 // import lime.utils.AssetManifest;
 import openfl.display.MovieClip;
 
-typedef AssetManifest = Dynamic;
-
 @:jsRequire("openfl/utils/AssetLibrary", "default")
 
 

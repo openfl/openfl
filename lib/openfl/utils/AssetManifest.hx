@@ -1,6 +1,9 @@
 package openfl.utils;
 
 
+@:jsRequire("openfl/utils/AssetManifest", "default")
+
+
 extern class AssetManifest /*extends LimeAssetManifest*/ {
 	
 	
