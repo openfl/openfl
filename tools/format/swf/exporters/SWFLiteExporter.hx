@@ -1,6 +1,7 @@
 package format.swf.exporters;
 
 
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import flash.display.BitmapData;
 import flash.text.TextFormatAlign;
@@ -59,7 +60,7 @@ using format.swf.exporters.SWFLiteExporter.AVM2;
 
 typedef TimelineFrameObject = {
 	var placedObject:FrameObject;
-	//var frameObject:format.swf.FrameObject;
+	var frameObject:format.swf.timeline.FrameObject;
 }
 
 class SWFLiteExporter {
@@ -600,92 +601,123 @@ class SWFLiteExporter {
 					lastModifiedTag = cast tag.tags[object.lastModifiedAtIndex];
 				}
 				else {
-					lastModifiedTag = null; //TODO: is this ever hit? if so going to cause problems below if placeAtTag is null as well
+					lastModifiedTag = null;  // fall back to workingObject, then placedAtTag
 				}
-//TODO: JOSH can we collapse lastModifiedTag and placedAtTag into a variable we use for everything below?
+
 				frameObject = new FrameObject ();
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
 
 				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
 				// finally placedAtTag if it exists
-				//TODO:LYLE this is my best guess, it may be that we do need to check placedAtTag first
 
-				var tag : TagPlaceObject = placedAtTag != null ? placedAtTag : lastModifiedTag;
-				var workingObject : TimelineFrameObject = workingObjects[tag.depth];
-				if(workingObject == null){
-
-					workingObject = {placedObject : frameObject/*, frameObject : null not sure where this should come from or where it is necessary*/ };
-					workingObjects[tag.depth] = workingObject;
+				var workingObject : TimelineFrameObject = workingObjects[object.depth];
+				if(workingObject == null) {
+					workingObject = {placedObject : frameObject, frameObject : object };
+					workingObjects[object.depth] = workingObject;
 				}
-				if( lastModifiedTag != null && lastModifiedTag.hasName )//TODO:should this be lastModifiedTag first?
+				if( lastModifiedTag != null && lastModifiedTag.hasName )  // working objects are not as new as the latest lastModifiedTag
 					frameObject.name = lastModifiedTag.instanceName;
 				else if( workingObject.placedObject.name != null )
 					frameObject.name = workingObject.placedObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;  //TODO: this may never be hit, might be worth checking later
 
-				frameObject.hasCharacter = tag.hasCharacter;
-				frameObject.hasMove = tag.hasMove;
+				frameObject.hasCharacter = (lastModifiedTag != null)? lastModifiedTag.hasCharacter : false;
+				frameObject.hasMove = (lastModifiedTag != null)? lastModifiedTag.hasMove : false;
 				frameObject.type = FrameObjectType.PLACE_OBJECT;
 
-				//TODO:LYLE check from here down to use lastModifiedTag as needed
-				if (tag.matrix != null) {
-					
-					var matrix = tag.matrix.matrix;
-					matrix.tx *= (1 / 20);
-					matrix.ty *= (1 / 20);
-					
-					frameObject.matrix = matrix;
-					
+				var m:Matrix;
+				if (lastModifiedTag != null && lastModifiedTag.hasMatrix) {
+					m = lastModifiedTag.matrix.matrix;
 				}
-				
-				if (tag.colorTransform != null) {
-					
-					frameObject.colorTransform = tag.colorTransform.colorTransform;
-					
+				else if( workingObject.placedObject.matrix != null ) {
+					m = workingObject.placedObject.matrix;
 				}
-				
-				if (tag.hasFilterList) {
-					
+				else if( placedAtTag.hasMatrix ) {
+					LogHelper.warn ("", ">>> used placedAtTag matrix name:"+ symbol.name +" at tagId:"+ symbol.tagId);  // if this is hit, clean this out and clean up duplicate filterList code below, if it is never hit, remove these else if blocks from each placeObject property code block here
+					m = placedAtTag.matrix.matrix;
+				}
+
+				m.tx *= (1 / 20);
+				m.ty *= (1 / 20);
+
+				frameObject.matrix = m;
+
+
+				if (lastModifiedTag != null && lastModifiedTag.hasColorTransform) {
+					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
+				}
+				else if( workingObject.placedObject.colorTransform != null ) {
+					frameObject.colorTransform = workingObject.placedObject.colorTransform;
+				}
+				else if( placedAtTag.hasColorTransform ) {
+					frameObject.colorTransform = placedAtTag.colorTransform;
+				}
+
+
+				if (lastModifiedTag != null && lastModifiedTag.hasFilterList) {
 					var filters:Array<FilterType> = [];
-					
-					for (surfaceFilter in tag.surfaceFilterList) {
-						
+					for (surfaceFilter in lastModifiedTag.surfaceFilterList) {
 						var type = surfaceFilter.type;
-						
 						if (type != null) {
-							
 							filters.push (surfaceFilter.type);
 							//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-							
 						}
-						
 					}
 					
 					frameObject.filters = filters;
 				}
+				else if( workingObject.placedObject.filters != null ) {
+					frameObject.filters = workingObject.placedObject.filters;
+				}
+				else if( placedAtTag.hasFilterList ) {
+					// TODO: clean this up once we see whether placedAtTag is ever used via the LogHelper.warn ">>> used placedAtTag matrix" above
+					var filters:Array<FilterType> = [];
+					for (surfaceFilter in placedAtTag.surfaceFilterList) {
+						var type = surfaceFilter.type;
+						if (type != null) {
+							filters.push (surfaceFilter.type);
+							//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
+						}
+					}
+
+					frameObject.filters = filters;
+				}
+
+				frameObject.depth = object.depth;
+				frameObject.clipDepth = object.clipDepth;
 				
-				frameObject.depth = tag.depth;
-				frameObject.clipDepth = (tag.hasClipDepth ? tag.clipDepth : 0);
-				
-				if (tag.hasVisible) {
-					
-					frameObject.visible = tag.visible != 0;
-					
+				if (lastModifiedTag != null && lastModifiedTag.hasVisible) {
+					frameObject.visible = lastModifiedTag.visible != 0;
+				}
+				else if (workingObject.placedObject.visible != null) {
+					frameObject.visible = workingObject.placedObject.visible;
+				}
+				else if (placedAtTag.hasVisible) {
+					frameObject.visible = placedAtTag.visible != 0;
 				}
 				
-				if (tag.hasBlendMode) {
-					
-					var blendMode = BlendMode.toString (tag.blendMode);
+				if (lastModifiedTag != null && lastModifiedTag.hasBlendMode) {
+					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
-					
+				}
+				else if (workingObject.placedObject.blendMode != null) {
+					frameObject.blendMode = workingObject.placedObject.blendMode;
+				}
+				else if (placedAtTag.hasBlendMode) {
+					var blendMode = BlendMode.toString (placedAtTag.blendMode);
+					frameObject.blendMode = blendMode;
 				}
 				
-				if (tag.hasCacheAsBitmap) {
-					
-					frameObject.cacheAsBitmap = tag.bitmapCache != 0;
-					
+				if (lastModifiedTag != null && lastModifiedTag.hasCacheAsBitmap) {
+					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
+				}
+				else if (workingObject.placedObject.cacheAsBitmap != null) {
+					frameObject.cacheAsBitmap = workingObject.placedObject.cacheAsBitmap;
+				}
+				else if (placedAtTag.hasCacheAsBitmap) {
+					frameObject.cacheAsBitmap = placedAtTag.bitmapCache != 0;
 				}
 				
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
