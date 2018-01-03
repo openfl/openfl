@@ -1,14 +1,14 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![NPM Version](https://img.shields.io/npm/v/openfl.svg?style=flat)](http://npmjs.com/package/openfl) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/develop.svg)](https://circleci.com/gh/openfl/openfl)
 
 
-Purpose
-=======
-
-Interactive application and game developers need access to productive tools for forging bitmap, vector, text, sound and video together. The modern-day web browser provides many of these features, but performance for animated content, and support for hardware graphics (while still supporting software caching and fallback) is not readily available. OpenFL combines a proven set of tools for development of games and rich interactive content, going back to the first renaissance innovators on the web.
-
-
 <br />
 <p align="center"><img src="assets/openfl.png"/></p>
+
+
+Introduction
+============
+
+Interactive application and game developers need access to productive tools for forging bitmap, vector, text, sound and video together. The modern-day web browser provides many of these features, but performance for animated content, and support for hardware graphics (while still supporting software caching and fallback) is not readily available. OpenFL combines a proven set of tools for development of games and rich interactive content, going back to the first renaissance innovators on the web.
 
 
 Two Versions
