@@ -87,7 +87,7 @@ public function new () {
 	BitmapData.loadFromFile ("openfl.png").onComplete (function (bitmapData) {
 		
 		var bitmap = new Bitmap (bitmapData);
-		this.addChild (bitmap);
+		addChild (bitmap);
 		
 	});
 	
