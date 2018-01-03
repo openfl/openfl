@@ -5,8 +5,8 @@
 <p align="center"><img src="assets/openfl.png"/></p>
 
 
-Introduction
-============
+Purpose
+=======
 
 Interactive application and game developers need access to productive tools for forging bitmap, vector, text, sound and video together. The modern-day web browser provides many of these features, but performance for animated content, and support for hardware graphics (while still supporting software caching and fallback) is not readily available. OpenFL combines a proven set of tools for development of games and rich interactive content, going back to the first renaissance innovators on the web.
 
@@ -24,18 +24,14 @@ Getting Started
 
 The simplest way to get started is to use Yeoman to create a new project:
 
-```npm install -g yo generator-openfl
-
+```bash
+npm install -g yo generator-openfl
 mkdir NewProject
 cd NewProject
 yo openfl
 ```
 
 You will have the opportunity to choose TypeScript, Haxe, ES6 or ES5 as the source language for your new project.
-
-
-Hello World
-===========
 
 The template project will include configuration files for Webpack, as well as a source code entry point where you can begin writing a new project. In order to begin using OpenFL, you can try adding support for loading and displaying an image.
 
