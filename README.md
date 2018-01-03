@@ -35,13 +35,14 @@ You will have the opportunity to choose TypeScript, Haxe, ES6 or ES5 as the sour
 
 The template project will include configuration files for Webpack, as well as a source code entry point where you can begin writing a new project. In order to begin using OpenFL, you can try adding support for loading and displaying an image.
 
-## Displaying a Bitmap
+Displaying a Bitmap
+===================
 
 First, download [openfl.png](assets/openfl.png) and save it your "dist" directory.
 
 Next, use Visual Studio Code or another code editor to open "src/app.ts", "src/app.js" or "src/App.hx", depending upon the language type you used when you created the project. We will need to add a couple more imports, and a little code to load and display an image.
 
-### TypeScript
+## TypeScript
 
 At the top of the file, add new imports:
 
@@ -67,7 +68,7 @@ constructor () {
 }
 ```
 
-### Haxe
+## Haxe
 
 At the top of the file, add new imports:
 
@@ -93,7 +94,7 @@ public function new () {
 }
 ```
 
-### ES6 JavaScript
+## ES6 JavaScript
 
 At the top of the file, add new imports:
 
@@ -119,7 +120,7 @@ constructor () {
 }
 ```
 
-### ES5 JavaScript
+## ES5 JavaScript
 
 At the top of the file, add new require statements:
 
@@ -163,7 +164,7 @@ bitmap.rotation = 45;
 bitmap.alpha = 0.5;
 ```
 
-## More Samples
+## Other Samples
 
 There are more sample projects with additional features (such as sound, animation and video) in each of the OpenFL samples repositories:
 
@@ -175,8 +176,8 @@ There are more sample projects with additional features (such as sound, animatio
 Each of the samples can be tested using `npm install` then `npm start`
 
 
-More Reading
-============
+Additional Reading
+==================
 
 Go to http://www.openfl.org for more information on OpenFL, and visit http://community.openfl.org to ask questions and get help!
 
@@ -187,8 +188,8 @@ License
 OpenFL is free, open-source software under the [MIT license](LICENSE.md).
 
 
-NPM Development Builds
-======================
+Development Builds
+==================
 
 Clone the OpenFL repository:
 
@@ -196,7 +197,7 @@ Clone the OpenFL repository:
 git clone https://github.com/openfl/openfl
 ```
 
-If you are using a development version of `hxgenjs` or `lime`, use `npm link`
+If you wish to use a development version of `hxgenjs` and/or `lime`, link them:
 
 ```bash
 cd path/to/lime
@@ -209,7 +210,7 @@ npm link lime
 npm link hxgenjs
 ```
 
-Install development dependencies for OpenFL:
+Then install necessary development dependencies:
 
 ```bash
 cd openfl
@@ -222,11 +223,11 @@ Generate ES6 modules for OpenFL:
 npm run build
 ```
 
-Then you may want to `npm link` OpenFL when testing other projects
+You may want to `npm link` OpenFL for use with other projects:
 
 ```bash
 npm link
 
-cd path/to/other-project
+cd path/to/your-project
 npm link openfl
 ```
