@@ -19,6 +19,23 @@ There are two versions of OpenFL, the first is primarily distributed using haxel
 The second edition of OpenFL is distributed using NPM, and is designed for use from TypeScript, JavaScript (EcmaScript 5 or 6+) or Haxe, the latter of which can be used in both versions of OpenFL. The NPM version of OpenFL is designed to be used in a browser environment.
 
 
+Features
+========
+
+The DOM (Document Object Model) is a convenient method of nesting and arranging visual content, but it is known to be slow. Use of the DOM is discouraged for animated content, unless steps are taken to limit the number of reflows. Normally to improve performance, a developer is forced to use either canvas 2D or WebGL, creating a new problem with writing new rendering code, and losing what made the DOM easy to work with.
+
+OpenFL features include:
+
+ * Support for complex hit testing, events and object transforms
+ * WebGL 2, WebGL 1, 2D canvas or CSS 2D transform (DOM) rendering
+ * Built-in vector graphics (paths, curves, fills, caps, miters)
+ * Extensive bitmap data support (blitting, render-to-texture, noise)
+ * Accelerated support for batched rendering
+ * Support for sound playback and video objects
+ * Broad feature compatibility with text layout and rendering APIs
+ * Integrated asset management
+
+
 Getting Started
 ===============
 
