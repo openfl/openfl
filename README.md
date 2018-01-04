@@ -24,17 +24,93 @@ Features
 
 The DOM (Document Object Model) is a convenient method of nesting and arranging visual content, but it is known to be slow. Use of the DOM is discouraged for animated content, unless steps are taken to limit the number of reflows. Normally to improve performance, a developer is forced to use either canvas 2D or WebGL, creating a new problem with writing new rendering code, and losing what made the DOM easy to work with.
 
-OpenFL provides a standard object model, along with additional features useful for animation and interactive development:
+OpenFL provides a standard object model, along with additional features useful for animation and interactive development.
 
- * Support for complex hit testing, events and object transforms
- * WebGL 2, WebGL 1, 2D canvas or CSS 2D transform (DOM) rendering
- * Built-in vector graphics (paths, curves, fills, caps, miters)
- * Extensive bitmap data support (blitting, render-to-texture, noise)
- * Support for movie clip animations
- * Accelerated support for batched rendering
- * Support for sound playback and video objects
- * Broad feature compatibility with text layout and rendering APIs
- * Integrated asset management
+## Rendering
+
+ * WebGL 1 and 2
+ * Canvas 2D
+ * CSS 2D transforms (DOM)
+
+## Object Model
+
+ * Matrix transforms
+ * Color transforms
+ * Hit testing
+ * Event propagation
+ * Bitmap caching
+ * Filters (limited)
+ * Masking and scroll rectangles
+
+## Vector Graphics
+
+ * Solid, bitmap and gradient fills
+ * Quadratic and cubic bézier curves
+ * Ellipses, circles and paths
+ * Rectangles and rounded rectangles
+ * Lines with cap, joint and miter styles
+
+## Bitmap Data
+
+ * Seamless support for image, canvas and typed array pixel stores
+ * Transparency and premultiplied alpha
+ * Get, set and copy pixels
+ * Fill and flood fill
+ * Color bounds calculation
+ * Threshold operations
+ * Render-to-texture
+ * Output PNG and JPEG bytes
+ * Channel blending between images
+ * Noise and perlin noise (limited)
+ * Palette swapping
+ * Difference images
+ * Scrolling
+
+## Text Support
+
+ * Font, color and alignment
+ * Selectable text input
+ * Auto-size and alignment
+ * Background and border
+ * Plain or simple HTML text
+ * Multi-line, restrict or password
+ * Character metrics
+ * Selection
+ * Text replacement
+
+## Sound Support
+
+ * Sound playback
+ * Global sound mixing
+ * Time, loops, sound transforms
+
+## Geometry Types
+
+ * 2D (3x3) matrix
+ * 3D (4x4) matrix
+ * Orientation and perspective
+ * Points and vectors
+ * Rectangle
+
+## Networking
+
+ * Save data to disk
+ * Local storage
+ * Web sockets
+ * HTTP requests
+
+## Input
+
+ * Mouse and touch
+ * Keyboard
+ * Gamepad
+
+## Other Features
+
+ * Batched tile rendering
+ * Video rendering
+ * Asset management
+ * MovieClip animations
 
 
 Getting Started
