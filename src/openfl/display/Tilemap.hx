@@ -367,7 +367,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
-		#if dom
 		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
@@ -383,16 +382,13 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			DOMTilemap.render (this, renderSession);
 			
 		}
-		#end
 		
 	}
 	
 	
 	private override function __renderDOMClear (renderSession:RenderSession):Void {
 		
-		#if dom
 		DOMTilemap.clear (this, renderSession);
-		#end
 		
 	}
 	#end

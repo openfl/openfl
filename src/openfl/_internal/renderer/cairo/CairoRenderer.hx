@@ -36,6 +36,7 @@ class CairoRenderer extends AbstractRenderer {
 		renderSession.cairo = cairo;
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
+		renderSession.renderType = CAIRO;
 		renderSession.maskManager = new CairoMaskManager (renderSession);
 		renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
 		#end

@@ -33,7 +33,6 @@ class DOMRenderer extends AbstractRenderer {
 		
 		super (stage);
 		
-		#if dom
 		this.element = element;
 		
 		renderSession = new RenderSession ();
@@ -75,7 +74,7 @@ class DOMRenderer extends AbstractRenderer {
 		renderSession.blendModeManager = new DOMBlendModeManager (renderSession);
 		
 		renderSession.renderer = this;
-		#end
+		renderSession.renderType = DOM;
 		
 	}
 	

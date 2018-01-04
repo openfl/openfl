@@ -775,8 +775,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
-		#if dom
-		
 		super.__renderDOM (renderSession);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
@@ -818,14 +816,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		renderSession.maskManager.popObject (this);
 		
-		#end
-		
 	}
 	
 	
 	private override function __renderDOMClear (renderSession:RenderSession):Void {
 		
-		#if dom
 		for (child in __children) {
 			child.__renderDOMClear (renderSession);
 		}
@@ -835,7 +830,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				orphan.__renderDOMClear (renderSession);
 			}
 		}
-		#end
 		
 	}
 	

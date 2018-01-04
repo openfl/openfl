@@ -88,7 +88,7 @@ class CanvasTextField {
 				
 				var transform = graphics.__renderTransform;
 				
-				#if dom
+				if (renderSession.renderType == DOM) {
 					
 					var scale = CanvasRenderer.scale;
 					
@@ -99,14 +99,14 @@ class CanvasTextField {
 					
 					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
 					
-				#else
+				} else {
 					
 					graphics.__canvas.width  = width;
 					graphics.__canvas.height = height;
 					
 					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 					
-				#end
+				}
 				
 				if (clearRect == null) {
 					

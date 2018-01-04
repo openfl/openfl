@@ -1,11 +1,12 @@
 package openfl._internal.renderer; #if (!display && !flash)
 
 
+import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.CairoRenderContext;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
-import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.RendererType;
 //import openfl._internal.renderer.opengl.utils.BlendModeManager;
 //import openfl._internal.renderer.opengl.utils.FilterManager;
 //import openfl._internal.renderer.opengl.utils.ShaderManager;
@@ -32,6 +33,7 @@ class RenderSession {
 	public var gl:GLRenderContext;
 	// public var lockTransform:Bool;
 	public var renderer:AbstractRenderer;
+	public var renderType:RendererType;
 	public var roundPixels:Bool;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;

@@ -116,9 +116,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	#if (js && html5)
 	private var __div:DivElement;
-	#end
-	
-	#if dom
 	private var __renderedOnCanvasWhileOnDOM:Bool = false;
 	private var __rawHtmlText:String;
 	private var __forceCachedBitmapUpdate:Bool = false;
@@ -1381,10 +1378,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
+		#if (js && html5)
+		
 		// TODO: Better DOM workaround on cacheAsBitmap
 		
-		#if (js && html5 && dom)
-		if (!__renderedOnCanvasWhileOnDOM) {
+		if (renderSession.renderType == DOM && !__renderedOnCanvasWhileOnDOM) {
 			
 			__renderedOnCanvasWhileOnDOM = true;
 			
@@ -1405,7 +1403,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__setRenderDirty ();
 			
 		}
-		#end
 		
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
@@ -1439,12 +1436,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
+		#end
+		
 	}
 	
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
-		#if dom
+		#if (js && html5)
+		
 		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
 		__forceCachedBitmapUpdate = false;
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
@@ -1474,6 +1474,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			DOMTextField.render (this, renderSession);
 			
 		}
+		
 		#end
 		
 	}
@@ -1481,9 +1482,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __renderDOMClear (renderSession:RenderSession):Void {
 		
-		#if dom
 		DOMTextField.clear (this, renderSession);
-		#end
 		
 	}
 	

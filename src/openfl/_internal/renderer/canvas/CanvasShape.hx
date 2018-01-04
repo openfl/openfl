@@ -4,7 +4,7 @@ package openfl._internal.renderer.canvas;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 
-#if (js && html5 && dom)
+#if (js && html5)
 import js.Browser;
 #end
 
@@ -55,10 +55,12 @@ class CanvasShape {
 						
 					}
 					
-					#if dom
-					var reverseScale = 1 / CanvasRenderer.scale;
-					context.scale (reverseScale, reverseScale);
-					#end
+					if (renderSession.renderType == DOM) {
+						
+						var reverseScale = 1 / CanvasRenderer.scale;
+						context.scale (reverseScale, reverseScale);
+						
+					}
 					
 					context.drawImage (graphics.__canvas, 0, 0);
 					

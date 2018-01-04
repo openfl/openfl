@@ -543,6 +543,7 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
+			renderSession.renderType = CANVAS;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = false;
 			renderSession.context = cast buffer.__srcContext;
@@ -634,6 +635,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
+			renderSession.renderType = CAIRO;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = false;
 			renderSession.cairo = cairo;
@@ -1690,6 +1692,7 @@ class BitmapData implements IBitmapDrawable {
 			var buffer = image.buffer;
 			
 			var renderSession = new RenderSession ();
+			renderSession.renderType = CANVAS;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = true;
 			renderSession.context = cast buffer.__srcContext;
@@ -1794,6 +1797,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var renderSession = new RenderSession ();
+			renderSession.renderType = CAIRO;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = true;
 			renderSession.cairo = cairo;

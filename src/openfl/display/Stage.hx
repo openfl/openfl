@@ -175,7 +175,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	#end
 	
-	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null #else window:Window, color:Null<Int> = null #end) {
+	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowConfig:Dynamic = null #else window:Window, color:Null<Int> = null #end) {
 		
 		#if hxtelemetry
 		Telemetry.__initialize ();
@@ -206,13 +206,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			window = new Window ({
-				width: width,
-				height: height,
-				element: element,
-				resizable: resizable,
-				background: null
-			});
+			if (windowConfig == null) windowConfig = {};
+			windowConfig.width = width;
+			windowConfig.height = height;
+			windowConfig.element = element;
+			windowConfig.resizable = resizable;
+			if (!Reflect.hasField (windowConfig, "background")) windowConfig.background = null;
+			
+			window = new Window (windowConfig);
 			window.stage = this;
 			
 			// if (Application.current == null) {
@@ -1203,9 +1204,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			case DOM (element):
 				
-				#if dom
 				__renderer = new DOMRenderer (this, element);
-				#end
 			
 			case CAIRO (cairo):
 				
@@ -1999,15 +1998,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				if (updateChildren) {
 					
-					#if dom
+					// #if dom
 					__wasDirty = true;
-					#end
+					// #end
 					
 					//__dirty = false;
 					
 				}
 				
-			} #if dom else if (__wasDirty) {
+			} /*#if dom*/ else if (__wasDirty) {
 				
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
@@ -2020,7 +2019,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 				}
 				
-			} #end
+			} /*#end*/
 			
 		}
 		
