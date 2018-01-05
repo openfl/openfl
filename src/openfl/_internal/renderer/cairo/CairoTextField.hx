@@ -313,9 +313,9 @@ class CairoTextField {
 								
 								var scrollY = 0.0;
 								
-								for (i in 0...textField.scrollV - 1) {
+								for (i in textField.scrollV...(group.lineIndex + 1)) {
 									
-									scrollY -= textEngine.lineHeights[i];
+									scrollY += textEngine.lineHeights[i - 1];
 									
 								}
 								
@@ -387,7 +387,7 @@ class CairoTextField {
 			
 			for (i in 0...textField.scrollV - 1) {
 				
-				scrollY -= textEngine.lineHeights[i];
+				scrollY += textEngine.lineHeights[i];
 				
 			}
 			

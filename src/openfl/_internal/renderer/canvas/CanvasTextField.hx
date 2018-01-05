@@ -101,7 +101,7 @@ class CanvasTextField {
 					
 				} else {
 					
-					graphics.__canvas.width  = width;
+					graphics.__canvas.width = width;
 					graphics.__canvas.height = height;
 					
 					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
@@ -182,18 +182,21 @@ class CanvasTextField {
 					var applyHack = ~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent);
 					
 					for (group in textEngine.layoutGroups) {
+						
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
-
+						
 						if (group.format.underline) {
-							context.beginPath();
+							
+							context.beginPath ();
 							context.strokeStyle = "#000000";
 							context.lineWidth = .5;
 							var x = group.offsetX + scrollX;
 							var y = group.offsetY + offsetY + scrollY + group.ascent;
-							context.moveTo(x, y);
-							context.lineTo(x + group.width, y);
-							context.stroke();
+							context.moveTo (x, y);
+							context.lineTo (x + group.width, y);
+							context.stroke ();
+							
 						}
 						
 						context.font = TextEngine.getFont (group.format);
@@ -246,9 +249,9 @@ class CanvasTextField {
 									
 									var scrollY = 0.0;
 									
-									for (i in 0...textField.scrollV - 1) {
+									for (i in textField.scrollV...(group.lineIndex + 1)) {
 										
-										scrollY -= textEngine.lineHeights[i];
+										scrollY += textEngine.lineHeights[i - 1];
 										
 									}
 									
@@ -345,7 +348,7 @@ class CanvasTextField {
 						
 						for (i in 0...textField.scrollV - 1) {
 							
-							scrollY -= textEngine.lineHeights[i];
+							scrollY += textEngine.lineHeights[i];
 							
 						}
 						
