@@ -211,6 +211,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			windowConfig.height = height;
 			windowConfig.element = element;
 			windowConfig.resizable = resizable;
+			if (!Reflect.hasField (windowConfig, "stencilBuffer")) windowConfig.stencilBuffer = true;
 			if (!Reflect.hasField (windowConfig, "background")) windowConfig.background = null;
 			
 			window = new Window (windowConfig);
