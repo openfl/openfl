@@ -205,32 +205,34 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public function removeTile (tile:Tile):Tile {
 		
-		var cacheLength = __tiles.length;
-		
-		for (i in 0...__tiles.length) {
-			
-			if (__tiles[i] == tile) {
-				tile.parent = null;
-				__tiles.splice (i, 1);
-				break;
+		if (tile != null && tile.parent == this)
+		{
+			var cacheLength = __tiles.length;
+
+			for (i in 0...__tiles.length) {
+
+				if (__tiles[i] == tile) {
+					tile.parent = null;
+					__tiles.splice (i, 1);
+					break;
+				}
+
 			}
-			
+
+			__tileArrayDirty = true;
+
+			if (cacheLength > __tiles.length) {
+				numTiles--;
+			}
+
+			if (numTiles <= 0 && __tileArray != null) {
+				__tileArray.length = 0;
+			}
+
+			#if !flash
+			__setRenderDirty ();
+			#end
 		}
-		
-		__tileArrayDirty = true;
-		
-		if (cacheLength > __tiles.length) {
-			numTiles--;
-		}
-		
-		if (numTiles <= 0 && __tileArray != null) {
-			__tileArray.length = 0;
-		}
-		
-		#if !flash
-		__setRenderDirty ();
-		#end
-		
 		return tile;
 		
 	}
