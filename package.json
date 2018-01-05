@@ -60,7 +60,8 @@
     "docker-test-es6": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-es6 -s\"",
     "docker-test-haxe": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-haxe -s\"",
     "docker-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-typescript -s\"",
-    "watch": "watch 'npm run build-lib -s' ./src ./node_modules/lime/lime"
+    "start": "npm run watch",
+    "watch": "watch 'echo \"watch: Compiling...\" && npm run build-lib -s && echo \"watch: Compiled successfully.\"' ./src ./node_modules/lime/lime"
   },
   "config": {
     "haxe": "3.4.4"
