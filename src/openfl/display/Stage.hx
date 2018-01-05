@@ -1114,7 +1114,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__enterFrame (__deltaTime);
 			__deltaTime = 0;
-			__update (false, true);
+			__traverse ();
 			
 			if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
 				
