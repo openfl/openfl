@@ -19,6 +19,23 @@ There are two versions of OpenFL, the first is primarily distributed using haxel
 The second edition of OpenFL is distributed using NPM, and is designed for use from TypeScript, JavaScript (EcmaScript 5 or 6+) or Haxe, the latter of which can be used in both versions of OpenFL. The NPM version of OpenFL is designed to be used in a browser environment.
 
 
+Getting Started
+===============
+
+The simplest way to get started is to use Yeoman to create a new project:
+
+```bash
+npm install -g yo generator-openfl
+mkdir NewProject
+cd NewProject
+yo openfl
+```
+
+You will have the opportunity to choose TypeScript, Haxe, ES6 or ES5 as the source language for your new project.
+
+The template project will include configuration files for Webpack, as well as a source code entry point where you can begin writing a new project. In order to begin using OpenFL, you can try adding support for loading and displaying an image (details below).
+
+
 Features
 ========
 
@@ -113,26 +130,18 @@ OpenFL provides a standard object model, along with additional features useful f
  * MovieClip animations
 
 
-Getting Started
-===============
-
-The simplest way to get started is to use Yeoman to create a new project:
-
-```bash
-npm install -g yo generator-openfl
-mkdir NewProject
-cd NewProject
-yo openfl
-```
-
-You will have the opportunity to choose TypeScript, Haxe, ES6 or ES5 as the source language for your new project.
-
-The template project will include configuration files for Webpack, as well as a source code entry point where you can begin writing a new project. In order to begin using OpenFL, you can try adding support for loading and displaying an image.
-
 Displaying a Bitmap
 ===================
 
-First, download [openfl.png](assets/openfl.png) and save it your "dist" directory.
+Create a new project using `yo openfl`
+
+```bash
+mkdir DisplayingABitmap
+cd DisplayingABitmap
+yo openfl
+```
+
+Next, download [openfl.png](assets/openfl.png) and save it your new "dist" directory.
 
 Next, use Visual Studio Code or another code editor to open "src/app.ts", "src/app.js" or "src/App.hx", depending upon the language type you used when you created the project. We will need to add a couple more imports, and a little code to load and display an image.
 
