@@ -35,12 +35,12 @@ import openfl.utils.ByteArray;
 @:keep class SWFLiteLibrary extends AssetLibrary {
 	
 	
-	private var alphaCheck:Map<String, Bool>;
-	private var id:String;
-	private var imageClassNames:Map<String, String>;
-	private var preloading:Bool;
-	private var rootPath:String;
-	private var swf:SWFLite;
+	public var alphaCheck:Map<String, Bool>;
+	public var id:String;
+	public var imageClassNames:Map<String, String>;
+	public var preloading:Bool;
+	public var rootPath:String;
+	public var swf:SWFLite;
 	
 	
 	public function new (id:String) {
