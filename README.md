@@ -33,7 +33,7 @@ yo openfl
 
 You will have the opportunity to choose TypeScript, Haxe, ES6 or ES5 as the source language for your new project.
 
-The template project will include configuration files for Webpack, as well as a source code entry point where you can begin writing a new project. In order to begin using OpenFL, you can try adding support for loading and displaying an image (details below).
+The template project will include configuration files for Webpack, as well as a source code entry point where you can begin writing a new project. In order to begin using OpenFL, you can try adding support for loading and displaying an image (_[continued below](#displaying-a-bitmap)_).
 
 
 Features
