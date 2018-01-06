@@ -1543,7 +1543,7 @@ class TextEngine {
 		var lineIndex = -1;
 		var offsetX = 0.0;
 		var totalWidth = this.width - 4;
-		var group, lineLength;
+		var group, lineLength, groupsInLine;
 		
 		for (i in 0...layoutGroups.length) {
 			
@@ -1605,26 +1605,41 @@ class TextEngine {
 							
 							if (lineLength > 1) {
 								
-								group = layoutGroups[i + lineLength - 1];
+								// get the final layout group in the current line and check if it needs to be justified
+								
+								groupsInLine = i + lineIndex;
+								
+								while (groupsInLine < layoutGroups.length && group.lineIndex == layoutGroups[groupsInLine].lineIndex) {
+									
+									groupsInLine++;
+									
+								}
+								
+								group = layoutGroups[groupsInLine - 1];
 								
 								var endChar = text.charCodeAt (group.endIndex);
 								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code) {
 									
 									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
 									
-									var j = 0;
+									// keep track of groups in the line as well as words in the line
+									var j = i, k = 0;
 									do {
 										
-										if (j > 1 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+										if (k > 0 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
 											
-											layoutGroups[i + j].offsetX += (offsetX * (j-1));
-											j++;
+											layoutGroups[j].offsetX += (offsetX * (k - 1));
 											
 										}
 										
-										layoutGroups[i + j].offsetX += (offsetX * j);
+										else {
+											
+											layoutGroups[j].offsetX += (offsetX * k);
+											k++;
+											
+										}
 										
-									} while (++j < lineLength);
+									} while (++j < groupsInLine);
 									
 								}
 								
