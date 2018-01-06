@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"baseUrl": ".",
+		"paths": {
+			"openfl/*": ["../../lib/openfl/*"]
+		},
+		"lib": [ "dom", "es2017" ],
+		"sourceMap": true
+	},
+	"include": [
+		"./**/*.ts"
+	]
+}

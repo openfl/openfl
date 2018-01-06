@@ -1,0 +1,173 @@
+# Generate platform-specific XML for documentation output
+
+-xml xml/Flash.xml
+-swf obj/docs
+-swf-version 17.0
+-D display
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/core/flash
+-cp ../externs/extras
+--no-output
+
+--next
+
+-xml xml/Windows.xml
+-cpp obj/docs
+-D display
+-D native
+-D lime-cffi
+-D windows
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/extras
+--no-output
+
+--next
+
+-xml xml/macOS.xml
+-cpp obj/docs
+-D display
+-D native
+-D lime-cffi
+-D mac
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/extras
+--no-output
+
+--next
+
+-xml xml/Linux.xml
+-cpp obj/docs
+-D display
+-D native
+-D lime-cffi
+-D linux
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/extras
+--no-output
+
+--next
+
+-xml xml/Neko.xml
+-neko obj/docs
+-D display
+-D native
+-D lime-cffi
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/extras
+--no-output
+
+--next
+
+-xml xml/iOS.xml
+-cpp obj/docs
+-D display
+-D native
+-D lime-cffi
+-D ios
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/extras
+--no-output
+
+--next
+
+-xml xml/Android.xml
+-cpp obj/docs
+-D display
+-D native
+-D lime-cffi
+-D android
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/extras
+--no-output
+
+--next
+
+#-xml xml/BlackBerry.xml
+#-cpp obj/docs
+#-D display
+#-D native
+#-D lime-cffi
+#-D blackberry
+#-D doc_gen
+#ImportAll
+#-lib lime
+#-lib openfl
+#-cp ../externs/core/openfl
+#-cp ../externs/extras
+#--no-output
+#
+#--next
+
+#-xml xml/Tizen.xml
+#-cpp obj/docs
+#-D display
+#-D native
+#-D lime-cffi
+#-D tizen
+#ImportAll
+#-lib lime
+#-lib openfl
+#-cp ../externs/core/openfl
+#-cp ../externs/extras
+#--no-output
+#
+#--next
+
+#-xml xml/Firefox.xml
+#-js obj/docs
+#-D display
+#-D html5
+#-D firefox
+#-D doc_gen
+#ImportAll
+#-lib lime
+#-lib openfl
+#-cp ../externs/core/openfl
+#-cp ../externs/extras
+#--no-output
+#
+#--next
+
+-xml xml/HTML5.xml
+-js obj/docs
+-D display
+-D html5
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+-cp ../externs/core/openfl
+-cp ../externs/extras
+--no-output
+
+--next
+
+-cmd haxelib run dox -o ../docs -i xml -ex flash --title "API Reference" -D website "http://www.openfl.org" -D logo "http://www.openfl.org/images/logo.png" -D textColor 0x777777 -theme ../assets/docs-theme
