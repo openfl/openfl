@@ -95,7 +95,7 @@ class ShapeSymbol extends SWFSymbol {
 			
 		}
 		
-		commands = null;
+//		commands = null;
 		rendered = new Shape ();
 		rendered.graphics.copyFrom (shape.graphics);
 		
