@@ -31,4 +31,4 @@ package-lock.json
 npm-debug.log
 *.map
 *.tgz
-bin/openfl.js
+bin/tools.js

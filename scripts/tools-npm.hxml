@@ -1,5 +1,5 @@
 -main Tools
--js ../bin/openfl.js
+-js ../bin/tools.js
 -cp ../src
 # -lib lime
 -cp ../node_modules/lime
