@@ -47,12 +47,13 @@ import openfl.geom.Rectangle;
 		
 		super ();
 		
-		__blurX = blurX;
-		__blurY = blurY;
-		__quality = quality;
+		this.blurX = blurX;
+		this.blurY = blurY;
+		this.quality = quality;
 		
 		__needSecondBitmapData = true;
 		__preserveObject = false;
+		__renderDirty = true;
 		
 	}
 	

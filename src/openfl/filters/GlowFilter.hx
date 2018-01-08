@@ -63,15 +63,16 @@ import openfl.geom.Rectangle;
 		
 		__color = color;
 		__alpha = alpha;
-		__blurX = blurX;
-		__blurY = blurY;
+		this.blurX = blurX;
+		this.blurY = blurY;
 		__strength = strength;
-		__quality = quality;
+		this.quality = quality;
 		__inner = inner;
 		__knockout = knockout;
 		
 		__needSecondBitmapData = true;
 		__preserveObject = true;
+		__renderDirty = true;
 		
 	}
 	

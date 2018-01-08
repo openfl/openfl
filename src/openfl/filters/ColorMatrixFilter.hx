@@ -35,7 +35,7 @@ import openfl.geom.Rectangle;
 		
 		super ();
 		
-		__matrix = matrix;
+		this.matrix = matrix;
 		
 		// __numShaderPasses = 1;
 		__numShaderPasses = 0;

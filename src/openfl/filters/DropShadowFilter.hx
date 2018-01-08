@@ -87,6 +87,7 @@ import openfl.geom.Rectangle;
 		
 		__needSecondBitmapData = true;
 		__preserveObject = !__hideObject;
+		__renderDirty = true;
 		
 	}
 	
