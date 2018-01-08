@@ -2000,7 +2000,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 				if (updateChildren) {
 					
 					// #if dom
-					__wasDirty = true;
+					if (DisplayObject.__supportDOM) {
+						
+						__wasDirty = true;
+						
+					}
+					
 					// #end
 					
 					//__dirty = false;

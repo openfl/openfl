@@ -69,6 +69,8 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __enterFrame (deltaTime:Int):Void {
 		
+		// TODO: Do not set as dirty for DOM render
+		
 		// #if (!js || !dom)
 		if (__bitmapData != null && __bitmapData.image != null) {
 			
