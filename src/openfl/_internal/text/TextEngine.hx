@@ -310,6 +310,10 @@ class TextEngine {
 		
 		leading = format.leading;
 		
+		#else
+		
+		ascent = descent = leading = 0;
+		
 		#end
 		
 		return ascent + descent + leading;

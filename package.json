@@ -22,6 +22,9 @@
     "Other OpenFL contributors"
   ],
   "main": "dist/openfl.min.js",
+  "bin": {
+    "openfljs": "bin/openfl.js"
+  },
   "module": "lib/openfl/index.js",
   "files": [
     "dist",
@@ -37,6 +40,7 @@
     "build": "npm run build-lib && npm run build-dist",
     "build-dist": "webpack --config webpack.dev.js && webpack --config webpack.prod.js",
     "build-lib": "cd scripts && haxe build.hxml",
+    "build-tools": "cd scripts && haxe tools-npm.hxml",
     "build-test-es5": "cd test/es5 && webpack",
     "build-test-es6": "cd test/es6 && webpack",
     "build-test-haxe": "cd test/haxe && haxe build.hxml && webpack",
@@ -64,21 +68,24 @@
     "watch": "watch 'echo \"watch: Compiling...\" && npm run build-lib -s && echo \"watch: Compiled successfully.\"' ./src ./scripts ./node_modules/lime/lime"
   },
   "config": {
-    "haxe": "3.4.4"
+    "haxe": "3.4.4",
+    "haxelib_version": "3.2.0-rc.3"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.44",
+    "@types/mocha": "^2.2.46",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-stage-1": "^6.24.1",
     "chai": "^4.1.2",
+    "format": "jgranick/format",
     "haxe": "^4.1.0",
     "hxgenjs": "kevinresol/hxgenjs",
+    "hxnodejs": "jgranick/hxnodejs",
     "lime": "openfl/lime#develop",
     "mocha": "^4.0.1",
     "mocha-chrome": "^1.0.2",
     "typescript": "^2.6.2",
-    "uglifyjs-webpack-plugin": "^1.1.4",
+    "uglifyjs-webpack-plugin": "^1.1.6",
     "watch": "^1.0.2",
     "webpack": "^3.10.0",
     "webpack-merge": "^4.1.1"

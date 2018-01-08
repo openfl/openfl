@@ -1,0 +1,19 @@
+-main Tools
+-js ../bin/openfl.js
+-cp ../src
+# -lib lime
+-cp ../node_modules/lime
+-D lime
+# -lib format
+-cp ../node_modules/format
+-D format
+# -lib nodejs
+-cp ../node_modules/hxnodejs/src
+--macro allowPackage('sys')
+--macro _hxnodejs.InitMacro.include()
+-D nodejs
+-D hxnodejs
+-D nocffi
+-D disable-cffi
+-D openfl
+--remap flash:openfl
