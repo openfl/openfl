@@ -1124,10 +1124,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						//__cacheBitmapData.disposeImage ();
 						
-						#if !openfljs
+						// #if !openfljs
 						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 						__cacheBitmap.__bitmapData = __cacheBitmapData;
-						#end
+						// #end
 						
 					} else {
 						
