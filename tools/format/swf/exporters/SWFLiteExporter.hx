@@ -595,7 +595,9 @@ class SWFLiteExporter {
 				LogHelper.info ("", ">>> frameData next object:" + object);
 
 				if (!lastModified.exists (object.placedAtIndex)) {
+					LogHelper.info ("", ">>> need to process the define tag, diving in ---");
 					processTag (cast data.getCharacter (object.characterId));
+					LogHelper.info ("", ">>> --- done processing the define tag, going out");
 				}
 
 				placedAtTag = cast tag.tags[object.placedAtIndex];
@@ -634,6 +636,20 @@ class SWFLiteExporter {
 
 				var m:Matrix = null;
 				var doScaleWork:Bool = false;
+				if( object.lastModifiedAtIndex == 11 )
+				{
+					LogHelper.info ("", ">>> printing info for last tag matrix finding logic...");
+					if (lastModifiedTag != null)
+					{
+						LogHelper.info ("", ">>> lastModifiedTag:" + lastModifiedTag);
+					}
+					else
+					{
+						LogHelper.info ("", ">>> lastModifiedTag:null");
+					}
+					LogHelper.info ("", ">>> workingObject.matrix:" + workingObject.matrix);
+					LogHelper.info ("", ">>> placedAtTag:" + placedAtTag);
+				}
 				if (lastModifiedTag != null && lastModifiedTag.hasMatrix) {
 					m = lastModifiedTag.matrix.matrix;
 					doScaleWork = true;
