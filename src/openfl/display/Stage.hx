@@ -74,6 +74,8 @@ import js.html.CanvasElement;
 import js.html.DivElement;
 import js.html.Element;
 import js.Browser;
+#elseif js
+typedef Element = Dynamic;
 #end
 
 #if !openfl_debug
@@ -196,8 +198,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			element = Browser.document.createElement ("div");
 			var resizable = (width == 0 && width == 0);
+			
+			#if (js && html5)
+			element = Browser.document.createElement ("div");
 			
 			if (resizable) {
 				
@@ -205,6 +209,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 				element.style.height = "100%";
 				
 			}
+			#else
+			element = null;
+			#end
 			
 			if (windowConfig == null) windowConfig = {};
 			windowConfig.width = width;

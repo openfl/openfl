@@ -252,7 +252,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if display
 		return 0;
 		#else
-		return this.length;
+		return this == null ? 0 : this.length;
 		#end
 		
 	}
@@ -371,7 +371,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if (js && html5)
+		#if js
 		if (__length > length) {
 			
 			var cacheLength = length;
@@ -644,7 +644,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if (js && html5)
+		#if js
 		if (__length > length) {
 			
 			var cacheLength = length;

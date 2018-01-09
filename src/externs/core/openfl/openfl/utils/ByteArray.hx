@@ -285,6 +285,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
+// TODO: Export as "ByteArray" in OpenFL-JS
+
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
@@ -299,6 +301,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private var __endian:Endian;
 	private var __length:Int;
+	
+	
+	#if openfljs
+	private static function __init__ () {
+		
+		untyped global.Object.defineProperties (ByteArrayData.prototype, {
+			"bytesAvailable": { get: untyped __js__ ("function () { return this.get_bytesAvailable (); }") },
+			"endian": { get: untyped __js__ ("function () { return this.get_endian (); }"), set: untyped __js__ ("function (v) { return this.set_endian (v); }") },
+			//"length": { get: p.get_length, set: p.set_length }
+		});
+		
+	}
+	#end
 	
 	
 	public function new (length:Int = 0) {
@@ -356,7 +371,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if (js && html5)
+		#if js
 		if (__length > length) {
 			
 			var cacheLength = length;
@@ -629,7 +644,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if (js && html5)
+		#if js
 		if (__length > length) {
 			
 			var cacheLength = length;

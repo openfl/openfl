@@ -53,7 +53,7 @@ class Frame
 		var frameObject:FrameObject = objects.get (tag.depth);
 		if(frameObject != null) {
 			// A character is already available at the specified depth
-			if(tag.characterId == 0 #if neko || tag.characterId == null #end) {
+			if(tag.characterId == 0 #if (neko || js) || tag.characterId == null #end) {
 				// The PlaceObject tag has no character id defined:
 				// This means that the previous character is reused 
 				// and most likely modified by transforms

@@ -453,6 +453,8 @@ class Tools {
 		
 		var arguments = Sys.args ();
 		
+		#if !nodejs
+		
 		if (arguments.length > 0) {
 			
 			// When the command-line tools are called from haxelib, 
@@ -483,6 +485,14 @@ class Tools {
 			}
 			
 		}
+		
+		#else
+		
+		// first argument is node executable, second is path to current script file
+		arguments.shift ();
+		arguments.shift ();
+		
+		#end
 		
 		var words = new Array<String> ();
 		targetFlags = new Map();
