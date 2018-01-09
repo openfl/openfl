@@ -1,6 +1,6 @@
 {
   "name": "openfl",
-  "version": "7.0.0-beta.5",
+  "version": "7.0.0-beta.6",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "openfl",
@@ -27,6 +27,7 @@
   },
   "module": "lib/openfl/index.js",
   "files": [
+    "bin",
     "dist",
     "lib",
     "scripts",
