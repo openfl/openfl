@@ -1,6 +1,6 @@
 {
   "name": "openfl",
-  "version": "7.0.0-beta.4",
+  "version": "7.0.0-beta.5",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "openfl",
@@ -37,7 +37,7 @@
     "url": "https://github.com/openfl/openfl.git"
   },
   "scripts": {
-    "build": "npm run build-lib && npm run build-dist",
+    "build": "npm run build-lib && npm run build-dist && npm run build-tools",
     "build-dist": "webpack --config webpack.dev.js && webpack --config webpack.prod.js",
     "build-lib": "cd scripts && haxe build.hxml",
     "build-tools": "cd scripts && haxe tools-npm.hxml",
