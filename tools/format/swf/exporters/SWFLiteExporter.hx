@@ -568,6 +568,11 @@ class SWFLiteExporter {
 			//TODO: replace on refactor frame.objects = new Map();
 			frame.objects = new Array();
 
+			LogHelper.info ("", " ");
+			LogHelper.info ("", ">>> NEW FRAME frame:"+frameData.frameNumber+" printing objects...");
+			for (object in frameData.getObjectsSortedByDepth ())
+				LogHelper.info ("", "   depth: "+object.depth+" object:" + object);
+
 			// check existing working objects and remove any that are gone this frame
 
 			var removeWorkingObjectsDepths:Array<Int> = [];
@@ -580,12 +585,14 @@ class SWFLiteExporter {
 				}
 			}
 			for( removeDepth in removeWorkingObjectsDepths ) {
+				LogHelper.info ("", ">>> removed working object at now empty depth:" + removeDepth);
 				workingObjects.remove(removeDepth);
 			}
 
 			// update frameObjects to match new frame
 
 			for (object in frameData.getObjectsSortedByDepth ()) {
+				LogHelper.info ("", ">>> frameData next object:" + object);
 
 				if (!lastModified.exists (object.placedAtIndex)) {
 					processTag (cast data.getCharacter (object.characterId));
