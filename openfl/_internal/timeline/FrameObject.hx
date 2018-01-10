@@ -38,11 +38,18 @@ class FrameObject {
 		frameObject.cacheAsBitmap = this.cacheAsBitmap;
 		frameObject.clipDepth = this.clipDepth;
 		var ct : ColorTransform = this.colorTransform;
-		frameObject.colorTransform = new ColorTransform(ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier, ct.redOffset, ct.greenOffset, ct.blueOffset, ct.alphaOffset);
+		if(ct != null) {
+			frameObject.colorTransform = new ColorTransform(ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier, ct.redOffset, ct.greenOffset, ct.blueOffset, ct.alphaOffset);
+		}
+		frameObject.colorTransform = this.colorTransform;
 		frameObject.depth = this.depth;
-		frameObject.filters = this.filters.copy();
+		if( this.filters != null) {
+			frameObject.filters = this.filters.copy();
+		}
 		frameObject.id = this.id;
-		frameObject.matrix = this.matrix.clone();
+		if(this.matrix != null) {
+			frameObject.matrix = this.matrix.clone();
+		}
 		frameObject.name = this.name;
 		frameObject.hasCharacter = this.hasCharacter;
 		frameObject.hasMove = this.hasMove;
