@@ -987,6 +987,28 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	private override function __traverse ():Void {
+		
+		if (__updateDirty) {
+			
+			__update (false, true);
+			
+		} else if (__updateTraverse) {
+			
+			for (child in __children) {
+				
+				child.__traverse ();
+				
+			}
+			
+		}
+		
+		// This container has been traversed, therefore reset flag
+		__updateTraverse = false;
+			
+	}
+	
+	
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		super.__update (transformOnly, updateChildren, maskGraphics);
