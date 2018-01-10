@@ -539,7 +539,7 @@ class SWFLiteExporter {
 		}
 
 		var lastModified = new Map<Int, Int> ();
-		var workingObjects = new Map<Int, FrameObject>();
+		var workingObjects = new Map<Int, FrameObject>();//<depth, the accumulative changes to the frameObject at that depth>
 		var lastFrame : Frame;
 		
 		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
@@ -576,12 +576,11 @@ class SWFLiteExporter {
 			// check existing working objects and remove any that are gone this frame
 
 			var removeWorkingObjectsDepths:Array<Int> = [];
-			for( workingObjectKey in workingObjects.keys())
+			for(workingObjectDepth in workingObjects.keys())
 			{
-				var workingObject : FrameObject = workingObjects[workingObjectKey];
-				if(frameData.objects[workingObject.depth] == null) {
+				if(frameData.objects[workingObjectDepth] == null) {
 					// workingObject is getting removed
-					removeWorkingObjectsDepths.push(workingObject.depth);
+					removeWorkingObjectsDepths.push(workingObjectDepth);
 				}
 			}
 			for( removeDepth in removeWorkingObjectsDepths ) {
@@ -609,23 +608,25 @@ class SWFLiteExporter {
 					lastModifiedTag = null;  // fall back to workingObject, then placedAtTag
 				}
 
+
 				frameObject = new FrameObject ();
+
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
+				frameObject.isKeyFrame = object.isKeyframe;
 
 				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
 				// finally placedAtTag if it exists
 
 				var workingObject : FrameObject = workingObjects[object.depth];
-				if(workingObject == null) {
-					workingObject = frameObject;
-					workingObjects[object.depth] = frameObject;
+				if(workingObject != null && workingObject.symbol != frameObject.symbol) {
+					workingObject = null;
 				}
 
 				// lastModifiedTag is the same as or newer than the latest workingObject
 				if( lastModifiedTag != null && lastModifiedTag.hasName )
 					frameObject.name = lastModifiedTag.instanceName;
-				else if( workingObject.name != null )
+				else if(workingObject != null && workingObject.name != null )
 					frameObject.name = workingObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;
@@ -654,7 +655,7 @@ class SWFLiteExporter {
 					m = lastModifiedTag.matrix.matrix;
 					doScaleWork = true;
 				}
-				else if( workingObject.matrix != null ) {
+				else if(workingObject != null && workingObject.matrix != null ) {
 					m = workingObject.matrix;
 				}
 				else if( placedAtTag.hasMatrix ) {
@@ -672,7 +673,7 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasColorTransform) {
 					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
 				}
-				else if( workingObject.colorTransform != null ) {
+				else if(workingObject != null && workingObject.colorTransform != null ) {
 					frameObject.colorTransform = workingObject.colorTransform;
 				}
 				else if( placedAtTag.hasColorTransform ) {
@@ -683,7 +684,7 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasFilterList) {
 					convertFilters = true;
 				}
-				else if( workingObject.filters != null ) {
+				else if(workingObject != null && workingObject.filters != null ) {
 					frameObject.filters = workingObject.filters;
 				}
 				else if( placedAtTag.hasFilterList ) {
@@ -709,7 +710,7 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasVisible) {
 					frameObject.visible = lastModifiedTag.visible != 0;
 				}
-				else if (workingObject.visible != null) {
+				else if (workingObject != null && workingObject.visible != null) {
 					frameObject.visible = workingObject.visible;
 				}
 				else if (placedAtTag.hasVisible) {
@@ -720,7 +721,7 @@ class SWFLiteExporter {
 					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
 				}
-				else if (workingObject.blendMode != null) {
+				else if (workingObject != null && workingObject.blendMode != null) {
 					frameObject.blendMode = workingObject.blendMode;
 				}
 				else if (placedAtTag.hasBlendMode) {
@@ -731,11 +732,16 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasCacheAsBitmap) {
 					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
 				}
-				else if (workingObject.cacheAsBitmap != null) {
+				else if (workingObject != null && workingObject.cacheAsBitmap != null) {
 					frameObject.cacheAsBitmap = workingObject.cacheAsBitmap;
 				}
 				else if (placedAtTag.hasCacheAsBitmap) {
 					frameObject.cacheAsBitmap = placedAtTag.bitmapCache != 0;
+				}
+
+				if(workingObject == null) {
+					workingObject = frameObject.clone();
+					workingObjects[object.depth] = workingObject;
 				}
 				
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);

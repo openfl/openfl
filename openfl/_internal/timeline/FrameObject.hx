@@ -14,7 +14,7 @@ import openfl.geom.Matrix;
 
 class FrameObject {
 	
-	
+	public var isKeyFrame:Bool;
 	public var blendMode:BlendMode;
 	public var cacheAsBitmap:Null<Bool>;
 	public var clipDepth:Int;
@@ -31,6 +31,27 @@ class FrameObject {
 	public var visible:Null<Bool>;
     public var lastFrameObjectWithPlacementData:FrameObject;
 
+	public function clone() : FrameObject {
+		var frameObject = new FrameObject();
+		frameObject.isKeyFrame = this.isKeyFrame;
+		frameObject.blendMode = this.blendMode;
+		frameObject.cacheAsBitmap = this.cacheAsBitmap;
+		frameObject.clipDepth = this.clipDepth;
+		var ct : ColorTransform = this.colorTransform;
+		frameObject.colorTransform = new ColorTransform(ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier, ct.redOffset, ct.greenOffset, ct.blueOffset, ct.alphaOffset);
+		frameObject.depth = this.depth;
+		frameObject.filters = this.filters.copy();
+		frameObject.id = this.id;
+		frameObject.matrix = this.matrix.clone();
+		frameObject.name = this.name;
+		frameObject.hasCharacter = this.hasCharacter;
+		frameObject.hasMove = this.hasMove;
+		frameObject.symbol = this.symbol;
+		frameObject.type = this.type;
+		frameObject.visible = this.visible;
+		//frameObject.lastFrameObjectWithPlacementData = this.lastFrameObjectWithPlacementData;
+		return frameObject;
+	}
 	
 	
 	public function new () {
