@@ -12,6 +12,7 @@ ImportAll
 --macro genjs.Generator.use()
 # -D hxextern
 # -D tsextern
+-D openfl-dynamic
 -D openfljs
 -D lime-opengl
 -D html5
