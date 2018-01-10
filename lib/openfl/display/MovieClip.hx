@@ -38,7 +38,7 @@ package openfl.display; #if (display || !flash)
  * MovieClip.opaqueBackground property for a suitable device, define
  * FEATURE_BITMAPCACHE in your project.
  */
-extern class MovieClip extends Sprite {
+extern class MovieClip extends Sprite implements Dynamic {
 	
 	
 	/**
