@@ -596,13 +596,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __getMouseAllowed ():Bool {
-		
-		return false;
-		
-	}
-	
-	
 	private function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__scrollRect == null) {
@@ -729,6 +722,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 		}
+		
+		return false;
+		
+	}
+	
+	
+	private function __mouseThroughAllowed ():Bool {
 		
 		return false;
 		

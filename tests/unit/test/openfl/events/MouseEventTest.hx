@@ -112,6 +112,22 @@ class MouseEventTest {
 		grandChild2Cover.mouseEnabled = grandChild2Cover.mouseChildren = false;
 		child_.addChild(grandChild2Cover);
 		
+		var coverBmp = new Bitmap(new BitmapData(2000, 2000, false, 0xFF00FF));
+		coverBmp.name = "coverBmp";
+		var cover = new Sprite();
+		cover.addChild(coverBmp);
+		cover.mouseEnabled = false;
+		cover.name = "wholeCoverWithBitmapChild";
+		stage.addChild(cover);
+		
+		var coverSprite = new Sprite();
+		coverSprite.graphics.beginFill(0x00FF00);
+		coverSprite.graphics.drawRect(0, 0, 2000, 2000);
+		coverSprite.graphics.endFill();
+		coverSprite.mouseEnabled = false;
+		coverSprite.name = "wholeCoverSprite";
+		stage.addChild(coverSprite);
+		
 		grandParent.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		parent_.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		child_.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
@@ -174,7 +190,7 @@ class MouseEventTest {
 		currentTargets.splice(0, currentTargets.length);
 		simulateMouseMove();
 		
-		var equalAsExpected = true;
+		var equalAsExpected = targets.length > 0;
 		for (i in 0...targets.length) {
 			if (targets[i] != expectedTargets[i]) {
 				equalAsExpected = false;
@@ -217,7 +233,7 @@ class MouseEventTest {
 		currentTargets.splice(0, currentTargets.length);
 		simulateMouseMove();
 		
-		var equalAsExpected = true;
+		var equalAsExpected = targets.length > 0;
 		for (i in 0...targets.length) {
 			if (targets[i] != expectedTargets[i]) {
 				equalAsExpected = false;
@@ -261,7 +277,7 @@ class MouseEventTest {
 		currentTargets.splice(0, currentTargets.length);
 		simulateMouseMove();
 		
-		var equalAsExpected = true;
+		var equalAsExpected = targets.length > 0;
 		for (i in 0...targets.length) {
 			if (targets[i] != expectedTargets[i]) {
 				equalAsExpected = false;
@@ -309,7 +325,7 @@ class MouseEventTest {
 		currentTargets.splice(0, currentTargets.length);
 		simulateMouseMove();
 		
-		var equalAsExpected = true;
+		var equalAsExpected = targets.length > 0;
 		for (i in 0...targets.length) {
 			if (targets[i] != expectedTargets[i]) {
 				equalAsExpected = false;
