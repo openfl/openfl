@@ -60,6 +60,11 @@ import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.cairo.CairoMaskManager;
 #end
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 @:access(lime.graphics.opengl.GL)
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
@@ -2086,6 +2091,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
+		#if gl_stats
+			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		#end
+		
 	}
 	
 	
@@ -2107,6 +2116,10 @@ class BitmapData implements IBitmapDrawable {
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		
+		#if gl_stats
+			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		#end
 		
 	}
 	

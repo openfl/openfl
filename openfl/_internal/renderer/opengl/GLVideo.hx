@@ -6,6 +6,11 @@ import openfl._internal.renderer.RenderSession;
 import openfl.media.Video;
 import openfl.net.NetStream;
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -79,6 +84,10 @@ class GLVideo {
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
+			#if gl_stats
+				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			#end
+			
 			renderSession.filterManager.popObject (video);
 			renderSession.maskManager.popObject (video);
 			
@@ -127,6 +136,10 @@ class GLVideo {
 			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			
+			#if gl_stats
+				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			#end
 			
 		}
 		#end
