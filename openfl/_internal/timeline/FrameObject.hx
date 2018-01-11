@@ -13,8 +13,7 @@ import openfl.geom.Matrix;
 
 
 class FrameObject {
-	
-	public var isKeyFrame:Bool;
+
 	public var blendMode:BlendMode;
 	public var cacheAsBitmap:Null<Bool>;
 	public var clipDepth:Int;
@@ -33,7 +32,6 @@ class FrameObject {
 
 	public function clone() : FrameObject {
 		var frameObject = new FrameObject();
-		frameObject.isKeyFrame = this.isKeyFrame;
 		frameObject.blendMode = this.blendMode;
 		frameObject.cacheAsBitmap = this.cacheAsBitmap;
 		frameObject.clipDepth = this.clipDepth;
@@ -77,11 +75,10 @@ class FrameObject {
 		" symbol: " + symbol +
 		" type: " + type +
 		" hasCharacter: " + hasCharacter + " hasMove: " + hasMove +
-		" isKeyFrame:" + isKeyFrame + " blendMode:" + blendMode +
 		" matrix: " + matrix +
+		" blendMode:" + blendMode + " clipDepth: " + clipDepth +
 		" colorTransform: " + colorTransform +
 		" cacheAsBitmap: " + cacheAsBitmap +
-		" clipDepth: " + clipDepth +
 		" filters: " + filters +
 		" visible: " + visible +
 		" }";

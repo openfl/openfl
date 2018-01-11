@@ -606,7 +606,6 @@ class SWFLiteExporter {
 
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
-				frameObject.isKeyFrame = object.isKeyframe;
 
 				// if lastModifiedTag exists, check if it is a tag in our current frame, and if so, use its hasCharacter and hasMove
 				if( lastModifiedTag != null && object.lastModifiedAtIndex >= frameData.tagIndexStart && object.lastModifiedAtIndex <= frameData.tagIndexEnd ) {
