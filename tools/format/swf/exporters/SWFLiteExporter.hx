@@ -545,6 +545,8 @@ class SWFLiteExporter {
 		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
 
+			LogHelper.info ("", ">>> started adding sprite ["+symbol.id+","+symbol.baseClassName+"] frame:" + frameData.frameNumber);
+
 			frame = new Frame ();
 
 			if (frameData.label != null) {
@@ -568,11 +570,6 @@ class SWFLiteExporter {
 			//TODO: replace on refactor frame.objects = new Map();
 			frame.objects = new Array();
 
-			LogHelper.info ("", " ");
-			LogHelper.info ("", ">>> NEW FRAME frame:"+frameData.frameNumber+" printing objects...");
-			for (object in frameData.getObjectsSortedByDepth ())
-				LogHelper.info ("", "   depth: "+object.depth+" object:" + object);
-
 			// check existing working objects and remove any that are gone this frame
 
 			var removeWorkingObjectsDepths:Array<Int> = [];
@@ -584,19 +581,15 @@ class SWFLiteExporter {
 				}
 			}
 			for( removeDepth in removeWorkingObjectsDepths ) {
-				LogHelper.info ("", ">>> removed working object at now empty depth:" + removeDepth);
 				workingObjects.remove(removeDepth);
 			}
 
 			// update frameObjects to match new frame
 
 			for (object in frameData.getObjectsSortedByDepth ()) {
-				LogHelper.info ("", ">>> frameData next object:" + object);
 
 				if (!lastModified.exists (object.placedAtIndex)) {
-					LogHelper.info ("", ">>> need to process the define tag, diving in ---");
 					processTag (cast data.getCharacter (object.characterId));
-					LogHelper.info ("", ">>> --- done processing the define tag, going out");
 				}
 
 				placedAtTag = cast tag.tags[object.placedAtIndex];
@@ -637,20 +630,6 @@ class SWFLiteExporter {
 
 				var m:Matrix = null;
 				var doScaleWork:Bool = false;
-				if( object.lastModifiedAtIndex == 11 )
-				{
-					LogHelper.info ("", ">>> printing info for last tag matrix finding logic...");
-					if (lastModifiedTag != null)
-					{
-						LogHelper.info ("", ">>> lastModifiedTag:" + lastModifiedTag);
-					}
-					else
-					{
-						LogHelper.info ("", ">>> lastModifiedTag:null");
-					}
-					LogHelper.info ("", ">>> workingObject.matrix:" + workingObject.matrix);
-					LogHelper.info ("", ">>> placedAtTag:" + placedAtTag);
-				}
 				if (lastModifiedTag != null && lastModifiedTag.hasMatrix) {
 					m = lastModifiedTag.matrix.matrix;
 					doScaleWork = true;
@@ -754,11 +733,14 @@ class SWFLiteExporter {
 				frame.objects.push (frameObject);
 				//TODO:refactor to frame.objects.set (lastModifiedTag.depth, frameObject);
 
+				LogHelper.info ("", ">>> added result sprite ["+symbol.id+","+symbol.baseClassName+"] frameObject:" + frameObject);
+
 			}
 
 			lastFrame = frame;
 			symbol.frames.push (frame);
-			
+
+			LogHelper.info ("", ">>> added result sprite ["+symbol.id+","+symbol.baseClassName+"] frame:" + frame);
 		}
 		
 		if (root) {

@@ -66,6 +66,25 @@ class FrameObject {
 		
 		
 	}
-	
-	
+
+
+	public function toString():String {
+		var str:String =
+		"FrameObject {"+
+		" id: " + id +
+		" depth: " + depth +
+		" name: " + name +
+		" symbol: " + symbol +
+		" type: " + type +
+		" hasCharacter: " + hasCharacter + " hasMove: " + hasMove +
+		" isKeyFrame:" + isKeyFrame + " blendMode:" + blendMode +
+		" matrix: " + matrix +
+		" colorTransform: " + colorTransform +
+		" cacheAsBitmap: " + cacheAsBitmap +
+		" clipDepth: " + clipDepth +
+		" filters: " + filters +
+		" visible: " + visible +
+		" }";
+		return str;
+	}
 }
