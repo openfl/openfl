@@ -1082,9 +1082,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = (__filters != null && __filters.length > 0);
 			
+			if (hasFilters && !needRender) {
+				
+				for (filter in __filters) {
+					
+					if (filter.__renderDirty) {
+						
+						needRender = true;
+						break;
+						
+					}
+					
+				}
+			
+			}
+			
 			var bitmapWidth = 0, bitmapHeight = 0;
 			
-			if (updateTransform || hasFilters) {
+			if (updateTransform || needRender) {
 				
 				matrix = Matrix.__pool.get ();
 				rect = Rectangle.__pool.get ();
@@ -1095,26 +1110,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				bitmapWidth = Math.ceil (rect.width);
 				bitmapHeight = Math.ceil (rect.height);
 				
-			}
-			
-			if (hasFilters) {
-				
-				if (__cacheBitmap != null && (bitmapWidth != __cacheBitmap.width || bitmapHeight != __cacheBitmap.height)) {
+				if (!needRender && __cacheBitmap != null && (bitmapWidth != __cacheBitmap.width || bitmapHeight !=__cacheBitmap.height)) {
 					
 					needRender = true;
-					
-				} else {
-					
-					for (filter in __filters) {
-						if (filter.__renderDirty) {
-							needRender = true;
-							break;
-						}
-					}
 					
 				}
 				
 			}
+			
 			
 			if (needRender) {
 				
@@ -1541,6 +1544,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private function set_mask (value:DisplayObject):DisplayObject {
+		
+		if (value == __mask) {
+			
+			return value;
+			
+		}
 		
 		if (value != __mask) {
 			
