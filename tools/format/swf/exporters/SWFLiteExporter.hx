@@ -608,6 +608,24 @@ class SWFLiteExporter {
 				frameObject.id = object.placedAtIndex;
 				frameObject.isKeyFrame = object.isKeyframe;
 
+				// if lastModifiedTag exists, check if it is a tag in our current frame, and if so, use its hasCharacter and hasMove
+				if( lastModifiedTag != null && object.lastModifiedAtIndex >= frameData.tagIndexStart && object.lastModifiedAtIndex <= frameData.tagIndexEnd ) {
+					frameObject.hasCharacter = lastModifiedTag.hasCharacter;
+					frameObject.hasMove = lastModifiedTag.hasMove;
+				}
+				// else if placedAtTag is in our current frame, use its hasCharacter and hasMove
+				else if( object.placedAtIndex >= frameData.tagIndexStart && object.placedAtIndex <= frameData.tagIndexEnd ) {
+					frameObject.hasCharacter = placedAtTag.hasCharacter;
+					frameObject.hasMove = placedAtTag.hasMove;
+				}
+				// else false for both hasCharacter and hasMove
+				else {
+					frameObject.hasCharacter = false;
+					frameObject.hasMove = false;
+				}
+
+				frameObject.type = FrameObjectType.PLACE_OBJECT;
+
 				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
 				// finally placedAtTag if it exists
 
@@ -623,10 +641,6 @@ class SWFLiteExporter {
 					frameObject.name = workingObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;
-
-				frameObject.hasCharacter = (lastModifiedTag != null)? lastModifiedTag.hasCharacter : false;
-				frameObject.hasMove = (lastModifiedTag != null)? lastModifiedTag.hasMove : false;
-				frameObject.type = FrameObjectType.PLACE_OBJECT;
 
 				var m:Matrix = null;
 				var doScaleWork:Bool = false;
