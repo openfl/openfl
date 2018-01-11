@@ -943,7 +943,11 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else {
 			
+			var dirty = false;
+			
 			if (__bufferAlpha != alpha) {
+				
+				dirty = true;
 				
 				for (i in 0...4) {
 					
@@ -956,6 +960,8 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+				
+				dirty = true;
 				
 				if (colorTransform != null) {
 					
@@ -998,7 +1004,11 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			if (dirty) {
+				
+				gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+				
+			}
 			
 		}
 		
