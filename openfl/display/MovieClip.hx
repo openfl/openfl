@@ -392,7 +392,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 					case PLACE_OBJECT:
 
-						if(frameObject.hasCharacter && frameObject.hasMove) {
+						if((frameObject.hasCharacter && frameObject.hasMove) || (!frameObject.hasCharacter && !frameObject.hasMove)) {
 							var oldInstance : FrameSymbolInstance = null;
 							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
 
@@ -407,9 +407,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
 								currentInstancesByFrameObjectID.set (frameObject.id, instance);
+								if(!frameObject.hasCharacter && !frameObject.hasMove && oldInstance != null && instance.initFrameObjectID == oldInstance.initFrameObjectID) {
+									break;
+								}
 								__updateDisplayObject (instance.displayObject, frameObject);
 
-								if(oldInstance != null) {
+								if(oldInstance != null && instance.initFrameObjectID == oldInstance.initFrameObjectID) {
 									if(frameObject.name == null) {
 										instance.displayObject.name = oldInstance.displayObject.name;
 									}
@@ -446,7 +449,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 								__updateDisplayObject (instance.displayObject, frameObject);
 
 							}
-						}else if (frameObject.hasMove) {
+						}else /*if (frameObject.hasMove)*/ {
 							instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
 
 							if (instance != null) {
@@ -455,11 +458,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 							}
 						}
-						else {
-							//TODO:Lyle & Josh : current theory: if display object is not changed on frame, but we are doing a GoTo to this frame and no object is already at this depth, we need to add display objects still to currentFrameObjectIdByDepth/currentInstancesByFrameObjectID
-							//then call __updateDisplayObject only if the object wasn't already in currentFrameObjects
-						}
-
 
 					case CREATE,DESTROY,UPDATE:
 //TODO:LC remove switch, all should be placeObject once assets have been reprocessed with new modifications to SWFLiteExporter to use PLACE_OBJECT
