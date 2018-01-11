@@ -680,20 +680,20 @@ class SWFLiteExporter {
 					frameObject.colorTransform = placedAtTag.colorTransform.colorTransform;
 				}
 
-				var convertFilters = false;
+				var tagToConvert : TagPlaceObject = null;
 				if (lastModifiedTag != null && lastModifiedTag.hasFilterList) {
-					convertFilters = true;
+					tagToConvert = lastModifiedTag;
 				}
 				else if(workingObject != null && workingObject.filters != null ) {
 					frameObject.filters = workingObject.filters;
 				}
 				else if( placedAtTag.hasFilterList ) {
-					convertFilters = true;
+					tagToConvert = placedAtTag;
 				}
 
-				if( convertFilters ) {
+				if(tagToConvert != null && tagToConvert.surfaceFilterList != null) {
 					var filters:Array<FilterType> = [];
-					for (surfaceFilter in lastModifiedTag.surfaceFilterList) {
+					for (surfaceFilter in tagToConvert.surfaceFilterList) {
 						var type = surfaceFilter.type;
 						if (type != null) {
 							filters.push (surfaceFilter.type);

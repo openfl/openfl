@@ -220,7 +220,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				//rebuild current children and apply masks now with new dynamically added object.
 				if(__symbol != null) {
 					__lastFrameUpdate = __currentFrame-1;
-					__updateFrameObjectsAndChildren(__currentFrame);
+					__updateFrameObjectsAndChildren();
 				}
 			}
 		}
@@ -336,7 +336,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 
 	var __isReprocessedWithPLACE_OBJECT : Bool = false;
-	private function __updateFrameObjectsAndChildrenNew(gotoFromFrame : Int = -1)	{
+	private function __updateFrameObjectsAndChildrenNew(isGoTo : Bool = false)	{
 
 		if (__currentFrame == __lastFrameUpdate)
 			return;
@@ -347,13 +347,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
 		var currentFrameObjectIDbyDepth : Map<Int, Int> = null;//<depth, id>
-		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >= 0 &&  __lastInstancesByFrameObjectID != null) {
-			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
-			currentFrameObjectIDbyDepth = __lastDisplayObjectsByDepth;
-		}
-		else {
+
+		if(__lastInstancesByFrameObjectID == null || (!isGoTo && (loopedSinceLastFrameUpdate || __lastFrameUpdate < 0))) {
 			currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
 			currentFrameObjectIDbyDepth = new Map<Int, Int>();
+		}
+		else {
+			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
+			currentFrameObjectIDbyDepth = __lastDisplayObjectsByDepth;
 		}
 
 		var frame:Int;
@@ -370,16 +371,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			var lastFrameObjectDepths : Array<Int> = new Array();
 
 			//Collect all depths present on the last frame
-			if(gotoFromFrame != -1){
-
-				for(frameObject in __symbol.frames[gotoFromFrame].objects) {
-					lastFrameObjectDepths.push(frameObject.depth);
-				}
-				gotoFromFrame = -1;
-			} else {
-				for(frameObject in __symbol.frames[i].objects) {
-					lastFrameObjectDepths.push(frameObject.depth);
-				}
+			for(frameObjectDepth in currentFrameObjectIDbyDepth.keys()) {
+				lastFrameObjectDepths.push(frameObjectDepth);
 			}
 			//anything that is on this frame we don't need to delete, so remove from the list
 			for (frameObject in frameData.objects) {
@@ -461,6 +454,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 								__updateDisplayObject (instance.displayObject, frameObject);
 
 							}
+						}
+						else {
+							//TODO:Lyle & Josh : current theory: if display object is not changed on frame, but we are doing a GoTo to this frame and no object is already at this depth, we need to add display objects still to currentFrameObjectIdByDepth/currentInstancesByFrameObjectID
+							//then call __updateDisplayObject only if the object wasn't already in currentFrameObjects
 						}
 
 
@@ -603,10 +600,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		__lastFrameUpdate = __currentFrame;
 	}
-	private function __updateFrameObjectsAndChildren(gotoFromFrame : Int = -1)	{
+	private function __updateFrameObjectsAndChildren(isGoTo : Bool = false)	{
 
 		if(__isReprocessedWithPLACE_OBJECT){
-			__updateFrameObjectsAndChildrenNew(gotoFromFrame);
+			__updateFrameObjectsAndChildrenNew(isGoTo);
 			return;
 		}
 
@@ -1165,11 +1162,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		if(__currentFrame != frame)
 		{
-			var gotoFromFrame = __lastFrameUpdate;
+			var gotoFromFrame = __lastFrameUpdate > 1 ? __lastFrameUpdate : 1;
 			__currentFrame = frame;
 			__lastFrameUpdate = frame-1;
 			//updating objects to this frame starting from scratch
-			__updateFrameObjectsAndChildren(gotoFromFrame);
+			__updateFrameObjectsAndChildren(true);
 
 			//check if there is a framescript and run it for this frame
 			if(__frameScripts != null && __frameScripts.exists(frame)) {
