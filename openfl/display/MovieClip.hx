@@ -408,7 +408,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
 								currentInstancesByFrameObjectID.set (frameObject.id, instance);
 								if(!frameObject.hasCharacter && !frameObject.hasMove && oldInstance != null && instance.initFrameObjectID == oldInstance.initFrameObjectID) {
-									break;
+									continue;
 								}
 								__updateDisplayObject (instance.displayObject, frameObject);
 
