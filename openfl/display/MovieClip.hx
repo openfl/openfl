@@ -368,23 +368,27 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			frame = i + 1;
 			frameData = __symbol.frames[i];
 
+			if (frameData.objects == null) continue;
+
 			var lastFrameObjectDepths : Array<Int> = new Array();
 
 			//Collect all depths present on the last frame
-			for(frameObjectDepth in currentFrameObjectIDbyDepth.keys()) {
-				lastFrameObjectDepths.push(frameObjectDepth);
+			if( currentFrameObjectIDbyDepth.iterator().hasNext() ) {
+				for(frameObjectDepth in currentFrameObjectIDbyDepth.keys()) {
+					lastFrameObjectDepths.push(frameObjectDepth);
+				}
 			}
 			//anything that is on this frame we don't need to delete, so remove from the list
-			for (frameObject in frameData.objects) {
-				lastFrameObjectDepths.remove(frameObject.depth);
+			if( lastFrameObjectDepths.iterator().hasNext() ) {
+				for (frameObject in frameData.objects) {
+					lastFrameObjectDepths.remove(frameObject.depth);
+				}
 			}
 			//delete anything that is left (means that depth was only present on the last frame)
 			for (depth in lastFrameObjectDepths) {
 				currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(depth));
 				currentFrameObjectIDbyDepth.remove(depth);
 			}
-
-			if (frameData.objects == null) continue;
 
 			for (frameObject in frameData.objects) {
 
@@ -1168,7 +1172,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			var gotoFromFrame = __lastFrameUpdate > 1 ? __lastFrameUpdate : 1;
 			__currentFrame = frame;
 			__lastFrameUpdate = frame-1;
-			//updating objects to this frame starting from scratch
+			//updating objects only on target frame (__lastFrameUpdate should be one before just to get into the loop)
 			__updateFrameObjectsAndChildren(true);
 
 			//check if there is a framescript and run it for this frame
