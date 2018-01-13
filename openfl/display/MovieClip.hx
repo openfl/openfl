@@ -437,26 +437,31 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 								}
 
 							}
-						} else if (frameObject.hasCharacter) {
-							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+						} else {
 
-							if (instance != null) {
-								if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
-									currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+							instance = null;
+							if(frameObject.hasMove) {
+								instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
+								if(instance.initFrameObjectID != frameObject.id) {
+									instance = null;
 								}
-								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
-
 							}
-						}else /*if (frameObject.hasMove)*/ {
-							instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
+							if (instance == null) {
+								instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+								if (instance != null) {
+									if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+										currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+									}
+									currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
+									currentInstancesByFrameObjectID.set (frameObject.id, instance);
 
+								}
+							}
 							if (instance != null) {
-
 								__updateDisplayObject (instance.displayObject, frameObject);
-
 							}
+
+
 						}
 
 					case CREATE,DESTROY,UPDATE:
