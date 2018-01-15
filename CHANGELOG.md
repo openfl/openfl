@@ -1,3 +1,28 @@
+7.0.0 (01/15/2018)
+------------------
+
+* Updated Lime to 6.0.*
+* Added initial release of OpenFL for NPM
+* Added TypeScript, ES6 JavaScript and ES5 JavaScript language support
+* Added `new Stage` support on NPM builds to initiate content
+* Added `sendToURL`, `navigateToURL` and `openfl.utils.*` top-level functions
+* Added support for using `URLVariables` with `navigateToURL`
+* Added `Font.loadFromBytes`, `Font.loadFromFile` and `Font.loadFromName`
+* Added initial implemention of `openfl.utils.AssetManifest`
+* Improved performance in GL `BitmapData` upload and changes to bitmap filters
+* Improved SWF processing tools to work with Node.js (used in `swf-loader`)
+* Improved support for consuming OpenFL as a JavaScript library
+* Improved handling of default HTTP timeout if `-Dlime-default-timeout` is set
+* Improved `tilemap.removeTile` ignore `null` tiles
+* Fixed support for use of many OpenFL classes and methods on Node.js
+* Fixed multi-line `TextField` to render cursor on correct line
+* Fixed `AssetLibrary.fromManifest` to up-cast if the result is a Lime library
+* Fixed `setTextFormat` so it does not remove links, if they exist
+* Fixed hit-testing objects when `!sprite.mouseEnabled` with children
+* Fixed support for support DOM rendering at runtime (no `-Ddom` required)
+* Fixed issue where setting `colorTransform` would not update properly
+
+
 6.5.3 (12/05/2017)
 ------------------
 
