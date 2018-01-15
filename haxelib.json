@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "6.5.3",
-	"releasenote": "Fixed a regression in Flash Player support",
+	"version": "7.0.0",
+	"releasenote": "Added support for NPM-based OpenFL releases, many smaller improvements",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
