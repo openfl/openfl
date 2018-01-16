@@ -29,6 +29,7 @@
   "files": [
     "bin",
     "dist",
+    "docs",
     "lib",
     "scripts",
     "src"
@@ -38,7 +39,7 @@
     "url": "https://github.com/openfl/openfl.git"
   },
   "scripts": {
-    "build": "npm run build-lib && npm run build-dist && npm run build-tools",
+    "build": "npm run build-lib && npm run build-dist && npm run build-tools && npm run build-docs",
     "build-dist": "npm run build-dist:dev && npm run build-dist:prod",
     "build-dist:dev": "webpack --config webpack.dev.js",
     "build-dist:prod": "webpack --config webpack.prod.js",
