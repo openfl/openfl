@@ -12,6 +12,7 @@ import openfl.events.Event;
 import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
@@ -27,6 +28,7 @@ import js.html.ImageData;
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
+@:access(openfl.text.Font)
 @:access(openfl.text.TextField)
 
 
@@ -36,6 +38,7 @@ class CanvasTextField {
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	private static var clearRect:Null<Bool>;
+	private static var shownHackWarning:Bool;
 	#end
 	
 	
@@ -211,7 +214,25 @@ class CanvasTextField {
 						
 						if (applyHack) {
 							
-							offsetY = group.format.size * 0.185;
+							var font = TextEngine.findFontVariant (group.format);
+
+							if(font != null && font.ascender != null && font.unitsPerEM != null) {
+
+								context.textBaseline = "alphabetic";
+								offsetY = group.format.size * font.ascender / font.unitsPerEM;
+
+							} else {
+
+								// no font metrics, ballback to the old hack, but show warning
+								if(!shownHackWarning) {
+									shownHackWarning = true;
+									trace('canvas/webgl text might appear broken on this browser. Consider setting the ascender and unitsPerEM for "${font != null ? font.name : group.format.font}".');
+								}
+
+								context.textBaseline = "top";
+								offsetY = group.format.size * 0.185;
+
+							}
 							
 						}
 						
