@@ -76,6 +76,13 @@ extern class Font extends LimeFont {
 	public static function registerFont (font:Class<Dynamic>):Void;
 	
 	
+	/**
+	 * Registers a font instance in the global font list.
+	 *
+	 */
+	public static function registerFontInstance (instance:Font):Void;
+	
+	
 }
 
 

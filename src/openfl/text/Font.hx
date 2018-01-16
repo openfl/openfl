@@ -121,6 +121,12 @@ class Font extends LimeFont {
 	public static function registerFont (font:Class<Dynamic>) {
 		
 		var instance = cast (Type.createInstance (font, []), Font);
+		registerFontInstance(instance);
+		
+	}
+	
+	
+	public static function registerFontInstance (instance:Font) {
 		
 		if (instance != null) {
 			
