@@ -28,7 +28,7 @@ class FrameObject {
 	public var symbol:Int;
 	public var type:FrameObjectType;
 	public var visible:Null<Bool>;
-    public var lastFrameObjectWithPlacementData:FrameObject;
+	public var lastFrameObjectWithPlacementData:FrameObject;
 
 	public function clone() : FrameObject {
 		var frameObject = new FrameObject();
@@ -54,7 +54,7 @@ class FrameObject {
 		frameObject.symbol = this.symbol;
 		frameObject.type = this.type;
 		frameObject.visible = this.visible;
-		//frameObject.lastFrameObjectWithPlacementData = this.lastFrameObjectWithPlacementData;
+		frameObject.lastFrameObjectWithPlacementData = this.lastFrameObjectWithPlacementData;
 		return frameObject;
 	}
 	
@@ -81,6 +81,7 @@ class FrameObject {
 		" cacheAsBitmap: " + cacheAsBitmap +
 		" filters: " + filters +
 		" visible: " + visible +
+		"lastFrameObjectWithPlacementData" + lastFrameObjectWithPlacementData +
 		" }";
 		return str;
 	}

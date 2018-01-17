@@ -545,8 +545,6 @@ class SWFLiteExporter {
 		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
 
-			LogHelper.info ("", ">>> started adding sprite ["+symbol.id+","+symbol.baseClassName+"] frame:" + frameData.frameNumber);
-
 			frame = new Frame ();
 
 			if (frameData.label != null) {
@@ -567,7 +565,6 @@ class SWFLiteExporter {
 
 			}
 			
-			//TODO: replace on refactor frame.objects = new Map();
 			frame.objects = new Array();
 
 			// check existing working objects and remove any that are gone this frame
@@ -735,25 +732,21 @@ class SWFLiteExporter {
 					workingObject = frameObject.clone();
 					workingObjects[object.depth] = workingObject;
 				}
-				
+
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
-				
+
 				if (frame.objects == null) {
 					
 					frame.objects = [];
 					
 				}
-				frame.objects.push (frameObject);
-				//TODO:refactor to frame.objects.set (lastModifiedTag.depth, frameObject);
 
-				LogHelper.info ("", ">>> added result sprite ["+symbol.id+","+symbol.baseClassName+"] frameObject:" + frameObject);
+				frame.objects.push (frameObject);
 
 			}
 
 			lastFrame = frame;
 			symbol.frames.push (frame);
-
-			LogHelper.info ("", ">>> added result sprite ["+symbol.id+","+symbol.baseClassName+"] frame:" + frame);
 		}
 		
 		if (root) {
