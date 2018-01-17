@@ -613,6 +613,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			__updateFrameObjectsAndChildrenNew(isGoTo);
 			return;
 		}
+		else if (isGoTo)
+		{
+			__lastFrameUpdate = 0;
+		}
 
 		if (__currentFrame == __lastFrameUpdate)
 			return;
@@ -1169,7 +1173,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		if(__currentFrame != frame)
 		{
-			var gotoFromFrame = __lastFrameUpdate > 1 ? __lastFrameUpdate : 1;
 			__currentFrame = frame;
 			__lastFrameUpdate = frame-1;
 			//updating objects only on target frame (__lastFrameUpdate should be one before just to get into the loop)
