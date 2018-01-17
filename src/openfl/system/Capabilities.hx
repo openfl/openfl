@@ -81,7 +81,8 @@ import openfl._internal.Lib;
 	
 	private static inline function get_cpuArchitecture ():String {
 		
-		#if mobile
+		// TODO: Check architecture
+		#if (mobile && !simulator && !emulator)
 		return "ARM";
 		#else
 		return "x86";
