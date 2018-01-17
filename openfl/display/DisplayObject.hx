@@ -90,6 +90,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 
 	public var _lastParentOrSelfChangeFrameID : UInt;
 	public var _lastChildChangeFrameID : UInt;
+	public var isTimelineMask : Bool;
 	
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
@@ -1571,8 +1572,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		if (__mask != null) {
-			
-			__mask.__isMask = false;
+			if(!__mask.isTimelineMask) {
+				__mask.__isMask = false;
+			}
 			__mask.__maskTarget = null;
 			__mask.__setTransformDirty ();
 			__mask.__setRenderDirty ();
@@ -1580,7 +1582,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		if (value != null) {
-			
 			value.__isMask = true;
 			value.__maskTarget = this;
 			value.__setWorldTransformInvalid ();

@@ -13,8 +13,7 @@ import openfl.geom.Matrix;
 
 
 class FrameObject {
-	
-	
+
 	public var blendMode:BlendMode;
 	public var cacheAsBitmap:Null<Bool>;
 	public var clipDepth:Int;
@@ -24,11 +23,40 @@ class FrameObject {
 	public var id:Int;	//Also matches the tag index of the PlaceObject tag that placed this object on the display list
 	public var matrix:Matrix;
 	public var name:String;
+	public var hasCharacter:Bool;
+	public var hasMove:Bool;
 	public var symbol:Int;
 	public var type:FrameObjectType;
 	public var visible:Null<Bool>;
-    public var lastFrameObjectWithPlacementData:FrameObject;
+	public var lastFrameObjectWithPlacementData:FrameObject;
 
+	public function clone() : FrameObject {
+		var frameObject = new FrameObject();
+		frameObject.blendMode = this.blendMode;
+		frameObject.cacheAsBitmap = this.cacheAsBitmap;
+		frameObject.clipDepth = this.clipDepth;
+		var ct : ColorTransform = this.colorTransform;
+		if(ct != null) {
+			frameObject.colorTransform = new ColorTransform(ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier, ct.redOffset, ct.greenOffset, ct.blueOffset, ct.alphaOffset);
+		}
+		frameObject.colorTransform = this.colorTransform;
+		frameObject.depth = this.depth;
+		if( this.filters != null) {
+			frameObject.filters = this.filters.copy();
+		}
+		frameObject.id = this.id;
+		if(this.matrix != null) {
+			frameObject.matrix = this.matrix.clone();
+		}
+		frameObject.name = this.name;
+		frameObject.hasCharacter = this.hasCharacter;
+		frameObject.hasMove = this.hasMove;
+		frameObject.symbol = this.symbol;
+		frameObject.type = this.type;
+		frameObject.visible = this.visible;
+		frameObject.lastFrameObjectWithPlacementData = this.lastFrameObjectWithPlacementData;
+		return frameObject;
+	}
 	
 	
 	public function new () {
@@ -36,6 +64,25 @@ class FrameObject {
 		
 		
 	}
-	
-	
+
+
+	public function toString():String {
+		var str:String =
+		"FrameObject {"+
+		" id: " + id +
+		" depth: " + depth +
+		" name: " + name +
+		" symbol: " + symbol +
+		" type: " + type +
+		" hasCharacter: " + hasCharacter + " hasMove: " + hasMove +
+		" matrix: " + matrix +
+		" blendMode:" + blendMode + " clipDepth: " + clipDepth +
+		" colorTransform: " + colorTransform +
+		" cacheAsBitmap: " + cacheAsBitmap +
+		" filters: " + filters +
+		" visible: " + visible +
+		"lastFrameObjectWithPlacementData" + lastFrameObjectWithPlacementData +
+		" }";
+		return str;
+	}
 }

@@ -1,6 +1,7 @@
 package format.swf.exporters;
 
 
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import flash.display.BitmapData;
 import flash.text.TextFormatAlign;
@@ -56,6 +57,7 @@ import format.swf.tags.TagDefineSound;
 
 using StringTools;
 using format.swf.exporters.SWFLiteExporter.AVM2;
+
 
 class SWFLiteExporter {
 	
@@ -528,21 +530,21 @@ class SWFLiteExporter {
 	
 	private function addSprite (tag:SWFTimelineContainer, root:Bool = false):SpriteSymbol {
 		
-		var symbol = new SpriteSymbol ();
+		var symbol : SpriteSymbol = new SpriteSymbol ();
 		
 		if (Std.is (tag, IDefinitionTag)) {
 			
 			symbol.id = untyped tag.characterId;
 			
 		}
-		
-		var instances = new Array<Int> ();
+
 		var lastModified = new Map<Int, Int> ();
-		var zeroCharacter = -1;
+		var workingObjects = new Map<Int, FrameObject>();//<depth, the accumulative changes to the frameObject at that depth>
+		var lastFrame : Frame;
 		
-		var frame, frameObject, frameData, placeTag:TagPlaceObject;
+		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
-			
+
 			frame = new Frame ();
 
 			if (frameData.label != null) {
@@ -563,148 +565,188 @@ class SWFLiteExporter {
 
 			}
 			
-			instances.splice (0, instances.length);
-			
-			frame.objects = [];
-			
+			frame.objects = new Array();
+
+			// check existing working objects and remove any that are gone this frame
+
+			var removeWorkingObjectsDepths:Array<Int> = [];
+			for(workingObjectDepth in workingObjects.keys())
+			{
+				if(frameData.objects[workingObjectDepth] == null) {
+					// workingObject is getting removed
+					removeWorkingObjectsDepths.push(workingObjectDepth);
+				}
+			}
+			for( removeDepth in removeWorkingObjectsDepths ) {
+				workingObjects.remove(removeDepth);
+			}
+
+			// update frameObjects to match new frame
+
 			for (object in frameData.getObjectsSortedByDepth ()) {
-				
-				instances.push (object.placedAtIndex);
-				
-				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
-					
-					lastModified.remove (0);
-					zeroCharacter = object.characterId;
-					
-				}
-				
+
 				if (!lastModified.exists (object.placedAtIndex)) {
-					
 					processTag (cast data.getCharacter (object.characterId));
-					
-					placeTag = cast tag.tags[object.placedAtIndex];
-					
-				} else if (object.lastModifiedAtIndex > lastModified.get (object.placedAtIndex)) {
-					
-					placeTag = cast tag.tags[object.lastModifiedAtIndex];
-					
-				} else {
-					
-					continue;
-					
 				}
-				
+
+				placedAtTag = cast tag.tags[object.placedAtIndex];
+
+				if (object.lastModifiedAtIndex > 0) {
+					lastModifiedTag = cast tag.tags[object.lastModifiedAtIndex];
+				}
+				else {
+					lastModifiedTag = null;  // fall back to workingObject, then placedAtTag
+				}
+
+
 				frameObject = new FrameObject ();
+
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
-				
-				frameObject.name = placeTag.instanceName;
-				
-				if (!lastModified.exists (object.placedAtIndex)) {
-					
-					frameObject.type = FrameObjectType.CREATE;
-					
-				} else {
-					
-					frameObject.type = FrameObjectType.UPDATE;
-					
+
+				// if lastModifiedTag exists, check if it is a tag in our current frame, and if so, use its hasCharacter and hasMove
+				if( lastModifiedTag != null && object.lastModifiedAtIndex >= frameData.tagIndexStart && object.lastModifiedAtIndex <= frameData.tagIndexEnd ) {
+					frameObject.hasCharacter = lastModifiedTag.hasCharacter;
+					frameObject.hasMove = lastModifiedTag.hasMove;
 				}
-				
-				if (placeTag.matrix != null) {
-					
-					var matrix = placeTag.matrix.matrix;
-					matrix.tx *= (1 / 20);
-					matrix.ty *= (1 / 20);
-					
-					frameObject.matrix = matrix;
-					
+				// else if placedAtTag is in our current frame, use its hasCharacter and hasMove
+				else if( object.placedAtIndex >= frameData.tagIndexStart && object.placedAtIndex <= frameData.tagIndexEnd ) {
+					frameObject.hasCharacter = placedAtTag.hasCharacter;
+					frameObject.hasMove = placedAtTag.hasMove;
 				}
-				
-				if (placeTag.colorTransform != null) {
-					
-					frameObject.colorTransform = placeTag.colorTransform.colorTransform;
-					
+				// else false for both hasCharacter and hasMove
+				else {
+					frameObject.hasCharacter = false;
+					frameObject.hasMove = false;
 				}
-				
-				if (placeTag.hasFilterList) {
-					
+
+				frameObject.type = FrameObjectType.PLACE_OBJECT;
+
+				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
+				// finally placedAtTag if it exists
+
+				var workingObject : FrameObject = workingObjects[object.depth];
+				if(workingObject != null && workingObject.symbol != frameObject.symbol) {
+					workingObject = null;
+				}
+
+				// lastModifiedTag is the same as or newer than the latest workingObject
+				if( lastModifiedTag != null && lastModifiedTag.hasName )
+					frameObject.name = lastModifiedTag.instanceName;
+				else if(workingObject != null && workingObject.name != null )
+					frameObject.name = workingObject.name;
+				else if( placedAtTag.hasName )
+					frameObject.name = placedAtTag.instanceName;
+
+				var m:Matrix = null;
+				var doScaleWork:Bool = false;
+				if (lastModifiedTag != null && lastModifiedTag.hasMatrix) {
+					m = lastModifiedTag.matrix.matrix;
+					doScaleWork = true;
+				}
+				else if(workingObject != null && workingObject.matrix != null ) {
+					m = workingObject.matrix;
+				}
+				else if( placedAtTag.hasMatrix ) {
+					m = placedAtTag.matrix.matrix;
+					doScaleWork = true;
+				}
+
+				if( doScaleWork ) {
+					m.tx *= (1 / 20);
+					m.ty *= (1 / 20);
+				}
+
+				frameObject.matrix = m;
+
+				if (lastModifiedTag != null && lastModifiedTag.hasColorTransform) {
+					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
+				}
+				else if(workingObject != null && workingObject.colorTransform != null ) {
+					frameObject.colorTransform = workingObject.colorTransform;
+				}
+				else if( placedAtTag.hasColorTransform ) {
+					frameObject.colorTransform = placedAtTag.colorTransform.colorTransform;
+				}
+
+				var tagToConvert : TagPlaceObject = null;
+				if (lastModifiedTag != null && lastModifiedTag.hasFilterList) {
+					tagToConvert = lastModifiedTag;
+				}
+				else if(workingObject != null && workingObject.filters != null ) {
+					frameObject.filters = workingObject.filters;
+				}
+				else if( placedAtTag.hasFilterList ) {
+					tagToConvert = placedAtTag;
+				}
+
+				if(tagToConvert != null && tagToConvert.surfaceFilterList != null) {
 					var filters:Array<FilterType> = [];
-					
-					for (surfaceFilter in placeTag.surfaceFilterList) {
-						
+					for (surfaceFilter in tagToConvert.surfaceFilterList) {
 						var type = surfaceFilter.type;
-						
 						if (type != null) {
-							
 							filters.push (surfaceFilter.type);
 							//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-							
 						}
-						
 					}
-					
+
 					frameObject.filters = filters;
-					
 				}
-				
-				frameObject.depth = placeTag.depth;
-				frameObject.clipDepth = (placeTag.hasClipDepth ? placeTag.clipDepth : 0);
-				
-				if (placeTag.hasVisible) {
-					
-					frameObject.visible = placeTag.visible != 0;
-					
+
+				frameObject.depth = object.depth;
+				frameObject.clipDepth = object.clipDepth;
+
+				if (lastModifiedTag != null && lastModifiedTag.hasVisible) {
+					frameObject.visible = lastModifiedTag.visible != 0;
 				}
-				
-				if (placeTag.hasBlendMode) {
-					
-					var blendMode = BlendMode.toString (placeTag.blendMode);
+				else if (workingObject != null && workingObject.visible != null) {
+					frameObject.visible = workingObject.visible;
+				}
+				else if (placedAtTag.hasVisible) {
+					frameObject.visible = placedAtTag.visible != 0;
+				}
+
+				if (lastModifiedTag != null && lastModifiedTag.hasBlendMode) {
+					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
-					
 				}
-				
-				if (placeTag.hasCacheAsBitmap) {
-					
-					frameObject.cacheAsBitmap = placeTag.bitmapCache != 0;
-					
+				else if (workingObject != null && workingObject.blendMode != null) {
+					frameObject.blendMode = workingObject.blendMode;
 				}
-				
+				else if (placedAtTag.hasBlendMode) {
+					var blendMode = BlendMode.toString (placedAtTag.blendMode);
+					frameObject.blendMode = blendMode;
+				}
+
+				if (lastModifiedTag != null && lastModifiedTag.hasCacheAsBitmap) {
+					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
+				}
+				else if (workingObject != null && workingObject.cacheAsBitmap != null) {
+					frameObject.cacheAsBitmap = workingObject.cacheAsBitmap;
+				}
+				else if (placedAtTag.hasCacheAsBitmap) {
+					frameObject.cacheAsBitmap = placedAtTag.bitmapCache != 0;
+				}
+
+				if(workingObject == null) {
+					workingObject = frameObject.clone();
+					workingObjects[object.depth] = workingObject;
+				}
+
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
-				
+
 				if (frame.objects == null) {
 					
 					frame.objects = [];
 					
 				}
-				
+
 				frame.objects.push (frameObject);
-				
+
 			}
-			
-			for (id in lastModified.keys ()) {
-				
-				if (instances.indexOf (id) == -1) {
-					
-					lastModified.remove (id);
-					
-					frameObject = new FrameObject ();
-					frameObject.id = id;
-					frameObject.type = FrameObjectType.DESTROY;
-					
-					if (frame.objects == null) {
-						
-						frame.objects = [];
-						
-					}
-					
-					frame.objects.push (frameObject);
-					
-				}
-				
-			}
-			
+
+			lastFrame = frame;
 			symbol.frames.push (frame);
-			
 		}
 		
 		if (root) {
@@ -1542,6 +1584,7 @@ class SWFLiteExporter {
 							js = js.replace("flash_", "openfl_");
 							js = js.replace("flash.", "openfl.");
 							js = js.replace ("fl_motion", "wwlib_graphics");
+							js = js.replace ("this.console", "console");  // hack to get trace statements working
 
 							LogHelper.info ("", "javascript:\n"+js);
 

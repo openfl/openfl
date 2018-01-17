@@ -60,7 +60,7 @@ class Frame
 				// and most likely modified by transforms
 				frameObject.lastModifiedAtIndex = tagIndex;
 				frameObject.isKeyframe = false;
-			} else {					
+			} else {
 				// A character id is defined:
 				// This means that the previous character is replaced 
 				// (possible transforms defined in previous frames are discarded)

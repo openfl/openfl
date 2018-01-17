@@ -23,6 +23,16 @@ package openfl._internal.timeline;
 		
 		
 	}
-	
-	
+
+
+	public function toString():String {
+		var str:String =
+		"Frame {"+
+		" labels: " + labels +
+		" label: " + label +
+		" objects: " + objects +
+		" has script: " + (script != null) +
+		" }";
+		return str;
+	}
 }
