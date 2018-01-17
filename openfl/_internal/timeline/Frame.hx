@@ -12,7 +12,7 @@ package openfl._internal.timeline;
 	
 	public var labels:Array<String>;
 	public var label:String;
-	public var objects:Array<FrameObject>;//TODO:Refactor to Map<Int,FrameObject>;
+	public var objects:Array<FrameObject>;
 	public var script:Dynamic;
 	public var scriptSource:String;
 	//public var scriptType:FrameScriptType;
