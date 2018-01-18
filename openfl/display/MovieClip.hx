@@ -68,7 +68,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __isInstanceFieldsSetup:Bool;
 	
 	
-	#if (js && html5)
+	#if openfljs
 	private static function __init__ () {
 		
 		untyped Object.defineProperties (MovieClip.prototype, {
