@@ -751,18 +751,20 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 		}
-		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
+
+		//S/ Commenting this out for now, because it ultimately causes CanvasElements to be created over and over again.
+		//S/ In the future, it may be worth exploring if some parts of orphan.__cleanup() are necessary.
+//		for (orphan in __removedChildren) {
+//
+//			if (orphan.stage == null) {
+//
+//				orphan.__cleanup ();
+//
+//			}
+//
+//		}
+//
+//		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
