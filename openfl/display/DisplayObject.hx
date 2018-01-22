@@ -1777,13 +1777,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		} else if (__scrollRect == null) {
 			
-			__scrollRect = value.clone();
+			__scrollRect = value.clone ();
 			
 			dirty = true;
 			
-		} else if (!__scrollRect.equals(value)) {
+		} else if (!__scrollRect.equals (value)) {
 			
-			__scrollRect.copyFrom(value);
+			__scrollRect.copyFrom (value);
 			
 			dirty = true;
 			
