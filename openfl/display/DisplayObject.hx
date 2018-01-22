@@ -971,14 +971,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__updateDirty) {
 			
-			__updateDirty = false;
-			__update (false, true);
+			__update (false, true, null, true);
 			
 		}
 	}
 	
 	
-	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+		
+		if (resetUpdateDirty) {
+			
+			__updateDirty = false;
+			__updateTraverse = false;
+			
+		}
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
@@ -1074,7 +1080,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (updateChildren && mask != null && mask.parent == null) {
 			
-			mask.__update (transformOnly, true, maskGraphics);
+			mask.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
 			
 		}
 		
@@ -1762,14 +1768,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function set_scrollRect (value:Rectangle):Rectangle {
 		
-		if (value != __scrollRect) {
+		var dirty = false;
+		if (value == null) {
+			
+			dirty = __scrollRect != null;
+			
+			__scrollRect = null;
+			
+		} else if (__scrollRect == null) {
+			
+			__scrollRect = value.clone ();
+			
+			dirty = true;
+			
+		} else if (!__scrollRect.equals (value)) {
+			
+			__scrollRect.copyFrom (value);
+			
+			dirty = true;
+			
+		}
+		
+		if (dirty) {
 			
 			__setTransformDirty ();
 			#if dom __setRenderDirty (); #end
 			
 		}
 		
-		return __scrollRect = value;
+		return __scrollRect;
 		
 	}
 	
