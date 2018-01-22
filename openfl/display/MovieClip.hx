@@ -19,6 +19,8 @@ import openfl.events.Event;
 import openfl.filters.*;
 import openfl.text.TextField;
 
+import openfl._internal.utils.FastIteratingIntMap;
+
 #if hscript
 import hscript.Interp;
 import hscript.Parser;
@@ -50,14 +52,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __cachedChildrenFrameSymbolInstacesDisplayObjects:Array<DisplayObject>;
 	private var __cachedManuallyAddedDisplayObjects:Array<DisplayObject>;
 	private var __activeInstances:Array<FrameSymbolInstance>;
-	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
-	private var __lastInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
-	private var __lastDisplayObjectsByDepth: Map <Int, Int>; //<depth, id>
+	private var __activeInstancesByFrameObjectID:FastIteratingIntMap<FrameSymbolInstance>;
+	private var __lastInstancesByFrameObjectID:FastIteratingIntMap<FrameSymbolInstance>;
+	private var __lastDisplayObjectsByDepth: FastIteratingIntMap <Int>; //<depth, id>
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
 	private var __currentLabel:String;
 	private var __currentLabels:Array<FrameLabel>;
-	private var __frameScripts:Map<Int, Void->Void>;
+	private var __frameScripts:FastIteratingIntMap<Void->Void>;
 	private var __frameTime:Int;
 	private var __lastFrameUpdate:Int;
 	private var __playing:Bool;
@@ -120,7 +122,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 			if (__frameScripts == null) {
 				
-				__frameScripts = new Map ();
+				__frameScripts = new FastIteratingIntMap<Void->Void> ();
 				
 			}
 			
@@ -345,14 +347,14 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		var loopedSinceLastFrameUpdate:Bool = ( __lastFrameUpdate > __currentFrame );
 
-		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
-		var currentFrameObjectIDbyDepth : Map<Int, Int> = null;//<depth, id>  id is a unique auto incremented id of every instance in the timeline. should be the same as FrameSymbolInstance.initFrameObjectID
+		var currentInstancesByFrameObjectID : FastIteratingIntMap<FrameSymbolInstance> = null;
+		var currentFrameObjectIDbyDepth : FastIteratingIntMap<Int> = null;//<depth, id>  id is a unique auto incremented id of every instance in the timeline. should be the same as FrameSymbolInstance.initFrameObjectID
 
 		// start from scratch if we have looped around or starting from beginning.
 		// Otherwise we need to keep the objects on the timeline active (when we are doing a goto either backward or forward, or just playing sequentially)
 		if(__lastInstancesByFrameObjectID == null || (!isGoTo && (loopedSinceLastFrameUpdate || __lastFrameUpdate < 0))) {
-			currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
-			currentFrameObjectIDbyDepth = new Map<Int, Int>();
+			currentInstancesByFrameObjectID = new FastIteratingIntMap<FrameSymbolInstance> ();
+			currentFrameObjectIDbyDepth = new FastIteratingIntMap<Int>();
 		}
 		else {
 			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
@@ -638,15 +640,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		var loopedSinceLastFrameUpdate:Bool = ( __lastFrameUpdate > __currentFrame );
 
-		var currentInstancesByFrameObjectID : Map<Int, FrameSymbolInstance> = null;
-		var currentFrameObjectIDbyDepth : Map<Int, Int> = null;//<depth, id>
+		var currentInstancesByFrameObjectID : FastIteratingIntMap<FrameSymbolInstance> = null;
+		var currentFrameObjectIDbyDepth : FastIteratingIntMap<Int> = null;//<depth, id>
 		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >= 0 &&  __lastInstancesByFrameObjectID != null) {
 			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
 			currentFrameObjectIDbyDepth = __lastDisplayObjectsByDepth;
 		}
 		else {
-			currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
-			currentFrameObjectIDbyDepth = new Map<Int, Int>();
+			currentInstancesByFrameObjectID = new FastIteratingIntMap<FrameSymbolInstance> ();
+			currentFrameObjectIDbyDepth = new FastIteratingIntMap<Int>();
 		}
 
 		var frame:Int;
@@ -855,7 +857,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__symbol = symbol;
 
 		__activeInstances = [];
-		__activeInstancesByFrameObjectID = new Map ();
+		__activeInstancesByFrameObjectID = new FastIteratingIntMap<FrameSymbolInstance> ();
 		__currentFrame = 1;
 		__lastFrameUpdate = -2;
 		__totalFrames = __symbol.frames.length;
@@ -895,7 +897,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				if (__frameScripts == null) {
 
-					__frameScripts = new Map ();
+					__frameScripts = new FastIteratingIntMap<Void->Void> ();
 
 				}
 
@@ -905,7 +907,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 				if (__frameScripts == null) {
 
-					__frameScripts = new Map ();
+					__frameScripts = new FastIteratingIntMap<Void->Void> ();
 
 				}
 
