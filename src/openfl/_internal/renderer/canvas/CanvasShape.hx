@@ -52,7 +52,7 @@ class CanvasShape {
 						
 					}
 					
-					context.drawImage (graphics.__canvas, 0, 0);
+					context.drawImage (graphics.__canvas, 0, 0, width, height);
 					
 					renderer.__popMaskObject (shape);
 					
