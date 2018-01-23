@@ -60,7 +60,7 @@ class CanvasShape {
 					context.scale (reverseScale, reverseScale);
 					#end
 					
-					context.drawImage (graphics.__canvas, 0, 0);
+					context.drawImage (graphics.__canvas, 0, 0, width, height);
 					
 					renderSession.maskManager.popObject (shape);
 					
