@@ -808,8 +808,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
-			
-			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+
+			//S/ Removing this call for now, until it is necessary
+			// __updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
