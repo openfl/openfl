@@ -1187,7 +1187,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			for (dispatcher in dispatchers) {
 				
-				dispatcher.__dispatch (event);
+				// TODO: Way to resolve dispatching occurring if object not on stage
+				// and there are multiple stage objects running in HTML5?
+				
+				if (dispatcher.stage == this || dispatcher.stage == null) {
+					
+					dispatcher.__dispatch (event);
+					
+				}
 				
 			}
 			
