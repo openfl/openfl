@@ -13,7 +13,7 @@ declare namespace openfl.media {
 	 * (volume) of the channel, and a property for assigning a SoundTransform
 	 * object to the channel.
 	 * 
-	 * @event soundComplete Dispatched when a sound has finished playing.
+	 * @:event soundComplete Dispatched when a sound has finished playing.
 	 */
 	/*@:final*/ export class SoundChannel extends EventDispatcher {
 		

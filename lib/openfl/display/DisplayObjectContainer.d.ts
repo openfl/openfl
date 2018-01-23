@@ -119,7 +119,7 @@ declare namespace openfl.display {
 		 * @throws ArgumentError Throws if the child is the same as the parent. Also
 		 *                       throws if the caller is a child(or grandchild etc.)
 		 *                       of the child being added.
-		 * @event added Dispatched when a display object is added to the display
+		 * @:event added Dispatched when a display object is added to the display
 		 *              list.
 		 */
 		addChild (child:DisplayObject):DisplayObject;
@@ -151,7 +151,7 @@ declare namespace openfl.display {
 		 *                       of the child being added.
 		 * @throws RangeError    Throws if the index position does not exist in the
 		 *                       child list.
-		 * @event added Dispatched when a display object is added to the display
+		 * @:event added Dispatched when a display object is added to the display
 		 *              list.
 		 */
 		addChildAt (child:DisplayObject, index:number):DisplayObject;

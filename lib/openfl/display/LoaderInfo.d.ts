@@ -62,16 +62,16 @@ declare namespace openfl.display {
 	 * applicable to LoaderInfo objects. If you call `dispatchEvent()`
 	 * on a LoaderInfo object, an IllegalOperationError exception is thrown.
 	 * 
-	 * @event complete   Dispatched when data has loaded successfully. In other
+	 * @:event complete   Dispatched when data has loaded successfully. In other
 	 *                   words, it is dispatched when all the content has been
 	 *                   downloaded and the loading has finished. The
 	 *                   `complete` event is always dispatched after
 	 *                   the `init` event. The `init` event
 	 *                   is dispatched when the object is ready to access, though
 	 *                   the content may still be downloading.
-	 * @event httpStatus Dispatched when a network request is made over HTTP and
+	 * @:event httpStatus Dispatched when a network request is made over HTTP and
 	 *                   an HTTP status code can be detected.
-	 * @event init       Dispatched when the properties and methods of a loaded
+	 * @:event init       Dispatched when the properties and methods of a loaded
 	 *                   SWF file are accessible and ready for use. The content,
 	 *                   however, can still be downloading. A LoaderInfo object
 	 *                   dispatches the `init` event when the following
@@ -95,12 +95,12 @@ declare namespace openfl.display {
 	 *
 	 *                   The `init` event always precedes the
 	 *                   `complete` event.
-	 * @event ioError    Dispatched when an input or output error occurs that
+	 * @:event ioError    Dispatched when an input or output error occurs that
 	 *                   causes a load operation to fail.
-	 * @event open       Dispatched when a load operation starts.
-	 * @event progress   Dispatched when data is received as the download
+	 * @:event open       Dispatched when a load operation starts.
+	 * @:event progress   Dispatched when data is received as the download
 	 *                   operation progresses.
-	 * @event unload     Dispatched by a LoaderInfo object whenever a loaded
+	 * @:event unload     Dispatched by a LoaderInfo object whenever a loaded
 	 *                   object is removed by using the `unload()`
 	 *                   method of the Loader object, or when a second load is
 	 *                   performed by the same Loader object and the original
