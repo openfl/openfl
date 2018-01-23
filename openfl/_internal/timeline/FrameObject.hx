@@ -76,12 +76,12 @@ class FrameObject {
 		" type: " + type +
 		" hasCharacter: " + hasCharacter + " hasMove: " + hasMove +
 		" matrix: " + matrix +
-		" blendMode:" + blendMode + " clipDepth: " + clipDepth +
+		" blendMode: " + blendMode + " clipDepth: " + clipDepth +
 		" colorTransform: " + colorTransform +
 		" cacheAsBitmap: " + cacheAsBitmap +
 		" filters: " + filters +
 		" visible: " + visible +
-		"lastFrameObjectWithPlacementData" + lastFrameObjectWithPlacementData +
+		" lastFrameObjectWithPlacementData: " + lastFrameObjectWithPlacementData +
 		" }";
 		return str;
 	}

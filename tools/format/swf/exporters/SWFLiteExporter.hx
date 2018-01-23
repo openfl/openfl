@@ -541,6 +541,8 @@ class SWFLiteExporter {
 		var lastModified = new Map<Int, Int> ();
 		var workingObjects = new Map<Int, FrameObject>();//<depth, the accumulative changes to the frameObject at that depth>
 		var lastFrame : Frame;
+
+		LogHelper.info ("", ">>> processing symbol id "+ symbol.id);
 		
 		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
@@ -564,6 +566,8 @@ class SWFLiteExporter {
 				frame.labels = [];
 
 			}
+
+			LogHelper.info ("", ">>> symbol "+ symbol.id +" frame "+frameData.frameNumber);
 			
 			frame.objects = new Array();
 
@@ -630,13 +634,21 @@ class SWFLiteExporter {
 					workingObject = null;
 				}
 
+				var placedAtTagIsForThisWorkingObject:Bool = true;//( workingObject != null && workingObject.id == object.placedAtIndex );
+
 				// lastModifiedTag is the same as or newer than the latest workingObject
+				LogHelper.info ("", ">>> symbol "+ symbol.id +" object.placedAtIndex "+object.placedAtIndex +
+					" frameData.tagIndexStart:"+frameData.tagIndexStart+" frameData.tagIndexEnd:"+frameData.tagIndexEnd);
+				LogHelper.info ("", ">>> symbol "+ symbol.id +" lastModifiedTag "+lastModifiedTag);
+				LogHelper.info ("", ">>> symbol "+ symbol.id +" workingObject "+workingObject);
+				LogHelper.info ("", ">>> symbol "+ symbol.id +" placedAtTag "+placedAtTag);
 				if( lastModifiedTag != null && lastModifiedTag.hasName )
 					frameObject.name = lastModifiedTag.instanceName;
-				else if(workingObject != null && workingObject.name != null )
+				else if(workingObject != null && workingObject.name != null && placedAtTagIsForThisWorkingObject )
 					frameObject.name = workingObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;
+				LogHelper.info ("", ">>> symbol "+ symbol.id +" frameObject.name "+frameObject.name);
 
 				var m:Matrix = null;
 				var doScaleWork:Bool = false;
@@ -644,7 +656,7 @@ class SWFLiteExporter {
 					m = lastModifiedTag.matrix.matrix;
 					doScaleWork = true;
 				}
-				else if(workingObject != null && workingObject.matrix != null ) {
+				else if(workingObject != null && workingObject.matrix != null && placedAtTagIsForThisWorkingObject ) {
 					m = workingObject.matrix;
 				}
 				else if( placedAtTag.hasMatrix ) {
@@ -662,7 +674,7 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasColorTransform) {
 					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
 				}
-				else if(workingObject != null && workingObject.colorTransform != null ) {
+				else if(workingObject != null && workingObject.colorTransform != null && placedAtTagIsForThisWorkingObject ) {
 					frameObject.colorTransform = workingObject.colorTransform;
 				}
 				else if( placedAtTag.hasColorTransform ) {
@@ -673,7 +685,7 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasFilterList) {
 					tagToConvert = lastModifiedTag;
 				}
-				else if(workingObject != null && workingObject.filters != null ) {
+				else if(workingObject != null && workingObject.filters != null && placedAtTagIsForThisWorkingObject ) {
 					frameObject.filters = workingObject.filters;
 				}
 				else if( placedAtTag.hasFilterList ) {
@@ -699,7 +711,7 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasVisible) {
 					frameObject.visible = lastModifiedTag.visible != 0;
 				}
-				else if (workingObject != null && workingObject.visible != null) {
+				else if (workingObject != null && workingObject.visible != null && placedAtTagIsForThisWorkingObject) {
 					frameObject.visible = workingObject.visible;
 				}
 				else if (placedAtTag.hasVisible) {
@@ -710,7 +722,7 @@ class SWFLiteExporter {
 					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
 				}
-				else if (workingObject != null && workingObject.blendMode != null) {
+				else if (workingObject != null && workingObject.blendMode != null && placedAtTagIsForThisWorkingObject) {
 					frameObject.blendMode = workingObject.blendMode;
 				}
 				else if (placedAtTag.hasBlendMode) {
@@ -721,7 +733,7 @@ class SWFLiteExporter {
 				if (lastModifiedTag != null && lastModifiedTag.hasCacheAsBitmap) {
 					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
 				}
-				else if (workingObject != null && workingObject.cacheAsBitmap != null) {
+				else if (workingObject != null && workingObject.cacheAsBitmap != null && placedAtTagIsForThisWorkingObject) {
 					frameObject.cacheAsBitmap = workingObject.cacheAsBitmap;
 				}
 				else if (placedAtTag.hasCacheAsBitmap) {
