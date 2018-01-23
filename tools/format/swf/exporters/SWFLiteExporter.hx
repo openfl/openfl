@@ -541,8 +541,6 @@ class SWFLiteExporter {
 		var lastModified = new Map<Int, Int> ();
 		var workingObjects = new Map<Int, FrameObject>();//<depth, the accumulative changes to the frameObject at that depth>
 		var lastFrame : Frame;
-
-		LogHelper.info ("", ">>> processing symbol id "+ symbol.id);
 		
 		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
@@ -566,8 +564,6 @@ class SWFLiteExporter {
 				frame.labels = [];
 
 			}
-
-			LogHelper.info ("", ">>> symbol "+ symbol.id +" frame "+frameData.frameNumber);
 			
 			frame.objects = new Array();
 
@@ -634,21 +630,15 @@ class SWFLiteExporter {
 					workingObject = null;
 				}
 
-				var placedAtTagIsForThisWorkingObject:Bool = true;//( workingObject != null && workingObject.id == object.placedAtIndex );
+				var placedAtTagIsForThisWorkingObject:Bool = ( workingObject != null && workingObject.id == object.placedAtIndex );
 
 				// lastModifiedTag is the same as or newer than the latest workingObject
-				LogHelper.info ("", ">>> symbol "+ symbol.id +" object.placedAtIndex "+object.placedAtIndex +
-					" frameData.tagIndexStart:"+frameData.tagIndexStart+" frameData.tagIndexEnd:"+frameData.tagIndexEnd);
-				LogHelper.info ("", ">>> symbol "+ symbol.id +" lastModifiedTag "+lastModifiedTag);
-				LogHelper.info ("", ">>> symbol "+ symbol.id +" workingObject "+workingObject);
-				LogHelper.info ("", ">>> symbol "+ symbol.id +" placedAtTag "+placedAtTag);
 				if( lastModifiedTag != null && lastModifiedTag.hasName )
 					frameObject.name = lastModifiedTag.instanceName;
 				else if(workingObject != null && workingObject.name != null && placedAtTagIsForThisWorkingObject )
 					frameObject.name = workingObject.name;
 				else if( placedAtTag.hasName )
 					frameObject.name = placedAtTag.instanceName;
-				LogHelper.info ("", ">>> symbol "+ symbol.id +" frameObject.name "+frameObject.name);
 
 				var m:Matrix = null;
 				var doScaleWork:Bool = false;
