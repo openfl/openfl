@@ -1,6 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
+import openfl.display.Stage;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 
@@ -61,7 +62,13 @@ class CanvasShape {
 					#end
 					
 					context.drawImage (graphics.__canvas, 0, 0, width, height);
-					
+
+					//S/ Remove this when debugging is no longer needed
+					Stage.drawImageCount++;
+					if (shape.parent.countChildDraws) {
+						shape.parent.childDraws++;
+					}
+
 					renderSession.maskManager.popObject (shape);
 					
 				}

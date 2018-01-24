@@ -717,8 +717,10 @@ class DisplayObjectContainer extends InteractiveObject {
 		#end
 		
 	}
-	
-	
+
+	//S/ Remove this when debugging is no longer needed
+	public var childDraws:Int = 0;
+
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
@@ -730,6 +732,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
 		renderSession.maskManager.pushObject (this);
+
+		//S/ Remove this when debugging is no longer needed
+		childDraws = 0;
 		
 		if (renderSession.clearRenderDirty) {
 			
@@ -750,6 +755,21 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 			}
 			
+		}
+
+		//S/ Remove this when debugging is no longer needed
+		if (countChildDraws) {
+			if (childDraws > Stage.mostDraws) {
+				var info:String = "";
+				info += this.name;
+				if (untyped this.__symbol != null) {
+					info += untyped this.__symbol.className;
+				}
+
+				Stage.mostDraws = childDraws;
+				Stage.mostDrawsInfo = info;
+				Stage.mostDrawsTarget = this;
+			}
 		}
 
 		//S/ Commenting this out for now, because it ultimately causes CanvasElements to be created over and over again.
@@ -1014,8 +1034,10 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 	}
-	
-	
+
+	//S/ Remove this when debugging is no longer needed
+	public var countChildDraws:Bool = true;
+
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		super.__update (transformOnly, updateChildren, maskGraphics);

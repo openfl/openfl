@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import wwlib.debug.DebugUtility;
 import haxe.CallStack;
 import haxe.EnumFlags;
 import lime.app.Application;
@@ -151,6 +152,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __wasFullscreen:Bool;
 
 	public static var frameID:UInt = 1;
+
+	//S/ Remove these when debugging is no longer needed
+	public static var drawImageCount:Int = 0;
+	public static var mostDraws:Int = 0;
+	public static var mostDrawsInfo:String = "";
+	public static var mostDrawsTarget:DisplayObjectContainer = null;
 	
 	#if openfljs
 	private static function __init__ () {
@@ -1062,8 +1069,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 					}
 					
 				}
-				
+
+				//S/ Remove these when debugging is no longer needed
+				drawImageCount = 0;
+				mostDraws = 0;
+				mostDrawsInfo = "";
+				mostDrawsTarget = null;
+
 				__renderer.render ();
+				//S/ DebugUtility.debugTrace("Most Draws: " + mostDraws + " ... " + mostDrawsInfo);
 				
 			} else {
 				
