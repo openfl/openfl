@@ -129,6 +129,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorSplit:Array<Float>;
 	private var __colorString:String;
 	private var __contentsScaleFactor:Float;
+	#if commonjs
+	private var __cursor:MouseCursor;
+	#end
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
 	private var __displayMatrix:Matrix;
@@ -1552,7 +1555,33 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					if (cursor != null) {
 						
+						#if commonjs
+						// TODO: Formal API
+						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
+							
+							@:privateAccess window.backend.element.style.cursor = switch (cursor) {
+								
+								case ARROW: "default";
+								case CROSSHAIR: "crosshair";
+								case MOVE: "move";
+								case POINTER: "pointer";
+								case RESIZE_NESW: "nesw-resize";
+								case RESIZE_NS: "ns-resize";
+								case RESIZE_NWSE: "nwse-resize";
+								case RESIZE_WE: "ew-resize";
+								case TEXT: "text";
+								case WAIT: "wait";
+								case WAIT_ARROW: "wait";
+								default: "auto";
+								
+							}
+							
+							__cursor = cursor;
+							
+						}
+						#else
 						LimeMouse.cursor = cursor;
+						#end
 						break;
 						
 					}
@@ -1563,7 +1592,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (cursor == null) {
 				
+				#if commonjs
+				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
+					
+					@:privateAccess window.backend.element.style.cursor = "default";
+					__cursor = null;
+					
+				}
+				#else
 				LimeMouse.cursor = ARROW;
+				#end
 				
 			}
 			
