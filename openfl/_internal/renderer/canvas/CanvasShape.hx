@@ -65,7 +65,7 @@ class CanvasShape {
 
 					//S/ Remove this when debugging is no longer needed
 					Stage.drawImageCount++;
-					if (shape.parent.countChildDraws) {
+					if (shape.parent != null && shape.parent.countChildDraws) {
 						shape.parent.childDraws++;
 					}
 
