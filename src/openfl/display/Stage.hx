@@ -129,7 +129,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorSplit:Array<Float>;
 	private var __colorString:String;
 	private var __contentsScaleFactor:Float;
-	#if commonjs
+	#if (commonjs && !nodejs)
 	private var __cursor:MouseCursor;
 	#end
 	private var __deltaTime:Int;
@@ -1555,7 +1555,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					if (cursor != null) {
 						
-						#if commonjs
+						#if (commonjs && !nodejs)
 						// TODO: Formal API
 						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 							
@@ -1592,7 +1592,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (cursor == null) {
 				
-				#if commonjs
+				#if (commonjs && !nodejs)
 				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 					
 					@:privateAccess window.backend.element.style.cursor = "default";
