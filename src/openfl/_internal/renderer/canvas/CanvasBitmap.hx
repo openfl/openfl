@@ -42,11 +42,11 @@ class CanvasBitmap {
 			
 			if (scrollRect == null) {
 				
-				context.drawImage (bitmap.__bitmapData.image.src, 0, 0);
+				context.drawImage (bitmap.__bitmapData.image.src, 0, 0, bitmap.__bitmapData.image.width, bitmap.__bitmapData.image.height);
 				
 			} else {
 				
-				context.drawImage (bitmap.__bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+				context.drawImage (bitmap.__bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
 				
 			}
 			
