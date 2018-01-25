@@ -964,7 +964,7 @@ class CanvasGraphics {
 						dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 						
 						context.transform (t1, t2, t3, t4, dx, dy);
-						context.drawImage (pattern, 0, 0);
+						context.drawImage (pattern, 0, 0, pattern.width, pattern.height);
 						context.restore ();
 						
 						i += 3;
