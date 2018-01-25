@@ -23,7 +23,7 @@ class CanvasDisplayObject {
 		var gBounds:Rectangle = displayObject.__graphics.__bounds;
 		var rX : Float = gBounds == null ? Math.NaN : displayObject.__worldTransform.tx + gBounds.x;
 		var rY : Float = gBounds == null ? Math.NaN : displayObject.__worldTransform.ty + gBounds.y;
-		if ((!Math.isNaN(rX) && !Math.isNaN(rY)) && (rX < 0 && (rX * -1) > gBounds.width) || (rY < 0 && (rY * -1) > gBounds.height) || (renderSession.renderer != null && (rX > renderSession.renderer.width || rY > renderSession.renderer.height)) )
+		if ((!Math.isNaN(rX) && !Math.isNaN(rY)) && ((rX < 0 && (rX * -1) > gBounds.width) || (rY < 0 && (rY * -1) > gBounds.height) || (renderSession.renderer != null && (rX > renderSession.renderer.width || rY > renderSession.renderer.height))) )
 		{
 			return;
 		}
