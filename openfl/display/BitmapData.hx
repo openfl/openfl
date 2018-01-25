@@ -2057,7 +2057,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		context.drawImage (image.src, 0, 0);
+		context.drawImage (image.src, 0, 0, image.width, image.height);
 		#end
 		
 	}

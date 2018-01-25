@@ -1094,7 +1094,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 				__renderer.render ();
 
-
 				//S/ Remove this when debugging is wrapped up
 				if (++statWait > 6) {
 					var array:Array<Int> = [];
@@ -1112,6 +1111,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 					statWait = 0;
 				}
+				//S/ wwlib.debug.DebugUtility.debugTrace("Most Draws: " + mostDraws + " ... " + mostDrawsInfo);
 				
 			} else {
 				
