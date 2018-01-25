@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+import openfl.display.Stage;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
@@ -1107,6 +1108,9 @@ class CanvasGraphics {
 		graphics.__update ();
 		
 		if (graphics.__dirty) {
+
+			//S/ Remove this when debugging is no longer needed
+			Stage.shapeRenderCount++;
 			
 			hitTesting = false;
 			

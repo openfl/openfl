@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-import wwlib.debug.DebugUtility;
+import gamePlayFlow.GamePlay;
 import haxe.CallStack;
 import haxe.EnumFlags;
 import lime.app.Application;
@@ -154,7 +154,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public static var frameID:UInt = 1;
 
 	//S/ Remove these when debugging is no longer needed
+	public static var updateCount:Int = 0;
 	public static var drawImageCount:Int = 0;
+	public static var shapeRenderCount:Int = 0;
 	public static var mostDraws:Int = 0;
 	public static var mostDrawsInfo:String = "";
 	public static var mostDrawsTarget:DisplayObjectContainer = null;
@@ -996,7 +998,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		//}
 		
 	}
-	
+
+	//S/ Remove this when debugging is wrapped up
+	public var stats:Array<Array<Int>> = null;
+	public var statWait:Int = 0;
+	public var statNum:Int = 1;
 	
 	public function render (renderer:Renderer):Void {
 		
@@ -1006,6 +1012,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (__rendering) return;
 			__rendering = true;
+
+			//S/ Remove this when debugging is wrapped up
+			if (stats == null) {
+				stats = [];
+				stats.push([]); // Update
+				stats.push([]); // Render
+				stats.push([]); // Draw
+			}
 			
 			#if hxtelemetry
 			Telemetry.__advanceFrame ();
@@ -1040,6 +1054,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#end
 			
 			__renderable = true;
+
+			//S/ Remove these when debugging is no longer needed
+			updateCount = 0;
+			drawImageCount = 0;
+			shapeRenderCount = 0;
+			mostDraws = 0;
+			mostDrawsInfo = "";
+			mostDrawsTarget = null;
 			
 			__enterFrame (__deltaTime);
 			__deltaTime = 0;
@@ -1070,14 +1092,26 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 				}
 
-				//S/ Remove these when debugging is no longer needed
-				drawImageCount = 0;
-				mostDraws = 0;
-				mostDrawsInfo = "";
-				mostDrawsTarget = null;
-
 				__renderer.render ();
-				//S/ DebugUtility.debugTrace("Most Draws: " + mostDraws + " ... " + mostDrawsInfo);
+
+
+				//S/ Remove this when debugging is wrapped up
+				if (++statWait > 6) {
+					var array:Array<Int> = [];
+					array.push(statNum++);
+					array.push(GamePlay.lastFPS);
+					array.push(updateCount);
+					array.push(shapeRenderCount);
+					array.push(drawImageCount);
+
+					stats.push(array);
+
+					if (stats.length > 500) {
+						stats.shift();
+					}
+
+					statWait = 0;
+				}
 				
 			} else {
 				
