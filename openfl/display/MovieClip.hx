@@ -238,7 +238,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	public override function __enterFrame (deltaTime:Int):Void {
 
-		if (__symbol == null) {
+		if (__symbol == null || __renderable == false) {
 			super.__enterFrame (deltaTime);
 			return;
 		}
