@@ -2549,9 +2549,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__stopTextInput ();
 			
 		} else {
-			
-			stage.window.onTextInput.remove (window_onTextInput);
-			stage.window.onKeyDown.remove (window_onKeyDown);
+			if(stage != null)
+			{
+				stage.window.onTextInput.remove (window_onTextInput);
+				stage.window.onKeyDown.remove (window_onKeyDown);
+			}
 			__inputEnabled = false;
 			
 		}
