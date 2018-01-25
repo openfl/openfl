@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import wwlib.debug.DebugUtility;
 import haxe.CallStack;
 import haxe.EnumFlags;
 import lime.app.Application;
@@ -1077,7 +1076,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				mostDrawsTarget = null;
 
 				__renderer.render ();
-				//S/ DebugUtility.debugTrace("Most Draws: " + mostDraws + " ... " + mostDrawsInfo);
+				//S/ wwlib.debug.DebugUtility.debugTrace("Most Draws: " + mostDraws + " ... " + mostDrawsInfo);
 				
 			} else {
 				
