@@ -1,7 +1,5 @@
 package openfl.display;
 
-
-import gamePlayFlow.GamePlay;
 import haxe.CallStack;
 import haxe.EnumFlags;
 import lime.app.Application;
@@ -1094,11 +1092,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 				__renderer.render ();
 
+				#if (js && html5)
 				//S/ Remove this when debugging is wrapped up
 				if (++statWait > 6) {
 					var array:Array<Int> = [];
 					array.push(statNum++);
-					array.push(GamePlay.lastFPS);
+					array.push(gamePlayFlow.GamePlay.lastFPS);
 					array.push(updateCount);
 					array.push(shapeRenderCount);
 					array.push(drawImageCount);
@@ -1112,6 +1111,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					statWait = 0;
 				}
 				//S/ wwlib.debug.DebugUtility.debugTrace("Most Draws: " + mostDraws + " ... " + mostDrawsInfo);
+				#end
 				
 			} else {
 				
