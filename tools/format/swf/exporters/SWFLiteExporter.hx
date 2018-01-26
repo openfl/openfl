@@ -25,7 +25,6 @@ import openfl._internal.symbols.StaticTextSymbol;
 import openfl._internal.symbols.SWFSymbol;
 import openfl._internal.timeline.Frame;
 import openfl._internal.timeline.FrameObject;
-import openfl._internal.timeline.FrameObjectType;
 import openfl._internal.swf.SWFLite;
 import format.swf.tags.IDefinitionTag;
 import format.swf.tags.TagDefineBits;
@@ -60,8 +59,8 @@ using format.swf.exporters.SWFLiteExporter.AVM2;
 
 
 class SWFLiteExporter {
-	
-	
+
+
 	public var bitmapAlpha:Map <Int, ByteArray>;
 	public var bitmaps:Map <Int, ByteArray>;
 	public var bitmapTypes:Map <Int, BitmapType>;
@@ -70,16 +69,16 @@ class SWFLiteExporter {
 	public var soundSymbolClassNames:Map <Int, String>;
 	public var filterClasses:Map <String, Bool>;
 	public var swfLite:SWFLite;
-	
+
 	private var alphaPalette:Bytes;
 	private var data:SWFRoot;
-	
+
 	private static var indentationLevel:Int = 0;
-	
+
 	public function new (data:SWFRoot) {
-		
+
 		this.data = data;
-		
+
 		bitmapAlpha = new Map <Int, ByteArray> ();
 		bitmaps = new Map <Int, ByteArray> ();
 		bitmapTypes = new Map <Int, BitmapType> ();
@@ -87,325 +86,324 @@ class SWFLiteExporter {
 		soundTypes = new Map <Int, SoundType> ();
 		soundSymbolClassNames = new Map <Int, String> ();
 		filterClasses = new Map <String, Bool> ();
-		
+
 		swfLite = new SWFLite ();
 		swfLite.frameRate = data.frameRate;
 		swfLite.frameSizeMinPixel = new Point(data.frameSize.xmin * (1/20), data.frameSize.ymin * (1/20));
         swfLite.frameSizeMaxPixel = new Point(data.frameSize.xmax * (1/20), data.frameSize.ymax * (1/20));
-		
+
 		addSprite (data, true);
-		
+
 		for (tag in data.tags) {
-			
+
 			if (Std.is (tag, TagSymbolClass)) {
-				
+
 				for (symbol in cast (tag, TagSymbolClass).symbols) {
-					
+
 					processSymbol (symbol);
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function addButton (tag:IDefinitionTag):SWFSymbol {
-		
+
 		var symbol = new ButtonSymbol ();
-		
+
 		if (Std.is (tag, IDefinitionTag)) {
-			
+
 			symbol.id = untyped tag.characterId;
-			
+
 		}
-		
+
 		var processRecords = function (records:Array<SWFButtonRecord>) {
-			
+
 			if (records.length > 0) {
-				
+
 				var sprite = new SpriteSymbol ();
 				var frame = new Frame ();
 				frame.labels = [];
 				frame.objects = [];
-				
+
 				for (i in 0...records.length) {
-					
+
 					var object = records[i];
-					
+
 					var frameObject = new FrameObject ();
-					frameObject.type = FrameObjectType.CREATE;
 					frameObject.symbol = object.characterId;
 					frameObject.id = i;
-					
+
 					processTag (cast data.getCharacter (object.characterId));
-					
+
 					if (object.placeMatrix != null) {
-						
+
 						var matrix = object.placeMatrix.matrix;
 						matrix.tx *= (1 / 20);
 						matrix.ty *= (1 / 20);
-						
+
 						frameObject.matrix = matrix;
-						
+
 					}
-					
+
 					if (object.colorTransform != null) {
-						
+
 						frameObject.colorTransform = object.colorTransform.colorTransform;
-						
+
 					}
-					
+
 					if (object.hasBlendMode) {
-						
+
 						var blendMode = BlendMode.toString (object.blendMode);
 						frameObject.blendMode = blendMode;
-						
+
 					}
-					
+
 					if (object.hasFilterList) {
-						
+
 						var filters:Array<FilterType> = [];
-						
+
 						for (filter in object.filterList) {
-							
+
 							var type = filter.type;
-							
+
 							if (type != null) {
-								
+
 								filters.push (filter.type);
 								//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-								
+
 							}
-							
+
 						}
-						
+
 						frameObject.filters = filters;
-						
+
 					}
-					
+
 					frameObject.depth = i;
 					frameObject.clipDepth = 0;
 					frameObject.visible = true;
-					
+
 					frame.objects.push (frameObject);
-					
+
 				}
-				
+
 				sprite.frames.push (frame);
-				
+
 				return sprite;
-				
+
 			}
-			
+
 			return null;
-			
+
 		}
-		
+
 		if (Std.is (tag, TagDefineButton)) {
-			
+
 			var defineButton:TagDefineButton = cast tag;
-			
+
 			symbol.downState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_DOWN));
 			symbol.hitState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_HIT));
 			symbol.overState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_OVER));
 			symbol.upState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_UP));
-			
+
 		} else {
-			
+
 			var defineButton:TagDefineButton2 = cast tag;
-			
+
 			symbol.downState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_DOWN));
 			symbol.hitState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_HIT));
 			symbol.overState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_OVER));
 			symbol.upState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_UP));
-			
+
 		}
-		
+
 		swfLite.symbols.set (symbol.id, symbol);
-		
+
 		return symbol;
-		
+
 	}
-	
-	
+
+
 	private function addBitmap (tag:IDefinitionTag):BitmapSymbol {
-		
+
 		var alphaByteArray = null;
 		var byteArray = null;
 		var type = null;
-		
+
 		if (Std.is (tag, TagDefineBitsLossless)) {
-			
+
 			var data:TagDefineBitsLossless = cast tag;
-			
+
 			var transparent = (data.level > 1);
 			var buffer = data.zlibBitmapData;
 			buffer.uncompress ();
 			buffer.position = 0;
-			
+
 			if (data.bitmapFormat == BitmapFormat.BIT_8) {
-				
+
 				var palette = Bytes.alloc (data.bitmapColorTableSize * 3);
 				var alpha = null;
-				
+
 				if (transparent) alpha = Bytes.alloc (data.bitmapColorTableSize);
 				var index = 0;
-				
+
 				for (i in 0...data.bitmapColorTableSize) {
-					
+
 					palette.set (index++, buffer.readUnsignedByte ());
 					palette.set (index++, buffer.readUnsignedByte ());
 					palette.set (index++, buffer.readUnsignedByte ());
 					if (transparent) alpha.set (i, buffer.readUnsignedByte ());
-					
+
 				}
-				
+
 				var paddedWidth:Int = Math.ceil (data.bitmapWidth / 4) * 4;
 				var values = Bytes.alloc ((data.bitmapWidth + 1) * data.bitmapHeight);
 				index = 0;
-				
+
 				for (y in 0...data.bitmapHeight) {
-					
+
 					values.set (index++, 0);
 					values.blit (index, buffer, buffer.position, data.bitmapWidth);
 					index += data.bitmapWidth;
 					buffer.position += paddedWidth;
-					
+
 				}
-				
+
 				var png = new List ();
 				png.add (CHeader ( { width: data.bitmapWidth, height: data.bitmapHeight, colbits: 8, color: ColIndexed, interlaced: false } ));
 				png.add (CPalette (palette));
 				if (transparent) png.add(CUnknown("tRNS", alpha));
 				png.add (CData (Deflate.run (values)));
 				png.add (CEnd);
-				
+
 				var output = new BytesOutput ();
 				var writer = new Writer (output);
 				writer.write (png);
-				
+
 				byteArray = ByteArray.fromBytes (output.getBytes ());
 				type = BitmapType.PNG;
-				
+
 			} else {
-				
+
 				var bitmapData = new BitmapData (data.bitmapWidth, data.bitmapHeight, transparent);
-				
+
 				bitmapData.image.buffer.premultiplied = false;
 				bitmapData.setPixels (bitmapData.rect, buffer);
 				bitmapData.image.buffer.premultiplied = true;
 				bitmapData.image.premultiplied = false;
-				
+
 				byteArray = bitmapData.encode (bitmapData.rect, new PNGEncoderOptions ());
 				type = BitmapType.PNG;
-				
+
 			}
-			
+
 		} else if (Std.is (tag, TagDefineBitsJPEG2)) {
-			
+
 			var data:TagDefineBitsJPEG2 = cast tag;
-			
+
 			if (Std.is (tag, TagDefineBitsJPEG3)) {
-				
+
 				var alpha = cast (tag, TagDefineBitsJPEG3).bitmapAlphaData;
 				alpha.uncompress ();
 				alpha.position = 0;
-				
+
 				if (alphaPalette == null) {
-					
+
 					alphaPalette = Bytes.alloc (256 * 3);
 					var index = 0;
-					
+
 					for (i in 0...256) {
-						
+
 						alphaPalette.set (index++, i);
 						alphaPalette.set (index++, i);
 						alphaPalette.set (index++, i);
-						
+
 					}
-					
+
 				}
-				
+
 				var tempFile = lime.tools.helpers.PathHelper.getTemporaryFile ("jpg");
 				sys.io.File.saveBytes (tempFile, data.bitmapData);
 				var image = lime.graphics.format.JPEG.decodeFile (tempFile, false);
 				try { sys.FileSystem.deleteFile (tempFile); } catch (e:Dynamic) {}
-				
+
 				var values = Bytes.alloc ((image.width + 1) * image.height);
 				var index = 0;
-				
+
 				for (y in 0...image.height) {
-					
+
 					values.set (index++, 0);
 					values.blit (index, alpha, alpha.position, image.width);
 					index += image.width;
 					alpha.position += image.width;
-					
+
 				}
-				
+
 				var png = new List ();
 				png.add (CHeader ( { width: image.width, height: image.height, colbits: 8, color: ColIndexed, interlaced: false } ));
 				png.add (CPalette (alphaPalette));
 				png.add (CData (Deflate.run (values)));
 				png.add (CEnd);
-				
+
 				var output = new BytesOutput ();
 				var writer = new Writer (output);
 				writer.write (png);
-				
+
 				alphaByteArray = ByteArray.fromBytes (output.getBytes ());
 				byteArray = data.bitmapData;
 				type = BitmapType.JPEG_ALPHA;
-				
+
 			} else {
-				
+
 				byteArray = data.bitmapData;
 				type = BitmapType.JPEG;
-				
+
 			}
-			
+
 		} else if (Std.is (tag, TagDefineBits)) {
-			
+
 			var data:TagDefineBits = cast tag;
-			
+
 			byteArray = data.bitmapData;
 			type = BitmapType.JPEG;
-			
+
 		}
-		
+
 		if (byteArray != null) {
-			
+
 			var symbol = new BitmapSymbol ();
 			symbol.id = tag.characterId;
-			
+
 			bitmapAlpha.set (symbol.id, alphaByteArray);
 			bitmaps.set (symbol.id, byteArray);
 			bitmapTypes.set (symbol.id, type);
-			
+
 			symbol.path = "";
 			swfLite.symbols.set (symbol.id, symbol);
-			
+
 			return symbol;
-			
+
 		}
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+
 	private function addFont (tag:IDefinitionTag):FontSymbol {
-		
+
 		if (Std.is (tag, TagDefineFont2)) {
-			
+
 			var defineFont:TagDefineFont2 = cast tag;
 			var symbol = new FontSymbol ();
 			symbol.id = defineFont.characterId;
 			symbol.glyphs = new Array<Array<ShapeCommand>> ();
-			
+
 			//for (i in 0...defineFont.glyphShapeTable.length) {
 				//
 				//var handler = new ShapeCommandExporter (data);
@@ -413,7 +411,7 @@ class SWFLiteExporter {
 				//symbol.glyphs.push (handler.commands);
 				//
 			//}
-			
+
 			symbol.advances = new Array<Int> ();
 			//symbol.advances = cast defineFont.fontAdvanceTable.copy ();
 			symbol.ascent = defineFont.ascent;
@@ -423,125 +421,124 @@ class SWFLiteExporter {
 			symbol.italic = defineFont.italic;
 			symbol.leading = defineFont.leading;
 			symbol.name = defineFont.fontName;
-			
+
 			swfLite.symbols.set (symbol.id, symbol);
-			
+
 			return symbol;
-			
+
 		}
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+
 	private function addShape (tag:TagDefineShape):SWFSymbol {
-		
+
 		var handler = new ShapeCommandExporter (data);
 		tag.export (handler);
-		
+
 		// TODO: Remove need for this optimization
-		
+
 		#if !disable_bitmap_optimization
 		var bitmaps = ShapeBitmapExporter.process (handler);
 		#else
 		var bitmaps:Array<Dynamic> = null;
 		#end
-		
+
 		if (bitmaps != null) {
-			
+
 			var symbol = new SpriteSymbol ();
 			var frame = new Frame ();
 			frame.objects = [];
 			frame.labels = [];
 			var bitmap, frameObject;
-			
+
 			for (i in 0...bitmaps.length) {
-				
+
 				bitmap = bitmaps[i];
-				
+
 				processTag (cast data.getCharacter (bitmap.id));
-				
+
 				var bitmapSymbol:BitmapSymbol = cast swfLite.symbols.get (bitmap.id);
-				
+
 				if (bitmapSymbol != null) {
-					
+
 					// Use smoothing if a shape requests it
-					
+
 					if (bitmapSymbol.smooth == null && !bitmap.smooth) {
-						
+
 						bitmapSymbol.smooth = false;
-						
+
 					} else if (bitmapSymbol.smooth == false && bitmap.smooth) {
-						
+
 						bitmapSymbol.smooth = true;
-						
+
 					}
-					
+
 				}
-				
+
 				frameObject = new FrameObject ();
 				frameObject.symbol = bitmap.id;
-				frameObject.type = FrameObjectType.CREATE;
 				frameObject.id = i;
 				frameObject.depth = i;
 				frameObject.clipDepth = 0;
 				frameObject.matrix = bitmap.transform;
 				frameObject.visible = true;
-				
+
 				frame.objects.push (frameObject);
-				
+
 			}
-			
+
 			symbol.frames.push (frame);
 			symbol.id = tag.characterId;
-			
+
 			swfLite.symbols.set (symbol.id, symbol);
 			return symbol;
-			
+
 		} else {
-			
+
 			var symbol = new ShapeSymbol ();
 			symbol.id = tag.characterId;
-			
+
 			symbol.commands = handler.commands;
-			
+
 			for (command in handler.commands) {
-				
+
 				switch (command) {
-					
+
 					case BeginBitmapFill (bitmapID, _, _, _):
-						
+
 						processTag (cast data.getCharacter (bitmapID));
-					
+
 					default:
-					
+
 				}
-				
+
 			}
-			
+
 			swfLite.symbols.set (symbol.id, symbol);
 			return symbol;
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function addSprite (tag:SWFTimelineContainer, root:Bool = false):SpriteSymbol {
-		
+
 		var symbol : SpriteSymbol = new SpriteSymbol ();
-		
+
 		if (Std.is (tag, IDefinitionTag)) {
-			
+
 			symbol.id = untyped tag.characterId;
-			
+
 		}
 
 		var lastModified = new Map<Int, Int> ();
 		var workingObjects = new Map<Int, FrameObject>();//<depth, the accumulative changes to the frameObject at that depth>
 		var lastFrame : Frame;
-		
+
 		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
 
@@ -556,7 +553,7 @@ class SWFLiteExporter {
 			if (frameData.labels != null) {
 
 				frame.labels = frameData.labels;
-				
+
 			}
 
 			else {
@@ -564,7 +561,7 @@ class SWFLiteExporter {
 				frame.labels = [];
 
 			}
-			
+
 			frame.objects = new Array();
 
 			// check existing working objects and remove any that are gone this frame
@@ -619,8 +616,6 @@ class SWFLiteExporter {
 					frameObject.hasCharacter = false;
 					frameObject.hasMove = false;
 				}
-
-				frameObject.type = FrameObjectType.PLACE_OBJECT;
 
 				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
 				// finally placedAtTag if it exists

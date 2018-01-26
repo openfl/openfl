@@ -13,12 +13,11 @@ import openfl._internal.symbols.StaticTextSymbol;
 import openfl._internal.symbols.SWFSymbol;
 import openfl._internal.timeline.Frame;
 import openfl._internal.timeline.FrameObject;
-import openfl._internal.timeline.FrameObjectType;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
 import openfl.filters.*;
 import openfl.text.TextField;
-
+import openfl._internal.timeline.FrameObjectType;
 import openfl._internal.utils.FastIteratingIntMap;
 
 #if hscript
@@ -32,14 +31,14 @@ import hscript.Parser;
 #end
 
 @:access(openfl._internal.symbols.SWFSymbol)
-
+@:access(openfl._internal.timeline.FrameObjectType)
 
 class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObjectContainer> #end {
-	
-	
+
+
 	private static var __initSWF:SWFLite;
 	private static var __initSymbol:SpriteSymbol;
-	
+
 	public var currentFrame (get, never):Int;
 	public var currentFrameLabel (get, never):String;
 	public var currentLabel (get, never):String;
@@ -68,11 +67,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __timeElapsed:Int;
 	private var __totalFrames:Int;
 	private var __isInstanceFieldsSetup:Bool;
-	
-	
+
+
 	#if openfljs
 	private static function __init__ () {
-		
+
 		untyped Object.defineProperties (MovieClip.prototype, {
 			"currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }") },
 			"currentFrameLabel": { get: untyped __js__ ("function () { return this.get_currentFrameLabel (); }") },
@@ -82,13 +81,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			"isPlaying": { get: untyped __js__ ("function () { return this.get_isPlaying (); }") },
 			"totalFrames": { get: untyped __js__ ("function () { return this.get_totalFrames (); }") },
 		});
-		
+
 	}
 	#end
-	
-	
+
+
 	public function new () {
-		
+
 		super ();
 		__cachedManuallyAddedDisplayObjects = new Array();
 		__cachedChildrenFrameSymbolInstacesDisplayObjects = new Array();
@@ -97,41 +96,41 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__totalFrames = 0;
 		__isInstanceFieldsSetup = false;
 		enabled = true;
-		
+
 		if (__initSymbol != null) {
-			
+
 			__swf = __initSWF;
 			__symbol = __initSymbol;
-			
+
 			__initSWF = null;
 			__initSymbol = null;
-			
+
 			__fromSymbol (__swf, __symbol);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	public function addFrameScript (index:Int, method:Void->Void):Void {
-		
+
 		if (index < 0) return;
 		var frame = index + 1;
-		
+
 		if (method != null) {
-			
+
 			if (__frameScripts == null) {
-				
+
 				__frameScripts = new FastIteratingIntMap<Void->Void> ();
-				
+
 			}
-			
+
 			__frameScripts.set (frame, method);
-			
+
 		} else if (__frameScripts != null) {
-			
+
 			__frameScripts.remove (frame);
-			
+
 		}
 
 	}
@@ -238,7 +237,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	public override function __enterFrame (deltaTime:Int):Void {
 
-		if (__symbol == null || __renderable == false) {
+		if (__symbol == null) {
 			super.__enterFrame (deltaTime);
 			return;
 		}
@@ -337,8 +336,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		super.__enterFrame (deltaTime);
 	}
 
-	var __isReprocessedWithPLACE_OBJECT : Bool = false;
-	private function __updateFrameObjectsAndChildrenNew(isGoTo : Bool = false)	{
+	private function __updateFrameObjectsAndChildren(isGoTo : Bool = false)	{
 
 		if (__currentFrame == __lastFrameUpdate)
 			return;
@@ -397,94 +395,83 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			for (frameObject in frameData.objects) {
 
-				switch (frameObject.type) {
+				// if is a new character sequentially in the timeline and has move information we check the old object
+				// at that depth after creating the new one and any information not applied by the frameObject is applied by the old object at that depth
+				//--
+				// if both hasChracter and hasMove are false then we just need to create a new character and
+				// add it at the depth and remove the previous object at that depth if it is not the same object already being use (frameObjectID)
+				// this should only happen when doing a goto
+				if(frameObject.hasCharacter == frameObject.hasMove) {
 
-					case PLACE_OBJECT:
+					var oldInstance : FrameSymbolInstance = null;
+					if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
 
-						// if is a new character sequentially in the timeline and has move information we check the old object
-						// at that depth after creating the new one and any information not applied by the frameObject is applied by the old object at that depth
-						//--
-						// if both hasChracter and hasMove are false then we just need to create a new character and
-						// add it at the depth and remove the previous object at that depth if it is not the same object already being use (frameObjectID)
-						// this should only happen when doing a goto
-						if(frameObject.hasCharacter == frameObject.hasMove) {
-							var oldInstance : FrameSymbolInstance = null;
-							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+						oldInstance = currentInstancesByFrameObjectID.get(currentFrameObjectIDbyDepth.get(frameObject.depth));
+						currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+						currentFrameObjectIDbyDepth.remove(frameObject.depth);
+					}
 
-								oldInstance = currentInstancesByFrameObjectID.get(currentFrameObjectIDbyDepth.get(frameObject.depth));
-								currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
-								currentFrameObjectIDbyDepth.remove(frameObject.depth);
+					instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+
+					if (instance != null) {
+
+						currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
+						currentInstancesByFrameObjectID.set (frameObject.id, instance);
+						if(!frameObject.hasCharacter && !frameObject.hasMove && oldInstance != null && instance.initFrameObjectID == oldInstance.initFrameObjectID) {
+							continue;//this object is already on the timeline and being used, no need to update
+						}
+						__updateDisplayObject (instance.displayObject, frameObject);
+
+						if(oldInstance != null && frameObject.hasMove) {
+							if(frameObject.name == null) {
+								instance.displayObject.name = oldInstance.displayObject.name;
 							}
-
-							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-
-							if (instance != null) {
-
-								currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								if(!frameObject.hasCharacter && !frameObject.hasMove && oldInstance != null && instance.initFrameObjectID == oldInstance.initFrameObjectID) {
-									continue;//this object is already on the timeline and being used, no need to update
-								}
-								__updateDisplayObject (instance.displayObject, frameObject);
-
-								if(oldInstance != null && frameObject.hasMove) {
-									if(frameObject.name == null) {
-										instance.displayObject.name = oldInstance.displayObject.name;
-									}
-									if(frameObject.matrix == null) {
-										instance.displayObject.transform.matrix = oldInstance.displayObject.transform.matrix;
-									}
-									if(frameObject.colorTransform == null) {
-										instance.displayObject.transform.colorTransform = oldInstance.displayObject.transform.colorTransform;
-									}
-									if(frameObject.filters == null) {
-										instance.displayObject.filters = oldInstance.displayObject.filters;
-									}
-									if (frameObject.visible == null) {
-										instance.displayObject.visible = oldInstance.displayObject.visible;
-									}
-									if (frameObject.blendMode == null) {
-										instance.displayObject.blendMode = oldInstance.displayObject.blendMode;
-									}
-									if (frameObject.cacheAsBitmap == null) {
-										//instance.displayObject.cacheAsBitmap = oldInstance.displayObject.cacheAsBitmap;
-									}
-								}
-
+							if(frameObject.matrix == null) {
+								instance.displayObject.transform.matrix = oldInstance.displayObject.transform.matrix;
 							}
-						} else {
-
-							//if hasMove we should be modifying the current object, unless we are doing a goto and the object doesn't exist
-							instance = null;
-							if(frameObject.hasMove) {
-								instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
-								if(instance != null && instance.initFrameObjectID != frameObject.id) {//throw away changes made by scripts if it isn't the same id
-									instance = null;
-								}
+							if(frameObject.colorTransform == null) {
+								instance.displayObject.transform.colorTransform = oldInstance.displayObject.transform.colorTransform;
 							}
-							//if frameObject.hasCharacter or we are doing a goto and the character doesn't exist yet, we need to make it
-							if (instance == null) {
-								instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-								if (instance != null) {
-									if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
-										currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
-									}
-									currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-									currentInstancesByFrameObjectID.set (frameObject.id, instance);
-
-								}
+							if(frameObject.filters == null) {
+								instance.displayObject.filters = oldInstance.displayObject.filters;
 							}
-							if (instance != null) {
-								__updateDisplayObject (instance.displayObject, frameObject);
+							if (frameObject.visible == null) {
+								instance.displayObject.visible = oldInstance.displayObject.visible;
 							}
-
-
+							if (frameObject.blendMode == null) {
+								instance.displayObject.blendMode = oldInstance.displayObject.blendMode;
+							}
+							if (frameObject.cacheAsBitmap == null) {
+								//instance.displayObject.cacheAsBitmap = oldInstance.displayObject.cacheAsBitmap;
+							}
 						}
 
-					case CREATE,DESTROY,UPDATE:
-//TODO:LC remove switch, all should be placeObject once assets have been reprocessed with new modifications to SWFLiteExporter to use PLACE_OBJECT
+					}
+				} else {
 
-//TODO:LC refactor to make more efficient by just using depth instead frameObject.id in many places throughout this function. also verify __fromSymbol, __enterFrame, and __goto are updated to match wherever necessary
+					//if hasMove we should be modifying the current object, unless we are doing a goto and the object doesn't exist
+					instance = null;
+					if(frameObject.hasMove) {
+						instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
+						if(instance != null && instance.initFrameObjectID != frameObject.id) {//throw away changes made by scripts if it isn't the same id
+							instance = null;
+						}
+					}
+					//if frameObject.hasCharacter or we are doing a goto and the character doesn't exist yet, we need to make it
+					if (instance == null) {
+						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+						if (instance != null) {
+							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+								currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
+							}
+							currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
+							currentInstancesByFrameObjectID.set (frameObject.id, instance);
+
+						}
+					}
+					if (instance != null) {
+						__updateDisplayObject (instance.displayObject, frameObject);
+					}
 
 				}
 
@@ -528,215 +515,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		var targetChild:DisplayObject;
 		var child:DisplayObject;
 		var maskApplied:Bool;
-
-		var length:Int = currentInstances.length;
-		var currentInstancesIndex = 0;
-		var childrenIndex = 0;
-
-		// first remove anything that doesn't exist now
-		while (childrenIndex < __children.length) {
-			child = __children[childrenIndex];
-
-			if(child != null){
-				if(__cachedManuallyAddedDisplayObjects.indexOf(child) >= 0){
-					//keep manually added child where it is at
-				}
-				else {
-					var shouldRemove = true;
-					for(instance in currentInstances){
-						if(child == instance.displayObject){
-							shouldRemove = false;
-							break;
-						}
-					}
-					if(shouldRemove && child != null){
-						removeChild(child);
-						if( !loopedSinceLastFrameUpdate ) {
-							__children.insert(childrenIndex, null);//insert placeholder null
-						}
-					}
-				}
-			}
-			childrenIndex++;
-		}
-
-		currentInstancesIndex = 0;
-		childrenIndex = 0;
-
-		var lastDepth = 0;
-		// then leave the manually added dynamic objects where they are, while adding anything new from the frame
-		while (currentInstancesIndex < length) {
-
-			existingChild = childrenIndex >= __children.length ? null : __children[childrenIndex];
-			instance = currentInstances[currentInstancesIndex];
-
-			targetDepth = lastDepth = instance.depth;
-			targetChild = instance.displayObject;
-
-			if (existingChild != targetChild) {
-				if(existingChild != null && __cachedManuallyAddedDisplayObjects.indexOf(existingChild) >= 0){ //keep manually added child where it is at
-					currentInstancesIndex--;
-					child = existingChild;
-				}
-				else{
-					child = targetChild;
-					if(existingChild == null && childrenIndex < __children.length)
-					{
-						__children.splice(childrenIndex, 1);//remove placeholder null
-					}
-					__addChildAtInternal (targetChild, childrenIndex); //add child at will remove another instance of the same object, so we know it is in the right spot and not duplicated
-				}
-
-			} else {
-
-				child = existingChild;
-
-			}
-
-			if(child != targetChild || (child == targetChild && instance.clipDepth <= 0)) { //dont apply masks to masks
-				__applyMask(currentMasks, targetDepth, child);
-			}
-
-			childrenIndex++;
-			currentInstancesIndex++;
-		}
-		//if any dynamic objects at the end of the __children array check to see if they need masks applied
-		while(childrenIndex < __children.length) {
-			lastDepth++;
-			child = __children[childrenIndex++];
-			if(child != null) {
-				__applyMask(currentMasks, lastDepth, child);
-			}
-		}
-		//remove any left over null children
-		childrenIndex = 0;
-		while(childrenIndex < __children.length){  // rely on haxe to javascript not caching length variable in while loop
-			if(__children[childrenIndex] == null) {
-				__children.splice(childrenIndex,1);
-			}
-			else {
-				childrenIndex++;
-			}
-		}
-
-		__lastFrameUpdate = __currentFrame;
-	}
-	private function __updateFrameObjectsAndChildren(isGoTo : Bool = false)	{
-
-//TODO:LC once all assets have been reprocessed refactor to just use __updateFrameObjectsAndChildrenNew and delete this function
-		if(__isReprocessedWithPLACE_OBJECT){
-			__updateFrameObjectsAndChildrenNew(isGoTo);
-			return;
-		}
-		else if (isGoTo) //rebuild from scratch because assets that haven't been reprocessed are missing information for doing a proper goto
-		{
-			__lastFrameUpdate = 0;
-		}
-
-		if (__currentFrame == __lastFrameUpdate)
-			return;
-
-		__updateFrameLabel ();
-
-		var loopedSinceLastFrameUpdate:Bool = ( __lastFrameUpdate > __currentFrame );
-
-		var currentInstancesByFrameObjectID : FastIteratingIntMap<FrameSymbolInstance> = null;
-		var currentFrameObjectIDbyDepth : FastIteratingIntMap<Int> = null;//<depth, id>
-		if(!loopedSinceLastFrameUpdate && __lastFrameUpdate >= 0 &&  __lastInstancesByFrameObjectID != null) {
-			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
-			currentFrameObjectIDbyDepth = __lastDisplayObjectsByDepth;
-		}
-		else {
-			currentInstancesByFrameObjectID = new FastIteratingIntMap<FrameSymbolInstance> ();
-			currentFrameObjectIDbyDepth = new FastIteratingIntMap<Int>();
-		}
-
-		var frame:Int;
-		var frameData:Frame;
-		var instance:FrameSymbolInstance;
-
-		var updateFrameStart:Int = (loopedSinceLastFrameUpdate || __lastFrameUpdate < 0)? 0 : __lastFrameUpdate;
-		for (i in updateFrameStart...__currentFrame) {
-
-			frame = i + 1;
-			frameData = __symbol.frames[i];
-
-			if (frameData.objects == null) continue;
-
-			for (frameObject in frameData.objects) {
-
-				switch (frameObject.type) {
-
-
-					case PLACE_OBJECT:
-
-					case CREATE:
-
-						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-
-						if (instance != null) {
-							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
-								currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
-							}
-							currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-							currentInstancesByFrameObjectID.set (frameObject.id, instance);
-							__updateDisplayObject (instance.displayObject, frameObject);
-
-						}
-
-					case UPDATE:
-
-						instance = currentInstancesByFrameObjectID.get (frameObject.id);
-
-						if (instance != null) {
-
-							__updateDisplayObject (instance.displayObject, frameObject);
-
-						}
-
-					case DESTROY:
-						currentInstancesByFrameObjectID.remove (frameObject.id);
-
-				}
-
-			}
-
-		}
-
-		// TODO: Less garbage?
-
-		var currentInstances = new Array<FrameSymbolInstance> ();
-		var currentMasks = new Array<FrameSymbolInstance> ();
-
-		for (instance in currentInstancesByFrameObjectID) {
-
-			if (currentInstances.indexOf (instance) == -1) {
-
-				if (instance.clipDepth > 0) {
-
-					currentMasks.push (instance);
-					currentInstances.push (instance);
-
-				} else {
-
-					currentInstances.push (instance);
-
-				}
-
-			}
-
-		}
-
-		__lastDisplayObjectsByDepth = currentFrameObjectIDbyDepth;
-		__lastInstancesByFrameObjectID = currentInstancesByFrameObjectID;
-
-
-		currentInstances.sort (__sortDepths);
-
-		var existingChild:DisplayObject;
-		var targetDepth:Int;
-		var targetChild:DisplayObject;
-		var child:DisplayObject;
 
 		var length:Int = currentInstances.length;
 		var currentInstancesIndex = 0;
@@ -1005,76 +783,70 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 			for (frameObject in frameData.objects) {
 
-//TODO:LC after everything is reprocessed we can remove this if check since everything will be FrameObjectType.PLACE_OBJECT
-				if (frameObject.type == FrameObjectType.CREATE || frameObject.type == FrameObjectType.PLACE_OBJECT) {
-//TODO:LC after everything is reprocessed we can remove __isReprocessedWithPLACE_OBJECT and everywhere it is used
-					__isReprocessedWithPLACE_OBJECT = __isReprocessedWithPLACE_OBJECT || frameObject.type == FrameObjectType.PLACE_OBJECT;
-					if (__activeInstancesByFrameObjectID.exists (frameObject.id)) {
+				if (__activeInstancesByFrameObjectID.exists (frameObject.id)) {
 
-						continue;
+					continue;
 
-					} else {
+				} else {
 
-						instance = null;
-						duplicate = false;
+					instance = null;
+					duplicate = false;
 
-						if(frameData.objects.length <= 2)	//for create and destroy
-						{
-							if(frameObject.name != null || frameObject.matrix != null || frameObject.colorTransform != null || frameObject.filters != null) {
-								lastObjectToHavePlacementData = frameObject.lastFrameObjectWithPlacementData = frameObject;
-							}
-							else if(lastObjectToHavePlacementData != null)
-								frameObject.lastFrameObjectWithPlacementData = lastObjectToHavePlacementData;
+					if(frameData.objects.length <= 2)	//for create and destroy
+					{
+						if(frameObject.name != null || frameObject.matrix != null || frameObject.colorTransform != null || frameObject.filters != null) {
+							lastObjectToHavePlacementData = frameObject.lastFrameObjectWithPlacementData = frameObject;
 						}
+						else if(lastObjectToHavePlacementData != null)
+							frameObject.lastFrameObjectWithPlacementData = lastObjectToHavePlacementData;
+					}
 
-						for (activeInstance in __activeInstances) {
+					for (activeInstance in __activeInstances) {
 
-							if (activeInstance.displayObject != null && activeInstance.characterID == frameObject.symbol && activeInstance.depth == frameObject.depth) {
+						if (activeInstance.displayObject != null && activeInstance.characterID == frameObject.symbol && activeInstance.depth == frameObject.depth) {
 
-								// TODO: Fix duplicates in exporter
-								instance = activeInstance;
-								duplicate = true;
-								break;
-
-							}
+							// TODO: Fix duplicates in exporter
+							instance = activeInstance;
+							duplicate = true;
+							break;
 
 						}
 
 					}
 
-					if (instance == null) {
+				}
 
-						symbol = __swf.symbols.get (frameObject.symbol);
+				if (instance == null) {
 
-						if (symbol != null) {
+					symbol = __swf.symbols.get (frameObject.symbol);
 
-							displayObject = symbol.__createObject (__swf);
+					if (symbol != null) {
 
-							if (displayObject != null) {
+						displayObject = symbol.__createObject (__swf);
 
-								displayObject.parent = this;
-								displayObject.stage = stage;
-								if(frameObject.clipDepth > 0) {
-									displayObject.isTimelineMask = true;
-								}
-								instance = new FrameSymbolInstance (frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject.clipDepth);
+						if (displayObject != null) {
 
+							displayObject.parent = this;
+							displayObject.stage = stage;
+							if(frameObject.clipDepth > 0) {
+								displayObject.isTimelineMask = true;
 							}
+							instance = new FrameSymbolInstance (frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject.clipDepth);
 
 						}
 
 					}
 
-					if (instance != null) {
+				}
 
-						__activeInstancesByFrameObjectID.set (frameObject.id, instance);
+				if (instance != null) {
 
-						if (!duplicate) {
+					__activeInstancesByFrameObjectID.set (frameObject.id, instance);
 
-							__activeInstances.push (instance);
-							__updateDisplayObject (instance.displayObject, frameObject);
+					if (!duplicate) {
 
-						}
+						__activeInstances.push (instance);
+						__updateDisplayObject (instance.displayObject, frameObject);
 
 					}
 

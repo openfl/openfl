@@ -26,7 +26,6 @@ class FrameObject {
 	public var hasCharacter:Bool;
 	public var hasMove:Bool;
 	public var symbol:Int;
-	public var type:FrameObjectType;
 	public var visible:Null<Bool>;
 	public var lastFrameObjectWithPlacementData:FrameObject;
 
@@ -52,17 +51,16 @@ class FrameObject {
 		frameObject.hasCharacter = this.hasCharacter;
 		frameObject.hasMove = this.hasMove;
 		frameObject.symbol = this.symbol;
-		frameObject.type = this.type;
 		frameObject.visible = this.visible;
 		frameObject.lastFrameObjectWithPlacementData = this.lastFrameObjectWithPlacementData;
 		return frameObject;
 	}
-	
-	
+
+
 	public function new () {
-		
-		
-		
+
+
+
 	}
 
 
@@ -73,7 +71,6 @@ class FrameObject {
 		" depth: " + depth +
 		" name: " + name +
 		" symbol: " + symbol +
-		" type: " + type +
 		" hasCharacter: " + hasCharacter + " hasMove: " + hasMove +
 		" matrix: " + matrix +
 		" blendMode: " + blendMode + " clipDepth: " + clipDepth +
