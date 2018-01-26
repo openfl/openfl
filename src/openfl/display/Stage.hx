@@ -42,6 +42,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.Window in OpenFLWindow;
 import openfl.errors.Error;
 import openfl.events.Event;
+import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
 import openfl.events.FullScreenEvent;
@@ -1076,6 +1077,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		} catch (e:Dynamic) {
 			
 			__handleError (e);
+			return false;
 			
 		}
 		
@@ -1164,6 +1166,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		} catch (e:Dynamic) {
 			
 			__handleError (e);
+			return false;
 			
 		}
 		
