@@ -269,7 +269,7 @@ import openfl._internal.Lib;
 			
 			if (display != null) {
 				
-				resolutionX = display.currentMode.width;
+				resolutionX = Math.ceil (display.currentMode.width * stage.window.scale);
 				
 			}
 			
@@ -297,7 +297,7 @@ import openfl._internal.Lib;
 			
 			if (display != null) {
 				
-				resolutionY = display.currentMode.height;
+				resolutionY = Math.ceil (display.currentMode.height * stage.window.scale);
 				
 			}
 			
