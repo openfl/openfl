@@ -2240,14 +2240,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function get_fullScreenHeight ():UInt {
 		
-		return window.display.currentMode.height;
+		return Math.ceil (window.display.currentMode.height * window.scale);
 		
 	}
 	
 	
 	private function get_fullScreenWidth ():UInt {
 		
-		return window.display.currentMode.width;
+		return Math.ceil (window.display.currentMode.width * window.scale);
 		
 	}
 	
