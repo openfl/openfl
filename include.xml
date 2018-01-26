@@ -76,7 +76,7 @@
 			<haxedef name="openfl-html5" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<module name="openfl" if="modular">
+			<module name="openfl" if="html5 lime-modular">
 				
 				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
 				
