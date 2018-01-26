@@ -417,7 +417,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-
+		
 		var result = super.__dispatchEvent (event);
 		
 		if (event.__isCanceled) {
@@ -441,70 +441,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return result;
-		
-	}
-	
-	
-	private function __dispatchStack (event:Event, stack:Array<DisplayObject>):Void {
-		
-		var target:DisplayObject;
-		var length = stack.length;
-		
-		if (length == 0) {
-			
-			event.eventPhase = EventPhase.AT_TARGET;
-			target = cast event.target;
-			target.__dispatch (event);
-			
-		} else {
-			
-			event.eventPhase = EventPhase.CAPTURING_PHASE;
-			event.target = stack[stack.length - 1];
-			
-			for (i in 0...length - 1) {
-				
-				stack[i].__dispatch (event);
-				
-				if (event.__isCanceled) {
-					
-					return;
-					
-				}
-				
-			}
-			
-			event.eventPhase = EventPhase.AT_TARGET;
-			target = cast event.target;
-			target.__dispatch (event);
-			
-			if (event.__isCanceled) {
-				
-				return;
-				
-			}
-			
-			if (event.bubbles) {
-				
-				event.eventPhase = EventPhase.BUBBLING_PHASE;
-				var i = length - 2;
-				
-				while (i >= 0) {
-					
-					stack[i].__dispatch (event);
-					
-					if (event.__isCanceled) {
-						
-						return;
-						
-					}
-					
-					i--;
-					
-				}
-				
-			}
-			
-		}
 		
 	}
 	
