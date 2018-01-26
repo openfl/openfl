@@ -691,12 +691,12 @@ import js.html.CanvasRenderingContext2D;
 	
 	private function __cleanup ():Void {
 		
-		if (__bounds != null) {
-			
-			__dirty = true;
-			__transformDirty = true;
-			
-		}
+//		if (__bounds != null) {
+//
+//			__dirty = true;
+//			__transformDirty = true;
+//
+//		}
 		
 		__bitmap = null;
 		

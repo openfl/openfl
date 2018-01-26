@@ -1100,6 +1100,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		}
 		
 	}
+
+	public override function cleanGraphics ():Void {
+		super.cleanGraphics();
+
+		for (child in __cachedChildrenFrameSymbolInstacesDisplayObjects) {
+			child.cleanGraphics();
+		}
+
+	}
 	
 	
 	

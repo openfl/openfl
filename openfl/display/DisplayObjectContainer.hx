@@ -316,6 +316,14 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 	}
+
+	public override function cleanGraphics ():Void {
+		super.cleanGraphics();
+
+		for (child in __children) {
+			child.cleanGraphics();
+		}
+	}
 	
 	
 	private function resolve (fieldName:String):DisplayObject {
@@ -784,7 +792,7 @@ class DisplayObjectContainer extends InteractiveObject {
 //
 //		}
 //
-//		__removedChildren.length = 0;
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
