@@ -52,8 +52,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __cachedManuallyAddedDisplayObjects:Array<DisplayObject>;
 	private var __activeInstances:Array<FrameSymbolInstance>;
 	private var __activeInstancesByFrameObjectID:FastIteratingIntMap<FrameSymbolInstance>;
-	private var __lastInstancesByFrameObjectID:FastIteratingIntMap<FrameSymbolInstance>;
-	private var __lastDisplayObjectsByDepth: FastIteratingIntMap <Int>; //<depth, id>
+	private var __lastInstancesByDepth: FastIteratingIntMap <FrameSymbolInstance>; //<depth, FrameSymbolInstance>
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;
 	private var __currentLabel:String;
@@ -345,18 +344,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		var loopedSinceLastFrameUpdate:Bool = ( __lastFrameUpdate > __currentFrame );
 
-		var currentInstancesByFrameObjectID : FastIteratingIntMap<FrameSymbolInstance> = null;
-		var currentFrameObjectIDbyDepth : FastIteratingIntMap<Int> = null;//<depth, id>  id is a unique auto incremented id of every instance in the timeline. should be the same as FrameSymbolInstance.initFrameObjectID
+		var currentInstancesbyDepth : FastIteratingIntMap<FrameSymbolInstance> = null;//<depth, FrameSymbolInstance>  frameObject.id should be the same as FrameSymbolInstance.initFrameObjectID
 
 		// start from scratch if we have looped around or starting from beginning.
 		// Otherwise we need to keep the objects on the timeline active (when we are doing a goto either backward or forward, or just playing sequentially)
-		if(__lastInstancesByFrameObjectID == null || (!isGoTo && (loopedSinceLastFrameUpdate || __lastFrameUpdate < 0))) {
-			currentInstancesByFrameObjectID = new FastIteratingIntMap<FrameSymbolInstance> ();
-			currentFrameObjectIDbyDepth = new FastIteratingIntMap<Int>();
+		if(__lastInstancesByDepth == null || (!isGoTo && (loopedSinceLastFrameUpdate || __lastFrameUpdate < 0))) {
+			currentInstancesbyDepth = new FastIteratingIntMap<FrameSymbolInstance>();
 		}
 		else {
-			currentInstancesByFrameObjectID = __lastInstancesByFrameObjectID;
-			currentFrameObjectIDbyDepth = __lastDisplayObjectsByDepth;
+			currentInstancesbyDepth = __lastInstancesByDepth;
 		}
 
 		var frame:Int;
@@ -376,8 +372,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			var lastFrameObjectDepths : Array<Int> = new Array();
 
 			//Collect all depths present on the last frame
-			if( currentFrameObjectIDbyDepth.iterator().hasNext() ) {
-				for(frameObjectDepth in currentFrameObjectIDbyDepth.keys()) {
+			if( currentInstancesbyDepth.iterator().hasNext() ) {
+				for(frameObjectDepth in currentInstancesbyDepth.keys()) {
 					lastFrameObjectDepths.push(frameObjectDepth);
 				}
 			}
@@ -389,8 +385,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 			//delete anything that is left (means that depth was only present on the last frame)
 			for (depth in lastFrameObjectDepths) {
-				currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(depth));
-				currentFrameObjectIDbyDepth.remove(depth);
+				currentInstancesbyDepth.remove(depth);
 			}
 
 			for (frameObject in frameData.objects) {
@@ -404,19 +399,17 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				if(frameObject.hasCharacter == frameObject.hasMove) {
 
 					var oldInstance : FrameSymbolInstance = null;
-					if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
+					if(currentInstancesbyDepth.exists(frameObject.depth)) {
 
-						oldInstance = currentInstancesByFrameObjectID.get(currentFrameObjectIDbyDepth.get(frameObject.depth));
-						currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
-						currentFrameObjectIDbyDepth.remove(frameObject.depth);
+						oldInstance = currentInstancesbyDepth.get(frameObject.depth);
+						currentInstancesbyDepth.remove(frameObject.depth);
 					}
 
 					instance = __activeInstancesByFrameObjectID.get (frameObject.id);
 
 					if (instance != null) {
 
-						currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-						currentInstancesByFrameObjectID.set (frameObject.id, instance);
+						currentInstancesbyDepth.set(frameObject.depth, instance);
 						if(!frameObject.hasCharacter && !frameObject.hasMove && oldInstance != null && instance.initFrameObjectID == oldInstance.initFrameObjectID) {
 							continue;//this object is already on the timeline and being used, no need to update
 						}
@@ -452,7 +445,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					//if hasMove we should be modifying the current object, unless we are doing a goto and the object doesn't exist
 					instance = null;
 					if(frameObject.hasMove) {
-						instance = currentInstancesByFrameObjectID.get (currentFrameObjectIDbyDepth.get(frameObject.depth));
+						instance = currentInstancesbyDepth.get(frameObject.depth);
 						if(instance != null && instance.initFrameObjectID != frameObject.id) {//throw away changes made by scripts if it isn't the same id
 							instance = null;
 						}
@@ -461,12 +454,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					if (instance == null) {
 						instance = __activeInstancesByFrameObjectID.get (frameObject.id);
 						if (instance != null) {
-							if(currentFrameObjectIDbyDepth.exists(frameObject.depth)) {
-								currentInstancesByFrameObjectID.remove(currentFrameObjectIDbyDepth.get(frameObject.depth));
-							}
-							currentFrameObjectIDbyDepth.set(frameObject.depth, frameObject.id);
-							currentInstancesByFrameObjectID.set (frameObject.id, instance);
-
+							currentInstancesbyDepth.set(frameObject.depth, instance);
 						}
 					}
 					if (instance != null) {
@@ -485,7 +473,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		var currentMasks = new Array<FrameSymbolInstance> ();
 
 		//separate out masks and make array of everything that should be displayed
-		for (instance in currentInstancesByFrameObjectID) {
+		for (instance in currentInstancesbyDepth) {
 
 			if (currentInstances.indexOf (instance) == -1) {
 
@@ -504,9 +492,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		}
 
-		__lastDisplayObjectsByDepth = currentFrameObjectIDbyDepth;
-		__lastInstancesByFrameObjectID = currentInstancesByFrameObjectID;
-
+		__lastInstancesByDepth = currentInstancesbyDepth;
 
 		currentInstances.sort (__sortDepths);
 
