@@ -198,7 +198,7 @@ import sys.io.Process;
 		var kernelVersion = "";
 		try {
 			var process = new Process ("uname", [ "-r" ]);
-			var kernelVersion = StringTools.trim (process.stdout.readLine ().toString ());
+			kernelVersion = StringTools.trim (process.stdout.readLine ().toString ());
 			process.close ();
 		} catch (e:Dynamic) {}
 		if (kernelVersion != "") return "Linux " + kernelVersion;
