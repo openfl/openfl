@@ -3,7 +3,12 @@ package openfl.system;
 
 import haxe.macro.Compiler;
 import lime.system.Locale;
+import lime.system.System;
 import openfl._internal.Lib;
+
+#if linux
+import sys.io.Process;
+#end
 
 
 @:final class Capabilities {
@@ -167,26 +172,37 @@ import openfl._internal.Lib;
 	
 	private static inline function get_os ():String {
 		
-		// TODO: OS version, too?
-		
 		#if firefox
 		return "Firefox";
 		#elseif (js && html5)
 		return "HTML5";
 		#elseif android
-		return "Android";
+		return System.version;
 		#elseif blackberry
 		return "BlackBerry";
 		#elseif ios
-		return "iOS";
+		return System.model;
 		#elseif tvos
-		return "tvOS";
+		return System.model;
 		#elseif tizen
 		return "Tizen";
 		#elseif webos
 		return "webOS";
-		#elseif sys
-		return Sys.systemName ();
+		#elseif windows
+		return "Windows";
+		#elseif mac
+		var version = System.version;
+		var index = version.indexOf ("10");
+		return "Mac OS " + version.substr (version.indexOf ("10"));
+		#elseif linux
+		var kernelVersion = "";
+		try {
+			var process = new Process ("uname", [ "-r" ]);
+			var kernelVersion = StringTools.trim (process.stdout.readLine ().toString ());
+			process.close ();
+		} catch (e:Dynamic) {}
+		if (kernelVersion != "") return "Linux " + kernelVersion;
+		else return "Linux";
 		#else
 		return "";
 		#end
