@@ -145,8 +145,14 @@ import sys.io.Process;
 	
 	private static inline function get_manufacturer ():String {
 		
+		#if mac
+		return "OpenFL Macintosh";
+		#elseif linux
+		return "OpenFL Linux";
+		#else
 		var name = System.platformName;
 		return "OpenFL" + (name != null ? " " + name : "");
+		#end
 		
 	}
 	
