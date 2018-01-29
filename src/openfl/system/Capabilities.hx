@@ -145,55 +145,18 @@ import sys.io.Process;
 	
 	private static inline function get_manufacturer ():String {
 		
-		#if firefox
-		return "OpenFL Firefox";
-		#elseif (js && html5)
-		return "OpenFL HTML5";
-		#elseif android
-		return "OpenFL Android";
-		#elseif blackberry
-		return "OpenFL BlackBerry";
-		#elseif ios
-		return "OpenFL iOS";
-		#elseif tvos
-		return "OpenFL tvOS";
-		#elseif tizen
-		return "OpenFL Tizen";
-		#elseif webos
-		return "OpenFL webOS";
-		#elseif sys
-		return "OpenFL " + Sys.systemName ();
-		#else
-		return "OpenFL";
-		#end
+		var name = System.platformName;
+		return "OpenFL" + (name != null ? " " + name : "");
 		
 	}
 	
 	
 	private static inline function get_os ():String {
 		
-		#if firefox
-		return "Firefox";
-		#elseif (js && html5)
-		return "HTML5";
-		#elseif android
-		return System.version;
-		#elseif blackberry
-		return "BlackBerry";
-		#elseif ios
-		return System.model;
-		#elseif tvos
-		return System.model;
-		#elseif tizen
-		return "Tizen";
-		#elseif webos
-		return "webOS";
-		#elseif windows
-		return "Windows";
+		#if (ios || tvos)
+		return System.deviceModel;
 		#elseif mac
-		var version = System.version;
-		var index = version.indexOf ("10");
-		return "Mac OS " + version.substr (version.indexOf ("10"));
+		return "Mac OS " + System.platformVersion;
 		#elseif linux
 		var kernelVersion = "";
 		try {
@@ -204,7 +167,8 @@ import sys.io.Process;
 		if (kernelVersion != "") return "Linux " + kernelVersion;
 		else return "Linux";
 		#else
-		return "";
+		var label = System.platformLabel;
+		return label != null ? label : "";
 		#end
 		
 	}
