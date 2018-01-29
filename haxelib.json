@@ -4,7 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "6.5.0",
-	"releasenote": "Initial GL stencil-based mask support, TextField font and input improvements",
-	"contributors": [ "singmajesty" ]
+	"version": "7.0.0",
+	"releasenote": "Added support for NPM-based OpenFL releases, many smaller improvements",
+	"contributors": [ "singmajesty" ],
+	"classPath": "src"
 }
