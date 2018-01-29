@@ -1957,11 +1957,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__textEngine.height = value;
 			
+			#if (js && html5)
 			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
 				
 				__forceCachedBitmapUpdate = true;
 				
 			}
+			#end
 			
 		}
 		
@@ -2313,11 +2315,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__dirty = true;
 			__setRenderDirty ();
 			
+			#if (js && html5)
 			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
 				
 				__forceCachedBitmapUpdate = true;
 				
 			}
+			#end
 			
 		}
 		
@@ -2403,11 +2407,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__textEngine.width = value;
 			
+			#if (js && html5)
 			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
 				
 				__forceCachedBitmapUpdate = true;
 				
 			}
+			#end
 		}
 		
 		return __textEngine.width * Math.abs (__scaleX);
@@ -2430,11 +2436,13 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__layoutDirty = true;
 			__setRenderDirty ();
 			
+			#if (js && html5)
 			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
 				
 				__forceCachedBitmapUpdate = true;
 				
 			}
+			#end
 			
 		}
 		
