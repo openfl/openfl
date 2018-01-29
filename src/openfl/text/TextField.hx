@@ -1319,9 +1319,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		__getRenderTransform ();
@@ -1332,7 +1332,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (__textEngine.bounds.contains (px, py)) {
 			
-			if (stack != null) {
+			if (stack != null && !hitTestWhenMouseDisabled) {
 				
 				stack.push (hitObject);
 				
@@ -1382,7 +1382,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		// TODO: Better DOM workaround on cacheAsBitmap
 		
-		if (renderSession.renderType == DOM && !__renderedOnCanvasWhileOnDOM) {
+		if (renderSession.renderType == DOM && (!__renderedOnCanvasWhileOnDOM  || __forceCachedBitmapUpdate)) {
 			
 			__renderedOnCanvasWhileOnDOM = true;
 			
@@ -1394,7 +1394,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			if (__isHTML) {
 				
-				__updateText (HTMLParser.parse (__text, __textFormat, __textEngine.textFormatRanges));
+				__updateText (HTMLParser.parse(__rawHtmlText, __textFormat, __textEngine.textFormatRanges));
 				
 			}
 			
@@ -1462,7 +1462,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				if (__isHTML && __rawHtmlText != null) {
 					
-					__updateText (__rawHtmlText);
+					__updateText (__text);
 					__dirty = true;
 					__layoutDirty = true;
 					__setRenderDirty ();
@@ -1957,6 +1957,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__textEngine.height = value;
 			
+			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
+				
+				__forceCachedBitmapUpdate = true;
+				
+			}
+			
 		}
 		
 		return __textEngine.height * Math.abs (scaleY);
@@ -1966,7 +1972,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function get_htmlText ():String {
 		
+		#if (js && html5)
+		return	DisplayObject.__supportDOM ? __rawHtmlText : __text;
+		#else
 		return __text;
+		#end
 		
 	}
 	
@@ -1993,40 +2003,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 		
-		#if (js && html5)
-		
-		if (DisplayObject.__supportDOM) {
-			
-			if (__textEngine.textFormatRanges.length > 1) {
-				
-				__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-				
-			}
-			
-			var range = __textEngine.textFormatRanges[0];
-			range.format = __textFormat;
-			range.start = 0;
-			
-			if (__renderedOnCanvasWhileOnDOM) {
-				
-				range.end = value.length;
-				__updateText (value);
-				
-			} else {
-				
-				range.end = __rawHtmlText.length;
-				__updateText (__rawHtmlText);
-				
-			}
-			
-		} else {
-			
-			__updateText (value);
-			
-		}
-		#else
 		__updateText (value);
-		#end
 		
 		return value;
 		
@@ -2336,6 +2313,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__dirty = true;
 			__setRenderDirty ();
 			
+			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
+				
+				__forceCachedBitmapUpdate = true;
+				
+			}
+			
 		}
 		
 		for (range in __textEngine.textFormatRanges) {
@@ -2420,6 +2403,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__textEngine.width = value;
 			
+			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
+				
+				__forceCachedBitmapUpdate = true;
+				
+			}
 		}
 		
 		return __textEngine.width * Math.abs (__scaleX);
@@ -2441,6 +2429,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__dirty = true;
 			__layoutDirty = true;
 			__setRenderDirty ();
+			
+			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
+				
+				__forceCachedBitmapUpdate = true;
+				
+			}
 			
 		}
 		

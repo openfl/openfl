@@ -26,7 +26,7 @@ class CanvasMaskManager extends AbstractMaskManager {
 		context.save ();
 		
 		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__getRenderTransform ();
+		var transform = mask.__renderTransform;
 		
 		context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 		

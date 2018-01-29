@@ -103,7 +103,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
 		if (!hitObject.visible || __isMask || __bitmapData == null) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
@@ -121,7 +121,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 				
 			}
 			
-			if (stack != null && !interactiveOnly) {
+			if (stack != null && !interactiveOnly && !hitTestWhenMouseDisabled) {
 				
 				stack.push (hitObject);
 				

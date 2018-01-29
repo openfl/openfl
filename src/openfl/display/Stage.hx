@@ -1121,7 +1121,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__enterFrame (__deltaTime);
 			__deltaTime = 0;
-			__update (false, true);
+			__traverse ();
 			
 			if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
 				
@@ -1981,13 +1981,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
 		
 		if (transformOnly) {
 			
 			if (__transformDirty) {
 				
-				super.__update (true, updateChildren, maskGraphics);
+				super.__update (true, updateChildren, maskGraphics, resetUpdateDirty);
 				
 				if (updateChildren) {
 					
@@ -2002,7 +2002,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (__transformDirty || __renderDirty) {
 				
-				super.__update (false, updateChildren, maskGraphics);
+				super.__update (false, updateChildren, maskGraphics, resetUpdateDirty);
 				
 				if (updateChildren) {
 					
@@ -2024,7 +2024,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
 				
-				super.__update (false, updateChildren, maskGraphics);
+				super.__update (false, updateChildren, maskGraphics, resetUpdateDirty);
 				
 				if (updateChildren) {
 					

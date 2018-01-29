@@ -497,9 +497,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+		if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		if (__scrollRect != null) {
@@ -526,9 +526,9 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 					
-					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
+					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i], hitTestWhenMouseDisabled)) {
 						
-						if (stack != null) {
+						if (stack != null && !hitTestWhenMouseDisabled) {
 							
 							stack.push (hitObject);
 							
@@ -551,13 +551,15 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 					interactive = __children[i].__getInteractive (null);
 					
-					if (interactive || (mouseEnabled && !hitTest)) {
+					var childHitTestWhenMouseDisabled = hitTestWhenMouseDisabled || (interactive && !__children[i].__mouseThroughAllowed ()) || (!interactive && !mouseEnabled);
+					
+					if (interactive || (mouseEnabled && !hitTest) || childHitTestWhenMouseDisabled) {
 						
-						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i])) {
+						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i], childHitTestWhenMouseDisabled)) {
 							
 							hitTest = true;
 							
-							if (interactive && stack.length > length) {
+							if (!childHitTestWhenMouseDisabled && interactive && stack.length > 0) {
 								
 								break;
 								
@@ -571,7 +573,12 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				if (hitTest) {
 					
-					stack.insert (length, hitObject);
+					if (!hitTestWhenMouseDisabled && mouseEnabled) {
+						
+						stack.insert (length, hitObject);
+						
+					}
+					
 					return true;
 					
 				}
@@ -608,6 +615,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		return false;
+		
+	}
+	
+	
+	private override function __mouseThroughAllowed ():Bool {
+		
+		return mouseEnabled || mouseChildren;
 		
 	}
 	
@@ -983,15 +997,37 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	private override function __traverse ():Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics);
+		if (__updateDirty) {
+			
+			__update (false, true, null, true);
+			
+		} else if (__updateTraverse) {
+			
+			for (child in __children) {
+				
+				child.__traverse ();
+				
+			}
+			
+		}
+		
+		// This container has been traversed, therefore reset flag
+		__updateTraverse = false;
+			
+	}
+	
+	
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+		
+		super.__update (transformOnly, updateChildren, maskGraphics, resetUpdateDirty);
 		
 		if (updateChildren) {
 			
 			for (child in __children) {
 				
-				child.__update (transformOnly, true, maskGraphics);
+				child.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
 				
 			}
 			

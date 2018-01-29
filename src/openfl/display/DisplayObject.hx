@@ -124,6 +124,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __scrollRect:Rectangle;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
+	private var __updateDirty:Bool;
+	private var __updateTraverse:Bool;
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
@@ -722,7 +724,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
 		if (__graphics != null) {
 			
@@ -731,7 +733,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (__graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 				
-				if (stack != null && !interactiveOnly) {
+				if (stack != null && !interactiveOnly && !hitTestWhenMouseDisabled) {
 					
 					stack.push (hitObject);
 					
@@ -759,6 +761,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			}
 			
 		}
+		
+		return false;
+		
+	}
+	
+	
+	private function __mouseThroughAllowed ():Bool {
 		
 		return false;
 		
@@ -922,7 +931,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__setParentRenderDirty ();
 			
 		}
-		
+		__setUpdateDirty();
 	}
 	
 	
@@ -944,7 +953,39 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
+		__setUpdateDirty();
+		
 	}
+	
+	
+	private inline function __setUpdateDirty ():Void {
+ 		
+ 		if (!__updateDirty) {
+ 			
+ 			__updateDirty = true;
+ 			
+ 			// As this DisplayObject needs to be updated, we need to flag all parents to be traversed
+ 			__setParentUpdateTraverse ();
+ 			
+ 		}
+ 		
+ 	}	
+ 	
+ 	
+ 	private function __setParentUpdateTraverse ():Void {
+ 		
+ 		var renderParent = __renderParent != null ? __renderParent : parent;
+ 		
+ 		// Relying on __updateTraverse always being set, is currently too risky and would only bring small performance gain
+ 		// Therefore setting it always to true up to the root objects
+ 		if (renderParent != null/* && !renderParent.__updateTraverse*/) {
+ 			
+ 			renderParent.__updateTraverse = true;
+ 			renderParent.__setParentUpdateTraverse ();
+ 		
+ 		}
+ 		
+ 	}
 	
 	
 	private function __setWorldTransformInvalid ():Void {
@@ -961,7 +1002,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	private function __traverse ():Void {
+		
+		if (__updateDirty) {
+			
+			__update (false, true, null, true);
+			
+		}
+	}
+	
+	
+	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+		
+		if (resetUpdateDirty) {
+			
+			__updateDirty = false;
+			__updateTraverse = false;
+			
+		}
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
@@ -1060,7 +1118,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (updateChildren && mask != null) {
 			
-			mask.__update (transformOnly, true, maskGraphics);
+			mask.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
 			
 		}
 		
@@ -1760,7 +1818,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function set_scrollRect (value:Rectangle):Rectangle {
 		
-		if (value != __scrollRect) {
+		var dirty = false;
+		if (value == null) {
+			
+			dirty = __scrollRect != null;
+			
+			__scrollRect = null;
+			
+		} else if (__scrollRect == null) {
+			
+			__scrollRect = value.clone ();
+			
+			dirty = true;
+			
+		} else if (!__scrollRect.equals (value)) {
+			
+			__scrollRect.copyFrom (value);
+			
+			dirty = true;
+			
+		}
+		
+		if (dirty) {
 			
 			__setTransformDirty ();
 			
@@ -1772,7 +1851,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		return __scrollRect = value;
+		return __scrollRect;
 		
 	}
 	
