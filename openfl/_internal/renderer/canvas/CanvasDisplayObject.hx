@@ -9,6 +9,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class CanvasDisplayObject {
@@ -19,16 +20,24 @@ class CanvasDisplayObject {
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
+		var gBounds:Rectangle = null;
+
+		if (displayObject.__graphics.__bounds != null && renderSession.renderer != null) {
+			gBounds = displayObject.__graphics.__bounds.clone();
+			if (gBounds.width == 0 || gBounds.height == 0) {
+				gBounds = null;
+			}
+			else {
+				gBounds.__transform(gBounds, displayObject.__worldTransform);
+			}
+		}
+
 		// Bail on rendering if bounds are completely offscreen
-		var gBounds:Rectangle = displayObject.__graphics.__bounds;
-		var rX : Float = gBounds == null ? Math.NaN : displayObject.__worldTransform.tx + gBounds.x;
-		var rY : Float = gBounds == null ? Math.NaN : displayObject.__worldTransform.ty + gBounds.y;
-		if ((!Math.isNaN(rX) && !Math.isNaN(rY)) && ((rX < 0 && (rX * -1) > gBounds.width) || (rY < 0 && (rY * -1) > gBounds.height) || (renderSession.renderer != null && (rX > renderSession.renderer.width || rY > renderSession.renderer.height))) )
-		{
+		if (gBounds != null && !gBounds.intersects(renderSession.renderer.viewport)) {
 			return;
 		}
 		
-		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
+		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender) {
 			
 			renderSession.blendModeManager.setBlendMode (displayObject.__worldBlendMode);
 			renderSession.maskManager.pushObject (displayObject);

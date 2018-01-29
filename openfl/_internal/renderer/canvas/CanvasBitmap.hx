@@ -1,12 +1,14 @@
 package openfl._internal.renderer.canvas;
 
 
+import openfl.geom.Rectangle;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
+@:access(openfl.geom.Rectangle)
 
 
 class CanvasBitmap {
@@ -15,8 +17,18 @@ class CanvasBitmap {
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
-		
+		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.__bitmapData == null) return;
+
+		// Bail on rendering if bounds are completely offscreen
+		var gBounds:Rectangle = bitmap.__bitmapData.rect.clone();
+		if (gBounds.width == 0 || gBounds.height == 0) return;
+
+		gBounds.__transform(gBounds, bitmap.__worldTransform);
+
+		if (!gBounds.intersects(renderSession.renderer.viewport)) {
+			return;
+		}
+
 		var context = renderSession.context;
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable) {

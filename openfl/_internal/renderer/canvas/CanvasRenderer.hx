@@ -1,6 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
+import openfl.geom.Rectangle;
 import lime.graphics.CanvasRenderContext;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
@@ -47,6 +48,8 @@ class CanvasRenderer extends AbstractRenderer {
 			
 		}
 		#end
+
+		viewport = new Rectangle(0, 0, width, height);
 		
 	}
 	
