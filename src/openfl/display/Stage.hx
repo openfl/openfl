@@ -2117,7 +2117,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (oldFocus != null) {
 				
-				var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, __focus, false, 0);
+				var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, value, false, 0);
 				var stack = new Array <DisplayObject> ();
 				oldFocus.__getInteractive (stack);
 				stack.reverse ();
@@ -2125,7 +2125,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			if (__focus != null) {
+			if (value != null) {
 				
 				var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, oldFocus, false, 0);
 				var stack = new Array <DisplayObject> ();
@@ -2137,7 +2137,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		return __focus;
+		return value;
 		
 	}
 	
