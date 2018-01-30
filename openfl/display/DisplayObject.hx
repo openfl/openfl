@@ -1402,7 +1402,38 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__renderTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
 			
 		}
-		
+
+		if (!overrided) {
+			postTransformUpdate();
+		}
+	}
+
+	public var calculatedBounds:Rectangle;
+
+	private function postTransformUpdate():Void {
+		if (__graphics == null || __graphics.__bounds == null) {
+			return;
+		}
+
+		if (calculatedBounds == null) {
+			calculatedBounds = new Rectangle();
+		}
+
+		calculatedBounds.copyFrom(__graphics.__bounds);
+		calculatedBounds.__transform(calculatedBounds, __worldTransform);
+
+		if (parent != null) {
+			parent.applyChildBounds(calculatedBounds);
+		}
+	}
+
+	public function isOnScreen():Bool {
+		if (calculatedBounds != null && stage != null && stage.__renderer != null) {
+			return calculatedBounds.intersects(stage.__renderer.viewport);
+		}
+
+		// Default to true?
+		return true;
 	}
 	
 	

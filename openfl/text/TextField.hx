@@ -1166,11 +1166,27 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		bounds.x += __offsetX;
 		bounds.y += __offsetY;
 		bounds.__transform (bounds, matrix);
-		
+
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 		Rectangle.__pool.release (bounds);
 		
+	}
+
+	private override function postTransformUpdate():Void {
+		if (__textEngine == null || __textEngine.bounds == null) {
+			return;
+		}
+
+		calculatedBounds = new Rectangle();
+		calculatedBounds.copyFrom(__textEngine.bounds);
+		calculatedBounds.x += __offsetX;
+		calculatedBounds.y += __offsetY;
+		calculatedBounds.__transform(calculatedBounds, __worldTransform);
+
+		if (parent != null) {
+			parent.applyChildBounds(calculatedBounds);
+		}
 	}
 	
 	

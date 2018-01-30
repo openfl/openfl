@@ -22,7 +22,10 @@ class CanvasDisplayObject {
 
 		var gBounds:Rectangle = null;
 
-		if (displayObject.__graphics.__bounds != null && renderSession.renderer != null) {
+		if (displayObject.calculatedBounds != null) {
+			gBounds = displayObject.calculatedBounds;
+		}
+		else if (displayObject.__graphics.__bounds != null && renderSession.renderer != null) {
 			gBounds = displayObject.__graphics.__bounds.clone();
 			if (gBounds.width == 0 || gBounds.height == 0) {
 				gBounds = null;

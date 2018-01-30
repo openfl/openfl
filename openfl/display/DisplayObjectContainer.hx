@@ -732,6 +732,10 @@ class DisplayObjectContainer extends InteractiveObject {
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
+
+		if (calculatedBounds != null && !calculatedBounds.intersects(renderSession.renderer.viewport)) {
+			return;
+		}
 		
 		#if !neko
 		
@@ -1047,11 +1051,16 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var countChildDraws:Bool = true;
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
-		
+
+		var oldCalculatedBounds:Rectangle = (!updateChildren && calculatedBounds != null) ? calculatedBounds.clone() : null;
+
 		super.__update (transformOnly, updateChildren, maskGraphics);
 
 		if (!updateChildren) {
-
+			calculatedBounds = oldCalculatedBounds;
+			if (parent != null) {
+				parent.applyChildBounds(calculatedBounds);
+			}
 			return;
 
 		}
@@ -1071,6 +1080,15 @@ class DisplayObjectContainer extends InteractiveObject {
 				child.__update (transformOnly, true, maskGraphics);
 
 			}
+			else {
+
+				applyChildBounds(child.calculatedBounds);
+
+			}
+		}
+
+		if (parent != null) {
+			parent.applyChildBounds(calculatedBounds);
 		}
 		
 	}
@@ -1097,10 +1115,23 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 	}
-	
-	
-	
-	
+
+	private override function postTransformUpdate ():Void {
+		calculatedBounds = null;
+	}
+
+	public function applyChildBounds(bounds:Rectangle):Void {
+		if (calculatedBounds == null) {
+			calculatedBounds = bounds != null ? bounds.clone() : null;
+		}
+		else if (bounds != null) {
+			calculatedBounds.merge(bounds);
+		}
+	}
+
+
+
+
 	// Get & Set Methods
 	
 	
