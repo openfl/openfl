@@ -1576,6 +1576,26 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
+		
+		if (super.__updateCacheBitmap (renderSession, force)) {
+			
+			if (__cacheBitmap != null) {
+				
+				__cacheBitmap.__renderTransform.tx -= __offsetX;
+				__cacheBitmap.__renderTransform.ty -= __offsetY;
+				
+			}
+			
+			return true;
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
 	private function __updateLayout ():Void {
 		
 		if (__layoutDirty) {
@@ -2445,6 +2465,36 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 		return __textEngine.wordWrap = value;
+		
+	}
+	
+	
+	private override function get_x ():Float {
+		
+		return __transform.tx + __offsetX;
+		
+	}
+	
+	
+	private override function set_x (value:Float):Float {
+		
+		if (value != __transform.tx + __offsetX) __setTransformDirty ();
+		return __transform.tx = value - __offsetX;
+		
+	}
+	
+	
+	private override function get_y ():Float {
+		
+		return __transform.ty + __offsetY;
+		
+	}
+	
+	
+	private override function set_y (value:Float):Float {
+		
+		if (value != __transform.ty + __offsetY) __setTransformDirty ();
+		return __transform.ty = value - __offsetY;
 		
 	}
 	
