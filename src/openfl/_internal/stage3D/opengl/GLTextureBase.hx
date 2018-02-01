@@ -26,7 +26,7 @@ class GLTextureBase {
 	public static var __supportsBGRA:Null<Bool> = null;
 	public static var __textureFormat:Int;
 	public static var __textureInternalFormat:Int;
-
+	
 	public static var __compressedTextureFormats:Null<GLCompressedTextureFormats> = null;
 	
 	
@@ -71,9 +71,9 @@ class GLTextureBase {
 			}
 			
 		}
-
+		
 		if (__compressedTextureFormats == null) {
-
+			
 			__compressedTextureFormats = new GLCompressedTextureFormats (gl);
 		}
 		
