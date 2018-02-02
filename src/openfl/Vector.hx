@@ -1,4 +1,4 @@
-package openfl; #if (!flash || display)
+package openfl; #if (!flash || display) #if (!commonjs || !js)
 
 
 import haxe.Constraints.Function;
@@ -1894,7 +1894,580 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 
 
 
+#else
 
+
+
+abstract Vector<T>(VectorData<T>) from VectorData<T> {
+	
+	
+	public var fixed (get, set):Bool;
+	public var length (get, set):Int;
+	
+	
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void {
+		
+		this = new VectorData (length, fixed, cast array);
+		
+	}
+	
+	
+	public inline function concat (?a:Vector<T>):Vector<T> {
+		
+		return cast new VectorData<T> (this.concat (cast a));
+		
+	}
+	
+	
+	public inline function copy ():Vector<T> {
+		
+		return cast new VectorData<T> (this.copy ());
+		
+	}
+	
+	
+	@:arrayAccess public inline function get (index:Int):T {
+		
+		return this.get (index);
+		
+	}
+	
+	
+	public inline function indexOf (x:T, ?from:Int = 0):Int {
+		
+		return this.indexOf (x, from);
+		
+	}
+	
+	
+	public inline function insertAt (index:Int, element:T):Void {
+		
+		this.insertAt (index, element);
+		
+	}
+	
+	
+	public inline function iterator<T> ():Iterator<T> {
+		
+		return this.iterator ();
+		
+	}
+	
+	
+	public inline function join (sep:String = ","):String {
+		
+		return this.join (sep);
+		
+	}
+	
+	
+	public inline function lastIndexOf (x:T, ?from:Int = 0):Int {
+		
+		return this.lastIndexOf (x, from);
+		
+	}
+	
+	
+	public inline function pop ():Null<T> {
+		
+		return this.pop ();
+		
+	}
+	
+	
+	public inline function push (x:T):Int {
+		
+		return this.push (x);
+		
+	}
+	
+	
+	public inline function removeAt (index:Int):T {
+		
+		return this.removeAt (index);
+		
+	}
+	
+	
+	public inline function reverse ():Vector<T> {
+		
+		return cast new VectorData<T> (this.reverse ());
+		
+	}
+	
+	
+	@:arrayAccess public inline function set (index:Int, value:T):T {
+		
+		return this.set (index, value);
+		
+	}
+	
+	
+	public inline function shift ():Null<T> {
+		
+		return this.shift ();
+		
+	}
+	
+	
+	public inline function slice (?pos:Int, ?end:Int):Vector<T> {
+		
+		return cast new VectorData<T> (this.slice (pos, end));
+		
+	}
+	
+	
+	public inline function sort (f:T->T->Int):Void {
+		
+		this.sort (f);
+		
+	}
+	
+	
+	public inline function splice (pos:Int, len:Int):Vector<T> {
+		
+		return cast new VectorData<T> (this.splice (pos, len));
+		
+	}
+	
+	
+	public inline function toString ():String {
+		
+		return (this != null) ? this.toString () : null;
+		
+	}
+	
+	
+	public inline function unshift (x:T):Void {
+		
+		this.unshift (x);
+		
+	}
+	
+	
+	public inline static function ofArray<T> (a:Array<T>):Vector<T> {
+		
+		var vector = new Vector<T> ();
+		
+		for (i in 0...a.length) {
+			
+			vector[i] = cast a[i];
+			
+		}
+		
+		return vector;
+		
+	}
+	
+	
+	public inline static function convert<T,U> (v:VectorData<T>):VectorData<U> {
+		
+		return cast v;
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	@:noCompletion private inline function get_fixed ():Bool {
+		
+		return this.fixed;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_fixed (value:Bool):Bool {
+		
+		return this.fixed = value;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_length ():Int {
+		
+		return this.length;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_length (value:Int):Int {
+		
+		return this.length = value;
+		
+	}
+	
+	
+}
+
+
+@:keep class VectorData<T> implements ArrayAccess<T> {
+	
+	
+	public var fixed:Bool;
+	public var length (get, set):Int;
+	
+	
+	private static function __init__ () {
+		
+		var decl = untyped __js__ ("VectorData.prototype");
+		var ofArray = untyped __js__ ("VectorData.ofArray");
+		var constructor = function (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>) {
+			
+			untyped __js__ ("alert (array)");
+			
+			if (array != null) {
+				
+				for (i in 0...untyped (array).length) {
+					
+					untyped __js__ ("this")[i] = array[i];
+					
+				}
+				
+			}
+			
+			if (length != null) {
+				
+				untyped __js__ ("this").length = length;
+				
+			}
+			
+			untyped __js__ ("this").fixed = (fixed == true);
+			
+		};
+		
+		untyped __js__ ("var VectorDataDescriptor = {
+			constructor: { value: constructor },
+			copy: { value: decl.copy },
+			get: { value: decl.get },
+			insertAt: { value: decl.insertAt },
+			iterator: { value: decl.iterator },
+			pop: { value: decl.pop },
+			push: { value: decl.push },
+			set: { value: decl.set },
+			shift: { value: decl.shift },
+			unshift: { value: decl.unshift },
+			get_length: { value: decl.get_length },
+			set_length: { value: decl.set_length },
+		}
+		VectorData = function (length, fixed, array) {
+			return Object.defineProperties ([], VectorDataDescriptor);
+		}
+		VectorData.ofArray = ofArray;
+		VectorData.prototype = Array.prototype");
+		
+	}
+	
+	
+	public function new (?length:Int, ?fixed:Bool, ?array:VectorData<T>) {}
+	
+	
+	public function concat (?a:Vector<T>):VectorData<T> {
+		
+		return null;
+		
+	}
+	
+	
+	public function copy ():VectorData<T> {
+		
+		return untyped __js__ ("this.concat") ();
+		
+	}
+	
+	
+	public function get (index:Int):T {
+		
+		return untyped __js__ ("this")[index];
+		
+	}
+	
+	
+	public function indexOf (x:T, ?from:Int = 0):Int {
+		
+		return -1;
+		
+	}
+	
+	
+	public function insertAt (index:Int, element:T):Void {
+		
+		if (!fixed || index < untyped __js__ ("this").length) {
+			
+			untyped __js__ ("this.splice") (index, 0, element);
+			
+		}
+		
+	}
+	
+	
+	public function iterator ():Iterator<T> {
+		
+		return new VectorIterator (this);
+		
+	}
+	
+	
+	public function join (sep:String = ","):String {
+		
+		return null;
+		
+	}
+	
+	
+	public function lastIndexOf (x:T, ?from:Int = 0):Int {
+		
+		return -1;
+		
+	}
+	
+	
+	public static function ofArray<T> (a:Array<Dynamic>):VectorData<T> {
+		
+		var data = new VectorData<T> ();
+		for (i in 0...a.length) {
+			data[i] = a[i];
+		}
+		return data;
+		
+		//return new VectorData<T> (null, null, cast a);
+		
+	}
+	
+	
+	public function pop ():T {
+		
+		if (!fixed) {
+			
+			return untyped __js__ ("Array.prototype.pop.call (this)");
+			
+		} else {
+			
+			return null;
+			
+		}
+		
+	}
+	
+	
+	public function push (x:T):Int {
+		
+		if (!fixed) {
+			
+			return untyped __js__ ("Array.prototype.push.call (this, x)");
+			
+		} else {
+			
+			return untyped __js__ ("this").length;
+			
+		}
+		
+	}
+	
+	
+	public function removeAt (index:Int):T {
+		
+		if (!fixed || index < untyped __js__ ("this").length) {
+			
+			return untyped __js__ ("this.splice") (index, 1)[0];
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
+	public function reverse ():VectorData<T> {
+		
+		return this;
+		
+	}
+	
+	
+	public function set (index:Int, value:T):T {
+		
+		if (!fixed || index < untyped __js__ ("this").length) {
+			
+			return untyped __js__ ("this")[index] = value;
+			
+		} else {
+			
+			return value;
+			
+		}
+		
+	}
+	
+	
+	public function shift ():Null<T> {
+		
+		if (!fixed) {
+			
+			return untyped __js__ ("Array.prototype.shift.call (this)");
+			
+		} else {
+			
+			return null;
+			
+		}
+		
+	}
+	
+	
+	public function slice (?startIndex:Int = 0, ?endIndex:Int = 16777215):VectorData<T> {
+		
+		return null;
+		
+	}
+	
+	
+	public function sort (f:T->T->Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function splice (pos:Int, len:Int):VectorData<T> {
+		
+		return null;
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return null;
+		
+	}
+	
+	
+	public function unshift (x:T):Void {
+		
+		if (!fixed) {
+			
+			untyped __js__ ("Array.prototype.unshift.call (this, x)");
+			
+		}
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	@:noCompletion private function get_length ():Int {
+		
+		return untyped __js__ ("this").length;
+		
+	}
+	
+	
+	@:noCompletion private function set_length (value:Int):Int {
+		
+		if (!fixed) {
+			
+			untyped __js__ ("this").length = value;
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+}
+
+
+// @:native("Array")
+// extern class VectorData<T> implements ArrayAccess<T> {
+	
+// 	@:native("length") private var __length:Int;
+	
+// 	public function new ();
+// 	// private static function __from (arrayLike:Dynamic, ?mapFn:Dynamic, ?thisArg:Dynamic):VectorData<Dynamic>;
+// 	// private static function __isArray (obj:Dynamic):Bool;
+// 	// private static function __of (?element0:Dynamic, ?element1:Dynamic, ?element2:Dynamic, ?element3:Dynamic):VectorData<Dynamic>;
+// 	@:native("concat") private function __concat (?value0:Dynamic, ?value1:Dynamic, ?value2:Dynamic, ?value3:Dynamic):VectorData<Dynamic>;
+// 	// private function __copyWithin (target:Int, ?start:Int, ?end:Int):VectorData<Dynamic>;
+// 	// private function __entries ():Iterator<Dynamic>;
+// 	// private function __every (callback:Dynamic, ?thisArg:Dynamic):Bool;
+// 	// private function __fill (value:T, ?start:Int, ?end:Int):VectorData<Dynamic>;
+// 	// private function __filter (callback:Dynamic, ?thisArg:Dynamic):VectorData<Dynamic>;
+// 	// private function __find (callback:Dynamic, ?thisArg:Dynamic):Null<T>;
+// 	// private function __findIndex (callback:Dynamic, ?thisArg:Dynamic):Int;
+// 	// private function __forEach (callback:Dynamic, ?thisArg:Dynamic):Void;
+// 	// private function __includes (searchElement:T, ?fromIndex:Int):Bool;
+// 	public function indexOf (searchElement:T, ?fromIndex:Int):Int;
+// 	public function join (?seperator:String):String;
+// 	// @:native("keys") private function __keys ():Iterator<Dynamic>;
+// 	public function lastIndexOf (searchElement:T, ?fromIndex:Int):Int;
+// 	// private function __map (callback:Dynamic, ?thisArg:Dynamic):VectorData<Dynamic>;
+// 	public function pop ():Null<T>;
+// 	//@:native("push") private function __push (element0:T, ?element1:T, ?element2:T, ?element3:T):Int;
+// 	public function push (x:T):Int;
+// 	// private function __reduce (callback:Dynamic, ?initialValue:Dynamic):Dynamic;
+// 	// private function __reduceRight (callback:Dynamic, ?initialValue:Dynamic):Dynamic;
+// 	// @:native("reverse") private function __reverse ():VectorData<Dynamic>;
+// 	public function shift ():Null<T>;
+// 	// @:native("slice") private function __slice (?begin:Int, ?end:Int):VectorData<Dynamic>;
+// 	// private function __some (callback:Dynamic, ?thisArg:Dynamic):Bool;
+// 	// @:native("sort") private function __sort (compareFunction:Dynamic):VectorData<Dynamic>;
+// 	@:native("splice") private function __splice (start:Int, ?deleteCount:Int, ?item0:T, ?item1:T, ?item2:T, ?item3:T):VectorData<Dynamic>;
+// 	// private function __toLocaleString (?locales:String, ?options:Dynamic):String;
+// 	public function toString ():String;
+// 	// @:native("unshift") private function __unshift (element0:T, ?element1:T, ?element2:T, ?element3:T):Int;
+// 	public function unshift (x:T):Void;
+// 	@:native("values") private function __values ():Iterator<T>;
+	
+// }
+
+
+private class VectorIterator<T> {
+	
+	
+	private var index:Int;
+	private var vector:Vector<T>;
+	
+	
+	public function new (vector:Vector<T>) {
+		
+		this.vector = vector;
+		index = -1;
+		
+	}
+	
+	
+	public function hasNext ():Bool {
+		
+		return index < vector.length - 1;
+		
+	}
+	
+	
+	public function next ():T {
+		
+		index++;
+		return vector[index];
+		
+	}
+	
+	
+}
+
+
+
+
+#end
 #else
 
 
