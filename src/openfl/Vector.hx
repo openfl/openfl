@@ -2142,14 +2142,18 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		
 		untyped __js__ ("var VectorDataDescriptor = {
 			constructor: { value: constructor },
+			concat: { value: decl.concat },
 			copy: { value: decl.copy },
 			get: { value: decl.get },
 			insertAt: { value: decl.insertAt },
 			iterator: { value: decl.iterator },
 			pop: { value: decl.pop },
 			push: { value: decl.push },
+			removeAt: { value: decl.removeAt },
 			set: { value: decl.set },
 			shift: { value: decl.shift },
+			slice: { value: decl.slice },
+			splice: { value: decl.splice },
 			unshift: { value: decl.unshift },
 			get_length: { value: decl.get_length },
 			set_length: { value: decl.set_length },
@@ -2168,14 +2172,14 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public function concat (?a:Vector<T>):VectorData<T> {
 		
-		return null;
+		return VectorData.ofArray (untyped __js__ ("Array.prototype.concat.call (this, a)"));
 		
 	}
 	
 	
 	public function copy ():VectorData<T> {
 		
-		return untyped __js__ ("this.concat") ();
+		return VectorData.ofArray (cast this);
 		
 	}
 	
@@ -2198,7 +2202,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		
 		if (!fixed || index < untyped __js__ ("this").length) {
 			
-			untyped __js__ ("this.splice") (index, 0, element);
+			untyped __js__ ("Array.prototype.slice.call (this, index, 0, element)");
 			
 		}
 		
@@ -2227,6 +2231,8 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	
 	public static function ofArray<T> (a:Array<Dynamic>):VectorData<T> {
+		
+		if (a == null) return null;
 		
 		var data = new VectorData<T> ();
 		for (i in 0...a.length) {
@@ -2273,7 +2279,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		
 		if (!fixed || index < untyped __js__ ("this").length) {
 			
-			return untyped __js__ ("this.splice") (index, 1)[0];
+			return untyped __js__ ("Array.prototype.slice.call (this, index, 1)")[0];
 			
 		}
 		
@@ -2321,7 +2327,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public function slice (?startIndex:Int = 0, ?endIndex:Int = 16777215):VectorData<T> {
 		
-		return null;
+		return VectorData.ofArray (untyped __js__ ("Array.prototype.slice.call (this, startIndex, endIndex)"));
 		
 	}
 	
@@ -2335,7 +2341,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public function splice (pos:Int, len:Int):VectorData<T> {
 		
-		return null;
+		return VectorData.ofArray (untyped __js__ ("Array.prototype.splice.call (this, pos, len)"));
 		
 	}
 	
