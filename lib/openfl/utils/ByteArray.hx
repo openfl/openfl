@@ -7,6 +7,10 @@ package openfl.utils;
 extern class ByteArray implements IDataOutput implements IDataInput /*implements ArrayAccess<Int>*/ {
 	
 	
+	public function get (position:Int):Int;
+	public function set (position:Int, value:Int):Int;
+	
+	
 	/**
 	 * Denotes the default object encoding for the ByteArray class to use for a
 	 * new ByteArray instance. When you create a new ByteArray instance, the
