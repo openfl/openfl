@@ -2114,33 +2114,9 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	private static function __init__ () {
 		
-		var decl = untyped __js__ ("VectorData.prototype");
-		var ofArray = untyped __js__ ("VectorData.ofArray");
-		var constructor = function (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>) {
-			
-			untyped __js__ ("alert (array)");
-			
-			if (array != null) {
-				
-				for (i in 0...untyped (array).length) {
-					
-					untyped __js__ ("this")[i] = array[i];
-					
-				}
-				
-			}
-			
-			if (length != null) {
-				
-				untyped __js__ ("this").length = length;
-				
-			}
-			
-			untyped __js__ ("this").fixed = (fixed == true);
-			
-		};
-		
-		untyped __js__ ("var VectorDataDescriptor = {
+		untyped __js__ ("var decl = VectorData.prototype;
+		var ofArray = VectorData.ofArray;
+		var VectorDataDescriptor = {
 			constructor: { value: constructor },
 			concat: { value: decl.concat },
 			copy: { value: decl.copy },
@@ -2159,7 +2135,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 			set_length: { value: decl.set_length },
 		}
 		VectorData = function (length, fixed, array) {
-			return Object.defineProperties ([], VectorDataDescriptor);
+			return Object.defineProperties (decl.construct ([], length, fixed, array), VectorDataDescriptor);
 		}
 		VectorData.ofArray = ofArray;
 		VectorData.prototype = Array.prototype");
@@ -2168,6 +2144,32 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	
 	public function new (?length:Int, ?fixed:Bool, ?array:VectorData<T>) {}
+	
+	
+	private function construct (instance:Dynamic, ?length:Int, ?fixed:Bool, ?array:Array<Dynamic>) {
+		
+		if (array != null) {
+			
+			for (i in 0...untyped (array).length) {
+				
+				instance[i] = array[i];
+				
+			}
+			
+		}
+		
+		if (length != null) {
+			
+			instance.length = length;
+			
+		}
+		
+		instance.fixed = (fixed == true);
+		
+		return instance;
+		
+	};
+		
 	
 	
 	public function concat (?a:Vector<T>):VectorData<T> {
