@@ -251,7 +251,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		#if display
 		return 0;
-		#elseif openfl
+		#elseif openfljs
 		return this == null ? 0 : this.l;
 		#else
 		return this == null ? 0 : this.length;

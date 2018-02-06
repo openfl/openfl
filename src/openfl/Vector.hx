@@ -2117,7 +2117,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		untyped __js__ ("var decl = VectorData.prototype;
 		var ofArray = VectorData.ofArray;
 		var VectorDataDescriptor = {
-			constructor: { value: constructor },
+			constructor: { value: decl.new },
 			concat: { value: decl.concat },
 			copy: { value: decl.copy },
 			get: { value: decl.get },
