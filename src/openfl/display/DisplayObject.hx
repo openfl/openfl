@@ -417,7 +417,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-
+		
 		var result = super.__dispatchEvent (event);
 		
 		if (event.__isCanceled) {
@@ -441,70 +441,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return result;
-		
-	}
-	
-	
-	private function __dispatchStack (event:Event, stack:Array<DisplayObject>):Void {
-		
-		var target:DisplayObject;
-		var length = stack.length;
-		
-		if (length == 0) {
-			
-			event.eventPhase = EventPhase.AT_TARGET;
-			target = cast event.target;
-			target.__dispatch (event);
-			
-		} else {
-			
-			event.eventPhase = EventPhase.CAPTURING_PHASE;
-			event.target = stack[stack.length - 1];
-			
-			for (i in 0...length - 1) {
-				
-				stack[i].__dispatch (event);
-				
-				if (event.__isCanceled) {
-					
-					return;
-					
-				}
-				
-			}
-			
-			event.eventPhase = EventPhase.AT_TARGET;
-			target = cast event.target;
-			target.__dispatch (event);
-			
-			if (event.__isCanceled) {
-				
-				return;
-				
-			}
-			
-			if (event.bubbles) {
-				
-				event.eventPhase = EventPhase.BUBBLING_PHASE;
-				var i = length - 2;
-				
-				while (i >= 0) {
-					
-					stack[i].__dispatch (event);
-					
-					if (event.__isCanceled) {
-						
-						return;
-						
-					}
-					
-					i--;
-					
-				}
-				
-			}
-			
-		}
 		
 	}
 	
@@ -1067,9 +1003,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Void {
+	private function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		if (__cacheBitmapRender) return;
+		if (__cacheBitmapRender) return false;
 		
 		if (cacheAsBitmap) {
 			
@@ -1118,7 +1054,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			
 			if (needRender) {
 				
 				__cacheBitmapBackground = opaqueBackground;
@@ -1146,7 +1081,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					__cacheBitmap = null;
 					__cacheBitmapData = null;
-					return;
+					return true;
 					
 				}
 				
@@ -1261,6 +1196,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				Matrix.__pool.release (matrix);
 				Rectangle.__pool.release (rect);
 				
+				return true;
+				
+			} else {
+				
+				return false;
+				
 			}
 			
 		} else if (__cacheBitmap != null) {
@@ -1275,7 +1216,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmapData = null;
 			__cacheBitmapColorTransform = null;
 			
+			return true;
+			
 		}
+		
+		return false;
 		
 	}
 	

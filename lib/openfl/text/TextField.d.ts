@@ -45,7 +45,7 @@ declare namespace openfl.text {
 	 * text. See the list of supported HTML tags in the description of the
 	 * `htmlText` property.
 	 * 
-	 * @event change                    Dispatched after a control value is
+	 * @:event change                    Dispatched after a control value is
 	 *                                  modified, unlike the
 	 *                                  `textInput` event, which is
 	 *                                  dispatched before the value is modified.
@@ -58,7 +58,7 @@ declare namespace openfl.text {
 	 *                                  changes. For example, if a user types text
 	 *                                  into a text field, a `change`
 	 *                                  event is dispatched after every keystroke.
-	 * @event link                      Dispatched when a user clicks a hyperlink
+	 * @:event link                      Dispatched when a user clicks a hyperlink
 	 *                                  in an HTML-enabled text field, where the
 	 *                                  URL begins with "event:". The remainder of
 	 *                                  the URL after "event:" is placed in the
@@ -71,9 +71,9 @@ declare namespace openfl.text {
 	 *                                  user attempts to input text. You cannot
 	 *                                  put text into a text field by sending it
 	 *                                  `textInput` events.
-	 * @event scroll                    Dispatched by a TextField object
+	 * @:event scroll                    Dispatched by a TextField object
 	 *                                  _after_ the user scrolls.
-	 * @event textInput                 Flash Player dispatches the
+	 * @:event textInput                 Flash Player dispatches the
 	 *                                  `textInput` event when a user
 	 *                                  enters one or more characters of text.
 	 *                                  Various text input methods can generate
@@ -82,7 +82,7 @@ declare namespace openfl.text {
 	 *                                  speech recognition systems, and even the
 	 *                                  act of pasting plain text with no
 	 *                                  formatting or style information.
-	 * @event textInteractionModeChange Flash Player dispatches the
+	 * @:event textInteractionModeChange Flash Player dispatches the
 	 *                                  `textInteractionModeChange`
 	 *                                  event when a user changes the interaction
 	 *                                  mode of a text field. for example on

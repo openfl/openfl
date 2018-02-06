@@ -20,7 +20,7 @@ declare namespace openfl.display {
 	 * rendering content onscreen, such as the Sprite, SimpleButton, TextField, or
 	 * MovieClip classes.
 	 * 
-	 * @event clear                  Dispatched when the user selects 'Clear'(or
+	 * @:event clear                  Dispatched when the user selects 'Clear'(or
 	 *                               'Delete') from the text context menu. This
 	 *                               event is dispatched to the object that
 	 *                               currently has focus. If the object that
@@ -28,7 +28,7 @@ declare namespace openfl.display {
 	 *                               default behavior of this event is to cause
 	 *                               any currently selected text in the text field
 	 *                               to be deleted.
-	 * @event click                  Dispatched when a user presses and releases
+	 * @:event click                  Dispatched when a user presses and releases
 	 *                               the main button of the user's pointing device
 	 *                               over the same InteractiveObject. For a click
 	 *                               event to occur, it must always follow this
@@ -41,10 +41,10 @@ declare namespace openfl.display {
 	 *                               the `mouseDown` or
 	 *                               `mouseUp` events; the
 	 *                               `click` event still occurs.
-	 * @event contextMenu            Dispatched when a user gesture triggers the
+	 * @:event contextMenu            Dispatched when a user gesture triggers the
 	 *                               context menu associated with this interactive
 	 *                               object in an AIR application.
-	 * @event copy                   Dispatched when the user activates the
+	 * @:event copy                   Dispatched when the user activates the
 	 *                               platform-specific accelerator key combination
 	 *                               for a copy operation or selects 'Copy' from
 	 *                               the text context menu. This event is
@@ -54,7 +54,7 @@ declare namespace openfl.display {
 	 *                               event is to cause any currently selected text
 	 *                               in the text field to be copied to the
 	 *                               clipboard.
-	 * @event cut                    Dispatched when the user activates the
+	 * @:event cut                    Dispatched when the user activates the
 	 *                               platform-specific accelerator key combination
 	 *                               for a cut operation or selects 'Cut' from the
 	 *                               text context menu. This event is dispatched
@@ -63,7 +63,7 @@ declare namespace openfl.display {
 	 *                               TextField, the default behavior of this event
 	 *                               is to cause any currently selected text in
 	 *                               the text field to be cut to the clipboard.
-	 * @event doubleClick            Dispatched when a user presses and releases
+	 * @:event doubleClick            Dispatched when a user presses and releases
 	 *                               the main button of a pointing device twice in
 	 *                               rapid succession over the same
 	 *                               InteractiveObject when that object's
@@ -99,7 +99,7 @@ declare namespace openfl.display {
 	 *                               `doubleClick` event. Use
 	 *                               `TextField.doubleClickEnabled` to
 	 *                               control TextField selections.
-	 * @event focusIn                Dispatched _after_ a display object
+	 * @:event focusIn                Dispatched _after_ a display object
 	 *                               gains focus. This situation happens when a
 	 *                               user highlights the object with a pointing
 	 *                               device or keyboard navigation. The recipient
@@ -114,7 +114,7 @@ declare namespace openfl.display {
 	 *                               This event follows the dispatch of the
 	 *                               previous object's `focusOut`
 	 *                               event.
-	 * @event focusOut               Dispatched _after_ a display object
+	 * @:event focusOut               Dispatched _after_ a display object
 	 *                               loses focus. This happens when a user
 	 *                               highlights a different object with a pointing
 	 *                               device or keyboard navigation. The object
@@ -129,7 +129,7 @@ declare namespace openfl.display {
 	 *                               This event precedes the dispatch of the
 	 *                               `focusIn` event by the related
 	 *                               object.
-	 * @event gesturePan             Dispatched when the user moves a point of
+	 * @:event gesturePan             Dispatched when the user moves a point of
 	 *                               contact over the InteractiveObject instance
 	 *                               on a touch-enabled device(such as moving a
 	 *                               finger from left to right over a display
@@ -166,7 +166,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event gesturePressAndTap     Dispatched when the user creates a point of
+	 * @:event gesturePressAndTap     Dispatched when the user creates a point of
 	 *                               contact with an InteractiveObject instance,
 	 *                               then taps on a touch-enabled device(such as
 	 *                               placing several fingers over a display object
@@ -212,7 +212,7 @@ declare namespace openfl.display {
 	 *                               `offsetX` and `offsetY`
 	 *                               properties are the distance to the secondary
 	 *                               point of contact(the "tap").
-	 * @event gestureRotate          Dispatched when the user performs a rotation
+	 * @:event gestureRotate          Dispatched when the user performs a rotation
 	 *                               gesture at a point of contact with an
 	 *                               InteractiveObject instance(such as touching
 	 *                               two fingers and rotating them over a display
@@ -262,7 +262,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event gestureSwipe           Dispatched when the user performs a swipe
+	 * @:event gestureSwipe           Dispatched when the user performs a swipe
 	 *                               gesture at a point of contact with an
 	 *                               InteractiveObject instance(such as touching
 	 *                               three fingers to a screen and then moving
@@ -310,7 +310,7 @@ declare namespace openfl.display {
 	 *                               Mac OS operating system can interpret a
 	 *                               four-finger swipe, this API only supports a
 	 *                               three-finger swipe.
-	 * @event gestureTwoFingerTap    Dispatched when the user presses two points
+	 * @:event gestureTwoFingerTap    Dispatched when the user presses two points
 	 *                               of contact over the same InteractiveObject
 	 *                               instance on a touch-enabled device(such as
 	 *                               presses and releases two fingers over a
@@ -346,7 +346,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event gestureZoom            Dispatched when the user performs a zoom
+	 * @:event gestureZoom            Dispatched when the user performs a zoom
 	 *                               gesture at a point of contact with an
 	 *                               InteractiveObject instance(such as touching
 	 *                               two fingers to a screen and then quickly
@@ -397,9 +397,9 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event imeStartComposition    This event is dispatched to any client app
+	 * @:event imeStartComposition    This event is dispatched to any client app
 	 *                               that supports inline input with an IME
-	 * @event keyDown                Dispatched when the user presses a key.
+	 * @:event keyDown                Dispatched when the user presses a key.
 	 *                               Mappings between keys and specific characters
 	 *                               vary by device and operating system. This
 	 *                               event type is generated after such a mapping
@@ -413,7 +413,7 @@ declare namespace openfl.display {
 	 *                               In AIR, canceling this event prevents the
 	 *                               character from being entered into a text
 	 *                               field.
-	 * @event keyFocusChange         Dispatched when the user attempts to change
+	 * @:event keyFocusChange         Dispatched when the user attempts to change
 	 *                               focus by using keyboard navigation. The
 	 *                               default behavior of this event is to change
 	 *                               the focus and dispatch the corresponding
@@ -432,7 +432,7 @@ declare namespace openfl.display {
 	 *                               `focusIn` and
 	 *                               `focusOut` events are dispatched
 	 *                               by default.
-	 * @event keyUp                  Dispatched when the user releases a key.
+	 * @:event keyUp                  Dispatched when the user releases a key.
 	 *                               Mappings between keys and specific characters
 	 *                               vary by device and operating system. This
 	 *                               event type is generated after such a mapping
@@ -443,7 +443,7 @@ declare namespace openfl.display {
 	 *                               to produce. This event occurs after a
 	 *                               `keyDown` event and has the
 	 *                               following characteristics:
-	 * @event middleClick            Dispatched when a user presses and releases
+	 * @:event middleClick            Dispatched when a user presses and releases
 	 *                               the middle button of the user's pointing
 	 *                               device over the same InteractiveObject. For a
 	 *                               `middleClick` event to occur, it
@@ -458,13 +458,13 @@ declare namespace openfl.display {
 	 *                               `middleMouseDown` or
 	 *                               `middleMouseUp` events; the
 	 *                               `middleClick` event still occurs.
-	 * @event middleMouseDown        Dispatched when a user presses the middle
+	 * @:event middleMouseDown        Dispatched when a user presses the middle
 	 *                               pointing device button over an
 	 *                               InteractiveObject instance.
-	 * @event middleMouseUp          Dispatched when a user releases the pointing
+	 * @:event middleMouseUp          Dispatched when a user releases the pointing
 	 *                               device button over an InteractiveObject
 	 *                               instance.
-	 * @event mouseDown              Dispatched when a user presses the pointing
+	 * @:event mouseDown              Dispatched when a user presses the pointing
 	 *                               device button over an InteractiveObject
 	 *                               instance. If the target is a SimpleButton
 	 *                               instance, the SimpleButton instance displays
@@ -472,7 +472,7 @@ declare namespace openfl.display {
 	 *                               the default behavior. If the target is a
 	 *                               selectable text field, the text field begins
 	 *                               selection as the default behavior.
-	 * @event mouseFocusChange       Dispatched when the user attempts to change
+	 * @:event mouseFocusChange       Dispatched when the user attempts to change
 	 *                               focus by using a pointer device. The default
 	 *                               behavior of this event is to change the focus
 	 *                               and dispatch the corresponding
@@ -492,12 +492,12 @@ declare namespace openfl.display {
 	 *                               `focusIn` and
 	 *                               `focusOut` events are dispatched
 	 *                               by default.
-	 * @event mouseMove              Dispatched when a user moves the pointing
+	 * @:event mouseMove              Dispatched when a user moves the pointing
 	 *                               device while it is over an InteractiveObject.
 	 *                               If the target is a text field that the user
 	 *                               is selecting, the selection is updated as the
 	 *                               default behavior.
-	 * @event mouseOut               Dispatched when the user moves a pointing
+	 * @:event mouseOut               Dispatched when the user moves a pointing
 	 *                               device away from an InteractiveObject
 	 *                               instance. The event target is the object
 	 *                               previously under the pointing device. The
@@ -528,7 +528,7 @@ declare namespace openfl.display {
 	 *                               with the highest parent that is neither the
 	 *                               root nor an ancestor of the
 	 *                               `relatedObject`.
-	 * @event mouseOver              Dispatched when the user moves a pointing
+	 * @:event mouseOver              Dispatched when the user moves a pointing
 	 *                               device over an InteractiveObject instance.
 	 *                               The `relatedObject` is the object
 	 *                               that was previously under the pointing
@@ -560,19 +560,19 @@ declare namespace openfl.display {
 	 *                               is neither the root nor an ancestor of the
 	 *                               `relatedObject` and ending with
 	 *                               the object.
-	 * @event mouseUp                Dispatched when a user releases the pointing
+	 * @:event mouseUp                Dispatched when a user releases the pointing
 	 *                               device button over an InteractiveObject
 	 *                               instance. If the target is a SimpleButton
 	 *                               instance, the object displays the
 	 *                               `upState` display object. If the
 	 *                               target is a selectable text field, the text
 	 *                               field ends selection as the default behavior.
-	 * @event mouseWheel             Dispatched when a mouse wheel is spun over an
+	 * @:event mouseWheel             Dispatched when a mouse wheel is spun over an
 	 *                               InteractiveObject instance. If the target is
 	 *                               a text field, the text scrolls as the default
 	 *                               behavior. Only available on Microsoft Windows
 	 *                               operating systems.
-	 * @event nativeDragComplete     Dispatched by the drag initiator
+	 * @:event nativeDragComplete     Dispatched by the drag initiator
 	 *                               InteractiveObject when the user releases the
 	 *                               drag gesture.
 	 *
@@ -589,7 +589,7 @@ declare namespace openfl.display {
 	 *                               example, by removing an item from a list(on
 	 *                               a drag action of "move"), or by changing the
 	 *                               visual properties.
-	 * @event nativeDragDrop         Dispatched by the target InteractiveObject
+	 * @:event nativeDragDrop         Dispatched by the target InteractiveObject
 	 *                               when a dragged object is dropped on it and
 	 *                               the drop has been accepted with a call to
 	 *                               DragManager.acceptDragDrop().
@@ -604,7 +604,7 @@ declare namespace openfl.display {
 	 *                               value is set, the DragManager will select a
 	 *                               default value from the list of allowed
 	 *                               actions.
-	 * @event nativeDragEnter        Dispatched by an InteractiveObject when a
+	 * @:event nativeDragEnter        Dispatched by an InteractiveObject when a
 	 *                               drag gesture enters its boundary.
 	 *
 	 *                               Handle either the
@@ -619,9 +619,9 @@ declare namespace openfl.display {
 	 *                               `clipboard` property of the event
 	 *                               object, and the allowed drag actions in the
 	 *                               `allowedActions` property.
-	 * @event nativeDragExit         Dispatched by an InteractiveObject when a
+	 * @:event nativeDragExit         Dispatched by an InteractiveObject when a
 	 *                               drag gesture leaves its boundary.
-	 * @event nativeDragOver         Dispatched by an InteractiveObject
+	 * @:event nativeDragOver         Dispatched by an InteractiveObject
 	 *                               continually while a drag gesture remains
 	 *                               within its boundary.
 	 *
@@ -643,18 +643,18 @@ declare namespace openfl.display {
 	 *                               `clipboard` property of the event
 	 *                               object, and the allowed drag actions in the
 	 *                               `allowedActions` property.
-	 * @event nativeDragStart        Dispatched at the beginning of a drag
+	 * @:event nativeDragStart        Dispatched at the beginning of a drag
 	 *                               operation by the InteractiveObject that is
 	 *                               specified as the drag initiator in the
 	 *                               DragManager.doDrag() call.
-	 * @event nativeDragUpdate       Dispatched during a drag operation by the
+	 * @:event nativeDragUpdate       Dispatched during a drag operation by the
 	 *                               InteractiveObject that is specified as the
 	 *                               drag initiator in the DragManager.doDrag()
 	 *                               call.
 	 *
 	 *                               `nativeDragUpdate` events are
 	 *                               not dispatched on Linux.
-	 * @event paste                  Dispatched when the user activates the
+	 * @:event paste                  Dispatched when the user activates the
 	 *                               platform-specific accelerator key combination
 	 *                               for a paste operation or selects 'Paste' from
 	 *                               the text context menu. This event is
@@ -665,7 +665,7 @@ declare namespace openfl.display {
 	 *                               clipboard to be pasted into the text field at
 	 *                               the current insertion point replacing any
 	 *                               currently selected text in the text field.
-	 * @event rightClick             Dispatched when a user presses and releases
+	 * @:event rightClick             Dispatched when a user presses and releases
 	 *                               the right button of the user's pointing
 	 *                               device over the same InteractiveObject. For a
 	 *                               `rightClick` event to occur, it
@@ -680,13 +680,13 @@ declare namespace openfl.display {
 	 *                               `rightMouseDown` or
 	 *                               `rightMouseUp` events; the
 	 *                               `rightClick` event still occurs.
-	 * @event rightMouseDown         Dispatched when a user presses the pointing
+	 * @:event rightMouseDown         Dispatched when a user presses the pointing
 	 *                               device button over an InteractiveObject
 	 *                               instance.
-	 * @event rightMouseUp           Dispatched when a user releases the pointing
+	 * @:event rightMouseUp           Dispatched when a user releases the pointing
 	 *                               device button over an InteractiveObject
 	 *                               instance.
-	 * @event rollOut                Dispatched when the user moves a pointing
+	 * @:event rollOut                Dispatched when the user moves a pointing
 	 *                               device away from an InteractiveObject
 	 *                               instance. The event target is the object
 	 *                               previously under the pointing device or a
@@ -715,7 +715,7 @@ declare namespace openfl.display {
 	 *                               object container, even if the mouse remains
 	 *                               over another child object of the display
 	 *                               object container.
-	 * @event rollOver               Dispatched when the user moves a pointing
+	 * @:event rollOver               Dispatched when the user moves a pointing
 	 *                               device over an InteractiveObject instance.
 	 *                               The event target is the object under the
 	 *                               pointing device or a parent of that object.
@@ -743,7 +743,7 @@ declare namespace openfl.display {
 	 *                               object container, even if the mouse was
 	 *                               already over another child object of the
 	 *                               display object container. 
-	 * @event selectAll              Dispatched when the user activates the
+	 * @:event selectAll              Dispatched when the user activates the
 	 *                               platform-specific accelerator key combination
 	 *                               for a select all operation or selects 'Select
 	 *                               All' from the text context menu. This event
@@ -752,26 +752,26 @@ declare namespace openfl.display {
 	 *                               focus is a TextField, the default behavior of
 	 *                               this event is to cause all the contents of
 	 *                               the text field to be selected.
-	 * @event softKeyboardActivate   Dispatched immediately after the soft
+	 * @:event softKeyboardActivate   Dispatched immediately after the soft
 	 *                               keyboard is raised.
-	 * @event softKeyboardActivating Dispatched immediately before the soft
+	 * @:event softKeyboardActivating Dispatched immediately before the soft
 	 *                               keyboard is raised.
-	 * @event softKeyboardDeactivate Dispatched immediately after the soft
+	 * @:event softKeyboardDeactivate Dispatched immediately after the soft
 	 *                               keyboard is lowered.
-	 * @event tabChildrenChange      Dispatched when the value of the object's
+	 * @:event tabChildrenChange      Dispatched when the value of the object's
 	 *                               `tabChildren` flag changes.
-	 * @event tabEnabledChange       Dispatched when the object's
+	 * @:event tabEnabledChange       Dispatched when the object's
 	 *                               `tabEnabled` flag changes.
-	 * @event tabIndexChange         Dispatched when the value of the object's
+	 * @:event tabIndexChange         Dispatched when the value of the object's
 	 *                               `tabIndex` property changes.
-	 * @event textInput              Dispatched when a user enters one or more
+	 * @:event textInput              Dispatched when a user enters one or more
 	 *                               characters of text. Various text input
 	 *                               methods can generate this event, including
 	 *                               standard keyboards, input method editors
 	 *                              (IMEs), voice or speech recognition systems,
 	 *                               and even the act of pasting plain text with
 	 *                               no formatting or style information.
-	 * @event touchBegin             Dispatched when the user first contacts a
+	 * @:event touchBegin             Dispatched when the user first contacts a
 	 *                               touch-enabled device(such as touches a
 	 *                               finger to a mobile phone or tablet with a
 	 *                               touch screen). Some devices might also
@@ -804,7 +804,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event touchEnd               Dispatched when the user removes contact with
+	 * @:event touchEnd               Dispatched when the user removes contact with
 	 *                               a touch-enabled device(such as lifts a
 	 *                               finger off a mobile phone or tablet with a
 	 *                               touch screen). Some devices might also
@@ -836,7 +836,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event touchMove              Dispatched when the user moves the point of
+	 * @:event touchMove              Dispatched when the user moves the point of
 	 *                               contact with a touch-enabled device(such as
 	 *                               drags a finger across a mobile phone or
 	 *                               tablet with a touch screen). Some devices
@@ -869,7 +869,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event touchOut               Dispatched when the user moves the point of
+	 * @:event touchOut               Dispatched when the user moves the point of
 	 *                               contact away from InteractiveObject instance
 	 *                               on a touch-enabled device(such as drags a
 	 *                               finger from one display object to another on
@@ -903,7 +903,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event touchOver              Dispatched when the user moves the point of
+	 * @:event touchOver              Dispatched when the user moves the point of
 	 *                               contact over an InteractiveObject instance on
 	 *                               a touch-enabled device(such as drags a
 	 *                               finger from a point outside a display object
@@ -938,7 +938,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event touchRollOut           Dispatched when the user moves the point of
+	 * @:event touchRollOut           Dispatched when the user moves the point of
 	 *                               contact away from an InteractiveObject
 	 *                               instance on a touch-enabled device(such as
 	 *                               drags a finger from over a display object to
@@ -973,7 +973,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event touchRollOver          Dispatched when the user moves the point of
+	 * @:event touchRollOver          Dispatched when the user moves the point of
 	 *                               contact over an InteractiveObject instance on
 	 *                               a touch-enabled device(such as drags a
 	 *                               finger from a point outside a display object
@@ -1008,7 +1008,7 @@ declare namespace openfl.display {
 	 *
 	 *                               **Note:** See the Multitouch class for
 	 *                               environment compatibility information.
-	 * @event touchTap               Dispatched when the user lifts the point of
+	 * @:event touchTap               Dispatched when the user lifts the point of
 	 *                               contact over the same InteractiveObject
 	 *                               instance on which the contact was initiated
 	 *                               on a touch-enabled device(such as presses

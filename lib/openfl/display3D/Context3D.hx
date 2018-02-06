@@ -28,6 +28,7 @@ import openfl.Vector;
 	public var maxBackBufferHeight:Int;
 	public var maxBackBufferWidth:Int;
 	public var profile (default, null):String;
+	public var totalGPUMemory (default, null):Int;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = 0xFFFFFFFF):Void;
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void;

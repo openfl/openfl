@@ -63,26 +63,26 @@ declare namespace openfl.display {
 	 * For more information, see the "Display Programming" chapter of the
 	 * _ActionScript 3.0 Developer's Guide_.
 	 * 
-	 * @event added            Dispatched when a display object is added to the
+	 * @:event added            Dispatched when a display object is added to the
 	 *                         display list. The following methods trigger this
 	 *                         event:
 	 *                         `DisplayObjectContainer.addChild()`,
 	 *                         `DisplayObjectContainer.addChildAt()`.
-	 * @event addedToStage     Dispatched when a display object is added to the on
+	 * @:event addedToStage     Dispatched when a display object is added to the on
 	 *                         stage display list, either directly or through the
 	 *                         addition of a sub tree in which the display object
 	 *                         is contained. The following methods trigger this
 	 *                         event:
 	 *                         `DisplayObjectContainer.addChild()`,
 	 *                         `DisplayObjectContainer.addChildAt()`.
-	 * @event enterFrame       [broadcast event] Dispatched when the playhead is
+	 * @:event enterFrame       [broadcast event] Dispatched when the playhead is
 	 *                         entering a new frame. If the playhead is not
 	 *                         moving, or if there is only one frame, this event
 	 *                         is dispatched continuously in conjunction with the
 	 *                         frame rate. This event is a broadcast event, which
 	 *                         means that it is dispatched by all display objects
 	 *                         with a listener registered for this event.
-	 * @event exitFrame        [broadcast event] Dispatched when the playhead is
+	 * @:event exitFrame        [broadcast event] Dispatched when the playhead is
 	 *                         exiting the current frame. All frame scripts have
 	 *                         been run. If the playhead is not moving, or if
 	 *                         there is only one frame, this event is dispatched
@@ -90,7 +90,7 @@ declare namespace openfl.display {
 	 *                         This event is a broadcast event, which means that
 	 *                         it is dispatched by all display objects with a
 	 *                         listener registered for this event.
-	 * @event frameConstructed [broadcast event] Dispatched after the constructors
+	 * @:event frameConstructed [broadcast event] Dispatched after the constructors
 	 *                         of frame display objects have run but before frame
 	 *                         scripts have run. If the playhead is not moving, or
 	 *                         if there is only one frame, this event is
@@ -98,7 +98,7 @@ declare namespace openfl.display {
 	 *                         frame rate. This event is a broadcast event, which
 	 *                         means that it is dispatched by all display objects
 	 *                         with a listener registered for this event.
-	 * @event removed          Dispatched when a display object is about to be
+	 * @:event removed          Dispatched when a display object is about to be
 	 *                         removed from the display list. Two methods of the
 	 *                         DisplayObjectContainer class generate this event:
 	 *                         `removeChild()` and
@@ -110,7 +110,7 @@ declare namespace openfl.display {
 	 *                         the new object: `addChild()`,
 	 *                         `addChildAt()`, and
 	 *                         `setChildIndex()`. 
-	 * @event removedFromStage Dispatched when a display object is about to be
+	 * @:event removedFromStage Dispatched when a display object is about to be
 	 *                         removed from the display list, either directly or
 	 *                         through the removal of a sub tree in which the
 	 *                         display object is contained. Two methods of the
@@ -124,7 +124,7 @@ declare namespace openfl.display {
 	 *                         the new object: `addChild()`,
 	 *                         `addChildAt()`, and
 	 *                         `setChildIndex()`. 
-	 * @event render           [broadcast event] Dispatched when the display list
+	 * @:event render           [broadcast event] Dispatched when the display list
 	 *                         is about to be updated and rendered. This event
 	 *                         provides the last opportunity for objects listening
 	 *                         for this event to make changes before the display

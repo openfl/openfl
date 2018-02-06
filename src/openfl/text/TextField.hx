@@ -1578,10 +1578,25 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool): Void {
+	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		super.__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || force);
+		var success = super.__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || force);
 		__forceCachedBitmapUpdate = false;
+		
+		if (success) {
+			
+			if (__cacheBitmap != null) {
+				
+				__cacheBitmap.__renderTransform.tx -= __offsetX;
+				__cacheBitmap.__renderTransform.ty -= __offsetY;
+				
+			}
+			
+			return true;
+			
+		}
+		
+		return false;
 		
 	}
 	
@@ -2459,6 +2474,36 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function get_x ():Float {
+		
+		return __transform.tx + __offsetX;
+		
+	}
+	
+	
+	private override function set_x (value:Float):Float {
+		
+		if (value != __transform.tx + __offsetX) __setTransformDirty ();
+		return __transform.tx = value - __offsetX;
+		
+	}
+	
+	
+	private override function get_y ():Float {
+		
+		return __transform.ty + __offsetY;
+		
+	}
+	
+	
+	private override function set_y (value:Float):Float {
+		
+		if (value != __transform.ty + __offsetY) __setTransformDirty ();
+		return __transform.ty = value - __offsetY;
+		
+	}
+	
+	
 	
 	
 	// Event Handlers
@@ -2554,7 +2599,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function this_onFocusIn (event:FocusEvent):Void {
 		
-		if (selectable && type == INPUT && stage != null && stage.focus == this) {
+		if (type == INPUT && stage != null && stage.focus == this) {
 			
 			__startTextInput ();
 			
@@ -2609,7 +2654,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function this_onMouseDown (event:MouseEvent):Void {
 		
-		if (!selectable) return;
+		if (!selectable && type != INPUT) return;
 		
 		__updateLayout ();
 		
