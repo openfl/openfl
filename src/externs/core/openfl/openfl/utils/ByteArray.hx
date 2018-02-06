@@ -251,8 +251,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		#if display
 		return 0;
+		#elseif openfl
+		return this == null ? 0 : this.l;
 		#else
-		return this.length;
+		return this == null ? 0 : this.length;
 		#end
 		
 	}
@@ -262,6 +264,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		#if display
 		#elseif flash
+		this.length = value;
+		#elseif commonjs
 		this.length = value;
 		#else
 		if (value > 0) {
@@ -309,7 +313,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		untyped global.Object.defineProperties (ByteArrayData.prototype, {
 			"bytesAvailable": { get: untyped __js__ ("function () { return this.get_bytesAvailable (); }") },
 			"endian": { get: untyped __js__ ("function () { return this.get_endian (); }"), set: untyped __js__ ("function (v) { return this.set_endian (v); }") },
-			//"length": { get: p.get_length, set: p.set_length }
+			"length": { get: untyped __js__ ("function () { return this.get_length (); }"), set: untyped __js__ ("function (v) { return this.set_length (v); }") },
 		});
 		
 	}
@@ -372,14 +376,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
 		#if js
-		if (__length > length) {
+		if (__length > #if commonjs l #else length #end) {
 			
-			var cacheLength = length;
+			var cacheLength = #if commonjs l #else length #end;
+			#if commonjs
+			this.l = __length;
+			#else
 			this.length = __length;
+			#end
 			var data = Bytes.alloc (cacheLength);
 			data.blit (0, this, 0, cacheLength);
 			__setData (data);
+			#if commonjs
+			this.l = cacheLength;
+			#else
 			this.length = cacheLength;
+			#end
 			
 		}
 		#end
@@ -396,8 +408,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 			__setData (bytes);
 			
-			length = __length;
-			position = length;
+			#if commonjs l #else length #end = __length;
+			position = #if commonjs l #else length #end;
 			
 		}
 		
@@ -429,7 +441,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readBoolean ():Bool {
 		
-		if (position < length) {
+		if (position < #if commonjs l #else length #end) {
 			
 			return (get (position++) != 0);
 			
@@ -462,9 +474,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readBytes (bytes:ByteArray, offset:Int = 0, length:Int = 0):Void {
 		
-		if (length == 0) length = this.length - position;
+		if (length == 0) length = #if commonjs l #else this.length #end - position;
 		
-		if (position + length > this.length) {
+		if (position + length > #if commonjs l #else this.length #end) {
 			
 			throw new EOFError ();
 			
@@ -566,7 +578,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readUnsignedByte ():Int {
 		
-		if (position < length) {
+		if (position < #if commonjs l #else length #end) {
 			
 			return get (position++);
 			
@@ -628,7 +640,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readUTFBytes (length:Int):String {
 		
-		if (position + length > this.length) {
+		if (position + length > #if commonjs l #else this.length #end) {
 			
 			throw new EOFError ();
 			
@@ -645,14 +657,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
 		#if js
-		if (__length > length) {
+		if (__length > #if commonjs l #else length #end) {
 			
-			var cacheLength = length;
+			var cacheLength = #if commonjs l #else length #end;
+			#if commonjs
+			this.l = __length;
+			#else
 			this.length = __length;
+			#end
 			var data = Bytes.alloc (cacheLength);
 			data.blit (0, this, 0, cacheLength);
 			__setData (data);
+			#if commonjs
+			this.l = cacheLength;
+			#else
 			this.length = cacheLength;
+			#end
 			
 		}
 		#end
@@ -669,7 +689,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 			__setData (bytes);
 			
-			length = __length;
+			#if commonjs l #else length #end = __length;
 			
 		}
 		
@@ -803,7 +823,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = Bytes.ofString (value);
 		
-		writeShort (bytes.length);
+		writeShort (#if commonjs bytes.l #else bytes.length #end);
 		writeBytes (bytes);
 		
 	}
@@ -820,7 +840,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	private function __fromBytes (bytes:Bytes):Void {
 		
 		__setData (bytes);
-		length = bytes.length;
+		#if commonjs l = bytes.l #else length = bytes.length #end;
 		
 	}
 	
@@ -833,17 +853,23 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			#if sys
 			bytes.fill (length, size, 0);
 			#end
-			var cacheLength = length;
-			length = __length;
-			bytes.blit (0, this, 0, __length);
-			length = cacheLength;
+			
+			if (__length > 0) {
+				
+				var cacheLength = #if commonjs l #else length #end;
+				#if commonjs l #else length #end = __length;
+				bytes.blit (0, this, 0, __length);
+				#if commonjs l #else length #end = cacheLength;
+				
+			}
+			
 			__setData (bytes);
 			
 		}
 		
-		if (length < size) {
+		if (#if commonjs l #else length #end < size) {
 			
-			length = size;
+			#if commonjs l #else length #end = size;
 			
 		}
 		
@@ -861,7 +887,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		b = bytes.b;
 		#end
 		
-		__length = bytes.length;
+		__length = #if commonjs bytes.l #else bytes.length #end;
 		
 		#if js
 		data = bytes.data;
@@ -879,7 +905,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:noCompletion private inline function get_bytesAvailable ():Int {
 		
-		return length - position;
+		return #if commonjs l #else length #end - position;
 		
 	}
 	
@@ -896,6 +922,27 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		return __endian = value;
 		
 	}
+	
+	
+	#if openfljs
+	@:noCompletion private override function set_length (value:Int):Int {
+		
+		#if display
+		#else
+		if (value > 0) {
+			
+			this.__resize (value);
+			if (value < this.position) this.position = value;
+			
+		}
+		
+		this.l = value;
+		#end
+		
+		return value;
+		
+	}
+	#end
 	
 	
 }
