@@ -174,7 +174,12 @@ class Transform {
 	private function __setTransform (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void {
 		
 		if (__displayObject != null) {
-			
+
+			var dt = __displayObject.__transform;
+			if (dt.a == a && dt.b == b && dt.c == c && dt.d == d && dt.tx == tx && dt.ty == ty) {
+				return;
+			}
+
 			var scaleX = 0.0;
 			var scaleY = 0.0;
 			

@@ -967,19 +967,39 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 	}
 
+	public function isVisible():Bool {
+		var isVis:Bool = __visible;
+		if (!isVis) {
+			return false;
+		}
+		var p : DisplayObjectContainer = this.parent;
+		while (p != null && isVis) {
+			isVis = p.visible;
+			p = p.parent;
+		}
+
+		return isVis;
+	}
+
 	public function setRequiresRedraw():Void
 	{
 
-		var p : DisplayObjectContainer = this.parent;
-		var frameID : UInt = Stage.frameID;
-		_lastParentOrSelfChangeFrameID = frameID;
+		// Only flag for updating when visible or just made invisible
+		if (__visibleChanged || isVisible()) {
+			var p : DisplayObjectContainer = this.parent;
+			var frameID : UInt = Stage.frameID;
+			_lastParentOrSelfChangeFrameID = frameID;
 
-		while (p != null && p._lastChildChangeFrameID != frameID) {
+			while (p != null && p._lastChildChangeFrameID != frameID) {
 
-			p._lastChildChangeFrameID = frameID;
-			p = p.parent;
+				p._lastChildChangeFrameID = frameID;
+				p = p.parent;
 
+			}
+
+			__visibleChanged = false;
 		}
+
 
 	}
 
@@ -1864,10 +1884,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 	}
 	
-	
+
+	private var __visibleChanged:Bool = false;
 	private function set_visible (value:Bool):Bool {
 		
-		if (value != __visible) __setRenderDirty ();
+		if (value != __visible) {
+			__visibleChanged = true;
+			__setRenderDirty ();
+		}
 		return __visible = value;
 		
 	}
