@@ -66,6 +66,7 @@ class GLTexture {
 			
 			hasTexture = true;
 			texture.__format = format;
+			texture.__internalFormat = format;
 			
 			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();
