@@ -1907,21 +1907,29 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void {
 		
-		this = new VectorData (length, fixed, cast array);
+		if (array != null) {
+			
+			this = VectorData.ofArray (array);
+			
+		} else {
+			
+			this = new VectorData (length, fixed);
+			
+		}
 		
 	}
 	
 	
 	public inline function concat (?a:Vector<T>):Vector<T> {
 		
-		return cast new VectorData<T> (this.concat (cast a));
+		return cast this.concat (cast a);
 		
 	}
 	
 	
 	public inline function copy ():Vector<T> {
 		
-		return cast new VectorData<T> (this.copy ());
+		return cast this.copy ();
 		
 	}
 	
@@ -1961,7 +1969,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	}
 	
 	
-	public inline function lastIndexOf (x:T, ?from:Int = 0):Int {
+	public inline function lastIndexOf (x:T, ?from:Int):Int {
 		
 		return this.lastIndexOf (x, from);
 		
@@ -1991,7 +1999,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public inline function reverse ():Vector<T> {
 		
-		return cast new VectorData<T> (this.reverse ());
+		return cast this.reverse ();
 		
 	}
 	
@@ -2012,7 +2020,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public inline function slice (?pos:Int, ?end:Int):Vector<T> {
 		
-		return cast new VectorData<T> (this.slice (pos, end));
+		return cast this.slice (pos, end);
 		
 	}
 	
@@ -2026,7 +2034,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public inline function splice (pos:Int, len:Int):Vector<T> {
 		
-		return cast new VectorData<T> (this.splice (pos, len));
+		return cast this.splice (pos, len);
 		
 	}
 	
@@ -2047,15 +2055,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public inline static function ofArray<T> (a:Array<T>):Vector<T> {
 		
-		var vector = new Vector<T> ();
-		
-		for (i in 0...a.length) {
-			
-			vector[i] = cast a[i];
-			
-		}
-		
-		return vector;
+		return cast VectorData.ofArray (a);
 		
 	}
 	
@@ -2123,6 +2123,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 			get: { value: decl.get },
 			insertAt: { value: decl.insertAt },
 			iterator: { value: decl.iterator },
+			lastIndexOf: { value: decl.lastIndexOf },
 			pop: { value: decl.pop },
 			push: { value: decl.push },
 			removeAt: { value: decl.removeAt },
@@ -2134,8 +2135,8 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 			get_length: { value: decl.get_length },
 			set_length: { value: decl.set_length },
 		}
-		VectorData = function (length, fixed, array) {
-			return Object.defineProperties (decl.construct ([], length, fixed, array), VectorDataDescriptor);
+		VectorData = function (length, fixed) {
+			return Object.defineProperties (decl.construct ([], length, fixed), VectorDataDescriptor);
 		}
 		VectorData.ofArray = ofArray;
 		VectorData.prototype = Array.prototype");
@@ -2146,19 +2147,15 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	public function new (?length:Int, ?fixed:Bool, ?array:VectorData<T>) {}
 	
 	
-	private function construct (instance:Dynamic, ?length:Int, ?fixed:Bool, ?array:Array<Dynamic>) {
-		
-		if (array != null) {
-			
-			for (i in 0...untyped (array).length) {
-				
-				instance[i] = array[i];
-				
-			}
-			
-		}
+	private function construct (instance:Dynamic, ?length:Int, ?fixed:Bool) {
 		
 		if (length != null) {
+			
+			// for (i in 0...length) {
+				
+			// 	untyped __js__ ("this")[i] = untyped __js__ ("null");
+				
+			// }
 			
 			instance.length = length;
 			
@@ -2204,7 +2201,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		
 		if (!fixed || index < untyped __js__ ("this").length) {
 			
-			untyped __js__ ("Array.prototype.slice.call (this, index, 0, element)");
+			untyped __js__ ("Array.prototype.splice.call (this, index, 0, element)");
 			
 		}
 		
@@ -2225,9 +2222,17 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	}
 	
 	
-	public function lastIndexOf (x:T, ?from:Int = 0):Int {
+	public function lastIndexOf (x:T, ?from:Int):Int {
 		
-		return -1;
+		if (from == null) {
+			
+			return untyped __js__ ("Array.prototype.lastIndexOf.call (this, x)");
+			
+		} else {
+			
+			return untyped __js__ ("Array.prototype.lastIndexOf.call (this, x, from)");
+			
+		}
 		
 	}
 	
@@ -2238,11 +2243,10 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		
 		var data = new VectorData<T> ();
 		for (i in 0...a.length) {
+			// data[i] = untyped __js__ ("a[i] === a[i] ? a[i] : null");
 			data[i] = a[i];
 		}
 		return data;
-		
-		//return new VectorData<T> (null, null, cast a);
 		
 	}
 	
@@ -2281,7 +2285,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		
 		if (!fixed || index < untyped __js__ ("this").length) {
 			
-			return untyped __js__ ("Array.prototype.slice.call (this, index, 1)")[0];
+			return untyped __js__ ("Array.prototype.splice.call (this, index, 1)")[0];
 			
 		}
 		
@@ -2385,6 +2389,22 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		if (!fixed) {
 			
 			untyped __js__ ("this").length = value;
+			
+			// var current = untyped __js__ ("this").length;
+			
+			// if (value < current) {
+				
+			// 	untyped __js__ ("this.length = value");
+				
+			// } else {
+				
+			// 	for (i in current...value) {
+					
+			// 		untyped __js__ ("this")[i] = untyped __js__ ("null");
+					
+			// 	}
+				
+			// }
 			
 		}
 		
