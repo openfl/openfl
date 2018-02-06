@@ -1383,7 +1383,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		// TODO: Better DOM workaround on cacheAsBitmap
 		
-		if ((renderSession.renderType == DOM && !__renderedOnCanvasWhileOnDOM) || __forceCachedBitmapUpdate) {
+		if (renderSession.renderType == DOM && (!__renderedOnCanvasWhileOnDOM || __forceCachedBitmapUpdate)) {
 			
 			__renderedOnCanvasWhileOnDOM = true;
 			
