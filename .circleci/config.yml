@@ -167,7 +167,7 @@ jobs:
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
     environment:
-     - DISPLAY: ":0"
+     - DISPLAY: :0
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
