@@ -46,6 +46,8 @@ class CairoRenderer extends AbstractRenderer {
 	
 	public override function clear ():Void {
 		
+		if (cairo == null) return;
+		
 		cairo.identityMatrix ();
 		
 		if (stage.__clearBeforeRender) {
@@ -60,6 +62,8 @@ class CairoRenderer extends AbstractRenderer {
 	
 	public override function render ():Void {
 		
+		if (cairo == null) return;
+		
 		renderSession.allowSmoothing = (stage.quality != LOW);
 		
 		stage.__renderCairo (renderSession);
@@ -68,6 +72,8 @@ class CairoRenderer extends AbstractRenderer {
 	
 	
 	public override function renderStage3D ():Void {
+		
+		if (cairo == null) return;
 		
 		for (stage3D in stage.stage3Ds) {
 			
