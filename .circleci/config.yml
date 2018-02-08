@@ -96,8 +96,6 @@ jobs:
   Neko (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    environment:
-     - DISPLAY: ":0"
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -121,8 +119,6 @@ jobs:
   Neko (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    environment:
-     - DISPLAY: ":0"
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -144,8 +140,6 @@ jobs:
   C++ (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    environment:
-     - DISPLAY: ":0"
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -166,8 +160,6 @@ jobs:
   C++ (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    environment:
-     - DISPLAY: :0
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
