@@ -1,3 +1,13 @@
+7.1.1 (02/09/2018)
+------------------
+
+* Improved the rendering of the `TextField` input cursor on HTML5
+* Fixed support for `openfl.Vector` when only part of the application is CommonJS
+* Fixed a possible crash if no native window is able to be initialized
+* Fixed a regression in "swf-loader" support within the NPM tools
+* Fixed a minor "unused variable" warning when building NPM tools
+
+
 7.1.0 (02/07/2018)
 ------------------
 
