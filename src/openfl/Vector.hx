@@ -1,4 +1,4 @@
-package openfl; #if (!flash || display) #if (!commonjs || !js)
+package openfl; #if (!flash || display) #if (!openfljs || !js)
 
 
 import haxe.Constraints.Function;
@@ -2114,37 +2114,48 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	private static function __init__ () {
 		
-		untyped __js__ ("var decl = VectorData.prototype;
-		var ofArray = VectorData.ofArray;
-		var VectorDataDescriptor = {
-			constructor: { value: decl.new },
-			concat: { value: decl.concat },
-			copy: { value: decl.copy },
-			get: { value: decl.get },
-			insertAt: { value: decl.insertAt },
-			iterator: { value: decl.iterator },
-			lastIndexOf: { value: decl.lastIndexOf },
-			pop: { value: decl.pop },
-			push: { value: decl.push },
-			removeAt: { value: decl.removeAt },
-			set: { value: decl.set },
-			shift: { value: decl.shift },
-			slice: { value: decl.slice },
-			splice: { value: decl.splice },
-			unshift: { value: decl.unshift },
-			get_length: { value: decl.get_length },
-			set_length: { value: decl.set_length },
+		untyped __js__ ("var prefix = (typeof openfl_VectorData !== 'undefined');
+		var ref = (prefix ? openfl_VectorData : VectorData);
+		var p = ref.prototype;
+		var construct = p.construct;
+		var _VectorDataDescriptor = {
+			constructor: { value: null },
+			concat: { value: p.concat },
+			copy: { value: p.copy },
+			get: { value: p.get },
+			insertAt: { value: p.insertAt },
+			iterator: { value: p.iterator },
+			lastIndexOf: { value: p.lastIndexOf },
+			pop: { value: p.pop },
+			push: { value: p.push },
+			removeAt: { value: p.removeAt },
+			set: { value: p.set },
+			shift: { value: p.shift },
+			slice: { value: p.slice },
+			splice: { value: p.splice },
+			unshift: { value: p.unshift },
+			get_length: { value: p.get_length },
+			set_length: { value: p.set_length },
 		}
-		VectorData = function (length, fixed) {
-			return Object.defineProperties (decl.construct ([], length, fixed), VectorDataDescriptor);
+		var _VectorData = function (length, fixed) {
+			return Object.defineProperties (construct ([], length, fixed), _VectorDataDescriptor);
 		}
-		VectorData.ofArray = ofArray;
-		VectorData.prototype = Array.prototype");
+		_VectorDataDescriptor.constructor.value = _VectorData;
+		_VectorData.__name__ = ref.__name__;
+		_VectorData.ofArray = ref.ofArray;
+		$hxClasses['openfl.VectorData'] = _VectorData;
+		_VectorData.prototype = Array.prototype
+		if (prefix) openfl_VectorData = _VectorData; else VectorData = _VectorData;
+		");
 		
 	}
 	
 	
-	public function new (?length:Int, ?fixed:Bool, ?array:VectorData<T>) {}
+	public function new (?length:Int, ?fixed:Bool, ?array:VectorData<T>) {
+		
+		construct (this, length, fixed);
+		
+	}
 	
 	
 	private function construct (instance:Dynamic, ?length:Int, ?fixed:Bool) {
@@ -2166,7 +2177,6 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 		return instance;
 		
 	};
-		
 	
 	
 	public function concat (?a:Vector<T>):VectorData<T> {
