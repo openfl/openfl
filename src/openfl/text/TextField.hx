@@ -219,34 +219,17 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (charIndex < 0 || charIndex > __text.length - 1) return null;
 		
-		__updateLayout ();
+		var rect = new Rectangle ();
 		
-		for (group in __textEngine.layoutGroups) {
+		if (__getCharBoundaries (charIndex, rect)) {
 			
-			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
-				
-				try {
-					
-					var x = group.offsetX;
-					
-					for (i in 0...(charIndex - group.startIndex)) {
-						
-						x += group.getAdvance (i);
-						
-					}
-					
-					// TODO: Is this actually right for combining characters?
-					var lastPosition = group.getAdvance (charIndex - group.startIndex);
-					
-					return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
-					
-				} catch (e:Dynamic) {}
-				
-			}
+			return rect;
+			
+		} else {
+			
+			return null;
 			
 		}
-		
-		return null;
 		
 	}
 	
@@ -564,6 +547,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		if (i > __text.length) i = __text.length;
 		
 		setSelection (i, i);
+		
+		// TODO: Solution where this is not run twice (run inside replaceText above)
+		__updateScrollH ();
 		
 	}
 	
@@ -1170,6 +1156,43 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private function __getCharBoundaries (charIndex:Int, rect:Rectangle):Bool {
+		
+		if (charIndex < 0 || charIndex > __text.length - 1) return false;
+		
+		__updateLayout ();
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
+				
+				try {
+					
+					var x = group.offsetX;
+					
+					for (i in 0...(charIndex - group.startIndex)) {
+						
+						x += group.getAdvance (i);
+						
+					}
+					
+					// TODO: Is this actually right for combining characters?
+					var lastPosition = group.getAdvance (charIndex - group.startIndex);
+					
+					rect.setTo (x, group.offsetY, lastPosition, group.ascent + group.descent);
+					return true;
+					
+				} catch (e:Dynamic) {}
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
 	private function __getCharIndexOnDifferentLine (charIndex:Int, lineIndex:Int):Int {
 		
 		if (charIndex < 0 || charIndex > __text.length) return -1;
@@ -1649,7 +1672,31 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			if (offsetX > 0) {
 				
-				scrollH = Math.ceil (offsetX);
+				// TODO: Handle __selectionIndex on drag select?
+				// TODO: Update scrollH by one character width at a time when able
+				
+				if (__caretIndex >= text.length) {
+					
+					scrollH = Math.ceil (offsetX);
+					
+				} else {
+					
+					var caret = Rectangle.__pool.get ();
+					__getCharBoundaries (__caretIndex, caret);
+					
+					if (caret.x < scrollH) {
+						
+						scrollH = Math.floor (caret.x - 2);
+						
+					} else if (caret.x > scrollH + __textEngine.width) {
+						
+						scrollH = Math.ceil (caret.x - __textEngine.width - 2);
+						
+					}
+					
+					Rectangle.__pool.release (caret);
+					
+				}
 				
 			} else {
 				
@@ -2748,6 +2795,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 				}
 				
+				__updateScrollH ();
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
@@ -2783,6 +2831,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 				}
 				
+				__updateScrollH ();
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
