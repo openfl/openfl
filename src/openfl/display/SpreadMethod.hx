@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract SpreadMethod(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract SpreadMethod(String) from String to String {
+	
+	public var PAD = "pad";
+	public var REFLECT = "reflect";
+	public var REPEAT = "repeat";
+	
+}
+
+
+#end

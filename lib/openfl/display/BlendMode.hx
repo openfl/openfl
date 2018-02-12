@@ -1,4 +1,4 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
 
 /**
@@ -11,7 +11,7 @@ package openfl.display; #if (display || !flash)
  * method of the openfl.display.BitmapData class
  * 
  */
-@:enum abstract BlendMode(Null<Int>) {
+@:enum abstract BlendMode(String) from String to String {
 	
 	/**
 	 * Adds the values of the constituent colors of the display object to the
@@ -23,7 +23,7 @@ package openfl.display; #if (display || !flash)
 	 * resulting RGB value for the displayed pixel is 0xFFC833(because 0xAA +
 	 * 0xDD > 0xFF, 0xA6 + 0x22 = 0xC8, and 0x33 + 0x00 = 0x33).
 	 */
-	public var ADD = 0;
+	public var ADD = "add";
 	
 	/**
 	 * Applies the alpha value of each pixel of the display object to the
@@ -33,7 +33,7 @@ package openfl.display; #if (display || !flash)
 	 *
 	 * Not supported under GPU rendering.
 	 */
-	public var ALPHA = 1;
+	public var ALPHA = "alpha";
 	
 	/**
 	 * Selects the darker of the constituent colors of the display object and the
@@ -47,7 +47,7 @@ package openfl.display; #if (display || !flash)
 	 *
 	 * Not supported under GPU rendering.
 	 */
-	public var DARKEN = 2;
+	public var DARKEN = "darken";
 	
 	/**
 	 * Compares the constituent colors of the display object with the colors of
@@ -60,7 +60,7 @@ package openfl.display; #if (display || !flash)
 	 * resulting RGB value for the displayed pixel is 0x222C33(because 0xFF -
 	 * 0xDD = 0x22, 0xF8 - 0xCC = 0x2C, and 0x33 - 0x00 = 0x33).
 	 */
-	public var DIFFERENCE = 3;
+	public var DIFFERENCE = "difference";
 	
 	/**
 	 * Erases the background based on the alpha value of the display object. This
@@ -69,7 +69,7 @@ package openfl.display; #if (display || !flash)
 	 *
 	 * Not supported under GPU rendering.
 	 */
-	public var ERASE = 4;
+	public var ERASE = "erase";
 	
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the display
@@ -81,12 +81,12 @@ package openfl.display; #if (display || !flash)
 	 *
 	 * Not supported under GPU rendering.
 	 */
-	public var HARDLIGHT = 5;
+	public var HARDLIGHT = "hardlight";
 	
 	/**
 	 * Inverts the background.
 	 */
-	public var INVERT = 6;
+	public var INVERT = "invert";
 	
 	/**
 	 * Forces the creation of a transparency group for the display object. This
@@ -98,7 +98,7 @@ package openfl.display; #if (display || !flash)
 	 *
 	 * Not supported under GPU rendering.
 	 */
-	public var LAYER = 7;
+	public var LAYER = "layer";
 	
 	/**
 	 * Selects the lighter of the constituent colors of the display object and
@@ -112,7 +112,7 @@ package openfl.display; #if (display || !flash)
 	 *
 	 * Not supported under GPU rendering.
 	 */
-	public var LIGHTEN = 8;
+	public var LIGHTEN = "lighten";
 	
 	/**
 	 * Multiplies the values of the display object constituent colors by the
@@ -127,14 +127,14 @@ package openfl.display; #if (display || !flash)
 	 * shade than the color of the display object or the color of the
 	 * background.
 	 */
-	public var MULTIPLY = 9;
+	public var MULTIPLY = "multiply";
 	
 	/**
 	 * The display object appears in front of the background. Pixel values of the
 	 * display object override the pixel values of the background. Where the
 	 * display object is transparent, the background is visible.
 	 */
-	public var NORMAL = 10;
+	public var NORMAL = "normal";
 	
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the background.
@@ -146,7 +146,7 @@ package openfl.display; #if (display || !flash)
 	 *
 	 * Not supported under GPU rendering.
 	 */
-	public var OVERLAY = 11;
+	public var OVERLAY = "overlay";
 	
 	/**
 	 * Multiplies the complement(inverse) of the display object color by the
@@ -154,9 +154,9 @@ package openfl.display; #if (display || !flash)
 	 * setting is commonly used for highlights or to remove black areas of the
 	 * display object.
 	 */
-	public var SCREEN = 12;
+	public var SCREEN = "screen";
 	
-	public var SHADER = 13;
+	public var SHADER = "shader";
 	
 	/**
 	 * Subtracts the values of the constituent colors in the display object from
@@ -168,61 +168,6 @@ package openfl.display; #if (display || !flash)
 	 * resulting RGB value for the displayed pixel is 0x338400(because 0xDD -
 	 * 0xAA = 0x33, 0xA6 - 0x22 = 0x84, and 0x00 - 0x33 < 0x00).
 	 */
-	public var SUBTRACT = 14;
-	
-	@:from private static function fromString (value:String):BlendMode {
-		
-		return switch (value) {
-			
-			case "add": ADD;
-			case "alpha": ALPHA;
-			case "darken": DARKEN;
-			case "difference": DIFFERENCE;
-			case "erase": ERASE;
-			case "hardlight": HARDLIGHT;
-			case "invert": INVERT;
-			case "layer": LAYER;
-			case "lighten": LIGHTEN;
-			case "multiply": MULTIPLY;
-			case "normal": NORMAL;
-			case "overlay": OVERLAY;
-			case "screen": SCREEN;
-			case "shader": SHADER;
-			case "subtract": SUBTRACT;
-			default: null;
-			
-		}
-		
-	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case BlendMode.ADD: "add";
-			case BlendMode.ALPHA: "alpha";
-			case BlendMode.DARKEN: "darken";
-			case BlendMode.DIFFERENCE: "difference";
-			case BlendMode.ERASE: "erase";
-			case BlendMode.HARDLIGHT: "hardlight";
-			case BlendMode.INVERT: "invert";
-			case BlendMode.LAYER: "layer";
-			case BlendMode.LIGHTEN: "lighten";
-			case BlendMode.MULTIPLY: "multiply";
-			case BlendMode.NORMAL: "normal";
-			case BlendMode.OVERLAY: "overlay";
-			case BlendMode.SCREEN: "screen";
-			case BlendMode.SHADER: "shader";
-			case BlendMode.SUBTRACT: "subtract";
-			default: null;
-			
-		}
-		
-	}
+	public var SUBTRACT = "subtract";
 	
 }
-
-
-#else
-typedef BlendMode = flash.display.BlendMode;
-#end

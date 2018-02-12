@@ -12,8 +12,8 @@ declare namespace openfl.display {
 	 */
 	export enum GraphicsPathWinding {
 		
-		EVEN_ODD = 0,
-		NON_ZERO = 1
+		EVEN_ODD = "evenOdd",
+		NON_ZERO = "nonZero"
 		
 	}
 	

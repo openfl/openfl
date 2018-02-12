@@ -2,12 +2,12 @@ declare namespace openfl.display3D {
 	
 	export enum Context3DTextureFormat {
 		
-		BGR_PACKED = 0,
-		BGRA = 1,
-		BGRA_PACKED = 2,
-		COMPRESSED = 3,
-		COMPRESSED_ALPHA = 4,
-		RGBA_HALF_FLOAT = 5
+		BGR_PACKED = "bgrPacked565",
+		BGRA = "bgra",
+		BGRA_PACKED = "bgraPacked4444",
+		COMPRESSED = "compressed",
+		COMPRESSED_ALPHA = "compressedAlpha",
+		RGBA_HALF_FLOAT = "rgbaHalfFloat"
 		
 	}
 	

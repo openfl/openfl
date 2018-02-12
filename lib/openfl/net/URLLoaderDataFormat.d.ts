@@ -9,17 +9,17 @@ declare namespace openfl.net {
 		/**
 		 * Specifies that downloaded data is received as raw binary data.
 		 */
-		BINARY = 0,
+		BINARY = "binary",
 		
 		/**
 		 * Specifies that downloaded data is received as text.
 		 */
-		TEXT = 1,
+		TEXT = "text",
 		
 		/**
 		 * Specifies that downloaded data is received as URL-encoded variables.
 		 */
-		VARIABLES = 2
+		VARIABLES = "variables"
 		
 	}
 	

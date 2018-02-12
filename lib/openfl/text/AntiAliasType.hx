@@ -1,11 +1,11 @@
-package openfl.text; #if (display || !flash)
+package openfl.text;
 
 
 /**
  * The AntiAliasType class provides values for anti-aliasing in the
  * flash.text.TextField class.
  */
-@:enum abstract AntiAliasType(Null<Int>) {
+@:enum abstract AntiAliasType(String) from String to String {
 	
 	/**
 	 * Sets anti-aliasing to advanced anti-aliasing. Advanced anti-aliasing
@@ -16,7 +16,7 @@ package openfl.text; #if (display || !flash)
 	 * in the TextField class. Use the syntax
 	 * `AntiAliasType.ADVANCED`.
 	 */
-	public var ADVANCED = 0;
+	public var ADVANCED = "advanced";
 	
 	/**
 	 * Sets anti-aliasing to the anti-aliasing that is used in Flash Player 7 and
@@ -25,35 +25,6 @@ package openfl.text; #if (display || !flash)
 	 * property in the TextField class. Use the syntax
 	 * `AntiAliasType.NORMAL`.
 	 */
-	public var NORMAL = 1;
-	
-	@:from private static function fromString (value:String):AntiAliasType {
-		
-		return switch (value) {
-			
-			case "advanced": ADVANCED;
-			case "normal": NORMAL;
-			default: null;
-			
-		}
-		
-	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case AntiAliasType.ADVANCED: "advanced";
-			case AntiAliasType.NORMAL: "normal";
-			default: null;
-			
-		}
-		
-	}
+	public var NORMAL = "normal";
 	
 }
-
-
-#else
-typedef AntiAliasType = flash.text.AntiAliasType;
-#end

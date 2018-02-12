@@ -9,12 +9,12 @@ declare namespace openfl.text {
 		/**
 		 * Used to specify a `dynamic` TextField.
 		 */
-		DYNAMIC = 0,
+		DYNAMIC = "dynamic",
 		
 		/**
 		 * Used to specify an `input` TextField.
 		 */
-		INPUT = 1
+		INPUT = "input"
 		
 	}
 	

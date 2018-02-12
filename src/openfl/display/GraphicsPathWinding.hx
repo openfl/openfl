@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract GraphicsPathWinding(Null<Int>) {
@@ -31,3 +31,17 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract GraphicsPathWinding(String) from String to String {
+	
+	public var EVEN_ODD = "evenOdd";
+	public var NON_ZERO = "nonZero";
+	
+}
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
 
 /**
@@ -11,38 +11,9 @@ package openfl.display; #if (display || !flash)
  *  When paths intersect or overlap, the winding direction determines the
  * rules for filling the areas created by the intersection or overlap:
  */
-@:enum abstract GraphicsPathWinding(Null<Int>) {
+@:enum abstract GraphicsPathWinding(String) from String to String {
 	
-	public var EVEN_ODD = 0;
-	public var NON_ZERO = 1;
-	
-	@:from private static function fromString (value:String):GraphicsPathWinding {
-		
-		return switch (value) {
-			
-			case "evenOdd": EVEN_ODD;
-			case "nonZero": NON_ZERO;
-			default: null;
-			
-		}
-		
-	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case GraphicsPathWinding.EVEN_ODD: "evenOdd";
-			case GraphicsPathWinding.NON_ZERO: "nonZero";
-			default: null;
-			
-		}
-		
-	}
+	public var EVEN_ODD = "evenOdd";
+	public var NON_ZERO = "nonZero";
 	
 }
-
-
-#else
-typedef GraphicsPathWinding = flash.display.GraphicsPathWinding;
-#end

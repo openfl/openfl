@@ -2,10 +2,10 @@ declare namespace openfl.utils {
 	
 	export enum CompressionAlgorithm {
 		
-		DEFLATE = 0,
+		DEFLATE = "deflate",
 		//GZIP;
-		LZMA = 1,
-		ZLIB = 2
+		LZMA = "lzma",
+		ZLIB = "zlib"
 		
 	}
 	
