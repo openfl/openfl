@@ -1108,9 +1108,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		if (updateChildren && mask != null) {
+		if (updateChildren && __mask != null) {
 			
-			mask.__update (transformOnly, true, maskGraphics);
+			__mask.__update (transformOnly, true, maskGraphics);
 			
 		}
 		

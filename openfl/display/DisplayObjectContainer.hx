@@ -731,7 +731,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
+		if (!__renderable || __worldAlpha <= 0 || (__mask != null && (__mask.width <= 0 || __mask.height <= 0))) return;
 
 		if (calculatedBounds != null && !calculatedBounds.intersects(renderSession.renderer.viewport)) {
 			return;
