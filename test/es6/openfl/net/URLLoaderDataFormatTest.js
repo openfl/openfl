@@ -7,7 +7,7 @@ describe ("ES6 | URLLoaderDataFormat", function () {
 	
 	it ("test", function () {
 		
-		switch (+URLLoaderDataFormat.BINARY) {
+		switch (""+URLLoaderDataFormat.BINARY) {
 			
 			case URLLoaderDataFormat.BINARY:
 			case URLLoaderDataFormat.TEXT:

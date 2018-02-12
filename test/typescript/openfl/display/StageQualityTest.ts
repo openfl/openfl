@@ -7,7 +7,7 @@ describe ("TypeScript | StageQuality", function () {
 	
 	it ("test", function () {
 		
-		switch (+StageQuality.MEDIUM) {
+		switch (""+StageQuality.MEDIUM) {
 			
 			case StageQuality.BEST:
 			case StageQuality.HIGH:

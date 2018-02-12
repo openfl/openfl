@@ -7,7 +7,7 @@ describe ("TypeScript | FontStyle", function () {
 	
 	it ("test", function () {
 		
-		switch (+FontStyle.BOLD) {
+		switch (""+FontStyle.BOLD) {
 			
 			case FontStyle.BOLD:
 			case FontStyle.BOLD_ITALIC:

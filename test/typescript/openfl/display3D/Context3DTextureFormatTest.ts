@@ -7,7 +7,7 @@ describe ("TypeScript | Context3DTextureFormat", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DTextureFormat.BGRA) {
+		switch (""+Context3DTextureFormat.BGRA) {
 			
 			case Context3DTextureFormat.BGRA:
 			case Context3DTextureFormat.BGRA_PACKED:

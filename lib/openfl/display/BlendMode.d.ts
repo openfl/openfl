@@ -172,3 +172,6 @@ declare namespace openfl.display {
 	}
 	
 }
+
+
+export default openfl.display.BlendMode;
