@@ -40,7 +40,8 @@ import openfl.Vector;
 
 class CairoGraphics {
 	
-	
+	#if lime_cairo
+	 
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
@@ -236,6 +237,8 @@ class CairoGraphics {
 		strokeCommands.clear ();
 		
 	}
+	
+	#end
 	
 	
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
@@ -466,6 +469,8 @@ class CairoGraphics {
 		
 	}
 	
+	
+	#if lime_cairo
 	
 	private static inline function isCCW (x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
 		
@@ -1073,6 +1078,8 @@ class CairoGraphics {
 		
 	}
 	
+	#end
+	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
 		
@@ -1389,6 +1396,8 @@ class CairoGraphics {
 	
 	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
 		
+		#if lime_cairo
+		
 		if (graphics.__commands.length != 0) {
 			
 			var cairo = renderSession.cairo;
@@ -1488,6 +1497,9 @@ class CairoGraphics {
 			
 			data.destroy();
 		}
+		
+		#end
+		
 	}
 	
 	
