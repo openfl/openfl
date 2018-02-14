@@ -160,6 +160,7 @@ class GLProgram3D {
 		program.__uniforms.clear ();
 		program.__samplerUniforms.clear ();
 		program.__alphaSamplerUniforms.clear ();
+		program.__alphaSamplerEnabled = [];
 		
 		program.__samplerUsageMask = 0;
 		
@@ -223,7 +224,7 @@ class GLProgram3D {
 				uniform.regData = program.__context.__fragmentConstants;
 				fragmentUniforms.add (uniform);
 				
-			} else if (StringTools.startsWith (uniform.name, "sampler") && !StringTools.endsWith (uniform.name, "_alpha")) {
+			} else if (StringTools.startsWith (uniform.name, "sampler") && uniform.name.indexOf ("alpha") == -1) {
 				
 				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
 				program.__samplerUniforms.add (uniform);
@@ -239,6 +240,11 @@ class GLProgram3D {
 				var len = uniform.name.indexOf ("_") - 7;
 				uniform.regIndex = Std.parseInt (uniform.name.substring (7, 7 + len)) + 4;
 				program.__alphaSamplerUniforms.add (uniform);
+				
+			} else if (StringTools.startsWith (uniform.name, "sampler") && StringTools.endsWith (uniform.name, "_alphaEnabled")) {
+				
+				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
+				program.__alphaSamplerEnabled[uniform.regIndex] = uniform;
 				
 			}
 			

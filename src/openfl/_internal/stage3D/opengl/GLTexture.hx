@@ -3,6 +3,7 @@ package openfl._internal.stage3D.opengl;
 
 import haxe.io.Bytes;
 import lime.utils.ArrayBufferView;
+import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.atf.ATFReader;
@@ -11,6 +12,7 @@ import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -59,7 +61,7 @@ class GLTexture {
 		
 		var hasTexture = false;
 		
-		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes) {
+		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes:Bytes) {
 			
 			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat (alpha, gpuFormat);
 			if (format == 0) return;
@@ -68,8 +70,31 @@ class GLTexture {
 			texture.__format = format;
 			texture.__internalFormat = format;
 			
-			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, blockLength, bytes);
-			GLUtils.CheckGLError ();
+			if (alpha && gpuFormat == 2) {
+				
+				var size = Std.int (blockLength / 2);
+				
+				gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, size, bytes);
+				GLUtils.CheckGLError ();
+				
+				var alphaTexture = new Texture (texture.__context, texture.__width, texture.__height, Context3DTextureFormat.COMPRESSED, texture.__optimizeForRenderToTexture, texture.__streamingLevels);
+				alphaTexture.__format = format;
+				alphaTexture.__internalFormat = format;
+				
+				gl.bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
+				GLUtils.CheckGLError ();
+				
+				gl.compressedTexImage2D (alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0, size, new BytePointer (bytes, size));
+				GLUtils.CheckGLError ();
+				
+				texture.__alphaTexture = alphaTexture;
+				
+			} else {
+				
+				gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, blockLength, bytes);
+				GLUtils.CheckGLError ();
+				
+			}
 			
 			// __trackCompressedMemoryUsage (blockLength);
 			

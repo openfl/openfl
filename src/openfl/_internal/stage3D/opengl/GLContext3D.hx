@@ -1040,6 +1040,35 @@ class GLContext3D {
 					
 				}
 				
+				if (context.__samplerStates[sampler].textureAlpha) {
+					
+					gl.activeTexture (gl.TEXTURE0 + sampler + 4);
+					GLUtils.CheckGLError ();
+					
+					if (texture != null && texture.__alphaTexture != null) {
+						
+						var target = texture.__alphaTexture.__textureTarget;
+						
+						gl.bindTexture (target, texture.__alphaTexture.__getTexture ());
+						GLUtils.CheckGLError ();
+						
+						texture.__alphaTexture.__setSamplerState (context.__samplerStates[sampler]);
+						
+						gl.uniform1i (context.__program.__alphaSamplerEnabled[sampler].location, 1);
+						GLUtils.CheckGLError ();
+						
+					} else {
+						
+						gl.bindTexture (gl.TEXTURE_2D, null);
+						GLUtils.CheckGLError ();
+						
+						gl.uniform1i (context.__program.__alphaSamplerEnabled[sampler].location, 0);
+						GLUtils.CheckGLError ();
+						
+					}
+					
+				}
+				
 				context.__samplerDirty &= ~(1 << sampler);
 				
 			}

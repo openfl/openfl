@@ -6,7 +6,7 @@ import openfl.utils.ByteArray;
 import openfl.errors.IllegalOperationError;
 import openfl.display3D.Context3DTextureFormat;
 
-typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> lime.utils.DataPointer -> Void;
+typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> Bytes -> Void;
 
 
 /**
@@ -25,12 +25,13 @@ typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> lim
 class ATFReader {
 	
 	
-	var cubeMap:Bool;
-	var data:ByteArray;
-	var height:Int;
-	var mipCount:Int;
-	var version = 0;
-	var width:Int;
+	private var atfFormat:ATFFormat;
+	private var cubeMap:Bool;
+	private var data:ByteArray;
+	private var height:Int;
+	private var mipCount:Int;
+	private var version = 0;
+	private var width:Int;
 	
 	
 	public function new (data:ByteArray, byteArrayOffset:UInt) {
@@ -92,7 +93,7 @@ class ATFReader {
 		
 		this.cubeMap = cubeMap;
 		
-		var atfFormat:ATFFormat = cast (tdata & 0x7f);
+		atfFormat = cast (tdata & 0x7f);
 		
 		// Make sure it is one of the supported formats
 		if (atfFormat != ATFFormat.RAW_COMPRESSED && atfFormat != ATFFormat.RAW_COMPRESSED_ALPHA) {
@@ -112,7 +113,7 @@ class ATFReader {
 		
 		mipCount = cast data.readUnsignedByte ();
 		
-		return (atfFormat == ATFFormat.RAW_COMPRESSED);
+		return (atfFormat == ATFFormat.RAW_COMPRESSED_ALPHA);
 		
 	}
 	

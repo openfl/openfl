@@ -23,6 +23,7 @@ import openfl.Vector;
 @:final class Program3D {
 	
 	
+	private var __alphaSamplerEnabled:Array<Uniform>;
 	private var __alphaSamplerUniforms:List<Uniform>;
 	private var __context:Context3D;
 	private var __fragmentShaderID:GLShader;
@@ -50,6 +51,7 @@ import openfl.Vector;
 		__uniforms = new List<Uniform> ();
 		__samplerUniforms = new List<Uniform> ();
 		__alphaSamplerUniforms = new List<Uniform> ();
+		__alphaSamplerEnabled = new Array<Uniform> ();
 		
 		__samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		

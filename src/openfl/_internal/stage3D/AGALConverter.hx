@@ -390,9 +390,23 @@ class AGALConverter {
 						
 						case 0: // 2d texture
 							
-							sr1.sourceMask = 0x3;
-							map.addSaR (sampler, RegisterUsage.SAMPLER_2D);
-							sb.add (dr.toGLSL () + " = texture2D(" + sampler.toGLSL () + ", " + sr1.toGLSL () + "); // tex");
+							if (sampler.t == 2) { // dxt5, sampler alpha
+								
+								sr1.sourceMask = 0x3;
+								map.addSaR (sampler, RegisterUsage.SAMPLER_2D_ALPHA);
+								sb.add ("if (" + sampler.toGLSL () + "_alphaEnabled) {\n");
+								sb.add ("\t\t" + dr.toGLSL () + " = vec4(texture2D(" + sampler.toGLSL () + ", " + sr1.toGLSL () + ").xyz, texture2D(" + sampler.toGLSL () + "_alpha, " + sr1.toGLSL () + ").x); // tex + alpha\n");
+								sb.add ("\t} else {\n");
+								sb.add ("\t\t" + dr.toGLSL () + " = texture2D(" + sampler.toGLSL () + ", " + sr1.toGLSL () + "); // tex\n");
+								sb.add ("\t}");
+								
+							} else {
+								
+								sr1.sourceMask = 0x3;
+								map.addSaR (sampler, RegisterUsage.SAMPLER_2D);
+								sb.add (dr.toGLSL () + " = texture2D(" + sampler.toGLSL () + ", " + sr1.toGLSL () + "); // tex");
+								
+							}
 						
 						case 1: // cube texture
 							
@@ -812,7 +826,7 @@ class RegisterMap {
 				
 				case RegisterUsage.SAMPLER_2D_ALPHA:
 					
-					trace ("Missing switch patten: RegisterUsage.SAMPLER_2D_ALPHA");
+					// trace ("Missing switch patten: RegisterUsage.SAMPLER_2D_ALPHA");
 				
 			}
 			
@@ -825,6 +839,11 @@ class RegisterMap {
 				sb.add ("uniform ");
 				sb.add ("sampler2D ");
 				sb.add (entry.name + "_alpha");
+				sb.add (";\n");
+				
+				sb.add ("uniform ");
+				sb.add ("bool ");
+				sb.add (entry.name + "_alphaEnabled");
 				sb.add (";\n");
 				
 			} else if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
@@ -1014,12 +1033,13 @@ private class SamplerRegister {
 		
 		var ignoreSampler = (s & 4 == 4);
 		var centroid = (s & 1 == 1);
+		var textureAlpha = (t == 2);
 		
 		// translate lod bias, sign extend and /8
 		var lodBias:Float = ((b << 24) >> 24) / 8.0;
 		var maxAniso:Float = 0.0;
 		
-		return new SamplerState (minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso, ignoreSampler, centroid);
+		return new SamplerState (minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso, ignoreSampler, centroid, false, textureAlpha);
 		
 	}
 	

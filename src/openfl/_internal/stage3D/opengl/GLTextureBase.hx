@@ -75,6 +75,7 @@ class GLTextureBase {
 		if (__compressedTextureFormats == null) {
 			
 			__compressedTextureFormats = new GLCompressedTextureFormats (gl);
+			
 		}
 		
 		textureBase.__internalFormat = __textureInternalFormat;
@@ -134,7 +135,7 @@ class GLTextureBase {
 	
 	public static function getImage (textureBase:TextureBase, renderSession:RenderSession, bitmapData:BitmapData):Image {
 		
-		var image =	bitmapData.image;
+		var image = bitmapData.image;
 		
 		if (!bitmapData.__isValid || image == null) {
 			
