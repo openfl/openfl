@@ -93,10 +93,15 @@ class GLCompressedTextureFormats {
 	
 	public function toTextureFormat (alpha:Bool, gpuFormat:ATFGPUFormat):Int {
 		
-		if (alpha)
-			return __formatMap[gpuFormat];
-		else
+		if (alpha) {
+			
 			return __formatMapAlpha[gpuFormat];
+			
+		} else {
+			
+			return __formatMap[gpuFormat];
+			
+		}
 		
 	}
 	
