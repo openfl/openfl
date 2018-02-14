@@ -5,6 +5,7 @@ import lime.graphics.CanvasRenderContext;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
+import openfl.geom.Rectangle;
 
 #if (js && html5)
 import js.Browser;
@@ -48,7 +49,8 @@ class CanvasRenderer extends AbstractRenderer {
 			
 		}
 		#end
-		
+
+		viewport = new Rectangle(0, 0, width, height);
 	}
 	
 	

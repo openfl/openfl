@@ -147,7 +147,8 @@ extern class NetStream extends EventDispatcher {
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:flash.media.VideoStreamSettings;
 	#end
-	
+
+	public var loadPercentage (default, null):Float;
 	
 	public function new (connection:NetConnection, ?peerID:String);
 	

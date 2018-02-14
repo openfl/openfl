@@ -1,6 +1,7 @@
 package openfl._internal.symbols;
 
 
+import haxe.Log;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.timeline.Frame;
 import openfl.display.MovieClip;
@@ -28,7 +29,8 @@ class SpriteSymbol extends SWFSymbol {
 		
 	}
 	
-	
+
+	@:access(openfl._internal.swf.SWFLiteLibrary.rootPath)
 	private override function __createObject (swf:SWFLite):MovieClip {
 		
 		#if !macro
@@ -44,7 +46,7 @@ class SpriteSymbol extends SWFSymbol {
 			
 			if (symbolType == null) {
 				
-				//Log.warn ("Could not resolve class \"" + className + "\"");
+				//Log.trace ("Could not resolve class \"" + className + "\"");
 				
 			}
 			
@@ -55,7 +57,7 @@ class SpriteSymbol extends SWFSymbol {
 			
 			if (symbolType == null) {
 				
-				//Log.warn ("Could not resolve class \"" + className + "\"");
+				Log.trace ("SWF Symbol \""+ className +"\" in library \""+ (swf.library.rootPath) +"\" has baseClassname \"" + baseClassName + "\" but no class by that name has been defined.");
 				
 			}
 			

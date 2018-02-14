@@ -71,7 +71,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	public var layers(default, null):Array<Layer>;
 	public var soundStream(default, null):SoundStream;
 
-	public var frameLabels(default, null):Map<Int, String>;
+	public var frameLabels(default, null):Map<Int, Array<String>>;
 	public var frameIndexes(default, null):Map<String, Int>;
 
 	private var currentFrame:Frame;
@@ -181,7 +181,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 		layers = new Array<Layer>();
 		dictionary = new Map<Int, Int>();
 		currentFrame = new Frame();
-		frameLabels = new Map<Int, String>();
+		frameLabels = new Map<Int, Array<String>>();
 		frameIndexes = new Map<String, Int>();
 		hasSoundStream = false;
 		_tmpData = data;
@@ -379,8 +379,8 @@ class SWFTimelineContainer extends SWFEventDispatcher
 		switch(cast (tag.type, Int)) {
 			case TagShowFrame.TYPE:
 				currentFrame.tagIndexEnd = currentTagIndex;
-				if (currentFrame.label == null && frameLabels.exists (currentFrame.frameNumber)) {
-					currentFrame.label = frameLabels.get (currentFrame.frameNumber);
+				if (currentFrame.labels == null && frameLabels.exists (currentFrame.frameNumber)) {
+					currentFrame.labels = frameLabels.get (currentFrame.frameNumber);
 				}
 				frames.push(currentFrame);
 				currentFrame = currentFrame.clone();
@@ -401,17 +401,33 @@ class SWFTimelineContainer extends SWFEventDispatcher
 				var i:Int;
 				for(i in 0...tagSceneAndFrameLabelData.frameLabels.length) {
 					var frameLabel:SWFFrameLabel = tagSceneAndFrameLabelData.frameLabels[i];
-					frameLabels.set (frameLabel.frameNumber, frameLabel.name);
+					var a:Array<String> = frameLabels.get (frameLabel.frameNumber);
+					if (null == a) {
+						a = new Array();
+						frameLabels.set (frameLabel.frameNumber, a);
+					}
+					a.push (frameLabel.name);
 					frameIndexes.set (frameLabel.name, frameLabel.frameNumber + 1);
 				}
 				for(i in 0...tagSceneAndFrameLabelData.scenes.length) {
 					var scene:SWFScene = cast tagSceneAndFrameLabelData.scenes[i];
-					scenes.push(new Scene(scene.offset, scene.name));
+					scenes.push (new Scene(scene.offset, scene.name));
 				}
 			case TagFrameLabel.TYPE:
 				var tagFrameLabel:TagFrameLabel = cast tag;
-				currentFrame.label = tagFrameLabel.frameName;
-				frameLabels.set(currentFrame.frameNumber, tagFrameLabel.frameName);
+				if (currentFrame.labels == null) {
+					currentFrame.labels = [];
+				}
+				currentFrame.labels.push (tagFrameLabel.frameName);
+				if (currentFrame.label != null && currentFrame.labels.indexOf(currentFrame.label) == -1) {
+					currentFrame.labels.push(currentFrame.label);
+				}
+				var a:Array<String> = frameLabels.get (currentFrame.frameNumber);
+				if (null == a) {
+					a = new Array();
+					frameLabels.set (currentFrame.frameNumber, a);
+				}
+				a.push (tagFrameLabel.frameName);
 				frameIndexes.set (tagFrameLabel.frameName, currentFrame.frameNumber + 1);
 		}
 	}
@@ -480,7 +496,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 
 		pcode = new Array();
 		for (fn in abcData.functions) {
-			pcode.push(format.abc.OpReader.decode(new haxe.io.BytesInput(fn.code)));
+			pcode.push(tools.format.swf.exporters.OpReader.decode(new haxe.io.BytesInput(fn.code)));
 		}
 	}
 

@@ -10,9 +10,10 @@ package openfl._internal.timeline;
 @:keep class Frame {
 	
 	
+	public var labels:Array<String>;
 	public var label:String;
 	public var objects:Array<FrameObject>;
-	public var script:Void->Void;
+	public var script:Dynamic;
 	public var scriptSource:String;
 	//public var scriptType:FrameScriptType;
 	
@@ -22,6 +23,16 @@ package openfl._internal.timeline;
 		
 		
 	}
-	
-	
+
+
+	public function toString():String {
+		var str:String =
+		"Frame {"+
+		" labels: " + labels +
+		" label: " + label +
+		" objects: " + objects +
+		" has script: " + (script != null) +
+		" }";
+		return str;
+	}
 }

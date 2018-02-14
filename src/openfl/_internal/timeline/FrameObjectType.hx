@@ -1,10 +1,10 @@
 package openfl._internal.timeline;
 
 
-enum FrameObjectType {
+@:keep enum FrameObjectType {
 	
 	CREATE;
 	UPDATE;
 	DESTROY;
-	
+	PLACE_OBJECT;
 }

@@ -123,9 +123,9 @@ extern class Event {
 	
 	public var bubbles (default, null):Bool;
 	public var cancelable (default, null):Bool;
-	public var currentTarget (default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var currentTarget (default, null):Dynamic;
 	public var eventPhase (default, null):EventPhase;
-	public var target (default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var target (default, null):Dynamic;
 	public var type (default, null):String;
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false);

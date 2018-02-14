@@ -691,12 +691,12 @@ import js.html.CanvasRenderingContext2D;
 	
 	private function __cleanup ():Void {
 		
-		if (__bounds != null) {
-			
-			__dirty = true;
-			__transformDirty = true;
-			
-		}
+//		if (__bounds != null) {
+//
+//			__dirty = true;
+//			__transformDirty = true;
+//
+//		}
 		
 		__bitmap = null;
 		
@@ -1020,12 +1020,12 @@ import js.html.CanvasRenderingContext2D;
 		var newHeight = Math.ceil(height + __renderTransform.ty);
 		
 		// Mark dirty if render size changed
-		if (newWidth != __width || newHeight != __height) {
-			
+		//S/ Check for differences greater than one, because most differences are negligible
+		//S/ and are potentially only different because of floating point precision issues.
+		if (Math.abs(newWidth - __width) > 1 || Math.abs(newHeight - __height) > 1) {
 			#if !openfl_disable_graphics_upscaling
 			__dirty = true;
 			#end
-			
 		}
 		
 		__width  = newWidth;

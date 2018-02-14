@@ -34,7 +34,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var mouseChildren:Bool;
 	public var numChildren (get, never):Int;
 	public var tabChildren:Bool;
-	
+
+	private var __isInitialized:Bool;
 	private var __removedChildren:Vector<DisplayObject>;
 	
 	
@@ -50,9 +51,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	private function new () {
 		
 		super ();
-		
+
 		mouseChildren = true;
-		
+		__isInitialized = false;
 		__children = new Array<DisplayObject> ();
 		__removedChildren = new Vector<DisplayObject> ();
 
@@ -67,7 +68,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
+	public function __addChildAtInternal (child:DisplayObject, index:Int):DisplayObject {
 		
 		if (child == null) {
 			
@@ -136,11 +137,21 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 		}
-		
+
+		__initializeChild(child);
+
 		return child;
 		
 	}
-	
+
+
+	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
+
+		__initializeSelf(); //make sure children are initialized
+
+		return __addChildAtInternal(child, index);
+	}
+
 	
 	public function areInaccessibleObjectsUnderPoint (point:Point):Bool {
 		
@@ -163,20 +174,38 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function getChildAt (index:Int):DisplayObject {
-		
+
+		__initializeSelf();//make sure children are initialized
 		if (index >= 0 && index < __children.length) {
-			
-			return __children[index];
-			
+			var child =  __children[index];
+			return child;
+
 		}
 		
 		return null;
 		
 	}
-	
-	
+
+
+	private function __initializeSelf() : Void {
+		if(!__isInitialized) {
+			__isInitialized = true;
+			__enterFrame(0);
+		}
+	}
+
+	private function __initializeChild(child : DisplayObject) : Void {
+
+		var fun = Reflect.field(child,"__initializeSelf");
+		if(Reflect.isFunction(fun))
+		{
+			Reflect.callMethod(child, fun, [0]);
+		}
+	}
+
 	public function getChildByName (name:String):DisplayObject {
-		
+
+		__initializeSelf();
 		for (child in __children) {
 			
 			if (child.name == name) return child;
@@ -190,7 +219,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function getChildIndex (child:DisplayObject):Int {
-		
+
+		__initializeSelf();
 		for (i in 0...__children.length) {
 			
 			if (__children[i] == child) return i;
@@ -296,8 +326,18 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 	}
-	
-	
+
+
+	public override function cleanGraphics ():Void {
+
+		super.cleanGraphics();
+
+		for (child in __children) {
+			child.cleanGraphics();
+		}
+	}
+
+
 	private function resolve (fieldName:String):DisplayObject {
 		
 		if (__children == null) return null;
@@ -318,13 +358,12 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function setChildIndex (child:DisplayObject, index:Int):Void {
-		
-		if (index >= 0 && index <= __children.length && child.parent == this) {
-			
-			__children.remove (child);
-			__children.insert (index, child);
-			
-		}
+
+		__initializeSelf();
+		if (index < 0 || index > __children.length || child.parent != this || __children[index] == child)
+			return;
+		__children.remove (child);
+		__children.insert (index, child);
 		
 	}
 	
@@ -337,7 +376,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void {
-		
+
+		__initializeSelf();
 		if (child1.parent == this && child2.parent == this) {
 			
 			var index1 = __children.indexOf (child1);
@@ -354,7 +394,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function swapChildrenAt (index1:Int, index2:Int):Void {
-		
+
+		__initializeSelf();
 		var swap:DisplayObject = __children[index1];
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
@@ -388,7 +429,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __enterFrame (deltaTime:Int):Void {
-		
+
+		if(__children == null || __renderable == false) return;
 		for (child in __children) {
 			
 			child.__enterFrame (deltaTime);
@@ -700,8 +742,12 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
-		
+		if (!__renderable || __worldAlpha <= 0 || (__mask != null && (__mask.width <= 0 || __mask.height <= 0))) return;
+
+		if (calculatedBounds != null && !calculatedBounds.intersects(renderSession.renderer.viewport)) {
+			return;
+		}
+
 		#if !neko
 		
 		super.__renderCanvas (renderSession);
@@ -730,16 +776,18 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 		}
-		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
+
+		//S/ Commenting this out for now, because it ultimately causes CanvasElements to be created over and over again.
+		//S/ In the future, it may be worth exploring if some parts of orphan.__cleanup() are necessary.
+//		for (orphan in __removedChildren) {
+//
+//			if (orphan.stage == null) {
+//
+//				orphan.__cleanup ();
+//
+//			}
+//
+//		}
 		
 		__removedChildren.length = 0;
 		
@@ -761,12 +809,12 @@ class DisplayObjectContainer extends InteractiveObject {
 		var bounds = Rectangle.__pool.get ();
 		__getLocalBounds (bounds);
 		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
+		renderSession.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 		Rectangle.__pool.release (bounds);
 		/*for (child in __children) {
 			
-			child.__renderMask (renderSession);
+			child.__renderCanvasMask (renderSession);
 			
 		}*/
 		
@@ -941,9 +989,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (__children != null) {
 			
 			for (child in __children) {
-				
-				child.__setStageReference (stage);
-				
+
+				if(child != null) {
+
+					child.__setStageReference (stage);
+
+				}
+
 			}
 			
 		}
@@ -984,32 +1036,83 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
-		
+
+		var oldCalculatedBounds:Rectangle = (!updateChildren && calculatedBounds != null) ? calculatedBounds.clone() : null;
+
 		super.__update (transformOnly, updateChildren, maskGraphics);
-		
-		if (updateChildren) {
-			
-			for (child in __children) {
-				
-				child.__update (transformOnly, true, maskGraphics);
-				
+
+		if (!updateChildren) {
+
+			calculatedBounds = oldCalculatedBounds;
+			if (parent != null) {
+				parent.applyChildBounds(calculatedBounds);
 			}
-			
+			return;
+
 		}
-		
-	}
-	
-	
-	public override function __updateChildren (transformOnly:Bool):Void {
-		
-		super.__updateChildren (transformOnly);
-		
+
+		var frameID:UInt = Stage.frameID;
+		var selfOrParentChanged = _lastParentOrSelfChangeFrameID == frameID;
+
 		for (child in __children) {
-			
-			child.__update (transformOnly, true);
-			
+
+			if (selfOrParentChanged) {
+
+				child._lastParentOrSelfChangeFrameID = frameID;
+
+			}
+			if (child._lastParentOrSelfChangeFrameID == frameID || child._lastChildChangeFrameID == frameID) {
+
+				child.__update (transformOnly, true, maskGraphics);
+
+			}
+			else {
+
+				applyChildBounds(child.calculatedBounds);
+
+			}
 		}
-		
+
+		if (parent != null) {
+			parent.applyChildBounds(calculatedBounds);
+		}
+
+	}
+
+	public override function __forceUpdateTransforms():Void {
+
+		super.__forceUpdateTransforms();
+
+		for (child in __children) {
+
+			child.__forceUpdateTransforms();
+
+		}
+	}
+
+	public override function __updateChildren (transformOnly:Bool):Void {
+
+		super.__updateChildren (transformOnly);
+
+		for (child in __children) {
+
+			child.__forceUpdateTransforms();
+
+		}
+
+	}
+
+	private override function postTransformUpdate ():Void {
+		calculatedBounds = null;
+	}
+
+	public function applyChildBounds(bounds:Rectangle):Void {
+		if (calculatedBounds == null) {
+			calculatedBounds = bounds != null ? bounds.clone() : null;
+		}
+		else if (bounds != null) {
+			calculatedBounds.merge(bounds);
+		}
 	}
 	
 	

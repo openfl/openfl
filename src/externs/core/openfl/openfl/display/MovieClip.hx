@@ -145,7 +145,7 @@ extern class MovieClip extends Sprite {
 	 *              specified scene.
 	 * @param scene The name of the scene to play. This parameter is optional.
 	 */
-	public function gotoAndPlay (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
+	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void;
 	
 	
 	/**
@@ -165,7 +165,7 @@ extern class MovieClip extends Sprite {
 	 * @throws ArgumentError If the `scene` or `frame`
 	 *                       specified are not found in this movie clip.
 	 */
-	public function gotoAndStop (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
+	public function gotoAndStop (frame:Dynamic, scene:String = null):Void;
 	
 	
 	/**

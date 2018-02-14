@@ -89,6 +89,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	@:keep public var width (get, set):Float;
 	@:keep public var x (get, set):Float;
 	@:keep public var y (get, set):Float;
+
+	public var _lastParentOrSelfChangeFrameID : UInt;
+	public var _lastChildChangeFrameID : UInt;
+	public var isTimelineMask : Bool;
 	
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
@@ -202,7 +206,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();		
+		__renderTransform = new Matrix ();
 		__worldVisible = true;
 		
 		name = "instance" + (++__instanceCount);
@@ -368,8 +372,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 	}
-	
-	
+
+	public function cleanGraphics ():Void {
+		__cleanup();
+	}
+
 	private function __cleanup ():Void {
 		
 		__cairo = null;
@@ -747,7 +754,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
-			
+
+			// comment this out for quick gains if your project doesn't use cacheAsBitmap?
 			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
@@ -858,7 +866,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__setParentRenderDirty ();
 			
 		}
-		
+
+		setRequiresRedraw();
+
 	}
 	
 	
@@ -879,7 +889,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__setParentRenderDirty ();
 			
 		}
-		
+
+		setRequiresRedraw();
+
 	}
 	
 	
@@ -895,8 +907,55 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		
 	}
-	
-	
+
+
+	public function isVisible():Bool {
+		var isVis:Bool = __visible;
+		if (!isVis) {
+			return false;
+		}
+		var p : DisplayObjectContainer = this.parent;
+		while (p != null && isVis) {
+			isVis = p.visible;
+			p = p.parent;
+		}
+
+		return isVis;
+	}
+
+
+	public function setRequiresRedraw():Void
+	{
+
+		// Only flag for updating when visible or just made invisible
+		if (__visibleChanged || isVisible()) {
+			var p : DisplayObjectContainer = this.parent;
+			var frameID : UInt = Stage.frameID;
+			_lastParentOrSelfChangeFrameID = frameID;
+
+			while (p != null && p._lastChildChangeFrameID != frameID) {
+
+				p._lastChildChangeFrameID = frameID;
+				p = p.parent;
+
+			}
+
+			__visibleChanged = false;
+		}
+
+	}
+
+
+	public function __forceUpdateTransforms():Void {
+
+		var renderParent = __renderParent != null ? __renderParent : parent;
+		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
+		__updateTransforms();
+		__transformDirty = false;
+
+	}
+
+
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
@@ -994,9 +1053,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		if (updateChildren && mask != null) {
+		if (updateChildren && __mask != null) {
 			
-			mask.__update (transformOnly, true, maskGraphics);
+			__mask.__update (transformOnly, true, maskGraphics);
 			
 		}
 		
@@ -1322,7 +1381,38 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__renderTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
 			
 		}
-		
+
+		if (!overrided) {
+			postTransformUpdate();
+		}
+	}
+
+	public var calculatedBounds:Rectangle;
+
+	private function postTransformUpdate():Void {
+		if (__graphics == null || __graphics.__bounds == null) {
+			return;
+		}
+
+		if (calculatedBounds == null) {
+			calculatedBounds = new Rectangle();
+		}
+
+		calculatedBounds.copyFrom(__graphics.__bounds);
+		calculatedBounds.__transform(calculatedBounds, __worldTransform);
+
+		if (parent != null) {
+			parent.applyChildBounds(calculatedBounds);
+		}
+	}
+
+	public function isOnScreen():Bool {
+		if (calculatedBounds != null && stage != null && stage.__renderer != null) {
+			return calculatedBounds.intersects(stage.__renderer.viewport);
+		}
+
+		// Default to true?
+		return true;
 	}
 	
 	
@@ -1366,7 +1456,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private function get_cacheAsBitmap ():Bool {
-		
+
+		// in some projects without many bitmaps you may get a performance boost by forcing this to return false
 		return (__filters == null ? __cacheAsBitmap : true);
 		
 	}
@@ -1504,8 +1595,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		if (__mask != null) {
-			
-			__mask.__isMask = false;
+
+			if(!__mask.isTimelineMask) {
+				__mask.__isMask = false;
+			}
 			__mask.__maskTarget = null;
 			__mask.__setTransformDirty ();
 			__mask.__setRenderDirty ();
@@ -1763,11 +1856,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		return __visible;
 		
 	}
-	
-	
+
+
+	private var __visibleChanged:Bool = false;
 	private function set_visible (value:Bool):Bool {
-		
-		if (value != __visible) __setRenderDirty ();
+
+		if (value != __visible) {
+			__visibleChanged = true;
+			__setRenderDirty ();
+		}
 		return __visible = value;
 		
 	}

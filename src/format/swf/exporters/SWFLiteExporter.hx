@@ -1,6 +1,8 @@
 package format.swf.exporters;
 
 
+import openfl.geom.Matrix;
+import openfl.geom.Point;
 import flash.display.BitmapData;
 import flash.text.TextFormatAlign;
 import flash.utils.ByteArray;
@@ -23,7 +25,6 @@ import openfl._internal.symbols.StaticTextSymbol;
 import openfl._internal.symbols.SWFSymbol;
 import openfl._internal.timeline.Frame;
 import openfl._internal.timeline.FrameObject;
-import openfl._internal.timeline.FrameObjectType;
 import openfl._internal.swf.SWFLite;
 import format.swf.tags.IDefinitionTag;
 import format.swf.tags.TagDefineBits;
@@ -56,9 +57,10 @@ import format.swf.tags.TagDefineSound;
 using StringTools;
 using format.swf.exporters.SWFLiteExporter.AVM2;
 
+
 class SWFLiteExporter {
-	
-	
+
+
 	public var bitmapAlpha:Map <Int, ByteArray>;
 	public var bitmaps:Map <Int, ByteArray>;
 	public var bitmapTypes:Map <Int, BitmapType>;
@@ -67,15 +69,16 @@ class SWFLiteExporter {
 	public var soundSymbolClassNames:Map <Int, String>;
 	public var filterClasses:Map <String, Bool>;
 	public var swfLite:SWFLite;
-	
+
 	private var alphaPalette:Bytes;
 	private var data:SWFRoot;
-	
-	
+
+	private static var indentationLevel:Int = 0;
+
 	public function new (data:SWFRoot) {
-		
+
 		this.data = data;
-		
+
 		bitmapAlpha = new Map <Int, ByteArray> ();
 		bitmaps = new Map <Int, ByteArray> ();
 		bitmapTypes = new Map <Int, BitmapType> ();
@@ -83,322 +86,324 @@ class SWFLiteExporter {
 		soundTypes = new Map <Int, SoundType> ();
 		soundSymbolClassNames = new Map <Int, String> ();
 		filterClasses = new Map <String, Bool> ();
-		
+
 		swfLite = new SWFLite ();
 		swfLite.frameRate = data.frameRate;
-		
+		swfLite.frameSizeMinPixel = new Point(data.frameSize.xmin * (1/20), data.frameSize.ymin * (1/20));
+        swfLite.frameSizeMaxPixel = new Point(data.frameSize.xmax * (1/20), data.frameSize.ymax * (1/20));
+
 		addSprite (data, true);
-		
+
 		for (tag in data.tags) {
-			
+
 			if (Std.is (tag, TagSymbolClass)) {
-				
+
 				for (symbol in cast (tag, TagSymbolClass).symbols) {
-					
+
 					processSymbol (symbol);
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function addButton (tag:IDefinitionTag):SWFSymbol {
-		
+
 		var symbol = new ButtonSymbol ();
-		
+
 		if (Std.is (tag, IDefinitionTag)) {
-			
+
 			symbol.id = untyped tag.characterId;
-			
+
 		}
-		
+
 		var processRecords = function (records:Array<SWFButtonRecord>) {
-			
+
 			if (records.length > 0) {
-				
+
 				var sprite = new SpriteSymbol ();
 				var frame = new Frame ();
+				frame.labels = [];
 				frame.objects = [];
-				
+
 				for (i in 0...records.length) {
-					
+
 					var object = records[i];
-					
+
 					var frameObject = new FrameObject ();
-					frameObject.type = FrameObjectType.CREATE;
 					frameObject.symbol = object.characterId;
 					frameObject.id = i;
-					
+
 					processTag (cast data.getCharacter (object.characterId));
-					
+
 					if (object.placeMatrix != null) {
-						
+
 						var matrix = object.placeMatrix.matrix;
 						matrix.tx *= (1 / 20);
 						matrix.ty *= (1 / 20);
-						
+
 						frameObject.matrix = matrix;
-						
+
 					}
-					
+
 					if (object.colorTransform != null) {
-						
+
 						frameObject.colorTransform = object.colorTransform.colorTransform;
-						
+
 					}
-					
+
 					if (object.hasBlendMode) {
-						
+
 						var blendMode = BlendMode.toString (object.blendMode);
 						frameObject.blendMode = blendMode;
-						
+
 					}
-					
+
 					if (object.hasFilterList) {
-						
+
 						var filters:Array<FilterType> = [];
-						
+
 						for (filter in object.filterList) {
-							
+
 							var type = filter.type;
-							
+
 							if (type != null) {
-								
+
 								filters.push (filter.type);
 								//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-								
+
 							}
-							
+
 						}
-						
+
 						frameObject.filters = filters;
-						
+
 					}
-					
+
 					frameObject.depth = i;
 					frameObject.clipDepth = 0;
 					frameObject.visible = true;
-					
+
 					frame.objects.push (frameObject);
-					
+
 				}
-				
+
 				sprite.frames.push (frame);
-				
+
 				return sprite;
-				
+
 			}
-			
+
 			return null;
-			
+
 		}
-		
+
 		if (Std.is (tag, TagDefineButton)) {
-			
+
 			var defineButton:TagDefineButton = cast tag;
-			
+
 			symbol.downState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_DOWN));
 			symbol.hitState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_HIT));
 			symbol.overState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_OVER));
 			symbol.upState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_UP));
-			
+
 		} else {
-			
+
 			var defineButton:TagDefineButton2 = cast tag;
-			
+
 			symbol.downState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_DOWN));
 			symbol.hitState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_HIT));
 			symbol.overState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_OVER));
 			symbol.upState = processRecords (defineButton.getRecordsByState (TagDefineButton.STATE_UP));
-			
+
 		}
-		
+
 		swfLite.symbols.set (symbol.id, symbol);
-		
+
 		return symbol;
-		
+
 	}
-	
-	
+
+
 	private function addBitmap (tag:IDefinitionTag):BitmapSymbol {
-		
+
 		var alphaByteArray = null;
 		var byteArray = null;
 		var type = null;
-		
+
 		if (Std.is (tag, TagDefineBitsLossless)) {
-			
+
 			var data:TagDefineBitsLossless = cast tag;
-			
+
 			var transparent = (data.level > 1);
 			var buffer = data.zlibBitmapData;
 			buffer.uncompress ();
 			buffer.position = 0;
-			
+
 			if (data.bitmapFormat == BitmapFormat.BIT_8) {
-				
+
 				var palette = Bytes.alloc (data.bitmapColorTableSize * 3);
 				var alpha = null;
-				
+
 				if (transparent) alpha = Bytes.alloc (data.bitmapColorTableSize);
 				var index = 0;
-				
+
 				for (i in 0...data.bitmapColorTableSize) {
-					
+
 					palette.set (index++, buffer.readUnsignedByte ());
 					palette.set (index++, buffer.readUnsignedByte ());
 					palette.set (index++, buffer.readUnsignedByte ());
 					if (transparent) alpha.set (i, buffer.readUnsignedByte ());
-					
+
 				}
-				
+
 				var paddedWidth:Int = Math.ceil (data.bitmapWidth / 4) * 4;
 				var values = Bytes.alloc ((data.bitmapWidth + 1) * data.bitmapHeight);
 				index = 0;
-				
+
 				for (y in 0...data.bitmapHeight) {
-					
+
 					values.set (index++, 0);
 					values.blit (index, buffer, buffer.position, data.bitmapWidth);
 					index += data.bitmapWidth;
 					buffer.position += paddedWidth;
-					
+
 				}
-				
+
 				var png = new List ();
 				png.add (CHeader ( { width: data.bitmapWidth, height: data.bitmapHeight, colbits: 8, color: ColIndexed, interlaced: false } ));
 				png.add (CPalette (palette));
 				if (transparent) png.add(CUnknown("tRNS", alpha));
 				png.add (CData (Deflate.run (values)));
 				png.add (CEnd);
-				
+
 				var output = new BytesOutput ();
 				var writer = new Writer (output);
 				writer.write (png);
-				
+
 				byteArray = ByteArray.fromBytes (output.getBytes ());
 				type = BitmapType.PNG;
-				
+
 			} else {
-				
+
 				var bitmapData = new BitmapData (data.bitmapWidth, data.bitmapHeight, transparent);
-				
+
 				bitmapData.image.buffer.premultiplied = false;
 				bitmapData.setPixels (bitmapData.rect, buffer);
 				bitmapData.image.buffer.premultiplied = true;
 				bitmapData.image.premultiplied = false;
-				
+
 				byteArray = bitmapData.encode (bitmapData.rect, new PNGEncoderOptions ());
 				type = BitmapType.PNG;
-				
+
 			}
-			
+
 		} else if (Std.is (tag, TagDefineBitsJPEG2)) {
-			
+
 			var data:TagDefineBitsJPEG2 = cast tag;
-			
+
 			if (Std.is (tag, TagDefineBitsJPEG3)) {
-				
+
 				var alpha = cast (tag, TagDefineBitsJPEG3).bitmapAlphaData;
 				alpha.uncompress ();
 				alpha.position = 0;
-				
+
 				if (alphaPalette == null) {
-					
+
 					alphaPalette = Bytes.alloc (256 * 3);
 					var index = 0;
-					
+
 					for (i in 0...256) {
-						
+
 						alphaPalette.set (index++, i);
 						alphaPalette.set (index++, i);
 						alphaPalette.set (index++, i);
-						
+
 					}
-					
+
 				}
-				
+
 				var tempFile = lime.tools.helpers.PathHelper.getTemporaryFile ("jpg");
 				sys.io.File.saveBytes (tempFile, data.bitmapData);
 				var image = lime.graphics.format.JPEG.decodeFile (tempFile, false);
 				try { sys.FileSystem.deleteFile (tempFile); } catch (e:Dynamic) {}
-				
+
 				var values = Bytes.alloc ((image.width + 1) * image.height);
 				var index = 0;
-				
+
 				for (y in 0...image.height) {
-					
+
 					values.set (index++, 0);
 					values.blit (index, alpha, alpha.position, image.width);
 					index += image.width;
 					alpha.position += image.width;
-					
+
 				}
-				
+
 				var png = new List ();
 				png.add (CHeader ( { width: image.width, height: image.height, colbits: 8, color: ColIndexed, interlaced: false } ));
 				png.add (CPalette (alphaPalette));
 				png.add (CData (Deflate.run (values)));
 				png.add (CEnd);
-				
+
 				var output = new BytesOutput ();
 				var writer = new Writer (output);
 				writer.write (png);
-				
+
 				alphaByteArray = ByteArray.fromBytes (output.getBytes ());
 				byteArray = data.bitmapData;
 				type = BitmapType.JPEG_ALPHA;
-				
+
 			} else {
-				
+
 				byteArray = data.bitmapData;
 				type = BitmapType.JPEG;
-				
+
 			}
-			
+
 		} else if (Std.is (tag, TagDefineBits)) {
-			
+
 			var data:TagDefineBits = cast tag;
-			
+
 			byteArray = data.bitmapData;
 			type = BitmapType.JPEG;
-			
+
 		}
-		
+
 		if (byteArray != null) {
-			
+
 			var symbol = new BitmapSymbol ();
 			symbol.id = tag.characterId;
-			
+
 			bitmapAlpha.set (symbol.id, alphaByteArray);
 			bitmaps.set (symbol.id, byteArray);
 			bitmapTypes.set (symbol.id, type);
-			
+
 			symbol.path = "";
 			swfLite.symbols.set (symbol.id, symbol);
-			
+
 			return symbol;
-			
+
 		}
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+
 	private function addFont (tag:IDefinitionTag):FontSymbol {
-		
+
 		if (Std.is (tag, TagDefineFont2)) {
-			
+
 			var defineFont:TagDefineFont2 = cast tag;
 			var symbol = new FontSymbol ();
 			symbol.id = defineFont.characterId;
 			symbol.glyphs = new Array<Array<ShapeCommand>> ();
-			
+
 			//for (i in 0...defineFont.glyphShapeTable.length) {
 				//
 				//var handler = new ShapeCommandExporter (data);
@@ -406,7 +411,7 @@ class SWFLiteExporter {
 				//symbol.glyphs.push (handler.commands);
 				//
 			//}
-			
+
 			symbol.advances = new Array<Int> ();
 			//symbol.advances = cast defineFont.fontAdvanceTable.copy ();
 			symbol.ascent = defineFont.ascent;
@@ -416,276 +421,329 @@ class SWFLiteExporter {
 			symbol.italic = defineFont.italic;
 			symbol.leading = defineFont.leading;
 			symbol.name = defineFont.fontName;
-			
+
 			swfLite.symbols.set (symbol.id, symbol);
-			
+
 			return symbol;
-			
+
 		}
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+
 	private function addShape (tag:TagDefineShape):SWFSymbol {
-		
+
 		var handler = new ShapeCommandExporter (data);
 		tag.export (handler);
-		
+
 		// TODO: Remove need for this optimization
-		
+
 		#if !disable_bitmap_optimization
 		var bitmaps = ShapeBitmapExporter.process (handler);
 		#else
 		var bitmaps:Array<Dynamic> = null;
 		#end
-		
+
 		if (bitmaps != null) {
-			
+
 			var symbol = new SpriteSymbol ();
 			var frame = new Frame ();
 			frame.objects = [];
+			frame.labels = [];
 			var bitmap, frameObject;
-			
+
 			for (i in 0...bitmaps.length) {
-				
+
 				bitmap = bitmaps[i];
-				
+
 				processTag (cast data.getCharacter (bitmap.id));
-				
+
 				var bitmapSymbol:BitmapSymbol = cast swfLite.symbols.get (bitmap.id);
-				
+
 				if (bitmapSymbol != null) {
-					
+
 					// Use smoothing if a shape requests it
-					
+
 					if (bitmapSymbol.smooth == null && !bitmap.smooth) {
-						
+
 						bitmapSymbol.smooth = false;
-						
+
 					} else if (bitmapSymbol.smooth == false && bitmap.smooth) {
-						
+
 						bitmapSymbol.smooth = true;
-						
+
 					}
-					
+
 				}
-				
+
 				frameObject = new FrameObject ();
 				frameObject.symbol = bitmap.id;
-				frameObject.type = FrameObjectType.CREATE;
 				frameObject.id = i;
 				frameObject.depth = i;
 				frameObject.clipDepth = 0;
 				frameObject.matrix = bitmap.transform;
 				frameObject.visible = true;
-				
+
 				frame.objects.push (frameObject);
-				
+
 			}
-			
+
 			symbol.frames.push (frame);
 			symbol.id = tag.characterId;
-			
+
 			swfLite.symbols.set (symbol.id, symbol);
 			return symbol;
-			
+
 		} else {
-			
+
 			var symbol = new ShapeSymbol ();
 			symbol.id = tag.characterId;
-			
+
 			symbol.commands = handler.commands;
-			
+
 			for (command in handler.commands) {
-				
+
 				switch (command) {
-					
+
 					case BeginBitmapFill (bitmapID, _, _, _):
-						
+
 						processTag (cast data.getCharacter (bitmapID));
-					
+
 					default:
-					
+
 				}
-				
+
 			}
-			
+
 			swfLite.symbols.set (symbol.id, symbol);
 			return symbol;
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function addSprite (tag:SWFTimelineContainer, root:Bool = false):SpriteSymbol {
-		
-		var symbol = new SpriteSymbol ();
-		
+
+		var symbol : SpriteSymbol = new SpriteSymbol ();
+
 		if (Std.is (tag, IDefinitionTag)) {
-			
+
 			symbol.id = untyped tag.characterId;
-			
+
 		}
-		
-		var instances = new Array<Int> ();
+
 		var lastModified = new Map<Int, Int> ();
-		var zeroCharacter = -1;
-		
-		var frame, frameObject, frameData, placeTag:TagPlaceObject;
-		
+		var workingObjects = new Map<Int, FrameObject>();//<depth, the accumulative changes to the frameObject at that depth>
+		var lastFrame : Frame;
+
+		var frame : Frame, frameObject : FrameObject, placedAtTag:TagPlaceObject, lastModifiedTag:TagPlaceObject;
 		for (frameData in tag.frames) {
-			
+
 			frame = new Frame ();
-			
+
 			if (frameData.label != null) {
-				
+
 				frame.label = frameData.label;
-				
+
 			}
-			
-			instances.splice (0, instances.length);
-			
+
+			if (frameData.labels != null) {
+
+				frame.labels = frameData.labels;
+
+			}
+
+			else {
+
+				frame.labels = [];
+
+			}
+
+			frame.objects = new Array();
+
+			// check existing working objects and remove any that are gone this frame
+
+			var removeWorkingObjectsDepths:Array<Int> = [];
+			for(workingObjectDepth in workingObjects.keys())
+			{
+				if(frameData.objects[workingObjectDepth] == null) {
+					// workingObject is getting removed
+					removeWorkingObjectsDepths.push(workingObjectDepth);
+				}
+			}
+			for( removeDepth in removeWorkingObjectsDepths ) {
+				workingObjects.remove(removeDepth);
+			}
+
+			// update frameObjects to match new frame
+
 			for (object in frameData.getObjectsSortedByDepth ()) {
-				
-				instances.push (object.placedAtIndex);
-				
-				if (object.placedAtIndex == 0 && object.characterId != zeroCharacter) {
-					
-					lastModified.remove (0);
-					zeroCharacter = object.characterId;
-					
-				}
-				
+
 				if (!lastModified.exists (object.placedAtIndex)) {
-					
 					processTag (cast data.getCharacter (object.characterId));
-					
-					placeTag = cast tag.tags[object.placedAtIndex];
-					
-				} else if (object.lastModifiedAtIndex > lastModified.get (object.placedAtIndex)) {
-					
-					placeTag = cast tag.tags[object.lastModifiedAtIndex];
-					
-				} else {
-					
-					continue;
-					
 				}
-				
+
+				placedAtTag = cast tag.tags[object.placedAtIndex];
+
+				if (object.lastModifiedAtIndex > 0) {
+					lastModifiedTag = cast tag.tags[object.lastModifiedAtIndex];
+				}
+				else {
+					lastModifiedTag = null;  // fall back to workingObject, then placedAtTag
+				}
+
+
 				frameObject = new FrameObject ();
+
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
-				
-				frameObject.name = placeTag.instanceName;
-				
-				if (!lastModified.exists (object.placedAtIndex)) {
-					
-					frameObject.type = FrameObjectType.CREATE;
-					
-				} else {
-					
-					frameObject.type = FrameObjectType.UPDATE;
-					
+
+				// if lastModifiedTag exists, check if it is a tag in our current frame, and if so, use its hasCharacter and hasMove
+				if( lastModifiedTag != null && object.lastModifiedAtIndex >= frameData.tagIndexStart && object.lastModifiedAtIndex <= frameData.tagIndexEnd ) {
+					frameObject.hasCharacter = lastModifiedTag.hasCharacter;
+					frameObject.hasMove = lastModifiedTag.hasMove;
 				}
-				
-				if (placeTag.matrix != null) {
-					
-					var matrix = placeTag.matrix.matrix;
-					matrix.tx *= (1 / 20);
-					matrix.ty *= (1 / 20);
-					
-					frameObject.matrix = matrix;
-					
+				// else if placedAtTag is in our current frame, use its hasCharacter and hasMove
+				else if( object.placedAtIndex >= frameData.tagIndexStart && object.placedAtIndex <= frameData.tagIndexEnd ) {
+					frameObject.hasCharacter = placedAtTag.hasCharacter;
+					frameObject.hasMove = placedAtTag.hasMove;
 				}
-				
-				if (placeTag.colorTransform != null) {
-					
-					frameObject.colorTransform = placeTag.colorTransform.colorTransform;
-					
+				// else false for both hasCharacter and hasMove
+				else {
+					frameObject.hasCharacter = false;
+					frameObject.hasMove = false;
 				}
-				
-				if (placeTag.hasFilterList) {
-					
+
+				// set each property to lastModifiedTag if it exists, workingObject if it exists, and
+				// finally placedAtTag if it exists
+
+				var workingObject : FrameObject = workingObjects[object.depth];
+				if(workingObject != null && workingObject.symbol != frameObject.symbol) {
+					workingObject = null;
+				}
+
+				var placedAtTagIsForThisWorkingObject:Bool = ( workingObject != null && workingObject.id == object.placedAtIndex );
+
+				// lastModifiedTag is the same as or newer than the latest workingObject
+				if( lastModifiedTag != null && lastModifiedTag.hasName )
+					frameObject.name = lastModifiedTag.instanceName;
+				else if(workingObject != null && workingObject.name != null && placedAtTagIsForThisWorkingObject )
+					frameObject.name = workingObject.name;
+				else if( placedAtTag.hasName )
+					frameObject.name = placedAtTag.instanceName;
+
+				var m:Matrix = null;
+				var doScaleWork:Bool = false;
+				if (lastModifiedTag != null && lastModifiedTag.hasMatrix) {
+					m = lastModifiedTag.matrix.matrix;
+					doScaleWork = true;
+				}
+				else if(workingObject != null && workingObject.matrix != null && placedAtTagIsForThisWorkingObject ) {
+					m = workingObject.matrix;
+				}
+				else if( placedAtTag.hasMatrix ) {
+					m = placedAtTag.matrix.matrix;
+					doScaleWork = true;
+				}
+
+				if( doScaleWork ) {
+					m.tx *= (1 / 20);
+					m.ty *= (1 / 20);
+				}
+
+				frameObject.matrix = m;
+
+				if (lastModifiedTag != null && lastModifiedTag.hasColorTransform) {
+					frameObject.colorTransform = lastModifiedTag.colorTransform.colorTransform;
+				}
+				else if(workingObject != null && workingObject.colorTransform != null && placedAtTagIsForThisWorkingObject ) {
+					frameObject.colorTransform = workingObject.colorTransform;
+				}
+				else if( placedAtTag.hasColorTransform ) {
+					frameObject.colorTransform = placedAtTag.colorTransform.colorTransform;
+				}
+
+				var tagToConvert : TagPlaceObject = null;
+				if (lastModifiedTag != null && lastModifiedTag.hasFilterList) {
+					tagToConvert = lastModifiedTag;
+				}
+				else if(workingObject != null && workingObject.filters != null && placedAtTagIsForThisWorkingObject ) {
+					frameObject.filters = workingObject.filters;
+				}
+				else if( placedAtTag.hasFilterList ) {
+					tagToConvert = placedAtTag;
+				}
+
+				if(tagToConvert != null && tagToConvert.surfaceFilterList != null) {
 					var filters:Array<FilterType> = [];
-					
-					for (surfaceFilter in placeTag.surfaceFilterList) {
-						
+					for (surfaceFilter in tagToConvert.surfaceFilterList) {
 						var type = surfaceFilter.type;
-						
 						if (type != null) {
-							
 							filters.push (surfaceFilter.type);
 							//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-							
 						}
-						
 					}
-					
+
 					frameObject.filters = filters;
-					
 				}
-				
-				frameObject.depth = placeTag.depth;
-				frameObject.clipDepth = (placeTag.hasClipDepth ? placeTag.clipDepth : 0);
-				
-				if (placeTag.hasVisible) {
-					
-					frameObject.visible = placeTag.visible != 0;
-					
+
+				frameObject.depth = object.depth;
+				frameObject.clipDepth = object.clipDepth;
+
+				if (lastModifiedTag != null && lastModifiedTag.hasVisible) {
+					frameObject.visible = lastModifiedTag.visible != 0;
 				}
-				
-				if (placeTag.hasBlendMode) {
-					
-					var blendMode = BlendMode.toString (placeTag.blendMode);
+				else if (workingObject != null && workingObject.visible != null && placedAtTagIsForThisWorkingObject) {
+					frameObject.visible = workingObject.visible;
+				}
+				else if (placedAtTag.hasVisible) {
+					frameObject.visible = placedAtTag.visible != 0;
+				}
+
+				if (lastModifiedTag != null && lastModifiedTag.hasBlendMode) {
+					var blendMode = BlendMode.toString (lastModifiedTag.blendMode);
 					frameObject.blendMode = blendMode;
-					
 				}
-				
-				if (placeTag.hasCacheAsBitmap) {
-					
-					frameObject.cacheAsBitmap = placeTag.bitmapCache != 0;
-					
+				else if (workingObject != null && workingObject.blendMode != null && placedAtTagIsForThisWorkingObject) {
+					frameObject.blendMode = workingObject.blendMode;
 				}
-				
+				else if (placedAtTag.hasBlendMode) {
+					var blendMode = BlendMode.toString (placedAtTag.blendMode);
+					frameObject.blendMode = blendMode;
+				}
+
+				if (lastModifiedTag != null && lastModifiedTag.hasCacheAsBitmap) {
+					frameObject.cacheAsBitmap = lastModifiedTag.bitmapCache != 0;
+				}
+				else if (workingObject != null && workingObject.cacheAsBitmap != null && placedAtTagIsForThisWorkingObject) {
+					frameObject.cacheAsBitmap = workingObject.cacheAsBitmap;
+				}
+				else if (placedAtTag.hasCacheAsBitmap) {
+					frameObject.cacheAsBitmap = placedAtTag.bitmapCache != 0;
+				}
+
+				if(workingObject == null) {
+					workingObject = frameObject.clone();
+					workingObjects[object.depth] = workingObject;
+				}
+
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
-				
+
 				if (frame.objects == null) {
 					
 					frame.objects = [];
 					
 				}
-				
+
 				frame.objects.push (frameObject);
-				
+
 			}
-			
-			for (id in lastModified.keys ()) {
-				
-				if (instances.indexOf (id) == -1) {
-					
-					lastModified.remove (id);
-					
-					frameObject = new FrameObject ();
-					frameObject.id = id;
-					frameObject.type = FrameObjectType.DESTROY;
-					
-					if (frame.objects == null) {
-						
-						frame.objects = [];
-						
-					}
-					
-					frame.objects.push (frameObject);
-					
-				}
-				
-			}
-			
+
+			lastFrame = frame;
 			symbol.frames.push (frame);
-			
 		}
 		
 		if (root) {
@@ -910,8 +968,13 @@ class SWFLiteExporter {
 		}
 		
 		// root symbol is a special case
-		if (data2 == null && ~/_fla\.MainTimeline$/.match(symbol.name)) {
+		if (data2 == null && (~/_fla\.MainTimeline$/.match(symbol.name) || symbol.tagId == 0)) {
 			data2 = swfLite.root;
+			data2.className = symbol.name;
+		}
+
+		if (data2 == null) {
+			LogHelper.warn ("", "could not process symbol "+ symbol.name +" at "+ symbol.tagId);
 		}
 		
 		// we only want to operate on DefineSprite tags from here
@@ -925,217 +988,611 @@ class SWFLiteExporter {
 		
 		if (cls != null) {
 			
-			// get base class
+		// get base class
 			if (cls.superclass != null) {
-				var superClsName = data.abcData.resolveMultiNameByIndex(cls.superclass);
-				switch (superClsName.nameSpace) {
-					case NPublic(_) if (!~/^flash\./.match(superClsName.nameSpaceName)):
-						// store on SWFLite object for serialized .dat export
-						spriteSymbol.baseClassName =
-							("" == superClsName.nameSpaceName ? "" : 
-								superClsName.nameSpaceName
-									+".")
-							+ superClsName.name;
-						LogHelper.info ("", "data.className: " + symbol.name + ", baseClass: " + spriteSymbol.baseClassName);
-					case _:
-				}
+		var superClsName = data.abcData.resolveMultiNameByIndex(cls.superclass);
+		switch (superClsName.nameSpace) {
+			case NPublic(_) if (!~/^flash\./.match(superClsName.nameSpaceName)):
+				// store on SWFLite object for serialized .dat export
+				spriteSymbol.baseClassName =
+					("" == superClsName.nameSpaceName ? "" : 
+						superClsName.nameSpaceName
+							+".")
+					+ superClsName.name;
+				LogHelper.info ("", "data.className: " + symbol.name + ", baseClass: " + spriteSymbol.baseClassName);
+			case _:
+		}
 			}
-			
-			// get frame scripts
-			if (cls.fields.length > 0) {
-				for (field in cls.fields) {
-					switch (field.kind) {
-						case FMethod(idx, _, _, _):
-							var methodName = data.abcData.resolveMultiNameByIndex(field.name);
-							if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
-								var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
-								LogHelper.info ("", "frame script #"+ frameNumOneIndexed);
-								var pcodes:Array<OpCode> = data.pcode[idx.getIndex()];
-								var js = "";
-								var prop:MultiName = null;
-								var stack:Array<Dynamic> = new Array();
-								for (pcode in pcodes) {
-									switch (pcode) {
-										case OThis:
-											stack.push("this");
-										case OScope:
-											stack.pop();
-										case OFindPropStrict(nameIndex):
-	//										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-										case OGetLex(nameIndex):
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+		
+		// get frame scripts
+		if (cls.fields.length > 0) {
+			for (field in cls.fields) {
+				switch (field.kind) {
+					case FMethod(idx, _, _, _):
+						var methodName = data.abcData.resolveMultiNameByIndex(field.name);
+						if (methodName != null && AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
+							var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
+							LogHelper.info ("", "frame script #"+ frameNumOneIndexed);
+							var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
+							var js = "";
+							var prop:MultiName = null;
+							var stack:Array<Dynamic> = new Array();
+							var closingBrackets = [];
+							var openingBrackets = [];
+							indentationLevel = 0;
+							var cond_break:Array<String> = [];
+							var in_if:Bool = false;
+							var while_loops = [];
 
-											var fullname = "";
+							for (pindex in 0...pcodes.length) {
 
-											if (prop != null)
-											{
-												fullname += AVM2.getFullName(data.abcData, prop, cls);
-												stack.push(fullname);
-											}
-										case OGetProp(nameIndex):
-											var fullname = "";
+								var pcode = pcodes[pindex];
+								switch (pcode.opr) {
+									case OThis:
+										stack.push("this");
+									case OScope:
+										stack.pop();
+									case OPop:
+										stack.pop();
+									case OFindPropStrict(nameIndex):
+//										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+									case OGetLex(nameIndex):
+										LogHelper.info ("", "OGetLex: " + nameIndex);
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
 
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+										var fullname = "";
 
-											if (prop != null)
+										if (prop != null)
+										{
+											fullname += AVM2.getFullName(data.abcData, prop, cls);
+											stack.push(fullname);
+										}
+									case OGetProp(nameIndex):
+										var fullname = "";
+
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+										if (prop != null)
+										{
+											if (prop.name != null)
 											{
 												fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
 											}
-
-											LogHelper.info ("", "OGetProp fullname: " + fullname);
-
-											stack.push(fullname);
-										case OSetProp(nameIndex):
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-											LogHelper.info ("", "OSetProp stack: " + prop + ", " + stack);
-
-											var result = stack.pop();
-
-											var name = null;
-
-											if (prop != null)
+											else
 											{
-												if (prop.name != null)
-												{
-													name = "." + prop.name;
-												}
-												else
-												{
-													name = "[" + stack.pop() + "]";
-												}
+												var name = stack.pop();
+												fullname += stack.pop() + "[" + name + "]";
+											}
+										}
+
+										LogHelper.info ("", "OGetProp fullname: " + fullname);
+
+										stack.push(fullname);
+									case OSetProp(nameIndex):
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+										LogHelper.info ("", "OSetProp stack: " + prop + ", " + stack);
+
+										var result = stack.pop();
+
+										var name = null;
+
+										if (prop != null)
+										{
+											if (prop.name != null)
+											{
+												name = "." + prop.name;
 											}
 											else
 											{
-												LogHelper.info ("", "OSetProp stack prop is null");
-												break;
+												name = "[" + stack.pop() + "]";
 											}
+										}
+										else
+										{
+											LogHelper.info ("", "OSetProp stack prop is null");
+											break;
+										}
 
-											var instance = stack.pop();
+										var instance = Std.string(stack.pop());
 
-											if (instance != "this")
+										if (!instance.startsWith("this"))
+										{
+											instance = "this" + "." + instance;
+										}
+
+										js += ind() + instance + name + " = " + result + ";";
+									case OString(strIndex):
+										var str = data.abcData.getStringByIndex(strIndex);
+										stack.push("\"" + str + "\"");
+									case OInt(i):
+										stack.push(i);
+										LogHelper.info ("", "int: " + i);
+									case OIntRef(nameIndex):
+										stack.push(data.abcData.getIntByIndex(nameIndex));
+									case OSmallInt(i):
+										stack.push(i);
+										LogHelper.info ("", "smallint: " + i);
+									case OFloat(nameIndex):
+										stack.push(data.abcData.getFloatByIndex(nameIndex));
+									case OCallPropVoid(nameIndex, argCount):
+										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+
+										var callpropvoid:String = "";
+
+										if (stack.length > 0)
+										{
+											callpropvoid += stack.pop() + ".";
+										}
+										else
+										{
+											if(!temp.startsWith("this.")) callpropvoid += "this" + ".";
+										}
+
+										callpropvoid += temp;
+										callpropvoid += ";";
+
+										js += ind() + callpropvoid;
+										// prop = null;
+									case OCallProperty(nameIndex, argCount):
+										LogHelper.info ("", "OCallProperty stack: " + stack);
+
+//										stack.pop();
+//										if (prop != null)
+//										{
+//											var temp = AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+//											trace("OCallProperty pushed to stack", temp);
+//											stack.push(temp);
+//										}
+
+										var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+
+										var prop2 = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+										var result = "";
+
+										if (prop2 != null)
+										{
+											if (prop2.name != "int")
 											{
-												instance = "this" + "." + instance;
-											}
-
-											js += instance + name + " = " + result + ";\n";
-										case OString(strIndex):
-											var str = data.abcData.getStringByIndex(strIndex);
-											stack.push("\"" + str + "\"");
-										case OInt(i):
-											stack.push(i);
-											LogHelper.info ("", "int: " + i);
-										case OSmallInt(i):
-											stack.push(i);
-											LogHelper.info ("", "smallint: " + i);
-										case OCallPropVoid(nameIndex, argCount):
-											var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
-
-											if (stack.length > 0)
-											{
-												js += stack.pop() + ".";
+												result += stack.pop() + "." + temp;
 											}
 											else
 											{
-												js += "this" + ".";
+												result += temp;
 											}
+										}
 
-											js += temp;
-											js += ";\n";
-										case OCallProperty(nameIndex, argCount):
-											LogHelper.info ("", "OCallProperty stack: " + stack);
+										LogHelper.info("", "OCallProperty result" + Std.string(result));
+										stack.push(result);
+									case OConstructProperty(nameIndex, argCount):
+										LogHelper.info ("", "OConstructProperty stack: " + stack);
 
-											stack.pop();
-											if (prop != null)
-											{
-												stack.push(AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
+										var temp = "";
+										temp += AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+										if(temp == "int()") {
+											temp = "0";
+										} else if(temp.indexOf("[") == 0) {
+											// Array
+										} else {
+											temp = "new " + temp;
+										}
+										stack.push(temp);
+
+										LogHelper.info ("", "OConstructProperty value: " + temp);
+									case OInitProp(nameIndex):
+										LogHelper.info ("", "OInitProp stack: " + stack);
+
+										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+										var temp = stack.pop();
+
+										js += ind() + stack.pop() + "." + prop.name + " = " + Std.string(temp) + ";";
+									case ODup:
+										stack.push(stack[stack.length - 1]);
+									case OArray(argCount):
+										LogHelper.info ("", "before array: " + stack);
+
+										var str = "";
+										var temp = [];
+										for (i in 0...argCount)
+										{
+											temp.push(stack.pop());
+										}
+										temp.reverse();
+										stack.push(temp);
+
+										LogHelper.info ("", "after array: " + stack);
+									case ORetVoid:
+									case ONull:
+										stack.push(null);
+									case OOp(op):
+										var operator = null;
+										var incr_operator = null;
+
+										var next_pcode = pcodes[pindex+1];
+										var _inverted:Bool = false;
+
+										// if next pcode is OpNot
+										// then we actually need to negate the boolean outcome
+										if(next_pcode != null) {
+											switch (next_pcode.opr) {
+												case OOp(_op):
+													if(_op == OpNot) _inverted = true;
+												case _ :
 											}
-										case OConstructProperty(nameIndex, argCount):
-											LogHelper.info ("", "OConstructProperty stack: " + stack);
+										}
 
-											var temp = "new ";
-											temp += AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
-											stack.push(temp);
+										switch (op) {
+											case OpMul:
+												operator = "*";
+											case OpAdd:
+												operator = "+";
+											case OpSub:
+												operator = "-";
+											case OpDiv:
+												operator = "/";
+											case OpGt:
+												operator = ">";
+												if(_inverted) operator = "<=";
+											case OpLt:
+												operator = "<";
+												if(_inverted) operator = ">=";
+											case OpEq:
+												operator = "==";
+												if(_inverted) operator = "!=";
+											case OpPhysEq:
+												operator = "===";
+												if(_inverted) operator = "!==";
+											case OpGte:
+												operator = ">=";
+												if(_inverted) operator = "<";
+											case OpLte:
+												operator = "<=";
+												if(_inverted) operator = ">";
+											case OpAnd:
+												operator = "&&";
+											case OpOr:
+												operator = "||";
+											case OpIncr:
+												incr_operator = " + 1";
+											case OpDecr:
+												incr_operator = " - 1";
+											case OpIIncr:
+												incr_operator = "++";
+											case OpIDecr:
+												incr_operator = "--";
+											case OpNot:
 
-											LogHelper.info ("", "OConstructProperty value: " + temp);
-										case OInitProp(nameIndex):
-											LogHelper.info ("", "OInitProp stack: " + stack);
+											case OpAs:
 
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+											case _:
+												LogHelper.warn ("", "Unhandled OOp: " + op, true);
+										}
 
+										if (op == OpAs)
+										{
+											var discard = stack.pop();
+											LogHelper.info ("", "cast to " + discard + " is discarded");
+										}
+
+										if (operator != null)
+										{
 											var temp = stack.pop();
+											stack.push(Std.string(stack.pop()) + " " + operator + " " + Std.string(temp));
+										}
 
-											js += stack.pop() + "." + prop.name + " = " + Std.string(temp) + ";\n";
-										case ODup:
-											stack.push(stack[stack.length - 1]);
-										case OArray(argCount):
-											LogHelper.info ("", "before array: " + stack);
+										if (incr_operator != null)
+										{
+											stack.push(Std.string(stack.pop()) + incr_operator);
+										}
+									case OJump(j, delta):
 
-											var str = "";
-											var temp = [];
-											for (i in 0...argCount)
-											{
-												temp.push(stack.pop());
-											}
-											temp.reverse();
-											stack.push(temp);
+										var if_cond = null;
+										
+										switch (j) {
+											case JNeq | JEq | JPhysNeq | JPhysEq | JNotGt | JNotLt | JNotGte | JNotLte | JLt | JGt | JLte | JGte :
 
-											LogHelper.info ("", "after array: " + stack);
-										case ORetVoid:
-										case ONull:
-											stack.push(null);
-										case OOp(op):
-											var operator = null;
-											switch (op) {
-												case OpMul:
-													operator = "*";
-												case OpAdd:
-													operator = "+";
-												case _:
-													LogHelper.info ("", "OOp");
-											}
+												var operator = null;
+												var next_pcode = pcodes[pindex+1];
+												var _inverted:Bool = false;
 
-											if (op == OpAs)
-											{
-												LogHelper.info ("", "cast to " + stack.pop() + " is discarded");
-											}
+												// if next pcode is an Always Jump,
+												// then we're actually checking the opposite
+												if(next_pcode != null) {
+													switch (next_pcode.opr) {
+														case OJump(_j, _d):
+															if(_j == JAlways) _inverted = true;
+														case _ :
+													}
+												}
 
-											if (operator != null)
-											{
+												if(!_inverted) {
+													switch(j) {
+														case JNeq:
+															operator = "==";
+														case JEq:
+															operator = "!=";
+														case JPhysNeq:
+															operator = "===";
+														case JPhysEq:
+															operator = "!==";
+														case JNotGt:
+															operator = ">";
+														case JNotLt:
+															operator = "<";
+														case JNotGte:
+															operator = ">=";
+														case JNotLte:
+															operator = "<=";
+														case JLt:
+															operator = "<";
+														case JGt:
+															operator = ">";
+														case JLte:
+															operator = "<=";
+														case JGte:
+															operator = ">=";
+														case _:
+													}
+												} else {
+													switch(j) {
+														case JNeq:
+															operator = "!=";
+														case JEq:
+															operator = "==";
+														case JPhysNeq:
+															operator = "!==";
+														case JPhysEq:
+															operator = "===";
+														case JNotGt:
+															operator = "<=";
+														case JNotLt:
+															operator = ">=";
+														case JNotGte:
+															operator = "<";
+														case JNotLte:
+															operator = ">";
+														case JLt:
+															operator = ">=";
+														case JGt:
+															operator = "<=";
+														case JLte:
+															operator = ">";
+														case JGte:
+															operator = "<";
+														case _:
+													}
+												}
+
 												var temp = stack.pop();
-												stack.push(Std.string(stack.pop()) + " " + operator + " " + Std.string(temp));
+
+												if_cond = Std.string(stack.pop()) + " " + operator + " " + Std.string(temp);
+
+												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+												{
+													closingBrackets.push(pcode.pos + delta);
+												}
+
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + "closingBrackets" + Std.string(closingBrackets));
+											case JAlways:
+												LogHelper.info("", "JAlways " + delta + " " + pcode.pos);
+
+//												if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+//												{
+													closingBrackets.push(pcode.pos + delta);
+//												}
+											case JFalse:
+												if((pcodes[pindex-1] != null && pcodes[pindex-1].opr == ODup) && (pcodes[pindex+1] != null && pcodes[pindex+1].opr == OPop )) {
+													// We are in between an "AND" if conditional
+													cond_break.push("&&");
+													if_cond = Std.string(stack.pop());
+												}else{
+													if_cond = Std.string(stack.pop());
+													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+													{
+														closingBrackets.push(pcode.pos + delta);
+													}
+												}
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
+											case JTrue:
+												if((pcodes[pindex-1] != null && pcodes[pindex-1].opr == ODup) && (pcodes[pindex+1] != null && pcodes[pindex+1].opr == OPop )) {
+													// We are in between an "OR" if conditional
+													cond_break.push("||");
+													if_cond = Std.string(stack.pop());
+												}else{
+													if_cond = "!" + Std.string(stack.pop());
+													if (closingBrackets.indexOf(pcode.pos + delta) == -1)
+													{
+														closingBrackets.push(pcode.pos + delta);
+													}
+												}
+												LogHelper.info("", "indentationLevel " + indentationLevel + " jump style " + j + " closingBrackets " + closingBrackets);
+											case _:
+												LogHelper.info ("", "OJump" + j + delta);
+										}
+
+										LogHelper.info("", Std.string(closingBrackets));
+
+										var in_while = false;
+										var out = "";
+										if(if_cond != null) {
+											if(!in_if) {
+												if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
+													out += "while (" + if_cond;
+													in_while = true;
+												} else {
+													// Already have indentation from "else"
+													if(js.endsWith("else ")) {
+														out += "if (" + if_cond;
+													}else{
+														out += ind() + "if (" + if_cond;
+													}
+												}
+											} else {
+												out += if_cond;
 											}
-										case OJump(j, delta):
-											switch (j) {
-												case JNeq:
-	//												LogHelper.info ("", stack[0]);
-													var temp = stack.pop();
-													js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
-												case JAlways:
-													js += "else\n";
-													LogHelper.info ("", Std.string(delta));
-												case JFalse:
-													js += "if (" + Std.string(stack.pop()) + ")\n";
-												case _:
-													LogHelper.info ("", "OJump");
+
+											// If the next pcode is a OPop we're in a conditional
+											if((pcodes[pindex+1] != null && pcodes[pindex+1].opr == OPop) || (pcodes[pindex+2] != null && pcodes[pindex+2].opr == OPop)) {
+												out += " " + cond_break.pop() + " ";
+												in_if = true;
+											} else {
+												if(in_while) {
+													out += ")";
+												}else{
+													out += ")" + ind() + "{";
+													indentationLevel++;
+												}
+ 												in_if = false;
 											}
-										case OTrue:
-											stack.push(true);
-										case OFalse:
-											stack.push(false);
-										case _:
-											// TODO: throw() on unsupported pcodes
-											LogHelper.info ("", "pcode "+ pcode);
-									}
+										}
+
+										if(while_loops.indexOf(pcode.pos + delta + 1) > -1) {
+											js = js.replace("[[[loop"+ (pcode.pos + delta + 1) +"]]]", out);
+											//indentationLevel--;
+											closingBrackets.push(pcode.pos);
+											//js += ind() + "}";
+										} else if (out != "") {
+											js += out;
+										}
+
+										LogHelper.info("", j + " " + delta);
+									case OTrue:
+										stack.push(true);
+									case OFalse:
+										stack.push(false);
+									case OLabel:
+										// Indicator for while loop position
+										// OJump(JAlways) can bring us back here at end of loop
+										LogHelper.info ("", "Label reached " + pcode);
+
+										var prev_pcode = pcodes[pindex-1];
+
+										// if next pcode is a Label,
+										// then we're actually in a while loop
+										if(prev_pcode != null) {
+											switch (prev_pcode.opr) {
+												case OJump(_j, _delta):
+													if (_j == JAlways) 
+														while_loops.push((pcode.pos));
+														js += ind() + "[[[loop"+ (pcode.pos) +"]]]";
+														js += ind() + "{";
+														indentationLevel++;
+												case _ :
+											}
+										}
+
+									case _:
+										// TODO: throw() on unsupported pcodes
+										LogHelper.warn ("", "unsupported pcode "+ pcode, true);
+										//throw(pcode);
 								}
-								LogHelper.info ("", "javascript:\n"+js);
-								
-								// store on SWFLite object for serialized .dat export
-								spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
+
+								for (i in 0...closingBrackets.length) {
+									if(in_if) break;
+									if (indentationLevel > -1 && pcode.pos == closingBrackets[i])
+									{
+										LogHelper.info("", "found a pcode for opening bracket" + pcode);
+										if(indentationLevel > 0) {
+											indentationLevel--;
+											js += ind() + "}";
+										}
+										closingBrackets.remove(i);
+										LogHelper.info("", "decreased indentationLevel" + indentationLevel + " " + closingBrackets);
+
+										switch (pcode.opr) {
+											case OJump(j, delta):
+												if (j == JAlways) {
+													if(delta < 0) return;
+													js += ind() + "else ";
+
+													var foundConditionals = false;
+
+													for (k in pcodes.indexOf(pcode)+1...pcodes.length) {
+														LogHelper.info("", "pcodes to look for conditional" + pcodes[k]);
+
+														switch(pcodes[k].opr) {
+															case OSetProp(_) | OCallPropVoid(_, _) | OInitProp(_):
+																foundConditionals = false;
+																break;
+															case OJump(_, _):
+																foundConditionals = true;
+																break;
+															case _:
+
+														}
+
+														if (pcodes[k].pos > pcode.pos + delta) {
+															break;
+														}
+														else
+														{
+															if (pcodes[k].opr.match(OJump(j2, delta2))) {
+																foundConditionals = true;
+															}
+														}
+													}
+
+													LogHelper.info("", "foundConditionals" + foundConditionals);
+													if (!foundConditionals) {
+														js += ind() + "{";
+														indentationLevel += 1;
+														LogHelper.info("", "indentationLevel" + j + indentationLevel + closingBrackets);
+													}
+												}
+											case _:
+										}
+//										break;
+									}
+
+//									if (pcode.pos == openingBrackets[i])
+//									{
+//										trace("found a pcode for a OJump (JNeq)", pcode);
+//										openingBrackets.remove(i);
+//
+//										var index = pcodes.indexOf(pcode);
+//
+//										if (index + 1 < pcodes.length - 1)
+//										{
+//											switch (pcodes[index + 1].opr)
+//											{
+//												case OJump(jumpStyle, delta):
+//													trace("pcode is OJump", jumpStyle);
+//												case _:
+//													trace("pcode", pcodes[index + 1].opr);
+//											}
+//										}
+//
+//										js += ind() + "{ \\\\opening\n";
+//										break;
+//									}
+								}
 							}
-						case _:
-					}
+
+							var _force_close = (indentationLevel > 0);
+							while (indentationLevel > 0) {
+								indentationLevel--;
+								js += ind() + "}";
+							}
+							if(_force_close) js += ind() + "// force close due to same bracket close collision, double-check statements";
+
+							// take care of common replacements
+							js = js.replace(" int(", " parseInt(");
+							js = js.replace("flash_", "openfl_");
+							js = js.replace("flash.", "openfl.");
+							js = js.replace ("fl_motion", "wwlib_graphics");
+							js = js.replace ("this.console", "console");  // hack to get trace statements working
+
+							LogHelper.info ("", "javascript:\n"+js);
+
+							LogHelper.info("", Std.string(pcodes));
+							// store on SWFLite object for serialized .dat export
+							spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
+						}
+					case _:
 				}
 			}
+		}
 			
 		}
 		
@@ -1145,12 +1602,13 @@ class SWFLiteExporter {
 	private function processTag (tag:IDefinitionTag):SWFSymbol {
 		
 		if (tag == null) return null;
-		
 		if (!swfLite.symbols.exists (tag.characterId)) {
 			
 			if (Std.is (tag, TagDefineSprite)) {
 				
-				return addSprite (cast tag);
+				var data2 = addSprite (cast tag);
+				data2.className = "Sprite" + data2.id;
+				return data2;
 				
 			} else if (Std.is (tag, TagDefineBits) || Std.is (tag, TagDefineBitsJPEG2) || Std.is (tag, TagDefineBitsLossless)) {
 				
@@ -1191,7 +1649,13 @@ class SWFLiteExporter {
 		}
 		
 	}
-	
+
+	public static function ind():String
+	{
+		var a:String = "\n";
+		for(_ in 0...indentationLevel) a += "	";
+		return a;
+	}
 	
 }
 
@@ -1243,6 +1707,14 @@ class AVM2 {
 		return abcData.strings[i.getIndex()-1];
 	}
 
+	public static function getIntByIndex(abcData: ABCData, i: Index<Int>): Int {
+		return abcData.ints[i.getIndex()-1];
+	}
+
+	public static function getFloatByIndex(abcData: ABCData, i: Index<Float>): Float {
+		return abcData.floats[i.getIndex()-1];
+	}
+
 	public static function getNameSpaceByIndex(abcData: ABCData, i: Index<Namespace>): Namespace {
 		return abcData.namespaces[i.getIndex()-1];
 	}
@@ -1257,7 +1729,7 @@ class AVM2 {
 			case NName(nameIndex, nsIndex): // a.k.a. QName
 				var nameSpace = abcData.getNameSpaceByIndex(nsIndex);
 				switch (nameSpace) {
-					case NPublic(nsNameIndex) | NInternal(nsNameIndex) | NPrivate(nsNameIndex): // a.k.a. PackageNamespace, PackageInternalNS
+					case NPublic(nsNameIndex) | NInternal(nsNameIndex) | NPrivate(nsNameIndex) | NProtected(nsNameIndex): // a.k.a. PackageNamespace, PackageInternalNS
 						return {
 							name: abcData.getStringByIndex(nameIndex),
 							nameIndex: i,
@@ -1265,7 +1737,7 @@ class AVM2 {
 							nameSpaceName: abcData.getStringByIndex(nsNameIndex)
 						}
 					case _:
-						LogHelper.info ("", "other type of namespace");
+						LogHelper.warn ("", "other type of namespace " + nameSpace);
 				}
 			case NMulti(nameIndex, nsIndexSet):
 				return {
@@ -1282,7 +1754,7 @@ class AVM2 {
 					nameSpaceName: null
 				}
 			case _:
-				LogHelper.info ("", "other type of name");
+				LogHelper.warn ("", "other type of name " + multiName);
 		}
 		return null;
 	}
@@ -1363,7 +1835,9 @@ class AVM2 {
 		{
 			switch (prop.nameSpace) {
 				case NPublic(_) if ("" != prop.nameSpaceName):
-					js = prop.nameSpaceName +"_"+ prop.name;
+					js = prop.nameSpaceName.replace(".", "_") +"_"+ prop.name;
+				case NProtected(_) if ("" != prop.nameSpaceName):
+					js = prop.nameSpaceName.replace(".", "_") +"_"+ prop.name;
 				case NInternal(_) if (cls.name == prop.nameIndex):
 					js = "this." + prop.name;
 				case NPublic(_):
@@ -1382,9 +1856,12 @@ class AVM2 {
 							js = prop.name;
 //						}
 					}
+				case NPrivate(_) | NInternal(_) | NProtected(_) :
+					LogHelper.info ("", "Namespace "+ prop.nameSpace + " " + prop.name);
+					js = prop.name;
 				case _:
 					// TODO: throw() on unsupported namespaces
-					LogHelper.info ("", "unsupported namespace "+ prop.nameSpace);
+					LogHelper.warn ("", "unsupported namespace "+ prop.nameSpace);
 			}
 		}
 
@@ -1393,6 +1870,7 @@ class AVM2 {
 
 	public static function parseFunctionCall(abcData: ABCData, cls: ClassDef, nameIndex: IName, argCount: Int, stack:Array<Dynamic>):String
 	{
+		var is_array:Bool = false;
 		var prop = abcData.resolveMultiNameByIndex(nameIndex);
 
 		if (prop == null)
@@ -1402,8 +1880,13 @@ class AVM2 {
 		}
 
 		var js = getFullName(abcData, prop, cls);
-		// invoke function
-		js += "(";
+		if(js == "Array") {
+			js = "[";
+			is_array = true;
+		}else {
+			// invoke function
+			js += "(";
+		}
 
 		var temp = [];
 		for (i in 0...argCount) {
@@ -1421,8 +1904,14 @@ class AVM2 {
 			}
 		}
 		temp.reverse();
-		js += temp.join(", ") + ")";
+		js += temp.join(", ");
+		if(is_array) {
+			js += "]";
+		} else {
+			js += ")";
+		}
 
 		return js;
 	}
+
 }

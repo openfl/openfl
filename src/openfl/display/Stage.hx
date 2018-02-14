@@ -163,6 +163,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	private var __wasFullscreen:Bool;
+
+	public static var frameID:UInt = 1;
 	
 	
 	#if openfljs
@@ -2011,7 +2013,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			} /*#end*/
 			
 		}
-		
+
+		frameID++;
+
 	}
 	
 	
