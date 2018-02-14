@@ -449,7 +449,7 @@ extern class BitmapData implements IBitmapDrawable {
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData;
 	
 	#if !flash
-	public static function fromTexture (texture:TextureBase):BitmapData {
+	public static function fromTexture (texture:TextureBase):BitmapData;
 	#end
 	
 	
