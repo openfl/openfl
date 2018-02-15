@@ -809,12 +809,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private function __renderCanvas (renderSession:RenderSession):Void {
-		
-		if (mask == null || (mask.width > 0 && mask.height > 0)) {
+
+		//S/ Commenting out mask width and height check here, as those getters are more expensive than a rare extra render.
+//		if (__mask == null || (__mask.width > 0 && __mask.height > 0)) {
 
 			//S/ Removing this call for now, until it is necessary
 			// __updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
-			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
 				CanvasBitmap.render (__cacheBitmap, renderSession);
@@ -825,7 +825,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-		}
+//		}
 		
 	}
 	
