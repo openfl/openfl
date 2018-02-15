@@ -123,7 +123,8 @@ class Assets {
 			#if flash
 			var font = limeFont.src;
 			#else
-			var font = Font.__fromLimeFont (limeFont);
+			var font = new Font ();
+			font.__fromLimeFont (limeFont);
 			#end
 			
 			if (useCache && cache.enabled) {
@@ -460,7 +461,8 @@ class Assets {
 			#if flash
 			var font = limeFont.src;
 			#else
-			var font = Font.__fromLimeFont (limeFont);
+			var font = new Font ();
+			font.__fromLimeFont (limeFont);
 			#end
 			
 			if (useCache && cache.enabled) {
