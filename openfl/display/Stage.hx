@@ -79,6 +79,7 @@ import js.Browser;
 #end
 
 @:access(openfl._internal.renderer.AbstractRenderer)
+@:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Sprite)
 @:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
@@ -141,6 +142,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseY:Float;
 	private var __primaryTouch:Touch;
 	private var __renderer:AbstractRenderer;
+	private var __guiRenderer:AbstractRenderer;
 	private var __rendering:Bool;
 	private var __rollOutStack:Array<DisplayObject>;
 	private var __stack:Array<DisplayObject>;
@@ -148,6 +150,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	private var __wasFullscreen:Bool;
+
+	private var __guiLayer:DisplayObjectContainer = null;
 
 	public static var frameID:UInt = 1;
 
@@ -1062,15 +1066,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 			mostDrawsTarget = null;
 			
 			__enterFrame (__deltaTime);
+			if (__guiLayer != null) __guiLayer.__enterFrame(__deltaTime);
 			__deltaTime = 0;
 			__update (false, true);
+			if (__guiLayer != null) __guiLayer.__update(false, true);
+			frameID++;
+
 			
 			if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
 				
 				if (!Stage3D.__active) {
-					
+
 					__renderer.clear ();
-					
+
 				}
 				
 				if (renderer.type == CAIRO) {
@@ -1140,6 +1148,36 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = deltaTime;
 		
 	}
+
+	public function addGuiLayer(layer:DisplayObjectContainer):Void {
+
+		layer.__setStageReference(this);
+		layer.parent = this;
+
+		layer.__setTransformDirty();
+		layer.__setRenderDirty();
+
+		__setRenderDirty();
+
+		var addedEvent = new Event (Event.ADDED, true);
+		addedEvent.target = layer;
+		layer.__dispatchWithCapture (addedEvent);
+
+		var addedToStageEvent = new Event (Event.ADDED_TO_STAGE, false, false);
+		layer.__dispatchWithCapture (addedToStageEvent);
+		layer.__dispatchChildren (addedToStageEvent);
+
+		__initializeChild(layer);
+
+		__guiLayer = layer;
+
+	}
+
+	public function toggleGuiLayer (on:Bool):Void {
+		if (__guiLayer == null) return;
+
+		__guiLayer.visible = on;
+	}
 	
 	
 	private function __broadcastEvent (event:Event):Void {
@@ -1172,6 +1210,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case CANVAS (context):
 				
 				__renderer = new CanvasRenderer (this, context);
+				__guiRenderer = new CanvasRenderer (this, untyped window.backend.guiCanvas.getContext("2d"));
 			
 			case DOM (element):
 				
@@ -1383,18 +1422,29 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var stack = [];
 		var target:InteractiveObject = null;
-		
-		if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
-			
+
+		if (__guiLayer != null && __guiLayer.__hitTest(__mouseX, __mouseY, true, stack, true, this)) {
+
 			target = cast stack[stack.length - 1];
-			
-		} else {
-			
-			target = this;
-			stack = [ this ];
-			
+
 		}
-		
+		else {
+
+			stack = [];
+
+			if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
+
+				target = cast stack[stack.length - 1];
+
+			} else {
+
+				target = this;
+				stack = [ this ];
+
+			}
+
+		}
+
 		if (target == null) target = this;
 		
 		var clickType = null;
@@ -1605,11 +1655,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__dragObject.mouseChildren = false;
 				
 				var stack = [];
-				
-				if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
-					
-					dropTarget = stack[stack.length - 1];
-					
+
+				if (__guiLayer != null && __guiLayer.__hitTest(__mouseX, __mouseY, true, stack, true, this)) {
+
+					target = cast stack[stack.length - 1];
+
+				}
+				else {
+
+					stack = [];
+
+					if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
+
+						dropTarget = stack[stack.length - 1];
+
+					}
 				}
 				
 				__dragObject.mouseEnabled = cacheMouseEnabled;
@@ -1638,17 +1698,29 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var stack = [];
 		var target:InteractiveObject = null;
-		
-		if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
-			
+
+		if (__guiLayer != null && __guiLayer.__hitTest(__mouseX, __mouseY, true, stack, true, this)) {
+
 			target = cast stack[stack.length - 1];
-			
-		} else {
-			
-			target = this;
-			stack = [ this ];
-			
+
 		}
+		else {
+
+			stack = [];
+
+			if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
+
+				target = cast stack[stack.length - 1];
+
+			} else {
+
+				target = this;
+				stack = [ this ];
+
+			}
+
+		}
+
 		
 		if (target == null) target = this;
 		var targetPoint = Point.__pool.get ();
@@ -1674,17 +1746,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var stack = [];
 		var target:InteractiveObject = null;
-		
-		if (__hitTest (touchX, touchY, false, stack, true, this)) {
-			
+
+		if (__guiLayer != null && __guiLayer.__hitTest(__mouseX, __mouseY, true, stack, true, this)) {
+
 			target = cast stack[stack.length - 1];
-			
+
 		}
 		else {
-			
-			target = this;
-			stack = [ this ];
-			
+
+			stack = [];
+
+			if (__hitTest (touchX, touchY, false, stack, true, this)) {
+
+				target = cast stack[stack.length - 1];
+
+			}
+			else {
+
+				target = this;
+				stack = [ this ];
+
+			}
+
 		}
 		
 		if (target == null) target = this;
@@ -1995,9 +2078,31 @@ class Stage extends DisplayObjectContainer implements IModule {
 			} #end
 			
 		}
-
-		frameID++;
 		
+	}
+
+	private override function __renderCanvas(renderSession:RenderSession):Void {
+		super.__renderCanvas(renderSession);
+
+		if (__guiLayer != null && (__guiLayer._lastChildChangeFrameID == frameID - 1 || __guiLayer._lastParentOrSelfChangeFrameID == frameID - 1)) {
+
+			var oldRenderer = renderSession.renderer;
+			renderSession.renderer = __guiRenderer;
+			renderSession.context = untyped __guiRenderer.context;
+
+			renderSession.blendModeManager.setBlendMode (NORMAL);
+
+			renderSession.context.setTransform (1, 0, 0, 1, 0, 0);
+			renderSession.context.globalAlpha = 1;
+			renderSession.context.clearRect(0, 0, renderSession.context.canvas.width, renderSession.context.canvas.height);
+
+			__guiLayer.__renderCanvas(renderSession);
+
+			renderSession.renderer = oldRenderer;
+			renderSession.context = untyped oldRenderer.context;
+
+		}
+
 	}
 	
 	
