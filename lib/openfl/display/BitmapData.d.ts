@@ -716,8 +716,8 @@ declare namespace openfl.display {
 		 *                       values. The alpha channel value is not affected if
 		 *                       this value is set to `true`.
 		 */
-		public perlinNoise (baseX:number, baseY:number, numOctaves:number, randomSeed:number, stitch:number, fractalNoise:boolean, channelOptions:number, grayScale?:boolean, offsets?:Array<Point>):void;
-		
+		public perlinNoise (baseX:number, baseY:number, numOctaves:number, randomSeed:number, stitch:boolean, fractalNoise:boolean, channelOptions?:number, grayScale?:boolean, offsets?:Array<Point>):void;
+	
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:number = 0, numPixels:number = 0, fillColor:number = 0):number;

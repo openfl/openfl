@@ -15,6 +15,7 @@ ImportAll
 -D openfl-dynamic
 -D openfljs
 -D lime-opengl
+-D lime-bytes-length-getter
 -D html5
 -D tools
 -D commonjs

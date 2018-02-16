@@ -9,10 +9,10 @@ declare namespace openfl.events {
 		
 		static NET_STATUS;
 		
-		info:object;
+		info:any;
 		
 		
-		constructor (type:string, bubbles?:boolean, cancelable?:boolean, info?:object);
+		constructor (type:string, bubbles?:boolean, cancelable?:boolean, info?:any);
 		
 		
 	}

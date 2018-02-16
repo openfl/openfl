@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "7.0.0",
-	"releasenote": "Added support for NPM-based OpenFL releases, many smaller improvements",
+	"version": "7.1.1",
+	"releasenote": "Minor improvement for use from CI environments, minor canvas render fix",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }

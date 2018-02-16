@@ -33,13 +33,13 @@ declare namespace openfl.events {
 	 * EventDispatcher member, and write simple hooks to route calls into the
 	 * aggregated EventDispatcher.
 	 * 
-	 * @event activate   [broadcast event] Dispatched when the Flash Player or AIR
+	 * @:event activate   [broadcast event] Dispatched when the Flash Player or AIR
 	 *                   application gains operating system focus and becomes
 	 *                   active. This event is a broadcast event, which means that
 	 *                   it is dispatched by all EventDispatcher objects with a
 	 *                   listener registered for this event. For more information
 	 *                   about broadcast events, see the DisplayObject class.
-	 * @event deactivate [broadcast event] Dispatched when the Flash Player or AIR
+	 * @:event deactivate [broadcast event] Dispatched when the Flash Player or AIR
 	 *                   application operating loses system focus and is becoming
 	 *                   inactive. This event is a broadcast event, which means
 	 *                   that it is dispatched by all EventDispatcher objects with

@@ -285,13 +285,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				if (currentInstances.indexOf (instance) == -1) {
 					
+					currentInstances.push (instance);
+					
 					if (instance.clipDepth > 0) {
 						
 						currentMasks.push (instance);
-						
-					} else {
-						
-						currentInstances.push (instance);
 						
 					}
 					

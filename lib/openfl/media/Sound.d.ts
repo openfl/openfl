@@ -63,15 +63,15 @@ declare namespace openfl.media {
 	 * For more information related to security, see the Flash Player Developer
 	 * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 * 
-	 * @event complete   Dispatched when data has loaded successfully.
-	 * @event id3        Dispatched by a Sound object when ID3 data is available
+	 * @:event complete   Dispatched when data has loaded successfully.
+	 * @:event id3        Dispatched by a Sound object when ID3 data is available
 	 *                   for an MP3 sound.
-	 * @event ioError    Dispatched when an input/output error occurs that causes
+	 * @:event ioError    Dispatched when an input/output error occurs that causes
 	 *                   a load operation to fail.
-	 * @event open       Dispatched when a load operation starts.
-	 * @event progress   Dispatched when data is received as a load operation
+	 * @:event open       Dispatched when a load operation starts.
+	 * @:event progress   Dispatched when data is received as a load operation
 	 *                   progresses.
-	 * @event sampleData Dispatched when the runtime requests new audio data.
+	 * @:event sampleData Dispatched when the runtime requests new audio data.
 	 */
 	export class Sound extends EventDispatcher {
 		

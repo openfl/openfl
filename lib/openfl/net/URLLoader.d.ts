@@ -37,15 +37,15 @@ declare namespace openfl.net {
 	 * For more information related to security, see the Flash Player Developer
 	 * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 * 
-	 * @event complete           Dispatched after all the received data is decoded
+	 * @:event complete           Dispatched after all the received data is decoded
 	 *                           and placed in the data property of the URLLoader
 	 *                           object. The received data may be accessed once
 	 *                           this event has been dispatched.
-	 * @event httpResponseStatus Dispatched if a call to the load() method
+	 * @:event httpResponseStatus Dispatched if a call to the load() method
 	 *                           attempts to access data over HTTP, and Adobe AIR
 	 *                           is able to detect and return the status code for
 	 *                           the request.
-	 * @event httpStatus         Dispatched if a call to URLLoader.load() attempts
+	 * @:event httpStatus         Dispatched if a call to URLLoader.load() attempts
 	 *                           to access data over HTTP. For content running in
 	 *                           Flash Player, this event is only dispatched if
 	 *                           the current Flash Player environment is able to
@@ -56,12 +56,12 @@ declare namespace openfl.net {
 	 *                           before(and in addition to) any
 	 *                           `complete` or `error`
 	 *                           event.
-	 * @event ioError            Dispatched if a call to URLLoader.load() results
+	 * @:event ioError            Dispatched if a call to URLLoader.load() results
 	 *                           in a fatal error that terminates the download.
-	 * @event open               Dispatched when the download operation commences
+	 * @:event open               Dispatched when the download operation commences
 	 *                           following a call to the
 	 *                           `URLLoader.load()` method.
-	 * @event progress           Dispatched when data is received as the download
+	 * @:event progress           Dispatched when data is received as the download
 	 *                           operation progresses.
 	 *
 	 *                           Note that with a URLLoader object, it is not
@@ -70,7 +70,7 @@ declare namespace openfl.net {
 	 *                           serves as a notification of how far the download
 	 *                           has progressed. To access the data before it's
 	 *                           entirely downloaded, use a URLStream object. 
-	 * @event securityError      Dispatched if a call to URLLoader.load() attempts
+	 * @:event securityError      Dispatched if a call to URLLoader.load() attempts
 	 *                           to load data from a server outside the security
 	 *                           sandbox. Also dispatched if a call to
 	 *                           `URLLoader.load()` attempts to load a
@@ -232,25 +232,25 @@ declare namespace openfl.net {
 		 * @throws TypeError     The value of the request parameter or the
 		 *                       `URLRequest.url` property of the
 		 *                       URLRequest object passed are `null`.
-		 * @event complete           Dispatched after data has loaded successfully.
-		 * @event httpResponseStatus Dispatched if a call to the `load()`
+		 * @:event complete           Dispatched after data has loaded successfully.
+		 * @:event httpResponseStatus Dispatched if a call to the `load()`
 		 *                           method attempts to access data over HTTP and
 		 *                           Adobe AIR is able to detect and return the
 		 *                           status code for the request.
-		 * @event httpStatus         If access is over HTTP, and the current Flash
+		 * @:event httpStatus         If access is over HTTP, and the current Flash
 		 *                           Player environment supports obtaining status
 		 *                           codes, you may receive these events in addition
 		 *                           to any `complete` or
 		 *                           `error` event.
-		 * @event ioError            The load operation could not be completed.
-		 * @event open               Dispatched when a load operation commences.
-		 * @event progress           Dispatched when data is received as the download
+		 * @:event ioError            The load operation could not be completed.
+		 * @:event open               Dispatched when a load operation commences.
+		 * @:event progress           Dispatched when data is received as the download
 		 *                           operation progresses.
-		 * @event securityError      A load operation attempted to retrieve data from
+		 * @:event securityError      A load operation attempted to retrieve data from
 		 *                           a server outside the caller's security sandbox.
 		 *                           This may be worked around using a policy file on
 		 *                           the server.
-		 * @event securityError      A load operation attempted to load a SWZ file(a
+		 * @:event securityError      A load operation attempted to load a SWZ file(a
 		 *                           Adobe platform component), but the certificate
 		 *                           is invalid or the digest does not match the
 		 *                           component.

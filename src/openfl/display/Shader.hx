@@ -96,7 +96,10 @@ class Shader {
 		}"
 		#else
 		"varying float vAlpha;
-		varying mat4 vColorMultipliers;
+		varying vec4 vColorMultipliers0;
+		varying vec4 vColorMultipliers1;
+		varying vec4 vColorMultipliers2;
+		varying vec4 vColorMultipliers3;
 		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
 		
@@ -114,7 +117,14 @@ class Shader {
 			} else if (uColorTransform) {
 				
 				color = vec4 (color.rgb / color.a, color.a);
-				color = vColorOffsets + (color * vColorMultipliers);
+				
+				mat4 colorMultiplier;
+				colorMultiplier[0] = vColorMultipliers0;
+				colorMultiplier[1] = vColorMultipliers1;
+				colorMultiplier[2] = vColorMultipliers2;
+				colorMultiplier[3] = vColorMultipliers3;
+				
+				color = vColorOffsets + (color * colorMultiplier);
 				
 				if (color.a > 0.0) {
 					
@@ -141,12 +151,18 @@ class Shader {
 	@:glVertexSource(
 		
 		"attribute float aAlpha;
-		attribute mat4 aColorMultipliers;
+		attribute vec4 aColorMultipliers0;
+		attribute vec4 aColorMultipliers1;
+		attribute vec4 aColorMultipliers2;
+		attribute vec4 aColorMultipliers3;
 		attribute vec4 aColorOffsets;
 		attribute vec4 aPosition;
 		attribute vec2 aTexCoord;
 		varying float vAlpha;
-		varying mat4 vColorMultipliers;
+		varying vec4 vColorMultipliers0;
+		varying vec4 vColorMultipliers1;
+		varying vec4 vColorMultipliers2;
+		varying vec4 vColorMultipliers3;
 		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
 		
@@ -160,7 +176,10 @@ class Shader {
 			
 			if (uColorTransform) {
 				
-				vColorMultipliers = aColorMultipliers;
+				vColorMultipliers0 = aColorMultipliers0;
+				vColorMultipliers1 = aColorMultipliers1;
+				vColorMultipliers2 = aColorMultipliers2;
+				vColorMultipliers3 = aColorMultipliers3;
 				vColorOffsets = aColorOffsets;
 				
 			}

@@ -110,21 +110,30 @@ class GLContext3D {
 		
 		#else
 		
-		var stencilExtension = gl.getExtension ("OES_packed_depth_stencil");
-		
-		if (stencilExtension != null) {
+		if (gl.type == GLES && gl.version >= 3) {
 			
 			context.__supportsPackedDepthStencil = true;
-			Context3D.DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_OES;
+			Context3D.DEPTH_STENCIL = gl.DEPTH24_STENCIL8;
 			
 		} else {
 			
-			stencilExtension = gl.getExtension ("EXT_packed_depth_stencil");
+			var stencilExtension = gl.getExtension ("OES_packed_depth_stencil");
 			
 			if (stencilExtension != null) {
 				
 				context.__supportsPackedDepthStencil = true;
-				Context3D.DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_EXT;
+				Context3D.DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_OES;
+				
+			} else {
+				
+				stencilExtension = gl.getExtension ("EXT_packed_depth_stencil");
+				
+				if (stencilExtension != null) {
+					
+					context.__supportsPackedDepthStencil = true;
+					Context3D.DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_EXT;
+					
+				}
 				
 			}
 			
@@ -741,7 +750,7 @@ class GLContext3D {
 			
 			if (code != gl.FRAMEBUFFER_COMPLETE) {
 				
-				trace ("Error: Context3D.setRenderToTexture status:${code} width:${texture2D.__width} height:${texture2D.__height}");
+				trace ('Error: Context3D.setRenderToTexture status:${code} width:${width} height:${height}');
 				
 			}
 			

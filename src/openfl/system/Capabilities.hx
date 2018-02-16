@@ -3,7 +3,12 @@ package openfl.system;
 
 import haxe.macro.Compiler;
 import lime.system.Locale;
+import lime.system.System;
 import openfl._internal.Lib;
+
+#if linux
+import sys.io.Process;
+#end
 
 
 @:final class Capabilities {
@@ -81,7 +86,8 @@ import openfl._internal.Lib;
 	
 	private static inline function get_cpuArchitecture ():String {
 		
-		#if mobile
+		// TODO: Check architecture
+		#if (mobile && !simulator && !emulator)
 		return "ARM";
 		#else
 		return "x86";
@@ -139,26 +145,13 @@ import openfl._internal.Lib;
 	
 	private static inline function get_manufacturer ():String {
 		
-		#if firefox
-		return "OpenFL Firefox";
-		#elseif (js && html5)
-		return "OpenFL HTML5";
-		#elseif android
-		return "OpenFL Android";
-		#elseif blackberry
-		return "OpenFL BlackBerry";
-		#elseif ios
-		return "OpenFL iOS";
-		#elseif tvos
-		return "OpenFL tvOS";
-		#elseif tizen
-		return "OpenFL Tizen";
-		#elseif webos
-		return "OpenFL webOS";
-		#elseif sys
-		return "OpenFL " + Sys.systemName ();
+		#if mac
+		return "OpenFL Macintosh";
+		#elseif linux
+		return "OpenFL Linux";
 		#else
-		return "OpenFL";
+		var name = System.platformName;
+		return "OpenFL" + (name != null ? " " + name : "");
 		#end
 		
 	}
@@ -166,28 +159,22 @@ import openfl._internal.Lib;
 	
 	private static inline function get_os ():String {
 		
-		// TODO: OS version, too?
-		
-		#if firefox
-		return "Firefox";
-		#elseif (js && html5)
-		return "HTML5";
-		#elseif android
-		return "Android";
-		#elseif blackberry
-		return "BlackBerry";
-		#elseif ios
-		return "iOS";
-		#elseif tvos
-		return "tvOS";
-		#elseif tizen
-		return "Tizen";
-		#elseif webos
-		return "webOS";
-		#elseif sys
-		return Sys.systemName ();
+		#if (ios || tvos)
+		return System.deviceModel;
+		#elseif mac
+		return "Mac OS " + System.platformVersion;
+		#elseif linux
+		var kernelVersion = "";
+		try {
+			var process = new Process ("uname", [ "-r" ]);
+			kernelVersion = StringTools.trim (process.stdout.readLine ().toString ());
+			process.close ();
+		} catch (e:Dynamic) {}
+		if (kernelVersion != "") return "Linux " + kernelVersion;
+		else return "Linux";
 		#else
-		return "";
+		var label = System.platformLabel;
+		return label != null ? label : "";
 		#end
 		
 	}
@@ -268,7 +255,7 @@ import openfl._internal.Lib;
 			
 			if (display != null) {
 				
-				resolutionX = display.currentMode.width;
+				resolutionX = Math.ceil (display.currentMode.width * stage.window.scale);
 				
 			}
 			
@@ -296,7 +283,7 @@ import openfl._internal.Lib;
 			
 			if (display != null) {
 				
-				resolutionY = display.currentMode.height;
+				resolutionY = Math.ceil (display.currentMode.height * stage.window.scale);
 				
 			}
 			

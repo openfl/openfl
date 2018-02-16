@@ -75,10 +75,10 @@ class GLTilemap {
 			
 		if (true || useColorTransform) {
 			
-			gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 1, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 2, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 13 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer (shader.data.aColorMultipliers.index + 3, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 17 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.data.aColorMultipliers0.index, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.data.aColorMultipliers1.index, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.data.aColorMultipliers2.index, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 13 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.data.aColorMultipliers3.index, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 17 * Float32Array.BYTES_PER_ELEMENT);
 			gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 21 * Float32Array.BYTES_PER_ELEMENT);
 			
 		}

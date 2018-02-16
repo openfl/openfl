@@ -1,3 +1,38 @@
+7.1.1 (02/09/2018)
+------------------
+
+* Improved the rendering of the `TextField` input cursor on HTML5
+* Fixed support for `openfl.Vector` when only part of the application is CommonJS
+* Fixed a possible crash if no native window is able to be initialized
+* Fixed a regression in "swf-loader" support within the NPM tools
+* Fixed a minor "unused variable" warning when building NPM tools
+
+
+7.1.0 (02/07/2018)
+------------------
+
+* Updated Lime to 6.1.*
+* Added support for `openfl.Vector` on NPM releases
+* Improved `TextField` input to work when `textField.selectable == false`
+* Improved `UncaughtErrorEvents` to catch closer to the triggered error
+* Improved the return value of `Capabilities.os`
+* Improved the returned value in `Capabilities.cpuArchitecture` on a simulator
+* Improved using `byteArray.length` on NPM releases
+* Improved support for old Adreno GPUs and certain Tegra GPUs
+* Improved GL depth buffer for `Stage3D` to be enabled by default on NPM builds
+* Fixed `ColorMatrixFilter` when using certain dark color values
+* Fixed adding mask children when using SWF-based `MovieClip` instances
+* Fixed the frequency of `Event.ENTER_FRAME` events on multiple HTML embeds
+* Fixed the use of `buttonMode` and custom mouse cursors on multiple embeds
+* Fixed `Capabilities.screenResolutionX`/`screenResolutionY` to be scaled
+* Fixed `stage.focus` when changing focus calls `stage.focus` again
+* Fixed minor type definition issues for TypeScript and NPM-based Haxe code
+* Fixed clearing graphics in `shape.graphics` on canvas renderer
+* Fixed the `x` and `y` of certain kinds of SWF-based `TextField` instances
+* Fixed support for `Context3D.setRenderToTexture` when GLESv3
+* Fixed the metrics of `TextField` objects with empty text
+
+
 7.0.0 (01/15/2018)
 ------------------
 

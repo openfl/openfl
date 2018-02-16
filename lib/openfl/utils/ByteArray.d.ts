@@ -10,6 +10,10 @@ declare namespace openfl.utils {
 	export class ByteArray implements IDataOutput, IDataInput /*implements ArrayAccess<Int>*/ {
 		
 		
+		public get (position:number):number;
+		public set (position:number, value:number):number;
+		
+		
 		/**
 		 * Denotes the default object encoding for the ByteArray class to use for a
 		 * new ByteArray instance. When you create a new ByteArray instance, the

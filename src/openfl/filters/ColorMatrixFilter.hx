@@ -92,10 +92,10 @@ import openfl.geom.Rectangle;
 					
 				} else {
 					
-					destPixel.r = Std.int (Math.min ((__matrix[0] * sourcePixel.r) + (__matrix[1] * sourcePixel.g) + (__matrix[2] * sourcePixel.b) + (__matrix[3] * sourcePixel.a) + __matrix[4], 255));
-					destPixel.g = Std.int (Math.min ((__matrix[5] * sourcePixel.r) + (__matrix[6] * sourcePixel.g) + (__matrix[7] * sourcePixel.b) + (__matrix[8] * sourcePixel.a) + __matrix[9], 255));
-					destPixel.b = Std.int (Math.min ((__matrix[10] * sourcePixel.r) + (__matrix[11] * sourcePixel.g) + (__matrix[12] * sourcePixel.b) + (__matrix[13] * sourcePixel.a) + __matrix[14], 255));
-					destPixel.a = Std.int (Math.min ((__matrix[15] * sourcePixel.r) + (__matrix[16] * sourcePixel.g) + (__matrix[17] * sourcePixel.b) + (__matrix[18] * sourcePixel.a) + __matrix[19], 255));
+					destPixel.r = Std.int (Math.max(0, Math.min ((__matrix[0] * sourcePixel.r) + (__matrix[1] * sourcePixel.g) + (__matrix[2] * sourcePixel.b) + (__matrix[3] * sourcePixel.a) + __matrix[4], 255)));
+					destPixel.g = Std.int (Math.max(0, Math.min ((__matrix[5] * sourcePixel.r) + (__matrix[6] * sourcePixel.g) + (__matrix[7] * sourcePixel.b) + (__matrix[8] * sourcePixel.a) + __matrix[9], 255)));
+					destPixel.b = Std.int (Math.max(0, Math.min ((__matrix[10] * sourcePixel.r) + (__matrix[11] * sourcePixel.g) + (__matrix[12] * sourcePixel.b) + (__matrix[13] * sourcePixel.a) + __matrix[14], 255)));
+					destPixel.a = Std.int (Math.max(0, Math.min ((__matrix[15] * sourcePixel.r) + (__matrix[16] * sourcePixel.g) + (__matrix[17] * sourcePixel.b) + (__matrix[18] * sourcePixel.a) + __matrix[19], 255)));
 					
 				}
 				

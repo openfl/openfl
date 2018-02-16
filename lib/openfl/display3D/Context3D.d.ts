@@ -41,6 +41,7 @@ declare namespace openfl.display3D {
 		public maxBackBufferHeight:number;
 		public maxBackBufferWidth:number;
 		public readonly profile:string;
+		public readonly totalGPUMemory:number;
 		
 		public clear (red?:number, green?:number, blue?:number, alpha?:number, depth?:number, stencil?:number, mask?:number):void;
 		public configureBackBuffer (width:number, height:number, antiAlias:number, enableDepthAndStencil?:boolean, wantsBestResolution?:boolean, wantsBestResolutionOnBrowserZoom?:boolean):void;

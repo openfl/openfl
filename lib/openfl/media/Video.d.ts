@@ -14,7 +14,7 @@ declare namespace openfl.media {
 		public readonly videoWidth:number;
 		
 		
-		public constructor (width?:number, height?:number):void;
+		public constructor (width?:number, height?:number);
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public attachCamera (camera:flash.media.Camera):Void;

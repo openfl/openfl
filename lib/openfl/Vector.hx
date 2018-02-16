@@ -3,7 +3,7 @@ package openfl;
 
 @:jsRequire("openfl/Vector", "default")
 
-extern class Vector<T> {
+extern class Vector<T> implements ArrayAccess<T> {
 	
 	
 	public var fixed:Bool;
@@ -16,7 +16,6 @@ extern class Vector<T> {
 	public function get (index:Int):T;
 	public function indexOf (x:T, ?from:Int = 0):Int;
 	public function insertAt (index:Int, element:T):Void;
-	public function iterator<T> ():Iterator<T>;
 	public function join (sep:String = ","):String;
 	public function lastIndexOf (x:T, ?from:Int = 0):Int;
 	public function pop ():Null<T>;
@@ -29,7 +28,9 @@ extern class Vector<T> {
 	public function sort (f:T->T->Int):Void;
 	public function splice (pos:Int, len:Int):Vector<T>;
 	public function unshift (x:T):Void;
-	//public static inline function ofArray<T> (a:Array<T>):Vector<T>;
+	public static function ofArray<T> (a:Array<T>):Vector<T>;
+	
+	@:noCompletion public function iterator ():Iterator<T>;
 	
 	
 }

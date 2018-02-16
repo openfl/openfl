@@ -255,7 +255,15 @@ class CanvasTextField {
 										
 									}
 									
-									context.fillRect (group.offsetX + advance - textField.scrollH, scrollY + 2, 1, TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
+									context.beginPath ();
+									context.strokeStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
+									context.moveTo (group.offsetX + advance - textField.scrollH, scrollY + 2);
+									context.lineWidth = 1;
+									context.lineTo (group.offsetX + advance - textField.scrollH, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
+									context.stroke ();
+									context.closePath ();
+									
+									// context.fillRect (group.offsetX + advance - textField.scrollH, scrollY + 2, 1, TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
 									
 								}
 								

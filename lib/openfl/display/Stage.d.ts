@@ -82,17 +82,17 @@ declare namespace openfl.display {
 	 * EventDispatcher subclasses. For more information on broadcast events, see
 	 * the DisplayObject class.
 	 * 
-	 * @event fullScreen             Dispatched when the Stage object enters, or
+	 * @:event fullScreen             Dispatched when the Stage object enters, or
 	 *                               leaves, full-screen mode. A change in
 	 *                               full-screen mode can be initiated through
 	 *                               ActionScript, or the user invoking a keyboard
 	 *                               shortcut, or if the current focus leaves the
 	 *                               full-screen window.
-	 * @event mouseLeave             Dispatched by the Stage object when the
+	 * @:event mouseLeave             Dispatched by the Stage object when the
 	 *                               pointer moves out of the stage area. If the
 	 *                               mouse button is pressed, the event is not
 	 *                               dispatched.
-	 * @event orientationChange      Dispatched by the Stage object when the stage
+	 * @:event orientationChange      Dispatched by the Stage object when the stage
 	 *                               orientation changes.
 	 *
 	 *                               Orientation changes can occur when the
@@ -108,7 +108,7 @@ declare namespace openfl.display {
 	 *                               only dispatched for device rotation when
 	 *                               `autoOrients` is
 	 *                               `true`.
-	 * @event orientationChanging    Dispatched by the Stage object when the stage
+	 * @:event orientationChanging    Dispatched by the Stage object when the stage
 	 *                               orientation begins changing.
 	 *
 	 *                               **Important:** orientationChanging
@@ -123,11 +123,11 @@ declare namespace openfl.display {
 	 *                               only dispatched for device rotation when
 	 *                               `autoOrients` is
 	 *                               `true`.
-	 * @event resize                 Dispatched when the `scaleMode`
+	 * @:event resize                 Dispatched when the `scaleMode`
 	 *                               property of the Stage object is set to
 	 *                               `StageScaleMode.NO_SCALE` and the
 	 *                               SWF file is resized.
-	 * @event stageVideoAvailability Dispatched by the Stage object when the state
+	 * @:event stageVideoAvailability Dispatched by the Stage object when the state
 	 *                               of the stageVideos property changes.
 	 */
 	export class Stage extends DisplayObjectContainer /*implements IModule*/ {

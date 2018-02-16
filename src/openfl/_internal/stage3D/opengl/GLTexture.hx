@@ -51,29 +51,41 @@ class GLTexture {
 		
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader (texture.__width, texture.__height, false);
-
+		
 		var gl = renderSession.gl;
 		
 		gl.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
-		reader.readTextures (function(target, level, gpuFormat, width, height, blockLength, bytes) {
+		var hasTexture = false;
+		
+		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes) {
 			
-			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat(alpha, gpuFormat);
+			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat (alpha, gpuFormat);
 			if (format == 0) return;
 			
+			hasTexture = true;
 			texture.__format = format;
+			texture.__internalFormat = format;
 			
-			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__format, width, height, 0, blockLength, bytes);
+			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, blockLength, bytes);
 			GLUtils.CheckGLError ();
 			
 			// __trackCompressedMemoryUsage (blockLength);
 			
 		});
-
+		
+		if (!hasTexture) {
+			
+			var data = new UInt8Array (texture.__width * texture.__height * 4);
+			gl.texImage2D (texture.__textureTarget, 0, texture.__internalFormat, texture.__width, texture.__height, 0, texture.__format, gl.UNSIGNED_BYTE, data);
+			GLUtils.CheckGLError ();
+			
+		}
+		
 		gl.bindTexture (texture.__textureTarget, null);
 		GLUtils.CheckGLError ();
-
+		
 	}
 	
 	

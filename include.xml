@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
-	<set name="lime-version" value="6.0.*" />
+	<set name="lime-version" value="6.1.*" />
 	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
@@ -28,7 +28,7 @@
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 6.0.* is required)" if="${lime < 6.0.0} || ${lime >= 6.1.0}" unless="setup || disable-version-check" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 6.1.* is required)" if="${lime < 6.1.0} || ${lime >= 6.2.0}" unless="setup || disable-version-check" />
 		
 	</section>
 	
@@ -76,7 +76,7 @@
 			<haxedef name="openfl-html5" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<module name="openfl" if="modular">
+			<module name="openfl" if="html5 lime-modular">
 				
 				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
 				

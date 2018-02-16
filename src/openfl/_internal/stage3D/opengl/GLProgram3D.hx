@@ -396,9 +396,9 @@ class GLProgram3D {
 		
 		gl.linkProgram (program.__programID);
 		
-		var infoLog = gl.getProgramInfoLog (program.__programID);
+		var infoLog:String = gl.getProgramInfoLog (program.__programID);
 		
-		if (infoLog != null && infoLog.length != 0) {
+		if (infoLog != null && infoLog.length != 0 && StringTools.trim (infoLog) != "") {
 			
 			trace ('program: ${infoLog}');
 			
