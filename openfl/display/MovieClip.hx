@@ -715,8 +715,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							} while (null != (p = p.parent));
 							name.reverse();
 							trace ("Error evaluating frame script\n" +
-								"swf: "+ this.__swf.library.rootPath +"\n" +
+								"swf: "+ (this.__swf == null || this.__swf.library == null ? "null " : "\"" + this.__swf.library.rootPath + "\"") +"\n" +
 								"symbol path: "+ name.join('.') +"\n" +
+								"symbol: "+ ((__symbol == null || __symbol.className == null) ? "null " : "\"" + __symbol.className + "\"") + "\n" +
 								e + "\n" +
 								haxe.CallStack.exceptionStack ().map (function (a) { return untyped a[2]; }).join ("\n") + "\n" +
 								e.stack + "\n" + untyped script.toString ());
@@ -738,9 +739,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					} while (null != (p = p.parent));
 					name.reverse();
 					Log.warn ("Unable to evaluate frame script source\n" +
-						"swf: "+ this.__swf.library.rootPath +"\n" +
+						"swf: "+ (this.__swf == null || this.__swf.library == null ? "null " : "\"" + this.__swf.library.rootPath + "\"") +"\n" +
 						"symbol path: "+ name.join('.') +"\n" +
-						"symbol: "+ (__symbol.className == null ? "null " : "\"" + __symbol.className + "\"") + "\n" +
+						"symbol: "+ ((__symbol == null || __symbol.className == null) ? "null " : "\"" + __symbol.className + "\"") + "\n" +
 						"frame: " + frame + "\n" +
 						frameData.scriptSource);
 
@@ -954,9 +955,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			} while (null != (p = p.parent));
 			name.reverse();
 			Log.warn ("Error #2109: Frame label " + label + " not found in scene.\n" +
-				"swf: "+ this.__swf.library.rootPath +"\n" +
+				"swf: "+ (this.__swf == null || this.__swf.library == null ? "null " : "\"" + this.__swf.library.rootPath + "\"") +"\n" +
 				"symbol path: "+ name.join('.') +"\n" +
-				"symbol: "+ (__symbol.className == null ? "null " : "\"" + __symbol.className + "\"") + "\n" +
+				"symbol: "+ ((__symbol == null || __symbol.className == null) ? "null " : "\"" + __symbol.className + "\"") + "\n" +
 				"frame: " + frame);
 			return 1;
 			
