@@ -5,6 +5,8 @@ import openfl.display.Sprite;
 import openfl.geom.Rectangle;
 
 
+@:jsRequire("openfl/printing/PrintJob", "default")
+
 extern class PrintJob {
 	
 	

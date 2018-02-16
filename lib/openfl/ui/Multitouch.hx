@@ -56,7 +56,7 @@ import openfl.Vector;
 	 * 
 	 * @default gesture
 	 */
-	public static var inputMode:MultitouchInputMode;
+	public static var inputMode (get, set):MultitouchInputMode;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
@@ -107,7 +107,7 @@ import openfl.Vector;
 	 * Indicates whether the current environment supports basic touch input, such
 	 * as a single finger tap. Touch events are listed in the TouchEvent class.
 	 */
-	public static var supportsTouchEvents (default, never):Bool;
+	public static var supportsTouchEvents (get, never):Bool;
 	
 	
 }

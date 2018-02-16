@@ -91,7 +91,7 @@ extern class ColorTransform {
 	 * tells the ActionScript compiler that the number is a hexadecimal
 	 * value.
 	 */
-	public var color:UInt;
+	public var color (get, set):UInt;
 	
 	/**
 	 * A decimal value that is multiplied with the green channel value.

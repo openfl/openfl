@@ -30,7 +30,7 @@ extern class SimpleButton extends InteractiveObject {
 	 * button "Down" state  - the state that the button is in when the user
 	 * selects the `hitTestState` object.
 	 */
-	public var downState:DisplayObject;
+	public var downState (get, set):DisplayObject;
 	
 	/**
 	 * A Boolean value that specifies whether a button is enabled. When a button
@@ -54,7 +54,7 @@ extern class SimpleButton extends InteractiveObject {
 	 * not set the `hitTestState` property, the SimpleButton is
 	 * inactive  -  it does not respond to user input events.
 	 */
-	public var hitTestState:DisplayObject;
+	public var hitTestState (get, set):DisplayObject;
 	
 	/**
 	 * Specifies a display object that is used as the visual object for the
@@ -70,7 +70,7 @@ extern class SimpleButton extends InteractiveObject {
 	 * states of the button. This SoundTransform object affects only embedded
 	 * sounds.
 	 */
-	public var soundTransform:SoundTransform;
+	public var soundTransform (get, set):SoundTransform;
 	
 	/**
 	 * Indicates whether other display objects that are SimpleButton or MovieClip
@@ -90,7 +90,7 @@ extern class SimpleButton extends InteractiveObject {
 	 * button up state  -  the state that the button is in when the pointer is
 	 * not positioned over the button.
 	 */
-	public var upState:DisplayObject;
+	public var upState (get, set):DisplayObject;
 	
 	/**
 	 * A Boolean value that, when set to `true`, indicates whether the

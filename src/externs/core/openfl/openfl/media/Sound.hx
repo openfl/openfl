@@ -300,6 +300,7 @@ extern class Sound extends EventDispatcher {
 	
 	
 	public static function loadFromFile (path:String):Future<Sound>;
+	public static function loadFromFiles (paths:Array<String>):Future<Sound>;
 	
 	
 	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void;

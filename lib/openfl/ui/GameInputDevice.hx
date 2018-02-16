@@ -29,7 +29,7 @@ import openfl.utils.ByteArray;
 	/**
 	 * Returns the number of controls on this device.
 	 */
-	public var numControls (default, never):Int;
+	public var numControls (get, never):Int;
 	
 	/**
 	 * Specifies the rate (in milliseconds) at which to retrieve control values.

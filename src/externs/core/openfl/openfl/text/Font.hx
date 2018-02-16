@@ -1,6 +1,7 @@
 package openfl.text; #if (display || !flash)
 
 
+import lime.app.Future;
 import lime.text.Font in LimeFont;
 import openfl.utils.ByteArray;
 
@@ -56,6 +57,11 @@ extern class Font extends LimeFont {
 	
 	
 	public static function fromFile (path:String):Font;
+	
+	
+	public static function loadFromBytes (bytes:ByteArray):Future<Font>;
+	public static function loadFromFile (path:String):Future<Font>;
+	public static function loadFromName (path:String):Future<Font>;
 	
 	
 	#if flash

@@ -9,8 +9,8 @@ import openfl.Vector;
 extern class Matrix3D {
 	
 	
-	public var determinant (default, never):Float;
-	public var position:Vector3D;
+	public var determinant (get, never):Float;
+	public var position (get, set):Vector3D;
 	public var rawData:Vector<Float>;
 	
 	

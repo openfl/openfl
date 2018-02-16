@@ -4,13 +4,17 @@ package;
 import openfl.desktop.Clipboard;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
+#if !openfljs
 import openfl.display.Application;
+#end
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
+#if !openfljs
 import openfl.display.DirectRenderer;
+#end
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DOMSprite;
@@ -39,7 +43,9 @@ import openfl.display.LineScaleMode;
 import openfl.display.Loader;
 import openfl.display.LoaderInfo;
 import openfl.display.MovieClip;
+#if !openfljs
 import openfl.display.OpenGLView;
+#end
 import openfl.display.PixelSnapping;
 import openfl.display.PNGEncoderOptions;
 import openfl.display.Preloader;
@@ -65,7 +71,9 @@ import openfl.display.TileArray;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.TriangleCulling;
+#if !openfljs
 import openfl.display.Window;
+#end
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.Texture;

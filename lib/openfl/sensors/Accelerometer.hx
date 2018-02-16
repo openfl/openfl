@@ -62,7 +62,7 @@ extern class Accelerometer extends EventDispatcher {
 	 * accelerometer sensor is available on the device, otherwise it is set to
 	 * `false`.
 	 */
-	public static var isSupported (default, never):Bool;
+	public static var isSupported (get, never):Bool;
 	
 	/**
 	 * Specifies whether the user has denied access to the accelerometer

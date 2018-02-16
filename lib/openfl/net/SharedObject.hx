@@ -181,7 +181,7 @@ extern class SharedObject extends EventDispatcher {
 	 * processing time, so you may want to avoid using this method unless you
 	 * have a specific need for it.
 	 */
-	public var size (default, never):UInt;
+	public var size (get, never):UInt;
 	
 	
 	private function new ();

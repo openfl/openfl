@@ -12,10 +12,10 @@ import openfl.utils.IDataInput;
 extern class URLStream extends EventDispatcher implements IDataInput {
 	
 	
-	public var bytesAvailable (default, never):UInt;
+	public var bytesAvailable (get, never):UInt;
 	public var connected (default, null):Bool;
 	//@:require(flash11_4) public var diskCacheEnabled (default, null):Bool;
-	public var endian:Endian;
+	public var endian (get, set):Endian;
 	//@:require(flash11_4) public var length (default, null):Float;
 	public var objectEncoding:UInt;
 	//@:require(flash11_4) public var position:Float;
