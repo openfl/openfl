@@ -779,6 +779,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
+		if(isTimelineMask || __isMask) return;
+
 		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
@@ -809,6 +811,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private function __renderCanvas (renderSession:RenderSession):Void {
+
+		if(isTimelineMask || __isMask) return;
 
 		//S/ Commenting out mask width and height check here, as those getters are more expensive than a rare extra render.
 //		if (__mask == null || (__mask.width > 0 && __mask.height > 0)) {
@@ -844,6 +848,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if dom
+		if(isTimelineMask || __isMask) return;
+
 		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
@@ -873,6 +879,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private function __renderGL (renderSession:RenderSession):Void {
+		
+		if(isTimelineMask || __isMask) return;
 		
 		__updateCacheBitmap (renderSession, false);
 		
