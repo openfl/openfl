@@ -729,29 +729,7 @@ class RegisterMap {
 			
 		});
 		
-		var arrayCount = new Map<RegisterMapEntry, Int> ();
 		var entry:RegisterMapEntry;
-		
-		for (i in 0...mEntries.length) {
-			
-			entry = mEntries[i];
-			
-			if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
-				
-				// find how many registers based on the next entry.
-				if (i < mEntries.length - 1) {
-					
-					arrayCount[entry] = mEntries[i + 1].number - entry.number;
-					
-				} else {
-					
-					arrayCount[entry] = 128;
-					
-				}
-				
-			}
-			
-		}
 		
 		mEntries.sort (function (a:RegisterMapEntry, b:RegisterMapEntry):Int {
 			
@@ -882,7 +860,7 @@ class RegisterMap {
 				
 			} else if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
 				
-				sb.add (entry.name + "[" + arrayCount[entry] + "]"); // this is an array of "count" elements.
+				sb.add (entry.name + "[128]"); // this is an array of "count" elements.
 				sb.add (";\n");
 				
 			} else {
