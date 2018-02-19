@@ -92,7 +92,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * 
 	 * In Flash Player, this property is always `null`.
 	 */
-	public var image (get, null):Image;
+	public var image (default, null):Image;
 	
 	/**
 	 * Defines whether the bitmap image is readable. Hardware-only bitmap images
