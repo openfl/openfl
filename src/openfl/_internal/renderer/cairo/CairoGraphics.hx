@@ -923,13 +923,6 @@ class CairoGraphics {
 						//cairo.identityMatrix();
 						//cairo.resetClip();
 						
-						cairo.newPath ();
-						cairo.moveTo (x1, y1);
-						cairo.lineTo (x2, y2);
-						cairo.lineTo (x3, y3);
-						cairo.closePath ();
-						//cairo.clip ();
-						
 						uvx1 = uvt[iax] * width;
 						uvx2 = uvt[ibx] * width;
 						uvx3 = uvt[icx] * width;
@@ -945,6 +938,13 @@ class CairoGraphics {
 							continue;
 							
 						}
+						
+						cairo.newPath ();
+						cairo.moveTo (x1, y1);
+						cairo.lineTo (x2, y2);
+						cairo.lineTo (x3, y3);
+						cairo.closePath ();
+						//cairo.clip ();
 						
 						x1*=currentMatrix.a;
 						x2*=currentMatrix.a;
