@@ -8,10 +8,16 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
 import lime.utils.Log;
+import openfl._internal.renderer.cairo.CairoBitmap;
+import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTextField;
+import openfl._internal.renderer.canvas.CanvasBitmap;
+import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
@@ -1393,8 +1399,18 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		CairoTextField.render (this, renderSession, __worldTransform);
-		super.__renderCairo (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			CairoBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			CairoTextField.render (this, renderSession, __worldTransform);
+			CairoDisplayObject.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -1428,35 +1444,47 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
-		CanvasTextField.render (this, renderSession, __worldTransform);
-		
-		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
+		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			var smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
+			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 			
-			if (smoothingEnabled) {
+			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
-				untyped (renderSession.context).mozImageSmoothingEnabled = false;
-				//untyped (renderSession.context).webkitImageSmoothingEnabled = false;
-				untyped (renderSession.context).msImageSmoothingEnabled = false;
-				untyped (renderSession.context).imageSmoothingEnabled = false;
+				CanvasBitmap.render (__cacheBitmap, renderSession);
+				
+			} else {
+				
+				CanvasTextField.render (this, renderSession, __worldTransform);
+				
+				var smoothingEnabled = false;
+				
+				if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
+					
+					smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
+					
+					if (smoothingEnabled) {
+						
+						untyped (renderSession.context).mozImageSmoothingEnabled = false;
+						//untyped (renderSession.context).webkitImageSmoothingEnabled = false;
+						untyped (renderSession.context).msImageSmoothingEnabled = false;
+						untyped (renderSession.context).imageSmoothingEnabled = false;
+						
+					}
+					
+				}
+				
+				CanvasDisplayObject.render (this, renderSession);
+				
+				if (smoothingEnabled) {
+					
+					untyped (renderSession.context).mozImageSmoothingEnabled = true;
+					//untyped (renderSession.context).webkitImageSmoothingEnabled = true;
+					untyped (renderSession.context).msImageSmoothingEnabled = true;
+					untyped (renderSession.context).imageSmoothingEnabled = true;
+					
+				}
 				
 			}
-			
-			super.__renderCanvas (renderSession);
-			
-			if (smoothingEnabled) {
-				
-				untyped (renderSession.context).mozImageSmoothingEnabled = true;
-				//untyped (renderSession.context).webkitImageSmoothingEnabled = true;
-				untyped (renderSession.context).msImageSmoothingEnabled = true;
-				untyped (renderSession.context).imageSmoothingEnabled = true;
-				
-			}
-			
-		} else {
-			
-			super.__renderCanvas (renderSession);
 			
 		}
 		
@@ -1516,13 +1544,23 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		#if (js && html5)
-		CanvasTextField.render (this, renderSession, __worldTransform);
-		#elseif lime_cairo
-		CairoTextField.render (this, renderSession, __worldTransform);
-		#end
+		__updateCacheBitmap (renderSession, false);
 		
-		super.__renderGL (renderSession);
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			#if (js && html5)
+			CanvasTextField.render (this, renderSession, __worldTransform);
+			#elseif lime_cairo
+			CairoTextField.render (this, renderSession, __worldTransform);
+			#end
+			
+			GLDisplayObject.render (this, renderSession);
+			
+		}
 		
 	}
 	
@@ -1607,7 +1645,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if ((filters == null || filters.length == 0) && !__domRender) return false;
 		
-		if (super.__updateCacheBitmap (renderSession, force)) {
+		if (super.__updateCacheBitmap (renderSession, force || __dirty)) {
 			
 			if (__cacheBitmap != null) {
 				
