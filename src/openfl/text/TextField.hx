@@ -1643,7 +1643,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		if ((filters == null || filters.length == 0) && !__domRender) return false;
+		if (__filters == null && !__domRender) return false;
 		
 		if (super.__updateCacheBitmap (renderSession, force || __dirty)) {
 			
