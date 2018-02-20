@@ -100,6 +100,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private var __cursorTimer:Timer;
 	private var __dirty:Bool;
 	private var __displayAsPassword:Bool;
+	private var __domRender:Bool;
 	private var __inputEnabled:Bool;
 	private var __isHTML:Bool;
 	private var __layoutDirty:Bool;
@@ -1468,8 +1469,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		#if (js && html5)
 		
+		__domRender = true;
 		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
 		__forceCachedBitmapUpdate = false;
+		__domRender = false;
+		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
 			__renderDOMClear (renderSession);
@@ -1600,6 +1604,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
+		
+		if ((filters == null || filters.length == 0) && !__domRender) return false;
 		
 		if (super.__updateCacheBitmap (renderSession, force)) {
 			
