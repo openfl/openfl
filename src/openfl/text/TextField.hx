@@ -113,12 +113,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private var __htmlText:UTF8String;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
+	private var __forceCachedBitmapUpdate:Bool = false;
 	
 	#if (js && html5)
 	private var __div:DivElement;
 	private var __renderedOnCanvasWhileOnDOM:Bool = false;
 	private var __rawHtmlText:String;
-	private var __forceCachedBitmapUpdate:Bool = false;
 	#end
 	
 	
@@ -1392,6 +1392,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
+		__forceCachedBitmapUpdate = __forceCachedBitmapUpdate || __dirty;
 		CairoTextField.render (this, renderSession, __worldTransform);
 		super.__renderCairo (renderSession);
 		#end
@@ -1405,7 +1406,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		// TODO: Better DOM workaround on cacheAsBitmap
 		
-		if (renderSession.renderType == DOM && !__renderedOnCanvasWhileOnDOM) {
+		if (renderSession.renderType == DOM && (!__renderedOnCanvasWhileOnDOM || __forceCachedBitmapUpdate)) {
 			
 			__renderedOnCanvasWhileOnDOM = true;
 			
@@ -1426,6 +1427,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__setRenderDirty ();
 			
 		}
+		__forceCachedBitmapUpdate = __forceCachedBitmapUpdate || __dirty;
 		
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
@@ -1468,8 +1470,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		#if (js && html5)
 		
-		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
-		__forceCachedBitmapUpdate = false;
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
 			__renderDOMClear (renderSession);
@@ -1512,6 +1513,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
+		__forceCachedBitmapUpdate = __forceCachedBitmapUpdate || __dirty;
 		#if (js && html5)
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		#elseif lime_cairo
@@ -1601,7 +1603,10 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		if (super.__updateCacheBitmap (renderSession, force)) {
+		var success = super.__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || force);
+		__forceCachedBitmapUpdate = false;
+		
+		if (success) {
 			
 			if (__cacheBitmap != null) {
 				
