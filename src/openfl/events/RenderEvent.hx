@@ -12,13 +12,15 @@ import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
+@:access(openfl.geom.ColorTransform)
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
 
-class AbstractViewEvent extends Event {
+class RenderEvent extends Event {
 	
 	
 	public static inline var RENDER_CAIRO = "renderCairo";
@@ -51,7 +53,15 @@ class AbstractViewEvent extends Event {
 	
 	public override function clone ():Event {
 		
-		var event = new AbstractViewEvent (type, bubbles, cancelable);
+		var event = new RenderEvent (type, bubbles, cancelable);
+		event.allowSmoothing = allowSmoothing;
+		event.cairo = cairo;
+		event.context = context;
+		event.gl = gl;
+		event.renderTransform.copyFrom (renderTransform);
+		event.worldColorTransform.__copyFrom (worldColorTransform);
+		event.worldTransform.copyFrom (worldTransform);
+		event.__renderSession = __renderSession;
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
@@ -86,7 +96,7 @@ class AbstractViewEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return __formatToString ("AbstractViewEvent",  [ "type", "bubbles", "cancelable" ]);
+		return __formatToString ("RenderEvent",  [ "type", "bubbles", "cancelable" ]);
 		
 	}
 	

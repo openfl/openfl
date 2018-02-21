@@ -4,7 +4,7 @@ package openfl.display;
 import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
-import openfl.events.AbstractViewEvent;
+import openfl.events.RenderEvent;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
@@ -15,14 +15,14 @@ import openfl.geom.Matrix;
 class AbstractView extends DisplayObject {
 	
 	
-	private var __renderEvent:AbstractViewEvent;
+	private var __renderEvent:RenderEvent;
 	
 	
 	public function new () {
 		
 		super ();
 		
-		__renderEvent = new AbstractViewEvent (null);
+		__renderEvent = new RenderEvent (null);
 		
 	}
 	
@@ -47,7 +47,7 @@ class AbstractView extends DisplayObject {
 		renderSession.blendModeManager.setBlendMode (__worldBlendMode);
 		renderSession.maskManager.pushObject (this);
 		
-		__renderEvent.type = AbstractViewEvent.RENDER_CAIRO;
+		__renderEvent.type = RenderEvent.RENDER_CAIRO;
 		__renderEvent.allowSmoothing = renderSession.allowSmoothing;
 		__renderEvent.cairo = renderSession.cairo;
 		__renderEvent.renderTransform.copyFrom (__renderTransform);
@@ -72,7 +72,7 @@ class AbstractView extends DisplayObject {
 		renderSession.blendModeManager.setBlendMode (__worldBlendMode);
 		renderSession.maskManager.pushObject (this);
 		
-		__renderEvent.type = AbstractViewEvent.RENDER_CANVAS;
+		__renderEvent.type = RenderEvent.RENDER_CANVAS;
 		__renderEvent.allowSmoothing = renderSession.allowSmoothing;
 		__renderEvent.context = renderSession.context;
 		__renderEvent.renderTransform.copyFrom (__renderTransform);
@@ -98,7 +98,7 @@ class AbstractView extends DisplayObject {
 		renderSession.maskManager.pushObject (this);
 		renderSession.shaderManager.setShader (null);
 		
-		__renderEvent.type = AbstractViewEvent.RENDER_OPENGL;
+		__renderEvent.type = RenderEvent.RENDER_OPENGL;
 		__renderEvent.allowSmoothing = renderSession.allowSmoothing;
 		__renderEvent.gl = renderSession.gl;
 		__renderEvent.renderTransform.copyFrom (__renderTransform);

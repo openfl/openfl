@@ -36,8 +36,6 @@ class KeyboardEvent extends Event {
 	}
 	
 	
-	
-	
 	public override function clone ():Event {
 		
 		var event = new KeyboardEvent (type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey, controlKey, commandKey);
