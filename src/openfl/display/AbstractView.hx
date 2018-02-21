@@ -27,13 +27,9 @@ class AbstractView extends DisplayObject {
 	}
 	
 	
-	private override function __enterFrame (deltaTime:Int):Void {
+	public function invalidate ():Void {
 		
-		if (__renderable) {
-			
-			__setRenderDirty ();
-			
-		}
+		__setRenderDirty ();
 		
 	}
 	
