@@ -210,7 +210,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__updateText (__text + text);
 		
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
-		__updateScrollH ();
+		__updateScrollHV (__caretIndex);
 		
 	}
 	
@@ -618,7 +618,10 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
-		__updateScrollH ();
+		var caretIndex = beginIndex + cast (newText, UTF8String).length;
+		if (caretIndex > __text.length) caretIndex = __text.length;
+		
+		__updateScrollHV (caretIndex);
 		
 		__dirty = true;
 		__layoutDirty = true;
@@ -1176,7 +1179,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
 		
 		var x:Null<Float> = null, y:Null<Float> = null;
-		
+		var lineGroup = null;
 		for (group in __textEngine.layoutGroups) {
 			
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
@@ -1189,7 +1192,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 				}
 				
-				if (y != null) return __getPosition (x, y);
+				if (y != null) return __getPosition (x, y, lineGroup);
 				
 			}
 			
@@ -1197,7 +1200,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				y = group.offsetY + group.height / 2;
 				
-				if (x != null) return __getPosition (x, y);
+				lineGroup = group;
+				
+				if (x != null) return __getPosition (x, y, lineGroup);
 				
 			}
 			
@@ -1283,9 +1288,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
-	private function __getPosition (x:Float, y:Float):Int {
+	private function __getPosition (x:Float, y:Float, group: TextLayoutGroup = null):Int {
 		
-		var group = __getGroup (x, y);
+		group = group == null ? __getGroup (x, y) : group;
 		
 		if (group == null) {
 			
@@ -1643,22 +1648,45 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
-	private function __updateScrollH ():Void {
+	private function __updateScrollHV (caretIndex: Int):Void {
 		
-		if (!multiline && type == INPUT) {
+		if (type == INPUT) {
 			
-			__layoutDirty = true;
-			__updateLayout ();
-			
-			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
-			
-			if (offsetX > 0) {
+			if (!multiline ) {
 				
-				scrollH = Math.ceil (offsetX);
+				__layoutDirty = true;
+				__updateLayout ();
+				
+				var offsetX = __textEngine.textWidth - __textEngine.width + 4;
+				
+				if (offsetX > 0) {
+					
+					scrollH = Math.ceil (offsetX);
+					
+				} else {
+					
+					scrollH = 0;
+					
+				}
 				
 			} else {
 				
-				scrollH = 0;
+				var currentNumLines = __textEngine.numLines;
+				__layoutDirty = true;
+				__updateLayout ();
+				
+				if (currentNumLines != __textEngine.numLines) {
+					
+					var lineIndex = getLineIndexOfChar (caretIndex);
+					var lineScrollV = lineIndex - __textEngine.bottomScrollV + 2;
+					
+					if (lineScrollV > __textEngine.scrollV) {
+						
+						scrollV = lineScrollV;
+						
+					}
+					
+				}
 				
 			}
 			
@@ -2120,7 +2148,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			__dirty = true;
 			__layoutDirty = true;
 			__updateText (__text);
-			__updateScrollH ();
+			__updateScrollHV (__caretIndex);
 			__setRenderDirty ();
 			
 		}
@@ -2205,7 +2233,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__dirty = true;
 			__setRenderDirty ();
-			dispatchEvent(new Event(Event.SCROLL));
+			dispatchEvent (new Event (Event.SCROLL));
 			
 		}
 		
@@ -2678,6 +2706,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
 		
+		var currentCaretIndex = __caretIndex;
+		var currentNumLines = __textEngine.numLines;
+		
 		switch (key) {
 			
 			case RETURN, NUMPAD_ENTER:
@@ -2702,6 +2733,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					replaceSelectedText ("");
 					__selectionIndex = __caretIndex;
 					
+					if (type == INPUT && multiline && currentNumLines != __textEngine.numLines) {
+						
+						scrollV -= (currentNumLines - __textEngine.numLines);
+						
+					}
+					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
 				}
@@ -2718,6 +2755,12 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 					replaceSelectedText ("");
 					__selectionIndex = __caretIndex;
+					
+					if (type == INPUT && multiline && currentNumLines != __textEngine.numLines && __textEngine.scrollV > __textEngine.maxScrollV) {
+						
+						scrollV = __textEngine.maxScrollV;
+						
+					}
 					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
@@ -2816,6 +2859,18 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 				}
 				
+				if (type == INPUT && multiline) {
+					
+					var currentLineIndex = getLineIndexOfChar (currentCaretIndex);
+					var newLineIndex = getLineIndexOfChar (__caretIndex);
+					if (newLineIndex != currentLineIndex && newLineIndex >= __textEngine.scrollV + __textEngine.bottomScrollV - 1) {
+						
+						scrollV += (newLineIndex - currentLineIndex);
+						
+					}
+					
+				}
+				
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
@@ -2839,6 +2894,18 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					}
 					
 					__selectionIndex = __caretIndex;
+					
+				}
+				
+				if (type == INPUT && multiline) {
+					
+					var currentLineIndex = getLineIndexOfChar (currentCaretIndex);
+					var newLineIndex = getLineIndexOfChar (__caretIndex);
+					if (newLineIndex != currentLineIndex && newLineIndex < __textEngine.scrollV - 1) {
+						
+						scrollV += (newLineIndex - currentLineIndex);
+						
+					}
 					
 				}
 				
