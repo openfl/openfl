@@ -96,7 +96,7 @@ class AbstractView extends DisplayObject {
 		
 		renderSession.blendModeManager.setBlendMode (__worldBlendMode);
 		renderSession.maskManager.pushObject (this);
-		renderSession.shaderManager.updateShader (null);
+		renderSession.shaderManager.setShader (null);
 		
 		__renderEvent.type = AbstractViewEvent.RENDER_OPENGL;
 		__renderEvent.allowSmoothing = renderSession.allowSmoothing;
