@@ -4,7 +4,7 @@ package openfl.display;
 import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
-import openfl.events.AbstractRenderEvent;
+import openfl.events.AbstractViewEvent;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
@@ -12,17 +12,17 @@ import openfl.geom.Matrix;
 @:access(openfl.geom.ColorTransform)
 
 
-class AbstractRender extends DisplayObject {
+class AbstractView extends DisplayObject {
 	
 	
-	private var __renderEvent:AbstractRenderEvent;
+	private var __renderEvent:AbstractViewEvent;
 	
 	
 	public function new () {
 		
 		super ();
 		
-		__renderEvent = new AbstractRenderEvent (null);
+		__renderEvent = new AbstractViewEvent (null);
 		
 	}
 	
@@ -47,7 +47,7 @@ class AbstractRender extends DisplayObject {
 		renderSession.blendModeManager.setBlendMode (__worldBlendMode);
 		renderSession.maskManager.pushObject (this);
 		
-		__renderEvent.type = AbstractRenderEvent.RENDER_CAIRO;
+		__renderEvent.type = AbstractViewEvent.RENDER_CAIRO;
 		__renderEvent.allowSmoothing = renderSession.allowSmoothing;
 		__renderEvent.cairo = renderSession.cairo;
 		__renderEvent.renderTransform.copyFrom (__renderTransform);
@@ -72,7 +72,7 @@ class AbstractRender extends DisplayObject {
 		renderSession.blendModeManager.setBlendMode (__worldBlendMode);
 		renderSession.maskManager.pushObject (this);
 		
-		__renderEvent.type = AbstractRenderEvent.RENDER_CANVAS;
+		__renderEvent.type = AbstractViewEvent.RENDER_CANVAS;
 		__renderEvent.allowSmoothing = renderSession.allowSmoothing;
 		__renderEvent.context = renderSession.context;
 		__renderEvent.renderTransform.copyFrom (__renderTransform);
@@ -98,7 +98,7 @@ class AbstractRender extends DisplayObject {
 		renderSession.maskManager.pushObject (this);
 		renderSession.shaderManager.updateShader (null);
 		
-		__renderEvent.type = AbstractRenderEvent.RENDER_OPENGL;
+		__renderEvent.type = AbstractViewEvent.RENDER_OPENGL;
 		__renderEvent.allowSmoothing = renderSession.allowSmoothing;
 		__renderEvent.gl = renderSession.gl;
 		__renderEvent.renderTransform.copyFrom (__renderTransform);

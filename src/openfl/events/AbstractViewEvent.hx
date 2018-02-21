@@ -18,7 +18,7 @@ import openfl.geom.Matrix;
 #end
 
 
-class AbstractRenderEvent extends Event {
+class AbstractViewEvent extends Event {
 	
 	
 	public static inline var RENDER_CAIRO = "renderCairo";
@@ -51,7 +51,7 @@ class AbstractRenderEvent extends Event {
 	
 	public override function clone ():Event {
 		
-		var event = new AbstractRenderEvent (type, bubbles, cancelable);
+		var event = new AbstractViewEvent (type, bubbles, cancelable);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
@@ -86,7 +86,7 @@ class AbstractRenderEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return __formatToString ("AbstractRenderEvent",  [ "type", "bubbles", "cancelable" ]);
+		return __formatToString ("AbstractViewEvent",  [ "type", "bubbles", "cancelable" ]);
 		
 	}
 	
