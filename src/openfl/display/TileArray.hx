@@ -3,6 +3,7 @@ package openfl.display;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -47,6 +48,7 @@ import openfl.Vector;
 	private var __bufferContext:GLRenderContext;
 	private var __bufferDirty:Bool;
 	private var __bufferData:Float32Array;
+	private var __bufferLength:Int;
 	private var __bufferSkipped:Vector<Bool>;
 	private var __cacheAlpha:Float;
 	private var __cacheDefaultTileset:Tileset;
@@ -361,7 +363,17 @@ import openfl.Vector;
 				
 			}
 			
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.DYNAMIC_DRAW);
+			if (__bufferLength >= __bufferData.byteLength) {
+				
+				(gl:WebGLContext).bufferSubData (gl.ARRAY_BUFFER, 0, __bufferData);
+				
+			} else {
+				
+				(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, __bufferData, gl.DYNAMIC_DRAW);
+				
+			}
+			
+			__bufferLength = __bufferData.byteLength;
 			
 			__cacheAlpha = worldAlpha;
 			__cacheDefaultTileset = defaultTileset;
