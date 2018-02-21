@@ -24,7 +24,7 @@ jobs:
          command: haxelib run lime rebuild tools -nocffi
      - run:
          name: Generate MUnit Test Runner
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run munit gen
      - persist_to_workspace:
          root: /
@@ -55,7 +55,7 @@ jobs:
          command: haxelib run lime rebuild tools -nocffi
      - run:
          name: Generate MUnit Test Runner
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run munit gen
      - persist_to_workspace:
          root: /
@@ -67,7 +67,7 @@ jobs:
   HTML5 (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -81,7 +81,7 @@ jobs:
   HTML5 (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -96,7 +96,7 @@ jobs:
   Neko (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -119,7 +119,7 @@ jobs:
   Neko (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -140,7 +140,7 @@ jobs:
   C++ (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -160,7 +160,7 @@ jobs:
   C++ (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -178,7 +178,7 @@ jobs:
   Flash (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -192,7 +192,7 @@ jobs:
   Flash (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    working_directory: /workspace/openfl/tests/unit
+    working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
          at: /
@@ -207,7 +207,7 @@ jobs:
   Documentation (Haxe 3.2.1):
     docker:
      - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/docs
+    working_directory: /workspace/openfl/scripts
     steps:
      - attach_workspace:
          at: /
@@ -219,12 +219,12 @@ jobs:
          command: haxelib dev dox ~/dox
      - run:
          name: Generate Documentation
-         command: haxe build.hxml
+         command: haxe docs.hxml
   
   Documentation (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.4
-    working_directory: /workspace/openfl/docs
+    working_directory: /workspace/openfl/scripts
     steps:
      - attach_workspace:
          at: /
@@ -236,7 +236,24 @@ jobs:
          command: haxelib dev dox ~/dox
      - run:
          name: Generate Documentation
-         command: haxe build.hxml
+         command: haxe docs.hxml
+  
+  
+  NPM:
+    docker:
+     - image: openfl/ci-openfl-js:0.0.2
+    working_directory: /workspace/openfl
+    steps:
+     - checkout
+     - run:
+         name: Install Dependencies
+         command: npm install
+     - run:
+         name: Build Library
+         command: npm run build
+     - run:
+         name: Run Tests
+         command: npm run test
   
   
   # This is used for local tests, it assumes you already have a working environment
@@ -264,16 +281,16 @@ jobs:
          command: haxelib run lime rebuild tools -nocffi
      - run:
          name: Generate MUnit Test Runner
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run munit gen
      # HTML5
      - run:
          name: Build Tests
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run lime build html5 -nocffi
      - run:
          name: Run Tests
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run munit test -browser phantomjs -nocffi
      # Neko
      - run:
@@ -281,11 +298,11 @@ jobs:
          command: haxelib run lime rebuild linux -release -64 -nocffi
      - run:
          name: Run Tests (CFFI-enabled)
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run lime build neko -nocffi
      - run:
          name: Run Tests (CFFI-disabled)
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run lime build neko -Ddisable-cffi -nocffi
      # Linux
      - run:
@@ -293,16 +310,16 @@ jobs:
          command: haxelib run lime rebuild linux -release -64 -nocffi
      - run:
          name: Run Tests
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run lime test linux --window-hardware=false
      # Flash
      - run:
          name: Build Tests
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run lime build flash -nocffi
      - run:
          name: Run Tests
-         working_directory: tests/unit
+         working_directory: test/unit
          command: haxelib run munit test -as3 -norun -nocffi
      # Documentation
      - run:
@@ -319,6 +336,10 @@ jobs:
 
 workflows:
   version: 2
+  
+  NPM Tests:
+    jobs:
+     - NPM
   
   Tests (Haxe 3.2.1):
     jobs:

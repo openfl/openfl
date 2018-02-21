@@ -1,3 +1,92 @@
+7.1.1 (02/09/2018)
+------------------
+
+* Improved the rendering of the `TextField` input cursor on HTML5
+* Fixed support for `openfl.Vector` when only part of the application is CommonJS
+* Fixed a possible crash if no native window is able to be initialized
+* Fixed a regression in "swf-loader" support within the NPM tools
+* Fixed a minor "unused variable" warning when building NPM tools
+
+
+7.1.0 (02/07/2018)
+------------------
+
+* Updated Lime to 6.1.*
+* Added support for `openfl.Vector` on NPM releases
+* Improved `TextField` input to work when `textField.selectable == false`
+* Improved `UncaughtErrorEvents` to catch closer to the triggered error
+* Improved the return value of `Capabilities.os`
+* Improved the returned value in `Capabilities.cpuArchitecture` on a simulator
+* Improved using `byteArray.length` on NPM releases
+* Improved support for old Adreno GPUs and certain Tegra GPUs
+* Improved GL depth buffer for `Stage3D` to be enabled by default on NPM builds
+* Fixed `ColorMatrixFilter` when using certain dark color values
+* Fixed adding mask children when using SWF-based `MovieClip` instances
+* Fixed the frequency of `Event.ENTER_FRAME` events on multiple HTML embeds
+* Fixed the use of `buttonMode` and custom mouse cursors on multiple embeds
+* Fixed `Capabilities.screenResolutionX`/`screenResolutionY` to be scaled
+* Fixed `stage.focus` when changing focus calls `stage.focus` again
+* Fixed minor type definition issues for TypeScript and NPM-based Haxe code
+* Fixed clearing graphics in `shape.graphics` on canvas renderer
+* Fixed the `x` and `y` of certain kinds of SWF-based `TextField` instances
+* Fixed support for `Context3D.setRenderToTexture` when GLESv3
+* Fixed the metrics of `TextField` objects with empty text
+
+
+7.0.0 (01/15/2018)
+------------------
+
+* Updated Lime to 6.0.*
+* Added initial release of OpenFL for NPM
+* Added TypeScript, ES6 JavaScript and ES5 JavaScript language support
+* Added `new Stage` support on NPM builds to initiate content
+* Added `sendToURL`, `navigateToURL` and `openfl.utils.*` top-level functions
+* Added support for using `URLVariables` with `navigateToURL`
+* Added `Font.loadFromBytes`, `Font.loadFromFile` and `Font.loadFromName`
+* Added initial implemention of `openfl.utils.AssetManifest`
+* Improved performance in GL `BitmapData` upload and changes to bitmap filters
+* Improved SWF processing tools to work with Node.js (used in `swf-loader`)
+* Improved support for consuming OpenFL as a JavaScript library
+* Improved handling of default HTTP timeout if `-Dlime-default-timeout` is set
+* Improved `tilemap.removeTile` ignore `null` tiles
+* Fixed support for use of many OpenFL classes and methods on Node.js
+* Fixed multi-line `TextField` to render cursor on correct line
+* Fixed `AssetLibrary.fromManifest` to up-cast if the result is a Lime library
+* Fixed `setTextFormat` so it does not remove links, if they exist
+* Fixed hit-testing objects when `!sprite.mouseEnabled` with children
+* Fixed support for support DOM rendering at runtime (no `-Ddom` required)
+* Fixed issue where setting `colorTransform` would not update properly
+
+
+6.5.3 (12/05/2017)
+------------------
+
+* Fixed a regression that caused an immediate runtime error on Flash Player
+
+
+6.5.2 (12/05/2017)
+------------------
+
+* Fixed issue where run script required Lime CFFI before Lime was installed
+* Fixed invalidation of `cacheAsBitmap` when `graphics` is dirty
+* Fixed a static initialization order issue in Canvas `graphics`
+* Fixed circular dependency issues in anticipation of ES5 module support
+
+
+6.5.1 (11/29/2017)
+------------------
+
+* Updated Lime to 5.9.*
+* Added support for improved CSS font embedding in Lime 5.9.0
+* Fixed support for rendering multiple masking levels in OpenGL masks
+* Fixed some issues with rendering masks with `cacheAsBitmap`
+* Fixed a possible crash in `TextField` and in `Loader`
+* Fixed the height offset when using `context3D.drawToBitmapData`
+* Fixed OpenGL rendering for masks with a different parent than the masked object
+* Fixed `ColorMatrixFilter` so that values are constrained between 0 and 255
+* Fixed a crash error on `textField.getCharBoundaries` when the char is not available
+
+
 6.5.0 (11/10/2017)
 ------------------
 

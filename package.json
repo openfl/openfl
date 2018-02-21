@@ -1,0 +1,105 @@
+{
+  "name": "openfl",
+  "version": "7.1.1",
+  "description": "A fast, productive library for 2D cross-platform development.",
+  "keywords": [
+    "openfl",
+    "openfl.js",
+    "openfl-js",
+    "game",
+    "animation",
+    "sound",
+    "flash",
+    "graphics"
+  ],
+  "homepage": "http://www.openfl.org",
+  "bugs": {
+    "url": "https://github.com/openfl/openfl/issues"
+  },
+  "license": "MIT",
+  "contributors": [
+    "Joshua Granick",
+    "Other OpenFL contributors"
+  ],
+  "main": "dist/openfl.min.js",
+  "bin": {
+    "openfljs": "bin/openfl.js"
+  },
+  "module": "lib/openfl/index.js",
+  "files": [
+    "bin",
+    "dist",
+    "docs",
+    "lib",
+    "scripts",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openfl/openfl.git"
+  },
+  "scripts": {
+    "build": "npm run build-lib && npm run build-dist && npm run build-tools && npm run build-docs",
+    "build-dist": "npm run build-dist:dev && npm run build-dist:prod",
+    "build-dist:dev": "webpack --config webpack.dev.js",
+    "build-dist:prod": "webpack --config webpack.prod.js",
+    "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint openfl --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,test}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
+    "build-lib": "cd scripts && haxe build.hxml",
+    "build-tools": "cd scripts && haxe tools-npm.hxml",
+    "build-test-es5": "cd test/es5 && webpack",
+    "build-test-es6": "cd test/es6 && webpack",
+    "build-test-haxe": "cd test/haxe && haxe build.hxml && webpack",
+    "build-test-typescript": "cd test/typescript && tsc -p tsconfig.json && webpack",
+    "dev-link": "npm link lime && npm link hxgenjs && npm link hxnodejs && npm link format",
+    "prepublishOnly": "npm run build",
+    "serve": "http-server -c-1 --cors",
+    "test": "npm run build-test-es5 && npm run build-test-es6 && npm run build-test-haxe && npm run build-test-typescript && mocha-chrome test/index.html --old-and-busted",
+    "test-es5": "npm run build-test-es5 && mocha-chrome test/es5/index.html --old-and-busted",
+    "test-es6": "npm run build-test-es6 && mocha-chrome test/es6/index.html --old-and-busted",
+    "test-haxe": "npm run build-test-haxe && mocha-chrome test/haxe/index.html --old-and-busted",
+    "test-typescript": "npm run build-test-typescript && mocha-chrome test/typescript/index.html --old-and-busted",
+    "docker-build": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run build; chmod -R 777 dist; chmod -R 777 lib/_gen\"",
+    "docker-build-dist": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run build-dist; chmod -R 777 dist\"",
+    "docker-build-lib": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run build-lib; chmod -R 777 lib/_gen\"",
+    "docker-build-test-es5": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run build-test-es5 -s; chmod -R 777 test/es5\"",
+    "docker-build-test-es6": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run build-test-es6 -s; chmod -R 777 test/es6\"",
+    "docker-build-test-haxe": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run build-test-haxe -s; chmod -R 777 test/haxe\"",
+    "docker-build-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run build-test-typescript -s; chmod -R 777 test/typescript\"",
+    "docker-test": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test -s; chmod -R 777 test\"",
+    "docker-test-es5": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-es5 -s\"",
+    "docker-test-es6": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-es6 -s\"",
+    "docker-test-haxe": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-haxe -s\"",
+    "docker-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-typescript -s\"",
+    "start": "npm run watch",
+    "watch": "watch \"echo watch: Compiling... && npm run build-lib -s && echo watch: Compiled successfully.\" ./src ./scripts ./node_modules/lime/lime"
+  },
+  "config": {
+    "haxe": "3.4.4",
+    "haxelib_version": "3.2.0-rc.3"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.99",
+    "@types/mocha": "^2.2.46",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-stage-1": "^6.24.1",
+    "chai": "^4.1.2",
+    "format": "jgranick/format",
+    "haxe": "^4.1.0",
+    "hxgenjs": "kevinresol/hxgenjs",
+    "hxnodejs": "jgranick/hxnodejs",
+    "lime": "openfl/lime#develop",
+    "mocha": "^4.0.1",
+    "mocha-chrome": "^1.0.2",
+    "typedoc": "^0.9.0",
+    "typescript": "^2.7.1",
+    "uglifyjs-webpack-plugin": "^1.1.6",
+    "watch": "^1.0.2",
+    "webpack": "^3.10.0",
+    "webpack-merge": "^4.1.1"
+  },
+  "dependencies": {
+    "howler": "^2.0.6",
+    "pako": "^1.0.6"
+  }
+}
