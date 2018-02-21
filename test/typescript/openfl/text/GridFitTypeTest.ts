@@ -7,7 +7,7 @@ describe ("TypeScript | GridFitType", function () {
 	
 	it ("test", function () {
 		
-		switch (+GridFitType.NONE) {
+		switch (""+GridFitType.NONE) {
 			
 			case GridFitType.NONE:
 			case GridFitType.PIXEL:

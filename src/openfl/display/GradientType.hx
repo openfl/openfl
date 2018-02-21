@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract GradientType(Null<Int>) {
@@ -31,3 +31,17 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract GradientType(String) from String to String {
+	
+	public var LINEAR = "linear";
+	public var RADIAL = "radial";
+	
+}
+
+
+#end

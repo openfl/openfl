@@ -11,12 +11,12 @@ declare namespace openfl.display {
 		/**
 		 * Value used to specify a linear gradient fill.
 		 */
-		LINEAR = 0,
+		LINEAR = "linear",
 		
 		/**
 		 * Value used to specify a radial gradient fill.
 		 */
-		RADIAL = 1
+		RADIAL = "radial"
 		
 	}
 	

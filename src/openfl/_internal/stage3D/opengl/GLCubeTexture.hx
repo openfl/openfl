@@ -2,6 +2,7 @@ package openfl._internal.stage3D.opengl;
 
 
 import lime.utils.ArrayBufferView;
+import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.RenderSession;
@@ -11,6 +12,7 @@ import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -59,9 +61,33 @@ class GLCubeTexture {
 			var target = __sideToTarget (gl, side);
 			
 			cubeTexture.__format = format;
+			cubeTexture.__internalFormat = format;
 			
-			gl.compressedTexImage2D (target, level, cubeTexture.__internalFormat, width, height, 0, blockLength, bytes);
-			GLUtils.CheckGLError ();
+			if (alpha && gpuFormat == 2) {
+				
+				var size = Std.int (blockLength / 2);
+				
+				gl.compressedTexImage2D (target, level, cubeTexture.__internalFormat, width, height, 0, size, bytes);
+				GLUtils.CheckGLError ();
+				
+				var alphaTexture = new CubeTexture (cubeTexture.__context, cubeTexture.__size, Context3DTextureFormat.COMPRESSED, cubeTexture.__optimizeForRenderToTexture, cubeTexture.__streamingLevels);
+				alphaTexture.__format = format;
+				alphaTexture.__internalFormat = format;
+				
+				gl.bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
+				GLUtils.CheckGLError ();
+				
+				gl.compressedTexImage2D (target, level, alphaTexture.__internalFormat, width, height, 0, size, new BytePointer (bytes, size));
+				GLUtils.CheckGLError ();
+				
+				cubeTexture.__alphaTexture = alphaTexture;
+				
+			} else {
+				
+				gl.compressedTexImage2D (target, level, cubeTexture.__internalFormat, width, height, 0, blockLength, bytes);
+				GLUtils.CheckGLError ();
+				
+			}
 			
 			// __trackCompressedMemoryUsage (blockLength);
 			

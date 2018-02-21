@@ -594,6 +594,8 @@ class CanvasGraphics {
 		windingRule = CanvasWindingRule.EVENODD;
 		setSmoothing (true);
 		
+		var hasPath:Bool = false;
+		
 		var data = new DrawCommandReader (commands);
 		
 		var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym, r, g, b;
@@ -606,22 +608,26 @@ class CanvasGraphics {
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo ();
+					hasPath = true;
 					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
+					hasPath = true;
 					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case DRAW_CIRCLE:
 					
 					var c = data.readDrawCircle ();
+					hasPath = true;
 					context.moveTo (c.x - offsetX + c.radius, c.y - offsetY);
 					context.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2, true);
 				
 				case DRAW_ELLIPSE:
 					
 					var c = data.readDrawEllipse ();
+					hasPath = true;
 					x = c.x;
 					y = c.y;
 					width = c.width;
@@ -645,11 +651,13 @@ class CanvasGraphics {
 				case DRAW_ROUND_RECT:
 					
 					var c = data.readDrawRoundRect ();
+					hasPath = true;
 					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				
 				case LINE_TO:
 					
 					var c = data.readLineTo ();
+					hasPath = true;
 					context.lineTo (c.x - offsetX, c.y - offsetY);
 					
 					positionX = c.x;
@@ -814,9 +822,6 @@ class CanvasGraphics {
 				
 				case DRAW_TRIANGLES:
 					
-					// endFill ();
-					// endStroke ();
-					
 					var c = data.readDrawTriangles ();
 					
 					var v = c.vertices;
@@ -827,7 +832,6 @@ class CanvasGraphics {
 					
 					if (colorFill && uvt != null) {
 						
-						// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
 						break;
 						
 					}
@@ -933,16 +937,7 @@ class CanvasGraphics {
 							i += 3;
 							continue;
 							
-						} 
-						
-						context.save ();
-						context.beginPath ();
-						context.moveTo (x1, y1);
-						context.lineTo (x2, y2);
-						context.lineTo (x3, y3);
-						context.closePath ();
-						
-						context.clip ();
+						}
 						
 						uvx1 = uvt[iax] * pattern.width;
 						uvx2 = uvt[ibx] * pattern.width;
@@ -956,9 +951,18 @@ class CanvasGraphics {
 						if (denom == 0) {
 							
 							i += 3;
+							context.restore ();
 							continue;
 							
 						}
+						
+						context.save ();
+						context.beginPath ();
+						context.moveTo (x1, y1);
+						context.lineTo (x2, y2);
+						context.lineTo (x3, y3);
+						context.closePath ();
+						context.clip ();
 						
 						t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
 						t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
@@ -1033,6 +1037,7 @@ class CanvasGraphics {
 					
 					if (!optimizationUsed) {
 						
+						hasPath = true;
 						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
 						
 					}
@@ -1058,43 +1063,47 @@ class CanvasGraphics {
 		
 		data.destroy ();
 		
-		if (stroke && hasStroke) {
+		if (hasPath) {
 			
-			if (hasFill && closeGap) {
+			if (stroke && hasStroke) {
 				
-				context.lineTo (startX - offsetX, startY - offsetY);
-				closePath (false);
-				
-			} else if (closeGap && positionX == startX && positionY == startY) {
-				
-				closePath (false);
-				
-			}
-			
-			if (!hitTesting) context.stroke ();
-			
-		}
-		
-		if (!stroke) {
-			
-			if (hasFill || bitmapFill != null) {
-				
-				context.translate (-bounds.x, -bounds.y);
-				
-				if (pendingMatrix != null) {
+				if (hasFill && closeGap) {
 					
-					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill (windingRule);
-					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
+					context.lineTo (startX - offsetX, startY - offsetY);
+					closePath (false);
 					
-				} else {
+				} else if (closeGap && positionX == startX && positionY == startY) {
 					
-					if (!hitTesting) context.fill (windingRule);
+					closePath (false);
 					
 				}
 				
-				context.translate (bounds.x, bounds.y);
-				context.closePath ();
+				if (!hitTesting) context.stroke ();
+				
+			}
+			
+			if (!stroke) {
+				
+				if (hasFill || bitmapFill != null) {
+					
+					context.translate (-bounds.x, -bounds.y);
+					
+					if (pendingMatrix != null) {
+						
+						context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
+						if (!hitTesting) context.fill (windingRule);
+						context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
+						
+					} else {
+						
+						if (!hitTesting) context.fill (windingRule);
+						
+					}
+					
+					context.translate (bounds.x, bounds.y);
+					context.closePath ();
+					
+				}
 				
 			}
 			

@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !openfljs
 
 
 @:enum abstract TouchscreenType(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.system;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract TouchscreenType(String) from String to String {
+	
+	public var FINGER = "finger";
+	public var NONE = "none";
+	public var STYLUS = "stylus";
+	
+}
+
+
+#end

@@ -3,6 +3,7 @@ package openfl.display; #if (display || !flash)
 
 import lime.app.Future;
 import lime.graphics.Image;
+import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -86,7 +87,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * 
 	 * In Flash Player, this property is always `null`.
 	 */
-	public var image (get, null):Image;
+	public var image (default, null):Image;
 	
 	/**
 	 * Defines whether the bitmap image is readable. Hardware-only bitmap images
@@ -446,6 +447,10 @@ extern class BitmapData implements IBitmapDrawable {
 	
 	public static function fromFile (path:String):BitmapData;
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData;
+	
+	#if !flash
+	public static function fromTexture (texture:TextureBase):BitmapData;
+	#end
 	
 	
 	/**

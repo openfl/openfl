@@ -7,7 +7,7 @@ describe ("ES6 | JointStyle", function () {
 	
 	it ("test", function () {
 		
-		switch (+JointStyle.ROUND) {
+		switch (""+JointStyle.ROUND) {
 			
 			case JointStyle.BEVEL:
 			case JointStyle.MITER:

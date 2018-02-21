@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract JointStyle(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract JointStyle(String) from String to String {
+	
+	public var BEVEL = "bevel";
+	public var MITER = "miter";
+	public var ROUND = "round";
+	
+}
+
+
+#end

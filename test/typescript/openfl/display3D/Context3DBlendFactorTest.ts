@@ -7,7 +7,7 @@ describe ("TypeScript | Context3DBlendFactor", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DBlendFactor.DESTINATION_ALPHA) {
+		switch (""+Context3DBlendFactor.DESTINATION_ALPHA) {
 			
 			case Context3DBlendFactor.DESTINATION_ALPHA:
 			case Context3DBlendFactor.DESTINATION_COLOR:

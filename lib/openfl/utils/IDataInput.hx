@@ -12,13 +12,13 @@ extern interface IDataInput {
 	#if (flash && !display)
 	public var bytesAvailable (default, null):UInt;
 	#else
-	public var bytesAvailable (default, never):UInt;
+	public var bytesAvailable (get, never):UInt;
 	#end
 	
 	#if (flash && !display)
 	public var endian:Endian;
 	#else
-	public var endian:Endian;
+	public var endian (get, set):Endian;
 	#end
 	
 	public var objectEncoding:UInt;

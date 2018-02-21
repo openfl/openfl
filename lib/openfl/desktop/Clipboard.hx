@@ -11,7 +11,7 @@ extern class Clipboard {
 	
 	public static var generalClipboard (default, null):Clipboard;
 	
-	public var formats (default, never):Array<ClipboardFormats>;
+	public var formats (get, never):Array<ClipboardFormats>;
 	
 	public function clear ():Void;
 	public function clearData (format:ClipboardFormats):Void;

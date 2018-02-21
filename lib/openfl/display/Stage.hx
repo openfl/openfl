@@ -172,7 +172,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	/**
 	 * The window background color.
 	 */
-	public var color:UInt;
+	public var color (get, set):UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
@@ -275,7 +275,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       `allowFullScreen` attribute is not set to
 	 *                       `true` throws a security error.
 	 */
-	public var displayState:StageDisplayState;
+	public var displayState (get, set):StageDisplayState;
 	
 	public var element (default, never):js.html.Element;
 	
@@ -286,7 +286,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * 
 	 * @throws Error Throws an error if focus cannot be set to the target.
 	 */
-	public var focus:InteractiveObject;
+	public var focus (get, set):InteractiveObject;
 	
 	/**
 	 * Gets and sets the frame rate of the stage. The frame rate is defined as
@@ -316,15 +316,15 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var frameRate:Float;
+	public var frameRate (get, set):Float;
 	
-	public var fullScreenHeight (default, never):UInt;
+	public var fullScreenHeight (get, never):UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
 	#end
 	
-	public var fullScreenWidth (default, never):UInt;
+	public var fullScreenWidth (get, never):UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;

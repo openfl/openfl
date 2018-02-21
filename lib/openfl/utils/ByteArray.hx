@@ -33,13 +33,16 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * read methods each time you access a ByteArray object to ensure that you
 	 * are reading valid data.
 	 */
-	public var bytesAvailable (default, never):UInt;
+	public var bytesAvailable (get, never):UInt;
+	@:noCompletion private function get_bytesAvailable ():UInt;
 	
 	/**
 	 * Changes or reads the byte order for the data; either
 	 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 	 */
-	public var endian:Endian;
+	public var endian (get, set):Endian;
+	@:noCompletion private function get_endian ():Endian;
+	@:noCompletion private function set_endian (value:Endian):Endian;
 	
 	/**
 	 * The length of the ByteArray object, in bytes.

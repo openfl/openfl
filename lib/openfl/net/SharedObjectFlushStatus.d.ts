@@ -5,13 +5,13 @@ declare namespace openfl.net {
 		/**
 		 * Indicates that the flush completed successfully.
 		 */
-		FLUSHED = 0,
+		FLUSHED = "flushed",
 		
 		/**
 		 * Indicates that the user is being prompted to increase disk space for the
 		 * shared object before the flush can occur.
 		 */
-		PENDING = 1
+		PENDING = "pending"
 		
 	}
 	

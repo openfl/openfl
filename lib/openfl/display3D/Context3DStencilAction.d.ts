@@ -2,14 +2,14 @@ declare namespace openfl.display3D {
 	
 	export enum Context3DStencilAction {
 		
-		DECREMENT_SATURATE = 0,
-		DECREMENT_WRAP = 1,
-		INCREMENT_SATURATE = 2,
-		INCREMENT_WRAP = 3,
-		INVERT = 4,
-		KEEP = 5,
-		SET = 6,
-		ZERO = 7
+		DECREMENT_SATURATE = "decrementSaturate",
+		DECREMENT_WRAP = "decrementWrap",
+		INCREMENT_SATURATE = "incrementSaturate",
+		INCREMENT_WRAP = "incrementWrap",
+		INVERT = "invert",
+		KEEP = "keep",
+		SET = "set",
+		ZERO = "zero"
 		
 	}
 	

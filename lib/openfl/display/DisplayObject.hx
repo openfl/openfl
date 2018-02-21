@@ -153,7 +153,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * 1. Display objects with `alpha` set to 0 _are_ active,
 	 * even though they are invisible.
 	 */
-	public var alpha:Float;
+	public var alpha (get, set):Float;
 	
 	/**
 	 * A value from the BlendMode class that specifies which blend mode to use. A
@@ -179,7 +179,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * the table show `blendMode` values applied to a circular display
 	 * object(2) superimposed on another display object(1).
 	 */
-	public var blendMode:BlendMode;
+	public var blendMode (default, set):BlendMode;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var blendShader (null, default):Shader;
@@ -236,7 +236,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * performance increases when the movie clip is translated(when its _x_
 	 * and _y_ position is changed).
 	 */
-	public var cacheAsBitmap:Bool;
+	public var cacheAsBitmap (get, set):Bool;
 	
 	/**
 	 * An indexed array that contains each filter object currently associated
@@ -313,7 +313,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 *                       See the `ShaderInput.input` property for
 	 *                       more information.
 	 */
-	public var filters:Array<BitmapFilter>;
+	public var filters (get, set):Array<BitmapFilter>;
 	
 	/**
 	 * Indicates the height of the display object, in pixels. The height is
@@ -325,7 +325,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * content(such as an empty sprite) has a height of 0, even if you try to
 	 * set `height` to a different value.
 	 */
-	public var height:Float;
+	public var height (get, set):Float;
 	
 	/**
 	 * Returns a LoaderInfo object containing information about loading the file
@@ -340,7 +340,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `this.root.loaderInfo.addEventListener(Event.COMPLETE,
 	 * func)`.
 	 */
-	public var loaderInfo (default, never):LoaderInfo;
+	public var loaderInfo (get, never):LoaderInfo;
 	
 	/**
 	 * The calling display object is masked by the specified `mask`
@@ -373,7 +373,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * first object, and that object's `mask` property becomes
 	 * `null`.
 	 */
-	public var mask:DisplayObject;
+	public var mask (get, set):DisplayObject;
 	
 	/**
 	 * Indicates the x coordinate of the mouse or user input device position, in
@@ -382,7 +382,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * **Note**: For a DisplayObject that has been rotated, the returned x
 	 * coordinate will reflect the non-rotated object.
 	 */
-	public var mouseX (default, never):Float;
+	public var mouseX (get, never):Float;
 	
 	/**
 	 * Indicates the y coordinate of the mouse or user input device position, in
@@ -391,7 +391,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * **Note**: For a DisplayObject that has been rotated, the returned y
 	 * coordinate will reflect the non-rotated object.
 	 */
-	public var mouseY (default, never):Float;
+	public var mouseY (get, never):Float;
 	
 	/**
 	 * Indicates the instance name of the DisplayObject. The object can be
@@ -403,7 +403,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 *                               on an object that was placed on the timeline
 	 *                               in the Flash authoring tool.
 	 */
-	public var name:String;
+	public var name (get, set):String;
 	
 	/**
 	 * Specifies whether the display object is opaque with a certain background
@@ -473,7 +473,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * as a child of a display object for which the `root` property is
 	 * set.
 	 */
-	public var root (default, never):DisplayObject;
+	public var root (get, never):DisplayObject;
 	
 	/**
 	 * Indicates the rotation of the DisplayObject instance, in degrees, from its
@@ -483,7 +483,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * the range. For example, the statement `my_video.rotation = 450`
 	 * is the same as ` my_video.rotation = 90`.
 	 */
-	public var rotation:Float;
+	public var rotation (get, set):Float;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
@@ -557,7 +557,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * Scaling the local coordinate system changes the `x` and
 	 * `y` property values, which are defined in whole pixels. 
 	 */
-	public var scaleX:Float;
+	public var scaleX (get, set):Float;
 	
 	/**
 	 * Indicates the vertical scale(percentage) of an object as applied from the
@@ -567,7 +567,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * Scaling the local coordinate system changes the `x` and
 	 * `y` property values, which are defined in whole pixels. 
 	 */
-	public var scaleY:Float;
+	public var scaleY (get, set):Float;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var scaleZ:Float;
@@ -595,7 +595,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * 90° and you scroll it left and right, the display object actually scrolls
 	 * up and down.
 	 */
-	public var scrollRect:Rectangle;
+	public var scrollRect (get, set):Rectangle;
 	
 	/**
 	 * The Stage of the display object. A Flash runtime application has only one
@@ -647,14 +647,14 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * Note that AIR for TV devices use hardware acceleration, if it is
 	 * available, for color transforms.
 	 */
-	public var transform:Transform;
+	public var transform (get, set):Transform;
 	
 	/**
 	 * Whether or not the display object is visible. Display objects that are not
 	 * visible are disabled. For example, if `visible=false` for an
 	 * InteractiveObject instance, it cannot be clicked.
 	 */
-	public var visible:Bool;
+	public var visible (get, set):Bool;
 	
 	/**
 	 * Indicates the width of the display object, in pixels. The width is
@@ -666,7 +666,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * content(such as an empty sprite) has a width of 0, even if you try to set
 	 * `width` to a different value.
 	 */
-	public var width:Float;
+	public var width (get, set):Float;
 	
 	/**
 	 * Indicates the _x_ coordinate of the DisplayObject instance relative
@@ -678,7 +678,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * rotated 90° counterclockwise. The object's coordinates refer to the
 	 * registration point position.
 	 */
-	public var x:Float;
+	public var x (get, set):Float;
 	
 	/**
 	 * Indicates the _y_ coordinate of the DisplayObject instance relative
@@ -690,7 +690,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * rotated 90° counterclockwise. The object's coordinates refer to the
 	 * registration point position.
 	 */
-	public var y:Float;
+	public var y (get, set):Float;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) var z:Float;

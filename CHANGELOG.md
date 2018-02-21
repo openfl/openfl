@@ -1,3 +1,15 @@
+7.1.2 (02/15/2018)
+------------------
+
+* Updated to Lime 6.2.*
+* Added support for ETC1+ETC1 compressed alpha textures in `Context3D`
+* Improved enum values on NPM builds to use `String` values
+* Improved `FileReference.save` to work on HTML5
+* Improved automatic horizontal scrolling in single-line input `TextField`
+* Fixed creation of automatic Docker builds for OpenFL releases
+* Fixed conversion from Lime `MouseCursor.RESIZE_NS` to OpenFL `MouseCursor`
+
+
 7.1.1 (02/09/2018)
 ------------------
 

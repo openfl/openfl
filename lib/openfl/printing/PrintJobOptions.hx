@@ -1,6 +1,8 @@
 package openfl.printing; #if (display || !flash)
 
 
+@:jsRequire("openfl/printing/PrintJobOptions", "default")
+
 extern class PrintJobOptions {
 	
 	

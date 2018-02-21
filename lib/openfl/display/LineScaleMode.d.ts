@@ -15,20 +15,20 @@ declare namespace openfl.display {
 		 * scaled only vertically, and the circle on the right is scaled both
 		 * vertically and horizontally.
 		 */
-		HORIZONTAL = 0,
+		HORIZONTAL = "horizontal",
 		
 		/**
 		 * With this setting used as the `scaleMode` parameter of the
 		 * `lineStyle()` method, the thickness of the line never scales.
 		 */
-		NONE = 1,
+		NONE = "none",
 		
 		/**
 		 * With this setting used as the `scaleMode` parameter of the
 		 * `lineStyle()` method, the thickness of the line always scales
 		 * when the object is scaled(the default).
 		 */
-		NORMAL = 2,
+		NORMAL = "normal",
 		
 		/**
 		 * With this setting used as the `scaleMode` parameter of the
@@ -39,7 +39,7 @@ declare namespace openfl.display {
 		 * left is scaled only horizontally, and the circle on the right is scaled
 		 * both vertically and horizontally.
 		 */
-		VERTICAL = 3
+		VERTICAL = "vertical"
 		
 	}
 	

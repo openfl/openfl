@@ -8,10 +8,16 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
 import lime.utils.Log;
+import openfl._internal.renderer.cairo.CairoBitmap;
+import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTextField;
+import openfl._internal.renderer.canvas.CanvasBitmap;
+import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
@@ -100,6 +106,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private var __cursorTimer:Timer;
 	private var __dirty:Bool;
 	private var __displayAsPassword:Bool;
+	private var __domRender:Bool;
 	private var __inputEnabled:Bool;
 	private var __isHTML:Bool;
 	private var __layoutDirty:Bool;
@@ -219,34 +226,17 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (charIndex < 0 || charIndex > __text.length - 1) return null;
 		
-		__updateLayout ();
+		var rect = new Rectangle ();
 		
-		for (group in __textEngine.layoutGroups) {
+		if (__getCharBoundaries (charIndex, rect)) {
 			
-			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
-				
-				try {
-					
-					var x = group.offsetX;
-					
-					for (i in 0...(charIndex - group.startIndex)) {
-						
-						x += group.getAdvance (i);
-						
-					}
-					
-					// TODO: Is this actually right for combining characters?
-					var lastPosition = group.getAdvance (charIndex - group.startIndex);
-					
-					return new Rectangle (x, group.offsetY, lastPosition, group.ascent + group.descent);
-					
-				} catch (e:Dynamic) {}
-				
-			}
+			return rect;
+			
+		} else {
+			
+			return null;
 			
 		}
-		
-		return null;
 		
 	}
 	
@@ -564,6 +554,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		if (i > __text.length) i = __text.length;
 		
 		setSelection (i, i);
+		
+		// TODO: Solution where this is not run twice (run inside replaceText above)
+		__updateScrollHV (__caretIndex);
 		
 	}
 	
@@ -1173,6 +1166,43 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private function __getCharBoundaries (charIndex:Int, rect:Rectangle):Bool {
+		
+		if (charIndex < 0 || charIndex > __text.length - 1) return false;
+		
+		__updateLayout ();
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
+				
+				try {
+					
+					var x = group.offsetX;
+					
+					for (i in 0...(charIndex - group.startIndex)) {
+						
+						x += group.getAdvance (i);
+						
+					}
+					
+					// TODO: Is this actually right for combining characters?
+					var lastPosition = group.getAdvance (charIndex - group.startIndex);
+					
+					rect.setTo (x, group.offsetY, lastPosition, group.ascent + group.descent);
+					return true;
+					
+				} catch (e:Dynamic) {}
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
 	private function __getCharIndexOnDifferentLine (charIndex:Int, lineIndex:Int):Int {
 		
 		if (charIndex < 0 || charIndex > __text.length) return -1;
@@ -1374,8 +1404,18 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		CairoTextField.render (this, renderSession, __worldTransform);
-		super.__renderCairo (renderSession);
+		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			CairoBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			CairoTextField.render (this, renderSession, __worldTransform);
+			CairoDisplayObject.render (this, renderSession);
+			
+		}
 		#end
 		
 	}
@@ -1409,35 +1449,47 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
-		CanvasTextField.render (this, renderSession, __worldTransform);
-		
-		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
+		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			var smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
+			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
 			
-			if (smoothingEnabled) {
+			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
-				untyped (renderSession.context).mozImageSmoothingEnabled = false;
-				//untyped (renderSession.context).webkitImageSmoothingEnabled = false;
-				untyped (renderSession.context).msImageSmoothingEnabled = false;
-				untyped (renderSession.context).imageSmoothingEnabled = false;
+				CanvasBitmap.render (__cacheBitmap, renderSession);
+				
+			} else {
+				
+				CanvasTextField.render (this, renderSession, __worldTransform);
+				
+				var smoothingEnabled = false;
+				
+				if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
+					
+					smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
+					
+					if (smoothingEnabled) {
+						
+						untyped (renderSession.context).mozImageSmoothingEnabled = false;
+						//untyped (renderSession.context).webkitImageSmoothingEnabled = false;
+						untyped (renderSession.context).msImageSmoothingEnabled = false;
+						untyped (renderSession.context).imageSmoothingEnabled = false;
+						
+					}
+					
+				}
+				
+				CanvasDisplayObject.render (this, renderSession);
+				
+				if (smoothingEnabled) {
+					
+					untyped (renderSession.context).mozImageSmoothingEnabled = true;
+					//untyped (renderSession.context).webkitImageSmoothingEnabled = true;
+					untyped (renderSession.context).msImageSmoothingEnabled = true;
+					untyped (renderSession.context).imageSmoothingEnabled = true;
+					
+				}
 				
 			}
-			
-			super.__renderCanvas (renderSession);
-			
-			if (smoothingEnabled) {
-				
-				untyped (renderSession.context).mozImageSmoothingEnabled = true;
-				//untyped (renderSession.context).webkitImageSmoothingEnabled = true;
-				untyped (renderSession.context).msImageSmoothingEnabled = true;
-				untyped (renderSession.context).imageSmoothingEnabled = true;
-				
-			}
-			
-		} else {
-			
-			super.__renderCanvas (renderSession);
 			
 		}
 		
@@ -1450,8 +1502,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		#if (js && html5)
 		
+		__domRender = true;
 		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
 		__forceCachedBitmapUpdate = false;
+		__domRender = false;
+		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
 			__renderDOMClear (renderSession);
@@ -1494,13 +1549,23 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
-		#if (js && html5)
-		CanvasTextField.render (this, renderSession, __worldTransform);
-		#elseif lime_cairo
-		CairoTextField.render (this, renderSession, __worldTransform);
-		#end
+		__updateCacheBitmap (renderSession, false);
 		
-		super.__renderGL (renderSession);
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			GLBitmap.render (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			#if (js && html5)
+			CanvasTextField.render (this, renderSession, __worldTransform);
+			#elseif lime_cairo
+			CairoTextField.render (this, renderSession, __worldTransform);
+			#end
+			
+			GLDisplayObject.render (this, renderSession);
+			
+		}
 		
 	}
 	
@@ -1583,7 +1648,9 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		if (super.__updateCacheBitmap (renderSession, force)) {
+		if (__filters == null && !__domRender) return false;
+		
+		if (super.__updateCacheBitmap (renderSession, force || __dirty)) {
 			
 			if (__cacheBitmap != null) {
 				
@@ -1656,7 +1723,31 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 				
 				if (offsetX > 0) {
 					
-					scrollH = Math.ceil (offsetX);
+					// TODO: Handle __selectionIndex on drag select?
+					// TODO: Update scrollH by one character width at a time when able
+					
+					if (__caretIndex >= text.length) {
+						
+						scrollH = Math.ceil (offsetX);
+						
+					} else {
+						
+						var caret = Rectangle.__pool.get ();
+						__getCharBoundaries (__caretIndex, caret);
+						
+						if (caret.x < scrollH) {
+							
+							scrollH = Math.floor (caret.x - 2);
+							
+						} else if (caret.x > scrollH + __textEngine.width) {
+							
+							scrollH = Math.ceil (caret.x - __textEngine.width - 2);
+							
+						}
+						
+						Rectangle.__pool.release (caret);
+						
+					}
 					
 				} else {
 					
@@ -2791,6 +2882,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 				}
 				
+				__updateScrollHV (__caretIndex);
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
@@ -2826,6 +2918,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 					
 				}
 				
+				__updateScrollHV (__caretIndex);
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			

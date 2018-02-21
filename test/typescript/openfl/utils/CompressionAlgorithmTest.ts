@@ -7,7 +7,7 @@ describe ("TypeScript | CompressionAlgorithm", function () {
 	
 	it ("test", function () {
 		
-		switch (+CompressionAlgorithm.DEFLATE) {
+		switch (""+CompressionAlgorithm.DEFLATE) {
 			
 			case CompressionAlgorithm.DEFLATE:
 			case CompressionAlgorithm.ZLIB:

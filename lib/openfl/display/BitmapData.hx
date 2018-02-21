@@ -4,6 +4,7 @@ package openfl.display; #if (display || !flash)
 // import lime.app.Future;
 import openfl.utils.Future;
 // import lime.graphics.Image;
+import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -452,6 +453,9 @@ extern class BitmapData implements IBitmapDrawable {
 	public static function fromFile (path:String):BitmapData;
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData;
 	
+	// #if !flash
+	public static function fromTexture (texture:TextureBase):BitmapData;
+	// #end
 	
 	/**
 	 * Determines the destination rectangle that the `applyFilter()`

@@ -55,7 +55,7 @@ import openfl.Vector;
 	 * 
 	 * @default gesture
 	 */
-	public static var inputMode (get, set):MultitouchInputMode;
+	public static var inputMode:MultitouchInputMode;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;

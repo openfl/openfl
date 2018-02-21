@@ -7,7 +7,7 @@ describe ("ES6 | Context3DBufferUsage", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DBufferUsage.DYNAMIC_DRAW) {
+		switch (""+Context3DBufferUsage.DYNAMIC_DRAW) {
 			
 			case Context3DBufferUsage.DYNAMIC_DRAW:
 			case Context3DBufferUsage.STATIC_DRAW:

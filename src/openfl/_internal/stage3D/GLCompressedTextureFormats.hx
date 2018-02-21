@@ -53,6 +53,7 @@ class GLCompressedTextureFormats {
 		if (compressedExtension != null) {
 			
 			__formatMap[ATFGPUFormat.ETC1] = compressedExtension.COMPRESSED_RGB_ETC1_WEBGL;
+			__formatMapAlpha[ATFGPUFormat.ETC1] = compressedExtension.COMPRESSED_RGB_ETC1_WEBGL;
 			
 		}
 		
@@ -62,6 +63,7 @@ class GLCompressedTextureFormats {
 		if (compressedExtension != null) {
 			
 			__formatMap[ATFGPUFormat.ETC1] = compressedExtension.ETC1_RGB8_OES;
+			__formatMapAlpha[ATFGPUFormat.ETC1] = compressedExtension.ETC1_RGB8_OES;
 			
 		}
 		
@@ -91,10 +93,15 @@ class GLCompressedTextureFormats {
 	
 	public function toTextureFormat (alpha:Bool, gpuFormat:ATFGPUFormat):Int {
 		
-		if (alpha)
-			return __formatMap[gpuFormat];
-		else
+		if (alpha) {
+			
 			return __formatMapAlpha[gpuFormat];
+			
+		} else {
+			
+			return __formatMap[gpuFormat];
+			
+		}
 		
 	}
 	

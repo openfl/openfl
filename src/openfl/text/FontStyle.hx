@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !openfljs
 
 
 @:enum abstract FontStyle(Null<Int>) {
@@ -37,3 +37,19 @@ package openfl.text;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract FontStyle(String) from String to String {
+	
+	public var BOLD = "bold";
+	public var BOLD_ITALIC = "boldItalic";
+	public var ITALIC = "italic";
+	public var REGULAR = "regular";
+	
+}
+
+
+#end

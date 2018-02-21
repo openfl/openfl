@@ -128,7 +128,7 @@ extern class Sound extends EventDispatcher {
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
-	public var id3 (default, never):ID3Info;
+	public var id3 (get, never):ID3Info;
 	
 	/**
 	 * Returns the buffering state of external MP3 files. If the value is
@@ -144,7 +144,7 @@ extern class Sound extends EventDispatcher {
 	/**
 	 * The length of the current sound in milliseconds.
 	 */
-	public var length (default, never):Float;
+	public var length (get, never):Float;
 	
 	/**
 	 * The URL from which this sound was loaded. This property is applicable only

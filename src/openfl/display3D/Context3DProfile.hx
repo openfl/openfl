@@ -1,7 +1,9 @@
-package openfl.display3D;
+package openfl.display3D; #if !openfljs
 
 
+#if cs
 import openfl._internal.utils.NullUtils;
+#end
 
 
 @:enum abstract Context3DProfile(Null<Int>) {
@@ -62,3 +64,21 @@ import openfl._internal.utils.NullUtils;
 	#end
 	
 }
+
+
+#else
+
+
+@:enum abstract Context3DProfile(String) from String to String {
+	
+	public var BASELINE = "baseline";
+	public var BASELINE_CONSTRAINED = "baselineConstrained";
+	public var BASELINE_EXTENDED = "baselineExtended";
+	public var STANDARD = "standard";
+	public var STANDARD_CONSTRAINED = "standardConstrained";
+	public var STANDARD_EXTENDED = "standardExtended";
+	
+}
+
+
+#end

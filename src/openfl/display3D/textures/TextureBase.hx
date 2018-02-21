@@ -22,7 +22,7 @@ import openfl.utils.ByteArray;
 class TextureBase extends EventDispatcher {
 	
 	
-	private var __alphaTexture:Texture;
+	private var __alphaTexture:TextureBase;
 	// private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
 	private var __format:Int;

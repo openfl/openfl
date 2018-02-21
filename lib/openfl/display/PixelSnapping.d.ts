@@ -12,7 +12,7 @@ declare namespace openfl.display {
 		 * Bitmap object to specify that the bitmap image is always snapped to the
 		 * nearest pixel, independent of any transformation.
 		 */
-		ALWAYS = 0,
+		ALWAYS = "always",
 		
 		/**
 		 * A constant value used in the `pixelSnapping` property of a
@@ -23,13 +23,13 @@ declare namespace openfl.display {
 		 * setting allows the image to be drawn as fast as possible by using the
 		 * vector renderer.
 		 */
-		AUTO = 1,
+		AUTO = "auto",
 		
 		/**
 		 * A constant value used in the `pixelSnapping` property of a
 		 * Bitmap object to specify that no pixel snapping occurs.
 		 */
-		NEVER = 2
+		NEVER = "never"
 		
 	}
 	

@@ -1,5 +1,9 @@
-package openfl.display3D;
+package openfl.display3D; #if !openfljs
+
+
+#if cs
 import openfl._internal.utils.NullUtils;
+#end
 
 
 @:enum abstract Context3DProgramType(Null<Int>) {
@@ -48,3 +52,17 @@ import openfl._internal.utils.NullUtils;
 	#end
 	
 }
+
+
+#else
+
+
+@:enum abstract Context3DProgramType(String) from String to String {
+	
+	public var FRAGMENT = "fragment";
+	public var VERTEX = "vertex";
+	
+}
+
+
+#end

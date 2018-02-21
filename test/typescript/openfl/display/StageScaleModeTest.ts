@@ -7,7 +7,7 @@ describe ("TypeScript | StageScaleMode", function () {
 	
 	it ("test", function () {
 		
-		switch (+StageScaleMode.SHOW_ALL) {
+		switch (""+StageScaleMode.SHOW_ALL) {
 			
 			case StageScaleMode.EXACT_FIT:
 			case StageScaleMode.NO_BORDER:

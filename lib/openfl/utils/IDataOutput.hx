@@ -12,7 +12,7 @@ extern interface IDataOutput {
 	#if (flash && !display)
 	public var endian:Endian;
 	#else
-	public var endian:Endian;
+	public var endian (get, set):Endian;
 	#end
 	
 	public var objectEncoding:UInt;

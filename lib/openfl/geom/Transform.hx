@@ -69,7 +69,7 @@ extern class Transform {
 	 * 
 	 * @throws TypeError The colorTransform is null when being set
 	 */
-	public var colorTransform:ColorTransform;
+	public var colorTransform (get, set):ColorTransform;
 	
 	/**
 	 * A ColorTransform object representing the combined color transformations
@@ -91,7 +91,7 @@ extern class Transform {
 	 * window coordinates, which may not be the same coordinate space as that of
 	 * the Stage.
 	 */
-	public var concatenatedMatrix (default, never):Matrix;
+	public var concatenatedMatrix (get, never):Matrix;
 	
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
@@ -105,7 +105,7 @@ extern class Transform {
 	 * 
 	 * @throws TypeError The matrix is null when being set
 	 */
-	public var matrix:Matrix;
+	public var matrix (get, set):Matrix;
 	
 	/**
 	 * Provides access to the Matrix3D object of a three-dimensional display
@@ -119,7 +119,7 @@ extern class Transform {
 	 * value(not `null`), the `matrix` property is
 	 * `null`.
 	 */
-	public var matrix3D:Matrix3D;
+	public var matrix3D (get, set):Matrix3D;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var perspectiveProjection:PerspectiveProjection;
