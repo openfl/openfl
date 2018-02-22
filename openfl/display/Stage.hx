@@ -1233,6 +1233,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 			default:
 			
 		}
+
+		switch (window.renderer.guiLayerContext) {
+
+			case OPENGL(gl):
+
+				#if (!disable_cffi && (!html5 || !canvas))
+				GLUtils.switchContext(GLUtils.guiContext);
+				__guiRenderer = new GLRenderer (this, gl);
+				GLUtils.revertContext();
+				#end
+
+			default:
+
+		}
 		
 	}
 	
@@ -2103,6 +2117,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
+	}
+
+	private override function __renderGL(renderSession:RenderSession):Void {
+		super.__renderGL(renderSession);
+
+		if (__guiLayer != null && (__guiLayer._lastChildChangeFrameID == frameID - 1 || __guiLayer._lastParentOrSelfChangeFrameID == frameID - 1)) {
+			__guiRenderer.renderGuiLayer();
+		}
 	}
 	
 	

@@ -1,6 +1,8 @@
 package openfl._internal.renderer.opengl;
 
 
+import lime.utils.GLUtils;
+import openfl.geom.Rectangle;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.math.Matrix4;
@@ -16,6 +18,7 @@ import openfl.geom.Matrix;
 #end
 
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
@@ -88,6 +91,8 @@ class GLRenderer extends AbstractRenderer {
 			resize (width, height);
 			
 		}
+
+		viewport = new Rectangle(0, 0, width, height);
 		
 	}
 	
@@ -248,6 +253,52 @@ class GLRenderer extends AbstractRenderer {
 			
 		}
 		
+	}
+
+	public override function renderGuiLayer ():Void {
+
+		GLUtils.switchContext(GLUtils.guiContext);
+
+		gl.clearColor (0, 0, 0, 0);
+		gl.clear(gl.COLOR_BUFFER_BIT);
+
+		gl.viewport (offsetX, offsetY, displayWidth, displayHeight);
+		renderSession.allowSmoothing = (stage.quality != LOW);
+		renderSession.upscaled = (displayMatrix.a != 1 || displayMatrix.d != 1);
+
+		stage.__guiLayer.__renderGL (renderSession);
+
+		if (offsetX > 0 || offsetY > 0) {
+
+			gl.clearColor (0, 0, 0, 1);
+			gl.enable (gl.SCISSOR_TEST);
+
+			if (offsetX > 0) {
+
+				gl.scissor (0, 0, offsetX, height);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+
+				gl.scissor (offsetX + displayWidth, 0, width, height);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+
+			}
+
+			if (offsetY > 0) {
+
+				gl.scissor (0, 0, width, offsetY);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+
+				gl.scissor (0, offsetY + displayHeight, width, height);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+
+			}
+
+			gl.disable (gl.SCISSOR_TEST);
+
+		}
+
+		GLUtils.revertContext();
+
 	}
 	
 	
