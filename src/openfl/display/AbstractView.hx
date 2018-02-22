@@ -15,6 +15,7 @@ import openfl.geom.Matrix;
 class AbstractView extends DisplayObject {
 	
 	
+	private var __domCleared:Bool;
 	private var __renderEvent:RenderEvent;
 	
 	
@@ -22,6 +23,7 @@ class AbstractView extends DisplayObject {
 		
 		super ();
 		
+		__domCleared = true;
 		__renderEvent = new RenderEvent (null);
 		
 	}
@@ -80,6 +82,49 @@ class AbstractView extends DisplayObject {
 		
 		renderSession.maskManager.popObject (this);
 		__renderEvent.context = null;
+		
+	}
+	
+	
+	private override function __renderDOM (renderSession:RenderSession):Void {
+		
+		if (stage != null && __worldVisible && __renderable) {
+			
+			super.__renderDOM (renderSession);
+			
+			renderSession.blendModeManager.setBlendMode (__worldBlendMode);
+			renderSession.maskManager.pushObject (this);
+			
+			__renderEvent.type = RenderEvent.RENDER_DOM;
+			__renderEvent.allowSmoothing = renderSession.allowSmoothing;
+			__renderEvent.element = renderSession.element;
+			__renderEvent.renderTransform.copyFrom (__renderTransform);
+			__renderEvent.worldColorTransform.__copyFrom (__worldColorTransform);
+			__renderEvent.worldTransform.copyFrom (__worldTransform);
+			__renderEvent.__renderSession = renderSession;
+			
+			dispatchEvent (__renderEvent);
+			
+			renderSession.maskManager.popObject (this);
+			__renderEvent.element = null;
+			__domCleared = false;
+			
+		} else if (!__domCleared) {
+			
+			__renderEvent.type = RenderEvent.CLEAR_DOM;
+			__renderEvent.allowSmoothing = renderSession.allowSmoothing;
+			__renderEvent.element = renderSession.element;
+			__renderEvent.renderTransform.copyFrom (__renderTransform);
+			__renderEvent.worldColorTransform.__copyFrom (__worldColorTransform);
+			__renderEvent.worldTransform.copyFrom (__worldTransform);
+			__renderEvent.__renderSession = renderSession;
+			
+			dispatchEvent (__renderEvent);
+			
+			__renderEvent.element = null;
+			__domCleared = true;
+			
+		}
 		
 	}
 	
