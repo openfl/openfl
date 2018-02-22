@@ -5,6 +5,7 @@ import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.CairoRenderContext;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.GLRenderContext;
+import lime.math.Matrix3;
 import lime.math.Matrix4;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -45,7 +46,8 @@ class RenderEvent extends Event {
 	public var worldColorTransform:ColorTransform;
 	public var worldTransform:Matrix;
 	
-	private var __projectionMatrix:Matrix4;
+	private var __matrix3:Matrix3;
+	private var __matrix4:Matrix4;
 	private var __renderSession:RenderSession;
 	
 	
@@ -56,13 +58,16 @@ class RenderEvent extends Event {
 		renderTransform = new Matrix ();
 		worldColorTransform = new ColorTransform ();
 		worldTransform = new Matrix ();
-		__projectionMatrix = new Matrix4 ();
+		
+		__matrix3 = new Matrix3 ();
+		__matrix4 = new Matrix4 ();
 		
 	}
 	
 	
-	public function applyStyle (childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {
+	public function applyDOMStyle (childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {
 		
+		#if (js && html5)
 		if (target != null && childElement != null) {
 			
 			var parent:DisplayObject = cast target;
@@ -80,6 +85,20 @@ class RenderEvent extends Event {
 			DOMRenderer.applyStyle (parent, __renderSession, true, true, true);
 			
 		}
+		#end
+		
+	}
+	
+	
+	public function clearDOMStyle (childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {
+		
+		#if (js && html5)
+		if (childElement != null && childElement.parentElement == element) {
+			
+			element.removeChild (childElement);
+			
+		}
+		#end
 		
 	}
 	
@@ -103,7 +122,15 @@ class RenderEvent extends Event {
 	}
 	
 	
-	public function getProjectionMatrix (transform:Matrix):Matrix4 {
+	public function getCairoMatrix (transform:Matrix):Matrix3 {
+		
+		__matrix3.setTo (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+		return __matrix3;
+		
+	}
+	
+	
+	public function getOpenGLMatrix (transform:Matrix):Matrix4 {
 		
 		if (gl != null) {
 			
@@ -112,15 +139,23 @@ class RenderEvent extends Event {
 			
 			for (i in 0...16) {
 				
-				__projectionMatrix[i] = values[i];
+				__matrix4[i] = values[i];
 				
 			}
 			
-			return __projectionMatrix;
+			return __matrix4;
 			
 		} else {
 			
-			return null;
+			__matrix4.identity ();
+			__matrix4[0] = transform.a;
+			__matrix4[1] = transform.b;
+			__matrix4[4] = transform.c;
+			__matrix4[5] = transform.d;
+			__matrix4[12] = transform.tx;
+			__matrix4[13] = transform.ty;
+			
+			return __matrix4;
 			
 		}
 		
