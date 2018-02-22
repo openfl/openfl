@@ -882,16 +882,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if(isTimelineMask || __isMask) return;
 		
-		__updateCacheBitmap (renderSession, false);
-		
+//		__updateCacheBitmap (renderSession, false);
+//
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
-			
+
 			GLBitmap.render (__cacheBitmap, renderSession);
-			
+
 		} else {
-			
+
 			GLDisplayObject.render (this, renderSession);
-			
+
 		}
 		
 	}

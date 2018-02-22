@@ -900,8 +900,11 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
-		
-		if (!__renderable || __worldAlpha <= 0) return;
+
+		if (!__renderable || __worldAlpha <= 0 || (__mask != null && (__mask.width <= 0 || __mask.height <= 0))) return;
+		if (calculatedBounds != null && !calculatedBounds.intersects(renderSession.renderer.viewport)) {
+			return;
+		}
 		
 		super.__renderGL (renderSession);
 		
@@ -935,15 +938,15 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
+//		for (orphan in __removedChildren) {
+//
+//			if (orphan.stage == null) {
+//
+//				orphan.__cleanup ();
+//
+//			}
+//
+//		}
 		
 		__removedChildren.length = 0;
 		
