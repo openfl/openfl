@@ -37,11 +37,7 @@ class GLShape {
 		
 		if (graphics != null) {
 			
-			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
-			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
-			#end
+			GLGraphics.render (graphics, renderSession, shape.__renderTransform, shape.__worldAlpha);
 			
 			var bounds = graphics.__bounds;
 			

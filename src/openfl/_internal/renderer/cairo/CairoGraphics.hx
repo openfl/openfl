@@ -10,17 +10,18 @@ import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
 import lime.math.Vector2;
+import openfl._internal.renderer.DrawCommandBuffer;
+import openfl._internal.renderer.DrawCommandReader;
+import openfl._internal.renderer.DrawCommandType;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
-import openfl._internal.renderer.DrawCommandBuffer;
-import openfl._internal.renderer.DrawCommandReader;
-import openfl._internal.renderer.DrawCommandType;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
+import openfl.display.TileAttribute;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -36,6 +37,7 @@ import openfl.Vector;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 class CairoGraphics {
@@ -793,6 +795,120 @@ class CairoGraphics {
 					hasFill = true;
 					bitmapFill = null;
 				
+				case DRAW_TILES:
+					
+					if (bitmapFill == null) continue;
+					
+					var c = data.readDrawTiles ();
+					var transforms = c.transforms;
+					var rects = c.rects;
+					var ids = c.ids;
+					var attributes = c.attributes;
+					var attributeOptions = c.attributeOptions;
+					
+					var hasRect = (rects != null);
+					var hasID = (hasRect && ids != null);
+					var hasAlpha = (attributeOptions & TileAttribute.ALPHA) > 0;
+					var hasColorTransform = (attributeOptions & TileAttribute.COLOR_TRANSFORM) > 0;
+					
+					var attributeSize = 0;
+					var colorTransformOffset = 0;
+					
+					if (hasAlpha) {
+						
+						attributeSize++;
+						colorTransformOffset = 1;
+						
+					}
+					
+					if (hasColorTransform) attributeSize += 8;
+					
+					var rect = Rectangle.__pool.get ();
+					var tileTransform = Matrix.__pool.get ();
+					
+					var sourceRect = bitmapFill.rect;
+					
+					var transform = graphics.__renderTransform;
+					// var roundPixels = renderSession.roundPixels;
+					
+					var matrix = new Matrix3 ();
+					var alpha = 1.0, id;
+					var i4, i6, tileRect = null;
+					
+					var length = Math.floor (transforms.length / 6);
+					
+					for (i in 0...length) {
+						
+						if (hasAlpha) attributes[i * attributeSize];
+						else if (hasColorTransform) alpha = attributes[i * attributeSize + colorTransformOffset];
+						else alpha = 1.0;
+						
+						if (alpha <= 0) continue;
+						
+						if (hasRect) {
+							
+							if (hasID) {
+								
+								id = ids[i];
+								if (id == -1) continue;
+								i4 = id * 4;
+								
+							} else {
+								
+								i4 = i * 4;
+								
+							}
+							
+							rect.setTo (rects[i4], rects[i4 + 1], rects[i4 + 2], rects[i4 + 3]);
+							tileRect = rect;
+							
+						} else {
+							
+							tileRect = sourceRect;
+							
+						}
+						
+						i6 = i * 6;
+						tileTransform.setTo (transforms[i6], transforms[i6 + 1], transforms[i6 + 2], transforms[i6 + 3], transforms[i6 + 4], transforms[i6 + 5]);
+						tileTransform.concat (transform);
+						
+						// if (roundPixels) {
+							
+						// 	tileTransform.tx = Math.round (tileTransform.tx);
+						// 	tileTransform.ty = Math.round (tileTransform.ty);
+							
+						// }
+						
+						cairo.matrix = tileTransform.__toMatrix3 ();
+						
+						matrix.tx = tileRect.x;
+						matrix.ty = tileRect.y;
+						fillPattern.matrix = matrix;
+						cairo.source = fillPattern;
+						
+						cairo.save ();
+						
+						cairo.newPath ();
+						cairo.rectangle (0, 0, tileRect.width, tileRect.height);
+						cairo.clip ();
+						
+						if (alpha == 1) {
+							
+							cairo.paint ();
+							
+						} else {
+							
+							cairo.paintWithAlpha (alpha);
+							
+						}
+						
+						cairo.restore ();
+						
+					}
+					
+					Rectangle.__pool.release (rect);
+					Matrix.__pool.release (tileTransform);
+				
 				case DRAW_TRIANGLES:
 					
 					var c = data.readDrawTriangles ();
@@ -1344,6 +1460,11 @@ class CairoGraphics {
 							strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 							
 						}
+					
+					case DRAW_TILES:
+						
+						var c = data.readDrawTiles ();
+						fillCommands.drawTiles (c.transforms, c.rects, c.ids, c.attributes, c.attributeOptions);
 					
 					case DRAW_TRIANGLES:
 						

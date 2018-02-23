@@ -95,6 +95,7 @@ class DrawCommandBuffer {
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+				case DRAW_TILES: var c = data.readDrawTiles (); drawTiles (c.transforms, c.rects, c.ids, c.attributes, c.attributeOptions);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 				case END_FILL: var c = data.readEndFill (); endFill ();
 				case LINE_BITMAP_STYLE: var c = data.readLineBitmapStyle (); lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
@@ -273,6 +274,20 @@ class DrawCommandBuffer {
 		f.push (height);
 		f.push (ellipseWidth);
 		o.push (ellipseHeight);
+		
+	}
+	
+	
+	public function drawTiles (transforms:Vector<Float>, rects:Vector<Float>, ids:Vector<Int>, attributes:Vector<Float>, attributeOptions:UInt):Void {
+		
+		prepareWrite ();
+		
+		types.push (DRAW_TILES);
+		o.push (transforms);
+		o.push (rects);
+		o.push (ids);
+		o.push (attributes);
+		i.push (attributeOptions);
 		
 	}
 	

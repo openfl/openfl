@@ -34,6 +34,7 @@ import js.html.CanvasRenderingContext2D;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.GraphicsPath)
+@:access(openfl.display.TileArray)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -44,6 +45,7 @@ import js.html.CanvasRenderingContext2D;
 	private static var maxTextureHeight:Null<Int> = null;
 	private static var maxTextureWidth:Null<Int> = null;
 	
+	private var __bitmapFill:BitmapData;
 	private var __bounds:Rectangle;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
@@ -95,6 +97,7 @@ import js.html.CanvasRenderingContext2D;
 		__commands.beginBitmapFill (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
 		
 		__visible = true;
+		__bitmapFill = bitmap;
 		
 	}
 	
@@ -104,6 +107,7 @@ import js.html.CanvasRenderingContext2D;
 		__commands.beginFill (color & 0xFFFFFF, alpha);
 		
 		if (alpha > 0) __visible = true;
+		__bitmapFill = null;
 		
 	}
 	
@@ -122,6 +126,8 @@ import js.html.CanvasRenderingContext2D;
 			}
 			
 		}
+		
+		__bitmapFill = null;
 		
 	}
 	
@@ -317,6 +323,7 @@ import js.html.CanvasRenderingContext2D;
 		var stroke:GraphicsStroke;
 		var path:GraphicsPath;
 		var trianglePath:GraphicsTrianglePath;
+		var tilePath:GraphicsTilePath;
 		
 		for (graphics in graphicsData) {
 			
@@ -393,6 +400,11 @@ import js.html.CanvasRenderingContext2D;
 				case END:
 					
 					endFill ();
+				
+				case TILE_PATH:
+					
+					tilePath = cast graphics;
+					drawTiles (tilePath.transforms, tilePath.rects, tilePath.ids, tilePath.attributes, tilePath.attributeOptions);
 				
 			}
 			
@@ -525,6 +537,54 @@ import js.html.CanvasRenderingContext2D;
 		lineTo (xw, yh - bottomRightRadius);
 		
 		__dirty = true;
+		
+	}
+	
+	
+	public function drawTiles (transforms:Vector<Float>, rects:Vector<Float> = null, ids:Vector<Int> = null, attributes:Vector<Float> = null, attributeOptions:UInt = 0):Void {
+		
+		if (transforms == null || __bitmapFill == null) return;
+		
+		var hasRects = (rects != null);
+		var hasIDs = (ids != null);
+		
+		var rect = Rectangle.__pool.get ();
+		var transform = Matrix.__pool.get ();
+		
+		var length = Math.floor (transforms.length / 6);
+		var position, i4, i6, id;
+		
+		for (i in 0...length) {
+			
+			i6 = i * 6;
+			transform.setTo (transforms[i6], transforms[i6 + 1], transforms[i6 + 2], transforms[i6 + 3], transforms[i6 + 4], transforms[i6 + 5]);
+			
+			if (hasRects) {
+				
+				i4 = (hasIDs ? (ids[i] * 4) : i * 4);
+				rect.setTo (rects[i4], rects[i4 + 1], rects[i4 + 2], rects[i4 + 3]);
+				rect.__transform (rect, transform);
+				
+				__inflateBounds (rect.x, rect.y);
+				__inflateBounds (rect.right, rect.bottom);
+				
+			} else {
+				
+				rect.setTo (0, 0, __bitmapFill.width, __bitmapFill.height);
+				rect.__transform (rect, transform);
+				
+				__inflateBounds (rect.x, rect.y);
+				__inflateBounds (rect.right, rect.bottom);
+				
+			}
+			
+		}
+		
+		__commands.drawTiles (transforms, rects, ids, attributes, attributeOptions);
+		__dirty = true;
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (transform);
 		
 	}
 	

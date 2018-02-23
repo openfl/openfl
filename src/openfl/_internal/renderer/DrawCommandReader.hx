@@ -93,6 +93,11 @@ class DrawCommandReader {
 				fPos += 5; //x, y, width, height, ellipseWidth
 				oPos += 1; //ellipseHeight
 			
+			case DRAW_TILES:
+				
+				oPos += 4; //transforms, rects, ids, attributes
+				iPos += 1; //attributeOptions
+			
 			case DRAW_TRIANGLES:
 				
 				oPos += 4; //vertices, indices, uvtData, culling
@@ -203,6 +208,7 @@ class DrawCommandReader {
 	public inline function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
 	public inline function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
 	public inline function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
+	public inline function readDrawTiles ():DrawTilesView { advance (); prev = DRAW_TILES; return new DrawTilesView (this); }
 	public inline function readDrawTriangles ():DrawTrianglesView { advance (); prev = DRAW_TRIANGLES; return new DrawTrianglesView (this); }
 	public inline function readEndFill ():EndFillView { advance (); prev = END_FILL; return new EndFillView (this); }
 	public inline function readLineBitmapStyle ():LineBitmapStyleView { advance (); prev = LINE_BITMAP_STYLE; return new LineBitmapStyleView (this); }
@@ -333,6 +339,18 @@ abstract DrawRoundRectView (DrawCommandReader) {
 	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	public var ellipseWidth (get, never):Float; private inline function get_ellipseWidth ():Float { return this.float (4); }
 	public var ellipseHeight (get, never):Null<Float>; private inline function get_ellipseHeight ():Null<Float> { return this.obj (0); }
+	
+}
+
+
+abstract DrawTilesView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var transforms (get, never):Vector<Float>; private inline function get_transforms ():Vector<Float> { return cast this.obj (0); }
+	public var rects (get, never):Vector<Float>; private inline function get_rects ():Vector<Float> { return cast this.obj (1); }
+	public var ids (get, never):Vector<Int>; private inline function get_ids ():Vector<Int> { return cast this.obj (2); }
+	public var attributes (get, never):Vector<Float>; private inline function get_attributes ():Vector<Float> { return cast this.obj (3); }
+	public var attributeOptions (get, never):UInt; private inline function get_attributeOptions ():UInt { return cast this.int (0); }
 	
 }
 
