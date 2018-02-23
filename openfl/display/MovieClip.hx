@@ -234,12 +234,35 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		return super.removeChild(child);
 	}
 
+	private var maxOffscreenSkips:Int = 60;
+	private var currentOffscreenSkips:Int = 0;
+	private var accumulatedDeltaTime:Int = 0;
+
 	public override function __enterFrame (deltaTime:Int):Void {
 
 		if (__symbol == null) {
 			super.__enterFrame (deltaTime);
 			return;
 		}
+
+		if (!isOnScreen()) {
+
+			if (currentOffscreenSkips++ < maxOffscreenSkips) {
+				accumulatedDeltaTime += deltaTime;
+				return;
+			}
+			else {
+				currentOffscreenSkips = 0;
+				deltaTime += accumulatedDeltaTime;
+				accumulatedDeltaTime = 0;
+			}
+		}
+		else {
+			currentOffscreenSkips = 0;
+			deltaTime += accumulatedDeltaTime;
+			accumulatedDeltaTime = 0;
+		}
+
 		var nextFrame : Int = -1;
 		var shouldRunTotalFramesScripts : Bool = false;
 		var startFrame : Int = __currentFrame;

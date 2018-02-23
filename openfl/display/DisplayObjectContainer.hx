@@ -1077,7 +1077,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (selfOrParentChanged) {
+			if (selfOrParentChanged && child.__visible) {
 
 				child._lastParentOrSelfChangeFrameID = frameID;
 
