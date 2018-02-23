@@ -795,12 +795,12 @@ class CairoGraphics {
 					hasFill = true;
 					bitmapFill = null;
 				
-				case DRAW_TILES:
+				case DRAW_QUADS:
 					
 					if (bitmapFill == null) continue;
 					
-					var c = data.readDrawTiles ();
-					var transforms = c.transforms;
+					var c = data.readDrawQuads ();
+					var matrices = c.matrices;
 					var sourceRects = c.sourceRects;
 					var rectIDs = c.rectIDs;
 					var attributes = c.attributes;
@@ -835,7 +835,7 @@ class CairoGraphics {
 					var alpha = 1.0, id;
 					var i4, i6, tileRect = null;
 					
-					var length = Math.floor (transforms.length / 6);
+					var length = Math.floor (matrices.length / 6);
 					
 					for (i in 0...length) {
 						
@@ -870,7 +870,7 @@ class CairoGraphics {
 						
 						i6 = i * 6;
 						
-						tileTransform.setTo (transforms[i6], transforms[i6 + 1], transforms[i6 + 2], transforms[i6 + 3], transforms[i6 + 4], transforms[i6 + 5]);
+						tileTransform.setTo (matrices[i6], matrices[i6 + 1], matrices[i6 + 2], matrices[i6 + 3], matrices[i6 + 4], matrices[i6 + 5]);
 						tileTransform.tx += positionX - offsetX;
 						tileTransform.ty += positionY - offsetY;
 						tileTransform.concat (transform);
@@ -1464,10 +1464,10 @@ class CairoGraphics {
 							
 						}
 					
-					case DRAW_TILES:
+					case DRAW_QUADS:
 						
-						var c = data.readDrawTiles ();
-						fillCommands.drawTiles (c.transforms, c.sourceRects, c.rectIDs, c.attributes, c.attributeOptions);
+						var c = data.readDrawQuads ();
+						fillCommands.drawQuads (c.matrices, c.sourceRects, c.rectIDs, c.attributes, c.attributeOptions);
 					
 					case DRAW_TRIANGLES:
 						

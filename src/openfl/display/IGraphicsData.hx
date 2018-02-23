@@ -8,7 +8,7 @@ interface IGraphicsData {
 }
 
 
-@:fakeEnum(Int) enum GraphicsDataType {
+@:dox(hide) @:fakeEnum(Int) enum GraphicsDataType {
 	
 	STROKE;
 	SOLID;
@@ -16,7 +16,7 @@ interface IGraphicsData {
 	PATH;
 	BITMAP;
 	END;
-	TILE_PATH;
+	QUAD_PATH;
 	TRIANGLE_PATH;
 	
 }

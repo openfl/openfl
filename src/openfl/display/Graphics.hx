@@ -34,7 +34,6 @@ import js.html.CanvasRenderingContext2D;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.GraphicsPath)
-@:access(openfl.display.TileArray)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -323,7 +322,7 @@ import js.html.CanvasRenderingContext2D;
 		var stroke:GraphicsStroke;
 		var path:GraphicsPath;
 		var trianglePath:GraphicsTrianglePath;
-		var tilePath:GraphicsTilePath;
+		var quadPath:GraphicsQuadPath;
 		
 		for (graphics in graphicsData) {
 			
@@ -401,10 +400,10 @@ import js.html.CanvasRenderingContext2D;
 					
 					endFill ();
 				
-				case TILE_PATH:
+				case QUAD_PATH:
 					
-					tilePath = cast graphics;
-					drawTiles (tilePath.transforms, tilePath.sourceRects, tilePath.rectIDs, tilePath.attributes, tilePath.attributeOptions);
+					quadPath = cast graphics;
+					drawQuads (quadPath.matrices, quadPath.sourceRects, quadPath.rectIDs, quadPath.attributes, quadPath.attributeOptions);
 				
 			}
 			
@@ -461,6 +460,63 @@ import js.html.CanvasRenderingContext2D;
 		
 		// TODO: Reset to EVEN_ODD after current path is filled?
 		//if (winding == GraphicsPathWinding.NON_ZERO) __commands.windingEvenOdd ();
+		
+	}
+	
+	
+	public function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float> = null, rectIDs:Vector<Int> = null, attributes:Vector<Float> = null, attributeOptions:UInt = 0):Void {
+		
+		if (matrices == null || __bitmapFill == null) return;
+		
+		var hasRects = (sourceRects != null);
+		var hasIDs = (rectIDs != null);
+		
+		var rect = Rectangle.__pool.get ();
+		var matrix = Matrix.__pool.get ();
+		
+		var length = Math.floor (matrices.length / 6);
+		if (length == 0) return;
+		
+		var i4, i6;
+		
+		var minX = Math.POSITIVE_INFINITY;
+		var minY = Math.POSITIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;
+		
+		for (i in 0...length) {
+			
+			i6 = i * 6;
+			matrix.setTo (matrices[i6], matrices[i6 + 1], matrices[i6 + 2], matrices[i6 + 3], matrices[i6 + 4], matrices[i6 + 5]);
+			
+			if (hasRects) {
+				
+				i4 = (hasIDs ? (rectIDs[i] * 4) : i * 4);
+				rect.setTo (sourceRects[i4], sourceRects[i4 + 1], sourceRects[i4 + 2], sourceRects[i4 + 3]);
+				
+			} else {
+				
+				rect.setTo (0, 0, __bitmapFill.width, __bitmapFill.height);
+				
+			}
+			
+			rect.__transform (rect, matrix);
+			
+			if (minX > rect.x) minX = rect.x;
+			if (minY > rect.y) minY = rect.y;
+			if (maxX < rect.right) maxX = rect.right;
+			if (maxY < rect.bottom) maxY = rect.bottom;
+			
+		}
+		
+		__inflateBounds (minX, minY);
+		__inflateBounds (maxX, maxY);
+		
+		__commands.drawQuads (matrices, sourceRects, rectIDs, attributes, attributeOptions);
+		__dirty = true;
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (matrix);
 		
 	}
 	
@@ -537,54 +593,6 @@ import js.html.CanvasRenderingContext2D;
 		lineTo (xw, yh - bottomRightRadius);
 		
 		__dirty = true;
-		
-	}
-	
-	
-	public function drawTiles (transforms:Vector<Float>, sourceRects:Vector<Float> = null, rectIDs:Vector<Int> = null, attributes:Vector<Float> = null, attributeOptions:UInt = 0):Void {
-		
-		if (transforms == null || __bitmapFill == null) return;
-		
-		var hasRects = (sourceRects != null);
-		var hasIDs = (rectIDs != null);
-		
-		var rect = Rectangle.__pool.get ();
-		var transform = Matrix.__pool.get ();
-		
-		var length = Math.floor (transforms.length / 6);
-		var position, i4, i6, id;
-		
-		for (i in 0...length) {
-			
-			i6 = i * 6;
-			transform.setTo (transforms[i6], transforms[i6 + 1], transforms[i6 + 2], transforms[i6 + 3], transforms[i6 + 4], transforms[i6 + 5]);
-			
-			if (hasRects) {
-				
-				i4 = (hasIDs ? (rectIDs[i] * 4) : i * 4);
-				rect.setTo (sourceRects[i4], sourceRects[i4 + 1], sourceRects[i4 + 2], sourceRects[i4 + 3]);
-				rect.__transform (rect, transform);
-				
-				__inflateBounds (rect.x, rect.y);
-				__inflateBounds (rect.right, rect.bottom);
-				
-			} else {
-				
-				rect.setTo (0, 0, __bitmapFill.width, __bitmapFill.height);
-				rect.__transform (rect, transform);
-				
-				__inflateBounds (rect.x, rect.y);
-				__inflateBounds (rect.right, rect.bottom);
-				
-			}
-			
-		}
-		
-		__commands.drawTiles (transforms, sourceRects, rectIDs, attributes, attributeOptions);
-		__dirty = true;
-		
-		Rectangle.__pool.release (rect);
-		Matrix.__pool.release (transform);
 		
 	}
 	

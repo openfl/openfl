@@ -84,6 +84,11 @@ class DrawCommandReader {
 				
 				fPos += 4; //x, y, width, height
 			
+			case DRAW_QUADS:
+				
+				oPos += 4; //matrices, sourceRects, rectIDs, attributes
+				iPos += 1; //attributeOptions
+			
 			case DRAW_RECT:
 				
 				fPos += 4; //x, y, width, height
@@ -92,11 +97,6 @@ class DrawCommandReader {
 				
 				fPos += 5; //x, y, width, height, ellipseWidth
 				oPos += 1; //ellipseHeight
-			
-			case DRAW_TILES:
-				
-				oPos += 4; //transforms, sourceRects, rectIDs, attributes
-				iPos += 1; //attributeOptions
 			
 			case DRAW_TRIANGLES:
 				
@@ -206,9 +206,9 @@ class DrawCommandReader {
 	public inline function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
 	public inline function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
 	public inline function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
+	public inline function readDrawQuads ():DrawQuadsView { advance (); prev = DRAW_QUADS; return new DrawQuadsView (this); }
 	public inline function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
 	public inline function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
-	public inline function readDrawTiles ():DrawTilesView { advance (); prev = DRAW_TILES; return new DrawTilesView (this); }
 	public inline function readDrawTriangles ():DrawTrianglesView { advance (); prev = DRAW_TRIANGLES; return new DrawTrianglesView (this); }
 	public inline function readEndFill ():EndFillView { advance (); prev = END_FILL; return new EndFillView (this); }
 	public inline function readLineBitmapStyle ():LineBitmapStyleView { advance (); prev = LINE_BITMAP_STYLE; return new LineBitmapStyleView (this); }
@@ -319,6 +319,18 @@ abstract DrawEllipseView (DrawCommandReader) {
 }
 
 
+abstract DrawQuadsView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var matrices (get, never):Vector<Float>; private inline function get_matrices ():Vector<Float> { return cast this.obj (0); }
+	public var sourceRects (get, never):Vector<Float>; private inline function get_sourceRects ():Vector<Float> { return cast this.obj (1); }
+	public var rectIDs (get, never):Vector<Int>; private inline function get_rectIDs ():Vector<Int> { return cast this.obj (2); }
+	public var attributes (get, never):Vector<Float>; private inline function get_attributes ():Vector<Float> { return cast this.obj (3); }
+	public var attributeOptions (get, never):UInt; private inline function get_attributeOptions ():UInt { return cast this.int (0); }
+	
+}
+
+
 abstract DrawRectView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
@@ -339,18 +351,6 @@ abstract DrawRoundRectView (DrawCommandReader) {
 	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
 	public var ellipseWidth (get, never):Float; private inline function get_ellipseWidth ():Float { return this.float (4); }
 	public var ellipseHeight (get, never):Null<Float>; private inline function get_ellipseHeight ():Null<Float> { return this.obj (0); }
-	
-}
-
-
-abstract DrawTilesView (DrawCommandReader) {
-	
-	public inline function new (d:DrawCommandReader) { this = d; }
-	public var transforms (get, never):Vector<Float>; private inline function get_transforms ():Vector<Float> { return cast this.obj (0); }
-	public var sourceRects (get, never):Vector<Float>; private inline function get_sourceRects ():Vector<Float> { return cast this.obj (1); }
-	public var rectIDs (get, never):Vector<Int>; private inline function get_rectIDs ():Vector<Int> { return cast this.obj (2); }
-	public var attributes (get, never):Vector<Float>; private inline function get_attributes ():Vector<Float> { return cast this.obj (3); }
-	public var attributeOptions (get, never):UInt; private inline function get_attributeOptions ():UInt { return cast this.int (0); }
 	
 }
 
