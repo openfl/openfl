@@ -66,13 +66,9 @@ class CanvasGraphics {
 	
 	#if (js && html5)
 	private static function __init__ ():Void {
-		
-		if (Browser.supported) {
 			
-			hitTestCanvas = cast Browser.document.createElement ("canvas");
-			hitTestContext = hitTestCanvas.getContext ("2d");
-			
-		}
+		hitTestCanvas = Browser.supported ? cast Browser.document.createElement ("canvas") : null;
+		hitTestContext = Browser.supported ? hitTestCanvas.getContext ("2d") : null;
 		
 	}
 	#end
