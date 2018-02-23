@@ -869,7 +869,10 @@ class CairoGraphics {
 						}
 						
 						i6 = i * 6;
+						
 						tileTransform.setTo (transforms[i6], transforms[i6 + 1], transforms[i6 + 2], transforms[i6 + 3], transforms[i6 + 4], transforms[i6 + 5]);
+						tileTransform.tx += positionX - offsetX;
+						tileTransform.ty += positionY - offsetY;
 						tileTransform.concat (transform);
 						
 						// if (roundPixels) {
