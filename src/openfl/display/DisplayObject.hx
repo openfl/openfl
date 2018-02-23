@@ -350,6 +350,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	public function invalidate ():Void {
+		
+		__setRenderDirty ();
+		
+	}
+	
+	
 	public function localToGlobal (point:Point):Point {
 		
 		return __getRenderTransform ().transformPoint (point);

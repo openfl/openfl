@@ -418,7 +418,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function invalidate ():Void {
+	public override function invalidate ():Void {
 		
 		__invalidated = true;
 		__renderDirty = true;

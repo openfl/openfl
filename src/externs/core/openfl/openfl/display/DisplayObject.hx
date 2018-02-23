@@ -798,6 +798,13 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	
 	
 	/**
+	 * Calling the `invalidate()` method signals to have the current object 
+	 * redrawn the next time the object is eligible to be rendered.
+	**/
+	public function invalidate ():Void;
+	
+	
+	/**
 	 * Converts the `point` object from the display object's(local)
 	 * coordinates to the Stage(global) coordinates.
 	 *

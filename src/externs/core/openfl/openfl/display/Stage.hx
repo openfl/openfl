@@ -566,7 +566,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 * `Security.allowDomain()` method.
 	 * 
 	 */
-	public function invalidate ():Void;
+	public override function invalidate ():Void;
 	
 	
 	#if flash
