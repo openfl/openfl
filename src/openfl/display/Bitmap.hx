@@ -170,6 +170,8 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			CairoBitmap.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		#end
 		
 	}
@@ -195,6 +197,8 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			CanvasBitmap.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		
 	}
 	
@@ -223,6 +227,8 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			
 		}
 		
+		__renderEvent (renderSession);
+		
 	}
 	
 	
@@ -246,6 +252,8 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			GLBitmap.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		
 	}
 	

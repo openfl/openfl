@@ -344,6 +344,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			CairoTilemap.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		#end
 		
 	}
@@ -363,6 +365,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			CanvasTilemap.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		
 	}
 	
@@ -384,6 +388,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			DOMTilemap.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		
 	}
 	
@@ -418,6 +424,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			GLTilemap.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		
 	}
 	

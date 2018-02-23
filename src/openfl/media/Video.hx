@@ -362,6 +362,7 @@ class Video extends DisplayObject implements IShaderDrawable {
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasVideo.render (this, renderSession);
+		__renderEvent (renderSession);
 		
 	}
 	
@@ -369,6 +370,7 @@ class Video extends DisplayObject implements IShaderDrawable {
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMVideo.render (this, renderSession);
+		__renderEvent (renderSession);
 		
 	}
 	
@@ -376,6 +378,7 @@ class Video extends DisplayObject implements IShaderDrawable {
 	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLVideo.render (this, renderSession);
+		__renderEvent (renderSession);
 		
 	}
 	

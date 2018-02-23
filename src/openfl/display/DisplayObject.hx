@@ -23,6 +23,7 @@ import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.EventDispatcher;
 import openfl.events.MouseEvent;
+import openfl.events.RenderEvent;
 import openfl.events.TouchEvent;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
@@ -101,6 +102,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __cacheBitmapRender:Bool;
 	private var __cairo:Cairo;
 	private var __children:Array<DisplayObject>;
+	private var __customRenderClear:Bool;
+	private var __customRenderEvent:RenderEvent;
 	private var __filters:Array<BitmapFilter>;
 	private var __graphics:Graphics;
 	private var __interactive:Bool;
@@ -227,6 +230,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				if (dispatchers.indexOf (this) == -1) {
 					
 					dispatchers.push (this);
+					
+				}
+			
+			case RenderEvent.CLEAR_DOM, RenderEvent.RENDER_CAIRO, RenderEvent.RENDER_CANVAS, RenderEvent.RENDER_DOM, RenderEvent.RENDER_OPENGL:
+				
+				if (__customRenderEvent == null) {
+					
+					__customRenderEvent = new RenderEvent (null);
+					__customRenderClear = true;
 					
 				}
 			
@@ -360,6 +372,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						__broadcastEvents.get (type).remove (this);
 						
 					}
+					
+				}
+			
+			case RenderEvent.CLEAR_DOM, RenderEvent.RENDER_CAIRO, RenderEvent.RENDER_CANVAS, RenderEvent.RENDER_DOM, RenderEvent.RENDER_OPENGL:
+				
+				if (!hasEventListener (RenderEvent.CLEAR_DOM) && !hasEventListener (RenderEvent.RENDER_CAIRO) && !hasEventListener (RenderEvent.RENDER_CANVAS) && !hasEventListener (RenderEvent.RENDER_DOM) && !hasEventListener (RenderEvent.RENDER_OPENGL)) {
+					
+					__customRenderEvent = null;
 					
 				}
 			
@@ -726,6 +746,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			CairoDisplayObject.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		#end
 		
 	}
@@ -762,6 +784,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
+		__renderEvent (renderSession);
+		
 	}
 	
 	
@@ -793,12 +817,74 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
+		__renderEvent (renderSession);
+		
 	}
 	
 	
 	private function __renderDOMClear (renderSession:RenderSession):Void {
 		
 		DOMDisplayObject.clear (this, renderSession);
+		
+	}
+	
+	
+	private function __renderEvent (renderSession:RenderSession):Void {
+		
+		if (__customRenderEvent != null && __renderable) {
+			
+			__customRenderEvent.allowSmoothing = renderSession.allowSmoothing;
+			__customRenderEvent.renderTransform.copyFrom (__renderTransform);
+			__customRenderEvent.worldColorTransform.__copyFrom (__worldColorTransform);
+			__customRenderEvent.worldTransform.copyFrom (__worldTransform);
+			__customRenderEvent.__renderSession = renderSession;
+			
+			if (renderSession.gl != null) {
+				
+				renderSession.shaderManager.setShader (null);
+				
+				__customRenderEvent.gl = renderSession.gl;
+				__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
+				
+			} else if (renderSession.cairo != null) {
+				
+				__customRenderEvent.cairo = renderSession.cairo;
+				__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
+				
+			} else if (renderSession.element != null) {
+				
+				__customRenderEvent.element = renderSession.element;
+				
+				if (stage != null && __worldVisible) {
+					
+					__customRenderEvent.type = RenderEvent.RENDER_DOM;
+					
+				} else {
+					
+					__customRenderEvent.type = RenderEvent.CLEAR_DOM;
+					
+				}
+				
+			} else if (renderSession.context != null) {
+				
+				__customRenderEvent.context = renderSession.context;
+				__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
+				
+			}
+			
+			renderSession.blendModeManager.setBlendMode (__worldBlendMode);
+			renderSession.maskManager.pushObject (this);
+			
+			dispatchEvent (__customRenderEvent);
+			
+			renderSession.maskManager.popObject (this);
+			
+			__customRenderEvent.gl = null;
+			__customRenderEvent.cairo = null;
+			__customRenderEvent.element = null;
+			__customRenderEvent.context = null;
+			
+		}
 		
 	}
 	
@@ -816,6 +902,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			GLDisplayObject.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		
 	}
 	

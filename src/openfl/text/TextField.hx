@@ -1411,6 +1411,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			CairoDisplayObject.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		#end
 		
 	}
@@ -1496,7 +1498,6 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		
 		__domRender = true;
 		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
 		__forceCachedBitmapUpdate = false;
@@ -1530,6 +1531,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 		}
 		
+		__renderEvent (renderSession);
 		#end
 		
 	}
@@ -1561,6 +1563,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			GLDisplayObject.render (this, renderSession);
 			
 		}
+		
+		__renderEvent (renderSession);
 		
 	}
 	
