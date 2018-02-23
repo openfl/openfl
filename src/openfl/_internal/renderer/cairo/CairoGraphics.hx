@@ -895,13 +895,17 @@ class CairoGraphics {
 						cairo.rectangle (0, 0, tileRect.width, tileRect.height);
 						cairo.clip ();
 						
-						if (alpha == 1) {
+						if (!hitTesting) {
 							
-							cairo.paint ();
-							
-						} else {
-							
-							cairo.paintWithAlpha (alpha);
+							if (alpha == 1) {
+								
+								cairo.paint ();
+								
+							} else {
+								
+								cairo.paintWithAlpha (alpha);
+								
+							}
 							
 						}
 						
@@ -911,6 +915,8 @@ class CairoGraphics {
 					
 					Rectangle.__pool.release (rect);
 					Matrix.__pool.release (tileTransform);
+					
+					cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
 				
 				case DRAW_TRIANGLES:
 					
