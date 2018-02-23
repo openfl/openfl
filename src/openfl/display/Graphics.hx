@@ -404,7 +404,7 @@ import js.html.CanvasRenderingContext2D;
 				case TILE_PATH:
 					
 					tilePath = cast graphics;
-					drawTiles (tilePath.transforms, tilePath.rects, tilePath.ids, tilePath.attributes, tilePath.attributeOptions);
+					drawTiles (tilePath.transforms, tilePath.sourceRects, tilePath.rectIDs, tilePath.attributes, tilePath.attributeOptions);
 				
 			}
 			
@@ -541,12 +541,12 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function drawTiles (transforms:Vector<Float>, rects:Vector<Float> = null, ids:Vector<Int> = null, attributes:Vector<Float> = null, attributeOptions:UInt = 0):Void {
+	public function drawTiles (transforms:Vector<Float>, sourceRects:Vector<Float> = null, rectIDs:Vector<Int> = null, attributes:Vector<Float> = null, attributeOptions:UInt = 0):Void {
 		
 		if (transforms == null || __bitmapFill == null) return;
 		
-		var hasRects = (rects != null);
-		var hasIDs = (ids != null);
+		var hasRects = (sourceRects != null);
+		var hasIDs = (rectIDs != null);
 		
 		var rect = Rectangle.__pool.get ();
 		var transform = Matrix.__pool.get ();
@@ -561,8 +561,8 @@ import js.html.CanvasRenderingContext2D;
 			
 			if (hasRects) {
 				
-				i4 = (hasIDs ? (ids[i] * 4) : i * 4);
-				rect.setTo (rects[i4], rects[i4 + 1], rects[i4 + 2], rects[i4 + 3]);
+				i4 = (hasIDs ? (rectIDs[i] * 4) : i * 4);
+				rect.setTo (sourceRects[i4], sourceRects[i4 + 1], sourceRects[i4 + 2], sourceRects[i4 + 3]);
 				rect.__transform (rect, transform);
 				
 				__inflateBounds (rect.x, rect.y);
@@ -580,7 +580,7 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__commands.drawTiles (transforms, rects, ids, attributes, attributeOptions);
+		__commands.drawTiles (transforms, sourceRects, rectIDs, attributes, attributeOptions);
 		__dirty = true;
 		
 		Rectangle.__pool.release (rect);

@@ -95,7 +95,7 @@ class DrawCommandReader {
 			
 			case DRAW_TILES:
 				
-				oPos += 4; //transforms, rects, ids, attributes
+				oPos += 4; //transforms, sourceRects, rectIDs, attributes
 				iPos += 1; //attributeOptions
 			
 			case DRAW_TRIANGLES:
@@ -347,8 +347,8 @@ abstract DrawTilesView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var transforms (get, never):Vector<Float>; private inline function get_transforms ():Vector<Float> { return cast this.obj (0); }
-	public var rects (get, never):Vector<Float>; private inline function get_rects ():Vector<Float> { return cast this.obj (1); }
-	public var ids (get, never):Vector<Int>; private inline function get_ids ():Vector<Int> { return cast this.obj (2); }
+	public var sourceRects (get, never):Vector<Float>; private inline function get_sourceRects ():Vector<Float> { return cast this.obj (1); }
+	public var rectIDs (get, never):Vector<Int>; private inline function get_rectIDs ():Vector<Int> { return cast this.obj (2); }
 	public var attributes (get, never):Vector<Float>; private inline function get_attributes ():Vector<Float> { return cast this.obj (3); }
 	public var attributeOptions (get, never):UInt; private inline function get_attributeOptions ():UInt { return cast this.int (0); }
 	

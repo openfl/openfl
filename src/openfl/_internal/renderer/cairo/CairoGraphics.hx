@@ -21,7 +21,7 @@ import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
-import openfl.display.TileAttribute;
+import openfl.display.VertexAttribute;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -801,15 +801,15 @@ class CairoGraphics {
 					
 					var c = data.readDrawTiles ();
 					var transforms = c.transforms;
-					var rects = c.rects;
-					var ids = c.ids;
+					var sourceRects = c.sourceRects;
+					var rectIDs = c.rectIDs;
 					var attributes = c.attributes;
 					var attributeOptions = c.attributeOptions;
 					
-					var hasRect = (rects != null);
-					var hasID = (hasRect && ids != null);
-					var hasAlpha = (attributeOptions & TileAttribute.ALPHA) > 0;
-					var hasColorTransform = (attributeOptions & TileAttribute.COLOR_TRANSFORM) > 0;
+					var hasRect = (sourceRects != null);
+					var hasID = (hasRect && rectIDs != null);
+					var hasAlpha = (attributeOptions & VertexAttribute.ALPHA) > 0;
+					var hasColorTransform = (attributeOptions & VertexAttribute.COLOR_TRANSFORM) > 0;
 					
 					var attributeSize = 0;
 					var colorTransformOffset = 0;
@@ -849,7 +849,7 @@ class CairoGraphics {
 							
 							if (hasID) {
 								
-								id = ids[i];
+								id = rectIDs[i];
 								if (id == -1) continue;
 								i4 = id * 4;
 								
@@ -859,7 +859,7 @@ class CairoGraphics {
 								
 							}
 							
-							rect.setTo (rects[i4], rects[i4 + 1], rects[i4 + 2], rects[i4 + 3]);
+							rect.setTo (sourceRects[i4], sourceRects[i4 + 1], sourceRects[i4 + 2], sourceRects[i4 + 3]);
 							tileRect = rect;
 							
 						} else {
@@ -1467,7 +1467,7 @@ class CairoGraphics {
 					case DRAW_TILES:
 						
 						var c = data.readDrawTiles ();
-						fillCommands.drawTiles (c.transforms, c.rects, c.ids, c.attributes, c.attributeOptions);
+						fillCommands.drawTiles (c.transforms, c.sourceRects, c.rectIDs, c.attributes, c.attributeOptions);
 					
 					case DRAW_TRIANGLES:
 						
