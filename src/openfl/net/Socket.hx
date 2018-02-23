@@ -3,6 +3,7 @@ package openfl.net;
 
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
+import haxe.io.Eof;
 import haxe.io.Error;
 import haxe.Timer;
 import openfl._internal.Lib;
@@ -685,6 +686,10 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 					}
 					
 				} while (l == __buffer.length);
+				
+			} catch (e:Eof) {
+				
+				// ignore
 				
 			} catch (e:Error) {
 				
