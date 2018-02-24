@@ -2,7 +2,10 @@ package openfl.display;
 
 
 import lime.graphics.cairo.Cairo;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
+import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
@@ -46,6 +49,11 @@ import js.html.CanvasRenderingContext2D;
 	
 	private var __bitmapFill:BitmapData;
 	private var __bounds:Rectangle;
+	private var __buffer:GLBuffer;
+	private var __bufferContext:GLRenderContext;
+	private var __bufferDirty:Bool;
+	private var __bufferData:Float32Array;
+	private var __bufferLength:Int;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
 	private var __height:Int;

@@ -1,11 +1,15 @@
 package openfl._internal.renderer.opengl;
 
 
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.Graphics;
+import openfl.display.VertexAttribute;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 #if gl_stats
 import openfl._internal.renderer.opengl.stats.GLStats;
@@ -18,14 +22,276 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 #end
 
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class GLGraphics {
 	
 	
-	private static function isCompatible (graphics:Graphics, parentTransform:Matrix):Bool {
+	private static var tempColorTransform = new ColorTransform ();
+	
+	
+	private static function buildBuffer (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
 		
-		return false;
+		var bufferLength = 0;
+		var bufferPosition = 0;
+		
+		var data = new DrawCommandReader (graphics.__commands);
+		
+		var renderer:GLRenderer = cast renderSession.renderer;
+		var gl:WebGLContext = renderSession.gl;
+		
+		var rect = Rectangle.__pool.get ();
+		var matrix = Matrix.__pool.get ();
+		
+		var bitmap = null;
+		
+		for (type in graphics.__commands.types) {
+			
+			switch (type) {
+				
+				case END_FILL:
+					
+					bitmap = null;
+				
+				case DRAW_QUADS:
+					
+					if (bitmap != null) {
+						
+						var c = data.readDrawQuads ();
+						var matrices = c.matrices;
+						var sourceRects = c.sourceRects;
+						var rectIDs = c.rectIDs;
+						var attributes = c.attributes;
+						var attributeOptions = c.attributeOptions;
+						
+						var hasRects = (sourceRects != null);
+						var hasIDs = (hasRects && rectIDs != null);
+						var hasAttributes = (attributes != null);
+						var hasAlpha = false;
+						var hasColorTransform = false;
+						var alphaOffset = 0;
+						var colorTransformOffset = 0;
+						
+						var dataLength = 4;
+						var attributeLength = 0;
+						
+						if (hasAttributes && attributeOptions & VertexAttribute.ALPHA > 0) {
+							
+							hasAlpha = true;
+							colorTransformOffset++;
+							attributeLength++;
+							
+						} else {
+							
+							// still passing alpha
+							attributeLength++;
+							
+						}
+						
+						if (hasAttributes && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0) {
+							
+							hasColorTransform = true;
+							attributeLength += 8;
+							
+						}
+						
+						dataLength += attributeLength;
+						
+						var length = Math.floor (matrices.length / 6);
+						var stride = dataLength * 6;
+						var bufferLength = length * stride;
+						
+						resizeBuffer (graphics, bufferPosition + (length * stride));
+						
+						var tileMatrix, tileColorTransform, tileRect = null;
+						
+						var offset = bufferPosition;
+						var alpha, tileData, id;
+						var bitmapWidth, bitmapHeight, tileWidth:Float, tileHeight:Float;
+						var uvX, uvY, uvWidth, uvHeight;
+						var x, y, x2, y2, x3, y3, x4, y4;
+						var redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier;
+						var redOffset, greenOffset, blueOffset, alphaOffset;
+						var rectOffset, matrixOffset, ctOffset;
+						
+						var __bufferData = graphics.__bufferData;
+						// var colorTransform = graphics.__worldColorTransform;
+						bitmapWidth = bitmap.width;
+						bitmapHeight = bitmap.height;
+						var sourceRect = bitmap.rect;
+						
+						var __skipTile = function (i, offset:Int):Void {
+							
+							for (i in 0...6) {
+								
+								__bufferData[offset + (dataLength * i) + 4] = 0;
+								
+							}
+							
+						}
+						
+						for (i in 0...length) {
+							
+							offset = bufferPosition + (i * stride);
+							alpha = (hasAlpha ? attributes[i * attributeLength] : 1.0);
+							
+							if (alpha <= 0) {
+								
+								__skipTile (i, offset);
+								continue;
+								
+							}
+							
+							if (hasRects) {
+								
+								if (hasIDs && rectIDs[i] == -1) {
+									
+									__skipTile (i, offset);
+									continue;
+									
+								}
+								
+								rectOffset = hasIDs ? rectIDs[i] : i * 4;
+								rect.setTo (sourceRects[rectOffset], sourceRects[rectOffset + 1], sourceRects[rectOffset + 2], sourceRects[rectOffset + 3]);
+								tileRect = rect;
+								
+							} else {
+								
+								tileRect = sourceRect;
+								
+							}
+							
+							tileWidth = tileRect.width;
+							tileHeight = tileRect.height;
+							
+							if (tileWidth <= 0 || tileHeight <= 0) {
+								
+								__skipTile (i, offset);
+								continue;
+								
+							}
+							
+							uvX = tileRect.x / bitmapWidth;
+							uvY = tileRect.y / bitmapHeight;
+							uvWidth = tileRect.right / bitmapWidth;
+							uvHeight = tileRect.bottom / bitmapHeight;
+							
+							matrixOffset = i * 6;
+							matrix.setTo (matrices[matrixOffset], matrices[matrixOffset + 1], matrices[matrixOffset + 2], matrices[matrixOffset + 3], matrices[matrixOffset + 4], matrices[matrixOffset + 5]);
+							tileMatrix = matrix;
+							
+							x = tileMatrix.__transformX (0, 0);
+							y = tileMatrix.__transformY (0, 0);
+							x2 = tileMatrix.__transformX (tileWidth, 0);
+							y2 = tileMatrix.__transformY (tileWidth, 0);
+							x3 = tileMatrix.__transformX (0, tileHeight);
+							y3 = tileMatrix.__transformY (0, tileHeight);
+							x4 = tileMatrix.__transformX (tileWidth, tileHeight);
+							y4 = tileMatrix.__transformY (tileWidth, tileHeight);
+							
+							__bufferData[offset + 0] = x;
+							__bufferData[offset + 1] = y;
+							__bufferData[offset + 2] = uvX;
+							__bufferData[offset + 3] = uvY;
+							
+							__bufferData[offset + dataLength + 0] = x2;
+							__bufferData[offset + dataLength + 1] = y2;
+							__bufferData[offset + dataLength + 2] = uvWidth;
+							__bufferData[offset + dataLength + 3] = uvY;
+							
+							__bufferData[offset + (dataLength * 2) + 0] = x3;
+							__bufferData[offset + (dataLength * 2) + 1] = y3;
+							__bufferData[offset + (dataLength * 2) + 2] = uvX;
+							__bufferData[offset + (dataLength * 2) + 3] = uvHeight;
+							
+							__bufferData[offset + (dataLength * 3) + 0] = x3;
+							__bufferData[offset + (dataLength * 3) + 1] = y3;
+							__bufferData[offset + (dataLength * 3) + 2] = uvX;
+							__bufferData[offset + (dataLength * 3) + 3] = uvHeight;
+							
+							__bufferData[offset + (dataLength * 4) + 0] = x2;
+							__bufferData[offset + (dataLength * 4) + 1] = y2;
+							__bufferData[offset + (dataLength * 4) + 2] = uvWidth;
+							__bufferData[offset + (dataLength * 4) + 3] = uvY;
+							
+							__bufferData[offset + (dataLength * 5) + 0] = x4;
+							__bufferData[offset + (dataLength * 5) + 1] = y4;
+							__bufferData[offset + (dataLength * 5) + 2] = uvWidth;
+							__bufferData[offset + (dataLength * 5) + 3] = uvHeight;
+							
+							alpha *= worldAlpha;
+							
+							for (j in 0...6) {
+								
+								__bufferData[offset + (dataLength * j) + 4] = alpha;
+								
+							}
+							
+							if (hasColorTransform) {
+								
+								ctOffset = i * attributeLength + colorTransformOffset;
+								tempColorTransform.redMultiplier = attributes[ctOffset];
+								tempColorTransform.greenMultiplier = attributes[ctOffset + 1];
+								tempColorTransform.blueMultiplier = attributes[ctOffset + 2];
+								tempColorTransform.alphaMultiplier = attributes[ctOffset + 3];
+								tempColorTransform.redOffset = attributes[ctOffset + 4];
+								tempColorTransform.greenOffset = attributes[ctOffset + 5];
+								tempColorTransform.blueOffset = attributes[ctOffset + 6];
+								tempColorTransform.alphaOffset = attributes[ctOffset + 7];
+								// tempColorTransform.__combine (colorTransform);
+								
+								redMultiplier = tempColorTransform.redMultiplier;
+								greenMultiplier = tempColorTransform.greenMultiplier;
+								blueMultiplier = tempColorTransform.blueMultiplier;
+								alphaMultiplier = tempColorTransform.alphaMultiplier;
+								redOffset = tempColorTransform.redOffset;
+								greenOffset = tempColorTransform.greenOffset;
+								blueOffset = tempColorTransform.blueOffset;
+								alphaOffset = tempColorTransform.alphaOffset;
+								
+								for (j in 0...6) {
+									
+									// 4 x 4 matrix
+									__bufferData[offset + (dataLength * j) + 5] = redMultiplier;
+									__bufferData[offset + (dataLength * j) + 10] = greenMultiplier;
+									__bufferData[offset + (dataLength * j) + 15] = blueMultiplier;
+									__bufferData[offset + (dataLength * j) + 20] = alphaMultiplier;
+									
+									__bufferData[offset + (dataLength * j) + 21] = redOffset / 255;
+									__bufferData[offset + (dataLength * j) + 22] = greenOffset / 255;
+									__bufferData[offset + (dataLength * j) + 23] = blueOffset / 255;
+									__bufferData[offset + (dataLength * j) + 24] = alphaOffset / 255;
+									
+								}
+								
+							}
+							
+						}
+						
+					}
+				
+				case BEGIN_BITMAP_FILL:
+					
+					var c = data.readBeginBitmapFill ();
+					bitmap = c.bitmap;
+				
+				default:
+					
+					data.skip (type);
+				
+			}
+			
+		}
+		
+		Rectangle.__pool.release (rect);
+		Matrix.__pool.release (matrix);
+		
+	}
+	
+	
+	private static function isCompatible (graphics:Graphics, parentTransform:Matrix):Bool {
 		
 		if (!graphics.__visible || graphics.__commands.length == 0) {
 			
@@ -40,7 +306,12 @@ class GLGraphics {
 				
 				switch (type) {
 					
-					case BEGIN_BITMAP_FILL, END_FILL, MOVE_TO, DRAW_TILES:
+					case BEGIN_FILL, DRAW_RECT:
+						
+						// not compatible yet, but skip for now
+						data.skip (type);
+					
+					case BEGIN_BITMAP_FILL, END_FILL, MOVE_TO, DRAW_QUADS:
 						
 						// compatible
 						data.skip (type);
@@ -65,6 +336,13 @@ class GLGraphics {
 		
 		if (!isCompatible (graphics, parentTransform)) {
 			
+			if (graphics.__buffer != null) {
+				
+				graphics.__bufferData = null;
+				graphics.__buffer = null;
+				
+			}
+			
 			#if (js && html5)
 			CanvasGraphics.render (graphics, renderSession, parentTransform);
 			#elseif lime_cairo
@@ -82,10 +360,12 @@ class GLGraphics {
 			
 			if (bounds != null && width >= 1 && height >= 1) {
 				
+				buildBuffer (graphics, renderSession, parentTransform, worldAlpha);
+				
 				var data = new DrawCommandReader (graphics.__commands);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
-				var gl = renderSession.gl;
+				var gl:WebGLContext = renderSession.gl;
 				
 				var shader = renderSession.shaderManager.defaultShader;
 				renderSession.shaderManager.setShader (shader);
@@ -110,11 +390,98 @@ class GLGraphics {
 							
 							bitmap = null;
 						
-						case DRAW_TILES:
+						case DRAW_QUADS:
 							
 							if (bitmap != null) {
 								
-								trace ("DRAW TILES");
+								var c = data.readDrawQuads ();
+								var matrices = c.matrices;
+								// var sourceRects = c.sourceRects;
+								// var rectIDs = c.rectIDs;
+								var attributes = c.attributes;
+								var attributeOptions = c.attributeOptions;
+								
+								// concat parentTransform with graphics renderTransform??
+								
+								var uMatrix = renderer.getMatrix (graphics.__renderTransform);
+								var smoothing = (renderSession.allowSmoothing);
+								
+								var useColorTransform = (attributes != null && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0);
+								
+								var shader = renderSession.shaderManager.initShader (renderSession.shaderManager.defaultShader);
+								renderSession.shaderManager.setShader (shader);
+								
+								shader.data.uMatrix.value = uMatrix;
+								shader.data.uImage0.input = bitmap;
+								shader.data.uImage0.smoothing = smoothing;
+								
+								if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+								shader.data.uColorTransform.value[0] = useColorTransform;
+								
+								renderSession.shaderManager.updateShader (shader);
+								
+								if (graphics.__buffer == null || graphics.__bufferContext != gl) {
+									
+									graphics.__bufferContext = cast gl;
+									graphics.__buffer = gl.createBuffer ();
+									
+								}
+								
+								gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
+								gl.bufferData (gl.ARRAY_BUFFER, graphics.__bufferData, gl.DYNAMIC_DRAW);
+								
+								var attribSize = 4;
+								
+								// if (hasAttributes && attributeOptions & VertexAttribute.ALPHA > 0) {
+									
+								// 	attribSize++;
+									
+								// } else {
+									
+									// still passing alpha
+									attribSize++;
+									
+								// }
+								
+								if (useColorTransform) {
+									
+									attribSize += 20;
+									
+								}
+								
+								gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 0);
+								gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+								gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+								
+								if (useColorTransform) {
+									
+									gl.vertexAttribPointer (shader.data.aColorMultipliers0.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+									gl.vertexAttribPointer (shader.data.aColorMultipliers1.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+									gl.vertexAttribPointer (shader.data.aColorMultipliers2.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 13 * Float32Array.BYTES_PER_ELEMENT);
+									gl.vertexAttribPointer (shader.data.aColorMultipliers3.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 17 * Float32Array.BYTES_PER_ELEMENT);
+									gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 21 * Float32Array.BYTES_PER_ELEMENT);
+									
+								} else {
+									
+									gl.disableVertexAttribArray (shader.data.aColorMultipliers0.index);
+									gl.vertexAttrib4f (shader.data.aColorMultipliers0.index, 0, 0, 0, 0);
+									gl.disableVertexAttribArray (shader.data.aColorMultipliers1.index);
+									gl.vertexAttrib4f (shader.data.aColorMultipliers1.index, 0, 0, 0, 0);
+									gl.disableVertexAttribArray (shader.data.aColorMultipliers2.index);
+									gl.vertexAttrib4f (shader.data.aColorMultipliers2.index, 0, 0, 0, 0);
+									gl.disableVertexAttribArray (shader.data.aColorMultipliers3.index);
+									gl.vertexAttrib4f (shader.data.aColorMultipliers3.index, 0, 0, 0, 0);
+									gl.disableVertexAttribArray (shader.data.aColorOffsets.index);
+									gl.vertexAttrib4f (shader.data.aColorOffsets.index, 0, 0, 0, 0);
+									
+								}
+								
+								var length = Math.floor (matrices.length / 6);
+								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
+								
+								#if gl_stats
+									GLStats.incrementDrawCall (DrawCallContext.STAGE);
+								#end
 								
 							}
 						
@@ -189,6 +556,31 @@ class GLGraphics {
 		#elseif lime_cairo
 		CairoGraphics.render (graphics, renderSession, parentTransform);
 		#end
+		
+	}
+	
+	
+	private static function resizeBuffer (graphics:Graphics, length:Int):Void {
+		
+		if (graphics.__bufferData == null) {
+			
+			graphics.__bufferData = new Float32Array (length);
+			
+		} else if (length > graphics.__bufferData.length) {
+			
+			var buffer = new Float32Array (length);
+			
+			if (graphics.__bufferData != null) {
+				
+				buffer.set (graphics.__bufferData);
+				
+			}
+			
+			graphics.__bufferData = buffer;
+			
+		}
+		
+		graphics.__bufferLength = length;
 		
 	}
 	
