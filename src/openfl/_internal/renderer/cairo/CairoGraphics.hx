@@ -799,6 +799,9 @@ class CairoGraphics {
 					
 					if (bitmapFill == null) continue;
 					
+					var cacheExtend = fillPattern.extend;
+					fillPattern.extend = CairoExtend.NONE;
+					
 					var c = data.readDrawQuads ();
 					var matrices = c.matrices;
 					var sourceRects = c.sourceRects;
@@ -889,11 +892,15 @@ class CairoGraphics {
 						fillPattern.matrix = matrix;
 						cairo.source = fillPattern;
 						
-						cairo.save ();
-						
-						cairo.newPath ();
-						cairo.rectangle (0, 0, tileRect.width, tileRect.height);
-						cairo.clip ();
+						if (tileRect != sourceRect) {
+							
+							cairo.save ();
+							
+							cairo.newPath ();
+							cairo.rectangle (0, 0, tileRect.width, tileRect.height);
+							cairo.clip ();
+							
+						}
 						
 						if (!hitTesting) {
 							
@@ -909,7 +916,11 @@ class CairoGraphics {
 							
 						}
 						
-						cairo.restore ();
+						if (tileRect != sourceRect) {
+							
+							cairo.restore ();
+							
+						}
 						
 					}
 					
@@ -917,6 +928,7 @@ class CairoGraphics {
 					Matrix.__pool.release (tileTransform);
 					
 					cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
+					fillPattern.extend = cacheExtend;
 				
 				case DRAW_TRIANGLES:
 					
