@@ -82,11 +82,7 @@ class GLGraphics {
 							hasAlpha = true;
 							colorTransformOffset++;
 							attributeLength++;
-							
-						} else {
-							
-							// still passing alpha
-							attributeLength++;
+							dataLength++;
 							
 						}
 						
@@ -94,10 +90,9 @@ class GLGraphics {
 							
 							hasColorTransform = true;
 							attributeLength += 8;
+							dataLength += 20;
 							
 						}
-						
-						dataLength += attributeLength;
 						
 						var length = Math.floor (matrices.length / 6);
 						var stride = dataLength * 6;
@@ -108,7 +103,7 @@ class GLGraphics {
 						var tileMatrix, tileColorTransform, tileRect = null;
 						
 						var offset = bufferPosition;
-						var alpha, tileData, id;
+						var alpha = 1.0, tileData, id;
 						var bitmapWidth, bitmapHeight, tileWidth:Float, tileHeight:Float;
 						var uvX, uvY, uvWidth, uvHeight;
 						var x, y, x2, y2, x3, y3, x4, y4;
@@ -135,12 +130,17 @@ class GLGraphics {
 						for (i in 0...length) {
 							
 							offset = bufferPosition + (i * stride);
-							alpha = (hasAlpha ? attributes[i * attributeLength] : 1.0);
 							
-							if (alpha <= 0) {
+							if (hasAlpha) {
 								
-								__skipTile (i, offset);
-								continue;
+								alpha = attributes[i * attributeLength] * worldAlpha;
+								
+								if (alpha <= 0) {
+									
+									__skipTile (i, offset);
+									continue;
+									
+								}
 								
 							}
 							
@@ -221,11 +221,13 @@ class GLGraphics {
 							__bufferData[offset + (dataLength * 5) + 2] = uvWidth;
 							__bufferData[offset + (dataLength * 5) + 3] = uvHeight;
 							
-							alpha *= worldAlpha;
-							
-							for (j in 0...6) {
+							if (hasAlpha) {
 								
-								__bufferData[offset + (dataLength * j) + 4] = alpha;
+								for (j in 0...6) {
+									
+									__bufferData[offset + (dataLength * j) + 4] = alpha;
+									
+								}
 								
 							}
 							
@@ -251,24 +253,28 @@ class GLGraphics {
 								blueOffset = tempColorTransform.blueOffset;
 								alphaOffset = tempColorTransform.alphaOffset;
 								
+								ctOffset = 4 + colorTransformOffset;
+								
 								for (j in 0...6) {
 									
 									// 4 x 4 matrix
-									__bufferData[offset + (dataLength * j) + 5] = redMultiplier;
-									__bufferData[offset + (dataLength * j) + 10] = greenMultiplier;
-									__bufferData[offset + (dataLength * j) + 15] = blueMultiplier;
-									__bufferData[offset + (dataLength * j) + 20] = alphaMultiplier;
+									__bufferData[offset + (dataLength * j) + ctOffset] = redMultiplier;
+									__bufferData[offset + (dataLength * j) + ctOffset*2] = greenMultiplier;
+									__bufferData[offset + (dataLength * j) + ctOffset*3] = blueMultiplier;
+									__bufferData[offset + (dataLength * j) + ctOffset*4] = alphaMultiplier;
 									
-									__bufferData[offset + (dataLength * j) + 21] = redOffset / 255;
-									__bufferData[offset + (dataLength * j) + 22] = greenOffset / 255;
-									__bufferData[offset + (dataLength * j) + 23] = blueOffset / 255;
-									__bufferData[offset + (dataLength * j) + 24] = alphaOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset*4 + 1] = redOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset*4 + 2] = greenOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset*4 + 3] = blueOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset*4 + 4] = alphaOffset / 255;
 									
 								}
 								
 							}
 							
 						}
+						
+						bufferPosition += length * stride;
 						
 					}
 				
@@ -293,6 +299,10 @@ class GLGraphics {
 	
 	private static function isCompatible (graphics:Graphics, parentTransform:Matrix):Bool {
 		
+		#if force_sw_graphics
+		return false;
+		#end
+		
 		if (!graphics.__visible || graphics.__commands.length == 0) {
 			
 			return false;
@@ -301,6 +311,7 @@ class GLGraphics {
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			var bitmap = null;
+			var hasDrawQuads = false;
 			
 			for (type in graphics.__commands.types) {
 				
@@ -311,9 +322,14 @@ class GLGraphics {
 						// not compatible yet, but skip for now
 						data.skip (type);
 					
-					case BEGIN_BITMAP_FILL, END_FILL, MOVE_TO, DRAW_QUADS:
+					case BEGIN_BITMAP_FILL, END_FILL, MOVE_TO:
 						
 						// compatible
+						data.skip (type);
+					
+					case DRAW_QUADS:
+						
+						hasDrawQuads = true;
 						data.skip (type);
 					
 					default:
@@ -325,7 +341,7 @@ class GLGraphics {
 				
 			}
 			
-			return true;
+			return hasDrawQuads;
 			
 		}
 		
@@ -360,21 +376,29 @@ class GLGraphics {
 			
 			if (bounds != null && width >= 1 && height >= 1) {
 				
-				buildBuffer (graphics, renderSession, parentTransform, worldAlpha);
+				var updatedBuffer = false;
+				
+				if (graphics.__dirty || graphics.__bufferData == null) {
+					
+					buildBuffer (graphics, renderSession, parentTransform, worldAlpha);
+					updatedBuffer = true;
+					
+				}
 				
 				var data = new DrawCommandReader (graphics.__commands);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
 				var gl:WebGLContext = renderSession.gl;
 				
-				var shader = renderSession.shaderManager.defaultShader;
-				renderSession.shaderManager.setShader (shader);
+				// var matrix = Matrix.__pool.get ();
 				
 				var bitmap = null;
 				var smooth = false;
 				
 				var positionX = 0.0;
 				var positionY = 0.0;
+				
+				var bufferPosition = 0;
 				
 				for (type in graphics.__commands.types) {
 					
@@ -401,11 +425,13 @@ class GLGraphics {
 								var attributes = c.attributes;
 								var attributeOptions = c.attributeOptions;
 								
-								// concat parentTransform with graphics renderTransform??
+								// matrix.copyFrom (graphics.__renderTransform);
+								// matrix.concat (parentTransform);
 								
-								var uMatrix = renderer.getMatrix (graphics.__renderTransform);
-								var smoothing = (renderSession.allowSmoothing);
+								var uMatrix = renderer.getMatrix (parentTransform);
+								var smoothing = (renderSession.allowSmoothing && smooth);
 								
+								var useAlpha = (attributes != null && attributeOptions & VertexAttribute.ALPHA > 0);
 								var useColorTransform = (attributes != null && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0);
 								
 								var shader = renderSession.shaderManager.initShader (renderSession.shaderManager.defaultShader);
@@ -428,20 +454,20 @@ class GLGraphics {
 								}
 								
 								gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
-								gl.bufferData (gl.ARRAY_BUFFER, graphics.__bufferData, gl.DYNAMIC_DRAW);
+								
+								if (updatedBuffer) {
+									
+									gl.bufferData (gl.ARRAY_BUFFER, graphics.__bufferData, gl.DYNAMIC_DRAW);
+									
+								}
 								
 								var attribSize = 4;
 								
-								// if (hasAttributes && attributeOptions & VertexAttribute.ALPHA > 0) {
+								if (useAlpha) {
 									
-								// 	attribSize++;
-									
-								// } else {
-									
-									// still passing alpha
 									attribSize++;
 									
-								// }
+								}
 								
 								if (useColorTransform) {
 									
@@ -451,7 +477,17 @@ class GLGraphics {
 								
 								gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 0);
 								gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-								gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+								
+								if (useAlpha) {
+									
+									gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+									
+								} else {
+									
+									gl.disableVertexAttribArray (shader.data.aAlpha.index);
+									gl.vertexAttrib1f (shader.data.aAlpha.index, 1);
+									
+								}
 								
 								if (useColorTransform) {
 									
@@ -477,7 +513,8 @@ class GLGraphics {
 								}
 								
 								var length = Math.floor (matrices.length / 6);
-								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
+								gl.drawArrays (gl.TRIANGLES, bufferPosition, length * 6);
+								bufferPosition += length * 6;
 								
 								#if gl_stats
 									GLStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -537,6 +574,8 @@ class GLGraphics {
 					}
 					
 				}
+				
+				// Matrix.__pool.release (matrix);
 				
 			}
 			
