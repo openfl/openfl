@@ -34,7 +34,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	@:arrayAccess public inline function get (index:Int):T {
 		
-		return this.data.get (index);
+		return cast this.data.get (index);
 		
 	}
 	
@@ -55,7 +55,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	public inline function iterator<T> ():Iterator<T> {
 		
-		return this.data.iterator ();
+		return cast this.data.iterator ();
 		
 	}
 	
@@ -76,7 +76,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	public inline function pop ():Null<T> {
 		
-		return this.data.pop ();
+		return cast this.data.pop ();
 		
 	}
 	
@@ -90,7 +90,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	public inline function removeAt (index:Int):T {
 		
-		return this.data.removeAt (index);
+		return cast this.data.removeAt (index);
 		
 	}
 	
@@ -104,14 +104,14 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	@:arrayAccess public inline function set (index:Int, value:T):T {
 		
-		return this.data.set (index, value);
+		return cast this.data.set (index, value);
 		
 	}
 	
 	
 	public inline function shift ():Null<T> {
 		
-		return this.data.shift ();
+		return cast this.data.shift ();
 		
 	}
 	
