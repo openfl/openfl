@@ -2114,6 +2114,12 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	private static function __init__ () {
 		
+		__stub__();
+		
+	}
+	
+	private static function __stub__() {
+		
 		untyped __js__ ("var prefix = (typeof openfl_VectorData !== 'undefined');
 		var ref = (prefix ? openfl_VectorData : VectorData);
 		var p = ref.prototype;
