@@ -69,17 +69,6 @@ class GLTilemap {
 		
 		tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
 		
-		gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
-			
-		if (true || useColorTransform) {
-			
-			gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
-			
-		}
-		
 		var cacheShader = null;
 		var cacheBitmapData = null;
 		var lastIndex = 0;
@@ -144,6 +133,24 @@ class GLTilemap {
 				
 				if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
 				shader.data.uUseColorTransform.value[0] = useColorTransform;
+				
+				gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				
+				if (true || useColorTransform) {
+					
+					gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+					gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+					
+				} else {
+					
+					// gl.disableVertexAttribArray (shader.data.aColorMultipliers.index);
+					// gl.vertexAttrib4f (shader.data.aColorMultipliers.index, 1, 1, 1, 1);
+					// gl.disableVertexAttribArray (shader.data.aColorOffsets.index);
+					// gl.vertexAttrib4f (shader.data.aColorOffsets.index, 0, 0, 0, 0);
+					
+				}
 				
 				// gl.bindBuffer (gl.ARRAY_BUFFER, tileArray.__buffer);
 				
