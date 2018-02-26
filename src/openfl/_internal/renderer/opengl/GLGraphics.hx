@@ -90,7 +90,7 @@ class GLGraphics {
 							
 							hasColorTransform = true;
 							attributeLength += 8;
-							dataLength += 20;
+							dataLength += 8;
 							
 						}
 						
@@ -259,14 +259,14 @@ class GLGraphics {
 									
 									// 4 x 4 matrix
 									__bufferData[offset + (dataLength * j) + ctOffset] = redMultiplier;
-									__bufferData[offset + (dataLength * j) + ctOffset*2] = greenMultiplier;
-									__bufferData[offset + (dataLength * j) + ctOffset*3] = blueMultiplier;
-									__bufferData[offset + (dataLength * j) + ctOffset*4] = alphaMultiplier;
+									__bufferData[offset + (dataLength * j) + ctOffset + 1] = greenMultiplier;
+									__bufferData[offset + (dataLength * j) + ctOffset + 2] = blueMultiplier;
+									__bufferData[offset + (dataLength * j) + ctOffset + 3] = alphaMultiplier;
 									
-									__bufferData[offset + (dataLength * j) + ctOffset*4 + 1] = redOffset / 255;
-									__bufferData[offset + (dataLength * j) + ctOffset*4 + 2] = greenOffset / 255;
-									__bufferData[offset + (dataLength * j) + ctOffset*4 + 3] = blueOffset / 255;
-									__bufferData[offset + (dataLength * j) + ctOffset*4 + 4] = alphaOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset + 4] = redOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset + 5] = greenOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset + 6] = blueOffset / 255;
+									__bufferData[offset + (dataLength * j) + ctOffset + 7] = alphaOffset / 255;
 									
 								}
 								
@@ -491,22 +491,13 @@ class GLGraphics {
 								
 								if (useColorTransform) {
 									
-									gl.vertexAttribPointer (shader.data.aColorMultipliers0.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-									gl.vertexAttribPointer (shader.data.aColorMultipliers1.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
-									gl.vertexAttribPointer (shader.data.aColorMultipliers2.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 13 * Float32Array.BYTES_PER_ELEMENT);
-									gl.vertexAttribPointer (shader.data.aColorMultipliers3.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 17 * Float32Array.BYTES_PER_ELEMENT);
-									gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 21 * Float32Array.BYTES_PER_ELEMENT);
+									gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+									gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
 									
 								} else {
 									
-									gl.disableVertexAttribArray (shader.data.aColorMultipliers0.index);
-									gl.vertexAttrib4f (shader.data.aColorMultipliers0.index, 0, 0, 0, 0);
-									gl.disableVertexAttribArray (shader.data.aColorMultipliers1.index);
-									gl.vertexAttrib4f (shader.data.aColorMultipliers1.index, 0, 0, 0, 0);
-									gl.disableVertexAttribArray (shader.data.aColorMultipliers2.index);
-									gl.vertexAttrib4f (shader.data.aColorMultipliers2.index, 0, 0, 0, 0);
-									gl.disableVertexAttribArray (shader.data.aColorMultipliers3.index);
-									gl.vertexAttrib4f (shader.data.aColorMultipliers3.index, 0, 0, 0, 0);
+									gl.disableVertexAttribArray (shader.data.aColorMultipliers.index);
+									gl.vertexAttrib4f (shader.data.aColorMultipliers.index, 1, 1, 1, 1);
 									gl.disableVertexAttribArray (shader.data.aColorOffsets.index);
 									gl.vertexAttrib4f (shader.data.aColorOffsets.index, 0, 0, 0, 0);
 									
