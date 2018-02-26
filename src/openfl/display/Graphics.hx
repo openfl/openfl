@@ -37,6 +37,7 @@ import js.html.CanvasRenderingContext2D;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.GraphicsPath)
+@:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -135,6 +136,21 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__bitmapFill = null;
+		
+	}
+	
+	
+	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void {
+		
+		// TODO: Avoid clone
+		
+		__commands.beginShaderFill (shader.__clone (), matrix);
+		
+		if (shader != null) {
+			
+			__bitmapFill = shader.data.uImage0.input;
+			
+		}
 		
 	}
 	
@@ -327,6 +343,7 @@ import js.html.CanvasRenderingContext2D;
 		var fill:GraphicsSolidFill;
 		var bitmapFill:GraphicsBitmapFill;
 		var gradientFill:GraphicsGradientFill;
+		var shaderFill:GraphicsShaderFill;
 		var stroke:GraphicsStroke;
 		var path:GraphicsPath;
 		var trianglePath:GraphicsTrianglePath;
@@ -350,6 +367,11 @@ import js.html.CanvasRenderingContext2D;
 					
 					gradientFill = cast graphics;
 					beginGradientFill (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+				
+				case SHADER:
+					
+					shaderFill = cast graphics;
+					beginShaderFill (shaderFill.shader, shaderFill.matrix);
 				
 				case STROKE:
 					
@@ -411,7 +433,7 @@ import js.html.CanvasRenderingContext2D;
 				case QUAD_PATH:
 					
 					quadPath = cast graphics;
-					drawQuads (quadPath.matrices, quadPath.sourceRects, quadPath.rectIDs, quadPath.attributes, quadPath.attributeOptions);
+					drawQuads (quadPath.matrices, quadPath.sourceRects, quadPath.rectIndices);
 				
 			}
 			
@@ -472,12 +494,12 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float> = null, rectIDs:Vector<Int> = null, attributes:Vector<Float> = null, attributeOptions:UInt = 0):Void {
+	public function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float> = null, rectIndices:Vector<Int> = null):Void {
 		
 		if (matrices == null || __bitmapFill == null) return;
 		
 		var hasRects = (sourceRects != null);
-		var hasIDs = (rectIDs != null);
+		var hasIDs = (rectIndices != null);
 		
 		var rect = Rectangle.__pool.get ();
 		var matrix = Matrix.__pool.get ();
@@ -499,7 +521,7 @@ import js.html.CanvasRenderingContext2D;
 			
 			if (hasRects) {
 				
-				i4 = (hasIDs ? (rectIDs[i] * 4) : i * 4);
+				i4 = (hasIDs ? (rectIndices[i] * 4) : i * 4);
 				rect.setTo (sourceRects[i4], sourceRects[i4 + 1], sourceRects[i4 + 2], sourceRects[i4 + 3]);
 				
 			} else {
@@ -520,7 +542,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (minX, minY);
 		__inflateBounds (maxX, maxY);
 		
-		__commands.drawQuads (matrices, sourceRects, rectIDs, attributes, attributeOptions);
+		__commands.drawQuads (matrices, sourceRects, rectIndices);
 		__dirty = true;
 		
 		Rectangle.__pool.release (rect);
@@ -983,6 +1005,9 @@ import js.html.CanvasRenderingContext2D;
 					var c = data.readBeginGradientFill ();
 					graphicsData.push (new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio));
 				
+				case BEGIN_SHADER_FILL:
+					
+					
 				
 				default:
 					

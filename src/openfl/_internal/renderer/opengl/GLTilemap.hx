@@ -128,7 +128,7 @@ class GLTilemap {
 			if (shader != cacheShader) {
 				
 				shaderManager.setShader (shader);
-				shaderManager.updateMatrix (uMatrix);
+				shaderManager.applyMatrix (uMatrix);
 				shader.data.uImage0.smoothing = smoothing;
 				shader.data.aAlpha.value = null;
 				shader.data.aColorMultipliers.value = null;
@@ -170,7 +170,7 @@ class GLTilemap {
 			if (i == drawCount && tileset.__bitmapData != null) {
 				
 				shader.data.uImage0.input = tileset.__bitmapData;
-				renderSession.shaderManager.updateShader (shader);
+				renderSession.shaderManager.updateShader ();
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
 				#if gl_stats
@@ -244,7 +244,7 @@ class GLTilemap {
 			if (flush) {
 				
 				shader.data.uImage0.input = cacheBitmapData;
-				renderSession.shaderManager.updateShader (shader);
+				renderSession.shaderManager.updateShader ();
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
@@ -262,7 +262,7 @@ class GLTilemap {
 			if (i == drawCount && tileset.__bitmapData != null) {
 				
 				shader.data.uImage0.input = tileset.__bitmapData;
-				renderSession.shaderManager.updateShader (shader);
+				renderSession.shaderManager.updateShader ();
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
 				#if gl_stats

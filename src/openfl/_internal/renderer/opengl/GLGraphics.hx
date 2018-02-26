@@ -6,7 +6,6 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.Graphics;
-import openfl.display.VertexAttribute;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -51,10 +50,6 @@ class GLGraphics {
 			
 			switch (type) {
 				
-				case END_FILL:
-					
-					bitmap = null;
-				
 				case DRAW_QUADS:
 					
 					if (bitmap != null) {
@@ -62,12 +57,12 @@ class GLGraphics {
 						var c = data.readDrawQuads ();
 						var matrices = c.matrices;
 						var sourceRects = c.sourceRects;
-						var rectIDs = c.rectIDs;
-						var attributes = c.attributes;
-						var attributeOptions = c.attributeOptions;
+						var rectIndices = c.rectIndices;
+						var attributes = null; //c.attributes;
+						var attributeOptions = 0; //c.attributeOptions;
 						
 						var hasRects = (sourceRects != null);
-						var hasIDs = (hasRects && rectIDs != null);
+						var hasIDs = (hasRects && rectIndices != null);
 						var hasAttributes = (attributes != null);
 						var hasAlpha = false;
 						var hasColorTransform = false;
@@ -77,22 +72,22 @@ class GLGraphics {
 						var dataLength = 4;
 						var attributeLength = 0;
 						
-						if (hasAttributes && attributeOptions & VertexAttribute.ALPHA > 0) {
+						// if (hasAttributes && attributeOptions & VertexAttribute.ALPHA > 0) {
 							
-							hasAlpha = true;
-							colorTransformOffset++;
-							attributeLength++;
-							dataLength++;
+						// 	hasAlpha = true;
+						// 	colorTransformOffset++;
+						// 	attributeLength++;
+						// 	dataLength++;
 							
-						}
+						// }
 						
-						if (hasAttributes && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0) {
+						// if (hasAttributes && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0) {
 							
-							hasColorTransform = true;
-							attributeLength += 8;
-							dataLength += 8;
+						// 	hasColorTransform = true;
+						// 	attributeLength += 8;
+						// 	dataLength += 8;
 							
-						}
+						// }
 						
 						var length = Math.floor (matrices.length / 6);
 						var stride = dataLength * 6;
@@ -146,14 +141,14 @@ class GLGraphics {
 							
 							if (hasRects) {
 								
-								if (hasIDs && rectIDs[i] == -1) {
+								if (hasIDs && rectIndices[i] == -1) {
 									
 									__skipTile (i, offset);
 									continue;
 									
 								}
 								
-								rectOffset = hasIDs ? rectIDs[i] : i * 4;
+								rectOffset = hasIDs ? rectIndices[i] : i * 4;
 								rect.setTo (sourceRects[rectOffset], sourceRects[rectOffset + 1], sourceRects[rectOffset + 2], sourceRects[rectOffset + 3]);
 								tileRect = rect;
 								
@@ -278,10 +273,19 @@ class GLGraphics {
 						
 					}
 				
+				case END_FILL:
+					
+					bitmap = null;
+				
 				case BEGIN_BITMAP_FILL:
 					
 					var c = data.readBeginBitmapFill ();
 					bitmap = c.bitmap;
+				
+				case BEGIN_SHADER_FILL:
+					
+					var c = data.readBeginShaderFill ();
+					bitmap = c.shader.data.uImage0.input;
 				
 				default:
 					
@@ -312,7 +316,8 @@ class GLGraphics {
 			var data = new DrawCommandReader (graphics.__commands);
 			var bitmap = null;
 			var hasDrawQuads = false;
-			
+			trace ("hi");
+			trace (graphics.__commands.types);
 			for (type in graphics.__commands.types) {
 				
 				switch (type) {
@@ -322,18 +327,18 @@ class GLGraphics {
 						// not compatible yet, but skip for now
 						data.skip (type);
 					
-					case BEGIN_BITMAP_FILL, END_FILL, MOVE_TO:
+					case BEGIN_BITMAP_FILL, BEGIN_SHADER_FILL, END_FILL, MOVE_TO:
 						
 						// compatible
 						data.skip (type);
 					
 					case DRAW_QUADS:
-						
+						trace ("SDLFKJ");
 						hasDrawQuads = true;
 						data.skip (type);
 					
 					default:
-						
+						trace (type);
 						data.destroy ();
 						return false;
 					
@@ -349,9 +354,9 @@ class GLGraphics {
 	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
-		
+		trace ("1");
 		if (!isCompatible (graphics, parentTransform)) {
-			
+			trace ("2");
 			if (graphics.__buffer != null) {
 				
 				graphics.__bufferData = null;
@@ -366,7 +371,7 @@ class GLGraphics {
 			#end
 			
 		} else {
-			
+			trace ("3");
 			graphics.__update ();
 			
 			var bounds = graphics.__bounds;
@@ -392,6 +397,7 @@ class GLGraphics {
 				
 				// var matrix = Matrix.__pool.get ();
 				
+				var shader = null;
 				var bitmap = null;
 				var smooth = false;
 				
@@ -404,26 +410,29 @@ class GLGraphics {
 					
 					switch (type) {
 						
-						case MOVE_TO:
+						case BEGIN_BITMAP_FILL:
 							
-							var c = data.readMoveTo ();
-							positionX = c.x;
-							positionY = c.y;
+							var c = data.readBeginBitmapFill ();
+							bitmap = c.bitmap;
+							smooth = c.smooth;
 						
-						case END_FILL:
+						case BEGIN_SHADER_FILL:
 							
-							bitmap = null;
+							var c = data.readBeginShaderFill ();
+							shader = c.shader;
+							bitmap = shader.data.uImage0.input;
+							smooth = shader.data.uImage0.smoothing;
 						
 						case DRAW_QUADS:
 							
 							if (bitmap != null) {
-								
+								trace ("draw");
 								var c = data.readDrawQuads ();
 								var matrices = c.matrices;
 								// var sourceRects = c.sourceRects;
 								// var rectIDs = c.rectIDs;
-								var attributes = c.attributes;
-								var attributeOptions = c.attributeOptions;
+								var attributes = null; //c.attributes;
+								var attributeOptions = 0; //c.attributeOptions;
 								
 								// matrix.copyFrom (graphics.__renderTransform);
 								// matrix.concat (parentTransform);
@@ -431,8 +440,8 @@ class GLGraphics {
 								var uMatrix = renderer.getMatrix (parentTransform);
 								var smoothing = (renderSession.allowSmoothing && smooth);
 								
-								var useAlpha = (attributes != null && attributeOptions & VertexAttribute.ALPHA > 0);
-								var useColorTransform = (attributes != null && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0);
+								var useAlpha = false; //(attributes != null && attributeOptions & VertexAttribute.ALPHA > 0);
+								var useColorTransform = false; ///(attributes != null && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0);
 								
 								var shader = renderSession.shaderManager.initShader (renderSession.shaderManager.defaultShader);
 								renderSession.shaderManager.setShader (shader);
@@ -513,12 +522,6 @@ class GLGraphics {
 								
 							}
 						
-						case BEGIN_BITMAP_FILL:
-							
-							var c = data.readBeginBitmapFill ();
-							bitmap = c.bitmap;
-							smooth = c.smooth;
-						
 						// case DRAW_RECT:
 							
 						// 	var c = data.readDrawRect ();
@@ -557,6 +560,16 @@ class GLGraphics {
 						// 		#end
 								
 						// 	}
+						
+						case END_FILL:
+							
+							bitmap = null;
+						
+						case MOVE_TO:
+							
+							var c = data.readMoveTo ();
+							positionX = c.x;
+							positionY = c.y;
 						
 						default:
 							

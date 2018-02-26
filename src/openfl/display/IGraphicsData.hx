@@ -18,5 +18,6 @@ interface IGraphicsData {
 	END;
 	QUAD_PATH;
 	TRIANGLE_PATH;
+	SHADER;
 	
 }

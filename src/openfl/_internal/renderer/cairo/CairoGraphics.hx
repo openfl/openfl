@@ -21,7 +21,6 @@ import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
-import openfl.display.VertexAttribute;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -805,14 +804,16 @@ class CairoGraphics {
 					var c = data.readDrawQuads ();
 					var matrices = c.matrices;
 					var sourceRects = c.sourceRects;
-					var rectIDs = c.rectIDs;
-					var attributes = c.attributes;
-					var attributeOptions = c.attributeOptions;
+					var rectIndices = c.rectIndices;
+					var attributes = []; //c.attributes;
+					var attributeOptions = 0; //c.attributeOptions;
 					
 					var hasRect = (sourceRects != null);
-					var hasID = (hasRect && rectIDs != null);
-					var hasAlpha = (attributeOptions & VertexAttribute.ALPHA) > 0;
-					var hasColorTransform = (attributeOptions & VertexAttribute.COLOR_TRANSFORM) > 0;
+					var hasID = (hasRect && rectIndices != null);
+					// var hasAlpha = (attributeOptions & VertexAttribute.ALPHA) > 0;
+					// var hasColorTransform = (attributeOptions & VertexAttribute.COLOR_TRANSFORM) > 0;
+					var hasAlpha = false;
+					var hasColorTransform = false;
 					
 					var attributeSize = 0;
 					var colorTransformOffset = 0;
@@ -852,7 +853,7 @@ class CairoGraphics {
 							
 							if (hasID) {
 								
-								id = rectIDs[i];
+								id = rectIndices[i];
 								if (id == -1) continue;
 								i4 = id * 4;
 								
@@ -1485,7 +1486,7 @@ class CairoGraphics {
 					case DRAW_QUADS:
 						
 						var c = data.readDrawQuads ();
-						fillCommands.drawQuads (c.matrices, c.sourceRects, c.rectIDs, c.attributes, c.attributeOptions);
+						fillCommands.drawQuads (c.matrices, c.sourceRects, c.rectIndices);
 					
 					case DRAW_TRIANGLES:
 						

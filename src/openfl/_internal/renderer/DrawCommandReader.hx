@@ -68,6 +68,10 @@ class DrawCommandReader {
 				ffPos += 1; //alphas
 				fPos += 1;  //focalPointRatio
 			
+			case BEGIN_SHADER_FILL:
+				
+				oPos += 2; //shader, matrix
+			
 			case CUBIC_CURVE_TO:
 				
 				fPos += 6; //controlX1, controlY1, controlX2, controlY2, anchorX, anchorY
@@ -86,8 +90,7 @@ class DrawCommandReader {
 			
 			case DRAW_QUADS:
 				
-				oPos += 4; //matrices, sourceRects, rectIDs, attributes
-				iPos += 1; //attributeOptions
+				oPos += 3; //matrices, sourceRects, rectIDs
 			
 			case DRAW_RECT:
 				
@@ -202,6 +205,7 @@ class DrawCommandReader {
 	public inline function readBeginBitmapFill ():BeginBitmapFillView { advance (); prev = BEGIN_BITMAP_FILL; return new BeginBitmapFillView (this); }
 	public inline function readBeginFill ():BeginFillView { advance (); prev = BEGIN_FILL; return new BeginFillView (this); }
 	public inline function readBeginGradientFill ():BeginGradientFillView { advance (); prev = BEGIN_GRADIENT_FILL; return new BeginGradientFillView (this); }
+	public inline function readBeginShaderFill ():BeginShaderFillView { advance (); prev = BEGIN_SHADER_FILL; return new BeginShaderFillView (this); }
 	public inline function readCubicCurveTo ():CubicCurveToView { advance (); prev = CUBIC_CURVE_TO; return new CubicCurveToView (this); }
 	public inline function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
 	public inline function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
@@ -274,6 +278,15 @@ abstract BeginGradientFillView (DrawCommandReader) {
 }
 
 
+abstract BeginShaderFillView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var shader (get, never):Shader; private inline function get_shader ():Shader { return cast this.obj (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	
+}
+
+
 abstract CubicCurveToView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
@@ -324,9 +337,7 @@ abstract DrawQuadsView (DrawCommandReader) {
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var matrices (get, never):Vector<Float>; private inline function get_matrices ():Vector<Float> { return cast this.obj (0); }
 	public var sourceRects (get, never):Vector<Float>; private inline function get_sourceRects ():Vector<Float> { return cast this.obj (1); }
-	public var rectIDs (get, never):Vector<Int>; private inline function get_rectIDs ():Vector<Int> { return cast this.obj (2); }
-	public var attributes (get, never):Vector<Float>; private inline function get_attributes ():Vector<Float> { return cast this.obj (3); }
-	public var attributeOptions (get, never):UInt; private inline function get_attributeOptions ():UInt { return cast this.int (0); }
+	public var rectIndices (get, never):Vector<Int>; private inline function get_rectIndices ():Vector<Int> { return cast this.obj (2); }
 	
 }
 

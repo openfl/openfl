@@ -89,11 +89,12 @@ class DrawCommandBuffer {
 				case BEGIN_BITMAP_FILL: var c = data.readBeginBitmapFill (); beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
 				case BEGIN_FILL: var c = data.readBeginFill (); beginFill (c.color, c.alpha);
 				case BEGIN_GRADIENT_FILL: var c = data.readBeginGradientFill (); beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+				case BEGIN_SHADER_FILL: var c = data.readBeginShaderFill (); beginShaderFill (c.shader, c.matrix);
 				case CUBIC_CURVE_TO: var c = data.readCubicCurveTo (); cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 				case CURVE_TO: var c = data.readCurveTo (); curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				case DRAW_CIRCLE: var c = data.readDrawCircle (); drawCircle (c.x, c.y, c.radius);
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
-				case DRAW_QUADS: var c = data.readDrawQuads (); drawQuads (c.matrices, c.sourceRects, c.rectIDs, c.attributes, c.attributeOptions);
+				case DRAW_QUADS: var c = data.readDrawQuads (); drawQuads (c.matrices, c.sourceRects, c.rectIndices);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
@@ -154,6 +155,17 @@ class DrawCommandBuffer {
 		o.push (spreadMethod);
 		o.push (interpolationMethod);
 		f.push (focalPointRatio);
+		
+	}
+	
+	
+	public function beginShaderFill (shader:Shader, matrix:Matrix):Void {
+		
+		prepareWrite ();
+		
+		types.push (BEGIN_SHADER_FILL);
+		o.push (shader);
+		o.push (matrix);
 		
 	}
 	
@@ -251,16 +263,14 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float>, rectIDs:Vector<Int>, attributes:Vector<Float>, attributeOptions:UInt):Void {
+	public function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float>, rectIndices:Vector<Int>):Void {
 		
 		prepareWrite ();
 		
 		types.push (DRAW_QUADS);
 		o.push (matrices);
 		o.push (sourceRects);
-		o.push (rectIDs);
-		o.push (attributes);
-		i.push (attributeOptions);
+		o.push (rectIndices);
 		
 	}
 	

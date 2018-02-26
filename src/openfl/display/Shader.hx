@@ -205,6 +205,62 @@ class Shader {
 	}
 	
 	
+	private function __clone ():Shader {
+		
+		var classType = Type.getClass (this);
+		var shader = Type.createInstance (classType, []);
+		
+		for (input in __inputBitmapData) {
+			
+			if (input.input != null) {
+				
+				var field = Reflect.field (shader.data, input.name);
+				
+				field.channels = input.channels;
+				field.height = input.height;
+				field.input = input.input;
+				field.smoothing = input.smoothing;
+				field.width = input.width;
+				
+			}
+			
+		}
+		
+		for (param in __paramBool) {
+			
+			if (param.value != null) {
+				
+				Reflect.field (shader.data, param.name).value = param.value.copy ();
+				
+			}
+			
+		}
+		
+		for (param in __paramFloat) {
+			
+			if (param.value != null) {
+				
+				Reflect.field (shader.data, param.name).value = param.value.copy ();
+				
+			}
+			
+		}
+		
+		for (param in __paramInt) {
+			
+			if (param.value != null) {
+				
+				Reflect.field (shader.data, param.name).value = param.value.copy ();
+				
+			}
+			
+		}
+		
+		return shader;
+		
+	}
+	
+	
 	private function __disable ():Void {
 		
 		if (glProgram != null) {

@@ -14,5 +14,6 @@ interface IGraphicsFill {
 	GRADIENT_FILL;
 	BITMAP_FILL;
 	END_FILL;
+	SHADER_FILL;
 	
 }
