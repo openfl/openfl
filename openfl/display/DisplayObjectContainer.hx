@@ -34,6 +34,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var mouseChildren:Bool;
 	public var numChildren (get, never):Int;
 	public var tabChildren:Bool;
+	public var allChildrenInvisible:Bool = true;
 
 	private var __isInitialized:Bool;
 	private var __removedChildren:Vector<DisplayObject>;
@@ -744,6 +745,10 @@ class DisplayObjectContainer extends InteractiveObject {
 		#if !neko
 		
 		super.__renderCanvas (renderSession);
+
+		if (allChildrenInvisible || __children.length == 0) {
+			return;
+		}
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
@@ -1075,6 +1080,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		var frameID:UInt = Stage.frameID;
 		var selfOrParentChanged = _lastParentOrSelfChangeFrameID == frameID;
 
+		allChildrenInvisible = true;
+
 		for (child in __children) {
 
 			if (selfOrParentChanged && child.__visible) {
@@ -1092,6 +1099,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				applyChildBounds(child.calculatedBounds);
 
 			}
+
+			allChildrenInvisible = allChildrenInvisible && (!child.__visible || !child.__renderable || child.__worldAlpha == 0);
 		}
 
 		if (parent != null) {
