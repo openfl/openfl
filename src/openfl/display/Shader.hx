@@ -539,134 +539,300 @@ class Shader {
 			
 		}
 		
-		var value, index;
+		var value, index:Dynamic;
 		
 		for (parameter in __paramBool) {
 			
 			value = parameter.value;
 			index = parameter.index;
 			
-			if (value != null) {
+			if (__isUniform.get (parameter.name)) {
+				
+				if (value != null) {
+					
+					switch (parameter.type) {
+						
+						case BOOL:
+							
+							gl.uniform1i (index, value[0] ? 1 : 0);
+						
+						case BOOL2:
+							
+							gl.uniform2i (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
+						
+						case BOOL3:
+							
+							gl.uniform3i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
+						
+						case BOOL4:
+							
+							gl.uniform4i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
+						
+						default:
+						
+					}
+					
+				}
+				
+			} else {
 				
 				switch (parameter.type) {
 					
 					case BOOL:
 						
-						gl.uniform1i (index, value[0] ? 1 : 0);
+						if (value != null && value.length == 1) {
+							
+							gl.disableVertexAttribArray (index);
+							//gl.vertexAttrib1i (index, value[0] ? 1 : 0);
+							gl.vertexAttrib1f (index, value[0] ? 1 : 0);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case BOOL2:
 						
-						gl.uniform2i (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
+						if (value != null && value.length == 2) {
+							
+							gl.disableVertexAttribArray (index);
+							//gl.vertexAttrib2i (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
+							gl.vertexAttrib2f (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case BOOL3:
 						
-						gl.uniform3i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
+						if (value != null && value.length == 1) {
+							
+							gl.disableVertexAttribArray (index);
+							//gl.vertexAttrib3i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
+							gl.vertexAttrib3f (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case BOOL4:
 						
-						gl.uniform4i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
+						if (value != null && value.length == 1) {
+							
+							gl.disableVertexAttribArray (index);
+							///gl.vertexAttrib4i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
+							gl.vertexAttrib4f (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					default:
 					
 				}
 				
-			} else if (!__isUniform.get (parameter.name)) {
-				
-				gl.enableVertexAttribArray (parameter.index);
-				
 			}
 			
 		}
 		
-		var value, index;
+		var value, index:Dynamic;
 		
 		for (parameter in __paramFloat) {
 			
 			value = parameter.value;
 			index = parameter.index;
 			
-			if (value != null) {
+			if (__isUniform.get (parameter.name)) {
+				
+				if (value != null) {
+					
+					switch (parameter.type) {
+						
+						case FLOAT:
+							
+							gl.uniform1f (index, value[0]);
+						
+						case FLOAT2:
+							
+							gl.uniform2f (index, value[0], value[1]);
+						
+						case FLOAT3:
+							
+							gl.uniform3f (index, value[0], value[1], value[2]);
+						
+						case FLOAT4:
+							
+							gl.uniform4f (index, value[0], value[1], value[2], value[3]);
+						
+						case MATRIX2X2:
+							
+							for (i in 0...4) {
+								
+								__uniformMatrix2[i] = value[i];
+								
+							}
+							
+							gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
+						
+						//case MATRIX2X3:
+						//case MATRIX2X4:
+						//case MATRIX3X2:
+						
+						case MATRIX3X3:
+							
+							for (i in 0...9) {
+								
+								__uniformMatrix3[i] = value[i];
+								
+							}
+							
+							gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
+						
+						//case MATRIX3X4:
+						//case MATRIX4X2:
+						//case MATRIX4X3:
+						
+						case MATRIX4X4:
+							
+							for (i in 0...16) {
+								
+								__uniformMatrix4[i] = value[i];
+								
+							}
+							
+							gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
+						
+						default:
+						
+					}
+					
+				}
+				
+			} else {
 				
 				switch (parameter.type) {
 					
 					case FLOAT:
 						
-						gl.uniform1f (index, value[0]);
+						if (value != null && value.length == 1) {
+							
+							gl.disableVertexAttribArray (index);
+							gl.vertexAttrib1f (parameter.index, value[0]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case FLOAT2:
 						
-						gl.uniform2f (index, value[0], value[1]);
+						if (value != null && value.length == 2) {
+							
+							gl.disableVertexAttribArray (index);
+							gl.vertexAttrib2f (index, value[0], value[1]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case FLOAT3:
 						
-						gl.uniform3f (index, value[0], value[1], value[2]);
+						if (value != null && value.length == 3) {
+							
+							gl.disableVertexAttribArray (index);
+							gl.vertexAttrib3f (index, value[0], value[1], value[2]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case FLOAT4:
 						
-						gl.uniform4f (index, value[0], value[1], value[2], value[3]);
+						if (value != null && value.length == 4) {
+							
+							gl.disableVertexAttribArray (index);
+							gl.vertexAttrib4f (index, value[0], value[1], value[2], value[3]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case MATRIX2X2:
 						
-						for (i in 0...4) {
+						if (value != null && value.length == 4) {
 							
-							__uniformMatrix2[i] = value[i];
+							for (i in 0...2) {
+								
+								gl.disableVertexAttribArray (index + i);
+								gl.vertexAttrib2f (index + i, value[i * 2], value[i * 2 + 1]);
+								
+							}
+							
+						} else {
+							
+							for (i in 0...2) {
+								
+								gl.enableVertexAttribArray (index + i);
+								
+							}
 							
 						}
-						
-						gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
-					
-					//case MATRIX2X3:
-					//case MATRIX2X4:
-					//case MATRIX3X2:
 					
 					case MATRIX3X3:
 						
-						for (i in 0...9) {
+						if (value != null && value.length == 9) {
 							
-							__uniformMatrix3[i] = value[i];
+							for (i in 0...3) {
+								
+								gl.disableVertexAttribArray (index + i);
+								gl.vertexAttrib3f (index + i, value[i * 3], value[i * 3 + 1], value[i * 3 + 2]);
+								
+							}
+							
+						} else {
+							
+							for (i in 0...3) {
+								
+								gl.enableVertexAttribArray (index + i);
+								
+							}
 							
 						}
-						
-						gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
-					
-					//case MATRIX3X4:
-					//case MATRIX4X2:
-					//case MATRIX4X3:
 					
 					case MATRIX4X4:
 						
-						for (i in 0...16) {
+						if (value != null && value.length == 16) {
 							
-							__uniformMatrix4[i] = value[i];
+							for (i in 0...4) {
+								
+								gl.disableVertexAttribArray (index + i);
+								gl.vertexAttrib4f (index + i, value[i * 4], value[i * 4 + 1], value[i * 4 + 2], value[i * 4 + 3]);
+								
+							}
+							
+						} else {
+							
+							for (i in 0...4) {
+								
+								gl.enableVertexAttribArray (index + i);
+								
+							}
 							
 						}
-						
-						gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
-					
-					default:
-					
-				}
-				
-			} else if (!__isUniform.get (parameter.name)) {
-				
-				gl.enableVertexAttribArray (parameter.index);
-				
-				switch (parameter.type) {
-					
-					case MATRIX2X2:
-						
-						gl.enableVertexAttribArray (parameter.index + 1);
-					
-					case MATRIX3X3:
-						
-						gl.enableVertexAttribArray (parameter.index + 1);
-						gl.enableVertexAttribArray (parameter.index + 2);
-					
-					case MATRIX4X4:
-						
-						gl.enableVertexAttribArray (parameter.index + 1);
-						gl.enableVertexAttribArray (parameter.index + 2);
-						gl.enableVertexAttribArray (parameter.index + 3);
 					
 					default:
 					
@@ -676,40 +842,104 @@ class Shader {
 			
 		}
 		
-		var value, index;
+		var value, index:Dynamic;
 		
 		for (parameter in __paramInt) {
 			
 			value = parameter.value;
 			index = parameter.index;
 			
-			if (value != null) {
+			if (__isUniform.get (parameter.name)) {
+				
+				if (value != null) {
+					
+					switch (parameter.type) {
+						
+						case INT:
+							
+							gl.uniform1i (index, value[0]);
+						
+						case INT2:
+							
+							gl.uniform2i (index, value[0], value[1]);
+						
+						case INT3:
+							
+							gl.uniform3i (index, value[0], value[1], value[2]);
+						
+						case INT4:
+							
+							gl.uniform4i (index, value[0], value[1], value[2], value[3]);
+						
+						default:
+						
+					}
+					
+				}
+				
+			} else {
 				
 				switch (parameter.type) {
 					
 					case INT:
 						
-						gl.uniform1i (index, value[0]);
+						if (value != null && value.length == 1) {
+							
+							gl.disableVertexAttribArray (index);
+							//gl.vertexAttrib1i (index, value[0]);
+							gl.vertexAttrib1f (index, value[0]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case INT2:
 						
-						gl.uniform2i (index, value[0], value[1]);
+						if (value != null && value.length == 2) {
+							
+							gl.disableVertexAttribArray (index);
+							//gl.vertexAttrib2i (index, value[0], value[1]);
+							gl.vertexAttrib2f (index, value[0], value[1]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case INT3:
 						
-						gl.uniform3i (index, value[0], value[1], value[2]);
+						if (value != null && value.length == 3) {
+							
+							gl.disableVertexAttribArray (index);
+							//gl.vertexAttrib3i (index, value[0], value[1], value[2]);
+							gl.vertexAttrib3f (index, value[0], value[1], value[2]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					case INT4:
 						
-						gl.uniform4i (index, value[0], value[1], value[2], value[3]);
+						if (value != null && value.length == 4) {
+							
+							gl.disableVertexAttribArray (index);
+							//gl.vertexAttrib4i (index, value[0], value[1], value[2], value[3]);
+							gl.vertexAttrib4f (index, value[0], value[1], value[2], value[3]);
+							
+						} else {
+							
+							gl.enableVertexAttribArray (index);
+							
+						}
 					
 					default:
 					
 				}
-				
-			} else if (!__isUniform.get (parameter.name)) {
-				
-				gl.enableVertexAttribArray (parameter.index);
 				
 			}
 			

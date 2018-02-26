@@ -136,6 +136,20 @@ class ColorTransform {
 	}
 	
 	
+	private function __setArrays (colorMultipliers:Array<Float>, colorOffsets:Array<Float>):Void {
+		
+		colorMultipliers[0] = redMultiplier;
+		colorMultipliers[1] = greenMultiplier;
+		colorMultipliers[2] = blueMultiplier;
+		colorMultipliers[3] = alphaMultiplier;
+		colorOffsets[0] = redOffset;
+		colorOffsets[1] = greenOffset;
+		colorOffsets[2] = blueOffset;
+		colorOffsets[3] = alphaOffset;
+		
+	}
+	
+	
 	
 	
 	// Getters & Setters

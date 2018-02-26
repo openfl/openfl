@@ -179,11 +179,11 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		renderSession.shaderManager.setShader (shader);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl, 1, null));
+		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl));
 		
 		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		// gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		

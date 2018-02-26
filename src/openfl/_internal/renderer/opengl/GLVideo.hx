@@ -32,25 +32,21 @@ class GLVideo {
 		if (video.__stream.__video != null) {
 			
 			var renderer:GLRenderer = cast renderSession.renderer;
+			var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 			var gl = renderSession.gl;
 			
 			renderSession.blendModeManager.setBlendMode (video.__worldBlendMode);
 			renderSession.maskManager.pushObject (video);
-			
 			renderSession.filterManager.pushObject (video);
 			
-			var shader = renderSession.shaderManager.initShader (video.shader);
-			renderSession.shaderManager.setShader (shader);
-			
+			var shader = shaderManager.initShader (video.shader);
+			shaderManager.setShader (shader);
+			shaderManager.applyBitmapData (null);
 			//shader.data.uImage0.input = bitmap.__bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
-			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
-			
-			var useColorTransform = !video.__worldColorTransform.__isDefault ();
-			if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
-			shader.data.uUseColorTransform.value[0] = useColorTransform;
-			
-			renderSession.shaderManager.updateShader (shader);
+			shaderManager.applyMatrix (renderer.getMatrix (video.__renderTransform));
+			shaderManager.applyColor (video.__worldAlpha, video.__worldColorTransform);
+			shaderManager.updateShader ();
 			
 			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (gl));
 			
@@ -66,19 +62,9 @@ class GLVideo {
 				
 			}
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl, video.__worldAlpha, video.__worldColorTransform));
-			
+			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl));
 			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-			
-			if (true || useColorTransform) {
-				
-				gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 10 * Float32Array.BYTES_PER_ELEMENT);
-				
-			}
-			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats

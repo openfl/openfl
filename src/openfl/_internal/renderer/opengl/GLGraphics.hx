@@ -444,7 +444,7 @@ class GLGraphics {
 								if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
 								shader.data.uUseColorTransform.value[0] = useColorTransform;
 								
-								renderSession.shaderManager.updateShader (shader);
+								renderSession.shaderManager.updateShader ();
 								
 								if (graphics.__buffer == null || graphics.__bufferContext != gl) {
 									

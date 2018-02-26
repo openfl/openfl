@@ -32,39 +32,23 @@ class GLBitmap {
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
 			var renderer:GLRenderer = cast renderSession.renderer;
+			var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 			var gl = renderSession.gl;
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap);
-			
 			renderSession.filterManager.pushObject (bitmap);
 			
-			var shader = renderSession.shaderManager.initShader (bitmap.shader);
-			renderSession.shaderManager.setShader (shader);
+			var shader = shaderManager.initShader (bitmap.shader);
+			shaderManager.setShader (shader);
+			shaderManager.applyBitmapData (bitmap.__bitmapData, renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled));
+			shaderManager.applyMatrix (renderer.getMatrix (bitmap.__renderTransform));
+			shaderManager.applyColor (bitmap.__worldAlpha, bitmap.__worldColorTransform);
+			shaderManager.updateShader ();
 			
-			shader.data.uImage0.input = bitmap.__bitmapData;
-			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
-			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
-			
-			var useColorTransform = !bitmap.__worldColorTransform.__isDefault ();
-			if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
-			shader.data.uUseColorTransform.value[0] = useColorTransform;
-			
-			renderSession.shaderManager.updateShader (shader);
-			
-			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl, bitmap.__worldAlpha, bitmap.__worldColorTransform));
-			
+			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl));
 			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-			
-			if (true || useColorTransform) {
-				
-				gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 10 * Float32Array.BYTES_PER_ELEMENT);
-				
-			}
-			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
@@ -84,22 +68,18 @@ class GLBitmap {
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
 			var renderer:GLRenderer = cast renderSession.renderer;
+			var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 			var gl = renderSession.gl;
 			
 			var shader = GLMaskManager.maskShader;
-			renderSession.shaderManager.setShader (shader);
+			shaderManager.setShader (shader);
+			shaderManager.applyBitmapData (bitmap.__bitmapData, renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled));
+			shaderManager.applyMatrix (renderer.getMatrix (bitmap.__renderTransform));
+			shaderManager.updateShader ();
 			
-			shader.data.uImage0.input = bitmap.__bitmapData;
-			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
-			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
-			
-			renderSession.shaderManager.updateShader (shader);
-			
-			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl, bitmap.__worldAlpha, bitmap.__worldColorTransform));
-			
+			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl));
 			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats

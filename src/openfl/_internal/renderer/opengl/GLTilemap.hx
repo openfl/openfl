@@ -45,6 +45,7 @@ class GLTilemap {
 		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
+		var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 		var gl = renderSession.gl;
 		
 		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
@@ -52,7 +53,7 @@ class GLTilemap {
 		
 		renderSession.filterManager.pushObject (tilemap);
 		
-		var shader = renderSession.shaderManager.initShader (tilemap.shader);
+		var shader = shaderManager.initShader (tilemap.shader);
 		
 		var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
 		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
@@ -111,7 +112,7 @@ class GLTilemap {
 			if (flush) {
 				
 				cacheShader.data.uImage0.input = cacheBitmapData;
-				renderSession.shaderManager.updateShader (cacheShader);
+				shaderManager.updateShader ();
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
@@ -126,10 +127,12 @@ class GLTilemap {
 			
 			if (shader != cacheShader) {
 				
-				renderSession.shaderManager.setShader (shader);
-				
-				shader.data.uMatrix.value = uMatrix;
+				shaderManager.setShader (shader);
+				shaderManager.updateMatrix (uMatrix);
 				shader.data.uImage0.smoothing = smoothing;
+				shader.data.aAlpha.value = null;
+				shader.data.aColorMultipliers.value = null;
+				shader.data.aColorOffserts.value = null;
 				
 				if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
 				shader.data.uUseColorTransform.value[0] = useColorTransform;
