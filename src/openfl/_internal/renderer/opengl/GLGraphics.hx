@@ -441,8 +441,8 @@ class GLGraphics {
 								shader.data.uImage0.input = bitmap;
 								shader.data.uImage0.smoothing = smoothing;
 								
-								if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-								shader.data.uColorTransform.value[0] = useColorTransform;
+								if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
+								shader.data.uUseColorTransform.value[0] = useColorTransform;
 								
 								renderSession.shaderManager.updateShader (shader);
 								
@@ -537,7 +537,7 @@ class GLGraphics {
 						// 		gl.enableVertexAttribArray (shader.data.aAlpha.index);
 						// 		gl.uniformMatrix4fv (shader.data.uMatrix.index, 1, false, renderer.getMatrix (parentTransform));
 								
-						// 		gl.uniform1i (shader.data.uColorTransform.index, 0);
+						// 		gl.uniform1i (shader.data.uUseColorTransform.index, 0);
 								
 						// 		gl.bindTexture (gl.TEXTURE_2D, bitmap.getTexture (gl));
 								
@@ -555,9 +555,9 @@ class GLGraphics {
 								
 						// 		gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.getBuffer (gl, worldAlpha, null));
 								
-						// 		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
-						// 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-						// 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+						// 		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+						// 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+						// 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 								
 						// 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 								

@@ -123,7 +123,7 @@ import openfl.Vector;
 		
 		// TODO: More closely align internal data format with GL buffer format?
 		
-		var attributeLength = 25;
+		var attributeLength = 13;
 		var stride = attributeLength * 6;
 		var bufferLength = __length * stride;
 		
@@ -348,14 +348,14 @@ import openfl.Vector;
 					
 					// 4 x 4 matrix
 					__bufferData[offset + (attributeLength * i) + 5] = redMultiplier;
-					__bufferData[offset + (attributeLength * i) + 10] = greenMultiplier;
-					__bufferData[offset + (attributeLength * i) + 15] = blueMultiplier;
-					__bufferData[offset + (attributeLength * i) + 20] = alphaMultiplier;
+					__bufferData[offset + (attributeLength * i) + 6] = greenMultiplier;
+					__bufferData[offset + (attributeLength * i) + 7] = blueMultiplier;
+					__bufferData[offset + (attributeLength * i) + 8] = alphaMultiplier;
 					
-					__bufferData[offset + (attributeLength * i) + 21] = redOffset / 255;
-					__bufferData[offset + (attributeLength * i) + 22] = greenOffset / 255;
-					__bufferData[offset + (attributeLength * i) + 23] = blueOffset / 255;
-					__bufferData[offset + (attributeLength * i) + 24] = alphaOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 9] = redOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 10] = greenOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 11] = blueOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 12] = alphaOffset / 255;
 					
 				}
 				

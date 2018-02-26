@@ -91,7 +91,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class BitmapData implements IBitmapDrawable {
 	
 	
-	private static inline var __bufferStride = 26;
+	private static inline var __bufferStride = 14;
 	private static var __supportsBGRA:Null<Bool> = null;
 	private static var __tempVector:Vector2 = new Vector2 ();
 	private static var __textureFormat:Int;
@@ -911,20 +911,13 @@ class BitmapData implements IBitmapDrawable {
 				if (colorTransform != null) {
 					
 					__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-					__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-					__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-					__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-					__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-					__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-					__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-					__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
-					
-				} else {
-					
-					__bufferData[__bufferStride * i + 6] = 1;
-					__bufferData[__bufferStride * i + 11] = 1;
-					__bufferData[__bufferStride * i + 16] = 1;
-					__bufferData[__bufferStride * i + 21] = 1;
+					__bufferData[__bufferStride * i + 7] = colorTransform.greenMultiplier;
+					__bufferData[__bufferStride * i + 8] = colorTransform.blueMultiplier;
+					__bufferData[__bufferStride * i + 9] = colorTransform.alphaMultiplier;
+					__bufferData[__bufferStride * i + 10] = colorTransform.redOffset / 255;
+					__bufferData[__bufferStride * i + 11] = colorTransform.greenOffset / 255;
+					__bufferData[__bufferStride * i + 12] = colorTransform.blueOffset / 255;
+					__bufferData[__bufferStride * i + 13] = colorTransform.alphaOffset / 255;
 					
 				}
 				

@@ -69,7 +69,7 @@ class Shader {
 		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
 		
-		uniform bool uColorTransform;
+		uniform bool uUseColorTransform;
 		uniform sampler2D uImage0;
 		
 		void main(void) {
@@ -80,12 +80,27 @@ class Shader {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 				
-			} else if (uColorTransform) {
+			} else if (uUseColorTransform) {
 				
 				color = vec4 (color.rgb / color.a, color.a);
+				
+				mat4 colorMultiplier;
+				colorMultiplier[0].x = vColorMultipliers.x;
+				colorMultiplier[1].y = vColorMultipliers.y;
+				colorMultiplier[2].z = vColorMultipliers.z;
+				colorMultiplier[3].w = vColorMultipliers.w;
+				
 				color = vColorOffsets + (color * vColorMultipliers);
 				
-				gl_FragColor = vec4 (color.bgr * color.a * vAlpha, color.a * vAlpha);
+				if (color.a > 0.0) {
+					
+					gl_FragColor = vec4 (color.bgr * color.a * vAlpha, color.a * vAlpha);
+					
+				} else {
+					
+					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+					
+				}
 				
 			} else {
 				
@@ -96,14 +111,11 @@ class Shader {
 		}"
 		#else
 		"varying float vAlpha;
-		varying vec4 vColorMultipliers0;
-		varying vec4 vColorMultipliers1;
-		varying vec4 vColorMultipliers2;
-		varying vec4 vColorMultipliers3;
+		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
 		
-		uniform bool uColorTransform;
+		uniform bool uUseColorTransform;
 		uniform sampler2D uImage0;
 		
 		void main(void) {
@@ -114,15 +126,15 @@ class Shader {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 				
-			} else if (uColorTransform) {
+			} else if (uUseColorTransform) {
 				
 				color = vec4 (color.rgb / color.a, color.a);
 				
 				mat4 colorMultiplier;
-				colorMultiplier[0] = vColorMultipliers0;
-				colorMultiplier[1] = vColorMultipliers1;
-				colorMultiplier[2] = vColorMultipliers2;
-				colorMultiplier[3] = vColorMultipliers3;
+				colorMultiplier[0][0] = vColorMultipliers.x;
+				colorMultiplier[1][1] = vColorMultipliers.y;
+				colorMultiplier[2][2] = vColorMultipliers.z;
+				colorMultiplier[3][3] = vColorMultipliers.w;
 				
 				color = vColorOffsets + (color * colorMultiplier);
 				
@@ -151,35 +163,26 @@ class Shader {
 	@:glVertexSource(
 		
 		"attribute float aAlpha;
-		attribute vec4 aColorMultipliers0;
-		attribute vec4 aColorMultipliers1;
-		attribute vec4 aColorMultipliers2;
-		attribute vec4 aColorMultipliers3;
+		attribute vec4 aColorMultipliers;
 		attribute vec4 aColorOffsets;
 		attribute vec4 aPosition;
 		attribute vec2 aTexCoord;
 		varying float vAlpha;
-		varying vec4 vColorMultipliers0;
-		varying vec4 vColorMultipliers1;
-		varying vec4 vColorMultipliers2;
-		varying vec4 vColorMultipliers3;
+		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
 		
 		uniform mat4 uMatrix;
-		uniform bool uColorTransform;
+		uniform bool uUseColorTransform;
 		
 		void main(void) {
 			
 			vAlpha = aAlpha;
 			vTexCoord = aTexCoord;
 			
-			if (uColorTransform) {
+			if (uUseColorTransform) {
 				
-				vColorMultipliers0 = aColorMultipliers0;
-				vColorMultipliers1 = aColorMultipliers1;
-				vColorMultipliers2 = aColorMultipliers2;
-				vColorMultipliers3 = aColorMultipliers3;
+				vColorMultipliers = aColorMultipliers;
 				vColorOffsets = aColorOffsets;
 				
 			}
