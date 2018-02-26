@@ -1455,7 +1455,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 	}
 
-	public function isOnScreen():Bool {
+	public function isOnScreen(pSkipLastCheck:Bool = false):Bool {
 		if (calculatedBounds != null && stage != null && stage.__renderer != null) {
 			return calculatedBounds.intersects(stage.__renderer.viewport);
 		}

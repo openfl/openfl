@@ -66,7 +66,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __timeElapsed:Int;
 	private var __totalFrames:Int;
 	private var __isInstanceFieldsSetup:Bool;
-
+	private var __isOnScreen_last_check:Bool = false;
+	private var __isOnScreen_last_check_tick:Int = 0;
 
 	#if openfljs
 	private static function __init__ () {
@@ -234,6 +235,22 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		return super.removeChild(child);
 	}
 
+	@:access(openfl.display.Stage.__renderer)
+	override public function isOnScreen(pSkipLastCheck:Bool = false):Bool {
+
+		if (calculatedBounds != null && stage != null && stage.__renderer != null) {
+
+			if (this.__isOnScreen_last_check_tick > 0 && !pSkipLastCheck){
+				this.__isOnScreen_last_check_tick--;
+				return this.__isOnScreen_last_check;
+			}
+			return calculatedBounds.intersects(stage.__renderer.viewport);
+		}
+
+		// Default to true?
+		return true;
+	}
+
 	private var maxOffscreenSkips:Int = 60;
 	private var currentOffscreenSkips:Int = 0;
 	private var accumulatedDeltaTime:Int = 0;
@@ -245,7 +262,10 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			return;
 		}
 
-		if (!isOnScreen()) {
+		__isOnScreen_last_check = isOnScreen(true);
+		__isOnScreen_last_check_tick = 1;
+
+		if (!__isOnScreen_last_check) {
 
 			if (currentOffscreenSkips++ < maxOffscreenSkips) {
 				accumulatedDeltaTime += deltaTime;
