@@ -3,8 +3,9 @@ package openfl.display;
 
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLShader;
 import lime.utils.Float32Array;
-import lime.utils.GLUtils;
+import lime.utils.Log;
 import openfl.utils.ByteArray;
 
 #if !openfl_debug
@@ -23,6 +24,9 @@ import openfl.utils.ByteArray;
 
 class Shader {
 	
+	
+	private static inline var POSITION_ATTRIBUTE = "aPosition";
+	private static inline var SAMPLER_ATTRIBUTE = "aTexCoord";
 	
 	public var byteCode (null, default):ByteArray;
 	public var data (get, set):ShaderData;
@@ -261,6 +265,52 @@ class Shader {
 	}
 	
 	
+	private function __createGLShader (source:String, type:Int):GLShader {
+		
+		var shader = gl.createShader (type);
+		gl.shaderSource (shader, source);
+		gl.compileShader (shader);
+		
+		if (gl.getShaderParameter (shader, gl.COMPILE_STATUS) == 0) {
+			
+			var message = (type == gl.VERTEX_SHADER) ? "Error compiling vertex shader" : "Error compiling fragment shader";
+			message += "\n" + gl.getShaderInfoLog (shader);
+			Log.error (message);
+			
+		}
+		
+		return shader;
+		
+	}
+	
+	
+	private function __createGLProgram (vertexSource:String, fragmentSource:String):GLProgram {
+		
+		var vertexShader = __createGLShader (vertexSource, gl.VERTEX_SHADER);
+		var fragmentShader = __createGLShader (fragmentSource, gl.FRAGMENT_SHADER);
+		
+		var program = gl.createProgram ();
+		
+		// Fix support for drivers that don't draw if attribute 0 is disabled
+		gl.bindAttribLocation (program, 0, POSITION_ATTRIBUTE);
+		
+		gl.attachShader (program, vertexShader);
+		gl.attachShader (program, fragmentShader);
+		gl.linkProgram (program);
+		
+		if (gl.getProgramParameter (program, gl.LINK_STATUS) == 0) {
+			
+			var message = "Unable to initialize the shader program";
+			message += "\n" + gl.getProgramInfoLog (program);
+			Log.error (message);
+			
+		}
+		
+		return program;
+		
+	}
+	
+	
 	private function __disable ():Void {
 		
 		if (glProgram != null) {
@@ -393,7 +443,7 @@ class Shader {
 				#endif
 				" + glFragmentSource;
 			
-			glProgram = GLUtils.createProgram (glVertexSource, fragment);
+			glProgram = __createGLProgram (glVertexSource, fragment);
 			
 			if (glProgram != null) {
 				
@@ -596,34 +646,30 @@ class Shader {
 		}
 		
 		var value, index:Dynamic;
+		var count;
 		
 		for (parameter in __paramBool) {
 			
 			value = parameter.value;
 			index = parameter.index;
 			
+			count = switch (parameter.type) {
+				case BOOL2: 2;
+				case BOOL3: 3;
+				case BOOL4: 4;
+				default: 1;
+			}
+			
 			if (__isUniform.get (parameter.name)) {
 				
-				if (value != null) {
+				if (value != null && value.length >= count) {
 					
-					switch (parameter.type) {
+					switch (count) {
 						
-						case BOOL:
-							
-							gl.uniform1i (index, value[0] ? 1 : 0);
-						
-						case BOOL2:
-							
-							gl.uniform2i (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
-						
-						case BOOL3:
-							
-							gl.uniform3i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
-						
-						case BOOL4:
-							
-							gl.uniform4i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
-						
+						case 1: gl.uniform1i (index, value[0] ? 1 : 0);
+						case 2: gl.uniform2i (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
+						case 3: gl.uniform3i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
+						case 4: gl.uniform4i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
 						default:
 						
 					}
@@ -632,65 +678,40 @@ class Shader {
 				
 			} else {
 				
-				switch (parameter.type) {
+				if (value == null || value.length == count) {
 					
-					case BOOL:
+					gl.disableVertexAttribArray (index);
+					
+					if (value != null) {
 						
-						if (value != null && value.length == 1) {
+						switch (count) {
 							
-							gl.disableVertexAttribArray (index);
-							//gl.vertexAttrib1i (index, value[0] ? 1 : 0);
-							gl.vertexAttrib1f (index, value[0] ? 1 : 0);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
+							case 1: gl.vertexAttrib1f (index, value[0] ? 1 : 0);
+							case 2: gl.vertexAttrib2f (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
+							case 3: gl.vertexAttrib3f (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
+							case 4: gl.vertexAttrib4f (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
+							default:
 							
 						}
-					
-					case BOOL2:
 						
-						if (value != null && value.length == 2) {
+					} else {
+						
+						switch (count) {
 							
-							gl.disableVertexAttribArray (index);
-							//gl.vertexAttrib2i (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
-							gl.vertexAttrib2f (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
+							case 1: gl.vertexAttrib1f (index, 0);
+							case 2: gl.vertexAttrib2f (index, 0, 0);
+							case 3: gl.vertexAttrib3f (index, 0, 0, 0);
+							case 4: gl.vertexAttrib4f (index, 0, 0, 0, 0);
+							default:
 							
 						}
-					
-					case BOOL3:
 						
-						if (value != null && value.length == 1) {
-							
-							gl.disableVertexAttribArray (index);
-							//gl.vertexAttrib3i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
-							gl.vertexAttrib3f (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
-							
-						}
+					}
 					
-					case BOOL4:
-						
-						if (value != null && value.length == 1) {
-							
-							gl.disableVertexAttribArray (index);
-							///gl.vertexAttrib4i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
-							gl.vertexAttrib4f (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
-							
-						}
+				} else {
 					
-					default:
+					gl.enableVertexAttribArray (index);
+					// TODO
 					
 				}
 				
@@ -699,34 +720,32 @@ class Shader {
 		}
 		
 		var value, index:Dynamic;
+		var count, arrayCount;
 		
 		for (parameter in __paramFloat) {
 			
 			value = parameter.value;
 			index = parameter.index;
 			
+			count = switch (parameter.type) {
+				case FLOAT2: 2;
+				case FLOAT3: 3;
+				case FLOAT4, MATRIX2X2: 4;
+				case MATRIX3X3: 9;
+				case MATRIX4X4: 16;
+				default: 1;
+			}
+			
 			if (__isUniform.get (parameter.name)) {
 				
-				if (value != null) {
+				if (value != null && value.length >= count) {
 					
 					switch (parameter.type) {
 						
-						case FLOAT:
-							
-							gl.uniform1f (index, value[0]);
-						
-						case FLOAT2:
-							
-							gl.uniform2f (index, value[0], value[1]);
-						
-						case FLOAT3:
-							
-							gl.uniform3f (index, value[0], value[1], value[2]);
-						
-						case FLOAT4:
-							
-							gl.uniform4f (index, value[0], value[1], value[2], value[3]);
-						
+						case FLOAT: gl.uniform1f (index, value[0]);
+						case FLOAT2: gl.uniform2f (index, value[0], value[1]);
+						case FLOAT3: gl.uniform3f (index, value[0], value[1], value[2]);
+						case FLOAT4: gl.uniform4f (index, value[0], value[1], value[2], value[3]);
 						case MATRIX2X2:
 							
 							for (i in 0...4) {
@@ -773,124 +792,103 @@ class Shader {
 				
 			} else {
 				
-				switch (parameter.type) {
+				arrayCount = switch (parameter.type) {
+					case MATRIX2X2: 2;
+					case MATRIX3X3: 3;
+					case MATRIX4X4: 4;
+					default: 1;
+				}
+				
+				if ((parameter.name != POSITION_ATTRIBUTE && parameter.name != SAMPLER_ATTRIBUTE) && (value == null || value.length == count)) {
 					
-					case FLOAT:
+					for (i in 0...arrayCount) {
 						
-						if (value != null && value.length == 1) {
+						gl.disableVertexAttribArray (index + i);
+						
+					}
+					
+					if (value != null) {
+						
+						switch (parameter.type) {
 							
-							gl.disableVertexAttribArray (index);
-							gl.vertexAttrib1f (parameter.index, value[0]);
+							case FLOAT: gl.vertexAttrib1f (index, value[0]);
+							case FLOAT2: gl.vertexAttrib2f (index, value[0], value[1]);
+							case FLOAT3: gl.vertexAttrib3f (index, value[0], value[1], value[2]);
+							case FLOAT4: gl.vertexAttrib4f (index, value[0], value[1], value[2], value[3]);
+							case MATRIX2X2:
+								
+								for (i in 0...2) {
+									
+									gl.vertexAttrib2f (index + i, value[i * 2], value[i * 2 + 1]);
+									
+								}
 							
-						} else {
+							case MATRIX3X3:
+								
+								for (i in 0...3) {
+									
+									gl.vertexAttrib3f (index + i, value[i * 3], value[i * 3 + 1], value[i * 3 + 2]);
+									
+								}
 							
-							gl.enableVertexAttribArray (index);
+							case MATRIX4X4:
+								
+								for (i in 0...4) {
+									
+									gl.vertexAttrib4f (index + i, value[i * 4], value[i * 4 + 1], value[i * 4 + 2], value[i * 4 + 3]);
+									
+								}
+							
+							default:
 							
 						}
-					
-					case FLOAT2:
 						
-						if (value != null && value.length == 2) {
+					} else {
+						
+						switch (parameter.type) {
 							
-							gl.disableVertexAttribArray (index);
-							gl.vertexAttrib2f (index, value[0], value[1]);
+							case FLOAT: gl.vertexAttrib1f (index, 0);
+							case FLOAT2: gl.vertexAttrib2f (index, 0, 0);
+							case FLOAT3: gl.vertexAttrib3f (index, 0, 0, 0);
+							case FLOAT4: gl.vertexAttrib4f (index, 0, 0, 0, 0);
+							case MATRIX2X2:
+								
+								for (i in 0...2) {
+									
+									gl.vertexAttrib2f (index + i, 0, 0);
+									
+								}
 							
-						} else {
+							case MATRIX3X3:
+								
+								for (i in 0...3) {
+									
+									gl.vertexAttrib3f (index + i, 0, 0, 0);
+									
+								}
 							
-							gl.enableVertexAttribArray (index);
+							case MATRIX4X4:
+								
+								for (i in 0...4) {
+									
+									gl.vertexAttrib4f (index + i, 0, 0, 0, 0);
+									
+								}
+							
+							default:
 							
 						}
-					
-					case FLOAT3:
 						
-						if (value != null && value.length == 3) {
-							
-							gl.disableVertexAttribArray (index);
-							gl.vertexAttrib3f (index, value[0], value[1], value[2]);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
-							
-						}
+					}
 					
-					case FLOAT4:
+				} else {
+					
+					for (i in 0...arrayCount) {
 						
-						if (value != null && value.length == 4) {
-							
-							gl.disableVertexAttribArray (index);
-							gl.vertexAttrib4f (index, value[0], value[1], value[2], value[3]);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
-							
-						}
-					
-					case MATRIX2X2:
+						gl.enableVertexAttribArray (index + i);
 						
-						if (value != null && value.length == 4) {
-							
-							for (i in 0...2) {
-								
-								gl.disableVertexAttribArray (index + i);
-								gl.vertexAttrib2f (index + i, value[i * 2], value[i * 2 + 1]);
-								
-							}
-							
-						} else {
-							
-							for (i in 0...2) {
-								
-								gl.enableVertexAttribArray (index + i);
-								
-							}
-							
-						}
-					
-					case MATRIX3X3:
-						
-						if (value != null && value.length == 9) {
-							
-							for (i in 0...3) {
-								
-								gl.disableVertexAttribArray (index + i);
-								gl.vertexAttrib3f (index + i, value[i * 3], value[i * 3 + 1], value[i * 3 + 2]);
-								
-							}
-							
-						} else {
-							
-							for (i in 0...3) {
-								
-								gl.enableVertexAttribArray (index + i);
-								
-							}
-							
-						}
-					
-					case MATRIX4X4:
-						
-						if (value != null && value.length == 16) {
-							
-							for (i in 0...4) {
-								
-								gl.disableVertexAttribArray (index + i);
-								gl.vertexAttrib4f (index + i, value[i * 4], value[i * 4 + 1], value[i * 4 + 2], value[i * 4 + 3]);
-								
-							}
-							
-						} else {
-							
-							for (i in 0...4) {
-								
-								gl.enableVertexAttribArray (index + i);
-								
-							}
-							
-						}
-					
-					default:
+					}
+					// TODO
 					
 				}
 				
@@ -899,34 +897,30 @@ class Shader {
 		}
 		
 		var value, index:Dynamic;
+		var count;
 		
 		for (parameter in __paramInt) {
 			
 			value = parameter.value;
 			index = parameter.index;
 			
+			count = switch (parameter.type) {
+				case INT2: 2;
+				case INT3: 3;
+				case INT4: 4;
+				default: 1;
+			}
+			
 			if (__isUniform.get (parameter.name)) {
 				
-				if (value != null) {
+				if (value != null && value.length >= count) {
 					
-					switch (parameter.type) {
+					switch (count) {
 						
-						case INT:
-							
-							gl.uniform1i (index, value[0]);
-						
-						case INT2:
-							
-							gl.uniform2i (index, value[0], value[1]);
-						
-						case INT3:
-							
-							gl.uniform3i (index, value[0], value[1], value[2]);
-						
-						case INT4:
-							
-							gl.uniform4i (index, value[0], value[1], value[2], value[3]);
-						
+						case 1: gl.uniform1i (index, value[0]);
+						case 2: gl.uniform2i (index, value[0], value[1]);
+						case 3: gl.uniform3i (index, value[0], value[1], value[2]);
+						case 4: gl.uniform4i (index, value[0], value[1], value[2], value[3]);
 						default:
 						
 					}
@@ -935,65 +929,40 @@ class Shader {
 				
 			} else {
 				
-				switch (parameter.type) {
+				if (value == null || value.length == count) {
 					
-					case INT:
+					gl.disableVertexAttribArray (index);
+					
+					if (value != null) {
 						
-						if (value != null && value.length == 1) {
+						switch (count) {
 							
-							gl.disableVertexAttribArray (index);
-							//gl.vertexAttrib1i (index, value[0]);
-							gl.vertexAttrib1f (index, value[0]);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
+							case 1: gl.vertexAttrib1f (index, value[0]);
+							case 2: gl.vertexAttrib2f (index, value[0], value[1]);
+							case 3: gl.vertexAttrib3f (index, value[0], value[1], value[2]);
+							case 4: gl.vertexAttrib4f (index, value[0], value[1], value[2], value[3]);
+							default:
 							
 						}
-					
-					case INT2:
 						
-						if (value != null && value.length == 2) {
+					} else {
+						
+						switch (count) {
 							
-							gl.disableVertexAttribArray (index);
-							//gl.vertexAttrib2i (index, value[0], value[1]);
-							gl.vertexAttrib2f (index, value[0], value[1]);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
+							case 1: gl.vertexAttrib1f (index, 0);
+							case 2: gl.vertexAttrib2f (index, 0, 0);
+							case 3: gl.vertexAttrib3f (index, 0, 0, 0);
+							case 4: gl.vertexAttrib4f (index, 0, 0, 0, 0);
+							default:
 							
 						}
-					
-					case INT3:
 						
-						if (value != null && value.length == 3) {
-							
-							gl.disableVertexAttribArray (index);
-							//gl.vertexAttrib3i (index, value[0], value[1], value[2]);
-							gl.vertexAttrib3f (index, value[0], value[1], value[2]);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
-							
-						}
+					}
 					
-					case INT4:
-						
-						if (value != null && value.length == 4) {
-							
-							gl.disableVertexAttribArray (index);
-							//gl.vertexAttrib4i (index, value[0], value[1], value[2], value[3]);
-							gl.vertexAttrib4f (index, value[0], value[1], value[2], value[3]);
-							
-						} else {
-							
-							gl.enableVertexAttribArray (index);
-							
-						}
+				} else {
 					
-					default:
+					gl.enableVertexAttribArray (index);
+					// TODO
 					
 				}
 				

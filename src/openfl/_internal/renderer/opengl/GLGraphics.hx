@@ -6,6 +6,7 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.Graphics;
+import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -20,6 +21,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:noDebug
 #end
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -216,56 +218,56 @@ class GLGraphics {
 							__bufferData[offset + (dataLength * 5) + 2] = uvWidth;
 							__bufferData[offset + (dataLength * 5) + 3] = uvHeight;
 							
-							if (hasAlpha) {
+							// if (hasAlpha) {
 								
-								for (j in 0...6) {
+							// 	for (j in 0...6) {
 									
-									__bufferData[offset + (dataLength * j) + 4] = alpha;
+							// 		__bufferData[offset + (dataLength * j) + 4] = alpha;
 									
-								}
+							// 	}
 								
-							}
+							// }
 							
-							if (hasColorTransform) {
+							// if (hasColorTransform) {
 								
-								ctOffset = i * attributeLength + colorTransformOffset;
-								tempColorTransform.redMultiplier = attributes[ctOffset];
-								tempColorTransform.greenMultiplier = attributes[ctOffset + 1];
-								tempColorTransform.blueMultiplier = attributes[ctOffset + 2];
-								tempColorTransform.alphaMultiplier = attributes[ctOffset + 3];
-								tempColorTransform.redOffset = attributes[ctOffset + 4];
-								tempColorTransform.greenOffset = attributes[ctOffset + 5];
-								tempColorTransform.blueOffset = attributes[ctOffset + 6];
-								tempColorTransform.alphaOffset = attributes[ctOffset + 7];
-								// tempColorTransform.__combine (colorTransform);
+							// 	ctOffset = i * attributeLength + colorTransformOffset;
+							// 	tempColorTransform.redMultiplier = attributes[ctOffset];
+							// 	tempColorTransform.greenMultiplier = attributes[ctOffset + 1];
+							// 	tempColorTransform.blueMultiplier = attributes[ctOffset + 2];
+							// 	tempColorTransform.alphaMultiplier = attributes[ctOffset + 3];
+							// 	tempColorTransform.redOffset = attributes[ctOffset + 4];
+							// 	tempColorTransform.greenOffset = attributes[ctOffset + 5];
+							// 	tempColorTransform.blueOffset = attributes[ctOffset + 6];
+							// 	tempColorTransform.alphaOffset = attributes[ctOffset + 7];
+							// 	// tempColorTransform.__combine (colorTransform);
 								
-								redMultiplier = tempColorTransform.redMultiplier;
-								greenMultiplier = tempColorTransform.greenMultiplier;
-								blueMultiplier = tempColorTransform.blueMultiplier;
-								alphaMultiplier = tempColorTransform.alphaMultiplier;
-								redOffset = tempColorTransform.redOffset;
-								greenOffset = tempColorTransform.greenOffset;
-								blueOffset = tempColorTransform.blueOffset;
-								alphaOffset = tempColorTransform.alphaOffset;
+							// 	redMultiplier = tempColorTransform.redMultiplier;
+							// 	greenMultiplier = tempColorTransform.greenMultiplier;
+							// 	blueMultiplier = tempColorTransform.blueMultiplier;
+							// 	alphaMultiplier = tempColorTransform.alphaMultiplier;
+							// 	redOffset = tempColorTransform.redOffset;
+							// 	greenOffset = tempColorTransform.greenOffset;
+							// 	blueOffset = tempColorTransform.blueOffset;
+							// 	alphaOffset = tempColorTransform.alphaOffset;
 								
-								ctOffset = 4 + colorTransformOffset;
+							// 	ctOffset = 4 + colorTransformOffset;
 								
-								for (j in 0...6) {
+							// 	for (j in 0...6) {
 									
-									// 4 x 4 matrix
-									__bufferData[offset + (dataLength * j) + ctOffset] = redMultiplier;
-									__bufferData[offset + (dataLength * j) + ctOffset + 1] = greenMultiplier;
-									__bufferData[offset + (dataLength * j) + ctOffset + 2] = blueMultiplier;
-									__bufferData[offset + (dataLength * j) + ctOffset + 3] = alphaMultiplier;
+							// 		// 4 x 4 matrix
+							// 		__bufferData[offset + (dataLength * j) + ctOffset] = redMultiplier;
+							// 		__bufferData[offset + (dataLength * j) + ctOffset + 1] = greenMultiplier;
+							// 		__bufferData[offset + (dataLength * j) + ctOffset + 2] = blueMultiplier;
+							// 		__bufferData[offset + (dataLength * j) + ctOffset + 3] = alphaMultiplier;
 									
-									__bufferData[offset + (dataLength * j) + ctOffset + 4] = redOffset / 255;
-									__bufferData[offset + (dataLength * j) + ctOffset + 5] = greenOffset / 255;
-									__bufferData[offset + (dataLength * j) + ctOffset + 6] = blueOffset / 255;
-									__bufferData[offset + (dataLength * j) + ctOffset + 7] = alphaOffset / 255;
+							// 		__bufferData[offset + (dataLength * j) + ctOffset + 4] = redOffset / 255;
+							// 		__bufferData[offset + (dataLength * j) + ctOffset + 5] = greenOffset / 255;
+							// 		__bufferData[offset + (dataLength * j) + ctOffset + 6] = blueOffset / 255;
+							// 		__bufferData[offset + (dataLength * j) + ctOffset + 7] = alphaOffset / 255;
 									
-								}
+							// 	}
 								
-							}
+							// }
 							
 						}
 						
@@ -316,8 +318,7 @@ class GLGraphics {
 			var data = new DrawCommandReader (graphics.__commands);
 			var bitmap = null;
 			var hasDrawQuads = false;
-			trace ("hi");
-			trace (graphics.__commands.types);
+			
 			for (type in graphics.__commands.types) {
 				
 				switch (type) {
@@ -333,12 +334,12 @@ class GLGraphics {
 						data.skip (type);
 					
 					case DRAW_QUADS:
-						trace ("SDLFKJ");
+						
 						hasDrawQuads = true;
 						data.skip (type);
 					
 					default:
-						trace (type);
+						
 						data.destroy ();
 						return false;
 					
@@ -354,9 +355,9 @@ class GLGraphics {
 	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
-		trace ("1");
+		
 		if (!isCompatible (graphics, parentTransform)) {
-			trace ("2");
+			
 			if (graphics.__buffer != null) {
 				
 				graphics.__bufferData = null;
@@ -371,7 +372,7 @@ class GLGraphics {
 			#end
 			
 		} else {
-			trace ("3");
+			
 			graphics.__update ();
 			
 			var bounds = graphics.__bounds;
@@ -393,11 +394,12 @@ class GLGraphics {
 				var data = new DrawCommandReader (graphics.__commands);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
+				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 				var gl:WebGLContext = renderSession.gl;
 				
 				// var matrix = Matrix.__pool.get ();
 				
-				var shader = null;
+				var customShader = null;
 				var bitmap = null;
 				var smooth = false;
 				
@@ -415,24 +417,23 @@ class GLGraphics {
 							var c = data.readBeginBitmapFill ();
 							bitmap = c.bitmap;
 							smooth = c.smooth;
+							customShader = null;
 						
 						case BEGIN_SHADER_FILL:
 							
 							var c = data.readBeginShaderFill ();
-							shader = c.shader;
-							bitmap = shader.data.uImage0.input;
-							smooth = shader.data.uImage0.smoothing;
+							customShader = c.shader;
+							bitmap = c.shader.data.uImage0.input;
+							smooth = c.shader.data.uImage0.smoothing;
 						
 						case DRAW_QUADS:
 							
 							if (bitmap != null) {
-								trace ("draw");
+								
 								var c = data.readDrawQuads ();
 								var matrices = c.matrices;
 								// var sourceRects = c.sourceRects;
-								// var rectIDs = c.rectIDs;
-								var attributes = null; //c.attributes;
-								var attributeOptions = 0; //c.attributeOptions;
+								// var rectIndices = c.rectIndices;
 								
 								// matrix.copyFrom (graphics.__renderTransform);
 								// matrix.concat (parentTransform);
@@ -440,20 +441,24 @@ class GLGraphics {
 								var uMatrix = renderer.getMatrix (parentTransform);
 								var smoothing = (renderSession.allowSmoothing && smooth);
 								
-								var useAlpha = false; //(attributes != null && attributeOptions & VertexAttribute.ALPHA > 0);
-								var useColorTransform = false; ///(attributes != null && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0);
+								var shader = shaderManager.initShader (customShader != null ? customShader : shaderManager.defaultShader);
+								shaderManager.setShader (shader);
+								shaderManager.applyMatrix (uMatrix);
 								
-								var shader = renderSession.shaderManager.initShader (renderSession.shaderManager.defaultShader);
-								renderSession.shaderManager.setShader (shader);
+								if (customShader == null) {
+									
+									shaderManager.applyBitmapData (bitmap, smoothing);
+									shaderManager.applyColor (graphics.__owner.__worldAlpha, graphics.__owner.__worldColorTransform);
+									
+								} else {
+									
+									var useColorTransform = (shader.data.aColorMultipliers != null);
+									if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
+									shader.data.uUseColorTransform.value[0] = useColorTransform;
+									
+								}
 								
-								shader.data.uMatrix.value = uMatrix;
-								shader.data.uImage0.input = bitmap;
-								shader.data.uImage0.smoothing = smoothing;
-								
-								if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
-								shader.data.uUseColorTransform.value[0] = useColorTransform;
-								
-								renderSession.shaderManager.updateShader ();
+								shaderManager.updateShader ();
 								
 								if (graphics.__buffer == null || graphics.__bufferContext != gl) {
 									
@@ -470,47 +475,8 @@ class GLGraphics {
 									
 								}
 								
-								var attribSize = 4;
-								
-								if (useAlpha) {
-									
-									attribSize++;
-									
-								}
-								
-								if (useColorTransform) {
-									
-									attribSize += 20;
-									
-								}
-								
-								gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 0);
-								gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-								
-								if (useAlpha) {
-									
-									gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
-									
-								} else {
-									
-									gl.disableVertexAttribArray (shader.data.aAlpha.index);
-									gl.vertexAttrib1f (shader.data.aAlpha.index, 1);
-									
-								}
-								
-								if (useColorTransform) {
-									
-									gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-									gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, attribSize * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
-									
-								} else {
-									
-									gl.disableVertexAttribArray (shader.data.aColorMultipliers.index);
-									gl.vertexAttrib4f (shader.data.aColorMultipliers.index, 1, 1, 1, 1);
-									gl.disableVertexAttribArray (shader.data.aColorOffsets.index);
-									gl.vertexAttrib4f (shader.data.aColorOffsets.index, 0, 0, 0, 0);
-									
-								}
+								gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+								gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 								
 								var length = Math.floor (matrices.length / 6);
 								gl.drawArrays (gl.TRIANGLES, bufferPosition, length * 6);
@@ -564,6 +530,7 @@ class GLGraphics {
 						case END_FILL:
 							
 							bitmap = null;
+							customShader = null;
 						
 						case MOVE_TO:
 							
