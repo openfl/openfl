@@ -57,8 +57,20 @@ class DisplayObjectContainer extends InteractiveObject {
 		__isInitialized = false;
 		__children = new Array<DisplayObject> ();
 		__removedChildren = new Vector<DisplayObject> ();
+		__hasAnimation = false;
 
 		
+	}
+
+	public function setAnimatableDirty():Void
+	{
+		__hasAnimationDirty = true;
+		var p = parent;
+		while(p != null)
+		{
+			p.__hasAnimationDirty = true;
+			p = p.parent;
+		}
 	}
 	
 	
@@ -130,6 +142,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		}
 
+		setAnimatableDirty();
 		__initializeChild(child);
 
 		return child;
@@ -263,9 +276,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.remove (child);
 			__removedChildren.push (child);
 			child.__setTransformDirty ();
+			setAnimatableDirty();
 			
 		}
-		
+
 		return child;
 		
 	}
@@ -418,15 +432,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __enterFrame (deltaTime:Int):Void {
+		checkAndUpdateAnimatable();
 		if(__children == null || __renderable == false) return;
-		if (!isOnScreen()) {
-			return;
-		}
+
+		if (!isOnScreen() || !__hasAnimation) return;
 
 		for (child in __children) {
-			
+
 			child.__enterFrame (deltaTime);
-			
+
 		}
 		
 	}

@@ -168,6 +168,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 		if (__symbol == null || __playing || __totalFrames < 2) return;
 
+		super.setAnimatableDirty();
 		__playing = true;
 
 		#if (!swflite_parent_fps && !swf_parent_fps)
@@ -257,6 +258,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 	public override function __enterFrame (deltaTime:Int):Void {
 
+		if(!__isAnimatable)
+		{
+			super.__enterFrame(deltaTime);
+			return;
+		}
 		if (__symbol == null) {
 			super.__enterFrame (deltaTime);
 			return;
@@ -884,6 +890,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			}
 
 		}
+
+		__hasAnimation = __isAnimatable;
 
 		if (__totalFrames > 1) {
 

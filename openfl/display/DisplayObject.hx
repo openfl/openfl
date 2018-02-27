@@ -91,6 +91,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	public var _lastParentOrSelfChangeFrameID : UInt;
 	public var _lastChildChangeFrameID : UInt;
 	public var isTimelineMask : Bool;
+	private var __hasAnimationDirty : Bool = false;
+	private var __hasAnimation:Bool = false;
 	
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
@@ -559,8 +561,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private function __enterFrame (deltaTime:Int):Void {
-		
-		
 		
 	}
 	
@@ -1463,9 +1463,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		// Default to true?
 		return true;
 	}
-	
-	
-	
+
+	public function checkAndUpdateAnimatable():Bool
+	{
+		if(__hasAnimationDirty)
+		{
+			var isAnimatable:Bool = Reflect.getProperty(this, "__isAnimatable") != null? untyped this.__isAnimatable && this.__playing:false;
+			__hasAnimationDirty = false;
+
+            if(__children != null && __children.length > 0)
+			{
+				for (child in __children) {
+
+					isAnimatable = child.checkAndUpdateAnimatable() || isAnimatable;
+				}
+			}
+
+			__hasAnimation = isAnimatable;
+		}
+
+		return __hasAnimation;
+	}
 	
 	// Get & Set Methods
 	
