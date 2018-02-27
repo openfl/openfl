@@ -40,7 +40,9 @@ class CanvasShape {
 				if (width > 0 && height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
 					
 					renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
-					renderSession.maskManager.pushObject (shape);
+
+					if (shape.__mask != null)
+						renderSession.maskManager.pushObject (shape);
 					
 					context.globalAlpha = shape.__worldAlpha;
 					
@@ -64,12 +66,13 @@ class CanvasShape {
 					context.drawImage (graphics.__canvas, 0, 0, width, height);
 
 					//S/ Remove this when debugging is no longer needed
-					Stage.drawImageCount++;
-					if (shape.parent != null && shape.parent.countChildDraws) {
-						shape.parent.childDraws++;
-					}
+//					Stage.drawImageCount++;
+//					if (shape.parent != null && shape.parent.countChildDraws) {
+//						shape.parent.childDraws++;
+//					}
 
-					renderSession.maskManager.popObject (shape);
+					if (shape.__mask != null)
+						renderSession.maskManager.popObject (shape);
 					
 				}
 				

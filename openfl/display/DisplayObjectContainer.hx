@@ -765,8 +765,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
-		
-		renderSession.maskManager.pushObject (this);
+
+		if (__mask != null)
+			renderSession.maskManager.pushObject (this);
 
 		//S/ Remove this when debugging is no longer needed
 		childDraws = 0;
@@ -793,19 +794,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 
 		//S/ Remove this when debugging is no longer needed
-		if (countChildDraws) {
-			if (childDraws > Stage.mostDraws) {
-				var info:String = "";
-				info += this.name;
-				if (untyped this.__symbol != null) {
-					info += untyped this.__symbol.className;
-				}
-
-				Stage.mostDraws = childDraws;
-				Stage.mostDrawsInfo = info;
-				Stage.mostDrawsTarget = this;
-			}
-		}
+//		if (countChildDraws) {
+//			if (childDraws > Stage.mostDraws) {
+//				var info:String = "";
+//				info += this.name;
+//				if (untyped this.__symbol != null) {
+//					info += untyped this.__symbol.className;
+//				}
+//
+//				Stage.mostDraws = childDraws;
+//				Stage.mostDrawsInfo = info;
+//				Stage.mostDrawsTarget = this;
+//			}
+//		}
 
 		//S/ Commenting this out for now, because it ultimately causes CanvasElements to be created over and over again.
 		//S/ In the future, it may be worth exploring if some parts of orphan.__cleanup() are necessary.
@@ -820,8 +821,9 @@ class DisplayObjectContainer extends InteractiveObject {
 //		}
 //
 		__removedChildren.length = 0;
-		
-		renderSession.maskManager.popObject (this);
+
+		if (__mask != null)
+			renderSession.maskManager.popObject (this);
 		
 		#end
 		

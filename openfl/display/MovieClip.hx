@@ -194,7 +194,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public function stop ():Void {
 
 		__playing = false;
-
+		super.setAnimatableDirty();
 	}
 
 	private override function __addChildAtInternal(child:DisplayObject, index:Int):DisplayObject{
