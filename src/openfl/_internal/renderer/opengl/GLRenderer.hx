@@ -96,6 +96,7 @@ class GLRenderer extends AbstractRenderer {
 		if (ext != null) {
 			
 			gl.enable (ext.DEBUG_OUTPUT);
+			gl.enable (ext.DEBUG_OUTPUT_SYNCHRONOUS);
 			
 		}
 		#end
