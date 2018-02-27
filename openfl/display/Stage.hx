@@ -1187,8 +1187,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var dispatchers = DisplayObject.__broadcastEvents.get (event.type);
 			
 			for (dispatcher in dispatchers) {
-				
-				dispatcher.__dispatch (event);
+				if (dispatcher.stage != null) {
+					dispatcher.__dispatch (event);
+				}
 				
 			}
 			
