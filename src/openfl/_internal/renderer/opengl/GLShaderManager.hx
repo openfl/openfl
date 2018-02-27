@@ -20,10 +20,11 @@ import openfl.geom.ColorTransform;
 class GLShaderManager extends AbstractShaderManager {
 	
 	
+	private static var emptyAlpha = [ 1. ];
 	private static var colorMultipliers = [ 0, 0, 0, 0. ];
 	private static var colorOffsets = [ 0, 0, 0, 0. ];
 	private static var emptyColor = [ 0, 0, 0, 0. ];
-	private static var useColorTransform = [ 0. ];
+	private static var useColorTransform = [ 0 ];
 	
 	private var gl:GLRenderContext;
 	
@@ -98,31 +99,11 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
-	public function applyMatrix (matrix:Array<Float>):Void {
+	public function applyDefaultColor ():Void {
 		
-		if (currentShader != null) {
+		if (currentShaderBuffer != null) {
 			
-			currentShader.data.uMatrix.value = matrix;
-			
-		} else if (currentShaderBuffer != null) {
-			
-			currentShaderBuffer.addOverride ("uMatrix", matrix);
-			
-		}
-		
-	}
-	
-	
-	public function applyUseColorTransform ():Void {
-		
-		if (currentShader != null) {
-			
-			var useColorTransform = (currentShader.data.aColorMultipliers.value != null);
-			if (currentShader.data.uUseColorTransform.value == null) currentShader.data.uUseColorTransform.value = [];
-			currentShader.data.uUseColorTransform.value[0] = useColorTransform;
-			
-		} else if (currentShaderBuffer != null) {
-			
+			var hasAlpha = false;
 			var hasMultipliers = false;
 			var floatIndex = 0;
 			
@@ -133,7 +114,10 @@ class GLShaderManager extends AbstractShaderManager {
 					if (currentShaderBuffer.paramRefs_Float[floatIndex].name == "aUseColorMultipliers") {
 						
 						hasMultipliers = (currentShaderBuffer.paramLengths[i] > 0);
-						break;
+						
+					} else if (currentShaderBuffer.paramRefs_Float[floatIndex].name == "aAlpha") {
+						
+						hasAlpha = (currentShaderBuffer.paramLengths[i] > 0);
 						
 					}
 					
@@ -145,6 +129,33 @@ class GLShaderManager extends AbstractShaderManager {
 			
 			useColorTransform[0] = hasMultipliers ? 1 : 0;
 			currentShaderBuffer.addOverride ("uUseColorTransform", useColorTransform);
+			
+			if (!hasAlpha) {
+				
+				currentShaderBuffer.addOverride ("aAlpha", emptyAlpha);
+				
+			}
+			
+		} else if (currentShader != null) {
+			
+			var useColorTransform = (currentShader.data.aColorMultipliers.value != null);
+			if (currentShader.data.uUseColorTransform.value == null) currentShader.data.uUseColorTransform.value = [];
+			currentShader.data.uUseColorTransform.value[0] = useColorTransform;
+			
+		}
+		
+	}
+	
+	
+	public function applyMatrix (matrix:Array<Float>):Void {
+		
+		if (currentShaderBuffer != null) {
+			
+			currentShaderBuffer.addOverride ("uMatrix", matrix);
+			
+		} else if (currentShader != null) {
+			
+			currentShader.data.uMatrix.value = matrix;
 			
 		}
 		

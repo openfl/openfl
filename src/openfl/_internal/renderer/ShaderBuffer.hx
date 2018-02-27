@@ -24,7 +24,7 @@ class ShaderBuffer {
 	public var inputs:Array<BitmapData>;
 	public var overrideCount:Int;
 	public var overrideNames:Array<String>;
-	public var overrideValues:Array<Array<Float>>;
+	public var overrideValues:Array<Array<Dynamic>>;
 	public var paramCount:Int;
 	public var paramData:Float32Array;
 	public var paramDataBuffer:GLBuffer;
@@ -54,7 +54,7 @@ class ShaderBuffer {
 	}
 	
 	
-	public function addOverride (name:String, values:Array<Float>):Void {
+	public function addOverride (name:String, values:Array<Dynamic>):Void {
 		
 		overrideNames[overrideCount] = name;
 		overrideValues[overrideCount] = values;
@@ -85,7 +85,7 @@ class ShaderBuffer {
 		paramCount = boolCount + floatCount + intCount;
 		
 		var paramLength = 0;
-		var length, p = 0;
+		var length = 0, p = 0;
 		var param;
 		
 		for (i in 0...boolCount) {
@@ -131,15 +131,19 @@ class ShaderBuffer {
 			
 		}
 		
-		if (paramData == null) {
+		if (paramDataLength > 0) {
 			
-			paramData = new Float32Array (paramDataLength);
-			
-		} else if (paramDataLength > paramData.length) {
-			
-			var data = new Float32Array (paramDataLength);
-			data.set (paramData);
-			paramData = data;
+			if (paramData == null) {
+				
+				paramData = new Float32Array (paramDataLength);
+				
+			} else if (paramDataLength > paramData.length) {
+				
+				var data = new Float32Array (paramDataLength);
+				data.set (paramData);
+				paramData = data;
+				
+			}
 			
 		}
 		

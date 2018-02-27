@@ -1,8 +1,9 @@
 package openfl._internal.renderer.opengl;
 
 
-import lime.graphics.GLRenderContext;
+import lime.graphics.opengl.ext.KHR_debug;
 import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.GLRenderContext;
 import lime.math.Matrix4;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl.display.BitmapData;
@@ -89,6 +90,15 @@ class GLRenderer extends AbstractRenderer {
 			resize (width, height);
 			
 		}
+		
+		#if gl_debug
+		var ext:KHR_debug = gl.getExtension ("KHR_debug");
+		if (ext != null) {
+			
+			gl.enable (ext.DEBUG_OUTPUT);
+			
+		}
+		#end
 		
 	}
 	

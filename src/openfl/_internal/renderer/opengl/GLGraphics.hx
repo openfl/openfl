@@ -443,11 +443,11 @@ class GLGraphics {
 								var shader;
 								
 								if (shaderBuffer != null) {
-									trace ("hi");
+									
 									shader = shaderManager.initShaderBuffer (shaderBuffer);
 									shaderManager.setShaderBuffer (shaderBuffer);
 									shaderManager.applyMatrix (uMatrix);
-									shaderManager.applyUseColorTransform ();
+									shaderManager.applyDefaultColor ();
 									shaderManager.updateShaderBuffer ();
 									
 								} else {

@@ -538,7 +538,7 @@ class Shader {
 				__inputBitmapData.push (input);
 				Reflect.setField (data, name, input);
 				
-			} else {
+			} else if (!Reflect.hasField (data, name)) {
 				
 				var parameterType:ShaderParameterType = switch (type) {
 					
@@ -988,6 +988,8 @@ class Shader {
 	
 	private function __updateGLFromBuffer (shaderBuffer:ShaderBuffer):Void {
 		
+		// TODO: Simplify
+		
 		var textureCount = 0;
 		var input, inputData;
 		
@@ -1019,14 +1021,26 @@ class Shader {
 			
 		}
 		
-		if (shaderBuffer.paramDataBuffer == null) {
+		if (shaderBuffer.paramDataLength > 0) {
 			
-			shaderBuffer.paramDataBuffer = gl.createBuffer ();
+			if (shaderBuffer.paramDataBuffer == null) {
+				
+				shaderBuffer.paramDataBuffer = gl.createBuffer ();
+				
+			}
+			
+			Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ")");
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, shaderBuffer.paramDataBuffer);
+			(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
+			
+		} else {
+			
+			Log.verbose ("bind buffer null");
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
 		}
-		
-		gl.bindBuffer (gl.ARRAY_BUFFER, shaderBuffer.paramDataBuffer);
-		(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
 		
 		var boolIndex = 0;
 		var floatIndex = 0;
@@ -1035,13 +1049,16 @@ class Shader {
 		var boolCount = shaderBuffer.paramRefs_Bool.length;
 		var floatCount = shaderBuffer.paramRefs_Float.length;
 		
-		var boolRef, floatRef, intRef, index, count, arrayCount;
-		var valueLength, position, hasOverride, overrideValues;
+		var boolRef, floatRef, intRef, index:Dynamic, count, arrayCount;
+		var valueLength, position, hasOverride;
 		var valueData;
+		var overrideBoolValue = null, overrideFloatValue = null, overrideIntValue = null;
 		
 		var paramData = shaderBuffer.paramData;
 		
 		for (i in 0...shaderBuffer.paramCount) {
+			
+			hasOverride = false;
 			
 			if (i < boolCount) {
 				
@@ -1050,13 +1067,12 @@ class Shader {
 				valueLength = shaderBuffer.paramLengths[i];
 				position = shaderBuffer.paramPositions[i];
 				
-				hasOverride = false;
-				
 				for (j in 0...shaderBuffer.overrideCount) {
 					
 					if (boolRef.name == shaderBuffer.overrideNames[j]) {
 						
-						overrideValues = shaderBuffer.overrideValues[j];
+						overrideBoolValue = shaderBuffer.overrideValues[j];
+						valueLength = overrideBoolValue != null ? overrideBoolValue.length : 0;
 						hasOverride = true;
 						break;
 						
@@ -1064,15 +1080,9 @@ class Shader {
 					
 				}
 				
-				// TODO: Overrides
-				
-				// if (hasOverride) {
-					
-				// 	valueLength = overrideValues.length;
-				// 	valueData = overrideValues;
-					
-				// }
-				
+				Log.verbose (boolRef.name + " (" + index + ")");
+				Log.verbose ("Length: " + valueLength);
+				Log.verbose ("Override: " + hasOverride);
 				
 				count = switch (boolRef.type) {
 					case BOOL2: 2;
@@ -1085,13 +1095,29 @@ class Shader {
 					
 					if (valueLength >= count) {
 						
-						switch (count) {
+						if (hasOverride) {
+							Log.verbose ("bind override uniform: " + boolRef.name + ", " + overrideBoolValue);
+							switch (count) {
+								
+								case 1: gl.uniform1i (index, overrideBoolValue[0]);
+								case 2: gl.uniform2i (index, overrideBoolValue[0] ? 1 : 0, overrideBoolValue[1] ? 1 : 0);
+								case 3: gl.uniform3i (index, overrideBoolValue[0] ? 1 : 0, overrideBoolValue[1] ? 1 : 0, overrideBoolValue[2] ? 1 : 0);
+								case 4: gl.uniform4i (index, overrideBoolValue[0] ? 1 : 0, overrideBoolValue[1] ? 1 : 0, overrideBoolValue[2] ? 1 : 0, overrideBoolValue[3] ? 1 : 0);
+								default:
+								
+							}
 							
-							case 1: gl.uniform1i (index, Std.int (paramData[position]));
-							case 2: gl.uniform2i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
-							case 3: gl.uniform3i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
-							case 4: gl.uniform4i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
-							default:
+						} else {
+							Log.verbose ("bind uniform: " + boolRef.name);
+							switch (count) {
+								
+								case 1: gl.uniform1i (index, Std.int (paramData[position]));
+								case 2: gl.uniform2i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
+								case 3: gl.uniform3i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
+								case 4: gl.uniform4i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
+								default:
+								
+							}
 							
 						}
 						
@@ -1099,19 +1125,35 @@ class Shader {
 					
 				} else {
 					
-					if (valueLength == count) {
-						
+					if (valueLength >= count || hasOverride) {
+						Log.verbose ("disable vertex attrib: " + boolRef.name);
 						gl.disableVertexAttribArray (index);
 						
 						if (valueLength > 0) {
 							
-							switch (count) {
+							if (hasOverride) {
+								Log.verbose ("bind override vertex attrib: " + boolRef.name + ", " + overrideBoolValue);
+								switch (count) {
+									
+									case 1: gl.vertexAttrib1f (index, overrideBoolValue[0] ? 1 : 0);
+									case 2: gl.vertexAttrib2f (index, overrideBoolValue[0] ? 1 : 0, overrideBoolValue[1] ? 1 : 0);
+									case 3: gl.vertexAttrib3f (index, overrideBoolValue[0] ? 1 : 0, overrideBoolValue[1] ? 1 : 0, overrideBoolValue[2] ? 1 : 0);
+									case 4: gl.vertexAttrib4f (index, overrideBoolValue[0] ? 1 : 0, overrideBoolValue[1] ? 1 : 0, overrideBoolValue[2] ? 1 : 0, overrideBoolValue[3] ? 1 : 0);
+									default:
+									
+								}
 								
-								case 1: gl.vertexAttrib1f (index, Std.int (paramData[position]));
-								case 2: gl.vertexAttrib2f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
-								case 3: gl.vertexAttrib3f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
-								case 4: gl.vertexAttrib4f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
-								default:
+							} else {
+								Log.verbose ("bind vertex attrib: " + boolRef.name);
+								switch (count) {
+									
+									case 1: gl.vertexAttrib1f (index, Std.int (paramData[position]));
+									case 2: gl.vertexAttrib2f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
+									case 3: gl.vertexAttrib3f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
+									case 4: gl.vertexAttrib4f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
+									default:
+									
+								}
 								
 							}
 							
@@ -1147,6 +1189,23 @@ class Shader {
 				valueLength = shaderBuffer.paramLengths[i];
 				position = shaderBuffer.paramPositions[i];
 				
+				for (j in 0...shaderBuffer.overrideCount) {
+					
+					if (floatRef.name == shaderBuffer.overrideNames[j]) {
+						
+						overrideFloatValue = shaderBuffer.overrideValues[j];
+						valueLength = overrideFloatValue != null ? overrideFloatValue.length : 0;
+						hasOverride = true;
+						break;
+						
+					}
+					
+				}
+				
+				Log.verbose (floatRef.name + " (" + index + ")");
+				Log.verbose ("Length: " + valueLength);
+				Log.verbose ("Override: " + hasOverride);
+				
 				count = switch (floatRef.type) {
 					case FLOAT2: 2;
 					case FLOAT3: 3;
@@ -1160,51 +1219,105 @@ class Shader {
 					
 					if (valueLength >= count) {
 						
-						switch (floatRef.type) {
-							
-							case FLOAT: gl.uniform1f (index, paramData[position]);
-							case FLOAT2: gl.uniform2f (index, paramData[position], paramData[position + 1]);
-							case FLOAT3: gl.uniform3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
-							case FLOAT4: gl.uniform4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
-							case MATRIX2X2:
+						if (hasOverride) {
+							Log.verbose ("bind override uniform: " +  floatRef.name + ", " + overrideFloatValue);
+							switch (floatRef.type) {
 								
-								for (j in 0...4) {
+								case FLOAT: gl.uniform1f (index, overrideFloatValue[0]);
+								case FLOAT2: gl.uniform2f (index, overrideFloatValue[0], overrideFloatValue[1]);
+								case FLOAT3: gl.uniform3f (index, overrideFloatValue[0], overrideFloatValue[1], overrideFloatValue[2]);
+								case FLOAT4: gl.uniform4f (index, overrideFloatValue[0], overrideFloatValue[1], overrideFloatValue[2], overrideFloatValue[3]);
+								case MATRIX2X2:
 									
-									__uniformMatrix2[j] = paramData[position + j];
+									for (j in 0...4) {
+										
+										__uniformMatrix2[j] = overrideFloatValue[j];
+										
+									}
 									
-								}
+									gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
 								
-								gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
-							
-							//case MATRIX2X3:
-							//case MATRIX2X4:
-							//case MATRIX3X2:
-							
-							case MATRIX3X3:
+								//case MATRIX2X3:
+								//case MATRIX2X4:
+								//case MATRIX3X2:
 								
-								for (j in 0...9) {
+								case MATRIX3X3:
 									
-									__uniformMatrix3[j] = paramData[position + j];
+									for (j in 0...9) {
+										
+										__uniformMatrix3[j] = overrideFloatValue[j];
+										
+									}
 									
-								}
+									gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
 								
-								gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
-							
-							//case MATRIX3X4:
-							//case MATRIX4X2:
-							//case MATRIX4X3:
-							
-							case MATRIX4X4:
+								//case MATRIX3X4:
+								//case MATRIX4X2:
+								//case MATRIX4X3:
 								
-								for (j in 0...16) {
+								case MATRIX4X4:
 									
-									__uniformMatrix4[j] = paramData[position + j];
+									for (j in 0...16) {
+										
+										__uniformMatrix4[j] = overrideFloatValue[j];
+										
+									}
 									
-								}
+									gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
 								
-								gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
+								default:
+								
+							}
 							
-							default:
+						} else {
+							Log.verbose ("bind uniform: " + floatRef.name);
+							switch (floatRef.type) {
+								
+								case FLOAT: gl.uniform1f (index, paramData[position]);
+								case FLOAT2: gl.uniform2f (index, paramData[position], paramData[position + 1]);
+								case FLOAT3: gl.uniform3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
+								case FLOAT4: gl.uniform4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
+								case MATRIX2X2:
+									
+									for (j in 0...4) {
+										
+										__uniformMatrix2[j] = paramData[position + j];
+										
+									}
+									
+									gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
+								
+								//case MATRIX2X3:
+								//case MATRIX2X4:
+								//case MATRIX3X2:
+								
+								case MATRIX3X3:
+									
+									for (j in 0...9) {
+										
+										__uniformMatrix3[j] = paramData[position + j];
+										
+									}
+									
+									gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
+								
+								//case MATRIX3X4:
+								//case MATRIX4X2:
+								//case MATRIX4X3:
+								
+								case MATRIX4X4:
+									
+									for (j in 0...16) {
+										
+										__uniformMatrix4[j] = paramData[position + j];
+										
+									}
+									
+									gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
+								
+								default:
+								
+							}
 							
 						}
 						
@@ -1219,8 +1332,8 @@ class Shader {
 						default: 1;
 					}
 					
-					if ((floatRef.name != POSITION_ATTRIBUTE && floatRef.name != SAMPLER_ATTRIBUTE) && (valueLength == 0 || valueLength == count)) {
-						
+					if ((floatRef.name != POSITION_ATTRIBUTE && floatRef.name != SAMPLER_ATTRIBUTE) && (hasOverride || valueLength == 0 || valueLength == count)) {
+						Log.verbose ("disable vertex attrib: " + floatRef.name);
 						for (i in 0...arrayCount) {
 							
 							gl.disableVertexAttribArray (index + i);
@@ -1229,37 +1342,77 @@ class Shader {
 						
 						if (valueLength > 0) {
 							
-							switch (floatRef.type) {
-								
-								case FLOAT: gl.vertexAttrib1f (index, paramData[position]);
-								case FLOAT2: gl.vertexAttrib2f (index, paramData[position], paramData[position + 1]);
-								case FLOAT3: gl.vertexAttrib3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
-								case FLOAT4: gl.vertexAttrib4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
-								case MATRIX2X2:
+							if (hasOverride) {
+								Log.verbose ("bind override attrib value: " + floatRef.name + ", " + overrideFloatValue);
+								switch (floatRef.type) {
 									
-									for (j in 0...2) {
+									case FLOAT: gl.vertexAttrib1f (index, overrideFloatValue[0]);
+									case FLOAT2: gl.vertexAttrib2f (index, overrideFloatValue[0], overrideFloatValue[1]);
+									case FLOAT3: gl.vertexAttrib3f (index, overrideFloatValue[0], overrideFloatValue[1], overrideFloatValue[2]);
+									case FLOAT4: gl.vertexAttrib4f (index, overrideFloatValue[0], overrideFloatValue[1], overrideFloatValue[2], overrideFloatValue[3]);
+									case MATRIX2X2:
 										
-										gl.vertexAttrib2f (index + j, paramData[position + j * 2], paramData[position + j * 2 + 1]);
-										
-									}
-								
-								case MATRIX3X3:
+										for (j in 0...2) {
+											
+											gl.vertexAttrib2f (index + j, overrideFloatValue[j * 2], overrideFloatValue[j * 2 + 1]);
+											
+										}
 									
-									for (j in 0...3) {
+									case MATRIX3X3:
 										
-										gl.vertexAttrib3f (index + j, paramData[position + j * 3], paramData[position + j * 3 + 1], paramData[position + j * 3 + 2]);
-										
-									}
-								
-								case MATRIX4X4:
+										for (j in 0...3) {
+											
+											gl.vertexAttrib3f (index + j, overrideFloatValue[j * 3], overrideFloatValue[j * 3 + 1], overrideFloatValue[j * 3 + 2]);
+											
+										}
 									
-									for (j in 0...4) {
+									case MATRIX4X4:
 										
-										gl.vertexAttrib4f (index + j, paramData[position + j * 4], paramData[position + j * 4 + 1], paramData[position + j * 4 + 2], paramData[position + j * 4 + 3]);
-										
-									}
+										for (j in 0...4) {
+											
+											gl.vertexAttrib4f (index + j, overrideFloatValue[j * 4], overrideFloatValue[j * 4 + 1], overrideFloatValue[j * 4 + 2], overrideFloatValue[i * 4 + 3]);
+											
+										}
+									
+									default:
+									
+								}
 								
-								default:
+							} else {
+								Log.verbose ("bind attrib value: " + floatRef.name);
+								switch (floatRef.type) {
+									
+									case FLOAT: gl.vertexAttrib1f (index, paramData[position]);
+									case FLOAT2: gl.vertexAttrib2f (index, paramData[position], paramData[position + 1]);
+									case FLOAT3: gl.vertexAttrib3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
+									case FLOAT4: gl.vertexAttrib4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
+									case MATRIX2X2:
+										
+										for (j in 0...2) {
+											
+											gl.vertexAttrib2f (index + j, paramData[position + j * 2], paramData[position + j * 2 + 1]);
+											
+										}
+									
+									case MATRIX3X3:
+										
+										for (j in 0...3) {
+											
+											gl.vertexAttrib3f (index + j, paramData[position + j * 3], paramData[position + j * 3 + 1], paramData[position + j * 3 + 2]);
+											
+										}
+									
+									case MATRIX4X4:
+										
+										for (j in 0...4) {
+											
+											gl.vertexAttrib4f (index + j, paramData[position + j * 4], paramData[position + j * 4 + 1], paramData[position + j * 4 + 2], paramData[position + j * 4 + 3]);
+											
+										}
+									
+									default:
+									
+								}
 								
 							}
 							
@@ -1306,7 +1459,15 @@ class Shader {
 						if (arrayCount == 1) {
 							
 							gl.enableVertexAttribArray (index);
-							gl.vertexAttribPointer (index, count, gl.FLOAT, false, count * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+							
+							if ((floatRef.name != POSITION_ATTRIBUTE && floatRef.name != SAMPLER_ATTRIBUTE)) {
+								
+								Log.verbose ("vertex attrib pointer: " + floatRef.name + ", " + index);
+								Log.verbose (count + ", " + position);
+								gl.vertexAttribPointer (index, count, gl.FLOAT, false, count * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+								
+							}
+							
 							
 						} else {
 							
@@ -1332,6 +1493,23 @@ class Shader {
 				valueLength = shaderBuffer.paramLengths[i];
 				position = shaderBuffer.paramPositions[i];
 				
+				for (j in 0...shaderBuffer.overrideCount) {
+					
+					if (intRef.name == shaderBuffer.overrideNames[j]) {
+						
+						overrideIntValue = shaderBuffer.overrideValues[j];
+						valueLength = overrideIntValue != null ? overrideIntValue.length : 0;
+						hasOverride = true;
+						break;
+						
+					}
+					
+				}
+				
+				Log.verbose (intRef.name + " (" + index + ")");
+				Log.verbose ("Length: " + valueLength);
+				Log.verbose ("Override: " + hasOverride);
+				
 				count = switch (intRef.type) {
 					case INT2: 2;
 					case INT3: 3;
@@ -1343,13 +1521,29 @@ class Shader {
 					
 					if (valueLength >= count) {
 						
-						switch (count) {
+						if (hasOverride) {
+							Log.verbose ("bind override uniform: " + intRef.name + ", " + overrideIntValue);
+							switch (count) {
+								
+								case 1: gl.uniform1i (index, overrideIntValue[0]);
+								case 2: gl.uniform2i (index, overrideIntValue[0], overrideIntValue[1]);
+								case 3: gl.uniform3i (index, overrideIntValue[0], overrideIntValue[1], overrideIntValue[2]);
+								case 4: gl.uniform4i (index, overrideIntValue[0], overrideIntValue[1], overrideIntValue[2], overrideIntValue[3]);
+								default:
+								
+							}
 							
-							case 1: gl.uniform1i (index, Std.int (paramData[position]));
-							case 2: gl.uniform2i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
-							case 3: gl.uniform3i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
-							case 4: gl.uniform4i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
-							default:
+						} else {
+							Log.verbose ("bind uniform: " + intRef.name);
+							switch (count) {
+								
+								case 1: gl.uniform1i (index, Std.int (paramData[position]));
+								case 2: gl.uniform2i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
+								case 3: gl.uniform3i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
+								case 4: gl.uniform4i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
+								default:
+								
+							}
 							
 						}
 						
@@ -1357,19 +1551,35 @@ class Shader {
 					
 				} else {
 					
-					if (valueLength == 0 || valueLength == count) {
-						
+					if (hasOverride || valueLength == 0 || valueLength == count) {
+						Log.verbose ("disable vertex attrib: " + intRef.name);
 						gl.disableVertexAttribArray (index);
 						
 						if (valueLength > 0) {
 							
-							switch (count) {
+							if (hasOverride) {
+								Log.verbose ("bind override attrib value: " + intRef.name + ", " + overrideIntValue);
+								switch (count) {
+									
+									case 1: gl.vertexAttrib1f (index, overrideIntValue[0]);
+									case 2: gl.vertexAttrib2f (index, overrideIntValue[0], overrideIntValue[1]);
+									case 3: gl.vertexAttrib3f (index, overrideIntValue[0], overrideIntValue[1], overrideIntValue[2]);
+									case 4: gl.vertexAttrib4f (index, overrideIntValue[0], overrideIntValue[1], overrideIntValue[2], overrideIntValue[3]);
+									default:
+									
+								}
 								
-								case 1: gl.vertexAttrib1f (index, paramData[position]);
-								case 2: gl.vertexAttrib2f (index, paramData[position], paramData[position + 1]);
-								case 3: gl.vertexAttrib3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
-								case 4: gl.vertexAttrib4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
-								default:
+							} else {
+								Log.verbose ("bind attrib value: " + intRef.name);
+								switch (count) {
+									
+									case 1: gl.vertexAttrib1f (index, paramData[position]);
+									case 2: gl.vertexAttrib2f (index, paramData[position], paramData[position + 1]);
+									case 3: gl.vertexAttrib3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
+									case 4: gl.vertexAttrib4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
+									default:
+									
+								}
 								
 							}
 							
