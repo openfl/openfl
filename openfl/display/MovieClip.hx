@@ -47,6 +47,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var framesLoaded (get, never):Int;
 	public var isPlaying (get, never):Bool;
 	public var totalFrames (get, never):Int;
+	public var isAnimatable (get, never):Bool;
 
 	private var __cachedChildrenFrameSymbolInstacesDisplayObjects:Array<DisplayObject>;
 	private var __cachedManuallyAddedDisplayObjects:Array<DisplayObject>;
@@ -68,6 +69,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __isInstanceFieldsSetup:Bool;
 	private var __isOnScreen_last_check:Bool = false;
 	private var __isOnScreen_last_check_tick:Int = 0;
+	private var __isAnimatable:Bool;
+
 
 	#if openfljs
 	private static function __init__ () {
@@ -95,6 +98,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__currentLabels = [];
 		__totalFrames = 0;
 		__isInstanceFieldsSetup = false;
+		__isAnimatable = true;
 		enabled = true;
 
 		if (__initSymbol != null) {
@@ -674,6 +678,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		__currentFrame = 1;
 		__lastFrameUpdate = -2;
 		__totalFrames = __symbol.frames.length;
+		__isAnimatable = __totalFrames > 1;
 
 		var frame:Int;
 		var frameData:Frame;
@@ -695,6 +700,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 					addLabel = addLabel && label != labelSingle;
 					__currentLabels.push (new FrameLabel (label, i + 1));
+					__isAnimatable = true;
 
 				}
 
@@ -703,6 +709,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			if (addLabel) {
 
 				__currentLabels.push (new FrameLabel (labelSingle, i + 1));
+				__isAnimatable = true;
 
 			}
 
@@ -715,9 +722,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				}
 
 				__frameScripts.set (frame, frameData.script);
+				__isAnimatable = true;
 
 			} else if (frameData.scriptSource != null) {
 
+				__isAnimatable = true;
 				if (__frameScripts == null) {
 
 					__frameScripts = new FastIteratingIntMap<Void->Void> ();
@@ -862,6 +871,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 
 						if (displayObject != null) {
 
+							if(!__isAnimatable)
+							{
+								if(Std.instance(displayObject, MovieClip) != null)
+									__isAnimatable = (cast displayObject:MovieClip).__isAnimatable;
+							}
 							displayObject.parent = this;
 							displayObject.stage = stage;
 							if(frameObject.clipDepth > 0) {
@@ -1177,6 +1191,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function get_framesLoaded ():Int { return __totalFrames; }
 	private function get_isPlaying ():Bool { return __playing; }
 	private function get_totalFrames ():Int { return __totalFrames; }
+	private function get_isAnimatable ():Bool { return __isAnimatable; }
 	private override function get_width():Float
 	{
 		if(__swf != null && __swf.frameSizeMaxPixel != null && this.__symbol == __swf.root)
