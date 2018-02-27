@@ -70,7 +70,7 @@ class DrawCommandReader {
 			
 			case BEGIN_SHADER_FILL:
 				
-				oPos += 2; //shader, matrix
+				oPos += 1; //shaderBuffer
 			
 			case CUBIC_CURVE_TO:
 				
@@ -281,8 +281,7 @@ abstract BeginGradientFillView (DrawCommandReader) {
 abstract BeginShaderFillView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var shader (get, never):Shader; private inline function get_shader ():Shader { return cast this.obj (0); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	public var shaderBuffer (get, never):ShaderBuffer; private inline function get_shaderBuffer ():ShaderBuffer { return cast this.obj (0); }
 	
 }
 

@@ -3,6 +3,7 @@ package openfl._internal.renderer.opengl;
 
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractShaderManager;
+import openfl._internal.renderer.ShaderBuffer;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
@@ -22,6 +23,7 @@ class GLShaderManager extends AbstractShaderManager {
 	private static var colorMultipliers = [ 0, 0, 0, 0. ];
 	private static var colorOffsets = [ 0, 0, 0, 0. ];
 	private static var emptyColor = [ 0, 0, 0, 0. ];
+	private static var useColorTransform = [ 0. ];
 	
 	private var gl:GLRenderContext;
 	
@@ -96,9 +98,55 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
-	public inline function applyMatrix (matrix:Array<Float>):Void {
+	public function applyMatrix (matrix:Array<Float>):Void {
 		
-		currentShader.data.uMatrix.value = matrix;
+		if (currentShader != null) {
+			
+			currentShader.data.uMatrix.value = matrix;
+			
+		} else if (currentShaderBuffer != null) {
+			
+			currentShaderBuffer.addOverride ("uMatrix", matrix);
+			
+		}
+		
+	}
+	
+	
+	public function applyUseColorTransform ():Void {
+		
+		if (currentShader != null) {
+			
+			var useColorTransform = (currentShader.data.aColorMultipliers.value != null);
+			if (currentShader.data.uUseColorTransform.value == null) currentShader.data.uUseColorTransform.value = [];
+			currentShader.data.uUseColorTransform.value[0] = useColorTransform;
+			
+		} else if (currentShaderBuffer != null) {
+			
+			var hasMultipliers = false;
+			var floatIndex = 0;
+			
+			for (i in 0...currentShaderBuffer.paramCount) {
+				
+				if (currentShaderBuffer.paramTypes[i] == 1) {
+					
+					if (currentShaderBuffer.paramRefs_Float[floatIndex].name == "aUseColorMultipliers") {
+						
+						hasMultipliers = (currentShaderBuffer.paramLengths[i] > 0);
+						break;
+						
+					}
+					
+					floatIndex++;
+					
+				}
+				
+			}
+			
+			useColorTransform[0] = hasMultipliers ? 1 : 0;
+			currentShaderBuffer.addOverride ("uUseColorTransform", useColorTransform);
+			
+		}
 		
 	}
 	
@@ -126,6 +174,19 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
+	public override function initShaderBuffer (shaderBuffer:ShaderBuffer):Shader {
+		
+		if (shaderBuffer != null) {
+			
+			return initShader (shaderBuffer.shader);
+			
+		}
+		
+		return defaultShader;
+		
+	}
+	
+	
 	public override function setShader (shader:Shader):Void {
 		
 		if (currentShader == shader) return;
@@ -133,6 +194,7 @@ class GLShaderManager extends AbstractShaderManager {
 		if (currentShader != null) {
 			
 			currentShader.__disable ();
+			currentShaderBuffer = null;
 			
 		}
 		
@@ -154,11 +216,30 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
+	public override function setShaderBuffer (shaderBuffer:ShaderBuffer):Void {
+		
+		setShader (shaderBuffer.shader);
+		currentShaderBuffer = shaderBuffer;
+		
+	}
+	
+	
 	public override function updateShader ():Void {
 		
 		if (currentShader != null) {
 			
 			currentShader.__update ();
+			
+		}
+		
+	}
+	
+	
+	public override function updateShaderBuffer ():Void {
+		
+		if (currentShader != null && currentShaderBuffer != null) {
+			
+			currentShader.__updateFromBuffer (currentShaderBuffer);
 			
 		}
 		

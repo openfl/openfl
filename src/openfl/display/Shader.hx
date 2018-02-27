@@ -1,11 +1,13 @@
 package openfl.display;
 
 
-import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.Log;
+import openfl._internal.renderer.ShaderBuffer;
 import openfl.utils.ByteArray;
 
 #if !openfl_debug
@@ -616,6 +618,17 @@ class Shader {
 	}
 	
 	
+	private function __updateFromBuffer (shaderBuffer:ShaderBuffer):Void {
+		
+		if (glProgram != null) {
+			
+			__updateGLFromBuffer (shaderBuffer);
+			
+		}
+		
+	}
+	
+	
 	private function __updateGL ():Void {
 		
 		var textureCount = 0;
@@ -965,6 +978,425 @@ class Shader {
 					// TODO
 					
 				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private function __updateGLFromBuffer (shaderBuffer:ShaderBuffer):Void {
+		
+		var textureCount = 0;
+		var input, inputData;
+		
+		for (i in 0...shaderBuffer.inputCount) {
+			
+			input = shaderBuffer.inputRefs[i];
+			inputData = shaderBuffer.inputs[i];
+			
+			if (input.input != null) {
+				
+				gl.activeTexture (gl.TEXTURE0 + textureCount);
+				gl.bindTexture (gl.TEXTURE_2D, inputData.getTexture (gl));
+				
+				if (input.smoothing) {
+					
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					
+				} else {
+					
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+					
+				}
+				
+			}
+			
+			textureCount++;
+			
+		}
+		
+		if (shaderBuffer.paramDataBuffer == null) {
+			
+			shaderBuffer.paramDataBuffer = gl.createBuffer ();
+			
+		}
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, shaderBuffer.paramDataBuffer);
+		(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
+		
+		var boolIndex = 0;
+		var floatIndex = 0;
+		var intIndex = 0;
+		
+		var boolCount = shaderBuffer.paramRefs_Bool.length;
+		var floatCount = shaderBuffer.paramRefs_Float.length;
+		
+		var boolRef, floatRef, intRef, index, count, arrayCount;
+		var valueLength, position, hasOverride, overrideValues;
+		var valueData;
+		
+		var paramData = shaderBuffer.paramData;
+		
+		for (i in 0...shaderBuffer.paramCount) {
+			
+			if (i < boolCount) {
+				
+				boolRef = shaderBuffer.paramRefs_Bool[boolIndex];
+				index = boolRef.index;
+				valueLength = shaderBuffer.paramLengths[i];
+				position = shaderBuffer.paramPositions[i];
+				
+				hasOverride = false;
+				
+				for (j in 0...shaderBuffer.overrideCount) {
+					
+					if (boolRef.name == shaderBuffer.overrideNames[j]) {
+						
+						overrideValues = shaderBuffer.overrideValues[j];
+						hasOverride = true;
+						break;
+						
+					}
+					
+				}
+				
+				// TODO: Overrides
+				
+				// if (hasOverride) {
+					
+				// 	valueLength = overrideValues.length;
+				// 	valueData = overrideValues;
+					
+				// }
+				
+				
+				count = switch (boolRef.type) {
+					case BOOL2: 2;
+					case BOOL3: 3;
+					case BOOL4: 4;
+					default: 1;
+				}
+				
+				if (__isUniform.get (boolRef.name)) {
+					
+					if (valueLength >= count) {
+						
+						switch (count) {
+							
+							case 1: gl.uniform1i (index, Std.int (paramData[position]));
+							case 2: gl.uniform2i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
+							case 3: gl.uniform3i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
+							case 4: gl.uniform4i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
+							default:
+							
+						}
+						
+					}
+					
+				} else {
+					
+					if (valueLength == count) {
+						
+						gl.disableVertexAttribArray (index);
+						
+						if (valueLength > 0) {
+							
+							switch (count) {
+								
+								case 1: gl.vertexAttrib1f (index, Std.int (paramData[position]));
+								case 2: gl.vertexAttrib2f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
+								case 3: gl.vertexAttrib3f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
+								case 4: gl.vertexAttrib4f (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
+								default:
+								
+							}
+							
+						} else {
+							
+							switch (count) {
+								
+								case 1: gl.vertexAttrib1f (index, 0);
+								case 2: gl.vertexAttrib2f (index, 0, 0);
+								case 3: gl.vertexAttrib3f (index, 0, 0, 0);
+								case 4: gl.vertexAttrib4f (index, 0, 0, 0, 0);
+								default:
+								
+							}
+							
+						}
+						
+					} else {
+						
+						gl.enableVertexAttribArray (index);
+						gl.vertexAttribPointer (index, count, gl.BOOL, false, count * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+						
+					}
+					
+				}
+				
+				boolIndex++;
+				
+			} else if (i < boolCount + floatCount) {
+				
+				floatRef = shaderBuffer.paramRefs_Float[floatIndex];
+				index = floatRef.index;
+				valueLength = shaderBuffer.paramLengths[i];
+				position = shaderBuffer.paramPositions[i];
+				
+				count = switch (floatRef.type) {
+					case FLOAT2: 2;
+					case FLOAT3: 3;
+					case FLOAT4, MATRIX2X2: 4;
+					case MATRIX3X3: 9;
+					case MATRIX4X4: 16;
+					default: 1;
+				}
+				
+				if (__isUniform.get (floatRef.name)) {
+					
+					if (valueLength >= count) {
+						
+						switch (floatRef.type) {
+							
+							case FLOAT: gl.uniform1f (index, paramData[position]);
+							case FLOAT2: gl.uniform2f (index, paramData[position], paramData[position + 1]);
+							case FLOAT3: gl.uniform3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
+							case FLOAT4: gl.uniform4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
+							case MATRIX2X2:
+								
+								for (j in 0...4) {
+									
+									__uniformMatrix2[j] = paramData[position + j];
+									
+								}
+								
+								gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
+							
+							//case MATRIX2X3:
+							//case MATRIX2X4:
+							//case MATRIX3X2:
+							
+							case MATRIX3X3:
+								
+								for (j in 0...9) {
+									
+									__uniformMatrix3[j] = paramData[position + j];
+									
+								}
+								
+								gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
+							
+							//case MATRIX3X4:
+							//case MATRIX4X2:
+							//case MATRIX4X3:
+							
+							case MATRIX4X4:
+								
+								for (j in 0...16) {
+									
+									__uniformMatrix4[j] = paramData[position + j];
+									
+								}
+								
+								gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
+							
+							default:
+							
+						}
+						
+					}
+					
+				} else {
+					
+					arrayCount = switch (floatRef.type) {
+						case MATRIX2X2: 2;
+						case MATRIX3X3: 3;
+						case MATRIX4X4: 4;
+						default: 1;
+					}
+					
+					if ((floatRef.name != POSITION_ATTRIBUTE && floatRef.name != SAMPLER_ATTRIBUTE) && (valueLength == 0 || valueLength == count)) {
+						
+						for (i in 0...arrayCount) {
+							
+							gl.disableVertexAttribArray (index + i);
+							
+						}
+						
+						if (valueLength > 0) {
+							
+							switch (floatRef.type) {
+								
+								case FLOAT: gl.vertexAttrib1f (index, paramData[position]);
+								case FLOAT2: gl.vertexAttrib2f (index, paramData[position], paramData[position + 1]);
+								case FLOAT3: gl.vertexAttrib3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
+								case FLOAT4: gl.vertexAttrib4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
+								case MATRIX2X2:
+									
+									for (j in 0...2) {
+										
+										gl.vertexAttrib2f (index + j, paramData[position + j * 2], paramData[position + j * 2 + 1]);
+										
+									}
+								
+								case MATRIX3X3:
+									
+									for (j in 0...3) {
+										
+										gl.vertexAttrib3f (index + j, paramData[position + j * 3], paramData[position + j * 3 + 1], paramData[position + j * 3 + 2]);
+										
+									}
+								
+								case MATRIX4X4:
+									
+									for (j in 0...4) {
+										
+										gl.vertexAttrib4f (index + j, paramData[position + j * 4], paramData[position + j * 4 + 1], paramData[position + j * 4 + 2], paramData[position + j * 4 + 3]);
+										
+									}
+								
+								default:
+								
+							}
+							
+						} else {
+							
+							switch (floatRef.type) {
+								
+								case FLOAT: gl.vertexAttrib1f (index, 0);
+								case FLOAT2: gl.vertexAttrib2f (index, 0, 0);
+								case FLOAT3: gl.vertexAttrib3f (index, 0, 0, 0);
+								case FLOAT4: gl.vertexAttrib4f (index, 0, 0, 0, 0);
+								case MATRIX2X2:
+									
+									for (j in 0...2) {
+										
+										gl.vertexAttrib2f (index + j, 0, 0);
+										
+									}
+								
+								case MATRIX3X3:
+									
+									for (j in 0...3) {
+										
+										gl.vertexAttrib3f (index + j, 0, 0, 0);
+										
+									}
+								
+								case MATRIX4X4:
+									
+									for (j in 0...4) {
+										
+										gl.vertexAttrib4f (index + j, 0, 0, 0, 0);
+										
+									}
+								
+								default:
+								
+							}
+							
+						}
+						
+					} else {
+						
+						if (arrayCount == 1) {
+							
+							gl.enableVertexAttribArray (index);
+							gl.vertexAttribPointer (index, count, gl.FLOAT, false, count * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+							
+						} else {
+							
+							for (j in 0...arrayCount) {
+								
+								gl.enableVertexAttribArray (index + j);
+								gl.vertexAttribPointer (index, count, gl.FLOAT, false, arrayCount * Float32Array.BYTES_PER_ELEMENT, (position + (j * count)) * Float32Array.BYTES_PER_ELEMENT);
+								
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+				floatIndex++;
+				
+			} else {
+				
+				intRef = shaderBuffer.paramRefs_Int[intIndex];
+				index = intRef.index;
+				valueLength = shaderBuffer.paramLengths[i];
+				position = shaderBuffer.paramPositions[i];
+				
+				count = switch (intRef.type) {
+					case INT2: 2;
+					case INT3: 3;
+					case INT4: 4;
+					default: 1;
+				}
+				
+				if (__isUniform.get (intRef.name)) {
+					
+					if (valueLength >= count) {
+						
+						switch (count) {
+							
+							case 1: gl.uniform1i (index, Std.int (paramData[position]));
+							case 2: gl.uniform2i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]));
+							case 3: gl.uniform3i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]));
+							case 4: gl.uniform4i (index, Std.int (paramData[position]), Std.int (paramData[position + 1]), Std.int (paramData[position + 2]), Std.int (paramData[position + 3]));
+							default:
+							
+						}
+						
+					}
+					
+				} else {
+					
+					if (valueLength == 0 || valueLength == count) {
+						
+						gl.disableVertexAttribArray (index);
+						
+						if (valueLength > 0) {
+							
+							switch (count) {
+								
+								case 1: gl.vertexAttrib1f (index, paramData[position]);
+								case 2: gl.vertexAttrib2f (index, paramData[position], paramData[position + 1]);
+								case 3: gl.vertexAttrib3f (index, paramData[position], paramData[position + 1], paramData[position + 2]);
+								case 4: gl.vertexAttrib4f (index, paramData[position], paramData[position + 1], paramData[position + 2], paramData[position + 3]);
+								default:
+								
+							}
+							
+						} else {
+							
+							switch (count) {
+								
+								case 1: gl.vertexAttrib1f (index, 0);
+								case 2: gl.vertexAttrib2f (index, 0, 0);
+								case 3: gl.vertexAttrib3f (index, 0, 0, 0);
+								case 4: gl.vertexAttrib4f (index, 0, 0, 0, 0);
+								default:
+								
+							}
+							
+						}
+						
+					} else {
+						
+						gl.enableVertexAttribArray (index);
+						gl.vertexAttribPointer (index, count, gl.INT, false, count * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+						
+					}
+					
+				}
+				
+				intIndex++;
 				
 			}
 			

@@ -6,10 +6,12 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
+import openfl._internal.renderer.ShaderBuffer;
 //import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl.display.Shader;
 import openfl.errors.ArgumentError;
@@ -62,8 +64,10 @@ import js.html.CanvasRenderingContext2D;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __renderTransform:Matrix;
+	private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	private var __strokePadding:Float;
 	private var __transformDirty:Bool;
+	private var __usedShaderBuffers:List<ShaderBuffer>;
 	private var __visible:Bool;
 	//private var __cachedTexture:RenderTexture;
 	private var __owner:DisplayObject;
@@ -85,10 +89,12 @@ import js.html.CanvasRenderingContext2D;
 		__owner = owner;
 		
 		__commands = new DrawCommandBuffer ();
+		__shaderBufferPool = new ObjectPool<ShaderBuffer> (function () return new ShaderBuffer ());
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
 		__renderTransform = new Matrix ();
+		__usedShaderBuffers = new List<ShaderBuffer> ();
 		__worldTransform = new Matrix ();
 		__width = 0;
 		__height = 0;
@@ -142,9 +148,11 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void {
 		
-		// TODO: Avoid clone
+		var shaderBuffer = __shaderBufferPool.get ();
+		__usedShaderBuffers.add (shaderBuffer);
+		shaderBuffer.update (shader);
 		
-		__commands.beginShaderFill (shader.__clone (), matrix);
+		__commands.beginShaderFill (shaderBuffer);
 		
 		if (shader != null) {
 			
@@ -156,6 +164,12 @@ import js.html.CanvasRenderingContext2D;
 	
 	
 	public function clear ():Void {
+		
+		for (shaderBuffer in __usedShaderBuffers) {
+			
+			__shaderBufferPool.release (shaderBuffer);
+			
+		}
 		
 		__commands.clear ();
 		__strokePadding = 0;

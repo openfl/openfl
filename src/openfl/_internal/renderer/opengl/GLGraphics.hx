@@ -287,7 +287,7 @@ class GLGraphics {
 				case BEGIN_SHADER_FILL:
 					
 					var c = data.readBeginShaderFill ();
-					bitmap = c.shader.data.uImage0.input;
+					bitmap = c.shaderBuffer.shader.data.uImage0.input;
 				
 				default:
 					
@@ -399,7 +399,7 @@ class GLGraphics {
 				
 				// var matrix = Matrix.__pool.get ();
 				
-				var customShader = null;
+				var shaderBuffer = null;
 				var bitmap = null;
 				var smooth = false;
 				
@@ -417,14 +417,14 @@ class GLGraphics {
 							var c = data.readBeginBitmapFill ();
 							bitmap = c.bitmap;
 							smooth = c.smooth;
-							customShader = null;
+							shaderBuffer = null;
 						
 						case BEGIN_SHADER_FILL:
 							
 							var c = data.readBeginShaderFill ();
-							customShader = c.shader;
-							bitmap = c.shader.data.uImage0.input;
-							smooth = c.shader.data.uImage0.smoothing;
+							shaderBuffer = c.shaderBuffer;
+							bitmap = shaderBuffer.shader.data.uImage0.input;
+							smooth = shaderBuffer.shader.data.uImage0.smoothing;
 						
 						case DRAW_QUADS:
 							
@@ -440,25 +440,26 @@ class GLGraphics {
 								
 								var uMatrix = renderer.getMatrix (parentTransform);
 								var smoothing = (renderSession.allowSmoothing && smooth);
+								var shader;
 								
-								var shader = shaderManager.initShader (customShader != null ? customShader : shaderManager.defaultShader);
-								shaderManager.setShader (shader);
-								shaderManager.applyMatrix (uMatrix);
-								
-								if (customShader == null) {
-									
-									shaderManager.applyBitmapData (bitmap, smoothing);
-									shaderManager.applyColor (graphics.__owner.__worldAlpha, graphics.__owner.__worldColorTransform);
+								if (shaderBuffer != null) {
+									trace ("hi");
+									shader = shaderManager.initShaderBuffer (shaderBuffer);
+									shaderManager.setShaderBuffer (shaderBuffer);
+									shaderManager.applyMatrix (uMatrix);
+									shaderManager.applyUseColorTransform ();
+									shaderManager.updateShaderBuffer ();
 									
 								} else {
 									
-									var useColorTransform = (shader.data.aColorMultipliers != null);
-									if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
-									shader.data.uUseColorTransform.value[0] = useColorTransform;
+									shader = shaderManager.initShader (shaderManager.defaultShader);
+									shaderManager.setShader (shader);
+									shaderManager.applyMatrix (uMatrix);
+									shaderManager.applyBitmapData (bitmap, smoothing);
+									shaderManager.applyColor (graphics.__owner.__worldAlpha, graphics.__owner.__worldColorTransform);
+									shaderManager.updateShader ();
 									
 								}
-								
-								shaderManager.updateShader ();
 								
 								if (graphics.__buffer == null || graphics.__bufferContext != gl) {
 									
@@ -530,7 +531,7 @@ class GLGraphics {
 						case END_FILL:
 							
 							bitmap = null;
-							customShader = null;
+							shaderBuffer = null;
 						
 						case MOVE_TO:
 							
@@ -579,13 +580,7 @@ class GLGraphics {
 		} else if (length > graphics.__bufferData.length) {
 			
 			var buffer = new Float32Array (length);
-			
-			if (graphics.__bufferData != null) {
-				
-				buffer.set (graphics.__bufferData);
-				
-			}
-			
+			buffer.set (graphics.__bufferData);
 			graphics.__bufferData = buffer;
 			
 		}

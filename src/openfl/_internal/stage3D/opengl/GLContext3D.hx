@@ -1391,7 +1391,7 @@ class GLContext3D {
 		
 		if (context.__renderToTexture == null && context.backBufferWidth > 0 && context.backBufferHeight > 0) {
 			
-			__setViewport (Std.int (context.__stage3D.x), Std.int (context.__stage3D.y), context.backBufferWidth, context.backBufferHeight);
+			__setViewport (Std.int (context.__stage3D.x), -Std.int (context.__stage3D.y), context.backBufferWidth, context.backBufferHeight);
 			
 		}
 		

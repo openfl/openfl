@@ -89,7 +89,7 @@ class DrawCommandBuffer {
 				case BEGIN_BITMAP_FILL: var c = data.readBeginBitmapFill (); beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
 				case BEGIN_FILL: var c = data.readBeginFill (); beginFill (c.color, c.alpha);
 				case BEGIN_GRADIENT_FILL: var c = data.readBeginGradientFill (); beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-				case BEGIN_SHADER_FILL: var c = data.readBeginShaderFill (); beginShaderFill (c.shader, c.matrix);
+				case BEGIN_SHADER_FILL: var c = data.readBeginShaderFill (); beginShaderFill (c.shaderBuffer);
 				case CUBIC_CURVE_TO: var c = data.readCubicCurveTo (); cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 				case CURVE_TO: var c = data.readCurveTo (); curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				case DRAW_CIRCLE: var c = data.readDrawCircle (); drawCircle (c.x, c.y, c.radius);
@@ -159,13 +159,12 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function beginShaderFill (shader:Shader, matrix:Matrix):Void {
+	public function beginShaderFill (shaderBuffer:ShaderBuffer):Void {
 		
 		prepareWrite ();
 		
 		types.push (BEGIN_SHADER_FILL);
-		o.push (shader);
-		o.push (matrix);
+		o.push (shaderBuffer);
 		
 	}
 	

@@ -13,6 +13,7 @@ class AbstractShaderManager {
 	
 	
 	public var currentShader (default, null):Shader;
+	public var currentShaderBuffer (default, null):ShaderBuffer;
 	public var defaultShader:Shader;
 	
 	
@@ -30,6 +31,13 @@ class AbstractShaderManager {
 	}
 	
 	
+	public function initShaderBuffer (shaderBuffer:ShaderBuffer):Shader {
+		
+		return shaderBuffer.shader;
+		
+	}
+	
+	
 	public function setShader (shader:Shader):Void {
 		
 		
@@ -37,7 +45,21 @@ class AbstractShaderManager {
 	}
 	
 	
+	public function setShaderBuffer (shaderBuffer:ShaderBuffer):Void {
+		
+		
+		
+	}
+	
+	
 	public function updateShader ():Void {
+		
+		
+		
+	}
+	
+	
+	public function updateShaderBuffer ():Void {
 		
 		
 		
