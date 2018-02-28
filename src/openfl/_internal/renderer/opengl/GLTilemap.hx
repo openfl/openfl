@@ -132,7 +132,7 @@ class GLTilemap {
 				shader.data.uImage0.smoothing = smoothing;
 				shader.data.aAlpha.value = null;
 				shader.data.aColorMultipliers.value = null;
-				shader.data.aColorOffserts.value = null;
+				shader.data.aColorOffsets.value = null;
 				
 				if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
 				shader.data.uUseColorTransform.value[0] = useColorTransform;
