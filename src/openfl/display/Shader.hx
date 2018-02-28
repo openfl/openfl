@@ -27,6 +27,8 @@ import openfl.utils.ByteArray;
 class Shader {
 	
 	
+	private static var __glPrograms = new Map<String, GLProgram> ();
+	
 	public var byteCode (null, default):ByteArray;
 	#if openfl_dynamic
 	public var data (get, set):ShaderData;
@@ -69,6 +71,29 @@ class Shader {
 		
 		__glSourceDirty = true;
 		__numPasses = 1;
+		
+	}
+	
+	
+	private function __clearUseArray ():Void {
+		
+		for (parameter in __paramBool) {
+			
+			parameter.__useArray = false;
+			
+		}
+		
+		for (parameter in __paramFloat) {
+			
+			parameter.__useArray = false;
+			
+		}
+		
+		for (parameter in __paramInt) {
+			
+			parameter.__useArray = false;
+			
+		}
 		
 	}
 	
@@ -310,7 +335,18 @@ class Shader {
 				#endif
 				" + glFragmentSource;
 			
-			glProgram = __createGLProgram (glVertexSource, fragment);
+			var id = fragment + glVertexSource;
+			
+			if (__glPrograms.exists (id)) {
+				
+				glProgram = __glPrograms.get (id);
+				
+			} else {
+				
+				glProgram = __createGLProgram (glVertexSource, fragment);
+				__glPrograms.set (id, glProgram);
+				
+			}
 			
 			if (glProgram != null) {
 				

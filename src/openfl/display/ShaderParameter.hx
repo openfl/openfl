@@ -27,6 +27,7 @@ import lime.utils.Float32Array;
 	private var __isUniform:Bool;
 	private var __length:Int;
 	private var __uniformMatrix:Float32Array;
+	private var __useArray:Bool;
 	
 	
 	public function new () {
@@ -113,7 +114,7 @@ import lime.utils.Float32Array;
 			
 		} else {
 			
-			if (!StringTools.startsWith (name, "openfl_") && (value == null || value.length == __length)) {
+			if (!__useArray && !StringTools.startsWith (name, "openfl_") && (value == null || value.length == __length)) {
 				
 				for (i in 0...__arrayLength) {
 					

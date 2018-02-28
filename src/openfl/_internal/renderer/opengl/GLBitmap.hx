@@ -40,10 +40,11 @@ class GLBitmap {
 			renderSession.filterManager.pushObject (bitmap);
 			
 			var shader = shaderManager.initDisplayShader (bitmap.shader);
-			shaderManager.setShader (shader, false);
+			shaderManager.setDisplayShader (shader);
 			shaderManager.applyBitmapData (bitmap.__bitmapData, renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled));
 			shaderManager.applyMatrix (renderer.getMatrix (bitmap.__renderTransform));
-			shaderManager.applyColor (bitmap.__worldAlpha, bitmap.__worldColorTransform);
+			shaderManager.applyAlpha (bitmap.__worldAlpha);
+			shaderManager.applyColorTransform (bitmap.__worldColorTransform);
 			shaderManager.updateShader ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl));
@@ -54,6 +55,8 @@ class GLBitmap {
 			#if gl_stats
 				GLStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
+			
+			shaderManager.clear ();
 			
 			renderSession.filterManager.popObject (bitmap);
 			renderSession.maskManager.popObject (bitmap);
@@ -72,7 +75,7 @@ class GLBitmap {
 			var gl = renderSession.gl;
 			
 			var shader = GLMaskManager.maskShader;
-			shaderManager.setShader (shader, false);
+			shaderManager.setDisplayShader (shader);
 			shaderManager.applyBitmapData (bitmap.__bitmapData, renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled));
 			shaderManager.applyMatrix (renderer.getMatrix (bitmap.__renderTransform));
 			shaderManager.updateShader ();
@@ -85,6 +88,8 @@ class GLBitmap {
 			#if gl_stats
 				GLStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
+			
+			shaderManager.clear ();
 			
 		}
 		

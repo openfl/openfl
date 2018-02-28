@@ -2089,10 +2089,12 @@ class BitmapData implements IBitmapDrawable {
 		renderSession.blendModeManager.setBlendMode (NORMAL);
 		
 		var shader = shaderManager.defaultDisplayShader;
+		shaderManager.setDisplayShader (shader);
 		shaderManager.applyBitmapData (this, renderSession.allowSmoothing && (renderSession.upscaled));
 		shaderManager.applyMatrix (renderer.getMatrix (__worldTransform));
-		shaderManager.applyColor (1, null);
-		shaderManager.setShader (shader, false);
+		shaderManager.applyAlpha (__worldAlpha);
+		shaderManager.applyColorTransform (__worldColorTransform);
+		shaderManager.updateShader ();
 		
 		// alpha == 1, __worldColorTransform
 		
@@ -2105,6 +2107,8 @@ class BitmapData implements IBitmapDrawable {
 		#if gl_stats
 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
 		#end
+		
+		shaderManager.clear ();
 		
 	}
 	

@@ -342,16 +342,18 @@ class GLGraphics {
 									shader = shaderManager.initShaderBuffer (shaderBuffer);
 									shaderManager.setShaderBuffer (shaderBuffer);
 									shaderManager.applyMatrix (uMatrix);
-									shaderManager.applyDefaultColor ();
+									shaderManager.applyAlpha (1);
+									shaderManager.applyColorTransform (null);
 									shaderManager.updateShaderBuffer ();
 									
 								} else {
 									
 									shader = shaderManager.initGraphicsShader (null);
-									shaderManager.setShader (shader, true);
+									shaderManager.setGraphicsShader (shader);
 									shaderManager.applyMatrix (uMatrix);
 									shaderManager.applyBitmapData (bitmap, smoothing);
-									shaderManager.applyColor (graphics.__owner.__worldAlpha, graphics.__owner.__worldColorTransform);
+									shaderManager.applyAlpha (graphics.__owner.__worldAlpha);
+									shaderManager.applyColorTransform (graphics.__owner.__worldColorTransform);
 									shaderManager.updateShader ();
 									
 								}
@@ -381,6 +383,8 @@ class GLGraphics {
 								#if gl_stats
 									GLStats.incrementDrawCall (DrawCallContext.STAGE);
 								#end
+								
+								shaderManager.clear ();
 								
 							}
 						

@@ -50,14 +50,14 @@ class GLShape {
 				
 				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 				renderSession.maskManager.pushObject (shape);
+				renderSession.filterManager.pushObject (shape);
 				
-				var shader:DisplayObjectShader = cast renderSession.filterManager.pushObject (shape);
-				
-				//var shader = shaderManager.initShader (shape.shader);
-				shaderManager.setShader (shader, false);
+				var shader = shaderManager.initDisplayShader (shaderManager.defaultDisplayShader);
+				shaderManager.setDisplayShader (shader);
 				shaderManager.applyBitmapData (graphics.__bitmap, renderSession.allowSmoothing);
 				shaderManager.applyMatrix (renderer.getMatrix (graphics.__worldTransform));
-				shaderManager.applyColor (shape.__worldAlpha, shape.__worldColorTransform);
+				shaderManager.applyAlpha (shape.__worldAlpha);
+				shaderManager.applyColorTransform (shape.__worldColorTransform);
 				shaderManager.updateShader ();
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl));
@@ -68,6 +68,8 @@ class GLShape {
 				#if gl_stats
 					GLStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
+				
+				shaderManager.clear ();
 				
 				renderSession.filterManager.popObject (shape);
 				renderSession.maskManager.popObject (shape);
@@ -116,6 +118,8 @@ class GLShape {
 				#if gl_stats
 					GLStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
+				
+				shaderManager.clear ();
 				
 			}
 			

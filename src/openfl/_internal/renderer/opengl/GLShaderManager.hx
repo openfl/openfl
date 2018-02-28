@@ -16,17 +16,19 @@ import openfl.geom.ColorTransform;
 #end
 
 @:access(openfl.display.Shader)
+@:access(openfl.display.ShaderParameter)
 @:access(openfl.geom.ColorTransform)
 
 
 class GLShaderManager extends AbstractShaderManager {
 	
 	
-	private static var emptyAlpha = [ 1. ];
-	private static var colorMultipliers = [ 0, 0, 0, 0. ];
-	private static var colorOffsets = [ 0, 0, 0, 0. ];
-	private static var emptyColor = [ 0, 0, 0, 0. ];
-	private static var useColorTransform = [ 0 ];
+	private static var alphaValue = [ 1. ];
+	private static var colorMultipliersValue = [ 0, 0, 0, 0. ];
+	private static var colorOffsetsValue = [ 0, 0, 0, 0. ];
+	private static var emptyColorValue = [ 0, 0, 0, 0. ];
+	private static var emptyAlphaValue = [ 1. ];
+	private static var hasColorTransformValue = [ false ];
 	
 	public var defaultDisplayShader:DisplayObjectShader;
 	public var defaultGraphicsShader:GraphicsShader;
@@ -53,27 +55,40 @@ class GLShaderManager extends AbstractShaderManager {
 	
 	public inline function applyAlpha (alpha:Float):Void {
 		
-		if (currentGraphicsShader != null) {
+		alphaValue[0] = alpha;
+		
+		if (currentShaderBuffer != null) {
 			
-			if (currentGraphicsShader.data.alpha.value == null) currentGraphicsShader.data.alpha.value = [];
-			currentGraphicsShader.data.alpha.value[0] = alpha;
+			var floatRefs = currentShaderBuffer.paramRefs_Float;
+			var floatStart = currentShaderBuffer.paramRefs_Bool.length;
+			var hasAlpha = false;
+			
+			for (i in 0...floatRefs.length) {
+				
+				if (floatRefs[i].name == "alpha") {
+					
+					hasAlpha = (currentShaderBuffer.paramLengths[floatStart + i] > 0);
+					break;
+					
+				}
+				
+			}
+			
+			if (!hasAlpha) {
+				
+				currentShaderBuffer.addOverride ("alpha", alphaValue);
+				
+			}
+			
+		} else if (currentGraphicsShader != null) {
+			
+			currentGraphicsShader.data.alpha.value = alphaValue;
 			
 		} else {
 			
-			if (currentDisplayShader.data.alpha.value == null) currentDisplayShader.data.alpha.value = [];
-			currentDisplayShader.data.alpha.value[0] = alpha;
+			currentDisplayShader.data.alpha.value = alphaValue;
 			
 		}
-		
-	}
-	
-	
-	public inline function applyBitmap (bitmapData:BitmapData, smoothing:Bool, matrix:Array<Float>, alpha:Float, colorTransform:ColorTransform):Void {
-		
-		applyBitmapData (bitmapData, smoothing);
-		applyMatrix (matrix);
-		applyAlpha (alpha);
-		applyColorTransform (colorTransform);
 		
 	}
 	
@@ -95,55 +110,62 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
-	public inline function applyColor (alpha:Float, colorTransform:ColorTransform):Void {
-		
-		applyAlpha (alpha);
-		applyColorTransform (colorTransform);
-		
-	}
-	
-	
 	public function applyColorTransform (colorTransform:ColorTransform):Void {
 		
-		var useColorTransform = (colorTransform != null && !colorTransform.__isDefault ());
-		
-		if (currentGraphicsShader != null) {
+		if (currentShaderBuffer != null) {
 			
-			var shaderData = currentGraphicsShader.data;
+			var floatRefs = currentShaderBuffer.paramRefs_Float;
+			var floatStart = currentShaderBuffer.paramRefs_Bool.length;
 			
-			if (shaderData.openfl_HasColorTransform.value == null) shaderData.openfl_HasColorTransform.value = [];
-			shaderData.openfl_HasColorTransform.value[0] = useColorTransform;
-			
-			if (useColorTransform) {
+			for (i in 0...floatRefs.length) {
 				
-				colorTransform.__setArrays (colorMultipliers, colorOffsets);
-				shaderData.colorMultipliers.value = colorMultipliers;
-				shaderData.colorOffsets.value = colorOffsets;
-				
-			} else {
-				
-				shaderData.colorMultipliers.value = emptyColor;
-				shaderData.colorOffsets.value = emptyColor;
+				if (floatRefs[i].name == "openfl_HasColorMultipliers") {
+					
+					applyHasColorTransform (currentShaderBuffer.paramLengths[floatStart + i] > 0);
+					break;
+					
+				}
 				
 			}
 			
 		} else {
 			
-			var shaderData = currentDisplayShader.data;
+			var enabled = (colorTransform != null && !colorTransform.__isDefault ());
+			applyHasColorTransform (enabled);
 			
-			if (shaderData.openfl_HasColorTransform.value == null) shaderData.openfl_HasColorTransform.value = [];
-			shaderData.openfl_HasColorTransform.value[0] = useColorTransform;
-			
-			if (useColorTransform) {
+			if (currentGraphicsShader != null) {
 				
-				colorTransform.__setArrays (colorMultipliers, colorOffsets);
-				shaderData.colorMultipliers.value = colorMultipliers;
-				shaderData.colorOffsets.value = colorOffsets;
+				var shaderData = currentGraphicsShader.data;
+				
+				if (enabled) {
+					
+					colorTransform.__setArrays (colorMultipliersValue, colorOffsetsValue);
+					shaderData.colorMultipliers.value = colorMultipliersValue;
+					shaderData.colorOffsets.value = colorOffsetsValue;
+					
+				} else {
+					
+					shaderData.colorMultipliers.value = emptyColorValue;
+					shaderData.colorOffsets.value = emptyColorValue;
+					
+				}
 				
 			} else {
 				
-				shaderData.colorMultipliers.value = emptyColor;
-				shaderData.colorOffsets.value = emptyColor;
+				var shaderData = currentDisplayShader.data;
+				
+				if (enabled) {
+					
+					colorTransform.__setArrays (colorMultipliersValue, colorOffsetsValue);
+					shaderData.colorMultipliers.value = colorMultipliersValue;
+					shaderData.colorOffsets.value = colorOffsetsValue;
+					
+				} else {
+					
+					shaderData.colorMultipliers.value = emptyColorValue;
+					shaderData.colorOffsets.value = emptyColorValue;
+					
+				}
 				
 			}
 			
@@ -152,54 +174,21 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
-	public function applyDefaultColor ():Void {
+	public function applyHasColorTransform (enabled:Bool):Void {
+		
+		hasColorTransformValue[0] = enabled;
 		
 		if (currentShaderBuffer != null) {
 			
-			var hasAlpha = false;
-			var hasMultipliers = false;
-			var floatIndex = 0;
-			
-			for (i in 0...currentShaderBuffer.paramCount) {
-				
-				if (currentShaderBuffer.paramTypes[i] == 1) {
-					
-					if (currentShaderBuffer.paramRefs_Float[floatIndex].name == "openfl_HasColorMultipliers") {
-						
-						hasMultipliers = (currentShaderBuffer.paramLengths[i] > 0);
-						
-					} else if (currentShaderBuffer.paramRefs_Float[floatIndex].name == "alpha") {
-						
-						hasAlpha = (currentShaderBuffer.paramLengths[i] > 0);
-						
-					}
-					
-					floatIndex++;
-					
-				}
-				
-			}
-			
-			useColorTransform[0] = hasMultipliers ? 1 : 0;
-			currentShaderBuffer.addOverride ("openfl_HasColorTransform", useColorTransform);
-			
-			if (!hasAlpha) {
-				
-				currentShaderBuffer.addOverride ("alpha", emptyAlpha);
-				
-			}
+			currentShaderBuffer.addOverride ("openfl_HasColorTransform", hasColorTransformValue);
 			
 		} else if (currentGraphicsShader != null) {
 			
-			var useColorTransform = (currentGraphicsShader.data.colorMultipliers.value != null);
-			if (currentGraphicsShader.data.openfl_HasColorTransform.value == null) currentGraphicsShader.data.openfl_HasColorTransform.value = [];
-			currentGraphicsShader.data.openfl_HasColorTransform.value[0] = useColorTransform;
+			currentGraphicsShader.data.openfl_HasColorTransform.value = hasColorTransformValue;
 			
-		} else if (currentDisplayShader != null) {
+		} else {
 			
-			var useColorTransform = (currentDisplayShader.data.colorMultipliers.value != null);
-			if (currentDisplayShader.data.openfl_HasColorTransform.value == null) currentDisplayShader.data.openfl_HasColorTransform.value = [];
-			currentDisplayShader.data.openfl_HasColorTransform.value[0] = useColorTransform;
+			currentDisplayShader.data.openfl_HasColorTransform.value = hasColorTransformValue;
 			
 		}
 		
@@ -219,6 +208,34 @@ class GLShaderManager extends AbstractShaderManager {
 		} else if (currentDisplayShader != null) {
 			
 			currentDisplayShader.data.openfl_Matrix.value = matrix;
+			
+		}
+		
+	}
+	
+	
+	public function clear ():Void {
+		
+		if (currentGraphicsShader != null) {
+			
+			if (currentShaderBuffer == null) {
+				
+				currentGraphicsShader.data.texture0.input = null;
+				
+			}
+			
+			currentGraphicsShader.data.openfl_HasColorTransform.value = null;
+			currentGraphicsShader.data.openfl_Position.value = null;
+			currentGraphicsShader.data.openfl_Matrix.value = null;
+			currentGraphicsShader.__clearUseArray ();
+			
+		} else if (currentDisplayShader != null) {
+			
+			currentDisplayShader.data.texture0.input = null;
+			currentDisplayShader.data.openfl_HasColorTransform.value = null;
+			currentDisplayShader.data.openfl_Position.value = null;
+			currentDisplayShader.data.openfl_Matrix.value = null;
+			currentDisplayShader.__clearUseArray ();
 			
 		}
 		
@@ -307,6 +324,20 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
+	public inline function setDisplayShader (shader:DisplayObjectShader):Void {
+		
+		setShader (shader, false);
+		
+	}
+	
+	
+	public inline function setGraphicsShader (shader:GraphicsShader):Void {
+		
+		setShader (shader, true);
+		
+	}
+	
+	
 	public /*override*/ function setShader (shader:Shader, graphics:Bool):Void {
 		
 		if (currentShader == shader) return;
@@ -367,6 +398,38 @@ class GLShaderManager extends AbstractShaderManager {
 		if (currentShader != null && currentShaderBuffer != null) {
 			
 			currentShader.__updateFromBuffer (currentShaderBuffer);
+			
+		}
+		
+	}
+	
+	
+	public function useAlphaArray ():Void {
+		
+		if (currentGraphicsShader != null) {
+			
+			currentGraphicsShader.data.alpha.__useArray = true;
+			
+		} else if (currentDisplayShader != null) {
+			
+			currentDisplayShader.data.alpha.__useArray = true;
+			
+		}
+		
+	}
+	
+	
+	public function useColorTransformArray ():Void {
+		
+		if (currentGraphicsShader != null) {
+			
+			currentGraphicsShader.data.colorMultipliers.__useArray = true;
+			currentGraphicsShader.data.colorOffsets.__useArray = true;
+			
+		} else if (currentDisplayShader != null) {
+			
+			currentDisplayShader.data.colorMultipliers.__useArray = true;
+			currentDisplayShader.data.colorOffsets.__useArray = true;
 			
 		}
 		
