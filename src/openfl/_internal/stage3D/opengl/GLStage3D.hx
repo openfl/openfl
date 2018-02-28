@@ -1,6 +1,7 @@
 package openfl._internal.stage3D.opengl;
 
 
+import openfl._internal.renderer.opengl.GLShaderManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.GLUtils;
 import openfl.display.Stage3D;
@@ -24,9 +25,10 @@ class GLStage3D {
 			
 			renderSession.blendModeManager.setBlendMode (null);
 			
-			if (renderSession.shaderManager.currentShader != null) {
+			var shaderManager:GLShaderManager = cast renderSession.shaderManager;
+			if (shaderManager.currentShader != null) {
 				
-				renderSession.shaderManager.setShader (null);
+				shaderManager.setShader (null, false);
 				
 				if (stage3D.context3D.__program != null) {
 					

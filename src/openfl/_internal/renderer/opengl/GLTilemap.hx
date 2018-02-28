@@ -53,7 +53,7 @@ class GLTilemap {
 		
 		renderSession.filterManager.pushObject (tilemap);
 		
-		var shader = shaderManager.initShader (tilemap.shader);
+		var shader = shaderManager.initDisplayShader (tilemap.shader);
 		
 		var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
 		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
@@ -111,8 +111,19 @@ class GLTilemap {
 			
 			if (flush) {
 				
-				cacheShader.data.uImage0.input = cacheBitmapData;
+				cacheShader.data.texture0.input = cacheBitmapData;
 				shaderManager.updateShader ();
+				
+				gl.enableVertexAttribArray (shader.data.alpha.index);
+				
+				if (useColorTransform) {
+					
+					gl.enableVertexAttribArray (shader.data.colorMultipliers.index);
+					gl.enableVertexAttribArray (shader.data.colorOffsets.index);
+					gl.vertexAttribPointer (shader.data.colorMultipliers.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+					gl.vertexAttribPointer (shader.data.colorOffsets.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+					
+				}
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
@@ -127,39 +138,19 @@ class GLTilemap {
 			
 			if (shader != cacheShader) {
 				
-				shaderManager.setShader (shader);
+				shaderManager.setShader (shader, false);
 				shaderManager.applyMatrix (uMatrix);
-				shader.data.uImage0.smoothing = smoothing;
-				shader.data.aAlpha.value = null;
-				shader.data.aColorMultipliers.value = null;
-				shader.data.aColorOffsets.value = null;
+				shader.data.texture0.smoothing = smoothing;
+				shader.data.alpha.value = null;
+				shader.data.colorMultipliers.value = null;
+				shader.data.colorOffsets.value = null;
 				
-				if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
-				shader.data.uUseColorTransform.value[0] = useColorTransform;
+				if (shader.data.openfl_HasColorTransform.value == null) shader.data.openfl_HasColorTransform.value = [];
+				shader.data.openfl_HasColorTransform.value[0] = useColorTransform;
 				
-				gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 0);
-				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
-				
-				if (true || useColorTransform) {
-					
-					gl.vertexAttribPointer (shader.data.aColorMultipliers.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-					gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
-					
-				} else {
-					
-					// gl.disableVertexAttribArray (shader.data.aColorMultipliers.index);
-					// gl.vertexAttrib4f (shader.data.aColorMultipliers.index, 1, 1, 1, 1);
-					// gl.disableVertexAttribArray (shader.data.aColorOffsets.index);
-					// gl.vertexAttrib4f (shader.data.aColorOffsets.index, 0, 0, 0, 0);
-					
-				}
-				
-				// gl.bindBuffer (gl.ARRAY_BUFFER, tileArray.__buffer);
-				
-				// gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-				// gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-				// gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.alpha.index, 1, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 				
 				cacheShader = shader;
 				
@@ -169,7 +160,7 @@ class GLTilemap {
 			
 			if (i == drawCount && tileset.__bitmapData != null) {
 				
-				shader.data.uImage0.input = tileset.__bitmapData;
+				shader.data.texture0.input = tileset.__bitmapData;
 				renderSession.shaderManager.updateShader ();
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
@@ -209,8 +200,8 @@ class GLTilemap {
 		
 		tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
 		
-		gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 		
 		var cacheBitmapData = null;
 		var lastIndex = 0;
@@ -243,7 +234,7 @@ class GLTilemap {
 			
 			if (flush) {
 				
-				shader.data.uImage0.input = cacheBitmapData;
+				shader.data.texture0.input = cacheBitmapData;
 				renderSession.shaderManager.updateShader ();
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
@@ -261,7 +252,7 @@ class GLTilemap {
 			
 			if (i == drawCount && tileset.__bitmapData != null) {
 				
-				shader.data.uImage0.input = tileset.__bitmapData;
+				shader.data.texture0.input = tileset.__bitmapData;
 				renderSession.shaderManager.updateShader ();
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				

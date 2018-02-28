@@ -27,11 +27,10 @@ import openfl.utils.ByteArray;
 class Shader {
 	
 	
-	private static inline var POSITION_ATTRIBUTE = "aPosition";
-	private static inline var SAMPLER_ATTRIBUTE = "aTexCoord";
-	
 	public var byteCode (null, default):ByteArray;
+	#if openfl_dynamic
 	public var data (get, set):ShaderData;
+	#end
 	public var glFragmentSource (get, set):String;
 	public var glProgram (default, null):GLProgram;
 	public var glVertexSource (get, set):String;
@@ -63,139 +62,6 @@ class Shader {
 	#end
 	
 	
-	@:glFragmentSource(
-		
-		#if emscripten
-		"varying float vAlpha;
-		varying mat4 vColorMultipliers;
-		varying vec4 vColorOffsets;
-		varying vec2 vTexCoord;
-		
-		uniform bool uUseColorTransform;
-		uniform sampler2D uImage0;
-		
-		void main(void) {
-			
-			vec4 color = texture2D (uImage0, vTexCoord);
-			
-			if (color.a == 0.0) {
-				
-				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-				
-			} else if (uUseColorTransform) {
-				
-				color = vec4 (color.rgb / color.a, color.a);
-				
-				mat4 colorMultiplier;
-				colorMultiplier[0].x = vColorMultipliers.x;
-				colorMultiplier[1].y = vColorMultipliers.y;
-				colorMultiplier[2].z = vColorMultipliers.z;
-				colorMultiplier[3].w = vColorMultipliers.w;
-				
-				color = vColorOffsets + (color * vColorMultipliers);
-				
-				if (color.a > 0.0) {
-					
-					gl_FragColor = vec4 (color.bgr * color.a * vAlpha, color.a * vAlpha);
-					
-				} else {
-					
-					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-					
-				}
-				
-			} else {
-				
-				gl_FragColor = color.bgra * vAlpha;
-				
-			}
-			
-		}"
-		#else
-		"varying float vAlpha;
-		varying vec4 vColorMultipliers;
-		varying vec4 vColorOffsets;
-		varying vec2 vTexCoord;
-		
-		uniform bool uUseColorTransform;
-		uniform sampler2D uImage0;
-		
-		void main(void) {
-			
-			vec4 color = texture2D (uImage0, vTexCoord);
-			
-			if (color.a == 0.0) {
-				
-				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-				
-			} else if (uUseColorTransform) {
-				
-				color = vec4 (color.rgb / color.a, color.a);
-				
-				mat4 colorMultiplier;
-				colorMultiplier[0][0] = vColorMultipliers.x;
-				colorMultiplier[1][1] = vColorMultipliers.y;
-				colorMultiplier[2][2] = vColorMultipliers.z;
-				colorMultiplier[3][3] = vColorMultipliers.w;
-				
-				color = vColorOffsets + (color * colorMultiplier);
-				
-				if (color.a > 0.0) {
-					
-					gl_FragColor = vec4 (color.rgb * color.a * vAlpha, color.a * vAlpha);
-					
-				} else {
-					
-					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-					
-				}
-				
-			} else {
-				
-				gl_FragColor = color * vAlpha;
-				
-			}
-			
-		}"
-		#end
-		
-	)
-	
-	
-	@:glVertexSource(
-		
-		"attribute float aAlpha;
-		attribute vec4 aColorMultipliers;
-		attribute vec4 aColorOffsets;
-		attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
-		varying float vAlpha;
-		varying vec4 vColorMultipliers;
-		varying vec4 vColorOffsets;
-		varying vec2 vTexCoord;
-		
-		uniform mat4 uMatrix;
-		uniform bool uUseColorTransform;
-		
-		void main(void) {
-			
-			vAlpha = aAlpha;
-			vTexCoord = aTexCoord;
-			
-			if (uUseColorTransform) {
-				
-				vColorMultipliers = aColorMultipliers;
-				vColorOffsets = aColorOffsets;
-				
-			}
-			
-			gl_Position = uMatrix * aPosition;
-			
-		}"
-		
-	)
-	
-	
 	public function new (code:ByteArray = null) {
 		
 		byteCode = code;
@@ -207,60 +73,60 @@ class Shader {
 	}
 	
 	
-	private function __clone ():Shader {
+	// private function __clone ():Shader {
 		
-		var classType = Type.getClass (this);
-		var shader = Type.createInstance (classType, []);
+		// var classType = Type.getClass (this);
+		// var shader = Type.createInstance (classType, []);
 		
-		for (input in __inputBitmapData) {
+		// for (input in __inputBitmapData) {
 			
-			if (input.input != null) {
+		// 	if (input.input != null) {
 				
-				var field = Reflect.field (shader.data, input.name);
+		// 		var field = Reflect.field (shader.data, input.name);
 				
-				field.channels = input.channels;
-				field.height = input.height;
-				field.input = input.input;
-				field.smoothing = input.smoothing;
-				field.width = input.width;
+		// 		field.channels = input.channels;
+		// 		field.height = input.height;
+		// 		field.input = input.input;
+		// 		field.smoothing = input.smoothing;
+		// 		field.width = input.width;
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
-		for (param in __paramBool) {
+		// for (param in __paramBool) {
 			
-			if (param.value != null) {
+		// 	if (param.value != null) {
 				
-				Reflect.field (shader.data, param.name).value = param.value.copy ();
+		// 		Reflect.field (shader.data, param.name).value = param.value.copy ();
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
-		for (param in __paramFloat) {
+		// for (param in __paramFloat) {
 			
-			if (param.value != null) {
+		// 	if (param.value != null) {
 				
-				Reflect.field (shader.data, param.name).value = param.value.copy ();
+		// 		Reflect.field (shader.data, param.name).value = param.value.copy ();
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
-		for (param in __paramInt) {
+		// for (param in __paramInt) {
 			
-			if (param.value != null) {
+		// 	if (param.value != null) {
 				
-				Reflect.field (shader.data, param.name).value = param.value.copy ();
+		// 		Reflect.field (shader.data, param.name).value = param.value.copy ();
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
-		return shader;
+		// return shader;
 		
-	}
+	// }
 	
 	
 	private function __createGLShader (source:String, type:Int):GLShader {
@@ -290,7 +156,16 @@ class Shader {
 		var program = gl.createProgram ();
 		
 		// Fix support for drivers that don't draw if attribute 0 is disabled
-		gl.bindAttribLocation (program, 0, POSITION_ATTRIBUTE);
+		for (param in __paramFloat) {
+			
+			if (param.name.indexOf ("Position") > -1 && StringTools.startsWith (param.name, "openfl_")) {
+				
+				gl.bindAttribLocation (program, 0, param.name);
+				break;
+				
+			}
+			
+		}
 		
 		gl.attachShader (program, vertexShader);
 		gl.attachShader (program, fragmentShader);
@@ -322,11 +197,11 @@ class Shader {
 	
 	private function __disableGL ():Void {
 		
-		if (data.uImage0 != null) {
+		// if (data.uImage0 != null) {
 			
-			data.uImage0.input = null;
+		// 	data.uImage0.input = null;
 			
-		}
+		// }
 		
 		for (parameter in __paramBool) {
 			
@@ -508,11 +383,11 @@ class Shader {
 		
 		if (storageType == "uniform") {
 			
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
 			
 		} else {
 			
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
 			
 		}
 		
@@ -520,6 +395,12 @@ class Shader {
 			
 			type = regex.matched (1);
 			name = regex.matched (2);
+			
+			if (StringTools.startsWith (name, "gl_")) {
+				
+				continue;
+				
+			}
 			
 			var isUniform = (storageType == "uniform");
 			
@@ -529,9 +410,9 @@ class Shader {
 				input.name = name;
 				input.__isUniform = isUniform;
 				__inputBitmapData.push (input);
-				Reflect.setField (data, name, input);
+				Reflect.setField (__data, name, input);
 				
-			} else if (!Reflect.hasField (data, name)) {
+			} else if (!Reflect.hasField (__data, name)) {
 				
 				var parameterType:ShaderParameterType = switch (type) {
 					
@@ -592,7 +473,7 @@ class Shader {
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramBool.push (parameter);
-						Reflect.setField (data, name, parameter);
+						Reflect.setField (__data, name, parameter);
 					
 					case INT, INT2, INT3, INT4:
 						
@@ -604,7 +485,7 @@ class Shader {
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramInt.push (parameter);
-						Reflect.setField (data, name, parameter);
+						Reflect.setField (__data, name, parameter);
 					
 					default:
 						
@@ -617,7 +498,7 @@ class Shader {
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramFloat.push (parameter);
-						Reflect.setField (data, name, parameter);
+						Reflect.setField (__data, name, parameter);
 					
 				}
 				
@@ -835,6 +716,7 @@ class Shader {
 	
 	
 	
+	#if openfl_dynamic
 	private function get_data ():ShaderData {
 		
 		if (__glSourceDirty || __data == null) {
@@ -853,6 +735,7 @@ class Shader {
 		return __data = cast value;
 		
 	}
+	#end
 	
 	
 	private function get_glFragmentSource ():String {

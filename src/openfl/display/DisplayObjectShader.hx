@@ -10,20 +10,20 @@ class DisplayObjectShader extends Shader {
 		"varying float vAlpha;
 		varying mat4 vColorMultipliers;
 		varying vec4 vColorOffsets;
-		varying vec2 vTexCoord;
+		varying vec2 openfl_vTexCoord;
 		
-		uniform bool uUseColorTransform;
-		uniform sampler2D uImage0;
+		uniform bool openfl_HasColorTransform;
+		uniform sampler2D texture0;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (uImage0, vTexCoord);
+			vec4 color = texture2D (texture0, openfl_vTexCoord);
 			
 			if (color.a == 0.0) {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 				
-			} else if (uUseColorTransform) {
+			} else if (openfl_HasColorTransform) {
 				
 				color = vec4 (color.rgb / color.a, color.a);
 				
@@ -33,7 +33,7 @@ class DisplayObjectShader extends Shader {
 				colorMultiplier[2].z = vColorMultipliers.z;
 				colorMultiplier[3].w = vColorMultipliers.w;
 				
-				color = vColorOffsets + (color * vColorMultipliers);
+				color = vColorOffsets + (color * colorMultiplier);
 				
 				if (color.a > 0.0) {
 					
@@ -56,20 +56,20 @@ class DisplayObjectShader extends Shader {
 		"varying float vAlpha;
 		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
-		varying vec2 vTexCoord;
+		varying vec2 openfl_vTexCoord;
 		
-		uniform bool uUseColorTransform;
-		uniform sampler2D uImage0;
+		uniform bool openfl_HasColorTransform;
+		uniform sampler2D texture0;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (uImage0, vTexCoord);
+			vec4 color = texture2D (texture0, openfl_vTexCoord);
 			
 			if (color.a == 0.0) {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 				
-			} else if (uUseColorTransform) {
+			} else if (openfl_HasColorTransform) {
 				
 				color = vec4 (color.rgb / color.a, color.a);
 				
@@ -105,32 +105,32 @@ class DisplayObjectShader extends Shader {
 	
 	@:glVertexSource(
 		
-		"attribute float aAlpha;
-		attribute vec4 aColorMultipliers;
-		attribute vec4 aColorOffsets;
-		attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
+		"attribute float alpha;
+		attribute vec4 colorMultipliers;
+		attribute vec4 colorOffsets;
+		attribute vec4 openfl_Position;
+		attribute vec2 openfl_TexCoord;
 		varying float vAlpha;
 		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
-		varying vec2 vTexCoord;
+		varying vec2 openfl_vTexCoord;
 		
-		uniform mat4 uMatrix;
-		uniform bool uUseColorTransform;
+		uniform mat4 openfl_Matrix;
+		uniform bool openfl_HasColorTransform;
 		
 		void main(void) {
 			
-			vAlpha = aAlpha;
-			vTexCoord = aTexCoord;
+			vAlpha = alpha;
+			openfl_vTexCoord = openfl_TexCoord;
 			
-			if (uUseColorTransform) {
+			if (openfl_HasColorTransform) {
 				
-				vColorMultipliers = aColorMultipliers;
-				vColorOffsets = aColorOffsets;
+				vColorMultipliers = colorMultipliers;
+				vColorOffsets = colorOffsets;
 				
 			}
 			
-			gl_Position = uMatrix * aPosition;
+			gl_Position = openfl_Matrix * openfl_Position;
 			
 		}"
 		

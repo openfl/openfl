@@ -207,7 +207,7 @@ import js.Browser;
 				
 			}
 			
-			renderSession.shaderManager.setShader (null);
+			renderSession.shaderManager.setShader (null, false);
 			renderSession.blendModeManager.setBlendMode (null);
 			
 			if (__render != null) __render (rect);

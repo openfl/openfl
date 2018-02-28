@@ -9,8 +9,6 @@ import lime.utils.Float32Array;
 @:noDebug
 #end
 
-@:access(openfl.display.Shader)
-
 #if !js @:generic #end
 
 
@@ -112,12 +110,10 @@ import lime.utils.Float32Array;
 				}
 				
 			}
-				
+			
 		} else {
 			
-			// TODO: Use special prefix instead
-			
-			if ((name != "aPosition" && name != "aTexCoord") && (value == null || value.length == __length)) {
+			if (!StringTools.startsWith (name, "openfl_") && (value == null || value.length == __length)) {
 				
 				for (i in 0...__arrayLength) {
 					
@@ -252,12 +248,10 @@ import lime.utils.Float32Array;
 				}
 				
 			}
-				
+			
 		} else {
 			
-			// TODO: Use special prefix instead
-			
-			if ((name != "aPosition" && name != "aTexCoord") && (value == null || value.length == __length)) {
+			if (!StringTools.startsWith (name, "openfl_") && (length == 0 || length == __length)) {
 				
 				for (i in 0...__arrayLength) {
 					
@@ -265,7 +259,7 @@ import lime.utils.Float32Array;
 					
 				}
 				
-				if (value != null) {
+				if (length > 0) {
 					
 					switch (type) {
 						

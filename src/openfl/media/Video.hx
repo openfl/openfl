@@ -32,7 +32,7 @@ class Video extends DisplayObject implements IShaderDrawable {
 	private static inline var __bufferStride = 5;
 	
 	public var deblocking:Int;
-	@:beta public var shader:Shader;
+	@:beta public var shader:DisplayObjectShader;
 	public var smoothing:Bool;
 	public var videoHeight (get, never):Int;
 	public var videoWidth (get, never):Int;

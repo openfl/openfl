@@ -11,14 +11,18 @@ import openfl.utils.ByteArray;
 #if ((!cs && !java) || display) @:final #end
 
 
-class ShaderData implements Dynamic {
+class ShaderData #if openfl_dynamic implements Dynamic #end {
 	
 	
-	public var aAlpha:ShaderParameter<Float>;
-	public var aPosition:ShaderParameter<Float>;
-	public var aTexCoord:ShaderParameter<Float>;
-	public var uImage0:ShaderInput<BitmapData>;
-	public var uMatrix:ShaderParameter<Float>;
+	// public var alpha:ShaderParameter<Float>;
+	// public var colorMultipliers:ShaderParameter<Float>;
+	// public var colorOffsets:ShaderParameter<Float>;
+	// public var texture0:ShaderInput<BitmapData>;
+	
+	// @:noCompletion @:dox(hide) public var openfl_HasColorTransform:ShaderParameter<Bool>;
+	// @:noCompletion @:dox(hide) public var openfl_Matrix:ShaderParameter<Float>;
+	// @:noCompletion @:dox(hide) public var openfl_Position:ShaderParameter<Float>;
+	// @:noCompletion @:dox(hide) public var openfl_TexCoord:ShaderParameter<Float>;
 	
 	
 	public function new (byteArray:ByteArray) {

@@ -146,7 +146,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void {
+	public function beginShaderFill (shader:GraphicsShader, matrix:Matrix = null):Void {
 		
 		var shaderBuffer = __shaderBufferPool.get ();
 		__usedShaderBuffers.add (shaderBuffer);
@@ -156,7 +156,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (shader != null) {
 			
-			__bitmapFill = shader.data.uImage0.input;
+			__bitmapFill = shader.data.texture0.input;
 			
 		}
 		

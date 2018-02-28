@@ -13,7 +13,7 @@ class Shape extends DisplayObject implements IShaderDrawable {
 	
 	
 	public var graphics (get, never):Graphics;
-	@:beta public var shader:Shader;
+	@:beta public var shader:DisplayObjectShader;
 	
 	
 	#if openfljs

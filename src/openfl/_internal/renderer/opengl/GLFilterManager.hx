@@ -6,7 +6,7 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.AbstractFilterManager;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
-import openfl.display.Shader;
+import openfl.display.DisplayObjectShader;
 import openfl.filters.BitmapFilter;
 import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
@@ -52,37 +52,38 @@ class GLFilterManager extends AbstractFilterManager {
 	}
 	
 	
-	public override function pushObject (object:DisplayObject):Shader {
+	public override function pushObject (object:DisplayObject):DisplayObjectShader {
 		
-		return renderSession.shaderManager.defaultShader;
+		var shaderManager:GLShaderManager = cast renderSession.shaderManager;
+		return shaderManager.defaultDisplayShader;
 		
 		// TODO: Support one-pass filters?
 		
-		if (object.__filters != null && object.__filters.length > 0) {
+		// if (object.__filters != null && object.__filters.length > 0) {
 			
-			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
+		// 	if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
 				
-				// Hack, force outline
-				return renderSession.shaderManager.defaultShader;
+		// 		// Hack, force outline
+		// 		return renderSession.shaderManager.defaultShader;
 				
-			}
+		// 	}
 			
-			if (object.__filters.length == 1 && object.__filters[0].__numShaderPasses == 0) {
+		// 	if (object.__filters.length == 1 && object.__filters[0].__numShaderPasses == 0) {
 				
-				renderer.getRenderTarget (false);
-				return object.__filters[0].__initShader (renderSession, 0);
+		// 		renderer.getRenderTarget (false);
+		// 		return object.__filters[0].__initShader (renderSession, 0);
 				
-			} else {
+		// 	} else {
 				
-				renderer.getRenderTarget (true);
+		// 		renderer.getRenderTarget (true);
 				
-			}
+		// 	}
 			
-			filterDepth++;
+		// 	filterDepth++;
 			
-		}
+		// }
 		
-		return renderSession.shaderManager.defaultShader;
+		// return renderSession.shaderManager.defaultShader;
 		
 	}
 	
@@ -93,96 +94,97 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		// TEMPORARILY DISABLED
 		
-		if (object.__filters != null && object.__filters.length > 0) {
+		// if (object.__filters != null && object.__filters.length > 0) {
 			
-			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
+		// 	if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
 				
-				// Hack, force outline
-				return;
+		// 		// Hack, force outline
+		// 		return;
 				
-			}
+		// 	}
 			
-			var numPasses:Int = 0;
+		// 	var numPasses:Int = 0;
 			
-			if (object.__filters.length > 1 || object.__filters[0].__numShaderPasses > 0) {
+		// 	if (object.__filters.length > 1 || object.__filters[0].__numShaderPasses > 0) {
 				
-				numPasses = object.__filters.length;
+		// 		numPasses = object.__filters.length;
 				
-				for (filter in object.__filters) {
+		// 		for (filter in object.__filters) {
 					
-					numPasses += (filter.__numShaderPasses > 0) ? (filter.__numShaderPasses - 1) : 0;
+		// 			numPasses += (filter.__numShaderPasses > 0) ? (filter.__numShaderPasses - 1) : 0;
 					
-				}
+		// 		}
 				
-			}
+		// 	}
 			
-			if (numPasses > 0) {
+		// 	if (numPasses > 0) {
 				
-				// if (filter.__cacheObject) {
+		// 		// if (filter.__cacheObject) {
 					
-				// 	currentTarget = renderer.currentRenderTarget;
-				// 	renderer.getCacheObject ();
+		// 		// 	currentTarget = renderer.currentRenderTarget;
+		// 		// 	renderer.getCacheObject ();
 					
-				// 	renderPass (currentTarget, renderSession.shaderManager.defaultShader);
+		// 		// 	renderPass (currentTarget, renderSession.shaderManager.defaultShader);
 					
-				// }
+		// 		// }
 				
-				var currentTarget, shader;
+		// 		var currentTarget, shader;
 				
-				for (filter in object.__filters) {
+		// 		for (filter in object.__filters) {
 					
-					// TODO: Handle mixture of software-only filters
+		// 			// TODO: Handle mixture of software-only filters
 					
-					for (i in 0...filter.__numShaderPasses) {
+		// 			for (i in 0...filter.__numShaderPasses) {
 						
-						currentTarget = renderer.currentRenderTarget;
-						renderer.getRenderTarget(true);
-						shader = filter.__initShader(renderSession, i);
+		// 				currentTarget = renderer.currentRenderTarget;
+		// 				renderer.getRenderTarget(true);
+		// 				shader = filter.__initShader(renderSession, i);
 						
-						renderPass (currentTarget, shader);
+		// 				renderPass (currentTarget, shader);
 						
-					}
+		// 			}
 					
-					// TODO: Properly handle filter-within-filter rendering
+		// 			// TODO: Properly handle filter-within-filter rendering
 					
-					filterDepth--;
-					currentTarget = renderer.currentRenderTarget;
-					renderer.getRenderTarget (filterDepth > 0);
+		// 			filterDepth--;
+		// 			currentTarget = renderer.currentRenderTarget;
+		// 			renderer.getRenderTarget (filterDepth > 0);
 					
-					renderPass (currentTarget, renderSession.shaderManager.defaultShader);
+		// 			renderPass (currentTarget, renderSession.shaderManager.defaultShader);
 					
-				}
+		// 		}
 				
-			} else {
+		// 	} else {
 				
-				filterDepth--;
+		// 		filterDepth--;
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
 	}
 	
 	
-	private function renderPass (target:BitmapData, shader:Shader):Void {
+	private function renderPass (target:BitmapData, shader:DisplayObjectShader):Void {
 		
 		if (target == null || shader == null) return;
 		
-		shader.data.uImage0.input = target;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
-		shader.data.uMatrix.value = renderer.getMatrix (matrix);
+		shader.data.texture0.input = target;
+		shader.data.texture0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
+		shader.data.openfl_Matrix.value = renderer.getMatrix (matrix);
 		
-		if (shader.data.uUseColorTransform != null) {
-			if (shader.data.uUseColorTransform.value == null) shader.data.uUseColorTransform.value = [];
-			shader.data.uUseColorTransform.value[0] = false;
+		if (shader.data.openfl_HasColorTransform != null) {
+			if (shader.data.openfl_HasColorTransform.value == null) shader.data.openfl_HasColorTransform.value = [];
+			shader.data.openfl_HasColorTransform.value[0] = false;
 		}
 		
-		renderSession.shaderManager.setShader (shader);
+		var shaderManager:GLShaderManager = cast renderSession.shaderManager;
+		shaderManager.setShader (shader, false);
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl));
 		
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		// gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);

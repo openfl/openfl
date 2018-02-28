@@ -33,7 +33,7 @@ class Tile implements ITile {
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	@:beta public var shader (get, set):Shader;
+	@:beta public var shader (get, set):DisplayObjectShader;
 	public var tileset (get, set):Tileset;
 	public var visible (get, set):Bool;
 	public var x (get, set):Float;
@@ -53,7 +53,7 @@ class Tile implements ITile {
 	private var __rotationSine:Float;
 	private var __scaleX:Null<Float>;
 	private var __scaleY:Null<Float>;
-	private var __shader:Shader;
+	private var __shader:DisplayObjectShader;
 	private var __shaderDirty:Bool;
 	private var __sourceDirty:Bool;
 	private var __tileset:Tileset;
@@ -564,14 +564,14 @@ class Tile implements ITile {
 	}
 	
 	
-	private function get_shader ():Shader {
+	private function get_shader ():DisplayObjectShader {
 		
 		return __shader;
 		
 	}
 	
 	
-	private function set_shader (value:Shader):Shader {
+	private function set_shader (value:DisplayObjectShader):DisplayObjectShader {
 		
 		__shaderDirty = true;
 		__setRenderDirty ();

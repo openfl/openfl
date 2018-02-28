@@ -15,6 +15,7 @@ import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
+import openfl._internal.renderer.opengl.GLShaderManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.Lib;
 import openfl.display.Stage;
@@ -848,7 +849,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (renderSession.gl != null) {
 				
-				renderSession.shaderManager.setShader (null);
+				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
+				shaderManager.setShader (null, false);
 				
 				__customRenderEvent.gl = renderSession.gl;
 				__customRenderEvent.type = RenderEvent.RENDER_OPENGL;

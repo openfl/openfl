@@ -28,6 +28,7 @@ import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectShader;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
 import openfl.display.IShaderDrawable;
@@ -92,7 +93,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	public var selectable (get, set):Bool;
 	public var selectionBeginIndex (get, never):Int;
 	public var selectionEndIndex (get, never):Int;
-	@:beta public var shader:Shader;
+	@:beta public var shader:DisplayObjectShader;
 	public var sharpness (get, set):Float;
 	public var text (get, set):UTF8String;
 	public var textColor (get, set):Int;

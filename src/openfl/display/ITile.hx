@@ -13,7 +13,7 @@ import openfl.geom.Rectangle;
 	public var id (get, set):Int;
 	public var matrix (get, set):Matrix;
 	public var rect (get, set):Rectangle;
-	public var shader (get, set):Shader;
+	public var shader (get, set):DisplayObjectShader;
 	public var tileset (get, set):Tileset;
 	public var visible (get, set):Bool;
 	

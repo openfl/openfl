@@ -30,7 +30,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	public var bitmapData (get, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
-	@:beta public var shader:Shader;
+	@:beta public var shader:DisplayObjectShader;
 	public var smoothing:Bool;
 	
 	#if (js && html5)

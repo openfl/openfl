@@ -4,6 +4,7 @@ package openfl._internal.renderer.opengl;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractMaskManager;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectShader;
 import openfl.display.Shader;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -228,18 +229,18 @@ class GLMaskManager extends AbstractMaskManager {
 }
 
 
-class GLMaskShader extends Shader {
+class GLMaskShader extends DisplayObjectShader {
 	
 	
 	@:glFragmentSource(
 		
-		"varying vec2 vTexCoord;
+		"varying vec2 openfl_vTexCoord;
 		
-		uniform sampler2D uImage0;
+		uniform sampler2D texture0;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (uImage0, vTexCoord);
+			vec4 color = texture2D (texture0, openfl_vTexCoord);
 			
 			if (color.a == 0.0) {
 				
@@ -258,26 +259,26 @@ class GLMaskShader extends Shader {
 	
 	@:glVertexSource(
 		
-		"attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
-		varying vec2 vTexCoord;
+		"attribute vec4 openfl_Position;
+		attribute vec2 openfl_TexCoord;
+		varying vec2 openfl_vTexCoord;
 		
-		uniform mat4 uMatrix;
+		uniform mat4 openfl_Matrix;
 		
 		void main(void) {
 			
-			vTexCoord = aTexCoord;
+			openfl_vTexCoord = openfl_TexCoord;
 			
-			gl_Position = uMatrix * aPosition;
+			gl_Position = openfl_Matrix * openfl_Position;
 			
 		}"
 		
 	)
 	
 	
-	public function new (code:ByteArray = null) {
+	public function new () {
 		
-		super (code);
+		super ();
 		
 	}
 	

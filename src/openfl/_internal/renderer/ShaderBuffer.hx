@@ -4,6 +4,7 @@ package openfl._internal.renderer;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.Float32Array;
 import openfl.display.BitmapData;
+import openfl.display.GraphicsShader;
 import openfl.display.Shader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
@@ -36,7 +37,7 @@ class ShaderBuffer {
 	public var paramRefs_Float:Array<ShaderParameter<Float>>;
 	public var paramRefs_Int:Array<ShaderParameter<Int>>;
 	public var paramTypes:Array<Int>;
-	public var shader:Shader;
+	public var shader:GraphicsShader;
 	
 	
 	public function new () {
@@ -65,7 +66,7 @@ class ShaderBuffer {
 	}
 	
 	
-	public function update (shader:Shader):Void {
+	public function update (shader:GraphicsShader):Void {
 		
 		overrideCount = 0;
 		inputCount = shader.__inputBitmapData.length;

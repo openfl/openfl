@@ -6,6 +6,6 @@ import openfl.filters.BitmapFilter;
 
 @:beta interface IShaderDrawable {
 	
-	public var shader:Shader;
+	public var shader:DisplayObjectShader;
 	
 }

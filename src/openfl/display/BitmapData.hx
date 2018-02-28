@@ -31,6 +31,7 @@ import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLMaskManager;
 import openfl._internal.renderer.opengl.GLRenderer;
+import openfl._internal.renderer.opengl.GLShaderManager;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
 import openfl.errors.Error;
@@ -2082,24 +2083,22 @@ class BitmapData implements IBitmapDrawable {
 	private function __renderGL (renderSession:RenderSession):Void {
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
+		var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 		var gl = renderSession.gl;
 		
 		renderSession.blendModeManager.setBlendMode (NORMAL);
 		
-		var shader = renderSession.shaderManager.defaultShader;
-		
-		shader.data.uImage0.input = this;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
-		shader.data.uMatrix.value = renderer.getMatrix (__worldTransform);
-		
-		renderSession.shaderManager.setShader (shader);
+		var shader = shaderManager.defaultDisplayShader;
+		shaderManager.applyBitmapData (this, renderSession.allowSmoothing && (renderSession.upscaled));
+		shaderManager.applyMatrix (renderer.getMatrix (__worldTransform));
+		shaderManager.applyColor (1, null);
+		shaderManager.setShader (shader, false);
 		
 		// alpha == 1, __worldColorTransform
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl));
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
@@ -2113,21 +2112,22 @@ class BitmapData implements IBitmapDrawable {
 	private function __renderGLMask (renderSession:RenderSession):Void {
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
+		var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 		var gl = renderSession.gl;
 		
 		var shader = GLMaskManager.maskShader;
 		
-		shader.data.uImage0.input = this;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
-		shader.data.uMatrix.value = renderer.getMatrix (__worldTransform);
+		shader.data.texture0.input = this;
+		shader.data.texture0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
+		shader.data.openfl_Matrix.value = renderer.getMatrix (__worldTransform);
 		
-		renderSession.shaderManager.setShader (shader);
+		shaderManager.setShader (shader, false);
 		
 		// alpha == 1, __worldColorTransform
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl));
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		

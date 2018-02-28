@@ -38,7 +38,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	public var numTiles (default, null):Int;
-	@:beta public var shader:Shader;
+	@:beta public var shader:DisplayObjectShader;
 	public var tileset (get, set):Tileset;
 	
 	#if !flash

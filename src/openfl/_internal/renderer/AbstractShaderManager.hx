@@ -38,11 +38,11 @@ class AbstractShaderManager {
 	}
 	
 	
-	public function setShader (shader:Shader):Void {
+	// public function setShader (shader:Shader):Void {
 		
 		
 		
-	}
+	// }
 	
 	
 	public function setShaderBuffer (shaderBuffer:ShaderBuffer):Void {

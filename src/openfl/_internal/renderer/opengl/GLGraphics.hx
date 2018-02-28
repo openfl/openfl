@@ -60,92 +60,39 @@ class GLGraphics {
 						var matrices = c.matrices;
 						var sourceRects = c.sourceRects;
 						var rectIndices = c.rectIndices;
-						var attributes = null; //c.attributes;
-						var attributeOptions = 0; //c.attributeOptions;
 						
 						var hasRects = (sourceRects != null);
 						var hasIDs = (hasRects && rectIndices != null);
-						var hasAttributes = (attributes != null);
-						var hasAlpha = false;
-						var hasColorTransform = false;
-						var alphaOffset = 0;
-						var colorTransformOffset = 0;
 						
 						var dataLength = 4;
-						var attributeLength = 0;
-						
-						// if (hasAttributes && attributeOptions & VertexAttribute.ALPHA > 0) {
-							
-						// 	hasAlpha = true;
-						// 	colorTransformOffset++;
-						// 	attributeLength++;
-						// 	dataLength++;
-							
-						// }
-						
-						// if (hasAttributes && attributeOptions & VertexAttribute.COLOR_TRANSFORM > 0) {
-							
-						// 	hasColorTransform = true;
-						// 	attributeLength += 8;
-						// 	dataLength += 8;
-							
-						// }
-						
 						var length = Math.floor (matrices.length / 6);
 						var stride = dataLength * 6;
 						var bufferLength = length * stride;
 						
 						resizeBuffer (graphics, bufferPosition + (length * stride));
 						
-						var tileMatrix, tileColorTransform, tileRect = null;
+						var tileMatrix, tileRect = null;
 						
 						var offset = bufferPosition;
 						var alpha = 1.0, tileData, id;
 						var bitmapWidth, bitmapHeight, tileWidth:Float, tileHeight:Float;
 						var uvX, uvY, uvWidth, uvHeight;
 						var x, y, x2, y2, x3, y3, x4, y4;
-						var redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier;
-						var redOffset, greenOffset, blueOffset, alphaOffset;
-						var rectOffset, matrixOffset, ctOffset;
+						var rectOffset, matrixOffset;
 						
 						var __bufferData = graphics.__bufferData;
-						// var colorTransform = graphics.__worldColorTransform;
 						bitmapWidth = bitmap.width;
 						bitmapHeight = bitmap.height;
 						var sourceRect = bitmap.rect;
-						
-						var __skipTile = function (i, offset:Int):Void {
-							
-							for (i in 0...6) {
-								
-								__bufferData[offset + (dataLength * i) + 4] = 0;
-								
-							}
-							
-						}
 						
 						for (i in 0...length) {
 							
 							offset = bufferPosition + (i * stride);
 							
-							if (hasAlpha) {
-								
-								alpha = attributes[i * attributeLength] * worldAlpha;
-								
-								if (alpha <= 0) {
-									
-									__skipTile (i, offset);
-									continue;
-									
-								}
-								
-							}
-							
 							if (hasRects) {
 								
 								if (hasIDs && rectIndices[i] == -1) {
 									
-									__skipTile (i, offset);
 									continue;
 									
 								}
@@ -165,7 +112,6 @@ class GLGraphics {
 							
 							if (tileWidth <= 0 || tileHeight <= 0) {
 								
-								__skipTile (i, offset);
 								continue;
 								
 							}
@@ -218,57 +164,6 @@ class GLGraphics {
 							__bufferData[offset + (dataLength * 5) + 2] = uvWidth;
 							__bufferData[offset + (dataLength * 5) + 3] = uvHeight;
 							
-							// if (hasAlpha) {
-								
-							// 	for (j in 0...6) {
-									
-							// 		__bufferData[offset + (dataLength * j) + 4] = alpha;
-									
-							// 	}
-								
-							// }
-							
-							// if (hasColorTransform) {
-								
-							// 	ctOffset = i * attributeLength + colorTransformOffset;
-							// 	tempColorTransform.redMultiplier = attributes[ctOffset];
-							// 	tempColorTransform.greenMultiplier = attributes[ctOffset + 1];
-							// 	tempColorTransform.blueMultiplier = attributes[ctOffset + 2];
-							// 	tempColorTransform.alphaMultiplier = attributes[ctOffset + 3];
-							// 	tempColorTransform.redOffset = attributes[ctOffset + 4];
-							// 	tempColorTransform.greenOffset = attributes[ctOffset + 5];
-							// 	tempColorTransform.blueOffset = attributes[ctOffset + 6];
-							// 	tempColorTransform.alphaOffset = attributes[ctOffset + 7];
-							// 	// tempColorTransform.__combine (colorTransform);
-								
-							// 	redMultiplier = tempColorTransform.redMultiplier;
-							// 	greenMultiplier = tempColorTransform.greenMultiplier;
-							// 	blueMultiplier = tempColorTransform.blueMultiplier;
-							// 	alphaMultiplier = tempColorTransform.alphaMultiplier;
-							// 	redOffset = tempColorTransform.redOffset;
-							// 	greenOffset = tempColorTransform.greenOffset;
-							// 	blueOffset = tempColorTransform.blueOffset;
-							// 	alphaOffset = tempColorTransform.alphaOffset;
-								
-							// 	ctOffset = 4 + colorTransformOffset;
-								
-							// 	for (j in 0...6) {
-									
-							// 		// 4 x 4 matrix
-							// 		__bufferData[offset + (dataLength * j) + ctOffset] = redMultiplier;
-							// 		__bufferData[offset + (dataLength * j) + ctOffset + 1] = greenMultiplier;
-							// 		__bufferData[offset + (dataLength * j) + ctOffset + 2] = blueMultiplier;
-							// 		__bufferData[offset + (dataLength * j) + ctOffset + 3] = alphaMultiplier;
-									
-							// 		__bufferData[offset + (dataLength * j) + ctOffset + 4] = redOffset / 255;
-							// 		__bufferData[offset + (dataLength * j) + ctOffset + 5] = greenOffset / 255;
-							// 		__bufferData[offset + (dataLength * j) + ctOffset + 6] = blueOffset / 255;
-							// 		__bufferData[offset + (dataLength * j) + ctOffset + 7] = alphaOffset / 255;
-									
-							// 	}
-								
-							// }
-							
 						}
 						
 						bufferPosition += length * stride;
@@ -287,7 +182,7 @@ class GLGraphics {
 				case BEGIN_SHADER_FILL:
 					
 					var c = data.readBeginShaderFill ();
-					bitmap = c.shaderBuffer.shader.data.uImage0.input;
+					bitmap = c.shaderBuffer.shader.data.texture0.input;
 				
 				default:
 					
@@ -423,8 +318,8 @@ class GLGraphics {
 							
 							var c = data.readBeginShaderFill ();
 							shaderBuffer = c.shaderBuffer;
-							bitmap = shaderBuffer.shader.data.uImage0.input;
-							smooth = shaderBuffer.shader.data.uImage0.smoothing;
+							bitmap = shaderBuffer.shader.data.texture0.input;
+							smooth = shaderBuffer.shader.data.texture0.smoothing;
 						
 						case DRAW_QUADS:
 							
@@ -452,8 +347,8 @@ class GLGraphics {
 									
 								} else {
 									
-									shader = shaderManager.initShader (shaderManager.defaultShader);
-									shaderManager.setShader (shader);
+									shader = shaderManager.initGraphicsShader (null);
+									shaderManager.setShader (shader, true);
 									shaderManager.applyMatrix (uMatrix);
 									shaderManager.applyBitmapData (bitmap, smoothing);
 									shaderManager.applyColor (graphics.__owner.__worldAlpha, graphics.__owner.__worldColorTransform);
@@ -476,8 +371,8 @@ class GLGraphics {
 									
 								}
 								
-								gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-								gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+								gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 								
 								var length = Math.floor (matrices.length / 6);
 								gl.drawArrays (gl.TRIANGLES, bufferPosition, length * 6);
