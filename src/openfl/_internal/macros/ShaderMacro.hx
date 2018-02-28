@@ -133,7 +133,7 @@ class ShaderMacro {
 						
 						if (glVertexSource != null) block.unshift (macro if (__glVertexSource == null) __glVertexSource = $v{glVertexSource});
 						if (glFragmentSource != null) block.unshift (macro if (__glFragmentSource == null) __glFragmentSource = $v{glFragmentSource});
-						block.unshift (Context.parse ("__data = cast new " + dataClassPack.join (".") + "." + dataClassName + " (null)", pos));
+						block.push (Context.parse ("__data = cast new " + dataClassPack.join (".") + "." + dataClassName + " (null)", pos));
 					
 					default:
 					

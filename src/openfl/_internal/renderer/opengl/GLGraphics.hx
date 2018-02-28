@@ -182,7 +182,17 @@ class GLGraphics {
 				case BEGIN_SHADER_FILL:
 					
 					var c = data.readBeginShaderFill ();
-					bitmap = c.shaderBuffer.shader.data.texture0.input;
+					var shaderBuffer = c.shaderBuffer;
+					
+					if (shaderBuffer == null || shaderBuffer.shader == null) {
+						
+						bitmap = null;
+						
+					} else {
+						
+						bitmap = c.shaderBuffer.shader.data.texture0.input;
+						
+					}
 				
 				default:
 					
@@ -318,8 +328,17 @@ class GLGraphics {
 							
 							var c = data.readBeginShaderFill ();
 							shaderBuffer = c.shaderBuffer;
-							bitmap = shaderBuffer.shader.data.texture0.input;
-							smooth = shaderBuffer.shader.data.texture0.smoothing;
+							
+							if (shaderBuffer == null || shaderBuffer.shader == null) {
+								
+								bitmap = null;
+								
+							} else {
+								
+								bitmap = shaderBuffer.shader.data.texture0.input;
+								smooth = shaderBuffer.shader.data.texture0.smoothing;
+								
+							}
 						
 						case DRAW_QUADS:
 							

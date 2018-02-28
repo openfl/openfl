@@ -171,6 +171,7 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
+		__usedShaderBuffers.clear ();
 		__commands.clear ();
 		__strokePadding = 0;
 		
