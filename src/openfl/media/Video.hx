@@ -11,6 +11,7 @@ import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.opengl.GLVideo;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectShader;
 import openfl.display.Graphics;
 import openfl.display.IShaderDrawable;
 import openfl.display.Shader;
