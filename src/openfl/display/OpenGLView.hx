@@ -209,7 +209,7 @@ import js.Browser;
 			}
 			
 			var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-			shaderManager.setShader (null, false);
+			shaderManager.setShader (null);
 			renderSession.blendModeManager.setBlendMode (null);
 			
 			if (__render != null) __render (rect);
