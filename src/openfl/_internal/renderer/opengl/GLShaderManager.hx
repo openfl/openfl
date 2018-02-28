@@ -53,7 +53,7 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
-	public inline function applyAlpha (alpha:Float):Void {
+	public function applyAlpha (alpha:Float):Void {
 		
 		alphaValue[0] = alpha;
 		
@@ -93,7 +93,7 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
-	public inline function applyBitmapData (bitmapData:BitmapData, smoothing:Bool):Void {
+	public function applyBitmapData (bitmapData:BitmapData, smoothing:Bool):Void {
 		
 		if (currentGraphicsShader != null) {
 			
@@ -326,19 +326,19 @@ class GLShaderManager extends AbstractShaderManager {
 	
 	public inline function setDisplayShader (shader:DisplayObjectShader):Void {
 		
-		setShader (shader, false);
+		setShader (shader);
 		
 	}
 	
 	
 	public inline function setGraphicsShader (shader:GraphicsShader):Void {
 		
-		setShader (shader, true);
+		setShader (shader);
 		
 	}
 	
 	
-	public /*override*/ function setShader (shader:Shader, graphics:Bool):Void {
+	public override function setShader (shader:Shader):Void {
 		
 		if (currentShader == shader) return;
 		
@@ -362,8 +362,8 @@ class GLShaderManager extends AbstractShaderManager {
 			
 			currentShader = shader;
 			
-			if (graphics) currentGraphicsShader = cast shader;
-			else currentDisplayShader = cast shader;
+			if (shader.__isGraphicsShader) currentGraphicsShader = cast shader;
+			if (shader.__isDisplayShader) currentDisplayShader = cast shader;
 			
 			initShader (shader);
 			gl.useProgram (shader.glProgram);
@@ -376,7 +376,7 @@ class GLShaderManager extends AbstractShaderManager {
 	
 	public override function setShaderBuffer (shaderBuffer:ShaderBuffer):Void {
 		
-		setShader (shaderBuffer.shader, true);
+		setShader (shaderBuffer.shader);
 		currentShaderBuffer = shaderBuffer;
 		
 	}

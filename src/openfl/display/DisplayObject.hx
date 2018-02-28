@@ -850,7 +850,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			if (renderSession.gl != null) {
 				
 				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-				shaderManager.setShader (null, false);
+				shaderManager.setShader (null);
 				
 				__customRenderEvent.gl = renderSession.gl;
 				__customRenderEvent.type = RenderEvent.RENDER_OPENGL;

@@ -105,7 +105,7 @@ class GLShape {
 				
 				var shader = GLMaskManager.maskShader;
 				//var shader = renderSession.shaderManager.initShader (shape.shader);
-				shaderManager.setShader (shader, false);
+				shaderManager.setShader (shader);
 				shaderManager.applyBitmapData (graphics.__bitmap, renderSession.allowSmoothing);
 				shaderManager.applyMatrix (renderer.getMatrix (graphics.__worldTransform));
 				shaderManager.updateShader ();

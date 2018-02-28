@@ -45,6 +45,8 @@ class Shader {
 	private var __glSourceDirty:Bool;
 	private var __glVertexSource:String;
 	private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
+	private var __isDisplayShader:Bool;
+	private var __isGraphicsShader:Bool;
 	private var __numPasses:Int;
 	private var __paramBool:Array<ShaderParameter<Bool>>;
 	private var __paramFloat:Array<ShaderParameter<Float>>;

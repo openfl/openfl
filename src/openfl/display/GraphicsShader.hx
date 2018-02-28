@@ -145,6 +145,8 @@ class GraphicsShader extends Shader {
 	
 	public function new () {
 		
+		__isGraphicsShader = true;
+		
 		super ();
 		
 	}

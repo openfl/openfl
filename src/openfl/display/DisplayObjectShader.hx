@@ -139,6 +139,8 @@ class DisplayObjectShader extends Shader {
 	
 	public function new () {
 		
+		__isDisplayShader = true;
+		
 		super ();
 		
 	}

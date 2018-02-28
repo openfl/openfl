@@ -2120,14 +2120,10 @@ class BitmapData implements IBitmapDrawable {
 		var gl = renderSession.gl;
 		
 		var shader = GLMaskManager.maskShader;
-		
-		shader.data.texture0.input = this;
-		shader.data.texture0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
-		shader.data.openfl_Matrix.value = renderer.getMatrix (__worldTransform);
-		
-		shaderManager.setShader (shader, false);
-		
-		// alpha == 1, __worldColorTransform
+		shaderManager.setShader (shader);
+		shaderManager.applyBitmapData (this, renderSession.allowSmoothing && (renderSession.upscaled));
+		shaderManager.applyMatrix (renderer.getMatrix (__worldTransform));
+		shaderManager.updateShader ();
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl));
 		gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);

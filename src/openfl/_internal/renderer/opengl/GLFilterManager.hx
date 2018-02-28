@@ -179,7 +179,7 @@ class GLFilterManager extends AbstractFilterManager {
 		}
 		
 		var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-		shaderManager.setShader (shader, false);
+		shaderManager.setShader (shader);
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl));
 		

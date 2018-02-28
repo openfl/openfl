@@ -28,7 +28,7 @@ class GLStage3D {
 			var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 			if (shaderManager.currentShader != null) {
 				
-				shaderManager.setShader (null, false);
+				shaderManager.setShader (null);
 				
 				if (stage3D.context3D.__program != null) {
 					
