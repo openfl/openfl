@@ -21,6 +21,7 @@ class ShaderBuffer {
 	
 	public var inputCount:Int;
 	public var inputRefs:Array<ShaderInput<BitmapData>>;
+	public var inputSmoothing:Array<Bool>;
 	public var inputs:Array<BitmapData>;
 	public var overrideCount:Int;
 	public var overrideNames:Array<String>;
@@ -41,6 +42,7 @@ class ShaderBuffer {
 	public function new () {
 		
 		inputRefs = [];
+		inputSmoothing = [];
 		inputs = [];
 		overrideNames = [];
 		overrideValues = [];
@@ -73,6 +75,7 @@ class ShaderBuffer {
 			
 			input = shader.__inputBitmapData[i];
 			inputs[i] = input.input;
+			inputSmoothing[i] = input.smoothing;
 			inputRefs[i] = input;
 			
 		}
@@ -91,11 +94,13 @@ class ShaderBuffer {
 		for (i in 0...boolCount) {
 			
 			param = shader.__paramBool[i];
+			
 			paramPositions[p] = paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
 			paramLengths[p] = length;
 			paramDataLength += length;
 			paramTypes[p] = 0;
+			
 			paramRefs_Bool[i] = param;
 			p++;
 			
@@ -106,11 +111,13 @@ class ShaderBuffer {
 		for (i in 0...floatCount) {
 			
 			param = shader.__paramFloat[i];
+			
 			paramPositions[p] = paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
 			paramLengths[p] = length;
 			paramDataLength += length;
 			paramTypes[p] = 1;
+			
 			paramRefs_Float[i] = param;
 			p++;
 			
@@ -121,11 +128,13 @@ class ShaderBuffer {
 		for (i in 0...intCount) {
 			
 			param = shader.__paramInt[i];
+			
 			paramPositions[p] = paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
 			paramLengths[p] = length;
 			paramDataLength += length;
 			paramTypes[p] = 2;
+			
 			paramRefs_Int[i] = param;
 			p++;
 			
