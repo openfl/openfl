@@ -119,7 +119,7 @@ class GLShaderManager extends AbstractShaderManager {
 			
 			for (i in 0...floatRefs.length) {
 				
-				if (floatRefs[i].name == "openfl_HasColorMultipliers") {
+				if (floatRefs[i].name == "colorMultipliers") {
 					
 					applyHasColorTransform (currentShaderBuffer.paramLengths[floatStart + i] > 0);
 					break;

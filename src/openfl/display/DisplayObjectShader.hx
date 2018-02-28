@@ -28,10 +28,10 @@ class DisplayObjectShader extends Shader {
 				color = vec4 (color.rgb / color.a, color.a);
 				
 				mat4 colorMultiplier;
-				colorMultiplier[0].x = vColorMultipliers.x;
-				colorMultiplier[1].y = vColorMultipliers.y;
-				colorMultiplier[2].z = vColorMultipliers.z;
-				colorMultiplier[3].w = vColorMultipliers.w;
+				colorMultiplier[0][0] = vColorMultipliers.x;
+				colorMultiplier[1][1] = vColorMultipliers.y;
+				colorMultiplier[2][2] = vColorMultipliers.z;
+				colorMultiplier[3][3] = vColorMultipliers.w;
 				
 				color = vColorOffsets + (color * colorMultiplier);
 				
