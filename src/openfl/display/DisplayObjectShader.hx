@@ -139,7 +139,9 @@ class DisplayObjectShader extends Shader {
 	
 	public function new () {
 		
+		#if !flash
 		__isDisplayShader = true;
+		#end
 		
 		super ();
 		

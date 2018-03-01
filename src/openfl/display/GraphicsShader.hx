@@ -145,7 +145,9 @@ class GraphicsShader extends Shader {
 	
 	public function new () {
 		
+		#if !flash
 		__isGraphicsShader = true;
+		#end
 		
 		super ();
 		
