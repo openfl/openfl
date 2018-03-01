@@ -1261,10 +1261,12 @@ class GLContext3D {
 		
 		if (context.__renderToTexture == null && context.backBufferWidth > 0 && context.backBufferHeight > 0) {
 			
-			var x = Std.int (context.__stage3D.x);
-			var y = -Std.int (context.__stage3D.y);
+			var window = context.__stage3D.__stage.window;
 			
-			__setViewport (x > 0 ? x : 0, y > 0 ? y : 0, context.backBufferWidth, context.backBufferHeight);
+			var x = Std.int (context.__stage3D.x);
+			var y = Std.int (window.height - context.backBufferHeight - context.__stage3D.y);
+			
+			__setViewport (x > 0 ? x : 0, (y > 0 ? y : 0), context.backBufferWidth, context.backBufferHeight);
 			
 		}
 		
