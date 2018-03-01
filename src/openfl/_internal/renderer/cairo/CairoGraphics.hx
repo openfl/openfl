@@ -351,7 +351,7 @@ class CairoGraphics {
 						hasFill = false;
 						bitmapFill = null;
 					
-					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
+					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 						
 						endFill ();
 						
@@ -382,6 +382,12 @@ class CairoGraphics {
 							var c = data.readBeginGradientFill ();
 							fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 							strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							
+						} else if (type == BEGIN_SHADER_FILL) {
+							
+							var c = data.readBeginShaderFill ();
+							fillCommands.beginShaderFill (c.shaderBuffer);
+							strokeCommands.beginShaderFill (c.shaderBuffer);
 							
 						} else {
 							
@@ -793,6 +799,22 @@ class CairoGraphics {
 					
 					hasFill = true;
 					bitmapFill = null;
+				
+				case BEGIN_SHADER_FILL:
+					
+					var c = data.readBeginShaderFill ();
+					var shaderBuffer = c.shaderBuffer;
+					
+					if (shaderBuffer.inputCount > 0) {
+						
+						fillPattern = createImagePattern (shaderBuffer.inputs[0], null, false, shaderBuffer.inputSmoothing[0]);
+						
+						bitmapFill = shaderBuffer.inputs[0];
+						bitmapRepeat = false;
+						
+						hasFill = true;
+						
+					}
 				
 				case DRAW_QUADS:
 					
@@ -1414,7 +1436,7 @@ class CairoGraphics {
 						hasLineStyle = c.thickness != null;
 						strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 					
-					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
+					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 						
 						endFill ();
 						endStroke ();
@@ -1430,6 +1452,12 @@ class CairoGraphics {
 							var c = data.readBeginGradientFill ();
 							fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 							strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							
+						} else if (type == BEGIN_SHADER_FILL) {
+							
+							var c = data.readBeginShaderFill ();
+							fillCommands.beginShaderFill (c.shaderBuffer);
+							strokeCommands.beginShaderFill (c.shaderBuffer);
 							
 						} else {
 							
