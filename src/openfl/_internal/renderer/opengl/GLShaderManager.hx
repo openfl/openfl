@@ -249,6 +249,10 @@ class GLShaderManager extends AbstractShaderManager {
 				
 				currentGraphicsShader.data.texture0.input = null;
 				
+			} else {
+				
+				currentShaderBuffer.clearOverride ();
+				
 			}
 			
 			currentGraphicsShader.data.openfl_HasColorTransform.value = null;
@@ -367,6 +371,8 @@ class GLShaderManager extends AbstractShaderManager {
 	
 	public override function setShader (shader:Shader):Void {
 		
+		currentShaderBuffer = null;
+		
 		if (currentShader == shader) return;
 		
 		currentDisplayShader = null;
@@ -375,7 +381,6 @@ class GLShaderManager extends AbstractShaderManager {
 		if (currentShader != null) {
 			
 			currentShader.__disable ();
-			currentShaderBuffer = null;
 			
 		}
 		

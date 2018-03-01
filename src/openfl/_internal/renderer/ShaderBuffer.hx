@@ -66,6 +66,13 @@ class ShaderBuffer {
 	}
 	
 	
+	public function clearOverride ():Void {
+		
+		overrideCount = 0;
+		
+	}
+	
+	
 	public function update (shader:GraphicsShader):Void {
 		
 		overrideCount = 0;

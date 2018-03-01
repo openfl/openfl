@@ -321,7 +321,7 @@ import lime.utils.Float32Array;
 			} else {
 				
 				var type = gl.FLOAT;
-				if (__isBool) type = gl.BOOL;
+				if (__isBool) type = gl.INT; //gl.BOOL;
 				else if (__isInt) type = gl.INT;
 				
 				for (i in 0...__arrayLength) {
