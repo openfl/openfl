@@ -392,13 +392,13 @@ class GLGraphics {
 									
 								}
 								
-								gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+								gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
+								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
 								
 								var length = Math.floor (matrices.length / 6);
 								
-								gl.drawArrays (gl.TRIANGLES, bufferPosition, length * 6);
-								bufferPosition += length * 6;
+								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
+								bufferPosition += (4 * length * 6);
 								
 								#if gl_stats
 									GLStats.incrementDrawCall (DrawCallContext.STAGE);

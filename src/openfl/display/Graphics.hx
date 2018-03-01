@@ -558,7 +558,9 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (maxX, maxY);
 		
 		__commands.drawQuads (matrices, sourceRects, rectIndices);
+		
 		__dirty = true;
+		__visible = true;
 		
 		Rectangle.__pool.release (rect);
 		Matrix.__pool.release (matrix);

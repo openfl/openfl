@@ -76,6 +76,12 @@ class ShaderBuffer {
 	public function update (shader:GraphicsShader):Void {
 		
 		overrideCount = 0;
+		paramDataLength = 0;
+		
+		if (shader == null) return;
+		
+		shader.__init ();
+		
 		inputCount = shader.__inputBitmapData.length;
 		var input;
 		
@@ -87,8 +93,6 @@ class ShaderBuffer {
 			inputRefs[i] = input;
 			
 		}
-		
-		paramDataLength = 0;
 		
 		var boolCount = shader.__paramBool.length;
 		var floatCount = shader.__paramFloat.length;
