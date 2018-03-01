@@ -173,7 +173,8 @@ class ShaderBuffer {
 			
 			if (i < boolCount) {
 				
-				boolParam = paramRefs_Bool[boolIndex++];
+				boolParam = paramRefs_Bool[boolIndex];
+				boolIndex++;
 				
 				for (j in 0...length) {
 					
@@ -184,7 +185,8 @@ class ShaderBuffer {
 				
 			} else if (i < boolCount + floatCount) {
 				
-				floatParam = paramRefs_Float[floatIndex++];
+				floatParam = paramRefs_Float[floatIndex];
+				floatIndex++;
 				
 				for (j in 0...length) {
 					
@@ -195,7 +197,8 @@ class ShaderBuffer {
 				
 			} else {
 				
-				intParam = paramRefs_Int[intIndex++];
+				intParam = paramRefs_Int[intIndex];
+				intIndex++;
 				
 				for (j in 0...length) {
 					

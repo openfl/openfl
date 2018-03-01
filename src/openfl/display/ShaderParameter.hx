@@ -327,7 +327,16 @@ import lime.utils.Float32Array;
 				for (i in 0...__arrayLength) {
 					
 					gl.enableVertexAttribArray (index + i);
-					gl.vertexAttribPointer (index + i, __arrayLength, type, false, __length * Float32Array.BYTES_PER_ELEMENT, (position + (i * __arrayLength)) * Float32Array.BYTES_PER_ELEMENT);
+					
+				}
+				
+				if (length > 0) {
+					
+					for (i in 0...__arrayLength) {
+						
+						gl.vertexAttribPointer (index + i, __length, type, false, __length * Float32Array.BYTES_PER_ELEMENT, (position + (i * __arrayLength)) * Float32Array.BYTES_PER_ELEMENT);
+						
+					}
 					
 				}
 				

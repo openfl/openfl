@@ -14,7 +14,7 @@ class GraphicsShader extends Shader {
 		
 		#if emscripten
 		"varying float vAlpha;
-		varying mat4 vColorMultipliers;
+		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
 		varying vec2 openfl_vTexCoord;
 		
@@ -33,13 +33,13 @@ class GraphicsShader extends Shader {
 				
 				color = vec4 (color.rgb / color.a, color.a);
 				
-				mat4 colorMultiplier;
+				mat4 colorMultiplier = mat4 (0);
 				colorMultiplier[0][0] = vColorMultipliers.x;
 				colorMultiplier[1][1] = vColorMultipliers.y;
 				colorMultiplier[2][2] = vColorMultipliers.z;
 				colorMultiplier[3][3] = vColorMultipliers.w;
 				
-				color = vColorOffsets + (color * colorMultiplier);
+				color = clamp (vColorOffsets + (color * colorMultiplier), 0.0, 1.0);
 				
 				if (color.a > 0.0) {
 					
@@ -79,13 +79,13 @@ class GraphicsShader extends Shader {
 				
 				color = vec4 (color.rgb / color.a, color.a);
 				
-				mat4 colorMultiplier;
+				mat4 colorMultiplier = mat4 (0);
 				colorMultiplier[0][0] = vColorMultipliers.x;
 				colorMultiplier[1][1] = vColorMultipliers.y;
 				colorMultiplier[2][2] = vColorMultipliers.z;
 				colorMultiplier[3][3] = vColorMultipliers.w;
 				
-				color = vColorOffsets + (color * colorMultiplier);
+				color = clamp (vColorOffsets + (color * colorMultiplier), 0.0, 1.0);
 				
 				if (color.a > 0.0) {
 					
@@ -132,7 +132,7 @@ class GraphicsShader extends Shader {
 			if (openfl_HasColorTransform) {
 				
 				vColorMultipliers = colorMultipliers;
-				vColorOffsets = colorOffsets;
+				vColorOffsets = colorOffsets / 255.0;
 				
 			}
 			

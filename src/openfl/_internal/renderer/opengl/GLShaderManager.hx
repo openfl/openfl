@@ -26,6 +26,7 @@ class GLShaderManager extends AbstractShaderManager {
 	private static var alphaValue = [ 1. ];
 	private static var colorMultipliersValue = [ 0, 0, 0, 0. ];
 	private static var colorOffsetsValue = [ 0, 0, 0, 0. ];
+	private static var defaultColorMultipliersValue = [ 1, 1, 1, 1. ];
 	private static var emptyColorValue = [ 0, 0, 0, 0. ];
 	private static var emptyAlphaValue = [ 1. ];
 	private static var hasColorTransformValue = [ false ];
@@ -117,14 +118,40 @@ class GLShaderManager extends AbstractShaderManager {
 			var floatRefs = currentShaderBuffer.paramRefs_Float;
 			var floatStart = currentShaderBuffer.paramRefs_Bool.length;
 			
+			var hasColorMultipliers = false;
+			var hasColorOffsets = false;
+			
 			for (i in 0...floatRefs.length) {
 				
 				if (floatRefs[i].name == "colorMultipliers") {
 					
-					applyHasColorTransform (currentShaderBuffer.paramLengths[floatStart + i] > 0);
-					break;
+					hasColorMultipliers = (currentShaderBuffer.paramLengths[floatStart + i] > 0);
+					
+				} else if (floatRefs[i].name == "colorOffsets") {
+					
+					hasColorOffsets = (currentShaderBuffer.paramLengths[floatStart + i] > 0);
 					
 				}
+				
+			}
+			
+			if (hasColorMultipliers || hasColorOffsets) {
+				
+				applyHasColorTransform (true);
+				
+				if (!hasColorMultipliers) {
+					
+					currentShaderBuffer.addOverride ("colorMultipliers", defaultColorMultipliersValue);
+					
+				} else if (!hasColorOffsets) {
+					
+					currentShaderBuffer.addOverride ("colorOffsets", emptyColorValue);
+					
+				}
+				
+			} else {
+				
+				applyHasColorTransform (false);
 				
 			}
 			

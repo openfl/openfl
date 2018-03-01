@@ -628,7 +628,7 @@ class Shader {
 				
 			}
 			
-			Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ")");
+			Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, shaderBuffer.paramDataBuffer);
 			(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);

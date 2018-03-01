@@ -396,6 +396,7 @@ class GLGraphics {
 								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 								
 								var length = Math.floor (matrices.length / 6);
+								
 								gl.drawArrays (gl.TRIANGLES, bufferPosition, length * 6);
 								bufferPosition += length * 6;
 								
