@@ -17,6 +17,7 @@ class AbstractMaskManager {
 	
 	
 	private var renderSession:RenderSession;
+	public var maskShader:Shader;
 	
 	
 	public function new (renderSession:RenderSession) {

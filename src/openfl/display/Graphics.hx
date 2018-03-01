@@ -924,10 +924,15 @@ import js.html.CanvasRenderingContext2D;
 		
 	}
 	
-	
+	private var previousParentTransform:Matrix = null;
+
 	private function __update ():Void {
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
+
+		if (previousParentTransform != null && previousParentTransform.equals(__owner.__renderTransform)) {
+			return;
+		}
 		
 		var parentTransform = __owner.__renderTransform;
 		var scaleX = 1.0, scaleY = 1.0;
@@ -959,6 +964,8 @@ import js.html.CanvasRenderingContext2D;
 			return;
 			
 		}
+
+		previousParentTransform = parentTransform.clone();
 		
 		#if openfl_disable_graphics_upscaling
 		if (scaleX > 1) scaleX = 1;
@@ -1042,12 +1049,16 @@ import js.html.CanvasRenderingContext2D;
 	
 	
 	private function set___dirty (value:Bool):Bool {
-		
-		if (value && __owner != null) {
-			
-			@:privateAccess __owner.__setRenderDirty();
-			
-		}
+
+		//S/ Commented this out because it seems to be creating unnecessary work.
+		//S/ If removing this ends up causing issues in the future, at the very least,
+		//S/ try to limit setRenderDirty calls to only when they are actually necessary.
+
+//		if (value && __owner != null) {
+//
+//			@:privateAccess __owner.__setRenderDirty();
+//
+//		}
 		
 		return __dirty = value;
 		
