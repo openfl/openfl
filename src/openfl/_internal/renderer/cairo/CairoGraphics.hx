@@ -1264,14 +1264,16 @@ class CairoGraphics {
 		} else {
 			
 			hitTesting = false;
+			var needsUpscaling = false;
 			
 			if (graphics.__cairo != null) {
 				
 				var surface:CairoImageSurface = cast graphics.__cairo.target;
 				
-				if (width != surface.width || height != surface.height) {
+				if (width > surface.width || height > surface.height) {
 					
 					graphics.__cairo = null;
+					needsUpscaling = true;
 					
 				}
 				
@@ -1279,7 +1281,9 @@ class CairoGraphics {
 			
 			if (graphics.__cairo == null || graphics.__bitmap == null) {
 				
-				var bitmap = new BitmapData (width, height, true, 0);
+				var bitmap = needsUpscaling ?
+					new BitmapData (Std.int (width * 1.25), Std.int (height * 1.25), true, 0) :
+					new BitmapData (width, height, true, 0);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
 				graphics.__bitmap = bitmap;
