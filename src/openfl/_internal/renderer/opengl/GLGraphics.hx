@@ -2,9 +2,11 @@ package openfl._internal.renderer.opengl;
 
 
 import lime.graphics.opengl.WebGLContext;
+import lime.math.color.ARGB;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
@@ -30,7 +32,8 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class GLGraphics {
 	
 	
-	private static var tempColorTransform = new ColorTransform ();
+	private static var blankBitmapData = new BitmapData (1, 1, false, 0);
+	private static var tempColorTransform = new ColorTransform (0, 0, 0, 1, 0, 0, 0, 0);
 	
 	
 	private static function buildBuffer (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
@@ -302,11 +305,12 @@ class GLGraphics {
 				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
 				var gl:WebGLContext = renderSession.gl;
 				
-				// var matrix = Matrix.__pool.get ();
+				var matrix = Matrix.__pool.get ();
 				
 				var shaderBuffer = null;
 				var bitmap = null;
 				var smooth = false;
+				var fill:Null<Int> = null;
 				
 				var positionX = 0.0;
 				var positionY = 0.0;
@@ -323,6 +327,15 @@ class GLGraphics {
 							bitmap = c.bitmap;
 							smooth = c.smooth;
 							shaderBuffer = null;
+							fill = null;
+						
+						case BEGIN_FILL:
+							
+							var c = data.readBeginFill ();
+							var color = Std.int (c.color);
+							var alpha = Std.int (c.alpha * 0xFF);
+							
+							fill = (color & 0xFFFFFF) | (alpha << 24);
 						
 						case BEGIN_SHADER_FILL:
 							
@@ -337,6 +350,50 @@ class GLGraphics {
 								
 								bitmap = shaderBuffer.shader.data.texture0.input;
 								smooth = shaderBuffer.shader.data.texture0.smoothing;
+								
+							}
+							
+							fill = null;
+						
+						case DRAW_RECT:
+							
+							if (fill != null) {
+								
+								var c = data.readDrawRect ();
+								var x = c.x;
+								var y = c.y;
+								var width = c.width;
+								var height = c.height;
+								
+								var color:ARGB = (fill:ARGB);
+								tempColorTransform.redOffset = color.r;
+								tempColorTransform.greenOffset = color.g;
+								tempColorTransform.blueOffset = color.b;
+								
+								matrix.identity ();
+								matrix.scale (width, height);
+								matrix.tx = x;
+								matrix.ty = y;
+								matrix.concat (parentTransform);
+								
+								var shader = shaderManager.initGraphicsShader (null);
+								shaderManager.setGraphicsShader (shader);
+								shaderManager.applyMatrix (renderer.getMatrix (matrix));
+								shaderManager.applyBitmapData (blankBitmapData, renderSession.allowSmoothing);
+								shaderManager.applyAlpha (color.a / 0xFF);
+								shaderManager.applyColorTransform (tempColorTransform);
+								shaderManager.updateShader ();
+								
+								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (cast gl));
+								gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+								gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+								
+								#if gl_stats
+									GLStats.incrementDrawCall (DrawCallContext.STAGE);
+								#end
+								
+								shaderManager.clear ();
 								
 							}
 						
@@ -359,6 +416,7 @@ class GLGraphics {
 								if (shaderBuffer != null) {
 									
 									shader = shaderManager.initShaderBuffer (shaderBuffer);
+									
 									shaderManager.setShaderBuffer (shaderBuffer);
 									shaderManager.applyMatrix (uMatrix);
 									shaderManager.applyAlpha (1);
@@ -408,49 +466,11 @@ class GLGraphics {
 								
 							}
 						
-						// case DRAW_RECT:
-							
-						// 	var c = data.readDrawRect ();
-							
-						// 	if (bitmap != null) {
-								
-						// 		gl.enableVertexAttribArray (shader.data.aAlpha.index);
-						// 		gl.uniformMatrix4fv (shader.data.uMatrix.index, 1, false, renderer.getMatrix (parentTransform));
-								
-						// 		gl.uniform1i (shader.data.uUseColorTransform.index, 0);
-								
-						// 		gl.bindTexture (gl.TEXTURE_2D, bitmap.getTexture (gl));
-								
-						// 		//if (renderSession.allowSmoothing && (smooth || renderSession.upscaled)) {
-									
-						// 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-						// 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-									
-						// 		//} else {
-						// 			//
-						// 			//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						// 			//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						// 			//
-						// 		//}
-								
-						// 		gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.getBuffer (gl, worldAlpha, null));
-								
-						// 		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-						// 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-						// 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-								
-						// 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
-								
-						// 		#if gl_stats
-						// 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
-						// 		#end
-								
-						// 	}
-						
 						case END_FILL:
 							
 							bitmap = null;
 							shaderBuffer = null;
+							fill = null;
 						
 						case MOVE_TO:
 							
@@ -466,7 +486,7 @@ class GLGraphics {
 					
 				}
 				
-				// Matrix.__pool.release (matrix);
+				Matrix.__pool.release (matrix);
 				
 			}
 			
