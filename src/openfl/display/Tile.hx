@@ -10,26 +10,21 @@ import openfl.geom.Rectangle;
 @:noDebug
 #end
 
-@:access(openfl.display.TileArray)
-@:access(openfl.display.Tilemap)
 @:access(openfl.geom.ColorTransform)
-@:access(openfl.geom.Matrix)
 
 
-class Tile implements ITile {
+class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	
-	
-	private static var __tempMatrix = new Matrix ();
 	
 	public var alpha (get, set):Float;
-	@:beta public var colorTransform (get, set):ColorTransform;
+	public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
 	public var id (get, set):Int;
 	public var matrix (get, set):Matrix;
 	public var originX (get, set):Float;
 	public var originY (get, set):Float;
-	public var parent (default, null):Tilemap;
-	@:beta public var rect (get, set):Rectangle;
+	public var parent (default, null):TileGroup;
+	public var rect (get, set):Rectangle;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
@@ -40,10 +35,10 @@ class Tile implements ITile {
 	public var y (get, set):Float;
 	
 	private var __alpha:Float;
-	private var __alphaDirty:Bool;
 	private var __colorTransform:ColorTransform;
-	private var __colorTransformDirty:Bool;
+	private var __dirty:Bool;
 	private var __id:Int;
+	private var __length:Int;
 	private var __matrix:Matrix;
 	private var __originX:Float;
 	private var __originY:Float;
@@ -54,12 +49,8 @@ class Tile implements ITile {
 	private var __scaleX:Null<Float>;
 	private var __scaleY:Null<Float>;
 	private var __shader:DisplayObjectShader;
-	private var __shaderDirty:Bool;
-	private var __sourceDirty:Bool;
 	private var __tileset:Tileset;
-	private var __transformDirty:Bool;
 	private var __visible:Bool;
-	private var __visibleDirty:Bool;
 	
 	
 	#if openfljs
@@ -98,15 +89,12 @@ class Tile implements ITile {
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
 		
+		__dirty = true;
+		__length = 0;
 		__originX = originX;
 		__originY = originY;
 		__alpha = 1;
 		__visible = true;
-		
-		__alphaDirty = true;
-		__sourceDirty = true;
-		__transformDirty = true;
-		__visibleDirty = true;
 		
 	}
 	
@@ -114,26 +102,34 @@ class Tile implements ITile {
 	public function clone ():Tile {
 		
 		var tile = new Tile (__id);
+		tile.__alpha = __alpha;
+		tile.__originX = __originX;
+		tile.__originY = __originY;
+		
+		if (__rect != null) tile.__rect = __rect.clone ();
+		
 		tile.matrix = __matrix.clone ();
+		tile.__shader = __shader;
 		tile.tileset = __tileset;
+		
+		if (__colorTransform != null) {
+			
+			#if flash
+			tile.__colorTransform = new ColorTransform (__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier, __colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset, __colorTransform.alphaOffset);
+			#else
+			tile.__colorTransform = __colorTransform.__clone ();
+			#end
+			
+		}
+		
 		return tile;
 		
 	}
 	
 	
-	private static function __fromTileArray (position:Int, tileArray:TileArray):Tile {
+	public function invalidate ():Void {
 		
-		var cachePosition = tileArray.position;
-		tileArray.position = position;
-		
-		var tile = new Tile ();
-		tile.alpha = tileArray.alpha;
-		tile.id = tileArray.id;
-		tileArray.matrix = tile.matrix;
-		
-		tileArray.position = cachePosition;
-		
-		return tile;
+		__setRenderDirty ();
 		
 	}
 	
@@ -141,89 +137,18 @@ class Tile implements ITile {
 	private inline function __setRenderDirty ():Void {
 		
 		#if !flash
-		if (parent != null) {
+		if (!__dirty) {
 			
-			parent.__setRenderDirty ();
+			__dirty = true;
+			
+			if (parent != null) {
+				
+				parent.__setRenderDirty ();
+				
+			}
 			
 		}
 		#end
-		
-	}
-	
-	
-	private function __updateTileArray (position:Int, tileArray:TileArray, forceUpdate:Bool):Void {
-		
-		var cachePosition = tileArray.position;
-		tileArray.position = position;
-		
-		if (__shaderDirty || forceUpdate) {
-			
-			tileArray.shader = __shader;
-			__shaderDirty = false;
-			
-		}
-		
-		if (__colorTransformDirty || forceUpdate) {
-			
-			tileArray.colorTransform = __colorTransform;
-			__colorTransformDirty = false;
-			
-		}
-		
-		if (__visibleDirty || forceUpdate) {
-			
-			tileArray.visible = __visible;
-			tileArray.__bufferDirty = true;
-			__visibleDirty = false;
-			
-		}
-		
-		if (__alphaDirty || forceUpdate) {
-			
-			tileArray.alpha = __alpha;
-			tileArray.__bufferDirty = true;
-			__alphaDirty = false;
-			
-		}
-		
-		if (__sourceDirty || forceUpdate) {
-			
-			if (__rect == null) {
-				
-				tileArray.id = __id;
-				
-			} else {
-				
-				tileArray.rect = rect;
-				
-			}
-			
-			tileArray.tileset = __tileset;
-			tileArray.__bufferDirty = true;
-			__sourceDirty = true;
-			
-		}
-		
-		if (__transformDirty || forceUpdate) {
-			
-			if (__originX != 0 || __originY != 0) {
-				
-				__tempMatrix.setTo (1, 0, 0, 1, -__originX, -__originY);
-				__tempMatrix.concat (__matrix);
-				tileArray.matrix = __tempMatrix;
-				
-			} else {
-				
-				tileArray.matrix = __matrix;
-				
-			}
-			
-			tileArray.__bufferDirty = true;
-			__transformDirty = false;
-			
-		}
-		
-		tileArray.position = cachePosition;
 		
 	}
 	
@@ -244,18 +169,19 @@ class Tile implements ITile {
 	
 	private function set_alpha (value:Float):Float {
 		
-		__alphaDirty = true;
-		__setRenderDirty ();
-		return __alpha = value;
+		if (value != __alpha) {
+			
+			__alpha = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
 	
 	private function get_colorTransform ():ColorTransform {
-		
-		if (__colorTransform == null) {
-			__colorTransform = new ColorTransform ();
-		}
 		
 		return __colorTransform;
 		
@@ -264,59 +190,14 @@ class Tile implements ITile {
 	
 	private function set_colorTransform (value:ColorTransform):ColorTransform {
 		
-		#if flash
-		
-		if (__colorTransform == null) {
+		if (value != __colorTransform) {
 			
-			__colorTransform = new ColorTransform ();
-			
-		} else if (value == null) {
-			
-			__colorTransform.redMultiplier = 1;
-			__colorTransform.greenMultiplier = 1;
-			__colorTransform.blueMultiplier = 1;
-			__colorTransform.alphaMultiplier = 1;
-			__colorTransform.redOffset = 0;
-			__colorTransform.greenOffset = 0;
-			__colorTransform.blueOffset = 0;
-			__colorTransform.alphaOffset = 0;
-			return value;
+			__colorTransform = value;
+			__setRenderDirty ();
 			
 		}
 		
-		__colorTransform.redMultiplier = value.redMultiplier;
-		__colorTransform.greenMultiplier = value.greenMultiplier;
-		__colorTransform.blueMultiplier = value.blueMultiplier;
-		__colorTransform.alphaMultiplier = value.alphaMultiplier;
-		__colorTransform.redOffset = value.redOffset;
-		__colorTransform.greenOffset = value.greenOffset;
-		__colorTransform.blueOffset = value.blueOffset;
-		__colorTransform.alphaOffset = value.alphaOffset;
 		return value;
-		
-		#else
-		
-		if (__colorTransform == null) {
-			
-			if (value != null) {
-				__colorTransform = value.__clone ();
-			}
-			
-		} else {
-			
-			if (value != null) {
-				__colorTransform.__copyFrom (value);
-			} else {
-				__colorTransform.__identity ();
-			}
-			
-		}
-		
-		__colorTransformDirty = true;
-		__setRenderDirty ();
-		return value;
-		
-		#end
 		
 	}
 	
@@ -330,9 +211,14 @@ class Tile implements ITile {
 	
 	private function set_id (value:Int):Int {
 		
-		__sourceDirty = true;
-		__setRenderDirty ();
-		return __id = value;
+		if (value != __id) {
+			
+			__id = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -346,12 +232,17 @@ class Tile implements ITile {
 	
 	private function set_matrix (value:Matrix):Matrix {
 		
-		__rotation = null;
-		__scaleX = null;
-		__scaleY = null;
-		__transformDirty = true;
-		__setRenderDirty ();
-		return __matrix = value;
+		if (value != __matrix) {
+			
+			__rotation = null;
+			__scaleX = null;
+			__scaleY = null;
+			__matrix = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -365,9 +256,14 @@ class Tile implements ITile {
 	
 	private function set_originX (value:Float):Float {
 		
-		__transformDirty = true;
-		__setRenderDirty ();
-		return __originX = value;
+		if (value != __originX) {
+			
+			__originX = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -381,9 +277,14 @@ class Tile implements ITile {
 	
 	private function set_originY (value:Float):Float {
 		
-		__transformDirty = true;
-		__setRenderDirty ();
-		return __originY = value;
+		if (value != __originY) {
+			
+			__originY = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -397,9 +298,14 @@ class Tile implements ITile {
 	
 	private function set_rect (value:Rectangle):Rectangle {
 		
-		__sourceDirty = true;
-		__setRenderDirty ();
-		return __rect = value;
+		if (value != __rect) {
+			
+			__rect = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -448,7 +354,6 @@ class Tile implements ITile {
 			__matrix.c = -__rotationSine * __scaleY;
 			__matrix.d = __rotationCosine * __scaleY;
 			
-			__transformDirty = true;
 			__setRenderDirty ();
 			
 		}
@@ -481,7 +386,7 @@ class Tile implements ITile {
 	
 	private function set_scaleX (value:Float):Float {
 		
-		if (__scaleX != value) {
+		if (value != __scaleX) {
 			
 			__scaleX = value;
 			
@@ -501,7 +406,6 @@ class Tile implements ITile {
 				
 			}
 			
-			__transformDirty = true;
 			__setRenderDirty ();
 			
 		}
@@ -534,7 +438,7 @@ class Tile implements ITile {
 	
 	private function set_scaleY (value:Float):Float {
 		
-		if (__scaleY != value) {
+		if (value != __scaleY) {
 			
 			__scaleY = value;
 			
@@ -554,7 +458,6 @@ class Tile implements ITile {
 				
 			}
 			
-			__transformDirty = true;
 			__setRenderDirty ();
 			
 		}
@@ -573,9 +476,14 @@ class Tile implements ITile {
 	
 	private function set_shader (value:DisplayObjectShader):DisplayObjectShader {
 		
-		__shaderDirty = true;
-		__setRenderDirty ();
-		return __shader = value;
+		if (value != __shader) {
+			
+			__shader = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -589,9 +497,14 @@ class Tile implements ITile {
 	
 	private function set_tileset (value:Tileset):Tileset {
 		
-		__sourceDirty = true;
-		__setRenderDirty ();
-		return __tileset = value;
+		if (value != __tileset) {
+			
+			__tileset = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -605,9 +518,14 @@ class Tile implements ITile {
 	
 	private function set_visible (value:Bool):Bool {
 		
-		__visibleDirty = true;
-		__setRenderDirty ();
-		return __visible = value;
+		if (value != __visible) {
+			
+			__visible = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -621,9 +539,14 @@ class Tile implements ITile {
 	
 	private function set_x (value:Float):Float {
 		
-		__transformDirty = true;
-		__setRenderDirty ();
-		return __matrix.tx = value;
+		if (value != __matrix.tx) {
+			
+			__matrix.tx = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -637,9 +560,14 @@ class Tile implements ITile {
 	
 	private function set_y (value:Float):Float {
 		
-		__transformDirty = true;
-		__setRenderDirty ();
-		return __matrix.ty = value;
+		if (value != __matrix.ty) {
+			
+			__matrix.ty = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	

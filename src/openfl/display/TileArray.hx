@@ -16,7 +16,8 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 
 
-@:beta class TileArray implements ITile {
+#if ((openfl < "9.0.0") && enable_tile_array)
+@:deprecated class TileArray implements ITile {
 	
 	
 	private static inline var ID_INDEX = 0;
@@ -688,3 +689,4 @@ private class TileArrayIterator {
 	
 	
 }
+#end

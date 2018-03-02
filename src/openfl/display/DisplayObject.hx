@@ -85,6 +85,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	@:keep public var scaleX (get, set):Float;
 	@:keep public var scaleY (get, set):Float;
 	public var scrollRect (get, set):Rectangle;
+	@:beta public var shader (get, set):DisplayObjectShader;
 	public var stage (default, null):Stage;
 	@:keep public var transform (get, set):Transform;
 	public var visible (get, set):Bool;
@@ -126,6 +127,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __scaleX:Float;
 	private var __scaleY:Float;
 	private var __scrollRect:Rectangle;
+	private var __shader:DisplayObjectShader;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
 	private var __visible:Bool;
@@ -135,6 +137,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __worldClip:Rectangle;
 	private var __worldClipChanged:Bool;
 	private var __worldColorTransform:ColorTransform;
+	private var __worldShader:DisplayObjectShader;
 	private var __worldTransform:Matrix;
 	private var __worldVisible:Bool;
 	private var __worldVisibleChanged:Bool;
@@ -850,7 +853,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			if (renderSession.gl != null) {
 				
 				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-				shaderManager.setShader (null);
+				shaderManager.setShader (__worldShader);
 				
 				__customRenderEvent.gl = renderSession.gl;
 				__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
@@ -1068,6 +1071,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
+				if (__shader == null) {
+					
+					__worldShader = renderParent.__shader;
+					
+				} else {
+					
+					__worldShader = __shader;
+					
+				}
+				
 			} else {
 				
 				__worldAlpha = alpha;
@@ -1202,6 +1215,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap.__renderable = __renderable;
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
+			__cacheBitmap.__worldShader = __worldShader;
 			__cacheBitmap.__scrollRect = __scrollRect;
 			//__cacheBitmap.filters = filters;
 			__cacheBitmap.mask = __mask;
@@ -1326,8 +1340,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
-		__worldAlpha = alpha;
-		__worldBlendMode = blendMode;
+		__worldAlpha = __alpha;
+		__worldBlendMode = __blendMode;
+		__worldShader = __shader;
 		
 		if (__transformDirty) {
 			
@@ -1815,6 +1830,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return __scrollRect = value;
+		
+	}
+	
+	
+	private function get_shader ():DisplayObjectShader {
+		
+		return __shader;
+		
+	}
+	
+	
+	private function set_shader (value:DisplayObjectShader):DisplayObjectShader {
+		
+		__shader = value;
+		__setRenderDirty ();
+		return value;
 		
 	}
 	

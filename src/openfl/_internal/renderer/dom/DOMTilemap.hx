@@ -9,6 +9,7 @@ import openfl.geom.Matrix;
 import js.Browser;
 #end
 
+@:access(openfl.display.TileGroup)
 @:access(openfl.display.Tilemap)
 @:access(openfl.geom.Matrix)
 
@@ -33,8 +34,10 @@ class DOMTilemap {
 	
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
+		// TODO: Support GL-based Tilemap?
+		
 		#if (js && html5)
-		if (tilemap.stage != null && tilemap.__worldVisible && tilemap.__renderable && tilemap.__tiles.length > 0) {
+		if (tilemap.stage != null && tilemap.__worldVisible && tilemap.__renderable && tilemap.__group.__tiles.length > 0) {
 			
 			if (tilemap.__canvas == null) {
 				
@@ -46,8 +49,6 @@ class DOMTilemap {
 			
 			tilemap.__canvas.width = tilemap.__width;
 			tilemap.__canvas.height = tilemap.__height;
-			
-			tilemap.__context.globalAlpha = tilemap.__worldAlpha;
 			
 			renderSession.context = tilemap.__context;
 			

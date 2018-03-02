@@ -6,7 +6,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 
-@:beta interface ITile {
+#if ((openfl < "9.0.0") && enable_tile_array)
+@:deprecated interface ITile {
 	
 	public var alpha (get, set):Float;
 	public var colorTransform (get, set):ColorTransform;
@@ -18,3 +19,4 @@ import openfl.geom.Rectangle;
 	public var visible (get, set):Bool;
 	
 }
+#end

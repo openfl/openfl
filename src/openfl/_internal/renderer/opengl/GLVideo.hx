@@ -39,13 +39,14 @@ class GLVideo {
 			renderSession.maskManager.pushObject (video);
 			renderSession.filterManager.pushObject (video);
 			
-			var shader = shaderManager.initDisplayShader (video.shader);
-			shaderManager.setShader (shader, false);
+			var shader = shaderManager.initDisplayShader (video.__worldShader);
+			shaderManager.setDisplayShader (shader);
 			shaderManager.applyBitmapData (null, renderSession.allowSmoothing);
 			//shader.data.uImage0.input = bitmap.__bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shaderManager.applyMatrix (renderer.getMatrix (video.__renderTransform));
-			shaderManager.applyColor (video.__worldAlpha, video.__worldColorTransform);
+			shaderManager.applyAlpha (video.__worldAlpha);
+			shaderManager.applyColorTransform (video.__worldColorTransform);
 			shaderManager.updateShader ();
 			
 			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (gl));
@@ -92,7 +93,7 @@ class GLVideo {
 			var gl = renderSession.gl;
 			
 			var shader = GLMaskManager.maskShader;
-			shaderManager.setShader (shader, false);
+			shaderManager.setDisplayShader (shader);
 			shaderManager.applyBitmapData (null, renderSession.allowSmoothing);
 			//shader.data.uImage0.input = bitmap.__bitmapData;
 			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);

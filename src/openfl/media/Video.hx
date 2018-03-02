@@ -13,7 +13,6 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectShader;
 import openfl.display.Graphics;
-import openfl.display.IShaderDrawable;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -27,13 +26,12 @@ import openfl.net.NetStream;
 @:access(openfl.geom.Point)
 
 
-class Video extends DisplayObject implements IShaderDrawable {
+class Video extends DisplayObject {
 	
 	
 	private static inline var __bufferStride = 5;
 	
 	public var deblocking:Int;
-	@:beta public var shader:DisplayObjectShader;
 	public var smoothing:Bool;
 	public var videoHeight (get, never):Int;
 	public var videoWidth (get, never):Int;

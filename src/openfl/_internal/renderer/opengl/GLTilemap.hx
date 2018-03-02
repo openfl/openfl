@@ -38,229 +38,229 @@ class GLTilemap {
 	
 	public static function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
-		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
+		// if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
 		
-		tilemap.__updateTileArray ();
+		// tilemap.__updateTileArray ();
 		
-		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
+		// if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-		var gl = renderSession.gl;
+		// var renderer:GLRenderer = cast renderSession.renderer;
+		// var shaderManager:GLShaderManager = cast renderSession.shaderManager;
+		// var gl = renderSession.gl;
 		
-		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
-		renderSession.maskManager.pushObject (tilemap);
-		renderSession.filterManager.pushObject (tilemap);
+		// renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
+		// renderSession.maskManager.pushObject (tilemap);
+		// renderSession.filterManager.pushObject (tilemap);
 		
-		var shader = shaderManager.initDisplayShader (tilemap.shader);
+		// var shader = shaderManager.initDisplayShader (tilemap.shader);
 		
-		var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
-		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
+		// var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
+		// var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		
-		var useColorTransform = true || !tilemap.__worldColorTransform.__isDefault ();
+		// var useColorTransform = true || !tilemap.__worldColorTransform.__isDefault ();
 		
-		var rect = Rectangle.__pool.get ();
-		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
-		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
+		// var rect = Rectangle.__pool.get ();
+		// rect.setTo (0, 0, tilemap.__width, tilemap.__height);
+		// renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
-		var tileArray = tilemap.__tileArray;
-		var defaultShader = shader;
-		var defaultTileset = tilemap.__tileset;
+		// var tileArray = tilemap.__tileArray;
+		// var defaultShader = shader;
+		// var defaultTileset = tilemap.__tileset;
 		
-		tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
+		// tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
 		
-		var cacheShader = null;
-		var cacheBitmapData = null;
-		var lastIndex = 0;
-		var skipped = tileArray.__bufferSkipped;
-		var drawCount = tileArray.__length;
+		// var cacheShader = null;
+		// var cacheBitmapData = null;
+		// var lastIndex = 0;
+		// var skipped = tileArray.__bufferSkipped;
+		// var drawCount = tileArray.__length;
 		
-		tileArray.position = 0;
+		// tileArray.position = 0;
 		
-		var shader = null, tileset, flush = false;
+		// var shader = null, tileset, flush = false;
 		
-		for (i in 0...(drawCount + 1)) {
+		// for (i in 0...(drawCount + 1)) {
 			
-			if (skipped[i]) {
+		// 	if (skipped[i]) {
 				
-				continue;
+		// 		continue;
 				
-			}
+		// 	}
 			
-			tileArray.position = (i < drawCount ? i : drawCount - 1);
+		// 	tileArray.position = (i < drawCount ? i : drawCount - 1);
 			
-			shader = tileArray.shader;
-			if (shader == null) shader = defaultShader;
+		// 	shader = tileArray.shader;
+		// 	if (shader == null) shader = defaultShader;
 			
-			if (shader != cacheShader && cacheShader != null) {
+		// 	if (shader != cacheShader && cacheShader != null) {
 				
-				flush = true;
+		// 		flush = true;
 				
-			}
+		// 	}
 			
-			tileset = tileArray.tileset;
-			if (tileset == null) tileset = defaultTileset;
-			if (tileset == null) continue;
+		// 	tileset = tileArray.tileset;
+		// 	if (tileset == null) tileset = defaultTileset;
+		// 	if (tileset == null) continue;
 			
-			if (tileset.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
+		// 	if (tileset.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
 				
-				flush = true;
+		// 		flush = true;
 				
-			}
+		// 	}
 			
-			if (flush) {
+		// 	if (flush) {
 				
-				shaderManager.applyBitmapData (cacheBitmapData, smoothing);
-				shaderManager.updateShader ();
+		// 		shaderManager.applyBitmapData (cacheBitmapData, smoothing);
+		// 		shaderManager.updateShader ();
 				
-				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
+		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
-				#if gl_stats
-					GLStats.incrementDrawCall (DrawCallContext.STAGE);
-				#end
+		// 		#if gl_stats
+		// 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		// 		#end
 				
-				flush = false;
-				lastIndex = i;
+		// 		flush = false;
+		// 		lastIndex = i;
 				
-			}
+		// 	}
 			
-			if (shader != cacheShader) {
+		// 	if (shader != cacheShader) {
 				
-				shaderManager.clear ();
+		// 		shaderManager.clear ();
 				
-				shaderManager.setDisplayShader (shader);
-				shaderManager.applyMatrix (uMatrix);
-				shaderManager.applyBitmapData (cacheBitmapData, smoothing);
-				shaderManager.useAlphaArray ();
-				shaderManager.applyHasColorTransform (useColorTransform);
-				shaderManager.useColorTransformArray ();
-				shaderManager.updateShader ();
+		// 		shaderManager.setDisplayShader (shader);
+		// 		shaderManager.applyMatrix (uMatrix);
+		// 		shaderManager.applyBitmapData (cacheBitmapData, smoothing);
+		// 		shaderManager.useAlphaArray ();
+		// 		shaderManager.applyHasColorTransform (useColorTransform);
+		// 		shaderManager.useColorTransformArray ();
+		// 		shaderManager.updateShader ();
 				
-				gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 0);
-				gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.data.alpha.index, 1, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+		// 		gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 0);
+		// 		gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		// 		gl.vertexAttribPointer (shader.data.alpha.index, 1, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 				
-				if (useColorTransform) {
+		// 		if (useColorTransform) {
 					
-					gl.vertexAttribPointer (shader.data.colorMultipliers.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-					gl.vertexAttribPointer (shader.data.colorOffsets.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+		// 			gl.vertexAttribPointer (shader.data.colorMultipliers.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		// 			gl.vertexAttribPointer (shader.data.colorOffsets.index, 4, gl.FLOAT, false, 13 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
 					
-				}
+		// 		}
 				
-				cacheShader = shader;
+		// 		cacheShader = shader;
 				
-			}
+		// 	}
 			
-			cacheBitmapData = tileset.__bitmapData;
+		// 	cacheBitmapData = tileset.__bitmapData;
 			
-			if (i == drawCount && tileset.__bitmapData != null) {
+		// 	if (i == drawCount && tileset.__bitmapData != null) {
 				
-				shaderManager.applyBitmapData (tileset.__bitmapData, smoothing);
-				shaderManager.updateShader ();
+		// 		shaderManager.applyBitmapData (tileset.__bitmapData, smoothing);
+		// 		shaderManager.updateShader ();
 				
-				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
+		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
-				#if gl_stats
-					GLStats.incrementDrawCall (DrawCallContext.STAGE);
-				#end
+		// 		#if gl_stats
+		// 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		// 		#end
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
-		shaderManager.clear ();
+		// shaderManager.clear ();
 		
-		renderSession.filterManager.popObject (tilemap);
-		renderSession.maskManager.popRect ();
-		renderSession.maskManager.popObject (tilemap);
+		// renderSession.filterManager.popObject (tilemap);
+		// renderSession.maskManager.popRect ();
+		// renderSession.maskManager.popObject (tilemap);
 		
-		Rectangle.__pool.release (rect);
+		// Rectangle.__pool.release (rect);
 		
 	}
 	
 	
 	public static function renderMask (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
-		tilemap.__updateTileArray ();
+		// tilemap.__updateTileArray ();
 		
-		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
+		// if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		var gl = renderSession.gl;
+		// var renderer:GLRenderer = cast renderSession.renderer;
+		// var gl = renderSession.gl;
 		
-		var shader = GLMaskManager.maskShader;
+		// var shader = GLMaskManager.maskShader;
 		
-		var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
-		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
+		// var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
+		// var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		
-		var tileArray = tilemap.__tileArray;
-		var defaultTileset = tilemap.__tileset;
+		// var tileArray = tilemap.__tileArray;
+		// var defaultTileset = tilemap.__tileset;
 		
-		tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
+		// tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
 		
-		gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		// gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 0);
+		// gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 		
-		var cacheBitmapData = null;
-		var lastIndex = 0;
-		var skipped = tileArray.__bufferSkipped;
-		var drawCount = tileArray.__length;
+		// var cacheBitmapData = null;
+		// var lastIndex = 0;
+		// var skipped = tileArray.__bufferSkipped;
+		// var drawCount = tileArray.__length;
 		
-		tileArray.position = 0;
+		// tileArray.position = 0;
 		
-		var tileset, flush = false;
+		// var tileset, flush = false;
 		
-		for (i in 0...(drawCount + 1)) {
+		// for (i in 0...(drawCount + 1)) {
 			
-			if (skipped[i]) {
+		// 	if (skipped[i]) {
 				
-				continue;
+		// 		continue;
 				
-			}
+		// 	}
 			
-			tileArray.position = (i < drawCount ? i : drawCount - 1);
+		// 	tileArray.position = (i < drawCount ? i : drawCount - 1);
 			
-			tileset = tileArray.tileset;
-			if (tileset == null) tileset = defaultTileset;
-			if (tileset == null) continue;
+		// 	tileset = tileArray.tileset;
+		// 	if (tileset == null) tileset = defaultTileset;
+		// 	if (tileset == null) continue;
 			
-			if (tileset.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
+		// 	if (tileset.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
 				
-				flush = true;
+		// 		flush = true;
 				
-			}
+		// 	}
 			
-			if (flush) {
+		// 	if (flush) {
 				
-				shader.data.texture0.input = cacheBitmapData;
-				renderSession.shaderManager.updateShader ();
+		// 		shader.data.texture0.input = cacheBitmapData;
+		// 		renderSession.shaderManager.updateShader ();
 				
-				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
+		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
-				#if gl_stats
-					GLStats.incrementDrawCall (DrawCallContext.STAGE);
-				#end
+		// 		#if gl_stats
+		// 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		// 		#end
 				
-				flush = false;
-				lastIndex = i;
+		// 		flush = false;
+		// 		lastIndex = i;
 				
-			}
+		// 	}
 			
-			cacheBitmapData = tileset.__bitmapData;
+		// 	cacheBitmapData = tileset.__bitmapData;
 			
-			if (i == drawCount && tileset.__bitmapData != null) {
+		// 	if (i == drawCount && tileset.__bitmapData != null) {
 				
-				shader.data.texture0.input = tileset.__bitmapData;
-				renderSession.shaderManager.updateShader ();
-				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
+		// 		shader.data.texture0.input = tileset.__bitmapData;
+		// 		renderSession.shaderManager.updateShader ();
+		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
-				#if gl_stats
-					GLStats.incrementDrawCall (DrawCallContext.STAGE);
-				#end
+		// 		#if gl_stats
+		// 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		// 		#end
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
 	}
 	

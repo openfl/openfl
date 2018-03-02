@@ -5,7 +5,6 @@ extern class Tilemap extends DisplayObject {
 	
 	
 	public var numTiles (default, null):Int;
-	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	public var tileset (default, set):Tileset;
 	

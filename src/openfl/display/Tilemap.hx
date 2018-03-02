@@ -34,21 +34,24 @@ import openfl._internal.renderer.opengl.GLTilemap;
 @:access(openfl.geom.Rectangle)
 
 
-class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end implements IShaderDrawable {
+class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end {
 	
 	
-	public var numTiles (default, null):Int;
-	@:beta public var shader:DisplayObjectShader;
+	public var numTiles (get, null):Int;
+	public var tileAlphaEnabled:Bool;
+	public var tileColorTransformEnabled:Bool;
 	public var tileset (get, set):Tileset;
 	
 	#if !flash
 	public var smoothing:Bool;
 	#end
 	
-	private var __tiles:Vector<Tile>;
+	private var __group:TileGroup;
 	private var __tileset:Tileset;
+	
+	#if ((openfl < "9.0.0") && enable_tile_array)
 	private var __tileArray:TileArray;
-	private var __tileArrayDirty:Bool;
+	#end
 	
 	#if !flash
 	private var __height:Int;
@@ -59,7 +62,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Tilemap.prototype, "tileset", { get: untyped __js__ ("function () { return this.get_tileset (); }"), set: untyped __js__ ("function (v) { return this.set_tileset (v); }") });
+		untyped Object.defineProperties (Tilemap.prototype, {
+			"numTiles": { get: untyped __js__ ("function () { return this.get_numTiles (); }") },
+			"tileset": { get: untyped __js__ ("function () { return this.get_tileset (); }"), set: untyped __js__ ("function (v) { return this.set_tileset (v); }") }
+		});
 		
 	}
 	#end
@@ -72,8 +78,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__tileset = tileset;
 		this.smoothing = smoothing;
 		
-		__tiles = new Vector ();
-		numTiles = 0;
+		tileAlphaEnabled = true;
+		tileColorTransformEnabled = true;
+		
+		__group = new TileGroup ();
 		
 		#if !flash
 		__width = width;
@@ -89,201 +97,175 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public function addTile (tile:Tile):Tile {
 		
-		if (tile == null) return null;
-		
-		if (tile.parent == this) {
-			
-			removeTile (tile);
-			
-		}
-		
-		__tiles[numTiles] = tile;
-		tile.parent = this;
-		numTiles++;
-		#if !flash
-		__setRenderDirty ();
-		#end
-		
-		return tile;
+		return __group.addTile (tile);
 		
 	}
 	
 	
 	public function addTileAt (tile:Tile, index:Int):Tile {
 		
-		if (tile == null) return null;
-		
-		if (tile.parent == this) {
-			
-			var cacheLength = __tiles.length;
-			
-			removeTile (tile);
-			
-			if (cacheLength > __tiles.length) {
-				index--;
-			}
-			
-		}
-		
-		__tiles.insertAt (index, tile);
-		tile.parent = this;
-		__tileArrayDirty = true;
-		numTiles++;
-		
-		#if !flash
-		__setRenderDirty ();
-		#end
-		
-		return tile;
+		return __group.addTileAt (tile, index);
 		
 	}
 	
 	
 	public function addTiles (tiles:Array<Tile>):Array<Tile> {
 		
-		for (tile in tiles) {
-			addTile (tile);
-		}
-		
-		return tiles;
+		return __group.addTiles (tiles);
 		
 	}
 	
 	
 	public function contains (tile:Tile):Bool {
 		
-		return (__tiles.indexOf (tile) > -1);
+		return __group.contains (tile);
 		
 	}
 	
 	
 	public function getTileAt (index:Int):Tile {
 		
-		if (index >= 0 && index < numTiles) {
-			
-			var tile = __tiles[index];
-			
-			if (tile == null && __tileArray != null && index < __tileArray.length) {
-				
-				tile = Tile.__fromTileArray (index, __tileArray);
-				__tiles[index] = tile;
-				
-			}
-			
-			return __tiles[index];
-			
-		}
-		
-		return null;
+		return __group.getTileAt (index);
 		
 	}
 	
 	
 	public function getTileIndex (tile:Tile):Int {
 		
-		for (i in 0...__tiles.length) {
-			if (__tiles[i] == tile) return i;
-		}
-		
-		return -1;
+		return __group.getTileIndex (tile);
 		
 	}
 	
 	
-	@:beta public function getTiles ():TileArray {
-		
-		__updateTileArray ();
+	#if ((openfl < "9.0.0") && enable_tile_array)
+	@:deprecated public function getTiles ():TileArray {
 		
 		if (__tileArray == null) {
+			
 			__tileArray = new TileArray ();
+			
+		}
+		
+		__tileArray.length = numTiles;
+		var tile;
+		
+		for (i in 0...numTiles) {
+			
+			__tileArray.position = i;
+			tile = __tiles[i];
+			
+			__tileArray.alpha = tile.__alpha;
+			__tileArray.colorTransform = tile.__colorTransform;
+			__tileArray.id = tile.__id;
+			__tileArray.matrix = tile.__matrix;
+			__tileArray.shader = tile.__shader;
+			__tileArray.tileset = tile.__tileset;
+			__tileArray.visible = tile.__visible;
+			
 		}
 		
 		return __tileArray;
 		
 	}
+	#else
+	public function getTiles ():TileGroup {
+		
+		return __group.clone ();
+		
+	}
+	#end
 	
 	
 	public function removeTile (tile:Tile):Tile {
 		
-		if (tile != null && tile.parent == this)
-		{
-			var cacheLength = __tiles.length;
-
-			for (i in 0...__tiles.length) {
-
-				if (__tiles[i] == tile) {
-					tile.parent = null;
-					__tiles.splice (i, 1);
-					break;
-				}
-
-			}
-
-			__tileArrayDirty = true;
-
-			if (cacheLength > __tiles.length) {
-				numTiles--;
-			}
-
-			if (numTiles <= 0 && __tileArray != null) {
-				__tileArray.length = 0;
-			}
-
-			#if !flash
-			__setRenderDirty ();
-			#end
-		}
-		return tile;
+		return __group.removeTile (tile);
 		
 	}
 	
 	
 	public function removeTileAt (index:Int):Tile {
 		
-		if (index >= 0 && index < numTiles) {
-			return removeTile (__tiles[index]);
-		}
-		
-		return null;
+		return __group.removeTileAt (index);
 		
 	}
 	
 	
 	public function removeTiles (beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void {
 		
-		if (beginIndex < 0) beginIndex = 0;
-		if (endIndex > __tiles.length - 1) endIndex = __tiles.length - 1;
-		
-		var removed = __tiles.splice (beginIndex, endIndex - beginIndex + 1);
-		for (tile in removed) {
-			tile.parent = null;
-		}
-		__tileArrayDirty = true;
-		numTiles = __tiles.length;
-		
-		if (numTiles == 0 && __tileArray != null) {
-			__tileArray.length = 0;
-		}
-		
-		#if !flash
-		__setRenderDirty ();
-		#end
+		return __group.removeTiles (beginIndex, endIndex);
 		
 	}
 	
 	
-	@:beta public function setTiles (tileArray:TileArray):Void {
+	#if ((openfl < "9.0.0") && enable_tile_array)
+	@:deprecated public function setTiles (tileArray:TileArray):Void {
 		
-		__tileArray = tileArray;
-		numTiles = __tileArray.length;
-		__tileArray.__bufferDirty = true;
-		__tileArrayDirty = false;
-		__tiles.length = 0;
-		#if !flash
+		if (tileArray != __tileArray) {
+			
+			__tileArray = tileArray;
+			
+		}
+		
+		var length = tileArray.length;
+		
+		for (i in numTiles...length) {
+			
+			addTile (new Tile ());
+			
+		}
+		
+		var tile, colorTransform;
+		
+		for (i in 0...length) {
+			
+			tileArray.position = i;
+			tile = __tiles[i];
+			
+			tile.__alpha = tileArray.alpha;
+			
+			colorTransform = tileArray.colorTransform;
+			
+			if (colorTransform != null) {
+				
+				#if flash
+				tile.__colorTransform = new ColorTransform (colorTransform.redMultiplier, colorTransform.greenMultiplier, colorTransform.blueMultiplier, colorTransform.alphaMultiplier, colorTransform.redOffset, colorTransform.greenOffset, colorTransform.blueOffset, colorTransform.alphaOffset);
+				#else
+				tile.__colorTransform = colorTransform.__clone ();
+				#end
+				
+			}
+			
+			tile.__id = tileArray.id;
+			tile.__matrix.copyFrom (tileArray.matrix);
+			tile.__shader = tileArray.shader;
+			tile.__tileset = tileArray.tileset;
+			tile.__visible = tileArray.visible;
+			
+		}
+		
 		__setRenderDirty ();
-		#end
 		
 	}
+	#else
+	public function setTiles (group:TileGroup):Void {
+		
+		__group.copyFrom (group);
+		
+	}
+	#end
+	
+	
+	#if !flash
+	private override function __enterFrame (deltaTime:Int):Void {
+		
+		if (__group.__dirty) {
+			
+			__setRenderDirty ();
+			
+		}
+		
+	}
+	#end
 	
 	
 	#if !flash
@@ -459,36 +441,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
-	private function __updateTileArray ():Void {
-		
-		if (__tiles.length > 0) {
-			
-			if (__tileArray == null) {
-				__tileArray = new TileArray ();
-			}
-			
-			//if (__tileArray.length < numTiles) {
-				__tileArray.length = numTiles;
-			//}
-			
-			var tile:Tile;
-			
-			for (i in 0...__tiles.length) {
-				
-				tile = __tiles[i];
-				if (tile != null) {
-					tile.__updateTileArray (i, __tileArray, __tileArrayDirty);
-				}
-				
-			}
-			
-		}
-		
-		__tileArrayDirty = false;
-		
-	}
-	
-	
 	
 	
 	// Get & Set Methods
@@ -527,6 +479,13 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
+	private function get_numTiles ():Int {
+		
+		return __group.__length;
+		
+	}
+	
+	
 	private function get_tileset ():Tileset {
 		
 		return __tileset;
@@ -536,8 +495,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	private function set_tileset (value:Tileset):Tileset {
 		
-		__tileArrayDirty = true;
-		return __tileset = value;
+		if (value != __tileset) {
+			
+			__tileset = value;
+			__group.__dirty = true;
+			
+			#if !flash
+			__setRenderDirty ();
+			#end
+			
+		}
+		
+		return value;
 		
 	}
 	

@@ -25,12 +25,11 @@ import js.html.ImageElement;
 @:access(openfl.geom.Rectangle)
 
 
-class Bitmap extends DisplayObject implements IShaderDrawable {
+class Bitmap extends DisplayObject {
 	
 	
 	public var bitmapData (get, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
-	@:beta public var shader:DisplayObjectShader;
 	public var smoothing:Bool;
 	
 	#if (js && html5)
