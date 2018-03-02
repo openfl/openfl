@@ -6,7 +6,6 @@ import openfl._internal.renderer.flash.FlashTilemap;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import openfl.Vector;
 
 #if !flash
 import openfl._internal.renderer.cairo.CairoBitmap;

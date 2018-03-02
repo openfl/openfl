@@ -14,7 +14,6 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
-import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.GLShaderManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.Lib;
