@@ -1264,7 +1264,7 @@ class GLContext3D {
 			var window = context.__stage3D.__stage.window;
 			
 			var x = Std.int (context.__stage3D.x);
-			var y = Std.int (window.height - context.backBufferHeight - context.__stage3D.y);
+			var y = Std.int ((window.height * window.scale) - context.backBufferHeight - context.__stage3D.y);
 			
 			__setViewport (x > 0 ? x : 0, (y > 0 ? y : 0), context.backBufferWidth, context.backBufferHeight);
 			
