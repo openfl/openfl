@@ -827,27 +827,9 @@ class CairoGraphics {
 					var matrices = c.matrices;
 					var sourceRects = c.sourceRects;
 					var rectIndices = c.rectIndices;
-					var attributes = []; //c.attributes;
-					var attributeOptions = 0; //c.attributeOptions;
 					
 					var hasRect = (sourceRects != null);
 					var hasID = (hasRect && rectIndices != null);
-					// var hasAlpha = (attributeOptions & VertexAttribute.ALPHA) > 0;
-					// var hasColorTransform = (attributeOptions & VertexAttribute.COLOR_TRANSFORM) > 0;
-					var hasAlpha = false;
-					var hasColorTransform = false;
-					
-					var attributeSize = 0;
-					var colorTransformOffset = 0;
-					
-					if (hasAlpha) {
-						
-						attributeSize++;
-						colorTransformOffset = 1;
-						
-					}
-					
-					if (hasColorTransform) attributeSize += 8;
 					
 					var rect = Rectangle.__pool.get ();
 					var tileTransform = Matrix.__pool.get ();
@@ -858,18 +840,11 @@ class CairoGraphics {
 					// var roundPixels = renderSession.roundPixels;
 					
 					var matrix = new Matrix3 ();
-					var alpha = 1.0, id;
-					var i4, i6, tileRect = null;
+					var id, i4, i6, tileRect = null;
 					
 					var length = Math.floor (matrices.length / 6);
 					
 					for (i in 0...length) {
-						
-						if (hasAlpha) attributes[i * attributeSize];
-						else if (hasColorTransform) alpha = attributes[i * attributeSize + colorTransformOffset];
-						else alpha = 1.0;
-						
-						if (alpha <= 0) continue;
 						
 						if (hasRect) {
 							
