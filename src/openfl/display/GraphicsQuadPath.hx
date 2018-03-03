@@ -12,7 +12,9 @@ import openfl.Vector;
 	public var rectIndices:Vector<Int>;
 	public var sourceRects:Vector<Float>;
 	
+	#if !flash
 	public var __graphicsDataType (default, null):GraphicsDataType;
+	#end
 	
 	
 	public function new (matrices:Vector<Float> = null, sourceRects:Vector<Float> = null, rectIndices:Vector<Int> = null) {
@@ -20,7 +22,10 @@ import openfl.Vector;
 		this.matrices = matrices;
 		this.sourceRects = sourceRects;
 		this.rectIndices = rectIndices;
+		
+		#if !flash
 		__graphicsDataType = QUAD_PATH;
+		#end
 		
 	}
 	

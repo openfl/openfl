@@ -475,6 +475,11 @@ import openfl.Vector;
 	public function lineGradientStyle (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
 	
 	
+	#if flash
+	@:require(flash10) public function lineShaderStyle (shader:Shader, ?matrix:Matrix):Void;
+	#end
+	
+	
 	/**
 	 * Specifies a line style used for subsequent calls to Graphics methods such
 	 * as the `lineTo()` method or the `drawCircle()`

@@ -52,7 +52,14 @@ import openfl.Vector;
 	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void;
 	public function drawCircle (x:Float, y:Float, radius:Float):Void;
 	public function drawEllipse (x:Float, y:Float, width:Float, height:Float):Void;
-	@:require(flash10) public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void;
+	
+	@:require(flash10) @:native("drawGraphicsData") @:noCompletion private function __drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void;
+	@:require(flash10) public inline function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
+		
+		FlashGraphics.drawGraphicsData (this, graphicsData);
+		
+	}
+	
 	@:require(flash10) public function drawPath (commands:Vector<Int>, data:Vector<Float>, ?winding:GraphicsPathWinding):Void;
 	
 	public inline function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float> = null, rectIndices:Vector<Int> = null):Void {
@@ -76,6 +83,7 @@ import openfl.Vector;
 
 	@:require(flash10) public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void;
 	public function lineGradientStyle (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void;
+	@:require(flash10) public function lineShaderStyle (shader:Shader, ?matrix:Matrix):Void;
 	public function lineStyle (thickness:Null<Float> = null, color:Null<UInt> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Null<Float> = 3):Void;
 	public function lineTo (x:Float, y:Float):Void;
 	public function moveTo (x:Float, y:Float):Void;
