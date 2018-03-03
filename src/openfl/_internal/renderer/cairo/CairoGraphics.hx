@@ -838,6 +838,7 @@ class CairoGraphics {
 					
 					var transform = graphics.__renderTransform;
 					// var roundPixels = renderSession.roundPixels;
+					var alpha = graphics.__owner.__worldAlpha;
 					
 					var matrix = new Matrix3 ();
 					var id, i4, i6, tileRect = null;
