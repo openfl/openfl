@@ -75,7 +75,7 @@ class FlashGraphics {
 					
 				} else if (Std.is (data, GraphicsShaderFill)) {
 					
-					shaderFill = cast graphics;
+					shaderFill = cast data;
 					graphics.beginShaderFill (shaderFill.shader, shaderFill.matrix);
 					
 				} else if (Std.is (data, GraphicsStroke)) {
