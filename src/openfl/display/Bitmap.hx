@@ -7,7 +7,6 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 #if (js && html5)

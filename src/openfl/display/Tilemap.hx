@@ -8,6 +8,9 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 #if !flash
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.GLRenderContext;
+import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTilemap;
@@ -53,6 +56,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	#if !flash
+	private var __buffer:GLBuffer;
+	private var __bufferContext:GLRenderContext;
+	private var __bufferData:Float32Array;
+	private var __bufferLength:Int;
 	private var __height:Int;
 	private var __width:Int;
 	#end
