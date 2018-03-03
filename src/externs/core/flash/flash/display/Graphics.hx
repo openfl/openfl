@@ -27,6 +27,13 @@ import openfl.Vector;
 	public function drawEllipse (x:Float, y:Float, width:Float, height:Float):Void;
 	@:require(flash10) public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void;
 	@:require(flash10) public function drawPath (commands:Vector<Int>, data:Vector<Float>, ?winding:GraphicsPathWinding):Void;
+	
+	public inline function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float> = null, rectIndices:Vector<Int> = null):Void {
+		
+		// TODO
+		
+	}
+	
 	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void;
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float> = null):Void;
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
