@@ -19,6 +19,7 @@ class Tileset {
 	
 	public var bitmapData (get, set):BitmapData;
 	public var rectData:Vector<Float>;
+	public var numRects (get, never):Int;
 	
 	private var __bitmapData:BitmapData;
 	private var __data:Array<TileData>;
@@ -166,6 +167,13 @@ class Tileset {
 		}
 		
 		return value;
+		
+	}
+	
+	
+	private function get_numRects ():Int {
+		
+		return __data.length;
 		
 	}
 	
