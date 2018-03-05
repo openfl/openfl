@@ -24,8 +24,8 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	
 	public function new ();
 	public function addFrameScript (index:Int, method:Void->Void):Void;
-	public function gotoAndPlay (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
-	public function gotoAndStop (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
+	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void;
+	public function gotoAndStop (frame:Dynamic, scene:String = null):Void;
 	public function nextFrame ():Void;
 	
 	#if flash

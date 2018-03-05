@@ -9,6 +9,7 @@ class Frame
 	public var frameNumber:Int = 0;
 	public var tagIndexStart:Int = 0;
 	public var tagIndexEnd:Int = 0;
+	public var labels:Array<String>;
 	public var label:String;
 	
 	public var objects(default, null):Map<Int, FrameObject>;
@@ -59,7 +60,7 @@ class Frame
 				// and most likely modified by transforms
 				frameObject.lastModifiedAtIndex = tagIndex;
 				frameObject.isKeyframe = false;
-			} else {					
+			} else {
 				// A character id is defined:
 				// This means that the previous character is replaced 
 				// (possible transforms defined in previous frames are discarded)
@@ -100,6 +101,11 @@ class Frame
 			"Start: " + tagIndexStart + ", " +
 			"Length: " + tagCount;
 		if(label != null && label != "") { str += ", Label: " + label; }
+		if (labels != null) {
+			for (label in labels)
+				if(label != null && label != "") { str += ", Label: " + label; }
+		}
+
 		if(characters.length > 0) {
 			str += "\n" + StringUtils.repeat(indent + 2) + "Defined CharacterIDs: " + characters.join(", ");
 		}

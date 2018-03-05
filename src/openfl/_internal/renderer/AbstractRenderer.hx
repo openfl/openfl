@@ -46,6 +46,12 @@ class AbstractRenderer {
 		
 		
 	}
+
+	public function renderGuiLayer ():Void {
+
+
+
+	}
 	
 	
 	public function renderStage3D ():Void {

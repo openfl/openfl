@@ -1,6 +1,7 @@
 package openfl._internal.swf;
 
 
+import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
 import openfl.display.SimpleButton;
@@ -30,6 +31,8 @@ import openfl.Assets;
 	public var library:SWFLiteLibrary;
 	public var root:SpriteSymbol;
 	public var symbols:Map<Int, SWFSymbol>;
+	public var frameSizeMinPixel:Point;
+	public var frameSizeMaxPixel:Point;
 	
 	
 	public function new () {

@@ -64,7 +64,6 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
-	private static var __missingFontWarning = new Map<String, Bool> ();
 	
 	public var antiAliasType (get, set):AntiAliasType;
 	public var autoSize (get, set):TextFieldAutoSize;
@@ -727,7 +726,7 @@ class TextField extends InteractiveObject {
 				
 				var ni = __textEngine.textFormatRanges.length;
 				
-				while (--ni >= 0 ) {
+				while (--ni >= 0) {
 					
 					range = __textEngine.textFormatRanges[ni];
 					
@@ -1072,13 +1071,16 @@ class TextField extends InteractiveObject {
 		}
 		
 		if (!found) {
-			
+			// perform inexact font match
+			// enables shared font class names to match human-friendly names
+
 			var alpha = ~/[^a-zA-Z]+/g;
-			
+			var sanitizedSymbolFontName = alpha.replace (symbol.fontName, "").toLowerCase ();
+
 			for (font in Font.enumerateFonts ()) {
-				
-				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length) == symbol.fontName) {
-					
+
+				if (alpha.replace (font.fontName, "").substr (0, symbol.fontName.length).toLowerCase() == sanitizedSymbolFontName) {
+
 					format.font = font.fontName;
 					found = true;
 					break;
@@ -1092,14 +1094,13 @@ class TextField extends InteractiveObject {
 		if (found) {
 			
 			embedFonts = true;
-			
-		} else if (!__missingFontWarning.exists (format.font)) {
-			
-			__missingFontWarning[format.font] = true;
-			Log.warn ("Could not find required font \"" + format.font + "\", it has not been embedded");
-			
+
+		} else {
+
+			trace ("Could not find required font \"" + format.font + "\"");
+
 		}
-		
+
 		if (symbol.align != null) {
 			
 			if (symbol.align == "center") format.align = TextFormatAlign.CENTER;
@@ -1159,6 +1160,23 @@ class TextField extends InteractiveObject {
 		
 		Rectangle.__pool.release (bounds);
 		
+	}
+
+
+	private override function postTransformUpdate():Void {
+		if (__textEngine == null || __textEngine.bounds == null) {
+			return;
+		}
+
+		calculatedBounds = new Rectangle();
+		calculatedBounds.copyFrom(__textEngine.bounds);
+		calculatedBounds.x += __offsetX;
+		calculatedBounds.y += __offsetY;
+		calculatedBounds.__transform(calculatedBounds, __worldTransform);
+
+		if (parent != null) {
+			parent.applyChildBounds(calculatedBounds);
+		}
 	}
 	
 	
@@ -2708,9 +2726,11 @@ class TextField extends InteractiveObject {
 			__stopTextInput ();
 			
 		} else {
-			
-			stage.window.onTextInput.remove (window_onTextInput);
-			stage.window.onKeyDown.remove (window_onKeyDown);
+			if(stage != null)
+			{
+				stage.window.onTextInput.remove (window_onTextInput);
+				stage.window.onKeyDown.remove (window_onKeyDown);
+			}
 			__inputEnabled = false;
 			
 		}

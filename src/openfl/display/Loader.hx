@@ -220,7 +220,11 @@ class Loader extends DisplayObjectContainer {
 		}
 		
 	}
-	
+
+	public function setContent(c:DisplayObject):Void {
+		content = c;
+		addChild(c);
+	}
 	
 	private function __dispatchError (text:String):Void {
 		

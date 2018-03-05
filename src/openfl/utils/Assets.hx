@@ -1,6 +1,8 @@
 package openfl.utils;
 
 
+import openfl._internal.symbols.SpriteSymbol;
+import openfl._internal.swf.SWFLiteLibrary;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.text.Font in LimeFont;
@@ -27,6 +29,8 @@ class Assets {
 	public static var cache:IAssetCache = new AssetCache ();
 	
 	private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher () #end;
+
+	private static var libraryByLastLoadedSymbolName: Map<String, String> = new Map();
 	
 	
 	public static function addEventListener (type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
@@ -154,11 +158,22 @@ class Assets {
 	public static function getMovieClip (id:String):MovieClip {
 		
 		#if (tools && !display)
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var limeLibrary = getLibrary (libraryName);
-		
+
+		var libraryName:String;
+		var symbolName:String;
+		var limeLibrary:LimeAssetLibrary;
+
+		if (-1 == id.indexOf (":")) {
+			// when no library specified, the last loaded symbol by that name is assumed
+			symbolName = id;
+			libraryName = libraryByLastLoadedSymbolName.get(symbolName);
+		}
+		else {
+			libraryName = id.substring (0, id.indexOf (":"));
+			symbolName = id.substr (id.indexOf (":") + 1);
+		}
+		limeLibrary = getLibrary (libraryName);
+
 		if (limeLibrary != null) {
 			
 			if (Std.is (limeLibrary, AssetLibrary)) {
@@ -627,6 +642,20 @@ class Assets {
 	public static function registerLibrary (name:String, library:AssetLibrary):Void {
 		
 		LimeAssets.registerLibrary (name, library);
+
+		var _library:SWFLiteLibrary = cast library;
+
+		// remember every symbol name we come across and the library it belongs to
+		// if two libraries have the symbol name, the last one loaded will shadow all former
+		for (symbol in _library.swf.symbols) {
+
+			if (symbol.className != "" && Std.is (symbol, SpriteSymbol)) {
+
+				libraryByLastLoadedSymbolName.set(symbol.className, name);
+
+			}
+
+		}
 		
 	}
 	

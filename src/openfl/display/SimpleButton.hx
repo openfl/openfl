@@ -306,7 +306,7 @@ class SimpleButton extends InteractiveObject {
 		var bounds = Rectangle.__pool.get ();
 		__getLocalBounds (bounds);
 		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
+		renderSession.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 		Rectangle.__pool.release (bounds);
 		__currentState.__renderCanvasMask (renderSession);

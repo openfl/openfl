@@ -133,8 +133,11 @@ import openfl.utils.ByteArray;
 	
 	
 	public override function getMovieClip (id:String):MovieClip {
-		
-		return (swf != null) ? swf.createMovieClip (id) : null;
+		var mc : MovieClip = (swf != null) ? swf.createMovieClip (id) : null;
+		if(mc != null){
+			mc.__enterFrame(0);
+		}
+		return mc;
 		
 	}
 	
@@ -213,7 +216,14 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			var path = (rootPath != null && rootPath != "") ? rootPath + "/" + id : id;
+			var path = id;
+			if (rootPath != null && rootPath != "") {
+				if (!StringTools.endsWith (rootPath, "/")) {
+					path = rootPath + "/" + path;
+				}else{
+					path = rootPath + path;
+				}
+			}
 			
 			var loader = new URLLoader ();
 			loader.addEventListener (Event.COMPLETE, function (_) onComplete (loader.data));

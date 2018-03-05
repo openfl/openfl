@@ -63,6 +63,14 @@ class Bitmap extends DisplayObject {
 		}
 		
 	}
+
+	public override function cleanGraphics ():Void {
+		super.cleanGraphics();
+
+		if (__bitmapData != null) {
+			__bitmapData = null;
+		}
+	}
 	
 	
 	private override function __enterFrame (deltaTime:Int):Void {
@@ -98,6 +106,23 @@ class Bitmap extends DisplayObject {
 			
 		}
 		
+	}
+
+	private override function postTransformUpdate():Void {
+		if (__bitmapData == null) {
+			return;
+		}
+
+		if (calculatedBounds == null) {
+			calculatedBounds = new Rectangle();
+		}
+
+		calculatedBounds.copyFrom(__bitmapData.rect);
+		calculatedBounds.__transform(calculatedBounds, __worldTransform);
+
+		if (parent != null) {
+			parent.applyChildBounds(calculatedBounds);
+		}
 	}
 	
 	

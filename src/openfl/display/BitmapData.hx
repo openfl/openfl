@@ -43,7 +43,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
-import openfl.utils.Object;
 import openfl.Vector;
 
 #if (js && html5)
@@ -684,7 +683,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function encode (rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray {
+	public function encode (rect:Rectangle, compressor:Dynamic, byteArray:ByteArray = null):ByteArray {
 		
 		if (!readable || rect == null) return byteArray = null;
 		if (byteArray == null) byteArray = new ByteArray();
@@ -1263,7 +1262,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function hitTest (firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool {
+	public function hitTest (firstPoint:Point, firstAlphaThreshold:Int, secondObject:Dynamic, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool {
 		
 		if (!readable) return false;
 		
@@ -2067,7 +2066,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		context.drawImage (image.src, 0, 0);
+		context.drawImage (image.src, 0, 0, image.width, image.height);
 		#end
 		
 	}

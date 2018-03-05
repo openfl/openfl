@@ -236,6 +236,35 @@ class Rectangle {
 		return new Rectangle (x0, y0, x1 - x0, y1 - y0);
 		
 	}
+
+	//S/ This behaves like union, but modifies the Rectangle instead of making a new one
+	public function merge (toMerge:Rectangle):Void {
+
+		if (width == 0 || height == 0) {
+
+			x = toMerge.x;
+			y = toMerge.y;
+			width = toMerge.width;
+			height = toMerge.height;
+			return;
+
+		} else if (toMerge.width == 0 || toMerge.height == 0) {
+
+			return;
+
+		}
+
+		var x0 = x > toMerge.x ? toMerge.x : x;
+		var x1 = right < toMerge.right ? toMerge.right : right;
+		var y0 = y > toMerge.y ? toMerge.y : y;
+		var y1 = bottom < toMerge.bottom ? toMerge.bottom : bottom;
+
+		x = x0;
+		y = y0;
+		width = x1 - x0;
+		height = y1 - y0;
+
+	}
 	
 	
 	public function __contract (x:Float, y:Float, width:Float, height:Float):Void {

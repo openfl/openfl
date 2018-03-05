@@ -30,6 +30,11 @@ class TagDefineBitsJPEG3 extends TagDefineBitsJPEG2 implements IDefinitionTag
 		data.readBytes(bitmapData, 0, alphaDataOffset);
 		if (bitmapData[0] == 0xff && (bitmapData[1] == 0xd8 || bitmapData[1] == 0xd9)) {
 			bitmapType = BitmapType.JPEG;
+			// Before version 8 of the SWF file format, SWF files could contain an 
+			// erroneous header of 0xFF, 0xD9, 0xFF, 0xD8 before the JPEG SOI marker.
+			if (bitmapData[0] == 0xff && bitmapData[1] == 0xd9 && bitmapData[2] == 0xff && bitmapData[3] == 0xd8 && bitmapData[4] == 0xff && bitmapData[5] == 0xd8) {
+				bitmapData.writeBytes(bitmapData, 4);
+			}
 		} else if (bitmapData[0] == 0x89 && bitmapData[1] == 0x50 && bitmapData[2] == 0x4e && bitmapData[3] == 0x47 && bitmapData[4] == 0x0d && bitmapData[5] == 0x0a && bitmapData[6] == 0x1a && bitmapData[7] == 0x0a) {
 			bitmapType = BitmapType.PNG;
 		} else if (bitmapData[0] == 0x47 && bitmapData[1] == 0x49 && bitmapData[2] == 0x46 && bitmapData[3] == 0x38 && bitmapData[4] == 0x39 && bitmapData[5] == 0x61) {

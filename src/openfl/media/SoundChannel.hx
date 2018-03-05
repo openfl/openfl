@@ -20,8 +20,10 @@ import openfl.media.Sound;
 	private var __isValid:Bool;
 	private var __soundTransform:SoundTransform;
 	private var __source:AudioSource;
+	private var __spriteKey:String;
 	
-	
+
+
 	#if openfljs
 	private static function __init__ () {
 		
@@ -32,10 +34,8 @@ import openfl.media.Sound;
 		
 	}
 	#end
-	
-	
-	private function new (source:AudioSource = null, soundTransform:SoundTransform = null):Void {
-		
+
+	private function new (source:AudioSource = null, soundTransform:SoundTransform = null, ?spriteKey:String):Void {
 		super (this);
 		
 		leftPeak = 1;
@@ -51,13 +51,21 @@ import openfl.media.Sound;
 			
 		}
 		
+		if (spriteKey != null)
+		{
+			__spriteKey = spriteKey;
+		}
 		if (source != null) {
 			
 			__source = source;
 			__source.onComplete.add (source_onComplete);
 			__isValid = true;
 			
+			#if howlerjs
+			__source.play (spriteKey);
+			#else
 			__source.play ();
+			#end
 			
 		}
 		
