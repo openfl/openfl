@@ -134,7 +134,7 @@ class GLGraphics {
 							} else if (transformABCD) {
 								
 								ti = i * 4;
-								tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], 0, 0);
+								tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
 								
 							} else if (transformXY) {
 								
@@ -144,7 +144,8 @@ class GLGraphics {
 								
 							} else {
 								
-								tileTransform.identity ();
+								tileTransform.tx = tileRect.x;
+								tileTransform.ty = tileRect.y;
 								
 							}
 							
