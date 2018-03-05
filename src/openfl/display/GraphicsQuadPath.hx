@@ -8,20 +8,20 @@ import openfl.Vector;
 @:final class GraphicsQuadPath implements IGraphicsData implements IGraphicsPath {
 	
 	
-	public var matrices:Vector<Float>;
-	public var rectIndices:Vector<Int>;
-	public var sourceRects:Vector<Float>;
+	public var indices:Vector<Int>;
+	public var rects:Vector<Float>;
+	public var transforms:Vector<Float>;
 	
 	#if !flash
 	public var __graphicsDataType (default, null):GraphicsDataType;
 	#end
 	
 	
-	public function new (matrices:Vector<Float> = null, sourceRects:Vector<Float> = null, rectIndices:Vector<Int> = null) {
+	public function new (rects:Vector<Float> = null, indices:Vector<Int> = null, transforms:Vector<Float> = null) {
 		
-		this.matrices = matrices;
-		this.sourceRects = sourceRects;
-		this.rectIndices = rectIndices;
+		this.rects = rects;
+		this.indices = indices;
+		this.transforms = transforms;
 		
 		#if !flash
 		__graphicsDataType = QUAD_PATH;

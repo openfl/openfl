@@ -46,8 +46,8 @@ class GLGraphics {
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl:WebGLContext = renderSession.gl;
 		
-		var rect = Rectangle.__pool.get ();
-		var matrix = Matrix.__pool.get ();
+		var tileRect = Rectangle.__pool.get ();
+		var tileTransform = Matrix.__pool.get ();
 		
 		var bitmap = null;
 		
@@ -57,31 +57,52 @@ class GLGraphics {
 				
 				case DRAW_QUADS:
 					
+					// TODO: Other fill types
+					
 					if (bitmap != null) {
 						
 						var c = data.readDrawQuads ();
-						var matrices = c.matrices;
-						var sourceRects = c.sourceRects;
-						var rectIndices = c.rectIndices;
+						var rects = c.rects;
+						var indices = c.indices;
+						var transforms = c.transforms;
 						
-						var hasRects = (sourceRects != null);
-						var hasIDs = (hasRects && rectIndices != null);
+						var hasIndices = (indices != null);
+						var transformABCD = false, transformXY = false;
+						
+						var length = hasIndices ? indices.length : rects.length;
+						if (length == 0) return;
+						
+						if (transforms != null) {
+							
+							if (transforms.length >= length * 6) {
+								
+								transformABCD = true;
+								transformXY = true;
+								
+							} else if (transforms.length >= length * 4) {
+								
+								transformABCD = true;
+								
+							} else if (transforms.length >= length * 2) {
+								
+								transformXY = true;
+								
+							}
+							
+						}
 						
 						var dataLength = 4;
-						var length = Math.floor (matrices.length / 6);
 						var stride = dataLength * 6;
 						var bufferLength = length * stride;
 						
 						resizeBuffer (graphics, bufferPosition + (length * stride));
-						
-						var tileMatrix, tileRect = null;
 						
 						var offset = bufferPosition;
 						var alpha = 1.0, tileData, id;
 						var bitmapWidth, bitmapHeight, tileWidth:Float, tileHeight:Float;
 						var uvX, uvY, uvWidth, uvHeight;
 						var x, y, x2, y2, x3, y3, x4, y4;
-						var rectOffset, matrixOffset;
+						var ri, ti;
 						
 						var __bufferData = graphics.__bufferData;
 						bitmapWidth = bitmap.width;
@@ -92,23 +113,9 @@ class GLGraphics {
 							
 							offset = bufferPosition + (i * stride);
 							
-							if (hasRects) {
-								
-								if (hasIDs && rectIndices[i] == -1) {
-									
-									continue;
-									
-								}
-								
-								rectOffset = hasIDs ? rectIndices[i] : i * 4;
-								rect.setTo (sourceRects[rectOffset], sourceRects[rectOffset + 1], sourceRects[rectOffset + 2], sourceRects[rectOffset + 3]);
-								tileRect = rect;
-								
-							} else {
-								
-								tileRect = sourceRect;
-								
-							}
+							ri = (hasIndices ? (indices[i] * 4) : i * 4);
+							if (ri < 0) continue;
+							tileRect.setTo (rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
 							
 							tileWidth = tileRect.width;
 							tileHeight = tileRect.height;
@@ -119,23 +126,41 @@ class GLGraphics {
 								
 							}
 							
+							if (transformABCD && transformXY) {
+								
+								ti = i * 6;
+								tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+								
+							} else if (transformABCD) {
+								
+								ti = i * 4;
+								tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], 0, 0);
+								
+							} else if (transformXY) {
+								
+								ti = i * 2;
+								tileTransform.tx = transforms[ti];
+								tileTransform.ty = transforms[ti + 1];
+								
+							} else {
+								
+								tileTransform.identity ();
+								
+							}
+							
 							uvX = tileRect.x / bitmapWidth;
 							uvY = tileRect.y / bitmapHeight;
 							uvWidth = tileRect.right / bitmapWidth;
 							uvHeight = tileRect.bottom / bitmapHeight;
 							
-							matrixOffset = i * 6;
-							matrix.setTo (matrices[matrixOffset], matrices[matrixOffset + 1], matrices[matrixOffset + 2], matrices[matrixOffset + 3], matrices[matrixOffset + 4], matrices[matrixOffset + 5]);
-							tileMatrix = matrix;
-							
-							x = tileMatrix.__transformX (0, 0);
-							y = tileMatrix.__transformY (0, 0);
-							x2 = tileMatrix.__transformX (tileWidth, 0);
-							y2 = tileMatrix.__transformY (tileWidth, 0);
-							x3 = tileMatrix.__transformX (0, tileHeight);
-							y3 = tileMatrix.__transformY (0, tileHeight);
-							x4 = tileMatrix.__transformX (tileWidth, tileHeight);
-							y4 = tileMatrix.__transformY (tileWidth, tileHeight);
+							x = tileTransform.__transformX (0, 0);
+							y = tileTransform.__transformY (0, 0);
+							x2 = tileTransform.__transformX (tileWidth, 0);
+							y2 = tileTransform.__transformY (tileWidth, 0);
+							x3 = tileTransform.__transformX (0, tileHeight);
+							y3 = tileTransform.__transformY (0, tileHeight);
+							x4 = tileTransform.__transformX (tileWidth, tileHeight);
+							y4 = tileTransform.__transformY (tileWidth, tileHeight);
 							
 							__bufferData[offset + 0] = x;
 							__bufferData[offset + 1] = y;
@@ -205,8 +230,8 @@ class GLGraphics {
 			
 		}
 		
-		Rectangle.__pool.release (rect);
-		Matrix.__pool.release (matrix);
+		Rectangle.__pool.release (tileRect);
+		Matrix.__pool.release (tileTransform);
 		
 	}
 	
@@ -402,9 +427,12 @@ class GLGraphics {
 							if (bitmap != null) {
 								
 								var c = data.readDrawQuads ();
-								var matrices = c.matrices;
-								// var sourceRects = c.sourceRects;
-								// var rectIndices = c.rectIndices;
+								var rects = c.rects;
+								var indices = c.indices;
+								var transforms = c.transforms;
+								
+								var hasIndices = (indices != null);
+								var length = hasIndices ? indices.length : rects.length;
 								
 								// matrix.copyFrom (graphics.__renderTransform);
 								// matrix.concat (parentTransform);
@@ -452,8 +480,6 @@ class GLGraphics {
 								
 								gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
 								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
-								
-								var length = Math.floor (matrices.length / 6);
 								
 								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
 								bufferPosition += (4 * length * 6);

@@ -90,7 +90,7 @@ class DrawCommandReader {
 			
 			case DRAW_QUADS:
 				
-				oPos += 3; //matrices, sourceRects, rectIDs
+				oPos += 3; //rects, indices, transforms
 			
 			case DRAW_RECT:
 				
@@ -334,9 +334,9 @@ abstract DrawEllipseView (DrawCommandReader) {
 abstract DrawQuadsView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var matrices (get, never):Vector<Float>; private inline function get_matrices ():Vector<Float> { return cast this.obj (0); }
-	public var sourceRects (get, never):Vector<Float>; private inline function get_sourceRects ():Vector<Float> { return cast this.obj (1); }
-	public var rectIndices (get, never):Vector<Int>; private inline function get_rectIndices ():Vector<Int> { return cast this.obj (2); }
+	public var rects (get, never):Vector<Float>; private inline function get_rects ():Vector<Float> { return cast this.obj (0); }
+	public var indices (get, never):Vector<Int>; private inline function get_indices ():Vector<Int> { return cast this.obj (1); }
+	public var transforms (get, never):Vector<Float>; private inline function get_transforms ():Vector<Float> { return cast this.obj (2); }
 	
 }
 

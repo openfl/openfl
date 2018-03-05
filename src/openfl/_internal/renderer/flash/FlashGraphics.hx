@@ -15,6 +15,7 @@ import openfl.display.GraphicsTrianglePath;
 import openfl.display.IGraphicsData;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.utils.Dictionary;
 import openfl.Vector;
 
 @:access(flash.display.Graphics)
@@ -23,7 +24,10 @@ import openfl.Vector;
 class FlashGraphics {
 	
 	
-	public static var lastBitmapFill:BitmapData;
+	public static var bitmapFill = new Dictionary<Graphics, BitmapData> (true);
+	
+	private static var tileRect = new Rectangle ();
+	private static var tileTransform = new Matrix ();
 	
 	
 	public static function drawGraphicsData (graphics:Graphics, graphicsData:Vector<IGraphicsData>):Void {
@@ -140,7 +144,7 @@ class FlashGraphics {
 				} else if (Std.is (data, GraphicsQuadPath)) {
 					
 					quadPath = cast data;
-					graphics.drawQuads (quadPath.matrices, quadPath.sourceRects, quadPath.rectIndices);
+					graphics.drawQuads (quadPath.rects, quadPath.indices, quadPath.transforms);
 					
 				}
 				
@@ -155,23 +159,42 @@ class FlashGraphics {
 	}
 	
 	
-	public static function drawQuads (graphics:Graphics, matrices:Vector<Float>, sourceRects:Vector<Float>, rectIndices:Vector<Int>):Void {
+	public static function drawQuads (graphics:Graphics, rects:Vector<Float>, indices:Vector<Int>, transforms:Vector<Float>):Void {
 		
-		if (matrices == null || matrices.length == 0 || lastBitmapFill == null) return;
+		var lastBitmapFill = bitmapFill.get (graphics);
 		
-		var hasRect = (sourceRects != null);
-		var hasID = (hasRect && rectIndices != null);
+		if (rects == null || rects.length == 0 || lastBitmapFill == null) return;
+		
 		var sourceRect = lastBitmapFill.rect;
+		var hasIndices = (indices != null);
+		var transformABCD = false, transformXY = false;
 		
-		var rect = new Rectangle ();
-		var tileTransform = new Matrix ();
+		var length = hasIndices ? indices.length : rects.length;
+		if (length == 0) return;
 		
-		var id, i4, i6, tileRect = null;
+		if (transforms != null) {
+			
+			if (transforms.length >= length * 6) {
+				
+				transformABCD = true;
+				transformXY = true;
+				
+			} else if (transforms.length >= length * 4) {
+				
+				transformABCD = true;
+				
+			} else if (transforms.length >= length * 2) {
+				
+				transformXY = true;
+				
+			}
+			
+		}
 		
-		var length = Math.floor (matrices.length / 6);
+		var ri, ti;
 		
 		var vertices = new Vector<Float> (length * 8);
-		var indices = new Vector<Int> (length * 6);
+		var vIndices = new Vector<Int> (length * 6);
 		var uvtData = new Vector<Float> (length * 8);
 		var offset4 = 0;
 		var offset6 = 0;
@@ -182,32 +205,33 @@ class FlashGraphics {
 		
 		for (i in 0...length) {
 			
-			if (hasRect) {
+			ri = (hasIndices ? (indices[i] * 4) : i * 4);
+			if (ri < 0) continue;
+			tileRect.setTo (rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+			
+			if (tileRect.width <= 0 || tileRect.height <= 0) {
 				
-				if (hasID) {
-					
-					id = rectIndices[i];
-					if (id == -1) continue;
-					i4 = id * 4;
-					
-				} else {
-					
-					i4 = i * 4;
-					
-				}
-				
-				rect.setTo (sourceRects[i4], sourceRects[i4 + 1], sourceRects[i4 + 2], sourceRects[i4 + 3]);
-				tileRect = rect;
-				
-			} else {
-				
-				tileRect = sourceRect;
+				continue;
 				
 			}
 			
-			i6 = i * 6;
-			
-			tileTransform.setTo (matrices[i6], matrices[i6 + 1], matrices[i6 + 2], matrices[i6 + 3], matrices[i6 + 4], matrices[i6 + 5]);
+			if (transformABCD && transformXY) {
+				
+				ti = i * 6;
+				tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+				
+			} else if (transformABCD) {
+				
+				ti = i * 4;
+				tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], 0, 0);
+				
+			} else if (transformXY) {
+				
+				ti = i * 2;
+				tileTransform.tx = transforms[ti];
+				tileTransform.ty = transforms[ti + 1];
+				
+			}
 			
 			tw = tileRect.width;
 			th = tileRect.height;
@@ -233,10 +257,10 @@ class FlashGraphics {
 			vertices[offset8 + 6] = x + tw * t0 + th * t2;
 			vertices[offset8 + 7] = y + tw * t1 + th * t3;
 			
-			indices[offset6] = 0 + offset4;
-			indices[offset6 + 1] = indices[offset6 + 3] = 1 + offset4;
-			indices[offset6 + 2] = indices[offset6 + 5] = 2 + offset4;
-			indices[offset6 + 4] = 3 + offset4;
+			vIndices[offset6] = 0 + offset4;
+			vIndices[offset6 + 1] = vIndices[offset6 + 3] = 1 + offset4;
+			vIndices[offset6 + 2] = vIndices[offset6 + 5] = 2 + offset4;
+			vIndices[offset6 + 4] = 3 + offset4;
 			
 			uvX = tileRect.x / sourceRect.width;
 			uvY = tileRect.y / sourceRect.height;
@@ -254,7 +278,7 @@ class FlashGraphics {
 			
 		}
 		
-		graphics.drawTriangles (vertices, indices, uvtData);
+		graphics.drawTriangles (vertices, vIndices, uvtData);
 		
 	}
 	

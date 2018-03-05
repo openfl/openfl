@@ -62,6 +62,7 @@ class CairoGraphics {
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var strokePattern:CairoPattern;
+	private static var tempMatrix3 = new Matrix3 ();
 	
 	
 	private static function closePath (strokeBefore:Bool = false):Void {
@@ -818,61 +819,89 @@ class CairoGraphics {
 				
 				case DRAW_QUADS:
 					
+					// TODO: Other fill types
+					
 					if (bitmapFill == null) continue;
 					
 					var cacheExtend = fillPattern.extend;
 					fillPattern.extend = CairoExtend.NONE;
 					
 					var c = data.readDrawQuads ();
-					var matrices = c.matrices;
-					var sourceRects = c.sourceRects;
-					var rectIndices = c.rectIndices;
+					var rects = c.rects;
+					var indices = c.indices;
+					var transforms = c.transforms;
 					
-					var hasRect = (sourceRects != null);
-					var hasID = (hasRect && rectIndices != null);
+					var hasIndices = (indices != null);
+					var transformABCD = false, transformXY = false;
 					
-					var rect = Rectangle.__pool.get ();
+					var length = hasIndices ? indices.length : rects.length;
+					if (length == 0) return;
+					
+					if (transforms != null) {
+						
+						if (transforms.length >= length * 6) {
+							
+							transformABCD = true;
+							transformXY = true;
+							
+						} else if (transforms.length >= length * 4) {
+							
+							transformABCD = true;
+							
+						} else if (transforms.length >= length * 2) {
+							
+							transformXY = true;
+							
+						}
+						
+					}
+					
+					var tileRect = Rectangle.__pool.get ();
 					var tileTransform = Matrix.__pool.get ();
 					
 					var sourceRect = bitmapFill.rect;
+					tempMatrix3.identity ();
 					
 					var transform = graphics.__renderTransform;
 					// var roundPixels = renderSession.roundPixels;
 					var alpha = graphics.__owner.__worldAlpha;
 					
-					var matrix = new Matrix3 ();
-					var id, i4, i6, tileRect = null;
-					
-					var length = Math.floor (matrices.length / 6);
+					var ri, ti;
 					
 					for (i in 0...length) {
 						
-						if (hasRect) {
+						ri = (hasIndices ? (indices[i] * 4) : i * 4);
+						if (ri < 0) continue;
+						tileRect.setTo (rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+						
+						if (tileRect.width <= 0 || tileRect.height <= 0) {
 							
-							if (hasID) {
-								
-								id = rectIndices[i];
-								if (id == -1) continue;
-								i4 = id * 4;
-								
-							} else {
-								
-								i4 = i * 4;
-								
-							}
-							
-							rect.setTo (sourceRects[i4], sourceRects[i4 + 1], sourceRects[i4 + 2], sourceRects[i4 + 3]);
-							tileRect = rect;
-							
-						} else {
-							
-							tileRect = sourceRect;
+							continue;
 							
 						}
 						
-						i6 = i * 6;
+						if (transformABCD && transformXY) {
+							
+							ti = i * 6;
+							tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+							
+						} else if (transformABCD) {
+							
+							ti = i * 4;
+							tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], 0, 0);
+							
+						} else if (transformXY) {
+							
+							ti = i * 2;
+							tileTransform.tx = transforms[ti];
+							tileTransform.ty = transforms[ti + 1];
+							
+						} else {
+							
+							tileTransform.identity ();
+							
+						}
 						
-						tileTransform.setTo (matrices[i6], matrices[i6 + 1], matrices[i6 + 2], matrices[i6 + 3], matrices[i6 + 4], matrices[i6 + 5]);
 						tileTransform.tx += positionX - offsetX;
 						tileTransform.ty += positionY - offsetY;
 						tileTransform.concat (transform);
@@ -886,9 +915,9 @@ class CairoGraphics {
 						
 						cairo.matrix = tileTransform.__toMatrix3 ();
 						
-						matrix.tx = tileRect.x;
-						matrix.ty = tileRect.y;
-						fillPattern.matrix = matrix;
+						tempMatrix3.tx = tileRect.x;
+						tempMatrix3.ty = tileRect.y;
+						fillPattern.matrix = tempMatrix3;
 						cairo.source = fillPattern;
 						
 						if (tileRect != sourceRect) {
@@ -923,7 +952,7 @@ class CairoGraphics {
 						
 					}
 					
-					Rectangle.__pool.release (rect);
+					Rectangle.__pool.release (tileRect);
 					Matrix.__pool.release (tileTransform);
 					
 					cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
@@ -993,8 +1022,6 @@ class CairoGraphics {
 					var denom:Float;
 					var t1:Float, t2:Float, t3:Float, t4:Float;
 					var dx:Float, dy:Float;
-					
-					var matrix = new Matrix3 ();
 					
 					cairo.antialias = NONE;
 					
@@ -1096,14 +1123,16 @@ class CairoGraphics {
 						dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
 						dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 						
-						matrix.setTo (t1, t2, t3, t4, dx, dy);
-						cairo.matrix = matrix;
+						tempMatrix3.setTo (t1, t2, t3, t4, dx, dy);
+						cairo.matrix = tempMatrix3;
 						cairo.source = fillPattern;
 						if (!hitTesting) cairo.fill ();
 						
 						i += 3;
 						
 					}
+					
+					cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
 				
 				case WINDING_EVEN_ODD:
 					
@@ -1494,7 +1523,7 @@ class CairoGraphics {
 					case DRAW_QUADS:
 						
 						var c = data.readDrawQuads ();
-						fillCommands.drawQuads (c.matrices, c.sourceRects, c.rectIndices);
+						fillCommands.drawQuads (c.rects, c.indices, c.transforms);
 					
 					case DRAW_TRIANGLES:
 						

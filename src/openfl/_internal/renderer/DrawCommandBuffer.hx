@@ -94,7 +94,7 @@ class DrawCommandBuffer {
 				case CURVE_TO: var c = data.readCurveTo (); curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				case DRAW_CIRCLE: var c = data.readDrawCircle (); drawCircle (c.x, c.y, c.radius);
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
-				case DRAW_QUADS: var c = data.readDrawQuads (); drawQuads (c.matrices, c.sourceRects, c.rectIndices);
+				case DRAW_QUADS: var c = data.readDrawQuads (); drawQuads (c.rects, c.indices, c.transforms);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
@@ -262,14 +262,14 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float>, rectIndices:Vector<Int>):Void {
+	public function drawQuads (rects:Vector<Float>, indices:Vector<Int>, transforms:Vector<Float>):Void {
 		
 		prepareWrite ();
 		
 		types.push (DRAW_QUADS);
-		o.push (matrices);
-		o.push (sourceRects);
-		o.push (rectIndices);
+		o.push (rects);
+		o.push (indices);
+		o.push (transforms);
 		
 	}
 	

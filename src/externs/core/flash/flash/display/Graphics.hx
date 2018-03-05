@@ -14,7 +14,7 @@ import openfl.Vector;
 	@:native("beginBitmapFill") @:noCompletion private function __beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void;
 	public inline function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
 		
-		FlashGraphics.lastBitmapFill = bitmap;
+		FlashGraphics.bitmapFill[this] = bitmap;
 		this.__beginBitmapFill (bitmap, matrix, repeat, smooth);
 		
 	}
@@ -22,7 +22,7 @@ import openfl.Vector;
 	@:native("beginFill") @:noCompletion private function __beginFill (color:UInt = 0, alpha:Float = 1):Void;
 	public inline function beginFill (color:UInt = 0, alpha:Float = 1):Void {
 		
-		FlashGraphics.lastBitmapFill = null;
+		FlashGraphics.bitmapFill[this] = null;
 		this.__beginFill (color, alpha);
 		
 	}
@@ -30,7 +30,9 @@ import openfl.Vector;
 	@:native("beginGradientFill") @:noCompletion private function __beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void;
 	public inline function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void {
 		
-		FlashGraphics.lastBitmapFill = null;
+		// TODO: Determine UV rect based on matrix value
+		
+		FlashGraphics.bitmapFill[this] = null;
 		this.__beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 		
 	}
@@ -39,7 +41,7 @@ import openfl.Vector;
 	@:native("beginShaderFill") @:require(flash10) private function __beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
 	@:require(flash10) public inline function beginShaderFill (shader:Shader, matrix:Matrix = null):Void {
 		
-		FlashGraphics.lastBitmapFill = null;
+		FlashGraphics.bitmapFill[this] = null;
 		this.__beginShaderFill (shader, matrix);
 		
 	}
@@ -62,9 +64,9 @@ import openfl.Vector;
 	
 	@:require(flash10) public function drawPath (commands:Vector<Int>, data:Vector<Float>, ?winding:GraphicsPathWinding):Void;
 	
-	public inline function drawQuads (matrices:Vector<Float>, sourceRects:Vector<Float> = null, rectIndices:Vector<Int> = null):Void {
+	public inline function drawQuads (rects:Vector<Float>, indices:Vector<Int> = null, transforms:Vector<Float> = null):Void {
 		
-		FlashGraphics.drawQuads (this, matrices, sourceRects, rectIndices);
+		FlashGraphics.drawQuads (this, rects, indices, transforms);
 		
 	}
 	
@@ -76,7 +78,7 @@ import openfl.Vector;
 	@:native("endFill") @:noCompletion private function __endFill ():Void;
 	public inline function endFill ():Void {
 		
-		FlashGraphics.lastBitmapFill = null;
+		FlashGraphics.bitmapFill[this] = null;
 		this.__endFill ();
 		
 	}
