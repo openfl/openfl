@@ -515,7 +515,7 @@ import js.html.CanvasRenderingContext2D;
 		var hasIndices = (indices != null);
 		var transformABCD = false, transformXY = false;
 		
-		var length = hasIndices ? indices.length : rects.length;
+		var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
 		if (length == 0) return;
 		
 		if (transforms != null) {

@@ -69,7 +69,7 @@ class GLGraphics {
 						var hasIndices = (indices != null);
 						var transformABCD = false, transformXY = false;
 						
-						var length = hasIndices ? indices.length : rects.length;
+						var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
 						if (length == 0) return;
 						
 						if (transforms != null) {
@@ -432,7 +432,7 @@ class GLGraphics {
 								var transforms = c.transforms;
 								
 								var hasIndices = (indices != null);
-								var length = hasIndices ? indices.length : rects.length;
+								var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
 								
 								// matrix.copyFrom (graphics.__renderTransform);
 								// matrix.concat (parentTransform);
