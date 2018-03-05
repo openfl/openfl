@@ -18,6 +18,7 @@ class Tileset {
 	
 	
 	public var bitmapData (get, set):BitmapData;
+	public var rectData:Vector<Float>;
 	
 	private var __bitmapData:BitmapData;
 	private var __data:Array<TileData>;
@@ -36,9 +37,10 @@ class Tileset {
 	
 	public function new (bitmapData:BitmapData, rects:Array<Rectangle> = null) {
 		
-		__data = new Array ();
-		
 		__bitmapData = bitmapData;
+		rectData = new Vector<Float> ();
+		
+		__data = new Array ();
 		
 		if (rects != null) {
 			
@@ -54,6 +56,11 @@ class Tileset {
 	public function addRect (rect:Rectangle):Int {
 		
 		if (rect == null) return -1;
+		
+		rectData.push (rect.x);
+		rectData.push (rect.y);
+		rectData.push (rect.width);
+		rectData.push (rect.height);
 		
 		var tileData = new TileData (rect);
 		tileData.__update (__bitmapData);
@@ -85,11 +92,49 @@ class Tileset {
 	}
 	
 	
+	public function hasRect (rect:Rectangle):Bool {
+		
+		for (tileData in __data) {
+			
+			if (rect.x == tileData.x && rect.y == tileData.y && rect.width == tileData.height && rect.height == tileData.height) {
+				
+				return true;
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
 	public function getRect (id:Int):Rectangle {
 		
 		if (id < __data.length && id >= 0) {
 			
 			return new Rectangle (__data[id].x, __data[id].y, __data[id].width, __data[id].height);
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
+	public function getRectID (rect:Rectangle):Null<Int> {
+		
+		var tileData;
+		
+		for (i in 0...__data.length) {
+			
+			tileData = __data[i];
+			
+			if (rect.x == tileData.x && rect.y == tileData.y && rect.width == tileData.height && rect.height == tileData.height) {
+				
+				return i;
+				
+			}
 			
 		}
 		
