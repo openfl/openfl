@@ -28,11 +28,13 @@ class GraphicsTest {
 		
 		// TODO: Confirm functionality
 		
+		#if !flash
 		var shape = new Shape ();
 		var graphics = shape.graphics;
 		var exists = graphics.beginBitmapFill;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -41,11 +43,13 @@ class GraphicsTest {
 		
 		// TODO: Confirm functionality
 		
+		#if !flash
 		var shape = new Shape ();
 		var graphics = shape.graphics;
 		var exists = graphics.beginFill;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -54,12 +58,14 @@ class GraphicsTest {
 		
 		// TODO: Confirm functionality
 		
+		#if !flash
 		var shape = new Shape ();
 		var graphics = shape.graphics;
 		#if !neko
 		var exists = graphics.beginGradientFill;
 		
 		Assert.isNotNull (exists);
+		#end
 		#end
 		
 	}
@@ -121,11 +127,13 @@ class GraphicsTest {
 		
 		// TODO: Confirm functionality
 		
+		#if !flash
 		var shape = new Shape ();
 		var graphics = shape.graphics;
 		var exists = graphics.drawGraphicsData;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -205,11 +213,13 @@ class GraphicsTest {
 		
 		// TODO: Confirm functionality
 		
+		#if !flash
 		var shape = new Shape ();
 		var graphics = shape.graphics;
 		var exists = graphics.endFill;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
