@@ -9,7 +9,7 @@ import openfl.display.BlendModeTest;
 import openfl.display.CapsStyleTest;
 import openfl.display.DisplayObjectContainerTest;
 import openfl.display.DisplayObjectTest;
-import openfl.display.DOMSpriteTest;
+import openfl.display.DOMElementTest;
 import openfl.display.FPSTest;
 import openfl.display.FrameLabelTest;
 import openfl.display.GradientTypeTest;

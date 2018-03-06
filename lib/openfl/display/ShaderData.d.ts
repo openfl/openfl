@@ -12,14 +12,16 @@ interface AnyProperties {
 declare namespace openfl.display {
 	
 	
-	export type ShaderData = AnyProperties & {
+	export class ShaderData implements AnyProperties {
+		
+		public constructor (bytes?:ByteArray);
 		
 		public texture0:ShaderInput<BitmapData>;
 		public alpha:ShaderParameter<number>;
 		public colorMultipliers:ShaderParameter<number>;
 		public colorOffsets:ShaderParameter<number>;
 		
-	};
+	}
 	
 }
 

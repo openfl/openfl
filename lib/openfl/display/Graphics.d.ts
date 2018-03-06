@@ -7,6 +7,7 @@ import IGraphicsData from "./IGraphicsData";
 import InterpolationMethod from "./InterpolationMethod";
 import JointStyle from "./JointStyle";
 import LineScaleMode from "./LineScaleMode";
+import Shader from "./Shader";
 import SpreadMethod from "./SpreadMethod";
 import TriangleCulling from "./TriangleCulling";
 import Matrix from "./../geom/Matrix";

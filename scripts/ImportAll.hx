@@ -16,6 +16,9 @@ import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObjectShader;
 import openfl.display.DOMElement;
+#if (openfljs && !display)
+import openfl.display.DOMSprite;
+#end
 import openfl.display.FPS;
 import openfl.display.FrameLabel;
 import openfl.display.GradientType;
@@ -65,6 +68,9 @@ import openfl.display.StageDisplayState;
 import openfl.display.StageQuality;
 import openfl.display.StageScaleMode;
 import openfl.display.Tile;
+#if (openfljs && !display)
+import openfl.display.TileArray;
+#end
 import openfl.display.TileGroup;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
