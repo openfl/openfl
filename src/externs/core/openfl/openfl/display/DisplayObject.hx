@@ -445,6 +445,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 */
 	public var parent (default, null):DisplayObjectContainer;
 	
+	public var renderShader (get, set):DisplayObjectShader;
+	
 	/**
 	 * For a display object in a loaded SWF file, the `root` property
 	 * is the top-most display object in the portion of the display list's tree

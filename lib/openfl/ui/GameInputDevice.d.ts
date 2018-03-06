@@ -1,7 +1,6 @@
 import GameInputControl from "./GameInputControl";
 import ByteArray from "./../utils/ByteArray";
-
-type Vector<T> = any;
+import Vector from "./../Vector";
 
 
 declare namespace openfl.ui {

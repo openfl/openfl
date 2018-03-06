@@ -3,6 +3,7 @@ package openfl.display;
 
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Vector;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -28,7 +29,10 @@ class Tileset {
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Tileset.prototype, "bitmapData", { get: untyped __js__ ("function () { return this.get_bitmapData (); }"), set: untyped __js__ ("function (v) { return this.set_bitmapData (v); }") });
+		untyped Object.defineProperties (Tileset.prototype, {
+			"bitmapData": { get: untyped __js__ ("function () { return this.get_bitmapData (); }"), set: untyped __js__ ("function (v) { return this.set_bitmapData (v); }") },
+			"numRects": { get: untyped __js__ ("function () { return this.get_numRects (); }") }
+		});
 		
 	}
 	#end

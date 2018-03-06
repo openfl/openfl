@@ -39,7 +39,7 @@ import openfl._internal.renderer.opengl.GLTilemap;
 class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end {
 	
 	
-	public var numTiles (get, null):Int;
+	public var numTiles (get, never):Int;
 	public var tileAlphaEnabled:Bool;
 	public var tileColorTransformEnabled:Bool;
 	public var tileset (get, set):Tileset;

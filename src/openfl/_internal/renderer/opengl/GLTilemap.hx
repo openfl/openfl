@@ -438,7 +438,7 @@ class GLTilemap {
 		renderSession.maskManager.pushObject (tilemap);
 		renderSession.filterManager.pushObject (tilemap);
 		
-		renderTileGroup (tilemap, renderSession, tilemap.__group, tilemap.__worldShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
+		renderTileGroup (tilemap, renderSession, tilemap.__group, tilemap.__worldRenderShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
 		flush (tilemap, renderSession);
 		
 		renderSession.filterManager.popObject (tilemap);

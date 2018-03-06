@@ -52,7 +52,7 @@ class GLShape {
 				renderSession.maskManager.pushObject (shape);
 				renderSession.filterManager.pushObject (shape);
 				
-				var shader = shaderManager.initDisplayShader (shape.__worldShader);
+				var shader = shaderManager.initDisplayShader (shape.__worldRenderShader);
 				shaderManager.setDisplayShader (shader);
 				shaderManager.applyBitmapData (graphics.__bitmap, renderSession.allowSmoothing);
 				shaderManager.applyMatrix (renderer.getMatrix (graphics.__worldTransform));

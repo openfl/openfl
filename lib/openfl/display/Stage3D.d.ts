@@ -1,9 +1,8 @@
+import Vector from "./../Vector";
 import Context3D from "./../display3D/Context3D";
 import Context3DProfile from "./../display3D/Context3DProfile";
 import Context3DRenderMode from "./../display3D/Context3DRenderMode";
 import EventDispatcher from "./../events/EventDispatcher";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.display {

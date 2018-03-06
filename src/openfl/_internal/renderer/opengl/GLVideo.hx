@@ -39,7 +39,7 @@ class GLVideo {
 			renderSession.maskManager.pushObject (video);
 			renderSession.filterManager.pushObject (video);
 			
-			var shader = shaderManager.initDisplayShader (video.__worldShader);
+			var shader = shaderManager.initDisplayShader (video.__worldRenderShader);
 			shaderManager.setDisplayShader (shader);
 			shaderManager.applyBitmapData (null, renderSession.allowSmoothing);
 			//shader.data.uImage0.input = bitmap.__bitmapData;

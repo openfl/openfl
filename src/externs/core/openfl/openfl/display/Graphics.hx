@@ -149,9 +149,7 @@ import openfl.Vector;
 	public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
 	
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
-	#end
+	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
 	
 	
 	/**

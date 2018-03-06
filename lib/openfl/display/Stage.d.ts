@@ -1,3 +1,4 @@
+import Vector from "./../Vector";
 // import Application from "./Application";
 import DisplayObjectContainer from "./DisplayObjectContainer";
 import InteractiveObject from "./InteractiveObject";
@@ -7,7 +8,6 @@ import StageDisplayState from "./StageDisplayState";
 import StageQuality from "./StageQuality";
 import StageScaleMode from "./StageScaleMode";
 
-type Vector<T> = any;
 type Window = any;
 
 

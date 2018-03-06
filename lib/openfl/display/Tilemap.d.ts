@@ -1,7 +1,7 @@
 import DisplayObject from "./DisplayObject";
 import Shader from "./Shader";
 import Tile from "./Tile";
-import TileArray from "./TileArray";
+import TileGroup from "./TileGroup";
 import Tileset from "./Tileset";
 
 
@@ -12,9 +12,10 @@ declare namespace openfl.display {
 		
 		
 		public readonly numTiles:number;
-		/*@:beta*/ public shader:Shader;
 		public smoothing:boolean;
-		public readonly tileset:Tileset;
+		public tileAlphaEnabled:Boolean;
+		public tileColorTransformEnabled:Boolean;
+		public tileset:Tileset;
 		
 		public constructor (width:number, height:number, tileset?:Tileset, smoothing?:boolean);
 		
@@ -24,11 +25,11 @@ declare namespace openfl.display {
 		public contains (tile:Tile):boolean;
 		public getTileAt (index:number):Tile;
 		public getTileIndex (tile:Tile):number;
-		/*@:beta*/ public getTiles ():TileArray;
+		public getTiles ():TileGroup;
 		public removeTile (tile:Tile):Tile;
 		public removeTileAt (index:number):Tile;
 		public removeTiles (beginIndex?:number, endIndex?:number):void;
-		/*@:beta*/ public setTiles (tileArray:TileArray):void;
+		public setTiles (tileArray:TileGroup):void;
 		
 		
 	}

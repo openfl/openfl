@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-extern class OpenGLView extends DirectRenderer {
+@:deprecated extern class OpenGLView extends DirectRenderer {
 	
 	
 	public static inline var CONTEXT_LOST = "glcontextlost";

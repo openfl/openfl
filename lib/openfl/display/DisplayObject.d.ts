@@ -1,5 +1,6 @@
 import BlendMode from "./BlendMode";
 import DisplayObjectContainer from "./DisplayObjectContainer";
+import DisplayObjectShader from "./DisplayObjectShader";
 import IBitmapDrawable from "./IBitmapDrawable";
 import LoaderInfo from "./LoaderInfo";
 import Stage from "./Stage";
@@ -449,6 +450,8 @@ declare namespace openfl.display {
 		 *                       the `Security.allowDomain()` method.
 		 */
 		readonly parent:DisplayObjectContainer;
+		
+		renderShader:DisplayObjectShader;
 		
 		/**
 		 * For a display object in a loaded SWF file, the `root` property

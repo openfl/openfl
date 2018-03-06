@@ -1,6 +1,5 @@
+import Vector from "./../Vector";
 import MultitouchInputMode from "./MultitouchInputMode";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.ui {
