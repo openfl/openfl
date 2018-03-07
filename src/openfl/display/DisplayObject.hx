@@ -448,12 +448,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-		var tmpParent = null;
-
-		if (event.bubbles) {
-			tmpParent = parent;
-		}
-
+		
+		var parent = event.bubbles ? this.parent : null;
 		var result = super.__dispatchEvent (event);
 		
 		if (event.__isCanceled) {
@@ -462,7 +458,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
-		if (tmpParent != null && tmpParent != this) {
+		if (parent != null && parent != this) {
 			
 			event.eventPhase = EventPhase.BUBBLING_PHASE;
 			
@@ -472,7 +468,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			tmpParent.__dispatchEvent (event);
+			parent.__dispatchEvent (event);
 			
 		}
 		
