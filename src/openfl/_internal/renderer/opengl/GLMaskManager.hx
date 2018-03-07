@@ -265,6 +265,12 @@ class GLMaskShader extends DisplayObjectShader {
 		
 		uniform mat4 openfl_Matrix;
 		
+		// unused
+		attribute float alpha;
+		attribute vec4 colorMultipliers;
+		attribute vec4 colorOffsets;
+		uniform bool openfl_HasColorTransform;
+		
 		void main(void) {
 			
 			openfl_vTexCoord = openfl_TexCoord;
