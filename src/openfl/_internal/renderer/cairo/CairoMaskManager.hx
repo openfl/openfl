@@ -28,14 +28,15 @@ class CairoMaskManager extends AbstractMaskManager {
 	
 	public override function pushMask (mask:DisplayObject):Void {
 		
+		var renderer:CairoRenderer = cast renderSession.renderer;
 		var cairo = renderSession.cairo;
 		
 		cairo.save ();
 		
 		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__getRenderTransform ();
 		
-		cairo.matrix = transform.__toMatrix3 ();
+		// cairo.matrix = renderer.getMatrix (mask.__getRenderTransform ());
+		cairo.matrix = renderer.getMatrix (mask.__renderTransform, true);
 		
 		cairo.newPath ();
 		mask.__renderCairoMask (renderSession);

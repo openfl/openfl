@@ -11,6 +11,12 @@ import openfl.display.Graphics;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 
+#if (js && html5)
+import openfl._internal.renderer.canvas.CanvasRenderer;
+#else
+import openfl._internal.renderer.cairo.CairoRenderer;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -30,6 +36,8 @@ class GLRenderer extends AbstractRenderer {
 	
 	public var projection:Matrix4;
 	public var projectionFlipped:Matrix4;
+	public var softwareRenderer:AbstractRenderer;
+	public var softwareRenderSession:RenderSession;
 	
 	public var defaultRenderTarget:BitmapData;
 	
@@ -100,6 +108,14 @@ class GLRenderer extends AbstractRenderer {
 			
 		}
 		#end
+		
+		#if (js && html5)
+		softwareRenderer = new CanvasRenderer (null, null);
+		#else
+		softwareRenderer = new CairoRenderer (null, null);
+		#end
+		
+		softwareRenderSession = softwareRenderer.renderSession;
 		
 	}
 	

@@ -89,10 +89,12 @@ class GLShape {
 			
 			// TODO: Support invisible shapes
 			
+			var renderer:GLRenderer = cast renderSession.renderer;
+			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
+			CanvasGraphics.render (graphics, renderer.softwareRenderSession, shape.__renderTransform);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
+			CairoGraphics.render (graphics, renderer.softwareRenderSession, shape.__renderTransform);
 			#end
 			
 			var bounds = graphics.__bounds;

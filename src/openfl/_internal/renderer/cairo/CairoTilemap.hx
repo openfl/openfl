@@ -55,6 +55,7 @@ class CairoTilemap {
 	
 	private static function renderTileGroup (group:TileGroup, renderSession:RenderSession, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
 		
+		var renderer:CairoRenderer = cast renderSession.renderer;
 		var cairo = renderSession.cairo;
 		var roundPixels = renderSession.roundPixels;
 		
@@ -70,13 +71,6 @@ class CairoTilemap {
 			tileTransform.setTo (1, 0, 0, 1, -tile.originX, -tile.originY);
 			tileTransform.concat (tile.matrix);
 			tileTransform.concat (parentTransform);
-			
-			if (roundPixels) {
-				
-				tileTransform.tx = Math.round (tileTransform.tx);
-				tileTransform.ty = Math.round (tileTransform.ty);
-				
-			}
 			
 			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
 			
@@ -125,7 +119,7 @@ class CairoTilemap {
 					
 				}
 				
-				cairo.matrix = tileTransform.__toMatrix3 ();
+				cairo.matrix = renderer.getMatrix (tileTransform, true);
 				
 				matrix.tx = tileRect.x;
 				matrix.ty = tileRect.y;

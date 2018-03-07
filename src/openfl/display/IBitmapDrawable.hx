@@ -12,6 +12,7 @@ interface IBitmapDrawable {
 	private var __blendMode:BlendMode;
 	private var __isMask:Bool;
 	private var __renderable:Bool;
+	private var __renderTransform:Matrix;
 	private var __transform:Matrix;
 	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;

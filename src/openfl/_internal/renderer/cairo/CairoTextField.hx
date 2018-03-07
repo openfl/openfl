@@ -40,6 +40,8 @@ class CairoTextField {
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
+		
+		var renderer:CairoRenderer = cast renderSession.renderer;
 		var cairo = graphics.__cairo;
 		
 		if (textField.__dirty) {
@@ -121,18 +123,7 @@ class CairoTextField {
 			
 		}
 		
-		if (true || renderSession.roundPixels) {
-			
-			var matrix = graphics.__renderTransform.__toMatrix3 ();
-			matrix.tx = Math.round (matrix.tx);
-			matrix.ty = Math.round (matrix.ty);
-			cairo.matrix = matrix;
-			
-		} else {
-			
-			cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
-			
-		}
+		cairo.matrix = renderer.getMatrix (graphics.__renderTransform, false);
 		
 		if (textEngine.border) {
 			

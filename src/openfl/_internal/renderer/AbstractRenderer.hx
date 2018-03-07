@@ -28,8 +28,12 @@ class AbstractRenderer {
 		
 		this.stage = stage;
 		
-		width = stage.stageWidth;
-		height = stage.stageHeight;
+		if (stage != null) {
+			
+			width = stage.stageWidth;
+			height = stage.stageHeight;
+			
+		}
 		
 	}
 	

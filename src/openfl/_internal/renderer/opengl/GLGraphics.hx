@@ -299,10 +299,12 @@ class GLGraphics {
 				
 			}
 			
+			var renderer:GLRenderer = cast renderSession.renderer;
+			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession, parentTransform);
+			CanvasGraphics.render (graphics, renderer.softwareRenderSession, parentTransform);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession, parentTransform);
+			CairoGraphics.render (graphics, renderer.softwareRenderSession, parentTransform);
 			#end
 			
 		} else {

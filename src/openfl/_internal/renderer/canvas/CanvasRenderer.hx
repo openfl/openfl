@@ -5,6 +5,7 @@ import lime.graphics.CanvasRenderContext;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
+import openfl.geom.Matrix;
 
 #if (js && html5)
 import js.Browser;
@@ -20,6 +21,8 @@ class CanvasRenderer extends AbstractRenderer {
 	public static var scale (default, null):Float = 1;
 	
 	private var context:CanvasRenderContext;
+	private var displayMatrix:Matrix;
+	private var tempMatrix:Matrix;
 	
 	
 	public function new (stage:Stage, context:CanvasRenderContext) {
@@ -39,15 +42,27 @@ class CanvasRenderer extends AbstractRenderer {
 		renderSession.maskManager = new CanvasMaskManager (renderSession);
 		#end
 		
-		#if (js && html5)
-		var config = stage.window.config;
+		tempMatrix = new Matrix ();
 		
-		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
+		if (stage != null) {
 			
-			scale = untyped window.devicePixelRatio || 1;
+			#if (js && html5)
+			var config = stage.window.config;
+			
+			if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
+				
+				scale = untyped window.devicePixelRatio || 1;
+				
+			}
+			#end
+			
+			setDisplayMatrix (stage.__displayMatrix);
+			
+		} else {
+			
+			setDisplayMatrix (new Matrix ());
 			
 		}
-		#end
 		
 	}
 	
@@ -87,6 +102,49 @@ class CanvasRenderer extends AbstractRenderer {
 		for (stage3D in stage.stage3Ds) {
 			
 			stage3D.__renderCanvas (stage, renderSession);
+			
+		}
+		
+	}
+	
+	
+	public override function resize (width:Int, height:Int):Void {
+		
+		super.resize (width, height);
+		
+		if (stage != null) {
+			
+			setDisplayMatrix (stage.__displayMatrix);
+			
+		}
+		
+	}
+	
+	
+	public function setDisplayMatrix (matrix:Matrix):Void {
+		
+		displayMatrix = matrix;
+		
+	}
+	
+	
+	public function setTransform (context:CanvasRenderContext, transform:Matrix):Void {
+		
+		if (this.context == context) {
+			
+			tempMatrix.copyFrom (transform);
+			tempMatrix.concat (displayMatrix);
+			transform = tempMatrix;
+			
+		}
+		
+		if (renderSession.roundPixels) {
+			
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+			
+		} else {
+			
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 			
 		}
 		

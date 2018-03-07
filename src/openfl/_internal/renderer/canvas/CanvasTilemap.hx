@@ -70,6 +70,7 @@ class CanvasTilemap {
 		var context = renderSession.context;
 		var roundPixels = renderSession.roundPixels;
 		
+		var renderer:CanvasRenderer = cast renderSession.renderer;
 		var tileTransform = Matrix.__pool.get ();
 		
 		var tiles = group.__tiles;
@@ -143,7 +144,7 @@ class CanvasTilemap {
 				
 				context.globalAlpha = alpha;
 				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
+				renderer.setTransform (context, tileTransform);
 				context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
 				
 			}

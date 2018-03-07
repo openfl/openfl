@@ -28,6 +28,7 @@ import lime.utils.UInt8Array;
 // import openfl.Lib;
 import openfl._internal.renderer.canvas.CanvasBlendModeManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
+import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLMaskManager;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -70,6 +71,8 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
+@:access(openfl._internal.renderer.cairo.CairoRenderer)
+@:access(openfl._internal.renderer.canvas.CanvasRenderer)
 @:access(openfl._internal.renderer.opengl.GLMaskManager)
 @:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display3D.textures.TextureBase)
@@ -116,6 +119,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __isMask:Bool;
 	private var __isValid:Bool;
 	private var __renderable:Bool;
+	private var __renderTransform:Matrix;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
@@ -197,6 +201,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
+		__renderTransform = new Matrix ();
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderable = true;
@@ -543,7 +548,8 @@ class BitmapData implements IBitmapDrawable {
 			
 			var buffer = image.buffer;
 			
-			var renderSession = new RenderSession ();
+			var renderer = new CanvasRenderer (null, buffer.__srcContext);
+			var renderSession = renderer.renderSession;
 			renderSession.renderType = CANVAS;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = false;
@@ -635,7 +641,9 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var renderSession = new RenderSession ();
+			var renderer = new CairoRenderer (null, cairo);
+			var renderSession = renderer.renderSession;
+			renderSession.renderer = renderer;
 			renderSession.renderType = CAIRO;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = false;
@@ -644,7 +652,7 @@ class BitmapData implements IBitmapDrawable {
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
-			renderSession.blendModeManager.setBlendMode(blendMode);
+			renderSession.blendModeManager.setBlendMode (blendMode);
 			
 			if (clipRect != null) {
 				
@@ -1696,7 +1704,8 @@ class BitmapData implements IBitmapDrawable {
 			
 			var buffer = image.buffer;
 			
-			var renderSession = new RenderSession ();
+			var renderer = new CanvasRenderer (null, buffer.__srcContext);
+			var renderSession = renderer.renderSession;
 			renderSession.renderType = CANVAS;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = true;
@@ -1801,7 +1810,9 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var renderSession = new RenderSession ();
+			var renderer = new CairoRenderer (null, cairo);
+			var renderSession = renderer.renderSession;
+			renderSession.renderer = renderer;
 			renderSession.renderType = CAIRO;
 			// renderSession.lockTransform = true;
 			renderSession.clearRenderDirty = true;

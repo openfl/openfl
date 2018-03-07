@@ -25,23 +25,13 @@ class CairoDisplayObject {
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
+			var renderer:CairoRenderer = cast renderSession.renderer;
+			var cairo = renderSession.cairo;
+			
 			renderSession.blendModeManager.setBlendMode (displayObject.__worldBlendMode);
 			renderSession.maskManager.pushObject (displayObject);
 			
-			var cairo = renderSession.cairo;
-			
-			if (renderSession.roundPixels) {
-				
-				var matrix = displayObject.__renderTransform.__toMatrix3 ();
-				matrix.tx = Math.round (matrix.tx);
-				matrix.ty = Math.round (matrix.ty);
-				cairo.matrix = matrix;
-				
-			} else {
-				
-				cairo.matrix = displayObject.__renderTransform.__toMatrix3 ();
-				
-			}
+			cairo.matrix = renderer.getMatrix (displayObject.__renderTransform, true);
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
 			cairo.setSourceRGB (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF);

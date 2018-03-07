@@ -31,23 +31,13 @@ class CairoShape {
 			
 			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1 && graphics.__height >= 1) {
 				
+				var renderer:CairoRenderer = cast renderSession.renderer;
+				var cairo = renderSession.cairo;
+				
 				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
 				renderSession.maskManager.pushObject (shape);
 				
-				var cairo = renderSession.cairo;
-				
-				if (renderSession.roundPixels) {
-					
-					var matrix = graphics.__worldTransform.__toMatrix3 ();
-					matrix.tx = Math.round (matrix.tx);
-					matrix.ty = Math.round (matrix.ty);
-					cairo.matrix = matrix;
-					
-				} else {
-					
-					cairo.matrix = graphics.__worldTransform.__toMatrix3 ();
-					
-				}
+				cairo.matrix = renderer.getMatrix (graphics.__worldTransform, true);
 				
 				cairo.setSourceSurface (graphics.__cairo.target, 0, 0);
 				cairo.paintWithAlpha (shape.__worldAlpha);

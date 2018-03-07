@@ -45,15 +45,8 @@ class CanvasShape {
 					
 					var transform = graphics.__worldTransform;
 					
-					if (renderSession.roundPixels) {
-						
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-						
-					} else {
-						
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-						
-					}
+					var renderer:CanvasRenderer = cast renderSession.renderer;
+					renderer.setTransform (context, transform);
 					
 					if (renderSession.renderType == DOM) {
 						
