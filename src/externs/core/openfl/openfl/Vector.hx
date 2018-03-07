@@ -34,7 +34,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	@:arrayAccess public inline function get (index:Int):T {
 		
-		return this.data.get (index);
+		return cast this.data.get (index);
 		
 	}
 	
@@ -55,7 +55,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	public inline function iterator<T> ():Iterator<T> {
 		
-		return this.data.iterator ();
+		return cast this.data.iterator ();
 		
 	}
 	
@@ -76,7 +76,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	public inline function pop ():Null<T> {
 		
-		return this.data.pop ();
+		return cast this.data.pop ();
 		
 	}
 	
@@ -90,7 +90,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	public inline function removeAt (index:Int):T {
 		
-		return this.data.removeAt (index);
+		return cast this.data.removeAt (index);
 		
 	}
 	
@@ -104,14 +104,14 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	
 	@:arrayAccess public inline function set (index:Int, value:T):T {
 		
-		return this.data.set (index, value);
+		return cast this.data.set (index, value);
 		
 	}
 	
 	
 	public inline function shift ():Null<T> {
 		
-		return this.data.shift ();
+		return cast this.data.shift ();
 		
 	}
 	
@@ -344,7 +344,17 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 		} else {
 			
-			return new BoolVector (__array.concat (cast (a, BoolVector).__array));
+			var other:BoolVector = cast a;
+			
+			if (other.__array.length > 0) {
+				
+				return new BoolVector (__array.concat (other.__array));
+				
+			} else {
+				
+				return new BoolVector (__array.copy ());
+				
+			}
 			
 		}
 		
@@ -661,7 +671,17 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 		} else {
 			
-			return new FloatVector (__array.concat (cast (a, FloatVector).__array));
+			var other:FloatVector = cast a;
+			
+			if (other.__array.length > 0) {
+				
+				return new FloatVector (__array.concat (other.__array));
+				
+			} else {
+				
+				return new FloatVector (__array.copy ());
+				
+			}
 			
 		}
 		
@@ -971,7 +991,17 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 		} else {
 			
-			return new FunctionVector (__array.concat (cast (a, FunctionVector).__array));
+			var other:FunctionVector = cast a;
+			
+			if (other.__array.length > 0) {
+				
+				return new FunctionVector (__array.concat (other.__array));
+				
+			} else {
+				
+				return new FunctionVector (__array.copy ());
+				
+			}
 			
 		}
 		
@@ -1289,7 +1319,17 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 		} else {
 			
-			return new IntVector (__array.concat (cast (a, IntVector).__array));
+			var other:IntVector = cast a;
+			
+			if (other.__array.length > 0) {
+				
+				return new IntVector (__array.concat (other.__array));
+				
+			} else {
+				
+				return new IntVector (__array.copy ());
+				
+			}
 			
 		}
 		
@@ -1598,7 +1638,17 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 			
 		} else {
 			
-			return new ObjectVector (__array.concat (cast (cast (a, ObjectVector<Dynamic>).__array)));
+			var other:ObjectVector<Dynamic> = cast a;
+			
+			if (other.__array.length > 0) {
+				
+				return new ObjectVector (__array.concat (cast other.__array));
+				
+			} else {
+				
+				return new ObjectVector (__array.copy ());
+				
+			}
 			
 		}
 		
