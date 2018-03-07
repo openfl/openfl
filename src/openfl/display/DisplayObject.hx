@@ -419,7 +419,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {
-		var tmpParent : DisplayObjectContainer = null;
+		var tmpParent = null;
 
 		if (event.bubbles) {
 			tmpParent = parent;
