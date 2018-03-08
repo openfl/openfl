@@ -162,6 +162,8 @@ class NetStream extends EventDispatcher {
 		}
 		
 		__video.currentTime = time;
+		
+		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Seek.Complete" } ));
 		#end
 		
 	}
