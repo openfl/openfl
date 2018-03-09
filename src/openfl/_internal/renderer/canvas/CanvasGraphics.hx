@@ -1,9 +1,9 @@
 package openfl._internal.renderer.canvas;
 
 import lime.graphics.utils.ImageCanvasUtil;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
+import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
 import openfl._internal.renderer.DrawCommandBuffer;
@@ -881,7 +881,7 @@ class CanvasGraphics {
 					var sourceRect = bitmapFill.rect;
 					
 					var transform = graphics.__renderTransform;
-					// var roundPixels = renderSession.roundPixels;
+					// var roundPixels = renderer.__roundPixels;
 					var alpha = graphics.__owner.__worldAlpha;
 					
 					var ri, ti;
@@ -1237,7 +1237,7 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
+	public static function render (graphics:Graphics, renderer:CanvasRenderer, parentTransform:Matrix):Void {
 		
 		#if (js && html5)
 		
@@ -1248,7 +1248,7 @@ class CanvasGraphics {
 			hitTesting = false;
 			
 			CanvasGraphics.graphics = graphics;
-			CanvasGraphics.allowSmoothing = renderSession.allowSmoothing;
+			CanvasGraphics.allowSmoothing = renderer.__allowSmoothing;
 			bounds = graphics.__bounds;
 			
 			var width = graphics.__width;
@@ -1273,11 +1273,11 @@ class CanvasGraphics {
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 				
-				var scale = CanvasRenderer.scale;
+				var scale = renderer.pixelRatio;
 				var scaledWidth = Std.int (width * scale);
 				var scaledHeight = Std.int (height * scale);
 				
-				if (renderSession.renderType == DOM) {
+				if (renderer.__isDOM) {
 					
 					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 						
@@ -1589,13 +1589,13 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
+	public static function renderMask (graphics:Graphics, renderer:CanvasRenderer) {
 		
 		#if (js && html5)
 		
 		if (graphics.__commands.length != 0) {
 			
-			context = cast renderSession.context;
+			context = cast renderer.context;
 			
 			var positionX = 0.0;
 			var positionY = 0.0;

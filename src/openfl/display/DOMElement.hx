@@ -3,7 +3,6 @@ package openfl.display;
 
 #if !flash
 import openfl._internal.renderer.dom.DOMRenderer;
-import openfl._internal.renderer.RenderSession;
 #end
 
 import openfl.display.Sprite;
@@ -31,33 +30,33 @@ class DOMElement extends DisplayObject {
 	
 	
 	#if !flash
-	private override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
 			
 			if (!__active) {
 				
-				DOMRenderer.initializeElement (this, __element, renderSession);
+				renderer.__initializeElement (this, __element);
 				__active = true;
 				
 			}
 			
-			DOMRenderer.updateClip (this, renderSession);
-			DOMRenderer.applyStyle (this, renderSession, true, true, true);
+			renderer.__updateClip (this);
+			renderer.__applyStyle (this, true, true, true);
 			
 		} else {
 			
 			if (__active) {
 				
-				renderSession.element.removeChild (__element);
+				renderer.element.removeChild (__element);
 				__active = false;
 				
 			}
 			
 		}
 		
-		super.__renderDOM (renderSession);
+		super.__renderDOM (renderer);
 		#end
 		
 	}

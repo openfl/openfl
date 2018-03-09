@@ -3,10 +3,10 @@ package openfl._internal.renderer.canvas;
 
 import haxe.Utf8;
 import openfl._internal.renderer.dom.DOMTextField;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
+import openfl.display.CanvasRenderer;
 import openfl.display.Graphics;
 import openfl.events.Event;
 import openfl.filters.GlowFilter;
@@ -26,6 +26,7 @@ import js.html.ImageData;
 
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
 
 
@@ -38,7 +39,7 @@ class CanvasTextField {
 	#end
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
+	public static inline function render (textField:TextField, renderer:CanvasRenderer, transform:Matrix):Void {
 		
 		#if (js && html5)
 		
@@ -88,16 +89,22 @@ class CanvasTextField {
 				
 				var transform = graphics.__renderTransform;
 				
-				if (renderSession.renderType == DOM) {
+				if (renderer.__isDOM) {
 					
-					var scale = CanvasRenderer.scale;
+					var scale = renderer.pixelRatio;
 					
 					graphics.__canvas.width = Std.int (width * scale);
 					graphics.__canvas.height = Std.int (height * scale);
 					graphics.__canvas.style.width = width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
+					var matrix = Matrix.__pool.get ();
+					matrix.copyFrom (transform);
+					matrix.scale (scale, scale);
+					
+					renderer.setTransform (matrix, context);
+					
+					Matrix.__pool.release (matrix);
 					
 				} else {
 					
@@ -124,7 +131,7 @@ class CanvasTextField {
 					
 					var text = textEngine.text;
 					
-					if (!renderSession.allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)) {
+					if (!renderer.__allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)) {
 						
 						untyped (graphics.__context).mozImageSmoothingEnabled = false;
 						//untyped (graphics.__context).webkitImageSmoothingEnabled = false;

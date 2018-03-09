@@ -2,8 +2,8 @@ package openfl._internal.renderer.canvas;
 
 
 import lime.graphics.utils.ImageCanvasUtil;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.CanvasRenderer;
 import openfl.display.TileGroup;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
@@ -23,19 +23,19 @@ import openfl.geom.Rectangle;
 class CanvasTilemap {
 	
 	
-	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
+	public static inline function render (tilemap:Tilemap, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
-		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
-		renderSession.maskManager.pushObject (tilemap);
+		renderer.__setBlendMode (tilemap.__worldBlendMode);
+		renderer.__pushMaskObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
-		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
+		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
+		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = false;
 			//untyped (context).webkitImageSmoothingEnabled = false;
@@ -44,9 +44,9 @@ class CanvasTilemap {
 			
 		}
 		
-		renderTileGroup (tilemap.__group, renderSession, tilemap.__renderTransform, tilemap.__tileset, (renderSession.allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, rect);
+		renderTileGroup (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, rect);
 		
-		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
+		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = true;
 			//untyped (context).webkitImageSmoothingEnabled = true;
@@ -55,8 +55,8 @@ class CanvasTilemap {
 			
 		}
 		
-		renderSession.maskManager.popRect ();
-		renderSession.maskManager.popObject (tilemap);
+		renderer.__popMaskRect ();
+		renderer.__popMaskObject (tilemap);
 		
 		Rectangle.__pool.release (rect);
 		#end
@@ -64,13 +64,12 @@ class CanvasTilemap {
 	}
 	
 	
-	private static function renderTileGroup (group:TileGroup, renderSession:RenderSession, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, source:Dynamic, rect:Rectangle):Void {
+	private static function renderTileGroup (group:TileGroup, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, source:Dynamic, rect:Rectangle):Void {
 		
 		#if (js && html5)
-		var context = renderSession.context;
-		var roundPixels = renderSession.roundPixels;
+		var context = renderer.context;
+		var roundPixels = renderer.__roundPixels;
 		
-		var renderer:CanvasRenderer = cast renderSession.renderer;
 		var tileTransform = Matrix.__pool.get ();
 		
 		var tiles = group.__tiles;
@@ -103,7 +102,7 @@ class CanvasTilemap {
 			
 			if (tile.__length > 0) {
 				
-				renderTileGroup (cast tile, renderSession, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, source, rect);
+				renderTileGroup (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, source, rect);
 				
 			} else {
 				
@@ -144,7 +143,7 @@ class CanvasTilemap {
 				
 				context.globalAlpha = alpha;
 				
-				renderer.setTransform (context, tileTransform);
+				renderer.setTransform (tileTransform, context);
 				context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
 				
 			}

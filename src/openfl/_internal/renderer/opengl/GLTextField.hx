@@ -1,7 +1,7 @@
 package openfl._internal.renderer.opengl;
 
 
-import openfl._internal.renderer.RenderSession;
+import openfl.display.OpenGLRenderer;
 import openfl.geom.Matrix;
 import openfl.text.TextField;
 
@@ -15,14 +15,12 @@ import openfl._internal.renderer.cairo.CairoTextField;
 class GLTextField {
 	
 	
-	public static function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
-		
-		var renderer:GLRenderer = cast renderSession.renderer;
+	public static function render (textField:TextField, renderer:OpenGLRenderer, transform:Matrix):Void {
 		
 		#if (js && html5)
-		CanvasTextField.render (textField, renderer.softwareRenderSession, transform);
+		CanvasTextField.render (textField, cast renderer.__softwareRenderer, transform);
 		#elseif lime_cairo
-		CairoTextField.render (textField, renderer.softwareRenderSession, transform);
+		CairoTextField.render (textField, cast renderer.__softwareRenderer, transform);
 		#end
 		
 	}

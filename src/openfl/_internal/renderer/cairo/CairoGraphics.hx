@@ -13,8 +13,8 @@ import lime.math.Vector2;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.DrawCommandType;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
 import openfl.display.GradientType;
@@ -863,7 +863,7 @@ class CairoGraphics {
 					tempMatrix3.identity ();
 					
 					var transform = graphics.__renderTransform;
-					// var roundPixels = renderSession.roundPixels;
+					// var roundPixels = renderer.__roundPixels;
 					var alpha = graphics.__owner.__worldAlpha;
 					
 					var ri, ti;
@@ -1247,12 +1247,12 @@ class CairoGraphics {
 	#end
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
+	public static function render (graphics:Graphics, renderer:CairoRenderer, parentTransform:Matrix):Void {
 		
 		#if lime_cairo
 		
 		CairoGraphics.graphics = graphics;
-		CairoGraphics.allowSmoothing = renderSession.allowSmoothing;
+		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
 		graphics.__update ();
 		
 		if (!graphics.__dirty || graphics.__managed) return;
@@ -1297,7 +1297,8 @@ class CairoGraphics {
 			}
 			
 			cairo = graphics.__cairo;
-			cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
+			
+			renderer.applyMatrix (graphics.__renderTransform, cairo);
 			
 			cairo.operator = CLEAR;
 			cairo.paint ();
@@ -1575,13 +1576,13 @@ class CairoGraphics {
 	}
 	
 	
-	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
+	public static function renderMask (graphics:Graphics, renderer:CairoRenderer) {
 		
 		#if lime_cairo
 		
 		if (graphics.__commands.length != 0) {
 			
-			var cairo = renderSession.cairo;
+			var cairo = renderer.cairo;
 			
 			var positionX = 0.0;
 			var positionY = 0.0;
@@ -1589,7 +1590,7 @@ class CairoGraphics {
 			var offsetX = 0;
 			var offsetY = 0;
 			
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = new DrawCommandReader (graphics.__commands);
 			
 			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
 			
@@ -1676,7 +1677,8 @@ class CairoGraphics {
 				
 			}
 			
-			data.destroy();
+			data.destroy ();
+			
 		}
 		
 		#end

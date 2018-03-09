@@ -6,8 +6,8 @@ import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
 import openfl.display.TileGroup;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
@@ -32,32 +32,31 @@ import openfl.geom.Rectangle;
 class CairoTilemap {
 	
 	
-	public static function render (tilemap:Tilemap, renderSession:RenderSession):Void {
+	public static function render (tilemap:Tilemap, renderer:CairoRenderer):Void {
 		
 		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
-		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
-		renderSession.maskManager.pushObject (tilemap);
+		renderer.__setBlendMode (tilemap.__worldBlendMode);
+		renderer.__pushMaskObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
-		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
+		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		renderTileGroup (tilemap.__group, renderSession, tilemap.__renderTransform, tilemap.__tileset, (renderSession.allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, null, rect, new Matrix3 ());
+		renderTileGroup (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, null, rect, new Matrix3 ());
 		
-		renderSession.maskManager.popRect ();
-		renderSession.maskManager.popObject (tilemap);
+		renderer.__popMaskRect ();
+		renderer.__popMaskObject (tilemap);
 		
 		Rectangle.__pool.release (rect);
 		
 	}
 	
 	
-	private static function renderTileGroup (group:TileGroup, renderSession:RenderSession, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
+	private static function renderTileGroup (group:TileGroup, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
 		
-		var renderer:CairoRenderer = cast renderSession.renderer;
-		var cairo = renderSession.cairo;
-		var roundPixels = renderSession.roundPixels;
+		var cairo = renderer.cairo;
+		var roundPixels = renderer.__roundPixels;
 		
 		var tileTransform = Matrix.__pool.get ();
 		
@@ -82,7 +81,7 @@ class CairoTilemap {
 			
 			if (tile.__length > 0) {
 				
-				renderTileGroup (cast tile, renderSession, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, surface, pattern, rect, matrix);
+				renderTileGroup (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, surface, pattern, rect, matrix);
 				
 			} else {
 				
@@ -119,7 +118,7 @@ class CairoTilemap {
 					
 				}
 				
-				cairo.matrix = renderer.getMatrix (tileTransform, true);
+				renderer.applyMatrix (tileTransform, cairo);
 				
 				matrix.tx = tileRect.x;
 				matrix.ty = tileRect.y;

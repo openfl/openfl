@@ -5,7 +5,6 @@ import haxe.io.Bytes;
 import lime.utils.ArrayBufferView;
 import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.atf.ATFReader;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
@@ -14,6 +13,7 @@ import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
@@ -30,9 +30,9 @@ import openfl.utils.ByteArray;
 class GLTexture {
 	
 	
-	public static function create (texture:Texture, renderSession:RenderSession):Void {
+	public static function create (texture:Texture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.gl;
 		
 		texture.__textureTarget = gl.TEXTURE_2D;
 		
@@ -44,17 +44,17 @@ class GLTexture {
 		
 		gl.bindTexture (texture.__textureTarget, null);
 		
-		uploadFromTypedArray (texture, renderSession, null);
+		uploadFromTypedArray (texture, renderer, null);
 		
 	}
 	
 	
-	public static function uploadCompressedTextureFromByteArray (texture:Texture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
+	public static function uploadCompressedTextureFromByteArray (texture:Texture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader (texture.__width, texture.__height, false);
 		
-		var gl = renderSession.gl;
+		var gl = renderer.gl;
 		
 		gl.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
@@ -114,7 +114,7 @@ class GLTexture {
 	}
 	
 	
-	public static function uploadFromBitmapData (texture:Texture, renderSession:RenderSession, source:BitmapData, miplevel:UInt, generateMipmap:Bool):Void {
+	public static function uploadFromBitmapData (texture:Texture, renderer:OpenGLRenderer, source:BitmapData, miplevel:UInt, generateMipmap:Bool):Void {
 		
 		/* TODO
 			if (LowMemoryMode) {
@@ -146,31 +146,31 @@ class GLTexture {
 		
 		var image = texture.__getImage (source);
 		
-		uploadFromTypedArray (texture, renderSession, image.data, miplevel);
+		uploadFromTypedArray (texture, renderer, image.data, miplevel);
 		
 	}
 	
 	
-	public static function uploadFromByteArray (texture:Texture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
+	public static function uploadFromByteArray (texture:Texture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (texture, renderSession, @:privateAccess (data:ByteArrayData).b, miplevel);
+			uploadFromTypedArray (texture, renderer, @:privateAccess (data:ByteArrayData).b, miplevel);
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (texture, renderSession, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
+		uploadFromTypedArray (texture, renderer, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (texture:Texture, renderSession:RenderSession, data:ArrayBufferView, miplevel:UInt = 0):Void {
+	public static function uploadFromTypedArray (texture:Texture, renderer:OpenGLRenderer, data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-		var gl = renderSession.gl;
+		var gl = renderer.gl;
 		
 		var width = texture.__width >> miplevel;
 		var height = texture.__height >> miplevel;
@@ -195,11 +195,11 @@ class GLTexture {
 	}
 	
 	
-	public static function setSamplerState (texture:Texture, renderSession:RenderSession, state:SamplerState) {
+	public static function setSamplerState (texture:Texture, renderer:OpenGLRenderer, state:SamplerState) {
 		
 		if (!state.equals (texture.__samplerState)) {
 			
-			var gl = renderSession.gl;
+			var gl = renderer.gl;
 			
 			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
 				
@@ -219,7 +219,7 @@ class GLTexture {
 			
 		}
 		
-		GLTextureBase.setSamplerState (texture, renderSession, state);
+		GLTextureBase.setSamplerState (texture, renderer, state);
 		
 	}
 	

@@ -4,9 +4,9 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectShader;
+import openfl.display.OpenGLRenderer;
 import openfl.geom.Matrix;
 
 #if gl_stats
@@ -30,7 +30,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class GLShape {
 	
 	
-	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static inline function render (shape:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		
@@ -38,27 +38,25 @@ class GLShape {
 		
 		if (graphics != null) {
 			
-			GLGraphics.render (graphics, renderSession, shape.__renderTransform, shape.__worldAlpha);
+			GLGraphics.render (graphics, renderer, shape.__renderTransform, shape.__worldAlpha);
 			
 			var bounds = graphics.__bounds;
 			
 			if (graphics.__bitmap != null && graphics.__visible) {
 				
-				var renderer:GLRenderer = cast renderSession.renderer;
-				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-				var gl = renderSession.gl;
+				var gl = renderer.gl;
 				
-				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
-				renderSession.maskManager.pushObject (shape);
-				renderSession.filterManager.pushObject (shape);
+				renderer.__setBlendMode (shape.__worldBlendMode);
+				renderer.__pushMaskObject (shape);
+				// renderer.filterManager.pushObject (shape);
 				
-				var shader = shaderManager.initDisplayShader (shape.__worldRenderShader);
-				shaderManager.setDisplayShader (shader);
-				shaderManager.applyBitmapData (graphics.__bitmap, renderSession.allowSmoothing);
-				shaderManager.applyMatrix (renderer.getMatrix (graphics.__worldTransform));
-				shaderManager.applyAlpha (shape.__worldAlpha);
-				shaderManager.applyColorTransform (shape.__worldColorTransform);
-				shaderManager.updateShader ();
+				var shader = renderer.__initDisplayShader (shape.__worldRenderShader);
+				renderer.setDisplayShader (shader);
+				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
+				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
+				renderer.applyAlpha (shape.__worldAlpha);
+				renderer.applyColorTransform (shape.__worldColorTransform);
+				renderer.updateShader ();
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl));
 				gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
@@ -69,10 +67,10 @@ class GLShape {
 					GLStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
 				
-				shaderManager.clear ();
+				renderer.__clearShader ();
 				
-				renderSession.filterManager.popObject (shape);
-				renderSession.maskManager.popObject (shape);
+				// renderer.filterManager.popObject (shape);
+				renderer.__popMaskObject (shape);
 				
 			}
 			
@@ -81,7 +79,7 @@ class GLShape {
 	}
 	
 	
-	public static inline function renderMask (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static inline function renderMask (shape:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		var graphics = shape.__graphics;
 		
@@ -89,28 +87,23 @@ class GLShape {
 			
 			// TODO: Support invisible shapes
 			
-			var renderer:GLRenderer = cast renderSession.renderer;
-			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, renderer.softwareRenderSession, shape.__renderTransform);
+			CanvasGraphics.render (graphics, cast renderer.__softwareRenderer, shape.__renderTransform);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderer.softwareRenderSession, shape.__renderTransform);
+			CairoGraphics.render (graphics, cast renderer.__softwareRenderer, shape.__renderTransform);
 			#end
 			
 			var bounds = graphics.__bounds;
 			
 			if (graphics.__bitmap != null) {
 				
-				var renderer:GLRenderer = cast renderSession.renderer;
-				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-				var gl = renderSession.gl;
+				var gl = renderer.gl;
 				
-				var shader = GLMaskManager.maskShader;
-				//var shader = renderSession.shaderManager.initShader (shape.shader);
-				shaderManager.setShader (shader);
-				shaderManager.applyBitmapData (graphics.__bitmap, renderSession.allowSmoothing);
-				shaderManager.applyMatrix (renderer.getMatrix (graphics.__worldTransform));
-				shaderManager.updateShader ();
+				var shader = renderer.__maskShader;
+				renderer.setShader (shader);
+				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
+				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
+				renderer.updateShader ();
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl));
 				gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
@@ -121,7 +114,7 @@ class GLShape {
 					GLStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
 				
-				shaderManager.clear ();
+				renderer.__clearShader ();
 				
 			}
 			

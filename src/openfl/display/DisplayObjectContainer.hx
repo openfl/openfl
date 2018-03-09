@@ -2,9 +2,7 @@ package openfl.display;
 
 
 import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
@@ -629,22 +627,22 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		super.__renderCairo (renderSession);
+		super.__renderCairo (renderer);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
+		renderer.__pushMaskObject (this);
 		
-		if (renderSession.clearRenderDirty) {
+		if (renderer.__stage != null) {
 			
 			for (child in __children) {
 				
-				child.__renderCairo (renderSession);
+				child.__renderCairo (renderer);
 				child.__renderDirty = false;
 				
 			}
@@ -655,7 +653,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__renderCairo (renderSession);
+				child.__renderCairo (renderer);
 				
 			}
 			
@@ -673,24 +671,24 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.maskManager.popObject (this);
+		renderer.__popMaskObject (this);
 		#end
 		
 	}
 	
 	
-	private override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		if (__graphics != null) {
 			
-			CairoGraphics.renderMask (__graphics, renderSession);
+			CairoGraphics.renderMask (__graphics, renderer);
 			
 		}
 		
 		for (child in __children) {
 			
-			child.__renderCairoMask (renderSession);
+			child.__renderCairoMask (renderer);
 			
 		}
 		#end
@@ -698,23 +696,23 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
 		
 		#if !neko
 		
-		super.__renderCanvas (renderSession);
+		super.__renderCanvas (renderer);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
+		renderer.__pushMaskObject (this);
 		
-		if (renderSession.clearRenderDirty) {
+		if (renderer.__stage != null) {
 			
 			for (child in __children) {
 				
-				child.__renderCanvas (renderSession);
+				child.__renderCanvas (renderer);
 				child.__renderDirty = false;
 				
 			}
@@ -725,7 +723,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__renderCanvas (renderSession);
+				child.__renderCanvas (renderer);
 				
 			}
 			
@@ -743,49 +741,49 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.maskManager.popObject (this);
+		renderer.__popMaskObject (this);
 		
 		#end
 		
 	}
 	
 	
-	private override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
 		if (__graphics != null) {
 			
-			CanvasGraphics.renderMask (__graphics, renderSession);
+			CanvasGraphics.renderMask (__graphics, renderer);
 			
 		}
 		
 		var bounds = Rectangle.__pool.get ();
 		__getLocalBounds (bounds);
 		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
+		renderer.context.rect (0, 0, bounds.width, bounds.height);
 		
 		Rectangle.__pool.release (bounds);
 		/*for (child in __children) {
 			
-			child.__renderMask (renderSession);
+			child.__renderMask (renderer);
 			
 		}*/
 		
 	}
 	
 	
-	private override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		super.__renderDOM (renderSession);
+		super.__renderDOM (renderer);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
+		renderer.__pushMaskObject (this);
 		
-		if (renderSession.clearRenderDirty) {
+		if (renderer.__stage != null) {
 			
 			for (child in __children) {
 				
-				child.__renderDOM (renderSession);
+				child.__renderDOM (renderer);
 				child.__renderDirty = false;
 				
 			}
@@ -796,7 +794,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__renderDOM (renderSession);
+				child.__renderDOM (renderer);
 				
 			}
 			
@@ -806,7 +804,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__renderDOM (renderSession);
+				orphan.__renderDOM (renderer);
 				
 			}
 			
@@ -814,44 +812,44 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.maskManager.popObject (this);
+		renderer.__popMaskObject (this);
 		
 	}
 	
 	
-	private override function __renderDOMClear (renderSession:RenderSession):Void {
+	private override function __renderDOMClear (renderer:DOMRenderer):Void {
 		
 		for (child in __children) {
-			child.__renderDOMClear (renderSession);
+			child.__renderDOMClear (renderer);
 		}
 		
 		for (orphan in __removedChildren) {
 			if (orphan.stage == null) {
-				orphan.__renderDOMClear (renderSession);
+				orphan.__renderDOMClear (renderer);
 			}
 		}
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		super.__renderGL (renderSession);
+		super.__renderGL (renderer);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
 		if (__children.length > 0) {
 			
-			renderSession.maskManager.pushObject (this);
-			renderSession.filterManager.pushObject (this);
+			renderer.__pushMaskObject (this);
+			// renderer.filterManager.pushObject (this);
 			
-			if (renderSession.clearRenderDirty) {
+			if (renderer.__stage != null) {
 				
 				for (child in __children) {
 					
-					child.__renderGL (renderSession);
+					child.__renderGL (renderer);
 					child.__renderDirty = false;
 					
 				}
@@ -862,7 +860,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				for (child in __children) {
 					
-					child.__renderGL (renderSession);
+					child.__renderGL (renderer);
 					
 				}
 				
@@ -884,25 +882,25 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length > 0) {
 			
-			renderSession.filterManager.popObject (this);
-			renderSession.maskManager.popObject (this);
+			// renderer.filterManager.popObject (this);
+			renderer.__popMaskObject (this);
 			
 		}
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		super.__renderGLMask (renderSession);
+		super.__renderGLMask (renderer);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
 		
-		if (renderSession.clearRenderDirty) {
+		if (renderer.__stage != null) {
 			
 			for (child in __children) {
 				
-				child.__renderGLMask (renderSession);
+				child.__renderGLMask (renderer);
 				child.__renderDirty = false;
 				
 			}
@@ -913,7 +911,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__renderGLMask (renderSession);
+				child.__renderGLMask (renderer);
 				
 			}
 			
@@ -983,15 +981,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics);
+		super.__update (transformOnly, updateChildren);
 		
 		if (updateChildren) {
 			
 			for (child in __children) {
 				
-				child.__update (transformOnly, true, maskGraphics);
+				child.__update (transformOnly, true);
 				
 			}
 			

@@ -1,7 +1,7 @@
 package openfl.filters;
 
 
-import openfl._internal.renderer.RenderSession;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 
 
@@ -39,7 +39,7 @@ class ShaderFilter extends BitmapFilter {
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
 		return shader;
 		

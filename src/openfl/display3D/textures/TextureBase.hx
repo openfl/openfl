@@ -46,7 +46,7 @@ class TextureBase extends EventDispatcher {
 		__context = context;
 		//__textureTarget = target;
 		
-		GLTextureBase.create (this, __context.__renderSession);
+		GLTextureBase.create (this, cast __context.__renderer);
 		
 		// __memoryUsage = 0;
 		// __compressedMemoryUsage = 0;
@@ -56,14 +56,14 @@ class TextureBase extends EventDispatcher {
 	
 	public function dispose ():Void {
 		
-		GLTextureBase.dispose (this, __context.__renderSession);
+		GLTextureBase.dispose (this, cast __context.__renderer);
 		
 	}
 	
 	
 	private function __getImage (bitmapData:BitmapData):Image {
 		
-		return GLTextureBase.getImage (this, __context.__renderSession, bitmapData);
+		return GLTextureBase.getImage (this, cast __context.__renderer, bitmapData);
 		
 	}
 	
@@ -77,7 +77,7 @@ class TextureBase extends EventDispatcher {
 	
 	private function __setSamplerState (state:SamplerState):Void {
 		
-		GLTextureBase.setSamplerState (this, __context.__renderSession, state);
+		GLTextureBase.setSamplerState (this, cast __context.__renderer, state);
 		
 	}
 	

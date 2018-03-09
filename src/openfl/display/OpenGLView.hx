@@ -3,12 +3,6 @@ package openfl.display;
 
 import lime.graphics.opengl.GL;
 import lime.graphics.GLRenderContext;
-
-#if !flash
-import openfl._internal.renderer.dom.DOMRenderer;
-import openfl._internal.renderer.opengl.GLShaderManager;
-import openfl._internal.renderer.RenderSession;
-#end
 import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
@@ -100,7 +94,7 @@ import js.Browser;
 	
 	
 	#if !flash
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		/*if (!__added) {
 			
@@ -116,7 +110,7 @@ import js.Browser;
 	
 	
 	#if !flash
-	private override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
@@ -146,10 +140,10 @@ import js.Browser;
 					
 				}*/
 				
-				renderSession.element.appendChild (__canvas);
+				renderer.element.appendChild (__canvas);
 				__added = true;
 				
-				DOMRenderer.initializeElement (this, __canvas, renderSession);
+				renderer.__initializeElement (this, __canvas);
 				
 			}
 			
@@ -173,13 +167,13 @@ import js.Browser;
 				
 			}
 			
-			//__applyStyle (renderSession, true, false, true);
+			//__applyStyle (renderer, true, false, true);
 			
 		} else {
 			
 			if (__added) {
 				
-				renderSession.element.removeChild (__canvas);
+				renderer.element.removeChild (__canvas);
 				__added = false;
 				
 			}
@@ -192,7 +186,7 @@ import js.Browser;
 	
 	
 	#if !flash
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		if (stage != null && __renderable) {
 			
@@ -208,9 +202,8 @@ import js.Browser;
 				
 			}
 			
-			var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-			shaderManager.setShader (null);
-			renderSession.blendModeManager.setBlendMode (null);
+			renderer.setShader (null);
+			renderer.__setBlendMode (null);
 			
 			if (__render != null) __render (rect);
 			
@@ -219,7 +212,7 @@ import js.Browser;
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
 		
 		

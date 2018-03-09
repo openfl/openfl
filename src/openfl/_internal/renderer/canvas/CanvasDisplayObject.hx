@@ -2,6 +2,7 @@ package openfl._internal.renderer.canvas;
 
 
 import lime.math.color.ARGB;
+import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
 
 @:access(openfl.display.DisplayObject)
@@ -11,7 +12,7 @@ import openfl.display.DisplayObject;
 class CanvasDisplayObject {
 	
 	
-	public static inline function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
+	public static inline function render (displayObject:DisplayObject, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
@@ -19,26 +20,24 @@ class CanvasDisplayObject {
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
-			renderSession.blendModeManager.setBlendMode (displayObject.__worldBlendMode);
-			renderSession.maskManager.pushObject (displayObject);
+			renderer.__setBlendMode (displayObject.__worldBlendMode);
+			renderer.__pushMaskObject (displayObject);
 			
-			var context = renderSession.context;
-			var transform = displayObject.__renderTransform;
+			var context = renderer.context;
 			
-			var renderer:CanvasRenderer = cast renderSession.renderer;
-			renderer.setTransform (context, transform);
+			renderer.setTransform (displayObject.__renderTransform, context);
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
 			context.fillStyle = 'rgb(${color.r},${color.g},${color.b})';
 			context.fillRect (0, 0, displayObject.width, displayObject.height);
 			
-			renderSession.maskManager.popObject (displayObject);
+			renderer.__popMaskObject (displayObject);
 			
 		}
 		
 		if (displayObject.__graphics != null) {
 			
-			CanvasShape.render (displayObject, renderSession);
+			CanvasShape.render (displayObject, renderer);
 			
 		}
 		#end

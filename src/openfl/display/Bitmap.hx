@@ -5,7 +5,6 @@ import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
-import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -154,129 +153,129 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
-	private override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			CairoBitmap.render (__cacheBitmap, renderSession);
+			CairoBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			CairoBitmap.render (this, renderSession);
+			CairoBitmap.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		#end
 		
 	}
 	
 	
-	private override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderer:CairoRenderer):Void {
 		
-		renderSession.cairo.rectangle (0, 0, width, height);
+		renderer.cairo.rectangle (0, 0, width, height);
 		
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			CanvasBitmap.render (__cacheBitmap, renderSession);
+			CanvasBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			CanvasBitmap.render (this, renderSession);
+			CanvasBitmap.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
-		renderSession.context.rect (0, 0, width, height);
+		renderer.context.rect (0, 0, width, height);
 		
 	}
 	
 	
-	private override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			__renderDOMClear (renderSession);
+			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
 			
-			DOMBitmap.render (__cacheBitmap, renderSession);
+			DOMBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			DOMBitmap.render (this, renderSession);
+			DOMBitmap.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderDOMClear (renderSession: RenderSession):Void {
+	private override function __renderDOMClear (renderer:DOMRenderer):Void {
 		
-		DOMBitmap.clear (this, renderSession);
+		DOMBitmap.clear (this, renderer);
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, false);
+		__updateCacheBitmap (renderer, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			GLBitmap.render (__cacheBitmap, renderSession);
+			GLBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			GLBitmap.render (this, renderSession);
+			GLBitmap.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, false);
+		__updateCacheBitmap (renderer, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			GLBitmap.renderMask (__cacheBitmap, renderSession);
+			GLBitmap.renderMask (__cacheBitmap, renderer);
 			
 		} else {
 			
-			GLBitmap.renderMask (this, renderSession);
+			GLBitmap.renderMask (this, renderer);
 			
 		}
 		
 	}
 	
 	
-	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
+	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		if (__filters == null) return false;
-		return super.__updateCacheBitmap (renderSession, force);
+		return super.__updateCacheBitmap (renderer, force);
 		
 	}
 	

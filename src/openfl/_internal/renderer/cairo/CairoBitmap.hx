@@ -5,8 +5,8 @@ import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.display.CairoRenderer;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -22,26 +22,25 @@ import openfl.display.Bitmap;
 class CairoBitmap {
 	
 	
-	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
+	public static inline function render (bitmap:Bitmap, renderer:CairoRenderer):Void {
 		
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
-			var renderer:CairoRenderer = cast renderSession.renderer;
-			var cairo = renderSession.cairo;
+			var cairo = renderer.cairo;
 			
-			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
-			renderSession.maskManager.pushObject (bitmap);
+			renderer.__setBlendMode (bitmap.__worldBlendMode);
+			renderer.__pushMaskObject (bitmap);
 			
-			cairo.matrix = renderer.getMatrix (bitmap.__renderTransform, true);
+			renderer.applyMatrix (bitmap.__renderTransform, cairo);
 			
 			var surface = bitmap.__bitmapData.getSurface ();
 			
 			if (surface != null) {
 				
 				var pattern = CairoPattern.createForSurface (surface);
-				pattern.filter = (renderSession.allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = (renderer.__allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				cairo.source = pattern;
 				
@@ -57,7 +56,7 @@ class CairoBitmap {
 				
 			}
 			
-			renderSession.maskManager.popObject (bitmap);
+			renderer.__popMaskObject (bitmap);
 			
 		}
 		

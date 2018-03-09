@@ -2,8 +2,8 @@ package openfl._internal.renderer.canvas;
 
 
 import lime.graphics.utils.ImageCanvasUtil;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.display.CanvasRenderer;
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
@@ -12,28 +12,26 @@ import openfl.display.Bitmap;
 class CanvasBitmap {
 	
 	
-	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
+	public static inline function render (bitmap:Bitmap, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
 		
-		var context = renderSession.context;
+		var context = renderer.context;
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable) {
 			
-			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
-			renderSession.maskManager.pushObject (bitmap, false);
+			renderer.__setBlendMode (bitmap.__worldBlendMode);
+			renderer.__pushMaskObject (bitmap, false);
 			
 			ImageCanvasUtil.convertToCanvas (bitmap.__bitmapData.image);
 			
 			context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__renderTransform;
 			var scrollRect = bitmap.__scrollRect;
 			
-			var renderer:CanvasRenderer = cast renderSession.renderer;
-			renderer.setTransform (context, transform);
+			renderer.setTransform (bitmap.__renderTransform, context);
 			
-			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
+			if (!renderer.__allowSmoothing || !bitmap.smoothing) {
 				
 				untyped (context).mozImageSmoothingEnabled = false;
 				//untyped (context).webkitImageSmoothingEnabled = false;
@@ -52,7 +50,7 @@ class CanvasBitmap {
 				
 			}
 			
-			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
+			if (!renderer.__allowSmoothing || !bitmap.smoothing) {
 				
 				untyped (context).mozImageSmoothingEnabled = true;
 				//untyped (context).webkitImageSmoothingEnabled = true;
@@ -61,7 +59,7 @@ class CanvasBitmap {
 				
 			}
 			
-			renderSession.maskManager.popObject (bitmap, false);
+			renderer.__popMaskObject (bitmap, false);
 			
 		}
 		#end

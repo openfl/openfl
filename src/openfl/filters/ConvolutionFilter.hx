@@ -1,9 +1,9 @@
 package openfl.filters;
 
 
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -65,7 +65,7 @@ class ConvolutionFilter extends BitmapFilter {
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
 		// var data = __convolutionShader.data;
 		

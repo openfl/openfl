@@ -1,9 +1,9 @@
 package openfl.filters;
 
 
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -49,9 +49,10 @@ class BitmapFilter {
 	}
 	
 	
-	private function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
-		return renderSession.shaderManager.defaultShader;
+		// return renderer.__defaultShader;
+		return null;
 		
 	}
 	

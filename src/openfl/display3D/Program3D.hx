@@ -60,14 +60,14 @@ import openfl.Vector;
 	
 	public function dispose ():Void {
 		
-		GLProgram3D.dispose (this, __context.__renderSession);
+		GLProgram3D.dispose (this, cast __context.__renderer);
 		
 	}
 	
 	
 	public function upload (vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
 		
-		GLProgram3D.upload (this, __context.__renderSession, vertexProgram, fragmentProgram);
+		GLProgram3D.upload (this, cast __context.__renderer, vertexProgram, fragmentProgram);
 		
 	}
 	
@@ -106,14 +106,14 @@ import openfl.Vector;
 		
 		if (__positionScale != null) {
 			
-			GLProgram3D.setPositionScale (this, __context.__renderSession, positionScale);
+			GLProgram3D.setPositionScale (this, cast __context.__renderer, positionScale);
 			
 		}
 		
 	}
 	
 	
-	public function __setSamplerState (sampler:Int, state:SamplerState):Void {
+	private function __setSamplerState (sampler:Int, state:SamplerState):Void {
 		
 		__samplerStates[sampler] = state;
 		
@@ -122,7 +122,7 @@ import openfl.Vector;
 	
 	private function __use ():Void {
 		
-		GLProgram3D.use (this, __context.__renderSession);
+		GLProgram3D.use (this, cast __context.__renderer);
 		
 	}
 	

@@ -10,9 +10,9 @@ import lime.graphics.cairo.CairoGlyph;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoHintStyle;
 import lime.graphics.cairo.CairoImageSurface;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
 import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -33,15 +33,13 @@ import openfl.text.TextFormat;
 class CairoTextField {
 	
 	
-	public static function render (textField:TextField, renderSession:RenderSession, transform:Matrix) {
+	public static function render (textField:TextField, renderer:CairoRenderer, transform:Matrix) {
 		
 		#if lime_cairo
 		
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
-		
-		var renderer:CairoRenderer = cast renderSession.renderer;
 		var cairo = graphics.__cairo;
 		
 		if (textField.__dirty) {
@@ -123,7 +121,7 @@ class CairoTextField {
 			
 		}
 		
-		cairo.matrix = renderer.getMatrix (graphics.__renderTransform, false);
+		renderer.applyMatrix (graphics.__renderTransform, cairo);
 		
 		if (textEngine.border) {
 			

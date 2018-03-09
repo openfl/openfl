@@ -8,6 +8,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -36,15 +37,14 @@ class GLGraphics {
 	private static var tempColorTransform = new ColorTransform (0, 0, 0, 1, 0, 0, 0, 0);
 	
 	
-	private static function buildBuffer (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
+	private static function buildBuffer (graphics:Graphics, renderer:OpenGLRenderer, parentTransform:Matrix, worldAlpha:Float):Void {
 		
 		var bufferLength = 0;
 		var bufferPosition = 0;
 		
 		var data = new DrawCommandReader (graphics.__commands);
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		var gl:WebGLContext = renderSession.gl;
+		var gl:WebGLContext = renderer.gl;
 		
 		var tileRect = Rectangle.__pool.get ();
 		var tileTransform = Matrix.__pool.get ();
@@ -288,7 +288,7 @@ class GLGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
+	public static function render (graphics:Graphics, renderer:OpenGLRenderer, parentTransform:Matrix, worldAlpha:Float):Void {
 		
 		if (!isCompatible (graphics, parentTransform)) {
 			
@@ -299,12 +299,10 @@ class GLGraphics {
 				
 			}
 			
-			var renderer:GLRenderer = cast renderSession.renderer;
-			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, renderer.softwareRenderSession, parentTransform);
+			CanvasGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderer.softwareRenderSession, parentTransform);
+			CairoGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
 			#end
 			
 		} else {
@@ -322,16 +320,14 @@ class GLGraphics {
 				
 				if (graphics.__dirty || graphics.__bufferData == null) {
 					
-					buildBuffer (graphics, renderSession, parentTransform, worldAlpha);
+					buildBuffer (graphics, renderer, parentTransform, worldAlpha);
 					updatedBuffer = true;
 					
 				}
 				
 				var data = new DrawCommandReader (graphics.__commands);
 				
-				var renderer:GLRenderer = cast renderSession.renderer;
-				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-				var gl:WebGLContext = renderSession.gl;
+				var gl:WebGLContext = renderer.gl;
 				
 				var matrix = Matrix.__pool.get ();
 				
@@ -404,13 +400,13 @@ class GLGraphics {
 								matrix.ty = y;
 								matrix.concat (parentTransform);
 								
-								var shader = shaderManager.initGraphicsShader (null);
-								shaderManager.setGraphicsShader (shader);
-								shaderManager.applyMatrix (renderer.getMatrix (matrix));
-								shaderManager.applyBitmapData (blankBitmapData, renderSession.allowSmoothing);
-								shaderManager.applyAlpha (color.a / 0xFF);
-								shaderManager.applyColorTransform (tempColorTransform);
-								shaderManager.updateShader ();
+								var shader = renderer.__initGraphicsShader (null);
+								renderer.setGraphicsShader (shader);
+								renderer.applyMatrix (renderer.__getMatrix (matrix));
+								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing);
+								renderer.applyAlpha (color.a / 0xFF);
+								renderer.applyColorTransform (tempColorTransform);
+								renderer.updateShader ();
 								
 								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (cast gl));
 								gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
@@ -421,7 +417,7 @@ class GLGraphics {
 									GLStats.incrementDrawCall (DrawCallContext.STAGE);
 								#end
 								
-								shaderManager.clear ();
+								renderer.__clearShader ();
 								
 							}
 						
@@ -440,29 +436,29 @@ class GLGraphics {
 								// matrix.copyFrom (graphics.__renderTransform);
 								// matrix.concat (parentTransform);
 								
-								var uMatrix = renderer.getMatrix (parentTransform);
-								var smoothing = (renderSession.allowSmoothing && smooth);
+								var uMatrix = renderer.__getMatrix (parentTransform);
+								var smoothing = (renderer.__allowSmoothing && smooth);
 								var shader;
 								
 								if (shaderBuffer != null) {
 									
-									shader = shaderManager.initShaderBuffer (shaderBuffer);
+									shader = renderer.__initShaderBuffer (shaderBuffer);
 									
-									shaderManager.setShaderBuffer (shaderBuffer);
-									shaderManager.applyMatrix (uMatrix);
-									shaderManager.applyAlpha (1);
-									shaderManager.applyColorTransform (null);
-									shaderManager.updateShaderBuffer ();
+									renderer.__setShaderBuffer (shaderBuffer);
+									renderer.applyMatrix (uMatrix);
+									renderer.applyAlpha (1);
+									renderer.applyColorTransform (null);
+									renderer.__updateShaderBuffer ();
 									
 								} else {
 									
-									shader = shaderManager.initGraphicsShader (null);
-									shaderManager.setGraphicsShader (shader);
-									shaderManager.applyMatrix (uMatrix);
-									shaderManager.applyBitmapData (bitmap, smoothing);
-									shaderManager.applyAlpha (graphics.__owner.__worldAlpha);
-									shaderManager.applyColorTransform (graphics.__owner.__worldColorTransform);
-									shaderManager.updateShader ();
+									shader = renderer.__initGraphicsShader (null);
+									renderer.setGraphicsShader (shader);
+									renderer.applyMatrix (uMatrix);
+									renderer.applyBitmapData (bitmap, smoothing);
+									renderer.applyAlpha (graphics.__owner.__worldAlpha);
+									renderer.applyColorTransform (graphics.__owner.__worldColorTransform);
+									renderer.updateShader ();
 									
 								}
 								
@@ -491,7 +487,7 @@ class GLGraphics {
 									GLStats.incrementDrawCall (DrawCallContext.STAGE);
 								#end
 								
-								shaderManager.clear ();
+								renderer.__clearShader ();
 								
 							}
 						
@@ -526,14 +522,14 @@ class GLGraphics {
 	}
 	
 	
-	public static function renderMask (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix, worldAlpha:Float):Void {
+	public static function renderMask (graphics:Graphics, renderer:OpenGLRenderer, parentTransform:Matrix, worldAlpha:Float):Void {
 		
 		// TODO: Support invisible shapes
 		
 		#if (js && html5)
-		CanvasGraphics.render (graphics, renderSession, parentTransform);
+		CanvasGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
 		#elseif lime_cairo
-		CairoGraphics.render (graphics, renderSession, parentTransform);
+		CairoGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
 		#end
 		
 	}

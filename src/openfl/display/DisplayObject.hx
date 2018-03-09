@@ -14,8 +14,6 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
-import openfl._internal.renderer.opengl.GLShaderManager;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -744,33 +742,33 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __renderCairo (renderSession:RenderSession):Void {
+	private function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			CairoBitmap.render (__cacheBitmap, renderSession);
+			CairoBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			CairoDisplayObject.render (this, renderSession);
+			CairoDisplayObject.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		#end
 		
 	}
 	
 	
-	private function __renderCairoMask (renderSession:RenderSession):Void {
+	private function __renderCairoMask (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		if (__graphics != null) {
 			
-			CairoGraphics.renderMask (__graphics, renderSession);
+			CairoGraphics.renderMask (__graphics, renderer);
 			
 		}
 		#end
@@ -778,160 +776,159 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __renderCanvas (renderSession:RenderSession):Void {
+	private function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+			__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
-				CanvasBitmap.render (__cacheBitmap, renderSession);
+				CanvasBitmap.render (__cacheBitmap, renderer);
 				
 			} else {
 				
-				CanvasDisplayObject.render (this, renderSession);
+				CanvasDisplayObject.render (this, renderer);
 				
 			}
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private function __renderCanvasMask (renderSession:RenderSession):Void {
+	private function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
 		if (__graphics != null) {
 			
-			CanvasGraphics.renderMask (__graphics, renderSession);
+			CanvasGraphics.renderMask (__graphics, renderer);
 			
 		}
 		
 	}
 	
 	
-	private function __renderDOM (renderSession:RenderSession):Void {
+	private function __renderDOM (renderer:DOMRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			__renderDOMClear (renderSession);
+			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
 			
-			DOMBitmap.render (__cacheBitmap, renderSession);
+			DOMBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			DOMDisplayObject.render (this, renderSession);
+			DOMDisplayObject.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private function __renderDOMClear (renderSession:RenderSession):Void {
+	private function __renderDOMClear (renderer:DOMRenderer):Void {
 		
-		DOMDisplayObject.clear (this, renderSession);
+		DOMDisplayObject.clear (this, renderer);
 		
 	}
 	
 	
-	private function __renderEvent (renderSession:RenderSession):Void {
+	private function __renderEvent (renderer:DisplayObjectRenderer):Void {
 		
 		if (__customRenderEvent != null && __renderable) {
 			
-			__customRenderEvent.allowSmoothing = renderSession.allowSmoothing;
-			__customRenderEvent.renderTransform.copyFrom (__renderTransform);
-			__customRenderEvent.worldColorTransform.__copyFrom (__worldColorTransform);
-			__customRenderEvent.worldTransform.copyFrom (__worldTransform);
-			__customRenderEvent.__renderSession = renderSession;
+			__customRenderEvent.allowSmoothing = renderer.__allowSmoothing;
+			__customRenderEvent.objectMatrix.copyFrom (__renderTransform);
+			__customRenderEvent.objectColorTransform.__copyFrom (__worldColorTransform);
+			__customRenderEvent.renderer = renderer;
 			
-			if (renderSession.gl != null) {
+			// if (renderer.gl != null) {
 				
-				var shaderManager:GLShaderManager = cast renderSession.shaderManager;
-				shaderManager.setShader (__worldRenderShader);
+			// 	var shaderManager:GLShaderManager = cast renderer.shaderManager;
+			// 	shaderManager.setShader (__worldRenderShader);
 				
-				__customRenderEvent.gl = renderSession.gl;
-				__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
+			// 	__customRenderEvent.gl = renderer.gl;
+			// 	__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
 				
-			} else if (renderSession.cairo != null) {
+			// } else if (renderer.cairo != null) {
 				
-				__customRenderEvent.cairo = renderSession.cairo;
-				__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
+			// 	__customRenderEvent.cairo = renderer.cairo;
+			// 	__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
 				
-			} else if (renderSession.element != null) {
+			// } else if (renderer.element != null) {
 				
-				__customRenderEvent.element = renderSession.element;
+			// 	__customRenderEvent.element = renderer.element;
 				
-				if (stage != null && __worldVisible) {
+			// 	if (stage != null && __worldVisible) {
 					
-					__customRenderEvent.type = RenderEvent.RENDER_DOM;
+			// 		__customRenderEvent.type = RenderEvent.RENDER_DOM;
 					
-				} else {
+			// 	} else {
 					
-					__customRenderEvent.type = RenderEvent.CLEAR_DOM;
+			// 		__customRenderEvent.type = RenderEvent.CLEAR_DOM;
 					
-				}
+			// 	}
 				
-			} else if (renderSession.context != null) {
+			// } else if (renderer.context != null) {
 				
-				__customRenderEvent.context = renderSession.context;
-				__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
+			// 	__customRenderEvent.context = renderer.context;
+			// 	__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
 				
-			}
+			// }
 			
-			renderSession.blendModeManager.setBlendMode (__worldBlendMode);
-			renderSession.maskManager.pushObject (this);
+			// renderer.__setBlendMode (__worldBlendMode);
+			// renderer.__pushMaskObject (this);
 			
-			dispatchEvent (__customRenderEvent);
+			// dispatchEvent (__customRenderEvent);
 			
-			renderSession.maskManager.popObject (this);
+			// renderer.__popMaskObject (this);
 			
-			__customRenderEvent.gl = null;
-			__customRenderEvent.cairo = null;
-			__customRenderEvent.element = null;
-			__customRenderEvent.context = null;
+			// __customRenderEvent.gl = null;
+			// __customRenderEvent.cairo = null;
+			// __customRenderEvent.element = null;
+			// __customRenderEvent.context = null;
 			
 		}
 		
 	}
 	
 	
-	private function __renderGL (renderSession:RenderSession):Void {
+	private function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, false);
+		__updateCacheBitmap (renderer, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			GLBitmap.render (__cacheBitmap, renderSession);
+			GLBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			GLDisplayObject.render (this, renderSession);
+			GLDisplayObject.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private function __renderGLMask (renderSession:RenderSession):Void {
+	private function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, false);
+		__updateCacheBitmap (renderer, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			GLBitmap.renderMask (__cacheBitmap, renderSession);
+			GLBitmap.renderMask (__cacheBitmap, renderer);
 			
 		} else {
 			
-			GLDisplayObject.renderMask (this, renderSession);
+			GLDisplayObject.renderMask (this, renderer);
 			
 		}
 		
@@ -998,7 +995,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	private function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
@@ -1010,12 +1007,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__transformDirty = false;
 			
 		//}
-		
-		if (maskGraphics != null) {
-			
-			__updateMask (maskGraphics);
-			
-		}
 		
 		if (!transformOnly) {
 			
@@ -1107,14 +1098,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (updateChildren && mask != null) {
 			
-			mask.__update (transformOnly, true, maskGraphics);
+			mask.__update (transformOnly, true);
 			
 		}
 		
 	}
 	
 	
-	private function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
+	private function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		if (__cacheBitmapRender) return false;
 		
@@ -1122,7 +1113,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var matrix = null, rect = null;
 			
-			//if (!renderSession.lockTransform) __getWorldTransform ();
+			//if (!renderer.lockTransform) __getWorldTransform ();
 			__update (false, true);
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
@@ -1212,7 +1203,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			__cacheBitmap.smoothing = renderSession.allowSmoothing;
+			__cacheBitmap.smoothing = renderer.__allowSmoothing;
 			__cacheBitmap.__renderable = __renderable;
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
@@ -1225,7 +1216,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmapRender = true;
 				
-				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
+				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderer.__allowSmoothing);
 				
 				if (hasFilters) {
 					
@@ -1318,9 +1309,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		} else if (__cacheBitmap != null) {
 			
-			if (renderSession.renderType == DOM) {
+			if (renderer.__type == DOM) {
 				
-				__cacheBitmap.__renderDOMClear (renderSession);
+				__cacheBitmap.__renderDOMClear (cast renderer);
 				
 			}
 			
@@ -1337,7 +1328,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	public function __updateChildren (transformOnly:Bool):Void {
+	private function __updateChildren (transformOnly:Bool):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
@@ -1354,7 +1345,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	public function __updateMask (maskGraphics:Graphics):Void {
+	private function __updateMask (maskGraphics:Graphics):Void {
 		
 		if (__graphics != null) {
 			
@@ -1376,7 +1367,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	public function __updateTransforms (overrideTransform:Matrix = null):Void {
+	private function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		var overrided = overrideTransform != null;
 		var local = overrided ? overrideTransform : __transform;

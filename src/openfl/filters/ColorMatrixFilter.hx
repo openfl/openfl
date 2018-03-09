@@ -3,8 +3,8 @@ package openfl.filters;
 
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.color.RGBA;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -111,7 +111,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
 		return null;
 		//__colorMatrixShader.init (matrix);

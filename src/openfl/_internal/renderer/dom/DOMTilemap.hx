@@ -2,6 +2,7 @@ package openfl._internal.renderer.dom;
 
 
 import openfl._internal.renderer.canvas.CanvasTilemap;
+import openfl.display.DOMRenderer;
 import openfl.display.Tilemap;
 import openfl.geom.Matrix;
 
@@ -17,12 +18,12 @@ import js.Browser;
 class DOMTilemap {
 	
 	
-	public static function clear (tilemap:Tilemap, renderSession:RenderSession):Void {
+	public static function clear (tilemap:Tilemap, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (tilemap.__canvas != null) {
 			
-			renderSession.element.removeChild (tilemap.__canvas);
+			renderer.element.removeChild (tilemap.__canvas);
 			tilemap.__canvas = null;
 			tilemap.__style = null;
 			
@@ -32,7 +33,7 @@ class DOMTilemap {
 	}
 	
 	
-	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
+	public static inline function render (tilemap:Tilemap, renderer:DOMRenderer):Void {
 		
 		// TODO: Support GL-based Tilemap?
 		
@@ -43,25 +44,25 @@ class DOMTilemap {
 				
 				tilemap.__canvas = cast Browser.document.createElement ("canvas");
 				tilemap.__context = tilemap.__canvas.getContext ("2d");
-				DOMRenderer.initializeElement (tilemap, tilemap.__canvas, renderSession);
+				renderer.__initializeElement (tilemap, tilemap.__canvas, renderer);
 				
 			}
 			
 			tilemap.__canvas.width = tilemap.__width;
 			tilemap.__canvas.height = tilemap.__height;
 			
-			renderSession.context = tilemap.__context;
+			renderer.__canvasRenderer.context = tilemap.__context;
 			
-			CanvasTilemap.render (tilemap, renderSession);
+			CanvasTilemap.render (tilemap, renderer.__canvasRenderer);
 			
-			renderSession.context = null;
+			renderer.__canvasRenderer.context = null;
 			
-			DOMRenderer.updateClip (tilemap, renderSession);
-			DOMRenderer.applyStyle (tilemap, renderSession, true, false, true);
+			renderer.__updateClip (tilemap);
+			renderer.__applyStyle (tilemap, true, false, true);
 			
 		} else {
 			
-			clear (tilemap, renderSession);
+			clear (tilemap, renderer);
 			
 		}
 		#end

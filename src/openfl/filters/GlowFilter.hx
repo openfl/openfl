@@ -2,8 +2,8 @@ package openfl.filters;
 
 
 import lime.graphics.utils.ImageDataUtil;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
@@ -101,7 +101,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
 		// var data = __glowShader.data;
 		

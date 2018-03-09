@@ -18,9 +18,7 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
-import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.GLTextField;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
@@ -28,10 +26,15 @@ import openfl._internal.text.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
+import openfl.display.CanvasRenderer;
+import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.DisplayObjectShader;
+import openfl.display.DOMRenderer;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Shader;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -1396,35 +1399,35 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			CairoBitmap.render (__cacheBitmap, renderSession);
+			CairoBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			CairoTextField.render (this, renderSession, __worldTransform);
-			CairoDisplayObject.render (this, renderSession);
+			CairoTextField.render (this, renderer, __worldTransform);
+			CairoDisplayObject.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		#end
 		
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		
 		// TODO: Better DOM workaround on cacheAsBitmap
 		
-		if (renderSession.renderType == DOM && !__renderedOnCanvasWhileOnDOM) {
+		if (renderer.__isDOM && !__renderedOnCanvasWhileOnDOM) {
 			
 			__renderedOnCanvasWhileOnDOM = true;
 			
@@ -1448,41 +1451,41 @@ class TextField extends InteractiveObject {
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+			__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 			
 			if (__cacheBitmap != null && !__cacheBitmapRender) {
 				
-				CanvasBitmap.render (__cacheBitmap, renderSession);
+				CanvasBitmap.render (__cacheBitmap, renderer);
 				
 			} else {
 				
-				CanvasTextField.render (this, renderSession, __worldTransform);
+				CanvasTextField.render (this, renderer, __worldTransform);
 				
 				var smoothingEnabled = false;
 				
 				if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
 					
-					smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
+					smoothingEnabled = untyped (renderer.context).imageSmoothingEnabled;
 					
 					if (smoothingEnabled) {
 						
-						untyped (renderSession.context).mozImageSmoothingEnabled = false;
-						//untyped (renderSession.context).webkitImageSmoothingEnabled = false;
-						untyped (renderSession.context).msImageSmoothingEnabled = false;
-						untyped (renderSession.context).imageSmoothingEnabled = false;
+						untyped (renderer.context).mozImageSmoothingEnabled = false;
+						//untyped (renderer.context).webkitImageSmoothingEnabled = false;
+						untyped (renderer.context).msImageSmoothingEnabled = false;
+						untyped (renderer.context).imageSmoothingEnabled = false;
 						
 					}
 					
 				}
 				
-				CanvasDisplayObject.render (this, renderSession);
+				CanvasDisplayObject.render (this, renderer);
 				
 				if (smoothingEnabled) {
 					
-					untyped (renderSession.context).mozImageSmoothingEnabled = true;
-					//untyped (renderSession.context).webkitImageSmoothingEnabled = true;
-					untyped (renderSession.context).msImageSmoothingEnabled = true;
-					untyped (renderSession.context).imageSmoothingEnabled = true;
+					untyped (renderer.context).mozImageSmoothingEnabled = true;
+					//untyped (renderer.context).webkitImageSmoothingEnabled = true;
+					untyped (renderer.context).msImageSmoothingEnabled = true;
+					untyped (renderer.context).imageSmoothingEnabled = true;
 					
 				}
 				
@@ -1495,20 +1498,20 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		__domRender = true;
-		__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
 		__forceCachedBitmapUpdate = false;
 		__domRender = false;
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			__renderDOMClear (renderSession);
+			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
 			
-			DOMBitmap.render (__cacheBitmap, renderSession);
+			DOMBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
@@ -1527,48 +1530,48 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			DOMTextField.render (this, renderSession);
+			DOMTextField.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		#end
 		
 	}
 	
 	
-	private override function __renderDOMClear (renderSession:RenderSession):Void {
+	private override function __renderDOMClear (renderer:DOMRenderer):Void {
 		
-		DOMTextField.clear (this, renderSession);
+		DOMTextField.clear (this, renderer);
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, false);
+		__updateCacheBitmap (renderer, false);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) {
 			
-			GLBitmap.render (__cacheBitmap, renderSession);
+			GLBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			GLTextField.render (this, renderSession, __worldTransform);
-			GLDisplayObject.render (this, renderSession);
+			GLTextField.render (this, renderer, __worldTransform);
+			GLDisplayObject.render (this, renderer);
 			
 		}
 		
-		__renderEvent (renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		GLTextField.render (this, renderSession, __worldTransform);
+		GLTextField.render (this, renderer, __worldTransform);
 		
-		super.__renderGLMask (renderSession);
+		super.__renderGLMask (renderer);
 		
 	}
 	
@@ -1636,11 +1639,11 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
+	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		if (__filters == null && !__domRender) return false;
 		
-		if (super.__updateCacheBitmap (renderSession, force || __dirty)) {
+		if (super.__updateCacheBitmap (renderer, force || __dirty)) {
 			
 			if (__cacheBitmap != null) {
 				

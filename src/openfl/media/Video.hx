@@ -9,10 +9,13 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.opengl.GLVideo;
-import openfl._internal.renderer.RenderSession;
+import openfl.display.CanvasRenderer;
+import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectShader;
+import openfl.display.DOMRenderer;
 import openfl.display.Graphics;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -351,33 +354,33 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
-		CanvasVideo.render (this, renderSession);
-		__renderEvent (renderSession);
-		
-	}
-	
-	
-	private override function __renderDOM (renderSession:RenderSession):Void {
-		
-		DOMVideo.render (this, renderSession);
-		__renderEvent (renderSession);
+		CanvasVideo.render (this, renderer);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		GLVideo.render (this, renderSession);
-		__renderEvent (renderSession);
+		DOMVideo.render (this, renderer);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		GLVideo.renderMask (this, renderSession);
+		GLVideo.render (this, renderer);
+		__renderEvent (renderer);
+		
+	}
+	
+	
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
+		
+		GLVideo.renderMask (this, renderer);
 		
 	}
 	

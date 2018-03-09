@@ -5,7 +5,6 @@ import lime.utils.ArrayBufferView;
 import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
 import lime.graphics.GLRenderContext;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.atf.ATFReader;
 import openfl._internal.stage3D.atf.ATFGPUFormat;
 import openfl._internal.stage3D.GLUtils;
@@ -14,6 +13,7 @@ import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
@@ -30,9 +30,9 @@ import openfl.utils.ByteArray;
 class GLCubeTexture {
 	
 	
-	public static function create (cubeTexture:CubeTexture, renderSession:RenderSession):Void {
+	public static function create (cubeTexture:CubeTexture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.gl;
 		
 		cubeTexture.__textureTarget = gl.TEXTURE_CUBE_MAP;
 		cubeTexture.__uploadedSides = 0;
@@ -40,12 +40,12 @@ class GLCubeTexture {
 	}
 	
 	
-	public static function uploadCompressedTextureFromByteArray (cubeTexture:CubeTexture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
+	public static function uploadCompressedTextureFromByteArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var reader = new ATFReader (data, byteArrayOffset);
 		var alpha = reader.readHeader (cubeTexture.__size, cubeTexture.__size, true);
 		
-		var gl = renderSession.gl;
+		var gl = renderer.gl;
 		
 		gl.bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureID);
 		GLUtils.CheckGLError ();
@@ -111,7 +111,7 @@ class GLCubeTexture {
 	}
 	
 	
-	public static function uploadFromBitmapData (cubeTexture:CubeTexture, renderSession:RenderSession, source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
+	public static function uploadFromBitmapData (cubeTexture:CubeTexture, renderer:OpenGLRenderer, source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
 		var size = cubeTexture.__size >> miplevel;
 		if (size == 0) return;
@@ -126,31 +126,31 @@ class GLCubeTexture {
 		
 		var image = cubeTexture.__getImage (source);
 		
-		uploadFromTypedArray (cubeTexture, renderSession, image.data, side, miplevel);
+		uploadFromTypedArray (cubeTexture, renderer, image.data, side, miplevel);
 		
 	}
 	
 	
-	public static function uploadFromByteArray (cubeTexture:CubeTexture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt):Void {
+	public static function uploadFromByteArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt):Void {
 		
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (cubeTexture, renderSession, @:privateAccess (data:ByteArrayData).b, side, miplevel);
+			uploadFromTypedArray (cubeTexture, renderer, @:privateAccess (data:ByteArrayData).b, side, miplevel);
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (cubeTexture, renderSession, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), side, miplevel);
+		uploadFromTypedArray (cubeTexture, renderer, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), side, miplevel);
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (cubeTexture:CubeTexture, renderSession:RenderSession, data:ArrayBufferView, side:UInt, miplevel:UInt):Void {
+	public static function uploadFromTypedArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ArrayBufferView, side:UInt, miplevel:UInt):Void {
 		
 		if (data == null) return;
-		var gl = renderSession.gl;
+		var gl = renderer.gl;
 		
 		var size = cubeTexture.__size >> miplevel;
 		if (size == 0) return;
@@ -174,11 +174,11 @@ class GLCubeTexture {
 	}
 	
 	
-	public static function setSamplerState (cubeTexture:CubeTexture, renderSession:RenderSession, state:SamplerState) {
+	public static function setSamplerState (cubeTexture:CubeTexture, renderer:OpenGLRenderer, state:SamplerState) {
 		
 		if (!state.equals (cubeTexture.__samplerState)) {
 			
-			var gl = renderSession.gl;
+			var gl = renderer.gl;
 			
 			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
 				
@@ -198,7 +198,7 @@ class GLCubeTexture {
 			
 		}
 		
-		GLTextureBase.setSamplerState (cubeTexture, renderSession, state);
+		GLTextureBase.setSamplerState (cubeTexture, renderer, state);
 		
 	}
 	

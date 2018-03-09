@@ -4,7 +4,6 @@ package openfl.display;
 import haxe.Timer;
 import lime.graphics.opengl.GL;
 import lime.graphics.GLRenderContext;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.opengl.GLStage3D;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
@@ -100,16 +99,16 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __createContext (stage:Stage, renderSession:RenderSession):Void {
+	private function __createContext (stage:Stage, renderer:DisplayObjectRenderer):Void {
 		
 		__stage = stage;
 		
-		if (renderSession.gl != null) {
+		if (renderer.__type == OPENGL) {
 			
-			context3D = new Context3D (this, renderSession);
+			context3D = new Context3D (this, renderer);
 			__dispatchCreate ();
 			
-		} else {
+		} else if (renderer.__type == DOM) {
 			
 			#if (js && html5)
 			__canvas = cast Browser.document.createElement ("canvas");
@@ -139,20 +138,21 @@ class Stage3D extends EventDispatcher {
 				__webgl = untyped WebGLDebugUtils.makeDebugContext (__webgl);
 				#end
 				
-				// TODO: Need to handle renderSession/context better
+				// TODO: Need to handle renderer/context better
 				
 				__renderContext = new GLRenderContext (cast __webgl);
 				GL.context = __renderContext;
 				
-				context3D = new Context3D (this, renderSession);
+				context3D = new Context3D (this, renderer);
 				
-				renderSession.element.appendChild (__canvas);
+				var renderer:DOMRenderer = cast renderer;
+				renderer.element.appendChild (__canvas);
 				
 				__style = __canvas.style;
 				__style.setProperty ("position", "absolute", null);
 				__style.setProperty ("top", "0", null);
 				__style.setProperty ("left", "0", null);
-				__style.setProperty (renderSession.transformOriginProperty, "0 0 0", null);
+				__style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
 				__style.setProperty ("z-index", "-1", null);
 				
 				__dispatchCreate ();
@@ -190,7 +190,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __renderCairo (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderCairo (stage:Stage, renderer:CairoRenderer):Void {
 		
 		if (!visible) return;
 		
@@ -204,7 +204,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __renderCanvas (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderCanvas (stage:Stage, renderer:CanvasRenderer):Void {
 		
 		if (!visible) return;
 		
@@ -218,13 +218,13 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __renderDOM (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderDOM (stage:Stage, renderer:DOMRenderer):Void {
 		
 		if (!visible) return;
 		
 		if (__contextRequested && context3D == null) {
 			
-			__createContext (stage, renderSession);
+			__createContext (stage, renderer);
 			
 		}
 		
@@ -235,34 +235,34 @@ class Stage3D extends EventDispatcher {
 			#end
 			
 			__resetContext3DStates ();
-			//DOMStage3D.render (this, renderSession);
+			//DOMStage3D.render (this, renderer);
 			
 		}
 		
 	}
 	
 	
-	private function __renderGL (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderGL (stage:Stage, renderer:OpenGLRenderer):Void {
 		
 		if (!visible) return;
 		
 		if (__contextRequested && context3D == null) {
 			
-			__createContext (stage, renderSession);
+			__createContext (stage, renderer);
 			
 		}
 		
 		if (context3D != null) {
 			
 			__resetContext3DStates ();
-			GLStage3D.render (this, renderSession);
+			GLStage3D.render (this, renderer);
 			
 		}
 		
 	}
 	
 	
-	public function __resize (width:Int, height:Int):Void {
+	private function __resize (width:Int, height:Int):Void {
 		
 		#if (js && html5)
 		if (__canvas != null) {
