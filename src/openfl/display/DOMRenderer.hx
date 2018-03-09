@@ -195,14 +195,14 @@ class DOMRenderer extends DisplayObjectRenderer {
 	#end
 	
 	
-	private function __popMask ():Void {
+	private override function __popMask ():Void {
 		
 		__popMaskRect ();
 		
 	}
 	
 	
-	private function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (object.__mask != null) {
 			
@@ -219,7 +219,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __popMaskRect ():Void {
+	private override function __popMaskRect ():Void {
 		
 		if (__numClipRects > 0) {
 			
@@ -240,7 +240,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __pushMask (mask:DisplayObject):Void {
+	private override function __pushMask (mask:DisplayObject):Void {
 		
 		// TODO: Handle true mask shape, as well as alpha test
 		
@@ -249,7 +249,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
@@ -266,7 +266,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		// TODO: Handle rotation?
 		
@@ -333,7 +333,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __setBlendMode (value:BlendMode):Void {
+	private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;
 		

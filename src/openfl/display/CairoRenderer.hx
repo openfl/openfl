@@ -97,14 +97,14 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __popMask ():Void {
+	private override function __popMask ():Void {
 		
 		cairo.restore ();
 		
 	}
 	
 	
-	private function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (!object.__cacheBitmapRender && object.__mask != null) {
 			
@@ -121,7 +121,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __pushMask (mask:DisplayObject):Void {
+	private override function __pushMask (mask:DisplayObject):Void {
 		
 		cairo.save ();
 		
@@ -134,7 +134,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
@@ -151,14 +151,14 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __popMaskRect ():Void {
+	private override function __popMaskRect ():Void {
 		
 		cairo.restore ();
 		
 	}
 	
 	
-	private function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		cairo.save ();
 		
@@ -193,7 +193,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __setBlendMode (value:BlendMode):Void {
+	private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;
 		

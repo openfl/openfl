@@ -240,6 +240,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				if (__customRenderEvent == null) {
 					
 					__customRenderEvent = new RenderEvent (null);
+					__customRenderEvent.objectColorTransform = new ColorTransform ();
+					__customRenderEvent.objectMatrix = new Matrix ();
 					__customRenderClear = true;
 					
 				}
@@ -848,51 +850,46 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__customRenderEvent.objectColorTransform.__copyFrom (__worldColorTransform);
 			__customRenderEvent.renderer = renderer;
 			
-			// if (renderer.gl != null) {
+			switch (renderer.__type) {
 				
-			// 	var shaderManager:GLShaderManager = cast renderer.shaderManager;
-			// 	shaderManager.setShader (__worldRenderShader);
-				
-			// 	__customRenderEvent.gl = renderer.gl;
-			// 	__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
-				
-			// } else if (renderer.cairo != null) {
-				
-			// 	__customRenderEvent.cairo = renderer.cairo;
-			// 	__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
-				
-			// } else if (renderer.element != null) {
-				
-			// 	__customRenderEvent.element = renderer.element;
-				
-			// 	if (stage != null && __worldVisible) {
+				case OPENGL:
 					
-			// 		__customRenderEvent.type = RenderEvent.RENDER_DOM;
-					
-			// 	} else {
-					
-			// 		__customRenderEvent.type = RenderEvent.CLEAR_DOM;
-					
-			// 	}
+					var renderer:OpenGLRenderer = cast renderer;
+					renderer.setShader (__worldRenderShader);
+					__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
 				
-			// } else if (renderer.context != null) {
+				case CAIRO:
+					
+					__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
 				
-			// 	__customRenderEvent.context = renderer.context;
-			// 	__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
+				case DOM:
+					
+					if (stage != null && __worldVisible) {
+						
+						__customRenderEvent.type = RenderEvent.RENDER_DOM;
+						
+					} else {
+						
+						__customRenderEvent.type = RenderEvent.CLEAR_DOM;
+						
+					}
 				
-			// }
+				case CANVAS:
+					
+					__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
+				
+				default:
+					
+					return;
+				
+			}
 			
-			// renderer.__setBlendMode (__worldBlendMode);
-			// renderer.__pushMaskObject (this);
+			renderer.__setBlendMode (__worldBlendMode);
+			renderer.__pushMaskObject (this);
 			
-			// dispatchEvent (__customRenderEvent);
+			dispatchEvent (__customRenderEvent);
 			
-			// renderer.__popMaskObject (this);
-			
-			// __customRenderEvent.gl = null;
-			// __customRenderEvent.cairo = null;
-			// __customRenderEvent.element = null;
-			// __customRenderEvent.context = null;
+			renderer.__popMaskObject (this);
 			
 		}
 		
