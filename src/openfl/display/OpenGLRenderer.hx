@@ -501,7 +501,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		var _matrix = Matrix.__pool.get ();
 		_matrix.copyFrom (transform);
-		_matrix.concat (__displayMatrix);
+		_matrix.concat (__worldTransform);
 		
 		if (__roundPixels) {
 			
@@ -819,7 +819,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
 		
-		__upscaled = (__displayMatrix.a != 1 || __displayMatrix.d != 1);
+		__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 		
 		object.__renderGL (this);
 		
@@ -941,10 +941,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var w = (__defaultRenderTarget == null) ? __stage.stageWidth : __defaultRenderTarget.width;
 		var h = (__defaultRenderTarget == null) ? __stage.stageHeight : __defaultRenderTarget.height;
 		
-		__offsetX = Math.round (__displayMatrix.__transformX (0, 0));
-		__offsetY = Math.round (__displayMatrix.__transformY (0, 0));
-		__displayWidth = Math.round (__displayMatrix.__transformX (w, 0) - __offsetX);
-		__displayHeight = Math.round (__displayMatrix.__transformY (0, h) - __offsetY);
+		__offsetX = Math.round (__worldTransform.__transformX (0, 0));
+		__offsetY = Math.round (__worldTransform.__transformY (0, 0));
+		__displayWidth = Math.round (__worldTransform.__transformX (w, 0) - __offsetX);
+		__displayHeight = Math.round (__worldTransform.__transformY (0, h) - __offsetY);
 		
 		__projection = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
 		__projectionFlipped = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
@@ -959,7 +959,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			gl.enable (gl.SCISSOR_TEST);
 			
 			var clipRect = __tempRect;
-			rect.__transform (clipRect, __displayMatrix);
+			rect.__transform (clipRect, __worldTransform);
 			
 			var x = Math.floor (clipRect.x);
 			var y = Math.floor (__height - clipRect.y - clipRect.height);

@@ -536,7 +536,13 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			renderer.__displayMatrix = displayMatrix;
+			var colorTransform = new ColorTransform ();
+			colorTransform.__copyFrom (source.__worldColorTransform);
+			colorTransform.__invert ();
+			
+			renderer.__worldTransform = displayMatrix;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = colorTransform;
 			
 			if (!smoothing) renderer.applySmoothing (buffer.__srcContext, false);
 			
@@ -616,7 +622,13 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			renderer.__displayMatrix = displayMatrix;
+			var colorTransform = new ColorTransform ();
+			colorTransform.__copyFrom (source.__worldColorTransform);
+			colorTransform.__invert ();
+			
+			renderer.__worldTransform = displayMatrix;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = colorTransform;
 			
 			if (clipRect != null) {
 				
@@ -1668,7 +1680,13 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			renderer.__displayMatrix = displayMatrix;
+			var colorTransform = new ColorTransform ();
+			colorTransform.__copyFrom (source.__worldColorTransform);
+			colorTransform.__invert ();
+			
+			renderer.__worldTransform = displayMatrix;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = colorTransform;
 			
 			if (!smoothing) renderer.applySmoothing (buffer.__srcContext, false);
 			
@@ -1685,13 +1703,9 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var cacheAlpha = source.__worldAlpha;
- 			source.__worldAlpha = 1;
- 			
 			renderer.__render (source);
 			
 			source.__renderable = cacheRenderable;
-			source.__worldAlpha = cacheAlpha;
 			
 			if (!smoothing) renderer.applySmoothing (buffer.__srcContext, true);
 			
@@ -1761,7 +1775,13 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			renderer.__displayMatrix = displayMatrix;
+			var colorTransform = new ColorTransform ();
+			colorTransform.__copyFrom (source.__worldColorTransform);
+			colorTransform.__invert ();
+			
+			renderer.__worldTransform = displayMatrix;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = colorTransform;
 			
 			if (clipRect != null) {
 				
@@ -1782,13 +1802,9 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var cacheAlpha = source.__worldAlpha;
- 			source.__worldAlpha = 1;
- 			
 			renderer.__render (source);
 			
 			source.__renderable = cacheRenderable;
-			source.__worldAlpha = cacheAlpha;
 			
 			// source.__updateTransforms (matrixCache);
 			// source.__updateChildren (true);

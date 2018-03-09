@@ -1023,9 +1023,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			if (!__worldColorTransform.__equals (transform.colorTransform)) {
+			if (__objectTransform != null) {
 				
-				__worldColorTransform = transform.colorTransform.__clone ();
+				__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
 				
 			}
 			
@@ -1258,7 +1258,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
 						
 						if (filter.__preserveObject) {
-							lastBitmap.draw (bitmapData3, null, transform.colorTransform);
+							lastBitmap.draw (bitmapData3, null, __objectTransform != null ? __objectTransform.colorTransform : null);
 						}
 						filter.__renderDirty = false;
 						

@@ -155,6 +155,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			"frameRate": { get: untyped __js__ ("function () { return this.get_frameRate (); }"), set: untyped __js__ ("function (v) { return this.set_frameRate (v); }") },
 			"fullScreenHeight": { get: untyped __js__ ("function () { return this.get_fullScreenHeight (); }") },
 			"fullScreenWidth": { get: untyped __js__ ("function () { return this.get_fullScreenWidth (); }") },
+			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
+			"scaleMode": { get: untyped __js__ ("function () { return this.get_scaleMode (); }"), set: untyped __js__ ("function (v) { return this.set_scaleMode (v); }") },
 		});
 		
 	}
@@ -169,6 +171,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		super ();
 		
 		#if commonjs
+		var app = null;
 		
 		if (!Math.isNaN (width)) {
 			
@@ -213,7 +216,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				var app = new Application ();
 				app.create ({});
 				app.createWindow (window);
-				app.exec ();
+				// app.exec ();
 				
 			// } else {
 				
@@ -270,8 +273,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
 		#end
-		quality = StageQuality.HIGH;
-		scaleMode = StageScaleMode.NO_SCALE;
+		__quality = StageQuality.HIGH;
+		__scaleMode = StageScaleMode.NO_SCALE;
 		showDefaultContextMenu = true;
 		softKeyboardRect = new Rectangle ();
 		stageFocusRect = true;
@@ -309,6 +312,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		Application.current.addModule (this);
+		
+		if (app != null) {
+			
+			app.exec ();
+			
+		}
 		#end
 		
 	}
@@ -1071,7 +1080,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (__renderer != null) {
 			
 			__renderer.__allowSmoothing = (quality != LOW);
-			__renderer.__displayMatrix = __displayMatrix;
+			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__stage = this;
 			
 			__renderer.__resize (Std.int (window.width * window.scale), Std.int (window.height * window.scale));

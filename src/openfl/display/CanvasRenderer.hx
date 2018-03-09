@@ -61,10 +61,10 @@ class CanvasRenderer extends DisplayObjectRenderer {
 			
 			context = this.context;
 			
-		} else if (this.context == context && __displayMatrix != null) {
+		} else if (this.context == context && __worldTransform != null) {
 			
 			__tempMatrix.copyFrom (transform);
-			__tempMatrix.concat (__displayMatrix);
+			__tempMatrix.concat (__worldTransform);
 			transform = __tempMatrix;
 			
 		}

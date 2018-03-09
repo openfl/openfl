@@ -24,9 +24,13 @@ class CairoBitmap {
 	
 	public static inline function render (bitmap:Bitmap, renderer:CairoRenderer):Void {
 		
-		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
+		if (!bitmap.__renderable) return;
 		
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
+		var alpha = renderer.__getAlpha (bitmap.__worldAlpha);
+		// var colorTransform = renderer.__getColorTransform (bitmap.__worldColorTransform);
+		//var blendMode = renderer.__getBlendMode (bitmap.__worldBlendMode);
+		
+		if (alpha > 0 && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
 			var cairo = renderer.cairo;
 			
@@ -44,13 +48,13 @@ class CairoBitmap {
 				
 				cairo.source = pattern;
 				
-				if (bitmap.__worldAlpha == 1) {
+				if (alpha == 1) {
 					
 					cairo.paint ();
 					
 				} else {
 					
-					cairo.paintWithAlpha (bitmap.__worldAlpha);
+					cairo.paintWithAlpha (alpha);
 					
 				}
 				

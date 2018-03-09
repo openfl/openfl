@@ -63,6 +63,7 @@ class CairoGraphics {
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var strokePattern:CairoPattern;
 	private static var tempMatrix3 = new Matrix3 ();
+	private static var worldAlpha:Float;
 	
 	
 	private static function closePath (strokeBefore:Bool = false):Void {
@@ -864,7 +865,7 @@ class CairoGraphics {
 					
 					var transform = graphics.__renderTransform;
 					// var roundPixels = renderer.__roundPixels;
-					var alpha = graphics.__owner.__worldAlpha;
+					var alpha = CairoGraphics.worldAlpha;
 					
 					var ri, ti;
 					
@@ -1253,6 +1254,7 @@ class CairoGraphics {
 		
 		CairoGraphics.graphics = graphics;
 		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
+		CairoGraphics.worldAlpha = renderer.__getAlpha (graphics.__owner.__worldAlpha);
 		graphics.__update ();
 		
 		if (!graphics.__dirty || graphics.__managed) return;

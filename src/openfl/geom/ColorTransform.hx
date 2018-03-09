@@ -122,6 +122,20 @@ class ColorTransform {
 	}
 	
 	
+	private function __invert ():Void {
+		
+		redMultiplier = 1 / redMultiplier;
+		greenMultiplier = 1 / greenMultiplier;
+		blueMultiplier = 1 / blueMultiplier;
+		alphaMultiplier = 1 / alphaMultiplier;
+		redOffset = -redOffset;
+		greenOffset = -greenOffset;
+		blueOffset = -blueOffset;
+		alphaOffset = -alphaOffset;
+		
+	}
+	
+	
 	private function __equals (ct:ColorTransform, ?skipAlphaMultiplier:Bool = false):Bool {
 		
 		return (ct != null && redMultiplier == ct.redMultiplier && greenMultiplier == ct.greenMultiplier && blueMultiplier == ct.blueMultiplier && (skipAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier) && redOffset == ct.redOffset && greenOffset == ct.greenOffset && blueOffset == ct.blueOffset && alphaOffset == ct.alphaOffset);

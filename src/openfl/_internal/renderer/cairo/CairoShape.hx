@@ -20,7 +20,11 @@ class CairoShape {
 	public static function render (shape:DisplayObject, renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
+		if (!shape.__renderable) return;
+		
+		var alpha = renderer.__getAlpha (shape.__worldAlpha);
+		
+		if (alpha <= 0) return;
 		
 		var graphics = shape.__graphics;
 		
@@ -40,7 +44,16 @@ class CairoShape {
 				renderer.applyMatrix (graphics.__worldTransform, cairo);
 				
 				cairo.setSourceSurface (graphics.__cairo.target, 0, 0);
-				cairo.paintWithAlpha (shape.__worldAlpha);
+				
+				if (alpha >= 1) {
+					
+					cairo.paint ();
+					
+				} else {
+					
+					cairo.paintWithAlpha (alpha);
+					
+				}
 				
 				renderer.__popMaskObject (shape);
 				

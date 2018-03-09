@@ -36,6 +36,10 @@ class CairoTilemap {
 		
 		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
+		var alpha = renderer.__getAlpha (tilemap.__worldAlpha);
+		
+		if (alpha <= 0) return;
+		
 		renderer.__setBlendMode (tilemap.__worldBlendMode);
 		renderer.__pushMaskObject (tilemap);
 		
@@ -43,7 +47,7 @@ class CairoTilemap {
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		renderTileGroup (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, null, rect, new Matrix3 ());
+		renderTileGroup (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, null, null, null, rect, new Matrix3 ());
 		
 		renderer.__popMaskRect ();
 		renderer.__popMaskObject (tilemap);

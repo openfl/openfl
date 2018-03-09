@@ -53,9 +53,9 @@ class CairoRenderer extends DisplayObjectRenderer {
 		
 		__matrix.copyFrom (transform);
 		
-		if (this.cairo == cairo && __displayMatrix != null) {
+		if (this.cairo == cairo && __worldTransform != null) {
 			
-			__matrix.concat (__displayMatrix);
+			__matrix.concat (__worldTransform);
 			
 		}
 		
