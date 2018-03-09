@@ -44,7 +44,7 @@ class DOMTilemap {
 				
 				tilemap.__canvas = cast Browser.document.createElement ("canvas");
 				tilemap.__context = tilemap.__canvas.getContext ("2d");
-				renderer.__initializeElement (tilemap, tilemap.__canvas, renderer);
+				renderer.__initializeElement (tilemap, tilemap.__canvas);
 				
 			}
 			
