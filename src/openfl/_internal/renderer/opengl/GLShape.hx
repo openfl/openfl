@@ -62,7 +62,10 @@ class GLShape {
 				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
 				
-				var useColorTransform = !shape.__worldColorTransform.__isDefault ();
+				
+				GLVAORenderHelper.prepareRenderDO (shape, renderSession, shader, graphics.__bitmap);
+				
+			/*	var useColorTransform = !shape.__worldColorTransform.__isDefault ();
 				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
 				shader.data.uColorTransform.value[0] = useColorTransform;
 				
@@ -82,7 +85,7 @@ class GLShape {
 					gl.vertexAttribPointer (shader.data.aColorMultipliers3.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 18 * Float32Array.BYTES_PER_ELEMENT);
 					gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 22 * Float32Array.BYTES_PER_ELEMENT);
 					
-				}
+				}*/
 				
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				
@@ -92,6 +95,8 @@ class GLShape {
 				
 				renderSession.filterManager.popObject (shape);
 				renderSession.maskManager.popObject (shape);
+				
+				GLVAORenderHelper.clear (gl);
 				
 			}
 			
@@ -130,18 +135,22 @@ class GLShape {
 				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
 				
-				renderSession.shaderManager.updateShader (shader);
+				GLVAORenderHelper.prepareRenderMask (shape, renderSession, shader, graphics.__bitmap);
+				
+				/*renderSession.shaderManager.updateShader (shader);
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha, shape.__worldColorTransform));
 				
 				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
 				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-				
+				*/
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				
 				#if gl_stats
 					GLStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
+				
+				GLVAORenderHelper.clear (gl);
 				
 			}
 			
