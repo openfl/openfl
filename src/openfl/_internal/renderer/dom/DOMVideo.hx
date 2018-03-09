@@ -33,7 +33,7 @@ class DOMVideo {
 			
 			if (!video.__active) {
 				
-				renderer.__initializeElement (video, video.__stream.__video, renderer);
+				renderer.__initializeElement (video, video.__stream.__video);
 				video.__active = true;
 				video.__dirty = true;
 				

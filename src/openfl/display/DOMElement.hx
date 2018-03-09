@@ -1,10 +1,6 @@
 package openfl.display;
 
 
-#if !flash
-import openfl._internal.renderer.dom.DOMRenderer;
-#end
-
 import openfl.display.Sprite;
 import openfl.display.Stage;
 
