@@ -62,14 +62,8 @@ class TileGroup extends Tile {
 		
 		if (tile.parent == this) {
 			
-			var cacheLength = __tiles.length;
-			
 			__tiles.remove (tile);
 			__length--;
-			
-			if (cacheLength > __tiles.length) {
-				index--;
-			}
 			
 		}
 		
@@ -183,6 +177,47 @@ class TileGroup extends Tile {
 		}
 		__length = __tiles.length;
 		
+		__setRenderDirty ();
+		
+	}
+	
+	
+	public function setTileIndex (tile:Tile, index:Int) {
+		
+		if (index >= 0 && index <= numTiles && tile.parent == this) {
+			
+			__tiles.remove (tile);
+			__tiles.insert (index, tile);
+			__setRenderDirty ();
+			
+		}
+		
+	}
+	
+	
+	public function swapTiles (tile1:Tile, tile2:Tile):Void {
+		
+		if (tile1.parent == this && tile2.parent == this) {
+			
+			var index1 = __tiles.indexOf (tile1);
+			var index2 = __tiles.indexOf (tile2);
+			
+			__tiles[index1] = tile2;
+			__tiles[index2] = tile1;
+			
+			__setRenderDirty ();
+			
+		}
+		
+	}
+	
+	
+	public function swapTilesAt (index1:Int, index2:Int):Void {
+		
+		var swap:Tile = __tiles[index1];
+		__tiles[index1] = __tiles[index2];
+		__tiles[index2] = swap;
+		swap = null;
 		__setRenderDirty ();
 		
 	}
