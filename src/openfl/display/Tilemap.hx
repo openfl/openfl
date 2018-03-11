@@ -202,6 +202,13 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
+	public function setTileIndex (tile:Tile, index:Int) {
+		
+		__group.setTileIndex (tile, index);
+		
+	}
+	
+	
 	#if ((openfl < "9.0.0") && enable_tile_array)
 	@:deprecated public function setTiles (tileArray:TileArray):Void {
 		
@@ -258,6 +265,20 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 	}
 	#end
+	
+	
+	public function swapTiles (tile1:Tile, tile2:Tile) {
+		
+		__group.swapTiles (tile1, tile2);
+		
+	}
+	
+	
+	public function swapTilesAt (index1:Int, index2:Int) {
+		
+		__group.swapTilesAt (index1, index2);
+		
+	}
 	
 	
 	#if !flash
