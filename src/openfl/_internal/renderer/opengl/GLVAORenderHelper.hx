@@ -1,6 +1,10 @@
 package openfl._internal.renderer.opengl;
 
 
+#if gl_stats
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
+#end
 import openfl._internal.renderer.opengl.VertexArrayObjectUtils;
 import openfl.display.BitmapData;
 import haxe.io.Float32Array;
@@ -23,13 +27,6 @@ import lime.graphics.GLRenderContext;
 class GLVAORenderHelper {
 	
 	
-	public static inline function clear (gl:GLRenderContext):Void {
-		
-		VertexArrayObjectUtils.bindVAO (gl, null);
-		
-	}
-	
-	
 	private static inline function __enableVertexAttribArray (gl:GLRenderContext, shader: Shader, useColorTransform:Bool):Void {
 		
 		gl.enableVertexAttribArray (shader.data.aPosition.index);
@@ -49,14 +46,15 @@ class GLVAORenderHelper {
 	}
 	
 	
-	public static inline function prepareRenderDO (displayObject:DisplayObject, renderSession:RenderSession, shader:Shader, bitmapData: BitmapData):Void {
+	public static inline function renderDO (displayObject:DisplayObject, renderSession:RenderSession, shader:Shader, bitmapData: BitmapData):Bool {
 		
 		var gl = renderSession.gl;
-		var useColorTransform = !displayObject.__worldColorTransform.__isDefault ();
-		if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-		shader.data.uColorTransform.value[0] = useColorTransform;
 		
 		if (VertexArrayObjectUtils.isVertexArrayObjectsSupported (gl)) {
+			
+			var useColorTransform = !displayObject.__worldColorTransform.__isDefault ();
+			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+			shader.data.uColorTransform.value[0] = useColorTransform;
 			
 			shader.__skipEnableVertexAttribArray = true;
 			renderSession.shaderManager.updateShader (shader);
@@ -77,20 +75,26 @@ class GLVAORenderHelper {
 				__setVertexAttribPointer (gl, shader, useColorTransform);
 				
 			} 
-			 
-		} else {
 			
-			renderSession.shaderManager.updateShader (shader);
+			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
-			bitmapData.getBuffer (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform);
+			#if gl_stats
+				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			#end
 			
-			__setVertexAttribPointer (gl, shader, useColorTransform);
+			renderSession.filterManager.popObject (displayObject);
+			renderSession.maskManager.popObject (displayObject);
 			
+			VertexArrayObjectUtils.bindVAO (gl, null);
+			
+			return true;
 		}
+		
+		return false;
 		
 	}
 	
-	public static inline function prepareRenderMask (displayObject:DisplayObject, renderSession:RenderSession, shader:Shader, bitmapData: BitmapData):Void {
+	public static inline function renderMask (displayObject:DisplayObject, renderSession:RenderSession, shader:Shader, bitmapData: BitmapData):Bool {
 		
 		var gl = renderSession.gl;
 		if (VertexArrayObjectUtils.isVertexArrayObjectsSupported (gl)) {
@@ -118,17 +122,20 @@ class GLVAORenderHelper {
 				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 				
 			} 
-			 
-		} else {
 			
-			renderSession.shaderManager.updateShader (shader);
+			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
-			bitmapData.getBuffer (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform);
+			#if gl_stats
+				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			#end
 			
-			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			VertexArrayObjectUtils.bindVAO (gl, null);
 			
-		}
+			return true;
+			
+		} 
+		
+		return false;
 		
 	}
 	

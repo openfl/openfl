@@ -46,9 +46,11 @@ class GLBitmap {
 			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
 			
-			GLVAORenderHelper.prepareRenderDO (bitmap, renderSession, shader, bitmap.__bitmapData);
+			var vaoRendered = GLVAORenderHelper.renderDO (bitmap, renderSession, shader, bitmap.__bitmapData);
 			
-		/*	var useColorTransform = !bitmap.__worldColorTransform.__isDefault ();
+			if (vaoRendered) return;
+			
+			var useColorTransform = !bitmap.__worldColorTransform.__isDefault ();
 			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
 			shader.data.uColorTransform.value[0] = useColorTransform;
 			
@@ -68,7 +70,7 @@ class GLBitmap {
 				gl.vertexAttribPointer (shader.data.aColorMultipliers3.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 18 * Float32Array.BYTES_PER_ELEMENT);
 				gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 22 * Float32Array.BYTES_PER_ELEMENT);
 				
-			}*/
+			}
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
@@ -78,8 +80,6 @@ class GLBitmap {
 			
 			renderSession.filterManager.popObject (bitmap);
 			renderSession.maskManager.popObject (bitmap);
-			
-			GLVAORenderHelper.clear (gl);
 			
 		}
 		
@@ -100,21 +100,22 @@ class GLBitmap {
 			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
 			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
 			
-			GLVAORenderHelper.prepareRenderMask (bitmap, renderSession, shader, bitmap.__bitmapData);
-			/*renderSession.shaderManager.updateShader (shader);
+			var vaoRendered = GLVAORenderHelper.renderMask (bitmap, renderSession, shader, bitmap.__bitmapData);
+			
+			if (vaoRendered) return;
+			
+			renderSession.shaderManager.updateShader (shader);
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl, bitmap.__worldAlpha, bitmap.__worldColorTransform));
 			
 			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			*/
+			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
 				GLStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
-			
-			GLVAORenderHelper.clear (gl);
 			
 		}
 		
