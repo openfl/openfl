@@ -20,6 +20,7 @@ class VertexArrayObjectUtils {
 	
 	public static inline function bindVAO (gl:GLRenderContext, vao:GLVertexArrayObject):Void {
 		
+		#if vertex_array_object
 		if (!isVertexArrayObjectsSupported(gl)) return;
 		
 		if (__vertexArrayObjectsExtension != null) {
@@ -31,12 +32,14 @@ class VertexArrayObjectUtils {
 			gl.bindVertexArray (vao);
 			
 		}
+		#end
 		
 	}
 	
 	
-	public static inline function createVAO (gl:GLRenderContext):GLVertexArrayObject {
+	public static function createVAO (gl:GLRenderContext):GLVertexArrayObject {
 		
+		#if vertex_array_object
 		if (!isVertexArrayObjectsSupported(gl)) return null;
 		
 		if (__vertexArrayObjectsExtension != null) {
@@ -48,12 +51,16 @@ class VertexArrayObjectUtils {
 			return gl.createVertexArray ();
 			
 		}
+		#end
+		
+		return null;
 		
 	}
 	
 	
 	public static inline function deleteVAO (gl:GLRenderContext, vao:GLVertexArrayObject):Void {
 		
+		#if vertex_array_object
 		if (!isVertexArrayObjectsSupported(gl) || vao == null) return;
 		
 		if (__vertexArrayObjectsExtension != null) {
@@ -65,6 +72,7 @@ class VertexArrayObjectUtils {
 			gl.deleteVertexArray (vao);
 			
 		}
+		#end
 		
 	}
 	
@@ -72,6 +80,7 @@ class VertexArrayObjectUtils {
 	private static inline function __init (gl:GLRenderContext):Void {
 		
 		__initialized = true;
+		#if vertex_array_object
 		if (gl.type == GLContextType.WEBGL) { 
 			
 			if (gl.version == 2) {
@@ -86,13 +95,16 @@ class VertexArrayObjectUtils {
 			}
 			
 		}
+		#end
 		
 	}
 	
 	
 	public static inline function isVertexArrayObjectsSupported(gl:GLRenderContext):Bool {
+		#if vertex_array_object
 		if (!__enabled) return false;
 		if (!__initialized) __init (gl);
+		#end
 		
 		return __vertexArrayObjectsSupported;
 		
