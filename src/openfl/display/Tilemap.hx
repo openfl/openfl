@@ -321,7 +321,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		#if lime_cairo
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			CairoBitmap.render (__cacheBitmap, renderer);
 			
@@ -342,7 +342,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			CanvasBitmap.render (__cacheBitmap, renderer);
 			
@@ -362,7 +362,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
@@ -401,7 +401,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		__updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			GLBitmap.render (__cacheBitmap, renderer);
 			
@@ -421,7 +421,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		__updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			GLBitmap.renderMask (__cacheBitmap, renderer);
 			

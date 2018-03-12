@@ -634,7 +634,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCairo (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
 		renderer.__pushMaskObject (this);
 		
@@ -704,7 +704,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCanvas (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
 		renderer.__pushMaskObject (this);
 		
@@ -775,7 +775,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderDOM (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
 		renderer.__pushMaskObject (this);
 		
@@ -838,7 +838,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderGL (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
 		if (__children.length > 0) {
 			
@@ -894,7 +894,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderGLMask (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
 		if (renderer.__stage != null) {
 			

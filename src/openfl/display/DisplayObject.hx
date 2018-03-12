@@ -45,6 +45,7 @@ import js.html.Element;
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Bitmap)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
@@ -61,6 +62,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private static var __initStage:Stage;
 	private static var __instanceCount = 0;
 	private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
+	private static var __tempColorTransform = new ColorTransform ();
 	private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
 	
 	@:keep public var alpha (get, set):Float;
@@ -98,7 +100,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __cacheBitmapBackground:Null<Int>;
 	private var __cacheBitmapColorTransform:ColorTransform;
 	private var __cacheBitmapData:BitmapData;
-	private var __cacheBitmapRender:Bool;
+	private var __cacheBitmapRenderer:DisplayObjectRenderer;
 	private var __cairo:Cairo;
 	private var __children:Array<DisplayObject>;
 	private var __customRenderClear:Bool;
@@ -106,6 +108,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __filters:Array<BitmapFilter>;
 	private var __graphics:Graphics;
 	private var __interactive:Bool;
+	private var __isCacheBitmapRender:Bool;
 	private var __isMask:Bool;
 	private var __loaderInfo:LoaderInfo;
 	private var __mask:DisplayObject;
@@ -749,7 +752,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		#if lime_cairo
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			CairoBitmap.render (__cacheBitmap, renderer);
 			
@@ -784,7 +787,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 			
-			if (__cacheBitmap != null && !__cacheBitmapRender) {
+			if (__cacheBitmap != null && !__isCacheBitmapRender) {
 				
 				CanvasBitmap.render (__cacheBitmap, renderer);
 				
@@ -816,7 +819,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
@@ -900,7 +903,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			GLBitmap.render (__cacheBitmap, renderer);
 			
@@ -919,7 +922,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			GLBitmap.renderMask (__cacheBitmap, renderer);
 			
@@ -1104,7 +1107,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
-		if (__cacheBitmapRender) return false;
+		if (__isCacheBitmapRender) return false;
 		
 		if (cacheAsBitmap) {
 			
@@ -1136,9 +1139,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (updateTransform || needRender) {
 				
-				matrix = Matrix.__pool.get ();
 				rect = Rectangle.__pool.get ();
-				matrix.identity ();
 				
 				__getFilterBounds (rect, __renderTransform);
 				
@@ -1168,6 +1169,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						// #if !openfljs
 						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 						__cacheBitmap.__bitmapData = __cacheBitmapData;
+						__cacheBitmapRenderer = null;
 						// #end
 						
 					} else {
@@ -1180,6 +1182,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					__cacheBitmap = null;
 					__cacheBitmapData = null;
+					__cacheBitmapRenderer = null;
 					return true;
 					
 				}
@@ -1190,13 +1193,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				
-				__cacheBitmap.__renderTransform.identity ();
+				__cacheBitmap.__renderTransform.copyFrom (__renderTransform);
 				__cacheBitmap.__renderTransform.tx = rect.x;
 				__cacheBitmap.__renderTransform.ty = rect.y;
-				
-				matrix.concat (__renderTransform);
-				matrix.tx -= Math.round (rect.x);
-				matrix.ty -= Math.round (rect.y);
 				
 			}
 			
@@ -1211,9 +1210,38 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (needRender) {
 				
-				__cacheBitmapRender = true;
+				// TODO: GL cacheBitmap
 				
-				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderer.__allowSmoothing);
+				if (__cacheBitmapRenderer == null /*|| renderer.__type != __cacheBitmapRenderer.__type*/) {
+					
+					#if (js && html5)
+					ImageCanvasUtil.convertToCanvas (__cacheBitmapData.image);
+					__cacheBitmapRenderer = new CanvasRenderer (__cacheBitmapData.image.buffer.__srcContext);
+					#else
+					__cacheBitmapRenderer = new CairoRenderer (new Cairo (__cacheBitmapData.getSurface ()));
+					#end
+					
+					__cacheBitmapRenderer.__worldTransform = new Matrix ();
+					__cacheBitmapRenderer.__worldColorTransform = new ColorTransform ();
+					
+				}
+				
+				__cacheBitmapRenderer.__allowSmoothing = renderer.__allowSmoothing;
+				__cacheBitmapRenderer.__setBlendMode (NORMAL);
+				__cacheBitmapRenderer.__worldAlpha = 1 / __worldAlpha;
+				
+				__cacheBitmapRenderer.__worldTransform.copyFrom (__renderTransform);
+				__cacheBitmapRenderer.__worldTransform.invert ();
+				__cacheBitmapRenderer.__worldColorTransform.__copyFrom (__worldColorTransform);
+				__cacheBitmapRenderer.__worldColorTransform.__invert ();
+				
+				__isCacheBitmapRender = true;
+				
+				#if (js && html5)
+				__cacheBitmapData.__drawCanvas (this, cast __cacheBitmapRenderer);
+				#else
+				__cacheBitmapData.__drawCairo (this, cast __cacheBitmapRenderer);
+				#end
 				
 				if (hasFilters) {
 					
@@ -1276,7 +1304,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
-				__cacheBitmapRender = false;
+				__isCacheBitmapRender = false;
 				
 				if (__cacheBitmapColorTransform == null) __cacheBitmapColorTransform = new ColorTransform ();
 				__cacheBitmapColorTransform.__copyFrom (__worldColorTransform);
@@ -1293,7 +1321,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__update (false, true);
 				
-				Matrix.__pool.release (matrix);
 				Rectangle.__pool.release (rect);
 				
 				return true;
@@ -1315,6 +1342,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap = null;
 			__cacheBitmapData = null;
 			__cacheBitmapColorTransform = null;
+			__cacheBitmapRenderer = null;
 			
 			return true;
 			

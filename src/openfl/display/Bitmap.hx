@@ -158,7 +158,7 @@ class Bitmap extends DisplayObject {
 		#if lime_cairo
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			CairoBitmap.render (__cacheBitmap, renderer);
 			
@@ -185,7 +185,7 @@ class Bitmap extends DisplayObject {
 		
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			CanvasBitmap.render (__cacheBitmap, renderer);
 			
@@ -211,7 +211,7 @@ class Bitmap extends DisplayObject {
 		
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
@@ -240,7 +240,7 @@ class Bitmap extends DisplayObject {
 		
 		__updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			GLBitmap.render (__cacheBitmap, renderer);
 			
@@ -259,7 +259,7 @@ class Bitmap extends DisplayObject {
 		
 		__updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			GLBitmap.renderMask (__cacheBitmap, renderer);
 			

@@ -28,7 +28,7 @@ class CairoDisplayObject {
 		
 		if (alpha <= 0) return;
 		
-		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
+		if (displayObject.opaqueBackground != null && !displayObject.__isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
 			var cairo = renderer.cairo;
 			

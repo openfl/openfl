@@ -1404,7 +1404,7 @@ class TextField extends InteractiveObject {
 		#if lime_cairo
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			CairoBitmap.render (__cacheBitmap, renderer);
 			
@@ -1453,7 +1453,7 @@ class TextField extends InteractiveObject {
 			
 			__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 			
-			if (__cacheBitmap != null && !__cacheBitmapRender) {
+			if (__cacheBitmap != null && !__isCacheBitmapRender) {
 				
 				CanvasBitmap.render (__cacheBitmap, renderer);
 				
@@ -1506,7 +1506,7 @@ class TextField extends InteractiveObject {
 		__forceCachedBitmapUpdate = false;
 		__domRender = false;
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
@@ -1551,7 +1551,7 @@ class TextField extends InteractiveObject {
 		
 		__updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
 			GLBitmap.render (__cacheBitmap, renderer);
 			

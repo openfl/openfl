@@ -188,6 +188,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__renderTransform = new Matrix ();
+		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderable = true;
@@ -466,196 +467,117 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
-		if (!readable /*|| !source.readable*/) {
+		if (source == null) return;
+		
+		source.__update (false, true);
+		
+		var transform = Matrix.__pool.get ();
+		transform.copyFrom (source.__renderTransform);
+		transform.invert ();
+		
+		if (matrix != null) {
 			
-			if (GL.context != null) {
+			transform.concat (matrix);
+			
+		}
+		
+		var _colorTransform = new ColorTransform ();
+		_colorTransform.__copyFrom (source.__worldColorTransform);
+		_colorTransform.__invert ();
+		
+		if (!readable && __textureContext != null) {
+			
+			if (colorTransform != null) {
 				
-				var gl = GL.context;
+				_colorTransform.__combine (colorTransform);
 				
-				// gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
-				// gl.viewport (0, 0, width, height);
+			}
+			
+			// TODO
+			
+			var renderer = new OpenGLRenderer (__textureContext);
+			renderer.__allowSmoothing = smoothing;
+			renderer.__setBlendMode (blendMode);
+			
+			renderer.__worldTransform = transform;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = _colorTransform;
+			
+			if (clipRect != null) {
 				
-				// var renderer = new OpenGLRenderer (gl);
+				renderer.__pushMaskRect (clipRect, Matrix.__identity);
 				
-				// var renderer = renderer.renderer;
-				// renderer.clearRenderDirty = false;
-				// renderer.shaderManager = cast (null, GLRenderer).renderer.shaderManager;
+			}
+			
+			__drawGL (source, renderer);
+			
+			if (clipRect != null) {
 				
-				// var matrixCache = source.__worldTransform;
-				// source.__updateTransforms (matrix);
-				// source.__updateChildren (false);
-				// source.__renderGL (renderer.renderer);
-				// source.__updateTransforms (matrixCache);
-				// source.__updateChildren (true);
-				
-				// gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+				renderer.__popMaskRect ();
 				
 			}
 			
 		} else {
 			
+			#if ((js && html5) || lime_cairo)
+			
+			if (colorTransform != null) {
+				
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
+				var copy = new BitmapData (width, height, true, 0);
+				copy.draw (source);
+				copy.colorTransform (copy.rect, _colorTransform);
+				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
+				
+			}
+			
 			#if (js && html5)
-			
-			if (colorTransform != null) {
-				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
-				
-			}
-			
 			ImageCanvasUtil.convertToCanvas (image);
+			var renderer = new CanvasRenderer (image.buffer.__srcContext);
+			#else
+			var renderer = new CairoRenderer (new Cairo (getSurface ()));
+			#end
 			
-			var buffer = image.buffer;
-			
-			var renderer = new CanvasRenderer (buffer.__srcContext);
 			renderer.__allowSmoothing = smoothing;
 			renderer.__setBlendMode (blendMode);
 			
-			source.__update (false, true);
-			
-			var displayMatrix = Matrix.__pool.get ();
-			displayMatrix.copyFrom (source.__renderTransform);
-			displayMatrix.invert ();
-			
-			if (matrix != null) {
-				
-				displayMatrix.concat (matrix);
-				
-			}
-			
-			var colorTransform = new ColorTransform ();
-			colorTransform.__copyFrom (source.__worldColorTransform);
-			colorTransform.__invert ();
-			
-			renderer.__worldTransform = displayMatrix;
+			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
-			renderer.__worldColorTransform = colorTransform;
-			
-			if (!smoothing) renderer.applySmoothing (buffer.__srcContext, false);
+			renderer.__worldColorTransform = _colorTransform;
 			
 			if (clipRect != null) {
 				
-				renderer.__pushMaskRect (clipRect, new Matrix ());
+				renderer.__pushMaskRect (clipRect, Matrix.__identity);
 				
 			}
 			
-			renderer.__render (source);
-			
-			if (!smoothing) renderer.applySmoothing (buffer.__srcContext, true);
+			#if (js && html5)
+			__drawCanvas (source, renderer);
+			#else
+			__drawCairo (source, renderer);
+			#end
 			
 			if (clipRect != null) {
 				
 				renderer.__popMaskRect ();
 				
 			}
-			
-			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
-			buffer.__srcImageData = null;
-			buffer.data = null;
-			
-			image.dirty = true;
-			image.version++;
-			
-			#elseif lime_cairo
-			
-			if (source == this) {
-				
-				source = clone ();
-				
-			}
-			
-			if (colorTransform != null) {
-				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
-				
-			}
-			
-			var surface = getSurface ();
-			var cairo = new Cairo (surface);
-			
-			if (!smoothing) {
-				
-				cairo.antialias = NONE;
-				
-			}
-			
-			var renderer = new CairoRenderer (cairo);
-			renderer.__allowSmoothing = smoothing;
-			renderer.__setBlendMode (blendMode);
-			
-			source.__update (false, true);
-			
-			var displayMatrix = Matrix.__pool.get ();
-			displayMatrix.copyFrom (source.__renderTransform);
-			displayMatrix.invert ();
-			
-			if (matrix != null) {
-				
-				displayMatrix.concat (matrix);
-				
-			}
-			
-			var colorTransform = new ColorTransform ();
-			colorTransform.__copyFrom (source.__worldColorTransform);
-			colorTransform.__invert ();
-			
-			renderer.__worldTransform = displayMatrix;
-			renderer.__worldAlpha = 1 / source.__worldAlpha;
-			renderer.__worldColorTransform = colorTransform;
-			
-			if (clipRect != null) {
-				
-				renderer.__pushMaskRect (clipRect, new Matrix ());
-				
-			}
-			
-			// TODO: Negate alpha, color transform
-			
-			renderer.__render (source);
-			
-			Matrix.__pool.release (displayMatrix);
-			
-			if (clipRect != null) {
-				
-				renderer.__popMaskRect ();
-				
-			}
-			
-			surface.flush ();
-			
-			image.dirty = true;
-			image.version++;
 			
 			#end
 			
 		}
+		
+		Matrix.__pool.release (transform);
 		
 	}
 	
@@ -1047,7 +969,6 @@ class BitmapData implements IBitmapDrawable {
 		if (!readable) return null;
 		
 		if (__surface == null) {
-			
 			
 			__surface = CairoImageSurface.fromImage (image);
 			
@@ -1609,222 +1530,73 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
+	private function __drawCairo (source:IBitmapDrawable, renderer:CairoRenderer):Void {
 		
-		if (!readable /*|| !source.readable*/) {
+		#if lime_cairo
+		
+		var cairo = renderer.cairo;
+		
+		if (source == this) {
 			
-			if (GL.context != null) {
-				
-				var gl = GL.context;
-				
-				// gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
-				// gl.viewport (0, 0, width, height);
-				
-				// var renderer = new GLRenderer (null, gl, this);
-				
-				// var renderer = renderer.renderer;
-				// renderer.clearRenderDirty = true;
-				// renderer.shaderManager = cast (null, GLRenderer).renderer.shaderManager;
-				
-				// var matrixCache = source.__worldTransform;
-				// source.__updateTransforms (matrix);
-				// source.__updateChildren (false);
-				// source.__renderGL (renderer.renderer);
-				// source.__updateTransforms (matrixCache);
-				// source.__updateChildren (true);
-				
-				// gl.bindFramebuffer (gl.FRAMEBUFFER, null);
-				
-			}
-			
-		} else {
-			
-			#if (js && html5)
-			
-			if (colorTransform != null) {
-				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
-				
-			}
-			
-			ImageCanvasUtil.convertToCanvas (image);
-			
-			var buffer = image.buffer;
-			
-			var renderer = new CanvasRenderer (buffer.__srcContext);
-			renderer.__allowSmoothing = smoothing;
-			
-			source.__update (false, true);
-			
-			var displayMatrix = Matrix.__pool.get ();
-			displayMatrix.copyFrom (source.__renderTransform);
-			displayMatrix.invert ();
-			
-			if (matrix != null) {
-				
-				displayMatrix.concat (matrix);
-				
-			}
-			
-			var colorTransform = new ColorTransform ();
-			colorTransform.__copyFrom (source.__worldColorTransform);
-			colorTransform.__invert ();
-			
-			renderer.__worldTransform = displayMatrix;
-			renderer.__worldAlpha = 1 / source.__worldAlpha;
-			renderer.__worldColorTransform = colorTransform;
-			
-			if (!smoothing) renderer.applySmoothing (buffer.__srcContext, false);
-			
-			if (clipRect != null) {
-				
-				renderer.__pushMaskRect (clipRect, new Matrix ());
-				
-			}
-			
-			var cacheRenderable = source.__renderable;
-			if (source.__isMask) {
-				
-				source.__renderable = true;
-				
-			}
-			
-			renderer.__render (source);
-			
-			source.__renderable = cacheRenderable;
-			
-			if (!smoothing) renderer.applySmoothing (buffer.__srcContext, true);
-			
-			if (clipRect != null) {
-				
-				renderer.__popMaskRect ();
-				
-			}
-			
-			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
-			buffer.__srcImageData = null;
-			buffer.data = null;
-			
-			image.dirty = true;
-			image.version++;
-			
-			#elseif lime_cairo
-			
-			if (source == this) {
-				
-				source = clone ();
-				
-			}
-			
-			if (colorTransform != null) {
-				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
-				
-			}
-			
-			var surface = getSurface ();
-			var cairo = new Cairo (surface);
-			
-			if (!smoothing) {
-				
-				cairo.antialias = NONE;
-				
-			}
-			
-			var renderer = new CairoRenderer (cairo);
-			renderer.__allowSmoothing = smoothing;
-			renderer.__setBlendMode (blendMode);
-			
-			source.__update (false, true);
-			
-			var displayMatrix = Matrix.__pool.get ();
-			displayMatrix.copyFrom (source.__renderTransform);
-			displayMatrix.invert ();
-			
-			if (matrix != null) {
-				
-				displayMatrix.concat (matrix);
-				
-			}
-			
-			var colorTransform = new ColorTransform ();
-			colorTransform.__copyFrom (source.__worldColorTransform);
-			colorTransform.__invert ();
-			
-			renderer.__worldTransform = displayMatrix;
-			renderer.__worldAlpha = 1 / source.__worldAlpha;
-			renderer.__worldColorTransform = colorTransform;
-			
-			if (clipRect != null) {
-				
-				renderer.__pushMaskRect (clipRect, new Matrix ());
-				
-			}
-			
-			// var matrixCache = source.__worldTransform;
-			// source.__updateTransforms (matrix);
-			// source.__updateChildren (false);
-			
-			// TODO: Force renderable using render session?
-			
-			var cacheRenderable = source.__renderable;
-			if (source.__isMask) {
-				
-				source.__renderable = true;
-				
-			}
-			
-			renderer.__render (source);
-			
-			source.__renderable = cacheRenderable;
-			
-			// source.__updateTransforms (matrixCache);
-			// source.__updateChildren (true);
-			
-			Matrix.__pool.release (displayMatrix);
-			
-			if (clipRect != null) {
-				
-				renderer.__popMaskRect ();
-				
-			}
-			
-			surface.flush ();
-			
-			image.dirty = true;
-			image.version++;
-			
-			#end
+			source = clone ();
 			
 		}
+		
+		if (!renderer.__allowSmoothing) cairo.antialias = NONE;
+		
+		renderer.__render (source);
+		
+		if (!renderer.__allowSmoothing) cairo.antialias = GOOD;
+		
+		cairo.target.flush ();
+		
+		image.dirty = true;
+		image.version++;
+		
+		#end
+		
+	}
+	
+	
+	private function __drawCanvas (source:IBitmapDrawable, renderer:CanvasRenderer):Void {
+		
+		var buffer = image.buffer;
+		
+		if (!renderer.__allowSmoothing) renderer.applySmoothing (buffer.__srcContext, false);
+		
+		renderer.__render (source);
+		
+		if (!renderer.__allowSmoothing) renderer.applySmoothing (buffer.__srcContext, true);
+		
+		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
+		buffer.__srcImageData = null;
+		buffer.data = null;
+		
+		image.dirty = true;
+		image.version++;
+		
+	}
+	
+	
+	private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
+		
+		// gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
+		// gl.viewport (0, 0, width, height);
+		
+		// var renderer = new OpenGLRenderer (gl);
+		
+		// var renderer = renderer.renderer;
+		// renderer.clearRenderDirty = false;
+		// renderer.shaderManager = cast (null, GLRenderer).renderer.shaderManager;
+		
+		// var matrixCache = source.__worldTransform;
+		// source.__updateTransforms (matrix);
+		// source.__updateChildren (false);
+		// source.__renderGL (renderer.renderer);
+		// source.__updateTransforms (matrixCache);
+		// source.__updateChildren (true);
+		
+		// gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 		
 	}
 	

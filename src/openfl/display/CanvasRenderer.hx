@@ -116,7 +116,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	
 	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
-		if (!object.__cacheBitmapRender && object.__mask != null) {
+		if (!object.__isCacheBitmapRender && object.__mask != null) {
 			
 			__popMask ();
 			
@@ -160,7 +160,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 			
 		}
 		
-		if (!object.__cacheBitmapRender && object.__mask != null) {
+		if (!object.__isCacheBitmapRender && object.__mask != null) {
 			
 			__pushMask (object.__mask);
 			
