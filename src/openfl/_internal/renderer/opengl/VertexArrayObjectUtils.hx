@@ -13,14 +13,14 @@ class VertexArrayObjectUtils {
 	
 	
 	private static var __initialized:Bool = false;
+	private static var __enabled:Bool = true;
 	private static var __vertexArrayObjectsSupported:Bool = false;
 	private static var __vertexArrayObjectsExtension:Dynamic = null;
 	
 	
 	public static inline function bindVAO (gl:GLRenderContext, vao:GLVertexArrayObject):Void {
 		
-		if (!__initialized) __init (gl);
-		if (!__vertexArrayObjectsSupported) return;
+		if (!isVertexArrayObjectsSupported(gl)) return;
 		
 		if (__vertexArrayObjectsExtension != null) {
 			
@@ -37,8 +37,7 @@ class VertexArrayObjectUtils {
 	
 	public static inline function createVAO (gl:GLRenderContext):GLVertexArrayObject {
 		
-		if (!__initialized) __init (gl);
-		if (!__vertexArrayObjectsSupported) return null;
+		if (!isVertexArrayObjectsSupported(gl)) return null;
 		
 		if (__vertexArrayObjectsExtension != null) {
 			
@@ -55,8 +54,7 @@ class VertexArrayObjectUtils {
 	
 	public static inline function deleteVAO (gl:GLRenderContext, vao:GLVertexArrayObject):Void {
 		
-		if (!__initialized) __init (gl);
-		if (!__vertexArrayObjectsSupported || vao == null) return;
+		if (!isVertexArrayObjectsSupported(gl) || vao == null) return;
 		
 		if (__vertexArrayObjectsExtension != null) {
 			
@@ -93,7 +91,7 @@ class VertexArrayObjectUtils {
 	
 	
 	public static inline function isVertexArrayObjectsSupported(gl:GLRenderContext):Bool {
-		
+		if (!__enabled) return false;
 		if (!__initialized) __init (gl);
 		
 		return __vertexArrayObjectsSupported;

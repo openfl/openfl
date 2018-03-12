@@ -48,6 +48,7 @@ class GLVAORenderHelper {
 	
 	public static inline function renderDO (displayObject:DisplayObject, renderSession:RenderSession, shader:Shader, bitmapData: BitmapData):Bool {
 		
+		return false;
 		var gl = renderSession.gl;
 		
 		if (VertexArrayObjectUtils.isVertexArrayObjectsSupported (gl)) {
@@ -95,6 +96,8 @@ class GLVAORenderHelper {
 	}
 	
 	public static inline function renderMask (displayObject:DisplayObject, renderSession:RenderSession, shader:Shader, bitmapData: BitmapData):Bool {
+		
+		return false;
 		
 		var gl = renderSession.gl;
 		if (VertexArrayObjectUtils.isVertexArrayObjectsSupported (gl)) {
