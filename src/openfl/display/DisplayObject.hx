@@ -2,6 +2,7 @@ package openfl.display;
 
 
 import lime.graphics.cairo.Cairo;
+import lime.graphics.utils.ImageCanvasUtil;
 import lime.ui.MouseCursor;
 import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
@@ -43,6 +44,8 @@ import js.html.Element;
 @:noDebug
 #end
 
+@:access(lime.graphics.Image)
+@:access(lime.graphics.ImageBuffer)
 @:access(openfl.events.Event)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
