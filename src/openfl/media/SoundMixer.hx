@@ -13,7 +13,7 @@ package openfl.media;
 	public static var soundTransform (get, set):SoundTransform;
 	
 	private static var __soundChannels = new Array<SoundChannel> ();
-	private static var __soundTransform = #if mute_sound new SoundTransform (0) #else new SoundTransform () #end;
+	private static var __soundTransform = #if (mute || mute_sound) new SoundTransform (0) #else new SoundTransform () #end;
 	
 	
 	#if openfljs
