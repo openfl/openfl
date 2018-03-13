@@ -487,6 +487,16 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
+		var clipMatrix = null;
+		
+		if (clipRect != null) {
+			
+			clipMatrix = Matrix.__pool.get ();
+			clipMatrix.copyFrom (transform);
+			clipMatrix.invert ();
+			
+		}
+		
 		var _colorTransform = new ColorTransform ();
 		_colorTransform.__copyFrom (source.__worldColorTransform);
 		_colorTransform.__invert ();
@@ -511,7 +521,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (clipRect != null) {
 				
-				renderer.__pushMaskRect (clipRect, Matrix.__identity);
+				renderer.__pushMaskRect (clipRect, clipMatrix);
 				
 			}
 			
@@ -520,6 +530,7 @@ class BitmapData implements IBitmapDrawable {
 			if (clipRect != null) {
 				
 				renderer.__popMaskRect ();
+				Matrix.__pool.release (clipMatrix);
 				
 			}
 			
@@ -563,7 +574,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (clipRect != null) {
 				
-				renderer.__pushMaskRect (clipRect, Matrix.__identity);
+				renderer.__pushMaskRect (clipRect, clipMatrix);
 				
 			}
 			
@@ -576,6 +587,7 @@ class BitmapData implements IBitmapDrawable {
 			if (clipRect != null) {
 				
 				renderer.__popMaskRect ();
+				Matrix.__pool.release (clipMatrix);
 				
 			}
 			
