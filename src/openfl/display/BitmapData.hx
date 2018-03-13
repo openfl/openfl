@@ -207,13 +207,15 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function clone ():BitmapData {
 		
+		var bitmapData;
+		
 		if (!__isValid) {
 			
-			return new BitmapData (width, height, transparent, 0);
+			bitmapData = new BitmapData (width, height, transparent, 0);
 			
 		} else if (!readable && image == null) {
 			
-			var bitmapData = new BitmapData (0, 0, transparent, 0);
+			bitmapData = new BitmapData (0, 0, transparent, 0);
 			
 			bitmapData.width = width;
 			bitmapData.height = height;
@@ -225,13 +227,16 @@ class BitmapData implements IBitmapDrawable {
 			bitmapData.__textureContext = __textureContext;
 			bitmapData.__isValid = true;
 			
-			return bitmapData;
-			
 		} else {
 			
-			return BitmapData.fromImage (image.clone (), transparent);
+			bitmapData = BitmapData.fromImage (image.clone (), transparent);
 			
 		}
+		
+		bitmapData.__worldTransform.copyFrom (__worldTransform);
+		bitmapData.__renderTransform.copyFrom (__renderTransform);
+		
+		return bitmapData;
 		
 	}
 	
@@ -472,6 +477,7 @@ class BitmapData implements IBitmapDrawable {
 		source.__update (false, true);
 		
 		var transform = Matrix.__pool.get ();
+		
 		transform.copyFrom (source.__renderTransform);
 		transform.invert ();
 		
@@ -1733,22 +1739,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var cairo = renderer.cairo;
 		
-		if (__worldTransform == null) __worldTransform = new Matrix ();
-		
-		var transform = __worldTransform;
-		
-		if (renderer.__roundPixels) {
-			
-			var matrix = transform.__toMatrix3 ();
-			matrix.tx = Math.round (matrix.tx);
-			matrix.ty = Math.round (matrix.ty);
-			cairo.matrix = matrix;
-			
-		} else {
-			
-			cairo.matrix = transform.__toMatrix3 ();
-			
-		}
+		renderer.applyMatrix (__renderTransform, cairo);
 		
 		var surface = getSurface ();
 		
@@ -1794,21 +1785,9 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		var context = renderer.context;
-		
-		if (__worldTransform == null) __worldTransform = new Matrix ();
-		
 		context.globalAlpha = 1;
-		var transform = __worldTransform;
 		
-		if (renderer.__roundPixels) {
-			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-			
-		} else {
-			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-			
-		}
+		renderer.setTransform (__renderTransform, context);
 		
 		context.drawImage (image.src, 0, 0);
 		#end
@@ -1907,7 +1886,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
-		
+		__updateTransforms ();
 		
 	}
 	
@@ -1934,9 +1913,11 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else {
 			
-			__worldTransform = overrideTransform;
+			__worldTransform.copyFrom (overrideTransform);
 			
 		}
+		
+		__renderTransform.copyFrom (__worldTransform);
 		
 	}
 	
