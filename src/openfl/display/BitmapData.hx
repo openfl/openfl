@@ -701,18 +701,26 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromBase64 (base64:String, type:String):BitmapData {
 		
+		#if (js && html5)
+		return null;
+		#else
 		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromBase64 (base64, type);
 		return bitmapData;
+		#end
 		
 	}
 	
 	
 	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData {
 		
+		#if (js && html5)
+		return null;
+		#else
 		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromBytes (bytes, rawAlpha);
 		return bitmapData;
+		#end
 		
 	}
 	
@@ -733,9 +741,13 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromFile (path:String):BitmapData {
 		
+		#if (js && html5)
+		return null;
+		#else
 		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromFile (path);
 		return bitmapData;
+		#end
 		
 	}
 	
