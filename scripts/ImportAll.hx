@@ -71,7 +71,7 @@ import openfl.display.Tile;
 #if (openfljs && !display)
 import openfl.display.TileArray;
 #end
-import openfl.display.TileGroup;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.TriangleCulling;

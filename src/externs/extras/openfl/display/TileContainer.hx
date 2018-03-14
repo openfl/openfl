@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-extern class TileGroup extends Tile {
+extern class TileContainer extends Tile implements ITileContainer {
 	
 	
 	public var numTiles (get, never):Int;
@@ -11,7 +11,6 @@ extern class TileGroup extends Tile {
 	public function addTileAt (tile:Tile, index:Int):Tile;
 	public function addTiles (tiles:Array<Tile>):Array<Tile>;
 	public function contains (tile:Tile):Bool;
-	public function copyFrom (other:TileGroup):Void;
 	public function getTileAt (index:Int):Tile;
 	public function getTileIndex (tile:Tile):Int;
 	public function removeTile (tile:Tile):Tile;

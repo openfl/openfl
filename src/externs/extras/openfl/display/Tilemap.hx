@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-extern class Tilemap extends DisplayObject {
+extern class Tilemap extends DisplayObject implements ITileContainer {
 	
 	
 	public var numTiles (get, never):Int;
@@ -18,12 +18,12 @@ extern class Tilemap extends DisplayObject {
 	public function contains (tile:Tile):Bool;
 	public function getTileAt (index:Int):Tile;
 	public function getTileIndex (tile:Tile):Int;
-	public function getTiles ():TileGroup;
+	public function getTiles ():TileContainer;
 	public function removeTile (tile:Tile):Tile;
 	public function removeTileAt (index:Int):Tile;
 	public function removeTiles (beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void;
 	public function setTileIndex (tile:Tile, index:Int):Void;
-	public function setTiles (group:TileGroup):Void;
+	public function setTiles (group:TileContainer):Void;
 	public function swapTiles (tile1:Tile, tile2:Tile):Void;
 	public function swapTilesAt (index1:Int, index2:Int):Void;
 	

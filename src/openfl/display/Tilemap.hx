@@ -35,7 +35,7 @@ import openfl._internal.renderer.opengl.GLTilemap;
 @:access(openfl.geom.Rectangle)
 
 
-class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end {
+class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end implements ITileContainer {
 	
 	
 	public var numTiles (get, never):Int;
@@ -47,7 +47,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public var smoothing:Bool;
 	#end
 	
-	private var __group:TileGroup;
+	private var __group:TileContainer;
 	private var __tileset:Tileset;
 	
 	#if ((openfl < "9.0.0") && enable_tile_array)
@@ -86,7 +86,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		tileAlphaEnabled = true;
 		tileColorTransformEnabled = true;
 		
-		__group = new TileGroup ();
+		__group = new TileContainer ();
 		
 		#if !flash
 		__width = width;
@@ -173,7 +173,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 	}
 	#else
-	public function getTiles ():TileGroup {
+	public function getTiles ():TileContainer {
 		
 		return __group.clone ();
 		
@@ -259,9 +259,13 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 	}
 	#else
-	public function setTiles (group:TileGroup):Void {
+	public function setTiles (group:TileContainer):Void {
 		
-		__group.copyFrom (group);
+		for (tile in group.__tiles) {
+			
+			addTile (tile);
+			
+		}
 		
 	}
 	#end

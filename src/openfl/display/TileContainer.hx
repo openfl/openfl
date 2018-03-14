@@ -7,7 +7,7 @@ package openfl.display;
 #end
 
 
-class TileGroup extends Tile {
+class TileContainer extends Tile implements ITileContainer {
 	
 	
 	public var numTiles (get, never):Int;
@@ -18,7 +18,7 @@ class TileGroup extends Tile {
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (TileGroup.prototype, "numTiles", { get: untyped __js__ ("function () { return this.get_numTiles (); }") });
+		untyped Object.defineProperty (TileContainer.prototype, "numTiles", { get: untyped __js__ ("function () { return this.get_numTiles (); }") });
 		
 	}
 	#end
@@ -89,9 +89,9 @@ class TileGroup extends Tile {
 	}
 	
 	
-	public override function clone ():TileGroup {
+	public override function clone ():TileContainer {
 		
-		var group = new TileGroup ();
+		var group = new TileContainer ();
 		for (tile in __tiles) {
 			group.addTile (tile.clone ());
 		}
@@ -103,14 +103,6 @@ class TileGroup extends Tile {
 	public function contains (tile:Tile):Bool {
 		
 		return (__tiles.indexOf (tile) > -1);
-		
-	}
-	
-	
-	public function copyFrom (other:TileGroup):Void {
-		
-		__tiles = other.__tiles.copy ();
-		__setRenderDirty ();
 		
 	}
 	

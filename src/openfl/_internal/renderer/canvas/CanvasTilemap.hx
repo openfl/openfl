@@ -4,7 +4,7 @@ package openfl._internal.renderer.canvas;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
-import openfl.display.TileGroup;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
@@ -13,7 +13,7 @@ import openfl.geom.Rectangle;
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tile)
-@:access(openfl.display.TileGroup)
+@:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
@@ -44,7 +44,7 @@ class CanvasTilemap {
 			
 		}
 		
-		renderTileGroup (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, rect);
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, rect);
 		
 		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
@@ -64,7 +64,7 @@ class CanvasTilemap {
 	}
 	
 	
-	private static function renderTileGroup (group:TileGroup, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, source:Dynamic, rect:Rectangle):Void {
+	private static function renderTileContainer (group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, source:Dynamic, rect:Rectangle):Void {
 		
 		#if (js && html5)
 		var context = renderer.context;
@@ -102,7 +102,7 @@ class CanvasTilemap {
 			
 			if (tile.__length > 0) {
 				
-				renderTileGroup (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, source, rect);
+				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, source, rect);
 				
 			} else {
 				

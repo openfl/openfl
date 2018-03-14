@@ -4,7 +4,7 @@ package openfl._internal.renderer.flash;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
-import openfl.display.TileGroup;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.ColorTransform;
@@ -13,7 +13,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 @:access(openfl.display.Tile)
-@:access(openfl.display.TileGroup)
+@:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 
@@ -38,7 +38,7 @@ class FlashTilemap {
 		bitmapData.lock ();
 		bitmapData.fillRect (bitmapData.rect, 0);
 		
-		renderTileGroup (tilemap.__group, bitmapData, new Matrix (), tilemap.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1, tilemap.tileColorTransformEnabled, null, null);
+		renderTileContainer (tilemap.__group, bitmapData, new Matrix (), tilemap.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1, tilemap.tileColorTransformEnabled, null, null);
 		
 		bitmapData.unlock ();
 		#end
@@ -46,7 +46,7 @@ class FlashTilemap {
 	}
 	
 	
-	private static function renderTileGroup (group:TileGroup, bitmapData:BitmapData, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform, cacheBitmapData:BitmapData):Void {
+	private static function renderTileContainer (group:TileContainer, bitmapData:BitmapData, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform, cacheBitmapData:BitmapData):Void {
 		
 		#if flash
 		var tileTransform = new Matrix ();
@@ -111,7 +111,7 @@ class FlashTilemap {
 			
 			if (tile.__length > 0) {
 				
-				renderTileGroup (cast tile, bitmapData, tileTransform, tileset, smooth, alphaEnabled, alpha, colorTransformEnabled, colorTransform, cacheBitmapData);
+				renderTileContainer (cast tile, bitmapData, tileTransform, tileset, smooth, alphaEnabled, alpha, colorTransformEnabled, colorTransform, cacheBitmapData);
 				
 			} else {
 				

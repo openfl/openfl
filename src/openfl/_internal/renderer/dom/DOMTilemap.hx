@@ -10,7 +10,7 @@ import openfl.geom.Matrix;
 import js.Browser;
 #end
 
-@:access(openfl.display.TileGroup)
+@:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.geom.Matrix)
 

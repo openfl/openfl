@@ -1,22 +1,19 @@
 import Tile from "./Tile";
-import Tileset from "./Tileset";
+import TileContainer from "./TileContainer";
 
 
 declare namespace openfl.display {
 	
 	
-	export class TileGroup extends Tile {
-		
-		
-		public readonly numTiles:number;
-		
-		public constructor (x?:number, y?:number, scaleX?:number, scaleY?:number, rotation?:number);
+	export class ITileContainer {
+	
+	
+		private get_numTiles ():number;
 		
 		public addTile (tile:Tile):Tile;
-		public addTiles (tiles:Array<Tile>):Array<Tile>;
 		public addTileAt (tile:Tile, index:number):Tile;
+		public addTiles (tiles:Array<Tile>):Array<Tile>;
 		public contains (tile:Tile):boolean;
-		public copyFrom (other:TileGroup):void;
 		public getTileAt (index:number):Tile;
 		public getTileIndex (tile:Tile):number;
 		public removeTile (tile:Tile):Tile;
@@ -33,4 +30,4 @@ declare namespace openfl.display {
 }
 
 
-export default openfl.display.TileGroup;
+export default openfl.display.ITileContainer;

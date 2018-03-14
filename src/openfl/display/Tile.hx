@@ -23,7 +23,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	public var matrix (get, set):Matrix;
 	public var originX (get, set):Float;
 	public var originY (get, set):Float;
-	public var parent (default, null):TileGroup;
+	public var parent (default, null):TileContainer;
 	public var rect (get, set):Rectangle;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;

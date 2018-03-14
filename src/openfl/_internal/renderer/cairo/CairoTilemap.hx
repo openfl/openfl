@@ -8,7 +8,7 @@ import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
-import openfl.display.TileGroup;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
@@ -22,7 +22,7 @@ import openfl.geom.Rectangle;
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tile)
-@:access(openfl.display.TileGroup)
+@:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
@@ -47,7 +47,7 @@ class CairoTilemap {
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		renderTileGroup (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, null, null, null, rect, new Matrix3 ());
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, null, null, null, rect, new Matrix3 ());
 		
 		renderer.__popMaskRect ();
 		renderer.__popMaskObject (tilemap);
@@ -57,7 +57,7 @@ class CairoTilemap {
 	}
 	
 	
-	private static function renderTileGroup (group:TileGroup, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
+	private static function renderTileContainer (group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
 		
 		var cairo = renderer.cairo;
 		var roundPixels = renderer.__roundPixels;
@@ -85,7 +85,7 @@ class CairoTilemap {
 			
 			if (tile.__length > 0) {
 				
-				renderTileGroup (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, surface, pattern, rect, matrix);
+				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, surface, pattern, rect, matrix);
 				
 			} else {
 				

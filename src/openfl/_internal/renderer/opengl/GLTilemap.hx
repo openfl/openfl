@@ -6,7 +6,7 @@ import lime.utils.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
 import openfl.display.OpenGLRenderer;
-import openfl.display.TileGroup;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.Tile;
@@ -63,7 +63,7 @@ class GLTilemap {
 		if (tilemap.tileAlphaEnabled) stride++;
 		if (tilemap.tileColorTransformEnabled) stride += 8;
 		
-		buildBufferTileGroup (tilemap, tilemap.__group, renderer, parentTransform, stride, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
+		buildBufferTileContainer (tilemap, tilemap.__group, renderer, parentTransform, stride, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
 		
 		tilemap.__bufferLength = bufferLength;
 		
@@ -74,7 +74,7 @@ class GLTilemap {
 	}
 	
 	
-	private static function buildBufferTileGroup (tilemap:Tilemap, group:TileGroup, renderer:OpenGLRenderer, parentTransform:Matrix, stride:Int, defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform, cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix):Void {
+	private static function buildBufferTileContainer (tilemap:Tilemap, group:TileContainer, renderer:OpenGLRenderer, parentTransform:Matrix, stride:Int, defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform, cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix):Void {
 		
 		var tileTransform = Matrix.__pool.get ();
 		var roundPixels = renderer.__roundPixels;
@@ -155,7 +155,7 @@ class GLTilemap {
 				cacheLength = bufferLength;
 				cacheBufferPosition = bufferPosition;
 				
-				buildBufferTileGroup (tilemap, cast tile, renderer, tileTransform, stride, tileset, alphaEnabled, alpha, colorTransformEnabled, colorTransform, cacheBitmapData, rect, matrix);
+				buildBufferTileContainer (tilemap, cast tile, renderer, tileTransform, stride, tileset, alphaEnabled, alpha, colorTransformEnabled, colorTransform, cacheBitmapData, rect, matrix);
 				
 				resizeBuffer (tilemap, cacheLength + (bufferPosition - cacheBufferPosition));
 				__bufferData = tilemap.__bufferData;
@@ -433,7 +433,7 @@ class GLTilemap {
 		renderer.__pushMaskObject (tilemap);
 		// renderer.filterManager.pushObject (tilemap);
 		
-		renderTileGroup (tilemap, renderer, tilemap.__group, tilemap.__worldRenderShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
+		renderTileContainer (tilemap, renderer, tilemap.__group, tilemap.__worldRenderShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
 		flush (tilemap, renderer);
 		
 		// renderer.filterManager.popObject (tilemap);
@@ -443,7 +443,7 @@ class GLTilemap {
 	}
 	
 	
-	private static function renderTileGroup (tilemap:Tilemap, renderer:OpenGLRenderer, group:TileGroup, defaultShader:DisplayObjectShader, stride:Int, defaultTileset:Tileset, worldAlpha:Float, cacheBitmapData:BitmapData):Void {
+	private static function renderTileContainer (tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:DisplayObjectShader, stride:Int, defaultTileset:Tileset, worldAlpha:Float, cacheBitmapData:BitmapData):Void {
 		
 		var tiles = group.__tiles;
 		var length = group.__length;
@@ -463,7 +463,7 @@ class GLTilemap {
 			
 			if (tile.__length > 0) {
 				
-				renderTileGroup (tilemap, renderer, cast tile, shader, stride, tileset, alpha, cacheBitmapData);
+				renderTileContainer (tilemap, renderer, cast tile, shader, stride, tileset, alpha, cacheBitmapData);
 				
 			} else {
 				
