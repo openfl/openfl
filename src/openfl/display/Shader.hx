@@ -450,7 +450,7 @@ class Shader {
 				__inputBitmapData.push (input);
 				Reflect.setField (__data, name, input);
 				
-			} else if (!Reflect.hasField (__data, name)) {
+			} else if (!Reflect.hasField (__data, name) || Reflect.field (__data, name) == null) {
 				
 				var parameterType:ShaderParameterType = switch (type) {
 					
