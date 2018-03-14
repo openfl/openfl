@@ -182,7 +182,7 @@ class TileGroup extends Tile {
 	}
 	
 	
-	public function setTileIndex (tile:Tile, index:Int) {
+	public function setTileIndex (tile:Tile, index:Int):Void {
 		
 		if (index >= 0 && index <= numTiles && tile.parent == this) {
 			
@@ -214,10 +214,11 @@ class TileGroup extends Tile {
 	
 	public function swapTilesAt (index1:Int, index2:Int):Void {
 		
-		var swap:Tile = __tiles[index1];
+		var swap = __tiles[index1];
 		__tiles[index1] = __tiles[index2];
 		__tiles[index2] = swap;
 		swap = null;
+		
 		__setRenderDirty ();
 		
 	}

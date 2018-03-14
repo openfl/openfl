@@ -22,6 +22,9 @@ declare namespace openfl.display {
 		public removeTile (tile:Tile):Tile;
 		public removeTileAt (index:number):Tile;
 		public removeTiles (beginIndex?:number, endIndex?:number):void;
+		public setTileIndex (tile:Tile, index:number):void;
+		public swapTiles (tile1:Tile, tile2:Tile):void;
+		public swapTilesAt (index1:number, index2:number):void;
 		
 		
 	}

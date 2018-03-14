@@ -24,7 +24,10 @@ extern class Tilemap extends DisplayObject {
 	public function removeTile (tile:Tile):Tile;
 	public function removeTileAt (index:Int):Tile;
 	public function removeTiles (beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void;
+	public function setTileIndex (tile:Tile, index:Int):Void;
 	public function setTiles (group:TileGroup):Void;
+	public function swapTiles (tile1:Tile, tile2:Tile):Void;
+	public function swapTilesAt (index1:Int, index2:Int):Void;
 	
 	
 }

@@ -202,7 +202,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	public function setTileIndex (tile:Tile, index:Int) {
+	public function setTileIndex (tile:Tile, index:Int):Void {
 		
 		__group.setTileIndex (tile, index);
 		
@@ -267,14 +267,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
-	public function swapTiles (tile1:Tile, tile2:Tile) {
+	public function swapTiles (tile1:Tile, tile2:Tile):Void {
 		
 		__group.swapTiles (tile1, tile2);
 		
 	}
 	
 	
-	public function swapTilesAt (index1:Int, index2:Int) {
+	public function swapTilesAt (index1:Int, index2:Int):Void {
 		
 		__group.swapTilesAt (index1, index2);
 		
