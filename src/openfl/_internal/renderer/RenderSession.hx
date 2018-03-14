@@ -80,8 +80,9 @@ class RenderSession {
 				var vertexArrayObjectsExtension = gl.getExtension ("OES_vertex_array_object");
 				
 				if (vertexArrayObjectsExtension != null) {
-				
+					
 					vaoContext = new VertexArrayObjectExtension (vertexArrayObjectsExtension);
+					
 				}
 				
 			}
