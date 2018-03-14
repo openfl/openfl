@@ -35,7 +35,6 @@ class RenderSession {
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl(default, set):GLRenderContext;
-	
 	// public var lockTransform:Bool;
 	public var renderer:AbstractRenderer;
 	public var renderType:RendererType;
