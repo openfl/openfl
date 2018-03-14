@@ -62,14 +62,13 @@ class GLShape {
 				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
 				
+				var useColorTransform = !shape.__worldColorTransform.__isDefault ();
+				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+				shader.data.uColorTransform.value[0] = useColorTransform;
 				
 				var vaoRendered = GLVAORenderHelper.renderDO (shape, renderSession, shader, graphics.__bitmap);
 				
 				if (vaoRendered) return;
-				
-				var useColorTransform = !shape.__worldColorTransform.__isDefault ();
-				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-				shader.data.uColorTransform.value[0] = useColorTransform;
 				
 				renderSession.shaderManager.updateShader (shader);
 				

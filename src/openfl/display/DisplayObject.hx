@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import openfl._internal.renderer.opengl.VertexArrayObjectUtils;
 import lime.graphics.opengl.GLVertexArrayObject;
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
@@ -393,14 +392,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__vao != null) {
 			
-			VertexArrayObjectUtils.deleteVAO (renderSession.gl, __vao);
+			renderSession.vaoContext.deleteVertexArray (__vao);
 			__vao = null;
 			
 		} 
 		
 		if (__vaoMask != null) {
 			
-			VertexArrayObjectUtils.deleteVAO (renderSession.gl, __vaoMask);
+			renderSession.vaoContext.deleteVertexArray (__vaoMask);
 			__vaoMask = null;
 			
 		} 

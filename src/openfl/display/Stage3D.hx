@@ -143,7 +143,7 @@ class Stage3D extends EventDispatcher {
 				
 				__renderContext = new GLRenderContext (cast __webgl);
 				GL.context = __renderContext;
-				
+				renderSession.gl = __renderContext;
 				context3D = new Context3D (this, renderSession);
 				
 				renderSession.element.appendChild (__canvas);
