@@ -63,9 +63,9 @@ class RenderSession {
 	//public var defaultFramebuffer:GLFramebuffer;
 	
 	
-	private function set_gl(gl: GLRenderContext): GLRenderContext {
+	private function set_gl(glContext: GLRenderContext): GLRenderContext {
 		
-		this.gl = gl;
+		gl = glContext;
 		
 		#if vertex_array_object
 		if (gl.type == GLContextType.WEBGL) { 
