@@ -28,6 +28,8 @@ class CanvasTilemap {
 		#if (js && html5)
 		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
+		var context = renderer.context;
+		
 		renderer.__setBlendMode (tilemap.__worldBlendMode);
 		renderer.__pushMaskObject (tilemap);
 		
