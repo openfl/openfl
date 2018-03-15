@@ -664,7 +664,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 
 				current = list[i];
 				current.__update (true, false);
-				current.__worldTransformInvalid = false;
 
 			}
 				
@@ -1011,6 +1010,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		//}
 		
+		__worldTransformInvalid = false;
+
 		if (!transformOnly) {
 			
 			if (__supportDOM) {
