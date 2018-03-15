@@ -679,7 +679,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			
@@ -749,7 +749,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			
@@ -888,7 +888,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			
@@ -937,7 +937,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			

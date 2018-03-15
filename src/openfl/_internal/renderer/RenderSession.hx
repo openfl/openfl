@@ -1,6 +1,10 @@
 package openfl._internal.renderer; #if (!display && !flash)
 
 
+import openfl._internal.renderer.opengl.vao.VertexArrayObjectExtension;
+import lime.graphics.opengl.GLContextType;
+import openfl._internal.renderer.opengl.vao.VertexArrayObjectContext;
+import openfl._internal.renderer.opengl.vao.IVertexArrayObjectContext;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.CairoRenderContext;
 import lime.graphics.CanvasRenderContext;
@@ -30,7 +34,7 @@ class RenderSession {
 	public var clearRenderDirty:Bool;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
-	public var gl:GLRenderContext;
+	public var gl(default, set):GLRenderContext;
 	// public var lockTransform:Bool;
 	public var renderer:AbstractRenderer;
 	public var renderType:RendererType;
@@ -39,7 +43,8 @@ class RenderSession {
 	public var transformOriginProperty:String;
 	public var upscaled:Bool;
 	public var vendorPrefix:String;
-	public var projectionMatrix:Matrix;
+	public var vaoContext:IVertexArrayObjectContext;
+	public var projectionMatrix:Matrix;	
 	public var z:Int;
 	
 	public var drawCount:Int;
@@ -56,6 +61,37 @@ class RenderSession {
 	//public var spriteBatch:SpriteBatch;
 	//public var stencilManager:StencilManager;
 	//public var defaultFramebuffer:GLFramebuffer;
+	
+	
+	private function set_gl(glContext: GLRenderContext): GLRenderContext {
+		
+		gl = glContext;
+		
+		#if vertex_array_object
+		if (gl.type == GLContextType.WEBGL) { 
+			
+			if (gl.version == 2) {
+				
+				vaoContext = new VertexArrayObjectContext (gl);
+				
+			} else if (gl.version == 1) {
+				
+				var vertexArrayObjectsExtension = gl.getExtension ("OES_vertex_array_object");
+				
+				if (vertexArrayObjectsExtension != null) {
+					
+					vaoContext = new VertexArrayObjectExtension (vertexArrayObjectsExtension);
+					
+				}
+				
+			}
+			
+		}
+		#end
+		
+		return gl;
+		
+	}
 	
 	
 	public function new () {

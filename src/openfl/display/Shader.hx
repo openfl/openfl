@@ -46,6 +46,7 @@ class Shader {
 	private var __uniformMatrix2:Float32Array;
 	private var __uniformMatrix3:Float32Array;
 	private var __uniformMatrix4:Float32Array;
+	private var __skipEnableVertexAttribArray:Bool;
 	
 	
 	#if openfljs
@@ -196,6 +197,7 @@ class Shader {
 		byteCode = code;
 		precisionHint = FULL;
 		
+		__skipEnableVertexAttribArray = false;
 		__glSourceDirty = true;
 		__numPasses = 1;
 		
@@ -567,7 +569,7 @@ class Shader {
 					
 				}
 				
-			} else if (!__isUniform.get (parameter.name)) {
+			} else if (!__isUniform.get (parameter.name) && !__skipEnableVertexAttribArray) {
 				
 				gl.enableVertexAttribArray (parameter.index);
 				
@@ -644,7 +646,7 @@ class Shader {
 					
 				}
 				
-			} else if (!__isUniform.get (parameter.name)) {
+			} else if (!__isUniform.get (parameter.name) && !__skipEnableVertexAttribArray) {
 				
 				gl.enableVertexAttribArray (parameter.index);
 				
@@ -704,7 +706,7 @@ class Shader {
 					
 				}
 				
-			} else if (!__isUniform.get (parameter.name)) {
+			} else if (!__isUniform.get (parameter.name) && !__skipEnableVertexAttribArray) {
 				
 				gl.enableVertexAttribArray (parameter.index);
 				
