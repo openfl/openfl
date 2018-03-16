@@ -683,19 +683,15 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
 		
-		if (vertices == null) return;
+		if (vertices == null || vertices.length == 0) return;
 		
-		var vlen = Std.int (vertices.length / 2);
-		
-		if (culling == null) {
-			
-			culling = NONE;
-			
-		}
+		var vertLength = Std.int (vertices.length / 2);
 		
 		if (indices == null) {
 			
-			if (vlen % 3 != 0) {
+			// TODO: Allow null indices
+			
+			if (vertLength % 3 != 0) {
 				
 				throw new ArgumentError ("Not enough vertices to close a triangle.");
 				
@@ -703,7 +699,7 @@ import js.html.CanvasRenderingContext2D;
 			
 			indices = new Vector<Int> ();
 			
-			for (i in 0...vlen) {
+			for (i in 0...vertLength) {
 				
 				indices.push (i);
 				
@@ -711,23 +707,33 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__inflateBounds (0, 0);
-		
-		var tmpx = Math.NEGATIVE_INFINITY;
-		var tmpy = Math.NEGATIVE_INFINITY;
-		var maxX = Math.NEGATIVE_INFINITY;
-		var maxY = Math.NEGATIVE_INFINITY;
-		
-		for (i in 0...vlen) {
+		if (culling == null) {
 			
-			tmpx = vertices[i * 2];
-			tmpy = vertices[i * 2 + 1];
-			if (maxX < tmpx) maxX = tmpx;
-			if (maxY < tmpy) maxY = tmpy;
+			culling = NONE;
 			
 		}
 		
+		var x, y;
+		var minX = Math.POSITIVE_INFINITY;
+		var minY = Math.POSITIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;
+		
+		for (i in 0...vertLength) {
+			
+			x = vertices[i * 2];
+			y = vertices[i * 2 + 1];
+			
+			if (minX > x) minX = x;
+			if (minY > y) minY = y;
+			if (maxX < x) maxX = x;
+			if (maxY < y) maxY = y;
+			
+		}
+		
+		__inflateBounds (minX, minY);
 		__inflateBounds (maxX, maxY);
+		
 		__commands.drawTriangles (vertices, indices, uvtData, culling);
 		
 		__dirty = true;
