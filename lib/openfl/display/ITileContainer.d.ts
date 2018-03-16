@@ -6,9 +6,9 @@ declare namespace openfl.display {
 	
 	
 	export class ITileContainer {
-	
-	
-		private get_numTiles ():number;
+		
+		
+		public readonly numTiles:number;
 		
 		public addTile (tile:Tile):Tile;
 		public addTileAt (tile:Tile, index:number):Tile;

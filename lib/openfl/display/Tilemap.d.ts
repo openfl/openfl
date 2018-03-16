@@ -35,6 +35,8 @@ declare namespace openfl.display {
 		public swapTiles (tile1:Tile, tile2:Tile):void;
 		public swapTilesAt (index1:number, index2:number):void;
 		
+		private get_numTiles ():number;
+		
 		
 	}
 	
