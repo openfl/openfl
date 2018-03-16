@@ -548,9 +548,19 @@ class BitmapData implements IBitmapDrawable {
 				var width:Int = Math.ceil (bounds.width);
 				var height:Int = Math.ceil (bounds.height);
 				
+				boundsMatrix.tx = -bounds.x;
+				boundsMatrix.ty = -bounds.y;
+				
 				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, _colorTransform);
+				copy.draw (source, boundsMatrix);
+				
+				copy.colorTransform (copy.rect, colorTransform);
+				copy.__renderTransform.identity ();
+				copy.__renderTransform.tx = bounds.x;
+				copy.__renderTransform.ty = bounds.y;
+				copy.__renderTransform.concat (source.__renderTransform);
+				copy.__worldAlpha = source.__worldAlpha;
+				copy.__worldColorTransform.__copyFrom (source.__worldColorTransform);
 				source = copy;
 				
 				Rectangle.__pool.release (bounds);
