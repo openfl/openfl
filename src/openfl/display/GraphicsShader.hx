@@ -16,14 +16,24 @@ class GraphicsShader extends Shader {
 		"varying float vAlpha;
 		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
-		varying vec2 openfl_vTexCoord;
+		varying vec4 openfl_vTexCoord;
 		
 		uniform bool openfl_HasColorTransform;
 		uniform sampler2D texture0;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (texture0, openfl_vTexCoord);
+			vec4 color;
+			
+			if (openfl_vTexCoord.p != 0) {
+				
+				color = texture2D (texture0, openfl_vTexCoord.st / openfl_vTexCoord.p);
+				
+			} else {
+				
+				color = texture2D (texture0, openfl_vTexCoord.st);
+				
+			}
 			
 			if (color.a == 0.0) {
 				
@@ -62,14 +72,24 @@ class GraphicsShader extends Shader {
 		"varying float vAlpha;
 		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
-		varying vec2 openfl_vTexCoord;
+		varying vec4 openfl_vTexCoord;
 		
 		uniform bool openfl_HasColorTransform;
 		uniform sampler2D texture0;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (texture0, openfl_vTexCoord);
+			vec4 color;
+			
+			if (openfl_vTexCoord.p != 0) {
+				
+				color = texture2D (texture0, openfl_vTexCoord.st / openfl_vTexCoord.p);
+				
+			} else {
+				
+				color = texture2D (texture0, openfl_vTexCoord.st);
+				
+			}
 			
 			if (color.a == 0.0) {
 				
@@ -115,11 +135,11 @@ class GraphicsShader extends Shader {
 		attribute vec4 colorMultipliers;
 		attribute vec4 colorOffsets;
 		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TexCoord;
+		attribute vec4 openfl_TexCoord;
 		varying float vAlpha;
 		varying vec4 vColorMultipliers;
 		varying vec4 vColorOffsets;
-		varying vec2 openfl_vTexCoord;
+		varying vec4 openfl_vTexCoord;
 		
 		uniform mat4 openfl_Matrix;
 		uniform bool openfl_HasColorTransform;

@@ -239,7 +239,7 @@ class GLGraphics {
 					var hasUVTData = (hasUVData && uvtData.length >= (length * 3));
 					var uvStride = hasUVTData ? 3 : 2;
 					
-					var stride = 4;
+					var stride = 2 + uvStride;
 					var offset = bufferPosition;
 					
 					resizeBuffer (graphics, bufferPosition + (length * stride));
@@ -259,6 +259,7 @@ class GLGraphics {
 						__bufferData[offset + 1] = vertices[vertOffset + 1];
 						__bufferData[offset + 2] = hasUVData ? uvtData[uvOffset] : 0;
 						__bufferData[offset + 3] = hasUVData ? uvtData[uvOffset + 1] : 0;
+						if (hasUVTData) __bufferData[offset + 4] = uvtData[uvOffset + 2];
 						
 					}
 					
@@ -593,11 +594,17 @@ class GLGraphics {
 							var c = data.readDrawTriangles ();
 							var vertices = c.vertices;
 							var indices = c.indices;
-							// var uvtData = c.uvtData;
+							var uvtData = c.uvtData;
 							var culling = c.culling;
 							
 							var hasIndices = (indices != null);
 							var length = hasIndices ? indices.length : Math.floor (vertices.length / 2);
+							
+							var hasUVData = (uvtData != null);
+							var hasUVTData = (hasUVData && uvtData.length >= (length * 3));
+							var uvStride = hasUVTData ? 3 : 2;
+							
+							var stride = 2 + uvStride;
 							
 							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 							var smoothing = (renderer.__allowSmoothing && smooth);
@@ -632,6 +639,12 @@ class GLGraphics {
 								
 							}
 							
+							if (smoothing) {
+								
+								gl.generateMipmap (gl.TEXTURE_2D);
+								
+							}
+							
 							gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
 							
 							if (updatedBuffer) {
@@ -640,8 +653,8 @@ class GLGraphics {
 								
 							}
 							
-							gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
-							gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
+							gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
+							gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, uvStride, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
 							
 							switch (culling) {
 								
@@ -660,7 +673,7 @@ class GLGraphics {
 							}
 							
 							gl.drawArrays (gl.TRIANGLES, 0, length);
-							bufferPosition += (4 * length);
+							bufferPosition += (stride * length);
 							
 							if (culling != NONE) {
 								
