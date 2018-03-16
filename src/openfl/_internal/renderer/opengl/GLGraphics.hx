@@ -233,19 +233,21 @@ class GLGraphics {
 					var culling = c.culling;
 					
 					var hasIndices = (indices != null);
-					var length = hasIndices ? indices.length : Math.floor (vertices.length / 2);
+					var numVertices = Math.floor (vertices.length / 2);
+					var length = hasIndices ? indices.length : numVertices;
 					
 					var hasUVData = (uvtData != null);
-					var hasUVTData = (hasUVData && uvtData.length >= (length * 3));
+					var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
+					var vertLength = hasUVTData ? 4 : 2;
 					var uvStride = hasUVTData ? 3 : 2;
 					
-					var stride = 2 + uvStride;
+					var stride = vertLength + 2;
 					var offset = bufferPosition;
 					
 					resizeBuffer (graphics, bufferPosition + (length * stride));
 					
 					var __bufferData = graphics.__bufferData;
-					var vertOffset, uvOffset;
+					var vertOffset, uvOffset, t;
 					
 					// TODO: Use an index buffer
 					
@@ -255,11 +257,24 @@ class GLGraphics {
 						vertOffset = hasIndices ? indices[i] * 2 : i * 2;
 						uvOffset = hasIndices ? indices[i] * uvStride : i * uvStride;
 						
-						__bufferData[offset + 0] = vertices[vertOffset];
-						__bufferData[offset + 1] = vertices[vertOffset + 1];
-						__bufferData[offset + 2] = hasUVData ? uvtData[uvOffset] : 0;
-						__bufferData[offset + 3] = hasUVData ? uvtData[uvOffset + 1] : 0;
-						if (hasUVTData) __bufferData[offset + 4] = uvtData[uvOffset + 2];
+						if (hasUVTData) {
+							
+							t = uvtData[uvOffset + 2];
+							
+							__bufferData[offset + 0] = vertices[vertOffset] / t;
+							__bufferData[offset + 1] = vertices[vertOffset + 1] / t;
+							__bufferData[offset + 2] = 0;
+							__bufferData[offset + 3] = 1 / t;
+							
+						} else {
+							
+							__bufferData[offset + 0] = vertices[vertOffset];
+							__bufferData[offset + 1] = vertices[vertOffset + 1];
+							
+						}
+						
+						__bufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] : 0;
+						__bufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] : 0;
 						
 					}
 					
@@ -598,13 +613,15 @@ class GLGraphics {
 							var culling = c.culling;
 							
 							var hasIndices = (indices != null);
-							var length = hasIndices ? indices.length : Math.floor (vertices.length / 2);
+							var numVertices = Math.floor (vertices.length / 2);
+							var length = hasIndices ? indices.length : numVertices;
 							
 							var hasUVData = (uvtData != null);
-							var hasUVTData = (hasUVData && uvtData.length >= (length * 3));
+							var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
+							var vertLength = hasUVTData ? 4 : 2;
 							var uvStride = hasUVTData ? 3 : 2;
 							
-							var stride = 2 + uvStride;
+							var stride = vertLength + 2;
 							
 							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 							var smoothing = (renderer.__allowSmoothing && smooth);
@@ -653,8 +670,8 @@ class GLGraphics {
 								
 							}
 							
-							gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
-							gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, uvStride, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
+							gl.vertexAttribPointer (shader.data.openfl_Position.index, vertLength, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
+							gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + vertLength) * Float32Array.BYTES_PER_ELEMENT);
 							
 							switch (culling) {
 								
