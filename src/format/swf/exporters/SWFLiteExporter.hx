@@ -809,7 +809,7 @@ class SWFLiteExporter {
 			
 			if (record.hasColor) textRecord.color = record.textColor;
 			if (record.hasXOffset) textRecord.offsetX = record.xOffset;
-			if (record.hasYOffset) textRecord.offsetY= record.yOffset;
+			if (record.hasYOffset) textRecord.offsetY = record.yOffset;
 			textRecord.fontHeight = record.textHeight;
 			
 			var advances = [];

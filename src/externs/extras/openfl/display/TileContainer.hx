@@ -20,5 +20,7 @@ extern class TileContainer extends Tile implements ITileContainer {
 	public function swapTiles (tile1:Tile, tile2:Tile):Void;
 	public function swapTilesAt (index1:Int, index2:Int):Void;
 	
+	@:noCompletion private function get_numTiles ():Int;
+	
 	
 }
