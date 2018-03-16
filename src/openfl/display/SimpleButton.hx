@@ -302,12 +302,12 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
-		var bounds = Rectangle.__pool.get ();
-		__getLocalBounds (bounds);
+		// var bounds = Rectangle.__pool.get ();
+		// __getLocalBounds (bounds);
 		
-		renderer.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
+		// renderer.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
 		
-		Rectangle.__pool.release (bounds);
+		// Rectangle.__pool.release (bounds);
 		__currentState.__renderCanvasMask (renderer);
 		
 	}

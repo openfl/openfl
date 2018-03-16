@@ -1593,6 +1593,9 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
+		// TODO: Move to normal render method, browsers appear to support more than
+		// one path in clipping now
+		
 		if (graphics.__commands.length != 0) {
 			
 			context = cast renderer.context;
@@ -1659,7 +1662,9 @@ class CanvasGraphics {
 					case DRAW_RECT:
 						
 						var c = data.readDrawRect ();
+						context.beginPath ();
 						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
+						context.closePath ();
 					
 					case DRAW_ROUND_RECT:
 						
