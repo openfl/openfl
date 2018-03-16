@@ -27,7 +27,7 @@ import sys.FileSystem;
 class SharedObject extends EventDispatcher {
 	
 	
-	public static var defaultObjectEncoding:Int = 3;
+	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 	
 	private static var __sharedObjects:Map<String, SharedObject>;
 	
@@ -35,7 +35,7 @@ class SharedObject extends EventDispatcher {
 	public var client:Dynamic;
 	public var data (default, null):Dynamic;
 	public var fps (null, default):Float;
-	public var objectEncoding:Int;
+	public var objectEncoding:ObjectEncoding;
 	public var size (get, never):Int;
 	
 	private var __localPath:String;
@@ -56,7 +56,7 @@ class SharedObject extends EventDispatcher {
 		super ();
 		
 		client = this;
-		objectEncoding = 3;
+		objectEncoding = defaultObjectEncoding;
 		
 	}
 	

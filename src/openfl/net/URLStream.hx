@@ -17,7 +17,7 @@ class URLStream extends EventDispatcher implements IDataInput {
 	public var bytesAvailable (get, never):UInt;
 	public var connected (get, never):Bool;
 	public var endian (get, set):Endian;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	private var __data:ByteArray;
 	private var __loader:URLLoader;

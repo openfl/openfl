@@ -315,9 +315,7 @@ declare namespace openfl.utils {
 		 * @return The deserialized object.
 		 * @throws EOFError There is not sufficient data available to read.
 		 */
-		// #if flash
-		// @:noCompletion @:dox(hide) readObject ():Dynamic;
-		// #end
+		readObject ():Dynamic;
 		
 		
 		/**
@@ -520,9 +518,7 @@ declare namespace openfl.utils {
 		 * 
 		 * @param object The object to serialize.
 		 */
-		// #if flash
-		// @:noCompletion @:dox(hide) writeObject (object:Dynamic):void;
-		// #end
+		writeObject (object:Dynamic):void;
 		
 		
 		/**

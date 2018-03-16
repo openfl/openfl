@@ -1,6 +1,8 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
 #if flash
 @:native("flash.utils.IDataOutput")
 #end
@@ -13,7 +15,7 @@ extern interface IDataOutput {
 	public var endian (get, set):Endian;
 	#end
 	
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	public function writeBoolean (value:Bool):Void;
 	public function writeByte (value:Int):Void;

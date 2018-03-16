@@ -11,7 +11,7 @@ extern class NetConnection extends EventDispatcher {
 	//public static inline var CONNECT_SUCCESS:String = "connectSuccess";
 	
 	#if flash
-	public static var defaultObjectEncoding:UInt;
+	public static var defaultObjectEncoding:ObjectEncoding;
 	#end
 	
 	#if flash
@@ -47,7 +47,7 @@ extern class NetConnection extends EventDispatcher {
 	#end
 	
 	#if flash
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	#end
 	
 	#if flash

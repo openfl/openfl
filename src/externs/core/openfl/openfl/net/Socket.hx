@@ -15,7 +15,7 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	public var bytesPending (get, never):UInt;
 	public var connected (get, never):Bool;
 	public var endian (get, set):Endian;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	public var timeout:UInt;
 	
 	@:noCompletion private function get_bytesAvailable ():UInt;

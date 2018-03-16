@@ -315,9 +315,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * @return The deserialized object.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	#if flash
-	@:noCompletion @:dox(hide) public function readObject ():Dynamic;
-	#end
+	public function readObject ():Dynamic;
 	
 	
 	/**
@@ -520,9 +518,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * 
 	 * @param object The object to serialize.
 	 */
-	#if flash
-	@:noCompletion @:dox(hide) public function writeObject (object:Dynamic):Void;
-	#end
+	public function writeObject (object:Dynamic):Void;
 	
 	
 	/**

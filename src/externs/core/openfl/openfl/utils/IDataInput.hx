@@ -1,6 +1,8 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
 #if flash
 @:native("flash.utils.IDataInput")
 #end
@@ -19,7 +21,7 @@ extern interface IDataInput {
 	public var endian (get, set):Endian;
 	#end
 	
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	public function readBoolean ():Bool;
 	public function readByte ():Int;

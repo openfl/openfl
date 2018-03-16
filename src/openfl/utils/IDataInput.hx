@@ -1,11 +1,14 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
+
 interface IDataInput {
 	
 	public var bytesAvailable (get, never):UInt;
 	public var endian (get, set):Endian;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	public function readBoolean ():Bool;
 	public function readByte ():Int;

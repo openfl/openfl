@@ -15,7 +15,7 @@ extern class URLStream extends EventDispatcher implements IDataInput {
 	//@:require(flash11_4) public var diskCacheEnabled (default, null):Bool;
 	public var endian (get, set):Endian;
 	//@:require(flash11_4) public var length (default, null):Float;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	//@:require(flash11_4) public var position:Float;
 	
 	public function new ():Void;

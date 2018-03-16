@@ -21,7 +21,7 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	public var localPort (default, never):Int;
 	#end
 	
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	#if air
 	public var remoteAddress (default, never):String;

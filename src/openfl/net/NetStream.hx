@@ -26,7 +26,7 @@ class NetStream extends EventDispatcher {
 	public var currentFPS (default, null):Float;
 	public var decodedFrames (default, null):Int;
 	public var liveDelay (default, null):Float;
-	public var objectEncoding (default, null):Int;
+	public var objectEncoding (default, null):ObjectEncoding;
 	public var soundTransform:SoundTransform;
 	public var speed (get, set):Float;
 	public var time (default, null):Float;
