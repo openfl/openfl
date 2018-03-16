@@ -75,7 +75,7 @@ class SimpleButton extends InteractiveObject {
 		__upState = (upState != null) ? upState : new DisplayObject ();
 		__overState = overState;
 		__downState = downState;
-		__hitTestState = (hitTestState != null) ? hitTestState : new DisplayObject ();
+		this.hitTestState = (hitTestState != null) ? hitTestState : new DisplayObject ();
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, __this_onMouseDown);
 		addEventListener (MouseEvent.MOUSE_OUT, __this_onMouseOut);
