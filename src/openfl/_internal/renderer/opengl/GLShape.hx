@@ -38,6 +38,10 @@ class GLShape {
 		
 		if (graphics != null) {
 			
+			renderer.__setBlendMode (shape.__worldBlendMode);
+			renderer.__pushMaskObject (shape);
+			// renderer.filterManager.pushObject (shape);
+			
 			GLGraphics.render (graphics, renderer, shape.__renderTransform, shape.__worldAlpha);
 			
 			var bounds = graphics.__bounds;
@@ -45,10 +49,6 @@ class GLShape {
 			if (graphics.__bitmap != null && graphics.__visible) {
 				
 				var gl = renderer.gl;
-				
-				renderer.__setBlendMode (shape.__worldBlendMode);
-				renderer.__pushMaskObject (shape);
-				// renderer.filterManager.pushObject (shape);
 				
 				var shader = renderer.__initDisplayShader (shape.__worldRenderShader);
 				renderer.setDisplayShader (shader);
@@ -69,10 +69,10 @@ class GLShape {
 				
 				renderer.__clearShader ();
 				
-				// renderer.filterManager.popObject (shape);
-				renderer.__popMaskObject (shape);
-				
 			}
+			
+			// renderer.filterManager.popObject (shape);
+			renderer.__popMaskObject (shape);
 			
 		}
 		
@@ -87,11 +87,7 @@ class GLShape {
 			
 			// TODO: Support invisible shapes
 			
-			#if (js && html5)
-			CanvasGraphics.render (graphics, cast renderer.__softwareRenderer, shape.__renderTransform);
-			#elseif lime_cairo
-			CairoGraphics.render (graphics, cast renderer.__softwareRenderer, shape.__renderTransform);
-			#end
+			GLGraphics.render (graphics, renderer, shape.__renderTransform, shape.__worldAlpha);
 			
 			var bounds = graphics.__bounds;
 			
