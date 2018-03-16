@@ -9,5 +9,6 @@ package openfl.display3D;
 	public var STANDARD = "standard";
 	public var STANDARD_CONSTRAINED = "standardConstrained";
 	public var STANDARD_EXTENDED = "standardExtended";
+	public var ENHANCED = "enhanced";
 	
 }
