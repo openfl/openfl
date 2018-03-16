@@ -92,25 +92,9 @@ class GLVideo {
 			
 			var shader = renderer.__maskShader;
 			renderer.setDisplayShader (shader);
-			renderer.applyBitmapData (null, renderer.__allowSmoothing);
-			//shader.data.uImage0.input = bitmap.__bitmapData;
-			//shader.data.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
+			renderer.applyBitmapData (GLMaskShader.opaqueBitmapData, true);
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.updateShader ();
-			
-			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (gl));
-			
-			// if (video.smoothing) {
-				
-			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-				
-			// } else {
-				
-			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-				
-			// }
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl));
 			

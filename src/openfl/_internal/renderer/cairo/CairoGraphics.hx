@@ -1248,7 +1248,7 @@ class CairoGraphics {
 	#end
 	
 	
-	public static function render (graphics:Graphics, renderer:CairoRenderer, parentTransform:Matrix):Void {
+	public static function render (graphics:Graphics, renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		

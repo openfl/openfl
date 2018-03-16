@@ -1,10 +1,14 @@
 package openfl._internal.renderer.opengl;
 
 
+import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
 
 
 class GLMaskShader extends DisplayObjectShader {
+	
+	
+	public static var opaqueBitmapData = new BitmapData (1, 1, false, 0);
 	
 	
 	@:glFragmentSource(

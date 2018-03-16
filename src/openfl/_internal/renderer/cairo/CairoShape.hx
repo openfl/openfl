@@ -30,7 +30,7 @@ class CairoShape {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderer, shape.__renderTransform);
+			CairoGraphics.render (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			

@@ -3,6 +3,7 @@ package openfl._internal.renderer.opengl;
 
 import lime.utils.Float32Array;
 import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 import openfl.display.OpenGLRenderer;
 
 #if gl_stats
@@ -72,7 +73,7 @@ class GLBitmap {
 			
 			var shader = renderer.__maskShader;
 			renderer.setDisplayShader (shader);
-			renderer.applyBitmapData (bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
+			renderer.applyBitmapData (GLMaskShader.opaqueBitmapData, true);
 			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform));
 			renderer.updateShader ();
 			

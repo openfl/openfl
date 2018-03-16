@@ -37,7 +37,7 @@ class GLGraphics {
 	private static var tempColorTransform = new ColorTransform (0, 0, 0, 1, 0, 0, 0, 0);
 	
 	
-	private static function buildBuffer (graphics:Graphics, renderer:OpenGLRenderer, parentTransform:Matrix, worldAlpha:Float):Void {
+	private static function buildBuffer (graphics:Graphics, renderer:OpenGLRenderer):Void {
 		
 		var bufferLength = 0;
 		var bufferPosition = 0;
@@ -282,7 +282,7 @@ class GLGraphics {
 	}
 	
 	
-	private static function isCompatible (graphics:Graphics, parentTransform:Matrix):Bool {
+	private static function isCompatible (graphics:Graphics):Bool {
 		
 		#if force_sw_graphics
 		return false;
@@ -383,11 +383,11 @@ class GLGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderer:OpenGLRenderer, parentTransform:Matrix, worldAlpha:Float):Void {
+	public static function render (graphics:Graphics, renderer:OpenGLRenderer):Void {
 		
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 		
-		if ((graphics.__bitmap != null && !graphics.__dirty) || !isCompatible (graphics, parentTransform)) {
+		if ((graphics.__bitmap != null && !graphics.__dirty) || !isCompatible (graphics)) {
 			
 			if (graphics.__buffer != null) {
 				
@@ -397,9 +397,9 @@ class GLGraphics {
 			}
 			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
+			CanvasGraphics.render (graphics, cast renderer.__softwareRenderer);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
+			CairoGraphics.render (graphics, cast renderer.__softwareRenderer);
 			#end
 			
 		} else {
@@ -418,7 +418,7 @@ class GLGraphics {
 				
 				if (graphics.__dirty || graphics.__bufferData == null) {
 					
-					buildBuffer (graphics, renderer, parentTransform, worldAlpha);
+					buildBuffer (graphics, renderer);
 					updatedBuffer = true;
 					
 				}
@@ -491,10 +491,7 @@ class GLGraphics {
 								var hasIndices = (indices != null);
 								var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
 								
-								// matrix.copyFrom (graphics.__renderTransform);
-								// matrix.concat (parentTransform);
-								
-								var uMatrix = renderer.__getMatrix (parentTransform);
+								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 								var smoothing = (renderer.__allowSmoothing && smooth);
 								var shader;
 								
@@ -568,7 +565,7 @@ class GLGraphics {
 								matrix.scale (width, height);
 								matrix.tx = x;
 								matrix.ty = y;
-								matrix.concat (parentTransform);
+								matrix.concat (graphics.__owner.__renderTransform);
 								
 								var shader = renderer.__initGraphicsShader (null);
 								renderer.setGraphicsShader (shader);
@@ -602,7 +599,7 @@ class GLGraphics {
 							var hasIndices = (indices != null);
 							var length = hasIndices ? indices.length : Math.floor (vertices.length / 2);
 							
-							var uMatrix = renderer.__getMatrix (parentTransform);
+							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 							var smoothing = (renderer.__allowSmoothing && smooth);
 							var shader;
 							
@@ -710,16 +707,16 @@ class GLGraphics {
 	}
 	
 	
-	public static function renderMask (graphics:Graphics, renderer:OpenGLRenderer, parentTransform:Matrix, worldAlpha:Float):Void {
+	public static function renderMask (graphics:Graphics, renderer:OpenGLRenderer):Void {
 		
 		// TODO: Support invisible shapes
 		
-		render (graphics, renderer, parentTransform, worldAlpha);
+		render (graphics, renderer);
 		
 		// #if (js && html5)
-		// CanvasGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
+		// CanvasGraphics.render (graphics, cast renderer.__softwareRenderer);
 		// #elseif lime_cairo
-		// CairoGraphics.render (graphics, cast renderer.__softwareRenderer, parentTransform);
+		// CairoGraphics.render (graphics, cast renderer.__softwareRenderer);
 		// #end
 		
 	}

@@ -257,17 +257,7 @@ class Bitmap extends DisplayObject {
 	
 	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderer, false);
-		
-		if (__cacheBitmap != null && !__isCacheBitmapRender) {
-			
-			GLBitmap.renderMask (__cacheBitmap, renderer);
-			
-		} else {
-			
-			GLBitmap.renderMask (this, renderer);
-			
-		}
+		GLBitmap.renderMask (this, renderer);
 		
 	}
 	

@@ -30,7 +30,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class GLShape {
 	
 	
-	public static inline function render (shape:DisplayObject, renderer:OpenGLRenderer):Void {
+	public static function render (shape:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		
@@ -42,7 +42,7 @@ class GLShape {
 			renderer.__pushMaskObject (shape);
 			// renderer.filterManager.pushObject (shape);
 			
-			GLGraphics.render (graphics, renderer, shape.__renderTransform, shape.__worldAlpha);
+			GLGraphics.render (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			
@@ -79,7 +79,7 @@ class GLShape {
 	}
 	
 	
-	public static inline function renderMask (shape:DisplayObject, renderer:OpenGLRenderer):Void {
+	public static function renderMask (shape:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		var graphics = shape.__graphics;
 		
@@ -87,7 +87,7 @@ class GLShape {
 			
 			// TODO: Support invisible shapes
 			
-			GLGraphics.render (graphics, renderer, shape.__renderTransform, shape.__worldAlpha);
+			GLGraphics.renderMask (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			

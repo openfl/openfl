@@ -42,7 +42,7 @@ class DOMShape {
 		
 		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null) {
 			
-			CanvasGraphics.render (graphics, renderer.__canvasRenderer, shape.__renderTransform);
+			CanvasGraphics.render (graphics, renderer.__canvasRenderer);
 			
 			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas != graphics.__canvas)) {
 				

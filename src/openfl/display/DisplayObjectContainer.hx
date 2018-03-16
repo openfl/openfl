@@ -3,6 +3,7 @@ package openfl.display;
 
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.opengl.GLGraphics;
 import openfl.display.Stage;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
@@ -754,22 +755,13 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			CanvasGraphics.renderMask (__graphics, renderer);
 			
-		} else {
-			
-			var bounds = Rectangle.__pool.get ();
-			__getLocalBounds (bounds);
-			
-			renderer.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
-			
-			Rectangle.__pool.release (bounds);
-			
 		}
 		
-		/*for (child in __children) {
+		for (child in __children) {
 			
-			child.__renderMask (renderer);
+			child.__renderCanvasMask (renderer);
 			
-		}*/
+		}
 		
 	}
 	
@@ -895,42 +887,17 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		super.__renderGLMask (renderer);
-		
-		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
-		
-		if (renderer.__stage != null) {
+		if (__graphics != null) {
 			
-			for (child in __children) {
-				
-				child.__renderGLMask (renderer);
-				child.__renderDirty = false;
-				
-			}
-			
-			__renderDirty = false;
-			
-		} else {
-			
-			for (child in __children) {
-				
-				child.__renderGLMask (renderer);
-				
-			}
+			GLGraphics.renderMask (__graphics, renderer);
 			
 		}
 		
-		for (orphan in __removedChildren) {
+		for (child in __children) {
 			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
+			child.__renderGLMask (renderer);
 			
 		}
-		
-		__removedChildren.length = 0;
 		
 	}
 	

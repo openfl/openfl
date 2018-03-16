@@ -1237,7 +1237,7 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderer:CanvasRenderer, parentTransform:Matrix):Void {
+	public static function render (graphics:Graphics, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		
