@@ -7,6 +7,7 @@ import haxe.macro.Type;
 
 using haxe.macro.ExprTools;
 using haxe.macro.Tools;
+using haxe.macro.TypeTools;
 
 
 class ShaderMacro {
@@ -68,11 +69,39 @@ class ShaderMacro {
 				
 			} else if (shaderDataFields.length > 0) {
 				
+				var superDataClassPack = [ "openfl", "display" ];
+				var superDataClassName = "ShaderData";
+				var superDataClassFields = null;
+				
+				if (definedData) {
+					
+					superDataClassPack = [ "openfl", "_generated" ];
+					superDataClassName = "_" + superClass.name + "_ShaderData";
+					var superDataClass = Context.getType ("openfl._generated._" + superClass.name + "_ShaderData").getClass ();
+					
+					if (superDataClass != null) {
+						
+						superDataClassFields = superDataClass.fields.get ();
+						
+					}
+					
+				}
+				
 				// dataClassPack = localClass.pack;
 				dataClassPack = [ "openfl", "_generated" ];
 				
 				var fieldNames = new Map<String, Bool> ();
 				var uniqueFields = [];
+				
+				if (superDataClassFields != null) {
+					
+					for (field in superDataClassFields) {
+						
+						fieldNames[field.name] = true;
+						
+					}
+					
+				}
 				
 				for (field in shaderDataFields) {
 					
@@ -93,7 +122,7 @@ class ShaderMacro {
 					pos: pos,
 					pack: dataClassPack,
 					name: dataClassName,
-					kind: TDClass ({ pack: [ "openfl", "display" ], name: "ShaderData", params: [] }, null, false),
+					kind: TDClass ({ pack: superDataClassPack, name: superDataClassName, params: [] }, null, false),
 					fields: uniqueFields,
 					params: [],
 					meta: [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":hack", pos: pos } ]
@@ -134,16 +163,16 @@ class ShaderMacro {
 						if (glVertexSource != null) block.unshift (macro if (__glVertexSource == null) __glVertexSource = $v{glVertexSource});
 						if (glFragmentSource != null) block.unshift (macro if (__glFragmentSource == null) __glFragmentSource = $v{glFragmentSource});
 						block.push (Context.parse ("__data = cast new " + dataClassPack.join (".") + "." + dataClassName + " (null)", pos));
-					
+						
 					default:
 					
 				}
 				
 			}
 			
-			if (!isBaseClass && !definedData && Context.definedValue ("openfl_dynamic") == null) {
+			if (!isBaseClass && Context.definedValue ("openfl_dynamic") == null) {
 				
-				// fields.push ({ name: "__data", access: [ APublic ], kind: FVar (TPath ({ name: dataClassName, pack: dataClassPack, params: [] }), Context.parse ("new " + dataClassPack.join (".") + "." + dataClassName + " (null)", pos)), doc: null, meta: [], pos: pos });
+				var dataField = !definedData ? "data" : "data_" + localClass.name;
 				
 				var get_data = macro { 
 					
@@ -157,9 +186,9 @@ class ShaderMacro {
 					
 				};
 				
-				fields.push ({ name: "get_data", access: [ APrivate ], kind: FFun({ args: [], expr: get_data, params: [], ret: dataClassType }), pos: pos });
-				fields.push ({ name: "set_data", access: [ APrivate ], kind: FFun({ args: [ { name: "value", type: dataClassType } ], expr: Context.parse ("return cast __data = value", pos), params: [], ret: dataClassType }), pos: pos });
-				fields.push ({ name: "data", access: [ APublic ], kind: FProp ("get", "set", dataClassType, null), doc: null, meta: [], pos: pos });
+				fields.push ({ name: "get_"+dataField, access: [ APrivate ], kind: FFun({ args: [], expr: get_data, params: [], ret: dataClassType }), pos: pos });
+				fields.push ({ name: "set_"+dataField, access: [ APrivate ], kind: FFun({ args: [ { name: "value", type: dataClassType } ], expr: Context.parse ("return cast __data = value", pos), params: [], ret: dataClassType }), pos: pos });
+				fields.push ({ name: dataField, access: [ APublic ], kind: FProp ("get", "set", dataClassType, null), doc: null, meta: [], pos: pos });
 				
 				//fields.push ({ kind: FProp ("get", "set", TPath ({ name: dataClassName, pack: dataClassPack, params: [] }), null), name: "data", doc: null, meta: [], access: [ APublic ], pos: Context.currentPos () });
 				
