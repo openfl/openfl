@@ -76,7 +76,7 @@ class GLGraphics {
 						
 					} else {
 						
-						bitmap = c.shaderBuffer.shader.data.texture0.input;
+						bitmap = c.shaderBuffer.shader.texture0.input;
 						
 					}
 				
@@ -488,8 +488,8 @@ class GLGraphics {
 								
 							} else {
 								
-								bitmap = shaderBuffer.shader.data.texture0.input;
-								smooth = shaderBuffer.shader.data.texture0.smoothing;
+								bitmap = shaderBuffer.shader.texture0.input;
+								smooth = shaderBuffer.shader.texture0.smoothing;
 								
 							}
 							
@@ -548,8 +548,8 @@ class GLGraphics {
 									
 								}
 								
-								gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
-								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
+								gl.vertexAttribPointer (shader.openfl_Position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
+								gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
 								
 								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
 								bufferPosition += (4 * length * 6);
@@ -592,8 +592,8 @@ class GLGraphics {
 								renderer.updateShader ();
 								
 								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (cast gl));
-								gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-								gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+								gl.vertexAttribPointer (shader.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+								gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 								gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 								
 								#if gl_stats
@@ -670,8 +670,8 @@ class GLGraphics {
 								
 							}
 							
-							gl.vertexAttribPointer (shader.data.openfl_Position.index, vertLength, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
-							gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + vertLength) * Float32Array.BYTES_PER_ELEMENT);
+							gl.vertexAttribPointer (shader.openfl_Position.index, vertLength, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
+							gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + vertLength) * Float32Array.BYTES_PER_ELEMENT);
 							
 							switch (culling) {
 								

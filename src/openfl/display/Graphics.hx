@@ -155,7 +155,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (shader != null) {
 			
-			__bitmapFill = shader.data.texture0.input;
+			__bitmapFill = shader.texture0.input;
 			
 		}
 		

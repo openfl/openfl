@@ -40,8 +40,8 @@ class GLVideo {
 			var shader = renderer.__initDisplayShader (video.__worldRenderShader);
 			renderer.setDisplayShader (shader);
 			renderer.applyBitmapData (null, renderer.__allowSmoothing);
-			//shader.data.uImage0.input = bitmap.__bitmapData;
-			//shader.data.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
+			//shader.uImage0.input = bitmap.__bitmapData;
+			//shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.applyAlpha (video.__worldAlpha);
 			renderer.applyColorTransform (video.__worldColorTransform);
@@ -62,8 +62,8 @@ class GLVideo {
 			}
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl));
-			gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
@@ -98,8 +98,8 @@ class GLVideo {
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl));
 			
-			gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.openfl_Position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			

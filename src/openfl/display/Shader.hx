@@ -20,7 +20,6 @@ import openfl.utils.ByteArray;
 
 #if (!display && !macro)
 @:autoBuild(openfl._internal.macros.ShaderMacro.build())
-@:build(openfl._internal.macros.ShaderMacro.build())
 #end
 
 
@@ -30,9 +29,7 @@ class Shader {
 	private static var __glPrograms = new Map<String, GLProgram> ();
 	
 	public var byteCode (null, default):ByteArray;
-	#if openfl_dynamic
 	public var data (get, set):ShaderData;
-	#end
 	public var glFragmentSource (get, set):String;
 	public var glProgram (default, null):GLProgram;
 	public var glVertexSource (get, set):String;
@@ -46,6 +43,7 @@ class Shader {
 	private var __glVertexSource:String;
 	private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
 	private var __isDisplayShader:Bool;
+	private var __isGenerated:Bool;
 	private var __isGraphicsShader:Bool;
 	private var __numPasses:Int;
 	private var __paramBool:Array<ShaderParameter<Bool>>;
@@ -73,6 +71,7 @@ class Shader {
 		
 		__glSourceDirty = true;
 		__numPasses = 1;
+		__data = new ShaderData (code);
 		
 	}
 	
@@ -449,6 +448,7 @@ class Shader {
 				input.__isUniform = isUniform;
 				__inputBitmapData.push (input);
 				Reflect.setField (__data, name, input);
+				if (__isGenerated) Reflect.setField (this, name, input);
 				
 			} else if (!Reflect.hasField (__data, name) || Reflect.field (__data, name) == null) {
 				
@@ -512,6 +512,7 @@ class Shader {
 						parameter.__length = length;
 						__paramBool.push (parameter);
 						Reflect.setField (__data, name, parameter);
+						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
 					case INT, INT2, INT3, INT4:
 						
@@ -524,6 +525,7 @@ class Shader {
 						parameter.__length = length;
 						__paramInt.push (parameter);
 						Reflect.setField (__data, name, parameter);
+						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
 					default:
 						
@@ -537,6 +539,7 @@ class Shader {
 						parameter.__length = length;
 						__paramFloat.push (parameter);
 						Reflect.setField (__data, name, parameter);
+						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
 				}
 				
@@ -754,7 +757,6 @@ class Shader {
 	
 	
 	
-	#if openfl_dynamic
 	private function get_data ():ShaderData {
 		
 		if (__glSourceDirty || __data == null) {
@@ -773,7 +775,6 @@ class Shader {
 		return __data = cast value;
 		
 	}
-	#end
 	
 	
 	private function get_glFragmentSource ():String {

@@ -165,11 +165,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		} else if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.data.alpha.value = __alphaValue;
+			__currentGraphicsShader.alpha.value = __alphaValue;
 			
 		} else {
 			
-			__currentDisplayShader.data.alpha.value = __alphaValue;
+			__currentDisplayShader.alpha.value = __alphaValue;
 			
 		}
 		
@@ -180,13 +180,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.data.texture0.input = bitmapData;
-			__currentGraphicsShader.data.texture0.smoothing = smoothing;
+			__currentGraphicsShader.texture0.input = bitmapData;
+			__currentGraphicsShader.texture0.smoothing = smoothing;
 			
 		} else {
 			
-			__currentDisplayShader.data.texture0.input = bitmapData;
-			__currentDisplayShader.data.texture0.smoothing = smoothing;
+			__currentDisplayShader.texture0.input = bitmapData;
+			__currentDisplayShader.texture0.smoothing = smoothing;
 			
 		}
 		
@@ -293,11 +293,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		} else if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.data.openfl_HasColorTransform.value = __hasColorTransformValue;
+			__currentGraphicsShader.openfl_HasColorTransform.value = __hasColorTransformValue;
 			
 		} else {
 			
-			__currentDisplayShader.data.openfl_HasColorTransform.value = __hasColorTransformValue;
+			__currentDisplayShader.openfl_HasColorTransform.value = __hasColorTransformValue;
 			
 		}
 		
@@ -312,11 +312,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		} else if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.data.openfl_Matrix.value = matrix;
+			__currentGraphicsShader.openfl_Matrix.value = matrix;
 			
 		} else if (__currentDisplayShader != null) {
 			
-			__currentDisplayShader.data.openfl_Matrix.value = matrix;
+			__currentDisplayShader.openfl_Matrix.value = matrix;
 			
 		}
 		
@@ -420,11 +420,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.data.alpha.__useArray = true;
+			__currentGraphicsShader.alpha.__useArray = true;
 			
 		} else if (__currentDisplayShader != null) {
 			
-			__currentDisplayShader.data.alpha.__useArray = true;
+			__currentDisplayShader.alpha.__useArray = true;
 			
 		}
 		
@@ -435,13 +435,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.data.colorMultipliers.__useArray = true;
-			__currentGraphicsShader.data.colorOffsets.__useArray = true;
+			__currentGraphicsShader.colorMultipliers.__useArray = true;
+			__currentGraphicsShader.colorOffsets.__useArray = true;
 			
 		} else if (__currentDisplayShader != null) {
 			
-			__currentDisplayShader.data.colorMultipliers.__useArray = true;
-			__currentDisplayShader.data.colorOffsets.__useArray = true;
+			__currentDisplayShader.colorMultipliers.__useArray = true;
+			__currentDisplayShader.colorOffsets.__useArray = true;
 			
 		}
 		
@@ -471,7 +471,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__currentShaderBuffer == null) {
 				
-				__currentGraphicsShader.data.texture0.input = null;
+				__currentGraphicsShader.texture0.input = null;
 				
 			} else {
 				
@@ -479,17 +479,17 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 			}
 			
-			__currentGraphicsShader.data.openfl_HasColorTransform.value = null;
-			__currentGraphicsShader.data.openfl_Position.value = null;
-			__currentGraphicsShader.data.openfl_Matrix.value = null;
+			__currentGraphicsShader.openfl_HasColorTransform.value = null;
+			__currentGraphicsShader.openfl_Position.value = null;
+			__currentGraphicsShader.openfl_Matrix.value = null;
 			__currentGraphicsShader.__clearUseArray ();
 			
 		} else if (__currentDisplayShader != null) {
 			
-			__currentDisplayShader.data.texture0.input = null;
-			__currentDisplayShader.data.openfl_HasColorTransform.value = null;
-			__currentDisplayShader.data.openfl_Position.value = null;
-			__currentDisplayShader.data.openfl_Matrix.value = null;
+			__currentDisplayShader.texture0.input = null;
+			__currentDisplayShader.openfl_HasColorTransform.value = null;
+			__currentDisplayShader.openfl_Position.value = null;
+			__currentDisplayShader.openfl_Matrix.value = null;
 			__currentDisplayShader.__clearUseArray ();
 			
 		}
@@ -859,13 +859,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		// if (target == null || shader == null) return;
 		
-		// shader.data.texture0.input = target;
-		// shader.data.texture0.smoothing = renderer.__allowSmoothing && (renderer.upscaled);
-		// shader.data.openfl_Matrix.value = renderer.__getMatrix (matrix);
+		// shader.texture0.input = target;
+		// shader.texture0.smoothing = renderer.__allowSmoothing && (renderer.upscaled);
+		// shader.openfl_Matrix.value = renderer.__getMatrix (matrix);
 		
-		// if (shader.data.openfl_HasColorTransform != null) {
-		// 	if (shader.data.openfl_HasColorTransform.value == null) shader.data.openfl_HasColorTransform.value = [];
-		// 	shader.data.openfl_HasColorTransform.value[0] = false;
+		// if (shader.openfl_HasColorTransform != null) {
+		// 	if (shader.openfl_HasColorTransform.value == null) shader.openfl_HasColorTransform.value = [];
+		// 	shader.openfl_HasColorTransform.value[0] = false;
 		// }
 		
 		// var shaderManager:GLShaderManager = cast renderer.shaderManager;
@@ -873,9 +873,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		// gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl));
 		
-		// gl.vertexAttribPointer (shader.data.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-		// gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		// // gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		// gl.vertexAttribPointer (shader.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+		// gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		// // gl.vertexAttribPointer (shader.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 		
 		// gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		

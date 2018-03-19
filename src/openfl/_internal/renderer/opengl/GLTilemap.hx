@@ -359,21 +359,21 @@ class GLTilemap {
 				
 			}
 			
-			gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.openfl_Position.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 			
 			
 			if (tilemap.tileAlphaEnabled) {
 				
-				gl.vertexAttribPointer (shader.data.alpha.index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.alpha.index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			if (tilemap.tileColorTransformEnabled) {
 				
 				var position = tilemap.tileAlphaEnabled ? 5 : 4;
 				
-				gl.vertexAttribPointer (shader.data.colorMultipliers.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.data.colorOffsets.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.colorMultipliers.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.colorOffsets.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			
@@ -522,8 +522,8 @@ class GLTilemap {
 		
 		// tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
 		
-		// gl.vertexAttribPointer (shader.data.openfl_Position.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 0);
-		// gl.vertexAttribPointer (shader.data.openfl_TexCoord.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		// gl.vertexAttribPointer (shader.openfl_Position.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 0);
+		// gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 		
 		// var cacheBitmapData = null;
 		// var lastIndex = 0;
@@ -556,7 +556,7 @@ class GLTilemap {
 			
 		// 	if (flush) {
 				
-		// 		shader.data.texture0.input = cacheBitmapData;
+		// 		shader.texture0.input = cacheBitmapData;
 		// 		renderer.shaderManager.updateShader ();
 				
 		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
@@ -574,7 +574,7 @@ class GLTilemap {
 			
 		// 	if (i == drawCount && tileset.__bitmapData != null) {
 				
-		// 		shader.data.texture0.input = tileset.__bitmapData;
+		// 		shader.texture0.input = tileset.__bitmapData;
 		// 		renderer.shaderManager.updateShader ();
 		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
