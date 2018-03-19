@@ -60,16 +60,6 @@ class ShaderMacro {
 				var fieldNames = new Map<String, Bool> ();
 				var parent;
 				
-				if (superDataClassFields != null) {
-					
-					for (field in superDataClassFields) {
-						
-						fieldNames[field.name] = true;
-						
-					}
-					
-				}
-				
 				for (field in shaderDataFields) {
 					
 					parent = superClass;
