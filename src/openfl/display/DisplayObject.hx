@@ -525,13 +525,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private function __getOwnBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__graphics != null) {
 			
 			__graphics.__getBounds (rect, matrix);
 			
 		}
+		
+	}
+	
+	
+	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		__getOwnBounds (rect, matrix);
 		
 	}
 	
@@ -547,7 +554,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		// TODO: Should this be __getRenderBounds, to account for scrollRect?
 		
-		__getBounds (rect, matrix);
+		__getOwnBounds (rect, matrix);
 		
 		if (__filters != null && __filters.length > 0) {
 			
@@ -597,7 +604,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__scrollRect == null) {
 			
-			__getBounds (rect, matrix);
+			__getOwnBounds (rect, matrix);
 			
 		} else {
 			
