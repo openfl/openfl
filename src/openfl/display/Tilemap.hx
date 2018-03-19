@@ -299,7 +299,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getOwnBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = Rectangle.__pool.get ();
 		bounds.setTo (0, 0, __width, __height);
