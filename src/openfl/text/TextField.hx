@@ -1156,7 +1156,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getOwnBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		__updateLayout ();
 		
