@@ -130,8 +130,25 @@ class GLGraphics {
 						var ri, ti;
 						
 						var __bufferData = graphics.__bufferData;
+						
+						#if openfl_power_of_two
+						bitmapWidth = 1;
+						bitmapHeight = 1;
+						while (bitmapWidth < bitmap.width) {
+							
+							bitmapWidth <<= 1;
+							
+						}
+						while (bitmapHeight < bitmap.height) {
+							
+							bitmapHeight <<= 1;
+							
+						}
+						#else
 						bitmapWidth = bitmap.width;
 						bitmapHeight = bitmap.height;
+						#end
+						
 						var sourceRect = bitmap.rect;
 						
 						for (i in 0...length) {
