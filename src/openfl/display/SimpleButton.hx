@@ -134,7 +134,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		__getOwnBounds (rect, matrix);
+		super.__getBounds (rect, matrix);
 		
 		if (matrix != null) {
 			
@@ -164,7 +164,7 @@ class SimpleButton extends InteractiveObject {
 			
 		} else {
 			
-			__getOwnBounds (rect, matrix);
+			super.__getBounds (rect, matrix);
 			
 		}
 		

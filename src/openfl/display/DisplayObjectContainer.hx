@@ -400,7 +400,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		__getOwnBounds (rect, matrix);
+		super.__getBounds (rect, matrix);
 		
 		if (__children.length == 0) return;
 		
@@ -467,7 +467,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		} else {
 			
-			__getOwnBounds (rect, matrix);
+			super.__getBounds (rect, matrix);
 			
 		}
 		
