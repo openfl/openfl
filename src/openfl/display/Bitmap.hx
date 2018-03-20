@@ -86,7 +86,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __getOwnBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__bitmapData != null) {
 			
