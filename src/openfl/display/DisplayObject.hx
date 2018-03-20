@@ -375,6 +375,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private static inline function __calculateAbsoluteTransform (local:Matrix, parentTransform:Matrix, target:Matrix):Void {
+		
+		target.a = local.a * parentTransform.a + local.b * parentTransform.c;
+		target.b = local.a * parentTransform.b + local.b * parentTransform.d;
+		target.c = local.c * parentTransform.a + local.d * parentTransform.c;
+		target.d = local.c * parentTransform.b + local.d * parentTransform.d;
+		target.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
+		target.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+		
+	}
+	
+	
 	private function __cleanup (renderSession: RenderSession):Void {
 		
 		__cairo = null;
@@ -1362,18 +1374,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
-		var parentTransform;
 		
 		if (!overrided && parent != null) {
 			
-			parentTransform = parent.__worldTransform;
-			
-			__worldTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
-			__worldTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
-			__worldTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
-			__worldTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
-			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
-			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			__calculateAbsoluteTransform (local, parent.__worldTransform, __worldTransform);
 			
 		} else {
 			
@@ -1383,14 +1387,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (!overrided && renderParent != null) {
 			
-			parentTransform = renderParent.__renderTransform;
-			
-			__renderTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
-			__renderTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
-			__renderTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
-			__renderTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
-			__renderTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
-			__renderTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			__calculateAbsoluteTransform (local, renderParent.__renderTransform, __renderTransform);
 			
 		} else {
 			

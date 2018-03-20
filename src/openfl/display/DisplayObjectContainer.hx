@@ -25,6 +25,7 @@ import openfl.Vector;
 @:access(openfl.display.Graphics)
 @:access(openfl.errors.Error)
 @:access(openfl.geom.Point)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 
@@ -403,27 +404,20 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__getBounds (rect, matrix);
 		
 		if (__children.length == 0) return;
-		
-		if (matrix != null) {
 			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0) continue;
-			child.__getBounds (rect, child.__worldTransform);
+			
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+			
+			child.__getBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -434,26 +428,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-			child.__getFilterBounds (rect, child.__worldTransform);
+
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+
+			child.__getFilterBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -473,26 +460,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-			child.__getRenderBounds (rect, child.__worldTransform);
+			
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+			
+			child.__getRenderBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
