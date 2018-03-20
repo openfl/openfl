@@ -375,6 +375,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private static inline function __calculateAbsoluteTransform (local:Matrix, parentTransform:Matrix, target:Matrix):Void {
+		
+		target.a = local.a * parentTransform.a + local.b * parentTransform.c;
+		target.b = local.a * parentTransform.b + local.b * parentTransform.d;
+		target.c = local.c * parentTransform.a + local.d * parentTransform.c;
+		target.d = local.c * parentTransform.b + local.d * parentTransform.d;
+		target.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
+		target.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+		
+	}
+	
+	
 	private function __cleanup (renderSession: RenderSession):Void {
 		
 		__cairo = null;
@@ -1340,17 +1352,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__graphics.__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
 			
 		}
-		
-	}
-	
-	private static inline function __calculateAbsoluteTransform (local:Matrix, parentTransform:Matrix, target:Matrix):Void {
-		
-		target.a = local.a * parentTransform.a + local.b * parentTransform.c;
-		target.b = local.a * parentTransform.b + local.b * parentTransform.d;
-		target.c = local.c * parentTransform.a + local.d * parentTransform.c;
-		target.d = local.c * parentTransform.b + local.d * parentTransform.d;
-		target.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
-		target.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 		
 	}
 	
