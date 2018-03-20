@@ -9,6 +9,8 @@ package openfl.display3D;
 	public var STANDARD = "standard";
 	public var STANDARD_CONSTRAINED = "standardConstrained";
 	public var STANDARD_EXTENDED = "standardExtended";
+	#if (flash && air)
 	public var ENHANCED = "enhanced";
+	#end
 	
 }
