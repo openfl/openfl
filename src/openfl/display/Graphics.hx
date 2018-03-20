@@ -607,10 +607,13 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void {
 		
-		if (width <= 0 || height <= 0) return;
+		if(width == 0 && height == 0) return;
 		
-		__inflateBounds (x - __strokePadding, y - __strokePadding);
-		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
+		var xSign = width < 0 ? -1 : 1;
+		var ySign = height < 0 ? -1 : 1;
+		
+		__inflateBounds (x - __strokePadding * xSign, y - __strokePadding * ySign);
+		__inflateBounds (x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
 		
 		__commands.drawRect (x, y, width, height);
 		
@@ -621,10 +624,13 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float> = null):Void {
 		
-		if (width <= 0 || height <= 0) return;
+		if(width == 0 && height == 0) return;
 		
-		__inflateBounds (x - __strokePadding, y - __strokePadding);
-		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
+		var xSign = width < 0 ? -1 : 1;
+		var ySign = height < 0 ? -1 : 1;
+		
+		__inflateBounds (x - __strokePadding * xSign, y - __strokePadding * ySign);
+		__inflateBounds (x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
 		
 		__commands.drawRoundRect (x, y, width, height, ellipseWidth, ellipseHeight);
 		
@@ -635,7 +641,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
-		if (width <= 0 || height <= 0) return;
+		if(width <= 0 || height <= 0) return;
 		
 		__inflateBounds (x - __strokePadding, y - __strokePadding);
 		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
