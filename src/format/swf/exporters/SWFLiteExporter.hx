@@ -747,6 +747,7 @@ class SWFLiteExporter {
 		
 		symbol.wordWrap = tag.wordWrap;
 		symbol.input = !tag.readOnly;
+		symbol.password = tag.password;
 		
 		// embedded fonts
 		if (tag.hasFont) {

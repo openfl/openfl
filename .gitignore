@@ -5,6 +5,7 @@ node_modules
 *.hash
 .idea
 .svn
+.vscode
 test/unit/build
 test/unit/report
 test/unit/src
