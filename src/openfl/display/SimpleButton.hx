@@ -136,21 +136,13 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__getBounds (rect, matrix);
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
-		__currentState.__getBounds (rect, __currentState.__worldTransform);
+		DisplayObject.__calculateAbsoluteTransform (__currentState.__transform, matrix, childWorldTransform);
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getBounds (rect, childWorldTransform);
+		
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -168,21 +160,13 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
-		__currentState.__getRenderBounds (rect, __currentState.__worldTransform);
+		DisplayObject.__calculateAbsoluteTransform (__currentState.__transform, matrix, childWorldTransform);
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getRenderBounds (rect, childWorldTransform);
+		
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
