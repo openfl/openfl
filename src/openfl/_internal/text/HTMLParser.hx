@@ -133,7 +133,8 @@ class HTMLParser {
 								
 								if (__regexAlign.match (segment)) {
 									
-									format.align = __getAttributeMatch (__regexAlign).toLowerCase ();
+									var align = __getAttributeMatch (__regexAlign).toLowerCase ();
+									format.align = align;
 									
 								}
 							
