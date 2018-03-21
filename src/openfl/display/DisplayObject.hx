@@ -1102,7 +1102,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (cacheAsBitmap) {
 			
-			var matrix = null, rect = null;
+			var rect = null;
 			
 			//if (!renderSession.lockTransform) __getWorldTransform ();
 			
@@ -1129,9 +1129,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (updateTransform || needRender) {
 				
-				matrix = Matrix.__pool.get ();
 				rect = Rectangle.__pool.get ();
-				matrix.identity ();
 				
 				__getFilterBounds (rect, __renderTransform);
 				
@@ -1186,11 +1184,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__cacheBitmap.__renderTransform.identity ();
 				__cacheBitmap.__renderTransform.tx = rect.x;
 				__cacheBitmap.__renderTransform.ty = rect.y;
-				
-				matrix.concat (__renderTransform);
-				matrix.tx -= Math.round (rect.x);
-				matrix.ty -= Math.round (rect.y);
-				
+
 			}
 			
 			__cacheBitmap.smoothing = renderSession.allowSmoothing;
@@ -1205,7 +1199,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmapRender = true;
 				
+				var matrix = Matrix.__pool.get ();
+				matrix.copyFrom (__renderTransform);
+				matrix.tx -= Math.round (rect.x);
+				matrix.ty -= Math.round (rect.y);
+
 				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
+
+				Matrix.__pool.release (matrix);
 				
 				if (hasFilters) {
 					
@@ -1283,7 +1284,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (updateTransform) {
 				
-				Matrix.__pool.release (matrix);
 				Rectangle.__pool.release (rect);
 				
 				return true;
