@@ -2501,6 +2501,7 @@ class TextField extends InteractiveObject {
 			}
 			
 			__dirty = true;
+			__layoutDirty = true;
 			__setRenderDirty ();
 			
 		}

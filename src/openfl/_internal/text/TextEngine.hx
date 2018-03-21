@@ -708,7 +708,7 @@ class TextEngine {
 			
 		}
 		
-		if (textHeight == 0 && textField != null) {
+		if (textHeight == 0 && textField != null && textField.type == INPUT) {
 			
 			var currentFormat = textField.__textFormat;
 			var ascent, descent, leading, heightValue;
