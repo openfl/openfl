@@ -160,12 +160,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		#else
 		
 		__socket = new SysSocket ();
-		__socket.setBlocking (false);
-		__socket.setFastSend (true);
 		
 		try {
 			
 			__socket.connect (h, port);
+			__socket.setBlocking (false);
+			__socket.setFastSend (true);
 			
 		} catch (e:Dynamic) {}
 		
