@@ -684,7 +684,7 @@ class TextField extends InteractiveObject {
 					
 					// the new incoming text format range matches an existing range exactly, just replace it
 					
-					range.format = __defaultTextFormat.clone ();
+					range.format = __textFormat.clone ();
 					range.format.__merge (format);
 					return;
 					
@@ -768,7 +768,7 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			var textFormat = __defaultTextFormat.clone ();
+			var textFormat = __textFormat.clone ();
 			textFormat.__merge (format);
 			
 			__textEngine.textFormatRanges.push (new TextFormatRange (textFormat, beginIndex, endIndex));
