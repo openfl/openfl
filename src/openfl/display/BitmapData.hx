@@ -63,6 +63,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(lime.math.Rectangle)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)

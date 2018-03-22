@@ -4,7 +4,6 @@ package openfl._internal.macros; #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import haxe.Template;
 
 using haxe.macro.ExprTools;
 using haxe.macro.Tools;
@@ -120,15 +119,15 @@ class ShaderMacro {
 			
 			if (glFragmentSource != null && glFragmentHeader != null && glFragmentBody != null) {
 				
-				var template = new Template (glFragmentSource);
-				glFragmentSource = template.execute ({ body: glFragmentBody, header: glFragmentHeader });
+				glFragmentSource = StringTools.replace (glFragmentSource, "#pragma header", glFragmentHeader);
+				glFragmentSource = StringTools.replace (glFragmentSource, "#pragma body", glFragmentBody);
 				
 			}
 			
 			if (glVertexSource != null && glVertexHeader != null && glVertexBody != null) {
 				
-				var template = new Template (glVertexSource);
-				glVertexSource = template.execute ({ body: glVertexBody, header: glVertexHeader });
+				glVertexSource = StringTools.replace (glVertexSource, "#pragma header", glVertexHeader);
+				glVertexSource = StringTools.replace (glVertexSource, "#pragma body", glVertexBody);
 				
 			}
 			
@@ -310,7 +309,7 @@ class ShaderMacro {
 			
 			if (StringTools.startsWith (name, "openfl_")) {
 				
-				field.meta = [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":allow", params: [ macro openfl ], pos: pos } ];
+				field.meta = [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":allow", params: [ macro openfl._internal ], pos: pos } ];
 				
 			}
 			

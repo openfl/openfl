@@ -50,11 +50,11 @@ class GraphicsShader extends Shader {
 	
 	@:glVertexSource(
 		
-		"::header::
+		"#pragma header
 		
 		void main(void) {
 			
-			::body::
+			#pragma body
 			
 		}"
 		
@@ -116,21 +116,21 @@ class GraphicsShader extends Shader {
 	@:glFragmentSource(
 		
 		#if emscripten
-		"::header::
+		"#pragma header
 		
 		void main(void) {
 			
-			::body::
+			#pragma body
 			
 			gl_FragColor = gl_FragColor.bgra;
 			
 		}"
 		#else
-		"::header::
+		"#pragma header
 		
 		void main(void) {
 			
-			::body::
+			#pragma body
 			
 		}"
 		#end
