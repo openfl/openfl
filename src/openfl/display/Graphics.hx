@@ -50,7 +50,6 @@ import js.html.CanvasRenderingContext2D;
 	private static var maxTextureHeight:Null<Int> = null;
 	private static var maxTextureWidth:Null<Int> = null;
 	
-	private var __bitmapFill:BitmapData;
 	private var __bounds:Rectangle;
 	private var __buffer:GLBuffer;
 	private var __bufferContext:GLRenderContext;
@@ -110,7 +109,6 @@ import js.html.CanvasRenderingContext2D;
 		__commands.beginBitmapFill (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
 		
 		__visible = true;
-		__bitmapFill = bitmap;
 		
 	}
 	
@@ -120,7 +118,6 @@ import js.html.CanvasRenderingContext2D;
 		__commands.beginFill (color & 0xFFFFFF, alpha);
 		
 		if (alpha > 0) __visible = true;
-		__bitmapFill = null;
 		
 	}
 	
@@ -140,8 +137,6 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__bitmapFill = null;
-		
 	}
 	
 	
@@ -152,12 +147,6 @@ import js.html.CanvasRenderingContext2D;
 		shaderBuffer.update (shader);
 		
 		__commands.beginShaderFill (shaderBuffer);
-		
-		if (shader != null) {
-			
-			__bitmapFill = shader.texture0.input;
-			
-		}
 		
 	}
 	
@@ -510,7 +499,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawQuads (rects:Vector<Float>, indices:Vector<Int> = null, transforms:Vector<Float> = null):Void {
 		
-		if (rects == null || __bitmapFill == null) return;
+		if (rects == null) return;
 		
 		var hasIndices = (indices != null);
 		var transformABCD = false, transformXY = false;

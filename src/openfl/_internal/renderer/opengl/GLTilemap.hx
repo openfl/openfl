@@ -365,15 +365,15 @@ class GLTilemap {
 			
 			if (tilemap.tileAlphaEnabled) {
 				
-				gl.vertexAttribPointer (shader.alpha.index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.openfl_Alpha.index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			if (tilemap.tileColorTransformEnabled) {
 				
 				var position = tilemap.tileAlphaEnabled ? 5 : 4;
 				
-				gl.vertexAttribPointer (shader.colorMultipliers.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.colorOffsets.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.openfl_ColorMultiplier.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.openfl_ColorOffset.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			
@@ -556,7 +556,7 @@ class GLTilemap {
 			
 		// 	if (flush) {
 				
-		// 		shader.texture0.input = cacheBitmapData;
+		// 		shader.openfl_Texture.input = cacheBitmapData;
 		// 		renderer.shaderManager.updateShader ();
 				
 		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
@@ -574,7 +574,7 @@ class GLTilemap {
 			
 		// 	if (i == drawCount && tileset.__bitmapData != null) {
 				
-		// 		shader.texture0.input = tileset.__bitmapData;
+		// 		shader.openfl_Texture.input = tileset.__bitmapData;
 		// 		renderer.shaderManager.updateShader ();
 		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				

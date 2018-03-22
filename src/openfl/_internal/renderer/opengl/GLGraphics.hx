@@ -76,7 +76,7 @@ class GLGraphics {
 						
 					} else {
 						
-						bitmap = c.shaderBuffer.shader.texture0.input;
+						bitmap = c.shaderBuffer.shader.bitmap.input;
 						
 					}
 				
@@ -505,8 +505,8 @@ class GLGraphics {
 								
 							} else {
 								
-								bitmap = shaderBuffer.shader.texture0.input;
-								smooth = shaderBuffer.shader.texture0.smoothing;
+								bitmap = shaderBuffer.shader.bitmap.input;
+								smooth = shaderBuffer.shader.bitmap.smoothing;
 								
 							}
 							
@@ -534,8 +534,8 @@ class GLGraphics {
 									
 									renderer.__setShaderBuffer (shaderBuffer);
 									renderer.applyMatrix (uMatrix);
-									renderer.applyAlpha (1);
-									renderer.applyColorTransform (null);
+									renderer.applyAlpha (graphics.__owner.__worldAlpha);
+									renderer.applyColorTransform (graphics.__owner.__worldColorTransform);
 									renderer.__updateShaderBuffer ();
 									
 								} else {

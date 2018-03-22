@@ -60,6 +60,11 @@ import lime.graphics.GLRenderContext;
 				
 			}
 			
+		} else {
+			
+			gl.activeTexture (gl.TEXTURE0 + id);
+			gl.bindTexture (gl.TEXTURE_2D, null);
+			
 		}
 		
 	}

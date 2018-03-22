@@ -114,7 +114,7 @@ import lime.utils.Float32Array;
 			
 		} else {
 			
-			if (!__useArray && !StringTools.startsWith (name, "openfl_") && (value == null || value.length == __length)) {
+			if (!__useArray && (value == null || value.length == __length)) {
 				
 				for (i in 0...__arrayLength) {
 					

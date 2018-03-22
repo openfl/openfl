@@ -165,6 +165,7 @@ class Shader {
 			
 			var message = (type == gl.VERTEX_SHADER) ? "Error compiling vertex shader" : "Error compiling fragment shader";
 			message += "\n" + gl.getShaderInfoLog (shader);
+			message += "\n" + source;
 			Log.error (message);
 			
 		}
@@ -278,8 +279,12 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			gl.uniform1i (input.index, textureCount);
-			textureCount++;
+			if (input.input != null) {
+				
+				gl.uniform1i (input.index, textureCount);
+				textureCount++;
+				
+			}
 			
 		}
 		
@@ -581,8 +586,12 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			input.__updateGL (gl, textureCount);
-			textureCount++;
+			if (input.input != null) {
+				
+				input.__updateGL (gl, textureCount);
+				textureCount++;
+				
+			}
 			
 		}
 		
@@ -618,8 +627,12 @@ class Shader {
 			inputData = shaderBuffer.inputs[i];
 			inputSmoothing = shaderBuffer.inputSmoothing[i];
 			
-			input.__updateGL (gl, textureCount, inputData, inputSmoothing);
-			textureCount++;
+			if (inputData != null) {
+				
+				input.__updateGL (gl, textureCount, inputData, inputSmoothing);
+				textureCount++;
+				
+			}
 			
 		}
 		
@@ -631,14 +644,14 @@ class Shader {
 				
 			}
 			
-			Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
+			//Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, shaderBuffer.paramDataBuffer);
 			(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
 			
 		} else {
 			
-			Log.verbose ("bind buffer null");
+			//Log.verbose ("bind buffer null");
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			

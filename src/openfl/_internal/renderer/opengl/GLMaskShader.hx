@@ -15,11 +15,11 @@ class GLMaskShader extends DisplayObjectShader {
 		
 		"varying vec2 openfl_vTexCoord;
 		
-		uniform sampler2D texture0;
+		uniform sampler2D openfl_Texture;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (texture0, openfl_vTexCoord);
+			vec4 color = texture2D (openfl_Texture, openfl_vTexCoord);
 			
 			if (color.a == 0.0) {
 				
@@ -45,8 +45,8 @@ class GLMaskShader extends DisplayObjectShader {
 		uniform mat4 openfl_Matrix;
 		
 		// unused
-		attribute float alpha;
-		attribute vec4 colorMultipliers;
+		attribute float openfl_Alpha;
+		attribute vec4 openfl_ColorMultiplier;
 		attribute vec4 colorOffsets;
 		uniform bool openfl_HasColorTransform;
 		

@@ -142,34 +142,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentShaderBuffer != null) {
 			
-			var floatRefs = __currentShaderBuffer.paramRefs_Float;
-			var floatStart = __currentShaderBuffer.paramRefs_Bool.length;
-			var hasAlpha = false;
-			
-			for (i in 0...floatRefs.length) {
-				
-				if (floatRefs[i].name == "alpha") {
-					
-					hasAlpha = (__currentShaderBuffer.paramLengths[floatStart + i] > 0);
-					break;
-					
-				}
-				
-			}
-			
-			if (!hasAlpha) {
-				
-				__currentShaderBuffer.addOverride ("alpha", __alphaValue);
-				
-			}
+			__currentShaderBuffer.addOverride ("openfl_Alpha", __alphaValue);
 			
 		} else if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.alpha.value = __alphaValue;
+			__currentGraphicsShader.openfl_Alpha.value = __alphaValue;
 			
 		} else {
 			
-			__currentDisplayShader.alpha.value = __alphaValue;
+			__currentDisplayShader.openfl_Alpha.value = __alphaValue;
 			
 		}
 		
@@ -180,13 +161,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.texture0.input = bitmapData;
-			__currentGraphicsShader.texture0.smoothing = smoothing;
+			__currentGraphicsShader.bitmap.input = bitmapData;
+			__currentGraphicsShader.bitmap.smoothing = smoothing;
 			
 		} else {
 			
-			__currentDisplayShader.texture0.input = bitmapData;
-			__currentDisplayShader.texture0.smoothing = smoothing;
+			__currentDisplayShader.openfl_Texture.input = bitmapData;
+			__currentDisplayShader.openfl_Texture.smoothing = smoothing;
 			
 		}
 		
@@ -195,86 +176,46 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function applyColorTransform (colorTransform:ColorTransform):Void {
 		
-		if (__currentShaderBuffer != null) {
+		var enabled = (colorTransform != null && !colorTransform.__isDefault ());
+		applyHasColorTransform (enabled);
+		
+		if (enabled) {
 			
-			var floatRefs = __currentShaderBuffer.paramRefs_Float;
-			var floatStart = __currentShaderBuffer.paramRefs_Bool.length;
+			colorTransform.__setArrays (__colorMultipliersValue, __colorOffsetsValue);
 			
-			var hasColorMultipliers = false;
-			var hasColorOffsets = false;
-			
-			for (i in 0...floatRefs.length) {
+			if (__currentShaderBuffer != null) {
 				
-				if (floatRefs[i].name == "colorMultipliers") {
-					
-					hasColorMultipliers = (__currentShaderBuffer.paramLengths[floatStart + i] > 0);
-					
-				} else if (floatRefs[i].name == "colorOffsets") {
-					
-					hasColorOffsets = (__currentShaderBuffer.paramLengths[floatStart + i] > 0);
-					
-				}
+				__currentShaderBuffer.addOverride ("openfl_ColorMultiplier", __colorMultipliersValue);
+				__currentShaderBuffer.addOverride ("openfl_ColorOffset", __colorOffsetsValue);
 				
-			}
-			
-			if (hasColorMultipliers || hasColorOffsets) {
+			} else if (__currentGraphicsShader != null) {
 				
-				applyHasColorTransform (true);
-				
-				if (!hasColorMultipliers) {
-					
-					__currentShaderBuffer.addOverride ("colorMultipliers", __defaultColorMultipliersValue);
-					
-				} else if (!hasColorOffsets) {
-					
-					__currentShaderBuffer.addOverride ("colorOffsets", __emptyColorValue);
-					
-				}
+				__currentGraphicsShader.openfl_ColorMultiplier.value = __colorMultipliersValue;
+				__currentGraphicsShader.openfl_ColorOffset.value = __colorOffsetsValue;
 				
 			} else {
 				
-				applyHasColorTransform (false);
+				__currentDisplayShader.openfl_ColorMultiplier.value = __colorMultipliersValue;
+				__currentDisplayShader.openfl_ColorOffset.value = __colorOffsetsValue;
 				
 			}
 			
 		} else {
 			
-			var enabled = (colorTransform != null && !colorTransform.__isDefault ());
-			applyHasColorTransform (enabled);
-			
-			if (__currentGraphicsShader != null) {
+			if (__currentShaderBuffer != null) {
 				
-				var shaderData = __currentGraphicsShader.data;
+				__currentShaderBuffer.addOverride ("openfl_ColorMultiplier", __emptyColorValue);
+				__currentShaderBuffer.addOverride ("openfl_ColorOffset", __emptyColorValue);
 				
-				if (enabled) {
-					
-					colorTransform.__setArrays (__colorMultipliersValue, __colorOffsetsValue);
-					shaderData.colorMultipliers.value = __colorMultipliersValue;
-					shaderData.colorOffsets.value = __colorOffsetsValue;
-					
-				} else {
-					
-					shaderData.colorMultipliers.value = __emptyColorValue;
-					shaderData.colorOffsets.value = __emptyColorValue;
-					
-				}
+			} else if (__currentGraphicsShader != null) {
+				
+				__currentGraphicsShader.openfl_ColorMultiplier.value = __emptyColorValue;
+				__currentGraphicsShader.openfl_ColorOffset.value = __emptyColorValue;
 				
 			} else {
 				
-				var shaderData = __currentDisplayShader.data;
-				
-				if (enabled) {
-					
-					colorTransform.__setArrays (__colorMultipliersValue, __colorOffsetsValue);
-					shaderData.colorMultipliers.value = __colorMultipliersValue;
-					shaderData.colorOffsets.value = __colorOffsetsValue;
-					
-				} else {
-					
-					shaderData.colorMultipliers.value = __emptyColorValue;
-					shaderData.colorOffsets.value = __emptyColorValue;
-					
-				}
+				__currentDisplayShader.openfl_ColorMultiplier.value = __emptyColorValue;
+				__currentDisplayShader.openfl_ColorOffset.value = __emptyColorValue;
 				
 			}
 			
@@ -409,6 +350,18 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentShader != null) {
 			
+			if (__currentGraphicsShader != null) {
+				
+				__currentGraphicsShader.openfl_Position.__useArray = true;
+				__currentGraphicsShader.openfl_TexCoord.__useArray = true;
+				
+			} else if (__currentDisplayShader != null) {
+				
+				__currentDisplayShader.openfl_Position.__useArray = true;
+				__currentDisplayShader.openfl_TexCoord.__useArray = true;
+				
+			}
+			
 			__currentShader.__update ();
 			
 		}
@@ -420,11 +373,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.alpha.__useArray = true;
+			__currentGraphicsShader.openfl_Alpha.__useArray = true;
 			
 		} else if (__currentDisplayShader != null) {
 			
-			__currentDisplayShader.alpha.__useArray = true;
+			__currentDisplayShader.openfl_Alpha.__useArray = true;
 			
 		}
 		
@@ -435,13 +388,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentGraphicsShader != null) {
 			
-			__currentGraphicsShader.colorMultipliers.__useArray = true;
-			__currentGraphicsShader.colorOffsets.__useArray = true;
+			__currentGraphicsShader.openfl_ColorMultiplier.__useArray = true;
+			__currentGraphicsShader.openfl_ColorOffset.__useArray = true;
 			
 		} else if (__currentDisplayShader != null) {
 			
-			__currentDisplayShader.colorMultipliers.__useArray = true;
-			__currentDisplayShader.colorOffsets.__useArray = true;
+			__currentDisplayShader.openfl_ColorMultiplier.__useArray = true;
+			__currentDisplayShader.openfl_ColorOffset.__useArray = true;
 			
 		}
 		
@@ -471,7 +424,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__currentShaderBuffer == null) {
 				
-				__currentGraphicsShader.texture0.input = null;
+				__currentGraphicsShader.bitmap.input = null;
 				
 			} else {
 				
@@ -486,7 +439,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		} else if (__currentDisplayShader != null) {
 			
-			__currentDisplayShader.texture0.input = null;
+			__currentDisplayShader.openfl_Texture.input = null;
 			__currentDisplayShader.openfl_HasColorTransform.value = null;
 			__currentDisplayShader.openfl_Position.value = null;
 			__currentDisplayShader.openfl_Matrix.value = null;
@@ -859,8 +812,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		// if (target == null || shader == null) return;
 		
-		// shader.texture0.input = target;
-		// shader.texture0.smoothing = renderer.__allowSmoothing && (renderer.upscaled);
+		// shader.openfl_Texture.input = target;
+		// shader.openfl_Texture.smoothing = renderer.__allowSmoothing && (renderer.upscaled);
 		// shader.openfl_Matrix.value = renderer.__getMatrix (matrix);
 		
 		// if (shader.openfl_HasColorTransform != null) {
