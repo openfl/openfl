@@ -47,7 +47,7 @@ class GLMaskShader extends DisplayObjectShader {
 		// unused
 		attribute float openfl_Alpha;
 		attribute vec4 openfl_ColorMultiplier;
-		attribute vec4 colorOffsets;
+		attribute vec4 openfl_ColorOffset;
 		uniform bool openfl_HasColorTransform;
 		
 		void main(void) {
