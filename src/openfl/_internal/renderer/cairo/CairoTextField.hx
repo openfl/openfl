@@ -275,8 +275,9 @@ class CairoTextField {
 						for (position in group.positions) {
 							
 							if (position == null || position.glyph == 0) continue;
-							glyphs.push (new CairoGlyph (position.glyph, x + 0.5, y + 0.5));
+							glyphs.push (new CairoGlyph (position.glyph, x + position.offset.x + 0.5, y - position.offset.y + 0.5));
 							x += position.advance.x;
+							y -= position.advance.y;
 							
 						}
 						
