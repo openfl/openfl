@@ -1,7 +1,7 @@
 package openfl.display; #if (display || !flash)
 
 
-#if !js @:generic #end
+#if (!js && !display) @:generic #end
 
 
 @:final extern class ShaderParameter<T> /*implements Dynamic*/ {

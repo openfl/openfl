@@ -8,7 +8,7 @@ import lime.graphics.GLRenderContext;
 @:noDebug
 #end
 
-#if !js @:generic #end
+#if (!js && !display) @:generic #end
 
 
 @:final class ShaderInput<T> /*implements Dynamic*/ {

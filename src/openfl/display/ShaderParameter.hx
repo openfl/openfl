@@ -9,7 +9,7 @@ import lime.utils.Float32Array;
 @:noDebug
 #end
 
-#if !js @:generic #end
+#if (!js && !display) @:generic #end
 
 
 @:final class ShaderParameter<T> /*implements Dynamic*/ {
