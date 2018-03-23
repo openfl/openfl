@@ -11,6 +11,7 @@ package openfl.display; #if (display || !flash)
 	public var height:Int;
 	public var index (default, null):Int;
 	public var input:T;
+	public var smoothing:Bool;
 	public var width:Int;
 	
 	

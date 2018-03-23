@@ -174,6 +174,7 @@ class ShaderMacro {
 				
 			}
 			
+			#if !display
 			for (field in fields) {
 				
 				switch (field.name) {
@@ -207,6 +208,7 @@ class ShaderMacro {
 				}
 				
 			}
+			#end
 			
 			fields = fields.concat (uniqueFields);
 			
