@@ -3,6 +3,10 @@ package openfl.display; #if (display || !flash)
 
 import openfl.utils.ByteArray;
 
+#if !macro
+@:autoBuild(openfl._internal.macros.ShaderMacro.build())
+#end
+
 
 extern class Shader {
 	
