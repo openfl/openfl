@@ -8,6 +8,11 @@ package flash.display; #if (!display && flash)
 	public var height:Int;
 	public var index (default, never):Int;
 	public var input:T;
+	
+	public var smoothing (get, set):Bool;
+	private inline function get_smoothing ():Bool { return false; }
+	private inline function set_smoothing (value:Bool):Bool { return false; }
+	
 	public var width:Int;
 	
 	
