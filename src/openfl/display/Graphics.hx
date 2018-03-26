@@ -124,6 +124,34 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void {
 		
+		if (colors == null || colors.length == 0) return;
+		
+		if (alphas == null) {
+			
+			alphas = [];
+			
+			for (i in 0...colors.length) {
+				
+				alphas.push (1);
+				
+			}
+			
+		}
+		
+		if (ratios == null) {
+			
+			ratios = [];
+			
+			for (i in 0...colors.length) {
+				
+				ratios.push (Math.ceil ((i / colors.length) * 255));
+				
+			}
+			
+		}
+		
+		if (alphas.length < colors.length || ratios.length < colors.length) return;
+		
 		__commands.beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 		
 		for (alpha in alphas) {
