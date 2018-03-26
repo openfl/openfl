@@ -1204,9 +1204,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				
-				__cacheBitmap.__renderTransform.copyFrom (__renderTransform);
-				__cacheBitmap.__renderTransform.tx = rect.x;
-				__cacheBitmap.__renderTransform.ty = rect.y;
+				if (parent != null) {
+					
+					__cacheBitmap.__renderTransform.copyFrom (parent.__renderTransform);
+					
+				} else {
+					
+					__cacheBitmap.__renderTransform.identity ();
+					
+				}
+				
+				__cacheBitmap.__renderTransform.tx += rect.x;
+				__cacheBitmap.__renderTransform.ty += rect.y;
 				
 			}
 			
@@ -1225,12 +1234,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (__cacheBitmapRenderer == null /*|| renderer.__type != __cacheBitmapRenderer.__type*/) {
 					
-					#if (js && html5)
-					ImageCanvasUtil.convertToCanvas (__cacheBitmapData.image);
-					__cacheBitmapRenderer = new CanvasRenderer (__cacheBitmapData.image.buffer.__srcContext);
-					#else
-					__cacheBitmapRenderer = new CairoRenderer (new Cairo (__cacheBitmapData.getSurface ()));
-					#end
+					// if (renderer.__type == OPENGL) {
+						
+					// 	__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
+						
+					// } else {
+						
+						#if (js && html5)
+						ImageCanvasUtil.convertToCanvas (__cacheBitmapData.image);
+						__cacheBitmapRenderer = new CanvasRenderer (__cacheBitmapData.image.buffer.__srcContext);
+						#else
+						__cacheBitmapRenderer = new CairoRenderer (new Cairo (__cacheBitmapData.getSurface ()));
+						#end
+						
+					// }
 					
 					__cacheBitmapRenderer.__worldTransform = new Matrix ();
 					__cacheBitmapRenderer.__worldColorTransform = new ColorTransform ();
@@ -1241,18 +1258,41 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__cacheBitmapRenderer.__setBlendMode (NORMAL);
 				__cacheBitmapRenderer.__worldAlpha = 1 / __worldAlpha;
 				
-				__cacheBitmapRenderer.__worldTransform.copyFrom (__renderTransform);
-				__cacheBitmapRenderer.__worldTransform.invert ();
+				if (parent != null) {
+					
+					__cacheBitmapRenderer.__worldTransform.copyFrom (parent.__renderTransform);
+					__cacheBitmapRenderer.__worldTransform.tx = __renderTransform.tx;
+					__cacheBitmapRenderer.__worldTransform.ty = __renderTransform.ty;
+					__cacheBitmapRenderer.__worldTransform.invert ();
+					
+				} else {
+					
+					__cacheBitmapRenderer.__worldTransform.identity ();
+					__cacheBitmapRenderer.__worldTransform.tx = __renderTransform.tx;
+					__cacheBitmapRenderer.__worldTransform.ty = __renderTransform.ty;
+					__cacheBitmapRenderer.__worldTransform.invert ();
+					
+				}
+				
 				__cacheBitmapRenderer.__worldColorTransform.__copyFrom (__worldColorTransform);
 				__cacheBitmapRenderer.__worldColorTransform.__invert ();
 				
 				__isCacheBitmapRender = true;
 				
-				#if (js && html5)
-				__cacheBitmapData.__drawCanvas (this, cast __cacheBitmapRenderer);
-				#else
-				__cacheBitmapData.__drawCairo (this, cast __cacheBitmapRenderer);
-				#end
+				if (__cacheBitmapRenderer.__type == OPENGL) {
+					
+					__cacheBitmapRenderer.__resize (__cacheBitmapData.width, __cacheBitmapData.height);
+					__cacheBitmapData.__drawGL (this, cast __cacheBitmapRenderer);
+					
+				} else {
+					
+					#if (js && html5)
+					__cacheBitmapData.__drawCanvas (this, cast __cacheBitmapRenderer);
+					#else
+					__cacheBitmapData.__drawCairo (this, cast __cacheBitmapRenderer);
+					#end
+					
+				}
 				
 				if (hasFilters) {
 					
