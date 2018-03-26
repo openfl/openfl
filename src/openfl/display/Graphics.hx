@@ -1109,7 +1109,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	private function __update ():Void {
+	private function __update (displayMatrix:Matrix):Void {
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 		
@@ -1141,6 +1141,30 @@ import js.html.CanvasRenderingContext2D;
 		} else {
 			
 			return;
+			
+		}
+		
+		if (displayMatrix != null) {
+			
+			if (displayMatrix.b == 0) {
+				
+				scaleX *= displayMatrix.a;
+				
+			} else {
+				
+				scaleX *= Math.sqrt (displayMatrix.a * displayMatrix.a + displayMatrix.b * displayMatrix.b);
+				
+			}
+			
+			if (displayMatrix.c == 0) {
+				
+				scaleY *= displayMatrix.d;
+				
+			} else {
+				
+				scaleY *= Math.sqrt (displayMatrix.c * displayMatrix.c + displayMatrix.d * displayMatrix.d);
+				
+			}
 			
 		}
 		
@@ -1200,8 +1224,8 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.ty = __worldTransform.__transformInverseY (tx, ty);
 		
 		// Calculate the size to contain the graphics and the extra subpixel
-		var newWidth  = Math.ceil(width  + __renderTransform.tx);
-		var newHeight = Math.ceil(height + __renderTransform.ty);
+		var newWidth  = Math.ceil (width  + __renderTransform.tx);
+		var newHeight = Math.ceil (height + __renderTransform.ty);
 		
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height) {

@@ -1241,7 +1241,7 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		graphics.__update ();
+		graphics.__update (renderer.__worldTransform);
 		
 		if (graphics.__dirty) {
 			

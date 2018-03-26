@@ -438,7 +438,8 @@ class GLGraphics {
 		} else {
 			
 			graphics.__bitmap = null;
-			graphics.__update ();
+			
+			graphics.__update (renderer.__worldTransform);
 			
 			var bounds = graphics.__bounds;
 			

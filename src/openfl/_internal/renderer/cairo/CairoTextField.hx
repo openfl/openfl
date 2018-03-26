@@ -59,7 +59,7 @@ class CairoTextField {
 			
 		}
 		
-		graphics.__update ();
+		graphics.__update (renderer.__worldTransform);
 		
 		var width = graphics.__width;
 		var height = graphics.__height;

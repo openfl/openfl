@@ -1255,7 +1255,8 @@ class CairoGraphics {
 		CairoGraphics.graphics = graphics;
 		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
 		CairoGraphics.worldAlpha = renderer.__getAlpha (graphics.__owner.__worldAlpha);
-		graphics.__update ();
+		
+		graphics.__update (renderer.__worldTransform);
 		
 		if (!graphics.__dirty || graphics.__managed) return;
 		
