@@ -429,16 +429,20 @@ class GLGraphics {
 				
 			}
 			
+			var cacheTransform = renderer.__softwareRenderer.__worldTransform;
+			renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
+			
 			#if (js && html5)
 			CanvasGraphics.render (graphics, cast renderer.__softwareRenderer);
 			#elseif lime_cairo
 			CairoGraphics.render (graphics, cast renderer.__softwareRenderer);
 			#end
 			
+			renderer.__softwareRenderer.__worldTransform = cacheTransform;
+			
 		} else {
 			
 			graphics.__bitmap = null;
-			
 			graphics.__update (renderer.__worldTransform);
 			
 			var bounds = graphics.__bounds;

@@ -517,7 +517,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var renderer = new OpenGLRenderer (__textureContext);
+			var renderer = new OpenGLRenderer (__textureContext, this);
 			renderer.__allowSmoothing = smoothing;
 			renderer.__setBlendMode (blendMode);
 			
@@ -525,7 +525,6 @@ class BitmapData implements IBitmapDrawable {
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
 			renderer.__worldColorTransform = _colorTransform;
 			
-			renderer.__defaultRenderTarget = this;
 			renderer.__resize (width, height);
 			
 			if (clipRect != null) {
