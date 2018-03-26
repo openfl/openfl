@@ -502,15 +502,20 @@ class BitmapData implements IBitmapDrawable {
 		_colorTransform.__copyFrom (source.__worldColorTransform);
 		_colorTransform.__invert ();
 		
-		if (!readable && __textureContext != null) {
+		if (!readable) {
+			
+			if (__textureContext == null) {
+				
+				// TODO: Some way to select current GL context for renderer?
+				__textureContext = GL.context;
+				
+			}
 			
 			if (colorTransform != null) {
 				
 				_colorTransform.__combine (colorTransform);
 				
 			}
-			
-			// TODO
 			
 			var renderer = new OpenGLRenderer (__textureContext);
 			renderer.__allowSmoothing = smoothing;
@@ -519,6 +524,9 @@ class BitmapData implements IBitmapDrawable {
 			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
 			renderer.__worldColorTransform = _colorTransform;
+			
+			renderer.__defaultRenderTarget = this;
+			renderer.__resize (width, height);
 			
 			if (clipRect != null) {
 				
@@ -1621,23 +1629,13 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
 		
-		// gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
-		// gl.viewport (0, 0, width, height);
+		var gl = renderer.gl;
 		
-		// var renderer = new OpenGLRenderer (gl);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 		
-		// var renderer = renderer.renderer;
-		// renderer.clearRenderDirty = false;
-		// renderer.shaderManager = cast (null, GLRenderer).renderer.shaderManager;
+		renderer.__render (source);
 		
-		// var matrixCache = source.__worldTransform;
-		// source.__updateTransforms (matrix);
-		// source.__updateChildren (false);
-		// source.__renderGL (renderer.renderer);
-		// source.__updateTransforms (matrixCache);
-		// source.__updateChildren (true);
-		
-		// gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 		
 	}
 	
