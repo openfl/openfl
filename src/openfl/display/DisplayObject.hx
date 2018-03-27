@@ -1147,11 +1147,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			}
 			
+			if (__cacheBitmapMatrix == null) {
+				
+				__cacheBitmapMatrix = new Matrix ();
+				
+			}
+			
+			var bitmapMatrix = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderTransform);
+			
 			if (!needRender) {
 				
-				// TODO: Add cacheAsBitmapMatrix to ignore scale-based invalidation
-				
-				if (__renderTransform.a != __cacheBitmapMatrix.a || __renderTransform.b != __cacheBitmapMatrix.b || __renderTransform.c != __cacheBitmapMatrix.c || __renderTransform.d != __cacheBitmapMatrix.d) {
+				if (bitmapMatrix.a != __cacheBitmapMatrix.a || bitmapMatrix.b != __cacheBitmapMatrix.b || bitmapMatrix.c != __cacheBitmapMatrix.c || bitmapMatrix.d != __cacheBitmapMatrix.d) {
 					
 					needRender = true;
 					
@@ -1159,13 +1165,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
+			__cacheBitmapMatrix.copyFrom (bitmapMatrix);
+			__cacheBitmapMatrix.tx = 0;
+			__cacheBitmapMatrix.ty = 0;
+			
 			var bitmapWidth = 0, bitmapHeight = 0;
 			
 			if (updateTransform || needRender) {
 				
 				rect = Rectangle.__pool.get ();
 				
-				__getFilterBounds (rect, __renderTransform);
+				__getFilterBounds (rect, __cacheBitmapMatrix);
 				
 				bitmapWidth = Math.ceil (rect.width);
 				bitmapHeight = Math.ceil (rect.height);
@@ -1189,13 +1199,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						
-						if (__cacheBitmap == null) {
-							
-							__cacheBitmap = new Bitmap ();
-							__cacheBitmapMatrix = new Matrix ();
-							
-						}
-						
+						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 						__cacheBitmap.__bitmapData = __cacheBitmapData;
 						__cacheBitmapRenderer = null;
 						
@@ -1210,7 +1214,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					__cacheBitmap = null;
 					__cacheBitmapData = null;
 					__cacheBitmapRenderer = null;
-					__cacheBitmapMatrix = null;
 					return true;
 					
 				}
@@ -1221,10 +1224,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__cacheBitmap.__worldTransform.copyFrom (__worldTransform);
 				
-				// TODO: Calculate matrix difference when using cacheAsBitmapMatrix
-				
-				__cacheBitmap.__renderTransform.tx = rect.x;
-				__cacheBitmap.__renderTransform.ty = rect.y;
+				if (bitmapMatrix == __renderTransform) {
+					
+					__cacheBitmap.__renderTransform.identity ();
+					__cacheBitmap.__renderTransform.tx = __renderTransform.tx + rect.x;
+					__cacheBitmap.__renderTransform.ty = __renderTransform.ty + rect.y;
+					
+				} else {
+					
+					__cacheBitmap.__renderTransform.copyFrom (__cacheBitmapMatrix);
+					__cacheBitmap.__renderTransform.tx += rect.x;
+					__cacheBitmap.__renderTransform.ty += rect.y;
+					__cacheBitmap.__renderTransform.invert ();
+					__cacheBitmap.__renderTransform.concat (__renderTransform);
+					
+				}
 				
 			}
 			
@@ -1267,11 +1281,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__cacheBitmapRenderer.__setBlendMode (NORMAL);
 				__cacheBitmapRenderer.__worldAlpha = 1 / __worldAlpha;
 				
-				__cacheBitmapRenderer.__worldTransform.tx = -Math.round (rect.x);
-				__cacheBitmapRenderer.__worldTransform.ty = -Math.round (rect.y);
-				
-				__cacheBitmapMatrix.copyFrom (__renderTransform);
-				__cacheBitmapMatrix.concat (__cacheBitmapRenderer.__worldTransform);
+				__cacheBitmapRenderer.__worldTransform.copyFrom (__renderTransform);
+				__cacheBitmapRenderer.__worldTransform.invert ();
+				__cacheBitmapRenderer.__worldTransform.concat (__cacheBitmapMatrix);
+				__cacheBitmapRenderer.__worldTransform.tx -= Math.round (rect.x);
+				__cacheBitmapRenderer.__worldTransform.ty -= Math.round (rect.y);
 				
 				__cacheBitmapRenderer.__worldColorTransform.__copyFrom (__worldColorTransform);
 				__cacheBitmapRenderer.__worldColorTransform.__invert ();
@@ -1392,7 +1406,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap = null;
 			__cacheBitmapData = null;
 			__cacheBitmapColorTransform = null;
-			__cacheBitmapMatrix = null;
 			__cacheBitmapRenderer = null;
 			
 			return true;
@@ -1555,7 +1568,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
 		
 		__setRenderDirty ();
-		return __cacheAsBitmapMatrix = value.clone ();
+		return __cacheAsBitmapMatrix = (value != null ? value.clone () : value);
 		
 	}
 	

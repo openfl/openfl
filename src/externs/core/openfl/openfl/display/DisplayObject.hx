@@ -3,6 +3,7 @@ package openfl.display; #if (display || !flash)
 
 import openfl.events.EventDispatcher;
 import openfl.filters.BitmapFilter;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
@@ -235,6 +236,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * and _y_ position is changed).
 	 */
 	public var cacheAsBitmap (get, set):Bool;
+	
+	public var cacheAsBitmapMatrix (get, set):Matrix;
 	
 	/**
 	 * An indexed array that contains each filter object currently associated
