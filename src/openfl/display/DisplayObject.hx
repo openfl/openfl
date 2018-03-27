@@ -1274,6 +1274,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
+				__cacheBitmapRenderer.__worldTransform.tx -= Math.round (rect.x);
+				__cacheBitmapRenderer.__worldTransform.ty -= Math.round (rect.y);
+				
 				__cacheBitmapRenderer.__worldColorTransform.__copyFrom (__worldColorTransform);
 				__cacheBitmapRenderer.__worldColorTransform.__invert ();
 				
