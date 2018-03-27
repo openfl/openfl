@@ -910,6 +910,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			renderer.__popMaskObject (this);
 			
+			if (renderer.__type == OPENGL) {
+				
+				var renderer:OpenGLRenderer = cast renderer;
+				renderer.setViewport ();
+				
+			}
+			
 		}
 		
 	}
@@ -1227,8 +1234,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				if (bitmapMatrix == __renderTransform) {
 					
 					__cacheBitmap.__renderTransform.identity ();
-					__cacheBitmap.__renderTransform.tx = __renderTransform.tx + rect.x;
-					__cacheBitmap.__renderTransform.ty = __renderTransform.ty + rect.y;
+					__cacheBitmap.__renderTransform.tx = __renderTransform.tx + Math.round (rect.x);
+					__cacheBitmap.__renderTransform.ty = __renderTransform.ty + Math.round (rect.y);
 					
 				} else {
 					
@@ -1253,15 +1260,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (needRender) {
 				
-				// TODO: GL cacheBitmap
-				
-				if (__cacheBitmapRenderer == null /*|| renderer.__type != __cacheBitmapRenderer.__type*/) {
+				if (__cacheBitmapRenderer == null #if !openfl_disable_gl_cacheasbitmap || renderer.__type != __cacheBitmapRenderer.__type #end) {
 					
-					// if (renderer.__type == OPENGL) {
+					#if !openfl_disable_gl_cacheasbitmap
+					if (renderer.__type == OPENGL) {
 						
-					// 	__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
+						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
 						
-					// } else {
+					} else #end {
 						
 						#if (js && html5)
 						ImageCanvasUtil.convertToCanvas (__cacheBitmapData.image);
@@ -1270,7 +1276,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						__cacheBitmapRenderer = new CairoRenderer (new Cairo (__cacheBitmapData.getSurface ()));
 						#end
 						
-					// }
+					}
 					
 					__cacheBitmapRenderer.__worldTransform = new Matrix ();
 					__cacheBitmapRenderer.__worldColorTransform = new ColorTransform ();
@@ -1294,8 +1300,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (__cacheBitmapRenderer.__type == OPENGL) {
 					
+					var parentRenderer:OpenGLRenderer = cast renderer;
+					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
+					
+					childRenderer.__copyShader (parentRenderer);
+					
 					__cacheBitmapRenderer.__resize (__cacheBitmapData.width, __cacheBitmapData.height);
-					__cacheBitmapData.__drawGL (this, cast __cacheBitmapRenderer);
+					__cacheBitmapData.__drawGL (this, childRenderer);
+					
+					parentRenderer.__copyShader (childRenderer);
+					parentRenderer.setViewport ();
 					
 				} else {
 					
@@ -1307,7 +1321,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
-				if (hasFilters) {
+				// TODO: Enable GL-based filters
+				
+				if (hasFilters && __cacheBitmapRenderer.__type != OPENGL) {
 					
 					var needSecondBitmapData = false;
 					var needCopyOfOriginal = false;

@@ -346,6 +346,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
+	public function setViewport ():Void {
+		
+		gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+		
+	}
+	
+	
 	public function updateShader ():Void {
 		
 		if (__currentShader != null) {
@@ -770,38 +777,50 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	private override function __render (object:IBitmapDrawable):Void {
 		
-		gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
-		
-		__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
-		
-		object.__renderGL (this);
-		
-		if (__offsetX > 0 || __offsetY > 0) {
+		if (__defaultRenderTarget == null) {
 			
-			gl.clearColor (0, 0, 0, 1);
-			gl.enable (gl.SCISSOR_TEST);
+			gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
 			
-			if (__offsetX > 0) {
+			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
+			
+			object.__renderGL (this);
+			
+			if (__offsetX > 0 || __offsetY > 0) {
 				
-				gl.scissor (0, 0, __offsetX, __height);
-				gl.clear (gl.COLOR_BUFFER_BIT);
+				gl.clearColor (0, 0, 0, 1);
+				gl.enable (gl.SCISSOR_TEST);
 				
-				gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
-				gl.clear (gl.COLOR_BUFFER_BIT);
+				if (__offsetX > 0) {
+					
+					gl.scissor (0, 0, __offsetX, __height);
+					gl.clear (gl.COLOR_BUFFER_BIT);
+					
+					gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
+					gl.clear (gl.COLOR_BUFFER_BIT);
+					
+				}
+				
+				if (__offsetY > 0) {
+					
+					gl.scissor (0, 0, __width, __offsetY);
+					gl.clear (gl.COLOR_BUFFER_BIT);
+					
+					gl.scissor (0, __offsetY + __displayHeight, __width, __height);
+					gl.clear (gl.COLOR_BUFFER_BIT);
+					
+				}
+				
+				gl.disable (gl.SCISSOR_TEST);
 				
 			}
 			
-			if (__offsetY > 0) {
-				
-				gl.scissor (0, 0, __width, __offsetY);
-				gl.clear (gl.COLOR_BUFFER_BIT);
-				
-				gl.scissor (0, __offsetY + __displayHeight, __width, __height);
-				gl.clear (gl.COLOR_BUFFER_BIT);
-				
-			}
+		} else {
 			
-			gl.disable (gl.SCISSOR_TEST);
+			gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			
+			// __upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
+			
+			object.__renderGL (this);
 			
 		}
 		
@@ -894,10 +913,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var w = (__defaultRenderTarget == null) ? __stage.stageWidth : __defaultRenderTarget.width;
 		var h = (__defaultRenderTarget == null) ? __stage.stageHeight : __defaultRenderTarget.height;
 		
-		__offsetX = Math.round (__worldTransform.__transformX (0, 0));
-		__offsetY = Math.round (__worldTransform.__transformY (0, 0));
-		__displayWidth = Math.round (__worldTransform.__transformX (w, 0) - __offsetX);
-		__displayHeight = Math.round (__worldTransform.__transformY (0, h) - __offsetY);
+		__offsetX = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (0, 0)) : 0;
+		__offsetY = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, 0)) : 0;
+		__displayWidth = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (w, 0) - __offsetX) : w;
+		__displayHeight = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, h) - __offsetY) : h;
 		
 		__projection = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
 		__projectionFlipped = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
@@ -979,6 +998,16 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 			
 		}
+		
+	}
+	
+	
+	private function __copyShader (other:OpenGLRenderer):Void {
+		
+		__currentShader = other.__currentShader;
+		__currentShaderBuffer = other.__currentShaderBuffer;
+		__currentDisplayShader = other.__currentDisplayShader;
+		__currentGraphicsShader = other.__currentGraphicsShader;
 		
 	}
 	
