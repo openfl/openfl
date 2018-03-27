@@ -1260,14 +1260,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (needRender) {
 				
-				if (__cacheBitmapRenderer == null #if (openfl_enable_gl_cacheasbitmap && !openfl_disable_gl_cacheasbitmap) || renderer.__type != __cacheBitmapRenderer.__type #end) {
+				if (__cacheBitmapRenderer == null #if !openfl_disable_gl_cacheasbitmap || renderer.__type != __cacheBitmapRenderer.__type #end) {
 					
-					#if (openfl_enable_gl_cacheasbitmap && !openfl_disable_gl_cacheasbitmap)
+					#if !openfl_disable_gl_cacheasbitmap
 					if (renderer.__type == OPENGL) {
 						
+						__cacheBitmapData.disposeImage ();
 						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
 						
 					} else #end {
+						
+						if (__cacheBitmapData.image == null) {
+							
+							var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
+							__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+							
+						}
 						
 						#if (js && html5)
 						ImageCanvasUtil.convertToCanvas (__cacheBitmapData.image);
