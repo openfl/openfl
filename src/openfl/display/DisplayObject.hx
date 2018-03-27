@@ -285,18 +285,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
-		var matrix;
-		var usingTemp = false;
+		var matrix = Matrix.__pool.get ();
 		
-		if (targetCoordinateSpace != null) {
+		if (targetCoordinateSpace != null && targetCoordinateSpace != this) {
 			
-			matrix = __getWorldTransform ().clone ();
-			matrix.concat (targetCoordinateSpace.__getWorldTransform ().clone ().invert ());
+			matrix.copyFrom (__getWorldTransform ());
+			
+			var targetMatrix = Matrix.__pool.get ();
+			
+			targetMatrix.copyFrom (targetCoordinateSpace.__getWorldTransform ());
+			targetMatrix.invert ();
+			
+			matrix.concat (targetMatrix);
+
+			Matrix.__pool.release (targetMatrix);
 			
 		} else {
 			
-			usingTemp = true;
-			matrix = Matrix.__pool.get ();
 			matrix.identity ();
 			
 		}
@@ -304,11 +309,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		var bounds = new Rectangle ();
 		__getBounds (bounds, matrix);
 		
-		if (usingTemp) {
-			
-			Matrix.__pool.release (matrix);
-			
-		}
+		Matrix.__pool.release (matrix);
 		
 		return bounds;
 		
