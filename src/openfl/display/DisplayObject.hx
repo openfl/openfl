@@ -1202,7 +1202,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (rect.width >= 0.5 && rect.height >= 0.5) {
 					
-					if (__cacheBitmap == null || bitmapWidth != __cacheBitmap.width || bitmapHeight != __cacheBitmap.height) {
+					if (__cacheBitmap == null || bitmapWidth > __cacheBitmap.width || bitmapHeight > __cacheBitmap.height) {
 						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						
