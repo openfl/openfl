@@ -1260,9 +1260,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (needRender) {
 				
-				if (__cacheBitmapRenderer == null #if !openfl_disable_gl_cacheasbitmap || renderer.__type != __cacheBitmapRenderer.__type #end) {
+				if (__cacheBitmapRenderer == null #if (openfl_enable_gl_cacheasbitmap && !openfl_disable_gl_cacheasbitmap) || renderer.__type != __cacheBitmapRenderer.__type #end) {
 					
-					#if !openfl_disable_gl_cacheasbitmap
+					#if (openfl_enable_gl_cacheasbitmap && !openfl_disable_gl_cacheasbitmap)
 					if (renderer.__type == OPENGL) {
 						
 						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
@@ -1282,6 +1282,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					__cacheBitmapRenderer.__worldColorTransform = new ColorTransform ();
 					
 				}
+				
+				__cacheBitmapRenderer.__stage = stage;
 				
 				__cacheBitmapRenderer.__allowSmoothing = renderer.__allowSmoothing;
 				__cacheBitmapRenderer.__setBlendMode (NORMAL);
