@@ -1576,6 +1576,13 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	private override function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
+		
+		return value == true ? true : false;
+		
+	}
+	
+	
 	private function __startCursorTimer ():Void {
 		
 		__cursorTimer = Timer.delay (__startCursorTimer, 600);

@@ -47,6 +47,7 @@ import js.html.Element;
 
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
+@:access(openfl._internal.renderer.opengl.GLGraphics)
 @:access(openfl.events.Event)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
@@ -1005,6 +1006,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
+		
+		if (value == true || __filters != null) return true;
+		
+		if (value == false || (__graphics != null && !GLGraphics.isCompatible (__graphics))) {
+			
+			return false;
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
 	private function __stopAllMovieClips ():Void {
 		
 		
@@ -1260,14 +1276,46 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (needRender) {
 				
-				if (__cacheBitmapRenderer == null #if !openfl_disable_gl_cacheasbitmap || renderer.__type != __cacheBitmapRenderer.__type #end) {
+				var renderType = renderer.__type;
+				
+				if (renderType == OPENGL) {
+					
+					var shouldCacheHardware:Null<Bool> = null;
 					
 					#if !openfl_disable_gl_cacheasbitmap
-					if (renderer.__type == OPENGL) {
+					if (__children != null) {
+						
+						for (child in __children) {
+							
+							shouldCacheHardware = child.__shouldCacheHardware (shouldCacheHardware);
+							if (shouldCacheHardware == true) break;
+							
+						}
+						
+					}
+					#else
+					shouldCacheHardware = false;
+					#end
+					
+					if (!shouldCacheHardware) {
+						
+						#if (js && html5)
+						renderType = CANVAS;
+						#else
+						renderType = CAIRO;
+						#end
+						
+					}
+					
+				}
+				
+				if (__cacheBitmapRenderer == null || renderType != __cacheBitmapRenderer.__type) {
+					
+					if (renderType == OPENGL) {
 						
 						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
 						
-					} else #end {
+					} else {
 						
 						if (__cacheBitmapData.image == null) {
 							

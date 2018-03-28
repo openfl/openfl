@@ -918,8 +918,30 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 	}
-
-
+	
+	
+	private override function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
+		
+		if (value == true) return true;
+		value = super.__shouldCacheHardware (value);
+		if (value == true) return true;
+		
+		if (__children != null) {
+			
+			for (child in __children) {
+				
+				value = child.__shouldCacheHardware (value);
+				if (value == true) return true;
+				
+			}
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	private override function __stopAllMovieClips ():Void {
 		
 		for (child in __children) {
