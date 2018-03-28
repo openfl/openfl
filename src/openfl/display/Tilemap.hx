@@ -458,7 +458,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 	}
-	#end
 	
 	
 	private override function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
@@ -468,7 +467,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	#if !flash
 	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		if (__filters == null) return false;
