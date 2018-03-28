@@ -1265,7 +1265,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					#if !openfl_disable_gl_cacheasbitmap
 					if (renderer.__type == OPENGL) {
 						
-						__cacheBitmapData.disposeImage ();
 						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
 						
 					} else #end {
@@ -1316,6 +1315,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					childRenderer.__copyShader (parentRenderer);
 					
 					__cacheBitmapRenderer.__resize (__cacheBitmapData.width, __cacheBitmapData.height);
+					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version;
+					
 					__cacheBitmapData.__drawGL (this, childRenderer);
 					
 					parentRenderer.__copyShader (childRenderer);
