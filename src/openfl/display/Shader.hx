@@ -619,17 +619,19 @@ class Shader {
 	private function __updateGLFromBuffer (shaderBuffer:ShaderBuffer):Void {
 		
 		var textureCount = 0;
-		var input, inputData, inputSmoothing;
+		var input, inputData, inputFilter, inputMipFilter, inputWrap;
 		
 		for (i in 0...shaderBuffer.inputCount) {
 			
 			input = shaderBuffer.inputRefs[i];
 			inputData = shaderBuffer.inputs[i];
-			inputSmoothing = shaderBuffer.inputSmoothing[i];
+			inputFilter = shaderBuffer.inputFilter[i];
+			inputMipFilter = shaderBuffer.inputMipFilter[i];
+			inputWrap = shaderBuffer.inputWrap[i];
 			
 			if (inputData != null) {
 				
-				input.__updateGL (gl, textureCount, inputData, inputSmoothing);
+				input.__updateGL (gl, textureCount, inputData, inputFilter, inputMipFilter, inputWrap);
 				textureCount++;
 				
 			}

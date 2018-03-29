@@ -809,7 +809,7 @@ class CairoGraphics {
 					
 					if (shaderBuffer.inputCount > 0) {
 						
-						fillPattern = createImagePattern (shaderBuffer.inputs[0], null, false, shaderBuffer.inputSmoothing[0]);
+						fillPattern = createImagePattern (shaderBuffer.inputs[0], null, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
 						
 						bitmapFill = shaderBuffer.inputs[0];
 						bitmapRepeat = false;

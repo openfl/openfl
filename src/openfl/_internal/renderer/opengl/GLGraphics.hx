@@ -469,6 +469,7 @@ class GLGraphics {
 				
 				var shaderBuffer = null;
 				var bitmap = null;
+				var repeat = true;
 				var smooth = false;
 				var fill:Null<Int> = null;
 				
@@ -485,6 +486,7 @@ class GLGraphics {
 							
 							var c = data.readBeginBitmapFill ();
 							bitmap = c.bitmap;
+							repeat = c.repeat;
 							smooth = c.smooth;
 							shaderBuffer = null;
 							fill = null;
@@ -511,7 +513,6 @@ class GLGraphics {
 							} else {
 								
 								bitmap = shaderBuffer.shader.bitmap.input;
-								smooth = shaderBuffer.shader.bitmap.smoothing;
 								
 							}
 							
@@ -530,7 +531,6 @@ class GLGraphics {
 								var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
 								
 								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
-								var smoothing = (renderer.__allowSmoothing && smooth);
 								var shader;
 								
 								if (shaderBuffer != null) {
@@ -548,7 +548,7 @@ class GLGraphics {
 									shader = renderer.__initGraphicsShader (null);
 									renderer.setGraphicsShader (shader);
 									renderer.applyMatrix (uMatrix);
-									renderer.applyBitmapData (bitmap, smoothing);
+									renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
 									renderer.applyAlpha (graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform (graphics.__owner.__worldColorTransform);
 									renderer.updateShader ();
@@ -608,7 +608,7 @@ class GLGraphics {
 								var shader = renderer.__initGraphicsShader (null);
 								renderer.setGraphicsShader (shader);
 								renderer.applyMatrix (renderer.__getMatrix (matrix));
-								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing);
+								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, true);
 								renderer.applyAlpha (color.a / 0xFF);
 								renderer.applyColorTransform (tempColorTransform);
 								renderer.updateShader ();
@@ -646,7 +646,6 @@ class GLGraphics {
 							var stride = vertLength + 2;
 							
 							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
-							var smoothing = (renderer.__allowSmoothing && smooth);
 							var shader;
 							
 							if (shaderBuffer != null) {
@@ -664,7 +663,7 @@ class GLGraphics {
 								shader = renderer.__initGraphicsShader (null);
 								renderer.setGraphicsShader (shader);
 								renderer.applyMatrix (uMatrix);
-								renderer.applyBitmapData (bitmap, smoothing);
+								renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
 								renderer.applyAlpha (graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform (graphics.__owner.__worldColorTransform);
 								renderer.updateShader ();
@@ -675,12 +674,6 @@ class GLGraphics {
 								
 								graphics.__bufferContext = cast gl;
 								graphics.__buffer = gl.createBuffer ();
-								
-							}
-							
-							if (smoothing) {
-								
-								gl.generateMipmap (gl.TEXTURE_2D);
 								
 							}
 							

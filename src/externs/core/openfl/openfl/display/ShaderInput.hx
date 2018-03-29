@@ -1,6 +1,11 @@
 package openfl.display; #if (display || !flash)
 
 
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DWrapMode;
+
+
 #if (!js && !display) @:generic #end
 
 
@@ -11,8 +16,10 @@ package openfl.display; #if (display || !flash)
 	public var height:Int;
 	public var index (default, null):Int;
 	public var input:T;
-	public var smoothing:Bool;
+	public var filter:Context3DTextureFilter;
+	public var mipFilter:Context3DMipFilter;
 	public var width:Int;
+	public var wrap:Context3DWrapMode;
 	
 	
 	public function new ();

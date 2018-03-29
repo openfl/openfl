@@ -157,17 +157,21 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applyBitmapData (bitmapData:BitmapData, smoothing:Bool):Void {
+	public function applyBitmapData (bitmapData:BitmapData, smooth:Bool, repeat:Bool = true):Void {
 		
 		if (__currentGraphicsShader != null) {
 			
 			__currentGraphicsShader.bitmap.input = bitmapData;
-			__currentGraphicsShader.bitmap.smoothing = smoothing;
+			__currentGraphicsShader.bitmap.filter = smooth ? LINEAR : NEAREST;
+			__currentGraphicsShader.bitmap.mipFilter = MIPNONE;
+			__currentGraphicsShader.bitmap.wrap = repeat ? REPEAT : CLAMP;
 			
 		} else {
 			
 			__currentDisplayShader.openfl_Texture.input = bitmapData;
-			__currentDisplayShader.openfl_Texture.smoothing = smoothing;
+			__currentDisplayShader.openfl_Texture.filter = smooth ? LINEAR : NEAREST;
+			__currentDisplayShader.openfl_Texture.mipFilter = MIPNONE;
+			__currentDisplayShader.openfl_Texture.wrap = repeat ? REPEAT : CLAMP;
 			
 		}
 		

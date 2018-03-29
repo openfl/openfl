@@ -3,6 +3,9 @@ package openfl._internal.renderer;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.Float32Array;
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DWrapMode;
 import openfl.display.BitmapData;
 import openfl.display.GraphicsShader;
 import openfl.display.Shader;
@@ -22,8 +25,10 @@ class ShaderBuffer {
 	
 	public var inputCount:Int;
 	public var inputRefs:Array<ShaderInput<BitmapData>>;
-	public var inputSmoothing:Array<Bool>;
+	public var inputFilter:Array<Context3DTextureFilter>;
+	public var inputMipFilter:Array<Context3DMipFilter>;
 	public var inputs:Array<BitmapData>;
+	public var inputWrap:Array<Context3DWrapMode>;
 	public var overrideCount:Int;
 	public var overrideNames:Array<String>;
 	public var overrideValues:Array<Array<Dynamic>>;
@@ -43,8 +48,10 @@ class ShaderBuffer {
 	public function new () {
 		
 		inputRefs = [];
-		inputSmoothing = [];
+		inputFilter = [];
+		inputMipFilter = [];
 		inputs = [];
+		inputWrap = [];
 		overrideNames = [];
 		overrideValues = [];
 		paramLengths = [];
@@ -89,8 +96,10 @@ class ShaderBuffer {
 			
 			input = shader.__inputBitmapData[i];
 			inputs[i] = input.input;
-			inputSmoothing[i] = input.smoothing;
+			inputFilter[i] = input.filter;
+			inputMipFilter[i] = input.mipFilter;
 			inputRefs[i] = input;
+			inputWrap[i] = input.wrap;
 			
 		}
 		
