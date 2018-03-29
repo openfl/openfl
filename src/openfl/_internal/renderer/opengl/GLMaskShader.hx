@@ -13,13 +13,13 @@ class GLMaskShader extends DisplayObjectShader {
 	
 	@:glFragmentSource(
 		
-		"varying vec2 openfl_vTexCoord;
+		"varying vec2 openfl_TexCoordv;
 		
 		uniform sampler2D openfl_Texture;
 		
 		void main(void) {
 			
-			vec4 color = texture2D (openfl_Texture, openfl_vTexCoord);
+			vec4 color = texture2D (openfl_Texture, openfl_TexCoordv);
 			
 			if (color.a == 0.0) {
 				
@@ -40,7 +40,7 @@ class GLMaskShader extends DisplayObjectShader {
 		
 		"attribute vec4 openfl_Position;
 		attribute vec2 openfl_TexCoord;
-		varying vec2 openfl_vTexCoord;
+		varying vec2 openfl_TexCoordv;
 		
 		uniform mat4 openfl_Matrix;
 		
@@ -52,7 +52,7 @@ class GLMaskShader extends DisplayObjectShader {
 		
 		void main(void) {
 			
-			openfl_vTexCoord = openfl_TexCoord;
+			openfl_TexCoordv = openfl_TexCoord;
 			
 			gl_Position = openfl_Matrix * openfl_Position;
 			
