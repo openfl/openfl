@@ -231,9 +231,13 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (needSecondBitmapData && lastBitmap == bitmapData2) {
 			
+			bitmapData2.image.version = image.version;
 			image = bitmapData2.image;
 			
 		}
+		
+		image.dirty = true;
+		image.version++;
 		
 	}
 	
