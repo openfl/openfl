@@ -181,9 +181,6 @@ class ShaderBuffer {
 		var floatIndex = 0;
 		var intIndex = 0;
 		
-		var boolCount = paramRefs_Bool.length;
-		var floatCount = paramRefs_Float.length;
-		
 		var paramPosition:Int = 0;
 		var boolParam, floatParam, intParam, length;
 		
