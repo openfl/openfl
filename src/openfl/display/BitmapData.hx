@@ -201,7 +201,39 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		
-		filter.__applyFilter (this, sourceBitmapData, sourceRect, destPoint);
+		// TODO: Ways to optimize this?
+		
+		var needSecondBitmapData = filter.__needSecondBitmapData;
+		var needCopyOfOriginal = filter.__preserveObject;
+		
+		var bitmapData2 = null;
+		var bitmapData3 = null;
+		
+		if (needSecondBitmapData) {
+			bitmapData2 = new BitmapData (width, height, true, 0);
+		} else {
+			bitmapData2 = this;
+		}
+		
+		if (needCopyOfOriginal) {
+			bitmapData3 = new BitmapData (width, height, true, 0);
+		}
+		
+		if (filter.__preserveObject) {
+			bitmapData3.copyPixels (this, rect, destPoint);
+		}
+		
+		var lastBitmap = filter.__applyFilter (bitmapData2, this, sourceRect, destPoint);
+		
+		if (filter.__preserveObject) {
+			lastBitmap.draw (bitmapData3, null, null);
+		}
+		
+		if (needSecondBitmapData && lastBitmap == bitmapData2) {
+			
+			image = bitmapData2.image;
+			
+		}
 		
 	}
 	
