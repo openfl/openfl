@@ -85,7 +85,7 @@
     "babel-preset-stage-1": "^6.24.1",
     "chai": "^4.1.2",
     "format": "jgranick/format",
-    "haxe": "^4.1.0",
+    "haxe": "4.1.0",
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
     "lime": "openfl/lime#develop",
