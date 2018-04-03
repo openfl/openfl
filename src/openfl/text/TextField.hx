@@ -2028,7 +2028,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private function get_htmlText ():String {
 		
 		#if (js && html5)
-		return	DisplayObject.__supportDOM ? __rawHtmlText : __text;
+		return __isHTML ? __rawHtmlText : __text;
 		#else
 		return __text;
 		#end
@@ -2049,11 +2049,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		__isHTML = true;
 		
 		#if (js && html5)
-		if (DisplayObject.__supportDOM) {
-			
-			__rawHtmlText = value;
-			
-		}
+		__rawHtmlText = value;
 		#end
 		
 		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
