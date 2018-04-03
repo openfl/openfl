@@ -136,21 +136,13 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__getBounds (rect, matrix);
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
-		__currentState.__getBounds (rect, __currentState.__worldTransform);
+		DisplayObject.__calculateAbsoluteTransform (__currentState.__transform, matrix, childWorldTransform);
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getBounds (rect, childWorldTransform);
+		
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -168,21 +160,13 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
-		__currentState.__getRenderBounds (rect, __currentState.__worldTransform);
+		DisplayObject.__calculateAbsoluteTransform (__currentState.__transform, matrix, childWorldTransform);
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getRenderBounds (rect, childWorldTransform);
+		
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -194,15 +178,15 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
 		var hitTest = false;
 		
 		if (hitTestState != null) {
 			
-			if (hitTestState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
+			if (hitTestState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled)) {
 				
-				if (stack != null) {
+				if (stack != null && !hitTestWhenMouseDisabled) {
 					
 					if (stack.length == 0) {
 						
@@ -222,10 +206,10 @@ class SimpleButton extends InteractiveObject {
 			
 		} else if (__currentState != null) {
 			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+			if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
-			if (__currentState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
+			if (__currentState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled)) {
 				
 				hitTest = interactiveOnly;
 				
@@ -236,7 +220,7 @@ class SimpleButton extends InteractiveObject {
 		// TODO: Better fix?
 		// (this is caused by the "hitObject" logic in hit testing)
 		
-		if (stack != null) {
+		if (stack != null && !hitTestWhenMouseDisabled) {
 			
 			while (stack.length > 1 && stack[stack.length - 1] == stack[stack.length - 2]) {
 				
@@ -401,21 +385,21 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics);
+		super.__update (transformOnly, updateChildren, maskGraphics, resetUpdateDirty);
 		
 		if (updateChildren) {
 			
 			if (__currentState != null) {
 				
-				__currentState.__update (transformOnly, true, maskGraphics);
+				__currentState.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
 				
 			}
 			
 			if (hitTestState != null && hitTestState != __currentState) {
 				
-				hitTestState.__update (transformOnly, true, maskGraphics);
+				hitTestState.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
 				
 			}
 			

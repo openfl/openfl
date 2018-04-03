@@ -503,11 +503,13 @@ class BitmapData implements IBitmapDrawable {
 				renderSession.clearRenderDirty = false;
 				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
 				
-				var matrixCache = source.__worldTransform;
+				var matrixCache = Matrix.__pool.get ();
+				matrixCache.copyFrom (source.__worldTransform);
 				source.__updateTransforms (matrix);
 				source.__updateChildren (false);
 				source.__renderGL (renderer.renderSession);
 				source.__updateTransforms (matrixCache);
+				Matrix.__pool.release (matrixCache);
 				source.__updateChildren (true);
 				
 				gl.bindFramebuffer (gl.FRAMEBUFFER, null);
@@ -568,11 +570,13 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var matrixCache = source.__worldTransform;
+			var matrixCache = Matrix.__pool.get ();
+			matrixCache.copyFrom (source.__worldTransform);
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
 			source.__renderCanvas (renderSession);
 			source.__updateTransforms (matrixCache);
+			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
 			
 			if (!smoothing) {
@@ -651,11 +655,13 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var matrixCache = source.__worldTransform;
+			var matrixCache = Matrix.__pool.get ();
+			matrixCache.copyFrom (source.__worldTransform);
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
 			source.__renderCairo (renderSession);
 			source.__updateTransforms (matrixCache);
+			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
 			
 			if (clipRect != null) {
@@ -848,6 +854,13 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
+	public function isBufferDirty (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):Bool {
+		
+		return __buffer == null || __bufferContext != gl || __bufferAlpha != alpha || 
+				(__bufferColorTransform == null && colorTransform != null) || 
+				(__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform));
+		
+	}
 	
 	public function getBuffer (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):GLBuffer {
 		
@@ -1663,11 +1676,13 @@ class BitmapData implements IBitmapDrawable {
 				renderSession.clearRenderDirty = true;
 				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
 				
-				var matrixCache = source.__worldTransform;
+				var matrixCache = Matrix.__pool.get ();
+				matrixCache.copyFrom (source.__worldTransform);
 				source.__updateTransforms (matrix);
 				source.__updateChildren (false);
 				source.__renderGL (renderer.renderSession);
 				source.__updateTransforms (matrixCache);
+				Matrix.__pool.release (matrixCache);
 				source.__updateChildren (true);
 				
 				gl.bindFramebuffer (gl.FRAMEBUFFER, null);
@@ -1727,7 +1742,8 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var matrixCache = source.__worldTransform;
+			var matrixCache = Matrix.__pool.get ();
+			matrixCache.copyFrom (source.__worldTransform);
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
 			
@@ -1746,6 +1762,7 @@ class BitmapData implements IBitmapDrawable {
 			source.__worldAlpha = cacheAlpha;
 			
 			source.__updateTransforms (matrixCache);
+			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
 			
 			if (!smoothing) {
@@ -1823,7 +1840,8 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var matrixCache = source.__worldTransform;
+			var matrixCache = Matrix.__pool.get ();
+			matrixCache.copyFrom (source.__worldTransform);
 			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
 			
@@ -1844,6 +1862,7 @@ class BitmapData implements IBitmapDrawable {
 			source.__worldAlpha = cacheAlpha;
 			
 			source.__updateTransforms (matrixCache);
+			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
 			
 			if (clipRect != null) {

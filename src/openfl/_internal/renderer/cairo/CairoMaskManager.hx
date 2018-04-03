@@ -33,7 +33,7 @@ class CairoMaskManager extends AbstractMaskManager {
 		cairo.save ();
 		
 		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__getRenderTransform ();
+		var transform = mask.__renderTransform;
 		
 		cairo.matrix = transform.__toMatrix3 ();
 		

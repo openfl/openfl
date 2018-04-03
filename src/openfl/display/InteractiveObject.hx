@@ -85,10 +85,17 @@ class InteractiveObject extends DisplayObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled)) return false;
+		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject, hitTestWhenMouseDisabled);
+		
+	}
+	
+	
+	private override function __mouseThroughAllowed ():Bool {
+		
+		return mouseEnabled;
 		
 	}
 	

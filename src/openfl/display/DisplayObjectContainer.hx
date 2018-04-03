@@ -25,6 +25,7 @@ import openfl.Vector;
 @:access(openfl.display.Graphics)
 @:access(openfl.errors.Error)
 @:access(openfl.geom.Point)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 
@@ -403,27 +404,20 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__getBounds (rect, matrix);
 		
 		if (__children.length == 0) return;
-		
-		if (matrix != null) {
 			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0) continue;
-			child.__getBounds (rect, child.__worldTransform);
+			
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+			
+			child.__getBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -434,26 +428,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-			child.__getFilterBounds (rect, child.__worldTransform);
+
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+
+			child.__getFilterBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -473,33 +460,26 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-			child.__getRenderBounds (rect, child.__worldTransform);
+			
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+			
+			child.__getRenderBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject, hitTestWhenMouseDisabled:Bool = false):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+		if (!hitObject.visible || __isMask || (!hitTestWhenMouseDisabled && interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		if (__scrollRect != null) {
@@ -526,9 +506,9 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 					
-					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
+					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i], hitTestWhenMouseDisabled)) {
 						
-						if (stack != null) {
+						if (stack != null && !hitTestWhenMouseDisabled) {
 							
 							stack.push (hitObject);
 							
@@ -551,13 +531,15 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 					interactive = __children[i].__getInteractive (null);
 					
-					if (interactive || (mouseEnabled && !hitTest)) {
+					var childHitTestWhenMouseDisabled = hitTestWhenMouseDisabled || (interactive && !__children[i].__mouseThroughAllowed ()) || (!interactive && !mouseEnabled);
+					
+					if (interactive || (mouseEnabled && !hitTest) || childHitTestWhenMouseDisabled) {
 						
-						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i])) {
+						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i], childHitTestWhenMouseDisabled)) {
 							
 							hitTest = true;
 							
-							if (interactive && stack.length > length) {
+							if (!childHitTestWhenMouseDisabled && interactive && stack.length > 0) {
 								
 								break;
 								
@@ -571,7 +553,12 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				if (hitTest) {
 					
-					stack.insert (length, hitObject);
+					if (!hitTestWhenMouseDisabled && mouseEnabled) {
+						
+						stack.insert (length, hitObject);
+						
+					}
+					
 					return true;
 					
 				}
@@ -608,6 +595,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		return false;
+		
+	}
+	
+	
+	private override function __mouseThroughAllowed ():Bool {
+		
+		return mouseEnabled || mouseChildren;
 		
 	}
 	
@@ -665,7 +659,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			
@@ -735,7 +729,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			
@@ -874,7 +868,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			
@@ -923,7 +917,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__cleanup ();
+				orphan.__cleanup (renderSession);
 				
 			}
 			
@@ -983,15 +977,37 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	private override function __traverse ():Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics);
+		if (__updateDirty) {
+			
+			__update (false, true, null, true);
+			
+		} else if (__updateTraverse) {
+			
+			for (child in __children) {
+				
+				child.__traverse ();
+				
+			}
+			
+		}
+		
+		// This container has been traversed, therefore reset flag
+		__updateTraverse = false;
+			
+	}
+	
+	
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+		
+		super.__update (transformOnly, updateChildren, maskGraphics, resetUpdateDirty);
 		
 		if (updateChildren) {
 			
 			for (child in __children) {
 				
-				child.__update (transformOnly, true, maskGraphics);
+				child.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
 				
 			}
 			

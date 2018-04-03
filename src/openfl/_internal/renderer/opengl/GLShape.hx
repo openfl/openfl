@@ -29,7 +29,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class GLShape {
 	
 	
-	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function render (shape:DisplayObject, renderSession:RenderSession):Void {
 		
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		
@@ -66,6 +66,10 @@ class GLShape {
 				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
 				shader.data.uColorTransform.value[0] = useColorTransform;
 				
+				var vaoRendered = GLVAORenderHelper.renderDO (shape, renderSession, shader, graphics.__bitmap);
+				
+				if (vaoRendered) return;
+				
 				renderSession.shaderManager.updateShader (shader);
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha, shape.__worldColorTransform));
@@ -100,7 +104,7 @@ class GLShape {
 	}
 	
 	
-	public static inline function renderMask (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function renderMask (shape:DisplayObject, renderSession:RenderSession):Void {
 		
 		var graphics = shape.__graphics;
 		
@@ -129,6 +133,10 @@ class GLShape {
 				shader.data.uImage0.input = graphics.__bitmap;
 				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
+				
+				var vaoRendered = GLVAORenderHelper.renderMask (shape, renderSession, shader, graphics.__bitmap);
+				
+				if (vaoRendered) return;
 				
 				renderSession.shaderManager.updateShader (shader);
 				

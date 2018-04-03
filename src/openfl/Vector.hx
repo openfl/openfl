@@ -294,7 +294,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		
 	}
 	
-	
+
 }
 
 
@@ -556,15 +556,14 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		}
 		
 	}
-	
-	
-	
-	
+
+
+
 	// Getters & Setters
 	
 	
-	
-	
+
+
 	@:noCompletion private function get_length ():Int {
 		
 		return __array.length;
@@ -865,9 +864,9 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		}
 		
 	}
-	
-	
-	
+
+
+		
 	
 	// Getters & Setters
 	
@@ -1493,10 +1492,10 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		}
 		
 	}
+
+
 	
-	
-	
-	
+
 	// Getters & Setters
 	
 	
@@ -1802,9 +1801,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 		}
 		
 	}
-	
-	
-	
+
 	
 	// Getters & Setters
 	

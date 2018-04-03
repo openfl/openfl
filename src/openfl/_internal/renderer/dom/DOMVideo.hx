@@ -14,19 +14,19 @@ class DOMVideo {
 	
 	
 	public static function clear (video:Video, renderSession:RenderSession):Void {
-		
+
 		#if (js && html5)
 		if (video.__active) {
-			
+
 			renderSession.element.removeChild (video.__stream.__video);
 			video.__active = false;
-			
+
 		}
 		#end
-		
+
 	}
-	
-	
+
+
 	public static function render (video:Video, renderSession:RenderSession):Void {
 		
 		#if (js && html5)

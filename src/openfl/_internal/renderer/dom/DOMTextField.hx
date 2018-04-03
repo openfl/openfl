@@ -232,6 +232,10 @@ class DOMTextField {
 						
 					} else {
 						
+						#if dom
+						text = textField.__rawHtmlText;
+						#end
+						
 						var matchText = text;
 						while (__regexFont.match (matchText)) {
 							
@@ -331,6 +335,16 @@ class DOMTextField {
 					}
 					
 					textField.__dirty = false;
+					
+					
+					var scrollTo = 0;
+					for (i in 0...textField.scrollV - 1) {
+						
+						scrollTo += Math.ceil (textEngine.lineHeights[i]);
+						
+					}
+					
+					textField.__div.scrollTop = scrollTo;
 					
 				} else {
 					
