@@ -825,6 +825,9 @@ class TextEngine {
 		
 		maxScrollV = numLines - bottomScrollV + 1;
 		
+		if (scrollV > maxScrollV) scrollV = maxScrollV;
+		if (scrollH > maxScrollH) scrollH = maxScrollH;
+		
 	}
 	
 	
