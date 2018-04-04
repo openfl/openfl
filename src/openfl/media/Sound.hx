@@ -67,6 +67,7 @@ class Sound extends EventDispatcher {
 		if (__buffer != null) {
 			
 			__buffer.dispose ();
+			__buffer = null;
 			
 		}
 		
@@ -194,7 +195,7 @@ class Sound extends EventDispatcher {
 	
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
-		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS) {
+		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS) {
 			
 			return null;
 			
