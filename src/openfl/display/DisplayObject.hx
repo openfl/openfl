@@ -53,6 +53,7 @@ import js.html.Element;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.Shader)
 @:access(openfl.display.Stage)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
@@ -83,13 +84,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	public var name (get, set):String;
 	public var opaqueBackground:Null<Int>;
 	public var parent (default, null):DisplayObjectContainer;
-	@:beta public var renderShader (get, set):DisplayObjectShader;
 	public var root (get, never):DisplayObject;
 	@:keep public var rotation (get, set):Float;
 	public var scale9Grid:Rectangle;
 	@:keep public var scaleX (get, set):Float;
 	@:keep public var scaleY (get, set):Float;
 	public var scrollRect (get, set):Rectangle;
+	@:beta public var shader (get, set):Shader;
 	public var stage (default, null):Stage;
 	@:keep public var transform (get, set):Transform;
 	public var visible (get, set):Bool;
@@ -124,7 +125,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __renderable:Bool;
 	private var __renderDirty:Bool;
 	private var __renderParent:DisplayObject;
-	private var __renderShader:DisplayObjectShader;
 	private var __renderTransform:Matrix;
 	private var __renderTransformCache:Matrix;
 	private var __renderTransformChanged:Bool;
@@ -134,6 +134,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __scaleX:Float;
 	private var __scaleY:Float;
 	private var __scrollRect:Rectangle;
+	private var __shader:Shader;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
 	private var __visible:Bool;
@@ -143,7 +144,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __worldClip:Rectangle;
 	private var __worldClipChanged:Bool;
 	private var __worldColorTransform:ColorTransform;
-	private var __worldRenderShader:DisplayObjectShader;
+	private var __worldShader:Shader;
 	private var __worldTransform:Matrix;
 	private var __worldVisible:Bool;
 	private var __worldVisibleChanged:Bool;
@@ -172,12 +173,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			"mouseX": { get: untyped __js__ ("function () { return this.get_mouseX (); }") },
 			"mouseY": { get: untyped __js__ ("function () { return this.get_mouseY (); }") },
 			"name": { get: untyped __js__ ("function () { return this.get_name (); }"), set: untyped __js__ ("function (v) { return this.set_name (v); }") },
-			"renderShader": { get: untyped __js__ ("function () { return this.get_renderShader (); }"), set: untyped __js__ ("function (v) { return this.set_renderShader (v); }") },
 			"root": { get: untyped __js__ ("function () { return this.get_root (); }") },
 			"rotation": { get: untyped __js__ ("function () { return this.get_rotation (); }"), set: untyped __js__ ("function (v) { return this.set_rotation (v); }") },
 			"scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
 			"scaleY": { get: untyped __js__ ("function () { return this.get_scaleY (); }"), set: untyped __js__ ("function (v) { return this.set_scaleY (v); }") },
 			"scrollRect": { get: untyped __js__ ("function () { return this.get_scrollRect (); }"), set: untyped __js__ ("function (v) { return this.set_scrollRect (v); }") },
+			"shader": { get: untyped __js__ ("function () { return this.get_shader (); }"), set: untyped __js__ ("function (v) { return this.set_shader (v); }") },
 			"transform": { get: untyped __js__ ("function () { return this.get_transform (); }"), set: untyped __js__ ("function (v) { return this.set_transform (v); }") },
 			"visible": { get: untyped __js__ ("function () { return this.get_visible (); }"), set: untyped __js__ ("function (v) { return this.set_visible (v); }") },
 			"width": { get: untyped __js__ ("function () { return this.get_width (); }"), set: untyped __js__ ("function (v) { return this.set_width (v); }") },
@@ -875,7 +876,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				case OPENGL:
 					
 					var renderer:OpenGLRenderer = cast renderer;
-					renderer.setShader (__worldRenderShader);
+					renderer.setShader (__worldShader);
 					__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
 				
 				case CAIRO:
@@ -1098,13 +1099,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
-				if (__renderShader == null) {
+				if (__shader == null) {
 					
-					__worldRenderShader = renderParent.__renderShader;
+					__worldShader = renderParent.__shader;
 					
 				} else {
 					
-					__worldRenderShader = __renderShader;
+					__worldShader = __shader;
+					
+				}
+				
+				if (__worldShader != null && !__worldShader.__isDisplayShader) {
+					
+					// TODO: Handle non-extended Shader classes better?
+					
+					__renderable = false;
 					
 				}
 				
@@ -1269,7 +1278,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap.__renderable = __renderable;
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
-			__cacheBitmap.__worldRenderShader = __worldRenderShader;
+			__cacheBitmap.__worldShader = __worldShader;
 			__cacheBitmap.__scrollRect = __scrollRect;
 			//__cacheBitmap.filters = filters;
 			__cacheBitmap.mask = __mask;
@@ -1498,7 +1507,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__worldAlpha = __alpha;
 		__worldBlendMode = __blendMode;
-		__worldRenderShader = __renderShader;
+		__worldShader = __shader;
 		
 		if (__transformDirty) {
 			
@@ -1818,22 +1827,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function get_renderShader ():DisplayObjectShader {
-		
-		return __renderShader;
-		
-	}
-	
-	
-	private function set_renderShader (value:DisplayObjectShader):DisplayObjectShader {
-		
-		__renderShader = value;
-		__setRenderDirty ();
-		return value;
-		
-	}
-	
-	
 	private function get_root ():DisplayObject {
 		
 		if (stage != null) {
@@ -1987,6 +1980,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return __scrollRect = value;
+		
+	}
+	
+	
+	private function get_shader ():Shader {
+		
+		return __shader;
+		
+	}
+	
+	
+	private function set_shader (value:Shader):Shader {
+		
+		__shader = value;
+		__setRenderDirty ();
+		return value;
 		
 	}
 	

@@ -38,7 +38,7 @@ class GLBitmap {
 			renderer.__pushMaskObject (bitmap);
 			// renderer.filterManager.pushObject (bitmap);
 			
-			var shader = renderer.__initDisplayShader (bitmap.__worldRenderShader);
+			var shader = renderer.__initDisplayShader (cast bitmap.__worldShader);
 			renderer.setDisplayShader (shader);
 			renderer.applyBitmapData (bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
 			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform));

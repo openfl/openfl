@@ -25,6 +25,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:noDebug
 #end
 
+@:access(openfl.display.Shader)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.display.Tile)
@@ -312,7 +313,7 @@ class GLTilemap {
 			
 			var gl:WebGLContext = renderer.gl;
 			
-			var shader = renderer.__initDisplayShader (currentShader);
+			var shader = renderer.__initDisplayShader (cast currentShader);
 			renderer.setDisplayShader (shader);
 			renderer.applyBitmapData (currentBitmapData, renderer.__allowSmoothing && tilemap.smoothing);
 			renderer.applyMatrix (renderer.__getMatrix (tilemap.__renderTransform));
@@ -433,7 +434,7 @@ class GLTilemap {
 		renderer.__pushMaskObject (tilemap);
 		// renderer.filterManager.pushObject (tilemap);
 		
-		renderTileContainer (tilemap, renderer, tilemap.__group, tilemap.__worldRenderShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
+		renderTileContainer (tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
 		flush (tilemap, renderer);
 		
 		// renderer.filterManager.popObject (tilemap);
@@ -448,7 +449,7 @@ class GLTilemap {
 		var tiles = group.__tiles;
 		var length = group.__length;
 		
-		var tile, tileset, alpha, visible, id, tileData, tileRect, shader, bitmapData;
+		var tile, tileset, alpha, visible, id, tileData, tileRect, shader:DisplayObjectShader, bitmapData;
 		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, offset;
 		
 		for (tile in tiles) {
@@ -459,7 +460,7 @@ class GLTilemap {
 			visible = tile.visible;
 			if (!visible || alpha <= 0) continue;
 			
-			shader = tile.shader != null ? tile.shader : defaultShader;
+			shader = (tile.shader != null && tile.shader.__isDisplayShader) ? cast tile.shader : defaultShader;
 			
 			if (tile.__length > 0) {
 				

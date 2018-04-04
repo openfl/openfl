@@ -9,14 +9,14 @@ import openfl.geom.Matrix;
 @:final class GraphicsShaderFill implements IGraphicsData implements IGraphicsFill {
 	
 	
-	public var shader:GraphicsShader;
+	public var shader:Shader;
 	public var matrix:Matrix;
 	
 	public var __graphicsDataType (default, null):GraphicsDataType;
 	public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
-	public function new (shader:GraphicsShader, matrix:Matrix = null) {
+	public function new (shader:Shader, matrix:Matrix = null) {
 		
 		this.shader = shader;
 		this.matrix = matrix;

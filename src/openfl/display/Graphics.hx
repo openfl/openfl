@@ -168,13 +168,17 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function beginShaderFill (shader:GraphicsShader, matrix:Matrix = null):Void {
+	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void {
 		
-		var shaderBuffer = __shaderBufferPool.get ();
-		__usedShaderBuffers.add (shaderBuffer);
-		shaderBuffer.update (shader);
-		
-		__commands.beginShaderFill (shaderBuffer);
+		if (shader != null && shader.__isGraphicsShader) {
+			
+			var shaderBuffer = __shaderBufferPool.get ();
+			__usedShaderBuffers.add (shaderBuffer);
+			shaderBuffer.update (cast shader);
+			
+			__commands.beginShaderFill (shaderBuffer);
+			
+		}
 		
 	}
 	

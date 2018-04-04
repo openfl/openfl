@@ -28,7 +28,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	@:beta public var shader (get, set):DisplayObjectShader;
+	@:beta public var shader (get, set):Shader;
 	public var tileset (get, set):Tileset;
 	public var visible (get, set):Bool;
 	public var x (get, set):Float;
@@ -48,7 +48,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	private var __rotationSine:Float;
 	private var __scaleX:Null<Float>;
 	private var __scaleY:Null<Float>;
-	private var __shader:DisplayObjectShader;
+	private var __shader:Shader;
 	private var __tileset:Tileset;
 	private var __visible:Bool;
 	
@@ -467,14 +467,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_shader ():DisplayObjectShader {
+	private function get_shader ():Shader {
 		
 		return __shader;
 		
 	}
 	
 	
-	private function set_shader (value:DisplayObjectShader):DisplayObjectShader {
+	private function set_shader (value:Shader):Shader {
 		
 		if (value != __shader) {
 			

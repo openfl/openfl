@@ -50,7 +50,7 @@ class GLShape {
 				
 				var gl = renderer.gl;
 				
-				var shader = renderer.__initDisplayShader (shape.__worldRenderShader);
+				var shader = renderer.__initDisplayShader (cast shape.__worldShader);
 				renderer.setDisplayShader (shader);
 				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
 				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
