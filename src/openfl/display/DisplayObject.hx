@@ -107,6 +107,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __cacheBitmapColorTransform:ColorTransform;
 	private var __cacheBitmapData:BitmapData;
 	private var __cacheBitmapData2:BitmapData;
+	private var __cacheBitmapData3:BitmapData;
 	private var __cacheBitmapMatrix:Matrix;
 	private var __cacheBitmapRenderer:DisplayObjectRenderer;
 	private var __cairo:Cairo;
@@ -136,6 +137,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __scaleY:Float;
 	private var __scrollRect:Rectangle;
 	private var __shader:Shader;
+	private var __tempPoint:Point;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
 	private var __visible:Bool;
@@ -1239,6 +1241,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					__cacheBitmap = null;
 					__cacheBitmapData = null;
 					__cacheBitmapData2 = null;
+					__cacheBitmapData3 = null;
 					__cacheBitmapRenderer = null;
 					return true;
 					
@@ -1246,9 +1249,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			} else {
 				
-				
 				// Should we retain this longer?
+				
 				__cacheBitmapData2 = null;
+				__cacheBitmapData3 = null;
 				
 			}
 			
@@ -1359,37 +1363,90 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					__cacheBitmapData.__drawGL (this, childRenderer);
 					
-					#if test_gl_filter
-					if (__cacheBitmapData2 == null) {
+					if (hasFilters) {
 						
-						__cacheBitmapData2 = new BitmapData (__cacheBitmapData.width, __cacheBitmapData.height, true, 0);
+						var needSecondBitmapData = true;
+						var needCopyOfOriginal = false;
+						
+						for (filter in __filters) {
+							// if (filter.__needSecondBitmapData) {
+							// 	needSecondBitmapData = true;
+							// }
+							if (filter.__preserveObject) {
+								needCopyOfOriginal = true;
+							}
+						}
+						
+						var bitmap = __cacheBitmapData;
+						var bitmap2 = null;
+						var bitmap3 = null;
+						
+						// if (needSecondBitmapData) {
+							if (__cacheBitmapData2 == null) {
+								__cacheBitmapData2 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+							} else if (__cacheBitmapData2.image != null) {
+								__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version;
+							}
+							bitmap2 = __cacheBitmapData2;
+						// } else {
+						// 	bitmap2 = bitmapData;
+						// }
+						
+						if (needCopyOfOriginal) {
+							if (__cacheBitmapData3 == null) {
+								__cacheBitmapData3 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+							} else if (__cacheBitmapData3.image != null) {
+								__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version;
+							}
+							bitmap3 = __cacheBitmapData3;
+						}
+						
+						childRenderer.__setBlendMode (NORMAL);
+						childRenderer.__worldAlpha = 1;
+						childRenderer.__worldTransform.identity ();
+						childRenderer.__worldColorTransform.__identity ();
+						
+						// var sourceRect = bitmap.rect;
+						// if (__tempPoint == null) __tempPoint = new Point ();
+						// var destPoint = __tempPoint;
+						var shader, cacheBitmap;
+						
+						for (filter in __filters) {
+							
+							if (filter.__preserveObject) {
+								
+								childRenderer.__setRenderTarget (bitmap3);
+								childRenderer.__renderFilterPass (bitmap, childRenderer.__defaultDisplayShader);
+								
+							}
+							
+							for (i in 0...filter.__numShaderPasses) {
+								
+								shader = filter.__initShader (childRenderer, i);
+								childRenderer.__setRenderTarget (bitmap2);
+								childRenderer.__renderFilterPass (bitmap, shader);
+								
+								cacheBitmap = bitmap;
+								bitmap = bitmap2;
+								bitmap2 = cacheBitmap;
+								
+							}
+							
+							if (filter.__preserveObject) {
+								
+								childRenderer.__setRenderTarget (bitmap);
+								childRenderer.__renderFilterPass (bitmap3, childRenderer.__defaultDisplayShader, false);
+								
+							}
+							
+							filter.__renderDirty = false;
+							
+						}
+						
+						__cacheBitmapData.__texture = bitmap.__texture;
+						__cacheBitmapData.__framebuffer = bitmap.__framebuffer;
 						
 					}
-					
-					childRenderer.__setBlendMode (NORMAL);
-					childRenderer.__worldAlpha = 1;
-					childRenderer.__worldTransform.identity ();
-					childRenderer.__worldColorTransform.__identity ();
-					
-					var shaders = [ new openfl.filters.BitmapFilterShader (), new openfl.filters.BitmapFilterShader () ];
-					// var shaders = [ new openfl.filters.BitmapFilterShader () ];
-					
-					var bitmap = __cacheBitmapData;
-					var bitmap2 = __cacheBitmapData2;
-					
-					for (shader in shaders) {
-						
-						childRenderer.__setRenderTarget (bitmap2);
-						childRenderer.__renderFilterPass (bitmap, shader);
-						
-						var temp = bitmap;
-						bitmap = bitmap2;
-						bitmap2 = temp;
-						
-					}
-					
-					__cacheBitmapData.__texture = bitmap.__texture;
-					#end
 					
 					parentRenderer.__copyShader (childRenderer);
 					parentRenderer.setViewport ();
@@ -1402,68 +1459,71 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					__cacheBitmapData.__drawCairo (this, cast __cacheBitmapRenderer);
 					#end
 					
-				}
-				
-				// TODO: Enable GL-based filters
-				
-				if (hasFilters && __cacheBitmapRenderer.__type != OPENGL) {
-					
-					var needSecondBitmapData = false;
-					var needCopyOfOriginal = false;
-					
-					for (filter in __filters) {
-						if (filter.__needSecondBitmapData) {
-							needSecondBitmapData = true;
-						}
-						if (filter.__preserveObject) {
-							needCopyOfOriginal = true;
-						}
-					}
-					
-					var bitmapData = __cacheBitmapData;
-					var bitmapData2 = null;
-					var bitmapData3 = null;
-					
-					// TODO: Cache if used repeatedly
-					
-					if (needSecondBitmapData) {
-						bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
-					} else {
-						bitmapData2 = bitmapData;
-					}
-					
-					if (needCopyOfOriginal) {
-						bitmapData3 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
-					}
-					
-					var sourceRect = bitmapData.rect;
-					var destPoint = new Point (); // TODO: ObjectPool
-					var cacheBitmap, lastBitmap;
-					
-					for (filter in __filters) {
+					if (hasFilters) {
 						
-						if (filter.__preserveObject) {
-							bitmapData3.copyPixels (bitmapData, bitmapData.rect, destPoint);
+						var needSecondBitmapData = false;
+						var needCopyOfOriginal = false;
+						
+						for (filter in __filters) {
+							if (filter.__needSecondBitmapData) {
+								needSecondBitmapData = true;
+							}
+							if (filter.__preserveObject) {
+								needCopyOfOriginal = true;
+							}
 						}
 						
-						lastBitmap = filter.__applyFilter (bitmapData2, bitmapData, sourceRect, destPoint);
+						var bitmap = __cacheBitmapData;
+						var bitmap2 = null;
+						var bitmap3 = null;
 						
-						if (filter.__preserveObject) {
-							lastBitmap.draw (bitmapData3, null, __objectTransform != null ? __objectTransform.colorTransform : null);
+						if (needSecondBitmapData) {
+							if (__cacheBitmapData2 == null || __cacheBitmapData2.image == null) {
+								__cacheBitmapData2 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+							}
+							bitmap2 = __cacheBitmapData2;
+						} else {
+							bitmap2 = bitmap;
 						}
-						filter.__renderDirty = false;
 						
-						if (needSecondBitmapData && lastBitmap == bitmapData2) {
+						if (needCopyOfOriginal) {
+							if (__cacheBitmapData3 == null || __cacheBitmapData3.image == null) {
+								__cacheBitmapData3 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+							}
+							bitmap3 = __cacheBitmapData3;
+						}
+						
+						var sourceRect = bitmap.rect;
+						if (__tempPoint == null) __tempPoint = new Point ();
+						var destPoint = __tempPoint;
+						var cacheBitmap, lastBitmap;
+						
+						for (filter in __filters) {
 							
-							cacheBitmap = bitmapData;
-							bitmapData = bitmapData2;
-							bitmapData2 = cacheBitmap;
+							if (filter.__preserveObject) {
+								bitmap3.copyPixels (bitmap, bitmap.rect, destPoint);
+							}
+							
+							lastBitmap = filter.__applyFilter (bitmap2, bitmap, sourceRect, destPoint);
+							
+							if (filter.__preserveObject) {
+								lastBitmap.draw (bitmap3, null, __objectTransform != null ? __objectTransform.colorTransform : null);
+							}
+							filter.__renderDirty = false;
+							
+							if (needSecondBitmapData && lastBitmap == bitmap2) {
+								
+								cacheBitmap = bitmap;
+								bitmap = bitmap2;
+								bitmap2 = cacheBitmap;
+								
+							}
 							
 						}
 						
+						__cacheBitmap.bitmapData = bitmap;
+						
 					}
-					
-					__cacheBitmap.bitmapData = bitmapData;
 					
 				}
 				
@@ -1505,6 +1565,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmap = null;
 			__cacheBitmapData = null;
 			__cacheBitmapData2 = null;
+			__cacheBitmapData3 = null;
 			__cacheBitmapColorTransform = null;
 			__cacheBitmapRenderer = null;
 			

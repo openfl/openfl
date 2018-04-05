@@ -1751,6 +1751,12 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
 			
+			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
+				
+				trace (gl.getError ());
+				
+			}
+			
 		}
 		
 		return __framebuffer;

@@ -777,15 +777,19 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __renderFilterPass (source:BitmapData, shader:Shader):Void {
+	private function __renderFilterPass (source:BitmapData, shader:Shader, clear:Bool = true):Void {
 		
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
 		gl.bindFramebuffer (gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (gl));
 		
-		gl.clearColor (0, 0, 0, 0);
-		gl.clear (gl.COLOR_BUFFER_BIT);
+		if (clear) {
+			
+			gl.clearColor (0, 0, 0, 0);
+			gl.clear (gl.COLOR_BUFFER_BIT);
+			
+		}
 		
 		var shader = __initShader (shader);
 		setShader (shader);
