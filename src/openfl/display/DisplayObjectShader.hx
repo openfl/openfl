@@ -140,10 +140,6 @@ class DisplayObjectShader extends Shader {
 	
 	public function new (code:ByteArray = null) {
 		
-		#if !flash
-		__isDisplayShader = true;
-		#end
-		
 		super (code);
 		
 	}

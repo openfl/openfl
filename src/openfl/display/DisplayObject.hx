@@ -1109,14 +1109,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
-				if (__worldShader != null && !__worldShader.__isDisplayShader) {
-					
-					// TODO: Handle non-extended Shader classes better?
-					
-					__renderable = false;
-					
-				}
-				
 			} else {
 				
 				__worldAlpha = alpha;

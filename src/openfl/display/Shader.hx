@@ -37,22 +37,25 @@ class Shader {
 	
 	private var gl:GLRenderContext;
 	
+	private var __alpha:ShaderParameter<Float>;
+	private var __bitmap:ShaderInput<BitmapData>;
+	private var __colorMultiplier:ShaderParameter<Float>;
+	private var __colorOffset:ShaderParameter<Float>;
 	private var __data:ShaderData;
 	private var __glFragmentSource:String;
 	private var __glSourceDirty:Bool;
 	private var __glVertexSource:String;
+	private var __hasColorTransform:ShaderParameter<Bool>;
 	private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
-	private var __inputBitmapDataMap:Map<String, ShaderInput<BitmapData>>;
-	private var __isDisplayShader:Bool;
 	private var __isGenerated:Bool;
-	private var __isGraphicsShader:Bool;
+	private var __matrix:ShaderParameter<Float>;
 	private var __numPasses:Int;
 	private var __paramBool:Array<ShaderParameter<Bool>>;
-	private var __paramBoolMap:Map<String, ShaderParameter<Bool>>;
 	private var __paramFloat:Array<ShaderParameter<Float>>;
-	private var __paramFloatMap:Map<String, ShaderParameter<Float>>;
 	private var __paramInt:Array<ShaderParameter<Int>>;
-	private var __paramIntMap:Map<String, ShaderParameter<Int>>;
+	private var __position:ShaderParameter<Float>;
+	private var __texCoord:ShaderParameter<Float>;
+	private var __texture:ShaderInput<BitmapData>;
 	
 	
 	#if openfljs
@@ -330,29 +333,9 @@ class Shader {
 			__paramFloat = new Array ();
 			__paramInt = new Array ();
 			
-			__inputBitmapDataMap = new Map ();
-			__paramBoolMap = new Map ();
-			__paramFloatMap = new Map ();
-			__paramIntMap = new Map ();
-			
 			__processGLData (glVertexSource, "attribute");
 			__processGLData (glVertexSource, "uniform");
 			__processGLData (glFragmentSource, "uniform");
-			
-			// TODO: Use different fields?
-			
-			var alpha = __paramFloatMap.exists ("openfl_Alpha");
-			var colorMultiplier = __paramFloatMap.exists ("openfl_ColorMultiplier");
-			var colorOffset = __paramFloatMap.exists ("openfl_ColorOffset");
-			var position = __paramFloatMap.exists ("openfl_Position");
-			var texCoord = __paramFloatMap.exists ("openfl_TexCoord");
-			var matrix = __paramFloatMap.exists ("openfl_Matrix");
-			var hasColorTransform = __paramBoolMap.exists ("openfl_HasColorTransform");
-			var texture = __inputBitmapDataMap.exists ("openfl_Texture");
-			var bitmap = __inputBitmapDataMap.exists ("bitmap");
-			
-			__isDisplayShader = (alpha && colorMultiplier && colorOffset && position && texCoord && matrix && hasColorTransform && texture);
-			__isGraphicsShader = (alpha && colorMultiplier && colorOffset && position && texCoord && matrix && hasColorTransform && bitmap);
 			
 		}
 		
@@ -476,7 +459,15 @@ class Shader {
 				input.name = name;
 				input.__isUniform = isUniform;
 				__inputBitmapData.push (input);
-				__inputBitmapDataMap.set (name, input);
+				
+				switch (name) {
+					
+					case "openfl_Texture": __texture = input;
+					case "bitmap": __bitmap = input;
+					default:
+					
+				}
+				
 				Reflect.setField (__data, name, input);
 				if (__isGenerated) Reflect.setField (this, name, input);
 				
@@ -541,7 +532,13 @@ class Shader {
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramBool.push (parameter);
-						__paramBoolMap.set (name, parameter);
+						
+						if (name == "openfl_HasColorTransform") {
+							
+							__hasColorTransform = parameter;
+							
+						}
+						
 						Reflect.setField (__data, name, parameter);
 						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
@@ -555,7 +552,6 @@ class Shader {
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramInt.push (parameter);
-						__paramIntMap.set (name, parameter);
 						Reflect.setField (__data, name, parameter);
 						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
@@ -570,7 +566,23 @@ class Shader {
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramFloat.push (parameter);
-						__paramFloatMap.set (name, parameter);
+						
+						if (StringTools.startsWith (name, "openfl_")) {
+							
+							switch (name) {
+								
+								case "openfl_Alpha": __alpha = parameter;
+								case "openfl_ColorMultiplier": __colorMultiplier = parameter;
+								case "openfl_ColorOffset": __colorOffset = parameter;
+								case "openfl_Matrix": __matrix = parameter;
+								case "openfl_Position": __position = parameter;
+								case "openfl_TexCoord": __texCoord = parameter;
+								default:
+								
+							}
+							
+						}
+						
 						Reflect.setField (__data, name, parameter);
 						if (__isGenerated) Reflect.setField (this, name, parameter);
 					

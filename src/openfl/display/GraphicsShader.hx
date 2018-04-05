@@ -140,10 +140,6 @@ class GraphicsShader extends Shader {
 	
 	public function new (code:ByteArray = null) {
 		
-		#if !flash
-		__isGraphicsShader = true;
-		#end
-		
 		super (code);
 		
 	}

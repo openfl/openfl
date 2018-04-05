@@ -71,13 +71,13 @@ class GLGraphics {
 					var c = data.readBeginShaderFill ();
 					var shaderBuffer = c.shaderBuffer;
 					
-					if (shaderBuffer == null || shaderBuffer.shader == null) {
+					if (shaderBuffer == null || shaderBuffer.shader == null || shaderBuffer.shader.__bitmap == null) {
 						
 						bitmap = null;
 						
 					} else {
 						
-						bitmap = c.shaderBuffer.shader.__inputBitmapDataMap.get ("bitmap").input;
+						bitmap = c.shaderBuffer.shader.__bitmap.input;
 						
 					}
 				
@@ -507,13 +507,13 @@ class GLGraphics {
 							var c = data.readBeginShaderFill ();
 							shaderBuffer = c.shaderBuffer;
 							
-							if (shaderBuffer == null || shaderBuffer.shader == null) {
+							if (shaderBuffer == null || shaderBuffer.shader == null || shaderBuffer.shader.__bitmap == null) {
 								
 								bitmap = null;
 								
 							} else {
 								
-								bitmap = shaderBuffer.shader.__inputBitmapDataMap.get ("bitmap").input;
+								bitmap = shaderBuffer.shader.__bitmap.input;
 								
 							}
 							
@@ -547,7 +547,7 @@ class GLGraphics {
 								} else {
 									
 									shader = renderer.__initGraphicsShader (null);
-									renderer.setGraphicsShader (shader);
+									renderer.setShader (shader);
 									renderer.applyMatrix (uMatrix);
 									renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
 									renderer.applyAlpha (graphics.__owner.__worldAlpha);
@@ -571,8 +571,8 @@ class GLGraphics {
 									
 								}
 								
-								gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Position").index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
-								gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_TexCoord").index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
+								if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
+								if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
 								
 								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
 								bufferPosition += (4 * length * 6);
@@ -607,7 +607,7 @@ class GLGraphics {
 								matrix.concat (graphics.__owner.__renderTransform);
 								
 								var shader = renderer.__initGraphicsShader (null);
-								renderer.setGraphicsShader (shader);
+								renderer.setShader (shader);
 								renderer.applyMatrix (renderer.__getMatrix (matrix));
 								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, true);
 								renderer.applyAlpha (color.a / 0xFF);
@@ -615,8 +615,8 @@ class GLGraphics {
 								renderer.updateShader ();
 								
 								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (cast gl));
-								gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Position").index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-								gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_TexCoord").index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+								if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+								if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 								gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 								
 								#if gl_stats
@@ -662,7 +662,7 @@ class GLGraphics {
 							} else {
 								
 								shader = renderer.__initGraphicsShader (null);
-								renderer.setGraphicsShader (shader);
+								renderer.setShader (shader);
 								renderer.applyMatrix (uMatrix);
 								renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
 								renderer.applyAlpha (graphics.__owner.__worldAlpha);
@@ -686,8 +686,8 @@ class GLGraphics {
 								
 							}
 							
-							gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Position").index, vertLength, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
-							gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_TexCoord").index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + vertLength) * Float32Array.BYTES_PER_ELEMENT);
+							if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, vertLength, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
+							if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + vertLength) * Float32Array.BYTES_PER_ELEMENT);
 							
 							switch (culling) {
 								

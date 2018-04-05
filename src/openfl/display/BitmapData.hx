@@ -1885,7 +1885,7 @@ class BitmapData implements IBitmapDrawable {
 		renderer.__setBlendMode (NORMAL);
 		
 		var shader = renderer.__defaultDisplayShader;
-		renderer.setDisplayShader (shader);
+		renderer.setShader (shader);
 		renderer.applyBitmapData (this, renderer.__allowSmoothing && (renderer.__upscaled));
 		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
 		renderer.applyAlpha (__worldAlpha);
@@ -1895,8 +1895,8 @@ class BitmapData implements IBitmapDrawable {
 		// alpha == 1, __worldColorTransform
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl));
-		gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Position").index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_TexCoord").index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+		if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
@@ -1920,8 +1920,8 @@ class BitmapData implements IBitmapDrawable {
 		renderer.updateShader ();
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl));
-		gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Position").index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_TexCoord").index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		

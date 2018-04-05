@@ -170,7 +170,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void {
 		
-		if (shader != null && shader.__isGraphicsShader) {
+		if (shader != null) {
 			
 			var shaderBuffer = __shaderBufferPool.get ();
 			__usedShaderBuffers.add (shaderBuffer);

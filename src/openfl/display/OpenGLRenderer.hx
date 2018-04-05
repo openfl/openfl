@@ -146,9 +146,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			__currentShaderBuffer.addOverride ("openfl_Alpha", __alphaValue);
 			
-		} else if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+		} else if (__currentShader != null) {
 			
-			__currentShader.__paramFloatMap.get ("openfl_Alpha").value = __alphaValue;
+			if (__currentShader.__alpha != null) __currentShader.__alpha.value = __alphaValue;
 			
 		}
 		
@@ -157,20 +157,21 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function applyBitmapData (bitmapData:BitmapData, smooth:Bool, repeat:Bool = true):Void {
 		
-		if (__currentGraphicsShader != null) {
+		if (__currentShader.__bitmap != null) {
 			
-			var bitmap = __currentGraphicsShader.__inputBitmapDataMap.get ("bitmap");
-			bitmap.filter = smooth ? LINEAR : NEAREST;
-			bitmap.mipFilter = MIPNONE;
-			bitmap.wrap = repeat ? REPEAT : CLAMP;
+			__currentShader.__bitmap.input = bitmapData;
+			__currentShader.__bitmap.filter = smooth ? LINEAR : NEAREST;
+			__currentShader.__bitmap.mipFilter = MIPNONE;
+			__currentShader.__bitmap.wrap = repeat ? REPEAT : CLAMP;
 			
-		} else if (__currentDisplayShader != null) {
+		}
+		
+		if (__currentShader.__texture != null) {
 			
-			var openfl_Texture = __currentDisplayShader.__inputBitmapDataMap.get ("openfl_Texture");
-			openfl_Texture.input = bitmapData;
-			openfl_Texture.filter = smooth ? LINEAR : NEAREST;
-			openfl_Texture.mipFilter = MIPNONE;
-			openfl_Texture.wrap = repeat ? REPEAT : CLAMP;
+			__currentShader.__texture.input = bitmapData;
+			__currentShader.__texture.filter = smooth ? LINEAR : NEAREST;
+			__currentShader.__texture.mipFilter = MIPNONE;
+			__currentShader.__texture.wrap = repeat ? REPEAT : CLAMP;
 			
 		}
 		
@@ -191,10 +192,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				__currentShaderBuffer.addOverride ("openfl_ColorMultiplier", __colorMultipliersValue);
 				__currentShaderBuffer.addOverride ("openfl_ColorOffset", __colorOffsetsValue);
 				
-			} else if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+			} else if (__currentShader != null) {
 				
-				__currentShader.__paramFloatMap.get ("openfl_ColorMultiplier").value = __colorMultipliersValue;
-				__currentShader.__paramFloatMap.get ("openfl_ColorOffset").value = __colorOffsetsValue;
+				if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.value = __colorMultipliersValue;
+				if (__currentShader.__colorOffset != null) __currentShader.__colorOffset.value = __colorOffsetsValue;
 				
 			}
 			
@@ -205,10 +206,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				__currentShaderBuffer.addOverride ("openfl_ColorMultiplier", __emptyColorValue);
 				__currentShaderBuffer.addOverride ("openfl_ColorOffset", __emptyColorValue);
 				
-			} else if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+			} else if (__currentShader != null) {
 				
-				__currentShader.__paramFloatMap.get ("openfl_ColorMultiplier").value = __emptyColorValue;
-				__currentShader.__paramFloatMap.get ("openfl_ColorOffset").value = __emptyColorValue;
+				if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.value = __emptyColorValue;
+				if (__currentShader.__colorOffset != null) __currentShader.__colorOffset.value = __emptyColorValue;
 				
 			}
 			
@@ -225,9 +226,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			__currentShaderBuffer.addOverride ("openfl_HasColorTransform", __hasColorTransformValue);
 			
-		} else if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+		} else if (__currentShader != null) {
 			
-			__currentShader.__paramBoolMap.get ("openfl_HasColorTransform").value = __hasColorTransformValue;
+			if (__currentShader.__hasColorTransform != null) __currentShader.__hasColorTransform.value = __hasColorTransformValue;
 			
 		}
 		
@@ -240,9 +241,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			__currentShaderBuffer.addOverride ("openfl_Matrix", matrix);
 			
-		} else if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+		} else if (__currentShader != null) {
 			
-			__currentShader.__paramFloatMap.get ("openfl_Matrix").value = matrix;
+			if (__currentShader.__matrix != null) __currentShader.__matrix.value = matrix;
 			
 		}
 		
@@ -280,28 +281,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public inline function setDisplayShader (shader:Shader):Void {
-		
-		setShader (shader);
-		
-	}
-	
-	
-	public inline function setGraphicsShader (shader:Shader):Void {
-		
-		setShader (shader);
-		
-	}
-	
-	
 	public function setShader (shader:Shader):Void {
 		
 		__currentShaderBuffer = null;
 		
 		if (__currentShader == shader) return;
-		
-		__currentDisplayShader = null;
-		__currentGraphicsShader = null;
 		
 		if (__currentShader != null) {
 			
@@ -318,10 +302,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		} else {
 			
 			__currentShader = shader;
-			
-			if (shader.__isGraphicsShader) __currentGraphicsShader = cast shader;
-			if (shader.__isDisplayShader) __currentDisplayShader = cast shader;
-			
 			__initShader (shader);
 			gl.useProgram (shader.glProgram);
 			__currentShader.__enable ();
@@ -340,10 +320,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function updateShader ():Void {
 		
-		if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+		if (__currentShader != null) {
 			
-			__currentShader.__paramFloatMap.get ("openfl_Position").__useArray = true;
-			__currentShader.__paramFloatMap.get ("openfl_TexCoord").__useArray = true;
+			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
+			if (__currentShader.__texCoord != null) __currentShader.__texCoord.__useArray = true;
 			__currentShader.__update ();
 			
 		}
@@ -353,9 +333,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function useAlphaArray ():Void {
 		
-		if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+		if (__currentShader != null) {
 			
-			__currentShader.__paramFloatMap.get ("openfl_Alpha").__useArray = true;
+			if (__currentShader.__alpha != null) __currentShader.__alpha.__useArray = true;
 			
 		}
 		
@@ -364,10 +344,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function useColorTransformArray ():Void {
 		
-		if (__currentDisplayShader != null || __currentGraphicsShader != null) {
+		if (__currentShader != null) {
 			
-			__currentShader.__paramFloatMap.get ("openfl_ColorMultiplier").__useArray = true;
-			__currentShader.__paramFloatMap.get ("openfl_ColorOffset").__useArray = true;
+			if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.__useArray = true;
+			if (__currentShader.__colorOffset != null) __currentShader.__colorOffset.__useArray = true;
 			
 		}
 		
@@ -393,11 +373,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	private function __clearShader ():Void {
 		
-		if (__currentGraphicsShader != null) {
+		if (__currentShader != null) {
 			
 			if (__currentShaderBuffer == null) {
 				
-				__currentGraphicsShader.__inputBitmapDataMap.get ("bitmap").input = null;
+				if (__currentShader.__bitmap != null) __currentShader.__bitmap.input = null;
 				
 			} else {
 				
@@ -405,18 +385,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 			}
 			
-			__currentGraphicsShader.__paramBoolMap.get ("openfl_HasColorTransform").value = null;
-			__currentGraphicsShader.__paramFloatMap.get ("openfl_Position").value = null;
-			__currentGraphicsShader.__paramFloatMap.get ("openfl_Matrix").value = null;
-			__currentGraphicsShader.__clearUseArray ();
-			
-		} else if (__currentDisplayShader != null) {
-			
-			__currentDisplayShader.__inputBitmapDataMap.get ("openfl_Texture").input = null;
-			__currentDisplayShader.__paramBoolMap.get ("openfl_HasColorTransform").value = null;
-			__currentDisplayShader.__paramFloatMap.get ("openfl_Position").value = null;
-			__currentDisplayShader.__paramFloatMap.get ("openfl_Matrix").value = null;
-			__currentDisplayShader.__clearUseArray ();
+			if (__currentShader.__texture != null) __currentShader.__texture.input = null;
+			if (__currentShader.__hasColorTransform != null) __currentShader.__hasColorTransform.value = null;
+			if (__currentShader.__position != null) __currentShader.__position.value = null;
+			if (__currentShader.__matrix != null) __currentShader.__matrix.value = null;
+			__currentShader.__clearUseArray ();
 			
 		}
 		

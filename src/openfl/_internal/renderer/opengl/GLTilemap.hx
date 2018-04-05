@@ -314,7 +314,7 @@ class GLTilemap {
 			var gl:WebGLContext = renderer.gl;
 			
 			var shader = renderer.__initDisplayShader (cast currentShader);
-			renderer.setDisplayShader (shader);
+			renderer.setShader (shader);
 			renderer.applyBitmapData (currentBitmapData, renderer.__allowSmoothing && tilemap.smoothing);
 			renderer.applyMatrix (renderer.__getMatrix (tilemap.__renderTransform));
 			
@@ -360,20 +360,20 @@ class GLTilemap {
 				
 			}
 			
-			gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Position").index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_TexCoord").index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 0);
+			if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 			
 			if (tilemap.tileAlphaEnabled) {
 				
-				gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Alpha").index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				if (shader.__alpha != null) gl.vertexAttribPointer (shader.__alpha.index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			if (tilemap.tileColorTransformEnabled) {
 				
 				var position = tilemap.tileAlphaEnabled ? 5 : 4;
 				
-				gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_ColorMultiplier").index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_ColorOffset").index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
+				if (shader.__colorMultiplier != null) gl.vertexAttribPointer (shader.__colorMultiplier.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+				if (shader.__colorOffset != null) gl.vertexAttribPointer (shader.__colorOffset.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			
@@ -459,7 +459,7 @@ class GLTilemap {
 			visible = tile.visible;
 			if (!visible || alpha <= 0) continue;
 			
-			shader = (tile.shader != null && tile.shader.__isDisplayShader) ? cast tile.shader : defaultShader;
+			shader = tile.shader != null ? tile.shader : defaultShader;
 			
 			if (tile.__length > 0) {
 				
