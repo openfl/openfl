@@ -1281,15 +1281,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (renderType == OPENGL) {
 					
-					var shouldCacheHardware:Null<Bool> = null;
-					
-					#if !openfl_disable_gl_cacheasbitmap
-					__shouldCacheHardware (shouldCacheHardware);
-					#else
-					shouldCacheHardware = false;
-					#end
-					
-					if (shouldCacheHardware == false) {
+					if (#if !openfl_disable_gl_cacheasbitmap __shouldCacheHardware (null) == false #else true #end) {
 						
 						#if (js && html5)
 						renderType = CANVAS;
