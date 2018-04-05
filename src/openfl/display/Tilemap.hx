@@ -444,7 +444,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		if (filters == null) return false;
+		if (!__hasFilters ()) return false;
 		return super.__updateCacheBitmap (renderSession, force);
 		
 	}

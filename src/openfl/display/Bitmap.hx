@@ -269,7 +269,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		if (filters == null) return false;
+		if (!__hasFilters ()) return false;
 		return super.__updateCacheBitmap (renderSession, force);
 		
 	}
@@ -321,7 +321,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		__setRenderDirty ();
 		
-		if (__filters != null && __filters.length > 0) {
+		if (__hasFilters ()) {
 			
 			//__updateFilters = true;
 			
