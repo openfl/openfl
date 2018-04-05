@@ -17,7 +17,7 @@ import openfl.geom.Rectangle;
 @:final class BlurFilter extends BitmapFilter {
 	
 	
-	//private static var __blurShader = new BlurShader ();
+	private static var __blurShader = new BlurShader ();
 	
 	public var blurX (get, set):Float;
 	public var blurY (get, set):Float;
@@ -76,25 +76,21 @@ import openfl.geom.Rectangle;
 	
 	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
-		// var data = __blurShader.data;
+		if (pass <= __horizontalPasses) {
+			
+			var scale = Math.pow (0.5, pass >> 1);
+			__blurShader.uRadius.value[0] = blurX * scale;
+			__blurShader.uRadius.value[1] = 0;
+			
+		} else {
+			
+			var scale = Math.pow (0.5, (pass - __horizontalPasses) >> 1);
+			__blurShader.uRadius.value[0] = 0;
+			__blurShader.uRadius.value[1] = blurY * scale;
+			
+		}
 		
-		// if (pass <= horizontalPasses) {
-			
-		// 	var scale = Math.pow (0.5, pass >> 1);
-		// 	data.uRadius.value[0] = blurX * scale;
-		// 	data.uRadius.value[1] = 0;
-			
-		// } else {
-			
-		// 	var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
-		// 	data.uRadius.value[0] = 0;
-		// 	data.uRadius.value[1] = blurY * scale;
-			
-		// }
-		
-		// return __blurShader;
-		
-		return null;
+		return __blurShader;
 		
 	}
 	
@@ -177,27 +173,25 @@ import openfl.geom.Rectangle;
 #end
 
 
-private class BlurShader extends Shader {
+private class BlurShader extends BitmapFilterShader {
 	
 	
 	@:glFragmentSource( 
 		
-		"varying float vAlpha;
-		varying vec2 vTexCoord;
-		uniform sampler2D uImage0;
+		"uniform sampler2D openfl_Texture;
 		
 		varying vec2 vBlurCoords[7];
 		
 		void main(void) {
 			
 			vec4 sum = vec4(0.0);
-			sum += texture2D(uImage0, vBlurCoords[0]) * 0.00443;
-			sum += texture2D(uImage0, vBlurCoords[1]) * 0.05399;
-			sum += texture2D(uImage0, vBlurCoords[2]) * 0.24197;
-			sum += texture2D(uImage0, vBlurCoords[3]) * 0.39894;
-			sum += texture2D(uImage0, vBlurCoords[4]) * 0.24197;
-			sum += texture2D(uImage0, vBlurCoords[5]) * 0.05399;
-			sum += texture2D(uImage0, vBlurCoords[6]) * 0.00443;
+			sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
+			sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoords[2]) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoords[3]) * 0.39894;
+			sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
 			
 			gl_FragColor = sum;
 			
@@ -208,13 +202,10 @@ private class BlurShader extends Shader {
 	
 	@:glVertexSource(
 		
-		"attribute float aAlpha;
-		attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
-		varying float vAlpha;
-		varying vec2 vTexCoord;
+		"attribute vec4 openfl_Position;
+		attribute vec2 openfl_TexCoord;
 		
-		uniform mat4 uMatrix;
+		uniform mat4 openfl_Matrix;
 		
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
@@ -222,18 +213,16 @@ private class BlurShader extends Shader {
 		
 		void main(void) {
 			
-			vAlpha = aAlpha;
-			vTexCoord = aTexCoord;
-			gl_Position = uMatrix * aPosition;
+			gl_Position = openfl_Matrix * openfl_Position;
 			
 			vec2 r = uRadius / uTextureSize;
-			vBlurCoords[0] = aTexCoord - r * 1.0;
-			vBlurCoords[1] = aTexCoord - r * 0.75;
-			vBlurCoords[2] = aTexCoord - r * 0.5;
-			vBlurCoords[3] = aTexCoord;
-			vBlurCoords[4] = aTexCoord + r * 0.5;
-			vBlurCoords[5] = aTexCoord + r * 0.75;
-			vBlurCoords[6] = aTexCoord + r * 1.0;
+			vBlurCoords[0] = openfl_TexCoord - r * 1.0;
+			vBlurCoords[1] = openfl_TexCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TexCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TexCoord;
+			vBlurCoords[4] = openfl_TexCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TexCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TexCoord + r * 1.0;
 			
 		}"
 		
@@ -245,7 +234,7 @@ private class BlurShader extends Shader {
 		super ();
 		
 		#if !macro
-		data.uRadius.value = [ 0, 0 ];
+		uRadius.value = [ 0, 0 ];
 		#end
 		
 	}
@@ -253,7 +242,7 @@ private class BlurShader extends Shader {
 	
 	private override function __update ():Void {
 		
-		data.uTextureSize.value = [ data.uImage0.input.width, data.uImage0.input.height ];
+		uTextureSize.value = [ __texture.input.width, __texture.input.height ];
 		
 		super.__update ();
 		
