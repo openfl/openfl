@@ -5,6 +5,7 @@ import lime.graphics.opengl.ext.KHR_debug;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import lime.math.Matrix4;
+import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl.display.BitmapData;
@@ -396,6 +397,16 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
+	private function __copyShader (other:OpenGLRenderer):Void {
+		
+		__currentShader = other.__currentShader;
+		__currentShaderBuffer = other.__currentShaderBuffer;
+		__currentDisplayShader = other.__currentDisplayShader;
+		__currentGraphicsShader = other.__currentGraphicsShader;
+		
+	}
+	
+	
 	private function __getMatrix (transform:Matrix):Array<Float> {
 		
 		var _matrix = Matrix.__pool.get ();
@@ -766,33 +777,32 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __renderFilterPass (target:BitmapData, shader:Shader):Void {
+	private function __renderFilterPass (source:BitmapData, shader:Shader):Void {
 		
-		// if (target == null || shader == null) return;
+		if (source == null || shader == null) return;
+		if (__defaultRenderTarget == null) return;
 		
-		// shader.openfl_Texture.input = target;
-		// shader.openfl_Texture.smoothing = renderer.__allowSmoothing && (renderer.upscaled);
-		// shader.openfl_Matrix.value = renderer.__getMatrix (matrix);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (gl));
 		
-		// if (shader.openfl_HasColorTransform != null) {
-		// 	if (shader.openfl_HasColorTransform.value == null) shader.openfl_HasColorTransform.value = [];
-		// 	shader.openfl_HasColorTransform.value[0] = false;
-		// }
+		gl.clearColor (0, 0, 0, 0);
+		gl.clear (gl.COLOR_BUFFER_BIT);
 		
-		// var shaderManager:GLShaderManager = cast renderer.shaderManager;
-		// shaderManager.setShader (shader);
+		var shader = __initShader (shader);
+		setShader (shader);
+		applyAlpha (1);
+		applyBitmapData (source, true);
+		applyColorTransform (null);
+		applyMatrix (__getMatrix (source.__renderTransform));
+		updateShader ();
 		
-		// gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl));
+		gl.bindBuffer (gl.ARRAY_BUFFER, source.getBuffer (gl));
+		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+		if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
-		// gl.vertexAttribPointer (shader.openfl_Position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-		// gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		// // gl.vertexAttribPointer (shader.aAlpha.index, 1, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 		
-		// gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
-		
-		// #if gl_stats
-		// 	GLStats.incrementDrawCall (DrawCallContext.STAGE);
-		// #end
+		__clearShader ();
 		
 	}
 	
@@ -941,12 +951,16 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __copyShader (other:OpenGLRenderer):Void {
+	private function __setRenderTarget (renderTarget:BitmapData):Void {
 		
-		__currentShader = other.__currentShader;
-		__currentShaderBuffer = other.__currentShaderBuffer;
-		__currentDisplayShader = other.__currentDisplayShader;
-		__currentGraphicsShader = other.__currentGraphicsShader;
+		__defaultRenderTarget = renderTarget;
+		__flipped = (renderTarget == null);
+		
+		if (renderTarget != null) {
+			
+			__resize (renderTarget.width, renderTarget.height);
+			
+		}
 		
 	}
 	

@@ -106,6 +106,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __cacheBitmapBackground:Null<Int>;
 	private var __cacheBitmapColorTransform:ColorTransform;
 	private var __cacheBitmapData:BitmapData;
+	private var __cacheBitmapData2:BitmapData;
 	private var __cacheBitmapMatrix:Matrix;
 	private var __cacheBitmapRenderer:DisplayObjectRenderer;
 	private var __cairo:Cairo;
@@ -1237,10 +1238,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					__cacheBitmap = null;
 					__cacheBitmapData = null;
+					__cacheBitmapData2 = null;
 					__cacheBitmapRenderer = null;
 					return true;
 					
 				}
+				
+			} else {
+				
+				
+				// Should we retain this longer?
+				__cacheBitmapData2 = null;
 				
 			}
 			
@@ -1346,52 +1354,44 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					childRenderer.__copyShader (parentRenderer);
 					
-					__cacheBitmapRenderer.__resize (__cacheBitmapData.width, __cacheBitmapData.height);
+					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version;
 					
 					__cacheBitmapData.__drawGL (this, childRenderer);
 					
 					#if test_gl_filter
-					var secondBitmapData = new BitmapData (__cacheBitmapData.width, __cacheBitmapData.height, true, 0);
-					secondBitmapData.disposeImage ();
+					if (__cacheBitmapData2 == null) {
+						
+						__cacheBitmapData2 = new BitmapData (__cacheBitmapData.width, __cacheBitmapData.height, true, 0);
+						
+					}
 					
-					var filterRenderer = new OpenGLRenderer (childRenderer.gl, secondBitmapData);
-					filterRenderer.__worldTransform = new Matrix ();
-					filterRenderer.__stage = stage;
-					filterRenderer.__copyShader (childRenderer);
-					filterRenderer.__resize (secondBitmapData.width, secondBitmapData.height);
+					childRenderer.__setBlendMode (NORMAL);
+					childRenderer.__worldAlpha = 1;
+					childRenderer.__worldTransform.identity ();
+					childRenderer.__worldColorTransform.__identity ();
 					
-					var gl = filterRenderer.gl;
-					gl.bindFramebuffer (gl.FRAMEBUFFER, secondBitmapData.__getFramebuffer (gl));
+					var shaders = [ new openfl.filters.BitmapFilterShader (), new openfl.filters.BitmapFilterShader () ];
+					// var shaders = [ new openfl.filters.BitmapFilterShader () ];
 					
-					var shader = filterRenderer.__initShader (new openfl.filters.BitmapFilterShader ());
-					filterRenderer.setShader (shader);
-					filterRenderer.applyAlpha (1);
-					filterRenderer.applyBitmapData (__cacheBitmapData, true);
-					filterRenderer.applyColorTransform (null);
-					filterRenderer.applyMatrix (filterRenderer.__getMatrix (__cacheBitmapData.__renderTransform));
-					filterRenderer.updateShader ();
+					var bitmap = __cacheBitmapData;
+					var bitmap2 = __cacheBitmapData2;
 					
-					gl.bindBuffer (gl.ARRAY_BUFFER, __cacheBitmapData.getBuffer (gl));
-					if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * lime.utils.Float32Array.BYTES_PER_ELEMENT, 0);
-					if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 14 * lime.utils.Float32Array.BYTES_PER_ELEMENT, 3 * lime.utils.Float32Array.BYTES_PER_ELEMENT);
-					gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+					for (shader in shaders) {
+						
+						childRenderer.__setRenderTarget (bitmap2);
+						childRenderer.__renderFilterPass (bitmap, shader);
+						
+						var temp = bitmap;
+						bitmap = bitmap2;
+						bitmap2 = temp;
+						
+					}
 					
-					gl.bindFramebuffer (gl.FRAMEBUFFER, null);
-					
-					filterRenderer.__clearShader ();
-					
-					__cacheBitmapData = secondBitmapData;
-					__cacheBitmap.bitmapData = __cacheBitmapData;
-					
-					parentRenderer.__copyShader (filterRenderer);
-					
-					#else
-					
-					parentRenderer.__copyShader (childRenderer);
-					
+					__cacheBitmapData.__texture = bitmap.__texture;
 					#end
 					
+					parentRenderer.__copyShader (childRenderer);
 					parentRenderer.setViewport ();
 					
 				} else {
@@ -1504,6 +1504,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			__cacheBitmap = null;
 			__cacheBitmapData = null;
+			__cacheBitmapData2 = null;
 			__cacheBitmapColorTransform = null;
 			__cacheBitmapRenderer = null;
 			
