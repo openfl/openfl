@@ -4,8 +4,8 @@ package openfl._internal.renderer.opengl;
 import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl.display.BitmapData;
-import openfl.display.DisplayObjectShader;
 import openfl.display.OpenGLRenderer;
+import openfl.display.Shader;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
@@ -43,10 +43,10 @@ class GLTilemap {
 	private static var bufferPosition:Int;
 	private static var cacheColorTransform:ColorTransform;
 	private static var currentBitmapData:BitmapData;
-	private static var currentShader:DisplayObjectShader;
+	private static var currentShader:Shader;
 	private static var lastFlushedPosition:Int;
 	private static var lastUsedBitmapData:BitmapData;
-	private static var lastUsedShader:DisplayObjectShader;
+	private static var lastUsedShader:Shader;
 	
 	
 	public static function buildBuffer (tilemap:Tilemap, renderer:OpenGLRenderer):Void {
@@ -360,21 +360,20 @@ class GLTilemap {
 				
 			}
 			
-			gl.vertexAttribPointer (shader.openfl_Position.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.openfl_TexCoord.index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-			
+			gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Position").index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_TexCoord").index, 2, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 			
 			if (tilemap.tileAlphaEnabled) {
 				
-				gl.vertexAttribPointer (shader.openfl_Alpha.index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_Alpha").index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			if (tilemap.tileColorTransformEnabled) {
 				
 				var position = tilemap.tileAlphaEnabled ? 5 : 4;
 				
-				gl.vertexAttribPointer (shader.openfl_ColorMultiplier.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.openfl_ColorOffset.index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_ColorMultiplier").index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, position * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.__paramFloatMap.get ("openfl_ColorOffset").index, 4, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, (position + 4) * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
 			
@@ -444,12 +443,12 @@ class GLTilemap {
 	}
 	
 	
-	private static function renderTileContainer (tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:DisplayObjectShader, stride:Int, defaultTileset:Tileset, worldAlpha:Float, cacheBitmapData:BitmapData):Void {
+	private static function renderTileContainer (tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:Shader, stride:Int, defaultTileset:Tileset, worldAlpha:Float, cacheBitmapData:BitmapData):Void {
 		
 		var tiles = group.__tiles;
 		var length = group.__length;
 		
-		var tile, tileset, alpha, visible, id, tileData, tileRect, shader:DisplayObjectShader, bitmapData;
+		var tile, tileset, alpha, visible, id, tileData, tileRect, shader:Shader, bitmapData;
 		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, offset;
 		
 		for (tile in tiles) {
