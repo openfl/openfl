@@ -58,7 +58,7 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		// TODO: Support one-pass filters?
 		
-		if (object.__filters != null && object.__filters.length > 0) {
+		if (object.__hasFilters ()) {
 			
 			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
 				
@@ -93,7 +93,7 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		// TEMPORARILY DISABLED
 		
-		if (object.__filters != null && object.__filters.length > 0) {
+		if (object.__hasFilters ()) {
 			
 			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
 				
