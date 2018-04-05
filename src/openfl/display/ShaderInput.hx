@@ -38,7 +38,7 @@ import openfl.display3D.Context3DWrapMode;
 		index = 0;
 		mipFilter = MIPNONE;
 		width = 0;
-		wrap = REPEAT;
+		wrap = CLAMP;
 		
 	}
 	

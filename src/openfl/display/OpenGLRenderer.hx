@@ -156,7 +156,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applyBitmapData (bitmapData:BitmapData, smooth:Bool, repeat:Bool = true):Void {
+	public function applyBitmapData (bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void {
 		
 		if (__currentShader.__bitmap != null) {
 			
@@ -790,7 +790,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var shader = __initShader (shader);
 		setShader (shader);
 		applyAlpha (1);
-		applyBitmapData (source, true);
+		applyBitmapData (source, false);
 		applyColorTransform (null);
 		applyMatrix (__getMatrix (source.__renderTransform));
 		updateShader ();
