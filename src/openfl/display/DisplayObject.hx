@@ -1366,7 +1366,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					var shader = filterRenderer.__initShader (new openfl.filters.BitmapFilterShader ());
 					filterRenderer.setShader (shader);
+					filterRenderer.applyAlpha (1);
 					filterRenderer.applyBitmapData (__cacheBitmapData, true);
+					filterRenderer.applyColorTransform (null);
 					filterRenderer.applyMatrix (filterRenderer.__getMatrix (__cacheBitmapData.__renderTransform));
 					filterRenderer.updateShader ();
 					
