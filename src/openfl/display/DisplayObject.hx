@@ -1284,21 +1284,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					var shouldCacheHardware:Null<Bool> = null;
 					
 					#if !openfl_disable_gl_cacheasbitmap
-					if (__children != null) {
-						
-						for (child in __children) {
-							
-							shouldCacheHardware = child.__shouldCacheHardware (shouldCacheHardware);
-							if (shouldCacheHardware == true) break;
-							
-						}
-						
-					}
+					__shouldCacheHardware (shouldCacheHardware);
 					#else
 					shouldCacheHardware = false;
 					#end
 					
-					if (!shouldCacheHardware) {
+					if (shouldCacheHardware == false) {
 						
 						#if (js && html5)
 						renderType = CANVAS;
@@ -1368,7 +1359,45 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					__cacheBitmapData.__drawGL (this, childRenderer);
 					
+					#if test_gl_filter
+					var secondBitmapData = new BitmapData (__cacheBitmapData.width, __cacheBitmapData.height, true, 0);
+					secondBitmapData.disposeImage ();
+					
+					var filterRenderer = new OpenGLRenderer (childRenderer.gl, secondBitmapData);
+					filterRenderer.__worldTransform = new Matrix ();
+					filterRenderer.__stage = stage;
+					filterRenderer.__copyShader (childRenderer);
+					filterRenderer.__resize (secondBitmapData.width, secondBitmapData.height);
+					
+					var gl = filterRenderer.gl;
+					gl.bindFramebuffer (gl.FRAMEBUFFER, secondBitmapData.__getFramebuffer (gl));
+					
+					var shader = filterRenderer.__initShader (new openfl.filters.BitmapFilterShader ());
+					filterRenderer.setShader (shader);
+					filterRenderer.applyBitmapData (__cacheBitmapData, true);
+					filterRenderer.applyMatrix (filterRenderer.__getMatrix (__cacheBitmapData.__renderTransform));
+					filterRenderer.updateShader ();
+					
+					gl.bindBuffer (gl.ARRAY_BUFFER, __cacheBitmapData.getBuffer (gl));
+					if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * lime.utils.Float32Array.BYTES_PER_ELEMENT, 0);
+					if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 14 * lime.utils.Float32Array.BYTES_PER_ELEMENT, 3 * lime.utils.Float32Array.BYTES_PER_ELEMENT);
+					gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+					
+					gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+					
+					filterRenderer.__clearShader ();
+					
+					__cacheBitmapData = secondBitmapData;
+					__cacheBitmap.bitmapData = __cacheBitmapData;
+					
+					parentRenderer.__copyShader (filterRenderer);
+					
+					#else
+					
 					parentRenderer.__copyShader (childRenderer);
+					
+					#end
+					
 					parentRenderer.setViewport ();
 					
 				} else {
