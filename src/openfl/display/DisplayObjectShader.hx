@@ -18,12 +18,12 @@ class DisplayObjectShader extends Shader {
 		attribute vec4 openfl_ColorMultiplier;
 		attribute vec4 openfl_ColorOffset;
 		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TexCoord;
+		attribute vec2 openfl_TextureCoord;
 		
 		varying float openfl_Alphav;
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
-		varying vec2 openfl_TexCoordv;
+		varying vec2 openfl_TextureCoordv;
 		
 		uniform mat4 openfl_Matrix;
 		uniform bool openfl_HasColorTransform;"
@@ -34,7 +34,7 @@ class DisplayObjectShader extends Shader {
 	@:glVertexBody(
 		
 		"openfl_Alphav = openfl_Alpha;
-		openfl_TexCoordv = openfl_TexCoord;
+		openfl_TextureCoordv = openfl_TextureCoord;
 		
 		if (openfl_HasColorTransform) {
 			
@@ -66,7 +66,7 @@ class DisplayObjectShader extends Shader {
 		"varying float openfl_Alphav;
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
-		varying vec2 openfl_TexCoordv;
+		varying vec2 openfl_TextureCoordv;
 		
 		uniform bool openfl_HasColorTransform;
 		uniform sampler2D openfl_Texture;"
@@ -76,7 +76,7 @@ class DisplayObjectShader extends Shader {
 	
 	@:glFragmentBody(
 		
-		"vec4 color = texture2D (openfl_Texture, openfl_TexCoordv);
+		"vec4 color = texture2D (openfl_Texture, openfl_TextureCoordv);
 		
 		if (color.a == 0.0) {
 			

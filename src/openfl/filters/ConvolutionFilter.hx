@@ -172,17 +172,17 @@ private class ConvolutionShader extends BitmapFilterShader {
 	@:glVertexSource( 
 		
 		"attribute vec4 openfl_Position;
-		attribute vec2 openfl_TexCoord;
+		attribute vec2 openfl_TextureCoord;
 		
 		varying vec2 vBlurCoords[9];
 		
 		uniform mat4 openfl_Matrix;
-		uniform vec2 uTextureSize;
+		uniform vec2 openfl_TextureSize;
 		
 		void main(void) {
 			
-			vec2 r = vec2 (1.0, 1.0) / uTextureSize;
-			vec2 t = openfl_TexCoord;
+			vec2 r = vec2 (1.0, 1.0) / openfl_TextureSize;
+			vec2 t = openfl_TextureCoord;
 			
 			vBlurCoords[0] = t + r * vec2 (-1.0, -1.0);
 			vBlurCoords[1] = t + r * vec2 (0.0, -1.0);
@@ -210,15 +210,6 @@ private class ConvolutionShader extends BitmapFilterShader {
 		uDivisor.value = [ 1 ];
 		uBias.value = [ 0 ];
 		uPreserveAlpha.value = [ true ];
-		
-	}
-	
-	
-	private override function __update ():Void {
-		
-		uTextureSize.value = [ __texture.input.width, __texture.input.height ];
-		
-		super.__update ();
 		
 	}
 	

@@ -49,6 +49,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	private static var __emptyColorValue = [ 0, 0, 0, 0. ];
 	private static var __emptyAlphaValue = [ 1. ];
 	private static var __hasColorTransformValue = [ false ];
+	private static var __textureSizeValue = [ 0, 0. ];
 	
 	public var gl:GLRenderContext;
 	
@@ -173,6 +174,22 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__currentShader.__texture.filter = smooth ? LINEAR : NEAREST;
 			__currentShader.__texture.mipFilter = MIPNONE;
 			__currentShader.__texture.wrap = repeat ? REPEAT : CLAMP;
+			
+		}
+		
+		if (__currentShader.__textureSize != null) {
+			
+			if (bitmapData != null) {
+				
+				__textureSizeValue[0] = bitmapData.width;
+				__textureSizeValue[1] = bitmapData.height;
+				__currentShader.__textureSize.value = __textureSizeValue;
+				
+			} else {
+				
+				__currentShader.__textureSize.value = null;
+				
+			}
 			
 		}
 		
@@ -324,7 +341,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__currentShader != null) {
 			
 			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
-			if (__currentShader.__texCoord != null) __currentShader.__texCoord.__useArray = true;
+			if (__currentShader.__textureCoord != null) __currentShader.__textureCoord.__useArray = true;
 			__currentShader.__update ();
 			
 		}
@@ -387,6 +404,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			}
 			
 			if (__currentShader.__texture != null) __currentShader.__texture.input = null;
+			if (__currentShader.__textureSize != null) __currentShader.__textureSize.value = null;
 			if (__currentShader.__hasColorTransform != null) __currentShader.__hasColorTransform.value = null;
 			if (__currentShader.__position != null) __currentShader.__position.value = null;
 			if (__currentShader.__matrix != null) __currentShader.__matrix.value = null;
@@ -801,7 +819,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, source.getBuffer (gl));
 		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-		if (shader.__texCoord != null) gl.vertexAttribPointer (shader.__texCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
 		gl.bindFramebuffer (gl.FRAMEBUFFER, null);

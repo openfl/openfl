@@ -54,8 +54,9 @@ class Shader {
 	private var __paramFloat:Array<ShaderParameter<Float>>;
 	private var __paramInt:Array<ShaderParameter<Int>>;
 	private var __position:ShaderParameter<Float>;
-	private var __texCoord:ShaderParameter<Float>;
+	private var __textureCoord:ShaderParameter<Float>;
 	private var __texture:ShaderInput<BitmapData>;
+	private var __textureSize:ShaderParameter<Float>;
 	
 	
 	#if openfljs
@@ -576,7 +577,8 @@ class Shader {
 								case "openfl_ColorOffset": __colorOffset = parameter;
 								case "openfl_Matrix": __matrix = parameter;
 								case "openfl_Position": __position = parameter;
-								case "openfl_TexCoord": __texCoord = parameter;
+								case "openfl_TextureCoord": __textureCoord = parameter;
+								case "openfl_TextureSize": __textureSize = parameter;
 								default:
 								
 							}

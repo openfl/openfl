@@ -203,7 +203,7 @@ private class BlurShader extends BitmapFilterShader {
 	@:glVertexSource(
 		
 		"attribute vec4 openfl_Position;
-		attribute vec2 openfl_TexCoord;
+		attribute vec2 openfl_TextureCoord;
 		
 		uniform mat4 openfl_Matrix;
 		
@@ -216,13 +216,13 @@ private class BlurShader extends BitmapFilterShader {
 			gl_Position = openfl_Matrix * openfl_Position;
 			
 			vec2 r = uRadius / uTextureSize;
-			vBlurCoords[0] = openfl_TexCoord - r * 1.0;
-			vBlurCoords[1] = openfl_TexCoord - r * 0.75;
-			vBlurCoords[2] = openfl_TexCoord - r * 0.5;
-			vBlurCoords[3] = openfl_TexCoord;
-			vBlurCoords[4] = openfl_TexCoord + r * 0.5;
-			vBlurCoords[5] = openfl_TexCoord + r * 0.75;
-			vBlurCoords[6] = openfl_TexCoord + r * 1.0;
+			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
+			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TextureCoord;
+			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
 			
 		}"
 		

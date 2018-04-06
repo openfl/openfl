@@ -102,7 +102,7 @@ import openfl.geom.Rectangle;
 	
 	
 	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
-		trace ("init shader pass: " + pass);
+		
 		if (pass <= __horizontalPasses) {
 			
 			var scale = Math.pow (0.5, pass >> 1);
@@ -161,7 +161,7 @@ import openfl.geom.Rectangle;
 		if (value != __blurX) {
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__leftExtension = (value > 0 ? Math.ceil (value * 1.5) : 0);
 			__rightExtension = __leftExtension;
 		}
 		return value;
@@ -181,7 +181,7 @@ import openfl.geom.Rectangle;
 		if (value != __blurY) {
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil (value) : 0);
+			__topExtension = (value > 0 ? Math.ceil (value * 1.5) : 0);
 			__bottomExtension = __topExtension;
 		}
 		return value;
@@ -313,26 +313,26 @@ private class GlowShader extends BitmapFilterShader {
 	@:glVertexSource(
 		
 		"attribute vec4 openfl_Position;
-		attribute vec2 openfl_TexCoord;
+		attribute vec2 openfl_TextureCoord;
 		
 		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
 		
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
-		uniform vec2 uTextureSize;
 		
 		void main(void) {
 			
 			gl_Position = openfl_Matrix * openfl_Position;
 			
-			vec2 r = uRadius / uTextureSize;
-			vBlurCoords[0] = aTexCoord - r * 1.0;
-			vBlurCoords[1] = aTexCoord - r * 0.75;
-			vBlurCoords[2] = aTexCoord - r * 0.5;
-			vBlurCoords[3] = aTexCoord;
-			vBlurCoords[4] = aTexCoord + r * 0.5;
-			vBlurCoords[5] = aTexCoord + r * 0.75;
-			vBlurCoords[6] = aTexCoord + r * 1.0;
+			vec2 r = uRadius / openfl_TextureSize;
+			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
+			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TextureCoord;
+			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
 			
 		}"
 		
@@ -347,15 +347,6 @@ private class GlowShader extends BitmapFilterShader {
 		uRadius.value = [ 0, 0 ];
 		uColor.value = [ 0, 0, 0, 0 ];
 		#end
-		
-	}
-	
-	
-	private override function __update ():Void {
-		
-		uTextureSize.value = [ __texture.input.width, __texture.input.height ];
-		
-		super.__update ();
 		
 	}
 	

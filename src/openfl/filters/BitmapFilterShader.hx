@@ -16,18 +16,19 @@ class BitmapFilterShader extends Shader {
 	@:glVertexHeader(
 		
 		"attribute vec4 openfl_Position;
-		attribute vec2 openfl_TexCoord;
+		attribute vec2 openfl_TextureCoord;
 		
-		varying vec2 openfl_TexCoordv;
+		varying vec2 openfl_TextureCoordv;
 		
-		uniform mat4 openfl_Matrix;"
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;"
 		
 	)
 	
 	
 	@:glVertexBody(
 		
-		"openfl_TexCoordv = openfl_TexCoord;
+		"openfl_TextureCoordv = openfl_TextureCoord;
 		
 		gl_Position = openfl_Matrix * openfl_Position;"
 		
@@ -49,18 +50,17 @@ class BitmapFilterShader extends Shader {
 	
 	@:glFragmentHeader(
 		
-		"varying vec2 openfl_TexCoordv;
+		"varying vec2 openfl_TextureCoordv;
 		
-		uniform sampler2D openfl_Texture;"
+		uniform sampler2D openfl_Texture;
+		uniform vec2 openfl_TextureSize;"
 		
 	)
 	
 	
 	@:glFragmentBody(
 		
-		"vec4 color = texture2D (openfl_Texture, openfl_TexCoordv);
-		
-		gl_FragColor = color;"
+		"gl_FragColor = texture2D (openfl_Texture, openfl_TextureCoordv);"
 		
 	)
 	
