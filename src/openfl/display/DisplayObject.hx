@@ -583,7 +583,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__getBounds (rect, matrix);
 		
-		if (__filters != null && __filters.length > 0) {
+		if (__filters != null) {
 			
 			var extension = Rectangle.__pool.get ();
 			
@@ -1157,7 +1157,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
-			var hasFilters = (__filters != null && __filters.length > 0);
+			var hasFilters = __filters != null;
 			
 			if (hasFilters && !needRender) {
 				

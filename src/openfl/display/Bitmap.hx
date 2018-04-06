@@ -316,7 +316,7 @@ class Bitmap extends DisplayObject {
 		
 		__setRenderDirty ();
 		
-		if (__filters != null && __filters.length > 0) {
+		if (__filters != null) {
 			
 			//__updateFilters = true;
 			

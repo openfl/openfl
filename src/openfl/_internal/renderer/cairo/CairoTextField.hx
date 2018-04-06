@@ -224,7 +224,7 @@ class CairoTextField {
 					
 					var usedHack = false;
 					
-					if (textField.__filters != null && textField.__filters.length > 0) {
+					if (textField.__filters != null) {
 						
 						// Hack, force outline
 						
