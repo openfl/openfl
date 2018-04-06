@@ -26,7 +26,8 @@ class DisplayObjectShader extends Shader {
 		varying vec2 openfl_TextureCoordv;
 		
 		uniform mat4 openfl_Matrix;
-		uniform bool openfl_HasColorTransform;"
+		uniform bool openfl_HasColorTransform;
+		uniform vec2 openfl_TextureSize;"
 		
 	)
 	
@@ -69,7 +70,8 @@ class DisplayObjectShader extends Shader {
 		varying vec2 openfl_TextureCoordv;
 		
 		uniform bool openfl_HasColorTransform;
-		uniform sampler2D openfl_Texture;"
+		uniform sampler2D openfl_Texture;
+		uniform vec2 openfl_TextureSize;"
 		
 	)
 	

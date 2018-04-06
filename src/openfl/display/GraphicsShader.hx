@@ -26,7 +26,8 @@ class GraphicsShader extends Shader {
 		varying vec2 openfl_TextureCoordv;
 		
 		uniform mat4 openfl_Matrix;
-		uniform bool openfl_HasColorTransform;"
+		uniform bool openfl_HasColorTransform;
+		uniform vec2 openfl_TextureSize;"
 		
 	)
 	
@@ -69,6 +70,7 @@ class GraphicsShader extends Shader {
 		varying vec2 openfl_TextureCoordv;
 		
 		uniform bool openfl_HasColorTransform;
+		uniform vec2 openfl_TextureSize;
 		uniform sampler2D bitmap;"
 		
 	)
