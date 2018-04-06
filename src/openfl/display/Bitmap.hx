@@ -264,7 +264,7 @@ class Bitmap extends DisplayObject {
 	
 	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
-		if (__filters == null) return false;
+		if (!__hasFilters ()) return false;
 		return super.__updateCacheBitmap (renderer, force);
 		
 	}
@@ -316,7 +316,7 @@ class Bitmap extends DisplayObject {
 		
 		__setRenderDirty ();
 		
-		if (__filters != null && __filters.length > 0) {
+		if (__hasFilters ()) {
 			
 			//__updateFilters = true;
 			
