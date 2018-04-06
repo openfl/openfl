@@ -135,40 +135,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	public function getTileBounds (tile:Tile, targetCoordinateSpace:DisplayObject):Rectangle {
-		
-		var matrix = Matrix.__pool.get ();
-		
-		if (targetCoordinateSpace != null && targetCoordinateSpace != this) {
-			
-			matrix.copyFrom (__getWorldTransform ());
-			
-			var targetMatrix = Matrix.__pool.get ();
-			
-			targetMatrix.copyFrom (targetCoordinateSpace.__getWorldTransform ());
-			targetMatrix.invert ();
-			
-			matrix.concat (targetMatrix);
-
-			Matrix.__pool.release (targetMatrix);
-			
-		} else {
-			
-			matrix.identity ();
-			
-		}
-		
-		var bounds = new Rectangle ();
-		bounds.setTo (0, 0, __bitmapData.width, __bitmapData.height);
-		bounds.__transform (bounds, matrix);
-		
-		Matrix.__pool.release (matrix);
-		
-		return bounds;
-		
-	})
-	
-	
 	public function getTileIndex (tile:Tile):Int {
 		
 		return __group.getTileIndex (tile);
