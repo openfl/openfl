@@ -172,6 +172,9 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var color (get, set):UInt;
 	
+	@:dox(hide) @:noCompletion private function get_color ():UInt;
+	@:dox(hide) @:noCompletion private function set_color (value:UInt):UInt;
+	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
 	#end
@@ -180,7 +183,9 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
 	#end
 	
-	public var contentsScaleFactor (default, never):Float;
+	public var contentsScaleFactor (get, never):Float;
+	
+	@:dox(hide) @:noCompletion private function get_contentsScaleFactor ():Float;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
@@ -275,6 +280,9 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var displayState (get, set):StageDisplayState;
 	
+	@:dox(hide) @:noCompletion private function get_displayState ():StageDisplayState;
+	@:dox(hide) @:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState;
+	
 	/**
 	 * The interactive object with keyboard focus; or `null` if focus
 	 * is not set or if the focused object belongs to a security sandbox to which
@@ -283,6 +291,9 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 * @throws Error Throws an error if focus cannot be set to the target.
 	 */
 	public var focus (get, set):InteractiveObject;
+	
+	@:dox(hide) @:noCompletion private function get_focus ():InteractiveObject;
+	@:dox(hide) @:noCompletion private function set_focus (value:InteractiveObject):InteractiveObject;
 	
 	/**
 	 * Gets and sets the frame rate of the stage. The frame rate is defined as
@@ -314,13 +325,20 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var frameRate (get, set):Float;
 	
+	@:dox(hide) @:noCompletion private function get_frameRate ():Float;
+	@:dox(hide) @:noCompletion private function set_frameRate (value:Float):Float;
+	
 	public var fullScreenHeight (get, never):UInt;
+	
+	@:dox(hide) @:noCompletion private function get_fullScreenHeight ():UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
 	#end
 	
 	public var fullScreenWidth (get, never):UInt;
+	
+	@:dox(hide) @:noCompletion private function get_fullScreenWidth ():UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
@@ -381,7 +399,10 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var quality:StageQuality;
+	public var quality (get, set):StageQuality;
+	
+	@:dox(hide) @:noCompletion private function get_quality ():StageQuality;
+	@:dox(hide) @:noCompletion private function set_quality (value:StageQuality):StageQuality;
 	
 	/**
 	 * A value from the StageScaleMode class that specifies which scale mode to
@@ -415,7 +436,10 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var scaleMode:StageScaleMode;
+	public var scaleMode (get, set):StageScaleMode;
+	
+	@:dox(hide) @:noCompletion private function get_scaleMode ():StageScaleMode;
+	@:dox(hide) @:noCompletion private function set_scaleMode (value:StageScaleMode):StageScaleMode;
 	
 	public var showDefaultContextMenu:Bool;
 	

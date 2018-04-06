@@ -108,6 +108,8 @@ import openfl.Vector;
 	 */
 	public static var supportsTouchEvents (get, never):Bool;
 	
+	@:dox(hide) @:noCompletion private function get_supportsTouchEvents ():Bool;
+	
 	
 }
 

@@ -181,6 +181,8 @@ extern class SharedObject extends EventDispatcher {
 	 */
 	public var size (get, never):UInt;
 	
+	@:dox(hide) @:noCompletion private function get_size ():UInt;
+	
 	
 	private function new ();
 	

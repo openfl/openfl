@@ -5,10 +5,17 @@ extern class Tilemap extends DisplayObject implements ITileContainer {
 	
 	
 	public var numTiles (get, never):Int;
+	
+	//@:dox(hide) @:noCompletion private function get_numTiles ():Int;
+	
 	public var smoothing:Bool;
 	public var tileAlphaEnabled:Bool;
 	public var tileColorTransformEnabled:Bool;
+	
 	public var tileset (get, set):Tileset;
+	
+	@:dox(hide) @:noCompletion private function get_tileset ():Tileset;
+	@:dox(hide) @:noCompletion private function set_tileset (value:Tileset):Tileset;
 	
 	public function new (width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true);
 	

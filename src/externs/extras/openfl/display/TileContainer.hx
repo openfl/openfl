@@ -6,6 +6,8 @@ extern class TileContainer extends Tile implements ITileContainer {
 	
 	public var numTiles (get, never):Int;
 	
+	//@:dox(hide) @:noCompletion private function get_numTiles ():Int;
+	
 	public function new (x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0);
 	public function addTile (tile:Tile):Tile;
 	public function addTileAt (tile:Tile, index:Int):Tile;

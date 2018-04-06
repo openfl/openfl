@@ -8,7 +8,12 @@ import openfl.events.EventDispatcher;
 	
 	
 	public var frame (get, never):Int;
+	
+	@:dox(hide) @:noCompletion private function get_frame ():Int;
+	
 	public var name (get, never):String;
+	
+	@:dox(hide) @:noCompletion private function get_name ():String;
 	
 	
 	public function new (name:String, frame:Int):Void;

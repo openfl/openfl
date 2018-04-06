@@ -11,10 +11,22 @@ extern class URLStream extends EventDispatcher implements IDataInput {
 	
 	
 	public var bytesAvailable (get, never):UInt;
+	
+	//@:dox(hide) @:noCompletion private function get_bytesAvailable ():UInt;
+	
 	public var connected (default, null):Bool;
+	
+	//@:dox(hide) @:noCompletion private function get_connected ():Bool;
+	
 	//@:require(flash11_4) public var diskCacheEnabled (default, null):Bool;
+	
 	public var endian (get, set):Endian;
+	
+	//@:dox(hide) @:noCompletion private function get_endian ():Endian;
+	//@:dox(hide) @:noCompletion private function set_endian (value:Endian):Endian;
+	
 	//@:require(flash11_4) public var length (default, null):Float;
+	
 	public var objectEncoding:ObjectEncoding;
 	//@:require(flash11_4) public var position:Float;
 	

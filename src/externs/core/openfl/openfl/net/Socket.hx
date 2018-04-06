@@ -12,9 +12,22 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	
 	
 	public var bytesAvailable (get, never):UInt;
+	
+	//@:dox(hide) @:noCompletion private function get_bytesAvailable ():UInt;
+	
 	public var bytesPending (get, never):UInt;
+	
+	//@:dox(hide) @:noCompletion private function get_bytesPending ():UInt;
+	
 	public var connected (get, never):Bool;
+	
+	@:dox(hide) @:noCompletion private function get_connected ():Bool;
+	
 	public var endian (get, set):Endian;
+	
+	//@:dox(hide) @:noCompletion private function get_endian ():Endian;
+	//@:dox(hide) @:noCompletion private function set_endian (value:Endian):Endian;
+	
 	public var objectEncoding:ObjectEncoding;
 	public var timeout:UInt;
 	

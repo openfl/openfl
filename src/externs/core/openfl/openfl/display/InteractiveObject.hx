@@ -1114,8 +1114,16 @@ extern class InteractiveObject extends DisplayObject {
 	 */
 	public var needsSoftKeyboard:Bool;
 	public var softKeyboardInputAreaOfInterest:Rectangle;
+	
 	public var tabEnabled (get, set):Bool;
+	
+	@:dox(hide) @:noCompletion private function get_tabEnabled ():Bool;
+	@:dox(hide) @:noCompletion private function set_tabEnabled (value:Bool):Bool;
+	
 	public var tabIndex (get, set):Int;
+	
+	@:dox(hide) @:noCompletion private function get_tabIndex ():Int;
+	@:dox(hide) @:noCompletion private function set_tabIndex (value:Int):Int;
 	
 	
 	/**

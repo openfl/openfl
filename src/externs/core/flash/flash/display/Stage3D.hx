@@ -20,7 +20,7 @@ extern class Stage3D extends EventDispatcher {
 	
 	
 	public function requestContext3D (?context3DRenderMode:Context3DRenderMode, ?profile:Context3DProfile):Void;
-	@:require(flash12) public function requestContext3DMatchingProfiles (profiles:Vector<String>):Void;
+	@:require(flash12) public function requestContext3DMatchingProfiles (profiles:Vector<Context3DProfile>):Void;
 	
 	
 }
