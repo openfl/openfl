@@ -17,7 +17,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	
 	
 	public var alpha (get, set):Float;
-	public var colorTransform (get, set):ColorTransform;
+	@:beta public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
 	public var id (get, set):Int;
 	public var matrix (get, set):Matrix;

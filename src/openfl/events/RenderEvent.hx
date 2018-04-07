@@ -14,7 +14,7 @@ import openfl.geom.Matrix;
 @:access(openfl.geom.ColorTransform)
 
 
-class RenderEvent extends Event {
+@:beta class RenderEvent extends Event {
 	
 	
 	public static inline var CLEAR_DOM = "clearDOM";
