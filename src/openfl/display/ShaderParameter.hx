@@ -110,6 +110,49 @@ import lime.utils.Float32Array;
 					
 				}
 				
+			} else {
+				
+				switch (type) {
+					
+					case BOOL, INT: gl.uniform1i (index, 0);
+					case BOOL2, INT2: gl.uniform2i (index, 0, 0);
+					case BOOL3, INT3: gl.uniform3i (index, 0, 0, 0);
+					case BOOL4, INT4: gl.uniform4i (index, 0, 0, 0, 0);
+					case FLOAT: gl.uniform1f (index, 0);
+					case FLOAT2: gl.uniform2f (index, 0, 0);
+					case FLOAT3: gl.uniform3f (index, 0, 0, 0);
+					case FLOAT4: gl.uniform4f (index, 0, 0, 0, 0);
+					
+					case MATRIX2X2:
+						for (i in 0...4) {
+							__uniformMatrix[i] = 0;
+						}
+						gl.uniformMatrix2fv (index, 1, false, __uniformMatrix);
+					
+					//case MATRIX2X3:
+					//case MATRIX2X4:
+					//case MATRIX3X2:
+					
+					case MATRIX3X3:
+						for (i in 0...9) {
+							__uniformMatrix[i] = 0;
+						}
+						gl.uniformMatrix3fv (index, 1, false, __uniformMatrix);
+					
+					//case MATRIX3X4:
+					//case MATRIX4X2:
+					//case MATRIX4X3:
+					
+					case MATRIX4X4:
+						for (i in 0...16) {
+							__uniformMatrix[i] = 0;
+						}
+						gl.uniformMatrix4fv (index, 1, false, __uniformMatrix);
+					
+					default:
+					
+				}
+				
 			}
 			
 		} else {

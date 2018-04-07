@@ -342,14 +342,17 @@ class Shader {
 		
 		if (gl != null && glProgram == null) {
 			
-			var fragment = 
+			var prefix = 
 				
 				"#ifdef GL_ES
 				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
 				#endif
-				" + glFragmentSource;
+				";
 			
-			var id = fragment + glVertexSource;
+			var vertex = prefix + glVertexSource;
+			var fragment = prefix + glFragmentSource;
+			
+			var id = vertex + fragment;
 			
 			if (__glPrograms.exists (id)) {
 				
@@ -357,7 +360,7 @@ class Shader {
 				
 			} else {
 				
-				glProgram = __createGLProgram (glVertexSource, fragment);
+				glProgram = __createGLProgram (vertex, fragment);
 				__glPrograms.set (id, glProgram);
 				
 			}
