@@ -28,7 +28,7 @@ class Tile implements ITile {
 	public var matrix (get, set):Matrix;
 	public var originX (get, set):Float;
 	public var originY (get, set):Float;
-	public var parent (default, null):Tilemap;
+	public var parent (default, set):Tilemap;
 	@:beta public var rect (get, set):Rectangle;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
@@ -200,7 +200,7 @@ class Tile implements ITile {
 			
 			tileArray.tileset = __tileset;
 			tileArray.__bufferDirty = true;
-			__sourceDirty = true;
+			__sourceDirty = false;
 			
 		}
 		
@@ -334,6 +334,11 @@ class Tile implements ITile {
 		__setRenderDirty ();
 		return __id = value;
 		
+	}
+
+	private function set_parent(value: Tilemap): Tilemap {
+		this.parent = value;
+		return value;
 	}
 	
 	

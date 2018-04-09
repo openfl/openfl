@@ -98,8 +98,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 		__tiles[numTiles] = tile;
-		tile.parent = this;
 		numTiles++;
+		tile.parent = this;
 		#if !flash
 		__setRenderDirty ();
 		#end
