@@ -1197,6 +1197,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__cacheBitmapMatrix.ty = 0;
 			
 			var bitmapWidth = 0, bitmapHeight = 0;
+			var filterWidth = 0, filterHeight = 0;
 			
 			if (updateTransform || needRender) {
 				
@@ -1204,12 +1205,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__getFilterBounds (rect, __cacheBitmapMatrix);
 				
-				bitmapWidth = Math.ceil (rect.width);
-				bitmapHeight = Math.ceil (rect.height);
+				filterWidth = Math.ceil (rect.width);
+				filterHeight = Math.ceil (rect.height);
 				
-				if (!needRender && __cacheBitmap != null && (bitmapWidth != __cacheBitmap.width || bitmapHeight !=__cacheBitmap.height)) {
+				if (__cacheBitmap != null && (bitmapWidth > __cacheBitmap.width || bitmapHeight > __cacheBitmap.height)) {
+					
+					bitmapWidth = Std.int (filterWidth * 1.25);
+					bitmapHeight = Std.int (filterWidth * 1.25);
 					
 					needRender = true;
+					
+				} else {
+					
+					bitmapWidth = filterWidth;
+					bitmapHeight = filterWidth;
 					
 				}
 				
@@ -1222,7 +1231,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (rect.width >= 0.5 && rect.height >= 0.5) {
 					
-					if (__cacheBitmap == null || bitmapWidth > __cacheBitmap.width || bitmapHeight > __cacheBitmap.height) {
+					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapWidth > __cacheBitmapData.height) {
 						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						
@@ -1358,6 +1367,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					childRenderer.__copyShader (parentRenderer);
 					
+					__cacheBitmapData.__setUVRect (childRenderer.gl, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version;
 					
@@ -1382,22 +1392,30 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						var bitmap3 = null;
 						
 						// if (needSecondBitmapData) {
-							if (__cacheBitmapData2 == null) {
+							if (__cacheBitmapData2 == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height) {
 								__cacheBitmapData2 = new BitmapData (bitmap.width, bitmap.height, true, 0);
-							} else if (__cacheBitmapData2.image != null) {
-								__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version;
+							} else {
+								__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
+								if (__cacheBitmapData2.image != null) {
+									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version;
+								}
 							}
+							__cacheBitmapData2.__setUVRect (childRenderer.gl, 0, 0, filterWidth, filterHeight);
 							bitmap2 = __cacheBitmapData2;
 						// } else {
 						// 	bitmap2 = bitmapData;
 						// }
 						
 						if (needCopyOfOriginal) {
-							if (__cacheBitmapData3 == null) {
+							if (__cacheBitmapData3 == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height) {
 								__cacheBitmapData3 = new BitmapData (bitmap.width, bitmap.height, true, 0);
-							} else if (__cacheBitmapData3.image != null) {
-								__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version;
+							} else {
+								__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
+								if (__cacheBitmapData3.image != null) {
+									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version;
+								}
 							}
+							__cacheBitmapData3.__setUVRect (childRenderer.gl, 0, 0, filterWidth, filterHeight);
 							bitmap3 = __cacheBitmapData3;
 						}
 						
@@ -1478,8 +1496,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						var bitmap3 = null;
 						
 						if (needSecondBitmapData) {
-							if (__cacheBitmapData2 == null || __cacheBitmapData2.image == null) {
+							if (__cacheBitmapData2 == null || __cacheBitmapData2.image == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height) {
 								__cacheBitmapData2 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+							} else {
+								__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
 							}
 							bitmap2 = __cacheBitmapData2;
 						} else {
@@ -1487,13 +1507,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						}
 						
 						if (needCopyOfOriginal) {
-							if (__cacheBitmapData3 == null || __cacheBitmapData3.image == null) {
+							if (__cacheBitmapData3 == null || __cacheBitmapData3.image == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height) {
 								__cacheBitmapData3 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+							} else {
+								__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
 							}
 							bitmap3 = __cacheBitmapData3;
 						}
 						
-						var sourceRect = bitmap.rect;
+						var sourceRect = Rectangle.__pool.get ();
+						sourceRect.setTo (0, 0, filterWidth, filterHeight);
+						
 						if (__tempPoint == null) __tempPoint = new Point ();
 						var destPoint = __tempPoint;
 						var cacheBitmap, lastBitmap;
@@ -1521,6 +1545,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 						}
 						
+						Rectangle.__pool.release (sourceRect);
 						__cacheBitmap.bitmapData = bitmap;
 						
 					}

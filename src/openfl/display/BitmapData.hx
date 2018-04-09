@@ -1950,6 +1950,35 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	private function __setUVRect (gl:GLRenderContext, x:Int, y:Int, width:Int, height:Int):Void {
+		
+		var buffer = getBuffer (gl);
+		
+		if (buffer != null) {
+			
+			var uvWidth = width / this.width;
+			var uvHeight = height / this.height;
+			
+			__bufferData[0] = this.width;
+			__bufferData[1] = this.height;
+			__bufferData[3] = uvWidth;
+			__bufferData[4] = uvHeight;
+			__bufferData[__bufferStride + 1] = this.height;
+			__bufferData[__bufferStride + 4] = uvHeight;
+			__bufferData[__bufferStride * 2] = this.width;
+			__bufferData[__bufferStride * 2 + 3] = uvWidth;
+			
+			#if (js && html5)
+			(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			#else
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			#end
+			
+		}
+		
+	}
+	
+	
 	private function __sync ():Void {
 		
 		#if (js && html5)
