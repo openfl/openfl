@@ -22,6 +22,8 @@ import openfl.geom.Rectangle;
 @:noDebug
 #end
 
+@:access(lime._backend.html5.HTML5GLRenderContext)
+@:access(lime.graphics.GLRenderContext)
 @:access(openfl._internal.renderer.ShaderBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
@@ -34,6 +36,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:allow(openfl._internal.renderer.opengl)
+@:allow(openfl._internal.stage3D.opengl)
 @:allow(openfl.display3D.textures)
 @:allow(openfl.display3D)
 @:allow(openfl.display)
@@ -51,7 +54,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	private static var __hasColorTransformValue = [ false ];
 	private static var __textureSizeValue = [ 0, 0. ];
 	
+	#if openfljs
+	public var gl:js.html.webgl.RenderingContext;
+	#else
 	public var gl:GLRenderContext;
+	#end
 	
 	private var __clipRects:Array<Rectangle>;
 	private var __currentDisplayShader:Shader;
@@ -66,6 +73,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	private var __displayHeight:Int;
 	private var __displayWidth:Int;
 	private var __flipped:Bool;
+	private var __gl:GLRenderContext;
 	private var __height:Int;
 	private var __maskShader:GLMaskShader;
 	private var __matrix:Matrix4;
@@ -89,13 +97,19 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		super ();
 		
+		#if openfljs
+		this.gl = gl.__context;
+		#else
 		this.gl = gl;
+		#end
+		
 		this.__defaultRenderTarget = defaultRenderTarget;
 		this.__flipped = (__defaultRenderTarget == null);
+		this.__gl = gl;
 		
 		if (Graphics.maxTextureWidth == null) {
 			
-			Graphics.maxTextureWidth = Graphics.maxTextureHeight = gl.getInteger (gl.MAX_TEXTURE_SIZE);
+			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getInteger (__gl.MAX_TEXTURE_SIZE);
 			
 		}
 		
@@ -103,11 +117,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__values = new Array ();
 		
 		#if gl_debug
-		var ext:KHR_debug = gl.getExtension ("KHR_debug");
+		var ext:KHR_debug = __gl.getExtension ("KHR_debug");
 		if (ext != null) {
 			
-			gl.enable (ext.DEBUG_OUTPUT);
-			gl.enable (ext.DEBUG_OUTPUT_SYNCHRONOUS);
+			__gl.enable (ext.DEBUG_OUTPUT);
+			__gl.enable (ext.DEBUG_OUTPUT_SYNCHRONOUS);
 			
 		}
 		#end
@@ -121,7 +135,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__type = OPENGL;
 		
 		__setBlendMode (NORMAL);
-		gl.enable (gl.BLEND);
+		__gl.enable (__gl.BLEND);
 		
 		__clipRects = new Array ();
 		__maskObjects = new Array ();
@@ -314,14 +328,14 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (shader == null) {
 			
 			__currentShader = null;
-			gl.useProgram (null);
+			__gl.useProgram (null);
 			return;
 			
 		} else {
 			
 			__currentShader = shader;
 			__initShader (shader);
-			gl.useProgram (shader.glProgram);
+			__gl.useProgram (shader.glProgram);
 			__currentShader.__enable ();
 			
 		}
@@ -331,7 +345,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function setViewport ():Void {
 		
-		gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+		__gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
 		
 	}
 	
@@ -376,15 +390,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stage.__transparent) {
 			
-			gl.clearColor (0, 0, 0, 0);
+			__gl.clearColor (0, 0, 0, 0);
 			
 		} else {
 			
-			gl.clearColor (__stage.__colorSplit[0], __stage.__colorSplit[1], __stage.__colorSplit[2], 1);
+			__gl.clearColor (__stage.__colorSplit[0], __stage.__colorSplit[1], __stage.__colorSplit[2], 1);
 			
 		}
 		
-		gl.clear (gl.COLOR_BUFFER_BIT);
+		__gl.clear (__gl.COLOR_BUFFER_BIT);
 		
 	}
 	
@@ -468,7 +482,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (shader.gl == null) {
 				
-				shader.gl = gl;
+				shader.gl = __gl;
 				shader.__init ();
 				
 			}
@@ -491,7 +505,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (shader.gl == null) {
 				
-				shader.gl = gl;
+				shader.gl = __gl;
 				shader.__init ();
 				
 			}
@@ -514,7 +528,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (shader.gl == null) {
 				
-				shader.gl = gl;
+				shader.gl = __gl;
 				shader.__init ();
 				
 			}
@@ -550,9 +564,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 				__renderTargetA = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, __renderTargetA.getTexture (gl));
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetA.getTexture (__gl));
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
 				
 			}
 			
@@ -560,9 +574,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 				__renderTargetB = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, __renderTargetB.getTexture (gl));
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetB.getTexture (__gl));
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
 				
 			}
 			
@@ -576,19 +590,19 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 			}
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __currentRenderTarget.__getFramebuffer (gl));
-			gl.viewport (0, 0, __width, __height);
-			gl.clearColor (0, 0, 0, 0);
-			gl.clear (gl.COLOR_BUFFER_BIT);
+			__gl.bindFramebuffer (__gl.FRAMEBUFFER, __currentRenderTarget.__getFramebuffer (__gl));
+			__gl.viewport (0, 0, __width, __height);
+			__gl.clearColor (0, 0, 0, 0);
+			__gl.clear (__gl.COLOR_BUFFER_BIT);
 			
 			__flipped = false;
 			
 		} else {
 			
 			__currentRenderTarget = __defaultRenderTarget;
-			var frameBuffer:GLFramebuffer = (__currentRenderTarget != null) ? __currentRenderTarget.__getFramebuffer (gl) : null;
+			var frameBuffer:GLFramebuffer = (__currentRenderTarget != null) ? __currentRenderTarget.__getFramebuffer (__gl) : null;
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, frameBuffer);
+			__gl.bindFramebuffer (__gl.FRAMEBUFFER, frameBuffer);
 			
 			__flipped = (__currentRenderTarget == null);
 			
@@ -603,22 +617,22 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 1) {
 			
-			gl.stencilOp (gl.KEEP, gl.KEEP, gl.DECR);
-			gl.stencilFunc (gl.EQUAL, __stencilReference, 0xFF);
-			gl.colorMask (false, false, false, false);
+			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
+			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			__gl.colorMask (false, false, false, false);
 			
 			var mask = __maskObjects.pop ();
 			mask.__renderGLMask (this);
 			__stencilReference--;
 			
-			gl.stencilOp (gl.KEEP, gl.KEEP, gl.KEEP);
-			gl.stencilFunc (gl.EQUAL, __stencilReference, 0xFF);
-			gl.colorMask (true, true, true, true);
+			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
+			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			__gl.colorMask (true, true, true, true);
 			
 		} else {
 			
 			__stencilReference = 0;
-			gl.disable (gl.STENCIL_TEST);
+			__gl.disable (__gl.STENCIL_TEST);
 			
 		}
 		
@@ -667,23 +681,23 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference == 0) {
 			
-			gl.enable (gl.STENCIL_TEST);
-			gl.stencilMask (0xFF);
-			gl.clear (gl.STENCIL_BUFFER_BIT);
+			__gl.enable (__gl.STENCIL_TEST);
+			__gl.stencilMask (0xFF);
+			__gl.clear (__gl.STENCIL_BUFFER_BIT);
 			
 		}
 		
-		gl.stencilOp (gl.KEEP, gl.KEEP, gl.INCR);
-		gl.stencilFunc (gl.EQUAL, __stencilReference, 0xFF);
-		gl.colorMask (false, false, false, false);
+		__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.INCR);
+		__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+		__gl.colorMask (false, false, false, false);
 		
 		mask.__renderGLMask (this);
 		__maskObjects.push (mask);
 		__stencilReference++;
 		
-		gl.stencilOp (gl.KEEP, gl.KEEP, gl.KEEP);
-		gl.stencilFunc (gl.EQUAL, __stencilReference, 0xFF);
-		gl.colorMask (true, true, true, true);
+		__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
+		__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+		__gl.colorMask (true, true, true, true);
 		
 	}
 	
@@ -747,7 +761,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__defaultRenderTarget == null) {
 			
-			gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			__gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
 			
 			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 			
@@ -755,36 +769,36 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__offsetX > 0 || __offsetY > 0) {
 				
-				gl.clearColor (0, 0, 0, 1);
-				gl.enable (gl.SCISSOR_TEST);
+				__gl.clearColor (0, 0, 0, 1);
+				__gl.enable (__gl.SCISSOR_TEST);
 				
 				if (__offsetX > 0) {
 					
-					gl.scissor (0, 0, __offsetX, __height);
-					gl.clear (gl.COLOR_BUFFER_BIT);
+					__gl.scissor (0, 0, __offsetX, __height);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
 					
-					gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
-					gl.clear (gl.COLOR_BUFFER_BIT);
+					__gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
 					
 				}
 				
 				if (__offsetY > 0) {
 					
-					gl.scissor (0, 0, __width, __offsetY);
-					gl.clear (gl.COLOR_BUFFER_BIT);
+					__gl.scissor (0, 0, __width, __offsetY);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
 					
-					gl.scissor (0, __offsetY + __displayHeight, __width, __height);
-					gl.clear (gl.COLOR_BUFFER_BIT);
+					__gl.scissor (0, __offsetY + __displayHeight, __width, __height);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
 					
 				}
 				
-				gl.disable (gl.SCISSOR_TEST);
+				__gl.disable (__gl.SCISSOR_TEST);
 				
 			}
 			
 		} else {
 			
-			gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			__gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
 			
 			// __upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 			
@@ -800,12 +814,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (gl));
+		__gl.bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (__gl));
 		
 		if (clear) {
 			
-			gl.clearColor (0, 0, 0, 0);
-			gl.clear (gl.COLOR_BUFFER_BIT);
+			__gl.clearColor (0, 0, 0, 0);
+			__gl.clear (__gl.COLOR_BUFFER_BIT);
 			
 		}
 		
@@ -817,12 +831,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		applyMatrix (__getMatrix (source.__renderTransform));
 		updateShader ();
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, source.getBuffer (gl));
-		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-		if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		__gl.bindBuffer (__gl.ARRAY_BUFFER, source.getBuffer (__gl));
+		if (shader.__position != null) __gl.vertexAttribPointer (shader.__position.index, 3, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+		if (shader.__textureCoord != null) __gl.vertexAttribPointer (shader.__textureCoord.index, 2, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		__gl.drawArrays (__gl.TRIANGLE_STRIP, 0, 4);
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		__gl.bindFramebuffer (__gl.FRAMEBUFFER, null);
 		
 		__clearShader ();
 		
@@ -861,9 +875,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 				__renderTargetA = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, __renderTargetA.getTexture (gl));
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetA.getTexture (__gl));
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
 				
 			}
 			
@@ -871,9 +885,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 				__renderTargetB = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, __renderTargetB.getTexture (gl));
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetB.getTexture (__gl));
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
+				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
 				
 			}
 			
@@ -899,7 +913,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (rect != null) {
 			
-			gl.enable (gl.SCISSOR_TEST);
+			__gl.enable (__gl.SCISSOR_TEST);
 			
 			var clipRect = __tempRect;
 			rect.__transform (clipRect, __worldTransform);
@@ -912,11 +926,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			gl.scissor (x, y, width, height);
+			__gl.scissor (x, y, width, height);
 			
 		} else {
 			
-			gl.disable (gl.SCISSOR_TEST);
+			__gl.disable (__gl.SCISSOR_TEST);
 			
 		}
 		
@@ -933,40 +947,40 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			case ADD:
 				
-				gl.blendEquation (gl.FUNC_ADD);
-				gl.blendFunc (gl.ONE, gl.ONE);
+				__gl.blendEquation (__gl.FUNC_ADD);
+				__gl.blendFunc (__gl.ONE, __gl.ONE);
 			
 			case MULTIPLY:
 				
-				gl.blendEquation (gl.FUNC_ADD);
-				gl.blendFunc (gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
+				__gl.blendEquation (__gl.FUNC_ADD);
+				__gl.blendFunc (__gl.DST_COLOR, __gl.ONE_MINUS_SRC_ALPHA);
 			
 			case SCREEN:
 				
-				gl.blendEquation (gl.FUNC_ADD);
-				gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_COLOR);
+				__gl.blendEquation (__gl.FUNC_ADD);
+				__gl.blendFunc (__gl.ONE, __gl.ONE_MINUS_SRC_COLOR);
 			
 			case SUBTRACT:
 				
-				gl.blendEquation (gl.FUNC_REVERSE_SUBTRACT);
-				gl.blendFunc (gl.ONE, gl.ONE);
+				__gl.blendEquation (__gl.FUNC_REVERSE_SUBTRACT);
+				__gl.blendFunc (__gl.ONE, __gl.ONE);
 			
 			#if desktop
 			case DARKEN:
 				
-				gl.blendEquation (0x8007); // GL_MIN
-				gl.blendFunc (gl.ONE, gl.ONE);
+				__gl.blendEquation (0x8007); // GL_MIN
+				__gl.blendFunc (__gl.ONE, __gl.ONE);
 				
 			case LIGHTEN:
 				
-				gl.blendEquation (0x8008); // GL_MAX
-				gl.blendFunc (gl.ONE, gl.ONE);
+				__gl.blendEquation (0x8008); // GL_MAX
+				__gl.blendFunc (__gl.ONE, __gl.ONE);
 			#end
 			
 			default:
 				
-				gl.blendEquation (gl.FUNC_ADD);
-				gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+				__gl.blendEquation (__gl.FUNC_ADD);
+				__gl.blendFunc (__gl.ONE, __gl.ONE_MINUS_SRC_ALPHA);
 			
 		}
 		

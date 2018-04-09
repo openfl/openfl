@@ -311,7 +311,7 @@ class GLTilemap {
 		
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
 			
-			var gl:WebGLContext = renderer.gl;
+			var gl:WebGLContext = renderer.__gl;
 			
 			var shader = renderer.__initDisplayShader (cast currentShader);
 			renderer.setShader (shader);
@@ -427,7 +427,7 @@ class GLTilemap {
 		if (tilemap.tileAlphaEnabled) stride++;
 		if (tilemap.tileColorTransformEnabled) stride += 8;
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		renderer.__setBlendMode (tilemap.__worldBlendMode);
 		renderer.__pushMaskObject (tilemap);
@@ -510,7 +510,7 @@ class GLTilemap {
 		// if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
 		// var renderer:OpenGLRenderer = cast renderer.renderer;
-		// var gl = renderer.gl;
+		// var gl = renderer.__gl;
 		
 		// var shader = renderer.__maskShader;
 		

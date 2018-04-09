@@ -24,7 +24,7 @@ class GLIndexBuffer3D {
 	
 	public static function create (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, bufferUsage:Context3DBufferUsage):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		indexBuffer.__elementType = gl.UNSIGNED_SHORT;
 		
@@ -41,7 +41,7 @@ class GLIndexBuffer3D {
 	
 	public static function dispose (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.deleteBuffer (indexBuffer.__id);
 		
@@ -64,7 +64,7 @@ class GLIndexBuffer3D {
 	public static function uploadFromTypedArray (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, data:ArrayBufferView):Void {
 		
 		if (data == null) return;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
 		GLUtils.CheckGLError ();
@@ -91,7 +91,7 @@ class GLIndexBuffer3D {
 		// TODO: Optimize more
 		
 		if (data == null) return;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		var length = startOffset + count;
 		var existingInt16Array = indexBuffer.__tempInt16Array;

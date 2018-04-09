@@ -32,7 +32,7 @@ class GLTextureBase {
 	
 	public static function create (textureBase:TextureBase, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		textureBase.__textureID = gl.createTexture ();
 		textureBase.__textureContext = gl;
@@ -86,7 +86,7 @@ class GLTextureBase {
 	
 	public static function dispose (textureBase:TextureBase, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		if (textureBase.__alphaTexture != null) {
 			
@@ -148,7 +148,7 @@ class GLTextureBase {
 		#end
 		
 		#if (js && html5)
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		if (image.type != DATA && !image.premultiplied) {
 			
@@ -198,7 +198,7 @@ class GLTextureBase {
 		
 		if (!state.equals (textureBase.__samplerState)) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			gl.bindTexture (textureBase.__textureTarget, textureBase.__textureID);
 			GLUtils.CheckGLError ();

@@ -21,7 +21,7 @@ class GLVideoTexture {
 	
 	public static function create (videoTexture:VideoTexture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		videoTexture.__textureTarget = gl.TEXTURE_2D;
 		
 	}
@@ -33,7 +33,7 @@ class GLVideoTexture {
 		
 		if (!videoTexture.__netStream.__video.paused) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			gl.bindTexture (videoTexture.__textureTarget, videoTexture.__textureID);
 			GLUtils.CheckGLError ();

@@ -25,7 +25,7 @@ class GLVertexBuffer3D {
 	
 	public static function create (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer, bufferUsage:Context3DBufferUsage) {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		vertexBuffer.__id = gl.createBuffer ();
 		GLUtils.CheckGLError ();
@@ -42,7 +42,7 @@ class GLVertexBuffer3D {
 	
 	public static function dispose (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.deleteBuffer (vertexBuffer.__id);
 		
@@ -66,7 +66,7 @@ class GLVertexBuffer3D {
 	public static function uploadFromTypedArray (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer, data:ArrayBufferView):Void {
 		
 		if (data == null) return;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer.__id);
 		GLUtils.CheckGLError ();
@@ -91,7 +91,7 @@ class GLVertexBuffer3D {
 	public static function uploadFromVector (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer, data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
 		if (data == null) return;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		// TODO: Optimize more
 		

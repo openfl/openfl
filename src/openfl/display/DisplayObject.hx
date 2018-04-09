@@ -1309,7 +1309,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					if (renderType == OPENGL) {
 						
-						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).gl, __cacheBitmapData);
+						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).__gl, __cacheBitmapData);
 						
 					} else {
 						

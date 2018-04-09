@@ -32,7 +32,7 @@ class GLCubeTexture {
 	
 	public static function create (cubeTexture:CubeTexture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		cubeTexture.__textureTarget = gl.TEXTURE_CUBE_MAP;
 		cubeTexture.__uploadedSides = 0;
@@ -45,7 +45,7 @@ class GLCubeTexture {
 		var reader = new ATFReader (data, byteArrayOffset);
 		var alpha = reader.readHeader (cubeTexture.__size, cubeTexture.__size, true);
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureID);
 		GLUtils.CheckGLError ();
@@ -150,7 +150,7 @@ class GLCubeTexture {
 	public static function uploadFromTypedArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ArrayBufferView, side:UInt, miplevel:UInt):Void {
 		
 		if (data == null) return;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		var size = cubeTexture.__size >> miplevel;
 		if (size == 0) return;
@@ -178,7 +178,7 @@ class GLCubeTexture {
 		
 		if (!state.equals (cubeTexture.__samplerState)) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
 				

@@ -485,7 +485,7 @@ class BitmapData implements IBitmapDrawable {
 			//if(renderer != null) {
 				//
 				//var renderer = @:privateAccess renderer.renderer;
-				//var gl = renderer.gl;
+				//var gl = renderer.__gl;
 				//
 				//if (gl != null) {
 					//
@@ -1665,7 +1665,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 		
@@ -1886,7 +1886,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		renderer.__setBlendMode (NORMAL);
 		
@@ -1917,7 +1917,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		var shader = renderer.__maskShader;
 		renderer.setShader (shader);

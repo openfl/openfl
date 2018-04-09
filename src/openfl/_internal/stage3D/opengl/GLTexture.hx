@@ -32,7 +32,7 @@ class GLTexture {
 	
 	public static function create (texture:Texture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		texture.__textureTarget = gl.TEXTURE_2D;
 		
@@ -54,7 +54,7 @@ class GLTexture {
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader (texture.__width, texture.__height, false);
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
@@ -170,7 +170,7 @@ class GLTexture {
 	public static function uploadFromTypedArray (texture:Texture, renderer:OpenGLRenderer, data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		var width = texture.__width >> miplevel;
 		var height = texture.__height >> miplevel;
@@ -199,7 +199,7 @@ class GLTexture {
 		
 		if (!state.equals (texture.__samplerState)) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
 				

@@ -32,7 +32,7 @@ class GLVideo {
 		
 		if (video.__stream.__video != null) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			renderer.__setBlendMode (video.__worldBlendMode);
 			renderer.__pushMaskObject (video);
@@ -89,7 +89,7 @@ class GLVideo {
 		
 		if (video.__stream.__video != null) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);

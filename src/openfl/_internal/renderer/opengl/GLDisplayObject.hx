@@ -29,7 +29,7 @@ class GLDisplayObject {
 			renderer.__setBlendMode (displayObject.__worldBlendMode);
 			renderer.__pushMaskObject (displayObject);
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			var rect = Rectangle.__pool.get ();
 			rect.setTo (0, 0, displayObject.width, displayObject.height);
@@ -61,7 +61,7 @@ class GLDisplayObject {
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			// TODO
 			

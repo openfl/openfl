@@ -64,7 +64,7 @@ class GLProgram3D {
 	
 	public static function setPositionScale (program:Program3D, renderer:OpenGLRenderer, positionScale:Float32Array):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		gl.uniform4fv (program.__positionScale.location, 1, positionScale);
 		GLUtils.CheckGLError ();
 		
@@ -95,7 +95,7 @@ class GLProgram3D {
 	
 	public static function use (program:Program3D, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.useProgram (program.__programID);
 		GLUtils.CheckGLError ();
@@ -155,7 +155,7 @@ class GLProgram3D {
 	
 	private static function __buildUniformList ():Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		program.__uniforms.clear ();
 		program.__samplerUniforms.clear ();
@@ -264,7 +264,7 @@ class GLProgram3D {
 	
 	private static function __deleteShaders ():Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		if (program.__programID != null) {
 			
@@ -319,7 +319,7 @@ class GLProgram3D {
 	
 	private static function __uploadFromGLSL (vertexShaderSource:String, fragmentShaderSource:String):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		__deleteShaders ();
 		

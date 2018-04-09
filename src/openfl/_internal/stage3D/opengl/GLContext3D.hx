@@ -66,7 +66,7 @@ class GLContext3D {
 	public static function create (context:Context3D) {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		context.__vertexConstants = new Float32Array (4 * Context3D.MAX_PROGRAM_REGISTERS);
 		context.__fragmentConstants = new Float32Array (4 * Context3D.MAX_PROGRAM_REGISTERS);
@@ -202,7 +202,7 @@ class GLContext3D {
 	public static function clear (context:Context3D, red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		var clearMask = 0;
 		
 		if (mask & Context3DClearMask.COLOR != 0) {
@@ -243,7 +243,7 @@ class GLContext3D {
 		
 		GLContext3D.context = context;
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		GLContext3D.gl = renderer.gl;
+		GLContext3D.gl = renderer.__gl;
 		
 		__updateBackbufferViewport ();
 		
@@ -294,7 +294,7 @@ class GLContext3D {
 		
 		GLContext3D.context = context;
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		GLContext3D.gl = renderer.gl;
+		GLContext3D.gl = renderer.__gl;
 		
 		__flushSamplerState ();
 		context.__program.__flush ();
@@ -341,7 +341,7 @@ class GLContext3D {
 			
 			GLContext3D.context = context;
 			var renderer:OpenGLRenderer = cast context.__renderer;
-			GLContext3D.gl = renderer.gl;
+			GLContext3D.gl = renderer.__gl;
 			
 			__updateBlendFactors ();
 			
@@ -353,7 +353,7 @@ class GLContext3D {
 	public static function setColorMask (context:Context3D, red:Bool, green:Bool, blue:Bool, alpha:Bool):Void {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.colorMask (red, green, blue, alpha);
 		
@@ -363,7 +363,7 @@ class GLContext3D {
 	public static function setCulling (context:Context3D, triangleFaceToCull:Context3DTriangleFace):Error {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		if (Context3D.__stateCache.updateCullingMode (triangleFaceToCull)) {
 			
@@ -415,7 +415,7 @@ class GLContext3D {
 	public static function setDepthTest (context:Context3D, depthMask:Bool, passCompareMode:Context3DCompareMode):Void {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		var depthTestEnabled = context.__backBufferEnableDepthAndStencil;
 		
 		if (Context3D.__stateCache.updateDepthTestEnabled (depthTestEnabled)) {
@@ -493,7 +493,7 @@ class GLContext3D {
 	public static function setProgramConstantsFromByteArray (context:Context3D, programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		if (numRegisters == -1) {
 			
@@ -621,7 +621,7 @@ class GLContext3D {
 	public static function setRenderToBackBuffer (context:Context3D):Void {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 		GLUtils.CheckGLError ();
@@ -649,7 +649,7 @@ class GLContext3D {
 	public static function setRenderToTexture (context:Context3D, texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0):Void {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		var width = 0;
 		var height = 0;
@@ -800,7 +800,7 @@ class GLContext3D {
 		}
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		var state = context.__samplerStates[sampler];
 		
 		switch (wrap) {
@@ -918,7 +918,7 @@ class GLContext3D {
 		
 		GLContext3D.context = context;
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		GLContext3D.gl = renderer.gl;
+		GLContext3D.gl = renderer.__gl;
 		
 		context.__scissorRectangle = rectangle != null ? rectangle.clone () : null;
 		__updateScissorRectangle ();
@@ -930,7 +930,7 @@ class GLContext3D {
 		
 		GLContext3D.context = context;
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		GLContext3D.gl = renderer.gl;
+		GLContext3D.gl = renderer.__gl;
 		
 		context.__stencilCompareMode = compareMode;
 		gl.stencilOpSeparate (__getGLTriangleFace (triangleFace), __getGLStencilAction (actionOnDepthPassStencilFail), __getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnBothPass));
@@ -943,7 +943,7 @@ class GLContext3D {
 		
 		GLContext3D.context = context;
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		GLContext3D.gl = renderer.gl;
+		GLContext3D.gl = renderer.__gl;
 		
 		context.__stencilReadMask = readMask;
 		context.__stencilRef = referenceValue;
@@ -969,7 +969,7 @@ class GLContext3D {
 	public static function setVertexBufferAt (context:Context3D, index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		if (buffer == null) {
 			
@@ -1264,7 +1264,7 @@ class GLContext3D {
 		
 		GLContext3D.context = context;
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		GLContext3D.gl = renderer.gl;
+		GLContext3D.gl = renderer.__gl;
 		
 		__updateBackbufferViewport ();
 		
@@ -1299,7 +1299,7 @@ class GLContext3D {
 		
 		GLContext3D.context = context;
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		GLContext3D.gl = renderer.gl;
+		GLContext3D.gl = renderer.__gl;
 		
 		__updateBlendFactors ();
 		

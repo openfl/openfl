@@ -26,7 +26,7 @@ class GLRectangleTexture {
 	
 	public static function create (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		rectangleTexture.__textureTarget = gl.TEXTURE_2D;
 		uploadFromTypedArray (rectangleTexture, renderer, null);
@@ -71,7 +71,7 @@ class GLRectangleTexture {
 			//
 		//}
 		
-		var gl = renderer.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
 		GLUtils.CheckGLError ();
@@ -92,7 +92,7 @@ class GLRectangleTexture {
 		
 		if (!state.equals (rectangleTexture.__samplerState)) {
 			
-			var gl = renderer.gl;
+			var gl = renderer.__gl;
 			
 			if (state.maxAniso != 0.0) {
 				

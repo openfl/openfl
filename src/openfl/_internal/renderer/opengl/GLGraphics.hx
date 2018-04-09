@@ -45,7 +45,7 @@ class GLGraphics {
 		
 		var data = new DrawCommandReader (graphics.__commands);
 		
-		var gl:WebGLContext = renderer.gl;
+		var gl:WebGLContext = renderer.__gl;
 		
 		var tileRect = Rectangle.__pool.get ();
 		var tileTransform = Matrix.__pool.get ();
@@ -464,7 +464,7 @@ class GLGraphics {
 				
 				var data = new DrawCommandReader (graphics.__commands);
 				
-				var gl:WebGLContext = renderer.gl;
+				var gl:WebGLContext = renderer.__gl;
 				
 				var matrix = Matrix.__pool.get ();
 				
