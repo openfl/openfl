@@ -73,6 +73,9 @@ declare namespace openfl.geom {
 		 */
 		public colorTransform:ColorTransform;
 		
+		private get_colorTransform ():ColorTransform;
+		private set_colorTransform (value:ColorTransform):ColorTransform;
+		
 		/**
 		 * A ColorTransform object representing the combined color transformations
 		 * applied to the display object and all of its parent objects, back to the
@@ -95,6 +98,9 @@ declare namespace openfl.geom {
 		 */
 		public readonly concatenatedMatrix:Matrix;
 		
+		private get_concatenatedMatrix ():Matrix;
+		private set_concatenatedMatrix (value:Matrix):Matrix;
+		
 		/**
 		 * A Matrix object containing values that alter the scaling, rotation, and
 		 * translation of the display object.
@@ -109,6 +115,9 @@ declare namespace openfl.geom {
 		 */
 		public matrix:Matrix;
 		
+		private get_matrix ():Matrix;
+		private set_matrix (value:Matrix):Matrix;
+		
 		/**
 		 * Provides access to the Matrix3D object of a three-dimensional display
 		 * object. The Matrix3D object represents a transformation matrix that
@@ -122,6 +131,9 @@ declare namespace openfl.geom {
 		 * `null`.
 		 */
 		public matrix3D:Matrix3D;
+		
+		private get_matrix3D ():Matrix3D;
+		private set_matrix3D (value:Matrix3D):Matrix3D;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) public perspectiveProjection:PerspectiveProjection;

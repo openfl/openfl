@@ -16,13 +16,13 @@ extern class Stage3D extends EventDispatcher {
 	
 	public var x (get, set):Float;
 	
-	@:dox(hide) @:noCompletion private function get_x ():Float;
-	@:dox(hide) @:noCompletion private function set_x (value:Float):Float;
+	@:noCompletion private function get_x ():Float;
+	@:noCompletion private function set_x (value:Float):Float;
 	
 	public var y (get, set):Float;
 	
-	@:dox(hide) @:noCompletion private function get_y ():Float;
-	@:dox(hide) @:noCompletion private function set_y (value:Float):Float;
+	@:noCompletion private function get_y ():Float;
+	@:noCompletion private function set_y (value:Float):Float;
 	
 	
 	public function requestContext3D (?context3DRenderMode:Context3DRenderMode, ?profile:Context3DProfile):Void;

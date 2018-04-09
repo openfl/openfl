@@ -24,8 +24,7 @@ extern class Shape extends DisplayObject {
 	 */
 	public var graphics (get, never):Graphics;
 	
-	@:dox(hide) @:noCompletion private function get_graphics ():Graphics;
-	@:dox(hide) @:noCompletion private function set_graphics (value:Graphics):Graphics;
+	@:noCompletion private function get_graphics ():Graphics;
 	
 	
 	/**

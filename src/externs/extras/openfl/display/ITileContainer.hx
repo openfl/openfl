@@ -6,7 +6,7 @@ extern interface ITileContainer {
 	
 	public var numTiles (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_numTiles ():Int;
+	@:noCompletion private function get_numTiles ():Int;
 	
 	public function addTile (tile:Tile):Tile;
 	public function addTileAt (tile:Tile, index:Int):Tile;

@@ -23,6 +23,9 @@ extern class Font /*extends LimeFont*/ {
 	 */
 	public var fontName (get, set):String;
 	
+	@:noCompletion private function get_fontName ():String;
+	@:noCompletion private function set_fontName (value:String):String;
+	
 	/**
 	 * The style of the font. This value can be any of the values defined in the
 	 * FontStyle class.

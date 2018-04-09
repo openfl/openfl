@@ -51,6 +51,8 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var totalMemory (get, never):Int;
 	
+	@:noCompletion private static function get_totalMemory ():Int;
+	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
 	#end
@@ -103,6 +105,8 @@ package openfl.system; #if (display || !flash)
 	public static var useCodePage:Bool;
 	
 	public static var vmVersion (get, never):String;
+	
+	@:noCompletion private static function get_vmVersion ():String;
 	
 	
 	#if flash

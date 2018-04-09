@@ -30,8 +30,8 @@ extern class SimpleButton extends InteractiveObject {
 	 */
 	public var downState (get, set):DisplayObject;
 	
-	@:dox(hide) @:noCompletion private function get_downState ():DisplayObject;
-	@:dox(hide) @:noCompletion private function set_downState (value:DisplayObject):DisplayObject;
+	@:noCompletion private function get_downState ():DisplayObject;
+	@:noCompletion private function set_downState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * A Boolean value that specifies whether a button is enabled. When a button
@@ -57,8 +57,8 @@ extern class SimpleButton extends InteractiveObject {
 	 */
 	public var hitTestState (get, set):DisplayObject;
 	
-	@:dox(hide) @:noCompletion private function get_hitTestState ():DisplayObject;
-	@:dox(hide) @:noCompletion private function set_hitTestState (value:DisplayObject):DisplayObject;
+	@:noCompletion private function get_hitTestState ():DisplayObject;
+	@:noCompletion private function set_hitTestState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * Specifies a display object that is used as the visual object for the
@@ -67,8 +67,8 @@ extern class SimpleButton extends InteractiveObject {
 	 */
 	public var overState (get, set):DisplayObject;
 	
-	@:dox(hide) @:noCompletion private function get_overState ():DisplayObject;
-	@:dox(hide) @:noCompletion private function set_overState (value:DisplayObject):DisplayObject;
+	@:noCompletion private function get_overState ():DisplayObject;
+	@:noCompletion private function set_overState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * The SoundTransform object assigned to this button. A SoundTransform object
@@ -79,8 +79,8 @@ extern class SimpleButton extends InteractiveObject {
 	 */
 	public var soundTransform (get, set):SoundTransform;
 	
-	@:dox(hide) @:noCompletion private function get_soundTransform ():SoundTransform;
-	@:dox(hide) @:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
+	@:noCompletion private function get_soundTransform ():SoundTransform;
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
 	
 	/**
 	 * Indicates whether other display objects that are SimpleButton or MovieClip
@@ -102,8 +102,8 @@ extern class SimpleButton extends InteractiveObject {
 	 */
 	public var upState (get, set):DisplayObject;
 	
-	@:dox(hide) @:noCompletion private function get_upState ():DisplayObject;
-	@:dox(hide) @:noCompletion private function set_upState (value:DisplayObject):DisplayObject;
+	@:noCompletion private function get_upState ():DisplayObject;
+	@:noCompletion private function set_upState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * A Boolean value that, when set to `true`, indicates whether the

@@ -14,7 +14,7 @@ extern interface IDataInput {
 	#else
 	public var bytesAvailable (get, never):UInt;
 	
-	@:dox(hide) @:noCompletion private function get_bytesAvailable ():UInt;
+	@:noCompletion private function get_bytesAvailable ():UInt;
 	#end
 	
 	#if (flash && !display)
@@ -22,8 +22,8 @@ extern interface IDataInput {
 	#else
 	public var endian (get, set):Endian;
 	
-	@:dox(hide) @:noCompletion private function get_endian ():Endian;
-	@:dox(hide) @:noCompletion private function set_endian (value:Endian):Endian;
+	@:noCompletion private function get_endian ():Endian;
+	@:noCompletion private function set_endian (value:Endian):Endian;
 	#end
 	
 	public var objectEncoding:ObjectEncoding;

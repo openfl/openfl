@@ -63,6 +63,8 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public var graphics (get, never):Graphics;
 	
+	@:noCompletion private function get_graphics ():Graphics;
+	
 	public var hitArea:Sprite;
 	
 	#if flash

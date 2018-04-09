@@ -1115,8 +1115,16 @@ declare namespace openfl.display {
 		 */
 		needsSoftKeyboard:boolean;
 		softKeyboardInputAreaOfInterest:Rectangle;
+		
 		tabEnabled:boolean;
+		
+		private get_tabEnabled ():boolean;
+		private set_tabEnabled (value:boolean):boolean;
+		
 		tabIndex:number;
+		
+		private get_tabIndex ():number;
+		private set_tabIndex (value:number):number;
 		
 		
 		/**

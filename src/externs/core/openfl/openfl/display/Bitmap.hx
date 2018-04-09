@@ -41,8 +41,8 @@ extern class Bitmap extends DisplayObject {
 	 */
 	public var bitmapData (get, set):BitmapData;
 	
-	@:dox(hide) @:noCompletion private function get_bitmapData ():BitmapData;
-	@:dox(hide) @:noCompletion private function set_bitmapData (value:BitmapData):BitmapData;
+	@:noCompletion private function get_bitmapData ():BitmapData;
+	@:noCompletion private function set_bitmapData (value:BitmapData):BitmapData;
 	
 	/**
 	 * Controls whether or not the Bitmap object is snapped to the nearest pixel.

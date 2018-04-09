@@ -98,8 +98,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var antiAliasType (get, set):AntiAliasType;
 	
-	@:dox(hide) @:noCompletion private function get_antiAliasType ():AntiAliasType;
-	@:dox(hide) @:noCompletion private function set_antiAliasType (value:AntiAliasType):AntiAliasType;
+	@:noCompletion private function get_antiAliasType ():AntiAliasType;
+	@:noCompletion private function set_antiAliasType (value:AntiAliasType):AntiAliasType;
 	
 	/**
 	 * Controls automatic sizing and alignment of text fields. Acceptable values
@@ -145,8 +145,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var autoSize (get, set):TextFieldAutoSize;
 	
-	@:dox(hide) @:noCompletion private function get_autoSize ():TextFieldAutoSize;
-	@:dox(hide) @:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize;
+	@:noCompletion private function get_autoSize ():TextFieldAutoSize;
+	@:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize;
 	
 	/**
 	 * Specifies whether the text field has a background fill. If
@@ -159,8 +159,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var background (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_background ():Bool;
-	@:dox(hide) @:noCompletion private function set_background (value:Bool):Bool;
+	@:noCompletion private function get_background ():Bool;
+	@:noCompletion private function set_background (value:Bool):Bool;
 	
 	/**
 	 * The color of the text field background. The default value is
@@ -171,8 +171,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var backgroundColor (get, set):Int;
 	
-	@:dox(hide) @:noCompletion private function get_backgroundColor ():Int;
-	@:dox(hide) @:noCompletion private function set_backgroundColor (value:Int):Int;
+	@:noCompletion private function get_backgroundColor ():Int;
+	@:noCompletion private function set_backgroundColor (value:Int):Int;
 	
 	/**
 	 * Specifies whether the text field has a border. If `true`, the
@@ -183,8 +183,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var border (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_border ():Bool;
-	@:dox(hide) @:noCompletion private function set_border (value:Bool):Bool;
+	@:noCompletion private function get_border ():Bool;
+	@:noCompletion private function set_border (value:Bool):Bool;
 	
 	/**
 	 * The color of the text field border. The default value is
@@ -194,8 +194,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var borderColor (get, set):Int;
 	
-	@:dox(hide) @:noCompletion private function get_borderColor ():Int;
-	@:dox(hide) @:noCompletion private function set_borderColor (value:Int):Int;
+	@:noCompletion private function get_borderColor ():Int;
+	@:noCompletion private function set_borderColor (value:Int):Int;
 	
 	/**
 	 * An integer(1-based index) that indicates the bottommost line that is
@@ -208,7 +208,7 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var bottomScrollV (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_bottomScrollV ():Int;
+	@:noCompletion private function get_bottomScrollV ():Int;
 	
 	/**
 	 * The index of the insertion point(caret) position. If no insertion point
@@ -221,8 +221,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var caretIndex (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_caretIndex ():Int;
-	@:dox(hide) @:noCompletion private function set_caretIndex (value:Int):Int;
+	@:noCompletion private function get_caretIndex ():Int;
+	@:noCompletion private function set_caretIndex (value:Int):Int;
 	
 	/**
 	 * Specifies the format applied to newly inserted text, such as text entered
@@ -255,8 +255,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var defaultTextFormat (get, set):TextFormat;
 	
-	@:dox(hide) @:noCompletion private function get_defaultTextFormat ():TextFormat;
-	@:dox(hide) @:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat;
+	@:noCompletion private function get_defaultTextFormat ():TextFormat;
+	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat;
 	
 	/**
 	 * Specifies whether the text field is a password text field. If the value of
@@ -272,8 +272,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var displayAsPassword (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_displayAsPassword ():Bool;
-	@:dox(hide) @:noCompletion private function set_displayAsPassword (value:Bool):Bool;
+	@:noCompletion private function get_displayAsPassword ():Bool;
+	@:noCompletion private function set_displayAsPassword (value:Bool):Bool;
 	
 	/**
 	 * Specifies whether to render by using embedded font outlines. If
@@ -290,8 +290,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var embedFonts (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_embedFonts ():Bool;
-	@:dox(hide) @:noCompletion private function set_embedFonts (value:Bool):Bool;
+	@:noCompletion private function get_embedFonts ():Bool;
+	@:noCompletion private function set_embedFonts (value:Bool):Bool;
 	
 	/**
 	 * The type of grid fitting used for this text field. This property applies
@@ -309,8 +309,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var gridFitType (get, set):GridFitType;
 	
-	@:dox(hide) @:noCompletion private function get_gridFitType ():GridFitType;
-	@:dox(hide) @:noCompletion private function set_gridFitType (value:GridFitType):GridFitType;
+	@:noCompletion private function get_gridFitType ():GridFitType;
+	@:noCompletion private function set_gridFitType (value:GridFitType):GridFitType;
 	
 	/**
 	 * Contains the HTML representation of the text field contents.
@@ -322,8 +322,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var htmlText (get, set):String;
 	
-	@:dox(hide) @:noCompletion private function get_htmlText ():String;
-	@:dox(hide) @:noCompletion private function set_htmlText (value:String):String;
+	@:noCompletion private function get_htmlText ():String;
+	@:noCompletion private function set_htmlText (value:String):String;
 	
 	/**
 	 * The number of characters in a text field. A character such as tab
@@ -331,8 +331,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var length (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_length ():Int;
-	@:dox(hide) @:noCompletion private function set_length (value:Int):Int;
+	@:noCompletion private function get_length ():Int;
+	@:noCompletion private function set_length (value:Int):Int;
 	
 	/**
 	 * The maximum number of characters that the text field can contain, as
@@ -345,27 +345,27 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var maxChars (get, set):Int;
 	
-	@:dox(hide) @:noCompletion private function get_maxChars ():Int;
-	@:dox(hide) @:noCompletion private function set_maxChars (value:Int):Int;
+	@:noCompletion private function get_maxChars ():Int;
+	@:noCompletion private function set_maxChars (value:Int):Int;
 	
 	/**
 	 * The maximum value of `scrollH`.
 	 */
 	public var maxScrollH (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_maxScrollH ():Int;
+	@:noCompletion private function get_maxScrollH ():Int;
 	
 	/**
 	 * The maximum value of `scrollV`.
 	 */
 	public var maxScrollV (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_maxScrollV ():Int;
+	@:noCompletion private function get_maxScrollV ():Int;
 	
 	public var mouseWheelEnabled (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_mouseWheelEnabled ():Bool;
-	@:dox(hide) @:noCompletion private function set_mouseWheelEnabled (value:Bool):Bool;
+	@:noCompletion private function get_mouseWheelEnabled ():Bool;
+	@:noCompletion private function set_mouseWheelEnabled (value:Bool):Bool;
 	
 	/**
 	 * Indicates whether field is a multiline text field. If the value is
@@ -381,8 +381,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var multiline (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_multiline ():Bool;
-	@:dox(hide) @:noCompletion private function set_multiline (value:Bool):Bool;
+	@:noCompletion private function get_multiline ():Bool;
+	@:noCompletion private function set_multiline (value:Bool):Bool;
 	
 	/**
 	 * Defines the number of text lines in a multiline text field. If
@@ -391,7 +391,7 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var numLines (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_numLines ():Int;
+	@:noCompletion private function get_numLines ():Int;
 	
 	/**
 	 * Indicates the set of characters that a user can enter into the text field.
@@ -441,8 +441,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var restrict (get, set):String;
 	
-	@:dox(hide) @:noCompletion private function get_restrict ():String;
-	@:dox(hide) @:noCompletion private function set_restrict (value:String):String;
+	@:noCompletion private function get_restrict ():String;
+	@:noCompletion private function set_restrict (value:String):String;
 	
 	/**
 	 * The current horizontal scrolling position. If the `scrollH`
@@ -462,8 +462,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var scrollH (get, set):Int;
 	
-	@:dox(hide) @:noCompletion private function get_scrollH ():Int;
-	@:dox(hide) @:noCompletion private function set_scrollH (value:Int):Int;
+	@:noCompletion private function get_scrollH ():Int;
+	@:noCompletion private function set_scrollH (value:Int):Int;
 	
 	/**
 	 * The vertical position of text in a text field. The `scrollV`
@@ -481,8 +481,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var scrollV (get, set):Int;
 	
-	@:dox(hide) @:noCompletion private function get_scrollV ():Int;
-	@:dox(hide) @:noCompletion private function set_scrollV (value:Int):Int;
+	@:noCompletion private function get_scrollV ():Int;
+	@:noCompletion private function set_scrollV (value:Int):Int;
 	
 	/**
 	 * A Boolean value that indicates whether the text field is selectable. The
@@ -504,8 +504,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var selectable (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_selectable ():Bool;
-	@:dox(hide) @:noCompletion private function set_selectable (value:Bool):Bool;
+	@:noCompletion private function get_selectable ():Bool;
+	@:noCompletion private function set_selectable (value:Bool):Bool;
 	
 	/**
 	 * The zero-based character index value of the first character in the current
@@ -515,7 +515,7 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var selectionBeginIndex (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_selectionBeginIndex ():Int;
+	@:noCompletion private function get_selectionBeginIndex ():Int;
 	
 	/**
 	 * The zero-based character index value of the last character in the current
@@ -525,7 +525,7 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var selectionEndIndex (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_selectionEndIndex ():Int;
+	@:noCompletion private function get_selectionEndIndex ():Int;
 	
 	/**
 	 * The sharpness of the glyph edges in this text field. This property applies
@@ -539,8 +539,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var sharpness (get, set):Float;
 	
-	@:dox(hide) @:noCompletion private function get_sharpness ():Float;
-	@:dox(hide) @:noCompletion private function set_sharpness (value:Float):Float;
+	@:noCompletion private function get_sharpness ():Float;
+	@:noCompletion private function set_sharpness (value:Float):Float;
 	
 	/**
 	 * A string that is the current text in the text field. Lines are separated
@@ -552,8 +552,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var text (get, set):String;
 	
-	@:dox(hide) @:noCompletion private function get_text ():String;
-	@:dox(hide) @:noCompletion private function set_text (value:String):String;
+	@:noCompletion private function get_text ():String;
+	@:noCompletion private function set_text (value:String):String;
 	
 	/**
 	 * The color of the text in a text field, in hexadecimal format. The
@@ -566,22 +566,22 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var textColor (get, set):Int;
 	
-	@:dox(hide) @:noCompletion private function get_textColor ():Int;
-	@:dox(hide) @:noCompletion private function set_textColor (value:Int):Int;
+	@:noCompletion private function get_textColor ():Int;
+	@:noCompletion private function set_textColor (value:Int):Int;
 	
 	/**
 	 * The height of the text in pixels.
 	 */
 	public var textHeight (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_textHeight ():Float;
+	@:noCompletion private function get_textHeight ():Float;
 	
 	/**
 	 * The width of the text in pixels.
 	 */
 	public var textWidth (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_textWidth ():Float;
+	@:noCompletion private function get_textWidth ():Float;
 	
 	/**
 	 * The type of the text field. Either one of the following TextFieldType
@@ -595,8 +595,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var type (get, set):TextFieldType;
 	
-	@:dox(hide) @:noCompletion private function get_type ():TextFieldType;
-	@:dox(hide) @:noCompletion private function set_type (value:TextFieldType):TextFieldType;
+	@:noCompletion private function get_type ():TextFieldType;
+	@:noCompletion private function set_type (value:TextFieldType):TextFieldType;
 	
 	/**
 	 * A Boolean value that indicates whether the text field has word wrap. If
@@ -606,8 +606,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var wordWrap (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_wordWrap ():Bool;
-	@:dox(hide) @:noCompletion private function set_wordWrap (value:Bool):Bool;
+	@:noCompletion private function get_wordWrap ():Bool;
+	@:noCompletion private function set_wordWrap (value:Bool):Bool;
 	
 	
 	/**

@@ -11,15 +11,14 @@ extern class Tileset {
 	
 	public var bitmapData (get, set):BitmapData;
 	
-	@:dox(hide) @:noCompletion private function get_bitmapData ():BitmapData;
-	@:dox(hide) @:noCompletion private function set_bitmapData (value:BitmapData):BitmapData;
+	@:noCompletion private function get_bitmapData ():BitmapData;
+	@:noCompletion private function set_bitmapData (value:BitmapData):BitmapData;
 	
 	public var rectData:Vector<Float>;
 	
 	public var numRects (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_numRects ():Int;
-	@:dox(hide) @:noCompletion private function set_numRects (value:Int):Int;
+	@:noCompletion private function get_numRects ():Int;
 	
 	public function new (bitmapData:BitmapData, rects:Array<Rectangle> = null);
 	public function addRect (rect:Rectangle):Int;

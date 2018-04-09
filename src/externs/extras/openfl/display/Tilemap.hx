@@ -6,7 +6,7 @@ extern class Tilemap extends DisplayObject implements ITileContainer {
 	
 	public var numTiles (get, never):Int;
 	
-	//@:dox(hide) @:noCompletion private function get_numTiles ():Int;
+	@:noCompletion private function get_numTiles ():Int;
 	
 	public var smoothing:Bool;
 	public var tileAlphaEnabled:Bool;
@@ -14,8 +14,8 @@ extern class Tilemap extends DisplayObject implements ITileContainer {
 	
 	public var tileset (get, set):Tileset;
 	
-	@:dox(hide) @:noCompletion private function get_tileset ():Tileset;
-	@:dox(hide) @:noCompletion private function set_tileset (value:Tileset):Tileset;
+	@:noCompletion private function get_tileset ():Tileset;
+	@:noCompletion private function set_tileset (value:Tileset):Tileset;
 	
 	public function new (width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true);
 	
@@ -33,8 +33,6 @@ extern class Tilemap extends DisplayObject implements ITileContainer {
 	public function setTiles (group:TileContainer):Void;
 	public function swapTiles (tile1:Tile, tile2:Tile):Void;
 	public function swapTilesAt (index1:Int, index2:Int):Void;
-	
-	@:noCompletion private function get_numTiles ():Int;
 	
 	
 }

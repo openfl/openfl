@@ -10,7 +10,15 @@ declare namespace openfl.geom {
 		
 		
 		public readonly determinant:number;
+		
+		private get_determinant ():number;
+		private set_determinant (value:number):number;
+		
 		public position:Vector3D;
+		
+		private get_position ():Vector3D;
+		private set_position (value:Vector3D):Vector3D;
+		
 		public rawData:Vector<number>;
 		
 		

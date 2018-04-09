@@ -10,8 +10,14 @@ declare namespace openfl.media {
 		
 		public deblocking:number;
 		public smoothing:boolean;
+		
 		public readonly videoHeight:number;
+		
+		private get_videoHeight ():number;
+		
 		public readonly videoWidth:number;
+		
+		private get_videoWidth ():number;
 		
 		
 		public constructor (width?:number, height?:number);

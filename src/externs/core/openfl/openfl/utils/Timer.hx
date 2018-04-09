@@ -48,8 +48,8 @@ extern class Timer extends EventDispatcher {
 	 */
 	public var delay (get, set):Float;
 	
-	@:dox(hide) @:noCompletion private function get_delay ():Float;
-	@:dox(hide) @:noCompletion private function set_delay (value:Float):Float;
+	@:noCompletion private function get_delay ():Float;
+	@:noCompletion private function set_delay (value:Float):Float;
 	
 	/**
 	 * The total number of times the timer is set to run. If the repeat count is
@@ -61,8 +61,8 @@ extern class Timer extends EventDispatcher {
 	 */
 	public var repeatCount (get, set):Int;
 	
-	@:dox(hide) @:noCompletion private function get_repeatCount ():Int;
-	@:dox(hide) @:noCompletion private function set_repeatCount (value:Int):Int;
+	@:noCompletion private function get_repeatCount ():Int;
+	@:noCompletion private function set_repeatCount (value:Int):Int;
 	
 	/**
 	 * The timer's current state; `true` if the timer is running,

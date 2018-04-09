@@ -12,6 +12,9 @@ declare namespace openfl.utils {
 	
 		public enabled:boolean;
 		
+		private get_enabled ():boolean;
+		private set_enabled (value:boolean):boolean;
+		
 		public constructor ();
 		
 		public clear (prefix?:string):void;

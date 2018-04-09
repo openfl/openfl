@@ -109,6 +109,8 @@ declare namespace openfl.ui {
 		 */
 		public static readonly supportsTouchEvents:boolean;
 		
+		private static get_supportsTouchEvents ():boolean;
+		
 		
 	}
 	

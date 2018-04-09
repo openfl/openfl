@@ -45,7 +45,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var cpuArchitecture (get, null):String;
 	
-	@:dox(hide) @:noCompletion private function get_cpuArchitecture ():String;
+	@:noCompletion private static function get_cpuArchitecture ():String;
 	
 	/**
 	 * Specifies whether the system supports(`true`) or does not
@@ -178,7 +178,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var language (get, never):String;
 	
-	@:dox(hide) @:noCompletion private function get_language ():String;
+	@:noCompletion private static function get_language ():String;
 	
 	/**
 	 * Specifies whether read access to the user's hard disk has been
@@ -220,7 +220,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var manufacturer (get, never):String;
 	
-	@:dox(hide) @:noCompletion private function get_manufacturer ():String;
+	@:noCompletion private static function get_manufacturer ():String;
 	
 	/**
 	 * Retrieves the highest H.264 Level IDC that the client hardware supports.
@@ -250,7 +250,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var os (get, never):String;
 	
-	@:dox(hide) @:noCompletion private function get_os ():String;
+	@:noCompletion private static function get_os ():String;
 	
 	/**
 	 * Specifies the pixel aspect ratio of the screen. The server string is
@@ -258,7 +258,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var pixelAspectRatio (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_pixelAspectRatio ():Float;
+	@:noCompletion private static function get_pixelAspectRatio ():Float;
 	
 	/**
 	 * Specifies the type of runtime environment. This property can have one of
@@ -294,7 +294,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var screenDPI (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_screenDPI ():Float;
+	@:noCompletion private static function get_screenDPI ():Float;
 	
 	/**
 	 * Specifies the maximum horizontal resolution of the screen. The server
@@ -306,7 +306,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var screenResolutionX (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_screenResolutionX ():Float;
+	@:noCompletion private static function get_screenResolutionX ():Float;
 	
 	/**
 	 * Specifies the maximum vertical resolution of the screen. The server string
@@ -317,7 +317,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var screenResolutionY (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_screenResolutionY ():Float;
+	@:noCompletion private static function get_screenResolutionY ():Float;
 	
 	/**
 	 * A URL-encoded string that specifies values for each Capabilities property.
@@ -372,7 +372,7 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var version (get, never):String;
 	
-	@:dox(hide) @:noCompletion private function get_version ():String;
+	@:noCompletion private static function get_version ():String;
 	
 	
 	public static function hasMultiChannelAudio (type:String):Bool;

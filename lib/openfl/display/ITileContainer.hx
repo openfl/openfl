@@ -9,6 +9,8 @@ extern interface ITileContainer {
 	
 	public var numTiles (get, never):Int;
 	
+	@:noCompletion private function get_numTiles ():Int;
+	
 	public function addTile (tile:Tile):Tile;
 	public function addTileAt (tile:Tile, index:Int):Tile;
 	public function addTiles (tiles:Array<Tile>):Array<Tile>;
@@ -21,8 +23,6 @@ extern interface ITileContainer {
 	public function setTileIndex (tile:Tile, index:Int):Void;
 	public function swapTiles (tile1:Tile, tile2:Tile):Void;
 	public function swapTilesAt (index1:Int, index2:Int):Void;
-	
-	@:noCompletion private function get_numTiles ():Int;
 	
 	
 }

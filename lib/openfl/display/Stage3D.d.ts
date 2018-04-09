@@ -13,8 +13,16 @@ declare namespace openfl.display {
 	
 		public readonly context3D:Context3D;
 		public visible:boolean;
+		
 		public x:number;
+		
+		private get_x ():number;
+		private set_x (value:number):number;
+		
 		public y:number;
+		
+		private get_y ():number;
+		private set_y (value:number):number;
 		
 		
 		public requestContext3D (context3DRenderMode?:Context3DRenderMode, profile?:Context3DProfile):void;

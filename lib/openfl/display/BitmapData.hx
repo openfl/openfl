@@ -106,7 +106,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * Since non-readable bitmap images do not have a software image buffer, they
 	 * will need to be recreated if the current hardware rendering context is lost.
 	 */
-	public var readable (default, null):Bool;
+	@:beta public var readable (default, null):Bool;
 	
 	/**
 	 * The rectangle that defines the size and location of the bitmap image. The
@@ -333,7 +333,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * `BitmapData.disposeImage()` will immediately change the value of 
 	 * the `readable` property to `false`.
 	 */
-	public function disposeImage ():Void;
+	@:beta public function disposeImage ():Void;
 	
 	
 	/**

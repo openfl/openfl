@@ -31,6 +31,8 @@ declare namespace openfl.geom {
 		 */
 		public readonly length:number;
 		
+		private get_length ():number;
+		
 		/**
 		 * The horizontal coordinate of the point. The default value is 0.
 		 */

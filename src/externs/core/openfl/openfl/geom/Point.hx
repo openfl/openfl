@@ -31,7 +31,7 @@ extern class Point {
 	 */
 	public var length (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_length ():Float;
+	@:noCompletion private function get_length ():Float;
 	
 	/**
 	 * The horizontal coordinate of the point. The default value is 0.

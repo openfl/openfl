@@ -1,6 +1,8 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
 @:jsRequire("openfl/utils/ByteArray", "default")
 
 
@@ -23,7 +25,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
 	 * used. The value is a constant from the ObjectEncoding class.
 	 */
-	public static var defaultObjectEncoding:UInt;
+	public static var defaultObjectEncoding:ObjectEncoding;
 	
 	/**
 	 * The number of bytes of data available for reading from the current
@@ -60,7 +62,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * ActionScript 1.0 format should be used when writing to, or reading from, a
 	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 	 */
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	/**
 	 * Moves, or returns the current position, in bytes, of the file pointer into

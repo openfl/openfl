@@ -1,11 +1,12 @@
 import BlendMode from "./BlendMode";
 import DisplayObjectContainer from "./DisplayObjectContainer";
-import DisplayObjectShader from "./DisplayObjectShader";
 import IBitmapDrawable from "./IBitmapDrawable";
 import LoaderInfo from "./LoaderInfo";
+import Shader from "./Shader";
 import Stage from "./Stage";
 import EventDispatcher from "./../events/EventDispatcher";
 import BitmapFilter from "./../filters/BitmapFilter";
+import Matrix from "./../geom/Matrix";
 import Point from "./../geom/Point";
 import Rectangle from "./../geom/Rectangle";
 import Transform from "./../geom/Transform";
@@ -159,6 +160,9 @@ declare namespace openfl.display {
 		 */
 		alpha:number;
 		
+		private get_alpha ():number;
+		private set_alpha (value:number):number;
+		
 		/**
 		 * A value from the BlendMode class that specifies which blend mode to use. A
 		 * bitmap can be drawn internally in two ways. If you have a blend mode
@@ -184,6 +188,10 @@ declare namespace openfl.display {
 		 * object(2) superimposed on another display object(1).
 		 */
 		blendMode:BlendMode;
+		
+		private get_blendMode ():BlendMode;
+		private set_blendMode (value:BlendMode):BlendMode;
+		
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) blendShader (null, default):Shader;
@@ -241,6 +249,15 @@ declare namespace openfl.display {
 		 * and _y_ position is changed).
 		 */
 		cacheAsBitmap:boolean;
+		
+		private get_cacheAsBitmap ():boolean;
+		private set_cacheAsBitmap (value:boolean):boolean;
+		
+		cacheAsBitmapMatrix:Matrix;
+		
+		private get_cacheAsBitmapMatrix ():Matrix;
+		private set_cacheAsBitmapMatrix (value:Matrix):Matrix;
+		
 		
 		/**
 		 * An indexed array that contains each filter object currently associated
@@ -319,6 +336,9 @@ declare namespace openfl.display {
 		 */
 		filters:Array<BitmapFilter>;
 		
+		private get_filters ():Array<BitmapFilter>;
+		private set_filters (value:Array<BitmapFilter>):Array<BitmapFilter>;
+		
 		/**
 		 * Indicates the height of the display object, in pixels. The height is
 		 * calculated based on the bounds of the content of the display object. When
@@ -330,6 +350,9 @@ declare namespace openfl.display {
 		 * set `height` to a different value.
 		 */
 		height:number;
+		
+		private get_height ():number;
+		private set_height (value:number):number;
 		
 		/**
 		 * Returns a LoaderInfo object containing information about loading the file
@@ -345,6 +368,8 @@ declare namespace openfl.display {
 		 * func)`.
 		 */
 		readonly loaderInfo:LoaderInfo;
+		
+		private get_loaderInfo ():LoaderInfo;
 		
 		/**
 		 * The calling display object is masked by the specified `mask`
@@ -379,6 +404,9 @@ declare namespace openfl.display {
 		 */
 		mask:DisplayObject;
 		
+		private get_mask ():DisplayObject;
+		private set_mask (value:DisplayObject):DisplayObject;
+		
 		/**
 		 * Indicates the x coordinate of the mouse or user input device position, in
 		 * pixels.
@@ -388,6 +416,8 @@ declare namespace openfl.display {
 		 */
 		readonly mouseX:number;
 		
+		private get_mouseX ():number;
+		
 		/**
 		 * Indicates the y coordinate of the mouse or user input device position, in
 		 * pixels.
@@ -396,6 +426,8 @@ declare namespace openfl.display {
 		 * coordinate will reflect the non-rotated object.
 		 */
 		readonly mouseY:number;
+		
+		private get_mouseY ():number;
 		
 		/**
 		 * Indicates the instance name of the DisplayObject. The object can be
@@ -408,6 +440,9 @@ declare namespace openfl.display {
 		 *                               in the Flash authoring tool.
 		 */
 		name:string;
+		
+		private get_name ():string;
+		private set_name (value:string):string;
 		
 		/**
 		 * Specifies whether the display object is opaque with a certain background
@@ -451,8 +486,6 @@ declare namespace openfl.display {
 		 */
 		readonly parent:DisplayObjectContainer;
 		
-		renderShader:DisplayObjectShader;
-		
 		/**
 		 * For a display object in a loaded SWF file, the `root` property
 		 * is the top-most display object in the portion of the display list's tree
@@ -481,6 +514,8 @@ declare namespace openfl.display {
 		 */
 		readonly root:DisplayObject;
 		
+		private get_root ():DisplayObject;
+		
 		/**
 		 * Indicates the rotation of the DisplayObject instance, in degrees, from its
 		 * original orientation. Values from 0 to 180 represent clockwise rotation;
@@ -490,6 +525,9 @@ declare namespace openfl.display {
 		 * is the same as ` my_video.rotation = 90`.
 		 */
 		rotation:number;
+		
+		private get_rotation ():number;
+		private set_rotation (value:number):number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) rotationX:Float;
@@ -565,6 +603,9 @@ declare namespace openfl.display {
 		 */
 		scaleX:number;
 		
+		private get_scaleX ():number;
+		private set_scaleX (value:number):number;
+		
 		/**
 		 * Indicates the vertical scale(percentage) of an object as applied from the
 		 * registration point of the object. The default registration point is(0,0).
@@ -574,6 +615,9 @@ declare namespace openfl.display {
 		 * `y` property values, which are defined in whole pixels. 
 		 */
 		scaleY:number;
+		
+		private get_scaleY ():number;
+		private set_scaleY (value:number):number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) scaleZ:Float;
@@ -603,6 +647,14 @@ declare namespace openfl.display {
 		 */
 		scrollRect:Rectangle;
 		
+		private get_scrollRect ():Rectangle;
+		private set_scrollRect (value:Rectangle):Rectangle;
+		
+		shader:Shader;
+		
+		private get_shader ():Shader;
+		private set_shader (value:Shader):Shader;
+		
 		/**
 		 * The Stage of the display object. A Flash runtime application has only one
 		 * Stage object. For example, you can create and load multiple display
@@ -614,6 +666,9 @@ declare namespace openfl.display {
 		 * `stage` property is set to `null`.
 		 */
 		readonly stage:Stage;
+		
+		private get_stage ():Stage;
+		private set_stage (value:Stage):Stage;
 		
 		/**
 		 * An object with properties pertaining to a display object's matrix, color
@@ -655,12 +710,18 @@ declare namespace openfl.display {
 		 */
 		transform:Transform;
 		
+		private get_transform ():Transform;
+		private set_transform (value:Transform):Transform;
+		
 		/**
 		 * Whether or not the display object is visible. Display objects that are not
 		 * visible are disabled. For example, if `visible=false` for an
 		 * InteractiveObject instance, it cannot be clicked.
 		 */
 		visible:boolean;
+		
+		private get_visible ():boolean;
+		private set_visible (value:boolean):boolean;
 		
 		/**
 		 * Indicates the width of the display object, in pixels. The width is
@@ -674,6 +735,9 @@ declare namespace openfl.display {
 		 */
 		width:number;
 		
+		private get_width ():number;
+		private set_width (value:number):number;
+		
 		/**
 		 * Indicates the _x_ coordinate of the DisplayObject instance relative
 		 * to the local coordinates of the parent DisplayObjectContainer. If the
@@ -686,6 +750,9 @@ declare namespace openfl.display {
 		 */
 		x:number;
 		
+		private get_x ():number;
+		private set_x (value:number):number;
+		
 		/**
 		 * Indicates the _y_ coordinate of the DisplayObject instance relative
 		 * to the local coordinates of the parent DisplayObjectContainer. If the
@@ -697,6 +764,9 @@ declare namespace openfl.display {
 		 * registration point position.
 		 */
 		y:number;
+		
+		private get_y ():number;
+		private set_y (value:number):number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) var z:Float;
@@ -804,6 +874,12 @@ declare namespace openfl.display {
 		 */
 		hitTestPoint (x:number, y:number, shapeFlag?:boolean):boolean;
 		
+		
+		/**
+		 * Calling the `invalidate()` method signals to have the current object 
+		 * redrawn the next time the object is eligible to be rendered.
+		**/
+		invalidate ():void;
 		
 		/**
 		 * Converts the `point` object from the display object's(local)

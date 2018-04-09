@@ -62,7 +62,7 @@ extern class Accelerometer extends EventDispatcher {
 	 */
 	public static var isSupported (get, never):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_isSupported ():Bool;
+	@:noCompletion private static function get_isSupported ():Bool;
 	
 	/**
 	 * Specifies whether the user has denied access to the accelerometer
@@ -71,8 +71,8 @@ extern class Accelerometer extends EventDispatcher {
 	 */
 	public var muted (get, set):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_muted ():Bool;
-	@:dox(hide) @:noCompletion private function set_muted (value:Bool):Bool;
+	@:noCompletion private function get_muted ():Bool;
+	@:noCompletion private function set_muted (value:Bool):Bool;
 	
 	
 	/**

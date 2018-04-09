@@ -69,8 +69,8 @@ extern class Transform {
 	 */
 	public var colorTransform (get, set):ColorTransform;
 	
-	@:dox(hide) @:noCompletion private function get_colorTransform ():ColorTransform;
-	@:dox(hide) @:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform;
+	@:noCompletion private function get_colorTransform ():ColorTransform;
+	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform;
 	
 	/**
 	 * A ColorTransform object representing the combined color transformations
@@ -94,8 +94,8 @@ extern class Transform {
 	 */
 	public var concatenatedMatrix (get, never):Matrix;
 	
-	@:dox(hide) @:noCompletion private function get_concatenatedMatrix ():Matrix;
-	@:dox(hide) @:noCompletion private function set_concatenatedMatrix (value:Matrix):Matrix;
+	@:noCompletion private function get_concatenatedMatrix ():Matrix;
+	@:noCompletion private function set_concatenatedMatrix (value:Matrix):Matrix;
 	
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
@@ -111,8 +111,8 @@ extern class Transform {
 	 */
 	public var matrix (get, set):Matrix;
 	
-	@:dox(hide) @:noCompletion private function get_matrix ():Matrix;
-	@:dox(hide) @:noCompletion private function set_matrix (value:Matrix):Matrix;
+	@:noCompletion private function get_matrix ():Matrix;
+	@:noCompletion private function set_matrix (value:Matrix):Matrix;
 	
 	/**
 	 * Provides access to the Matrix3D object of a three-dimensional display
@@ -128,8 +128,8 @@ extern class Transform {
 	 */
 	public var matrix3D (get, set):Matrix3D;
 	
-	@:dox(hide) @:noCompletion private function get_matrix3D ():Matrix3D;
-	@:dox(hide) @:noCompletion private function set_matrix3D (value:Matrix3D):Matrix3D;
+	@:noCompletion private function get_matrix3D ():Matrix3D;
+	@:noCompletion private function set_matrix3D (value:Matrix3D):Matrix3D;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var perspectiveProjection:PerspectiveProjection;

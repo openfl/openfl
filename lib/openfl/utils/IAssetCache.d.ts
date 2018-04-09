@@ -11,6 +11,9 @@ declare namespace openfl.utils {
 		
 		public enabled:boolean;
 		
+		private get_enabled ():boolean;
+		private set_enabled (value:boolean):boolean;
+		
 		public clear (prefix?:string):void;
 		public getBitmapData (id:string):BitmapData;
 		public getFont (id:string):Font;

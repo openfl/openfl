@@ -1,4 +1,5 @@
 import NetConnection from "./NetConnection";
+import ObjectEncoding from "./ObjectEncoding";
 import SharedObjectFlushStatus from "./SharedObjectFlushStatus";
 import EventDispatcher from "./../events/EventDispatcher";
 
@@ -146,7 +147,7 @@ declare namespace openfl.net {
 	export class SharedObject extends EventDispatcher {
 		
 		
-		public static defaultObjectEncoding:number;
+		public static defaultObjectEncoding:ObjectEncoding;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash11_7) public static preventBackup:boolean;
@@ -170,7 +171,7 @@ declare namespace openfl.net {
 		public readonly data:any;
 		
 		public fps:number;
-		public objectEncoding:number;
+		public objectEncoding:ObjectEncoding;
 		
 		/**
 		 * The current size of the shared object, in bytes.
@@ -182,6 +183,8 @@ declare namespace openfl.net {
 		 * have a specific need for it.
 		 */
 		public readonly size:number;
+		
+		private get_size ():number;
 		
 		
 		// private constructor ();

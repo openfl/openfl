@@ -56,7 +56,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public var numChildren (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_numChildren ():Int;
+	@:noCompletion private function get_numChildren ():Int;
 	
 	
 	/**

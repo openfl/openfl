@@ -13,10 +13,16 @@ declare namespace openfl.display {
 		
 		
 		public readonly numTiles:number;
+		
+		//private get_numTiles ():number;
+		
 		public smoothing:boolean;
 		public tileAlphaEnabled:Boolean;
 		public tileColorTransformEnabled:Boolean;
 		public tileset:Tileset;
+		
+		private get_tileset ():Tileset;
+		private set_tileset (value:Tileset):Tileset;
 		
 		public constructor (width:number, height:number, tileset?:Tileset, smoothing?:boolean);
 		
@@ -34,8 +40,6 @@ declare namespace openfl.display {
 		public setTiles (group:TileContainer):void;
 		public swapTiles (tile1:Tile, tile2:Tile):void;
 		public swapTilesAt (index1:number, index2:number):void;
-		
-		private get_numTiles ():number;
 		
 		
 	}

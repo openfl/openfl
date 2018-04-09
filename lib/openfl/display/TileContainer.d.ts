@@ -11,6 +11,8 @@ declare namespace openfl.display {
 		
 		public readonly numTiles:number;
 		
+		//private get_numTiles ():number;
+		
 		public constructor (x?:number, y?:number, scaleX?:number, scaleY?:number, rotation?:number);
 		
 		public addTile (tile:Tile):Tile;
@@ -25,8 +27,6 @@ declare namespace openfl.display {
 		public setTileIndex (tile:Tile, index:number):void;
 		public swapTiles (tile1:Tile, tile2:Tile):void;
 		public swapTilesAt (index1:number, index2:number):void;
-		
-		private get_numTiles ():number;
 		
 		
 	}

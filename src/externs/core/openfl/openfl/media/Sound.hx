@@ -125,7 +125,7 @@ extern class Sound extends EventDispatcher {
 	 */
 	public var id3 (get, never):ID3Info;
 	
-	@:dox(hide) @:noCompletion private function get_id3 ():ID3Info;
+	@:noCompletion private function get_id3 ():ID3Info;
 	
 	/**
 	 * Returns the buffering state of external MP3 files. If the value is
@@ -143,7 +143,7 @@ extern class Sound extends EventDispatcher {
 	 */
 	public var length (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_length ():Float;
+	@:noCompletion private function get_length ():Float;
 	
 	/**
 	 * The URL from which this sound was loaded. This property is applicable only

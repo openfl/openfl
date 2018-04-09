@@ -91,8 +91,8 @@ extern class ColorTransform {
 	 */
 	public var color (get, set):UInt;
 	
-	@:dox(hide) @:noCompletion private function get_color ():UInt;
-	@:dox(hide) @:noCompletion private function set_color (value:UInt):UInt;
+	@:noCompletion private function get_color ():UInt;
+	@:noCompletion private function set_color (value:UInt):UInt;
 	
 	/**
 	 * A decimal value that is multiplied with the green channel value.

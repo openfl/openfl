@@ -10,8 +10,16 @@ declare namespace openfl.display {
 		
 		
 		public bitmapData:BitmapData;
+		
+		private get_bitmapData ():BitmapData;
+		private set_bitmapData (value:BitmapData):BitmapData;
+		
 		public rectData:Vector<number>;
+		
 		public readonly numRects:number;
+		
+		private get_numRects ():number;
+		
 		
 		public constructor (bitmapData:BitmapData, rects?:Array<Rectangle>);
 		

@@ -58,6 +58,8 @@ declare namespace openfl.display {
 		 */
 		readonly numChildren:number;
 		
+		private get_numChildren ():number;
+		
 		
 		/**
 		 * Determines whether the children of the object are tab enabled. Enables or

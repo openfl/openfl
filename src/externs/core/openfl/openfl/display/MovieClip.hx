@@ -46,7 +46,7 @@ extern class MovieClip extends Sprite {
 	 */
 	public var currentFrame (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_currentFrame ():Int;
+	@:noCompletion private function get_currentFrame ():Int;
 	
 	/**
 	 * The label at the current frame in the timeline of the MovieClip instance.
@@ -55,7 +55,7 @@ extern class MovieClip extends Sprite {
 	 */
 	public var currentFrameLabel (get, never):String;
 	
-	@:dox(hide) @:noCompletion private function get_currentFrameLabel ():String;
+	@:noCompletion private function get_currentFrameLabel ():String;
 	
 	/**
 	 * The current label in which the playhead is located in the timeline of the
@@ -66,7 +66,7 @@ extern class MovieClip extends Sprite {
 	 */
 	public var currentLabel (get, never):String;
 	
-	@:dox(hide) @:noCompletion private function get_currentLabel ():String;
+	@:noCompletion private function get_currentLabel ():String;
 	
 	/**
 	 * Returns an array of FrameLabel objects from the current scene. If the
@@ -75,7 +75,7 @@ extern class MovieClip extends Sprite {
 	 */
 	public var currentLabels (get, never):Array<FrameLabel>;
 	
-	@:dox(hide) @:noCompletion private function get_currentLabels ():Array<FrameLabel>;
+	@:noCompletion private function get_currentLabels ():Array<FrameLabel>;
 	
 	/**
 	 * A Boolean value that indicates whether a movie clip is enabled. The
@@ -108,11 +108,11 @@ extern class MovieClip extends Sprite {
 	 */
 	public var framesLoaded (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_framesLoaded ():Int;
+	@:noCompletion private function get_framesLoaded ():Int;
 	
 	public var isPlaying (get, never):Bool;
 	
-	@:dox(hide) @:noCompletion private function get_isPlaying ():Bool;
+	@:noCompletion private function get_isPlaying ():Bool;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var scenes (default, null):Array<flash.display.Scene>;
@@ -127,7 +127,7 @@ extern class MovieClip extends Sprite {
 	 */
 	public var totalFrames (get, never):Int;
 	
-	@:dox(hide) @:noCompletion private function get_totalFrames ():Int;
+	@:noCompletion private function get_totalFrames ():Int;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;

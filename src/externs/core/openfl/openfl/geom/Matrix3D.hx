@@ -9,13 +9,13 @@ extern class Matrix3D {
 	
 	public var determinant (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_determinant ():Float;
-	@:dox(hide) @:noCompletion private function set_determinant (value:Float):Float;
+	@:noCompletion private function get_determinant ():Float;
+	@:noCompletion private function set_determinant (value:Float):Float;
 	
 	public var position (get, set):Vector3D;
 	
-	@:dox(hide) @:noCompletion private function get_position ():Vector3D;
-	@:dox(hide) @:noCompletion private function set_position (value:Vector3D):Vector3D;
+	@:noCompletion private function get_position ():Vector3D;
+	@:noCompletion private function set_position (value:Vector3D):Vector3D;
 	
 	public var rawData:Vector<Float>;
 	

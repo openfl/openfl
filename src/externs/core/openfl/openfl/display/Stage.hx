@@ -172,8 +172,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var color (get, set):UInt;
 	
-	@:dox(hide) @:noCompletion private function get_color ():UInt;
-	@:dox(hide) @:noCompletion private function set_color (value:UInt):UInt;
+	@:noCompletion private function get_color ():UInt;
+	@:noCompletion private function set_color (value:UInt):UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
@@ -185,7 +185,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var contentsScaleFactor (get, never):Float;
 	
-	@:dox(hide) @:noCompletion private function get_contentsScaleFactor ():Float;
+	@:noCompletion private function get_contentsScaleFactor ():Float;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
@@ -280,8 +280,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var displayState (get, set):StageDisplayState;
 	
-	@:dox(hide) @:noCompletion private function get_displayState ():StageDisplayState;
-	@:dox(hide) @:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState;
+	@:noCompletion private function get_displayState ():StageDisplayState;
+	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState;
 	
 	/**
 	 * The interactive object with keyboard focus; or `null` if focus
@@ -292,8 +292,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var focus (get, set):InteractiveObject;
 	
-	@:dox(hide) @:noCompletion private function get_focus ():InteractiveObject;
-	@:dox(hide) @:noCompletion private function set_focus (value:InteractiveObject):InteractiveObject;
+	@:noCompletion private function get_focus ():InteractiveObject;
+	@:noCompletion private function set_focus (value:InteractiveObject):InteractiveObject;
 	
 	/**
 	 * Gets and sets the frame rate of the stage. The frame rate is defined as
@@ -325,12 +325,12 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var frameRate (get, set):Float;
 	
-	@:dox(hide) @:noCompletion private function get_frameRate ():Float;
-	@:dox(hide) @:noCompletion private function set_frameRate (value:Float):Float;
+	@:noCompletion private function get_frameRate ():Float;
+	@:noCompletion private function set_frameRate (value:Float):Float;
 	
 	public var fullScreenHeight (get, never):UInt;
 	
-	@:dox(hide) @:noCompletion private function get_fullScreenHeight ():UInt;
+	@:noCompletion private function get_fullScreenHeight ():UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
@@ -338,7 +338,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var fullScreenWidth (get, never):UInt;
 	
-	@:dox(hide) @:noCompletion private function get_fullScreenWidth ():UInt;
+	@:noCompletion private function get_fullScreenWidth ():UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
@@ -401,8 +401,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var quality (get, set):StageQuality;
 	
-	@:dox(hide) @:noCompletion private function get_quality ():StageQuality;
-	@:dox(hide) @:noCompletion private function set_quality (value:StageQuality):StageQuality;
+	@:noCompletion private function get_quality ():StageQuality;
+	@:noCompletion private function set_quality (value:StageQuality):StageQuality;
 	
 	/**
 	 * A value from the StageScaleMode class that specifies which scale mode to
@@ -438,8 +438,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var scaleMode (get, set):StageScaleMode;
 	
-	@:dox(hide) @:noCompletion private function get_scaleMode ():StageScaleMode;
-	@:dox(hide) @:noCompletion private function set_scaleMode (value:StageScaleMode):StageScaleMode;
+	@:noCompletion private function get_scaleMode ():StageScaleMode;
+	@:noCompletion private function set_scaleMode (value:StageScaleMode):StageScaleMode;
 	
 	public var showDefaultContextMenu:Bool;
 	

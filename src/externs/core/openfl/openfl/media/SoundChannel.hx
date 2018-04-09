@@ -38,8 +38,8 @@ import openfl.events.EventDispatcher;
 	 */
 	public var position (get, set):Float;
 	
-	@:dox(hide) @:noCompletion private function get_position ():Float;
-	@:dox(hide) @:noCompletion private function set_position (value:Float):Float;
+	@:noCompletion private function get_position ():Float;
+	@:noCompletion private function set_position (value:Float):Float;
 	
 	/**
 	 * The current amplitude(volume) of the right channel, from 0(silent) to 1
@@ -54,8 +54,8 @@ import openfl.events.EventDispatcher;
 	 */
 	public var soundTransform (get, set):SoundTransform;
 	
-	@:dox(hide) @:noCompletion private function get_soundTransform ():SoundTransform;
-	@:dox(hide) @:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
+	@:noCompletion private function get_soundTransform ():SoundTransform;
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
 	
 	
 	#if flash

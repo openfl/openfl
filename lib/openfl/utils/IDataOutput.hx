@@ -1,6 +1,9 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
+
 @:jsRequire("openfl/utils/IDataOutput", "default")
 
 #if flash
@@ -13,9 +16,12 @@ extern interface IDataOutput {
 	public var endian:Endian;
 	#else
 	public var endian (get, set):Endian;
+	
+	@:noCompletion private function get_endian ():Endian;
+	@:noCompletion private function set_endian (value:Endian):Endian;
 	#end
 	
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	public function writeBoolean (value:Bool):Void;
 	public function writeByte (value:Int):Void;
