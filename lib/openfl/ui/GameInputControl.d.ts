@@ -34,7 +34,7 @@ declare namespace openfl.ui {
 		public readonly value:number;
 		
 		
-		private new (device:GameInputDevice, id:string, minValue:number, maxValue:number, value?:number);
+		protected new (device:GameInputDevice, id:string, minValue:number, maxValue:number, value?:number);
 		
 		
 	}

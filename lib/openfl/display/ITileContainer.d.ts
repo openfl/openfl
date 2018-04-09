@@ -10,7 +10,7 @@ declare namespace openfl.display {
 		
 		public readonly numTiles:number;
 		
-		// private get_numTiles ():number;
+		// protected get_numTiles ():number;
 		
 		public addTile (tile:Tile):Tile;
 		public addTileAt (tile:Tile, index:number):Tile;

@@ -12,8 +12,8 @@ declare namespace openfl.utils {
 	
 		public enabled:boolean;
 		
-		private get_enabled ():boolean;
-		private set_enabled (value:boolean):boolean;
+		protected get_enabled ():boolean;
+		protected set_enabled (value:boolean):boolean;
 		
 		public constructor ();
 		
@@ -31,8 +31,8 @@ declare namespace openfl.utils {
 		public setFont (id:string, font:Font):void;
 		public setSound (id:string, sound:Sound):void;
 		
-		private get_enabled ():boolean;
-		private set_enabled (value:boolean):boolean;
+		protected get_enabled ():boolean;
+		protected set_enabled (value:boolean):boolean;
 		
 		
 	}

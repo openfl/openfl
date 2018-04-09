@@ -50,7 +50,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly totalMemory:number;
 		
-		private static get_totalMemory ():number;
+		protected static get_totalMemory ():number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
@@ -105,7 +105,7 @@ declare namespace openfl.system {
 		
 		public static readonly vmVersion:string;
 		
-		private static get_vmVersion ():string;
+		protected static get_vmVersion ():string;
 		
 		
 		// #if flash

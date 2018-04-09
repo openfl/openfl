@@ -13,20 +13,20 @@ declare namespace openfl.display {
 		
 		public data:ShaderData;
 		
-		private get_data ():ShaderData;
-		private set_data (value:ShaderData):ShaderData;
+		protected get_data ():ShaderData;
+		protected set_data (value:ShaderData):ShaderData;
 	
 		public glFragmentSource:string;
 		
-		private get_glFragmentSource ():string;
-		private set_glFragmentSource (value:string):string;
+		protected get_glFragmentSource ():string;
+		protected set_glFragmentSource (value:string):string;
 	
 		public readonly glProgram:any;
 		
 		public glVertexSource:string;
 		
-		private get_glVertexSource ():string;
-		private set_glVertexSource (value:string):string;
+		protected get_glVertexSource ():string;
+		protected set_glVertexSource (value:string):string;
 	
 		public precisionHint:ShaderPrecision;
 		

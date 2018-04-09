@@ -130,7 +130,7 @@ declare namespace openfl.media {
 		 */
 		public readonly id3:ID3Info;
 		
-		private get_id3 ():ID3Info;
+		protected get_id3 ():ID3Info;
 		
 		/**
 		 * Returns the buffering state of external MP3 files. If the value is
@@ -148,7 +148,7 @@ declare namespace openfl.media {
 		 */
 		public readonly length:number;
 		
-		private get_length ():number;
+		protected get_length ():number;
 		
 		/**
 		 * The URL from which this sound was loaded. This property is applicable only

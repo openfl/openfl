@@ -46,8 +46,8 @@ declare namespace openfl.display {
 		 */
 		public bitmapData:BitmapData;
 		
-		private get_bitmapData ():BitmapData;
-		private set_bitmapData (value:BitmapData):BitmapData;
+		protected get_bitmapData ():BitmapData;
+		protected set_bitmapData (value:BitmapData):BitmapData;
 		
 		/**
 		 * Controls whether or not the Bitmap object is snapped to the nearest pixel.

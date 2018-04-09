@@ -10,8 +10,8 @@ declare namespace openfl.utils {
 		
 		public endian:Endian;
 		
-		// private get_endian ():Endian;
-		// private set_endian (value:Endian):Endian;
+		// protected get_endian ():Endian;
+		// protected set_endian (value:Endian):Endian;
 		
 		public objectEncoding:number;
 		

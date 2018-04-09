@@ -28,7 +28,7 @@ declare namespace openfl.display {
 		 */
 		public readonly graphics:Graphics;
 		
-		private get_graphics ():Graphics;
+		protected get_graphics ():Graphics;
 		
 		
 		/**

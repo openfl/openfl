@@ -389,7 +389,7 @@ declare namespace openfl.display {
 		public readonly width:number;
 		
 		
-		// private new ();
+		// protected new ();
 		
 		
 		// #if flash

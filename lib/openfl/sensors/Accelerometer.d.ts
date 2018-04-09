@@ -63,7 +63,7 @@ declare namespace openfl.sensors {
 		 */
 		public static readonly isSupported:boolean;
 		
-		private static get_isSupported ():boolean;
+		protected static get_isSupported ():boolean;
 		
 		/**
 		 * Specifies whether the user has denied access to the accelerometer
@@ -72,8 +72,8 @@ declare namespace openfl.sensors {
 		 */
 		public muted:boolean;
 		
-		private get_muted ():boolean;
-		private set_muted (value:boolean):boolean;
+		protected get_muted ():boolean;
+		protected set_muted (value:boolean):boolean;
 		
 		
 		/**

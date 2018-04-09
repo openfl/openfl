@@ -32,8 +32,8 @@ declare namespace openfl.display {
 		 */
 		public downState:DisplayObject;
 		
-		private get_downState ():DisplayObject;
-		private set_downState (value:DisplayObject):DisplayObject;
+		protected get_downState ():DisplayObject;
+		protected set_downState (value:DisplayObject):DisplayObject;
 		
 		/**
 		 * A Boolean value that specifies whether a button is enabled. When a button
@@ -59,8 +59,8 @@ declare namespace openfl.display {
 		 */
 		public hitTestState:DisplayObject;
 		
-		private get_hitTestState ():DisplayObject;
-		private set_hitTestState (value:DisplayObject):DisplayObject;
+		protected get_hitTestState ():DisplayObject;
+		protected set_hitTestState (value:DisplayObject):DisplayObject;
 		
 		/**
 		 * Specifies a display object that is used as the visual object for the
@@ -69,8 +69,8 @@ declare namespace openfl.display {
 		 */
 		public overState:DisplayObject;
 		
-		private get_overState ():DisplayObject;
-		private set_overState (value:DisplayObject):DisplayObject;
+		protected get_overState ():DisplayObject;
+		protected set_overState (value:DisplayObject):DisplayObject;
 		
 		/**
 		 * The SoundTransform object assigned to this button. A SoundTransform object
@@ -81,8 +81,8 @@ declare namespace openfl.display {
 		 */
 		public soundTransform:SoundTransform;
 		
-		private get_soundTransform ():SoundTransform;
-		private set_soundTransform (value:SoundTransform):SoundTransform;
+		protected get_soundTransform ():SoundTransform;
+		protected set_soundTransform (value:SoundTransform):SoundTransform;
 		
 		/**
 		 * Indicates whether other display objects that are SimpleButton or MovieClip
@@ -104,8 +104,8 @@ declare namespace openfl.display {
 		 */
 		public upState:DisplayObject;
 		
-		private get_upState ():DisplayObject;
-		private set_upState (value:DisplayObject):DisplayObject;
+		protected get_upState ():DisplayObject;
+		protected set_upState (value:DisplayObject):DisplayObject;
 		
 		/**
 		 * A Boolean value that, when set to `true`, indicates whether the

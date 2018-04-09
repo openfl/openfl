@@ -104,8 +104,8 @@ declare namespace openfl.text {
 		 */
 		public readonly antiAliasType:AntiAliasType;
 		
-		private get_antiAliasType ():AntiAliasType;
-		private set_antiAliasType (value:AntiAliasType):AntiAliasType;
+		protected get_antiAliasType ():AntiAliasType;
+		protected set_antiAliasType (value:AntiAliasType):AntiAliasType;
 		
 		/**
 		 * Controls automatic sizing and alignment of text fields. Acceptable values
@@ -151,8 +151,8 @@ declare namespace openfl.text {
 		 */
 		public autoSize:TextFieldAutoSize;
 		
-		private get_autoSize ():TextFieldAutoSize;
-		private set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize;
+		protected get_autoSize ():TextFieldAutoSize;
+		protected set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize;
 		
 		/**
 		 * Specifies whether the text field has a background fill. If
@@ -165,8 +165,8 @@ declare namespace openfl.text {
 		 */
 		public background:boolean;
 		
-		private get_background ():boolean;
-		private set_background (value:boolean):boolean;
+		protected get_background ():boolean;
+		protected set_background (value:boolean):boolean;
 		
 		/**
 		 * The color of the text field background. The default value is
@@ -177,8 +177,8 @@ declare namespace openfl.text {
 		 */
 		public backgroundColor:number;
 		
-		private get_backgroundColor ():number;
-		private set_backgroundColor (value:number):number;
+		protected get_backgroundColor ():number;
+		protected set_backgroundColor (value:number):number;
 		
 		/**
 		 * Specifies whether the text field has a border. If `true`, the
@@ -189,8 +189,8 @@ declare namespace openfl.text {
 		 */
 		public border:boolean;
 		
-		private get_border ():boolean;
-		private set_border (value:boolean):boolean;
+		protected get_border ():boolean;
+		protected set_border (value:boolean):boolean;
 		
 		/**
 		 * The color of the text field border. The default value is
@@ -200,8 +200,8 @@ declare namespace openfl.text {
 		 */
 		public borderColor:number;
 		
-		private get_borderColor ():number;
-		private set_borderColor (value:number):number;
+		protected get_borderColor ():number;
+		protected set_borderColor (value:number):number;
 		
 		/**
 		 * An integer(1-based index) that indicates the bottommost line that is
@@ -214,7 +214,7 @@ declare namespace openfl.text {
 		 */
 		public readonly bottomScrollV:number;
 		
-		private get_bottomScrollV ():number;
+		protected get_bottomScrollV ():number;
 		
 		/**
 		 * The index of the insertion point(caret) position. If no insertion point
@@ -227,8 +227,8 @@ declare namespace openfl.text {
 		 */
 		public readonly caretIndex:number;
 		
-		private get_caretIndex ():number;
-		private set_caretIndex (value:number):number;
+		protected get_caretIndex ():number;
+		protected set_caretIndex (value:number):number;
 		
 		/**
 		 * Specifies the format applied to newly inserted text, such as text entered
@@ -261,8 +261,8 @@ declare namespace openfl.text {
 		 */
 		public defaultTextFormat:TextFormat;
 		
-		private get_defaultTextFormat ():TextFormat;
-		private set_defaultTextFormat (value:TextFormat):TextFormat;
+		protected get_defaultTextFormat ():TextFormat;
+		protected set_defaultTextFormat (value:TextFormat):TextFormat;
 		
 		/**
 		 * Specifies whether the text field is a password text field. If the value of
@@ -278,8 +278,8 @@ declare namespace openfl.text {
 		 */
 		public displayAsPassword:boolean;
 		
-		private get_displayAsPassword ():boolean;
-		private set_displayAsPassword (value:boolean):boolean;
+		protected get_displayAsPassword ():boolean;
+		protected set_displayAsPassword (value:boolean):boolean;
 		
 		/**
 		 * Specifies whether to render by using embedded font outlines. If
@@ -296,8 +296,8 @@ declare namespace openfl.text {
 		 */
 		public embedFonts:boolean;
 		
-		private get_embedFonts ():boolean;
-		private set_embedFonts (value:boolean):boolean;
+		protected get_embedFonts ():boolean;
+		protected set_embedFonts (value:boolean):boolean;
 		
 		/**
 		 * The type of grid fitting used for this text field. This property applies
@@ -315,8 +315,8 @@ declare namespace openfl.text {
 		 */
 		public gridFitType:GridFitType;
 		
-		private get_gridFitType ():GridFitType;
-		private set_gridFitType (value:GridFitType):GridFitType;
+		protected get_gridFitType ():GridFitType;
+		protected set_gridFitType (value:GridFitType):GridFitType;
 		
 		/**
 		 * Contains the HTML representation of the text field contents.
@@ -328,8 +328,8 @@ declare namespace openfl.text {
 		 */
 		public htmlText:string;
 		
-		private get_htmlText ():string;
-		private set_htmlText (value:string):string;
+		protected get_htmlText ():string;
+		protected set_htmlText (value:string):string;
 		
 		/**
 		 * The number of characters in a text field. A character such as tab
@@ -337,8 +337,8 @@ declare namespace openfl.text {
 		 */
 		public readonly length:number;
 		
-		private get_length ():number;
-		private set_length (value:number):number;
+		protected get_length ():number;
+		protected set_length (value:number):number;
 		
 		/**
 		 * The maximum number of characters that the text field can contain, as
@@ -351,27 +351,27 @@ declare namespace openfl.text {
 		 */
 		public maxChars:number;
 		
-		private get_maxChars ():number;
-		private set_maxChars (value:number):number;
+		protected get_maxChars ():number;
+		protected set_maxChars (value:number):number;
 		
 		/**
 		 * The maximum value of `scrollH`.
 		 */
 		public readonly maxScrollH:number;
 		
-		private get_maxScrollH ():number;
+		protected get_maxScrollH ():number;
 		
 		/**
 		 * The maximum value of `scrollV`.
 		 */
 		public readonly maxScrollV:number;
 		
-		private get_maxScrollV ():number;
+		protected get_maxScrollV ():number;
 		
 		public mouseWheelEnabled:boolean;
 		
-		private get_mouseWheelEnabled ():boolean;
-		private set_mouseWheelEnabled (value:boolean):boolean;
+		protected get_mouseWheelEnabled ():boolean;
+		protected set_mouseWheelEnabled (value:boolean):boolean;
 		
 		/**
 		 * Indicates whether field is a multiline text field. If the value is
@@ -387,8 +387,8 @@ declare namespace openfl.text {
 		 */
 		public multiline:boolean;
 		
-		private get_multiline ():boolean;
-		private set_multiline (value:boolean):boolean;
+		protected get_multiline ():boolean;
+		protected set_multiline (value:boolean):boolean;
 		
 		/**
 		 * Defines the number of text lines in a multiline text field. If
@@ -397,7 +397,7 @@ declare namespace openfl.text {
 		 */
 		public readonly numLines:number;
 		
-		private get_numLines ():number;
+		protected get_numLines ():number;
 		
 		/**
 		 * Indicates the set of characters that a user can enter into the text field.
@@ -447,8 +447,8 @@ declare namespace openfl.text {
 		 */
 		public restrict:string;
 		
-		private get_restrict ():string;
-		private set_restrict (value:string):string;
+		protected get_restrict ():string;
+		protected set_restrict (value:string):string;
 		
 		/**
 		 * The current horizontal scrolling position. If the `scrollH`
@@ -468,8 +468,8 @@ declare namespace openfl.text {
 		 */
 		public scrollH:number;
 		
-		private get_scrollH ():number;
-		private set_scrollH (value:number):number;
+		protected get_scrollH ():number;
+		protected set_scrollH (value:number):number;
 		
 		/**
 		 * The vertical position of text in a text field. The `scrollV`
@@ -487,8 +487,8 @@ declare namespace openfl.text {
 		 */
 		public scrollV:number;
 		
-		private get_scrollV ():number;
-		private set_scrollV (value:number):number;
+		protected get_scrollV ():number;
+		protected set_scrollV (value:number):number;
 		
 		/**
 		 * A Boolean value that indicates whether the text field is selectable. The
@@ -510,8 +510,8 @@ declare namespace openfl.text {
 		 */
 		public selectable:boolean;
 		
-		private get_selectable ():boolean;
-		private set_selectable (value:boolean):boolean;
+		protected get_selectable ():boolean;
+		protected set_selectable (value:boolean):boolean;
 		
 		/**
 		 * The zero-based character index value of the first character in the current
@@ -521,7 +521,7 @@ declare namespace openfl.text {
 		 */
 		public readonly selectionBeginIndex:number;
 		
-		private get_selectionBeginIndex ():number;
+		protected get_selectionBeginIndex ():number;
 		
 		/**
 		 * The zero-based character index value of the last character in the current
@@ -531,7 +531,7 @@ declare namespace openfl.text {
 		 */
 		public readonly selectionEndIndex:number;
 		
-		private get_selectionEndIndex ():number;
+		protected get_selectionEndIndex ():number;
 			
 		/**
 		 * The sharpness of the glyph edges in this text field. This property applies
@@ -545,8 +545,8 @@ declare namespace openfl.text {
 		 */
 		public sharpness:number;
 		
-		private get_sharpness ():number;
-		private set_sharpness (value:number):number;
+		protected get_sharpness ():number;
+		protected set_sharpness (value:number):number;
 		
 		/**
 		 * A string that is the current text in the text field. Lines are separated
@@ -558,8 +558,8 @@ declare namespace openfl.text {
 		 */
 		public text:string;
 		
-		private get_text ():string;
-		private set_text (value:string):string;
+		protected get_text ():string;
+		protected set_text (value:string):string;
 		
 		/**
 		 * The color of the text in a text field, in hexadecimal format. The
@@ -572,22 +572,22 @@ declare namespace openfl.text {
 		 */
 		public textColor:number;
 		
-		private get_textColor ():number;
-		private set_textColor (value:number):number;
+		protected get_textColor ():number;
+		protected set_textColor (value:number):number;
 		
 		/**
 		 * The height of the text in pixels.
 		 */
 		public readonly textHeight:number;
 		
-		private get_textHeight ():number;
+		protected get_textHeight ():number;
 		
 		/**
 		 * The width of the text in pixels.
 		 */
 		public readonly textWidth:number;
 		
-		private get_textWidth ():number;
+		protected get_textWidth ():number;
 		
 		/**
 		 * The type of the text field. Either one of the following TextFieldType
@@ -601,8 +601,8 @@ declare namespace openfl.text {
 		 */
 		public type:TextFieldType;
 		
-		private get_type ():TextFieldType;
-		private set_type (value:TextFieldType):TextFieldType;
+		protected get_type ():TextFieldType;
+		protected set_type (value:TextFieldType):TextFieldType;
 		
 		/**
 		 * A Boolean value that indicates whether the text field has word wrap. If
@@ -612,8 +612,8 @@ declare namespace openfl.text {
 		 */
 		public wordWrap:boolean;
 		
-		private get_wordWrap ():boolean;
-		private set_wordWrap (value:boolean):boolean;
+		protected get_wordWrap ():boolean;
+		protected set_wordWrap (value:boolean):boolean;
 		
 		
 		/**

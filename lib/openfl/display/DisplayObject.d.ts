@@ -160,8 +160,8 @@ declare namespace openfl.display {
 		 */
 		alpha:number;
 		
-		private get_alpha ():number;
-		private set_alpha (value:number):number;
+		protected get_alpha ():number;
+		protected set_alpha (value:number):number;
 		
 		/**
 		 * A value from the BlendMode class that specifies which blend mode to use. A
@@ -189,8 +189,8 @@ declare namespace openfl.display {
 		 */
 		blendMode:BlendMode;
 		
-		private get_blendMode ():BlendMode;
-		private set_blendMode (value:BlendMode):BlendMode;
+		protected get_blendMode ():BlendMode;
+		protected set_blendMode (value:BlendMode):BlendMode;
 		
 		
 		// #if flash
@@ -250,13 +250,13 @@ declare namespace openfl.display {
 		 */
 		cacheAsBitmap:boolean;
 		
-		private get_cacheAsBitmap ():boolean;
-		private set_cacheAsBitmap (value:boolean):boolean;
+		protected get_cacheAsBitmap ():boolean;
+		protected set_cacheAsBitmap (value:boolean):boolean;
 		
 		cacheAsBitmapMatrix:Matrix;
 		
-		private get_cacheAsBitmapMatrix ():Matrix;
-		private set_cacheAsBitmapMatrix (value:Matrix):Matrix;
+		protected get_cacheAsBitmapMatrix ():Matrix;
+		protected set_cacheAsBitmapMatrix (value:Matrix):Matrix;
 		
 		
 		/**
@@ -336,8 +336,8 @@ declare namespace openfl.display {
 		 */
 		filters:Array<BitmapFilter>;
 		
-		private get_filters ():Array<BitmapFilter>;
-		private set_filters (value:Array<BitmapFilter>):Array<BitmapFilter>;
+		protected get_filters ():Array<BitmapFilter>;
+		protected set_filters (value:Array<BitmapFilter>):Array<BitmapFilter>;
 		
 		/**
 		 * Indicates the height of the display object, in pixels. The height is
@@ -351,8 +351,8 @@ declare namespace openfl.display {
 		 */
 		height:number;
 		
-		private get_height ():number;
-		private set_height (value:number):number;
+		protected get_height ():number;
+		protected set_height (value:number):number;
 		
 		/**
 		 * Returns a LoaderInfo object containing information about loading the file
@@ -369,7 +369,7 @@ declare namespace openfl.display {
 		 */
 		readonly loaderInfo:LoaderInfo;
 		
-		private get_loaderInfo ():LoaderInfo;
+		protected get_loaderInfo ():LoaderInfo;
 		
 		/**
 		 * The calling display object is masked by the specified `mask`
@@ -404,8 +404,8 @@ declare namespace openfl.display {
 		 */
 		mask:DisplayObject;
 		
-		private get_mask ():DisplayObject;
-		private set_mask (value:DisplayObject):DisplayObject;
+		protected get_mask ():DisplayObject;
+		protected set_mask (value:DisplayObject):DisplayObject;
 		
 		/**
 		 * Indicates the x coordinate of the mouse or user input device position, in
@@ -416,7 +416,7 @@ declare namespace openfl.display {
 		 */
 		readonly mouseX:number;
 		
-		private get_mouseX ():number;
+		protected get_mouseX ():number;
 		
 		/**
 		 * Indicates the y coordinate of the mouse or user input device position, in
@@ -427,7 +427,7 @@ declare namespace openfl.display {
 		 */
 		readonly mouseY:number;
 		
-		private get_mouseY ():number;
+		protected get_mouseY ():number;
 		
 		/**
 		 * Indicates the instance name of the DisplayObject. The object can be
@@ -441,8 +441,8 @@ declare namespace openfl.display {
 		 */
 		name:string;
 		
-		private get_name ():string;
-		private set_name (value:string):string;
+		protected get_name ():string;
+		protected set_name (value:string):string;
 		
 		/**
 		 * Specifies whether the display object is opaque with a certain background
@@ -514,7 +514,7 @@ declare namespace openfl.display {
 		 */
 		readonly root:DisplayObject;
 		
-		private get_root ():DisplayObject;
+		protected get_root ():DisplayObject;
 		
 		/**
 		 * Indicates the rotation of the DisplayObject instance, in degrees, from its
@@ -526,8 +526,8 @@ declare namespace openfl.display {
 		 */
 		rotation:number;
 		
-		private get_rotation ():number;
-		private set_rotation (value:number):number;
+		protected get_rotation ():number;
+		protected set_rotation (value:number):number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) rotationX:Float;
@@ -603,8 +603,8 @@ declare namespace openfl.display {
 		 */
 		scaleX:number;
 		
-		private get_scaleX ():number;
-		private set_scaleX (value:number):number;
+		protected get_scaleX ():number;
+		protected set_scaleX (value:number):number;
 		
 		/**
 		 * Indicates the vertical scale(percentage) of an object as applied from the
@@ -616,8 +616,8 @@ declare namespace openfl.display {
 		 */
 		scaleY:number;
 		
-		private get_scaleY ():number;
-		private set_scaleY (value:number):number;
+		protected get_scaleY ():number;
+		protected set_scaleY (value:number):number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) scaleZ:Float;
@@ -647,13 +647,13 @@ declare namespace openfl.display {
 		 */
 		scrollRect:Rectangle;
 		
-		private get_scrollRect ():Rectangle;
-		private set_scrollRect (value:Rectangle):Rectangle;
+		protected get_scrollRect ():Rectangle;
+		protected set_scrollRect (value:Rectangle):Rectangle;
 		
 		shader:Shader;
 		
-		private get_shader ():Shader;
-		private set_shader (value:Shader):Shader;
+		protected get_shader ():Shader;
+		protected set_shader (value:Shader):Shader;
 		
 		/**
 		 * The Stage of the display object. A Flash runtime application has only one
@@ -667,8 +667,8 @@ declare namespace openfl.display {
 		 */
 		readonly stage:Stage;
 		
-		private get_stage ():Stage;
-		private set_stage (value:Stage):Stage;
+		protected get_stage ():Stage;
+		protected set_stage (value:Stage):Stage;
 		
 		/**
 		 * An object with properties pertaining to a display object's matrix, color
@@ -710,8 +710,8 @@ declare namespace openfl.display {
 		 */
 		transform:Transform;
 		
-		private get_transform ():Transform;
-		private set_transform (value:Transform):Transform;
+		protected get_transform ():Transform;
+		protected set_transform (value:Transform):Transform;
 		
 		/**
 		 * Whether or not the display object is visible. Display objects that are not
@@ -720,8 +720,8 @@ declare namespace openfl.display {
 		 */
 		visible:boolean;
 		
-		private get_visible ():boolean;
-		private set_visible (value:boolean):boolean;
+		protected get_visible ():boolean;
+		protected set_visible (value:boolean):boolean;
 		
 		/**
 		 * Indicates the width of the display object, in pixels. The width is
@@ -735,8 +735,8 @@ declare namespace openfl.display {
 		 */
 		width:number;
 		
-		private get_width ():number;
-		private set_width (value:number):number;
+		protected get_width ():number;
+		protected set_width (value:number):number;
 		
 		/**
 		 * Indicates the _x_ coordinate of the DisplayObject instance relative
@@ -750,8 +750,8 @@ declare namespace openfl.display {
 		 */
 		x:number;
 		
-		private get_x ():number;
-		private set_x (value:number):number;
+		protected get_x ():number;
+		protected set_x (value:number):number;
 		
 		/**
 		 * Indicates the _y_ coordinate of the DisplayObject instance relative
@@ -765,8 +765,8 @@ declare namespace openfl.display {
 		 */
 		y:number;
 		
-		private get_y ():number;
-		private set_y (value:number):number;
+		protected get_y ():number;
+		protected set_y (value:number):number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) var z:Float;

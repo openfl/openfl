@@ -1118,13 +1118,13 @@ declare namespace openfl.display {
 		
 		tabEnabled:boolean;
 		
-		private get_tabEnabled ():boolean;
-		private set_tabEnabled (value:boolean):boolean;
+		protected get_tabEnabled ():boolean;
+		protected set_tabEnabled (value:boolean):boolean;
 		
 		tabIndex:number;
 		
-		private get_tabIndex ():number;
-		private set_tabIndex (value:number):number;
+		protected get_tabIndex ():number;
+		protected set_tabIndex (value:number):number;
 		
 		
 		/**

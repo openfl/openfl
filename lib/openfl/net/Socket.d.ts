@@ -14,20 +14,20 @@ declare namespace openfl.net {
 		
 		public readonly bytesAvailable:number;
 		
-		private get_bytesAvailable ():number;
+		protected get_bytesAvailable ():number;
 		
 		public readonly bytesPending:number;
 		
-		private get_bytesPending ():number;
+		protected get_bytesPending ():number;
 		
 		public readonly connected:boolean;
 		
-		private get_connected ():boolean;
+		protected get_connected ():boolean;
 		
 		public endian:Endian;
 		
-		private get_endian ():Endian;
-		private set_endian (value:Endian):Endian;
+		protected get_endian ():Endian;
+		protected set_endian (value:Endian):Endian;
 		
 		public objectEncoding:ObjectEncoding;
 		public timeout:number;

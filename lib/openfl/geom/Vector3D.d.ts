@@ -6,24 +6,24 @@ declare namespace openfl.geom {
 	
 		public static readonly X_AXIS:Vector3D;
 		
-		private static get_X_AXIS ():Vector3D;
+		protected static get_X_AXIS ():Vector3D;
 		
 		public static readonly Y_AXIS:Vector3D;
 		
-		private static get_Y_AXIS ():Vector3D;
+		protected static get_Y_AXIS ():Vector3D;
 		
 		public static readonly Z_AXIS:Vector3D;
 		
-		private static get_Z_AXIS ():Vector3D;
+		protected static get_Z_AXIS ():Vector3D;
 		
 		
 		public readonly length:number;
 		
-		private get_length ():number;
+		protected get_length ():number;
 		
 		public readonly lengthSquared:number;
 		
-		private get_lengthSquared ():number;
+		protected get_lengthSquared ():number;
 		
 		
 		public w:number;

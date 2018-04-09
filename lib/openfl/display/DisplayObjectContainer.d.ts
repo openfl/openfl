@@ -58,7 +58,7 @@ declare namespace openfl.display {
 		 */
 		readonly numChildren:number;
 		
-		private get_numChildren ():number;
+		protected get_numChildren ():number;
 		
 		
 		/**

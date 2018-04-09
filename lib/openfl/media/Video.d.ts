@@ -13,11 +13,11 @@ declare namespace openfl.media {
 		
 		public readonly videoHeight:number;
 		
-		private get_videoHeight ():number;
+		protected get_videoHeight ():number;
 		
 		public readonly videoWidth:number;
 		
-		private get_videoWidth ():number;
+		protected get_videoWidth ():number;
 		
 		
 		public constructor (width?:number, height?:number);

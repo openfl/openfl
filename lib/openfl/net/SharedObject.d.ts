@@ -184,10 +184,10 @@ declare namespace openfl.net {
 		 */
 		public readonly size:number;
 		
-		private get_size ():number;
+		protected get_size ():number;
 		
 		
-		// private constructor ();
+		// protected constructor ();
 		
 		
 		/**

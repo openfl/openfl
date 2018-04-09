@@ -48,7 +48,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly cpuArchitecture:string;
 		
-		private static get_cpuArchitecture ():string;
+		protected static get_cpuArchitecture ():string;
 		
 		/**
 		 * Specifies whether the system supports(`true`) or does not
@@ -181,7 +181,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly language:string;
 		
-		private static get_language ():string;
+		protected static get_language ():string;
 		
 		/**
 		 * Specifies whether read access to the user's hard disk has been
@@ -223,7 +223,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly manufacturer:string;
 		
-		private static get_manufacturer ():string;
+		protected static get_manufacturer ():string;
 		
 		/**
 		 * Retrieves the highest H.264 Level IDC that the client hardware supports.
@@ -253,7 +253,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly os:string;
 		
-		private static get_os ():string;
+		protected static get_os ():string;
 		
 		/**
 		 * Specifies the pixel aspect ratio of the screen. The server string is
@@ -261,7 +261,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly pixelAspectRatio:number;
 		
-		private static get_pixelAspectRatio ():number;
+		protected static get_pixelAspectRatio ():number;
 		
 		/**
 		 * Specifies the type of runtime environment. This property can have one of
@@ -297,7 +297,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly screenDPI:number;
 		
-		private static get_screenDPI ():number;
+		protected static get_screenDPI ():number;
 		
 		/**
 		 * Specifies the maximum horizontal resolution of the screen. The server
@@ -309,7 +309,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly screenResolutionX:number;
 		
-		private static get_screenResolutionX ():number;
+		protected static get_screenResolutionX ():number;
 		
 		/**
 		 * Specifies the maximum vertical resolution of the screen. The server string
@@ -320,7 +320,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly screenResolutionY:number;
 		
-		private static get_screenResolutionY ():number;
+		protected static get_screenResolutionY ():number;
 		
 		/**
 		 * A URL-encoded string that specifies values for each Capabilities property.
@@ -375,7 +375,7 @@ declare namespace openfl.system {
 		 */
 		public static readonly version:string;
 		
-		private static get_version ():string;
+		protected static get_version ():string;
 		
 		
 		public static hasMultiChannelAudio (type:string):boolean;

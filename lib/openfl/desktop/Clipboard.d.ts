@@ -13,7 +13,7 @@ declare namespace openfl.desktop {
 		
 		public readonly formats:Array<ClipboardFormats>;
 		
-		private get_formats ():Array<ClipboardFormats>;
+		protected get_formats ():Array<ClipboardFormats>;
 		
 		public clear ():void;
 		public clearData (format:ClipboardFormats):void;

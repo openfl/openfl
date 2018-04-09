@@ -31,7 +31,7 @@ declare namespace openfl.ui {
 		 */
 		public readonly numControls:number;
 		
-		private get_numControls ():number;
+		protected get_numControls ():number;
 		
 		/**
 		 * Specifies the rate (in milliseconds) at which to retrieve control values.

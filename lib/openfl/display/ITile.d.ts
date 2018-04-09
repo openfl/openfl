@@ -20,22 +20,22 @@ declare namespace openfl.display {
 		public tileset:Tileset;
 		public visible:boolean;
 		
-		private get_alpha ():number;
-		private set_alpha (value:number):number;
-		private get_colorTransform ():ColorTransform;
-		private set_colorTransform (value:ColorTransform):ColorTransform;
-		private get_id ():number;
-		private set_id (value:number):number;
-		private get_matrix ():Matrix;
-		private set_matrix (value:Matrix):Matrix;
-		private get_rect ():Rectangle;
-		private set_rect (value:Rectangle):Rectangle;
-		private get_shader ():Shader;
-		private set_shader (value:Shader):Shader;
-		private get_tileset ():Tileset;
-		private set_tileset (value:Tileset):Tileset;
-		private get_visible ():boolean;
-		private set_visible (value:boolean):boolean;
+		protected get_alpha ():number;
+		protected set_alpha (value:number):number;
+		protected get_colorTransform ():ColorTransform;
+		protected set_colorTransform (value:ColorTransform):ColorTransform;
+		protected get_id ():number;
+		protected set_id (value:number):number;
+		protected get_matrix ():Matrix;
+		protected set_matrix (value:Matrix):Matrix;
+		protected get_rect ():Rectangle;
+		protected set_rect (value:Rectangle):Rectangle;
+		protected get_shader ():Shader;
+		protected set_shader (value:Shader):Shader;
+		protected get_tileset ():Tileset;
+		protected set_tileset (value:Tileset):Tileset;
+		protected get_visible ():boolean;
+		protected set_visible (value:boolean):boolean;
 		
 		
 	}

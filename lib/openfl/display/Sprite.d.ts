@@ -64,7 +64,7 @@ declare namespace openfl.display {
 		 */
 		readonly graphics:Graphics;
 		
-		private get_graphics ():Graphics;
+		protected get_graphics ():Graphics;
 		
 		hitArea:Sprite;
 		

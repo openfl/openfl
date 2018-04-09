@@ -39,8 +39,8 @@ declare namespace openfl.media {
 		 */
 		public position:number;
 		
-		private get_position ():number;
-		private set_position (value:number):number;
+		protected get_position ():number;
+		protected set_position (value:number):number;
 		
 		/**
 		 * The current amplitude(volume) of the right channel, from 0(silent) to 1
@@ -55,8 +55,8 @@ declare namespace openfl.media {
 		 */
 		public soundTransform:SoundTransform;
 		
-		private get_soundTransform ():SoundTransform;
-		private set_soundTransform (value:SoundTransform):SoundTransform;
+		protected get_soundTransform ():SoundTransform;
+		protected set_soundTransform (value:SoundTransform):SoundTransform;
 		
 		
 		// #if flash

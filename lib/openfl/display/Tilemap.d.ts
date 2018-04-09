@@ -14,15 +14,15 @@ declare namespace openfl.display {
 		
 		public readonly numTiles:number;
 		
-		private get_numTiles ():number;
+		protected get_numTiles ():number;
 		
 		public smoothing:boolean;
 		public tileAlphaEnabled:Boolean;
 		public tileColorTransformEnabled:Boolean;
 		public tileset:Tileset;
 		
-		private get_tileset ():Tileset;
-		private set_tileset (value:Tileset):Tileset;
+		protected get_tileset ():Tileset;
+		protected set_tileset (value:Tileset):Tileset;
 		
 		public constructor (width:number, height:number, tileset?:Tileset, smoothing?:boolean);
 		

@@ -11,7 +11,7 @@ declare namespace openfl.display {
 		
 		public readonly numTiles:number;
 		
-		private get_numTiles ():number;
+		protected get_numTiles ():number;
 		
 		public constructor (x?:number, y?:number, scaleX?:number, scaleY?:number, rotation?:number);
 		
