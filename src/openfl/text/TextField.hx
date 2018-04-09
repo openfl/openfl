@@ -116,7 +116,6 @@ class TextField extends InteractiveObject {
 	private var __mouseWheelEnabled:Bool;
 	private var __offsetX:Float;
 	private var __offsetY:Float;
-	private var __restrict:UTF8String;
 	private var __selectionIndex:Int;
 	private var __showCursor:Bool;
 	private var __symbol:DynamicTextSymbol;
