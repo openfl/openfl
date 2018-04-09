@@ -116,6 +116,7 @@ class TextField extends InteractiveObject {
 	private var __mouseWheelEnabled:Bool;
 	private var __offsetX:Float;
 	private var __offsetY:Float;
+	private var __restrict:UTF8String;
 	private var __selectionIndex:Int;
 	private var __showCursor:Bool;
 	private var __symbol:DynamicTextSymbol;
@@ -533,92 +534,14 @@ class TextField extends InteractiveObject {
 	
 	public function replaceSelectedText (value:String):Void {
 		
-		if (value == "" && __selectionIndex == __caretIndex) return;
-		
-		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
-		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
-		
-		if (startIndex == endIndex && __textEngine.maxChars > 0 && __text.length == __textEngine.maxChars) return;
-		
-		if (startIndex > __text.length) startIndex = __text.length;
-		if (endIndex > __text.length) endIndex = __text.length;
-		if (endIndex < startIndex) {
-			
-			var cache = endIndex;
-			endIndex = startIndex;
-			startIndex = cache;
-			
-		}
-		if (startIndex < 0) startIndex = 0;
-		
-		replaceText (startIndex, endIndex, value);
-		
-		var i = startIndex + cast (value, UTF8String).length;
-		if (i > __text.length) i = __text.length;
-		
-		setSelection (i, i);
-		
-		// TODO: Solution where this is not run twice (run inside replaceText above)
-		__updateScrollH ();
+		__replaceSelectedText (value, false);
 		
 	}
 	
 	
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
 		
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
-		
-		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
-		if (endIndex > __text.length) endIndex = __text.length;
-		
-		var offset = newText.length - (endIndex - beginIndex);
-		
-		var i = 0;
-		var range;
-		
-		while (i < __textEngine.textFormatRanges.length) {
-			
-			range = __textEngine.textFormatRanges[i];
-			
-			if (range.start <= beginIndex && range.end >= endIndex) {
-				
-				range.end += offset;
-				i++;
-				
-			} else if (range.start >= beginIndex && range.end <= endIndex) {
-				
-				if (i > 0) {
-					
-					__textEngine.textFormatRanges.splice (i, 1);
-					
-				} else {
-					
-					range.start = 0;
-					range.end = beginIndex + newText.length;
-					i++;
-					
-				}
-				
-				offset -= (range.end - range.start);
-				
-			} else if (range.start > beginIndex && range.start <= endIndex) {
-				
-				range.start += offset;
-				i++;
-				
-			} else {
-				
-				i++;
-				
-			}
-			
-		}
-		
-		__updateScrollH ();
-		
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty ();
+		__replaceText (beginIndex, endIndex, newText, false);
 		
 	}
 	
@@ -1572,6 +1495,121 @@ class TextField extends InteractiveObject {
 		GLTextField.render (this, renderer, __worldTransform);
 		
 		super.__renderGLMask (renderer);
+		
+	}
+	
+	
+	private function __replaceSelectedText (value:String, restrict:Bool = true):Void {
+		
+		if (value == "" && __selectionIndex == __caretIndex) return;
+		
+		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
+		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
+		
+		if (startIndex == endIndex && __textEngine.maxChars > 0 && __text.length == __textEngine.maxChars) return;
+		
+		if (startIndex > __text.length) startIndex = __text.length;
+		if (endIndex > __text.length) endIndex = __text.length;
+		if (endIndex < startIndex) {
+			
+			var cache = endIndex;
+			endIndex = startIndex;
+			startIndex = cache;
+			
+		}
+		if (startIndex < 0) startIndex = 0;
+		
+		__replaceText (startIndex, endIndex, value, restrict);
+		
+		var i = startIndex + cast (value, UTF8String).length;
+		if (i > __text.length) i = __text.length;
+		
+		setSelection (i, i);
+		
+		// TODO: Solution where this is not run twice (run inside replaceText above)
+		__updateScrollH ();
+		
+	}
+	
+	
+	private function __replaceText (beginIndex:Int, endIndex:Int, newText:String, restrict:Bool):Void {
+		
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
+		
+		if (restrict) {
+			
+			newText = __textEngine.restrictText (newText);
+			
+			if (__textEngine.maxChars > 0) {
+				
+				var removeLength = (endIndex - beginIndex);
+				var maxLength = __textEngine.maxChars - __text.length + removeLength;
+				
+				if (maxLength <= 0) {
+					
+					newText = "";
+					
+				} else if (maxLength < newText.length) {
+					
+					newText = newText.substr (0, maxLength);
+					
+				}
+				
+			}
+			
+		}
+		
+		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
+		if (endIndex > __text.length) endIndex = __text.length;
+		
+		var offset = newText.length - (endIndex - beginIndex);
+		
+		var i = 0;
+		var range;
+		
+		while (i < __textEngine.textFormatRanges.length) {
+			
+			range = __textEngine.textFormatRanges[i];
+			
+			if (range.start <= beginIndex && range.end >= endIndex) {
+				
+				range.end += offset;
+				i++;
+				
+			} else if (range.start >= beginIndex && range.end <= endIndex) {
+				
+				if (i > 0) {
+					
+					__textEngine.textFormatRanges.splice (i, 1);
+					
+				} else {
+					
+					range.start = 0;
+					range.end = beginIndex + newText.length;
+					i++;
+					
+				}
+				
+				offset -= (range.end - range.start);
+				
+			} else if (range.start > beginIndex && range.start <= endIndex) {
+				
+				range.start += offset;
+				i++;
+				
+			} else {
+				
+				i++;
+				
+			}
+			
+		}
+		
+		__updateScrollH ();
+		
+		__dirty = true;
+		__layoutDirty = true;
+		__setRenderDirty ();
 		
 	}
 	
@@ -2779,7 +2817,8 @@ class TextField extends InteractiveObject {
 				
 				if (__textEngine.multiline) {
 					
-					replaceSelectedText ("\n");
+					__replaceSelectedText (text, true);
+					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
 				}
@@ -2990,17 +3029,7 @@ class TextField extends InteractiveObject {
 				
 				if (#if mac modifier.metaKey #else modifier.ctrlKey #end) {
 					
-					var text = Clipboard.text;
-					
-					if (text != null) {
-						
-						replaceSelectedText (text);
-						
-					} else {
-						
-						replaceSelectedText ("");
-						
-					}
+					__replaceSelectedText (Clipboard.text, true);
 					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
@@ -3029,8 +3058,9 @@ class TextField extends InteractiveObject {
 	
 	private function window_onTextInput (value:String):Void {
 		
-		replaceSelectedText (value);
+		__replaceSelectedText (value, true);
 		
+		// TODO: Dispatch change if at max chars?
 		dispatchEvent (new Event (Event.CHANGE, true));
 		
 	}

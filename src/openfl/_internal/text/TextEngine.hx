@@ -1584,6 +1584,31 @@ class TextEngine {
 	}
 	
 	
+	public function restrictText (value:UTF8String):UTF8String {
+		
+		if (value == null) {
+			
+			return value;
+			
+		}
+		
+		if (__restrictRegexp != null) {
+			
+			value = __restrictRegexp.split (value).join ('');
+			
+		}
+		
+		// if (maxChars > 0 && value.length > maxChars) {
+			
+		// 	value = value.substr (0, maxChars);
+			
+		// }
+		
+		return value;
+		
+	}
+	
+	
 	private function setTextAlignment ():Void {
 		
 		var lineIndex = -1;
@@ -1699,6 +1724,25 @@ class TextEngine {
 	}
 	
 	
+	public function trimText (value:UTF8String):UTF8String {
+		
+		if (value == null) {
+			
+			return value;
+			
+		}
+		
+		if (maxChars > 0 && value.length > maxChars) {
+			
+			value = value.substr (0, maxChars);
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	private function update ():Void {
 		
 		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0) {
@@ -1764,27 +1808,7 @@ class TextEngine {
 	
 	private function set_text (value:String):String {
 		
-		if (value == null) {
-			
-			return text = value;
-			
-		}
-		
-		if (__restrictRegexp != null) {
-			
-			value = __restrictRegexp.split (value).join ('');
-			
-		}
-		
-		if (maxChars > 0 && value.length > maxChars) {
-			
-			value = value.substr (0, maxChars);
-			
-		}
-		
-		text = value;
-		
-		return text;
+		return text = value;
 		
 	}
 	
