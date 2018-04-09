@@ -14,7 +14,7 @@ declare namespace openfl.display {
 		
 		public readonly numTiles:number;
 		
-		//private get_numTiles ():number;
+		private get_numTiles ():number;
 		
 		public smoothing:boolean;
 		public tileAlphaEnabled:Boolean;
