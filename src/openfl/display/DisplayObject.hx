@@ -1367,7 +1367,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					childRenderer.__copyShader (parentRenderer);
 					
-					__cacheBitmapData.__setUVRect (childRenderer.gl, 0, 0, filterWidth, filterHeight);
+					__cacheBitmapData.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version;
 					
@@ -1400,7 +1400,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version;
 								}
 							}
-							__cacheBitmapData2.__setUVRect (childRenderer.gl, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData2.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
 							bitmap2 = __cacheBitmapData2;
 						// } else {
 						// 	bitmap2 = bitmapData;
@@ -1415,7 +1415,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version;
 								}
 							}
-							__cacheBitmapData3.__setUVRect (childRenderer.gl, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData3.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
 							bitmap3 = __cacheBitmapData3;
 						}
 						
