@@ -27,6 +27,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -599,6 +600,7 @@ class GLGraphics {
 								tempColorTransform.redOffset = color.r;
 								tempColorTransform.greenOffset = color.g;
 								tempColorTransform.blueOffset = color.b;
+								tempColorTransform.__combine (graphics.__owner.__worldColorTransform);
 								
 								matrix.identity ();
 								matrix.scale (width, height);
@@ -610,7 +612,7 @@ class GLGraphics {
 								renderer.setShader (shader);
 								renderer.applyMatrix (renderer.__getMatrix (matrix));
 								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, true);
-								renderer.applyAlpha (color.a / 0xFF);
+								renderer.applyAlpha ((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform (tempColorTransform);
 								renderer.updateShader ();
 								
