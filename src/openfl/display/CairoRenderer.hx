@@ -92,6 +92,10 @@ class CairoRenderer extends DisplayObjectRenderer {
 			cairo.setSourceRGB (__stage.__colorSplit[0], __stage.__colorSplit[1], __stage.__colorSplit[2]);
 			cairo.paint ();
 			
+			var cacheBlendMode = __blendMode;
+			__blendMode = null;
+			__setBlendMode (cacheBlendMode);
+			
 		}
 		
 	}
