@@ -84,9 +84,10 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	
 	private override function __clear ():Void {
 		
-		__setBlendMode (NORMAL);
-		
 		if (__stage != null) {
+			
+			var cacheBlendMode = __blendMode;
+			__setBlendMode (NORMAL);
 			
 			context.setTransform (1, 0, 0, 1, 0, 0);
 			context.globalAlpha = 1;
@@ -101,6 +102,8 @@ class CanvasRenderer extends DisplayObjectRenderer {
 				context.clearRect (0, 0, __stage.stageWidth * __stage.window.scale, __stage.stageHeight * __stage.window.scale);
 				
 			}
+			
+			__setBlendMode (cacheBlendMode);
 			
 		}
 		
