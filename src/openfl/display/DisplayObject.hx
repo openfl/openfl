@@ -1211,14 +1211,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				if (__cacheBitmap != null && (bitmapWidth > __cacheBitmap.width || bitmapHeight > __cacheBitmap.height)) {
 					
 					bitmapWidth = Std.int (filterWidth * 1.25);
-					bitmapHeight = Std.int (filterWidth * 1.25);
+					bitmapHeight = Std.int (filterHeight * 1.25);
 					
 					needRender = true;
 					
 				} else {
 					
 					bitmapWidth = filterWidth;
-					bitmapHeight = filterWidth;
+					bitmapHeight = filterHeight;
 					
 				}
 				
