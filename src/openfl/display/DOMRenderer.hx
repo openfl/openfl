@@ -82,26 +82,24 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applyStyle (childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {
+	public function applyStyle (parent:DisplayObject, childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {
 		
-	// 	#if (js && html5)
-	// 	if (target != null && childElement != null) {
+		#if (js && html5)
+		if (parent != null && childElement != null) {
 			
-	// 		var parent:DisplayObject = cast target;
-			
-	// 		if (parent.__style == null || childElement.parentElement != element) {
+			if (parent.__style == null || childElement.parentElement != element) {
 				
-	// 			__initializeElement (parent, childElement);
+				__initializeElement (parent, childElement);
 				
-	// 		}
+			}
 			
-	// 		parent.__style = childElement.style;
+			parent.__style = childElement.style;
 			
-	// 		__updateClip (parent);
-	// 		__applyStyle (parent, true, true, true);
+			__updateClip (parent);
+			__applyStyle (parent, true, true, true);
 			
-	// 	}
-	// 	#end
+		}
+		#end
 		
 	}
 	
