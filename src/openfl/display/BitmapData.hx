@@ -113,10 +113,9 @@ class BitmapData implements IBitmapDrawable {
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
-	private var __textureHeight:Int;
 	private var __textureVersion:Int;
-	private var __textureWidth:Int;
 	private var __transform:Matrix;
+	private var __uvRect:Rectangle;
 	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
@@ -865,16 +864,14 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			__textureWidth = newWidth;
-			__textureHeight = newHeight;
+			__uvRect = new Rectangle (0, 0, newWidth, newHeight);
 			
 			var uvWidth = width / newWidth;
 			var uvHeight = height / newHeight;
 			
 			#else
 			
-			__textureWidth = width;
-			__textureHeight = height;
+			__uvRect = new Rectangle (0, 0, width, height);
 			
 			var uvWidth = 1;
 			var uvHeight = 1;
@@ -1960,26 +1957,32 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __setUVRect (gl:GLRenderContext, x:Int, y:Int, width:Int, height:Int):Void {
+	private function __setUVRect (gl:GLRenderContext, x:Float, y:Float, width:Float, height:Float):Void {
 		
 		var buffer = getBuffer (gl);
 		
-		if (buffer != null && (width != __textureWidth || height != __textureHeight)) {
+		if (buffer != null && (width != __uvRect.width || height != __uvRect.height || x != __uvRect.x || y != __uvRect.y)) {
 			
-			__textureWidth = width;
-			__textureHeight = height;
+			if (__uvRect == null) __uvRect = new Rectangle ();
+			__uvRect.setTo (x, y, width, height);
 			
+			var uvX = x / this.width;
+			var uvY = y / this.height;
 			var uvWidth = width / this.width;
 			var uvHeight = height / this.height;
 			
 			__bufferData[0] = width;
 			__bufferData[1] = height;
-			__bufferData[3] = uvWidth;
-			__bufferData[4] = uvHeight;
+			__bufferData[3] = uvX + uvWidth;
+			__bufferData[4] = uvY + uvHeight;
 			__bufferData[__bufferStride + 1] = height;
-			__bufferData[__bufferStride + 4] = uvHeight;
+			__bufferData[__bufferStride + 3] = uvX;
+			__bufferData[__bufferStride + 4] = uvY + uvHeight;
 			__bufferData[__bufferStride * 2] = width;
-			__bufferData[__bufferStride * 2 + 3] = uvWidth;
+			__bufferData[__bufferStride * 2 + 3] = uvX + uvWidth;
+			__bufferData[__bufferStride * 2 + 4] = uvY;
+			__bufferData[__bufferStride * 3 + 3] = uvX;
+			__bufferData[__bufferStride * 3 + 4] = uvY;
 			
 			#if (js && html5)
 			(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);

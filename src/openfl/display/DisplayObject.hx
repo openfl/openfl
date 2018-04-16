@@ -1195,7 +1195,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var bitmapWidth = 0, bitmapHeight = 0;
 			var filterWidth = 0, filterHeight = 0;
-			var offsetX = 0, offsetY = 0;
+			var offsetX = 0., offsetY = 0.;
 			
 			if (updateTransform || needRender) {
 				
