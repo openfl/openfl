@@ -1964,7 +1964,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var buffer = getBuffer (gl);
 		
-		if (buffer != null) {
+		if (buffer != null && (width != __textureWidth || height != __textureHeight)) {
 			
 			__textureWidth = width;
 			__textureHeight = height;

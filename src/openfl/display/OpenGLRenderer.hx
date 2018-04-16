@@ -193,8 +193,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (bitmapData != null) {
 				
-				__textureSizeValue[0] = bitmapData.__textureWidth;
-				__textureSizeValue[1] = bitmapData.__textureHeight;
+				// __textureSizeValue[0] = bitmapData.__textureWidth;
+				// __textureSizeValue[1] = bitmapData.__textureHeight;
+				__textureSizeValue[0] = bitmapData.width;
+				__textureSizeValue[1] = bitmapData.height;
 				__currentShader.__textureSize.value = __textureSizeValue;
 				
 			} else {

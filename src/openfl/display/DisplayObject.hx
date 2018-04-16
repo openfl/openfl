@@ -1240,7 +1240,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					// TODO: Fix texture re-use
 					
-					if (true || (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height)) {
+					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height) {
 						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						
@@ -1269,6 +1269,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				// Should we retain this longer?
 				
+				__cacheBitmapData = __cacheBitmap.bitmapData;
 				__cacheBitmapData2 = null;
 				__cacheBitmapData3 = null;
 				
@@ -1287,10 +1288,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				} else {
 					
 					__cacheBitmap.__renderTransform.copyFrom (__cacheBitmapMatrix);
-					__cacheBitmap.__renderTransform.tx += rect.x;
-					__cacheBitmap.__renderTransform.ty += rect.y;
 					__cacheBitmap.__renderTransform.invert ();
 					__cacheBitmap.__renderTransform.concat (__renderTransform);
+					__cacheBitmap.__renderTransform.tx += rect.x;
+					__cacheBitmap.__renderTransform.ty += rect.y;
 					
 				}
 				
@@ -1471,8 +1472,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 						}
 						
-						__cacheBitmapData.__texture = bitmap.__texture;
-						__cacheBitmapData.__framebuffer = bitmap.__framebuffer;
+						__cacheBitmap.bitmapData = bitmap;
 						
 					}
 					
