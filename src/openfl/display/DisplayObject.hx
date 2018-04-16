@@ -1182,19 +1182,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var bitmapMatrix = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderTransform);
 			
-			if (!needRender) {
+			if (!needRender && (bitmapMatrix.a != __cacheBitmapMatrix.a || bitmapMatrix.b != __cacheBitmapMatrix.b || bitmapMatrix.c != __cacheBitmapMatrix.c || bitmapMatrix.d != __cacheBitmapMatrix.d)) {
 				
-				if (bitmapMatrix.a != __cacheBitmapMatrix.a || bitmapMatrix.b != __cacheBitmapMatrix.b || bitmapMatrix.c != __cacheBitmapMatrix.c || bitmapMatrix.d != __cacheBitmapMatrix.d) {
-					
-					needRender = true;
-					
-				}
+				needRender = true;
 				
 			}
 			
 			__cacheBitmapMatrix.copyFrom (bitmapMatrix);
 			__cacheBitmapMatrix.tx = 0;
 			__cacheBitmapMatrix.ty = 0;
+			
+			// TODO: Handle dimensions better if object has a scrollRect?
 			
 			var bitmapWidth = 0, bitmapHeight = 0;
 			var filterWidth = 0, filterHeight = 0;
@@ -1208,12 +1206,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				filterWidth = Math.ceil (rect.width);
 				filterHeight = Math.ceil (rect.height);
 				
-				if (__cacheBitmap != null && (bitmapWidth > __cacheBitmap.width || bitmapHeight > __cacheBitmap.height)) {
+				if (__cacheBitmapData != null) {
 					
-					bitmapWidth = Std.int (filterWidth * 1.25);
-					bitmapHeight = Std.int (filterHeight * 1.25);
-					
-					needRender = true;
+					if (filterWidth > __cacheBitmapData.width || filterHeight > __cacheBitmapData.height) {
+						
+						bitmapWidth = Std.int (filterWidth * 1.25);
+						bitmapHeight = Std.int (filterHeight * 1.25);
+						needRender = true;
+						
+					} else {
+						
+						bitmapWidth = __cacheBitmapData.width;
+						bitmapHeight = __cacheBitmapData.height;
+						
+					}
 					
 				} else {
 					
@@ -1226,12 +1232,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (needRender) {
 				
+				updateTransform = true;
 				__cacheBitmapBackground = opaqueBackground;
 				var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 				
-				if (rect.width >= 0.5 && rect.height >= 0.5) {
+				if (filterWidth >= 0.5 && filterHeight >= 0.5) {
 					
-					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapWidth > __cacheBitmapData.height) {
+					// TODO: Fix texture re-use
+					
+					if (true || (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height)) {
 						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
 						
@@ -1365,6 +1374,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					var parentRenderer:OpenGLRenderer = cast renderer;
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
 					
+					parentRenderer.__suspendClipAndMask ();
 					childRenderer.__copyShader (parentRenderer);
 					
 					__cacheBitmapData.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
@@ -1393,7 +1403,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 						// if (needSecondBitmapData) {
 							if (__cacheBitmapData2 == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height) {
-								__cacheBitmapData2 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+								__cacheBitmapData2 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
 								//__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
 								if (__cacheBitmapData2.image != null) {
@@ -1408,7 +1418,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 						if (needCopyOfOriginal) {
 							if (__cacheBitmapData3 == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height) {
-								__cacheBitmapData3 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+								__cacheBitmapData3 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
 								//__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
 								if (__cacheBitmapData3.image != null) {
@@ -1467,6 +1477,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					}
 					
 					parentRenderer.__copyShader (childRenderer);
+					parentRenderer.__resumeClipAndMask ();
 					parentRenderer.setViewport ();
 					
 				} else {
@@ -1497,7 +1508,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 						if (needSecondBitmapData) {
 							if (__cacheBitmapData2 == null || __cacheBitmapData2.image == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height) {
-								__cacheBitmapData2 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+								__cacheBitmapData2 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
 								__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
 							}
@@ -1508,7 +1519,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 						if (needCopyOfOriginal) {
 							if (__cacheBitmapData3 == null || __cacheBitmapData3.image == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height) {
-								__cacheBitmapData3 = new BitmapData (bitmap.width, bitmap.height, true, 0);
+								__cacheBitmapData3 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
 								__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
 							}

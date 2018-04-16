@@ -106,8 +106,10 @@ class BitmapData implements IBitmapDrawable {
 	private var __framebufferContext:GLRenderContext;
 	private var __isMask:Bool;
 	private var __isValid:Bool;
+	private var __mask:DisplayObject;
 	private var __renderable:Bool;
 	private var __renderTransform:Matrix;
+	private var __scrollRect:Rectangle;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
@@ -1959,13 +1961,13 @@ class BitmapData implements IBitmapDrawable {
 			var uvWidth = width / this.width;
 			var uvHeight = height / this.height;
 			
-			__bufferData[0] = this.width;
-			__bufferData[1] = this.height;
+			__bufferData[0] = width;
+			__bufferData[1] = height;
 			__bufferData[3] = uvWidth;
 			__bufferData[4] = uvHeight;
-			__bufferData[__bufferStride + 1] = this.height;
+			__bufferData[__bufferStride + 1] = height;
 			__bufferData[__bufferStride + 4] = uvHeight;
-			__bufferData[__bufferStride * 2] = this.width;
+			__bufferData[__bufferStride * 2] = width;
 			__bufferData[__bufferStride * 2 + 3] = uvWidth;
 			
 			#if (js && html5)

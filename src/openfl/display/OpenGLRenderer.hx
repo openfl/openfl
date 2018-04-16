@@ -77,8 +77,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	private var __height:Int;
 	private var __maskShader:GLMaskShader;
 	private var __matrix:Matrix4;
-	private var __renderTargetA:BitmapData;
-	private var __renderTargetB:BitmapData;
 	private var __maskObjects:Array<DisplayObject>;
 	private var __numClipRects:Int;
 	private var __offsetX:Int;
@@ -386,6 +384,25 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
+	private function __cleanup ():Void {
+		
+		if (__stencilReference > 0) {
+			
+			__stencilReference = 0;
+			__gl.disable (__gl.STENCIL_TEST);
+			
+		}
+		
+		if (__numClipRects > 0) {
+			
+			__numClipRects = 0;
+			__scissorRect ();
+			
+		}
+		
+	}
+	
+	
 	private override function __clear ():Void {
 		
 		if (__stage.__transparent) {
@@ -556,61 +573,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __getRenderTarget (framebuffer:Bool):Void {
-		
-		if (framebuffer) {
-			
-			if (__renderTargetA == null) {
-				
-				__renderTargetA = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
-				
-				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetA.getTexture (__gl));
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
-				
-			}
-			
-			if (__renderTargetB == null) {
-				
-				__renderTargetB = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
-				
-				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetB.getTexture (__gl));
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
-				
-			}
-			
-			if (__currentRenderTarget == __renderTargetA) {
-				
-				__currentRenderTarget = __renderTargetB;
-				
-			} else {
-				
-				__currentRenderTarget = __renderTargetA;
-				
-			}
-			
-			__gl.bindFramebuffer (__gl.FRAMEBUFFER, __currentRenderTarget.__getFramebuffer (__gl));
-			__gl.viewport (0, 0, __width, __height);
-			__gl.clearColor (0, 0, 0, 0);
-			__gl.clear (__gl.COLOR_BUFFER_BIT);
-			
-			__flipped = false;
-			
-		} else {
-			
-			__currentRenderTarget = __defaultRenderTarget;
-			var frameBuffer:GLFramebuffer = (__currentRenderTarget != null) ? __currentRenderTarget.__getFramebuffer (__gl) : null;
-			
-			__gl.bindFramebuffer (__gl.FRAMEBUFFER, frameBuffer);
-			
-			__flipped = (__currentRenderTarget == null);
-			
-		}
-		
-	}
-	
-	
 	private override function __popMask ():Void {
 		
 		if (__stencilReference == 0) return;
@@ -729,8 +691,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		}
 		
+		var _matrix = Matrix.__pool.get ();
+		_matrix.copyFrom (transform);
+		_matrix.concat (__worldTransform);
+		
 		var clipRect = __clipRects[__numClipRects];
-		rect.__transform (clipRect, transform);
+		rect.__transform (clipRect, _matrix);
 		
 		if (__numClipRects > 0) {
 			
@@ -750,6 +716,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			clipRect.width = 0;
 			
 		}
+		
+		Matrix.__pool.release (_matrix);
 		
 		__scissorRect (clipRect);
 		__numClipRects++;
@@ -802,7 +770,17 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			// __upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 			
+			// TODO: Cleaner approach?
+			
+			var cacheMask = object.__mask;
+			var cacheScrollRect = object.__scrollRect;
+			object.__mask = null;
+			object.__scrollRect = null;
+			
 			object.__renderGL (this);
+			
+			object.__mask = cacheMask;
+			object.__scrollRect = cacheScrollRect;
 			
 		}
 		
@@ -859,42 +837,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__width = width;
 		__height = height;
 		
-		// if (cacheObject == null || cacheObject.width != width || cacheObject.height != height) {
-			
-		// 	cacheObject = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
-			
-		// 	gl.bindTexture (gl.TEXTURE_2D, cacheObject.getTexture (gl));
-		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			
-		// }
-		
-		if (__width > 0 && __height > 0) {
-			
-			if (__renderTargetA != null && (__renderTargetA.width != __width || __renderTargetA.height != __height)) {
-				
-				__renderTargetA = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
-				
-				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetA.getTexture (__gl));
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
-				
-			}
-			
-			if (__renderTargetB != null && (__renderTargetB.width != __width || __renderTargetB.height != __height)) {
-				
-				__renderTargetB = BitmapData.fromTexture (__stage.stage3Ds[0].context3D.createRectangleTexture (__width, __height, BGRA, true));
-				
-				__gl.bindTexture (__gl.TEXTURE_2D, __renderTargetB.getTexture (__gl));
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_S, __gl.CLAMP_TO_EDGE);
-				__gl.texParameteri (__gl.TEXTURE_2D, __gl.TEXTURE_WRAP_T, __gl.CLAMP_TO_EDGE);
-				
-			}
-			
-		}
-		
-		// displayMatrix = (defaultRenderTarget == null) ? stage.__displayMatrix : new Matrix ();
-		
 		var w = (__defaultRenderTarget == null) ? __stage.stageWidth : __defaultRenderTarget.width;
 		var h = (__defaultRenderTarget == null) ? __stage.stageHeight : __defaultRenderTarget.height;
 		
@@ -909,17 +851,31 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __scissorRect (rect:Rectangle = null):Void {
+	private function __resumeClipAndMask ():Void {
 		
-		if (rect != null) {
+		if (__stencilReference > 0) {
+			
+			__gl.enable (__gl.STENCIL_TEST);
+			
+		}
+		
+		if (__numClipRects > 0) {
+			
+			__scissorRect (__clipRects[__numClipRects - 1]);
+			
+		}
+		
+	}
+	
+	
+	private function __scissorRect (clipRect:Rectangle = null):Void {
+		
+		if (clipRect != null) {
 			
 			__gl.enable (__gl.SCISSOR_TEST);
 			
-			var clipRect = __tempRect;
-			rect.__transform (clipRect, __worldTransform);
-			
 			var x = Math.floor (clipRect.x);
-			var y = Math.floor (__height - clipRect.y - clipRect.height);
+			var y = __flipped ? Math.floor (__height - clipRect.y - clipRect.height) : Math.floor (clipRect.y);
 			var width = Math.ceil (clipRect.width);
 			var height = Math.ceil (clipRect.height);
 			
@@ -1005,6 +961,23 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		setShader (shaderBuffer.shader);
 		__currentShaderBuffer = shaderBuffer;
+		
+	}
+	
+	
+	private function __suspendClipAndMask ():Void {
+		
+		if (__stencilReference > 0) {
+			
+			__gl.disable (__gl.STENCIL_TEST);
+			
+		}
+		
+		if (__numClipRects > 0) {
+			
+			__scissorRect ();
+			
+		}
 		
 	}
 	

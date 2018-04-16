@@ -30,4 +30,7 @@ interface IBitmapDrawable {
 	private function __updateMask (maskGraphics:Graphics):Void;
 	private function __updateTransforms (?overrideTransform:Matrix = null):Void;
 	
+	private var __mask:DisplayObject;
+	private var __scrollRect:Rectangle;
+	
 }
