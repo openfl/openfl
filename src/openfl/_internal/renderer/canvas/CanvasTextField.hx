@@ -68,6 +68,10 @@ class CanvasTextField {
 			var width = graphics.__width;
 			var height = graphics.__height;
 			
+			if (graphics.__bitmap != null) {
+				graphics.__bitmap.disposeImage ();
+			}
+			
 			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus && (textEngine.type != INPUT || !textEngine.selectable)) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
 				textField.__graphics.__canvas = null;

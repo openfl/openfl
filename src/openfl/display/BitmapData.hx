@@ -505,6 +505,17 @@ class BitmapData implements IBitmapDrawable {
 		
 		readable = false;
 		
+		if (__texture != null) {
+			__textureContext.deleteTexture (__texture);
+			__texture = null;
+			__textureContext = null;
+		}
+		
+		if (__buffer != null) {
+			__bufferContext.deleteBuffer (__buffer);
+			__buffer = null;
+			__bufferContext = null;
+		}
 	}
 	
 	
@@ -916,6 +927,11 @@ class BitmapData implements IBitmapDrawable {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+			
+			if (__buffer != null) {
+				__bufferContext.deleteBuffer (__buffer);
+			}
+			
 			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
