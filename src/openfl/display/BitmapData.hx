@@ -113,7 +113,9 @@ class BitmapData implements IBitmapDrawable {
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
+	private var __textureHeight:Int;
 	private var __textureVersion:Int;
+	private var __textureWidth:Int;
 	private var __transform:Matrix;
 	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
@@ -713,11 +715,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (readable) {
-			
-			image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
-			
-		} else if (__framebuffer != null) {
+		if (__framebuffer != null) {
 			
 			var gl = GL.context;
 			var color:ARGB = (color:ARGB);
@@ -742,6 +740,10 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			
+		} else if (readable) {
+			
+			image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
 			
 		}
 		
@@ -863,10 +865,16 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
+			__textureWidth = newWidth;
+			__textureHeight = newHeight;
+			
 			var uvWidth = width / newWidth;
 			var uvHeight = height / newHeight;
 			
 			#else
+			
+			__textureWidth = width;
+			__textureHeight = height;
 			
 			var uvWidth = 1;
 			var uvHeight = 1;
@@ -1957,6 +1965,9 @@ class BitmapData implements IBitmapDrawable {
 		var buffer = getBuffer (gl);
 		
 		if (buffer != null) {
+			
+			__textureWidth = width;
+			__textureHeight = height;
 			
 			var uvWidth = width / this.width;
 			var uvHeight = height / this.height;
