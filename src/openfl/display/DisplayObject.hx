@@ -1152,7 +1152,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var matrix = null, rect = null;
 			
-			//if (!renderer.lockTransform) __getWorldTransform ();
 			__update (false, true);
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
@@ -1196,6 +1195,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			var bitmapWidth = 0, bitmapHeight = 0;
 			var filterWidth = 0, filterHeight = 0;
+			var offsetX = 0, offsetY = 0;
 			
 			if (updateTransform || needRender) {
 				
@@ -1205,6 +1205,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				filterWidth = Math.ceil (rect.width);
 				filterHeight = Math.ceil (rect.height);
+				
+				offsetX = rect.x > 0 ? Math.ceil (rect.x) : Math.floor (rect.x);
+				offsetY = rect.y > 0 ? Math.ceil (rect.y) : Math.floor (rect.y);
 				
 				if (__cacheBitmapData != null) {
 					
@@ -1238,8 +1241,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (filterWidth >= 0.5 && filterHeight >= 0.5) {
 					
-					// TODO: Fix texture re-use
-					
 					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height) {
 						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
@@ -1267,7 +1268,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			} else {
 				
-				// Should we retain this longer?
+				// Should we retain these longer?
 				
 				__cacheBitmapData = __cacheBitmap.bitmapData;
 				__cacheBitmapData2 = null;
@@ -1282,16 +1283,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				if (bitmapMatrix == __renderTransform) {
 					
 					__cacheBitmap.__renderTransform.identity ();
-					__cacheBitmap.__renderTransform.tx = __renderTransform.tx + Math.round (rect.x);
-					__cacheBitmap.__renderTransform.ty = __renderTransform.ty + Math.round (rect.y);
+					__cacheBitmap.__renderTransform.tx = __renderTransform.tx + offsetX;
+					__cacheBitmap.__renderTransform.ty = __renderTransform.ty + offsetY;
 					
 				} else {
 					
 					__cacheBitmap.__renderTransform.copyFrom (__cacheBitmapMatrix);
 					__cacheBitmap.__renderTransform.invert ();
 					__cacheBitmap.__renderTransform.concat (__renderTransform);
-					__cacheBitmap.__renderTransform.tx += rect.x;
-					__cacheBitmap.__renderTransform.ty += rect.y;
+					__cacheBitmap.__renderTransform.tx += offsetX;
+					__cacheBitmap.__renderTransform.ty += offsetY;
 					
 				}
 				
@@ -1362,8 +1363,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__cacheBitmapRenderer.__worldTransform.copyFrom (__renderTransform);
 				__cacheBitmapRenderer.__worldTransform.invert ();
 				__cacheBitmapRenderer.__worldTransform.concat (__cacheBitmapMatrix);
-				__cacheBitmapRenderer.__worldTransform.tx -= Math.round (rect.x);
-				__cacheBitmapRenderer.__worldTransform.ty -= Math.round (rect.y);
+				__cacheBitmapRenderer.__worldTransform.tx -= offsetX;
+				__cacheBitmapRenderer.__worldTransform.ty -= offsetY;
 				
 				__cacheBitmapRenderer.__worldColorTransform.__copyFrom (__worldColorTransform);
 				__cacheBitmapRenderer.__worldColorTransform.__invert ();
@@ -1472,7 +1473,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 						}
 						
-						__cacheBitmap.bitmapData = bitmap;
+						__cacheBitmap.__bitmapData = bitmap;
 						
 					}
 					
@@ -1557,7 +1558,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						}
 						
 						Rectangle.__pool.release (sourceRect);
-						__cacheBitmap.bitmapData = bitmap;
+						__cacheBitmap.__bitmapData = bitmap;
+						__cacheBitmap.__imageVersion = bitmap.__textureVersion;
 						
 					}
 					
