@@ -64,6 +64,10 @@ import haxe.macro.Expr;
 		
 		lime.system.System.__registerEntryPoint (projectName, create, config);
 		
+		#if sys
+		lime.system.System.__parseArguments (config);
+		#end
+		
 		#if (hxtelemetry && !macro)
 		var telemetry = new hxtelemetry.HxTelemetry.Config ();
 		telemetry.allocations = ::if (config.hxtelemetry != null)::("::config.hxtelemetry.allocations::" == "true")::else::true::end::;
