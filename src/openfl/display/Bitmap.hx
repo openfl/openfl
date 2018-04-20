@@ -264,7 +264,7 @@ class Bitmap extends DisplayObject {
 	
 	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
-		if (__filters == null) return false;
+		if (__filters == null && renderer.__type == OPENGL) return false;
 		return super.__updateCacheBitmap (renderer, force);
 		
 	}

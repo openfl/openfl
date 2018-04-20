@@ -1148,7 +1148,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__isCacheBitmapRender) return false;
 		
-		if (cacheAsBitmap) {
+		if (cacheAsBitmap || (renderer.__type != OPENGL && !__worldColorTransform.__isDefault ())) {
 			
 			var matrix = null, rect = null;
 			
