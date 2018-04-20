@@ -22,7 +22,7 @@ import openfl.geom.Rectangle;
 class Sprite extends DisplayObjectContainer {
 	
 	
-	public var buttonMode:Bool;
+	@keep public var buttonMode (get, set):Bool;
 	public var dropTarget (default, null):DisplayObject;
 	public var graphics (get, never):Graphics;
 	public var hitArea:Sprite;
@@ -37,12 +37,13 @@ class Sprite extends DisplayObjectContainer {
 	}
 	#end
 	
+	private var __buttonMode:Bool;
 	
 	public function new () {
 		
 		super ();
 		
-		buttonMode = false;
+		__buttonMode = false;
 		useHandCursor = true;
 		
 	}
@@ -72,7 +73,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	private override function __getCursor ():MouseCursor {
 		
-		return (buttonMode && useHandCursor) ? POINTER : null;
+		return (__buttonMode && useHandCursor) ? POINTER : null;
 		
 	}
 	
@@ -187,7 +188,23 @@ class Sprite extends DisplayObjectContainer {
 	
 	private override function get_tabEnabled ():Bool {
 		
-		return (__tabEnabled == null ? buttonMode : __tabEnabled);
+		return (__tabEnabled == null ? __buttonMode : __tabEnabled);
+		
+	}
+	
+	
+	private function get_buttonMode ():Bool {
+		
+		return __buttonMode;
+		
+	}
+	
+	
+	private function set_buttonMode (value:Bool):Bool {
+		
+		__buttonMode = value;
+		
+		return __buttonMode;
 		
 	}
 	

@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import flash.events.MouseEvent;
 import lime.utils.Log;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
@@ -867,6 +868,84 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
+	private function __stageAddedHandler(e:Event):Void {
+		removeEventListener(Event.ADDED_TO_STAGE, __stageAddedHandler);
+		
+		if (__buttonMode)
+		{
+			__buttonModeHandlersAdd();
+		}
+	}
+	
+	private function __stageRemovedHandler(e:Event):Void {
+		__buttonModeHandlersRemove();
+	}
+	
+	private function __buttonModeHandlersRemove() {
+		removeEventListener(Event.ADDED_TO_STAGE, __stageAddedHandler);
+		removeEventListener(Event.REMOVED_FROM_STAGE, __stageRemovedHandler);
+		removeEventListener(MouseEvent.ROLL_OVER, __rollOverHandler);
+		removeEventListener(MouseEvent.ROLL_OUT, __rollOutHandler);
+		removeEventListener(MouseEvent.MOUSE_UP, __mouseUpHandler);
+		removeEventListener(MouseEvent.MOUSE_DOWN, __mouseDownHandler);
+	}
+	
+	private function __mouseUpHandler(e:MouseEvent):Void {
+		gotoAndStop("_over");
+	}
+	
+	private function __mouseDownHandler(e:MouseEvent):Void {
+		gotoAndStop("_down");
+	}
+	
+	private function __rollOverHandler(e:MouseEvent):Void {
+		//TODO: Mouse up counts as click even when mouse leaves the target and comes back if mouse button stays pressed the whole time.
+		//if (e.buttonDown && stage.__mouseDownLeft == e.target)
+			//gotoAndStop("_down");
+		//else
+			gotoAndStop("_over");
+	}
+	
+	private function __rollOutHandler(e:MouseEvent):Void {
+		gotoAndStop("_up");
+	}
+	
+	private function __buttonModeHandlersAdd() {
+		
+		var hasUp:Bool = false, hasOver:Bool = false, hasDown:Bool = false;
+		
+		for (frameLabel in __currentLabels) {
+			
+			if (frameLabel.name == "_up") {
+				hasUp = true;
+				continue;
+			}
+			else if (frameLabel.name == "_over") {
+				hasOver = true;
+				continue;
+			}
+			else if (frameLabel.name == "_down") {
+				hasDown = true;
+				continue;
+			}
+		}
+		
+		if (hasUp || hasOver || hasDown) {
+			addEventListener(Event.REMOVED_FROM_STAGE, __stageRemovedHandler);
+		}
+		
+		if (hasOver) {
+			addEventListener(MouseEvent.ROLL_OVER, __rollOverHandler);
+			addEventListener(MouseEvent.MOUSE_UP, __mouseUpHandler);
+		}
+		if (hasUp) {
+			addEventListener(MouseEvent.ROLL_OUT, __rollOutHandler);
+		}
+		if (hasDown) {
+			addEventListener(MouseEvent.MOUSE_DOWN, __mouseDownHandler);
+		}
+		
+	}
 	
 	
 	// Getters & Setters
@@ -883,6 +962,29 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function get_totalFrames ():Int { return __totalFrames; }
 	
 	
+	override private function set_buttonMode (value:Bool):Bool {
+		__buttonMode = value;
+		
+		if (__buttonMode == false)
+		{
+			__buttonModeHandlersRemove();
+		}
+		else
+		{
+			if (stage == null)
+			{
+				addEventListener(Event.ADDED_TO_STAGE, __stageAddedHandler);
+			}
+			else
+			{
+				__buttonModeHandlersAdd();
+				
+			}
+		}
+		
+		return __buttonMode;
+		
+	}
 }
 
 
