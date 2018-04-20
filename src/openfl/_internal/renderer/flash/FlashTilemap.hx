@@ -22,6 +22,7 @@ class FlashTilemap {
 	
 	
 	private static var alphaColorTransform = new ColorTransform ();
+	private static var bitmap = new Bitmap ();
 	private static var destPoint = new Point ();
 	private static var sourceRect = new Rectangle ();
 	
@@ -142,7 +143,11 @@ class FlashTilemap {
 					cacheAlpha = colorTransform.alphaMultiplier;
 					colorTransform.alphaMultiplier *= alpha;
 					
-					bitmapData.draw (sourceBitmapData, tileTransform, colorTransform, null, null, smooth);
+					bitmap.bitmapData = sourceBitmapData;
+					bitmap.smoothing = smooth;
+					bitmap.scrollRect = sourceRect;
+					
+					bitmapData.draw (bitmap, tileTransform, colorTransform, null, null, smooth);
 					
 					colorTransform.alphaMultiplier = cacheAlpha;
 					
@@ -151,13 +156,17 @@ class FlashTilemap {
 					destPoint.x = tileTransform.tx;
 					destPoint.y = tileTransform.ty;
 					
-					bitmapData.copyPixels (sourceBitmapData, sourceBitmapData.rect, destPoint, null, null, true);
+					bitmapData.copyPixels (sourceBitmapData, sourceRect, destPoint, null, null, true);
 					
 				} else if (alphaEnabled) {
 					
 					alphaColorTransform.alphaMultiplier = alpha;
 					
-					bitmapData.draw (sourceBitmapData, tileTransform, alphaColorTransform, null, null, smooth);
+					bitmap.bitmapData = sourceBitmapData;
+					bitmap.smoothing = smooth;
+					bitmap.scrollRect = sourceRect;
+					
+					bitmapData.draw (bitmap, tileTransform, alphaColorTransform, null, null, smooth);
 					
 				}
 				
