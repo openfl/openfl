@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import flash.events.MouseEvent;
 import lime.utils.Log;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
@@ -17,6 +16,7 @@ import openfl._internal.timeline.FrameObject;
 import openfl._internal.timeline.FrameObjectType;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
+import openfl.events.MouseEvent;
 import openfl.filters.*;
 import openfl.text.TextField;
 
@@ -56,8 +56,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __currentLabels:Array<FrameLabel>;
 	private var __frameScripts:Map<Int, Void->Void>;
 	private var __frameTime:Int;
+	private var __hasDown:Bool;
+	private var __hasOver:Bool;
+	private var __hasUp:Bool;
 	private var __lastFrameScriptEval:Int;
 	private var __lastFrameUpdate:Int;
+	private var __mouseIsDown:Bool;
 	private var __playing:Bool;
 	private var __swf:SWFLite;
 	private var __symbol:SpriteSymbol;
@@ -868,89 +872,131 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __stageAddedHandler(e:Event):Void {
-		removeEventListener(Event.ADDED_TO_STAGE, __stageAddedHandler);
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private function __onMouseDown (event:MouseEvent):Void {
 		
-		if (__buttonMode)
-		{
-			__buttonModeHandlersAdd();
-		}
-	}
-	
-	private function __stageRemovedHandler(e:Event):Void {
-		__buttonModeHandlersRemove();
-	}
-	
-	private function __buttonModeHandlersRemove() {
-		removeEventListener(Event.ADDED_TO_STAGE, __stageAddedHandler);
-		removeEventListener(Event.REMOVED_FROM_STAGE, __stageRemovedHandler);
-		removeEventListener(MouseEvent.ROLL_OVER, __rollOverHandler);
-		removeEventListener(MouseEvent.ROLL_OUT, __rollOutHandler);
-		removeEventListener(MouseEvent.MOUSE_UP, __mouseUpHandler);
-		removeEventListener(MouseEvent.MOUSE_DOWN, __mouseDownHandler);
-	}
-	
-	private function __mouseUpHandler(e:MouseEvent):Void {
-		gotoAndStop("_over");
-	}
-	
-	private function __mouseDownHandler(e:MouseEvent):Void {
-		gotoAndStop("_down");
-	}
-	
-	private function __rollOverHandler(e:MouseEvent):Void {
-		//TODO: Mouse up counts as click even when mouse leaves the target and comes back if mouse button stays pressed the whole time.
-		//if (e.buttonDown && stage.__mouseDownLeft == e.target)
-			//gotoAndStop("_down");
-		//else
-			gotoAndStop("_over");
-	}
-	
-	private function __rollOutHandler(e:MouseEvent):Void {
-		gotoAndStop("_up");
-	}
-	
-	private function __buttonModeHandlersAdd() {
-		
-		var hasUp:Bool = false, hasOver:Bool = false, hasDown:Bool = false;
-		
-		for (frameLabel in __currentLabels) {
+		if (__hasDown) {
 			
-			if (frameLabel.name == "_up") {
-				hasUp = true;
-				continue;
-			}
-			else if (frameLabel.name == "_over") {
-				hasOver = true;
-				continue;
-			}
-			else if (frameLabel.name == "_down") {
-				hasDown = true;
-				continue;
-			}
+			gotoAndStop ("_down");
+			
 		}
 		
-		if (hasUp || hasOver || hasDown) {
-			addEventListener(Event.REMOVED_FROM_STAGE, __stageRemovedHandler);
+		__mouseIsDown = true;
+		stage.addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+		
+	}
+	
+	
+	private function __onMouseUp (event:MouseEvent):Void {
+		
+		__mouseIsDown = false;
+		
+		if (stage != null) {
+			
+			stage.removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+			
 		}
 		
-		if (hasOver) {
-			addEventListener(MouseEvent.ROLL_OVER, __rollOverHandler);
-			addEventListener(MouseEvent.MOUSE_UP, __mouseUpHandler);
-		}
-		if (hasUp) {
-			addEventListener(MouseEvent.ROLL_OUT, __rollOutHandler);
-		}
-		if (hasDown) {
-			addEventListener(MouseEvent.MOUSE_DOWN, __mouseDownHandler);
+		if (event.currentTarget == this && __hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		} else if (__hasUp) {
+			
+			gotoAndStop ("_up");
+			
 		}
 		
 	}
+	
+	
+	private function __onRollOut (event:MouseEvent):Void {
+		
+		if (__mouseIsDown && __hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		} else if (__hasUp) {
+			
+			gotoAndStop ("_up");
+			
+		}
+		
+	}
+	
+	
+	private function __onRollOver (event:MouseEvent):Void {
+		
+		if (__hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		}
+		
+	}
+	
+	
 	
 	
 	// Getters & Setters
 	
 	
+	
+	
+	private override function set_buttonMode (value:Bool):Bool {
+		
+		if (__buttonMode != value) {
+			
+			if (value) {
+				
+				__hasDown = false;
+				__hasOver = false;
+				__hasUp = false;
+				
+				for (frameLabel in __currentLabels) {
+					
+					switch (frameLabel.name) {
+						
+						case "_up": __hasUp = true;
+						case "_over": __hasOver = true;
+						case "_down": __hasDown = true;
+						default:
+						
+					}
+					
+				}
+				
+				if (__hasDown || __hasOver || __hasUp) {
+					
+					addEventListener (MouseEvent.ROLL_OVER, __onRollOver);
+					addEventListener (MouseEvent.ROLL_OUT, __onRollOut);
+					addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+					addEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
+						
+				}
+				
+			} else {
+				
+				removeEventListener (MouseEvent.ROLL_OVER, __onRollOver);
+				removeEventListener (MouseEvent.ROLL_OUT, __onRollOut);
+				removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+				removeEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
+				
+			}
+			
+			__buttonMode = value;
+			
+		}
+		
+		return value;
+		
+	}
 	
 	
 	private function get_currentFrame ():Int { return __currentFrame; }
@@ -962,29 +1008,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function get_totalFrames ():Int { return __totalFrames; }
 	
 	
-	override private function set_buttonMode (value:Bool):Bool {
-		__buttonMode = value;
-		
-		if (__buttonMode == false)
-		{
-			__buttonModeHandlersRemove();
-		}
-		else
-		{
-			if (stage == null)
-			{
-				addEventListener(Event.ADDED_TO_STAGE, __stageAddedHandler);
-			}
-			else
-			{
-				__buttonModeHandlersAdd();
-				
-			}
-		}
-		
-		return __buttonMode;
-		
-	}
 }
 
 
