@@ -22,22 +22,26 @@ import openfl.geom.Rectangle;
 class Sprite extends DisplayObjectContainer {
 	
 	
-	@keep public var buttonMode (get, set):Bool;
+	public var buttonMode (get, set):Bool;
 	public var dropTarget (default, null):DisplayObject;
 	public var graphics (get, never):Graphics;
 	public var hitArea:Sprite;
 	public var useHandCursor:Bool;
 	
+	private var __buttonMode:Bool;
+	
 	
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Sprite.prototype, "graphics", { get: untyped __js__ ("function () { return this.get_graphics (); }") });
+		untyped Object.defineProperties (Sprite.prototype, {
+			"buttonMode": { get: untyped __js__ ("function () { return this.get_buttonMode (); }"), set: untyped __js__ ("function (v) { return this.set_buttonMode (v); }") },
+			"graphics": { get: untyped __js__ ("function () { return this.get_graphics (); }") },
+		});
 		
 	}
 	#end
 	
-	private var __buttonMode:Bool;
 	
 	public function new () {
 		
@@ -202,9 +206,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	private function set_buttonMode (value:Bool):Bool {
 		
-		__buttonMode = value;
-		
-		return __buttonMode;
+		return __buttonMode = value;
 		
 	}
 	

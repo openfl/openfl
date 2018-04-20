@@ -56,6 +56,9 @@ declare namespace openfl.display {
 		 */
 		buttonMode:boolean;
 		
+		protected get_buttonMode ():boolean;
+		protected set_buttonMode (value:boolean):boolean;
+		
 		readonly dropTarget:DisplayObject;
 		
 		/**
