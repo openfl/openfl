@@ -1,6 +1,9 @@
 package openfl.filters; #if (display || !flash)
 
 
+@:jsRequire("openfl/filters/ConvolutionFilter", "default")
+
+
 @:final extern class ConvolutionFilter extends BitmapFilter {
 	
 	

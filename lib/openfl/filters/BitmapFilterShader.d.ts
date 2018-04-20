@@ -1,11 +1,11 @@
+import Shader from "./../display/Shader";
 import ByteArray from "./../utils/ByteArray";
-import Shader from "./Shader";
 
 
 declare namespace openfl.display {
 	
 	
-	export class DisplayObjectShader extends Shader {
+	export class BitmapFilterShader extends Shader {
 		
 		
 		public constructor (code?:ByteArray);
@@ -17,4 +17,4 @@ declare namespace openfl.display {
 }
 
 
-export default openfl.display.DisplayObjectShader;
+export default openfl.display.BitmapFilterShader;

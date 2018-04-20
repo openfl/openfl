@@ -1376,6 +1376,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					var parentRenderer:OpenGLRenderer = cast renderer;
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
 					
+					var cacheBlendMode = parentRenderer.__blendMode;
 					parentRenderer.__suspendClipAndMask ();
 					childRenderer.__copyShader (parentRenderer);
 					
@@ -1453,6 +1454,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							for (i in 0...filter.__numShaderPasses) {
 								
 								shader = filter.__initShader (childRenderer, i);
+								childRenderer.__setBlendMode (filter.__shaderBlendMode);
 								childRenderer.__setRenderTarget (bitmap2);
 								childRenderer.__renderFilterPass (bitmap, shader);
 								
@@ -1464,6 +1466,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 							if (filter.__preserveObject) {
 								
+								childRenderer.__setBlendMode (NORMAL);
 								childRenderer.__setRenderTarget (bitmap);
 								childRenderer.__renderFilterPass (bitmap3, childRenderer.__defaultDisplayShader, false);
 								
@@ -1477,6 +1480,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					}
 					
+					parentRenderer.__blendMode = NORMAL;
+					parentRenderer.__setBlendMode (cacheBlendMode);
 					parentRenderer.__copyShader (childRenderer);
 					parentRenderer.__resumeClipAndMask ();
 					parentRenderer.setViewport ();

@@ -1,6 +1,7 @@
 package openfl.filters;
 
 
+import openfl.display.BlendMode;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 
@@ -8,6 +9,7 @@ import openfl.display.Shader;
 class ShaderFilter extends BitmapFilter {
 	
 	
+	@:beta public var blendMode:BlendMode;
 	public var bottomExtension:Int;
 	public var leftExtension:Int;
 	public var rightExtension:Int;
@@ -40,6 +42,7 @@ class ShaderFilter extends BitmapFilter {
 	
 	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
+		__shaderBlendMode = blendMode;
 		return shader;
 		
 	}

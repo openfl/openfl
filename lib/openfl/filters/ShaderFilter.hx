@@ -4,6 +4,8 @@ package openfl.filters; #if (display || !flash)
 import openfl.display.BlendMode;
 import openfl.display.Shader;
 
+@:jsRequire("openfl/filters/ShaderFilter", "default")
+
 
 extern class ShaderFilter extends BitmapFilter {
 	
