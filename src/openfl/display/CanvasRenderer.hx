@@ -87,6 +87,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 		if (__stage != null) {
 			
 			var cacheBlendMode = __blendMode;
+			__blendMode = null;
 			__setBlendMode (NORMAL);
 			
 			context.setTransform (1, 0, 0, 1, 0, 0);
