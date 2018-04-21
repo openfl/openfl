@@ -66,19 +66,11 @@ class Bitmap extends DisplayObject {
 	
 	private override function __enterFrame (deltaTime:Int):Void {
 		
-		// TODO: Do not set as dirty for DOM render
-		
-		// #if (!js || !dom)
-		if (__bitmapData != null && __bitmapData.image != null) {
+		if (__bitmapData != null && __bitmapData.image != null && __bitmapData.image.version != __imageVersion) {
 			
-			var image = __bitmapData.image;
-			if (__bitmapData.image.version != __imageVersion) {
-				__setRenderDirty ();
-				__imageVersion = image.version;
-			}
+			__setRenderDirty ();
 			
 		}
-		// #end
 		
 	}
 	
@@ -155,6 +147,12 @@ class Bitmap extends DisplayObject {
 	
 	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
+		if (__bitmapData != null && __bitmapData.image != null) {
+			
+			__imageVersion = __bitmapData.image.version;
+			
+		}
+		
 		#if lime_cairo
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
@@ -182,6 +180,12 @@ class Bitmap extends DisplayObject {
 	
 	
 	private override function __renderCanvas (renderer:CanvasRenderer):Void {
+		
+		if (__bitmapData != null && __bitmapData.image != null) {
+			
+			__imageVersion = __bitmapData.image.version;
+			
+		}
 		
 		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
@@ -237,6 +241,12 @@ class Bitmap extends DisplayObject {
 	
 	
 	private override function __renderGL (renderer:OpenGLRenderer):Void {
+		
+		if (__bitmapData != null && __bitmapData.image != null) {
+			
+			__imageVersion = __bitmapData.image.version;
+			
+		}
 		
 		__updateCacheBitmap (renderer, false);
 		
