@@ -188,7 +188,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FloatVector {
 		
-		return new FloatVector (length, fixed, cast array);
+		return new FloatVector (length, fixed, cast array, true);
 		
 	}
 	
@@ -205,13 +205,13 @@ abstract Vector<T>(IVector<T>) {
 	#if (haxe_ver < "3.4.0")
 	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T> {
 		
-		return new ObjectVector<T> (length, fixed, cast array);
+		return new ObjectVector<T> (length, fixed, cast array, true);
 		
 	}
 	#else
 	@:to static #if (!js && !flash) inline #end function toObjectVector<T:{}> (t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T> {
 		
-		return new ObjectVector<T> (length, fixed, cast array);
+		return new ObjectVector<T> (length, fixed, cast array, true);
 		
 	}
 	#end
@@ -631,10 +631,19 @@ abstract Vector<T>(IVector<T>) {
 	private var __array:Array<Float>;
 	
 	
-	public function new (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>):Void {
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void {
 		
-		__array = new Array ();
-		if (array != null) for (i in 0...array.length) __array[i] = array[i];
+		if (forceCopy) {
+			
+			__array = new Array ();
+			if (array != null) for (i in 0...array.length) __array[i] = array[i];
+			
+		} else {
+			
+			if (array == null) array = new Array<Float> ();
+			__array = cast array;
+			
+		}
 		
 		if (length != null && length > 0) {
 			
@@ -1591,10 +1600,19 @@ abstract Vector<T>(IVector<T>) {
 	private var __array:Array<T>;
 	
 	
-	public function new (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>):Void {
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void {
 		
-		__array = new Array ();
-		if (array != null) for (i in 0...array.length) __array[i] = array[i];
+		if (forceCopy) {
+			
+			__array = new Array ();
+			if (array != null) for (i in 0...array.length) __array[i] = array[i];
+			
+		} else {
+			
+			if (array == null) array = cast new Array<T> ();
+			__array = cast array;
+			
+		}
 		
 		if (length != null && length > 0) {
 			
