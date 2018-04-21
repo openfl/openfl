@@ -887,11 +887,19 @@ abstract Vector<T>(IVector<T>) {
 	
 	@:noCompletion private function set_length (value:Int):Int {
 		
-		if (!fixed) {
+		if (value != __array.length && !fixed) {
 			
 			#if cpp
 			
-			cpp.NativeArray.setSize (__array, value);
+			if (value > __array.length) {
+				
+				cpp.NativeArray.setSize (__array, value);
+				
+			} else {
+				
+				__array.splice (value, __array.length);
+				
+			}
 			
 			#else
 			
