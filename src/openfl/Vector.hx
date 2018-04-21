@@ -52,7 +52,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline function iterator<T> ():Iterator<T> {
+	public inline function iterator ():Iterator<T> {
 		
 		return this.iterator ();
 		
@@ -400,7 +400,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function iterator<Bool> ():Iterator<Bool> {
+	public function iterator ():Iterator<Bool> {
 		
 		return cast __array.iterator ();
 		
@@ -723,7 +723,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function iterator<Float> ():Iterator<Float> {
+	public function iterator ():Iterator<Float> {
 		
 		return cast __array.iterator ();
 		
@@ -1054,7 +1054,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function iterator<Function> ():Iterator<Function> {
+	public function iterator ():Iterator<Function> {
 		
 		return cast __array.iterator ();
 		
@@ -1369,7 +1369,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function iterator<Int> ():Iterator<Int> {
+	public function iterator ():Iterator<Int> {
 		
 		return cast __array.iterator ();
 		
@@ -1692,7 +1692,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function iterator<T> ():Iterator<T> {
+	public function iterator ():Iterator<T> {
 		
 		return cast __array.iterator ();
 		
@@ -1918,7 +1918,7 @@ abstract Vector<T>(IVector<T>) {
 	public function get (index:Int):T;
 	public function indexOf (x:T, ?from:Int = 0):Int;
 	public function insertAt (index:Int, element:T):Void;
-	public function iterator<T> ():Iterator<T>;
+	public function iterator ():Iterator<T>;
 	public function join (sep:String = ","):String;
 	public function lastIndexOf (x:T, ?from:Int = 0):Int;
 	public function pop ():Null<T>;
@@ -1998,7 +1998,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	}
 	
 	
-	public inline function iterator<T> ():Iterator<T> {
+	public inline function iterator ():Iterator<T> {
 		
 		return this.iterator ();
 		
@@ -2628,7 +2628,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	public inline function iterator<T> ():Iterator<T> {
+	public inline function iterator ():Iterator<T> {
 		
 		return new VectorDataIterator<T> (this);
 		
