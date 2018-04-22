@@ -708,8 +708,8 @@ class Shader {
 		var floatIndex = 0;
 		var intIndex = 0;
 		
-		var boolCount = shaderBuffer.paramRefs_Bool.length;
-		var floatCount = shaderBuffer.paramRefs_Float.length;
+		var boolCount = shaderBuffer.paramBoolCount;
+		var floatCount = shaderBuffer.paramFloatCount;
 		var paramData = shaderBuffer.paramData;
 		
 		var boolRef, floatRef, intRef, hasOverride;

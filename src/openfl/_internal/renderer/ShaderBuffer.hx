@@ -32,10 +32,13 @@ class ShaderBuffer {
 	public var overrideCount:Int;
 	public var overrideNames:Array<String>;
 	public var overrideValues:Array<Array<Dynamic>>;
+	public var paramBoolCount:Int;
 	public var paramCount:Int;
 	public var paramData:Float32Array;
 	public var paramDataBuffer:GLBuffer;
 	public var paramDataLength:Int;
+	public var paramFloatCount:Int;
+	public var paramIntCount:Int;
 	public var paramLengths:Array<Int>;
 	public var paramPositions:Array<Int>;
 	public var paramRefs_Bool:Array<ShaderParameter<Bool>>;
@@ -82,8 +85,14 @@ class ShaderBuffer {
 	
 	public function update (shader:GraphicsShader):Void {
 		
+		inputCount = 0;
 		overrideCount = 0;
+		paramBoolCount = 0;
+		paramCount = 0;
 		paramDataLength = 0;
+		paramFloatCount = 0;
+		paramIntCount = 0;
+		this.shader = null;
 		
 		if (shader == null) return;
 		
@@ -107,6 +116,9 @@ class ShaderBuffer {
 		var floatCount = shader.__paramFloat.length;
 		var intCount = shader.__paramInt.length;
 		paramCount = boolCount + floatCount + intCount;
+		paramBoolCount = boolCount;
+		paramFloatCount = floatCount;
+		paramIntCount = intCount;
 		
 		var paramLength = 0;
 		var length = 0, p = 0;
