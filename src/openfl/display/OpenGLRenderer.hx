@@ -171,37 +171,51 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function applyBitmapData (bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void {
 		
-		if (__currentShader.__bitmap != null) {
-			
-			__currentShader.__bitmap.input = bitmapData;
-			__currentShader.__bitmap.filter = smooth ? LINEAR : NEAREST;
-			__currentShader.__bitmap.mipFilter = MIPNONE;
-			__currentShader.__bitmap.wrap = repeat ? REPEAT : CLAMP;
-			
-		}
-		
-		if (__currentShader.__texture != null) {
-			
-			__currentShader.__texture.input = bitmapData;
-			__currentShader.__texture.filter = smooth ? LINEAR : NEAREST;
-			__currentShader.__texture.mipFilter = MIPNONE;
-			__currentShader.__texture.wrap = repeat ? REPEAT : CLAMP;
-			
-		}
-		
-		if (__currentShader.__textureSize != null) {
+		if (__currentShaderBuffer != null) {
 			
 			if (bitmapData != null) {
 				
-				// __textureSizeValue[0] = bitmapData.__textureWidth;
-				// __textureSizeValue[1] = bitmapData.__textureHeight;
 				__textureSizeValue[0] = bitmapData.width;
 				__textureSizeValue[1] = bitmapData.height;
-				__currentShader.__textureSize.value = __textureSizeValue;
+				__currentShaderBuffer.addOverride ("openfl_TextureSize", __textureSizeValue);
 				
-			} else {
+			}
+			
+		} else if (__currentShader != null) {
+			
+			if (__currentShader.__bitmap != null) {
 				
-				__currentShader.__textureSize.value = null;
+				__currentShader.__bitmap.input = bitmapData;
+				__currentShader.__bitmap.filter = smooth ? LINEAR : NEAREST;
+				__currentShader.__bitmap.mipFilter = MIPNONE;
+				__currentShader.__bitmap.wrap = repeat ? REPEAT : CLAMP;
+				
+			}
+			
+			if (__currentShader.__texture != null) {
+				
+				__currentShader.__texture.input = bitmapData;
+				__currentShader.__texture.filter = smooth ? LINEAR : NEAREST;
+				__currentShader.__texture.mipFilter = MIPNONE;
+				__currentShader.__texture.wrap = repeat ? REPEAT : CLAMP;
+				
+			}
+			
+			if (__currentShader.__textureSize != null) {
+				
+				if (bitmapData != null) {
+					
+					// __textureSizeValue[0] = bitmapData.__textureWidth;
+					// __textureSizeValue[1] = bitmapData.__textureHeight;
+					__textureSizeValue[0] = bitmapData.width;
+					__textureSizeValue[1] = bitmapData.height;
+					__currentShader.__textureSize.value = __textureSizeValue;
+					
+				} else {
+					
+					__currentShader.__textureSize.value = null;
+					
+				}
 				
 			}
 			

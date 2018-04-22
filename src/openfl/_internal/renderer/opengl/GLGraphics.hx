@@ -553,6 +553,7 @@ class GLGraphics {
 									
 									renderer.__setShaderBuffer (shaderBuffer);
 									renderer.applyMatrix (uMatrix);
+									renderer.applyBitmapData (bitmap, false, false);
 									renderer.applyAlpha (graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform (graphics.__owner.__worldColorTransform);
 									renderer.__updateShaderBuffer ();
@@ -669,6 +670,7 @@ class GLGraphics {
 								
 								renderer.__setShaderBuffer (shaderBuffer);
 								renderer.applyMatrix (uMatrix);
+								renderer.applyBitmapData (bitmap, false, false);
 								renderer.applyAlpha (1);
 								renderer.applyColorTransform (null);
 								renderer.__updateShaderBuffer ();
