@@ -295,15 +295,15 @@ class ShaderMacro {
 					
 					case BOOL, BOOL2, BOOL3, BOOL4:
 						
-						field = { name: name, meta: [], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Bool>), pos: pos };
+						field = { name: name, meta: [ { name: ":keep", pos: pos } ], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Bool>), pos: pos };
 					
 					case INT, INT2, INT3, INT4:
 						
-						field = { name: name, meta: [], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Int>), pos: pos };
+						field = { name: name, meta: [ { name: ":keep", pos: pos } ], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Int>), pos: pos };
 					
 					default:
 						
-						field = { name: name, meta: [], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos };
+						field = { name: name, meta: [ { name: ":keep", pos: pos } ], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos };
 					
 				}
 				
@@ -311,7 +311,7 @@ class ShaderMacro {
 			
 			if (StringTools.startsWith (name, "openfl_")) {
 				
-				field.meta = [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":allow", params: [ macro openfl._internal ], pos: pos } ];
+				field.meta = [ { name: ":keep", pos: pos }, { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":allow", params: [ macro openfl._internal ], pos: pos } ];
 				
 			}
 			
