@@ -87,7 +87,7 @@ class CanvasTilemap {
 			}
 			
 			bitmapData = tileset.bitmapData;
-			if (bitmapData == null || !bitmapData.readable) continue;
+			if (bitmapData == null || !bitmapData.__prepareImage()) continue;
 			
 			if (bitmapData != cacheBitmapData) {
 				

@@ -414,7 +414,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void {
 		
-		if (!readable || sourceBitmapData == null) return;
+		if (!readable || sourceBitmapData == null || !sourceBitmapData.__prepareImage()) return;
 		
 		if (alphaPoint != null) {
 			
@@ -2031,6 +2031,8 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	private function __prepareImage() return image != null;
+
 	private function __loadFromFile (path:String):Future<BitmapData> {
 		
 		return Image.loadFromFile (path).then (function (image) {
