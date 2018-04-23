@@ -1120,6 +1120,10 @@ class CanvasGraphics {
 			
 			var width = graphics.__width;
 			var height = graphics.__height;
+
+			if (graphics.__bitmap != null) {
+				graphics.__bitmap.dispose ();
+			}
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1) {
 				

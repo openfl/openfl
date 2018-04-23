@@ -120,6 +120,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
+	private var __ownsTexture:Bool;
 	private var __transform:Matrix;
 	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
@@ -202,6 +203,7 @@ class BitmapData implements IBitmapDrawable {
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderable = true;
+		__ownsTexture = false;
 		
 	}
 	
@@ -439,11 +441,21 @@ class BitmapData implements IBitmapDrawable {
 		
 		__surface = null;
 		
-		__buffer = null;
+		if (__buffer != null) {
+			__bufferContext.deleteBuffer (__buffer);
+			__buffer = null;
+			__bufferContext = null;
+		}
+		
 		__framebuffer = null;
 		__framebufferContext = null;
-		__texture = null;
-		__textureContext = null;
+		
+		if (__ownsTexture) {
+			__ownsTexture = false;
+			__textureContext.deleteTexture (__texture);
+			__texture = null;
+			__textureContext = null;
+		}
 		
 		//if (__texture != null) {
 			//
@@ -1105,6 +1117,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			__textureContext = gl;
 			__texture = gl.createTexture ();
+			__ownsTexture = true;
 			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
