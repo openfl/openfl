@@ -4,6 +4,11 @@ package openfl.events;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class MouseEvent extends Event {
 	

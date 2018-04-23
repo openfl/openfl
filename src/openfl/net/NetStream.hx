@@ -12,6 +12,11 @@ import js.html.VideoElement;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class NetStream extends EventDispatcher {
 	

@@ -10,6 +10,11 @@ import openfl._internal.Lib;
 import sys.io.Process;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class Capabilities {
 	

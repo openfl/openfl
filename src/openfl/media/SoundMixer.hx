@@ -1,6 +1,11 @@
 package openfl.media;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.media.SoundChannel)
 
 

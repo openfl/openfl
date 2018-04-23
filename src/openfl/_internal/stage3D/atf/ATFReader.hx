@@ -8,6 +8,10 @@ import openfl.display3D.Context3DTextureFormat;
 
 typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> Bytes -> Void;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 /**
 	This class can read textures from Adobe Texture Format containers.

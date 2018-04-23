@@ -3,6 +3,11 @@ package openfl.events;
 
 import openfl.ui.KeyLocation;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class KeyboardEvent extends Event {
 	

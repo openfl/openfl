@@ -9,6 +9,11 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 

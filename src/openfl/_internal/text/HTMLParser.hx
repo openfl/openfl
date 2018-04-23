@@ -3,6 +3,11 @@ package openfl._internal.text;
 
 import openfl.text.TextFormat;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class HTMLParser {
 	

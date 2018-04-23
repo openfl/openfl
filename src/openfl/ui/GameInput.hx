@@ -8,6 +8,11 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.GameInputEvent;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.ui.GameInputControl)
 @:access(openfl.ui.GameInputDevice)
 

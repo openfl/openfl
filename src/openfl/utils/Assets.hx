@@ -16,6 +16,11 @@ import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.text.Font;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.text.Font)
 @:access(openfl.utils.AssetLibrary)

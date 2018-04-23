@@ -2,6 +2,11 @@ package openfl._internal.renderer.opengl.stats;
 
 import haxe.ds.IntMap;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 class GLStats {
 	
 	private static var drawCallsCounters:IntMap<DrawCallCounter> = [ DrawCallContext.STAGE => new DrawCallCounter(), 

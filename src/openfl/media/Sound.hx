@@ -13,6 +13,11 @@ import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
 @:access(openfl.media.SoundChannel.new)

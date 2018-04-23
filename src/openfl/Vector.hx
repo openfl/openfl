@@ -2839,6 +2839,12 @@ abstract Vector<T>(VectorData<T>) {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:dox(hide) private class VectorDataIterator<T> {
 	
 	

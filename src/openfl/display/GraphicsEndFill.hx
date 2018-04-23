@@ -4,6 +4,11 @@ package openfl.display;
 import openfl.display.IGraphicsData;
 import openfl.display.IGraphicsFill;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class GraphicsEndFill implements IGraphicsData implements IGraphicsFill {
 	

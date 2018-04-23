@@ -11,6 +11,7 @@ import openfl.errors.IllegalOperationError;
 @:noDebug
 #end
 
+
 class GLCompressedTextureFormats {
 	
 	

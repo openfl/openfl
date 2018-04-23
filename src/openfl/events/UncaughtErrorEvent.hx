@@ -1,6 +1,12 @@
 package openfl.events;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 class UncaughtErrorEvent extends ErrorEvent {
 	
 	

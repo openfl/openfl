@@ -9,6 +9,11 @@ import openfl.events.ProgressEvent;
 import openfl.net.Socket;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class XMLSocket extends EventDispatcher {
 	

@@ -10,6 +10,11 @@ import openfl.utils.IDataInput;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class URLStream extends EventDispatcher implements IDataInput {
 	

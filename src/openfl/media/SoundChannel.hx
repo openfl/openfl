@@ -6,6 +6,11 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.media.SoundMixer)
 
 

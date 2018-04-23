@@ -304,7 +304,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
-// TODO: Export as "ByteArray" in OpenFL-JS
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 

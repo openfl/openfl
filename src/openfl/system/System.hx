@@ -10,6 +10,11 @@ import neko.vm.Gc;
 import cpp.vm.Gc;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class System {
 	

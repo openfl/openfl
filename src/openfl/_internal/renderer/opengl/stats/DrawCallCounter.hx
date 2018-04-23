@@ -1,5 +1,12 @@
 package openfl._internal.renderer.opengl.stats;
 
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 class DrawCallCounter {
 	
 	public var currentDrawCallsNum (default, null):Int = 0;

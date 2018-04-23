@@ -6,6 +6,11 @@ import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:dox(hide) class AssetCache implements IAssetCache {
 	

@@ -5,6 +5,11 @@ import openfl.display.BlendMode;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class ShaderFilter extends BitmapFilter {
 	

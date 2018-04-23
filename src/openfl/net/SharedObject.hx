@@ -23,6 +23,11 @@ import sys.io.File;
 import sys.FileSystem;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class SharedObject extends EventDispatcher {
 	

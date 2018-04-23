@@ -15,6 +15,11 @@ import openfl.events.SecurityErrorEvent;
 import openfl.net.URLRequestMethod;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class URLLoader extends EventDispatcher {
 	

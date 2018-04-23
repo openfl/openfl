@@ -12,6 +12,11 @@ import openfl.events.EventDispatcher;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Accelerometer extends EventDispatcher {
 	

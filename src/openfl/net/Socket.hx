@@ -29,6 +29,11 @@ import sys.net.Host;
 import sys.net.Socket in SysSocket;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	

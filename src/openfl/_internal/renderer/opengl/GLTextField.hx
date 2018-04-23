@@ -11,6 +11,11 @@ import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.cairo.CairoTextField;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class GLTextField {
 	
