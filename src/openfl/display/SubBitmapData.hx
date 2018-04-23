@@ -7,6 +7,7 @@ import js.Browser;
 import js.html.CanvasElement;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.ColorTransform;
+import lime.graphics.CanvasRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
@@ -255,40 +256,34 @@ class SubBitmapData extends BitmapData {
 	}
 
 	override function __prepareImage() {
-		if (image == null)
-			image = lime.graphics.Image.fromCanvas(drawToCanvas());
+		if (image == null) {
+			var canvas:CanvasElement = cast Browser.document.createElement("canvas");
+			canvas.width = width;
+			canvas.height = height;
+
+			__drawToCanvas(canvas.getContext("2d"), 1, 0, 0, 1, 0, 0);
+
+			image = lime.graphics.Image.fromCanvas(canvas);
+		}
 		return true;
 	}
-
-	function drawToCanvas():CanvasElement {
+	
+	inline function __drawToCanvas(context:CanvasRenderContext, a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float) {
 		var parentImage = __parentBitmap.image;
 		if (parentImage.type == DATA) {
 			ImageCanvasUtil.convertToCanvas(parentImage);
 		}
 
-		var canvas:CanvasElement = cast Browser.document.createElement("canvas");
-		canvas.width = width;
-		canvas.height = height;
-
-		var context = canvas.getContext("2d");
-
-		context.setTransform(1, 0, 0, 1, __offsetX, __offsetY);
+		context.setTransform(a, b, c, d, tx + __offsetX, ty + __offsetY);
 		if (__rotated) {
 			context.rotate(-90 * Math.PI / 180);
 			context.translate(-__texWidth, 0);
 		}
-		context.drawImage(parentImage.src, __texX, __texY, __texWidth, __texHeight, 0, 0, __texWidth, __texHeight);
 
-		return canvas;
+		context.drawImage(parentImage.src, __texX, __texY, __texWidth, __texHeight, 0, 0, __texWidth, __texHeight);
 	}
 
 	override function __renderCanvas(renderSession:RenderSession) {
-		var image = __parentBitmap.image;
-
-		if (image.type == DATA) {
-			ImageCanvasUtil.convertToCanvas(image);
-		}
-
 		var transform = __worldTransform;
 		var tx = transform.tx;
 		var ty = transform.ty;
@@ -299,12 +294,7 @@ class SubBitmapData extends BitmapData {
 
 		var context = renderSession.context;
 		context.globalAlpha = 1;
-		context.setTransform(transform.a, transform.b, transform.c, transform.d, tx + __offsetX, ty + __offsetY);
-		if (__rotated) {
-			context.rotate(-90 * Math.PI / 180);
-			context.translate(-__texWidth, 0);
-		}
-		context.drawImage(image.src, __texX, __texY, __texWidth, __texHeight, 0, 0, __texWidth, __texHeight);
+		__drawToCanvas(context, transform.a, transform.b, transform.c, transform.d, tx, ty);
 	}
 	#end
 }
