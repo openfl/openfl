@@ -12,6 +12,7 @@ import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.GLVertexArrayObject;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.WebGLContext;
 import lime.graphics.GLRenderContext;
@@ -124,6 +125,8 @@ class BitmapData implements IBitmapDrawable {
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
 	
+	private var __vao:GLVertexArrayObject;
+	private var __vaoMask:GLVertexArrayObject;
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
 		
@@ -1641,6 +1644,25 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		image.version++;
+		
+	}
+	
+	
+	function __cleanup (renderSession: RenderSession):Void {
+
+		if (__vao != null) {
+			
+			renderSession.vaoContext.deleteVertexArray (__vao);
+			__vao = null;
+			
+		}
+		
+		if (__vaoMask != null) {
+			
+			renderSession.vaoContext.deleteVertexArray (__vaoMask);
+			__vaoMask = null;
+			
+		}
 		
 	}
 	

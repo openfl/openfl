@@ -128,8 +128,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __updateDirty:Bool;
 	private var __updateTraverse:Bool;
 	private var __visible:Bool;
-	private var __vao:GLVertexArrayObject;
-	private var __vaoMask:GLVertexArrayObject;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
 	private var __worldBlendMode:BlendMode;
@@ -402,20 +400,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__graphics.__cleanup ();
 			
 		}
-		
-		if (__vao != null) {
-			
-			renderSession.vaoContext.deleteVertexArray (__vao);
-			__vao = null;
-			
-		} 
-		
-		if (__vaoMask != null) {
-			
-			renderSession.vaoContext.deleteVertexArray (__vaoMask);
-			__vaoMask = null;
-			
-		} 
 		
 	}
 	
