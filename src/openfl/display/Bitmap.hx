@@ -66,6 +66,17 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 	}
 	
+	private override function __cleanup (renderSession: RenderSession):Void {
+		
+		super.__cleanup (renderSession);
+		
+		if (__bitmapData != null) {
+			
+			__bitmapData.__cleanup (renderSession);
+			
+		}
+		
+	}
 	
 	private override function __enterFrame (deltaTime:Int):Void {
 		

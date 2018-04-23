@@ -51,14 +51,14 @@ class GLVAORenderHelper {
 			renderSession.shaderManager.updateShader (shader);
 			shader.__skipEnableVertexAttribArray = false;
 			
-			var hasVAO: Bool = displayObject.__vao != null;
+			var hasVAO: Bool = bitmapData.__vao != null;
 			if (!hasVAO) {
 				
-				displayObject.__vao = vaoContext.createVertexArray ();
+				bitmapData.__vao = vaoContext.createVertexArray ();
 				
 			}
 			
-			vaoContext.bindVertexArray (displayObject.__vao);
+			vaoContext.bindVertexArray (bitmapData.__vao);
 			if (!hasVAO || bitmapData.isBufferDirty (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform)) {
 				
 				__enableVertexAttribArray (gl, shader);
@@ -96,14 +96,14 @@ class GLVAORenderHelper {
 			renderSession.shaderManager.updateShader (shader);
 			shader.__skipEnableVertexAttribArray = false;
 			
-			var hasVAO: Bool = displayObject.__vaoMask != null;
+			var hasVAO: Bool = bitmapData.__vaoMask != null;
 			if (!hasVAO) {
 				
-				displayObject.__vaoMask = vaoContext.createVertexArray ();
+				bitmapData.__vaoMask = vaoContext.createVertexArray ();
 				
 			}
 			
-			vaoContext.bindVertexArray (displayObject.__vaoMask);
+			vaoContext.bindVertexArray (bitmapData.__vaoMask);
 			if (!hasVAO || bitmapData.isBufferDirty (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform)) {
 				
 				gl.enableVertexAttribArray (shader.data.aPosition.index);
