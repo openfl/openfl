@@ -451,6 +451,7 @@ class BitmapData implements IBitmapDrawable {
 		__framebufferContext = null;
 		
 		if (__ownsTexture) {
+			__ownsTexture = false;
 			__textureContext.deleteTexture (__texture);
 			__texture = null;
 			__textureContext = null;
