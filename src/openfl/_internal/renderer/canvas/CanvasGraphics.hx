@@ -113,6 +113,8 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
+		if (!bitmap.__prepareImage()) return null;
+		
 		ImageCanvasUtil.convertToCanvas (bitmap.image);
 		setSmoothing (smooth);
 		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
