@@ -368,7 +368,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						//set MovieClips back to initial state (autoplay)
 						if (Std.is(child, MovieClip))
 						{
-							cast(child, MovieClip).gotoAndPlay(1);
+							var movie : MovieClip = cast child;
+							movie.gotoAndPlay(1);
 						}
 						
 						removeChild (child);
