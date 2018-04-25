@@ -78,6 +78,30 @@ class SubBitmapData extends BitmapData {
 	}
 
 	#if !display
+
+	inline function __getPixelAbsolute(x:Int, y:Int, getPixel:Int->Int->Int):Int {
+		x -= __offsetX;
+		y -= __offsetY;
+		if (x < 0 || y < 0)
+			return 0;
+		if (__rotated) {
+			var tmp = x;
+			x = __texWidth - y;
+			y = tmp;
+		}
+		x += __texX;
+		y += __texY;
+		return getPixel(x, y);
+	}
+
+	override function getPixel (x:Int, y:Int):Int {
+		return __getPixelAbsolute(x, y, function(x, y) return __parentBitmap.image.getPixel(x, y, ARGB32));
+	}
+
+	override function getPixel32 (x:Int, y:Int):Int {
+		return __getPixelAbsolute(x, y, function(x, y) return __parentBitmap.image.getPixel32(x, y, ARGB32));
+	}
+
 	override function getTexture (gl:GLRenderContext):GLTexture {
 		return __texture;
 	}
