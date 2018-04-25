@@ -134,13 +134,13 @@ class GLTextureBase {
 	
 	public static function getImage (textureBase:TextureBase, renderSession:RenderSession, bitmapData:BitmapData):Image {
 		
-		var image =	bitmapData.image;
-		
-		if (!bitmapData.__isValid || image == null) {
+		if (!bitmapData.__isValid || !bitmapData.__prepareImage()) {
 			
 			return null;
 			
 		}
+		
+		var image =	bitmapData.image;
 		
 		#if (js && html5)
 		ImageCanvasUtil.sync (image, false);
