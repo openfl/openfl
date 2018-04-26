@@ -70,8 +70,15 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	#if openfljs
+	private static var __parent_fps:Bool;
 	private static function __init__ () {
 		
+		#if openfljs
+		__parent_fps = true;
+		untyped __js__("/// #if (typeof swf_parent_fps === 'undefined' || !swf_parent_fps) && (typeof swflite_parent_fps === 'undefined' || !swflite_parent_fps)");
+		__parent_fps = false;
+		untyped __js__("/// #endif");
+		#end
 		untyped Object.defineProperties (MovieClip.prototype, {
 			"currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }") },
 			"currentFrameLabel": { get: untyped __js__ ("function () { return this.get_currentFrameLabel (); }") },
@@ -164,9 +171,19 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__playing = true;
 		
-		#if (!swflite_parent_fps && !swf_parent_fps)
+		#if (openfljs || (!swflite_parent_fps && !swf_parent_fps))
+		
+		#if openfljs
+		if (!__parent_fps) {
+		#end
+		
 		__frameTime = Std.int (1000 / __swf.frameRate);
 		__timeElapsed = 0;
+		
+		#if openfljs
+		}
+		#end
+		
 		#end
 		
 	}
@@ -687,19 +704,34 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	private function __getNextFrame (deltaTime:Int):Int {
 		
-		#if (!swflite_parent_fps && !swf_parent_fps)
+		var nextFrame:Int = 0;
+		#if openfljs
+		if (!__parent_fps) {
+		#end
+		
+		#if (openfljs || (!swflite_parent_fps && !swf_parent_fps))
 		
 		__timeElapsed += deltaTime;
-		var nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
+		nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
 		if (nextFrame < 1) nextFrame = 1;
 		if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
 		__timeElapsed = (__timeElapsed % __frameTime);
 		
-		#else
+		#end
 		
-		var nextFrame = __currentFrame + 1;
+		#if openfljs
+		} else {
+		#end
+		
+		#if (openfljs || swflite_parent_fps || swf_parent_fps)
+		
+		nextFrame = __currentFrame + 1;
 		if (nextFrame > __totalFrames) nextFrame = 1;
 		
+		#end
+		
+		#if openfljs
+		}
 		#end
 		
 		return nextFrame;
