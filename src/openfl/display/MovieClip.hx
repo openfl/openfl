@@ -73,12 +73,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private static var __parent_fps:Bool;
 	private static function __init__ () {
 		
-		#if openfljs
 		__parent_fps = true;
 		untyped __js__("/// #if (typeof swf_parent_fps === 'undefined' || !swf_parent_fps) && (typeof swflite_parent_fps === 'undefined' || !swflite_parent_fps)");
 		__parent_fps = false;
 		untyped __js__("/// #endif");
-		#end
+		
 		untyped Object.defineProperties (MovieClip.prototype, {
 			"currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }") },
 			"currentFrameLabel": { get: untyped __js__ ("function () { return this.get_currentFrameLabel (); }") },

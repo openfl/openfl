@@ -191,7 +191,7 @@ class CustomClassGenerator implements IClassGenerator {
 		if (metaContent.indexOf('///') > -1) {
 			// Purpose of this replace call is to remove the trailing semicolon 
 			// from triple slash lines like: /// #if debug;
-      metaContent = re.replace(metaContent, '/// #$1 $2$3');
+			metaContent = re.replace(metaContent, '/// #$1 $2$3');
 		}
 		if (init.indexOf('///') > -1) {
 			init = re.replace(init, '/// #$1 $2$3');
