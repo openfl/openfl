@@ -311,10 +311,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		Application.current.addModule (this);
-		
 		if (app != null) {
 			
+			app.addModule (this);
 			app.exec ();
 			
 		}
@@ -324,6 +323,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	@:noCompletion public function addRenderer (renderer:Renderer):Void {
+		
+		if (this.window == null || this.window.renderer != renderer) return;
 		
 		renderer.onRender.add (render.bind (renderer));
 		renderer.onContextLost.add (onRenderContextLost.bind (renderer));

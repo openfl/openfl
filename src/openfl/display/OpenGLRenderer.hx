@@ -421,7 +421,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	private override function __clear ():Void {
 		
-		if (__stage.__transparent) {
+		if (__stage == null || __stage.__transparent) {
 			
 			__gl.clearColor (0, 0, 0, 0);
 			
