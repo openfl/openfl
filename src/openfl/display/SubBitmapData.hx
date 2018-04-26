@@ -78,28 +78,48 @@ class SubBitmapData extends BitmapData {
 	}
 
 	#if !display
+	
+	// not using Point class here, because we need Int coords, not Float
+	static var __getPixelAbsoluteCoordsX:Int;
+	static var __getPixelAbsoluteCoordsY:Int;
 
-	inline function __getPixelAbsolute(x:Int, y:Int, getPixel:Int->Int->Int):Int {
+	function __getPixelAbsoluteCoords(x:Int, y:Int):Bool {
 		x -= __offsetX;
 		y -= __offsetY;
 		if (x < 0 || y < 0)
-			return 0;
+			return false;
+			
 		if (__rotated) {
+			if (x > __texHeight || y > __texWidth)
+				return false;
+			
 			var tmp = x;
 			x = __texWidth - y;
 			y = tmp;
+		} else {
+			if (x > __texWidth || y > __texHeight)
+				return false;
 		}
-		x += __texX;
-		y += __texY;
-		return getPixel(x, y);
+
+		__getPixelAbsoluteCoordsX = __texX + x;
+		__getPixelAbsoluteCoordsY = __texY + y;
+		return true;
 	}
 
 	override function getPixel (x:Int, y:Int):Int {
-		return __getPixelAbsolute(x, y, function(x, y) return __parentBitmap.image.getPixel(x, y, ARGB32));
+		if (__getPixelAbsoluteCoords(x, y)) {
+			return __parentBitmap.image.getPixel(__getPixelAbsoluteCoordsX, __getPixelAbsoluteCoordsY, ARGB32);
+		} else {
+			return 0;
+		}
 	}
 
 	override function getPixel32 (x:Int, y:Int):Int {
-		return __getPixelAbsolute(x, y, function(x, y) return __parentBitmap.image.getPixel32(x, y, ARGB32));
+		if (__getPixelAbsoluteCoords(x, y)) {
+			return __parentBitmap.image.getPixel32(__getPixelAbsoluteCoordsX, __getPixelAbsoluteCoordsY, ARGB32);
+		} else {
+			return 0;
+		}
 	}
 
 	override function getTexture (gl:GLRenderContext):GLTexture {
