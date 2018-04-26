@@ -18,6 +18,7 @@ import openfl.errors.ArgumentError;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.filters.*;
+import openfl.geom.ColorTransform;
 import openfl.text.TextField;
 
 #if hscript
@@ -257,7 +258,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							if (instance != null) {
 								
 								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
+								__updateDisplayObject (instance.displayObject, frameObject, true);
 								
 							}
 						
@@ -765,7 +766,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject):Void {
+	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject, reset : Bool = false):Void {
 		
 		if (displayObject == null) return;
 		
@@ -784,6 +785,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		if (frameObject.colorTransform != null) {
 			
 			displayObject.transform.colorTransform = frameObject.colorTransform;
+			
+		}
+		else if (reset) {
+			
+			displayObject.transform.colorTransform = new ColorTransform();
 			
 		}
 		
