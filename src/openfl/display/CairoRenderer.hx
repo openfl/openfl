@@ -126,6 +126,13 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
+	private override function __popMaskRect ():Void {
+		
+		cairo.restore ();
+		
+	}
+	
+	
 	private override function __pushMask (mask:DisplayObject):Void {
 		
 		cairo.save ();
@@ -152,13 +159,6 @@ class CairoRenderer extends DisplayObjectRenderer {
 			__pushMask (object.__mask);
 			
 		}
-		
-	}
-	
-	
-	private override function __popMaskRect ():Void {
-		
-		cairo.restore ();
 		
 	}
 	

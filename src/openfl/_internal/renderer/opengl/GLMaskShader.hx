@@ -2,7 +2,7 @@ package openfl._internal.renderer.opengl;
 
 
 import openfl.display.BitmapData;
-import openfl.display.DisplayObjectShader;
+import openfl.display.Shader;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -10,7 +10,7 @@ import openfl.display.DisplayObjectShader;
 #end
 
 
-class GLMaskShader extends DisplayObjectShader {
+class GLMaskShader extends Shader {
 	
 	
 	public static var opaqueBitmapData = new BitmapData (1, 1, false, 0);
@@ -48,12 +48,6 @@ class GLMaskShader extends DisplayObjectShader {
 		varying vec2 openfl_TextureCoordv;
 		
 		uniform mat4 openfl_Matrix;
-		
-		// unused
-		attribute float openfl_Alpha;
-		attribute vec4 openfl_ColorMultiplier;
-		attribute vec4 openfl_ColorOffset;
-		uniform bool openfl_HasColorTransform;
 		
 		void main(void) {
 			
