@@ -1,10 +1,10 @@
 
-export { default as BitmapFilter } from "./BitmapFilter.esm";
-export { default as BitmapFilterQuality } from "./BitmapFilterQuality.esm";
-export { default as BitmapFilterShader } from "./BitmapFilterShader.esm";
-export { default as BitmapFilterType } from "./BitmapFilterType.esm";
-export { default as BlurFilter } from "./BlurFilter.esm";
-export { default as ColorMatrixFilter } from "./ColorMatrixFilter.esm";
-export { default as ConvolutionFilter } from "./ConvolutionFilter.esm";
-export { default as DropShadowFilter } from "./DropShadowFilter.esm";
-export { default as GlowFilter } from "./GlowFilter.esm";
+export { default as BitmapFilter } from "./BitmapFilter";
+export { default as BitmapFilterQuality } from "./BitmapFilterQuality";
+export { default as BitmapFilterShader } from "./BitmapFilterShader";
+export { default as BitmapFilterType } from "./BitmapFilterType";
+export { default as BlurFilter } from "./BlurFilter";
+export { default as ColorMatrixFilter } from "./ColorMatrixFilter";
+export { default as ConvolutionFilter } from "./ConvolutionFilter";
+export { default as DropShadowFilter } from "./DropShadowFilter";
+export { default as GlowFilter } from "./GlowFilter";

@@ -1,2 +1,2 @@
 
-export { default as Accelerometer } from "./Accelerometer.esm";
+export { default as Accelerometer } from "./Accelerometer";

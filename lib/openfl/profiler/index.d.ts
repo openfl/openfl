@@ -1,2 +1,2 @@
 
-export { default as Telemetry } from "./Telemetry.esm";
+export { default as Telemetry } from "./Telemetry";

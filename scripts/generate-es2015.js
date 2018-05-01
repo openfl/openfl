@@ -347,6 +347,10 @@ function createEsmIndex(filePath) {
   var esmFilePath = filePath.replace(/\.js$/, '.esm.js');
   writeIfModified(esmFilePath, result);
   
+  
+  result = result.replace(/\/index.esm/g, '');
+  result = result.replace(/\.esm/g, '');
+  
   var dTSFilePath = filePath.replace(/\.js$/, '.d.ts');
   writeIfModified(dTSFilePath, result);
   

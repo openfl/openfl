@@ -1,14 +1,14 @@
 
-export { default as AGALMiniAssembler } from "./AGALMiniAssembler.esm";
-export { default as ByteArray } from "./ByteArray.esm";
-export { default as CompressionAlgorithm } from "./CompressionAlgorithm.esm";
-// export { default as  Dictionary } from "./Dictionary.esm";
-export { default as Endian } from "./Endian.esm";
-export { default as IDataInput } from "./IDataInput.esm";
-export { default as IDataOutput } from "./IDataOutput.esm";
-// export { default as  Object } from "./Object.esm";
-export { default as Timer } from "./Timer.esm";
-export { default as getTimer } from "./getTimer.esm";
-export { default as getDefinitionByName } from "./getDefinitionByName.esm";
-export { default as getQualifiedClassName } from "./getQualifiedClassName.esm";
-export { default as getQualifiedSuperclassName } from "./getQualifiedSuperclassName.esm";
+export { default as AGALMiniAssembler } from "./AGALMiniAssembler";
+export { default as ByteArray } from "./ByteArray";
+export { default as CompressionAlgorithm } from "./CompressionAlgorithm";
+// export { default as  Dictionary } from "./Dictionary";
+export { default as Endian } from "./Endian";
+export { default as IDataInput } from "./IDataInput";
+export { default as IDataOutput } from "./IDataOutput";
+// export { default as  Object } from "./Object";
+export { default as Timer } from "./Timer";
+export { default as getTimer } from "./getTimer";
+export { default as getDefinitionByName } from "./getDefinitionByName";
+export { default as getQualifiedClassName } from "./getQualifiedClassName";
+export { default as getQualifiedSuperclassName } from "./getQualifiedSuperclassName";

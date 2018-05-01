@@ -1,8 +1,8 @@
 
-export { default as ApplicationDomain } from "./ApplicationDomain.esm";
-export { default as Capabilities } from "./Capabilities.esm";
-export { default as LoaderContext } from "./LoaderContext.esm";
-export { default as Security } from "./Security.esm";
-export { default as SecurityDomain } from "./SecurityDomain.esm";
-export { default as System } from "./System.esm";
-export { default as TouchscreenType } from "./TouchscreenType.esm";
+export { default as ApplicationDomain } from "./ApplicationDomain";
+export { default as Capabilities } from "./Capabilities";
+export { default as LoaderContext } from "./LoaderContext";
+export { default as Security } from "./Security";
+export { default as SecurityDomain } from "./SecurityDomain";
+export { default as System } from "./System";
+export { default as TouchscreenType } from "./TouchscreenType";

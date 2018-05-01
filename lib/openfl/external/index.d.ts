@@ -1,2 +1,2 @@
 
-export { default as ExternalInterface } from "./ExternalInterface.esm";
+export { default as ExternalInterface } from "./ExternalInterface";
