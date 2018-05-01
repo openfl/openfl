@@ -47,12 +47,15 @@ console.log('generate-es2015 running...');
 
 startCreateEsmModules().then(() => {
   
-  startCreateDefaultReExportEsms().then(() => {
+  startModifyEsmModules().then(() => {
     
-    startCreateBarrelModules().then(() => {
+    startCreateDefaultReExportEsms().then(() => {
       
-      complete();
-      
+      startCreateBarrelModules().then(() => {
+        
+        complete();
+        
+      });
     });
   });
   
@@ -88,6 +91,7 @@ function complete() {
 
 
 function startCreateEsmModules() {
+  
   return globby(['../lib/_gen/**/*.js']).then((paths) => {
     
     for (let path of paths) {
@@ -100,6 +104,8 @@ function startCreateEsmModules() {
       }
     }
   });
+  
+  
 }
 
 
@@ -162,6 +168,64 @@ function createEsmModule(filePath) {
   return writeIfModified(esmFilePath, result);
 }
 
+
+
+function startModifyEsmModules() {
+  
+  // Now we need to go through the esm.js modules that were generated 
+  // and replace the required file paths with the .esm.js versions
+  return globby(['../lib/_gen/**/*.esm.js']).then((paths) => {
+    
+    for (let path of paths) {
+      
+      if (modifyEsmModule(path)) {
+      }
+    }
+  });
+}
+
+function modifyEsmModule(filePath) {
+  
+  let content;
+  
+  try {
+    content = fs.readFileSync(filePath, 'utf8');
+  } catch (error) {
+    console.error('Could not read file:', filePath);
+    return;
+  }
+  
+  
+  var result = content;
+  
+  // Replace
+  // require("./../../_gen/openfl/display/Sprite");
+  // with
+  // require("./../../_gen/openfl/display/Sprite.esm");
+  // BUT ONY IF Sprite.esm.js exists, if not, leave as is
+  result = result.replace(/require\(['"](.+?)['"]\)/gm, (match, p1) => {
+    
+    try {
+      
+      // Check if the esm.js file event exists
+			let fullPath = path.resolve(path.dirname(filePath), p1 + '.esm.js');
+			
+			if (fs.statSync(fullPath).isFile()) {
+        return 'require("' + p1 + '.esm")';
+			}
+		} catch (error) {
+			
+    }
+    
+    return 'require("' + p1 + '")';
+  });
+  
+    
+  //let esmFilePath = filePath.replace(/\.js$/, '.esm.js');
+  let esmFilePath = filePath;
+  
+  return writeIfModified(esmFilePath, result);
+}
 
 
 // Here we look create the es2015 version of the commonjs modules that contain:
@@ -386,7 +450,8 @@ function writeIfModified(filePath, content) {
         return false;
       } 
       
-      modifiedMap.set(filePath, true);
+      if (!createdMap.has(filePath))
+        modifiedMap.set(filePath, true);
     }
     
     fs.writeFileSync(filePath, content, 'utf8');
