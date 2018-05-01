@@ -2,7 +2,7 @@
 
 let fs = require('fs');
 let globby = require('globby');
-
+let path = require('path');
 /*
 This script will take all the barrel index.js files under lib/openfl and generate es2015 versions of them
 and save them as index.esm.js. We then need to make sure we add the key-value pair: 
@@ -21,7 +21,7 @@ globby(['../lib/openfl/**/index.js']).then((paths) => {
 
   for (let path of paths) {
     if (createEsmIndex(path)) {
-      updated++;
+			updated++;
     }
   }
     
@@ -56,14 +56,35 @@ function createEsmIndex(filePath) {
 	// with
 	// "export { default as Bitmap } from "./Bitmap.esm";"
 	 
+	//let matches = result.match(/^\s*(.+?): require\(["'](.+?)["']\).*$/gm);
+	
+	//console.log(matches);
 	
 	// Deal with the barrel index modules that are re-rexported
 	// Note: Must call this AFTER the previous replace() call
-	result = result.replace(/^\s*(.+?): require\(["'](.+?)["']\).*/gm, 'export * from "$2/index.esm";');
+	//result = result.replace(/^\s*(.+?): require\(["'](.+?)["']\).*/gm, 'export * from "$2/index.esm";');
+	result = result.replace(/^\s*(.+?): require\(["'](.+?)["']\).*/gm, (match, p1, p2) => {
+		
+		try {
+			
+			let fullPath = path.resolve(path.dirname(filePath), p2 + '.js');
+			//fullPath = path.dirname(filePath) + '/' + p2 + '.js';
+			
+			if (fs.statSync(fullPath).isFile()) {
+				return 'export * from "' + p2 + '.esm";';
+			}
+		} catch (error) {
+			
+		}
+		
+		return 'export * from "' + p2 + '/index.esm";';
+	});
 	// Replaces: 
 	// textures: require("./textures"),
 	// with
 	// export * from "./textures/index.esm";
+	
+	
 	
 	// Remove the "module.exports = {" lines
 	result = result.replace('module.exports = {', '');

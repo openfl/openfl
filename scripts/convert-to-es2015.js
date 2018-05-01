@@ -2,7 +2,7 @@
 
 let fs = require('fs');
 let globby = require('globby');
-
+let path = require('path');
 
 /*
 This script replaces all occurrences of:
@@ -25,10 +25,13 @@ from the webpack generated js bundle.
 
 // Search for all the js files under lib/_gen/
 
+var c = 0;
+startCreateEsmModules();
 startCreateDefaultReExportEsms();
 
+
 function startCreateEsmModules() {
-  globby(['../lib/_gen/openfl/**/*.js']).then((paths) => {
+  globby(['../lib/_gen/**/*.js']).then((paths) => {
 
     let updated = 0;
     
@@ -75,7 +78,30 @@ function createEsmModule(filePath) {
   result = result.replace('$global.Object.defineProperty(exports, "__esModule", {value: true});', '');
   result = result.replace('Object.defineProperty(exports, "__esModule", {value: true});', '');
   
-
+  result = result.replace(/require\(['"](.+?)['"]\)/gm, (match, p1) => {
+    
+    try {
+      
+      
+			let fullPath = path.resolve(path.dirname(filePath), p1 + '.esm.js');
+			//fullPath = path.dirname(filePath) + '/' + p2 + '.js';
+			
+      if (c++ < 100) {
+        console.log(fullPath);
+      }
+			if (fs.statSync(fullPath).isFile()) {
+        return 'require("' + p1 + '.esm")';
+			}
+		} catch (error) {
+			
+    }
+    
+    return 'require("' + p1 + '")';
+    
+    
+  });
+  
+  
   try {
     
     let esmFilePath = filePath.replace(/\.js$/, '.esm.js');
@@ -150,7 +176,7 @@ function createDefaultReExportEsm(filePath) {
   // "export { default } from "./../../_gen/openfl/display/Graphics.esm";
   
   
-  result = result.replace('Object.defineProperty (module.exports, "__esModule", { value: true });', '');
+  result = result.replace(/Object\.defineProperty \(module.exports, "__esModule", { value: true }\)(,|;)?/, '');
   // Remove these lines
   // Object.defineProperty (module.exports, "__esModule", { value: true });
   
