@@ -16,6 +16,7 @@ import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLGraphics;
+import openfl._internal.renderer.opengl.GLShape;
 import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -950,7 +951,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__graphics != null) {
 			
-			GLGraphics.renderMask (__graphics, renderer);
+			//GLGraphics.renderMask (__graphics, renderer);
+			GLShape.renderMask (this, renderer);
 			
 		}
 		

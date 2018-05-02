@@ -202,19 +202,18 @@ abstract Vector<T>(IVector<T>) {
 	#end
 	
 	
-	#if (haxe_ver < "3.4.0")
-	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T> {
-		
-		return new ObjectVector<T> (length, fixed, cast array, true);
-		
-	}
-	#else
 	@:to static #if (!js && !flash) inline #end function toObjectVector<T:{}> (t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T> {
 		
 		return new ObjectVector<T> (length, fixed, cast array, true);
 		
 	}
-	#end
+	
+	
+	@:to static #if (!js && !flash) inline #end function toNullVector<T:Null<Dynamic>> (t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T> {
+		
+		return new ObjectVector<T> (length, fixed, cast array, true);
+		
+	}
 	
 	
 	@:from static inline function fromBoolVector<T> (vector:BoolVector):Vector<T> {
