@@ -32,7 +32,7 @@ import hscript.Parser;
 #end
 
 @:access(openfl._internal.symbols.SWFSymbol)
-
+@:access(openfl.geom.ColorTransform)
 
 class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
 	
@@ -787,7 +787,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			displayObject.transform.colorTransform = frameObject.colorTransform;
 			
 		}
-		else if (reset) {
+		else if (reset && !displayObject.transform.colorTransform.__isDefault()) {
 			
 			displayObject.transform.colorTransform = new ColorTransform();
 			
