@@ -1259,11 +1259,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				} else {
 					
-					__cacheBitmap = null;
-					__cacheBitmapData = null;
-					__cacheBitmapData2 = null;
-					__cacheBitmapData3 = null;
-					__cacheBitmapRenderer = null;
+					__clearCachedBitmap(false);
 					return true;
 					
 				}
@@ -1607,12 +1603,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			__cacheBitmap = null;
-			__cacheBitmapData = null;
-			__cacheBitmapData2 = null;
-			__cacheBitmapData3 = null;
-			__cacheBitmapColorTransform = null;
-			__cacheBitmapRenderer = null;
+			__clearCachedBitmap(true);
 			
 			return true;
 			
@@ -1620,6 +1611,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		return false;
 		
+	}
+
+	private inline function __clearCachedBitmap (clearColorTransform:Bool = false):Void {
+
+			__cacheBitmap = null;
+			__cacheBitmapData = null;
+			__cacheBitmapData2 = null;
+			__cacheBitmapData3 = null;
+			__cacheBitmapRenderer = null;
+			if (clearColorTransform) __cacheBitmapColorTransform = null;
+
 	}
 	
 	
