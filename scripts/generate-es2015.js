@@ -41,6 +41,11 @@ var createdMap = new Map();
 var modifiedMap = new Map();
 var unchangedMap = new Map();
 var unableToWriteMap = new Map();
+var previousContentsMap = new Map();
+var writtenContentsMap = new Map();
+var originalContentsMap = new Map();
+
+var c = 0;
 
 
 console.log('generate-es2015 running...');
@@ -61,11 +66,63 @@ startCreateEsmModules().then(() => {
   
 });
 
-
 function complete() {
+  
+  writtenContentsMap.forEach((content, filePath) => {
     
+    try {
+      
+      let created = false;
+      if (!fs.existsSync(filePath) || createdMap.has(filePath)) {
+        created = true;
+      } else {
+        if (!originalContentsMap.has(filePath))
+          originalContentsMap.set(filePath, fs.readFileSync(filePath, 'utf8'));
+      }
+      
+      if (originalContentsMap.has(filePath) && originalContentsMap.get(filePath) != content) {
+        /*
+        if (c++ < 1) {
+          
+          let originalContent = originalContentsMap.get(filePath);
+          
+          console.log('\n\n-original-');
+          //console.log(originalContent.substr(originalContent.length - 500));
+          console.log(originalContent.substr(0, 1000));
+          console.log('\n\n-new-');
+          //console.log(content.substr(content.length - 500));
+          console.log(content.substr(0, 1000));
+          console.log('\n\n');
+          console.log('filePath', filePath);
+          console.log(originalContentsMap.get(filePath).length, content.length);
+        }
+        */
+       
+        fs.writeFileSync(filePath, content, 'utf8');
+        modifiedMap.set(filePath, true);
+        
+      } else if (created) {
+        
+        fs.writeFileSync(filePath, content, 'utf8');
+        createdMap.set(filePath, true);
+        
+      } else {
+        
+        unchangedMap.set(filePath, true);
+      }
+      
+    } catch (error) {
+      unableToWriteMap.set(filePath, true);
+      console.error('Could not write to file:', filePath);
+      return false;
+    }
+  });
+  
+        
+  
   var modifiedFiles = Array.from(modifiedMap.keys());
   var errorFiles = Array.from(unableToWriteMap.keys());
+  
   
   console.log('complete!');
   console.log(modifiedFiles.length + ' files updated');
@@ -112,14 +169,9 @@ function startCreateEsmModules() {
 
 function createEsmModule(filePath) {
   
-  let content;
-  
-  try {
-    content = fs.readFileSync(filePath, 'utf8');
-  } catch (error) {
-    console.error('Could not read file:', filePath);
+  let content = readFileSync(filePath);
+  if (content === false)
     return;
-  }
   
   
   var result = content.replace(/exports\.default =/g, 'export default');
@@ -138,34 +190,10 @@ function createEsmModule(filePath) {
   
   // TODO: Remove this line ONLY if $global is not used anywhere else in the module
   //result = result.replace('var $global = typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this', '');
-  
-  
-  // Replace
-  // require("./../../_gen/openfl/display/Sprite");
-  // with
-  // require("./../../_gen/openfl/display/Sprite.esm");
-  // BUT ONY IF Sprite.esm.js exists, if not, leave as is
-  result = result.replace(/require\(['"](.+?)['"]\)/gm, (match, p1) => {
-    
-    try {
-      
-      // Check if the esm.js file event exists
-			let fullPath = path.resolve(path.dirname(filePath), p1 + '.esm.js');
-			
-			if (fs.statSync(fullPath).isFile()) {
-        return 'require("' + p1 + '.esm")';
-			}
-		} catch (error) {
-			
-    }
-    
-    return 'require("' + p1 + '")';
-  });
-  
     
   let esmFilePath = filePath.replace(/\.js$/, '.esm.js');
     
-  return writeIfModified(esmFilePath, result);
+  return writeFileSync(esmFilePath, result);
 }
 
 
@@ -186,14 +214,9 @@ function startModifyEsmModules() {
 
 function modifyEsmModule(filePath) {
   
-  let content;
-  
-  try {
-    content = fs.readFileSync(filePath, 'utf8');
-  } catch (error) {
-    console.error('Could not read file:', filePath);
+  let content = readFileSync(filePath);
+  if (content === false)
     return;
-  }
   
   
   var result = content;
@@ -202,19 +225,23 @@ function modifyEsmModule(filePath) {
   // require("./../../_gen/openfl/display/Sprite");
   // with
   // require("./../../_gen/openfl/display/Sprite.esm");
-  // BUT ONY IF Sprite.esm.js exists, if not, leave as is
-  result = result.replace(/require\(['"](.+?)['"]\)/gm, (match, p1) => {
+  // BUT ONY IF Sprite.esm.js exists, if not, leave as is as is the case 
+  // with the howler and pako requires.
+  result = result.replace(/require\s*\(['"](.+?)['"]\)/gm, (match, p1) => {
     
+    let fullPath;
     try {
       
-      // Check if the esm.js file event exists
-			let fullPath = path.resolve(path.dirname(filePath), p1 + '.esm.js');
+      // Check if the esm.js file exists, if not, leave it
+			fullPath = path.resolve(path.dirname(filePath), p1 + '.esm.js');
 			
-			if (fs.statSync(fullPath).isFile()) {
+			if (isFile(fullPath)) {
         return 'require("' + p1 + '.esm")';
 			}
 		} catch (error) {
-			
+      
+      //console.log('f', filePath);
+      //console.log(fullPath);
     }
     
     return 'require("' + p1 + '")';
@@ -224,7 +251,8 @@ function modifyEsmModule(filePath) {
   //let esmFilePath = filePath.replace(/\.js$/, '.esm.js');
   let esmFilePath = filePath;
   
-  return writeIfModified(esmFilePath, result);
+  
+  return writeFileSync(esmFilePath, result);
 }
 
 
@@ -261,14 +289,10 @@ function startCreateDefaultReExportEsms() {
 
 function createDefaultReExportEsm(filePath) {
   
-  let content;
   
-  try {
-    content = fs.readFileSync(filePath, 'utf8');
-  } catch (error) {
-    console.error('Could not read file:', filePath);
+  let content = readFileSync(filePath);
+  if (content === false)
     return;
-  }
   
   var result = content;
   
@@ -307,7 +331,7 @@ function createDefaultReExportEsm(filePath) {
     
   let esmFilePath = filePath.replace(/\.js$/, '.esm.js');
   
-  return writeIfModified(esmFilePath, result);
+  return writeFileSync(esmFilePath, result);
 }
 
 
@@ -343,14 +367,10 @@ function startCreateBarrelModules() {
 
 function createEsmIndex(filePath) {
   
-  let content;
   
-  try {
-    content = fs.readFileSync(filePath, 'utf8');
-  } catch (error) {
-    console.error('Could not read file:', filePath);
+  let content = readFileSync(filePath);
+  if (content === false)
     return;
-  }
   
 	var result = content;
   
@@ -364,6 +384,7 @@ function createEsmIndex(filePath) {
 	
 	
 	result = result.replace(/^\s*(.+?): require\(["'](.+?)["']\)\.default.*/gm, 'export { default as $1 } from "$2.esm";');
+	//result = result.replace(/^\s*(.+?): require\(["'](.+?)["']\)\.default.*/gm, 'export { default as $1 } from "$2";');
 	// Replaces: 
 	// "Bitmap: require("./Bitmap").default,"
 	// with
@@ -384,6 +405,7 @@ function createEsmIndex(filePath) {
 			//fullPath = path.dirname(filePath) + '/' + p2 + '.js';
 			
 			if (fs.statSync(fullPath).isFile()) {
+				//return 'export * from "' + p2 + '";';
 				return 'export * from "' + p2 + '.esm";';
 			}
 		} catch (error) {
@@ -409,58 +431,80 @@ function createEsmIndex(filePath) {
   // We save the file as index.esm.js and place it in the same directory as the 
   // index.js that we read
   var esmFilePath = filePath.replace(/\.js$/, '.esm.js');
-  writeIfModified(esmFilePath, result);
+  writeFileSync(esmFilePath, result);
   
   
   result = result.replace(/\/index.esm/g, '');
   result = result.replace(/\.esm/g, '');
   
   var dTSFilePath = filePath.replace(/\.js$/, '.d.ts');
-  writeIfModified(dTSFilePath, result);
+  writeFileSync(dTSFilePath, result);
   
   return true;
   
 }
 
-
-
-function writeIfModified(filePath, content) {
+function isFile(filename) {
+  
+  filename = path.resolve(filename);
+  
+  if (writtenContentsMap.has(filename)) {
+    return true;
+  }
+  
+  if (originalContentsMap.has(filename)) {
+    return true;
+  }
   
   try {
-    
-    if (!fs.existsSync(filePath)) {
-      createdMap.set(filePath, true);
-    } else {
-      
-      previousContents = fs.readFileSync(filePath, 'utf8');
-    
-      if (filePath.indexOf('openfl/display') > -1) {
-        //console.log(filePath);
-      }
-      
-      if (filePath.indexOf('Sprite.esm.js') > -1) {
-        
-        //console.log(filePath);
-        //console.log(previousContents.substring(0, 100));
-        //console.log(content.substring(0, 100));
-        //console.log(previousContents);
-      }
-      if (content == previousContents) {
-        unchangedMap.set(filePath, true);
-        return false;
-      } 
-      
-      if (!createdMap.has(filePath))
-        modifiedMap.set(filePath, true);
-    }
-    
-    fs.writeFileSync(filePath, content, 'utf8');
-    
+    fs.statSync(filename).isFile();
   } catch (error) {
-    unableToWriteMap.set(filePath, true);
-    console.error('Could not write to file:', filePath);
     return false;
   }
   
   return true;
+  
+  
+}
+
+function readFileSync(filename) {
+  
+  filename = path.resolve(filename);
+  
+  if (writtenContentsMap.has(filename)) {
+    return writtenContentsMap.get(filename);
+  }
+  if (originalContentsMap.has(filename)) {
+    return originalContentsMap.get(filename);
+  }
+  
+  try {
+    content = fs.readFileSync(filename, 'utf8');
+    originalContentsMap.set(filename, content);
+  } catch (error) {
+    console.error('Could not read file:', filename);
+    return false;
+  }
+  
+  return content;
+}
+
+
+
+function writeFileSync(filename, content) {
+    
+  filename = path.resolve(filename);
+  
+  // Need to write to the file system so that globby() can pick up the file
+  if (!fs.existsSync(filename)) {
+    createdMap.set(filename, true);
+    try {
+      fs.writeFileSync(filename, content, 'utf8');
+    } catch (error) {
+      
+    }
+    
+  }
+  
+  writtenContentsMap.set(filename, content);
 }
