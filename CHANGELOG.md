@@ -1,3 +1,61 @@
+8.0.0 (03/04/2018)
+------------------
+
+* Deprecated `DOMSprite`, `OpenGLView` and `TileArray`
+* Updated to Lime 6.3.*
+* Added `DisplayObjectShader`, `GraphicsShader`, `BitmapFilterShader`
+* Added `graphics.drawQuads` and `graphics.beginShaderFill`
+* Added `DOMElement`, `GraphicsQuadPath` and `GraphicsShaderPath`
+* Added `displayObject.shader` and `displayObject.invalidate()`
+* Added support for inheritance within `Shader` classes
+* Added initial support for `displayObject.cacheAsBitmapMatrix`
+* Added missing "NetStream.Seek.Complete" event in `NetStream`
+* (Beta) Added `RenderEvent` for custom `DisplayObject` rendering
+* Improved the behavior of `PerspectiveProjection` to be more accurate
+* Improved `graphics.drawTriangles` to support running in OpenGL
+* Improved `cacheAsBitmap` to support OpenGL render-to-texture
+* Improved filters to support OpenGL shader-based filters
+* Improved `Shader` to support uploading of custom attributes
+* Improved `Shader` to support enabling or constant values
+* Improved the behavior of `buttonMode` on `MovieClip` objects
+* Improved the performance of `openfl.Vector` on native targets
+* Improved `Shader` to generate strictly-typed fields
+* Improved `Graphics` to upscale only (to prevent reallocation)
+* Improved updating of object transform information internally
+* Improved behavior of window focus on desktop targets
+* Improved the behavior of numpad `ENTER` to be more consistent
+* Improved the playback of nested `MovieClip` animations
+* Improved the performance of `displayObject.getBounds`
+* Improved the handling of inputs to `beginGradientFill`
+* Improved support for `byteArray.readObject` and `writeObject`
+* Fixed the return type of `BitmapData.fromBytes` on JS
+* Fixed missing `password` field in SWF-based `TextField` objects
+* Fixed some minor issues in `colorTransform.concat`
+* Fixed some incorrect values in `TextField` `scrollV`/`scrollH`
+* Fixed use of current `defaultTextFormat` when using `setTextFormat`
+* Fixed the behavior of `restrict`/`maxChars` to affect user input only
+* Fixed use of `context.resetTransform` for certain browsers
+* Fixed support for use of `matrix` and `clipRect` in `bitmapData.draw`
+* Fixed some issues in mask support in the OpenGL and Canvas renderers
+* Fixed a minor issue in `DisplayObject` event bubbling
+* Fixed initialization of socket flags if a socket is lost on IPv6
+* Fixed setting `colorTransform` in some `MovieClip` animations
+* Fixed some discrepancies in the externs for the OpenFL API
+* Fixed an additional render that occurred on some `drawTriangles` calls
+* Fixed performance regression in `Tilemap`
+* Fixed initialization of some AGAL register values
+* Fixed ignoring of up/down key events in single-line `TextField` objects
+* Fixed the value of `textWidth`/`textHeight` when not type `INPUT`
+* Fixed use of `cacheAsBitmap` on `TextField` objects
+* Fixed support for transparent backend in OpenFL preloader class
+* Fixed possible errors in HTML parser on text with invalid HTML
+* Fixed incorrect bounds when rendering `SimpleButton` on canvas
+* Fixed JPEG2 and JPEG3 tag parsing in older SWF versions
+* Fixed support for `graphics.drawRect` with negative coordinates
+* Fixed an issue where EOF on sockets could close the socket prematurely
+* Fixed concatenation of two empty `openfl.Vector` objects
+
+
 7.1.2 (02/15/2018)
 ------------------
 
