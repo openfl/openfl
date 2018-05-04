@@ -16,6 +16,7 @@ import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse in LimeMouse;
+import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.TouchData;
@@ -108,7 +109,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorString:String;
 	private var __contentsScaleFactor:Float;
 	#if (commonjs && !nodejs)
-	private var __cursor:MouseCursor;
+	private var __cursor:LimeMouseCursor;
 	#end
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
