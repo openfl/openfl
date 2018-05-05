@@ -190,8 +190,11 @@ function createEsmModule(filePath) {
   
   // TODO: Remove this line ONLY if $global is not used anywhere else in the module
   //result = result.replace('var $global = typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this', '');
-    
+  
+  //filePath.replace('lib/', 'lib-es/')
   let esmFilePath = filePath.replace(/\.js$/, '.esm.js');
+  
+  
     
   return writeFileSync(esmFilePath, result);
 }
@@ -222,11 +225,41 @@ function modifyEsmModule(filePath) {
   var result = content;
   
   // Replace
+  // var $hxClasses = require("./../../hxClasses_stub").default;
+  // with
+  // import { default as $hxClasses } from "./../../hxClasses_stub";
+  result = result.replace(/^var (.+?) = require\(['"](.+?)['"]\)\.default;/gm, 'import $1 from "$2";');
+  
+  // Replace
+  // function openfl_display_DisplayObject() {return require("./../../openfl/display/DisplayObject");}
+  // with
+  // import { default as openfl_display_DisplayObject } from "./../../openfl/display/DisplayObject";
+  result = result.replace(/^function (.+?)\(\) {return require\(['"]\.\/(.+?)['"]\);}/gm, 'import $1 from "./$2";');
+  
+  
+  
+  // Replace
+  // (openfl_display_DisplayObject().default).call(this);
+  // with
+  // openfl_display_DisplayObject.call(this);
+  
+  // I had to add the [^(] character negation to deal with this case:
+  // (symbol1,(openfl__$internal_symbols_BitmapSymbol().default))
+  // Had I instead used the dot metacharacter, it would have transformed it into this:
+  // symbol1,(openfl__$internal_symbols_BitmapSymbol)
+  // as opposed to the correct form:
+  // (symbol1,openfl__$internal_symbols_BitmapSymbol)
+  result = result.replace(/\(([^(]+?)\(\)\.default\)/gm, '$1');
+  
+  
+  
+  // Replace
   // require("./../../_gen/openfl/display/Sprite");
   // with
   // require("./../../_gen/openfl/display/Sprite.esm");
   // BUT ONY IF Sprite.esm.js exists, if not, leave as is as is the case 
   // with the howler and pako requires.
+  /*
   result = result.replace(/require\s*\(['"](.+?)['"]\)/gm, (match, p1) => {
     
     let fullPath;
@@ -246,7 +279,30 @@ function modifyEsmModule(filePath) {
     
     return 'require("' + p1 + '")';
   });
+  */
+ 
   
+ result = result.replace(/(import .+? from )['"](.+?)['"];/gm, (match, p1, p2) => {
+    
+  let fullPath;
+  try {
+    
+    // Check if the esm.js file exists, if not, leave it
+    fullPath = path.resolve(path.dirname(filePath), p2 + '.esm.js');
+    
+    if (isFile(fullPath)) {
+      //return 'require("' + p1 + '.esm")';
+      return p1 + '"' + p2 + '.esm' + '";'
+    }
+  } catch (error) {
+    
+    //console.log('f', filePath);
+    //console.log(fullPath);
+  }
+  
+  //return 'require("' + p1 + '")';
+  return match;
+});
     
   //let esmFilePath = filePath.replace(/\.js$/, '.esm.js');
   let esmFilePath = filePath;
