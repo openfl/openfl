@@ -45,7 +45,7 @@ import openfl.events.GameInputEvent;
 			
 			for (device in __deviceList) {
 				
-				dispatchEvent (new GameInputEvent (GameInputEvent.DEVICE_ADDED, device));
+				dispatchEvent (new GameInputEvent (GameInputEvent.DEVICE_ADDED, true, false, device));
 				
 			}
 			
@@ -164,7 +164,7 @@ import openfl.events.GameInputEvent;
 		
 		for (instance in __instances) {
 			
-			instance.dispatchEvent (new GameInputEvent (GameInputEvent.DEVICE_ADDED, device));
+			instance.dispatchEvent (new GameInputEvent (GameInputEvent.DEVICE_ADDED, true, false, device));
 			
 		}
 		
@@ -188,7 +188,7 @@ import openfl.events.GameInputEvent;
 			
 			for (instance in __instances) {
 				
-				instance.dispatchEvent (new GameInputEvent (GameInputEvent.DEVICE_REMOVED, device));
+				instance.dispatchEvent (new GameInputEvent (GameInputEvent.DEVICE_REMOVED, true, false, device));
 				
 			}
 			

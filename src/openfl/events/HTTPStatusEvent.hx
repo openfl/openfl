@@ -33,7 +33,7 @@ class HTTPStatusEvent extends Event {
 	
 	public override function clone ():Event {
 		
-		var event = new HTTPStatusEvent (type, bubbles, status, redirected);
+		var event = new HTTPStatusEvent (type, bubbles, cancelable, status, redirected);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
