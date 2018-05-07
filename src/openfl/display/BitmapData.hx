@@ -1093,7 +1093,7 @@ class BitmapData implements IBitmapDrawable {
 		ImageCanvasUtil.sync (image, false);
 		#end
 		
-		if (image != null && image.version != __textureVersion) {
+		if (image != null && image.version > __textureVersion) {
 			
 			var internalFormat, format;
 			
