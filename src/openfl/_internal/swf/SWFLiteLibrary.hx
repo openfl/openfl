@@ -322,6 +322,14 @@ import openfl.utils.ByteArray;
 		rootPath = manifest.rootPath;
 		super.__fromManifest (manifest);
 		
+		bytesTotal = 0;
+		
+		for (id in paths.keys ()) {
+			
+			bytesTotal += sizes.get (id);
+			
+		}
+		
 	}
 	
 	
