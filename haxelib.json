@@ -5,7 +5,7 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "8.0.0",
-	"releasenote": "Updated for Lime 6.2, improved compressed texture support, text-scroll fix",
+	"releasenote": "Improved Tilemap, custom rendering, new custom shaders, added drawQuads",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
