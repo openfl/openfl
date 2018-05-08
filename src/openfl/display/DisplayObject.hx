@@ -1245,13 +1245,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				updateTransform = true;
 				__cacheBitmapBackground = opaqueBackground;
-				var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 				
 				if (filterWidth >= 0.5 && filterHeight >= 0.5) {
 					
+					var needsFill = (opaqueBackground != null && (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
+					var fillColor = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
+					var bitmapColor = needsFill ? 0 : fillColor;
+					var allowFramebuffer = (renderer.__type == OPENGL);
+					
 					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height) {
 						
-						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, bitmapColor);
 						
 						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 						__cacheBitmap.__bitmapData = __cacheBitmapData;
@@ -1259,7 +1263,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					} else {
 						
-						__cacheBitmapData.__fillRect (__cacheBitmapData.rect, color, renderer.__type == OPENGL);
+						__cacheBitmapData.__fillRect (__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
+						
+					}
+					
+					if (needsFill) {
+						
+						rect.setTo (0, 0, filterWidth, filterHeight);
+						__cacheBitmapData.__fillRect (rect, fillColor, allowFramebuffer);
 						
 					}
 					
