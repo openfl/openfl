@@ -1,3 +1,15 @@
+8.0.1 (03/08/2018)
+------------------
+
+* Fixed an issue when filter classes were accessed by the macro context
+* Fixed an issue when using custom shaders with `-dce full`
+* Fixed bounds calculation when using `lineTo` after using `clear`
+* Fixed rendering for `cacheAsBitmap` and `opaqueBackground` together
+* Fixed a possible issue using `cacheAsBitmap` and masks together
+* Fixed an issue rendering a hardware `cacheAsBitmap` object in software
+* Fixed minor issues to improve support for HashLink
+
+
 8.0.0 (03/04/2018)
 ------------------
 
