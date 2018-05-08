@@ -1259,7 +1259,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					} else {
 						
-						__cacheBitmapData.fillRect (__cacheBitmapData.rect, color);
+						__cacheBitmapData.__fillRect (__cacheBitmapData.rect, color, renderer.__type == OPENGL);
 						
 					}
 					

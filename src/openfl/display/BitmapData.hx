@@ -706,45 +706,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
-		if (rect == null) return;
-		
-		if (transparent && (color & 0xFF000000) == 0) {
-			
-			color = 0;
-			
-		}
-		
-		if (__framebuffer != null) {
-			
-			var gl = GL.context;
-			var color:ARGB = (color:ARGB);
-			var useScissor = !this.rect.equals (rect);
-			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-			
-			if (useScissor) {
-				
-				gl.enable (gl.SCISSOR_TEST);
-				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
-				
-			}
-			
-			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
-			gl.clear (gl.COLOR_BUFFER_BIT);
-			
-			if (useScissor) {
-				
-				gl.disable (gl.SCISSOR_TEST);
-				
-			}
-			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
-			
-		} else if (readable) {
-			
-			image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
-			
-		}
+		__fillRect (rect, color, true);
 		
 	}
 	
@@ -1679,6 +1641,51 @@ class BitmapData implements IBitmapDrawable {
 		renderer.__render (source);
 		
 		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		
+	}
+	
+	
+	private function __fillRect (rect:Rectangle, color:Int, allowFramebuffer:Bool):Void {
+		
+		if (rect == null) return;
+		
+		if (transparent && (color & 0xFF000000) == 0) {
+			
+			color = 0;
+			
+		}
+		
+		if (allowFramebuffer && __framebuffer != null) {
+			
+			var gl = GL.context;
+			var color:ARGB = (color:ARGB);
+			var useScissor = !this.rect.equals (rect);
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			
+			if (useScissor) {
+				
+				gl.enable (gl.SCISSOR_TEST);
+				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
+				
+			}
+			
+			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
+			gl.clear (gl.COLOR_BUFFER_BIT);
+			
+			if (useScissor) {
+				
+				gl.disable (gl.SCISSOR_TEST);
+				
+			}
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			
+		} else if (readable) {
+			
+			image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
+			
+		}
 		
 	}
 	

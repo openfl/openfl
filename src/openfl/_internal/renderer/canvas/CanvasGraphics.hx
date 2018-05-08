@@ -1305,7 +1305,7 @@ class CanvasGraphics {
 						
 					} else {
 						
-						canvas.width  = width;
+						canvas.width = width;
 						canvas.height = height;
 						
 					}
