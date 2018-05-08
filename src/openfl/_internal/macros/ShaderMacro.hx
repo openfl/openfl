@@ -313,6 +313,10 @@ class ShaderMacro {
 				
 				field.meta = [ { name: ":keep", pos: pos }, { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":allow", params: [ macro openfl._internal ], pos: pos } ];
 				
+			} else {
+				
+				field.meta = [ { name: ":keep", pos: pos } ];
+				
 			}
 			
 			fields.push (field);

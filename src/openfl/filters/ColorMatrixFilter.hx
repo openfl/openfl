@@ -206,6 +206,7 @@ private class ColorMatrixShader extends BitmapFilterShader {
 	
 	public function init (matrix:Array<Float>):Void {
 		
+		#if !macro
 		var multipliers = uMultipliers.value;
 		var offsets = uOffsets.value;
 		
@@ -230,6 +231,7 @@ private class ColorMatrixShader extends BitmapFilterShader {
 		offsets[1] = matrix[9] / 255.0;
 		offsets[2] = matrix[14] / 255.0;
 		offsets[3] = matrix[19] / 255.0;
+		#end
 		
 	}
 	

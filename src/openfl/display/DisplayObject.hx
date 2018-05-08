@@ -1189,6 +1189,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
+			if (!needRender && renderer.__type != OPENGL && __cacheBitmapData != null && __cacheBitmapData.image != null && __cacheBitmapData.image.version < __cacheBitmapData.__textureVersion) {
+				
+				needRender = true;
+				
+			}
+			
 			__cacheBitmapMatrix.copyFrom (bitmapMatrix);
 			__cacheBitmapMatrix.tx = 0;
 			__cacheBitmapMatrix.ty = 0;
@@ -1253,7 +1259,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					} else {
 						
-						__cacheBitmapData.fillRect (__cacheBitmapData.rect, color);
+						__cacheBitmapData.__fillRect (__cacheBitmapData.rect, color, renderer.__type == OPENGL);
 						
 					}
 					
@@ -1384,7 +1390,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					__cacheBitmapData.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
-					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version;
+					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 					
 					__cacheBitmapData.__drawGL (this, childRenderer);
 					
@@ -1412,7 +1418,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							} else {
 								//__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
 								if (__cacheBitmapData2.image != null) {
-									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version;
+									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
 							}
 							__cacheBitmapData2.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
@@ -1427,7 +1433,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							} else {
 								//__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
 								if (__cacheBitmapData3.image != null) {
-									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version;
+									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
 							}
 							__cacheBitmapData3.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
