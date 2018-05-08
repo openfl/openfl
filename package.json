@@ -25,7 +25,7 @@
   "bin": {
     "openfljs": "bin/openfl.js"
   },
-  "module": "lib/openfl/index.esm.js",
+  "module": "lib_esm/openfl/index.js",
   "types": "lib/openfl/index.d.ts",
   "sideEffects": false,
   "files": [
