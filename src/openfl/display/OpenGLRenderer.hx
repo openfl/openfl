@@ -869,15 +869,19 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	private function __resumeClipAndMask ():Void {
 		
+		// TODO: Coordinate child renderer to know if masking needs to be reset
+		
 		if (__stencilReference > 0) {
 			
 			__gl.enable (__gl.STENCIL_TEST);
+			__gl.stencilMask (0xFF);
+			__gl.clear (__gl.STENCIL_BUFFER_BIT);
 			
 		}
 		
-		if (__numClipRects > 0) {
+		for (i in 0...__numClipRects) {
 			
-			__scissorRect (__clipRects[__numClipRects - 1]);
+			__scissorRect (__clipRects[i]);
 			
 		}
 		
