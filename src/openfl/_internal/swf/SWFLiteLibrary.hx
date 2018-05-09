@@ -213,7 +213,17 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			var path = (rootPath != null && rootPath != "") ? rootPath + "/" + id : id;
+			var path = null;
+			
+			if (paths.exists (id)) {
+				
+				path = paths.get (id);
+				
+			} else {
+				
+				path = (rootPath != null && rootPath != "") ? rootPath + "/" + id : id;
+				
+			}
 			
 			var loader = new URLLoader ();
 			loader.addEventListener (Event.COMPLETE, function (_) onComplete (loader.data));
