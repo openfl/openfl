@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
+	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
+	
 	<set name="lime-version" value="6.3.*" />
 	
 	<haxedef name="native" if="cpp || neko" />
