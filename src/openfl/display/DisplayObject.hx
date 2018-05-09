@@ -1067,15 +1067,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			if (__objectTransform != null) {
-				
-				__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
-				
-			} else {
-				
-				__worldColorTransform.__identity ();
-				
-			}
+			
 			
 			if (renderParent != null) {
 				
@@ -1095,7 +1087,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
-				__worldColorTransform.__combine (renderParent.__worldColorTransform);
+				if (__objectTransform != null) {
+					
+					__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
+					__worldColorTransform.__combine (renderParent.__worldColorTransform);
+					
+				} else {
+					
+					__worldColorTransform.__copyFrom (renderParent.__worldColorTransform);
+					
+				}
 				
 				if (__blendMode == null || __blendMode == NORMAL) {
 					
@@ -1128,6 +1129,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					__worldVisible = visible;
 					
 					__worldAlphaChanged = (__worldAlpha != alpha);
+					
+				}
+				
+				if (__objectTransform != null) {
+					
+					__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
+					
+				} else {
+					
+					__worldColorTransform.__identity ();
 					
 				}
 				
