@@ -1071,6 +1071,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
 				
+			} else {
+				
+				__worldColorTransform.__identity ();
+				
 			}
 			
 			if (renderParent != null) {
@@ -2168,7 +2172,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__setTransformDirty ();
 		__objectTransform.matrix = value.matrix;
-		__objectTransform.colorTransform = value.colorTransform.__clone();
+		
+		if (!__objectTransform.colorTransform.__equals (value.colorTransform)) {
+			
+			__objectTransform.colorTransform.__copyFrom (value.colorTransform);
+			__setRenderDirty ();
+			
+		}
 		
 		return __objectTransform;
 		
