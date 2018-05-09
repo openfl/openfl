@@ -1,21 +1,17 @@
 export { default } from "./../../_gen/openfl/utils/AssetLibrary";
 
-// TODO: Put elsewhere?
-var internal = {
-	FilterType: require ("../../_gen/openfl/_internal/swf/FilterType").default,
-	ShapeCommand: require ("../../_gen/openfl/_internal/swf/ShapeCommand").default,
-	SWFLiteLibrary: require ("../../_gen/openfl/_internal/swf/SWFLiteLibrary").default,
-	BitmapSymbol: require ("../../_gen/openfl/_internal/symbols/BitmapSymbol").default,
-	ButtonSymbol: require ("../../_gen/openfl/_internal/symbols/ButtonSymbol").default,
-	DynamicTextSymbol: require ("../../_gen/openfl/_internal/symbols/DynamicTextSymbol").default,
-	FontSymbol: require ("../../_gen/openfl/_internal/symbols/FontSymbol").default,
-	ShapeSymbol: require ("../../_gen/openfl/_internal/symbols/ShapeSymbol").default,
-	SpriteSymbol: require ("../../_gen/openfl/_internal/symbols/SpriteSymbol").default,
-	StaticTextRecord: require ("../../_gen/openfl/_internal/symbols/StaticTextRecord").default,
-	StaticTextSymbol: require ("../../_gen/openfl/_internal/symbols/StaticTextSymbol").default,
-	SWFSymbol: require ("../../_gen/openfl/_internal/symbols/SWFSymbol").default,
-	Frame: require ("../../_gen/openfl/_internal/timeline/Frame").default,
-	FrameObject: require ("../../_gen/openfl/_internal/timeline/FrameObject").default,
-	FrameObjectType: require ("../../_gen/openfl/_internal/timeline/FrameObjectType").default
-}
-export { internal as _internal };
+export { default as FilterType } from "../../_gen/openfl/_internal/swf/FilterType";
+export { default as ShapeCommand } from "../../_gen/openfl/_internal/swf/ShapeCommand";
+export { default as SWFLiteLibrary } from "../../_gen/openfl/_internal/swf/SWFLiteLibrary";
+export { default as BitmapSymbol } from "../../_gen/openfl/_internal/symbols/BitmapSymbol";
+export { default as ButtonSymbol } from "../../_gen/openfl/_internal/symbols/ButtonSymbol";
+export { default as DynamicTextSymbol } from "../../_gen/openfl/_internal/symbols/DynamicTextSymbol";
+export { default as FontSymbol } from "../../_gen/openfl/_internal/symbols/FontSymbol";
+export { default as ShapeSymbol } from "../../_gen/openfl/_internal/symbols/ShapeSymbol";
+export { default as SpriteSymbol } from "../../_gen/openfl/_internal/symbols/SpriteSymbol";
+export { default as StaticTextRecord } from "../../_gen/openfl/_internal/symbols/StaticTextRecord";
+export { default as StaticTextSymbol } from "../../_gen/openfl/_internal/symbols/StaticTextSymbol";
+export { default as SWFSymbol } from "../../_gen/openfl/_internal/symbols/SWFSymbol";
+export { default as Frame } from "../../_gen/openfl/_internal/timeline/Frame";
+export { default as FrameObject } from "../../_gen/openfl/_internal/timeline/FrameObject";
+export { default as FrameObjectType } from "../../_gen/openfl/_internal/timeline/FrameObjectType";
