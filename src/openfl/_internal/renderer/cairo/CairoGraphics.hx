@@ -1078,6 +1078,7 @@ class CairoGraphics {
 							cairo.lineTo (x2, y2);
 							cairo.lineTo (x3, y3);
 							cairo.closePath ();
+							cairo.source = fillPattern;
 							if (!hitTesting) cairo.fillPreserve ();
 							i += 3;
 							continue;
