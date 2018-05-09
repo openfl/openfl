@@ -38,16 +38,19 @@ import openfl.utils.ByteArray;
 	private var alphaCheck:Map<String, Bool>;
 	private var id:String;
 	private var imageClassNames:Map<String, String>;
+	private var instanceID:String;
 	private var preloading:Bool;
 	private var rootPath:String;
 	private var swf:SWFLite;
 	
 	
-	public function new (id:String) {
+	public function new (id:String, uuid:String = null) {
 		
 		super ();
 		
 		this.id = id;
+		
+		instanceID = uuid != null ? uuid : id;
 		
 		alphaCheck = new Map ();
 		imageClassNames = new Map ();
@@ -182,7 +185,7 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			SWFLite.instances.set (id, swf);
+			SWFLite.instances.set (instanceID, swf);
 			
 			__load ().onProgress (promise.progress).onError (promise.error).onComplete (function (_) {
 				
@@ -293,6 +296,12 @@ import openfl.utils.ByteArray;
 	public override function unload ():Void {
 		
 		if (swf == null) return;
+		
+		if (SWFLite.instances.exists (instanceID) && SWFLite.instances.get (instanceID) == swf) {
+			
+			SWFLite.instances.remove (instanceID);
+			
+		}
 		
 		var bitmap:BitmapSymbol;
 		
