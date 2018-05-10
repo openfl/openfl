@@ -820,10 +820,6 @@ class CairoGraphics {
 				
 				case DRAW_QUADS:
 					
-					// TODO: Other fill types
-					
-					if (bitmapFill == null) continue;
-					
 					var cacheExtend = fillPattern.extend;
 					fillPattern.extend = CairoExtend.NONE;
 					
@@ -860,7 +856,7 @@ class CairoGraphics {
 					var tileRect = Rectangle.__pool.get ();
 					var tileTransform = Matrix.__pool.get ();
 					
-					var sourceRect = bitmapFill.rect;
+					var sourceRect = (bitmapFill != null) ? bitmapFill.rect : null;
 					tempMatrix3.identity ();
 					
 					var transform = graphics.__renderTransform;
