@@ -163,9 +163,9 @@ class FlashGraphics {
 		
 		var lastBitmapFill = bitmapFill.get (graphics);
 		
-		if (rects == null || rects.length == 0 || lastBitmapFill == null) return;
+		if (rects == null || rects.length == 0) return;
 		
-		var sourceRect = lastBitmapFill.rect;
+		var sourceRect = (lastBitmapFill != null) ? lastBitmapFill.rect : null;
 		var hasIndices = (indices != null);
 		var transformABCD = false, transformXY = false;
 		
@@ -201,7 +201,7 @@ class FlashGraphics {
 		var offset8 = 0;
 		
 		var x, y, tw, th, t0, t1, t2, t3, ox, oy, ox_;
-		var uvX, uvY, uvWidth, uvHeight;
+		var uvX = 0.0, uvY = 0.0, uvWidth = 1.0, uvHeight = 1.0;
 		
 		for (i in 0...length) {
 			
@@ -246,13 +246,17 @@ class FlashGraphics {
 			t3 = tileTransform.d;
 			x = tileTransform.tx;
 			y = tileTransform.ty;
-			ox = tileRect.x * tw;
-			oy = tileRect.y * th;
-			ox_ = ox * t0 + oy * t2;
 			
-			oy = ox * t1 + oy * t3;
-			x -= ox_;
-			y -= oy;
+			// Code for tile point offset
+			
+			// ox = tilePoint.x * tw;
+			// oy = tilePoint.y * th;
+			// ox_ = ox * t0 + oy * t2;
+			
+			// oy = ox * t1 + oy * t3;
+			// x -= ox_;
+			// y -= oy;
+			
 			vertices[offset8] = x;
 			vertices[offset8 + 1] = y;
 			vertices[offset8 + 2] = x + tw * t0;
@@ -267,15 +271,19 @@ class FlashGraphics {
 			vIndices[offset6 + 2] = vIndices[offset6 + 5] = 2 + offset4;
 			vIndices[offset6 + 4] = 3 + offset4;
 			
-			uvX = tileRect.x / sourceRect.width;
-			uvY = tileRect.y / sourceRect.height;
-			uvWidth = tileRect.right / sourceRect.width;
-			uvHeight = tileRect.bottom / sourceRect.height;
-			
-			uvtData[offset8] = uvtData[offset8 + 4] = uvX;
-			uvtData[offset8 + 1] = uvtData[offset8 + 3] = uvY;
-			uvtData[offset8 + 2] = uvtData[offset8 + 6] = uvWidth;
-			uvtData[offset8 + 5] = uvtData[offset8 + 7] = uvHeight;
+			if (sourceRect != null) {
+				
+				uvX = tileRect.x / sourceRect.width;
+				uvY = tileRect.y / sourceRect.height;
+				uvWidth = tileRect.right / sourceRect.width;
+				uvHeight = tileRect.bottom / sourceRect.height;
+				
+				uvtData[offset8] = uvtData[offset8 + 4] = uvX;
+				uvtData[offset8 + 1] = uvtData[offset8 + 3] = uvY;
+				uvtData[offset8 + 2] = uvtData[offset8 + 6] = uvWidth;
+				uvtData[offset8 + 5] = uvtData[offset8 + 7] = uvHeight;
+				
+			}
 			
 			offset4 += 4;
 			offset6 += 6;
@@ -283,7 +291,15 @@ class FlashGraphics {
 			
 		}
 		
-		graphics.drawTriangles (vertices, vIndices, uvtData);
+		if (sourceRect != null) {
+			
+			graphics.drawTriangles (vertices, vIndices, uvtData);
+			
+		} else {
+			
+			graphics.drawTriangles (vertices, vIndices);
+			
+		}
 		
 	}
 	
