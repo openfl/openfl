@@ -1500,6 +1500,7 @@ class TextField extends InteractiveObject {
 	
 	private function __replaceSelectedText (value:String, restrict:Bool = true):Void {
 		
+		if (value == null) value = "";
 		if (value == "" && __selectionIndex == __caretIndex) return;
 		
 		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
@@ -2816,7 +2817,7 @@ class TextField extends InteractiveObject {
 				
 				if (__textEngine.multiline) {
 					
-					__replaceSelectedText (text, true);
+					__replaceSelectedText ("\n", true);
 					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
