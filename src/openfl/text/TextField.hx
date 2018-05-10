@@ -1686,7 +1686,7 @@ class TextField extends InteractiveObject {
 	
 	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
-		if (__filters == null && renderer.__type == OPENGL && !__domRender) return false;
+		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null && !__domRender) return false;
 		
 		if (super.__updateCacheBitmap (renderer, force || __dirty)) {
 			
