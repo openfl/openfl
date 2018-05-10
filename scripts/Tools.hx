@@ -726,11 +726,11 @@ class Tools {
 		
 		var includeXML = 
 '<?xml version="1.0" encoding="utf-8"?>
-<extension>
+<library>
 	
 	<source path="src" />
 	
-</extension>';
+</library>';
 		
 		File.saveContent (PathHelper.combine (targetPath, "include.xml"), includeXML);
 		
