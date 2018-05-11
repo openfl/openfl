@@ -45,6 +45,7 @@
     "build-dist:prod": "webpack --config webpack.prod.js",
     "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint openfl --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,test}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
     "build-lib": "cd scripts && haxe build.hxml",
+    "build-swc": "cd scripts && asconfigc",
     "build-tools": "cd scripts && haxe tools-npm.hxml",
     "build-test-es5": "cd test/es5 && webpack",
     "build-test-es6": "cd test/es6 && webpack",
@@ -78,8 +79,10 @@
     "haxelib_version": "3.2.0-rc.3"
   },
   "devDependencies": {
+    "@apache-royale/royale-js": "^0.9.3",
     "@types/lodash": "^4.14.99",
     "@types/mocha": "^2.2.46",
+    "asconfigc": "^0.6.9",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-stage-1": "^6.24.1",

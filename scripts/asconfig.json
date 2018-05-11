@@ -1,0 +1,19 @@
+{
+	"config": "js",
+	"type": "lib",
+	"compilerOptions": {
+		"targets": [
+			"JS"
+		],
+		"keep-as3-metadata": [
+			"JSModule"
+		],
+		"source-path": [
+			"../lib"
+		],
+		"include-sources": [
+			"../lib"
+		],
+		"output": "../dist/openfl.swc"
+	}
+}
