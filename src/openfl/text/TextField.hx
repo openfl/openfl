@@ -1152,6 +1152,12 @@ class TextField extends InteractiveObject {
 				
 				y = group.offsetY + group.height / 2;
 				
+				for (i in 0...scrollV - 1) {
+					
+					y -= __textEngine.lineHeights[i];
+					
+				}
+				
 				if (x != null) return __getPosition (x, y);
 				
 			}
