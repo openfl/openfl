@@ -1,3 +1,19 @@
+8.0.2 (03/11/2018)
+------------------
+
+* Updated recommended Haxe release to Haxe 3.4.3 or Haxe 4
+* Improved support for pre-processed SWF asset libraries
+* Fixed an issue when clearing `filters` on `Bitmap` and `TextField` objects
+* Fixed `drawQuads` to support `beginFill` in addition to other fill types
+* Fixed the behavior of `Stage3D` scissor to behave better with scaled windows
+* Fixed geometry for `drawQuads` on the Flash renderer
+* Fixed a regression in the behavior of the enter key on input `TextField`
+* Fixed a regression in the behavior of up/down keys in `TextField`
+* Fixed the behavior of inherited `colorTransform` values
+* Fixed support for `beginFill` with `drawTriangles` on the Cairo renderer
+* Fixed the clipping of `Tilemap` bounds on the OpenGL renderer
+
+
 8.0.1 (03/08/2018)
 ------------------
 
