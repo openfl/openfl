@@ -247,7 +247,7 @@ jobs:
      - checkout
      - run:
          name: Install Dependencies
-         command: npm install
+         command: yes | npm install
      - run:
          name: Build Library
          command: npm run build
