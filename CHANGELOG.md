@@ -1,4 +1,4 @@
-8.0.2 (03/11/2018)
+8.0.2 (05/11/2018)
 ------------------
 
 * Updated recommended Haxe release to Haxe 3.4.3 or Haxe 4
@@ -14,7 +14,7 @@
 * Fixed the clipping of `Tilemap` bounds on the OpenGL renderer
 
 
-8.0.1 (03/08/2018)
+8.0.1 (05/08/2018)
 ------------------
 
 * Fixed an issue when filter classes were accessed by the macro context
@@ -26,7 +26,7 @@
 * Fixed minor issues to improve support for HashLink
 
 
-8.0.0 (03/04/2018)
+8.0.0 (05/04/2018)
 ------------------
 
 * Deprecated `DOMSprite`, `OpenGLView` and `TileArray`
