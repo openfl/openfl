@@ -1,8 +1,8 @@
 package openfl.display {
 	
 	
-	// import openfl.geom.Rectangle;
-	// import openfl.media.SoundTransform;
+	import openfl.geom.Rectangle;
+	import openfl.media.SoundTransform;
 	
 	
 	/**
@@ -20,7 +20,7 @@ package openfl.display {
 	 * functionality of previous ActionScript releases to provide backward
 	 * compatibility.
 	 */
-	public class Sprite /*extends DisplayObjectContainer*/ {
+	public class Sprite extends DisplayObjectContainer {
 		
 		
 		/**
@@ -55,10 +55,10 @@ package openfl.display {
 		public function get buttonMode ():Boolean { return false; }
 		public function set buttonMode (value:Boolean):void {}
 		
-		// @:noCompletion private function get_buttonMode ():Bool;
-		// @:noCompletion private function set_buttonMode (value:Bool):Bool;
+		protected function get_buttonMode ():Boolean { return false; }
+		protected function set_buttonMode (value:Boolean):Boolean { return false; }
 		
-		// public var dropTarget (default, null):DisplayObject;
+		public function get dropTarget ():DisplayObject { return null; }
 		
 		/**
 		 * Specifies the Graphics object that belongs to this sprite where vector
@@ -66,7 +66,7 @@ package openfl.display {
 		 */
 		public function get graphics ():Graphics { return null; }
 		
-		// @:noCompletion private function get_graphics ():Graphics;
+		protected function get_graphics ():Graphics { return null; }
 		
 		public var hitArea:Sprite;
 		
@@ -126,7 +126,7 @@ package openfl.display {
 		 * @param bounds     Value relative to the coordinates of the Sprite's parent
 		 *                   that specify a constraint rectangle for the Sprite.
 		 */
-		// public function startDrag (lockCenter:Bool = false, bounds:Rectangle = null):Void;
+		public function startDrag (lockCenter:Boolean = false, bounds:Rectangle = null):void {}
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;

@@ -15,7 +15,7 @@ package openfl.display {
 	// import lime.ui.KeyModifier;
 	// import lime.ui.Touch;
 	// import lime.ui.Window;
-	// import openfl.geom.Rectangle;
+	import openfl.geom.Rectangle;
 
 
 	/**
@@ -135,7 +135,7 @@ package openfl.display {
 	 * @event stageVideoAvailability Dispatched by the Stage object when the state
 	 *                               of the stageVideos property changes.
 	 */
-	public class Stage /*extends DisplayObjectContainer*/ /*implements IModule*/ {
+	public class Stage extends DisplayObjectContainer /*implements IModule*/ {
 		
 		
 		/**
@@ -150,7 +150,7 @@ package openfl.display {
 		 * information, see the "Security" chapter in the _ActionScript 3.0
 		 * Developer's Guide_.
 		 */
-		// public var align:StageAlign;
+		public var align:String;
 		
 		/**
 		 * Specifies whether this stage allows the use of the full screen mode
@@ -174,8 +174,8 @@ package openfl.display {
 		public function get color ():uint { return 0; }
 		public function set color (value:uint):void {}
 		
-		// @:noCompletion private function get_color ():UInt;
-		// @:noCompletion private function set_color (value:UInt):UInt;
+		protected function get_color ():uint { return 0; }
+		protected function set_color (value:uint):uint { return 0; }
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
@@ -187,7 +187,7 @@ package openfl.display {
 		
 		public function get contentsScaleFactor ():Number { return 0; }
 		
-		// @:noCompletion private function get_contentsScaleFactor ():Float;
+		protected function get_contentsScaleFactor ():Number { return 0; }
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
@@ -280,10 +280,10 @@ package openfl.display {
 		 *                       `allowFullScreen` attribute is not set to
 		 *                       `true` throws a security error.
 		 */
-		// public var displayState (get, set):StageDisplayState;
+		public var displayState:String;
 		
-		// @:noCompletion private function get_displayState ():StageDisplayState;
-		// @:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState;
+		protected function get_displayState ():String { return null; }
+		protected function set_displayState (value:String):String { return null; }
 		
 		public function get element ():* { return null; }
 		// public var element (default, never):js.html.Element;
@@ -295,10 +295,10 @@ package openfl.display {
 		 * 
 		 * @throws Error Throws an error if focus cannot be set to the target.
 		 */
-		// public var focus (get, set):InteractiveObject;
+		public var focus:InteractiveObject;
 		
-		// @:noCompletion private function get_focus ():InteractiveObject;
-		// @:noCompletion private function set_focus (value:InteractiveObject):InteractiveObject;
+		protected function get_focus ():InteractiveObject { return null; }
+		protected function set_focus (value:InteractiveObject):InteractiveObject { return null; }
 		
 		/**
 		 * Gets and sets the frame rate of the stage. The frame rate is defined as
@@ -331,12 +331,12 @@ package openfl.display {
 		public function get frameRate ():Number { return 0; }
 		public function set frameRate (value:Number):void {}
 		
-		// @:noCompletion private function get_frameRate ():Float;
-		// @:noCompletion private function set_frameRate (value:Float):Float;
+		protected function get_frameRate ():Number { return 0; }
+		protected function set_frameRate (value:Number):Number { return 0; }
 		
 		public function get fullScreenHeight ():uint { return 0; }
 		
-		// @:noCompletion private function get_fullScreenHeight ():UInt;
+		protected function get_fullScreenHeight ():uint { return 0; }
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
@@ -344,7 +344,7 @@ package openfl.display {
 		
 		public function get fullScreenWidth ():uint { return 0; }
 		
-		// @:noCompletion private function get_fullScreenWidth ():UInt;
+		protected function get_fullScreenWidth ():uint { return 0; }
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
@@ -405,10 +405,10 @@ package openfl.display {
 		 *                       For more information, see the "Security" chapter in
 		 *                       the _ActionScript 3.0 Developer's Guide_.
 		 */
-		// public var quality (get, set):StageQuality;
+		public var quality:String;
 		
-		// @:noCompletion private function get_quality ():StageQuality;
-		// @:noCompletion private function set_quality (value:StageQuality):StageQuality;
+		protected function get_quality ():String { return null; }
+		protected function set_quality (value:String):String { return null; }
 		
 		/**
 		 * A value from the StageScaleMode class that specifies which scale mode to
@@ -442,10 +442,10 @@ package openfl.display {
 		 *                       For more information, see the "Security" chapter in
 		 *                       the _ActionScript 3.0 Developer's Guide_.
 		 */
-		// public var scaleMode:StageScaleMode;
+		public var scaleMode:String;
 		
-		// @:noCompletion private function get_scaleMode ():StageScaleMode;
-		// @:noCompletion private function set_scaleMode (value:StageScaleMode):StageScaleMode;
+		protected function get_scaleMode ():String { return null; }
+		protected function set_scaleMode (value:String):String { return null; }
 		
 		public var showDefaultContextMenu:Boolean;
 		
@@ -571,8 +571,7 @@ package openfl.display {
 		
 		// #if !flash
 		//public function new (window:Window, color:Null<Int> = null);
-		// public function new (width:Int = 0, height:Int = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowConfig:Dynamic = null);
-		public function Stage (width:int = 0, height:int = 0, color:* = null /*, documentClass:Class<Dynamic> = null, windowConfig:Dynamic = null*/) {}
+		public function Stage (width:int = 0, height:int = 0, color:Object = null, documentClass:Class = null, windowConfig:Object = null) {}
 		// #end
 		
 		
@@ -598,7 +597,7 @@ package openfl.display {
 		 * `Security.allowDomain()` method.
 		 * 
 		 */
-		// public override function invalidate ():Void;
+		// public override function invalidate ():void {}
 		
 		
 		// #if flash
@@ -658,8 +657,6 @@ package openfl.display {
 		// @:noCompletion @:dox(hide) public function onWindowRestore (window:Window):Void;
 		// @:noCompletion @:dox(hide) public function render (renderer:Renderer):Void;
 		// @:noCompletion @:dox(hide) public function update (deltaTime:Int):Void;
-		
-		public function addChild (child:Sprite):void {}
 		
 		
 	}
