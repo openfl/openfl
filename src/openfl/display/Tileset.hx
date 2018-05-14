@@ -51,11 +51,11 @@ class Tileset {
 	}
 	
 	
-	public function addRect (rect:Rectangle):Int {
+	public function addRect (rect:Rectangle, offsetX:Int = 0, offsetY:Int = 0, rotated:Bool = false):Int {
 		
 		if (rect == null) return -1;
 		
-		var tileData = new TileData (rect);
+		var tileData = new TileData (rect, offsetX, offsetY, rotated);
 		tileData.__update (__bitmapData);
 		__data.push (tileData);
 		
@@ -141,6 +141,9 @@ class Tileset {
 	public var width:Int;
 	public var x:Int;
 	public var y:Int;
+	public var offsetX:Int;
+	public var offsetY:Int;
+	public var rotated:Bool;
 	
 	public var __bitmapData:BitmapData;
 	public var __uvHeight:Float;
@@ -149,17 +152,16 @@ class Tileset {
 	public var __uvY:Float;
 	
 	
-	public function new (rect:Rectangle = null) {
+	public function new (rect:Rectangle, offsetX:Int, offsetY:Int, rotated:Bool) {
 		
-		if (rect != null) {
-			
-			x = Std.int (rect.x);
-			y = Std.int (rect.y);
-			width = Std.int (rect.width);
-			height = Std.int (rect.height);
-			
-		}
+		x = Std.int (rect.x);
+		y = Std.int (rect.y);
+		width = Std.int (rect.width);
+		height = Std.int (rect.height);
 		
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+		this.rotated = rotated;
 	}
 	
 	

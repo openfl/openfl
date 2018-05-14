@@ -7,6 +7,7 @@ import js.Browser;
 import js.html.CanvasElement;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.ColorTransform;
+import openfl.display.BitmapData.TextureRegionResult;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GL;
@@ -297,6 +298,41 @@ class SubBitmapData extends BitmapData {
 		}
 
 		return __buffer;
+	}
+
+	override function __getTextureRegion(uvX:Float, uvY:Float, uvWidth:Float, uvHeight:Float, result:TextureRegionResult) {
+		// translate (back) to pixel coordinates inside the SubBitmapData region
+		var left = uvX * width;
+		var right = uvWidth * width;
+		var top = uvY * height;
+		var bottom = uvHeight * height;
+
+		if (__rotated) {
+			result.u0 = (__texX + __texWidth - top + __offsetY) / __parentBitmap.width;
+			result.v0 = (__texY + left - __offsetX) / __parentBitmap.height;
+
+			result.u1 = (__texX + __texWidth - top + __offsetY) / __parentBitmap.width;
+			result.v1 = (__texY + right - __offsetX) / __parentBitmap.height;
+
+			result.u2 = (__texX + __texWidth - bottom + __offsetY) / __parentBitmap.width;
+			result.v2 = (__texY + right - __offsetX) / __parentBitmap.height;
+
+			result.u3 = (__texX + __texWidth - bottom + __offsetY)/ __parentBitmap.width;
+			result.v3 = (__texY + left - __offsetX) / __parentBitmap.height;
+		} else {
+			var u0 = (__texX + left - __offsetX) / __parentBitmap.width;
+			var v0 = (__texY + top - __offsetY) / __parentBitmap.height;
+			var u1 = (__texX + right - __offsetX) / __parentBitmap.width;
+			var v1 = (__texY + bottom - __offsetY) / __parentBitmap.height;
+			result.u0 = u0;
+			result.v0 = v0;
+			result.u1 = u1;
+			result.v1 = v0;
+			result.u2 = u1;
+			result.v2 = v1;
+			result.u3 = u0;
+			result.v3 = v1;
+		}
 	}
 
 	override function __prepareImage() {

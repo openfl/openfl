@@ -1048,6 +1048,25 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	/**
+		Calculate texture coordinates for a quad representing a texture region
+		inside this BitmapData given normalized texture coordinates.
+	**/
+	public function __getTextureRegion(uvX:Float, uvY:Float, uvWidth:Float, uvHeight:Float, result:TextureRegionResult) {
+		result.u0 = uvX;
+		result.v0 = uvY;
+
+		result.u1 = uvWidth;
+		result.v1 = uvY;
+
+		result.u2 = uvWidth;
+		result.v2 = uvHeight;
+
+		result.u3 = uvX;
+		result.v3 = uvHeight;
+	}
+	
+	
 	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
 		
 		if (!readable) return new Rectangle (0, 0, width, height);
@@ -2245,4 +2264,21 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+}
+
+
+/**
+	Result structure for `BitmapData.__getTextureRegion`.
+	Can only be used for reading after calling `__getTextureRegion`.
+**/
+@:publicFields class TextureRegionResult {
+	var u0:Float;
+	var v0:Float;
+	var u1:Float;
+	var v1:Float;
+	var u2:Float;
+	var v2:Float;
+	var u3:Float;
+	var v3:Float;
+	function new() {}
 }
