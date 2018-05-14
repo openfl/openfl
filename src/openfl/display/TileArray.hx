@@ -306,6 +306,24 @@ import openfl.Vector;
 					y3 = tileMatrix.__transformY (offsetX, offsetY + tileWidth);
 					x4 = tileMatrix.__transformX (offsetX + tileHeight, offsetY + tileWidth);
 					y4 = tileMatrix.__transformY (offsetX + tileHeight, offsetY + tileWidth);
+
+					__bufferData[offset + 2] = textureRegion.u1;
+					__bufferData[offset + 3] = textureRegion.v1;
+					
+					__bufferData[offset + attributeLength + 2] = textureRegion.u2;
+					__bufferData[offset + attributeLength + 3] = textureRegion.v2;
+					
+					__bufferData[offset + (attributeLength * 2) + 2] = textureRegion.u0;
+					__bufferData[offset + (attributeLength * 2) + 3] = textureRegion.v0;
+					
+					__bufferData[offset + (attributeLength * 3) + 2] = textureRegion.u0;
+					__bufferData[offset + (attributeLength * 3) + 3] = textureRegion.v0;
+					
+					__bufferData[offset + (attributeLength * 4) + 2] = textureRegion.u2;
+					__bufferData[offset + (attributeLength * 4) + 3] = textureRegion.v2;
+					
+					__bufferData[offset + (attributeLength * 5) + 2] = textureRegion.u3;
+					__bufferData[offset + (attributeLength * 5) + 3] = textureRegion.v3;
 				} else {
 					x = tileMatrix.__transformX (offsetX, offsetY);
 					y = tileMatrix.__transformY (offsetX, offsetY);
@@ -315,6 +333,24 @@ import openfl.Vector;
 					y3 = tileMatrix.__transformY (offsetX, offsetY + tileHeight);
 					x4 = tileMatrix.__transformX (offsetX + tileWidth, offsetY + tileHeight);
 					y4 = tileMatrix.__transformY (offsetX + tileWidth, offsetY + tileHeight);
+
+					__bufferData[offset + 2] = textureRegion.u0;
+					__bufferData[offset + 3] = textureRegion.v0;
+					
+					__bufferData[offset + attributeLength + 2] = textureRegion.u1;
+					__bufferData[offset + attributeLength + 3] = textureRegion.v1;
+					
+					__bufferData[offset + (attributeLength * 2) + 2] = textureRegion.u3;
+					__bufferData[offset + (attributeLength * 2) + 3] = textureRegion.v3;
+					
+					__bufferData[offset + (attributeLength * 3) + 2] = textureRegion.u3;
+					__bufferData[offset + (attributeLength * 3) + 3] = textureRegion.v3;
+					
+					__bufferData[offset + (attributeLength * 4) + 2] = textureRegion.u1;
+					__bufferData[offset + (attributeLength * 4) + 3] = textureRegion.v1;
+					
+					__bufferData[offset + (attributeLength * 5) + 2] = textureRegion.u2;
+					__bufferData[offset + (attributeLength * 5) + 3] = textureRegion.v2;
 				}
 
 				alpha *= worldAlpha;
@@ -348,44 +384,6 @@ import openfl.Vector;
 				
 				__bufferData[offset + (attributeLength * 5) + 0] = x4;
 				__bufferData[offset + (attributeLength * 5) + 1] = y4;
-				
-				if (rotated) {
-					__bufferData[offset + 2] = textureRegion.u1;
-					__bufferData[offset + 3] = textureRegion.v1;
-					
-					__bufferData[offset + attributeLength + 2] = textureRegion.u2;
-					__bufferData[offset + attributeLength + 3] = textureRegion.v2;
-					
-					__bufferData[offset + (attributeLength * 2) + 2] = textureRegion.u0;
-					__bufferData[offset + (attributeLength * 2) + 3] = textureRegion.v0;
-					
-					__bufferData[offset + (attributeLength * 3) + 2] = textureRegion.u0;
-					__bufferData[offset + (attributeLength * 3) + 3] = textureRegion.v0;
-					
-					__bufferData[offset + (attributeLength * 4) + 2] = textureRegion.u2;
-					__bufferData[offset + (attributeLength * 4) + 3] = textureRegion.v2;
-					
-					__bufferData[offset + (attributeLength * 5) + 2] = textureRegion.u3;
-					__bufferData[offset + (attributeLength * 5) + 3] = textureRegion.v3;
-				} else {
-					__bufferData[offset + 2] = textureRegion.u0;
-					__bufferData[offset + 3] = textureRegion.v0;
-					
-					__bufferData[offset + attributeLength + 2] = textureRegion.u1;
-					__bufferData[offset + attributeLength + 3] = textureRegion.v1;
-					
-					__bufferData[offset + (attributeLength * 2) + 2] = textureRegion.u3;
-					__bufferData[offset + (attributeLength * 2) + 3] = textureRegion.v3;
-					
-					__bufferData[offset + (attributeLength * 3) + 2] = textureRegion.u3;
-					__bufferData[offset + (attributeLength * 3) + 3] = textureRegion.v3;
-					
-					__bufferData[offset + (attributeLength * 4) + 2] = textureRegion.u1;
-					__bufferData[offset + (attributeLength * 4) + 3] = textureRegion.v1;
-					
-					__bufferData[offset + (attributeLength * 5) + 2] = textureRegion.u2;
-					__bufferData[offset + (attributeLength * 5) + 3] = textureRegion.v2;
-				}
 				
 				for (i in 0...6) {
 					
