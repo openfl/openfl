@@ -1,9 +1,9 @@
 package openfl.display {
 
 
-	// import openfl.geom.Matrix;
-	// import openfl.geom.Point;
-	// import openfl.geom.Rectangle;
+	import openfl.geom.Matrix;
+	import openfl.geom.Point;
+	import openfl.geom.Rectangle;
 	// import openfl.Vector;
 
 
@@ -62,7 +62,7 @@ package openfl.display {
 		 *               using a bilinear algorithm. Rendering by using the nearest
 		 *               neighbor algorithm is faster.
 		 */
-		// public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Boolean = true, smooth:Boolean = false):void;
+		public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Boolean = true, smooth:Boolean = false):void {}
 		
 		
 		/**
@@ -147,10 +147,10 @@ package openfl.display {
 		 *                            a `focalPointRatio` set to 0.75:
 		 * @throws ArgumentError If the `type` parameter is not valid.
 		 */
-		// public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
+		public function beginGradientFill (type:GradientType, colors:Array, alphas:Array, ratios:Array, matrix:Matrix = null, spreadMethod:String = null, interpolationMethod:String = null, focalPointRatio:Number = 0):void {}
 		
 		
-		// public function beginShaderFill (shader:Shader, matrix:Matrix = null):void;
+		public function beginShaderFill (shader:Shader, matrix:Matrix = null):void {}
 		
 		
 		/**
@@ -249,7 +249,7 @@ package openfl.display {
 		 * sub-paths are rendered during this operation. 
 		 * 
 		 */
-		// public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void;
+		public function drawGraphicsData (graphicsData:Vector.<IGraphicsData>):void {}
 		
 		
 		/**
@@ -297,7 +297,7 @@ package openfl.display {
 		 * @param winding Specifies the winding rule using a value defined in the
 		 *                GraphicsPathWinding class.
 		 */
-		// public function drawPath (commands:Vector<Int>, data:Vector<Float>, ?winding:GraphicsPathWinding):Void;
+		public function drawPath (commands:Vector.<int>, data:Vector.<Number>, winding:String = null):void {}
 		
 		
 		/**
@@ -329,7 +329,7 @@ package openfl.display {
 		 *                   which is six times the draw count in size will use full
 		 *                   matrix [ a, b, c, d, tx, ty, ... ] values per draw.
 		 */
-		// public function drawQuads (rects:Vector<Float>, ?indices:Vector<Int> = null, ?transforms:Vector<Float> = null):Void;
+		public function drawQuads (rects:Vector.<Number>, indices:Vector.<int> = null, transforms:Vector.<Number> = null):void {}
 		
 		
 		/**
@@ -378,10 +378,10 @@ package openfl.display {
 		 *                       `ellipseHeight` parameters are not a
 		 *                       number(`Number.NaN`).
 		 */
-		// public function drawRoundRect (x:Number, y:Number, width:Number, height:Number, ellipseWidth:Number, ?ellipseHeight:Null<Number>):void;
+		public function drawRoundRect (x:Number, y:Number, width:Number, height:Number, ellipseWidth:Number, ellipseHeight:Object = null):void {}
 		
 		
-		// public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
+		public function drawRoundRectComplex (x:Number, y:Number, width:Number, height:Number, topLeftRadius:Number, topRightRadius:Number, bottomLeftRadius:Number, bottomRightRadius:Number):void {}
 		
 		
 		/**
@@ -402,7 +402,7 @@ package openfl.display {
 		 *                parameter can be set to any value defined by the
 		 *                TriangleCulling class.
 		 */
-		// public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling):Void;
+		public function drawTriangles (vertices:Vector.<Number>, indices:Vector.<int> = null, uvtData:Vector.<Number> = null, culling:String = null):void {}
 		
 		
 		/**
@@ -448,7 +448,7 @@ package openfl.display {
 		 * @param repeat Whether to repeat the bitmap in a tiled fashion.
 		 * @param smooth Whether smoothing should be applied to the bitmap.
 		 */
-		// public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void;
+		public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Boolean = true, smooth:Boolean = false):void {}
 		
 		
 		/**
@@ -503,7 +503,7 @@ package openfl.display {
 		 *                            image shows a gradient with a
 		 *                            `focalPointRatio` of -0.75:
 		 */
-		// public function lineGradientStyle (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
+		public function lineGradientStyle (type:String, colors:Array, alphas:Array, ratios:Array, matrix:Matrix = null, spreadMethod:String = null, interpolationMethod:String = null, focalPointRatio:Number = 0):void {}
 		
 		
 		/**
@@ -645,7 +645,7 @@ package openfl.display {
 		 *                     has a specific maximum angle for which the miter is
 		 *                     cut off. The following table lists some examples:
 		 */
-		// public function lineStyle (thickness:Null<Float> = null, ?color:UInt, ?alpha:Float, ?pixelHinting:Bool, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Float = 3):Void;
+		public function lineStyle (thickness:Object = null, color:uint = 0, alpha:Number = 0, pixelHinting:Boolean = false, scaleMode:String = null, caps:String = null, joints:String = null, miterLimit:Number = 3):void {}
 		
 		
 		/**
@@ -680,7 +680,7 @@ package openfl.display {
 		public function moveTo (x:Number, y:Number):void {}
 		
 		
-		// public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
+		public function readGraphicsData (recurse:Boolean = true):Vector.<IGraphicsData> { return null; }
 		
 		
 	}
