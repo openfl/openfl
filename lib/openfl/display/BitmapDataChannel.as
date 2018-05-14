@@ -23,7 +23,7 @@ package openfl.display {
 	* `openfl.filters.DisplacementMapFilter.componentY` properties
 	* 
 	*/
-	public class BitmapDataChannel {
+	final public class BitmapDataChannel {
 		
 		/**
 		* The alpha channel.

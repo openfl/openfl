@@ -6,7 +6,7 @@ package openfl.display {
 	 * The LineScaleMode class provides values for the `scaleMode`
 	 * parameter in the `Graphics.lineStyle()` method.
 	 */
-	public class LineScaleMode {
+	final public class LineScaleMode {
 		
 		/**
 		 * With this setting used as the `scaleMode` parameter of the

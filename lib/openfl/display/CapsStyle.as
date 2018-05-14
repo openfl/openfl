@@ -9,7 +9,7 @@ package openfl.display {
 	* `openfl.display.Graphics.lineStyle()` method. You can specify the
 	* following three types of caps:
 	*/
-	public class CapsStyle {
+	final public class CapsStyle {
 		
 		/**
 		* Used to specify no caps in the `caps` parameter of the

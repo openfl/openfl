@@ -8,7 +8,7 @@ package openfl.display {
 	 * `lineGradientStyle()` methods of the openfl.display.Graphics
 	 * class.
 	 */
-	public class GradientType {
+	final public class GradientType {
 		
 		/**
 		 * Value used to specify a linear gradient fill.

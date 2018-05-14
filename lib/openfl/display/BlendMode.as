@@ -12,7 +12,7 @@ package openfl.display {
 	* method of the openfl.display.BitmapData class
 	* 
 	*/
-	public class BlendMode {
+	final public class BlendMode {
 		
 		/**
 		* Adds the values of the constituent colors of the display object to the

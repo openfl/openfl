@@ -9,7 +9,7 @@ package openfl.display {
 	 * `Graphics.drawPath()` method, or stored in the
 	 * `commands` vector of a GraphicsPath object.
 	 */
-	public class GraphicsPathCommand {
+	final public class GraphicsPathCommand {
 		
 		public static const CUBIC_CURVE_TO:uint = 6;
 		public static const CURVE_TO:uint = 3;
