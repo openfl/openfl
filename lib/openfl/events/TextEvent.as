@@ -61,7 +61,7 @@ package openfl.events {
 		 *                   Event listeners can access this information through the
 		 *                   `text` property.
 		 */
-		public function TextEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, text:String = "") {}
+		public function TextEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, text:String = "") { super (type); }
 		
 		
 	}

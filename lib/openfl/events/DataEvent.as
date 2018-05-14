@@ -13,7 +13,7 @@ package openfl.events {
 		public var data:String;
 		
 		
-		public function DataEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, data:String = "") {}
+		public function DataEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, data:String = "") { super (type); }
 		
 		
 	}

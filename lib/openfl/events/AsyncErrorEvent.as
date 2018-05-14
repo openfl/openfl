@@ -15,7 +15,7 @@ package openfl.events {
 		public var error:Error;
 		
 		
-		public function AsyncErrorEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, text:String = "", error:Error = null) {}
+		public function AsyncErrorEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, text:String = "", error:Error = null) { super (type); }
 		
 		
 	}

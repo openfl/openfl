@@ -61,7 +61,7 @@ package openfl.events {
 		 * @param id         A reference number to associate with the specific error
 		 *                  (supported in Adobe AIR only).
 		 */
-		public function ErrorEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, text:String = "", id:int = 0) {}
+		public function ErrorEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, text:String = "", id:int = 0) { super (type); }
 		
 		
 	}

@@ -76,7 +76,7 @@ package openfl.events {
 		 * @param accelerationZ The acceleration value in Gs(9.8m/sec/sec) along the
 		 *                      z-axis.
 		 */
-		public function AccelerometerEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, timestamp:Number = 0, accelerationX:Number = 0, accelerationY:Number = 0, accelerationZ:Number = 0) {}
+		public function AccelerometerEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, timestamp:Number = 0, accelerationX:Number = 0, accelerationY:Number = 0, accelerationZ:Number = 0) { super (type); }
 		
 		
 	}

@@ -12,7 +12,7 @@ package openfl.events {
 		public var activating:Boolean;
 		
 		
-		public function ActivityEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, activating:Boolean = false) {}
+		public function ActivityEvent (type:String, bubbles:Boolean = false, cancelable:Boolean = false, activating:Boolean = false) { super (type); }
 		
 		
 	}

@@ -9,7 +9,7 @@ declare namespace openfl.ui {
 	/*@:final*/ export class GameInputDevice {
 		
 		
-		public static MAX_BUFFER_SIZE:number;
+		public static MAX_BUFFER_SIZE:int;
 		
 		/**
 		 * Enables or disables this device.

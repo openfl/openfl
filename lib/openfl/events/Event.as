@@ -367,7 +367,7 @@ package openfl.events {
 		 *  *  The bubbling phase(`EventPhase.BUBBLING_PHASE`).
 		 * 
 		 */
-		public function get eventPhase ():String { return null; }
+		public function get eventPhase ():uint { return null; }
 		
 		/**
 		 * The event target. This property contains the target node. For example, if
