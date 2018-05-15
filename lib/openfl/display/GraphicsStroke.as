@@ -206,7 +206,7 @@ package openfl.display {
 		 *                     `miterLimit` parameter to limit the length
 		 *                     of the miter.
 		 */
-		public function GraphicsStroke (thickness:Number = Number.NaN, pixelHinting:Boolean = false, scaleMode:String = null, caps:String = null, joints:String = null, miterLimit:Number = 3, fill:IGraphicsFill = null) {}
+		public function GraphicsStroke (thickness:Number = /*Number.NaN*/undefined, pixelHinting:Boolean = false, scaleMode:String = null, caps:String = null, joints:String = null, miterLimit:Number = 3, fill:IGraphicsFill = null) {}
 		
 		
 	}
