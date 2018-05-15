@@ -46,7 +46,7 @@
     "build-dist:dev": "webpack --config webpack.dev.js",
     "build-dist:prod": "webpack --config webpack.prod.js",
     "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint openfl --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,test}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
-    "build-lib": "cd scripts && haxe build.hxml && node generate-es2015",
+    "build-lib": "cd scripts && haxe build.hxml && node generate-es2015 gen",
     "build-tools": "cd scripts && haxe tools-npm.hxml",
     "build-test-es5": "cd test/es5 && webpack",
     "build-test-es6": "cd test/es6 && webpack",

@@ -1,17 +1,35 @@
 export { default } from "./../../_gen/openfl/utils/AssetLibrary";
 
-export { default as FilterType } from "../../_gen/openfl/_internal/swf/FilterType";
-export { default as ShapeCommand } from "../../_gen/openfl/_internal/swf/ShapeCommand";
-export { default as SWFLiteLibrary } from "../../_gen/openfl/_internal/swf/SWFLiteLibrary";
-export { default as BitmapSymbol } from "../../_gen/openfl/_internal/symbols/BitmapSymbol";
-export { default as ButtonSymbol } from "../../_gen/openfl/_internal/symbols/ButtonSymbol";
-export { default as DynamicTextSymbol } from "../../_gen/openfl/_internal/symbols/DynamicTextSymbol";
-export { default as FontSymbol } from "../../_gen/openfl/_internal/symbols/FontSymbol";
-export { default as ShapeSymbol } from "../../_gen/openfl/_internal/symbols/ShapeSymbol";
-export { default as SpriteSymbol } from "../../_gen/openfl/_internal/symbols/SpriteSymbol";
-export { default as StaticTextRecord } from "../../_gen/openfl/_internal/symbols/StaticTextRecord";
-export { default as StaticTextSymbol } from "../../_gen/openfl/_internal/symbols/StaticTextSymbol";
-export { default as SWFSymbol } from "../../_gen/openfl/_internal/symbols/SWFSymbol";
-export { default as Frame } from "../../_gen/openfl/_internal/timeline/Frame";
-export { default as FrameObject } from "../../_gen/openfl/_internal/timeline/FrameObject";
-export { default as FrameObjectType } from "../../_gen/openfl/_internal/timeline/FrameObjectType";
+import { default as FilterType } from "../../_gen/openfl/_internal/swf/FilterType";
+import { default as ShapeCommand } from "../../_gen/openfl/_internal/swf/ShapeCommand";
+import { default as SWFLiteLibrary } from "../../_gen/openfl/_internal/swf/SWFLiteLibrary";
+import { default as BitmapSymbol } from "../../_gen/openfl/_internal/symbols/BitmapSymbol";
+import { default as ButtonSymbol } from "../../_gen/openfl/_internal/symbols/ButtonSymbol";
+import { default as DynamicTextSymbol } from "../../_gen/openfl/_internal/symbols/DynamicTextSymbol";
+import { default as FontSymbol } from "../../_gen/openfl/_internal/symbols/FontSymbol";
+import { default as ShapeSymbol } from "../../_gen/openfl/_internal/symbols/ShapeSymbol";
+import { default as SpriteSymbol } from "../../_gen/openfl/_internal/symbols/SpriteSymbol";
+import { default as StaticTextRecord } from "../../_gen/openfl/_internal/symbols/StaticTextRecord";
+import { default as StaticTextSymbol } from "../../_gen/openfl/_internal/symbols/StaticTextSymbol";
+import { default as SWFSymbol } from "../../_gen/openfl/_internal/symbols/SWFSymbol";
+import { default as Frame } from "../../_gen/openfl/_internal/timeline/Frame";
+import { default as FrameObject } from "../../_gen/openfl/_internal/timeline/FrameObject";
+import { default as FrameObjectType } from "../../_gen/openfl/_internal/timeline/FrameObjectType";
+
+// Apart from adding this file to the sideEffects array in package.json, we also need 
+// to list each class out here so that it is included in the webpack bundle
+FilterType;
+ShapeCommand;
+SWFLiteLibrary;
+BitmapSymbol;
+ButtonSymbol;
+DynamicTextSymbol;
+FontSymbol;
+ShapeSymbol;
+SpriteSymbol;
+StaticTextRecord;
+StaticTextSymbol;
+SWFSymbol;
+Frame;
+FrameObject;
+FrameObjectType;

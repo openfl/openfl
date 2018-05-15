@@ -4,6 +4,9 @@ let fs = require('fs');
 let globby = require('globby');
 let path = require('path');
 
+
+let argv = process.argv;
+
 /*
 Run this after the "npm run build-lib" script. This script does the following:
 
@@ -48,29 +51,48 @@ var c = 0;
 
 
 console.log('generate-es2015 running...');
+/*
 
-// First create the directory we will export our es2015 modules to
-mkDirByPathSync('../lib_esm/_gen');
+*/
 
-startCreateEsmModules().then(() => {
-  
-  startModifyEsmModules().then(() => {
-    
+if (argv.length == 3) {
+  if (argv[2] == 'export') {
+    // First create the directory we will export our es2015 modules to
+    mkDirByPathSync('../lib_esm/');
+
     startCreateDefaultReExportEsms().then(() => {
-      
+        
       startCreateBarrelModules().then(() => {
         
         complete();
         
       });
     });
-  });
+  }
+  if (argv[2] == 'gen') {
+    
+    // First create the directory we will export our es2015 modules to
+    mkDirByPathSync('../lib_esm/_gen');
+
+
+    startCreateEsmModules().then(() => {
   
-});
+      startModifyEsmModules().then(() => {
+        complete();
+        
+      });
+      
+    });
+  }
+}
+
 
 function complete() {
   
-  writtenContentsMap.forEach((content, filePath) => {
+  writtenContentsMap.forEach((value, filePath) => {
+    
+    let content = value.content;
+    let override = value.override;
     
     try {
       
@@ -82,7 +104,7 @@ function complete() {
           originalContentsMap.set(filePath, fs.readFileSync(filePath, 'utf8'));
       }
       
-      if (originalContentsMap.has(filePath) && originalContentsMap.get(filePath) != content) {
+      if (originalContentsMap.has(filePath) && originalContentsMap.get(filePath) != content && override) {
         /*
         if (c++ < 1) {
           
@@ -179,6 +201,13 @@ function moveImportsToTop(content, importLines) {
   content = content.replace('// Imports', '// Imports\n' + importLineStr);
   
   return content; 
+}
+
+function appendImport(content, importStatement) {
+  
+  content = content.replace('// Constructor', importStatement + '\n\n// Constructor');
+  
+  return content;
 }
 
 
@@ -297,6 +326,7 @@ function modifyEsmModule(filePath) {
   if (filePath.indexOf('openfl/display/DisplayObject.') > -1) {
     result = exportInit(result, 'DisplayObject');
     
+    // To deal with circular dependencies
     result = moveImportsToTop(result, [
       'import { default as haxe_ds_StringMap } from "./../../haxe/ds/StringMap";', 
       'import { default as lime_utils_ObjectPool } from "./../../lime/utils/ObjectPool";'
@@ -326,6 +356,51 @@ function modifyEsmModule(filePath) {
   }
   
   
+  //
+  // howler
+  //
+  result = result.replace('function lime_media_howlerjs_Howl() {return require("howler");}', 'import { Howl } from "howler";');
+  // Replace
+  // function lime_media_howlerjs_Howl() {return require("howler");}
+  // with
+  // import { Howl } from "howler";
+  
+  result = result.replace(/new \(lime_media_howlerjs_Howl\(\)\.Howl\)/g, 'new Howl');
+  // Replace
+  // new (lime_media_howlerjs_Howl().Howl)
+  // with
+  // new Howl
+  
+  
+  //
+  // filesaver
+  //
+  if (result.indexOf('require (\'file-saverjs\')') > -1)
+    result = appendImport(result, 'import fileSaverJs from "file-saverjs"');
+  result = result.replace(/require \('file-saverjs'\)/g, 'fileSaverJs');
+  
+  
+  //
+  // pako
+  //
+  if (result.indexOf('require ("pako").deflateRaw') > -1) 
+    result = appendImport(result, 'import { deflateRaw, inflateRaw } from "pako";');
+  if (result.indexOf('require ("pako").inflate') > -1) 
+    result = appendImport(result, 'import { deflate, inflate } from "pako";');
+    
+  result = result.replace(/require \("pako"\)\./g, '');
+  // Replace
+  // var data = require ("pako").inflate(bytes.getData());
+  // with
+  // var data = inflate(bytes.getData());
+  
+  
+  
+  result = result.replace("var js_Boot = require('./js/Boot');", 'import { default as js_Boot } from "./js/Boot";');
+  
+  result = result.replace("var HxOverrides = require('./HxOverrides');", 'import { default as HxOverrides } from "./HxOverrides";');
+  
+  result = result.replace(/HxOverrides\.default/g, 'HxOverrides');
   
   // Replace
   // (openfl_display_DisplayObject().default).call(this);
@@ -430,7 +505,7 @@ function createDefaultReExportEsm(filePath) {
   // to
   // ../lib_esm/openfl/display/Sprite.js
   
-  return writeFileSync(esmFilePath, result);
+  return writeFileSync(esmFilePath, result, false);
 }
 
 function startCreateBarrelModules() {
@@ -520,7 +595,7 @@ function createEsmIndex(filePath) {
   
   
   var dTSFilePath = filePath.replace(/\.js$/, '.d.ts');
-  writeFileSync(dTSFilePath, result);
+  writeFileSync(dTSFilePath, result, false);
   
   return true;
   
@@ -552,7 +627,7 @@ function readFileSync(filename) {
   filename = path.resolve(filename);
   
   if (writtenContentsMap.has(filename)) {
-    return writtenContentsMap.get(filename);
+    return writtenContentsMap.get(filename).content;
   }
   if (originalContentsMap.has(filename)) {
     return originalContentsMap.get(filename);
@@ -571,9 +646,13 @@ function readFileSync(filename) {
 
 
 
-function writeFileSync(filename, content) {
+function writeFileSync(filename, content, override) {
+    
+  if (override == null)
+    override = true;
     
   filename = path.resolve(filename);
+  
   
   // Need to write to the file system so that globby() can pick up the file
   if (!fs.existsSync(filename)) {
@@ -586,7 +665,7 @@ function writeFileSync(filename, content) {
     
   }
   
-  writtenContentsMap.set(filename, content);
+  writtenContentsMap.set(filename, {content: content, override: override});
 }
 
 
