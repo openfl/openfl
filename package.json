@@ -82,7 +82,6 @@
     "@apache-royale/royale-js": "^0.9.3",
     "@types/lodash": "^4.14.99",
     "@types/mocha": "^2.2.46",
-    "asconfigc": "^0.6.9",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-stage-1": "^6.24.1",
