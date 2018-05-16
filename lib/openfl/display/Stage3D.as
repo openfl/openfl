@@ -5,7 +5,7 @@ package openfl.display {
 	import openfl.display3D.Context3DProfile;
 	import openfl.display3D.Context3DRenderMode;
 	import openfl.events.EventDispatcher;
-	// import openfl.Vector;
+	import openfl.Vector;
 	
 	
 	/**
@@ -29,7 +29,7 @@ package openfl.display {
 		
 		
 		public function requestContext3D (context3DRenderMode:String = null, profile:String = null):void {}
-		public function requestContext3DMatchingProfiles (profiles:Vector.<String>):void {}
+		public function requestContext3DMatchingProfiles (profiles:openfl.Vector):void {}
 		
 		
 	}

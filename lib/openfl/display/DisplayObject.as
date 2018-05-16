@@ -319,7 +319,7 @@ package openfl.display {
 		 *                       and the shader specifies an image input that isn't
 		 *                       provided.
 		 * @throws ArgumentError When `filters` includes a ShaderFilter, a
-		 *                       ByteArray or Vector.<Number> instance as a shader
+		 *                       ByteArray or Vector instance as a shader
 		 *                       input, and the `width` and
 		 *                       `height` properties aren't specified for
 		 *                       the ShaderInput object, or the specified values

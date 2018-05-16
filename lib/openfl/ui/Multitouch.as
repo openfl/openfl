@@ -1,7 +1,7 @@
 package openfl.ui {
 	
 	
-	// import openfl.Vector;
+	import openfl.Vector;
 	
 	
 	/**
@@ -88,7 +88,7 @@ package openfl.ui {
 		 * that are not supported in the current evironment, you'll need to create
 		 * alternative event handling.
 		 */
-		public static function get supportedGestures ():Vector.<String> { return null; }
+		public static function get supportedGestures ():openfl.Vector { return null; }
 		
 		/**
 		 * Indicates whether the current environment supports gesture input, such as

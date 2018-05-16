@@ -1,7 +1,7 @@
 package openfl.display {
 	
 	
-	// import openfl.Vector;
+	import openfl.Vector;
 	
 	
 	/**
@@ -10,11 +10,11 @@ package openfl.display {
 	final public class GraphicsQuadPath implements IGraphicsData, IGraphicsPath {
 		
 		
-		public var indices:Vector.<int>;
-		public var rects:Vector.<Number>;
-		public var transforms:Vector.<Number>;
+		public var indices:openfl.Vector;
+		public var rects:openfl.Vector;
+		public var transforms:openfl.Vector;
 		
-		public function GraphicsQuadPath (rects:Vector.<Number> = null, indices:Vector.<int> = null, transforms:Vector.<Number> = null) {}
+		public function GraphicsQuadPath (rects:openfl.Vector = null, indices:openfl.Vector = null, transforms:openfl.Vector = null) {}
 		
 		
 	}

@@ -1,7 +1,7 @@
 package openfl.display {
 	
 	
-	// import openfl.Vector;
+	import openfl.Vector;
 	
 	
 	/**
@@ -28,13 +28,13 @@ package openfl.display {
 		 * The Vector of drawing commands as integers representing the path. Each
 		 * command can be one of the values defined by the GraphicsPathCommand class.
 		 */
-		public var commands:Vector.<int>;
+		public var commands:openfl.Vector;
 		
 		/**
 		 * The Vector of Numbers containing the parameters used with the drawing
 		 * commands.
 		 */
-		public var data:Vector.<Number>;
+		public var data:openfl.Vector;
 		
 		/**
 		 * Specifies the winding rule using a value defined in the
@@ -49,14 +49,14 @@ package openfl.display {
 		 * @param winding Specifies the winding rule using a value defined in the
 		 *                GraphicsPathWinding class.
 		 */
-		public function GraphicsPath (commands:Vector.<int> = null, data:Vector.<Number> = null, winding:String = null) {}
+		public function GraphicsPath (commands:openfl.Vector = null, data:openfl.Vector = null, winding:String = null) {}
 		
 		
 		public function cubicCurveTo (controlX1:Number, controlY1:Number, controlX2:Number, controlY2:Number, anchorX:Number, anchorY:Number):void {}
 		
 		/**
 		 * Adds a new "curveTo" command to the `commands` vector and new
-		 * coordinates to the `data` vector.
+		 * coordinates to the `data` Vector
 		 * 
 		 * @param controlX A number that specifies the horizontal position of the
 		 *                 control point relative to the registration point of the
@@ -76,7 +76,7 @@ package openfl.display {
 		
 		/**
 		 * Adds a new "lineTo" command to the `commands` vector and new
-		 * coordinates to the `data` vector.
+		 * coordinates to the `data` Vector
 		 * 
 		 * @param x The x coordinate of the destination point for the line.
 		 * @param y The y coordinate of the destination point for the line.
@@ -86,7 +86,7 @@ package openfl.display {
 		
 		/**
 		 * Adds a new "moveTo" command to the `commands` vector and new
-		 * coordinates to the `data` vector.
+		 * coordinates to the `data` Vector
 		 * 
 		 * @param x The x coordinate of the destination point.
 		 * @param y The y coordinate of the destination point.
@@ -96,7 +96,7 @@ package openfl.display {
 		
 		/**
 		 * Adds a new "wideLineTo" command to the `commands` vector and
-		 * new coordinates to the `data` vector.
+		 * new coordinates to the `data` Vector
 		 * 
 		 * @param x The x-coordinate of the destination point for the line.
 		 * @param y The y-coordinate of the destination point for the line.
@@ -106,7 +106,7 @@ package openfl.display {
 		
 		/**
 		 * Adds a new "wideMoveTo" command to the `commands` vector and
-		 * new coordinates to the `data` vector.
+		 * new coordinates to the `data` Vector
 		 * 
 		 * @param x The x-coordinate of the destination point.
 		 * @param y The y-coordinate of the destination point.

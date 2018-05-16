@@ -28,7 +28,7 @@ package openfl.system {
 		public function getDefinition (name:String):Object { return null; }
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) @:require(flash11_3) function getQualifiedDefinitionNames() : flash.Vector<String>;
+		// @:noCompletion @:dox(hide) @:require(flash11_3) function getQualifiedDefinitionNames() : flash.Vector;
 		// #end
 		
 		public function hasDefinition (name:String):Boolean { return false; }

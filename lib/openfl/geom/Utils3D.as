@@ -1,7 +1,7 @@
 package openfl.geom {
 	
 	
-	// import openfl.Vector;
+	import openfl.Vector;
 	
 	
 	/**
@@ -16,7 +16,7 @@ package openfl.geom {
 		
 		
 		public static function projectVector (m:Matrix3D, v:Vector3D):Vector3D { return null; }
-		public static function projectVectors (m:Matrix3D, verts:Vector.<Number>, projectedVerts:Vector.<Number>, uvts:Vector.<Number>):void {}
+		public static function projectVectors (m:Matrix3D, verts:openfl.Vector, projectedVerts:openfl.Vector, uvts:openfl.Vector):void {}
 		
 		
 	}

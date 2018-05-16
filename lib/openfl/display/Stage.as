@@ -1,6 +1,6 @@
 package openfl.display {
-
-
+	
+	
 	// import lime.app.Application in LimeApplication;
 	// import lime.app.IModule;
 	// import lime.app.Preloader;
@@ -16,8 +16,9 @@ package openfl.display {
 	// import lime.ui.Touch;
 	// import lime.ui.Window;
 	import openfl.geom.Rectangle;
-
-
+	import openfl.Vector;
+	
+	
 	/**
 	 * @externs
 	 * The Stage class represents the main drawing area.
@@ -453,7 +454,7 @@ package openfl.display {
 		// @:noCompletion @:dox(hide) @:require(flash11) public var softKeyboardRect (default, null):Rectangle;
 		// #end
 		
-		// public var stage3Ds (default, null):Vector<Stage3D>;
+		public function get stage3Ds ():openfl.Vector { return null; }
 		
 		/**
 		 * Specifies whether or not objects display a glowing border when they have
@@ -516,7 +517,7 @@ package openfl.display {
 		public function get stageHeight ():int { return 0; }
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
+		// @:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):openfl.Vector<flash.media.StageVideo>;
 		// #end
 		
 		/**

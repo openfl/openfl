@@ -4,7 +4,7 @@ package openfl.display {
 	import openfl.geom.Matrix;
 	import openfl.geom.Point;
 	import openfl.geom.Rectangle;
-	// import openfl.Vector;
+	import openfl.Vector;
 
 
 	/**
@@ -249,7 +249,7 @@ package openfl.display {
 		 * sub-paths are rendered during this operation. 
 		 * 
 		 */
-		public function drawGraphicsData (graphicsData:Vector.<IGraphicsData>):void {}
+		public function drawGraphicsData (graphicsData:openfl.Vector):void {}
 		
 		
 		/**
@@ -297,7 +297,7 @@ package openfl.display {
 		 * @param winding Specifies the winding rule using a value defined in the
 		 *                GraphicsPathWinding class.
 		 */
-		public function drawPath (commands:Vector.<int>, data:Vector.<Number>, winding:String = null):void {}
+		public function drawPath (commands:openfl.Vector, data:openfl.Vector, winding:String = null):void {}
 		
 		
 		/**
@@ -329,7 +329,7 @@ package openfl.display {
 		 *                   which is six times the draw count in size will use full
 		 *                   matrix [ a, b, c, d, tx, ty, ... ] values per draw.
 		 */
-		public function drawQuads (rects:Vector.<Number>, indices:Vector.<int> = null, transforms:Vector.<Number> = null):void {}
+		public function drawQuads (rects:openfl.Vector, indices:openfl.Vector = null, transforms:openfl.Vector = null):void {}
 		
 		
 		/**
@@ -402,7 +402,7 @@ package openfl.display {
 		 *                parameter can be set to any value defined by the
 		 *                TriangleCulling class.
 		 */
-		public function drawTriangles (vertices:Vector.<Number>, indices:Vector.<int> = null, uvtData:Vector.<Number> = null, culling:String = null):void {}
+		public function drawTriangles (vertices:openfl.Vector, indices:openfl.Vector = null, uvtData:openfl.Vector = null, culling:String = null):void {}
 		
 		
 		/**
@@ -680,7 +680,7 @@ package openfl.display {
 		public function moveTo (x:Number, y:Number):void {}
 		
 		
-		public function readGraphicsData (recurse:Boolean = true):Vector.<IGraphicsData> { return null; }
+		public function readGraphicsData (recurse:Boolean = true):openfl.Vector { return null; }
 		
 		
 	}
