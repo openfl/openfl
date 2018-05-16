@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.0.2",
-	"releasenote": "Improved SWF asset support, minor fixes and improvements",
+	"version": "8.1.0",
+	"releasenote": "Added initial support for AS3 in NPM builds, Cairo mask fix",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
