@@ -13,7 +13,7 @@ module.exports = {
 			commonjs: 'Howler',
 			commonjs2: 'Howler',
 			amd: 'Howler',
-			root: 'Howler'
+			root: 'window'
 		},
 		pako: {
 			commonjs: 'pako',
