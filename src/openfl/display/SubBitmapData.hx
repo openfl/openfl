@@ -7,6 +7,7 @@ import js.Browser;
 import js.html.CanvasElement;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.ColorTransform;
+import openfl.geom.Rectangle;
 import openfl.display.BitmapData.TextureRegionResult;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.GLRenderContext;
@@ -49,7 +50,13 @@ class SubBitmapData extends BitmapData {
 			h = tmp;
 		}
 
-		super(w, h, false, 0);
+		// we don't want BitmapData constructor to create a lime Image of given width/height
+		// so we supply zeroes as dimensions and then initialize the fields directly
+		super(0, 0, false, 0);
+		this.width = w;
+		this.height = h;
+		rect = new Rectangle (0, 0, w, h);
+		__isValid = true;
 		readable = false;
 		image = null;
 
