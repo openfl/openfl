@@ -26,12 +26,16 @@ package openfl.net {
 		
 		protected function get_connected ():Boolean { return false; }
 		
-		public var endian:String;
+		public function get endian ():String { return null; }
+		public function set endian (value:String):void {}
+		// public var endian:String;
 		
 		protected function get_endian ():String { return null; }
 		protected function set_endian (value:String):String { return null; }
 		
-		public var objectEncoding:String;
+		public function get objectEncoding ():String { return null; }
+		public function set objectEncoding (value:String):void {}
+		// public var objectEncoding:String;
 		public var timeout:uint;
 		
 		public function Socket (host:String = null, port:int = 0) {}

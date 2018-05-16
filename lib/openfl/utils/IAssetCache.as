@@ -8,10 +8,8 @@ package openfl.utils {
 	
 	public interface IAssetCache {
 		
-		// public var enabled:Boolean;
-		
-		// protected function get_enabled ():Bool;
-		// protected function set_enabled (value:Bool):Bool;
+		function get enabled ():Boolean;
+		function set enabled (value:Boolean):void;
 		
 		function clear (prefix:String = null):void;
 		function getBitmapData (id:String):BitmapData;

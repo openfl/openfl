@@ -13,16 +13,11 @@ package openfl.utils {
 	 */
 	public interface IDataOutput {
 		
-		// #if (flash && !display)
-		// var endian:Endian;
-		// #else
-		// var endian:String;
+		function get endian ():String;
+		function set endian (value:String):void;
 		
-		// function get_endian ():String;
-		// function set_endian (value:String):String;
-		// #end
-		
-		// var objectEncoding:String;
+		function get objectEncoding ():String;
+		function set objectEncoding (value:String):void;
 		
 		function writeBoolean (value:Boolean):void;
 		function writeByte (value:int):void;

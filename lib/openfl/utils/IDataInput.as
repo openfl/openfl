@@ -13,24 +13,13 @@ package openfl.utils {
 	 */
 	public interface IDataInput {
 		
-		// #if (flash && !display)
-		// var bytesAvailable (default, null):UInt;
-		// #else
 		function get bytesAvailable ():uint;
 		
-		// function get_bytesAvailable ():uint;
-		// #end
+		function get endian ():String;
+		function set endian (value:String):void;
 		
-		// #if (flash && !display)
-		// var endian:Endian;
-		// #else
-		// var endian:String;
-		
-		// function get_endian ():String;
-		// function set_endian (value:String):String;
-		// #end
-		
-		// var objectEncoding:ObjectEncoding;
+		function get objectEncoding ():String;
+		function set objectEncoding (value:String):void;
 		
 		function readBoolean ():Boolean;
 		function readByte ():int;

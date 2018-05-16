@@ -43,7 +43,9 @@ package openfl.utils {
 		 * Changes or reads the byte order for the data; either
 		 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 		 */
-		public var endian:String;
+		public function get endian ():String { return null; }
+		public function set endian (value:String):void {}
+		// public var endian:String;
 		protected function get_endian ():String { return null; }
 		protected function set_endian (value:String):String { return null; }
 		
@@ -63,7 +65,9 @@ package openfl.utils {
 		 * ActionScript 1.0 format should be used when writing to, or reading from, a
 		 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 		 */
-		public var objectEncoding:String;
+		public function get objectEncoding ():String { return null; }
+		public function set objectEncoding (value:String):void {}
+		// public var objectEncoding:String;
 		
 		/**
 		 * Moves, or returns the current position, in bytes, of the file pointer into

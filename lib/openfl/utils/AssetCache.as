@@ -12,7 +12,9 @@ package openfl.utils {
 	public class AssetCache implements IAssetCache {
 		
 		
-		public var enabled:Boolean;
+		public function get enabled ():Boolean { return false; }
+		public function set enabled (value:Boolean):void {}
+		// public var enabled:Boolean;
 		
 		protected function get_enabled ():Boolean { return false; }
 		protected function set_enabled (value:Boolean):Boolean { return false; }

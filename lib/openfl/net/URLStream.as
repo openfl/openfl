@@ -21,14 +21,18 @@ package openfl.net {
 		
 		//@:require(flash11_4) public var diskCacheEnabled (default, null):Bool;
 		
-		public var endian:String;
+		public function get endian ():String { return null; }
+		public function set endian (value:String):void {}
+		// public var endian:String;
 		
 		protected function get_endian ():String { return null; }
 		protected function set_endian (value:String):String { return null; }
 		
 		//@:require(flash11_4) public var length (default, null):Float;
 		
-		public var objectEncoding:String;
+		public function get objectEncoding ():String { return null; }
+		public function set objectEncoding (value:String):void {}
+		// public var objectEncoding:String;
 		//@:require(flash11_4) public var position:Float;
 		
 		public function new ():void {}
