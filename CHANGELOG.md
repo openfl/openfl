@@ -1,4 +1,5 @@
 8.1.0 (05/16/2018)
+------------------
 
 * Added (initial) support for ActionScript 3.0 as a source language on NPM
 * Fixed inconsistencies in mask shape rendering on the Cairo renderer
