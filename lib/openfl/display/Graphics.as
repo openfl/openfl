@@ -147,7 +147,7 @@ package openfl.display {
 		 *                            a `focalPointRatio` set to 0.75:
 		 * @throws ArgumentError If the `type` parameter is not valid.
 		 */
-		public function beginGradientFill (type:GradientType, colors:Array, alphas:Array, ratios:Array, matrix:Matrix = null, spreadMethod:String = null, interpolationMethod:String = null, focalPointRatio:Number = 0):void {}
+		public function beginGradientFill (type:String, colors:Array, alphas:Array, ratios:Array, matrix:Matrix = null, spreadMethod:String = null, interpolationMethod:String = null, focalPointRatio:Number = 0):void {}
 		
 		
 		public function beginShaderFill (shader:Shader, matrix:Matrix = null):void {}
