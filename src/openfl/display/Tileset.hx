@@ -62,7 +62,7 @@ class Tileset {
 		return __data.length - 1;
 		
 	}
-	
+
 
 	public function addTileData (tileData: TileData):Int {
 
@@ -146,7 +146,7 @@ class Tileset {
 #end
 
 @:allow(openfl.display.Tileset) class TileData {
-
+	
 
 	public var height:Int;
 	public var width:Int;
@@ -155,26 +155,26 @@ class Tileset {
 	public var offsetX:Int;
 	public var offsetY:Int;
 	public var rotated:Bool;
-
+	
 	public var __bitmapData:BitmapData;
 	public var __uvHeight:Float;
 	public var __uvWidth:Float;
 	public var __uvX:Float;
 	public var __uvY:Float;
-
-
+	
+	
 	public function new (rect:Rectangle, offsetX:Int, offsetY:Int, rotated:Bool) {
-
+		
 		if (rect != null) {
 			setTo(rect.x, rect.y, rect.width, rect.height, offsetX, offsetY, rotated);
 		} else {
 			setTo(0, 0, 0, 0, offsetY, offsetY, rotated);
 		}
-
+		
 	}
-
+		
 	public function setTo(rectX:Float, rectY:Float, rectWidth:Float, rectHeight:Float, offsetX:Int, offsetY:Int, rotated:Bool):TileData {
-
+		
 		x = Std.int (rectX);
 		y = Std.int (rectY);
 		width = Std.int (rectWidth);
