@@ -589,6 +589,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
+		dispatchPendingMouseMove ();
+		
 		var type = switch (button) {
 			
 			case 1: MouseEvent.MIDDLE_MOUSE_DOWN;
@@ -601,15 +603,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 	}
 	
+	var hasPendingMouseMove = false;
+	var pendingMouseMoveX:Int;
+	var pendingMouseMoveY:Int;
 	
 	public function onMouseMove (window:Window, x:Float, y:Float):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+		hasPendingMouseMove = true;
+		pendingMouseMoveX = Std.int (x * window.scale);
+		pendingMouseMoveY = Std.int (y * window.scale);
 		
 	}
 	
+	function dispatchPendingMouseMove () {
+		
+		if (hasPendingMouseMove) {
+			__onMouse (MouseEvent.MOUSE_MOVE, pendingMouseMoveX, pendingMouseMoveY, 0);
+			hasPendingMouseMove = false;
+		}
+		
+	}
 	
 	public function onMouseMoveRelative (window:Window, x:Float, y:Float):Void {
 		
@@ -621,6 +636,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onMouseUp (window:Window, x:Float, y:Float, button:Int):Void {
 		
 		if (this.window == null || this.window != window) return;
+		
+		dispatchPendingMouseMove ();
 		
 		var type = switch (button) {
 			
@@ -644,6 +661,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float):Void {
 		
 		if (this.window == null || this.window != window) return;
+		
+		dispatchPendingMouseMove ();
 		
 		__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
 		
@@ -997,6 +1016,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__deltaTime = deltaTime;
 		
+		dispatchPendingMouseMove ();
+		
 	}
 	
 	
@@ -1284,6 +1305,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	private function __onKey (type:String, keyCode:KeyCode, modifier:KeyModifier):Void {
+		
+		dispatchPendingMouseMove ();
 		
 		MouseEvent.__altKey = modifier.altKey;
 		MouseEvent.__commandKey = modifier.metaKey;
