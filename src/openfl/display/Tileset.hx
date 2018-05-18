@@ -18,7 +18,6 @@ class Tileset {
 	
 	
 	public var bitmapData (get, set):BitmapData;
-	public var data (get, set):Array<TileData>;
 	
 	private var __bitmapData:BitmapData;
 	private var __data:Array<TileData>;
@@ -63,7 +62,7 @@ class Tileset {
 		return __data.length - 1;
 		
 	}
-
+	
 
 	public function addTileData (tileData: TileData):Int {
 
@@ -137,21 +136,6 @@ class Tileset {
 		
 	}
 
-
-	private function get_data (): Array<TileData> {
-
-		return __data;
-
-	}
-
-
-	private function set_data (value:Array<TileData>): Array<TileData> {
-
-		__data = value;
-
-		return __data;
-
-	}
 	
 }
 
