@@ -88,26 +88,55 @@ class Tile implements ITile {
 	
 	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0) {
-		
-		__id = id;
-		
 		__matrix = new Matrix ();
+		setTo(id, x, y, scaleX, scaleY, rotation, originX, originY);
+	}
+
+	public function clean(): Void {
+		__colorTransform = null;
+		__colorTransformDirty = false;
+		__id = null;
+		__matrix.identity();
+		__originX = 0;
+		__originY = 0;
+		__rect = null;
+		__rotation = null;
+		__rotationCosine = 0;
+		__rotationSine = 0;
+		__shader = null;
+		__shaderDirty = false;
+		__sourceDirty = false;
+		__tileset = null;
+		__transformDirty = false;
+		__alpha = 1;
+		__alphaDirty = false;
+		__visible = false;
+		__visibleDirty = false;
+
+		parent = null;
+		data = null;
+	}
+
+	public function setTo(id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0): Tile {
+		__id = id;
+
 		if (x != 0) this.x = x;
 		if (y != 0) this.y = y;
 		if (scaleX != 1) this.scaleX = scaleX;
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
-		
+
 		__originX = originX;
 		__originY = originY;
 		__alpha = 1;
 		__visible = true;
-		
+
 		__alphaDirty = true;
 		__sourceDirty = true;
 		__transformDirty = true;
 		__visibleDirty = true;
-		
+
+		return this;
 	}
 	
 	

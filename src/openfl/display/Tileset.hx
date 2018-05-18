@@ -18,6 +18,7 @@ class Tileset {
 	
 	
 	public var bitmapData (get, set):BitmapData;
+	public var data (get, set):Array<TileData>;
 	
 	private var __bitmapData:BitmapData;
 	private var __data:Array<TileData>;
@@ -62,8 +63,20 @@ class Tileset {
 		return __data.length - 1;
 		
 	}
-	
-	
+
+
+	public function addTileData (tileData: TileData):Int {
+
+		if (tileData == null) return -1;
+
+		tileData.__update (__bitmapData);
+		__data.push (tileData);
+
+		return __data.length - 1;
+
+	}
+
+
 	public function clone ():Tileset {
 		
 		var tileset = new Tileset (__bitmapData, null);
@@ -123,7 +136,22 @@ class Tileset {
 		return value;
 		
 	}
-	
+
+
+	private function get_data (): Array<TileData> {
+
+		return __data;
+
+	}
+
+
+	private function set_data (value:Array<TileData>): Array<TileData> {
+
+		__data = value;
+
+		return __data;
+
+	}
 	
 }
 
@@ -133,10 +161,9 @@ class Tileset {
 @:noDebug
 #end
 
+@:allow(openfl.display.Tileset) class TileData {
 
-@:allow(openfl.display.Tileset) @:dox(hide) private class TileData {
-	
-	
+
 	public var height:Int;
 	public var width:Int;
 	public var x:Int;
@@ -144,44 +171,55 @@ class Tileset {
 	public var offsetX:Int;
 	public var offsetY:Int;
 	public var rotated:Bool;
-	
+
 	public var __bitmapData:BitmapData;
 	public var __uvHeight:Float;
 	public var __uvWidth:Float;
 	public var __uvX:Float;
 	public var __uvY:Float;
-	
-	
+
+
 	public function new (rect:Rectangle, offsetX:Int, offsetY:Int, rotated:Bool) {
-		
-		x = Std.int (rect.x);
-		y = Std.int (rect.y);
-		width = Std.int (rect.width);
-		height = Std.int (rect.height);
-		
+
+		if (rect != null) {
+			setTo(rect.x, rect.y, rect.width, rect.height, offsetX, offsetY, rotated);
+		} else {
+			setTo(0, 0, 0, 0, offsetY, offsetY, rotated);
+		}
+
+	}
+
+	public function setTo(rectX:Float, rectY:Float, rectWidth:Float, rectHeight:Float, offsetX:Int, offsetY:Int, rotated:Bool):TileData {
+
+		x = Std.int (rectX);
+		y = Std.int (rectY);
+		width = Std.int (rectWidth);
+		height = Std.int (rectHeight);
+
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.rotated = rotated;
+
+		return this;
 	}
-	
-	
+
 	private function __update (bitmapData:BitmapData):Void {
-		
+
 		if (bitmapData != null) {
-			
+
 			__uvX = x / bitmapData.width;
 			__uvY = y / bitmapData.height;
 			__uvWidth = (x + width) / bitmapData.width;
 			__uvHeight = (y + height) / bitmapData.height;
-			
+
 			#if flash
 			__bitmapData = new BitmapData (width, height);
 			__bitmapData.copyPixels (bitmapData, new Rectangle (x, y, width, height), new Point ());
 			#end
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 }
