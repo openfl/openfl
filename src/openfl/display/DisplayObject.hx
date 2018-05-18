@@ -1371,6 +1371,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 							var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 							__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+							__cacheBitmap.__bitmapData = __cacheBitmapData;
 							
 						}
 						
@@ -1596,9 +1597,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 						}
 						
+						if (__cacheBitmapData != bitmap) {
+							
+							// TODO: Fix issue with swapping __cacheBitmap.__bitmapData
+							__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
+							
+							// cacheBitmap = __cacheBitmapData;
+							// __cacheBitmapData = bitmap;
+							// __cacheBitmapData2 = cacheBitmap;
+							// __cacheBitmap.__bitmapData = __cacheBitmapData;
+							
+						}
+						
 						Rectangle.__pool.release (sourceRect);
-						__cacheBitmap.__bitmapData = bitmap;
-						__cacheBitmap.__imageVersion = bitmap.__textureVersion;
+						__cacheBitmap.__imageVersion = __cacheBitmapData.__textureVersion;
 						
 					}
 					
