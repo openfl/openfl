@@ -1,3 +1,9 @@
+8.1.1 (05/17/2018)
+------------------
+
+* Fixed minor issues with some ActionScript 3.0 externs
+
+
 8.1.0 (05/16/2018)
 ------------------
 
