@@ -795,7 +795,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__wasFullscreen = true;
 			if (__displayState == NORMAL) __displayState = FULL_SCREEN_INTERACTIVE;
-			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
+			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 			
 		}
 		
@@ -845,7 +845,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__wasFullscreen = false;
 			__displayState = NORMAL;
-			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
+			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 			
 		}
 		
