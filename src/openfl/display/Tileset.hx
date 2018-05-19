@@ -133,6 +133,7 @@ class Tileset {
 @:noDebug
 #end
 
+
 @:allow(openfl.display.Tileset) class TileData {
 	
 	
