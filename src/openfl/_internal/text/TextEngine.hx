@@ -1075,8 +1075,7 @@ class TextEngine {
 			}
 		}
 		
-		inline function actuallyPlaceFormattedText (endIndex:Int):Void {
-			// pft and blw need to call each other but they're both inlined, so this is a workaround (sorry)
+		inline function placeFormattedText (endIndex:Int):Void {
 			
 			if (endIndex < formatRange.end) {
 				// don't worry about placing multiple formats if the space or break happens first
@@ -1202,7 +1201,7 @@ class TextEngine {
 					
 				}
 				
-				actuallyPlaceFormattedText (textIndex + i);
+				placeFormattedText (textIndex + i);
 				
 				alignBaseline();
 				
@@ -1216,7 +1215,7 @@ class TextEngine {
 			
 		}
 		
-		inline function placeFormattedText (endIndex:Int):Void {
+		inline function placeText (endIndex:Int):Void {
 			
 			if (width >= 4 && wordWrap) {
 				
@@ -1224,7 +1223,7 @@ class TextEngine {
 				
 			}
 			
-			actuallyPlaceFormattedText (endIndex);
+			placeFormattedText (endIndex);
 			
 		}
 		
@@ -1242,7 +1241,7 @@ class TextEngine {
 				if (textIndex <= breakIndex) {
 					
 					setFormattedPositions (breakIndex);
-					placeFormattedText (breakIndex);
+					placeText (breakIndex);
 					
 					layoutGroup = null;
 					
@@ -1432,7 +1431,7 @@ class TextEngine {
 							
 						}
 						
-						placeFormattedText (endIndex);
+						placeText (endIndex);
 						
 						wrap = false;
 						
@@ -1456,7 +1455,7 @@ class TextEngine {
 							
 						} else if (layoutGroup == null || lineFormat.align == JUSTIFY) {
 							
-							placeFormattedText (endIndex);
+							placeText (endIndex);
 							
 						} else {
 							
@@ -1519,7 +1518,7 @@ class TextEngine {
 			} else {
 				// if there are no line breaks or spaces to deal with next, place all remaining text
 				setFormattedPositions (text.length);
-				placeFormattedText (text.length);
+				placeText (text.length);
 				
 				alignBaseline ();
 				
