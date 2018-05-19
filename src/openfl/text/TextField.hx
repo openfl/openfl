@@ -2863,7 +2863,7 @@ class TextField extends InteractiveObject {
 					
 				}
 			
-			case LEFT:
+			case LEFT if (selectable):
 				
 				if (modifier.metaKey) {
 					
@@ -2899,7 +2899,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case RIGHT:
+			case RIGHT if (selectable):
 				
 				if (modifier.metaKey) {
 					
@@ -2935,7 +2935,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case DOWN:
+			case DOWN if (selectable):
 				
 				if (!__textEngine.multiline) return;
 				
@@ -2963,7 +2963,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case UP:
+			case UP if (selectable):
 				
 				if (!__textEngine.multiline) return;
 				
@@ -2991,13 +2991,13 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case HOME:
+			case HOME if (selectable):
 				
 				__caretBeginningOfLine ();
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case END:
+			case END if (selectable):
 				
 				__caretEndOfLine ();
 				__stopCursorTimer ();
@@ -3046,7 +3046,7 @@ class TextField extends InteractiveObject {
 				}
 			#end
 			
-			case A:
+			case A if (selectable):
 				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
