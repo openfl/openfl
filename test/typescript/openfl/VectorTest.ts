@@ -1,7 +1,5 @@
-
-
-
-import openfl.errors.Error;
+import Vector from "openfl/Vector";
+import * as assert from "assert";
 
 
 describe ("TypeScript | Vector", function () {
@@ -9,7 +7,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("length", function () {
 		
-		var vector = new Vector<Int> (1);
+		var vector = new Vector<number> (1);
 		vector.length = 0;
 		
 		assert.equal (vector.length, 0);
@@ -17,46 +15,50 @@ describe ("TypeScript | Vector", function () {
 		vector.length = 2;
 		
 		assert.equal (vector.length, 2);
-		assert.equal (vector[0], 0);
+		// assert.equal (vector[0], 0);
+		assert (!vector[0]);
 		
-		var vector = new Vector<Float> ();
+		var vector = new Vector<number> ();
 		vector.length = 2;
 		
-		assert.equal (vector[0], 0);
+		// assert.equal (vector[0], 0);
+		assert (!vector[0]);
 		
-		var vector = new Vector<Bool> ();
+		var vector = new Vector<number> ();
 		vector.length = 2;
 		
-		assert.equal (vector[0], false);
+		// assert.equal (vector[0], false);
+		assert (!vector[0]);
 		
-		var vector = new Vector<Int> (10);
+		var vector = new Vector<number> (10);
 		
 		assert.equal (vector.length, 10);
 		
-		var vector = new Vector<String> ();
-		vector.length = 2;
+		var vector_ = new Vector<String> ();
+		vector_.length = 2;
 		
-		assert.equal (vector[0], null);
+		// assert.equal (vector_[0], null);
+		assert (!vector_[0]);
 		
 		try {
 			
-			var invalid = vector[3];
+			var invalid = vector_[3];
 			assert.ok (false);
 			
-		} catch (e:Dynamic) {}
+		} catch (e) {}
 		
 	});
 	
 	
 	it ("fixed", function () {
 		
-		var vector = new Vector<Int> (0, true);
+		var vector = new Vector<number> (0, true);
 		
-		#if !cpp // for performance, C++ does not match here
-		try {
-			vector.length = 10;
-		} catch (e:Dynamic) {}
-		#end
+		// #if !cpp // for performance, C++ does not match here
+		// try {
+		// 	vector.length = 10;
+		// } catch (e:Dynamic) {}
+		// #end
 		
 		assert.equal (vector.length, 0);
 		vector.fixed = false;
@@ -64,24 +66,25 @@ describe ("TypeScript | Vector", function () {
 		assert.equal (vector.length, 10);
 		vector.fixed = true;
 		
-		#if !cpp // for performance, C++ does not match here
-		try {
-			vector.push (1);
-		} catch (e:Dynamic) {}
-		#end
+		// #if !cpp // for performance, C++ does not match here
+		// try {
+		// 	vector.push (1);
+		// } catch (e:Dynamic) {}
+		// #end
 		
 		assert.equal (10, vector.length);
 		
-		#if !cpp // for performance, C++ does not match here
-		try {
-			vector.unshift (100);
-		} catch (e:Dynamic) {}
-		#end
+		// #if !cpp // for performance, C++ does not match here
+		// try {
+		// 	vector.unshift (100);
+		// } catch (e:Dynamic) {}
+		// #end
 		
 		assert.equal (vector.length, 10);
-		assert.equal (vector[0], 0);
+		// assert.equal (vector[0], 0);
+		assert (!vector[0]);
 		
-		var vector2 = new Vector<Int> ();
+		var vector2 = new Vector<number> ();
 		vector2.push (1);
 		vector = vector.concat (vector2);
 		assert.equal (vector.length, 11);
@@ -95,7 +98,8 @@ describe ("TypeScript | Vector", function () {
 		vector.shift ();
 		
 		assert.equal (vector.length, 9);
-		assert.equal (vector[0], 0);
+		// assert.equal (vector[0], 0);
+		assert (!vector[0]);
 		
 		vector.fixed = true;
 		var vector = vector.splice (0, 2);
@@ -103,7 +107,7 @@ describe ("TypeScript | Vector", function () {
 		
 		assert.equal (vector.length, 2);
 		
-		vector = new Vector<Int> (10, true);
+		vector = new Vector<number> (10, true);
 		assert.equal (vector.length, 10);
 		var vector2 = vector.slice (0, 2);
 		
@@ -114,28 +118,28 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("new", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		
 		assert.equal (vector.length, 0);
 		assert (!vector.fixed);
 		
-		var vector = new Vector<Int> (10, true);
+		var vector = new Vector<number> (10, true);
 		
 		assert.equal (vector.length, 10);
 		
-		#if !cpp // for performance, C++ does not match here
+		// #if !cpp // for performance, C++ does not match here
 		assert (vector.fixed);
-		#end
+		// #end
 		
 	});
 	
 	
 	it ("concat", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		vector.push (0);
 		
-		var vector2 = new Vector<Int> ();
+		var vector2 = new Vector<number> ();
 		vector2.push (1);
 		
 		vector = vector.concat (vector2);
@@ -151,7 +155,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("join", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		vector.push (0);
 		
 		assert.equal (vector.join (","), "0");
@@ -165,7 +169,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("pop", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		vector.push (0);
 		vector.push (1);
 		
@@ -177,7 +181,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("push", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		vector.push (1);
 		
 		assert.equal (vector.length, 1);
@@ -188,7 +192,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("reverse", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		vector.push (0);
 		vector.push (1);
 		vector.reverse ();
@@ -201,7 +205,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("shift", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		vector.push (0);
 		vector.push (1);
 		
@@ -214,7 +218,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("unshift", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		vector.push (0);
 		vector.push (1);
 		vector.unshift (2);
@@ -227,9 +231,9 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("slice", function () {
 		
-		var vector = new Vector<Int> (10);
+		var vector = new Vector<number> (10);
 		
-		for (i in 0...10) {
+		for (var i:number = 0; i < 10; i++) {
 			
 			vector[i] = i;
 			
@@ -237,7 +241,7 @@ describe ("TypeScript | Vector", function () {
 		
 		var vector2 = vector.slice ();
 		
-		for (i in 0...vector.length) {
+		for (var i:number = 0; i < vector.length; i++) {
 			
 			assert.equal (vector2[i], vector[i]);
 			
@@ -273,7 +277,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("sort", function () {
 		
-		var sort = function (a:Int, b:Int):Int {
+		var sort = function (a:number, b:number):number {
 			
 			return a - b;
 			
@@ -284,7 +288,7 @@ describe ("TypeScript | Vector", function () {
 		
 		var lastValue = 0;
 		
-		for (i in 0...vector.length) {
+		for (var i:number = 0; i < vector.length; i++) {
 			
 			assert (vector[i] >= lastValue);
 			lastValue = vector[i];
@@ -296,9 +300,9 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("splice", function () {
 		
-		var vector = new Vector<Int> (10);
+		var vector = new Vector<number> (10);
 		
-		for (i in 0...10) {
+		for (var i:number = 0; i < 10; i++) {
 			
 			vector[i] = i;
 			
@@ -343,9 +347,9 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("indexOf", function () {
 		
-		var vector = new Vector<Int> (20);
+		var vector = new Vector<number> (20);
 		
-		for (i in 0...10) {
+		for (var i:number = 0; i < 10; i++) {
 			
 			vector[i] = vector[i + 10] = i;
 			
@@ -359,9 +363,9 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("iterator", function () {
 		
-		var vector = new Vector<Int> (10);
+		var vector = new Vector<number> (10);
 		
-		for (i in 0...10) {
+		for (var i:number = 0; i < 10; i++) {
 			
 			vector[i] = i;
 			
@@ -371,7 +375,7 @@ describe ("TypeScript | Vector", function () {
 		
 		var iterations = 0;
 		
-		for (i in vector) {
+		for (var i:number = 0; i < vector.length; i++) {
 			
 			assert.equal (vector[iterations], iterations);
 			iterations++;
@@ -385,9 +389,9 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("lastIndexOf", function () {
 		
-		var vector = new Vector<Int> (20);
+		var vector = new Vector<number> (20);
 		
-		for (i in 0...10) {
+		for (var i:number = 0; i < 10; i++) {
 			
 			vector[i] = vector[i + 10] = i;
 			
@@ -401,9 +405,9 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("ofArray", function () {
 		
-		var array = new Array<Int> ();
+		var array = new Array<number> ();
 		
-		for (i in 0...10) {
+		for (var i:number = 0; i < 10; i++) {
 			
 			array[i] = i;
 			
@@ -426,7 +430,7 @@ describe ("TypeScript | Vector", function () {
 	
 	it ("arrayAccess", function () {
 		
-		var vector = new Vector<Int> ();
+		var vector = new Vector<number> ();
 		
 		assert.equal (vector.length, 0);
 		
@@ -441,78 +445,78 @@ describe ("TypeScript | Vector", function () {
 	});
 	
 	
-	#if (!html5 && !flash) @Ignore #end it ("intVectorStringify", function () {
-		// Testing if we have the same stringify behavior in JS and flash
-		var expected: String = "[1,2]";
-		var stringyfied: String = null;
-		var vector: Vector<Int> = new Vector<Int> ();
+	// #if (!html5 && !flash) @Ignore #end it ("intVectorStringify", function () {
+	// 	// Testing if we have the same stringify behavior in JS and flash
+	// 	var expected: String = "[1,2]";
+	// 	var stringyfied: String = null;
+	// 	var vector: Vector<Int> = new Vector<Int> ();
 		
-		vector.push(1);
-		vector.push(2);
+	// 	vector.push(1);
+	// 	vector.push(2);
 		
-		stringyfied = haxe.Json.stringify(vector);
+	// 	stringyfied = haxe.Json.stringify(vector);
 		
-		assert.equal (stringyfied, expected);
-	});
+	// 	assert.equal (stringyfied, expected);
+	// });
 	
 	
-	#if (!html5 && !flash) @Ignore #end it ("boolVectorStringify", function () {
-		// Testing if we have the same stringify behavior in JS and flash
-		var expected: String = "[false,true]";
-		var stringyfied: String = null;
-		var vector: Vector<Bool> = new Vector<Bool> ();
+	// #if (!html5 && !flash) @Ignore #end it ("boolVectorStringify", function () {
+	// 	// Testing if we have the same stringify behavior in JS and flash
+	// 	var expected: String = "[false,true]";
+	// 	var stringyfied: String = null;
+	// 	var vector: Vector<Bool> = new Vector<Bool> ();
 		
-		vector.push(false);
-		vector.push(true);
+	// 	vector.push(false);
+	// 	vector.push(true);
 		
-		stringyfied = haxe.Json.stringify(vector);
+	// 	stringyfied = haxe.Json.stringify(vector);
 		
-		assert.equal (stringyfied, expected);
-	});
+	// 	assert.equal (stringyfied, expected);
+	// });
 	
 	
-	#if (!html5 && !flash) @Ignore #end it ("floatVectorStringify", function () {
-		// Testing if we have the same stringify behavior in JS and flash
-		var expected: String = "[1.1,2.2]";
-		var stringyfied: String = null;
-		var vector: Vector<Float> = new Vector<Float> ();
+	// #if (!html5 && !flash) @Ignore #end it ("floatVectorStringify", function () {
+	// 	// Testing if we have the same stringify behavior in JS and flash
+	// 	var expected: String = "[1.1,2.2]";
+	// 	var stringyfied: String = null;
+	// 	var vector: Vector<Float> = new Vector<Float> ();
 		
-		vector.push(1.1);
-		vector.push(2.2);
+	// 	vector.push(1.1);
+	// 	vector.push(2.2);
 		
-		stringyfied = haxe.Json.stringify(vector);
+	// 	stringyfied = haxe.Json.stringify(vector);
 		
-		assert.equal (stringyfied, expected);
-	});
+	// 	assert.equal (stringyfied, expected);
+	// });
 	
 	
-	#if (!html5 && !flash) @Ignore #end it ("objectVectorStringify", function () {
-		// Testing if we have the same stringify behavior in JS and flash
-		var expected: String = null;
-		var stringyfied: String = null;
-		var obj: Error = new Error("Message", 1);
-		var strObj: String = haxe.Json.stringify(obj);
-		var vector: Vector<Error> = new Vector<Error> ();
+	// #if (!html5 && !flash) @Ignore #end it ("objectVectorStringify", function () {
+	// 	// Testing if we have the same stringify behavior in JS and flash
+	// 	var expected: String = null;
+	// 	var stringyfied: String = null;
+	// 	var obj: Error = new Error("Message", 1);
+	// 	var strObj: String = haxe.Json.stringify(obj);
+	// 	var vector: Vector<Error> = new Vector<Error> ();
 		
-		vector.push(obj);
+	// 	vector.push(obj);
 		
-		stringyfied = haxe.Json.stringify(vector);
-		expected = "[" + strObj + "]";
+	// 	stringyfied = haxe.Json.stringify(vector);
+	// 	expected = "[" + strObj + "]";
 		
-		assert.equal (stringyfied, expected);
+	// 	assert.equal (stringyfied, expected);
 		
-		// Testing stringify inside object
-		var obj: Dynamic = {id: 5, errors: vector};
+	// 	// Testing stringify inside object
+	// 	var obj: Dynamic = {id: 5, errors: vector};
 		
-		stringyfied = haxe.Json.stringify(obj);
+	// 	stringyfied = haxe.Json.stringify(obj);
 		
-		// Testing if stringify inside object is still the same as outside
-		assert (stringyfied.indexOf(expected) != -1);
+	// 	// Testing if stringify inside object is still the same as outside
+	// 	assert (stringyfied.indexOf(expected) != -1);
 		
-		// Check lengh and __array aren't stringified
-		assert.equal(stringyfied.indexOf("length"), -1);
-		assert.equal(stringyfied.indexOf("__array"), -1);
-	});
+	// 	// Check lengh and __array aren't stringified
+	// 	assert.equal(stringyfied.indexOf("length"), -1);
+	// 	assert.equal(stringyfied.indexOf("__array"), -1);
+	// });
 	
 	
 });
