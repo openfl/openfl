@@ -1,7 +1,7 @@
 package flash.geom {
 	
 	
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -16,7 +16,7 @@ package flash.geom {
 		
 		
 		public static function projectVector (m:Matrix3D, v:Vector3D):Vector3D { return null; }
-		public static function projectVectors (m:Matrix3D, verts:flash.Vector, projectedVerts:flash.Vector, uvts:flash.Vector):void {}
+		public static function projectVectors (m:Matrix3D, verts:Vector.<Number>, projectedVerts:Vector.<Number>, uvts:Vector.<Number>):void {}
 		
 		
 	}

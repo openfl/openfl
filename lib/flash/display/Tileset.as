@@ -3,7 +3,7 @@ package flash.display {
 	
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -17,7 +17,7 @@ package flash.display {
 		protected function get_bitmapData ():BitmapData { return null; }
 		protected function set_bitmapData (value:BitmapData):BitmapData { return null; }
 		
-		public var rectData:flash.Vector;
+		public var rectData:Vector.<Number>;
 		
 		public function get numRects ():int { return 0; }
 		

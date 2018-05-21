@@ -11,7 +11,7 @@ package openfl.display3D {
 	import openfl.geom.Matrix3D;
 	import openfl.geom.Rectangle;
 	import openfl.utils.ByteArray;
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	
 	/**
@@ -56,7 +56,7 @@ package openfl.display3D {
 		public function setProgram (program:Program3D):void {}
 		public function setProgramConstantsFromByteArray (programType:String, firstRegister:int, numRegisters:int, data:ByteArray, byteArrayOffset:uint):void {}
 		public function setProgramConstantsFromMatrix (programType:String, firstRegister:int, matrix:Matrix3D, transposedMatrix:Boolean = false):void {}
-		public function setProgramConstantsFromVector (programType:String, firstRegister:int, data:openfl.Vector, numRegisters:int = -1):void {}
+		public function setProgramConstantsFromVector (programType:String, firstRegister:int, data:Vector.<Number>, numRegisters:int = -1):void {}
 		public function setRenderToBackBuffer ():void {}
 		public function setRenderToTexture (texture:TextureBase, enableDepthAndStencil:Boolean = false, antiAlias:int = 0, surfaceSelector:int = 0, colorOutputIndex:int = 0):void {}
 		public function setSamplerStateAt (sampler:int, wrap:String, filter:String, mipfilter:String):void {}

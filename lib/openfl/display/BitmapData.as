@@ -12,7 +12,7 @@ package openfl.display {
 	import openfl.geom.Rectangle;
 	import openfl.utils.ByteArray;
 	// import openfl.utils.Object;
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	// #if (js && html5)
 	// import js.html.CanvasElement;
@@ -596,10 +596,10 @@ package openfl.display {
 		 * @return A Vector representing the given Rectangle.
 		 * @throws TypeError The rect is null.
 		 */
-		public function getVector (rect:Rectangle):openfl.Vector { return null; }
+		public function getVector (rect:Rectangle):Vector.<uint> { return null; }
 		
 		
-		public function histogram (hRect:Rectangle = null):openfl.Vector { return null; }
+		public function histogram (hRect:Rectangle = null):Vector.<Vector.<Number>> { return null; }
 		
 		
 		public function hitTest (firstPoint:Point, firstAlphaThreshold:uint, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:uint = 1):Boolean { return false; }
@@ -826,7 +826,7 @@ package openfl.display {
 		 * @throws RangeError The vector array is not large enough to read all the
 		 *                    pixel data.
 		 */
-		public function setVector (rect:Rectangle, inputVector:openfl.Vector):void {}
+		public function setVector (rect:Rectangle, inputVector:Vector.<uint>):void {}
 		
 		
 		/**

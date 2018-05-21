@@ -16,7 +16,7 @@ package openfl.display {
 	// import lime.ui.Touch;
 	// import lime.ui.Window;
 	import openfl.geom.Rectangle;
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	
 	/**
@@ -454,7 +454,7 @@ package openfl.display {
 		// @:noCompletion @:dox(hide) @:require(flash11) public var softKeyboardRect (default, null):Rectangle;
 		// #end
 		
-		public function get stage3Ds ():openfl.Vector { return null; }
+		public function get stage3Ds ():Vector.<Stage3D> { return null; }
 		
 		/**
 		 * Specifies whether or not objects display a glowing border when they have

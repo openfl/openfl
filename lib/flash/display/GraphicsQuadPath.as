@@ -1,7 +1,7 @@
 package flash.display {
 	
 	
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -10,11 +10,11 @@ package flash.display {
 	final public class GraphicsQuadPath implements IGraphicsData, IGraphicsPath {
 		
 		
-		public var indices:flash.Vector;
-		public var rects:flash.Vector;
-		public var transforms:flash.Vector;
+		public var indices:Vector.<int>;
+		public var rects:Vector.<Number>;
+		public var transforms:Vector.<Number>;
 		
-		public function GraphicsQuadPath (rects:flash.Vector = null, indices:flash.Vector = null, transforms:flash.Vector = null) {}
+		public function GraphicsQuadPath (rects:Vector.<Number> = null, indices:Vector.<int> = null, transforms:Vector.<Number> = null) {}
 		
 		
 	}

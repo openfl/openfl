@@ -2,7 +2,7 @@ package flash.ui {
 	
 	
 	import flash.utils.ByteArray;
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -63,7 +63,7 @@ package flash.ui {
 		 * @param	numSamples
 		 * @param	controls
 		 */
-		public function startCachingSamples (numSamples:int, controls:flash.Vector):void {}
+		public function startCachingSamples (numSamples:int, controls:Vector.<String>):void {}
 		
 		
 		/**

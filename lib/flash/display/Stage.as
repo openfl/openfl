@@ -16,7 +16,7 @@ package flash.display {
 	// import lime.ui.Touch;
 	// import lime.ui.Window;
 	import flash.geom.Rectangle;
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -454,7 +454,7 @@ package flash.display {
 		// @:noCompletion @:dox(hide) @:require(flash11) public var softKeyboardRect (default, null):Rectangle;
 		// #end
 		
-		public function get stage3Ds ():flash.Vector { return null; }
+		public function get stage3Ds ():Vector.<Stage3D> { return null; }
 		
 		/**
 		 * Specifies whether or not objects display a glowing border when they have

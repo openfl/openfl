@@ -4,7 +4,7 @@ package flash.display {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.Vector;
+	// import flash.Vector;
 
 
 	/**
@@ -249,7 +249,7 @@ package flash.display {
 		 * sub-paths are rendered during this operation. 
 		 * 
 		 */
-		public function drawGraphicsData (graphicsData:flash.Vector):void {}
+		public function drawGraphicsData (graphicsData:Vector.<IGraphicsData>):void {}
 		
 		
 		/**
@@ -297,7 +297,7 @@ package flash.display {
 		 * @param winding Specifies the winding rule using a value defined in the
 		 *                GraphicsPathWinding class.
 		 */
-		public function drawPath (commands:flash.Vector, data:flash.Vector, winding:String = null):void {}
+		public function drawPath (commands:Vector.<int>, data:Vector.<Number>, winding:String = null):void {}
 		
 		
 		/**
@@ -329,7 +329,7 @@ package flash.display {
 		 *                   which is six times the draw count in size will use full
 		 *                   matrix [ a, b, c, d, tx, ty, ... ] values per draw.
 		 */
-		public function drawQuads (rects:flash.Vector, indices:flash.Vector = null, transforms:flash.Vector = null):void {}
+		public function drawQuads (rects:Vector.<Number>, indices:Vector.<int> = null, transforms:Vector.<Number> = null):void {}
 		
 		
 		/**
@@ -402,7 +402,7 @@ package flash.display {
 		 *                parameter can be set to any value defined by the
 		 *                TriangleCulling class.
 		 */
-		public function drawTriangles (vertices:flash.Vector, indices:flash.Vector = null, uvtData:flash.Vector = null, culling:String = null):void {}
+		public function drawTriangles (vertices:Vector.<Number>, indices:Vector.<int> = null, uvtData:Vector.<Number> = null, culling:String = null):void {}
 		
 		
 		/**
@@ -680,7 +680,7 @@ package flash.display {
 		public function moveTo (x:Number, y:Number):void {}
 		
 		
-		public function readGraphicsData (recurse:Boolean = true):flash.Vector { return null; }
+		public function readGraphicsData (recurse:Boolean = true):Vector.<IGraphicsData> { return null; }
 		
 		
 	}

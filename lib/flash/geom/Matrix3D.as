@@ -1,7 +1,7 @@
 package flash.geom {
 	
 	
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -20,11 +20,11 @@ package flash.geom {
 		protected function get_position ():Vector3D { return null; }
 		protected function set_position (value:Vector3D):Vector3D { return null; }
 		
-		public var rawData:flash.Vector;
+		public var rawData:Vector.<Number>;
 		
 		
 		
-		public function Matrix3D (v:flash.Vector = null) {}
+		public function Matrix3D (v:Vector.<Number> = null) {}
 		
 		
 		//public inline function append (lhs:Matrix3D):void {}
@@ -56,10 +56,10 @@ package flash.geom {
 		public function copyFrom (other:Matrix3D):void {}
 		
 		
-		public function copyRawDataFrom (vector:flash.Vector, index:uint = 0, transpose:Boolean = false):void {}
+		public function copyRawDataFrom (vector:Vector.<Number>, index:uint = 0, transpose:Boolean = false):void {}
 		
 		
-		public function copyRawDataTo (vector:flash.Vector, index:uint = 0, transpose:Boolean = false):void {}
+		public function copyRawDataTo (vector:Vector.<Number>, index:uint = 0, transpose:Boolean = false):void {}
 		
 		
 		public function copyRowFrom (row:uint, vector3D:Vector3D):void {}
@@ -80,7 +80,7 @@ package flash.geom {
 		//public static function createOrtho (x0:Number, x1:Number,  y0:Number, y1:Number, zNear:Number, zFar:Number):Matrix3D;
 		
 		
-		public function decompose (orientationStyle:String = null):flash.Vector { return null; }
+		public function decompose (orientationStyle:String = null):Vector.<Number> { return null; }
 		
 		
 		public function deltaTransformVector (v:Vector3D):Vector3D { return null; }
@@ -119,14 +119,14 @@ package flash.geom {
 		public function prependTranslation (x:Number, y:Number, z:Number):void {}
 		
 		
-		public function recompose (components:flash.Vector, orientationStyle:String = null):Boolean { return false; }
+		public function recompose (components:Vector.<Number>, orientationStyle:String = null):Boolean { return false; }
 		
 		
 		//public inline function transformVector (v:Vector3D):Vector3D;
 		public function transformVector (v:Vector3D):Vector3D { return null; }
 		
 		
-		public function transformVectors (vin:flash.Vector, vout:flash.Vector):void {}
+		public function transformVectors (vin:Vector.<Number>, vout:Vector.<Number>):void {}
 		
 		
 		//public inline function transpose ():void {}

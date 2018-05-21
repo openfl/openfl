@@ -4,7 +4,7 @@ package flash.display3D {
 	// import lime.utils.ArrayBufferView;
 	// import js.html.ArrayBufferView;
 	import flash.utils.ByteArray;
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -16,7 +16,7 @@ package flash.display3D {
 		public function dispose ():void {}
 		public function uploadFromByteArray (data:ByteArray, byteArrayOffset:int, startVertex:int, numVertices:int):void {}
 		public function uploadFromTypedArray (data:*):void {}
-		public function uploadFromVector (data:flash.Vector, startVertex:int, numVertices:int):void {}
+		public function uploadFromVector (data:Vector.<Number>, startVertex:int, numVertices:int):void {}
 		
 		
 	}

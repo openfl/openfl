@@ -1,7 +1,7 @@
 package flash.display {
 	
 	
-	import flash.Vector;
+	// import flash.Vector;
 	
 	
 	/**
@@ -11,11 +11,11 @@ package flash.display {
 		
 		
 		public var culling:String;
-		public var indices:flash.Vector;
-		public var uvtData:flash.Vector;
-		public var vertices:flash.Vector;
+		public var indices:Vector.<int>;
+		public var uvtData:Vector.<Number>;
+		public var vertices:Vector.<Number>;
 		
-		public function GraphicsTrianglePath (vertices:flash.Vector = null, indices:flash.Vector = null, uvtData:flash.Vector = null, culling:String = null) {}
+		public function GraphicsTrianglePath (vertices:Vector.<Number> = null, indices:Vector.<int> = null, uvtData:Vector.<Number> = null, culling:String = null) {}
 		
 	}
 	

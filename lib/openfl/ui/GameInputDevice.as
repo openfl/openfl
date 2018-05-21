@@ -2,7 +2,7 @@ package openfl.ui {
 	
 	
 	import openfl.utils.ByteArray;
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	
 	/**
@@ -63,7 +63,7 @@ package openfl.ui {
 		 * @param	numSamples
 		 * @param	controls
 		 */
-		public function startCachingSamples (numSamples:int, controls:openfl.Vector):void {}
+		public function startCachingSamples (numSamples:int, controls:Vector.<String>):void {}
 		
 		
 		/**
