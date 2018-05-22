@@ -60,14 +60,14 @@ if (argv.length == 3) {
     // First create the directory we will export our es2015 modules to
     mkDirByPathSync('../lib_esm/');
 
-    startCreateDefaultReExportEsms().then(() => {
+    //startCreateDefaultReExportEsms().then(() => {
         
       startCreateBarrelModules().then(() => {
         
         complete();
         
       });
-    });
+    //});
   }
   if (argv[2] == 'gen') {
     
@@ -376,7 +376,7 @@ function modifyEsmModule(filePath) {
   // filesaver
   //
   if (result.indexOf('require (\'file-saverjs\')') > -1)
-    result = appendImport(result, 'import fileSaverJs from "file-saverjs"');
+    result = appendImport(result, 'import fileSaverJs from "file-saverjs";');
   result = result.replace(/require \('file-saverjs'\)/g, 'fileSaverJs');
   
   
@@ -536,7 +536,7 @@ function createEsmIndex(filePath) {
 	// Replaces: 
 	// "// Application: require("./Application").default,"
 	// with
-	// "export { default as Application } from "./Application.esm";"
+	// "// export { default as Application } from "./Application.esm";"
 	
 	
 	result = result.replace(/^\s*(.+?): require\(["'](.+?)["']\)\.default.*/gm, 'export { default as $1 } from "$2";');
@@ -560,7 +560,7 @@ function createEsmIndex(filePath) {
 			
 			if (fs.statSync(fullPath).isFile()) {
 				
-        return 'export * from "' + p2 + '";';
+        return 'export { default as ' + p1 + ' } from "' + p2 + '";';
 			}
 		} catch (error) {
 			
@@ -571,7 +571,7 @@ function createEsmIndex(filePath) {
 	// Replaces: 
 	// textures: require("./textures"),
 	// with
-	// export * from "./textures/index.esm";
+	// export * from "./textures";
 	
 	
 	
@@ -579,11 +579,15 @@ function createEsmIndex(filePath) {
 	result = result.replace('module.exports = {', '');
 	
 	// And remove the end "}"
-	result = result.replace(/}\s*$/gm, '');
+  result = result.replace(/}\s*$/gm, '');
   
   
-  // We save the file as index.esm.js and place it in the same directory as the 
-  // index.js that we read
+  // Add additiona exports not present in the original index barrel module
+  if (filePath.indexOf('openfl/utils/index.js') > -1)
+    result += 'export { default as AssetLibrary } from "./AssetLibrary";';
+  
+  
+  // We save the file as index.js and place it in the lib_esm/ directory
   //var esmFilePath = filePath.replace(/\.js$/, '.esm.js');
   let esmFilePath = filePath.replace('lib/', 'lib_esm/');
   mkDirByPathSync(path.dirname(esmFilePath));
@@ -595,7 +599,7 @@ function createEsmIndex(filePath) {
   
   
   var dTSFilePath = filePath.replace(/\.js$/, '.d.ts');
-  writeFileSync(dTSFilePath, result, false);
+  writeFileSync(dTSFilePath, result, true);
   
   return true;
   

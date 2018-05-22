@@ -12,3 +12,4 @@ export { default as getTimer } from "./getTimer";
 export { default as getDefinitionByName } from "./getDefinitionByName";
 export { default as getQualifiedClassName } from "./getQualifiedClassName";
 export { default as getQualifiedSuperclassName } from "./getQualifiedSuperclassName";
+export { default as AssetLibrary } from "./AssetLibrary";
