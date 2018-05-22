@@ -66,7 +66,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline function lastIndexOf (x:T, ?from:Int = 0):Int {
+	public inline function lastIndexOf (x:T, ?from:Int = null):Int {
 		
 		return this.lastIndexOf (x, from);
 		
@@ -413,11 +413,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Bool, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Bool, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -736,11 +736,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Float, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Float, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -1067,11 +1067,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Function, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Function, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (Reflect.compareMethods (__array[i], x)) return i;
 			i--;
@@ -1382,11 +1382,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Int, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Int, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -1705,11 +1705,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:T, ?from:Int = 0):Int {
+	public function lastIndexOf (x:T, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -1919,7 +1919,7 @@ abstract Vector<T>(IVector<T>) {
 	public function insertAt (index:Int, element:T):Void;
 	public function iterator ():Iterator<T>;
 	public function join (sep:String = ","):String;
-	public function lastIndexOf (x:T, ?from:Int = 0):Int;
+	public function lastIndexOf (x:T, ?from:Int = null):Int;
 	public function pop ():Null<T>;
 	public function push (x:T):Int;
 	public function removeAt (index:Int):T;
