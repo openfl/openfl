@@ -134,7 +134,7 @@ class Tileset {
 #end
 
 
-@:allow(openfl.display.Tileset) @:dox(hide) private class TileData {
+@:allow(openfl.display.Tileset) class TileData {
 	
 	
 	public var height:Int;
@@ -153,12 +153,12 @@ class Tileset {
 	
 	
 	public function new (rect:Rectangle, offsetX:Int, offsetY:Int, rotated:Bool) {
-		
-		x = Std.int (rect.x);
-		y = Std.int (rect.y);
-		width = Std.int (rect.width);
-		height = Std.int (rect.height);
-		
+		if (rect != null) {
+			x = Std.int (rect.x);
+			y = Std.int (rect.y);
+			width = Std.int (rect.width);
+			height = Std.int (rect.height);
+		}
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.rotated = rotated;
