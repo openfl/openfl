@@ -25,7 +25,9 @@
   "bin": {
     "openfljs": "bin/openfl.js"
   },
-  "module": "lib/openfl/index.js",
+  "module": "lib_esm/openfl/index.js",
+  "types": "lib/openfl/index.d.ts",
+  "sideEffects": ["./lib_esm/openfl/utils/AssetLibrary.js"],
   "files": [
     "bin",
     "dist",
@@ -44,7 +46,7 @@
     "build-dist:dev": "webpack --config webpack.dev.js",
     "build-dist:prod": "webpack --config webpack.prod.js",
     "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint openfl --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,test}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
-    "build-lib": "cd scripts && haxe build.hxml",
+    "build-lib": "cd scripts && haxe build.hxml && node generate-es2015 gen",
     "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF -output=dist/openfl.swc",
     "build-tools": "cd scripts && haxe tools-npm.hxml",
     "build-test-es5": "cd test/es5 && webpack",
@@ -89,6 +91,7 @@
     "chai": "^4.1.2",
     "compression-webpack-plugin": "^1.1.11",
     "format": "jgranick/format",
+    "globby": "^8.0.1",
     "haxe": "4.1.0",
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
