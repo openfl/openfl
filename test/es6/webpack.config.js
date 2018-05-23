@@ -4,14 +4,12 @@ var path = require ("path");
 var allTests = glob.sync ('./**/*.js', { "ignore": [ './webpack.config.js', './bundle.js' ]});
 
 module.exports = {
+	mode: "development",
 	node: {
 		fs: 'empty'
 	},
 	entry: {
 		bundle: allTests
-	},
-	output: {
-		filename: "bundle.js",
 	},
 	externals: [{
 		mocha: true
@@ -25,6 +23,5 @@ module.exports = {
 		rules: [
 			{ test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
 		]
-	},
-	devtool: "source-map"
+	}
 };

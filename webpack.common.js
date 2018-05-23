@@ -1,7 +1,9 @@
 const path = require ("path");
 
 module.exports = {
-	entry: "./lib/openfl/index.js",
+	entry: {
+		openfl: "./lib/openfl/index.js"
+	},
 	devtool: "source-map",
 	output: {
 		path: path.resolve (__dirname, "dist"),
