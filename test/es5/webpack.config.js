@@ -11,6 +11,9 @@ module.exports = {
 	entry: {
 		bundle: allTests
 	},
+	output: {
+		path: __dirname
+	},
 	resolve: {
 		alias: {
 			"openfl": path.resolve (__dirname, '../../lib/openfl/')

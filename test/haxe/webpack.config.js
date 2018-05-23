@@ -9,6 +9,9 @@ module.exports = {
 	entry: {
 		bundle: [ "./entry.js" ]
 	},
+	output: {
+		path: __dirname
+	},
 	resolve: {
 		alias: {
 			"openfl": path.resolve (__dirname, '../../lib/openfl/')

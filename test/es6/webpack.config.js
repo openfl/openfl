@@ -11,6 +11,9 @@ module.exports = {
 	entry: {
 		bundle: allTests
 	},
+	output: {
+		path: __dirname
+	},
 	externals: [{
 		mocha: true
 	}],
