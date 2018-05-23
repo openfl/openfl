@@ -27,7 +27,7 @@ haxedoc.xml
 dump
 */dump/*
 lib/_gen
-lib_esm/_gen
+lib-esm/_gen
 test/*/bundle.js
 package-lock.json
 npm-debug.log
