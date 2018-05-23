@@ -241,7 +241,7 @@ jobs:
   
   NPM:
     docker:
-     - image: openfl/ci-openfl-js:0.0.2
+     - image: openfl/ci-openfl-js:0.0.3
     working_directory: /workspace/openfl
     steps:
      - checkout
