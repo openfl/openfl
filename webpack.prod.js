@@ -1,5 +1,7 @@
 const webpack = require ("webpack");
 const merge = require ("webpack-merge");
+const BrotliPlugin = require ('brotli-webpack-plugin');
+const CompressionPlugin = require ("compression-webpack-plugin");
 const UglifyJSPlugin = require ("uglifyjs-webpack-plugin");
 const common = require ("./webpack.common.js");
 const package = require ("./package.json");
@@ -22,6 +24,13 @@ module.exports = merge (common, {
 		}),
 		new webpack.DefinePlugin ({
 			"process.env.NODE_ENV": JSON.stringify ("production")
+		}),
+		new CompressionPlugin ({
+			include: /openfl.min.js$/
+		}),
+		new BrotliPlugin ({
+			asset: '[path].br[query]',
+			test: /openfl.min.js$/
 		})
 	]
 });
