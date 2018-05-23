@@ -22,7 +22,7 @@ them. Also generates the index.d.ts declaration files for typescript. See startC
 
 We then need to make sure we add the following:
 
-"module": "lib_esm/openfl/index.js"
+"module": "lib-esm/openfl/index.js"
 
 to the openfl package.json. This way whenever the following import is encountered
 
@@ -58,7 +58,7 @@ console.log('generate-es2015 running...');
 if (argv.length == 3) {
   if (argv[2] == 'export') {
     // First create the directory we will export our es2015 modules to
-    mkDirByPathSync('../lib_esm/');
+    mkDirByPathSync('../lib-esm/');
 
     //startCreateDefaultReExportEsms().then(() => {
         
@@ -72,7 +72,7 @@ if (argv.length == 3) {
   if (argv[2] == 'gen') {
     
     // First create the directory we will export our es2015 modules to
-    mkDirByPathSync('../lib_esm/_gen');
+    mkDirByPathSync('../lib-esm/_gen');
 
 
     startCreateEsmModules().then(() => {
@@ -263,10 +263,10 @@ function createEsmModule(filePath) {
   // TODO: Remove this line ONLY if $global is not used anywhere else in the module
   //result = result.replace('var $global = typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this', '');
   
-  let esmFilePath = filePath.replace('lib/', 'lib_esm/');
+  let esmFilePath = filePath.replace('lib/', 'lib-esm/');
   // ../lib/_gen/openfl/display/Sprite.js
   // to
-  // ../lib_esm/_gen/openfl/display/Sprite.js
+  // ../lib-esm/_gen/openfl/display/Sprite.js
   
   
   mkDirByPathSync(path.dirname(esmFilePath));
@@ -281,7 +281,7 @@ function startModifyEsmModules() {
   
   // Now we need to go through the esm.js modules that were generated 
   // and replace the required file paths with the .esm.js versions
-  return globby(['../lib_esm/_gen/**/*.js']).then((paths) => {
+  return globby(['../lib-esm/_gen/**/*.js']).then((paths) => {
     
     for (let path of paths) {
       
@@ -492,18 +492,18 @@ function createDefaultReExportEsm(filePath) {
   
   
   result = result.replace('module.exports._internal = internal;', 'export { internal as _internal };');
-  // Replace (in lib_esm/openfl/utils/AssetLibrary.js)
+  // Replace (in lib-esm/openfl/utils/AssetLibrary.js)
   // module.exports._internal = internal;
   // with
   // export { internal as _internal };
 
   
   
-  let esmFilePath = filePath.replace('lib/', 'lib_esm/');
+  let esmFilePath = filePath.replace('lib/', 'lib-esm/');
   mkDirByPathSync(path.dirname(esmFilePath));
   // ../lib/openfl/display/Sprite.js
   // to
-  // ../lib_esm/openfl/display/Sprite.js
+  // ../lib-esm/openfl/display/Sprite.js
   
   return writeFileSync(esmFilePath, result, false);
 }
@@ -587,13 +587,13 @@ function createEsmIndex(filePath) {
     result += 'export { default as AssetLibrary } from "./AssetLibrary";';
   
   
-  // We save the file as index.js and place it in the lib_esm/ directory
+  // We save the file as index.js and place it in the lib-esm/ directory
   //var esmFilePath = filePath.replace(/\.js$/, '.esm.js');
-  let esmFilePath = filePath.replace('lib/', 'lib_esm/');
+  let esmFilePath = filePath.replace('lib/', 'lib-esm/');
   mkDirByPathSync(path.dirname(esmFilePath));
   // ../lib/openfl/display/index.js
   // to
-  // ../lib_esm/openfl/display/index.js
+  // ../lib-esm/openfl/display/index.js
   
   writeFileSync(esmFilePath, result);
   
