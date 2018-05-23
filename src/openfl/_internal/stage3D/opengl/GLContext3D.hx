@@ -1410,9 +1410,11 @@ class GLContext3D {
 			
 		} else {
 			
+			var window = context.__stage3D.__stage.window;
+			
 			height = context.backBufferHeight;
 			offsetX = Std.int (context.__stage3D.x);
-			offsetY = Std.int (context.__stage3D.y);
+			offsetY = Std.int (window.height * window.scale) - height - Std.int (context.__stage3D.y);
 			
 		}
 		

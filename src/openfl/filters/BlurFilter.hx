@@ -81,6 +81,7 @@ import openfl.geom.Rectangle;
 	
 	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
+		#if !macro
 		if (pass <= __horizontalPasses) {
 			
 			var scale = Math.pow (0.5, pass >> 1);
@@ -94,6 +95,7 @@ import openfl.geom.Rectangle;
 			__blurShader.uRadius.value[1] = blurY * scale;
 			
 		}
+		#end
 		
 		return __blurShader;
 		
@@ -247,7 +249,9 @@ private class BlurShader extends BitmapFilterShader {
 	
 	private override function __update ():Void {
 		
+		#if !macro
 		uTextureSize.value = [ __texture.input.width, __texture.input.height ];
+		#end
 		
 		super.__update ();
 		

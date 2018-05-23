@@ -204,6 +204,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__visible = false;
+		__positionX = 0;
+		__positionY = 0;
 		
 		#if (js && html5)
 		moveTo (0, 0);

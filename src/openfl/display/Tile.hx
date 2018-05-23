@@ -134,7 +134,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private inline function __setRenderDirty ():Void {
+	private function __setRenderDirty ():Void {
 		
 		#if !flash
 		if (!__dirty) {

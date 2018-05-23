@@ -1067,11 +1067,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			if (__objectTransform != null) {
-				
-				__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
-				
-			}
+			
 			
 			if (renderParent != null) {
 				
@@ -1091,7 +1087,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 				}
 				
-				__worldColorTransform.__combine (renderParent.__worldColorTransform);
+				if (__objectTransform != null) {
+					
+					__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
+					__worldColorTransform.__combine (renderParent.__worldColorTransform);
+					
+				} else {
+					
+					__worldColorTransform.__copyFrom (renderParent.__worldColorTransform);
+					
+				}
 				
 				if (__blendMode == null || __blendMode == NORMAL) {
 					
@@ -1124,6 +1129,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					__worldVisible = visible;
 					
 					__worldAlphaChanged = (__worldAlpha != alpha);
+					
+				}
+				
+				if (__objectTransform != null) {
+					
+					__worldColorTransform.__copyFrom (__objectTransform.colorTransform);
+					
+				} else {
+					
+					__worldColorTransform.__identity ();
 					
 				}
 				
@@ -1189,6 +1204,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
+			if (!needRender && renderer.__type != OPENGL && __cacheBitmapData != null && __cacheBitmapData.image != null && __cacheBitmapData.image.version < __cacheBitmapData.__textureVersion) {
+				
+				needRender = true;
+				
+			}
+			
 			__cacheBitmapMatrix.copyFrom (bitmapMatrix);
 			__cacheBitmapMatrix.tx = 0;
 			__cacheBitmapMatrix.ty = 0;
@@ -1239,13 +1260,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				updateTransform = true;
 				__cacheBitmapBackground = opaqueBackground;
-				var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 				
 				if (filterWidth >= 0.5 && filterHeight >= 0.5) {
 					
+					var needsFill = (opaqueBackground != null && (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
+					var fillColor = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
+					var bitmapColor = needsFill ? 0 : fillColor;
+					var allowFramebuffer = (renderer.__type == OPENGL);
+					
 					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height) {
 						
-						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, bitmapColor);
 						
 						if (__cacheBitmap == null) __cacheBitmap = new Bitmap ();
 						__cacheBitmap.__bitmapData = __cacheBitmapData;
@@ -1253,7 +1278,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					} else {
 						
-						__cacheBitmapData.fillRect (__cacheBitmapData.rect, color);
+						__cacheBitmapData.__fillRect (__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
+						
+					}
+					
+					if (needsFill) {
+						
+						rect.setTo (0, 0, filterWidth, filterHeight);
+						__cacheBitmapData.__fillRect (rect, fillColor, allowFramebuffer);
 						
 					}
 					
@@ -1339,6 +1371,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 							var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 							__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+							__cacheBitmap.__bitmapData = __cacheBitmapData;
 							
 						}
 						
@@ -1384,7 +1417,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					__cacheBitmapData.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
-					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version;
+					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 					
 					__cacheBitmapData.__drawGL (this, childRenderer);
 					
@@ -1412,7 +1445,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							} else {
 								//__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
 								if (__cacheBitmapData2.image != null) {
-									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version;
+									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
 							}
 							__cacheBitmapData2.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
@@ -1427,7 +1460,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							} else {
 								//__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
 								if (__cacheBitmapData3.image != null) {
-									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version;
+									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
 							}
 							__cacheBitmapData3.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
@@ -1564,9 +1597,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 						}
 						
+						if (__cacheBitmapData != bitmap) {
+							
+							// TODO: Fix issue with swapping __cacheBitmap.__bitmapData
+							__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
+							
+							// cacheBitmap = __cacheBitmapData;
+							// __cacheBitmapData = bitmap;
+							// __cacheBitmapData2 = cacheBitmap;
+							// __cacheBitmap.__bitmapData = __cacheBitmapData;
+							
+						}
+						
 						Rectangle.__pool.release (sourceRect);
-						__cacheBitmap.__bitmapData = bitmap;
-						__cacheBitmap.__imageVersion = bitmap.__textureVersion;
+						__cacheBitmap.__imageVersion = __cacheBitmapData.__textureVersion;
 						
 					}
 					
@@ -2151,7 +2195,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__setTransformDirty ();
 		__objectTransform.matrix = value.matrix;
-		__objectTransform.colorTransform = value.colorTransform.__clone();
+		
+		if (!__objectTransform.colorTransform.__equals (value.colorTransform)) {
+			
+			__objectTransform.colorTransform.__copyFrom (value.colorTransform);
+			__setRenderDirty ();
+			
+		}
 		
 		return __objectTransform;
 		

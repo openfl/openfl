@@ -487,10 +487,31 @@ class Assets {
 	}
 	
 	
-	public static function loadLibrary (name:String):Future<LimeAssetLibrary> {
+	public static function loadLibrary (name:String):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
-		var future = LimeAssets.loadLibrary (name);
-		return future;
+		return LimeAssets.loadLibrary (name).then (function (library) {
+			
+			var _library:AssetLibrary = null;
+			
+			if (library != null) {
+				
+				if (Std.is (library, AssetLibrary)) {
+					
+					_library = cast library;
+					
+				} else {
+					
+					_library = new AssetLibrary ();
+					_library.__proxy = library;
+					LimeAssets.registerLibrary (name, _library);
+					
+				}
+				
+			}
+			
+			return Future.withValue (_library);
+			
+		});
 		
 	}
 	

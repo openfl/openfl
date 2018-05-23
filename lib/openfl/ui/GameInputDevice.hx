@@ -9,7 +9,7 @@ import openfl.utils.ByteArray;
 @:final extern class GameInputDevice {
 	
 	
-	public static var MAX_BUFFER_SIZE;
+	public static var MAX_BUFFER_SIZE:Int;
 	
 	/**
 	 * Enables or disables this device.

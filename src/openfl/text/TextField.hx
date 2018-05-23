@@ -1152,6 +1152,12 @@ class TextField extends InteractiveObject {
 				
 				y = group.offsetY + group.height / 2;
 				
+				for (i in 0...scrollV - 1) {
+					
+					y -= __textEngine.lineHeights[i];
+					
+				}
+				
 				if (x != null) return __getPosition (x, y);
 				
 			}
@@ -1500,6 +1506,7 @@ class TextField extends InteractiveObject {
 	
 	private function __replaceSelectedText (value:String, restrict:Bool = true):Void {
 		
+		if (value == null) value = "";
 		if (value == "" && __selectionIndex == __caretIndex) return;
 		
 		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
@@ -1685,7 +1692,7 @@ class TextField extends InteractiveObject {
 	
 	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
-		if (__filters == null && renderer.__type == OPENGL && !__domRender) return false;
+		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null && !__domRender) return false;
 		
 		if (super.__updateCacheBitmap (renderer, force || __dirty)) {
 			
@@ -2816,7 +2823,7 @@ class TextField extends InteractiveObject {
 				
 				if (__textEngine.multiline) {
 					
-					__replaceSelectedText (text, true);
+					__replaceSelectedText ("\n", true);
 					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					

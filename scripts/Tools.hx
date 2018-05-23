@@ -317,7 +317,7 @@ class Tools {
 	}
 	
 	
-	private static function generateSWFLiteClasses (targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfLiteAsset:Asset, prefix:String = ""):Array<String> {
+	private static function generateSWFLiteClasses (targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfID:String, prefix:String = ""):Array<String> {
 		
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
@@ -420,7 +420,7 @@ class Tools {
 					
 				}
 				
-				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfLiteAsset.id, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
+				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfID, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				
 				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (symbol.className.split (".").join ("/"))) + "/" + name + ".hx", AssetType.TEMPLATE);
@@ -706,8 +706,9 @@ class Tools {
 		
 		// TODO: Allow prefix, fix generated class SWFLite references
 		var prefix = "";
+		var uuid = StringHelper.generateUUID (20);
 		
-		generateSWFLiteClasses (srcPath, exportedClasses, swfLite, swfLiteAsset, prefix);
+		generateSWFLiteClasses (srcPath, exportedClasses, swfLite, uuid, prefix);
 		
 		for (file in exportedClasses) {
 			
@@ -718,10 +719,20 @@ class Tools {
 		
 		var data = AssetHelper.createManifest (project);
 		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-		data.libraryArgs = [ "swflite" + SWFLITE_DATA_SUFFIX ];
+		data.libraryArgs = [ "swflite" + SWFLITE_DATA_SUFFIX, uuid ];
 		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
 		
 		File.saveContent (PathHelper.combine (targetPath, "library.json"), data.serialize ());
+		
+		var includeXML = 
+'<?xml version="1.0" encoding="utf-8"?>
+<library>
+	
+	<source path="src" />
+	
+</library>';
+		
+		File.saveContent (PathHelper.combine (targetPath, "include.xml"), includeXML);
 		
 		return true;
 		
@@ -1039,7 +1050,7 @@ class Tools {
 								
 							}
 							
-							var generatedClasses = generateSWFLiteClasses (targetPath, output.assets, swfLite, swfLiteAsset, library.prefix);
+							var generatedClasses = generateSWFLiteClasses (targetPath, output.assets, swfLite, swfLiteAsset.id, library.prefix);
 							
 							for (className in generatedClasses) {
 								

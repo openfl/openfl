@@ -841,10 +841,6 @@ class CanvasGraphics {
 				
 				case DRAW_QUADS:
 					
-					// TODO: Other fill types
-					
-					if (bitmapFill == null) continue;
-					
 					var c = data.readDrawQuads ();
 					var rects = c.rects;
 					var indices = c.indices;
@@ -878,7 +874,7 @@ class CanvasGraphics {
 					var tileRect = Rectangle.__pool.get ();
 					var tileTransform = Matrix.__pool.get ();
 					
-					var sourceRect = bitmapFill.rect;
+					var sourceRect = (bitmapFill != null) ? bitmapFill.rect : null;
 					
 					var transform = graphics.__renderTransform;
 					// var roundPixels = renderer.__roundPixels;
@@ -935,7 +931,16 @@ class CanvasGraphics {
 						// }
 						
 						context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
-						context.drawImage (bitmapFill.image.src, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
+						
+						if (bitmapFill != null) {
+							
+							context.drawImage (bitmapFill.image.src, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
+							
+						} else {
+							
+							context.fillRect (0, 0, tileRect.width, tileRect.height);
+							
+						}
 						
 					}
 					
@@ -1305,7 +1310,7 @@ class CanvasGraphics {
 						
 					} else {
 						
-						canvas.width  = width;
+						canvas.width = width;
 						canvas.height = height;
 						
 					}
