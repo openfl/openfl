@@ -472,7 +472,9 @@ class Shader {
 					
 				}
 				
+				#if !hl
 				Reflect.setField (__data, name, input);
+				#end
 				if (__isGenerated) Reflect.setField (this, name, input);
 				
 			} else if (!Reflect.hasField (__data, name) || Reflect.field (__data, name) == null) {
@@ -543,7 +545,9 @@ class Shader {
 							
 						}
 						
+						#if !hl
 						Reflect.setField (__data, name, parameter);
+						#end
 						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
 					case INT, INT2, INT3, INT4:
@@ -556,7 +560,9 @@ class Shader {
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramInt.push (parameter);
+						#if !hl
 						Reflect.setField (__data, name, parameter);
+						#end
 						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
 					default:
@@ -588,7 +594,9 @@ class Shader {
 							
 						}
 						
+						#if !hl
 						Reflect.setField (__data, name, parameter);
+						#end
 						if (__isGenerated) Reflect.setField (this, name, parameter);
 					
 				}
