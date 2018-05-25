@@ -4,7 +4,7 @@ package openfl.display {
 	import openfl.geom.Matrix;
 	import openfl.geom.Point;
 	import openfl.geom.Rectangle;
-	import openfl.Vector;
+	// import openfl.Vector;
 
 
 	/**
