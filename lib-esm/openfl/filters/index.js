@@ -8,3 +8,4 @@ export { default as ColorMatrixFilter } from "./ColorMatrixFilter";
 export { default as ConvolutionFilter } from "./ConvolutionFilter";
 export { default as DropShadowFilter } from "./DropShadowFilter";
 export { default as GlowFilter } from "./GlowFilter";
+export { default as ShaderFilter } from "./ShaderFilter";

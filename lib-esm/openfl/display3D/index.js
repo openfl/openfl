@@ -16,4 +16,5 @@ export { default as Context3DTriangleFace } from "./Context3DTriangleFace";
 export { default as Context3DVertexBufferFormat } from "./Context3DVertexBufferFormat";
 export { default as Context3DWrapMode } from "./Context3DWrapMode";
 export { default as IndexBuffer3D } from "./IndexBuffer3D";
+export { default as Program3D } from "./Program3D";
 export { default as VertexBuffer3D } from "./VertexBuffer3D";
