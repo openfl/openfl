@@ -3,12 +3,12 @@ package openfl.utils;
 
 
 
-abstract Dictionary<K, V> (DictionaryData) {
+abstract Dictionary<K, V> (Dynamic) {
 	
 	
 	public function new (weakKeys:Bool = false) {
 		
-		this = new DictionaryData ();
+		this = {};
 		
 	}
 	
@@ -69,22 +69,6 @@ abstract Dictionary<K, V> (DictionaryData) {
 		}
 		
 		return values.iterator ();
-		
-	}
-	
-	
-}
-
-
-
-@:jsRequire("openfl/utils/Dictionary", "default")
-
-@:dox(hide) private extern class DictionaryData implements Dynamic {
-	
-	
-	public function new (weakKeys:Bool = false) {
-		
-		
 		
 	}
 	

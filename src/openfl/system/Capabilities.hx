@@ -254,6 +254,8 @@ import sys.io.Process;
 		var stage = Lib.current.stage;
 		var resolutionX = 0;
 		
+		if (stage == null) return 0;
+		
 		if (stage.window != null) {
 			
 			var display = stage.window.display;
@@ -281,6 +283,8 @@ import sys.io.Process;
 		
 		var stage = Lib.current.stage;
 		var resolutionY = 0;
+		
+		if (stage == null) return 0;
 		
 		if (stage.window != null) {
 			

@@ -34,7 +34,7 @@ import hscript.Parser;
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.geom.ColorTransform)
 
-class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
+class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __initSWF:SWFLite;
@@ -667,7 +667,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__enterFrame (0);
 		
-		#if !openfl_dynamic
+		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+		// TODO: Speed this up
 		for (field in Type.getInstanceFields (Type.getClass (this))) {
 			
 			for (child in __children) {
@@ -847,7 +848,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
-		#if (openfl_dynamic || openfl_dynamic_fields_only)
+		#if (openfljs || ((openfl_dynamic || openfl_dynamic_fields_only) && haxe_ver <= "4.0.0"))
 		Reflect.setField (this, displayObject.name, displayObject);
 		#end
 		

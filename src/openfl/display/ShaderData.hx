@@ -9,12 +9,14 @@ import openfl.utils.ByteArray;
 #end
 
 
-@:final class ShaderData implements Dynamic {
+@:forward()
+
+abstract ShaderData(Dynamic) from Dynamic to Dynamic {
 	
 	
 	public function new (byteArray:ByteArray) {
 		
-		
+		this = {};
 		
 	}
 	

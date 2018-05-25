@@ -1,13 +1,21 @@
 package openfl.net; #if (display || !flash)
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
+@:forward()
+
 /**
  * The URLVariables class allows you to transfer variables between an
  * application and a server. Use URLVariables objects with methods of the
  * URLLoader class, with the `data` property of the URLRequest
  * class, and with flash.net package functions.
  */
-extern class URLVariables implements Dynamic {
+abstract URLVariables(Dynamic) from Dynamic to Dynamic {
 	
 	
 	/**
@@ -20,7 +28,17 @@ extern class URLVariables implements Dynamic {
 	 * 
 	 * @param source A URL-encoded string containing name/value pairs.
 	 */
-	public function new (source:String = null);
+	public function new (source:String = null) {
+		
+		this = {};
+		
+		if (source != null) {
+			
+			decode (source);
+			
+		}
+		
+	}
 	
 	
 	/**
@@ -34,7 +52,35 @@ extern class URLVariables implements Dynamic {
 	 * @throws Error The source parameter must be a URL-encoded query string
 	 *               containing name/value pairs.
 	 */
-	public function decode (source:String):Void;
+	public function decode (source:String):Void {
+		
+		var fields = Reflect.fields (this);
+		
+		for (f in fields) {
+			
+			Reflect.deleteField (this, f);
+			
+		}
+		
+		var fields = source.split (";").join ("&").split ("&");
+		
+		for (f in fields) {
+			
+			var eq = f.indexOf ("=");
+			
+			if (eq > 0) {
+				
+				Reflect.setField (this, StringTools.urlDecode (f.substr(0, eq)), StringTools.urlDecode (f.substr(eq + 1)));
+				
+			} else if (eq != 0) {
+				
+				Reflect.setField (this, StringTools.urlDecode (f), "");
+				
+			}
+			
+		}
+		
+	}
 	
 	
 	/**
@@ -43,7 +89,20 @@ extern class URLVariables implements Dynamic {
 	 * 
 	 * @return A URL-encoded string containing name/value pairs.
 	 */
-	public function toString ():String;
+	public function toString ():String {
+		
+		var result = new Array<String> ();
+		var fields = Reflect.fields (this);
+		
+		for (f in fields) {
+			
+			result.push (StringTools.urlEncode (f) + "=" + StringTools.urlEncode (Reflect.field (this, f)));
+			
+		}
+		
+		return result.join ("&");
+		
+	}
 	
 	
 }

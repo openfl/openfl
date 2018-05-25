@@ -3,11 +3,22 @@ package openfl.display; #if (display || !flash)
 
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
-@:final extern class ShaderData implements Dynamic {
+
+@:forward()
+
+abstract ShaderData(Dynamic) from Dynamic to Dynamic {
 	
 	
-	public function new (byteArray:ByteArray):Void;
+	public function new (byteArray:ByteArray) {
+		
+		this = {};
+		
+	}
 	
 	
 }

@@ -536,12 +536,12 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 
 
 
-abstract Dictionary<K, V> (DictionaryData) {
+abstract Dictionary<K, V> (Dynamic) {
 	
 	
 	public function new (weakKeys:Bool = false) {
 		
-		this = new DictionaryData ();
+		this = {};
 		
 	}
 	
@@ -602,19 +602,6 @@ abstract Dictionary<K, V> (DictionaryData) {
 		}
 		
 		return values.iterator ();
-		
-	}
-	
-	
-}
-
-
-@:dox(hide) private class DictionaryData implements Dynamic {
-	
-	
-	public function new (weakKeys:Bool = false) {
-		
-		
 		
 	}
 	
