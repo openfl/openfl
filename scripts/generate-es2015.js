@@ -11,7 +11,7 @@ let argv = process.argv;
 Run this after the "npm run build-lib" script. This script does the following:
 
 - Goes through each of the commonjs modules under lib/_gen/ and generates es2015 versions 
-of them and plaaces them under a different directory. See startCreateEsmModules()
+of them and places them under lib-esm/. See startCreateEsmModules()
 
 - Goes through each of the commonjs modules under lib/openfl/ that re-export a single module and 
 generates the equivalent es2015 module. See startCreateDefaultReExportEsms()
@@ -31,11 +31,12 @@ import { Sprite, Stage } from "openfl";
 webpack will rely on index.js to import the listed classes. We also need to add the 
 following:
 
-"sideEffects": false
+"sideEffects": ["./lib_esm/openfl/utils/AssetLibrary.js"],
 
 to package.json. This in combination with assigning a es2015 index module to the "module" field 
 allows webpack 4 to exclude entire unused modules from the generated bundle, thus decreasing the 
-file size.
+file size. An exception for the AssetLibrary module is needed though so that webpack includes 
+all of the imported modules in that module.
 */
 
 
@@ -56,34 +57,67 @@ console.log('generate-es2015 running...');
 */
 
 if (argv.length == 3) {
+  
+  
   if (argv[2] == 'export') {
     // First create the directory we will export our es2015 modules to
     mkDirByPathSync('../lib-esm/');
 
-    //startCreateDefaultReExportEsms().then(() => {
+    
+    startCreateDefaultReExportEsms().then(() => {
         
       startCreateBarrelModules().then(() => {
         
         complete();
         
       });
-    //});
+    });
   }
-  if (argv[2] == 'gen') {
+  else if (argv[2] == 'gen') {
     
     // First create the directory we will export our es2015 modules to
     mkDirByPathSync('../lib-esm/_gen');
-
-
+    
     startCreateEsmModules().then(() => {
   
       startModifyEsmModules().then(() => {
+        
         complete();
         
       });
       
     });
   }
+  else if (argv[2] == 'all') {
+    
+    // Do both of the above operations, one after the other
+    
+    
+    // First create the directory we will export our es2015 modules to
+    mkDirByPathSync('../lib-esm/');
+
+    startCreateDefaultReExportEsms().then(() => {
+        
+      startCreateBarrelModules().then(() => {
+        
+        // First create the directory we will export our es2015 modules to
+        mkDirByPathSync('../lib-esm/_gen');
+
+        startCreateEsmModules().then(() => {
+      
+          startModifyEsmModules().then(() => {
+            
+            complete();
+            
+          });
+          
+        });
+        
+      });
+    });
+  }
+  
+  
 }
 
 
@@ -272,7 +306,10 @@ function createEsmModule(filePath) {
   mkDirByPathSync(path.dirname(esmFilePath));
   
   
-  return writeFileSync(esmFilePath, result);
+  //return writeFileSync(esmFilePath, result);
+  
+  writeFileSync(esmFilePath, result);
+  return modifyEsmModule(esmFilePath);
 }
 
 
@@ -285,8 +322,8 @@ function startModifyEsmModules() {
     
     for (let path of paths) {
       
-      if (modifyEsmModule(path)) {
-      }
+      //if (modifyEsmModule(path)) {
+      //}
     }
   });
 }
@@ -488,7 +525,7 @@ function createDefaultReExportEsm(filePath) {
   // Replace
   // var Lib = require ("./../../_gen/openfl/Lib").default;
   // with
-  // import { default as Lib } from "./../../_gen/openfl/Lib.esm";
+  // import { default as Lib } from "./../../_gen/openfl/Lib";
   
   
   result = result.replace('module.exports._internal = internal;', 'export { internal as _internal };');
@@ -583,8 +620,8 @@ function createEsmIndex(filePath) {
   
   
   // Add additiona exports not present in the original index barrel module
-  if (filePath.indexOf('openfl/utils/index.js') > -1)
-    result += 'export { default as AssetLibrary } from "./AssetLibrary";';
+  //if (filePath.indexOf('openfl/utils/index.js') > -1)
+   // result += 'export { default as AssetLibrary } from "./AssetLibrary";';
   
   
   // We save the file as index.js and place it in the lib-esm/ directory
