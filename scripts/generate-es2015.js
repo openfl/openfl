@@ -1,10 +1,24 @@
+/*
+generate-es2015.js
+
+
+Commands:
+node generate-es2015 gen
+- This will generate the es2015 modules and save them under lib-esm/_gen/
+
+node generate-es2015 other
+- This will generate the re-export modules as well as the index.js and index.d.ts barrel modules
+- re-export module example: lib-esm/openfl/display/Sprite.js
+- barrel modules examples: lib-esm/openfl/display/index.js and lib/openfl/display/index.d.ts
+
+*/
 
 const _fs = require('fs');
 const _path = require('path');
 const globby = require('globby');
 const readline = require('readline');
 let DelayFS = init();
-let fs = new DelayFS(false);
+let delayFS = new DelayFS(false);
 
 
 // Settings
@@ -21,13 +35,15 @@ let outputGenPath = _path.resolve(baseDir, outputLibDirname, '_gen');
 let inputLibOpenflPath = _path.resolve(baseDir, inputLibDirname, 'openfl');
 let outputLibOpenflPath = _path.resolve(baseDir, outputLibDirname, 'openfl');
 
+
+// Convert windows paths to posix paths
 fullInputLibDirPath = normalizePath(fullInputLibDirPath);
 fullOutputLibDirPath = normalizePath(fullOutputLibDirPath);
 inputGenPath = normalizePath(inputGenPath);
 outputGenPath = normalizePath(outputGenPath);
-
 inputLibOpenflPath = normalizePath(inputLibOpenflPath);
 outputLibOpenflPath = normalizePath(outputLibOpenflPath);
+
 
 const debug = false;
 
@@ -41,10 +57,10 @@ if (argv.length == 3) {
 
 async function start(option) {
 
-  output('\n## convert-es2015.js doing its thing...');
+  output('\n## convert-es2015.js...');
 
   if (option == 'gen') {
-    // Generate the es2015 modules into the lib-esm/_gen/ directory
+    // Generate the es2015 modules in the lib-esm/_gen/ directory
     await startCreateEsmModules();
     
     let totalFilesAddedOrModified = writeAllToFileSystem();
@@ -74,7 +90,7 @@ async function start(option) {
       }
     });
   }
-  else if (option == 'other') {
+  else if (option == 'non-gen') {
 
     await startCreateDefaultReExportEsms();
     await startCreateIndexModules();
@@ -98,8 +114,10 @@ async function start(option) {
 
     });
 
-  } else if (option == 'find') {
+  } else if (option == 'circular') {
+    // Search for circular dependencies that may cause run-time errors
     await startFind();
+    output('Complete!', true);
   }
   else {
     output('\nOption unrecognized or not specified. Nothing to be done. Exiting script.', true);
@@ -112,20 +130,289 @@ async function start(option) {
 
 function startFind() {
   
+  output('Searching for runtime circular dependency related errors:');
+  
   return globby([_path.resolve(`${outputGenPath}`, `**/*.js`)]).then((paths) => {
     
+    // First we search for circular references...
+    let result = new EsmModuleResult();
     
-    for (let path of paths) {
+    for (let i = 0; i < paths.length; i++) {      
+      let path = paths[i];
       
-      
-      let content = fs.readFileSyncUTF8(path);
-      
-      // look at import lines and look for circular dependencies
-      
-      process.exit();
+      result.level = 0;
+      processModule(result, path);
     }
+    
+    // ... then we look for circular imports that would cause a runtime error
+    result.circulars.forEach(circular => {
+      analyzeCircular(circular);
+    });
+    
+    
   });
 }
+
+
+function analyzeCircular(circularChain) {
+  
+  circularChain.map(module => {
+    
+    Array.from(module.directImports.values()).map(importedModuleInfo => {
+      
+      if (circularChain.some(module => importedModuleInfo.module)) {
+        if (importedModuleInfo.inCircular) {
+          
+          
+          if (module.content.search(new RegExp(`\\$extend\\(${RegExp.escape(importedModuleInfo.localName)}\\.prototype`)) > -1) {
+            console.log('\nPossible runtime error:');
+            console.log(module.fullFilePath, 'extends', importedModuleInfo.localName);
+            console.log(circularChain.map(module => module.shortName).join(' -> ') + ' -> ' + circularChain[0].shortName);
+          }
+          
+          let initCommentLine = module.content.search(/^\/\/ Init/m);
+          
+          if (initCommentLine > -1) {
+            
+            let lastPart = '';
+            
+            initCommentLine += '// Init'.length;
+            
+            let exportCommentLine = module.content.search(/^\/\/ Export/m);
+            if (exportCommentLine > -1)
+              lastPart = module.content.substring(initCommentLine, exportCommentLine);
+            else
+              lastPart = module.content.substring(initCommentLine);
+              
+            let localNameUsedIndex = lastPart.search(new RegExp(`^[^\t]*?${RegExp.escape(importedModuleInfo.localName)}`, 'm'));
+            
+            
+            if (localNameUsedIndex > -1) {
+              console.log('\nPossible runtime error:');
+              console.log(module.fullFilePath, 'depends on', importedModuleInfo.localName);
+              console.log(circularChain.map(module => module.shortName).join(' -> ') + ' -> ' + circularChain[0].shortName);
+            }
+          }
+          
+        }
+      }
+    });
+    
+    
+    
+  });
+  
+  
+}
+
+
+
+
+RegExp.escape = function(str) {
+  if (!arguments.callee.sRE) {
+      var specials = [
+          '/', '.', '*', '+', '?', '|',
+          '(', ')', '[', ']', '{', '}', '\\', '$'
+      ];
+      arguments.callee.sRE = new RegExp(
+      '(\\' + specials.join('|\\') + ')', 'gim'
+  );
+  }
+  return str.replace(arguments.callee.sRE, '\\$1');
+}
+            
+
+function processModule(result, moduleFilePath) {
+  
+  let module = new EsmModule();
+  
+  if (typeof moduleFilePath == 'string')
+    module = result.getOrCreateModule(moduleFilePath);
+  else
+    module = moduleFilePath;
+    
+  if (module.importsProcessed) {
+    return;
+  }
+  if (module.isAbsolute)
+    return;
+  
+  
+  let dirname = _path.dirname(module.fullFilePath);
+  let content = _fs.readFileSync(module.fullFilePath, 'utf8');
+  let regex = /^import \{ default as (.+?)[, ].*?} from "(.+?)";/gm;
+  module.content = content;
+  
+  // We look for lines like this:
+  // import { default as openfl_display_DisplayObject } from "./../../openfl/display/DisplayObject";
+  // And we want to extract these parts:
+  // openfl_display_DisplayObject
+  // ./../../openfl/display/DisplayObject
+  
+  while (matches = regex.exec(content)) {
+    
+    let importPath = matches[2];
+    let importFullFilePath = _path.resolve(dirname, matches[2] + '.js');
+    importFullFilePath = normalizePath(importFullFilePath);
+    
+    
+    
+    let importedModule;
+    
+    if (importPath[0] != '.' && importPath[0] != '/') {
+      // absolute import path
+      importedModule = result.getOrCreateModule(importPath);
+      importedModule.isAbsolute = true;
+    } else {
+      importedModule = result.getOrCreateModule(importFullFilePath);
+    }
+    
+    // Such as "openfl_display_DisplayObject"
+    let localName = matches[1];
+    
+    module.addDirectImport(importedModule, localName); 
+  }
+  
+  
+  module.importsProcessed = true;
+  
+  result.chain.push(module);
+  module.directImports.forEach((importedModuleInfo, key) => {
+    
+    if (result.chain.has(importedModuleInfo.module)) {
+      result.foundCircular(result.chain, importedModuleInfo.module, module);
+      
+      // We must not go further or we get trapped in an endless loop
+      return;
+    }
+    result.level++;
+    processModule(result, importedModuleInfo.module);
+    result.level--;
+  });
+  result.chain.pop();
+  
+}
+
+class ImportChain {
+  
+  constructor() {
+    this.chain = [];
+  }
+  
+  setAsCircular(startModule, endModule) {
+    
+  }
+  
+  getModulesBetween(start, end) {
+    
+    let index = this.chain.indexOf(start);
+    
+    let modules = [];
+    
+    while (true) {
+      
+      modules.push(this.chain[index]);
+      
+      if (this.chain[index] == end) {
+        break;
+      }
+      index++;
+      
+    }
+    
+    return modules;
+  }
+  has(module) {
+    return this.chain.indexOf(module) > -1;
+  }
+  push(module) {
+    this.chain.push(module);
+  }
+  pop() {
+    this.chain.pop();
+  }
+}
+class EsmModuleResult {
+  
+  constructor() {
+    this.chain = new ImportChain();
+    this.modules = new Map();
+    
+    this.circulars = [];
+  }
+  
+  foundCircular(chain, startModule, endModule) {
+    
+    let modules = chain.getModulesBetween(startModule, endModule);
+    
+    modules.forEach(module => {
+      
+      let importedModuleInfos = Array.from(module.directImports.values()).filter(importedModuleInfo => modules.some(module2 => module2 == importedModuleInfo.module));
+      
+      importedModuleInfos.forEach(importedModuleInfo => {
+        importedModuleInfo.inCircular = true;
+      });
+    });
+    
+    this.circulars.push(modules);
+  }
+  
+  
+  addModule(module) {
+    this.modules.set(module.fullFilePath, module);
+  }
+  hasModule(fullFilePath) {
+    return this.modules.has(fullFilePath);
+    
+  }
+  
+  moduleProcessed(module) {
+    return module.processed;
+  }
+  
+  
+  getOrCreateModule(fullFilePath) {
+    
+    if (this.hasModule(fullFilePath)) {
+      return this.modules.get(fullFilePath);
+    }
+    
+    let module = new EsmModule();
+    module.shortName = _path.basename(fullFilePath);
+    module.fullFilePath = fullFilePath;
+    this.addModule(module);
+    
+    return module;
+    
+  }
+}
+
+class EsmModule {
+  
+  constructor() {
+    
+    this.isAbsolute = false;
+    
+    this.directImports = new Map();
+    this.indirectImports = new Map();
+    
+    this.isInCircularImportChain = false;
+    this.fullFilePath = null;
+    this.importsProcessed = false;
+  }
+  
+  addDirectImport(module, localName) {
+    
+    let importedModuleInfo = {};
+    importedModuleInfo.module = module;
+    importedModuleInfo.localName = localName;
+    importedModuleInfo.inCircular = false;
+    
+    this.directImports.set(module.fullFilePath, importedModuleInfo);
+  }
+}
+
+
 
 
 function startCreateEsmModules() {
@@ -138,7 +425,7 @@ function startCreateEsmModules() {
         continue;
       }
       
-      let content = fs.readFileSyncUTF8(path, 'cjs-module');
+      let content = delayFS.readFileSyncUTF8(path, 'cjs-module');
 
       let result = createEsmModule(content, path);
       
@@ -146,8 +433,8 @@ function startCreateEsmModules() {
       let esmFilePath = path.replace(fullInputLibDirPath + '/', fullOutputLibDirPath + '/');
       // change: ".../openfl/lib/_gen/openfl/display/Sprite.js" to ".../openfl/lib-esm/_gen/openfl/display/Sprite.js"
       
-      fs.mkDirByPathSync(_path.dirname(esmFilePath));
-      fs.writeFileSyncUTF8(esmFilePath, result, 'esm-module');
+      delayFS.mkDirByPathSync(_path.dirname(esmFilePath));
+      delayFS.writeFileSyncUTF8(esmFilePath, result, 'esm-module');
     }
   });
 }
@@ -172,17 +459,17 @@ function startCreateDefaultReExportEsms() {
       }
       
 
-      let content = fs.readFileSyncUTF8(path);
+      let content = delayFS.readFileSyncUTF8(path);
       let esmFilePath = path.replace(fullInputLibDirPath + '/', fullOutputLibDirPath + '/');
       
       
       let result = createDefaultReExportEsm(content, path);
-      fs.mkDirByPathSync(_path.dirname(esmFilePath));
+      delayFS.mkDirByPathSync(_path.dirname(esmFilePath));
       
       if (path.indexOf('AssetLibrary') > -1) {
-        fs.writeFileSyncUTF8(esmFilePath, result, {tags: 'rexport', createOnly: true});
+        delayFS.writeFileSyncUTF8(esmFilePath, result, {tags: 'rexport', createOnly: true});
       } else {
-        fs.writeFileSyncUTF8(esmFilePath, result, 'rexport');
+        delayFS.writeFileSyncUTF8(esmFilePath, result, 'rexport');
       }
     }
   });
@@ -196,17 +483,17 @@ function startCreateIndexModules() {
     
     for (let path of paths) {
       
-      let content = fs.readFileSyncUTF8(path);
+      let content = delayFS.readFileSyncUTF8(path);
       let esmFilePath = path.replace(fullInputLibDirPath + '/', fullOutputLibDirPath + '/');
 
       let result = createIndexModules(content, path);
       
-      fs.mkDirByPathSync(_path.dirname(esmFilePath));
+      delayFS.mkDirByPathSync(_path.dirname(esmFilePath));
 
-      fs.writeFileSyncUTF8(esmFilePath, result, 'index');
+      delayFS.writeFileSyncUTF8(esmFilePath, result, 'index');
       
       var dTSFilePath = path.replace(/\.js$/, '.d.ts');
-      fs.writeFileSyncUTF8(dTSFilePath, result, 'index');
+      delayFS.writeFileSyncUTF8(dTSFilePath, result, 'index');
 
     }
   });
@@ -248,36 +535,44 @@ function createEsmModule(content, filePath) {
   
   
   
+  //
+  // Here we deal with circular dependency related bugs
+  //
+  if (filePath.indexOf('openfl/display/Bitmap.') > -1) {
+    result = importAndCallInit(result, 'openfl_display_DisplayObject', 'Bitmap');
+  }
+  
+  if (filePath.indexOf('GLMaskShader.') > -1) {
+    result = importAndCallInit(result, 'openfl_display_BitmapData', 'GLMaskShader');
+  }
+  
   if (filePath.indexOf('openfl/display/DisplayObject.') > -1) {
+    
     result = exportInit(result, 'DisplayObject');
     
-    // To deal with circular dependencies
+    // Because the following imports are used in the module context of DisplayObject.js, that is, 
+    // outside any function attached to the prototype of DisplayObject or static function. We must 
+    // make sure these imports are processed before the import that leads to the circular dependency
     result = moveImportsToTop(result, [
       'import { default as haxe_ds_StringMap } from "./../../haxe/ds/StringMap";', 
       'import { default as lime_utils_ObjectPool } from "./../../lime/utils/ObjectPool";'
     ]);
   }
   
-  
-  if (filePath.indexOf('openfl/display/Bitmap.js') > -1) {
-    result = importAndCallInit(result, 'openfl_display_DisplayObject', 'Bitmap');
-  }
-
-  if (filePath.indexOf('openfl/display/BitmapData.js') > -1) {
+  if (filePath.indexOf('openfl/display/BitmapData.') > -1) {
     
     result = exportInit(result, 'BitmapData');
-      
+    
     result = moveImportsToTop(result, [
       'import { default as openfl_geom_Rectangle } from "./../../openfl/geom/Rectangle";',
       'import { default as lime_graphics_Image } from "./../../lime/graphics/Image";',
       'import { default as lime_math_Vector2 } from "./../../lime/math/Vector2";'
     ]);
+    
   }
   
-  if (filePath.indexOf('openfl/_internal/renderer/opengl/GLMaskShader.js') > -1) {
-    
-    result = importAndCallInit(result, 'openfl_display_BitmapData', 'GLMaskShader');
-  }
+  
+  
   
   
   //
@@ -299,10 +594,15 @@ function createEsmModule(content, filePath) {
   //
   // filesaver
   //
-  if (result.indexOf('require (\'file-saverjs\')') > -1)
+  if (result.indexOf('require (\'file-saverjs\')') > -1) {
     result = appendImport(result, 'import fileSaverJs from "file-saverjs";');
-  result = result.replace(/require \('file-saverjs'\)/g, 'fileSaverJs');
-  
+    result = result.replace(/require \('file-saverjs'\)/g, 'fileSaverJs');
+  }
+    
+  if (result.indexOf('require (\'file-saver\')') > -1) {
+    result = appendImport(result, 'import * as fileSaver from "file-saver";');
+    result = result.replace(/require \('file-saver'\)/g, 'fileSaver');
+  }
   
   //
   // pako
@@ -453,7 +753,7 @@ function createIndexModules(content, filePath) {
 
 function writeAllToFileSystem(dryRun) {
 
-  let summary = fs.commit(dryRun);
+  let summary = delayFS.commit(dryRun);
 
  // output(`Stats: ${inputGenPath} \n\tfiles read from filesystem: ${summary.getRead('cjs-module').length}`);
   //output('');
@@ -489,7 +789,9 @@ function writeAllToFileSystem(dryRun) {
   
   let modifiedAll = summary.getModified().length;
   let addedAll = summary.getAdded();
-  let unmodifiedAll = summary.getUnmodified().length;
+  let unmodifiedAll = summary.getUnmodified();
+  let ignoredAll = summary.getIgnored();
+  
   if (addedAll.length > 0) {
     if (!dryRun)
       output(`\n${addedAll.length} files created`);
@@ -501,11 +803,18 @@ function writeAllToFileSystem(dryRun) {
       }
     }
   }
-  if (unmodifiedAll > 0) {
+  if (unmodifiedAll.length > 0) {
     if (!dryRun)
-      output(`\n${unmodifiedAll} files unmodified`);
+      output(`\n${unmodifiedAll.length} files were not modified`);
     else
-      output(`\n${unmodifiedAll} files will not be modified`);
+      output(`\n${unmodifiedAll.length} files will not be modified`);
+      
+  }
+  if (ignoredAll.length > 0) {
+    
+    output(`\nThe following modules are left alone since they contain custom modifications:`);
+    output(summary.getIgnored().join('\n'));
+    
   }
   if (modifiedAll > 0) {
     if (dryRun) {
@@ -651,6 +960,10 @@ class DelayFS {
         value.tags = [options.tags];
       }
     }
+    
+    if (options.createOnly != null) {
+      value.createOnly = options.createOnly;
+    }
 
     value.content = content;
 
@@ -673,9 +986,7 @@ class DelayFS {
     if (typeof extra == 'string') {
       tags = extra;
     } else if (typeof extra == 'object') {
-      if (extra.createOnly != null)
-        createOnly = extra.createOnly;
-      else if (extra.tags != null)
+      if (extra.tags != null)
         tags = extra.tags;
     }
     
@@ -702,7 +1013,7 @@ class DelayFS {
       else if (extra.tags != null)
         tags = extra.tags;
     }
-
+    
     this.updateOrAddToVirtualFileSystem(fullFilePath, content, {performWrite: true, tags: tags, createOnly: createOnly});
   }
 
@@ -755,10 +1066,10 @@ class DelayFS {
           summary.unmodifiedFile(fullFilePath, value.tags);
 
         } else {
-
+          
           // Mofications made to existing file
           if (value.createOnly != null && value.createOnly) {
-            summary.unmodifiedFile(fullFilePath, value.tags);
+            summary.unmodifiedFile(fullFilePath, value.tags, true);
             return;
           }
 
@@ -878,8 +1189,8 @@ class Summary {
     this.modified.push({tags, path});
   }
 
-  unmodifiedFile(path, tags) {
-    this.unmodified.push({tags, path});
+  unmodifiedFile(path, tags, ignored) {
+    this.unmodified.push({tags, path, ignored});
   }
 
   toString() {
@@ -916,6 +1227,16 @@ class Summary {
 
     return this.unmodified.filter(value => {
       return value.tags && value.tags.some(value => value == tags)
+    }).map(value => value.path);
+  }
+  
+  getIgnored(tags) {
+    if (tags == null) {
+      return this.unmodified.filter(value => value.ignored).map(value => value.path);
+    }
+
+    return this.unmodified.filter(value => {
+      return value.tags && value.tags.some(value => value == tags) && value.ignored
     }).map(value => value.path);
   }
 
