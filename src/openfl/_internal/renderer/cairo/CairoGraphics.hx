@@ -820,10 +820,6 @@ class CairoGraphics {
 				
 				case DRAW_QUADS:
 					
-					// TODO: Other fill types
-					
-					if (bitmapFill == null) continue;
-					
 					var cacheExtend = fillPattern.extend;
 					fillPattern.extend = CairoExtend.NONE;
 					
@@ -860,7 +856,7 @@ class CairoGraphics {
 					var tileRect = Rectangle.__pool.get ();
 					var tileTransform = Matrix.__pool.get ();
 					
-					var sourceRect = bitmapFill.rect;
+					var sourceRect = (bitmapFill != null) ? bitmapFill.rect : null;
 					tempMatrix3.identity ();
 					
 					var transform = graphics.__renderTransform;
@@ -1078,6 +1074,7 @@ class CairoGraphics {
 							cairo.lineTo (x2, y2);
 							cairo.lineTo (x3, y3);
 							cairo.closePath ();
+							cairo.source = fillPattern;
 							if (!hitTesting) cairo.fillPreserve ();
 							i += 3;
 							continue;
@@ -1585,7 +1582,7 @@ class CairoGraphics {
 		
 		if (graphics.__commands.length != 0) {
 			
-			var cairo = renderer.cairo;
+			cairo = renderer.cairo;
 			
 			var positionX = 0.0;
 			var positionY = 0.0;
@@ -1606,7 +1603,7 @@ class CairoGraphics {
 						var c = data.readCubicCurveTo ();
 						cairo.curveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 						positionX = c.anchorX;
-						positionY = c.anchorX;
+						positionY = c.anchorY;
 					
 					case CURVE_TO:
 						

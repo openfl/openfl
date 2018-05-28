@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.0.0",
-	"releasenote": "Updated for Lime 6.2, improved compressed texture support, text-scroll fix",
+	"version": "8.1.1",
+	"releasenote": "Fixed minor issues with some ActionScript 3.0 externs",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }

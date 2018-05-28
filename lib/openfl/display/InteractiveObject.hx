@@ -1140,7 +1140,7 @@ extern class InteractiveObject extends DisplayObject {
 	 *  * `new MovieClip()`
 	 * 
 	 */
-	public function new ();
+	private function new ();
 	
 	
 	/**

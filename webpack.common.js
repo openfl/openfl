@@ -1,7 +1,9 @@
 const path = require ("path");
 
 module.exports = {
-	entry: "./lib/openfl/index.js",
+	entry: {
+		openfl: "./lib/openfl/index.js"
+	},
 	devtool: "source-map",
 	output: {
 		path: path.resolve (__dirname, "dist"),
@@ -13,7 +15,7 @@ module.exports = {
 			commonjs: 'Howler',
 			commonjs2: 'Howler',
 			amd: 'Howler',
-			root: 'Howler'
+			root: 'window'
 		},
 		pako: {
 			commonjs: 'pako',

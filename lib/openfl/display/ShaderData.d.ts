@@ -21,6 +21,8 @@ declare namespace openfl.display {
 		public colorMultipliers:ShaderParameter<number>;
 		public colorOffsets:ShaderParameter<number>;
 		
+		[key:string]:any;
+		
 	}
 	
 }

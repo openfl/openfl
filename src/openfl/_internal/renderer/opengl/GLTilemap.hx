@@ -433,6 +433,10 @@ class GLTilemap {
 		renderer.__pushMaskObject (tilemap);
 		// renderer.filterManager.pushObject (tilemap);
 		
+		var rect = Rectangle.__pool.get ();
+		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
+		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
+		
 		renderTileContainer (tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
 		flush (tilemap, renderer);
 		

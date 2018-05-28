@@ -1,4 +1,46 @@
-8.0.0 (03/04/2018)
+8.1.1 (05/17/2018)
+------------------
+
+* Fixed minor issues with some ActionScript 3.0 externs
+
+
+8.1.0 (05/16/2018)
+------------------
+
+* Added (initial) support for ActionScript 3.0 as a source language on NPM
+* Fixed inconsistencies in mask shape rendering on the Cairo renderer
+* Fixed some types and behaviors when using the global "openfl.js" library
+
+
+8.0.2 (05/11/2018)
+------------------
+
+* Updated recommended Haxe release to Haxe 3.4.3 or Haxe 4
+* Improved support for pre-processed SWF asset libraries
+* Fixed an issue when clearing `filters` on `Bitmap` and `TextField` objects
+* Fixed `drawQuads` to support `beginFill` in addition to other fill types
+* Fixed the behavior of `Stage3D` scissor to behave better with scaled windows
+* Fixed geometry for `drawQuads` on the Flash renderer
+* Fixed a regression in the behavior of the enter key on input `TextField`
+* Fixed a regression in the behavior of up/down keys in `TextField`
+* Fixed the behavior of inherited `colorTransform` values
+* Fixed support for `beginFill` with `drawTriangles` on the Cairo renderer
+* Fixed the clipping of `Tilemap` bounds on the OpenGL renderer
+
+
+8.0.1 (05/08/2018)
+------------------
+
+* Fixed an issue when filter classes were accessed by the macro context
+* Fixed an issue when using custom shaders with `-dce full`
+* Fixed bounds calculation when using `lineTo` after using `clear`
+* Fixed rendering for `cacheAsBitmap` and `opaqueBackground` together
+* Fixed a possible issue using `cacheAsBitmap` and masks together
+* Fixed an issue rendering a hardware `cacheAsBitmap` object in software
+* Fixed minor issues to improve support for HashLink
+
+
+8.0.0 (05/04/2018)
 ------------------
 
 * Deprecated `DOMSprite`, `OpenGLView` and `TileArray`
