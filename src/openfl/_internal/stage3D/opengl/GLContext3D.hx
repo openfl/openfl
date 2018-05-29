@@ -481,7 +481,7 @@ class GLContext3D {
 			
 			for (i in 0...Context3D.MAX_SAMPLERS) {
 				
-				context.__samplerStates[i].copyFrom (context.__program.__getSamplerState (i));
+				context.__samplerStates[i] = context.__program.__getSamplerState (i);
 				
 			}
 			
@@ -881,7 +881,7 @@ class GLContext3D {
 				
 				if (context.__supportsAnisotropicFiltering) {
 					
-					state.maxAniso = (context.__maxAnisotropyTexture2D < 16 ? context.__maxAnisotropyTexture2D : 16);
+					state.maxAniso = (context.__maxAnisotropyTexture2D < 16 ? context.__maxAnisotropyTexture2D : 0);
 					
 				}
 			
