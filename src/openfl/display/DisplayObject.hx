@@ -1067,8 +1067,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 			}
 			
-			
-			
 			if (renderParent != null) {
 				
 				if (__supportDOM) {

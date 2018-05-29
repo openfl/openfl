@@ -120,6 +120,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __dragOffsetX:Float;
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
+	private var __forceRender:Bool;
 	private var __fullscreen:Bool;
 	private var __invalidated:Bool;
 	private var __lastClickTime:Int;
@@ -287,6 +288,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__clearBeforeRender = true;
+		__forceRender = false;
 		__stack = [];
 		__rollOutStack = [];
 		__touchData = new Map<Int, TouchData>();
@@ -875,8 +877,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__renderDirty = true;
 		__resize ();
+		
+		#if android // workaround for newer behavior
+		__forceRender = true;
+		Lib.setTimeout (function () {
+			__forceRender = false;
+		}, 500);
+		#end
 		
 		if (__wasFullscreen && !window.fullscreen) {
 			
@@ -943,7 +951,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
+		if (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) {
 			
 			if (!Stage3D.__active) {
 				
@@ -1922,6 +1930,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (stageWidth != cacheWidth || stageHeight != cacheHeight) {
 			
+			__renderDirty = true;
+			__setTransformDirty ();
+			
 			__dispatchEvent (new Event (Event.RESIZE));
 			
 		}
@@ -2020,7 +2031,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 				}
 				
-			} /*#if dom*/ else if (__wasDirty) {
+			} /*#if dom*/ else if (!__renderDirty && __wasDirty) {
 				
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
