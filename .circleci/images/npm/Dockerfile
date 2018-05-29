@@ -34,3 +34,10 @@ RUN apt-get update && \
     echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
     apt-get install -y oracle-java8-installer && \
     apt-get clean
+
+## Install awscli
+RUN apt-get update
+RUN apt-get install -y build-essential git curl python
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && python get-pip.py
+RUN pip install awscli awsebcli
+RUN apt-get clean
