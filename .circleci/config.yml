@@ -237,6 +237,7 @@ jobs:
      - run:
          name: Generate Documentation
          command: cd scripts && haxe docs.hxml
+     - run:
          name: Deploy
          command: |
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
