@@ -10,3 +10,10 @@ RUN haxelib install hamcrest
 RUN git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1
 RUN haxelib dev munit ~/munit/src
 RUN cd ~/munit/tool && haxe build.hxml
+
+## Install awscli
+RUN apt-get update
+RUN apt-get install -y build-essential git curl python
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && python get-pip.py
+RUN pip install awscli awsebcli
+RUN apt-get clean

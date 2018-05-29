@@ -34,7 +34,7 @@ jobs:
   
   Setup (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl
     steps:
      - checkout
@@ -80,7 +80,7 @@ jobs:
   
   HTML5 (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -118,7 +118,7 @@ jobs:
   
   Neko (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -159,7 +159,7 @@ jobs:
   
   C++ (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -191,7 +191,7 @@ jobs:
   
   Flash (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -223,7 +223,7 @@ jobs:
   
   Documentation (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/scripts
     steps:
      - attach_workspace:
@@ -266,7 +266,7 @@ jobs:
   # This is used for local tests, it assumes you already have a working environment
   build:
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl
     steps:
      # Setup
