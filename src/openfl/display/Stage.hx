@@ -346,6 +346,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		window.onDeactivate.add (onWindowDeactivate.bind (window));
 		window.onDropFile.add (onWindowDropFile.bind (window));
 		window.onEnter.add (onWindowEnter.bind (window));
+		window.onExpose.add (onWindowExpose.bind (window));
 		window.onFocusIn.add (onWindowFocusIn.bind (window));
 		window.onFocusOut.add (onWindowFocusOut.bind (window));
 		window.onFullscreen.add (onWindowFullscreen.bind (window));
@@ -798,6 +799,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onWindowEnter (window:Window):Void {
 		
 		//if (this.window == null || this.window != window) return;
+		
+	}
+	
+	
+	public function onWindowExpose (window:Window):Void {
+		
+		if (this.window == null || this.window != window) return;
+		
+		__renderDirty = true;
 		
 	}
 	
