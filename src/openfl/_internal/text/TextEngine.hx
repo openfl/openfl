@@ -1363,7 +1363,7 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						if (layoutGroup != null || layoutGroups.length > 0) {
+						if (lineFormat.align != JUSTIFY && (layoutGroup != null || layoutGroups.length > 0)) {
 							
 							var previous = layoutGroup;
 							if (previous == null) {
