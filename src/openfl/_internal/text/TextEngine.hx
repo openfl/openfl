@@ -1399,7 +1399,7 @@ class TextEngine {
 						
 						if (textIndex == previousSpaceIndex + 1) {
 							
-							alignBaseline();
+							alignBaseline ();
 							
 						}
 						
@@ -1421,7 +1421,7 @@ class TextEngine {
 							
 						}
 						
-						if (width >= 4) breakLongWords(endIndex);
+						if (width >= 4) breakLongWords (endIndex);
 						
 						nextLayoutGroup (textIndex, endIndex);
 						
@@ -1683,15 +1683,15 @@ class TextEngine {
 									
 									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
 									
-									var j = 0;
+									var j = 1;
 									do {
 										
-										if (j > 1 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+										// if (text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
 											
-											layoutGroups[i + j].offsetX += (offsetX * (j-1));
-											j++;
+										// 	layoutGroups[i + j].offsetX += (offsetX * (j-1));
+										// 	j++;
 											
-										}
+										// }
 										
 										layoutGroups[i + j].offsetX += (offsetX * j);
 										
