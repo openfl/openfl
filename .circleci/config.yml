@@ -224,7 +224,7 @@ jobs:
   Documentation (Haxe 3.4.x):
     docker:
      - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl/scripts
+    working_directory: /workspace/openfl
     steps:
      - attach_workspace:
          at: /
@@ -236,11 +236,11 @@ jobs:
          command: haxelib dev dox ~/dox
      - run:
          name: Generate Documentation
-         command: haxe docs.hxml
+         command: cd scripts && haxe docs.hxml
          name: Deploy
          command: |
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-              aws s3 sync ../docs-api s3://api.openfl.org --acl bucket-owner-full-control --acl public-read --size-only --delete --include="*" --cache-control max-age=864000
+              aws s3 sync docs-api s3://api.openfl.org --acl bucket-owner-full-control --acl public-read --size-only --delete --include="*" --cache-control max-age=864000
             else
               echo "Not on master (skipping step)"
             fi
