@@ -1051,10 +1051,6 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		#if (js && html5)
-		ImageCanvasUtil.sync (image, false);
-		#end
-		
 		if (image != null && image.version > __textureVersion) {
 			
 			var internalFormat, format;
@@ -1998,15 +1994,6 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 		}
-		
-	}
-	
-	
-	private function __sync ():Void {
-		
-		#if (js && html5)
-		ImageCanvasUtil.sync (image, false);
-		#end
 		
 	}
 	
