@@ -1,10 +1,11 @@
 package openfl._internal.stage3D.opengl;
 
 
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
-import lime.graphics.GLRenderContext;
 import openfl._internal.stage3D.atf.ATFReader;
 import openfl._internal.stage3D.atf.ATFGPUFormat;
 import openfl._internal.stage3D.GLUtils;
@@ -122,17 +123,17 @@ class GLCubeTexture {
 		#if (js && html5)
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			var gl = renderer.__gl;
+			var gl:WebGLContext = renderer.__gl;
 			
 			var size = cubeTexture.__size >> miplevel;
 			if (size == 0) return;
 			
-			var target = __sideToTarget (gl, side);
+			var target = __sideToTarget (cast gl, side);
 			
 			gl.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
 			GLUtils.CheckGLError ();
 			
-			gl.texImage2DWEBGL (target, miplevel, cubeTexture.__internalFormat, size, size, 0, cubeTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			gl.texImage2D (target, miplevel, cubeTexture.__internalFormat, cubeTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
 			gl.bindTexture (cubeTexture.__textureTarget, null);

@@ -2,6 +2,7 @@ package openfl._internal.stage3D.opengl;
 
 
 import haxe.io.Bytes;
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
@@ -148,7 +149,7 @@ class GLTexture {
 		#if (js && html5)
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			var gl = renderer.__gl;
+			var gl:WebGLContext = renderer.__gl;
 			
 			var width = texture.__width >> miplevel;
 			var height = texture.__height >> miplevel;
@@ -161,7 +162,7 @@ class GLTexture {
 			gl.bindTexture (texture.__textureTarget, texture.__textureID);
 			GLUtils.CheckGLError ();
 			
-			gl.texImage2DWEBGL (texture.__textureTarget, miplevel, texture.__internalFormat, width, height, 0, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
 			gl.bindTexture (texture.__textureTarget, null);
