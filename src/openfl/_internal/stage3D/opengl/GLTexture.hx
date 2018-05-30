@@ -44,8 +44,6 @@ class GLTexture {
 		
 		gl.bindTexture (texture.__textureTarget, null);
 		
-		uploadFromTypedArray (texture, renderer, null);
-		
 	}
 	
 	
@@ -145,6 +143,36 @@ class GLTexture {
 		}
 		
 		var image = texture.__getImage (source);
+		if (image == null) return;
+		
+		#if (js && html5)
+		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+			
+			var gl = renderer.__gl;
+			
+			var width = texture.__width >> miplevel;
+			var height = texture.__height >> miplevel;
+			
+			if (width == 0 && height == 0) return;
+			
+			if (width == 0) width = 1;
+			if (height == 0) height = 1;
+			
+			gl.bindTexture (texture.__textureTarget, texture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2DWEBGL (texture.__textureTarget, miplevel, texture.__internalFormat, width, height, 0, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (texture.__textureTarget, null);
+			GLUtils.CheckGLError ();
+			
+			// var memUsage = (width * height) * 4;
+			// __trackMemoryUsage (memUsage);
+			return;
+			
+		}
+		#end
 		
 		uploadFromTypedArray (texture, renderer, image.data, miplevel);
 		

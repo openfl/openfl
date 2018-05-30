@@ -116,15 +116,33 @@ class GLCubeTexture {
 		var size = cubeTexture.__size >> miplevel;
 		if (size == 0) return;
 		
-		//if (source.width != size || source.height != size) {
-			//
-			//var copy = new BitmapData (size, size, true, 0);
-			//copy.draw (source);
-			//source = copy;
-			//
-		//}
-		
 		var image = cubeTexture.__getImage (source);
+		if (image == null) return;
+		
+		#if (js && html5)
+		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+			
+			var gl = renderer.__gl;
+			
+			var size = cubeTexture.__size >> miplevel;
+			if (size == 0) return;
+			
+			var target = __sideToTarget (gl, side);
+			
+			gl.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2DWEBGL (target, miplevel, cubeTexture.__internalFormat, size, size, 0, cubeTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (cubeTexture.__textureTarget, null);
+			GLUtils.CheckGLError ();
+			
+			cubeTexture.__uploadedSides |= 1 << side;
+			return;
+			
+		}
+		#end
 		
 		uploadFromTypedArray (cubeTexture, renderer, image.data, side, miplevel);
 		

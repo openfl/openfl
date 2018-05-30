@@ -39,8 +39,25 @@ class GLRectangleTexture {
 		if (source == null) return;
 		
 		var image = rectangleTexture.__getImage (source);
-		
 		if (image == null) return;
+		
+		#if (js && html5)
+		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+			
+			var gl = renderer.__gl;
+			
+			gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2DWEBGL (rectangleTexture.__textureTarget, 0, rectangleTexture.__internalFormat, rectangleTexture.__width, rectangleTexture.__height, 0, rectangleTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (rectangleTexture.__textureTarget, null);
+			GLUtils.CheckGLError ();
+			return;
+			
+		}
+		#end
 		
 		uploadFromTypedArray (rectangleTexture, renderer, image.data);
 		
