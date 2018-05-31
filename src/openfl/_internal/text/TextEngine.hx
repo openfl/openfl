@@ -89,6 +89,7 @@ class TextEngine {
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text (default, set):UTF8String;
+	public var textBounds:Rectangle;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
@@ -127,6 +128,7 @@ class TextEngine {
 		text = "";
 		
 		bounds = new Rectangle (0, 0, 0, 0);
+		textBounds = new Rectangle (0, 0, 0, 0);
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -261,6 +263,17 @@ class TextEngine {
 		
 		bounds.width = width + padding;
 		bounds.height = height + padding;
+		
+		var x = width, y = width;
+		
+		for (group in layoutGroups) {
+			
+			if (group.offsetX < x) x = group.offsetX;
+			if (group.offsetY < y) y = group.offsetY;
+			
+		}
+		
+		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), textWidth + 4, textHeight + 4);
 		
 	}
 	
