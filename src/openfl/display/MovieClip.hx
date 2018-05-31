@@ -34,11 +34,13 @@ import hscript.Parser;
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.geom.ColorTransform)
 
+
 class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __initSWF:SWFLite;
 	private static var __initSymbol:SpriteSymbol;
+	private static #if !openfljs inline #end var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
 	
 	public var currentFrame (get, never):Int;
 	public var currentFrameLabel (get, never):String;
@@ -71,12 +73,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	
 	
 	#if openfljs
-	private static var __parent_fps:Bool;
 	private static function __init__ () {
 		
-		__parent_fps = true;
-		untyped __js__("/// #if (typeof swf_parent_fps === 'undefined' || !swf_parent_fps) && (typeof swflite_parent_fps === 'undefined' || !swflite_parent_fps)");
-		__parent_fps = false;
+		__useParentFPS = true;
+		untyped __js__("/// #if (typeof swf-parent-fps === 'undefined' || !swf-parent-fps) && (typeof swflite-parent-fps === 'undefined' || !swflite-parent-fps)");
+		__useParentFPS = false;
 		untyped __js__("/// #endif");
 		
 		untyped Object.defineProperties (MovieClip.prototype, {
@@ -171,20 +172,12 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		
 		__playing = true;
 		
-		#if (openfljs || (!swflite_parent_fps && !swf_parent_fps))
-		
-		#if openfljs
-		if (!__parent_fps) {
-		#end
-		
-		__frameTime = Std.int (1000 / __swf.frameRate);
-		__timeElapsed = 0;
-		
-		#if openfljs
+		if (!__useParentFPS) {
+			
+			__frameTime = Std.int (1000 / __swf.frameRate);
+			__timeElapsed = 0;
+			
 		}
-		#end
-		
-		#end
 		
 	}
 	
@@ -706,34 +699,21 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	private function __getNextFrame (deltaTime:Int):Int {
 		
 		var nextFrame:Int = 0;
-		#if openfljs
-		if (!__parent_fps) {
-		#end
 		
-		#if (openfljs || (!swflite_parent_fps && !swf_parent_fps))
-		
-		__timeElapsed += deltaTime;
-		nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
-		if (nextFrame < 1) nextFrame = 1;
-		if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
-		__timeElapsed = (__timeElapsed % __frameTime);
-		
-		#end
-		
-		#if openfljs
+		if (!__useParentFPS) {
+			
+			__timeElapsed += deltaTime;
+			nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
+			if (nextFrame < 1) nextFrame = 1;
+			if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
+			__timeElapsed = (__timeElapsed % __frameTime);
+			
 		} else {
-		#end
-		
-		#if (openfljs || swflite_parent_fps || swf_parent_fps)
-		
-		nextFrame = __currentFrame + 1;
-		if (nextFrame > __totalFrames) nextFrame = 1;
-		
-		#end
-		
-		#if openfljs
+			
+			nextFrame = __currentFrame + 1;
+			if (nextFrame > __totalFrames) nextFrame = 1;
+			
 		}
-		#end
 		
 		return nextFrame;
 		
