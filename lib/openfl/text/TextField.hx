@@ -236,12 +236,16 @@ extern class TextField extends InteractiveObject {
 	 * selected up to and including the last character. Here is an example:
 	 *
 	 * ```
-	 * var my_txt:TextField new TextField();
-	 * my_txt.text = "Flash Macintosh version"; var my_fmt:TextFormat = new
-	 * TextFormat(); my_fmt.color = 0xFF0000; my_txt.defaultTextFormat = my_fmt;
-	 * my_txt.setSelection(6,15); // partial text selected - defaultTextFormat
-	 * not applied my_txt.setSelection(6,23); // text selected to end -
-	 * defaultTextFormat applied my_txt.replaceSelectedText("Windows version");
+	 * var my_txt = new TextField();
+	 * my_txt.text = "Flash Macintosh version";
+	 * var my_fmt = new TextFormat();
+	 * my_fmt.color = 0xFF0000;
+	 * my_txt.defaultTextFormat = my_fmt;
+	 * // partial text selected - defaultTextFormat not applied
+	 * my_txt.setSelection(6,15);
+	 * // text selected to end - defaultTextFormat applied
+	 * my_txt.setSelection(6,23);
+	 * my_txt.replaceSelectedText("Windows version");
 	 * ```
 	 *
 	 * When you access the `defaultTextFormat` property, the
