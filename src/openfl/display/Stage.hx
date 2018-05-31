@@ -1288,7 +1288,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private function __handleError (e:Dynamic):Void {
 		
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
-		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+		
+		try {
+			
+			Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+			
+		} catch (e:Dynamic) {}
 		
 		if (!event.__preventDefault) {
 			
