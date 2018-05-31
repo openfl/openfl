@@ -859,7 +859,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowLeave (window:Window):Void {
 		
-		if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window || MouseEvent.__buttonDown) return;
 		
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
