@@ -490,7 +490,7 @@ class TextField extends InteractiveObject {
 	public function getTextFormat (beginIndex:Int = -1, endIndex:Int = -1):TextFormat {
 		
 		var format = null;
-		if (beginIndex >= textLength) return null;
+		if (beginIndex >= text.length) return null;
 		
 		if (beginIndex == -1) beginIndex = 0;
 		if (endIndex == -1) endIndex = text.length;
