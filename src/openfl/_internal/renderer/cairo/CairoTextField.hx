@@ -99,9 +99,22 @@ class CairoTextField {
 		
 		if (cairo == null) {
 			
-			var bitmap = needsUpscaling ?
-					new BitmapData (Std.int (Math.min (width * 1.25, Graphics.maxTextureWidth)), Std.int (Math.min (height * 1.25, Graphics.maxTextureHeight)), true, 0) :
-					new BitmapData (width, height, true, 0);
+			var bitmapWidth = needsUpscaling ? Std.int (width * 1.25) : width;
+			var bitmapHeight = needsUpscaling ? Std.int (height * 1.25) : height;
+			
+			if (Graphics.maxTextureWidth != null && bitmapWidth > Graphics.maxTextureWidth) {
+				
+				bitmapWidth = Graphics.maxTextureWidth;
+				
+			}
+			
+			if (Graphics.maxTextureHeight != null && bitmapHeight > Graphics.maxTextureHeight) {
+				
+				bitmapHeight = Graphics.maxTextureHeight;
+				
+			}
+			
+			var bitmap = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
 			graphics.__visible = true;
