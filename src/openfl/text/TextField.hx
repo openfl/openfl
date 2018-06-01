@@ -497,7 +497,7 @@ class TextField extends InteractiveObject {
 		
 		for (group in __textEngine.textFormatRanges) {
 			
-			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start <= endIndex && group.end >= endIndex) || (beginIndex == endIndex && group.start <= beginIndex && group.end >= beginIndex)) {
+			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end > endIndex)) {
 				
 				if (format == null) {
 					
