@@ -487,9 +487,12 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat {
+	public function getTextFormat (beginIndex:Int = -1, endIndex:Int = -1):TextFormat {
 		
 		var format = null;
+		
+		if (beginIndex == -1) beginIndex = 0;
+		if (endIndex == -1) endIndex = text.length;
 		
 		for (group in __textEngine.textFormatRanges) {
 			
