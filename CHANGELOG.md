@@ -1,3 +1,35 @@
+8.2.0 (06/01/2018)
+------------------
+
+* Updated to Lime 6.4.*
+* Updated `file-saverjs` dependency on NPM to `file-saver`
+* Updated to avoid `implements Dynamic` since it is being removed in Haxe 4
+* Added ES6 modules (as an alternative to the default CommonJS modules)
+* Added `openfl.utils.setTimeout` on NPM-based builds
+* Added `openfl.utils.Dictionary` for NPM builds
+* Added Gzip and Brotli min.js files for NPM builds
+* Improved the texture size used for rendering `TextField`
+* Improved behavior of `texture.uploadFromBitmapData` when the source is HTML5 canvas
+* Improved compilation on AS3 by including `flash.*` versions of OpenFL types
+* Improved extern types for NPM builds
+* Improved using generated SWF classes with dead-code elimination
+* Fixed initialization of the stencil/depth buffers when using Stage3D
+* Fixed the behavior of `textField.getTextFormat` to handle some edge cases
+* Fixed a regression in software bitmap filters for certain cases
+* Fixed cases where HTML5 would dispatch `MOUSE_LEAVE` instead of `RELEASE_OUTSIDE`
+* Fixed support for `Vector.<T>` on the AS3 target
+* Fixed a possible loop when dispatching `UncaughtErrorEvent` throws an error
+* Fixed `Lib.setTimeout` and `Lib.setInterval` to make the last argument optional
+* Fixed a possible `null` issue when hit-testing within `Sprite`
+* Fixed the default value for `vector.lastIndexOf`
+* Fixed some minor issues when forcing power-of-two textures
+* Fixed some edge cases in justified text word-wrapping
+* Fixed the behavior of the `displayObject.visible` property if it is overridden
+* Fixed behavior of setting Stage3D max anisotropy to invalidate less often
+* Fixed keyboard shortcuts to move text cursor to work only if selectable is true
+* Fixed a regression in the SWF generator when using it from Node.js
+
+
 8.1.1 (05/17/2018)
 ------------------
 
