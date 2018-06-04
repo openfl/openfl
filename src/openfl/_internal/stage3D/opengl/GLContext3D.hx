@@ -246,6 +246,7 @@ class GLContext3D {
 		GLContext3D.gl = renderer.__gl;
 		
 		__updateBackbufferViewport ();
+		__updateDepthAndStencilState ();
 		
 		context.backBufferWidth = width;
 		context.backBufferHeight = height;

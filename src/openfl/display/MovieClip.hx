@@ -40,7 +40,12 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	
 	private static var __initSWF:SWFLite;
 	private static var __initSymbol:SpriteSymbol;
-	private static #if !openfljs inline #end var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
+	
+	#if openfljs
+	private static var __useParentFPS:Bool;
+	#else
+	private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
+	#end
 	
 	public var currentFrame (get, never):Int;
 	public var currentFrameLabel (get, never):String;

@@ -319,8 +319,13 @@ class Tools {
 	
 	private static function generateSWFLiteClasses (targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfID:String, prefix:String = ""):Array<String> {
 		
+		#if commonjs
+		var movieClipTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/MovieClip.mtt"));
+		var simpleButtonTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
+		#else
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		#end
 		
 		var generatedClasses = [];
 		
@@ -708,6 +713,7 @@ class Tools {
 		var prefix = "";
 		var uuid = StringHelper.generateUUID (20);
 		
+		#if !commonjs
 		generateSWFLiteClasses (srcPath, exportedClasses, swfLite, uuid, prefix);
 		
 		for (file in exportedClasses) {
@@ -716,6 +722,7 @@ class Tools {
 			File.saveContent (file.targetPath, file.data);
 			
 		}
+		#end
 		
 		var data = AssetHelper.createManifest (project);
 		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
