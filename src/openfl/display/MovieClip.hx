@@ -186,6 +186,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	#if openfljs
 	@:noCompletion private static function __init__ () {
 		
+		__useParentFPS = true;
+		untyped __js__("/// #if (typeof defines == 'undefined' || (!defines['swf-parent-fps'] && !defines['swflite-parent-fps']))");
+		__useParentFPS = false;
+		untyped __js__("/// #endif");
+		
 		untyped Object.defineProperties (MovieClip.prototype, {
 			"currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }") },
 			"currentFrameLabel": { get: untyped __js__ ("function () { return this.get_currentFrameLabel (); }") },
@@ -225,13 +230,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			__fromSymbol (__swf, __symbol);
 			
 		}
-	
-		#if openfljs
-		__useParentFPS = true;
-		untyped __js__("/// #if (typeof swf_parent_fps === 'undefined' || !swf_parent_fps) && (typeof swflite_parent_fps === 'undefined' || !swflite_parent_fps)");
-		__useParentFPS = false;
-		untyped __js__("/// #endif");
-		#end	
+		
 	}
 	
 	
