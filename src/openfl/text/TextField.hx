@@ -490,14 +490,14 @@ class TextField extends InteractiveObject {
 	public function getTextFormat (beginIndex:Int = -1, endIndex:Int = -1):TextFormat {
 		
 		var format = null;
-		if (beginIndex >= text.length) return null;
+		if (beginIndex >= text.length) return new TextFormat ();
 		
 		if (beginIndex == -1) beginIndex = 0;
 		if (endIndex == -1) endIndex = text.length;
 		
 		for (group in __textEngine.textFormatRanges) {
 			
-			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end > endIndex)) {
+			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end >= endIndex)) {
 				
 				if (format == null) {
 					
@@ -530,6 +530,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		if (format == null) format = new TextFormat ();
 		return format;
 		
 	}
