@@ -516,14 +516,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		var ch1 = readInt ();
-		var ch2 = readInt ();
-		
 		if (endian == LITTLE_ENDIAN) {
 			
-			return FPHelper.i64ToDouble (ch1, ch2);
+			if (position + 8 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 8;
+			return getDouble (position - 8);
 			
 		} else {
+			
+			var ch1 = readInt ();
+			var ch2 = readInt ();
 			
 			return FPHelper.i64ToDouble (ch2, ch1);
 			
