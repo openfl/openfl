@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.2.0",
-	"releasenote": "Addition of ES6 modules for NPM, many fixes and improvements",
+	"version": "8.2.1",
+	"releasenote": "Fixed minor regressions in texture upload and TextField",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }

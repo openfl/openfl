@@ -1,6 +1,6 @@
 {
   "name": "openfl",
-  "version": "8.2.0",
+  "version": "8.2.1",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "openfl",
@@ -92,7 +92,7 @@
     "compression-webpack-plugin": "^1.1.11",
     "format": "jgranick/format",
     "globby": "^8.0.1",
-    "haxe": "5.0.9",
+    "haxe": "^5.0.10",
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
     "lime": "openfl/lime#develop",
