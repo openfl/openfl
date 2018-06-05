@@ -335,9 +335,9 @@ class CairoTextField {
 									
 								}
 								
-								cairo.moveTo (Math.floor (group.offsetX + advance) + 0.5 - textField.scrollV - bounds.x, scrollY + 2.5 - bounds.y);
+								cairo.moveTo (Math.floor (group.offsetX + advance) + 0.5 - textField.scrollH - bounds.x, scrollY + 2.5 - bounds.y);
 								cairo.lineWidth = 1;
-								cairo.lineTo (Math.floor (group.offsetX + advance) + 0.5 - textField.scrollV - bounds.x, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1 - bounds.y);
+								cairo.lineTo (Math.floor (group.offsetX + advance) + 0.5 - textField.scrollH - bounds.x, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1 - bounds.y);
 								cairo.stroke ();
 								
 							}

@@ -273,6 +273,9 @@ class TextEngine {
 			
 		}
 		
+		if (x >= width) x = 2;
+		if (y >= height) y = 2;
+		
 		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), textWidth + 4, textHeight + 4);
 		
 	}
