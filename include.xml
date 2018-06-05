@@ -8,7 +8,7 @@
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<window stencil-buffer="true" />
+	<window stencil-buffer="true" depth-buffer="true" color-depth="32" />
 	
 	<unset name="custom-backend" />
 	
