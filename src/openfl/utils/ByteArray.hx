@@ -534,7 +534,23 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readFloat ():Float {
 		
-		return FPHelper.i32ToFloat (readInt ());
+		if (endian == LITTLE_ENDIAN) {
+			
+			if (position + 4 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 4;
+			return getFloat (position - 4);
+			
+		} else {
+			
+			return FPHelper.i32ToFloat (readInt ());
+			
+		}
 		
 	}
 	
@@ -709,7 +725,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		
 		position += length;
-		
 		
 		return getString (position - length, length);
 		
