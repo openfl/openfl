@@ -947,7 +947,7 @@ class SWFLiteExporter {
 			if (cls.fields.length > 0) {
 				for (field in cls.fields) {
 					switch (field.kind) {
-						case FMethod(idx, _, _, _):
+						case FMethod(var idx, _, _, _):
 							var methodName = data.abcData.resolveMultiNameByIndex(field.name);
 							if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 								var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
@@ -1325,7 +1325,7 @@ class AVM2 {
 
 		for (field in cls.fields) {
 			switch (field.kind) {
-				case FMethod(idx, _, _, _):
+				case FMethod(var idx, _, _, _):
 					var methodName = abcData.resolveMultiNameByIndex(field.name);
 					if (methodName.name == name)
 					{
