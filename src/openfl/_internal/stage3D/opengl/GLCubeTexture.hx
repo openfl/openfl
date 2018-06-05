@@ -120,8 +120,10 @@ class GLCubeTexture {
 		var image = cubeTexture.__getImage (source);
 		if (image == null) return;
 		
+		// TODO: Improve handling of miplevels with canvas src
+		
 		#if (js && html5)
-		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
 			var gl:WebGLContext = renderer.__gl;
 			
