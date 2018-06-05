@@ -1,3 +1,13 @@
+8.2.1 (06/05/2018)
+------------------
+
+* Updated default window color depth to 32-bit (`<window color-depth="16" />` to revert)
+* Updated to enable depth buffer by default (`<window depth-buffer="false" />` to revert)
+* Improved the performacne of little endian `ByteArray` `readFloat`/`readDouble`
+* Fixed a regression in the behavior of `textField.getTextFormat`
+* Fixed a regression in Stage3D texture uploads on HTML5
+
+
 8.2.0 (06/01/2018)
 ------------------
 
