@@ -1,3 +1,9 @@
+8.2.2 (06/05/2018)
+------------------
+
+* Fixed a regression in the `TextField` input cursor
+
+
 8.2.1 (06/05/2018)
 ------------------
 
