@@ -937,9 +937,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
  		
  		var renderParent = __renderParent != null ? __renderParent : parent;
  		
- 		// Relying on __updateTraverse always being set, is currently too risky and would only bring small performance gain
- 		// Therefore setting it always to true up to the root objects
- 		if (renderParent != null/* && !renderParent.__updateTraverse*/) {
+ 		if (renderParent != null && !renderParent.__updateTraverse) {
  			
  			renderParent.__updateTraverse = true;
  			renderParent.__setParentUpdateTraverse ();
