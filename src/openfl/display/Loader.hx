@@ -341,6 +341,7 @@ class Loader extends DisplayObjectContainer {
 			
 		} else {
 			
+			contentLoaderInfo.bytes = loader.data;
 			BitmapData.loadFromBytes (loader.data).onComplete (BitmapData_onLoad).onError (BitmapData_onError);
 			
 		}
