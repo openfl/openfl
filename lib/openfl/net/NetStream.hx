@@ -183,8 +183,9 @@ extern class NetStream extends EventDispatcher {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_2) public function dispose ():Void;
+	@:require(flash11_2)
 	#end
+	public function dispose ():Void;
 	
 	
 	#if flash

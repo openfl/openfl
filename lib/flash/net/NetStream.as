@@ -184,8 +184,9 @@ package flash.net {
 		
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) @:require(flash11_2) public function dispose ():void {}
+		// @:noCompletion @:dox(hide) @:require(flash11_2)
 		// #end
+		public function dispose ():void {}
 		
 		
 		// #if flash
