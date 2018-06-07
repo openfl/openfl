@@ -1,7 +1,6 @@
+import Vector from "./../Vector";
 import Matrix3D from "./Matrix3D";
 import Vector3D from "./Vector3D";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.geom {

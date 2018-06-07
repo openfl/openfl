@@ -20,11 +20,12 @@ class SamplerState {
 	public var centroid:Bool;
 	public var ignoreSampler:Bool;
 	public var mipmapGenerated:Bool;
+	public var textureAlpha:Bool;
 	
 	private var __samplerDirty:Bool;
 	
 	
-	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0, ignoreSampler:Bool = false, centroid:Bool = false, mipmapGenerated:Bool = false) {
+	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0, ignoreSampler:Bool = false, centroid:Bool = false, mipmapGenerated:Bool = false, textureAlpha:Bool = false) {
 		
 		this.minFilter = minFilter;
 		this.magFilter = magFilter;
@@ -35,6 +36,7 @@ class SamplerState {
 		this.ignoreSampler = ignoreSampler;
 		this.centroid = centroid;
 		this.mipmapGenerated = mipmapGenerated;
+		this.textureAlpha = textureAlpha;
 		
 		__samplerDirty = true;
 		
@@ -53,6 +55,7 @@ class SamplerState {
 		this.maxAniso = other.maxAniso;
 		this.centroid = other.centroid;
 		this.mipmapGenerated = other.mipmapGenerated;
+		this.textureAlpha = other.textureAlpha;
 		
 	}
 	
@@ -71,7 +74,7 @@ class SamplerState {
 			
 		}
 
-		return (minFilter == other.minFilter && magFilter == other.magFilter && wrapModeS == other.wrapModeS && wrapModeT == other.wrapModeT && lodBias == other.lodBias && maxAniso == other.maxAniso && mipmapGenerated == other.mipmapGenerated);
+		return (minFilter == other.minFilter && magFilter == other.magFilter && wrapModeS == other.wrapModeS && wrapModeT == other.wrapModeT && lodBias == other.lodBias && maxAniso == other.maxAniso && mipmapGenerated == other.mipmapGenerated && textureAlpha == other.textureAlpha);
 		
 	}
 	

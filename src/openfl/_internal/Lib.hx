@@ -6,6 +6,11 @@ import lime.utils.Log;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Lib {
 	

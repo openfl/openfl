@@ -91,6 +91,9 @@ declare namespace openfl.geom {
 		 */
 		public color:number;
 		
+		protected get_color ():number;
+		protected set_color (value:number):number;
+		
 		/**
 		 * A decimal value that is multiplied with the green channel value.
 		 */

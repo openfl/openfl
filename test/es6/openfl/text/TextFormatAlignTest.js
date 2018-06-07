@@ -7,7 +7,7 @@ describe ("ES6 | TextFormatAlign", function () {
 	
 	it ("test", function () {
 		
-		switch (+TextFormatAlign.CENTER) {
+		switch (""+TextFormatAlign.CENTER) {
 			
 			case TextFormatAlign.CENTER:
 			case TextFormatAlign.JUSTIFY:

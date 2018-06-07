@@ -56,6 +56,9 @@ declare namespace openfl.display {
 		 */
 		buttonMode:boolean;
 		
+		protected get_buttonMode ():boolean;
+		protected set_buttonMode (value:boolean):boolean;
+		
 		readonly dropTarget:DisplayObject;
 		
 		/**
@@ -63,6 +66,8 @@ declare namespace openfl.display {
 		 * drawing commands can occur.
 		 */
 		readonly graphics:Graphics;
+		
+		protected get_graphics ():Graphics;
 		
 		hitArea:Sprite;
 		

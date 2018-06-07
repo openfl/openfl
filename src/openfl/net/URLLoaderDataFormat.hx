@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !openfljs
 
 
 @:enum abstract URLLoaderDataFormat(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.net;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract URLLoaderDataFormat(String) from String to String {
+	
+	public var BINARY = "binary";
+	public var TEXT = "text";
+	public var VARIABLES = "variables";
+	
+}
+
+
+#end

@@ -1,3 +1,4 @@
+import ObjectEncoding from "./ObjectEncoding";
 import EventDispatcher from "./../events/EventDispatcher";
 import ByteArray from "./../utils/ByteArray";
 import Endian from "./../utils/Endian";
@@ -12,15 +13,24 @@ declare namespace openfl.net {
 		
 		
 		public readonly bytesAvailable:number;
-		public readonly bytesPending:number;
-		public readonly connected:boolean;
-		public endian:Endian;
-		public objectEncoding:number;
-		public timeout:number;
 		
-		// @:noCompletion private get_bytesAvailable ():number;
-		// @:noCompletion private get_endian ():Endian;
-		// @:noCompletion private set_endian (value:Endian):Endian;
+		protected get_bytesAvailable ():number;
+		
+		public readonly bytesPending:number;
+		
+		protected get_bytesPending ():number;
+		
+		public readonly connected:boolean;
+		
+		protected get_connected ():boolean;
+		
+		public endian:Endian;
+		
+		protected get_endian ():Endian;
+		protected set_endian (value:Endian):Endian;
+		
+		public objectEncoding:ObjectEncoding;
+		public timeout:number;
 		
 		public constructor (host?:string, port?:number);
 		public close ():void;

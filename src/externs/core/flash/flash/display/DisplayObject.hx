@@ -3,6 +3,7 @@ package flash.display; #if (!display && flash)
 
 import openfl.events.EventDispatcher;
 import openfl.filters.BitmapFilter;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
@@ -25,8 +26,12 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	public var cacheAsBitmap:Bool;
 	
-	#if air
-	public var cacheAsBitmapMatrix:flash.geom.Matrix;
+	#if (air || !flash)
+	public var cacheAsBitmapMatrix:Matrix;
+	#else
+	public var cacheAsBitmapMatrix (get, set):Matrix;
+	private inline function get_cacheAsBitmapMatrix ():Matrix { return transform.concatenatedMatrix; }
+	private inline function set_cacheAsBitmapMatrix (value:Matrix):Matrix { return value; }
 	#end
 	
 	public var filters:Array<BitmapFilter>;

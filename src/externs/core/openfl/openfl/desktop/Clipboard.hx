@@ -11,6 +11,8 @@ extern class Clipboard {
 	
 	public var formats (get, never):Array<ClipboardFormats>;
 	
+	@:noCompletion private function get_formats ():Array<ClipboardFormats>;
+	
 	public function clear ():Void;
 	public function clearData (format:ClipboardFormats):Void;
 	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Object;

@@ -146,7 +146,7 @@ import openfl.utils.Object;
 extern class SharedObject extends EventDispatcher {
 	
 	
-	public static var defaultObjectEncoding:Int;
+	public static var defaultObjectEncoding:ObjectEncoding;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
@@ -170,7 +170,7 @@ extern class SharedObject extends EventDispatcher {
 	public var data (default, null):Dynamic;
 	
 	public var fps (null, default):Float;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	/**
 	 * The current size of the shared object, in bytes.
@@ -181,7 +181,9 @@ extern class SharedObject extends EventDispatcher {
 	 * processing time, so you may want to avoid using this method unless you
 	 * have a specific need for it.
 	 */
-	public var size (default, never):UInt;
+	public var size (get, never):UInt;
+	
+	@:noCompletion private function get_size ():UInt;
 	
 	
 	private function new ();

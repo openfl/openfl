@@ -1,4 +1,5 @@
 import NetConnection from "./NetConnection";
+import ObjectEncoding from "./ObjectEncoding";
 import SharedObjectFlushStatus from "./SharedObjectFlushStatus";
 import EventDispatcher from "./../events/EventDispatcher";
 
@@ -131,22 +132,22 @@ declare namespace openfl.net {
 	 * `netStatus` event with a `code` property of
 	 * `SharedObject.Flush.Failed`. 
 	 * 
-	 * @event asyncError Dispatched when an exception is thrown asynchronously  - 
+	 * @:event asyncError Dispatched when an exception is thrown asynchronously  - 
 	 *                   that is, from native asynchronous code.
-	 * @event netStatus  Dispatched when a SharedObject instance is reporting its
+	 * @:event netStatus  Dispatched when a SharedObject instance is reporting its
 	 *                   status or error condition. The `netStatus`
 	 *                   event contains an `info` property, which is an
 	 *                   information object that contains specific information
 	 *                   about the event, such as whether a connection attempt
 	 *                   succeeded or whether the shared object was successfully
 	 *                   written to the local disk.
-	 * @event sync       Dispatched when a remote shared object has been updated
+	 * @:event sync       Dispatched when a remote shared object has been updated
 	 *                   by the server.
 	 */
 	export class SharedObject extends EventDispatcher {
 		
 		
-		public static defaultObjectEncoding:number;
+		public static defaultObjectEncoding:ObjectEncoding;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash11_7) public static preventBackup:boolean;
@@ -170,7 +171,7 @@ declare namespace openfl.net {
 		public readonly data:any;
 		
 		public fps:number;
-		public objectEncoding:number;
+		public objectEncoding:ObjectEncoding;
 		
 		/**
 		 * The current size of the shared object, in bytes.
@@ -183,8 +184,10 @@ declare namespace openfl.net {
 		 */
 		public readonly size:number;
 		
+		protected get_size ():number;
 		
-		// private constructor ();
+		
+		// protected constructor ();
 		
 		
 		/**

@@ -5,6 +5,7 @@ import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.Image;
 import openfl.display.BitmapDataChannel;
+import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -82,6 +83,14 @@ extern class BitmapData implements IBitmapDrawable {
 		#end
 		
 	}
+	
+	
+	public static function fromTexture (texture:TextureBase):BitmapData {
+		
+		return null;
+		
+	}
+	
 	
 	public function generateFilterRect (sourceRect:Rectangle, filter:BitmapFilter):Rectangle;
 	public function getColorBoundsRect (mask:UInt, color:UInt, findColor:Bool = true):Rectangle;

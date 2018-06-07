@@ -1,8 +1,8 @@
 package openfl._internal.stage3D.opengl;
 
 
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.GLUtils;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Stage3D;
 
 #if !openfl_debug
@@ -13,20 +13,21 @@ import openfl.display.Stage3D;
 @:access(openfl._internal.stage3D.GLUtils)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
+@:access(openfl.display.OpenGLRenderer)
 
 
 class GLStage3D {
 	
 	
-	public static inline function render (stage3D:Stage3D, renderSession:RenderSession):Void {
+	public static inline function render (stage3D:Stage3D, renderer:OpenGLRenderer):Void {
 		
 		if (stage3D.context3D != null) {
 			
-			renderSession.blendModeManager.setBlendMode (null);
+			renderer.__setBlendMode (null);
 			
-			if (renderSession.shaderManager.currentShader != null) {
+			if (renderer.__currentShader != null) {
 				
-				renderSession.shaderManager.setShader (null);
+				renderer.setShader (null);
 				
 				if (stage3D.context3D.__program != null) {
 					
@@ -40,7 +41,7 @@ class GLStage3D {
 		
 		if (GLUtils.debug) {
 			
-			renderSession.gl.getError ();
+			renderer.gl.getError ();
 			
 		}
 		

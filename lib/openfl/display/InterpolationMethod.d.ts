@@ -21,7 +21,7 @@ declare namespace openfl.display {
 		 * `SpreadMethod.REFLECT`). The different interpolation methods
 		 * affect the appearance as follows: 
 		 */
-		LINEAR_RGB = 0,
+		LINEAR_RGB = "linearRGB",
 		
 		/**
 		 * Specifies that the RGB interpolation method should be used. This means
@@ -35,7 +35,7 @@ declare namespace openfl.display {
 		 * `SpreadMethod.REFLECT`). The different interpolation methods
 		 * affect the appearance as follows: 
 		 */
-		RGB = 1
+		RGB = "rgb"
 		
 	}
 	

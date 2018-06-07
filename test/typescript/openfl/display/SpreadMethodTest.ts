@@ -7,7 +7,7 @@ describe ("TypeScript | SpreadMethod", function () {
 	
 	it ("test", function () {
 		
-		switch (+SpreadMethod.REPEAT) {
+		switch (""+SpreadMethod.REPEAT) {
 			
 			case SpreadMethod.PAD:
 			case SpreadMethod.REFLECT:

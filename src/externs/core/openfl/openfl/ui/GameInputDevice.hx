@@ -29,6 +29,8 @@ import openfl.utils.ByteArray;
 	 */
 	public var numControls (get, never):Int;
 	
+	@:noCompletion private function get_numControls ():Int;
+	
 	/**
 	 * Specifies the rate (in milliseconds) at which to retrieve control values.
 	 */

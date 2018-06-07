@@ -2,6 +2,7 @@ package openfl.net;
 
 
 import haxe.io.Path;
+import haxe.Timer;
 import lime.system.System;
 import lime.ui.FileDialog;
 import lime.utils.Bytes;
@@ -15,6 +16,11 @@ import openfl.utils.ByteArray;
 import sys.io.File;
 import sys.FileStat;
 import sys.FileSystem;
+#end
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
 #end
 
 
@@ -148,6 +154,24 @@ class FileReference extends EventDispatcher {
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
 		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null, defaultFileName);
 		
+		#elseif (js && html5)
+		
+		if (Std.is (data, ByteArrayData)) {
+			
+			__data = data;
+			
+		} else {
+			
+			__data = new ByteArray ();
+			__data.writeUTFBytes (Std.string (data));
+			
+		}
+		
+		var saveFileDialog = new FileDialog ();
+		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
+		saveFileDialog.onSave.add (saveFileDialog_onSave);
+		saveFileDialog.save (__data, defaultFileName != null ? Path.extension (defaultFileName) : null, defaultFileName);
+		
 		#end
 		
 	}
@@ -202,6 +226,17 @@ class FileReference extends EventDispatcher {
 	private function saveFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
+		
+	}
+	
+	
+	private function saveFileDialog_onSave (path:String):Void {
+		
+		Timer.delay (function () {
+			
+			dispatchEvent (new Event (Event.COMPLETE));
+			
+		}, 1);
 		
 	}
 	

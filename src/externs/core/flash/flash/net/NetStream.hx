@@ -108,7 +108,7 @@ extern class NetStream extends EventDispatcher {
 	@:require(flash10) public var nearNonce (default, never):String;
 	#end
 	
-	public var objectEncoding (default, never):UInt;
+	public var objectEncoding (default, never):ObjectEncoding;
 	
 	#if flash
 	@:require(flash10) public var peerStreams (default, never):Array<Dynamic>;

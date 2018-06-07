@@ -8,7 +8,7 @@ import openfl.utils.Object;
 extern class SharedObject extends EventDispatcher {
 	
 	
-	public static var defaultObjectEncoding:Int;
+	public static var defaultObjectEncoding:ObjectEncoding;
 	
 	#if flash
 	@:require(flash11_7) public static var preventBackup:Bool;
@@ -17,7 +17,7 @@ extern class SharedObject extends EventDispatcher {
 	public var client:Dynamic;
 	public var data (default, never):Dynamic;
 	public var fps (never, default):Float;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	public var size (default, never):UInt;
 	
 	private function new ();

@@ -5,6 +5,7 @@ import Matrix from "./../geom/Matrix";
 import Point from "./../geom/Point";
 import Rectangle from "./../geom/Rectangle";
 import ByteArray from "./../utils/ByteArray";
+import Vector from "./../Vector";
 import Bitmap from "./Bitmap";
 import BitmapDataChannel from "./BitmapDataChannel";
 import BlendMode from "./BlendMode";
@@ -12,7 +13,6 @@ import IBitmapDrawable from "./IBitmapDrawable";
 import StageQuality from "./StageQuality";
 
 type Image = any;
-type Vector<T> = any;
 
 
 declare namespace openfl.display {
@@ -716,8 +716,8 @@ declare namespace openfl.display {
 		 *                       values. The alpha channel value is not affected if
 		 *                       this value is set to `true`.
 		 */
-		public perlinNoise (baseX:number, baseY:number, numOctaves:number, randomSeed:number, stitch:number, fractalNoise:boolean, channelOptions:number, grayScale?:boolean, offsets?:Array<Point>):void;
-		
+		public perlinNoise (baseX:number, baseY:number, numOctaves:number, randomSeed:number, stitch:boolean, fractalNoise:boolean, channelOptions?:number, grayScale?:boolean, offsets?:Array<Point>):void;
+	
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:number = 0, numPixels:number = 0, fillColor:number = 0):number;

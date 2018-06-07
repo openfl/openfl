@@ -7,7 +7,7 @@ describe ("TypeScript | GraphicsPathWinding", function () {
 	
 	it ("test", function () {
 		
-		switch (+GraphicsPathWinding.NON_ZERO) {
+		switch (""+GraphicsPathWinding.NON_ZERO) {
 			
 			case GraphicsPathWinding.EVEN_ODD:
 			case GraphicsPathWinding.NON_ZERO:

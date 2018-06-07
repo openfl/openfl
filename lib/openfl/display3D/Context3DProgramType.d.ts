@@ -2,8 +2,8 @@ declare namespace openfl.display3D {
 	
 	export enum Context3DProgramType {
 		
-		FRAGMENT = 0,
-		VERTEX = 1
+		FRAGMENT = "fragment",
+		VERTEX = "vertex"
 		
 	}
 	

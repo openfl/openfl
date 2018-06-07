@@ -10,26 +10,26 @@ declare namespace openfl.display {
 		 * Specifies very high rendering quality: graphics are anti-aliased using a 4
 		 * x 4 pixel grid and bitmaps are always smoothed.
 		 */
-		BEST = 0,
+		BEST = "best",
 		
 		/**
 		 * Specifies high rendering quality: graphics are anti-aliased using a 4 x 4
 		 * pixel grid, and bitmaps are smoothed if the movie is static.
 		 */
-		HIGH = 1,
+		HIGH = "high",
 		
 		/**
 		 * Specifies low rendering quality: graphics are not anti-aliased, and
 		 * bitmaps are not smoothed.
 		 */
-		LOW = 2,
+		LOW = "low",
 		
 		/**
 		 * Specifies medium rendering quality: graphics are anti-aliased using a 2 x
 		 * 2 pixel grid, but bitmaps are not smoothed. This setting is suitable for
 		 * movies that do not contain text.
 		 */
-		MEDIUM = 3
+		MEDIUM = "medium"
 		
 	}
 	

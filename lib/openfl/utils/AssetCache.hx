@@ -11,7 +11,10 @@ import openfl.text.Font;
 @:dox(hide) extern class AssetCache implements IAssetCache {
 	
 	
-	public var enabled:Bool;
+	public var enabled (get, set):Bool;
+	
+	@:noCompletion private function get_enabled ():Bool;
+	@:noCompletion private function set_enabled (value:Bool):Bool;
 	
 	public function new ();
 	

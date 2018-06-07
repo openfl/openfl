@@ -9,10 +9,13 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.opengl.GLVideo;
-import openfl._internal.renderer.RenderSession;
+import openfl.display.CanvasRenderer;
+import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectShader;
+import openfl.display.DOMRenderer;
 import openfl.display.Graphics;
-import openfl.display.IShaderDrawable;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -20,19 +23,23 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
 @:access(openfl.geom.Point)
 
 
-class Video extends DisplayObject implements IShaderDrawable {
+class Video extends DisplayObject {
 	
 	
-	private static inline var __bufferStride = 26;
+	private static inline var __bufferStride = 5;
 	
 	public var deblocking:Int;
-	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	public var videoHeight (get, never):Int;
 	public var videoWidth (get, never):Int;
@@ -126,7 +133,7 @@ class Video extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
-	private function __getBuffer (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):GLBuffer {
+	private function __getBuffer (gl:GLRenderContext):GLBuffer {
 		
 		if (__buffer == null || __bufferContext != gl) {
 			
@@ -181,34 +188,27 @@ class Video extends DisplayObject implements IShaderDrawable {
 			__bufferData[__bufferStride * 2] = width;
 			__bufferData[__bufferStride * 2 + 3] = uvWidth;
 			
-			for (i in 0...4) {
+			// for (i in 0...4) {
 				
-				__bufferData[__bufferStride * i + 5] = alpha;
+			// 	__bufferData[__bufferStride * i + 5] = alpha;
 				
-				if (colorTransform != null) {
+			// 	if (colorTransform != null) {
 					
-					__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-					__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-					__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-					__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-					__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-					__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-					__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-					__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+			// 		__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+			// 		__bufferData[__bufferStride * i + 7] = colorTransform.greenMultiplier;
+			// 		__bufferData[__bufferStride * i + 8] = colorTransform.blueMultiplier;
+			// 		__bufferData[__bufferStride * i + 9] = colorTransform.alphaMultiplier;
+			// 		__bufferData[__bufferStride * i + 10] = colorTransform.redOffset / 255;
+			// 		__bufferData[__bufferStride * i + 11] = colorTransform.greenOffset / 255;
+			// 		__bufferData[__bufferStride * i + 12] = colorTransform.blueOffset / 255;
+			// 		__bufferData[__bufferStride * i + 13] = colorTransform.alphaOffset / 255;
 					
-				} else {
-					
-					__bufferData[__bufferStride * i + 6] = 1;
-					__bufferData[__bufferStride * i + 11] = 1;
-					__bufferData[__bufferStride * i + 16] = 1;
-					__bufferData[__bufferStride * i + 21] = 1;
-					
-				}
+			// 	}
 				
-			}
+			// }
 			
-			__bufferAlpha = alpha;
-			__bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+			// __bufferAlpha = alpha;
+			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
 			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
@@ -218,56 +218,56 @@ class Video extends DisplayObject implements IShaderDrawable {
 			
 		} else {
 			
-			if (__bufferAlpha != alpha) {
+			// if (__bufferAlpha != alpha) {
 				
-				for (i in 0...4) {
+			// 	for (i in 0...4) {
 					
-					__bufferData[__bufferStride * i + 5] = alpha;
+			// 		__bufferData[__bufferStride * i + 5] = alpha;
 					
-				}
+			// 	}
 				
-			}
+			// }
 			
-			if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+			// if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
 				
-				if (colorTransform != null) {
+			// 	if (colorTransform != null) {
 					
-					__bufferColorTransform = colorTransform.__clone ();
+			// 		__bufferColorTransform = colorTransform.__clone ();
 					
-					for (i in 0...4) {
+			// 		for (i in 0...4) {
 						
-						__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-						__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-						__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-						__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-						__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-						__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-						__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-						__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+			// 			__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+			// 			__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+			// 			__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+			// 			__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+			// 			__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+			// 			__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+			// 			__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+			// 			__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
 						
-					}
+			// 		}
 					
-				} else {
+			// 	} else {
 					
-					for (i in 0...4) {
+			// 		for (i in 0...4) {
 						
-						__bufferData[__bufferStride * i + 6] = 1;
-						__bufferData[__bufferStride * i + 11] = 1;
-						__bufferData[__bufferStride * i + 16] = 1;
-						__bufferData[__bufferStride * i + 21] = 1;
-						__bufferData[__bufferStride * i + 22] = 0;
-						__bufferData[__bufferStride * i + 23] = 0;
-						__bufferData[__bufferStride * i + 24] = 0;
-						__bufferData[__bufferStride * i + 25] = 0;
+			// 			__bufferData[__bufferStride * i + 6] = 1;
+			// 			__bufferData[__bufferStride * i + 11] = 1;
+			// 			__bufferData[__bufferStride * i + 16] = 1;
+			// 			__bufferData[__bufferStride * i + 21] = 1;
+			// 			__bufferData[__bufferStride * i + 22] = 0;
+			// 			__bufferData[__bufferStride * i + 23] = 0;
+			// 			__bufferData[__bufferStride * i + 24] = 0;
+			// 			__bufferData[__bufferStride * i + 25] = 0;
 						
-					}
+			// 		}
 					
-				}
+			// 	}
 				
-			}
+			// }
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			// gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			
 		}
 		
@@ -359,30 +359,33 @@ class Video extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
-		CanvasVideo.render (this, renderSession);
-		
-	}
-	
-	
-	private override function __renderDOM (renderSession:RenderSession):Void {
-		
-		DOMVideo.render (this, renderSession);
+		CanvasVideo.render (this, renderer);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		GLVideo.render (this, renderSession);
+		DOMVideo.render (this, renderer);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		GLVideo.renderMask (this, renderSession);
+		GLVideo.render (this, renderer);
+		__renderEvent (renderer);
+		
+	}
+	
+	
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
+		
+		GLVideo.renderMask (this, renderer);
 		
 	}
 	

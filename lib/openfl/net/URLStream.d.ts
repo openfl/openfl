@@ -1,3 +1,4 @@
+import ObjectEncoding from "./ObjectEncoding";
 import EventDispatcher from "./../events/EventDispatcher";
 import URLRequest from "./../net/URLRequest";
 import ByteArray from "./../utils/ByteArray";
@@ -12,11 +13,21 @@ declare namespace openfl.net {
 		
 		
 		public readonly bytesAvailable:number;
+		
+		protected get_bytesAvailable ():number;
+		
 		public readonly connected:boolean;
+		
 		//@:require(flash11_4) public var diskCacheEnabled (default, null):boolean;
+		
 		public endian:Endian;
+		
+		protected get_endian ():Endian;
+		protected set_endian (value:Endian):Endian;
+		
 		//@:require(flash11_4) public var length (default, null):Float;
-		public objectEncoding:number;
+		
+		public objectEncoding:ObjectEncoding;
 		//@:require(flash11_4) public var position:Float;
 		
 		public constructor ();
@@ -38,9 +49,9 @@ declare namespace openfl.net {
 		public readUnsignedShort ():number;
 		//@:require(flash11_4) public stop ():Void;
 		
-		// @:noCompletion @:dox(hide) private get_bytesAvailable ():UInt;
-		// @:noCompletion @:dox(hide) private get_endian ():Endian;
-		// @:noCompletion @:dox(hide) private set_endian (value:Endian):Endian;
+		// @:noCompletion @:dox(hide) protected get_bytesAvailable ():UInt;
+		// @:noCompletion @:dox(hide) protected get_endian ():Endian;
+		// @:noCompletion @:dox(hide) protected set_endian (value:Endian):Endian;
 		
 	}
 	

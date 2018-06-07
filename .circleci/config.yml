@@ -247,7 +247,7 @@ jobs:
      - checkout
      - run:
          name: Install Dependencies
-         command: npm install
+         command: yes | npm install
      - run:
          name: Build Library
          command: npm run build
@@ -341,24 +341,24 @@ workflows:
     jobs:
      - NPM
   
-  Tests (Haxe 3.2.1):
-    jobs:
-     - Setup (Haxe 3.2.1)
-     - HTML5 (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - Neko (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - C++ (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - Flash (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - Documentation (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
+#   Tests (Haxe 3.2.1):
+#     jobs:
+#      - Setup (Haxe 3.2.1)
+#      - HTML5 (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - Neko (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - C++ (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - Flash (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - Documentation (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
   
   Tests (Haxe 3.4.x):
     jobs:

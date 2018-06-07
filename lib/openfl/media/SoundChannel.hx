@@ -38,7 +38,10 @@ import openfl.events.EventDispatcher;
 	 * If the sound is looped, `position` is reset to 0 at the
 	 * beginning of each loop.
 	 */
-	public var position:Float;
+	public var position (get, set):Float;
+	
+	@:noCompletion private function get_position ():Float;
+	@:noCompletion private function set_position (value:Float):Float;
 	
 	/**
 	 * The current amplitude(volume) of the right channel, from 0(silent) to 1
@@ -51,7 +54,10 @@ import openfl.events.EventDispatcher;
 	 * object includes properties for setting volume, panning, left speaker
 	 * assignment, and right speaker assignment.
 	 */
-	public var soundTransform:SoundTransform;
+	public var soundTransform (get, set):SoundTransform;
+	
+	@:noCompletion private function get_soundTransform ():SoundTransform;
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
 	
 	
 	#if flash

@@ -2,7 +2,7 @@ Notices
 =======
 
 ### OpenFL
-Copyright (c) 2013-2017 Joshua Granick and other OpenFL contributors
+Copyright (c) 2013-2018 Joshua Granick and other OpenFL contributors
 
 Modifications and source-repository versions of Haxe core files are included in the
 [haxe/](haxe/) folder, which are available under an "MIT" license. For details, see

@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract StageDisplayState(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract StageDisplayState(String) from String to String {
+	
+	public var FULL_SCREEN = "fullScreen";
+	public var FULL_SCREEN_INTERACTIVE = "fullScreenInteractive";
+	public var NORMAL = "normal";
+	
+}
+
+
+#end

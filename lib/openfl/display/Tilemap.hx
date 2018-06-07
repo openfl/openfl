@@ -3,13 +3,21 @@ package openfl.display;
 
 @:jsRequire("openfl/display/Tilemap", "default")
 
-extern class Tilemap extends DisplayObject {
+
+extern class Tilemap extends DisplayObject implements ITileContainer {
 	
 	
-	public var numTiles (default, null):Int;
-	@:beta public var shader:Shader;
+	public var numTiles (get, never):Int;
+	
+	@:noCompletion private function get_numTiles ():Int;
+	
 	public var smoothing:Bool;
-	public var tileset (default, set):Tileset;
+	public var tileAlphaEnabled:Bool;
+	public var tileColorTransformEnabled:Bool;
+	public var tileset (get, set):Tileset;
+	
+	@:noCompletion private function get_tileset ():Tileset;
+	@:noCompletion private function set_tileset (value:Tileset):Tileset;
 	
 	public function new (width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true);
 	
@@ -19,11 +27,14 @@ extern class Tilemap extends DisplayObject {
 	public function contains (tile:Tile):Bool;
 	public function getTileAt (index:Int):Tile;
 	public function getTileIndex (tile:Tile):Int;
-	@:beta public function getTiles ():TileArray;
+	public function getTiles ():TileContainer;
 	public function removeTile (tile:Tile):Tile;
 	public function removeTileAt (index:Int):Tile;
 	public function removeTiles (beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void;
-	@:beta public function setTiles (tileArray:TileArray):Void;
+	public function setTileIndex (tile:Tile, index:Int):Void;
+	public function setTiles (group:TileContainer):Void;
+	public function swapTiles (tile1:Tile, tile2:Tile):Void;
+	public function swapTilesAt (index1:Int, index2:Int):Void;
 	
 	
 }

@@ -1,13 +1,20 @@
 package openfl.filters;
 
 
-import openfl._internal.renderer.RenderSession;
+import openfl.display.BlendMode;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 class ShaderFilter extends BitmapFilter {
 	
 	
+	@:beta public var blendMode:BlendMode;
 	public var bottomExtension:Int;
 	public var leftExtension:Int;
 	public var rightExtension:Int;
@@ -21,8 +28,7 @@ class ShaderFilter extends BitmapFilter {
 		
 		this.shader = shader;
 		
-		// __numShaderPasses = 1;
-		__numShaderPasses = 0;
+		__numShaderPasses = 1;
 		
 	}
 	
@@ -39,8 +45,9 @@ class ShaderFilter extends BitmapFilter {
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
+		__shaderBlendMode = blendMode;
 		return shader;
 		
 	}

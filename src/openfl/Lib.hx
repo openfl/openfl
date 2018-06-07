@@ -1,13 +1,16 @@
 package openfl;
 
 
+import haxe.Constraints.Function;
 import haxe.PosInfos;
+import haxe.Timer;
 import lime.system.System;
 import lime.utils.Log;
 import openfl._internal.Lib in InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
+import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.net.URLVariables;
 
@@ -35,7 +38,9 @@ import js.Browser;
 	public static var application (get, never):Application;
 	public static var current (get, never):MovieClip;
 	
-	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
+	private static var __lastTimerID:UInt = 0;
+	private static var __sentWarnings = new Map<String, Bool> ();
+	private static var __timers = new Map<UInt, Timer> ();
 	
 	
 	#if openfljs
@@ -72,6 +77,32 @@ import js.Browser;
 	}
 	
 	
+	public static function clearInterval (id:UInt):Void {
+		
+		if (__timers.exists (id)) {
+			
+			var timer = __timers[id];
+			timer.stop ();
+			__timers.remove (id);
+			
+		}
+		
+	}
+	
+	
+	public static function clearTimeout (id:UInt):Void {
+		
+		if (__timers.exists (id)) {
+			
+			var timer = __timers[id];
+			timer.stop ();
+			__timers.remove (id);
+			
+		}
+		
+	}
+	
+	
 	#if flash
 	public static function eval (path:String):Dynamic {
 		
@@ -90,6 +121,28 @@ import js.Browser;
 	#end
 	
 	
+	public static function getDefinitionByName (name:String):Class<Dynamic> {
+		
+		return Type.resolveClass (name);
+		
+	}
+	
+	
+	public static function getQualifiedClassName (value:Dynamic):String {
+		
+		return Type.getClassName (Type.getClass (value));
+		
+	}
+	
+	
+	public static function getQualifiedSuperclassName (value:Dynamic):String {
+		
+		var ref = Type.getSuperClass (Type.getClass (value));
+		return (ref != null ? Type.getClassName (ref) : null);
+		
+	}
+	
+	
 	public static function getTimer ():Int {
 		
 		#if flash
@@ -103,14 +156,21 @@ import js.Browser;
 	
 	public static function getURL (request:URLRequest, target:String = null):Void {
 		
-		if (target == null) {
+		navigateToURL (request, target);
+		
+	}
+	
+	
+	public static function navigateToURL (request:URLRequest, window:String = null):Void {
+		
+		if (window == null) {
 			
-			target = "_blank";
+			window = "_blank";
 			
 		}
 		
 		#if flash
-		return flash.Lib.getURL (request, target);
+		return flash.Lib.getURL (request, window);
 		#else
 		var uri = request.url;
 		
@@ -138,7 +198,7 @@ import js.Browser;
 			
 		}
 		
-		System.openURL (uri, target);
+		System.openURL (uri, window);
 		#end
 		
 	}
@@ -179,6 +239,42 @@ import js.Browser;
 		
 	}
 	#end
+	
+	
+	public static function sendToURL (request:URLRequest):Void {
+		
+		var urlLoader = new URLLoader ();
+		urlLoader.load (request);
+		
+	}
+	
+	
+	public static function setInterval (closure:Function, delay:Int, args:Array<Dynamic>):UInt {
+		
+		var id = ++__lastTimerID;
+		var timer = new Timer (delay);
+		__timers[id] = timer;
+		timer.run = function () {
+			
+			Reflect.callMethod (closure, closure, args);
+			
+		};
+		return id;
+		
+	}
+	
+	
+	public static function setTimeout (closure:Function, delay:Int, args:Array<Dynamic>):UInt {
+		
+		var id = ++__lastTimerID;
+		__timers[id] = Timer.delay (function () {
+			
+			Reflect.callMethod (closure, closure, args);
+			
+		}, delay);
+		return id;
+		
+	}
 	
 	
 	public static function trace (arg:Dynamic):Void {

@@ -30,12 +30,12 @@ declare namespace openfl.sensors {
 	 * for more information regarding API support across
 	 * multiple profiles. 
 	 * 
-	 * @event status Dispatched when an accelerometer changes its status.
+	 * @:event status Dispatched when an accelerometer changes its status.
 	 *
 	 *               **Note:** On some devices, the accelerometer is always
 	 *               available. On such devices, an Accelerometer object never
 	 *               dispatches a `status` event.
-	 * @event update The `update` event is dispatched in response to
+	 * @:event update The `update` event is dispatched in response to
 	 *               updates from the accelerometer sensor. The event is
 	 *               dispatched in the following circumstances:
 	 *
@@ -63,12 +63,17 @@ declare namespace openfl.sensors {
 		 */
 		public static readonly isSupported:boolean;
 		
+		protected static get_isSupported ():boolean;
+		
 		/**
 		 * Specifies whether the user has denied access to the accelerometer
 		 * (`true`) or allowed access(`false`). When this
 		 * value changes, a `status` event is dispatched.
 		 */
 		public muted:boolean;
+		
+		protected get_muted ():boolean;
+		protected set_muted (value:boolean):boolean;
 		
 		
 		/**

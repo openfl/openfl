@@ -2,12 +2,17 @@ import CompressionAlgorithm from "./CompressionAlgorithm";
 import Endian from "./Endian";
 import IDataInput from "./IDataInput";
 import IDataOutput from "./IDataOutput";
+import ObjectEncoding from "./../net/ObjectEncoding";
 
 
 declare namespace openfl.utils {
 	
 	
 	export class ByteArray implements IDataOutput, IDataInput /*implements ArrayAccess<Int>*/ {
+		
+		
+		public get (position:number):number;
+		public set (position:number, value:number):number;
 		
 		
 		/**
@@ -22,7 +27,7 @@ declare namespace openfl.utils {
 		 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
 		 * used. The value is a constant from the ObjectEncoding class.
 		 */
-		static defaultObjectEncoding:number;
+		static defaultObjectEncoding:ObjectEncoding;
 		
 		/**
 		 * The number of bytes of data available for reading from the current
@@ -56,7 +61,7 @@ declare namespace openfl.utils {
 		 * ActionScript 1.0 format should be used when writing to, or reading from, a
 		 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 		 */
-		objectEncoding:number;
+		objectEncoding:ObjectEncoding;
 		
 		/**
 		 * Moves, or returns the current position, in bytes, of the file pointer into
@@ -311,9 +316,7 @@ declare namespace openfl.utils {
 		 * @return The deserialized object.
 		 * @throws EOFError There is not sufficient data available to read.
 		 */
-		// #if flash
-		// @:noCompletion @:dox(hide) readObject ():Dynamic;
-		// #end
+		readObject ():any;
 		
 		
 		/**
@@ -516,9 +519,7 @@ declare namespace openfl.utils {
 		 * 
 		 * @param object The object to serialize.
 		 */
-		// #if flash
-		// @:noCompletion @:dox(hide) writeObject (object:Dynamic):void;
-		// #end
+		writeObject (object:any):void;
 		
 		
 		/**

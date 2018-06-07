@@ -30,7 +30,10 @@ extern class SimpleButton extends InteractiveObject {
 	 * button "Down" state  - the state that the button is in when the user
 	 * selects the `hitTestState` object.
 	 */
-	public var downState:DisplayObject;
+	public var downState (get, set):DisplayObject;
+	
+	@:noCompletion private function get_downState ():DisplayObject;
+	@:noCompletion private function set_downState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * A Boolean value that specifies whether a button is enabled. When a button
@@ -54,14 +57,20 @@ extern class SimpleButton extends InteractiveObject {
 	 * not set the `hitTestState` property, the SimpleButton is
 	 * inactive  -  it does not respond to user input events.
 	 */
-	public var hitTestState:DisplayObject;
+	public var hitTestState (get, set):DisplayObject;
+	
+	@:noCompletion private function get_hitTestState ():DisplayObject;
+	@:noCompletion private function set_hitTestState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * Specifies a display object that is used as the visual object for the
 	 * button over state  -  the state that the button is in when the pointer is
 	 * positioned over the button.
 	 */
-	public var overState:DisplayObject;
+	public var overState (get, set):DisplayObject;
+	
+	@:noCompletion private function get_overState ():DisplayObject;
+	@:noCompletion private function set_overState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * The SoundTransform object assigned to this button. A SoundTransform object
@@ -70,7 +79,10 @@ extern class SimpleButton extends InteractiveObject {
 	 * states of the button. This SoundTransform object affects only embedded
 	 * sounds.
 	 */
-	public var soundTransform:SoundTransform;
+	public var soundTransform (get, set):SoundTransform;
+	
+	@:noCompletion private function get_soundTransform ():SoundTransform;
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
 	
 	/**
 	 * Indicates whether other display objects that are SimpleButton or MovieClip
@@ -90,7 +102,10 @@ extern class SimpleButton extends InteractiveObject {
 	 * button up state  -  the state that the button is in when the pointer is
 	 * not positioned over the button.
 	 */
-	public var upState:DisplayObject;
+	public var upState (get, set):DisplayObject;
+	
+	@:noCompletion private function get_upState ():DisplayObject;
+	@:noCompletion private function set_upState (value:DisplayObject):DisplayObject;
 	
 	/**
 	 * A Boolean value that, when set to `true`, indicates whether the

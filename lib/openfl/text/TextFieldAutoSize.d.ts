@@ -11,26 +11,26 @@ declare namespace openfl.text {
 		 * resizing of a single line of a text field is equally distributed to both
 		 * the right and left sides.
 		 */
-		CENTER = 0,
+		CENTER = "center",
 		
 		/**
 		 * Specifies that the text is to be treated as left-justified text, meaning
 		 * that the left side of the text field remains fixed and any resizing of a
 		 * single line is on the right side.
 		 */
-		LEFT = 1,
+		LEFT = "left",
 		
 		/**
 		 * Specifies that no resizing is to occur.
 		 */
-		NONE = 2,
+		NONE = "none",
 		
 		/**
 		 * Specifies that the text is to be treated as right-justified text, meaning
 		 * that the right side of the text field remains fixed and any resizing of a
 		 * single line is on the left side.
 		 */
-		RIGHT = 3
+		RIGHT = "right"
 		
 	}
 	

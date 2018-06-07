@@ -1,10 +1,13 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
+
 interface IDataOutput {
 	
 	public var endian (get, set):Endian;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	public function writeBoolean (value:Bool):Void;
 	public function writeByte (value:Int):Void;

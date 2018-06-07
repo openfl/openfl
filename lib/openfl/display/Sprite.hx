@@ -53,7 +53,10 @@ extern class Sprite extends DisplayObjectContainer {
 	 * clips used as buttons). These automatic state changes are not available
 	 * for sprites, which have no timeline, and thus no frames to label. 
 	 */
-	public var buttonMode:Bool;
+	public var buttonMode (get, set):Bool;
+	
+	@:noCompletion private function get_buttonMode ():Bool;
+	@:noCompletion private function set_buttonMode (value:Bool):Bool;
 	
 	public var dropTarget (default, null):DisplayObject;
 	
@@ -61,7 +64,9 @@ extern class Sprite extends DisplayObjectContainer {
 	 * Specifies the Graphics object that belongs to this sprite where vector
 	 * drawing commands can occur.
 	 */
-	public var graphics (default, never):Graphics;
+	public var graphics (get, never):Graphics;
+	
+	@:noCompletion private function get_graphics ():Graphics;
 	
 	public var hitArea:Sprite;
 	

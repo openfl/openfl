@@ -1,50 +1,16 @@
-package openfl.display3D; #if (display || !flash)
+package openfl.display3D;
 
 
-@:enum abstract Context3DProfile(Null<Int>) {
+@:enum abstract Context3DProfile(String) from String to String {
 	
-	public var BASELINE = 0;
-	public var BASELINE_CONSTRAINED = 1;
-	public var BASELINE_EXTENDED = 2;
-	public var STANDARD = 3;
-	public var STANDARD_CONSTRAINED = 4;
-	public var STANDARD_EXTENDED = 5;
-	
-	@:from private static function fromString (value:String):Context3DProfile {
-		
-		return switch (value) {
-			
-			case "baseline": BASELINE;
-			case "baselineConstrained": BASELINE_CONSTRAINED;
-			case "baselineExtended": BASELINE_EXTENDED;
-			case "standard": STANDARD;
-			case "standardConstrained": STANDARD_CONSTRAINED;
-			case "standardExtended": STANDARD_EXTENDED;
-			default: null;
-			
-		}
-		
-	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case Context3DProfile.BASELINE: "baseline";
-			case Context3DProfile.BASELINE_CONSTRAINED: "baselineConstrained";
-			case Context3DProfile.BASELINE_EXTENDED: "baselineExtended";
-			case Context3DProfile.STANDARD: "standard";
-			case Context3DProfile.STANDARD_CONSTRAINED: "standardConstrained";
-			case Context3DProfile.STANDARD_EXTENDED: "standardExtended";
-			default: null;
-			
-		}
-		
-	}
+	public var BASELINE = "baseline";
+	public var BASELINE_CONSTRAINED = "baselineConstrained";
+	public var BASELINE_EXTENDED = "baselineExtended";
+	public var STANDARD = "standard";
+	public var STANDARD_CONSTRAINED = "standardConstrained";
+	public var STANDARD_EXTENDED = "standardExtended";
+	#if (flash && air)
+	public var ENHANCED = "enhanced";
+	#end
 	
 }
-
-
-#else
-typedef Context3DProfile = flash.display3D.Context3DProfile;
-#end

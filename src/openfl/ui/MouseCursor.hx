@@ -33,7 +33,7 @@ import lime.ui.MouseCursor in LimeMouseCursor;
 			case LimeMouseCursor.TEXT: MouseCursor.IBEAM;
 			case LimeMouseCursor.CROSSHAIR: MouseCursor.__CROSSHAIR;
 			case LimeMouseCursor.RESIZE_NESW: MouseCursor.__RESIZE_NESW;
-			case LimeMouseCursor.RESIZE_NS: MouseCursor.__RESIZE_NWSE;
+			case LimeMouseCursor.RESIZE_NS: MouseCursor.__RESIZE_NS;
 			case LimeMouseCursor.RESIZE_NWSE: MouseCursor.__RESIZE_NWSE;
 			case LimeMouseCursor.RESIZE_WE: MouseCursor.__RESIZE_WE;
 			case LimeMouseCursor.WAIT: MouseCursor.__WAIT;

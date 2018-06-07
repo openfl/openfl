@@ -7,7 +7,7 @@ describe ("TypeScript | SharedObjectFlushStatus", function () {
 	
 	it ("test", function () {
 		
-		switch (+SharedObjectFlushStatus.FLUSHED) {
+		switch (""+SharedObjectFlushStatus.FLUSHED) {
 			
 			case SharedObjectFlushStatus.FLUSHED:
 			case SharedObjectFlushStatus.PENDING:

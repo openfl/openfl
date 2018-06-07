@@ -1,12 +1,14 @@
 package openfl.filters; #if (display || !flash)
 
 
+import openfl.display.BlendMode;
 import openfl.display.Shader;
 
 
 extern class ShaderFilter extends BitmapFilter {
 	
 	
+	@:beta public var blendMode:BlendMode;
 	public var bottomExtension:Int;
 	public var leftExtension:Int;
 	public var rightExtension:Int;

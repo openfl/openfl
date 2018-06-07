@@ -2,8 +2,8 @@ package openfl._internal.renderer.opengl;
 
 
 import lime.math.color.ARGB;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.display.OpenGLRenderer;
 import openfl.geom.Rectangle;
 
 #if !openfl_debug
@@ -19,28 +19,28 @@ import openfl.geom.Rectangle;
 class GLDisplayObject {
 	
 	
-	public static inline function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
+	public static inline function render (displayObject:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 		
-		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
+		if (displayObject.opaqueBackground != null && !displayObject.__isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
-			renderSession.blendModeManager.setBlendMode (displayObject.__worldBlendMode);
-			renderSession.maskManager.pushObject (displayObject);
+			renderer.__setBlendMode (displayObject.__worldBlendMode);
+			renderer.__pushMaskObject (displayObject);
 			
-			var gl = renderSession.gl;
+			var gl = renderer.__gl;
 			
 			var rect = Rectangle.__pool.get ();
 			rect.setTo (0, 0, displayObject.width, displayObject.height);
-			renderSession.maskManager.pushRect (rect, displayObject.__renderTransform);
+			renderer.__pushMaskRect (rect, displayObject.__renderTransform);
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
 			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
 			gl.clear (gl.COLOR_BUFFER_BIT);
 			
-			renderSession.maskManager.popRect ();
-			renderSession.maskManager.popObject (displayObject);
+			renderer.__popMaskRect ();
+			renderer.__popMaskObject (displayObject);
 			
 			Rectangle.__pool.release (rect);
 			
@@ -48,33 +48,33 @@ class GLDisplayObject {
 		
 		if (displayObject.__graphics != null) {
 			
-			GLShape.render (displayObject, renderSession);
+			GLShape.render (displayObject, renderer);
 			
 		}
 		
 	}
 	
 	
-	public static inline function renderMask (displayObject:DisplayObject, renderSession:RenderSession):Void {
+	public static inline function renderMask (displayObject:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		
-		if (displayObject.opaqueBackground != null && !displayObject.__cacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
+		if (displayObject.opaqueBackground != null && !displayObject.__isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
-			var gl = renderSession.gl;
+			var gl = renderer.__gl;
 			
 			// TODO
 			
 			// var rect = Rectangle.__pool.get ();
 			// rect.setTo (0, 0, displayObject.width, displayObject.height);
-			// renderSession.maskManager.pushRect (rect, displayObject.__renderTransform);
+			// renderer.__pushMaskRect (rect, displayObject.__renderTransform);
 			
 			// var color:ARGB = (displayObject.opaqueBackground:ARGB);
 			// gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
 			// gl.clear (gl.COLOR_BUFFER_BIT);
 			
-			// renderSession.maskManager.popRect ();
-			// renderSession.maskManager.popObject (displayObject);
+			// renderer.__popMaskRect ();
+			// renderer.__popMaskObject (displayObject);
 			
 			// Rectangle.__pool.release (rect);
 			
@@ -82,7 +82,7 @@ class GLDisplayObject {
 		
 		if (displayObject.__graphics != null) {
 			
-			GLShape.renderMask (displayObject, renderSession);
+			GLShape.renderMask (displayObject, renderer);
 			
 		}
 		

@@ -1,18 +1,23 @@
 package openfl.filters;
 
 
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 class ConvolutionFilter extends BitmapFilter {
 	
 	
-	//private static var __convolutionShader = new ConvolutionShader ();
+	private static var __convolutionShader = new ConvolutionShader ();
 	
 	public var alpha:Float;
 	public var bias:Float;
@@ -52,8 +57,7 @@ class ConvolutionFilter extends BitmapFilter {
 		this.color = color;
 		this.alpha = alpha;
 		
-		// __numShaderPasses = 1;
-		__numShaderPasses = 0;
+		__numShaderPasses = 1;
 		
 	}
 	
@@ -65,18 +69,14 @@ class ConvolutionFilter extends BitmapFilter {
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
-		// var data = __convolutionShader.data;
+		__convolutionShader.uConvoMatrix.value = matrix;
+		__convolutionShader.uDivisor.value[0] = divisor;
+		__convolutionShader.uBias.value[0] = bias;
+		__convolutionShader.uPreserveAlpha.value[0] = preserveAlpha;
 		
-		// data.uConvoMatrix.value = matrix;
-		// data.uDivisor.value[0] = divisor;
-		// data.uBias.value[0] = bias;
-		// data.uPreserveAlpha.value[0] = preserveAlpha;
-		
-		// return __convolutionShader;
-		
-		return null;
+		return __convolutionShader;
 		
 	}
 	
@@ -123,16 +123,14 @@ class ConvolutionFilter extends BitmapFilter {
 #end
 
 
-private class ConvolutionShader extends Shader {
+private class ConvolutionShader extends BitmapFilterShader {
 	
 	
 	@:glFragmentSource( 
 		
 		"varying vec2 vBlurCoords[9];
-		varying float vAlpha;
-		varying vec2 vTexCoord;
 		
-		uniform sampler2D uImage0;
+		uniform sampler2D openfl_Texture;
 		
 		uniform float uBias;
 		uniform mat3 uConvoMatrix;
@@ -141,22 +139,22 @@ private class ConvolutionShader extends Shader {
 		
 		void main(void) {
 			
-			vec4 tc = texture2D (uImage0, vBlurCoords[4]);
+			vec4 tc = texture2D (openfl_Texture, vBlurCoords[4]);
 			vec4 c = vec4 (0.0);
 			
-			c += texture2D (uImage0, vBlurCoords[0]) * uConvoMatrix[0][0];
-			c += texture2D (uImage0, vBlurCoords[1]) * uConvoMatrix[0][1];
-			c += texture2D (uImage0, vBlurCoords[2]) * uConvoMatrix[0][2];
+			c += texture2D (openfl_Texture, vBlurCoords[0]) * uConvoMatrix[0][0];
+			c += texture2D (openfl_Texture, vBlurCoords[1]) * uConvoMatrix[0][1];
+			c += texture2D (openfl_Texture, vBlurCoords[2]) * uConvoMatrix[0][2];
 			
-			c += texture2D (uImage0, vBlurCoords[3]) * uConvoMatrix[1][0];
+			c += texture2D (openfl_Texture, vBlurCoords[3]) * uConvoMatrix[1][0];
 			c += tc * uConvoMatrix[1][1];
-			c += texture2D (uImage0, vBlurCoords[5]) * uConvoMatrix[1][2];
+			c += texture2D (openfl_Texture, vBlurCoords[5]) * uConvoMatrix[1][2];
 			
-			c += texture2D (uImage0, vBlurCoords[6]) * uConvoMatrix[2][0];
-			c += texture2D (uImage0, vBlurCoords[7]) * uConvoMatrix[2][1];
-			c += texture2D (uImage0, vBlurCoords[8]) * uConvoMatrix[2][2];
+			c += texture2D (openfl_Texture, vBlurCoords[6]) * uConvoMatrix[2][0];
+			c += texture2D (openfl_Texture, vBlurCoords[7]) * uConvoMatrix[2][1];
+			c += texture2D (openfl_Texture, vBlurCoords[8]) * uConvoMatrix[2][2];
 			
-			if (uDivisor > 0) {
+			if (uDivisor > 0.0) {
 				
 				c /= vec4 (uDivisor, uDivisor, uDivisor, uDivisor);
 				
@@ -170,7 +168,7 @@ private class ConvolutionShader extends Shader {
 				
 			}
 			
-			gl_FragColor = c * vAlpha;
+			gl_FragColor = c;
 			
 		}"
 		
@@ -178,21 +176,18 @@ private class ConvolutionShader extends Shader {
 	
 	@:glVertexSource( 
 		
-		"attribute float aAlpha;
-		attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
+		"attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
 		
 		varying vec2 vBlurCoords[9];
-		varying float vAlpha;
-		varying vec2 vTexCoord;
 		
-		uniform mat4 uMatrix;
-		uniform vec2 uTextureSize;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
 		
 		void main(void) {
 			
-			vec2 r = vec2 (1.0, 1.0) / uTextureSize;
-			vec2 t = aTexCoord;
+			vec2 r = vec2 (1.0, 1.0) / openfl_TextureSize;
+			vec2 t = openfl_TextureCoord;
 			
 			vBlurCoords[0] = t + r * vec2 (-1.0, -1.0);
 			vBlurCoords[1] = t + r * vec2 (0.0, -1.0);
@@ -206,9 +201,7 @@ private class ConvolutionShader extends Shader {
 			vBlurCoords[7] = t + r * vec2 (0.0, 1.0);
 			vBlurCoords[8] = t + r * vec2 (1.0, 1.0);
 			
-			vAlpha = aAlpha;
-			vTexCoord = aTexCoord;
-			gl_Position = uMatrix * aPosition;
+			gl_Position = openfl_Matrix * openfl_Position;
 			
 		}"
 		
@@ -219,18 +212,9 @@ private class ConvolutionShader extends Shader {
 		
 		super ();
 		
-		data.uDivisor.value = [ 1 ];
-		data.uBias.value = [ 0 ];
-		data.uPreserveAlpha.value = [ true ];
-		
-	}
-	
-	
-	private override function __update ():Void {
-		
-		data.uTextureSize.value = [ data.uImage0.input.width, data.uImage0.input.height ];
-		
-		super.__update ();
+		uDivisor.value = [ 1 ];
+		uBias.value = [ 0 ];
+		uPreserveAlpha.value = [ true ];
 		
 	}
 	

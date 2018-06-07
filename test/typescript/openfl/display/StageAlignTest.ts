@@ -7,7 +7,7 @@ describe ("TypeScript | StageAlign", function () {
 	
 	it ("test", function () {
 		
-		switch (+StageAlign.TOP_RIGHT) {
+		switch (""+StageAlign.TOP_RIGHT) {
 				
 			case StageAlign.BOTTOM:
 			case StageAlign.BOTTOM_LEFT:

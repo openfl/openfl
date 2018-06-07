@@ -1,4 +1,5 @@
 import NetConnection from "./NetConnection";
+import ObjectEncoding from "./ObjectEncoding";
 import EventDispatcher from "./../events/EventDispatcher";
 import SoundTransform from "./../media/SoundTransform";
 
@@ -114,7 +115,7 @@ declare namespace openfl.net {
 		// @:noCompletion @:dox(hide) @:require(flash10) public var nearNonce (default, null):string;
 		// #end
 		
-		public readonly objectEncoding:number;
+		public readonly objectEncoding:ObjectEncoding;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) public var peerStreams (default, null):Array<Dynamic>;

@@ -244,7 +244,7 @@ class VectorTest {
 			
 		}
 		
-		Assert.areNotSame (vector, vector2);
+		Assert.areNotEqual (vector, vector2);
 		
 		var vector2 = vector.slice (2);
 		
@@ -354,6 +354,7 @@ class VectorTest {
 		
 		Assert.areEqual (9, vector.indexOf (9));
 		Assert.areEqual (2, vector.indexOf (2));
+		Assert.areEqual (2, vector.indexOf (2, 1));
 		
 	}
 	
@@ -396,6 +397,7 @@ class VectorTest {
 		
 		Assert.areEqual (19, vector.lastIndexOf (9));
 		Assert.areEqual (12, vector.lastIndexOf (2));
+		Assert.areEqual (12, vector.lastIndexOf (2, 20));
 		
 	}
 	

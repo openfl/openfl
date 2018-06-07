@@ -1,10 +1,16 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
 @:jsRequire("openfl/utils/ByteArray", "default")
 
 
 extern class ByteArray implements IDataOutput implements IDataInput /*implements ArrayAccess<Int>*/ {
+	
+	
+	public function get (position:Int):Int;
+	public function set (position:Int, value:Int):Int;
 	
 	
 	/**
@@ -19,7 +25,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
 	 * used. The value is a constant from the ObjectEncoding class.
 	 */
-	public static var defaultObjectEncoding:UInt;
+	public static var defaultObjectEncoding:ObjectEncoding;
 	
 	/**
 	 * The number of bytes of data available for reading from the current
@@ -29,13 +35,16 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * read methods each time you access a ByteArray object to ensure that you
 	 * are reading valid data.
 	 */
-	public var bytesAvailable (default, never):UInt;
+	public var bytesAvailable (get, never):UInt;
+	@:noCompletion private function get_bytesAvailable ():UInt;
 	
 	/**
 	 * Changes or reads the byte order for the data; either
 	 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 	 */
-	public var endian:Endian;
+	public var endian (get, set):Endian;
+	@:noCompletion private function get_endian ():Endian;
+	@:noCompletion private function set_endian (value:Endian):Endian;
 	
 	/**
 	 * The length of the ByteArray object, in bytes.
@@ -53,7 +62,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * ActionScript 1.0 format should be used when writing to, or reading from, a
 	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 	 */
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	/**
 	 * Moves, or returns the current position, in bytes, of the file pointer into
@@ -308,9 +317,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * @return The deserialized object.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	#if flash
-	@:noCompletion @:dox(hide) public function readObject ():Dynamic;
-	#end
+	public function readObject ():Dynamic;
 	
 	
 	/**
@@ -513,9 +520,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * 
 	 * @param object The object to serialize.
 	 */
-	#if flash
-	@:noCompletion @:dox(hide) public function writeObject (object:Dynamic):Void;
-	#end
+	public function writeObject (object:Dynamic):Void;
 	
 	
 	/**

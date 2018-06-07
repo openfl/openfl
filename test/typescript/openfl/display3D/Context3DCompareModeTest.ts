@@ -7,7 +7,7 @@ describe ("TypeScript | Context3DCompareMode", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DCompareMode.ALWAYS) {
+		switch (""+Context3DCompareMode.ALWAYS) {
 			
 			case Context3DCompareMode.ALWAYS:
 			case Context3DCompareMode.EQUAL:

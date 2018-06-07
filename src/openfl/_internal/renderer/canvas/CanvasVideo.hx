@@ -1,7 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
-import openfl._internal.renderer.RenderSession;
+import openfl.display.CanvasRenderer;
 import openfl.media.Video;
 import openfl.net.NetStream;
 
@@ -12,32 +12,23 @@ import openfl.net.NetStream;
 class CanvasVideo {
 	
 	
-	public static function render (video:Video, renderSession:RenderSession):Void {
+	public static function render (video:Video, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		if (!video.__renderable || video.__worldAlpha <= 0 || video.__stream == null) return;
 		
-		var context = renderSession.context;
+		var context = renderer.context;
 		
 		if (video.__stream.__video != null) {
 			
-			renderSession.blendModeManager.setBlendMode (video.__worldBlendMode);
-			renderSession.maskManager.pushObject (video);
+			renderer.__setBlendMode (video.__worldBlendMode);
+			renderer.__pushMaskObject (video);
 			
 			context.globalAlpha = video.__worldAlpha;
-			var transform = video.__worldTransform;
 			var scrollRect = video.__scrollRect;
 			var smoothing = video.smoothing;
 			
-			if (renderSession.roundPixels) {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-				
-			} else {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-				
-			}
+			renderer.setTransform (video.__worldTransform, context);
 			
 			if (!smoothing) {
 				
@@ -67,7 +58,7 @@ class CanvasVideo {
 				
 			}
 			
-			renderSession.maskManager.popObject (video);
+			renderer.__popMaskObject (video);
 			
 		}
 		#end

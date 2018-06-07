@@ -23,6 +23,9 @@ declare namespace openfl.text {
 		 */
 		public fontName:string;
 		
+		protected get_fontName ():string;
+		protected set_fontName (value:string):string;
+		
 		/**
 		 * The style of the font. This value can be any of the values defined in the
 		 * FontStyle class.

@@ -7,7 +7,7 @@ describe ("ES6 | MultitouchInputMode", function () {
 	
 	it ("test", function () {
 		
-		switch (+MultitouchInputMode.GESTURE) {
+		switch (""+MultitouchInputMode.GESTURE) {
 			
 			case MultitouchInputMode.GESTURE:
 			case MultitouchInputMode.NONE:

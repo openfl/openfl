@@ -26,18 +26,18 @@ declare namespace openfl.display {
 		/**
 		 * Specifies culling of all triangles facing toward the current view point.
 		 */
-		NEGATIVE = 0,
+		NEGATIVE = "negative",
 		
 		/**
 		 * Specifies no culling. All triangles in the path are rendered.
 		 */
-		NONE = 1,
+		NONE = "none",
 		
 		/**
 		 * Specifies culling of all triangles facing away from the current view
 		 * point. This is also known as backface culling.
 		 */
-		POSITIVE = 2
+		POSITIVE = "positive"
 		
 	}
 	

@@ -5,8 +5,8 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
-
 @:jsRequire("openfl/display/ITile", "default")
+
 
 extern interface ITile {
 	

@@ -25,6 +25,28 @@ class ExtraParams {
 				
 			}
 			
+			if (Context.defined ("js") && !Context.defined ("nodejs") && !Context.defined ("lime")) {
+				
+				var childPath = Context.resolvePath ("openfl/external");
+				
+				var parts = StringTools.replace (childPath, "\\", "/").split ("/");
+				
+				if (parts.length > 3) {
+					
+					parts.pop ();
+					parts.pop ();
+					parts.pop ();
+					
+					var openflPath = parts.join ("/");
+					
+					trace (openflPath);
+					
+					Compiler.addClassPath (openflPath + "/lib");
+					
+				}
+				
+			}
+			
 		}
 		
 	}

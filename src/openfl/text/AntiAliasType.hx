@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !openfljs
 
 
 @:enum abstract AntiAliasType(Null<Int>) {
@@ -31,3 +31,17 @@ package openfl.text;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract AntiAliasType(String) from String to String {
+	
+	public var ADVANCED = "advanced";
+	public var NORMAL = "normal";
+	
+}
+
+
+#end

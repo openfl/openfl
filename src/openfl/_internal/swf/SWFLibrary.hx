@@ -26,6 +26,11 @@ import openfl.utils.ByteArray;
 import flash.display.AVM1Movie;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:keep class SWFLibrary extends AssetLibrary {
 	

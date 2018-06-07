@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract StageAlign(Null<Int>) {
@@ -49,3 +49,23 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract StageAlign(String) from String to String {
+	
+	public var BOTTOM = "bottom";
+	public var BOTTOM_LEFT = "bottomLeft";
+	public var BOTTOM_RIGHT = "bottomRight";
+	public var LEFT = "left";
+	public var RIGHT = "right";
+	public var TOP = "top";
+	public var TOP_LEFT = "topLeft";
+	public var TOP_RIGHT = "topRight";
+	
+}
+
+
+#end

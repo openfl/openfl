@@ -2,9 +2,9 @@ declare namespace openfl.text {
 	
 	export enum GridFitType {
 		
-		NONE = 0,
-		PIXEL = 1,
-		SUBPIXEL = 2
+		NONE = "none",
+		PIXEL = "pixel",
+		SUBPIXEL = "subpixel"
 		
 	}
 	

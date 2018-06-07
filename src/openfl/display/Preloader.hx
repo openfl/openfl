@@ -181,7 +181,17 @@ class Preloader extends LimePreloader {
 	
 	public function getBackgroundColor ():Int {
 		
-		return Lib.current.stage.window.config.background;
+		var config = Lib.current.stage.window.config;
+		
+		if (Reflect.hasField (config, "background") && config.background != null) {
+			
+			return config.background;
+			
+		} else {
+			
+			return 0;
+			
+		}
 		
 	}
 	

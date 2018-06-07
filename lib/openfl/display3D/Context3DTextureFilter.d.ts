@@ -2,12 +2,12 @@ declare namespace openfl.display3D {
 	
 	export enum Context3DTextureFilter {
 		
-		ANISOTROPIC16X = 0,
-		ANISOTROPIC2X = 1,
-		ANISOTROPIC4X = 2,
-		ANISOTROPIC8X = 3,
-		LINEAR = 4,
-		NEAREST = 5
+		ANISOTROPIC16X = "anisotropic16x",
+		ANISOTROPIC2X = "anisotropic2x",
+		ANISOTROPIC4X = "anisotropic4x",
+		ANISOTROPIC8X = "anisotropic8x",
+		LINEAR = "linear",
+		NEAREST = "nearest"
 		
 	}
 	

@@ -16,7 +16,9 @@ import openfl._internal.timeline.FrameObject;
 import openfl._internal.timeline.FrameObjectType;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
+import openfl.events.MouseEvent;
 import openfl.filters.*;
+import openfl.geom.ColorTransform;
 import openfl.text.TextField;
 
 #if hscript
@@ -30,7 +32,7 @@ import hscript.Parser;
 #end
 
 @:access(openfl._internal.symbols.SWFSymbol)
-
+@:access(openfl.geom.ColorTransform)
 
 class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
 	
@@ -55,8 +57,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __currentLabels:Array<FrameLabel>;
 	private var __frameScripts:Map<Int, Void->Void>;
 	private var __frameTime:Int;
+	private var __hasDown:Bool;
+	private var __hasOver:Bool;
+	private var __hasUp:Bool;
 	private var __lastFrameScriptEval:Int;
 	private var __lastFrameUpdate:Int;
+	private var __mouseIsDown:Bool;
 	private var __playing:Bool;
 	private var __swf:SWFLite;
 	private var __symbol:SpriteSymbol;
@@ -252,7 +258,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							if (instance != null) {
 								
 								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
+								__updateDisplayObject (instance.displayObject, frameObject, true);
 								
 							}
 						
@@ -285,13 +291,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				
 				if (currentInstances.indexOf (instance) == -1) {
 					
+					currentInstances.push (instance);
+					
 					if (instance.clipDepth > 0) {
 						
 						currentMasks.push (instance);
-						
-					} else {
-						
-						currentInstances.push (instance);
 						
 					}
 					
@@ -361,6 +365,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				for (instance in __activeInstances) {
 					
 					if (instance.displayObject == child) {
+						
+						//set MovieClips back to initial state (autoplay)
+						if (Std.is(child, MovieClip))
+						{
+							var movie : MovieClip = cast child;
+							movie.gotoAndPlay(1);
+						}
 						
 						removeChild (child);
 						i--;
@@ -755,7 +766,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject):Void {
+	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject, reset : Bool = false):Void {
 		
 		if (displayObject == null) return;
 		
@@ -774,6 +785,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		if (frameObject.colorTransform != null) {
 			
 			displayObject.transform.colorTransform = frameObject.colorTransform;
+			
+		}
+		else if (reset && !displayObject.transform.colorTransform.__isDefault()) {
+			
+			displayObject.transform.colorTransform = new ColorTransform();
 			
 		}
 		
@@ -871,9 +887,129 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	
+	// Event Handlers
+	
+	
+	
+	
+	private function __onMouseDown (event:MouseEvent):Void {
+		
+		if (__hasDown) {
+			
+			gotoAndStop ("_down");
+			
+		}
+		
+		__mouseIsDown = true;
+		stage.addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+		
+	}
+	
+	
+	private function __onMouseUp (event:MouseEvent):Void {
+		
+		__mouseIsDown = false;
+		
+		if (stage != null) {
+			
+			stage.removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+			
+		}
+		
+		if (event.currentTarget == this && __hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		} else if (__hasUp) {
+			
+			gotoAndStop ("_up");
+			
+		}
+		
+	}
+	
+	
+	private function __onRollOut (event:MouseEvent):Void {
+		
+		if (__mouseIsDown && __hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		} else if (__hasUp) {
+			
+			gotoAndStop ("_up");
+			
+		}
+		
+	}
+	
+	
+	private function __onRollOver (event:MouseEvent):Void {
+		
+		if (__hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		}
+		
+	}
+	
+	
+	
+	
 	// Getters & Setters
 	
 	
+	
+	
+	private override function set_buttonMode (value:Bool):Bool {
+		
+		if (__buttonMode != value) {
+			
+			if (value) {
+				
+				__hasDown = false;
+				__hasOver = false;
+				__hasUp = false;
+				
+				for (frameLabel in __currentLabels) {
+					
+					switch (frameLabel.name) {
+						
+						case "_up": __hasUp = true;
+						case "_over": __hasOver = true;
+						case "_down": __hasDown = true;
+						default:
+						
+					}
+					
+				}
+				
+				if (__hasDown || __hasOver || __hasUp) {
+					
+					addEventListener (MouseEvent.ROLL_OVER, __onRollOver);
+					addEventListener (MouseEvent.ROLL_OUT, __onRollOut);
+					addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+					addEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
+						
+				}
+				
+			} else {
+				
+				removeEventListener (MouseEvent.ROLL_OVER, __onRollOver);
+				removeEventListener (MouseEvent.ROLL_OUT, __onRollOut);
+				removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+				removeEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
+				
+			}
+			
+			__buttonMode = value;
+			
+		}
+		
+		return value;
+		
+	}
 	
 	
 	private function get_currentFrame ():Int { return __currentFrame; }

@@ -7,7 +7,7 @@ describe ("ES6 | Context3DTriangleFace", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DTriangleFace.BACK) {
+		switch (""+Context3DTriangleFace.BACK) {
 			
 			case Context3DTriangleFace.BACK:
 			case Context3DTriangleFace.FRONT:

@@ -10,13 +10,13 @@ import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
 import lime.math.Vector2;
-import openfl._internal.renderer.RenderSession;
-import openfl.display.BitmapData;
-import openfl.display.CapsStyle;
-import openfl.display.DisplayObject;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.DrawCommandType;
+import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
+import openfl.display.CapsStyle;
+import openfl.display.DisplayObject;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -36,11 +36,13 @@ import openfl.Vector;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 class CairoGraphics {
 	
-	
+	#if lime_cairo
+	 
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
@@ -60,6 +62,8 @@ class CairoGraphics {
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer ();
 	private static var strokePattern:CairoPattern;
+	private static var tempMatrix3 = new Matrix3 ();
+	private static var worldAlpha:Float;
 	
 	
 	private static function closePath (strokeBefore:Bool = false):Void {
@@ -237,6 +241,8 @@ class CairoGraphics {
 		
 	}
 	
+	#end
+	
 	
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
@@ -347,7 +353,7 @@ class CairoGraphics {
 						hasFill = false;
 						bitmapFill = null;
 					
-					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
+					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 						
 						endFill ();
 						
@@ -378,6 +384,12 @@ class CairoGraphics {
 							var c = data.readBeginGradientFill ();
 							fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 							strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							
+						} else if (type == BEGIN_SHADER_FILL) {
+							
+							var c = data.readBeginShaderFill ();
+							fillCommands.beginShaderFill (c.shaderBuffer);
+							strokeCommands.beginShaderFill (c.shaderBuffer);
 							
 						} else {
 							
@@ -466,6 +478,8 @@ class CairoGraphics {
 		
 	}
 	
+	
+	#if lime_cairo
 	
 	private static inline function isCCW (x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
 		
@@ -788,6 +802,160 @@ class CairoGraphics {
 					hasFill = true;
 					bitmapFill = null;
 				
+				case BEGIN_SHADER_FILL:
+					
+					var c = data.readBeginShaderFill ();
+					var shaderBuffer = c.shaderBuffer;
+					
+					if (shaderBuffer.inputCount > 0) {
+						
+						fillPattern = createImagePattern (shaderBuffer.inputs[0], null, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+						
+						bitmapFill = shaderBuffer.inputs[0];
+						bitmapRepeat = false;
+						
+						hasFill = true;
+						
+					}
+				
+				case DRAW_QUADS:
+					
+					var cacheExtend = fillPattern.extend;
+					fillPattern.extend = CairoExtend.NONE;
+					
+					var c = data.readDrawQuads ();
+					var rects = c.rects;
+					var indices = c.indices;
+					var transforms = c.transforms;
+					
+					var hasIndices = (indices != null);
+					var transformABCD = false, transformXY = false;
+					
+					var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
+					if (length == 0) return;
+					
+					if (transforms != null) {
+						
+						if (transforms.length >= length * 6) {
+							
+							transformABCD = true;
+							transformXY = true;
+							
+						} else if (transforms.length >= length * 4) {
+							
+							transformABCD = true;
+							
+						} else if (transforms.length >= length * 2) {
+							
+							transformXY = true;
+							
+						}
+						
+					}
+					
+					var tileRect = Rectangle.__pool.get ();
+					var tileTransform = Matrix.__pool.get ();
+					
+					var sourceRect = (bitmapFill != null) ? bitmapFill.rect : null;
+					tempMatrix3.identity ();
+					
+					var transform = graphics.__renderTransform;
+					// var roundPixels = renderer.__roundPixels;
+					var alpha = CairoGraphics.worldAlpha;
+					
+					var ri, ti;
+					
+					for (i in 0...length) {
+						
+						ri = (hasIndices ? (indices[i] * 4) : i * 4);
+						if (ri < 0) continue;
+						tileRect.setTo (rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+						
+						if (tileRect.width <= 0 || tileRect.height <= 0) {
+							
+							continue;
+							
+						}
+						
+						if (transformABCD && transformXY) {
+							
+							ti = i * 6;
+							tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+							
+						} else if (transformABCD) {
+							
+							ti = i * 4;
+							tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
+							
+						} else if (transformXY) {
+							
+							ti = i * 2;
+							tileTransform.tx = transforms[ti];
+							tileTransform.ty = transforms[ti + 1];
+							
+						} else {
+							
+							tileTransform.tx = tileRect.x;
+							tileTransform.ty = tileRect.y;
+							
+						}
+						
+						tileTransform.tx += positionX - offsetX;
+						tileTransform.ty += positionY - offsetY;
+						tileTransform.concat (transform);
+						
+						// if (roundPixels) {
+							
+						// 	tileTransform.tx = Math.round (tileTransform.tx);
+						// 	tileTransform.ty = Math.round (tileTransform.ty);
+							
+						// }
+						
+						cairo.matrix = tileTransform.__toMatrix3 ();
+						
+						tempMatrix3.tx = tileRect.x;
+						tempMatrix3.ty = tileRect.y;
+						fillPattern.matrix = tempMatrix3;
+						cairo.source = fillPattern;
+						
+						if (tileRect != sourceRect) {
+							
+							cairo.save ();
+							
+							cairo.newPath ();
+							cairo.rectangle (0, 0, tileRect.width, tileRect.height);
+							cairo.clip ();
+							
+						}
+						
+						if (!hitTesting) {
+							
+							if (alpha == 1) {
+								
+								cairo.paint ();
+								
+							} else {
+								
+								cairo.paintWithAlpha (alpha);
+								
+							}
+							
+						}
+						
+						if (tileRect != sourceRect) {
+							
+							cairo.restore ();
+							
+						}
+						
+					}
+					
+					Rectangle.__pool.release (tileRect);
+					Matrix.__pool.release (tileTransform);
+					
+					cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
+					fillPattern.extend = cacheExtend;
+				
 				case DRAW_TRIANGLES:
 					
 					var c = data.readDrawTriangles ();
@@ -853,8 +1021,6 @@ class CairoGraphics {
 					var t1:Float, t2:Float, t3:Float, t4:Float;
 					var dx:Float, dy:Float;
 					
-					var matrix = new Matrix3 ();
-					
 					cairo.antialias = NONE;
 					
 					while (i < l) {
@@ -908,6 +1074,7 @@ class CairoGraphics {
 							cairo.lineTo (x2, y2);
 							cairo.lineTo (x3, y3);
 							cairo.closePath ();
+							cairo.source = fillPattern;
 							if (!hitTesting) cairo.fillPreserve ();
 							i += 3;
 							continue;
@@ -917,13 +1084,6 @@ class CairoGraphics {
 						cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
 						//cairo.identityMatrix();
 						//cairo.resetClip();
-						
-						cairo.newPath ();
-						cairo.moveTo (x1, y1);
-						cairo.lineTo (x2, y2);
-						cairo.lineTo (x3, y3);
-						cairo.closePath ();
-						//cairo.clip ();
 						
 						uvx1 = uvt[iax] * width;
 						uvx2 = uvt[ibx] * width;
@@ -941,6 +1101,13 @@ class CairoGraphics {
 							
 						}
 						
+						cairo.newPath ();
+						cairo.moveTo (x1, y1);
+						cairo.lineTo (x2, y2);
+						cairo.lineTo (x3, y3);
+						cairo.closePath ();
+						//cairo.clip ();
+						
 						x1*=currentMatrix.a;
 						x2*=currentMatrix.a;
 						x3*=currentMatrix.a;
@@ -955,14 +1122,16 @@ class CairoGraphics {
 						dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
 						dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 						
-						matrix.setTo (t1, t2, t3, t4, dx, dy);
-						cairo.matrix = matrix;
+						tempMatrix3.setTo (t1, t2, t3, t4, dx, dy);
+						cairo.matrix = tempMatrix3;
 						cairo.source = fillPattern;
 						if (!hitTesting) cairo.fill ();
 						
 						i += 3;
 						
 					}
+					
+					cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
 				
 				case WINDING_EVEN_ODD:
 					
@@ -1073,14 +1242,18 @@ class CairoGraphics {
 		
 	}
 	
+	#end
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
+	
+	public static function render (graphics:Graphics, renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		
 		CairoGraphics.graphics = graphics;
-		CairoGraphics.allowSmoothing = renderSession.allowSmoothing;
-		graphics.__update ();
+		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
+		CairoGraphics.worldAlpha = renderer.__getAlpha (graphics.__owner.__worldAlpha);
+		
+		graphics.__update (renderer.__worldTransform);
 		
 		if (!graphics.__dirty || graphics.__managed) return;
 		
@@ -1097,14 +1270,16 @@ class CairoGraphics {
 		} else {
 			
 			hitTesting = false;
+			var needsUpscaling = false;
 			
 			if (graphics.__cairo != null) {
 				
 				var surface:CairoImageSurface = cast graphics.__cairo.target;
 				
-				if (width != surface.width || height != surface.height) {
+				if (width > surface.width || height > surface.height) {
 					
 					graphics.__cairo = null;
+					needsUpscaling = true;
 					
 				}
 				
@@ -1112,7 +1287,9 @@ class CairoGraphics {
 			
 			if (graphics.__cairo == null || graphics.__bitmap == null) {
 				
-				var bitmap = new BitmapData (width, height, true, 0);
+				var bitmap = needsUpscaling ?
+					new BitmapData (Std.int (width * 1.25), Std.int (height * 1.25), true, 0) :
+					new BitmapData (width, height, true, 0);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
 				graphics.__bitmap = bitmap;
@@ -1120,7 +1297,8 @@ class CairoGraphics {
 			}
 			
 			cairo = graphics.__cairo;
-			cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
+			
+			renderer.applyMatrix (graphics.__renderTransform, cairo);
 			
 			cairo.operator = CLEAR;
 			cairo.paint ();
@@ -1269,7 +1447,7 @@ class CairoGraphics {
 						hasLineStyle = c.thickness != null;
 						strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 					
-					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
+					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 						
 						endFill ();
 						endStroke ();
@@ -1285,6 +1463,12 @@ class CairoGraphics {
 							var c = data.readBeginGradientFill ();
 							fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 							strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							
+						} else if (type == BEGIN_SHADER_FILL) {
+							
+							var c = data.readBeginShaderFill ();
+							fillCommands.beginShaderFill (c.shaderBuffer);
+							strokeCommands.beginShaderFill (c.shaderBuffer);
 							
 						} else {
 							
@@ -1338,6 +1522,11 @@ class CairoGraphics {
 							
 						}
 					
+					case DRAW_QUADS:
+						
+						var c = data.readDrawQuads ();
+						fillCommands.drawQuads (c.rects, c.indices, c.transforms);
+					
 					case DRAW_TRIANGLES:
 						
 						var c = data.readDrawTriangles ();
@@ -1387,11 +1576,13 @@ class CairoGraphics {
 	}
 	
 	
-	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
+	public static function renderMask (graphics:Graphics, renderer:CairoRenderer) {
+		
+		#if lime_cairo
 		
 		if (graphics.__commands.length != 0) {
 			
-			var cairo = renderSession.cairo;
+			cairo = renderer.cairo;
 			
 			var positionX = 0.0;
 			var positionY = 0.0;
@@ -1399,7 +1590,7 @@ class CairoGraphics {
 			var offsetX = 0;
 			var offsetY = 0;
 			
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = new DrawCommandReader (graphics.__commands);
 			
 			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
 			
@@ -1412,7 +1603,7 @@ class CairoGraphics {
 						var c = data.readCubicCurveTo ();
 						cairo.curveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 						positionX = c.anchorX;
-						positionY = c.anchorX;
+						positionY = c.anchorY;
 					
 					case CURVE_TO:
 						
@@ -1486,8 +1677,12 @@ class CairoGraphics {
 				
 			}
 			
-			data.destroy();
+			data.destroy ();
+			
 		}
+		
+		#end
+		
 	}
 	
 	

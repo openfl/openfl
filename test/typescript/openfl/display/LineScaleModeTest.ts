@@ -7,7 +7,7 @@ describe ("TypeScript | LineScaleMode", function () {
 	
 	it ("test", function () {
 		
-		switch (+LineScaleMode.VERTICAL) {
+		switch (""+LineScaleMode.VERTICAL) {
 			
 			case LineScaleMode.HORIZONTAL:
 			case LineScaleMode.NONE:

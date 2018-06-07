@@ -286,7 +286,7 @@ declare namespace openfl.display {
 		 * @throws SecurityError         If a local SWF file is attempting to use the
 		 *                               `securityDomain` property of the
 		 *                               `context` parameter.
-		 * @event asyncError    Dispatched by the `contentLoaderInfo`
+		 * @:event asyncError    Dispatched by the `contentLoaderInfo`
 		 *                      object if the
 		 *                      `LoaderContext.requestedContentParent`
 		 *                      property has been specified and it is not possible to
@@ -296,37 +296,37 @@ declare namespace openfl.display {
 		 *                      `openfl.display.AVM1Movie` or if the
 		 *                      `addChild()` call to the
 		 *                      requestedContentParent throws an error.
-		 * @event complete      Dispatched by the `contentLoaderInfo`
+		 * @:event complete      Dispatched by the `contentLoaderInfo`
 		 *                      object when the file has completed loading. The
 		 *                      `complete` event is always dispatched
 		 *                      after the `init` event.
-		 * @event httpStatus    Dispatched by the `contentLoaderInfo`
+		 * @:event httpStatus    Dispatched by the `contentLoaderInfo`
 		 *                      object when a network request is made over HTTP and
 		 *                      Flash Player can detect the HTTP status code.
-		 * @event init          Dispatched by the `contentLoaderInfo`
+		 * @:event init          Dispatched by the `contentLoaderInfo`
 		 *                      object when the properties and methods of the loaded
 		 *                      SWF file are accessible. The `init` event
 		 *                      always precedes the `complete` event.
-		 * @event ioError       Dispatched by the `contentLoaderInfo`
+		 * @:event ioError       Dispatched by the `contentLoaderInfo`
 		 *                      object when an input or output error occurs that
 		 *                      causes a load operation to fail.
-		 * @event open          Dispatched by the `contentLoaderInfo`
+		 * @:event open          Dispatched by the `contentLoaderInfo`
 		 *                      object when the loading operation starts.
-		 * @event progress      Dispatched by the `contentLoaderInfo`
+		 * @:event progress      Dispatched by the `contentLoaderInfo`
 		 *                      object as data is received while load operation
 		 *                      progresses.
-		 * @event securityError Dispatched by the `contentLoaderInfo`
+		 * @:event securityError Dispatched by the `contentLoaderInfo`
 		 *                      object if a SWF file in the local-with-filesystem
 		 *                      sandbox attempts to load content in the
 		 *                      local-with-networking sandbox, or vice versa.
-		 * @event securityError Dispatched by the `contentLoaderInfo`
+		 * @:event securityError Dispatched by the `contentLoaderInfo`
 		 *                      object if the
 		 *                      `LoaderContext.requestedContentParent`
 		 *                      property has been specified and the security sandbox
 		 *                      of the
 		 *                      `LoaderContext.requestedContentParent`
 		 *                      does not have access to the loaded SWF.
-		 * @event unload        Dispatched by the `contentLoaderInfo`
+		 * @:event unload        Dispatched by the `contentLoaderInfo`
 		 *                      object when a loaded object is removed.
 		 */
 		public load (request:URLRequest, context?:LoaderContext):void;
@@ -381,7 +381,7 @@ declare namespace openfl.display {
 		 *                               ports. For a complete list of blocked ports,
 		 *                               see "Restricting Networking APIs" in the
 		 *                               _ActionScript 3.0 Developer's Guide_.
-		 * @event asyncError    Dispatched by the `contentLoaderInfo`
+		 * @:event asyncError    Dispatched by the `contentLoaderInfo`
 		 *                      object if the
 		 *                      `LoaderContext.requestedContentParent`
 		 *                      property has been specified and it is not possible to
@@ -391,29 +391,29 @@ declare namespace openfl.display {
 		 *                      `openfl.display.AVM1Movie` or if the
 		 *                      `addChild()` call to the
 		 *                      requestedContentParent throws an error.
-		 * @event complete      Dispatched by the `contentLoaderInfo`
+		 * @:event complete      Dispatched by the `contentLoaderInfo`
 		 *                      object when the operation is complete. The
 		 *                      `complete` event is always dispatched
 		 *                      after the `init` event.
-		 * @event init          Dispatched by the `contentLoaderInfo`
+		 * @:event init          Dispatched by the `contentLoaderInfo`
 		 *                      object when the properties and methods of the loaded
 		 *                      data are accessible. The `init` event
 		 *                      always precedes the `complete` event.
-		 * @event ioError       Dispatched by the `contentLoaderInfo`
+		 * @:event ioError       Dispatched by the `contentLoaderInfo`
 		 *                      object when the runtime cannot parse the data in the
 		 *                      byte array.
-		 * @event open          Dispatched by the `contentLoaderInfo`
+		 * @:event open          Dispatched by the `contentLoaderInfo`
 		 *                      object when the operation starts.
-		 * @event progress      Dispatched by the `contentLoaderInfo`
+		 * @:event progress      Dispatched by the `contentLoaderInfo`
 		 *                      object as data is transfered in memory.
-		 * @event securityError Dispatched by the `contentLoaderInfo`
+		 * @:event securityError Dispatched by the `contentLoaderInfo`
 		 *                      object if the
 		 *                      `LoaderContext.requestedContentParent`
 		 *                      property has been specified and the security sandbox
 		 *                      of the
 		 *                      `LoaderContext.requestedContentParent`
 		 *                      does not have access to the loaded SWF.
-		 * @event unload        Dispatched by the `contentLoaderInfo`
+		 * @:event unload        Dispatched by the `contentLoaderInfo`
 		 *                      object when a loaded object is removed.
 		 */
 		public loadBytes (buffer:ByteArray, context?:LoaderContext):void;

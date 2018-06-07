@@ -6,6 +6,11 @@ import lime.utils.ObjectPool;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class TouchData {
 	

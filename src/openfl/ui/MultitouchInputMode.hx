@@ -1,4 +1,4 @@
-package openfl.ui;
+package openfl.ui; #if !openfljs
 
 
 @:enum abstract MultitouchInputMode(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.ui;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract MultitouchInputMode(String) from String to String {
+	
+	public var GESTURE = "gesture";
+	public var NONE = "none";
+	public var TOUCH_POINT = "touchPoint";
+	
+}
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl.utils; #if (display || !flash)
+package openfl.utils;
 
 
 // import lime.system.Endian in LimeEndian;
@@ -18,11 +18,11 @@ package openfl.utils; #if (display || !flash)
  * order that matches the protocol of the server that is sending or receiving
  * data.
  */
-@:enum abstract Endian(Null<Int>) {
+@:enum abstract Endian(String) from String to String {
 	
 	
-	public var BIG_ENDIAN = 0;
-	public var LITTLE_ENDIAN = 1;
+	public var BIG_ENDIAN = "bigEndian";
+	public var LITTLE_ENDIAN = "littleEndian";
 	
 	
 	// @:from private static function fromLimeEndian (value:LimeEndian):Endian {
@@ -38,20 +38,7 @@ package openfl.utils; #if (display || !flash)
 	// }
 	
 	
-	@:from private static function fromString (value:String):Endian {
-		
-		return switch (value) {
-			
-			case "bigEndian": BIG_ENDIAN;
-			case "littleEndian": LITTLE_ENDIAN;
-			default: null;
-			
-		}
-		
-	}
-	
-	
-	// @:to private static function toLimeEndian (value:Int):LimeEndian {
+	// @:to private static function toLimeEndian (value:String):LimeEndian {
 		
 	// 	return switch (value) {
 			
@@ -64,22 +51,4 @@ package openfl.utils; #if (display || !flash)
 	// }
 	
 	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case Endian.BIG_ENDIAN: "bigEndian";
-			case Endian.LITTLE_ENDIAN: "littleEndian";
-			default: null;
-			
-		}
-		
-	}
-	
-	
 }
-
-
-#else
-typedef Endian = flash.utils.Endian;
-#end

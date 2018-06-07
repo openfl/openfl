@@ -3,6 +3,11 @@ package openfl.events;
 
 import openfl.ui.GameInputDevice;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class GameInputEvent extends Event {
 	

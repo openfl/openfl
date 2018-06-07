@@ -10,9 +10,9 @@ import lime.graphics.cairo.CairoGlyph;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoHintStyle;
 import lime.graphics.cairo.CairoImageSurface;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
 import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -33,7 +33,7 @@ import openfl.text.TextFormat;
 class CairoTextField {
 	
 	
-	public static function render (textField:TextField, renderSession:RenderSession, transform:Matrix) {
+	public static function render (textField:TextField, renderer:CairoRenderer, transform:Matrix) {
 		
 		#if lime_cairo
 		
@@ -59,7 +59,7 @@ class CairoTextField {
 			
 		}
 		
-		graphics.__update ();
+		graphics.__update (renderer.__worldTransform);
 		
 		var width = graphics.__width;
 		var height = graphics.__height;
@@ -121,18 +121,7 @@ class CairoTextField {
 			
 		}
 		
-		if (true || renderSession.roundPixels) {
-			
-			var matrix = graphics.__renderTransform.__toMatrix3 ();
-			matrix.tx = Math.round (matrix.tx);
-			matrix.ty = Math.round (matrix.ty);
-			cairo.matrix = matrix;
-			
-		} else {
-			
-			cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
-			
-		}
+		renderer.applyMatrix (graphics.__renderTransform, cairo);
 		
 		if (textEngine.border) {
 			
@@ -235,7 +224,7 @@ class CairoTextField {
 					
 					var usedHack = false;
 					
-					if (textField.__filters != null && textField.__filters.length > 0) {
+					if (textField.__filters != null) {
 						
 						// Hack, force outline
 						
@@ -286,8 +275,9 @@ class CairoTextField {
 						for (position in group.positions) {
 							
 							if (position == null || position.glyph == 0) continue;
-							glyphs.push (new CairoGlyph (position.glyph, x + 0.5, y + 0.5));
+							glyphs.push (new CairoGlyph (position.glyph, x + position.offset.x + 0.5, y - position.offset.y + 0.5));
 							x += position.advance.x;
+							y -= position.advance.y;
 							
 						}
 						
