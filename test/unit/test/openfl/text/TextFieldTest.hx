@@ -561,6 +561,12 @@ class TextFieldTest {
 		var textFormat1 = new TextFormat ("_sans", 20, 0xFF0000);
 		var textFormat2 = new TextFormat ("_serif", 40);
 		
+		textField.setTextFormat (textFormat1);
+		
+		Assert.isNotNull (textFormat);
+		Assert.areEqual (null, textFormat.font);
+		Assert.areEqual (null, textFormat.size);
+		
 		textField.text = "1234";
 		textField.setTextFormat (textFormat1, 0, 4);
 		textField.setTextFormat (textFormat2, 2, 4);
