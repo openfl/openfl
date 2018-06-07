@@ -148,7 +148,7 @@ class URLLoader extends EventDispatcher {
 		
 		if (request.data != null) {
 			
-			if (Std.is (request.data, URLVariables)) {
+			if (Type.typeof(request.data) == Type.ValueType.TObject) { 
 				
 				var fields = Reflect.fields (request.data);
 				

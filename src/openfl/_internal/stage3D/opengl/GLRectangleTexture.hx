@@ -1,6 +1,7 @@
 package openfl._internal.stage3D.opengl;
 
 
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
@@ -39,8 +40,25 @@ class GLRectangleTexture {
 		if (source == null) return;
 		
 		var image = rectangleTexture.__getImage (source);
-		
 		if (image == null) return;
+		
+		#if (js && html5)
+		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+			
+			var gl:WebGLContext = renderer.__gl;
+			
+			gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2D (rectangleTexture.__textureTarget, 0, rectangleTexture.__internalFormat, rectangleTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (rectangleTexture.__textureTarget, null);
+			GLUtils.CheckGLError ();
+			return;
+			
+		}
+		#end
 		
 		uploadFromTypedArray (rectangleTexture, renderer, image.data);
 		

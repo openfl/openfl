@@ -88,7 +88,7 @@ class Video extends DisplayObject {
 		__stream = netStream;
 		
 		#if (js && html5)
-		if (__stream != null) {
+		if (__stream != null && __stream.__video != null && !__stream.__closed) {
 			
 			__stream.__video.play ();
 			
@@ -280,7 +280,7 @@ class Video extends DisplayObject {
 		
 		#if (js && html5)
 		
-		if (__stream == null) return null;
+		if (__stream == null || __stream.__video == null) return null;
 		
 		if (__texture == null) {
 			
@@ -294,7 +294,7 @@ class Video extends DisplayObject {
 			
 		}
 		
-		if (__stream.__video.currentTime != __textureTime) {
+		if (!__stream.__closed && __stream.__video.currentTime != __textureTime) {
 			
 			var internalFormat = gl.RGBA;
 			var format = gl.RGBA;
@@ -422,7 +422,7 @@ class Video extends DisplayObject {
 	private function get_videoHeight ():Int {
 		
 		#if (js && html5)
-		if (__stream != null) {
+		if (__stream != null && __stream.__video != null) {
 			
 			return Std.int (__stream.__video.videoHeight);
 			
@@ -437,7 +437,7 @@ class Video extends DisplayObject {
 	private function get_videoWidth ():Int {
 		
 		#if (js && html5)
-		if (__stream != null) {
+		if (__stream != null && __stream.__video != null) {
 			
 			return Std.int (__stream.__video.videoWidth);
 			

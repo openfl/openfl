@@ -224,10 +224,33 @@ class Tileset {
 		
 		if (bitmapData != null) {
 			
-			__uvX = x / bitmapData.width;
-			__uvY = y / bitmapData.height;
-			__uvWidth = (x + width) / bitmapData.width;
-			__uvHeight = (y + height) / bitmapData.height;
+			var bitmapWidth = bitmapData.width;
+			var bitmapHeight = bitmapData.height;
+			
+			#if (openfl_power_of_two && !flash)
+			var newWidth = 1;
+			var newHeight = 1;
+			
+			while (newWidth < bitmapWidth) {
+				
+				newWidth <<= 1;
+				
+			}
+			
+			while (newHeight < bitmapHeight) {
+				
+				newHeight <<= 1;
+				
+			}
+			
+			bitmapWidth = newWidth;
+			bitmapHeight = newHeight;
+			#end
+			
+			__uvX = x / bitmapWidth;
+			__uvY = y / bitmapHeight;
+			__uvWidth = (x + width) / bitmapWidth;
+			__uvHeight = (y + height) / bitmapHeight;
 			
 			#if flash
 			__bitmapData = new BitmapData (width, height);

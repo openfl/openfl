@@ -66,7 +66,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline function lastIndexOf (x:T, ?from:Int = 0):Int {
+	public inline function lastIndexOf (x:T, ?from:Int = null):Int {
 		
 		return this.lastIndexOf (x, from);
 		
@@ -413,11 +413,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Bool, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Bool, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -736,11 +736,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Float, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Float, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -1067,11 +1067,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Function, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Function, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (Reflect.compareMethods (__array[i], x)) return i;
 			i--;
@@ -1382,11 +1382,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:Int, ?from:Int = 0):Int {
+	public function lastIndexOf (x:Int, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -1705,11 +1705,11 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public function lastIndexOf (x:T, ?from:Int = 0):Int {
+	public function lastIndexOf (x:T, ?from:Int = null):Int {
 		
-		var i = __array.length - 1;
+		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 		
-		while (i >= from) {
+		while (i >= 0) {
 			
 			if (__array[i] == x) return i;
 			i--;
@@ -1919,7 +1919,7 @@ abstract Vector<T>(IVector<T>) {
 	public function insertAt (index:Int, element:T):Void;
 	public function iterator ():Iterator<T>;
 	public function join (sep:String = ","):String;
-	public function lastIndexOf (x:T, ?from:Int = 0):Int;
+	public function lastIndexOf (x:T, ?from:Int = null):Int;
 	public function pop ():Null<T>;
 	public function push (x:T):Int;
 	public function removeAt (index:Int):T;
@@ -1964,133 +1964,210 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	
 	public inline function concat (?a:Vector<T>):Vector<T> {
 		
-		return cast this.concat (cast a);
+		// Duplicating behavior of VectorData in abstract, to allow
+		// for Vector.<T> with ActionScript target -- it preserves
+		// the correct behavior for Haxe libraries, even if only
+		// a bare Array object is passed in
+		
+		// return cast this.concat (cast a);
+		return VectorData.ofArray (untyped __js__ ("Array.prototype.concat.call") (this, a));
 		
 	}
 	
 	
 	public inline function copy ():Vector<T> {
 		
-		return cast this.copy ();
+		// return cast this.copy ();
+		return VectorData.ofArray (cast this);
 		
 	}
 	
 	
 	@:arrayAccess public inline function get (index:Int):T {
 		
-		return this.get (index);
+		// return this.get (index);
+		return this[index];
 		
 	}
 	
 	
 	public inline function indexOf (x:T, ?from:Int = 0):Int {
 		
-		return this.indexOf (x, from);
+		// return this.indexOf (x, from);
+		return untyped __js__ ("Array.prototype.indexOf.call") (this, x, from);
 		
 	}
 	
 	
-	public inline function insertAt (index:Int, element:T):Void {
+	public /*inline*/ function insertAt (index:Int, element:T):Void {
 		
-		this.insertAt (index, element);
+		// this.insertAt (index, element);
+		if (!this.fixed || index < this.length) {
+			
+			untyped __js__ ("Array.prototype.splice.call") (this, index, 0, element);
+			
+		}
 		
 	}
 	
 	
 	public inline function iterator ():Iterator<T> {
 		
-		return this.iterator ();
+		// return this.iterator ();
+		return new VectorIterator (this);
 		
 	}
 	
 	
 	public inline function join (sep:String = ","):String {
 		
-		return this.join (sep);
+		// return this.join (sep);
+		return untyped __js__ ("Array.prototype.join.call") (this, sep);
 		
 	}
 	
 	
-	public inline function lastIndexOf (x:T, ?from:Int):Int {
+	public /*inline*/ function lastIndexOf (x:T, ?from:Int):Int {
 		
-		return this.lastIndexOf (x, from);
-		
-	}
-	
-	
-	public inline function pop ():Null<T> {
-		
-		return this.pop ();
-		
-	}
-	
-	
-	public inline function push (x:T):Int {
-		
-		return this.push (x);
+		// return this.lastIndexOf (x, from);
+		if (from == null) {
+			
+			return untyped __js__ ("Array.prototype.lastIndexOf.call") (this, x);
+			
+		} else {
+			
+			return untyped __js__ ("Array.prototype.lastIndexOf.call") (this, x, from);
+			
+		}
 		
 	}
 	
 	
-	public inline function removeAt (index:Int):T {
+	public /*inline*/ function pop ():Null<T> {
 		
-		return this.removeAt (index);
+		// return this.pop ();
+		if (!fixed) {
+			
+			return untyped __js__ ("Array.prototype.pop.call") (this);
+			
+		} else {
+			
+			return null;
+			
+		}
+		
+	}
+	
+	
+	public /*inline*/ function push (x:T):Int {
+		
+		// return this.push (x);
+		if (!fixed) {
+			
+			return untyped __js__ ("Array.prototype.push.call") (this, x);
+			
+		} else {
+			
+			return untyped __js__ ("this").length;
+			
+		}
+		
+	}
+	
+	
+	public /*inline*/ function removeAt (index:Int):T {
+		
+		// return this.removeAt (index);
+		if (!this.fixed || index < this.length) {
+			
+			return untyped __js__ ("Array.prototype.splice.call") (this, index, 1)[0];
+			
+		}
+		
+		return null;
 		
 	}
 	
 	
 	public inline function reverse ():Vector<T> {
 		
-		return cast this.reverse ();
+		// return cast this.reverse ();
+		return untyped __js__ ("Array.prototype.reverse.call") (this);
 		
 	}
 	
 	
-	@:arrayAccess public inline function set (index:Int, value:T):T {
+	@:arrayAccess public /*inline*/ function set (index:Int, value:T):T {
 		
-		return this.set (index, value);
+		// return this.set (index, value);
+		if (!this.fixed || index < this.length) {
+			
+			return this[index] = value;
+			
+		} else {
+			
+			return value;
+			
+		}
 		
 	}
 	
 	
-	public inline function shift ():Null<T> {
+	public /*inline*/ function shift ():Null<T> {
 		
-		return this.shift ();
+		// return this.shift ();
+		if (!this.fixed) {
+			
+			return untyped __js__ ("Array.prototype.shift.call") (this);
+			
+		} else {
+			
+			return null;
+			
+		}
 		
 	}
 	
 	
-	public inline function slice (?pos:Int, ?end:Int):Vector<T> {
+	public inline function slice (?startIndex:Int = 0, ?endIndex:Int = 16777215):Vector<T> {
 		
-		return cast this.slice (pos, end);
+		// return cast this.slice (pos, end);
+		return VectorData.ofArray (untyped __js__ ("Array.prototype.slice.call") (this, startIndex, endIndex));
 		
 	}
 	
 	
 	public inline function sort (f:T->T->Int):Void {
 		
-		this.sort (f);
+		// this.sort (f);
+		untyped __js__ ("Array.prototype.sort.call") (this, f);
 		
 	}
 	
 	
 	public inline function splice (pos:Int, len:Int):Vector<T> {
 		
-		return cast this.splice (pos, len);
+		// return cast this.splice (pos, len);
+		return VectorData.ofArray (untyped __js__ ("Array.prototype.splice.call") (this, pos, len));
 		
 	}
 	
 	
 	public inline function toString ():String {
 		
-		return (this != null) ? this.toString () : null;
+		return (this != null) ? Std.string (this) : null;
 		
 	}
 	
 	
-	public inline function unshift (x:T):Void {
+	public /*inline*/ function unshift (x:T):Void {
 		
-		this.unshift (x);
+		// this.unshift (x);
+		if (!this.fixed) {
+			
+			untyped __js__ ("Array.prototype.unshift.call") (this, x);
+			
+		}
 		
 	}
 	

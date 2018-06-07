@@ -5,7 +5,7 @@ import Rectangle from "openfl/geom/Rectangle";
 import * as assert from "assert";
 
 
-describe ("ES6 | Imports", function () {
+describe ("TypeScript | Imports", function () {
 	
 	
 	it ("test", function () {

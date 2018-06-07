@@ -516,14 +516,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		var ch1 = readInt ();
-		var ch2 = readInt ();
-		
 		if (endian == LITTLE_ENDIAN) {
 			
-			return FPHelper.i64ToDouble (ch1, ch2);
+			if (position + 8 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 8;
+			return getDouble (position - 8);
 			
 		} else {
+			
+			var ch1 = readInt ();
+			var ch2 = readInt ();
 			
 			return FPHelper.i64ToDouble (ch2, ch1);
 			
@@ -534,7 +542,23 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readFloat ():Float {
 		
-		return FPHelper.i32ToFloat (readInt ());
+		if (endian == LITTLE_ENDIAN) {
+			
+			if (position + 4 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 4;
+			return getFloat (position - 4);
+			
+		} else {
+			
+			return FPHelper.i32ToFloat (readInt ());
+			
+		}
 		
 	}
 	
@@ -709,7 +733,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		
 		position += length;
-		
 		
 		return getString (position - length, length);
 		

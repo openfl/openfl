@@ -164,10 +164,10 @@ import openfl.ui.MultitouchInputModeTest;
 import openfl.ui.MultitouchTest;
 import openfl.utils.ByteArrayTest;
 import openfl.utils.CompressionAlgorithmTest;
-// import openfl.utils.DictionaryTest;
+import openfl.utils.DictionaryTest;
 import openfl.utils.EndianTest;
 import openfl.utils.TimerTest;
-// import openfl.VectorTest;
+import openfl.VectorTest;
 
 //
 

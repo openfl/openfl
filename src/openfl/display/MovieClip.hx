@@ -34,11 +34,18 @@ import hscript.Parser;
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.geom.ColorTransform)
 
-class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
+
+class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __initSWF:SWFLite;
 	private static var __initSymbol:SpriteSymbol;
+	
+	#if openfljs
+	private static var __useParentFPS:Bool;
+	#else
+	private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
+	#end
 	
 	public var currentFrame (get, never):Int;
 	public var currentFrameLabel (get, never):String;
@@ -72,6 +79,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	#if openfljs
 	private static function __init__ () {
+		
+		__useParentFPS = true;
+		untyped __js__("/// #if (typeof swf-parent-fps === 'undefined' || !swf-parent-fps) && (typeof swflite-parent-fps === 'undefined' || !swflite-parent-fps)");
+		__useParentFPS = false;
+		untyped __js__("/// #endif");
 		
 		untyped Object.defineProperties (MovieClip.prototype, {
 			"currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }") },
@@ -165,10 +177,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__playing = true;
 		
-		#if (!swflite_parent_fps && !swf_parent_fps)
-		__frameTime = Std.int (1000 / __swf.frameRate);
-		__timeElapsed = 0;
-		#end
+		if (!__useParentFPS) {
+			
+			__frameTime = Std.int (1000 / __swf.frameRate);
+			__timeElapsed = 0;
+			
+		}
 		
 	}
 	
@@ -667,7 +681,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__enterFrame (0);
 		
-		#if !openfl_dynamic
+		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+		// TODO: Speed this up
 		for (field in Type.getInstanceFields (Type.getClass (this))) {
 			
 			for (child in __children) {
@@ -688,20 +703,22 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	private function __getNextFrame (deltaTime:Int):Int {
 		
-		#if (!swflite_parent_fps && !swf_parent_fps)
+		var nextFrame:Int = 0;
 		
-		__timeElapsed += deltaTime;
-		var nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
-		if (nextFrame < 1) nextFrame = 1;
-		if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
-		__timeElapsed = (__timeElapsed % __frameTime);
-		
-		#else
-		
-		var nextFrame = __currentFrame + 1;
-		if (nextFrame > __totalFrames) nextFrame = 1;
-		
-		#end
+		if (!__useParentFPS) {
+			
+			__timeElapsed += deltaTime;
+			nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
+			if (nextFrame < 1) nextFrame = 1;
+			if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
+			__timeElapsed = (__timeElapsed % __frameTime);
+			
+		} else {
+			
+			nextFrame = __currentFrame + 1;
+			if (nextFrame > __totalFrames) nextFrame = 1;
+			
+		}
 		
 		return nextFrame;
 		
@@ -847,7 +864,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
-		#if (openfl_dynamic || openfl_dynamic_fields_only)
+		#if (openfljs || ((openfl_dynamic || openfl_dynamic_fields_only) && haxe_ver <= "4.0.0"))
 		Reflect.setField (this, displayObject.name, displayObject);
 		#end
 		

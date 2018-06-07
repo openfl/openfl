@@ -246,6 +246,7 @@ class GLContext3D {
 		GLContext3D.gl = renderer.__gl;
 		
 		__updateBackbufferViewport ();
+		__updateDepthAndStencilState ();
 		
 		context.backBufferWidth = width;
 		context.backBufferHeight = height;
@@ -881,7 +882,7 @@ class GLContext3D {
 				
 				if (context.__supportsAnisotropicFiltering) {
 					
-					state.maxAniso = (context.__maxAnisotropyTexture2D < 16 ? context.__maxAnisotropyTexture2D : 16);
+					state.maxAniso = (context.__maxAnisotropyTexture2D < 16 ? context.__maxAnisotropyTexture2D : 0);
 					
 				}
 			

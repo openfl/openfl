@@ -62,7 +62,7 @@ import js.html.Element;
 @:access(openfl.geom.Rectangle)
 
 
-class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openfl_dynamic implements Dynamic<DisplayObject> #end {
+class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
@@ -719,7 +719,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__graphics != null) {
 			
-			if (!hitObject.visible || __isMask) return false;
+			if (!hitObject.__visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
 			if (__graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
@@ -1038,7 +1038,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
-		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
+		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms ();
 		
 		//if (updateChildren && __transformDirty) {
@@ -1067,13 +1067,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			
-			
 			if (renderParent != null) {
 				
 				if (__supportDOM) {
 					
-					var worldVisible = (renderParent.__worldVisible && visible);
+					var worldVisible = (renderParent.__worldVisible && __visible);
 					__worldVisibleChanged = (__worldVisible != worldVisible);
 					__worldVisible = worldVisible;
 					
@@ -1125,8 +1123,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (__supportDOM) {
 					
-					__worldVisibleChanged = (__worldVisible != visible);
-					__worldVisible = visible;
+					__worldVisibleChanged = (__worldVisible != __visible);
+					__worldVisible = __visible;
 					
 					__worldAlphaChanged = (__worldAlpha != alpha);
 					
@@ -1371,6 +1369,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 							var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 							__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+							__cacheBitmap.__bitmapData = __cacheBitmapData;
 							
 						}
 						
@@ -1596,9 +1595,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 						}
 						
+						if (__cacheBitmapData != bitmap) {
+							
+							// TODO: Fix issue with swapping __cacheBitmap.__bitmapData
+							__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
+							
+							// cacheBitmap = __cacheBitmapData;
+							// __cacheBitmapData = bitmap;
+							// __cacheBitmapData2 = cacheBitmap;
+							// __cacheBitmap.__bitmapData = __cacheBitmapData;
+							
+						}
+						
 						Rectangle.__pool.release (sourceRect);
-						__cacheBitmap.__bitmapData = bitmap;
-						__cacheBitmap.__imageVersion = bitmap.__textureVersion;
+						__cacheBitmap.__imageVersion = __cacheBitmapData.__textureVersion;
 						
 					}
 					
@@ -1658,7 +1668,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __updateChildren (transformOnly:Bool):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
-		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
+		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__worldAlpha = __alpha;
 		__worldBlendMode = __blendMode;
 		__worldShader = __shader;

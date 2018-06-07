@@ -1,7 +1,7 @@
 package openfl.display {
 	
 	
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	
 	/**
@@ -28,13 +28,13 @@ package openfl.display {
 		 * The Vector of drawing commands as integers representing the path. Each
 		 * command can be one of the values defined by the GraphicsPathCommand class.
 		 */
-		public var commands:openfl.Vector;
+		public var commands:Vector.<int>;
 		
 		/**
 		 * The Vector of Numbers containing the parameters used with the drawing
 		 * commands.
 		 */
-		public var data:openfl.Vector;
+		public var data:Vector.<Number>;
 		
 		/**
 		 * Specifies the winding rule using a value defined in the
@@ -49,7 +49,7 @@ package openfl.display {
 		 * @param winding Specifies the winding rule using a value defined in the
 		 *                GraphicsPathWinding class.
 		 */
-		public function GraphicsPath (commands:openfl.Vector = null, data:openfl.Vector = null, winding:String = null) {}
+		public function GraphicsPath (commands:Vector.<int> = null, data:Vector.<Number> = null, winding:String = null) {}
 		
 		
 		public function cubicCurveTo (controlX1:Number, controlY1:Number, controlX2:Number, controlY2:Number, anchorX:Number, anchorY:Number):void {}

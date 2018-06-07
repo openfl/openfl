@@ -17,21 +17,24 @@ describe ("ES6 | URLVariables", function () {
 	
 	it ("decode", function () {
 		
-		// TODO: Confirm functionality
+		var urlVariables = new URLVariables ("firstName=Tom&lastName=Jones");
+		assert.equal ("Tom", urlVariables.firstName);
+		assert.equal ("Jones", urlVariables.lastName);
 		
 		var urlVariables = new URLVariables ();
-		var exists = urlVariables.decode;
-		
-		assert.notEqual (exists, null);
+		urlVariables.decode ("firstName=Tom&lastName=Jones");
+		assert.equal ("Tom", urlVariables.firstName);
+		assert.equal ("Jones", urlVariables.lastName);
 		
 	});
 	
 	
-	/*public function toString", function () {
+	it ("toString", function () {
 		
+		var urlVariables = new URLVariables ("firstName=Tom&lastName=Jones");
+		assert.equal ("firstName=Tom&lastName=Jones", urlVariables.toString ());
 		
-		
-	}*/
+	});
 	
 	
 });

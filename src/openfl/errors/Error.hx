@@ -9,7 +9,7 @@ import haxe.CallStack;
 #end
 
 
-class Error #if openfl_dynamic implements Dynamic #end {
+class Error #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end {
 	
 	
 	private static inline var DEFAULT_TO_STRING = "Error";

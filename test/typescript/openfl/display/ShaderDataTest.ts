@@ -14,6 +14,8 @@ describe ("TypeScript | ShaderData", function () {
 		var shaderData = new ShaderData (new ByteArray ());
 		var exists = shaderData;
 		
+		shaderData.testIsDynamic = true;
+		
 		assert.notEqual (exists, null);
 		// #end
 		

@@ -1,7 +1,7 @@
 package openfl.display {
 	
 	
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	
 	/**
@@ -11,11 +11,11 @@ package openfl.display {
 		
 		
 		public var culling:String;
-		public var indices:openfl.Vector;
-		public var uvtData:openfl.Vector;
-		public var vertices:openfl.Vector;
+		public var indices:Vector.<int>;
+		public var uvtData:Vector.<Number>;
+		public var vertices:Vector.<Number>;
 		
-		public function GraphicsTrianglePath (vertices:openfl.Vector = null, indices:openfl.Vector = null, uvtData:openfl.Vector = null, culling:String = null) {}
+		public function GraphicsTrianglePath (vertices:Vector.<Number> = null, indices:Vector.<int> = null, uvtData:Vector.<Number> = null, culling:String = null) {}
 		
 	}
 	

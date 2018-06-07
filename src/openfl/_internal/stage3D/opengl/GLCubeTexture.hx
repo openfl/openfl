@@ -1,10 +1,11 @@
 package openfl._internal.stage3D.opengl;
 
 
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
-import lime.graphics.GLRenderContext;
 import openfl._internal.stage3D.atf.ATFReader;
 import openfl._internal.stage3D.atf.ATFGPUFormat;
 import openfl._internal.stage3D.GLUtils;
@@ -116,15 +117,35 @@ class GLCubeTexture {
 		var size = cubeTexture.__size >> miplevel;
 		if (size == 0) return;
 		
-		//if (source.width != size || source.height != size) {
-			//
-			//var copy = new BitmapData (size, size, true, 0);
-			//copy.draw (source);
-			//source = copy;
-			//
-		//}
-		
 		var image = cubeTexture.__getImage (source);
+		if (image == null) return;
+		
+		// TODO: Improve handling of miplevels with canvas src
+		
+		#if (js && html5)
+		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+			
+			var gl:WebGLContext = renderer.__gl;
+			
+			var size = cubeTexture.__size >> miplevel;
+			if (size == 0) return;
+			
+			var target = __sideToTarget (cast gl, side);
+			
+			gl.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2D (target, miplevel, cubeTexture.__internalFormat, cubeTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (cubeTexture.__textureTarget, null);
+			GLUtils.CheckGLError ();
+			
+			cubeTexture.__uploadedSides |= 1 << side;
+			return;
+			
+		}
+		#end
 		
 		uploadFromTypedArray (cubeTexture, renderer, image.data, side, miplevel);
 		

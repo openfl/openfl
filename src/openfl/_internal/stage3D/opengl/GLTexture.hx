@@ -2,6 +2,7 @@ package openfl._internal.stage3D.opengl;
 
 
 import haxe.io.Bytes;
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
@@ -43,8 +44,6 @@ class GLTexture {
 		GLUtils.CheckGLError ();
 		
 		gl.bindTexture (texture.__textureTarget, null);
-		
-		uploadFromTypedArray (texture, renderer, null);
 		
 	}
 	
@@ -145,6 +144,38 @@ class GLTexture {
 		}
 		
 		var image = texture.__getImage (source);
+		if (image == null) return;
+		
+		// TODO: Improve handling of miplevels with canvas src
+		
+		#if (js && html5)
+		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+			
+			var gl:WebGLContext = renderer.__gl;
+			
+			var width = texture.__width >> miplevel;
+			var height = texture.__height >> miplevel;
+			
+			if (width == 0 && height == 0) return;
+			
+			if (width == 0) width = 1;
+			if (height == 0) height = 1;
+			
+			gl.bindTexture (texture.__textureTarget, texture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (texture.__textureTarget, null);
+			GLUtils.CheckGLError ();
+			
+			// var memUsage = (width * height) * 4;
+			// __trackMemoryUsage (memUsage);
+			return;
+			
+		}
+		#end
 		
 		uploadFromTypedArray (texture, renderer, image.data, miplevel);
 		

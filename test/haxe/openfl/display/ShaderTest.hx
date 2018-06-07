@@ -28,6 +28,8 @@ class ShaderTest { public static function __init__ () { Mocha.describe ("Haxe | 
 		var shader = new Shader ();
 		var exists = shader.data;
 		
+		shader.data.testIsDynamic = true;
+		
 		#if flash
 		Assert.equal (exists, null);
 		#else

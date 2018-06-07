@@ -120,6 +120,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __dragOffsetX:Float;
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
+	private var __forceRender:Bool;
 	private var __fullscreen:Bool;
 	private var __invalidated:Bool;
 	private var __lastClickTime:Int;
@@ -287,6 +288,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__clearBeforeRender = true;
+		__forceRender = false;
 		__stack = [];
 		__rollOutStack = [];
 		__touchData = new Map<Int, TouchData>();
@@ -344,6 +346,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		window.onDeactivate.add (onWindowDeactivate.bind (window));
 		window.onDropFile.add (onWindowDropFile.bind (window));
 		window.onEnter.add (onWindowEnter.bind (window));
+		window.onExpose.add (onWindowExpose.bind (window));
 		window.onFocusIn.add (onWindowFocusIn.bind (window));
 		window.onFocusOut.add (onWindowFocusOut.bind (window));
 		window.onFullscreen.add (onWindowFullscreen.bind (window));
@@ -800,6 +803,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onWindowExpose (window:Window):Void {
+		
+		if (this.window == null || this.window != window) return;
+		
+		__renderDirty = true;
+		
+	}
+	
+	
 	public function onWindowFocusIn (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
@@ -847,7 +859,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowLeave (window:Window):Void {
 		
-		if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window || MouseEvent.__buttonDown) return;
 		
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
@@ -875,8 +887,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__renderDirty = true;
 		__resize ();
+		
+		#if android // workaround for newer behavior
+		__forceRender = true;
+		Lib.setTimeout (function () {
+			__forceRender = false;
+		}, 500);
+		#end
 		
 		if (__wasFullscreen && !window.fullscreen) {
 			
@@ -943,7 +961,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
+		if (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) {
 			
 			if (!Stage3D.__active) {
 				
@@ -1270,7 +1288,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private function __handleError (e:Dynamic):Void {
 		
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
-		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+		
+		try {
+			
+			Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+			
+		} catch (e:Dynamic) {}
 		
 		if (!event.__preventDefault) {
 			
@@ -1431,7 +1454,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					MouseEvent.__buttonDown = false;
 					
-					if (__mouseX < 0 || __mouseY < 0) {
+					if (__mouseX < 0 || __mouseY < 0 || __mouseX > stageWidth || __mouseY > stageHeight) {
 						
 						__dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
 						
@@ -1922,6 +1945,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (stageWidth != cacheWidth || stageHeight != cacheHeight) {
 			
+			__renderDirty = true;
+			__setTransformDirty ();
+			
 			__dispatchEvent (new Event (Event.RESIZE));
 			
 		}
@@ -2020,7 +2046,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 				}
 				
-			} /*#if dom*/ else if (__wasDirty) {
+			} /*#if dom*/ else if (!__renderDirty && __wasDirty) {
 				
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties

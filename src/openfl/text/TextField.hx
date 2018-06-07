@@ -487,13 +487,17 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat {
+	public function getTextFormat (beginIndex:Int = -1, endIndex:Int = -1):TextFormat {
 		
 		var format = null;
+		if (beginIndex >= text.length) return new TextFormat ();
+		
+		if (beginIndex == -1) beginIndex = 0;
+		if (endIndex == -1) endIndex = text.length;
 		
 		for (group in __textEngine.textFormatRanges) {
 			
-			if ((group.start <= beginIndex && group.end >= beginIndex) || (group.start <= endIndex && group.end >= endIndex)) {
+			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end >= endIndex)) {
 				
 				if (format == null) {
 					
@@ -526,6 +530,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		if (format == null) format = new TextFormat ();
 		return format;
 		
 	}
@@ -2863,7 +2868,7 @@ class TextField extends InteractiveObject {
 					
 				}
 			
-			case LEFT:
+			case LEFT if (selectable):
 				
 				if (modifier.metaKey) {
 					
@@ -2899,7 +2904,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case RIGHT:
+			case RIGHT if (selectable):
 				
 				if (modifier.metaKey) {
 					
@@ -2935,7 +2940,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case DOWN:
+			case DOWN if (selectable):
 				
 				if (!__textEngine.multiline) return;
 				
@@ -2963,7 +2968,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case UP:
+			case UP if (selectable):
 				
 				if (!__textEngine.multiline) return;
 				
@@ -2991,13 +2996,13 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case HOME:
+			case HOME if (selectable):
 				
 				__caretBeginningOfLine ();
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case END:
+			case END if (selectable):
 				
 				__caretEndOfLine ();
 				__stopCursorTimer ();
@@ -3046,7 +3051,7 @@ class TextField extends InteractiveObject {
 				}
 			#end
 			
-			case A:
+			case A if (selectable):
 				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
