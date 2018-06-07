@@ -48,8 +48,6 @@ class GLTilemap {
 	private static var lastUsedBitmapData:BitmapData;
 	private static var lastUsedShader:Shader;
 	
-	private static var updatedBuffer:Bool;
-	
 	
 	public static function buildBuffer (tilemap:Tilemap, renderer:OpenGLRenderer):Void {
 		
@@ -295,6 +293,7 @@ class GLTilemap {
 			
 		}
 		
+		tilemap.__bufferDirty = true;
 		bufferLength = bufferPosition;
 		Matrix.__pool.release (tileTransform);
 		
@@ -308,8 +307,6 @@ class GLTilemap {
 			currentShader = renderer.__defaultDisplayShader;
 			
 		}
-		
-	//	var updatedBuffer = true; // TODO: cache
 		
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
 			
@@ -356,10 +353,10 @@ class GLTilemap {
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
 			
-			if (updatedBuffer) {
+			if (tilemap.__bufferDirty) {
 				
 				gl.bufferData (gl.ARRAY_BUFFER, tilemap.__bufferData, gl.DYNAMIC_DRAW);
-				updatedBuffer = false;
+				tilemap.__bufferDirty = false;
 				
 			}
 			
@@ -371,6 +368,7 @@ class GLTilemap {
 				if (shader.__alpha != null) gl.vertexAttribPointer (shader.__alpha.index, 1, gl.FLOAT, false, stride * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 				
 			}
+			
 			if (tilemap.tileColorTransformEnabled) {
 				
 				var position = tilemap.tileAlphaEnabled ? 5 : 4;
@@ -382,15 +380,6 @@ class GLTilemap {
 			
 			var start = lastFlushedPosition == 0 ? 0 : Std.int (lastFlushedPosition / stride);
 			var length = Std.int ((bufferPosition - lastFlushedPosition) / stride);
-			
-			// trace ("DRAW");
-			// trace (lastFlushedPosition);
-			// trace (bufferLength);
-			// trace (bufferPosition);
-			// trace (start);
-			// trace (length);
-			// trace (currentShader == null);
-			// trace (currentBitmapData == null);
 			
 			gl.drawArrays (gl.TRIANGLES, start, length);
 			
@@ -416,8 +405,6 @@ class GLTilemap {
 		buildBuffer (tilemap, renderer);
 		
 		if (tilemap.__bufferLength == 0) return;
-		
-		updatedBuffer = true;
 		
 		bufferLength = tilemap.__bufferLength;
 		bufferPosition = 0;
@@ -496,12 +483,6 @@ class GLTilemap {
 				}
 				
 				if ((shader != currentShader && currentShader != null) || (bitmapData != currentBitmapData && currentBitmapData != null)) {
-					
-					if (shader != currentShader && currentShader != null) {
-						
-						updatedBuffer = true;
-						
-					}
 					
 					flush (tilemap, renderer);
 					

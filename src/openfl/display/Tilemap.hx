@@ -58,6 +58,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	private var __buffer:GLBuffer;
 	private var __bufferContext:GLRenderContext;
 	private var __bufferData:Float32Array;
+	private var __bufferDirty:Bool;
 	private var __bufferLength:Int;
 	private var __height:Int;
 	private var __width:Int;
