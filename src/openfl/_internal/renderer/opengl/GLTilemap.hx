@@ -48,6 +48,8 @@ class GLTilemap {
 	private static var lastUsedBitmapData:BitmapData;
 	private static var lastUsedShader:Shader;
 	
+	private static var updatedBuffer:Bool;
+	
 	
 	public static function buildBuffer (tilemap:Tilemap, renderer:OpenGLRenderer):Void {
 		
@@ -307,7 +309,7 @@ class GLTilemap {
 			
 		}
 		
-		var updatedBuffer = true; // TODO: cache
+	//	var updatedBuffer = true; // TODO: cache
 		
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
 			
@@ -357,6 +359,7 @@ class GLTilemap {
 			if (updatedBuffer) {
 				
 				gl.bufferData (gl.ARRAY_BUFFER, tilemap.__bufferData, gl.DYNAMIC_DRAW);
+				updatedBuffer = false;
 				
 			}
 			
@@ -413,6 +416,8 @@ class GLTilemap {
 		buildBuffer (tilemap, renderer);
 		
 		if (tilemap.__bufferLength == 0) return;
+		
+		updatedBuffer = true;
 		
 		bufferLength = tilemap.__bufferLength;
 		bufferPosition = 0;
@@ -491,6 +496,12 @@ class GLTilemap {
 				}
 				
 				if ((shader != currentShader && currentShader != null) || (bitmapData != currentBitmapData && currentBitmapData != null)) {
+					
+					if (shader != currentShader && currentShader != null) {
+						
+						updatedBuffer = true;
+						
+					}
 					
 					flush (tilemap, renderer);
 					
