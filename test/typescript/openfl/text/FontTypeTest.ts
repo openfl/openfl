@@ -7,7 +7,7 @@ describe ("TypeScript | FontType", function () {
 	
 	it ("test", function () {
 		
-		switch (+FontType.DEVICE) {
+		switch (""+FontType.DEVICE) {
 			
 			case FontType.DEVICE:
 			case FontType.EMBEDDED:

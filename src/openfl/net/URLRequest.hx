@@ -1,6 +1,13 @@
 package openfl.net;
 
+
 import haxe.macro.Compiler;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class URLRequest {
 	

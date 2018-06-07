@@ -7,7 +7,7 @@ describe ("ES6 | BitmapFilterType", function () {
 	
 	it ("test", function () {
 		
-		switch (+BitmapFilterType.FULL) {
+		switch (""+BitmapFilterType.FULL) {
 			
 			case BitmapFilterType.FULL:
 			case BitmapFilterType.INNER:

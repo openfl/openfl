@@ -68,6 +68,10 @@ class DrawCommandReader {
 				ffPos += 1; //alphas
 				fPos += 1;  //focalPointRatio
 			
+			case BEGIN_SHADER_FILL:
+				
+				oPos += 1; //shaderBuffer
+			
 			case CUBIC_CURVE_TO:
 				
 				fPos += 6; //controlX1, controlY1, controlX2, controlY2, anchorX, anchorY
@@ -83,6 +87,10 @@ class DrawCommandReader {
 			case DRAW_ELLIPSE:
 				
 				fPos += 4; //x, y, width, height
+			
+			case DRAW_QUADS:
+				
+				oPos += 3; //rects, indices, transforms
 			
 			case DRAW_RECT:
 				
@@ -197,10 +205,12 @@ class DrawCommandReader {
 	public inline function readBeginBitmapFill ():BeginBitmapFillView { advance (); prev = BEGIN_BITMAP_FILL; return new BeginBitmapFillView (this); }
 	public inline function readBeginFill ():BeginFillView { advance (); prev = BEGIN_FILL; return new BeginFillView (this); }
 	public inline function readBeginGradientFill ():BeginGradientFillView { advance (); prev = BEGIN_GRADIENT_FILL; return new BeginGradientFillView (this); }
+	public inline function readBeginShaderFill ():BeginShaderFillView { advance (); prev = BEGIN_SHADER_FILL; return new BeginShaderFillView (this); }
 	public inline function readCubicCurveTo ():CubicCurveToView { advance (); prev = CUBIC_CURVE_TO; return new CubicCurveToView (this); }
 	public inline function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
 	public inline function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
 	public inline function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
+	public inline function readDrawQuads ():DrawQuadsView { advance (); prev = DRAW_QUADS; return new DrawQuadsView (this); }
 	public inline function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
 	public inline function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
 	public inline function readDrawTriangles ():DrawTrianglesView { advance (); prev = DRAW_TRIANGLES; return new DrawTrianglesView (this); }
@@ -268,6 +278,14 @@ abstract BeginGradientFillView (DrawCommandReader) {
 }
 
 
+abstract BeginShaderFillView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var shaderBuffer (get, never):ShaderBuffer; private inline function get_shaderBuffer ():ShaderBuffer { return cast this.obj (0); }
+	
+}
+
+
 abstract CubicCurveToView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
@@ -309,6 +327,16 @@ abstract DrawEllipseView (DrawCommandReader) {
 	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
 	public var width (get, never):Float; private inline function get_width ():Float { return this.float (2); }
 	public var height(get, never):Float; private inline function get_height ():Float { return this.float (3); }
+	
+}
+
+
+abstract DrawQuadsView (DrawCommandReader) {
+	
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var rects (get, never):Vector<Float>; private inline function get_rects ():Vector<Float> { return cast this.obj (0); }
+	public var indices (get, never):Vector<Int>; private inline function get_indices ():Vector<Int> { return cast this.obj (1); }
+	public var transforms (get, never):Vector<Float>; private inline function get_transforms ():Vector<Float> { return cast this.obj (2); }
 	
 }
 

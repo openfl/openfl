@@ -46,12 +46,16 @@ extern class MovieClip extends Sprite {
 	 */
 	public var currentFrame (get, never):Int;
 	
+	@:noCompletion private function get_currentFrame ():Int;
+	
 	/**
 	 * The label at the current frame in the timeline of the MovieClip instance.
 	 * If the current frame has no label, `currentLabel` is
 	 * `null`.
 	 */
 	public var currentFrameLabel (get, never):String;
+	
+	@:noCompletion private function get_currentFrameLabel ():String;
 	
 	/**
 	 * The current label in which the playhead is located in the timeline of the
@@ -62,12 +66,16 @@ extern class MovieClip extends Sprite {
 	 */
 	public var currentLabel (get, never):String;
 	
+	@:noCompletion private function get_currentLabel ():String;
+	
 	/**
 	 * Returns an array of FrameLabel objects from the current scene. If the
 	 * MovieClip instance does not use scenes, the array includes all frame
 	 * labels from the entire MovieClip instance.
 	 */
 	public var currentLabels (get, never):Array<FrameLabel>;
+	
+	@:noCompletion private function get_currentLabels ():Array<FrameLabel>;
 	
 	/**
 	 * A Boolean value that indicates whether a movie clip is enabled. The
@@ -100,7 +108,11 @@ extern class MovieClip extends Sprite {
 	 */
 	public var framesLoaded (get, never):Int;
 	
+	@:noCompletion private function get_framesLoaded ():Int;
+	
 	public var isPlaying (get, never):Bool;
+	
+	@:noCompletion private function get_isPlaying ():Bool;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var scenes (default, null):Array<flash.display.Scene>;
@@ -114,6 +126,8 @@ extern class MovieClip extends Sprite {
 	 * _all_ scenes in the movie clip.
 	 */
 	public var totalFrames (get, never):Int;
+	
+	@:noCompletion private function get_totalFrames ():Int;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;

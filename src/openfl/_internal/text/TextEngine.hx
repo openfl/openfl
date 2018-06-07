@@ -89,6 +89,7 @@ class TextEngine {
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text (default, set):UTF8String;
+	public var textBounds:Rectangle;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
@@ -127,6 +128,7 @@ class TextEngine {
 		text = "";
 		
 		bounds = new Rectangle (0, 0, 0, 0);
+		textBounds = new Rectangle (0, 0, 0, 0);
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -262,6 +264,20 @@ class TextEngine {
 		bounds.width = width + padding;
 		bounds.height = height + padding;
 		
+		var x = width, y = width;
+		
+		for (group in layoutGroups) {
+			
+			if (group.offsetX < x) x = group.offsetX;
+			if (group.offsetY < y) y = group.offsetY;
+			
+		}
+		
+		if (x >= width) x = 2;
+		if (y >= height) y = 2;
+		
+		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), textWidth + 4, textHeight + 4);
+		
 	}
 	
 	
@@ -309,6 +325,10 @@ class TextEngine {
 		}
 		
 		leading = format.leading;
+		
+		#else
+		
+		ascent = descent = leading = 0;
 		
 		#end
 		
@@ -704,6 +724,67 @@ class TextEngine {
 			
 		}
 		
+		if (textHeight == 0 && textField != null && textField.type == INPUT) {
+			
+			var currentFormat = textField.__textFormat;
+			var ascent, descent, leading, heightValue;
+			
+			#if js
+			
+			// __context.font = getFont (currentFormat);
+			
+			if (currentFormat.__ascent != null) {
+				
+				ascent = currentFormat.size * currentFormat.__ascent;
+				descent = currentFormat.size * currentFormat.__descent;
+				
+			} else {
+				
+				ascent = currentFormat.size;
+				descent = currentFormat.size * 0.185;
+				
+			}
+			
+			leading = currentFormat.leading;
+			
+			heightValue = ascent + descent + leading;
+			
+			#elseif (lime_cffi)
+			
+			var font = getFontInstance (currentFormat);
+			
+			if (currentFormat.__ascent != null) {
+				
+				ascent = currentFormat.size * currentFormat.__ascent;
+				descent = currentFormat.size * currentFormat.__descent;
+				
+			} else if (font != null) {
+				
+				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
+				descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
+				
+			} else {
+				
+				ascent = currentFormat.size;
+				descent = currentFormat.size * 0.185;
+				
+			}
+			
+			leading = currentFormat.leading;
+			
+			heightValue = ascent + descent + leading;
+			
+			#end
+			
+			currentLineAscent = ascent;
+			currentLineDescent = descent;
+			currentLineLeading = leading;
+			
+			currentTextHeight = ascent + descent;
+			textHeight = currentTextHeight;
+			
+		}
+		
 		lineAscents.push (currentLineAscent);
 		lineDescents.push (currentLineDescent);
 		lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
@@ -759,6 +840,9 @@ class TextEngine {
 		}
 		
 		maxScrollV = numLines - bottomScrollV + 1;
+		
+		if (scrollV > maxScrollV) scrollV = maxScrollV;
+		if (scrollH > maxScrollH) scrollH = maxScrollH;
 		
 	}
 	
@@ -869,6 +953,9 @@ class TextEngine {
 				
 			}
 			
+			// __textLayout.direction = RIGHT_TO_LEFT;
+			// __textLayout.script = ARABIC;
+			
 			__textLayout.text = text.substring (startIndex, endIndex);
 			return __textLayout.positions;
 			
@@ -918,6 +1005,9 @@ class TextEngine {
 				__textLayout.size = formatRange.format.size;
 				
 			}
+			
+			// __textLayout.direction = RIGHT_TO_LEFT;
+			// __textLayout.script = ARABIC;
 			
 			__textLayout.text = text;
 			
@@ -1409,7 +1499,7 @@ class TextEngine {
 						
 						if (textIndex == previousSpaceIndex + 1) {
 							
-							alignBaseline();
+							alignBaseline ();
 							
 						}
 						
@@ -1533,6 +1623,31 @@ class TextEngine {
 			trace("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
 		}
 		#end
+		
+	}
+	
+	
+	public function restrictText (value:UTF8String):UTF8String {
+		
+		if (value == null) {
+			
+			return value;
+			
+		}
+		
+		if (__restrictRegexp != null) {
+			
+			value = __restrictRegexp.split (value).join ('');
+			
+		}
+		
+		// if (maxChars > 0 && value.length > maxChars) {
+			
+		// 	value = value.substr (0, maxChars);
+			
+		// }
+		
+		return value;
 		
 	}
 	
@@ -1667,6 +1782,25 @@ class TextEngine {
 	}
 	
 	
+	public function trimText (value:UTF8String):UTF8String {
+		
+		if (value == null) {
+			
+			return value;
+			
+		}
+		
+		if (maxChars > 0 && value.length > maxChars) {
+			
+			value = value.substr (0, maxChars);
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	private function update ():Void {
 		
 		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0) {
@@ -1732,27 +1866,7 @@ class TextEngine {
 	
 	private function set_text (value:String):String {
 		
-		if (value == null) {
-			
-			return text = value;
-			
-		}
-		
-		if (__restrictRegexp != null) {
-			
-			value = __restrictRegexp.split (value).join ('');
-			
-		}
-		
-		if (maxChars > 0 && value.length > maxChars) {
-			
-			value = value.substr (0, maxChars);
-			
-		}
-		
-		text = value;
-		
-		return text;
+		return text = value;
 		
 	}
 	

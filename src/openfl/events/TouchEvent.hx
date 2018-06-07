@@ -5,6 +5,11 @@ import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class TouchEvent extends Event {
 	

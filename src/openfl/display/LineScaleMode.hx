@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract LineScaleMode(Null<Int>) {
@@ -37,3 +37,19 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract LineScaleMode(String) from String to String {
+	
+	public var HORIZONTAL = "horizontal";
+	public var NONE = "none";
+	public var NORMAL = "normal";
+	public var VERTICAL = "vertical";
+	
+}
+
+
+#end

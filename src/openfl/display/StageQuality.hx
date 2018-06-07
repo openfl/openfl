@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract StageQuality(Null<Int>) {
@@ -37,3 +37,19 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract StageQuality(String) from String to String {
+	
+	public var BEST = "best";
+	public var HIGH = "high";
+	public var LOW = "low";
+	public var MEDIUM = "medium";
+	
+}
+
+
+#end

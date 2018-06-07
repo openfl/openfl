@@ -1,3 +1,4 @@
+import Vector from "./../Vector";
 import BitmapData from "./BitmapData";
 import CapsStyle from "./CapsStyle";
 import GradientType from "./GradientType";
@@ -6,13 +7,12 @@ import IGraphicsData from "./IGraphicsData";
 import InterpolationMethod from "./InterpolationMethod";
 import JointStyle from "./JointStyle";
 import LineScaleMode from "./LineScaleMode";
+import Shader from "./Shader";
 import SpreadMethod from "./SpreadMethod";
 import TriangleCulling from "./TriangleCulling";
 import Matrix from "./../geom/Matrix";
 import Point from "./../geom/Point";
 import Rectangle from "./../geom/Rectangle";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.display {
@@ -160,9 +160,7 @@ declare namespace openfl.display {
 		public beginGradientFill (type:GradientType, colors:Array<number>, alphas:Array<number>, ratios:Array<number>, matrix?:Matrix, spreadMethod?:SpreadMethod, interpolationMethod?:InterpolationMethod, focalPointRatio?:number):void;
 		
 		
-		// #if flash
-		// @:noCompletion @:dox(hide) @:require(flash10) public beginShaderFill (shader:Shader, matrix:Matrix = null):void;
-		// #end
+		public beginShaderFill (shader:Shader, matrix?:Matrix):void;
 		
 		
 		/**
@@ -310,6 +308,38 @@ declare namespace openfl.display {
 		 *                GraphicsPathWinding class.
 		 */
 		public drawPath (commands:Vector<number>, data:Vector<number>, winding?:GraphicsPathWinding):void;
+		
+		
+		/**
+		 * Renders a set of quadrilaterals. This is similar to calling `drawRect`
+		 * repeatedly, but each rectangle can use a transform value to rotate, scale
+		 * or skew the result.
+		 *
+		 * Any type of fill can be used, but if the fill has a transform matrix
+		 * that transform matrix is ignored.
+		 *
+		 * The optional `indices` parameter allows the use of either repeated 
+		 * rectangle geometry, or allows the use of a subset of a broader rectangle
+		 * data `Vector`, such as `tileset.rectData`.
+		 *
+		 * @param rects A `Vector` containing rectangle coordinates in 
+		 *              [ x0, y0, width0, height0, x1, y1 ... ] format.
+		 * @param indices A `Vector` containing optional index values to reference
+		 *                the data contained in `rects`. Each index is a rectangle
+		 *                index in the `Vector`, not an array index. If this parameter
+		 *                is ommitted, each index from `rects` will be used in order.
+		 * @param transforms A `Vector` containing optional transform data to adjust
+		 *                   _x_, _y_, _a_, _b_, _c_ or _d_ value for the resulting
+		 *                   quadrilateral. A `transforms` `Vector` that is double
+		 *                   size of the draw count (the length of `indices`, or if
+		 *                   omitted, the rectangle count in `rects`) will be treated
+		 *                   as [ x, y, ... ] pairs. A `transforms` `Vector` that is
+		 *                   four times the size of the draw count will be used as 
+		 *                   matrix [ a, b, c, d, ... ] values. A `transforms` object
+		 *                   which is six times the draw count in size will use full
+		 *                   matrix [ a, b, c, d, tx, ty, ... ] values per draw.
+		 */
+		public drawQuads (rects:Vector<number>, indices?:Vector<number>, transforms?:Vector<number>):void;
 		
 		
 		/**

@@ -12,6 +12,9 @@ import openfl.text.Font;
 	
 	public var enabled (get, set):Bool;
 	
+	@:noCompletion private function get_enabled ():Bool;
+	@:noCompletion private function set_enabled (value:Bool):Bool;
+	
 	public function clear (prefix:String = null):Void;
 	public function getBitmapData (id:String):BitmapData;
 	public function getFont (id:String):Font;

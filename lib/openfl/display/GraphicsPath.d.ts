@@ -1,8 +1,7 @@
+import Vector from "./../Vector";
 import GraphicsPathWinding from "./GraphicsPathWinding";
 import IGraphicsData from "./IGraphicsData";
 import IGraphicsPath from "./IGraphicsPath";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.display {

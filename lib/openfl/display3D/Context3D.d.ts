@@ -3,6 +3,7 @@ import RectangleTexture from "./textures/RectangleTexture";
 import Texture from "./textures/Texture";
 import TextureBase from "./textures/TextureBase";
 import VideoTexture from "./textures/VideoTexture";
+import Vector from "./../Vector";
 import Context3DBlendFactor from "./Context3DBlendFactor";
 import Context3DBufferUsage from "./Context3DBufferUsage";
 import Context3DCompareMode from "./Context3DCompareMode";
@@ -23,8 +24,6 @@ import Matrix3D from "./../geom/Matrix3D";
 import Rectangle from "./../geom/Rectangle";
 import ByteArray from "./../utils/ByteArray";
 
-type Vector<T> = any;
-
 
 declare namespace openfl.display3D {
 	
@@ -41,6 +40,7 @@ declare namespace openfl.display3D {
 		public maxBackBufferHeight:number;
 		public maxBackBufferWidth:number;
 		public readonly profile:string;
+		public readonly totalGPUMemory:number;
 		
 		public clear (red?:number, green?:number, blue?:number, alpha?:number, depth?:number, stencil?:number, mask?:number):void;
 		public configureBackBuffer (width:number, height:number, antiAlias:number, enableDepthAndStencil?:boolean, wantsBestResolution?:boolean, wantsBestResolutionOnBrowserZoom?:boolean):void;

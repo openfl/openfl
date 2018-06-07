@@ -1,6 +1,7 @@
 package openfl._internal.renderer.cairo;
 
 
+import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 
 #if !openfl_debug
@@ -16,43 +17,45 @@ import openfl.display.DisplayObject;
 class CairoShape {
 	
 	
-	public static function render (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function render (shape:DisplayObject, renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
+		if (!shape.__renderable) return;
+		
+		var alpha = renderer.__getAlpha (shape.__worldAlpha);
+		
+		if (alpha <= 0) return;
 		
 		var graphics = shape.__graphics;
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
+			CairoGraphics.render (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			
 			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1 && graphics.__height >= 1) {
 				
-				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
-				renderSession.maskManager.pushObject (shape);
+				var cairo = renderer.cairo;
 				
-				var cairo = renderSession.cairo;
+				renderer.__setBlendMode (shape.__worldBlendMode);
+				renderer.__pushMaskObject (shape);
 				
-				if (renderSession.roundPixels) {
+				renderer.applyMatrix (graphics.__worldTransform, cairo);
+				
+				cairo.setSourceSurface (graphics.__cairo.target, 0, 0);
+				
+				if (alpha >= 1) {
 					
-					var matrix = graphics.__worldTransform.__toMatrix3 ();
-					matrix.tx = Math.round (matrix.tx);
-					matrix.ty = Math.round (matrix.ty);
-					cairo.matrix = matrix;
+					cairo.paint ();
 					
 				} else {
 					
-					cairo.matrix = graphics.__worldTransform.__toMatrix3 ();
+					cairo.paintWithAlpha (alpha);
 					
 				}
 				
-				cairo.setSourceSurface (graphics.__cairo.target, 0, 0);
-				cairo.paintWithAlpha (shape.__worldAlpha);
-				
-				renderSession.maskManager.popObject (shape);
+				renderer.__popMaskObject (shape);
 				
 			}
 			

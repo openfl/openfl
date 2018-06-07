@@ -7,7 +7,7 @@ describe ("TypeScript | BlendMode", function () {
 	
 	it ("test", function () {
 		
-		switch (+BlendMode.SUBTRACT) {
+		switch (""+BlendMode.SUBTRACT) {
 			
 			case BlendMode.ADD:
 			case BlendMode.ALPHA:

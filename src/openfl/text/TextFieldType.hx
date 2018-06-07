@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !openfljs
 
 
 @:enum abstract TextFieldType(Null<Int>) {
@@ -31,3 +31,17 @@ package openfl.text;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract TextFieldType(String) from String to String {
+	
+	public var DYNAMIC = "dynamic";
+	public var INPUT = "input";
+	
+}
+
+
+#end

@@ -78,9 +78,12 @@ class Font extends LimeFont {
 	
 	public static function loadFromBytes (bytes:ByteArray):Future<Font> {
 		
-		return LimeFont.loadFromBytes (bytes).then (function (font) {
+		return LimeFont.loadFromBytes (bytes).then (function (limeFont) {
 			
-			return Future.withValue (Font.__fromLimeFont (font));
+			var font = new Font ();
+			font.__fromLimeFont (limeFont);
+			
+			return Future.withValue (font);
 			
 		});
 		
@@ -89,9 +92,12 @@ class Font extends LimeFont {
 	
 	public static function loadFromFile (path:String):Future<Font> {
 		
-		return LimeFont.loadFromFile (path).then (function (font) {
+		return LimeFont.loadFromFile (path).then (function (limeFont) {
 			
-			return Future.withValue (Font.__fromLimeFont (font));
+			var font = new Font ();
+			font.__fromLimeFont (limeFont);
+			
+			return Future.withValue (font);
 			
 		});
 		
@@ -100,9 +106,12 @@ class Font extends LimeFont {
 	
 	public static function loadFromName (path:String):Future<Font> {
 		
-		return LimeFont.loadFromName (path).then (function (font) {
+		return LimeFont.loadFromName (path).then (function (limeFont) {
 			
-			return Future.withValue (Font.__fromLimeFont (font));
+			var font = new Font ();
+			font.__fromLimeFont (limeFont);
+			
+			return Future.withValue (font);
 			
 		});
 		
@@ -129,12 +138,9 @@ class Font extends LimeFont {
 	}
 	
 	
-	private static function __fromLimeFont (value:LimeFont):Font {
+	private function __fromLimeFont (font:LimeFont):Void {
 		
-		var font = new Font ();
-		font.name = value.name;
-		font.src = value.src;
-		return font;
+		__copyFrom (font);
 		
 	}
 	

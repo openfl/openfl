@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !openfljs
 
 
 @:enum abstract CompressionAlgorithm(Null<Int>) {
@@ -35,3 +35,19 @@ package openfl.utils;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract CompressionAlgorithm(String) from String to String {
+	
+	public var DEFLATE = "deflate";
+	//GZIP;
+	public var LZMA = "lzma";
+	public var ZLIB = "zlib";
+	
+}
+
+
+#end

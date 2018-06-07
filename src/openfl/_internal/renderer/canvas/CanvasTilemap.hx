@@ -2,13 +2,18 @@ package openfl._internal.renderer.canvas;
 
 
 import lime.graphics.utils.ImageCanvasUtil;
-import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
+import openfl.display.CanvasRenderer;
+import openfl.display.TileContainer;
 import openfl.display.Tilemap;
+import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Tile)
+@:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
@@ -18,29 +23,21 @@ import openfl.geom.Rectangle;
 class CanvasTilemap {
 	
 	
-	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
+	public static inline function render (tilemap:Tilemap, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
+		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
-		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
+		var context = renderer.context;
 		
-		tilemap.__updateTileArray ();
-		
-		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
-		
-		var context = renderSession.context;
-		
-		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
-		renderSession.maskManager.pushObject (tilemap);
+		renderer.__setBlendMode (tilemap.__worldBlendMode);
+		renderer.__pushMaskObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
-		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
+		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		var transform = tilemap.__renderTransform;
-		var roundPixels = renderSession.roundPixels;
-		
-		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
+		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = false;
 			//untyped (context).webkitImageSmoothingEnabled = false;
@@ -49,79 +46,9 @@ class CanvasTilemap {
 			
 		}
 		
-		var defaultTileset = tilemap.__tileset;
-		var cacheBitmapData = null;
-		var source = null;
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, rect);
 		
-		var alpha, visible, tileset, id, tileData, bitmapData;
-		
-		var tileArray = tilemap.__tileArray;
-		
-		var tileTransform;
-		var tileRect = Rectangle.__pool.get ();
-		
-		for (tile in tileArray) {
-			
-			alpha = tile.alpha;
-			visible = tile.visible;
-			if (!visible || alpha <= 0) continue;
-			
-			tileset = tile.tileset;
-			if (tileset == null) tileset = defaultTileset;
-			if (tileset == null) continue;
-			
-			id = tile.id;
-			
-			if (id == -1) {
-				
-				tileRect.copyFrom (tile.rect);
-				if (tileRect.width <= 0 || tileRect.height <= 0) continue;
-				
-			} else {
-				
-				tileData = tileset.__data[id];
-				if (tileData == null) continue;
-				
-				tileRect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
-				
-			}
-			
-			bitmapData = tileset.bitmapData;
-			if (bitmapData == null || !bitmapData.readable) continue;
-			
-			if (bitmapData != cacheBitmapData) {
-				
-				if (bitmapData.image.buffer.__srcImage == null) {
-					
-					ImageCanvasUtil.convertToCanvas (bitmapData.image);
-					
-				}
-				
-				source = bitmapData.image.src;
-				cacheBitmapData = bitmapData;
-				
-			}
-			
-			context.globalAlpha = tilemap.__worldAlpha * alpha;
-			
-			tileTransform = tile.matrix;
-			tileTransform.concat (transform);
-			
-			if (roundPixels) {
-				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, Std.int (tileTransform.tx), Std.int (tileTransform.ty));
-				
-			} else {
-				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
-				
-			}
-			
-			context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
-			
-		}
-		
-		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
+		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = true;
 			//untyped (context).webkitImageSmoothingEnabled = true;
@@ -130,12 +57,102 @@ class CanvasTilemap {
 			
 		}
 		
-		renderSession.maskManager.popRect ();
-		renderSession.maskManager.popObject (tilemap);
+		renderer.__popMaskRect ();
+		renderer.__popMaskObject (tilemap);
 		
 		Rectangle.__pool.release (rect);
-		Rectangle.__pool.release (tileRect);
+		#end
 		
+	}
+	
+	
+	private static function renderTileContainer (group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, source:Dynamic, rect:Rectangle):Void {
+		
+		#if (js && html5)
+		var context = renderer.context;
+		var roundPixels = renderer.__roundPixels;
+		
+		var tileTransform = Matrix.__pool.get ();
+		
+		var tiles = group.__tiles;
+		var length = group.__length;
+		
+		var tile, tileset, alpha, visible, id, tileData, tileRect, bitmapData;
+		
+		for (i in 0...length) {
+			
+			tile = tiles[i];
+			
+			tileTransform.setTo (1, 0, 0, 1, -tile.originX, -tile.originY);
+			tileTransform.concat (tile.matrix);
+			tileTransform.concat (parentTransform);
+			
+			if (roundPixels) {
+				
+				tileTransform.tx = Math.round (tileTransform.tx);
+				tileTransform.ty = Math.round (tileTransform.ty);
+				
+			}
+			
+			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+			
+			alpha = tile.alpha * worldAlpha;
+			visible = tile.visible;
+			if (!visible || alpha <= 0) continue;
+			
+			if (!alphaEnabled) alpha = 1;
+			
+			if (tile.__length > 0) {
+				
+				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, source, rect);
+				
+			} else {
+				
+				if (tileset == null) continue;
+				
+				id = tile.id;
+				
+				if (id == -1) {
+					
+					tileRect = tile.rect;
+					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
+					
+				} else {
+					
+					tileData = tileset.__data[id];
+					if (tileData == null) continue;
+					
+					rect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
+					tileRect = rect;
+					
+				}
+				
+				bitmapData = tileset.__bitmapData;
+				if (bitmapData == null) continue;
+				
+				if (bitmapData != cacheBitmapData) {
+					
+					if (bitmapData.image.buffer.__srcImage == null) {
+						
+						ImageCanvasUtil.convertToCanvas (bitmapData.image);
+						
+					}
+					
+					source = bitmapData.image.src;
+					cacheBitmapData = bitmapData;
+					
+				}
+				
+				context.globalAlpha = alpha;
+				
+				renderer.setTransform (tileTransform, context);
+				context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
+				
+			}
+			
+		}
+		
+		Matrix.__pool.release (tileTransform);
 		#end
 		
 	}

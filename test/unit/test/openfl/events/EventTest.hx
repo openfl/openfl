@@ -94,8 +94,8 @@ class EventTest {
 			
 			called = true;
 			
-			Assert.areSame (e.target, sprite);
-			Assert.areSame (e.currentTarget, sprite);
+			Assert.areSame (cast e.target, sprite);
+			Assert.areSame (cast e.currentTarget, sprite);
 			
 		}
 		
@@ -103,8 +103,8 @@ class EventTest {
 			
 			called2 = true;
 			
-			Assert.areSame (e.target, sprite);
-			Assert.areSame (e.currentTarget, sprite2);
+			Assert.areSame (cast e.target, sprite);
+			Assert.areSame (cast e.currentTarget, sprite2);
 			
 		}
 		
@@ -127,8 +127,8 @@ class EventTest {
 			
 			called = true;
 			
-			Assert.areSame (e.target, sprite);
-			Assert.areSame (e.currentTarget, sprite);
+			Assert.areSame (cast e.target, sprite);
+			Assert.areSame (cast e.currentTarget, sprite);
 			
 		}
 		
@@ -136,8 +136,8 @@ class EventTest {
 			
 			called2 = true;
 			
-			Assert.areSame (e.target, sprite2);
-			Assert.areSame (e.currentTarget, sprite2);
+			Assert.areSame (cast e.target, sprite2);
+			Assert.areSame (cast e.currentTarget, sprite2);
 			
 		}
 		

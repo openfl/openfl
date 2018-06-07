@@ -1,4 +1,4 @@
-package openfl.filters;
+package openfl.filters; #if !openfljs
 
 
 @:enum abstract BitmapFilterType(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.filters;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract BitmapFilterType(String) from String to String {
+	
+	public var FULL = "full";
+	public var INNER = "inner";
+	public var OUTER = "outer";
+	
+}
+
+
+#end

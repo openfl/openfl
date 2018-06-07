@@ -7,7 +7,7 @@ describe ("ES6 | Context3DStencilAction", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DStencilAction.DECREMENT_SATURATE) {
+		switch (""+Context3DStencilAction.DECREMENT_SATURATE) {
 			
 			case Context3DStencilAction.DECREMENT_SATURATE:
 			case Context3DStencilAction.DECREMENT_WRAP:

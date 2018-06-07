@@ -7,7 +7,7 @@ describe ("ES6 | Context3DWrapMode", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DWrapMode.CLAMP) {
+		switch (""+Context3DWrapMode.CLAMP) {
 			
 			case Context3DWrapMode.CLAMP:
 			case Context3DWrapMode.CLAMP_U_REPEAT_V:

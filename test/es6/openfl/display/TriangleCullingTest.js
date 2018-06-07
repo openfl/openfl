@@ -7,7 +7,7 @@ describe ("ES6 | TriangleCulling", function () {
 	
 	it ("test", function () {
 		
-		switch (+TriangleCulling.NEGATIVE) {
+		switch (""+TriangleCulling.NEGATIVE) {
 			
 			case TriangleCulling.NEGATIVE:
 			case TriangleCulling.NONE:

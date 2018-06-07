@@ -6,7 +6,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 
-@:beta extern class TileArray {
+@:deprecated extern class TileArray {
 	
 	
 	public var alpha (get, set):Float;

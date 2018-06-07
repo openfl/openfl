@@ -13,16 +13,25 @@ import openfl.utils.IDataOutput;
 extern class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	public var bytesAvailable (default, never):UInt;
-	public var bytesPending (default, never):UInt;
-	public var connected (default, never):Bool;
-	public var endian (default, set):Endian;
-	public var objectEncoding:UInt;
-	public var timeout:UInt;
+	public var bytesAvailable (get, never):UInt;
 	
 	@:noCompletion private function get_bytesAvailable ():UInt;
+	
+	public var bytesPending (get, never):UInt;
+	
+	@:noCompletion private function get_bytesPending ():UInt;
+	
+	public var connected (get, never):Bool;
+	
+	@:noCompletion private function get_connected ():Bool;
+	
+	public var endian (get, set):Endian;
+	
 	@:noCompletion private function get_endian ():Endian;
 	@:noCompletion private function set_endian (value:Endian):Endian;
+	
+	public var objectEncoding:ObjectEncoding;
+	public var timeout:UInt;
 	
 	public function new (host:String = null, port:Int = 0);
 	public function close ():Void;

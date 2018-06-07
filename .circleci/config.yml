@@ -34,7 +34,7 @@ jobs:
   
   Setup (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl
     steps:
      - checkout
@@ -80,7 +80,7 @@ jobs:
   
   HTML5 (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -118,7 +118,7 @@ jobs:
   
   Neko (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -159,7 +159,7 @@ jobs:
   
   C++ (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -191,7 +191,7 @@ jobs:
   
   Flash (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl/test/unit
     steps:
      - attach_workspace:
@@ -223,8 +223,8 @@ jobs:
   
   Documentation (Haxe 3.4.x):
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
-    working_directory: /workspace/openfl/scripts
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
+    working_directory: /workspace/openfl
     steps:
      - attach_workspace:
          at: /
@@ -236,12 +236,20 @@ jobs:
          command: haxelib dev dox ~/dox
      - run:
          name: Generate Documentation
-         command: haxe docs.hxml
+         command: cd scripts && haxe docs.hxml
+     - run:
+         name: Deploy
+         command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              aws s3 sync docs-api s3://api.openfl.org --acl bucket-owner-full-control --acl public-read --size-only --delete --include="*" --cache-control max-age=864000
+            else
+              echo "Not on master (skipping step)"
+            fi
   
   
   NPM:
     docker:
-     - image: openfl/ci-openfl-js:0.0.2
+     - image: openfl/ci-openfl-js:0.0.3
     working_directory: /workspace/openfl
     steps:
      - checkout
@@ -259,7 +267,7 @@ jobs:
   # This is used for local tests, it assumes you already have a working environment
   build:
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.4
+     - image: openfl/openfl-tests-unit-3.4:0.0.5
     working_directory: /workspace/openfl
     steps:
      # Setup
@@ -341,24 +349,24 @@ workflows:
     jobs:
      - NPM
   
-  Tests (Haxe 3.2.1):
-    jobs:
-     - Setup (Haxe 3.2.1)
-     - HTML5 (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - Neko (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - C++ (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - Flash (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
-     - Documentation (Haxe 3.2.1):
-         requires:
-          - Setup (Haxe 3.2.1)
+#   Tests (Haxe 3.2.1):
+#     jobs:
+#      - Setup (Haxe 3.2.1)
+#      - HTML5 (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - Neko (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - C++ (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - Flash (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
+#      - Documentation (Haxe 3.2.1):
+#          requires:
+#           - Setup (Haxe 3.2.1)
   
   Tests (Haxe 3.4.x):
     jobs:

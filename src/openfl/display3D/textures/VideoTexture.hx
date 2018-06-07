@@ -30,7 +30,7 @@ import openfl.net.NetStream;
 		
 		super (context);
 		
-		GLVideoTexture.create (this, __context.__renderSession);
+		GLVideoTexture.create (this, cast __context.__renderer);
 		
 	}
 	
@@ -69,7 +69,7 @@ import openfl.net.NetStream;
 	
 	private override function __getTexture ():GLTexture {
 		
-		return GLVideoTexture.getTexture (this, __context.__renderSession);
+		return GLVideoTexture.getTexture (this, cast __context.__renderer);
 		
 	}
 	

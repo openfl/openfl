@@ -56,11 +56,17 @@ declare namespace openfl.geom {
 		 */
 		public bottom:number;
 		
+		protected get_bottom ():number;
+		protected set_bottom (value:number):number;
+		
 		/**
 		 * The location of the Rectangle object's bottom-right corner, determined by
 		 * the values of the `right` and `bottom` properties.
 		 */
 		public bottomRight:Point;
+		
+		protected get_bottomRight ():Point;
+		protected set_bottomRight (value:Point):Point;
 		
 		/**
 		 * The height of the rectangle, in pixels. Changing the `height`
@@ -81,16 +87,25 @@ declare namespace openfl.geom {
 		 */
 		public left:number;
 		
+		protected get_left ():number;
+		protected set_left (value:number):number;
+		
 		/**
 		 * The sum of the `x` and `width` properties.
 		 */
 		public right:number;
+		
+		protected get_right ():number;
+		protected set_right (value:number):number;
 		
 		/**
 		 * The size of the Rectangle object, expressed as a Point object with the
 		 * values of the `width` and `height` properties.
 		 */
 		public size:Point;
+		
+		protected get_size ():Point;
+		protected set_size (value:Point):Point;
 		
 		/**
 		 * The _y_ coordinate of the top-left corner of the rectangle. Changing
@@ -104,11 +119,17 @@ declare namespace openfl.geom {
 		 */
 		public top:number;
 		
+		protected get_top ():number;
+		protected set_top (value:number):number;
+		
 		/**
 		 * The location of the Rectangle object's top-left corner, determined by the
 		 * _x_ and _y_ coordinates of the point.
 		 */
 		public topLeft:Point;
+		
+		protected get_topLeft ():Point;
+		protected set_topLeft (value:Point):Point;
 		
 		/**
 		 * The width of the rectangle, in pixels. Changing the `width`

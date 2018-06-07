@@ -14,19 +14,19 @@ declare namespace openfl.display {
 		 * Specifies beveled joints in the `joints` parameter of the
 		 * `openfl.display.Graphics.lineStyle()` method.
 		 */
-		BEVEL = 0,
+		BEVEL = "bevel",
 		
 		/**
 		 * Specifies mitered joints in the `joints` parameter of the
 		 * `openfl.display.Graphics.lineStyle()` method.
 		 */
-		MITER = 1,
+		MITER = "miter",
 		
 		/**
 		 * Specifies round joints in the `joints` parameter of the
 		 * `openfl.display.Graphics.lineStyle()` method.
 		 */
-		ROUND = 2
+		ROUND = "round"
 		
 	}
 	

@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !openfljs
 
 
 @:enum abstract TextFieldAutoSize(Null<Int>) {
@@ -37,3 +37,19 @@ package openfl.text;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract TextFieldAutoSize(String) from String to String {
+	
+	public var CENTER = "center";
+	public var LEFT = "left";
+	public var NONE = "none";
+	public var RIGHT = "right";
+	
+}
+
+
+#end

@@ -13,17 +13,17 @@ declare namespace openfl.display {
 		/**
 		 * Specifies that the gradient use the _pad_ spread method.
 		 */
-		PAD = 0,
+		PAD = "pad",
 		
 		/**
 		 * Specifies that the gradient use the _reflect_ spread method.
 		 */
-		REFLECT = 1,
+		REFLECT = "reflect",
 		
 		/**
 		 * Specifies that the gradient use the _repeat_ spread method.
 		 */
-		REPEAT = 2
+		REPEAT = "repeat"
 		
 	}
 	

@@ -9,7 +9,14 @@ declare namespace openfl.utils {
 		
 		
 		public readonly bytesAvailable:number;
+		
+		// protected get_bytesAvailable ():number;
+		
 		public endian:Endian;
+		
+		// protected get_endian ():Endian;
+		// protected set_endian (value:Endian):Endian;
+		
 		public objectEncoding:number;
 		
 		public readBoolean ():boolean;

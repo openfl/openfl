@@ -2,12 +2,12 @@ declare namespace openfl.display3D {
 	
 	export enum Context3DProfile {
 		
-		BASELINE = 0,
-		BASELINE_CONSTRAINED = 1,
-		BASELINE_EXTENDED = 2,
-		STANDARD = 3,
-		STANDARD_CONSTRAINED = 4,
-		STANDARD_EXTENDED = 5
+		BASELINE = "baseline",
+		BASELINE_CONSTRAINED = "baselineConstrained",
+		BASELINE_EXTENDED = "baselineExtended",
+		STANDARD = "standard",
+		STANDARD_CONSTRAINED = "standardConstrained",
+		STANDARD_EXTENDED = "standardExtended"
 		
 	}
 	

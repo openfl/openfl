@@ -151,9 +151,7 @@ import openfl.Vector;
 	public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
 	
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
-	#end
+	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
 	
 	
 	/**
@@ -301,6 +299,38 @@ import openfl.Vector;
 	 *                GraphicsPathWinding class.
 	 */
 	public function drawPath (commands:Vector<Int>, data:Vector<Float>, ?winding:GraphicsPathWinding):Void;
+	
+	
+	/**
+	 * Renders a set of quadrilaterals. This is similar to calling `drawRect`
+	 * repeatedly, but each rectangle can use a transform value to rotate, scale
+	 * or skew the result.
+	 *
+	 * Any type of fill can be used, but if the fill has a transform matrix
+	 * that transform matrix is ignored.
+	 *
+	 * The optional `indices` parameter allows the use of either repeated 
+	 * rectangle geometry, or allows the use of a subset of a broader rectangle
+	 * data `Vector`, such as `tileset.rectData`.
+	 *
+	 * @param rects A `Vector` containing rectangle coordinates in 
+	 *              [ x0, y0, width0, height0, x1, y1 ... ] format.
+	 * @param indices A `Vector` containing optional index values to reference
+     *                the data contained in `rects`. Each index is a rectangle
+	 *                index in the `Vector`, not an array index. If this parameter
+	 *                is ommitted, each index from `rects` will be used in order.
+	 * @param transforms A `Vector` containing optional transform data to adjust
+	 *                   _x_, _y_, _a_, _b_, _c_ or _d_ value for the resulting
+	 *                   quadrilateral. A `transforms` `Vector` that is double
+	 *                   size of the draw count (the length of `indices`, or if
+	 *                   omitted, the rectangle count in `rects`) will be treated
+	 *                   as [ x, y, ... ] pairs. A `transforms` `Vector` that is
+	 *                   four times the size of the draw count will be used as 
+	 *                   matrix [ a, b, c, d, ... ] values. A `transforms` object
+	 *                   which is six times the draw count in size will use full
+	 *                   matrix [ a, b, c, d, tx, ty, ... ] values per draw.
+	 */
+	public function drawQuads (rects:Vector<Float>, ?indices:Vector<Int> = null, ?transforms:Vector<Float> = null):Void;
 	
 	
 	/**

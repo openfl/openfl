@@ -5,8 +5,8 @@ import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.display.CairoRenderer;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -22,54 +22,45 @@ import openfl.display.Bitmap;
 class CairoBitmap {
 	
 	
-	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
+	public static inline function render (bitmap:Bitmap, renderer:CairoRenderer):Void {
 		
-		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
+		if (!bitmap.__renderable) return;
 		
-		var cairo = renderSession.cairo;
+		var alpha = renderer.__getAlpha (bitmap.__worldAlpha);
+		// var colorTransform = renderer.__getColorTransform (bitmap.__worldColorTransform);
+		//var blendMode = renderer.__getBlendMode (bitmap.__worldBlendMode);
 		
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
+		if (alpha > 0 && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
-			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
-			renderSession.maskManager.pushObject (bitmap);
+			var cairo = renderer.cairo;
 			
-			var transform = bitmap.__renderTransform;
+			renderer.__setBlendMode (bitmap.__worldBlendMode);
+			renderer.__pushMaskObject (bitmap);
 			
-			if (renderSession.roundPixels) {
-				
-				var matrix = transform.__toMatrix3 ();
-				matrix.tx = Math.round (matrix.tx);
-				matrix.ty = Math.round (matrix.ty);
-				cairo.matrix = matrix;
-				
-			} else {
-				
-				cairo.matrix = transform.__toMatrix3 ();
-				
-			}
+			renderer.applyMatrix (bitmap.__renderTransform, cairo);
 			
 			var surface = bitmap.__bitmapData.getSurface ();
 			
 			if (surface != null) {
 				
 				var pattern = CairoPattern.createForSurface (surface);
-				pattern.filter = (renderSession.allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = (renderer.__allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				cairo.source = pattern;
 				
-				if (bitmap.__worldAlpha == 1) {
+				if (alpha == 1) {
 					
 					cairo.paint ();
 					
 				} else {
 					
-					cairo.paintWithAlpha (bitmap.__worldAlpha);
+					cairo.paintWithAlpha (alpha);
 					
 				}
 				
 			}
 			
-			renderSession.maskManager.popObject (bitmap);
+			renderer.__popMaskObject (bitmap);
 			
 		}
 		

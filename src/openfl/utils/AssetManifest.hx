@@ -3,6 +3,11 @@ package openfl.utils;
 
 import lime.utils.AssetManifest in LimeAssetManifest;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class AssetManifest extends LimeAssetManifest {
 	

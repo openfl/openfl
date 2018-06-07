@@ -9,7 +9,7 @@ import openfl.utils.ByteArray;
 @:final extern class GameInputDevice {
 	
 	
-	public static var MAX_BUFFER_SIZE;
+	public static var MAX_BUFFER_SIZE:Int;
 	
 	/**
 	 * Enables or disables this device.
@@ -29,7 +29,9 @@ import openfl.utils.ByteArray;
 	/**
 	 * Returns the number of controls on this device.
 	 */
-	public var numControls (default, never):Int;
+	public var numControls (get, never):Int;
+	
+	@:noCompletion private function get_numControls ():Int;
 	
 	/**
 	 * Specifies the rate (in milliseconds) at which to retrieve control values.

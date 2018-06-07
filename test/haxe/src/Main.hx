@@ -9,7 +9,7 @@ import openfl.display.BlendModeTest;
 import openfl.display.CapsStyleTest;
 import openfl.display.DisplayObjectContainerTest;
 import openfl.display.DisplayObjectTest;
-import openfl.display.DOMSpriteTest;
+import openfl.display.DOMElementTest;
 import openfl.display.FPSTest;
 import openfl.display.FrameLabelTest;
 import openfl.display.GradientTypeTest;
@@ -164,10 +164,10 @@ import openfl.ui.MultitouchInputModeTest;
 import openfl.ui.MultitouchTest;
 import openfl.utils.ByteArrayTest;
 import openfl.utils.CompressionAlgorithmTest;
-// import openfl.utils.DictionaryTest;
+import openfl.utils.DictionaryTest;
 import openfl.utils.EndianTest;
 import openfl.utils.TimerTest;
-// import openfl.VectorTest;
+import openfl.VectorTest;
 
 //
 

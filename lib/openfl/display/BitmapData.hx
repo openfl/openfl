@@ -4,6 +4,7 @@ package openfl.display; #if (display || !flash)
 // import lime.app.Future;
 import openfl.utils.Future;
 // import lime.graphics.Image;
+import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -105,7 +106,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * Since non-readable bitmap images do not have a software image buffer, they
 	 * will need to be recreated if the current hardware rendering context is lost.
 	 */
-	public var readable (default, null):Bool;
+	@:beta public var readable (default, null):Bool;
 	
 	/**
 	 * The rectangle that defines the size and location of the bitmap image. The
@@ -332,7 +333,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * `BitmapData.disposeImage()` will immediately change the value of 
 	 * the `readable` property to `false`.
 	 */
-	public function disposeImage ():Void;
+	@:beta public function disposeImage ():Void;
 	
 	
 	/**
@@ -452,6 +453,9 @@ extern class BitmapData implements IBitmapDrawable {
 	public static function fromFile (path:String):BitmapData;
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData;
 	
+	// #if !flash
+	public static function fromTexture (texture:TextureBase):BitmapData;
+	// #end
 	
 	/**
 	 * Determines the destination rectangle that the `applyFilter()`

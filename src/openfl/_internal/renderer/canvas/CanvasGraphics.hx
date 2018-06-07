@@ -1,9 +1,9 @@
 package openfl._internal.renderer.canvas;
 
 import lime.graphics.utils.ImageCanvasUtil;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
+import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
 import openfl._internal.renderer.DrawCommandBuffer;
@@ -34,6 +34,7 @@ import js.html.ImageData;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 class CanvasGraphics {
@@ -67,8 +68,8 @@ class CanvasGraphics {
 	#if (js && html5)
 	private static function __init__ ():Void {
 		
-		hitTestCanvas = cast Browser.document.createElement ("canvas");
-		hitTestContext = hitTestCanvas.getContext ("2d");
+		hitTestCanvas = Browser.supported ? cast Browser.document.createElement ("canvas") : null;
+		hitTestContext = Browser.supported ? hitTestCanvas.getContext ("2d") : null;
 		
 	}
 	#end
@@ -390,7 +391,7 @@ class CanvasGraphics {
 						hasFill = false;
 						bitmapFill = null;
 					
-					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
+					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 						
 						endFill ();
 						
@@ -425,6 +426,12 @@ class CanvasGraphics {
 							var c = data.readBeginGradientFill ();
 							fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 							strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							
+						} else if (type == BEGIN_SHADER_FILL) {
+							
+							var c = data.readBeginShaderFill ();
+							fillCommands.beginShaderFill (c.shaderBuffer);
+							strokeCommands.beginShaderFill (c.shaderBuffer);
 							
 						} else {
 							
@@ -590,6 +597,8 @@ class CanvasGraphics {
 		windingRule = CanvasWindingRule.EVENODD;
 		setSmoothing (true);
 		
+		var hasPath:Bool = false;
+		
 		var data = new DrawCommandReader (commands);
 		
 		var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym, r, g, b;
@@ -602,22 +611,26 @@ class CanvasGraphics {
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo ();
+					hasPath = true;
 					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
+					hasPath = true;
 					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case DRAW_CIRCLE:
 					
 					var c = data.readDrawCircle ();
+					hasPath = true;
 					context.moveTo (c.x - offsetX + c.radius, c.y - offsetY);
 					context.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2, true);
 				
 				case DRAW_ELLIPSE:
 					
 					var c = data.readDrawEllipse ();
+					hasPath = true;
 					x = c.x;
 					y = c.y;
 					width = c.width;
@@ -641,11 +654,13 @@ class CanvasGraphics {
 				case DRAW_ROUND_RECT:
 					
 					var c = data.readDrawRoundRect ();
+					hasPath = true;
 					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				
 				case LINE_TO:
 					
 					var c = data.readLineTo ();
+					hasPath = true;
 					context.lineTo (c.x - offsetX, c.y - offsetY);
 					
 					positionX = c.x;
@@ -754,7 +769,7 @@ class CanvasGraphics {
 					
 					var c = data.readBeginBitmapFill ();
 					bitmapFill = c.bitmap;
-					context.fillStyle = createBitmapFill (c.bitmap, true, c.smooth);
+					context.fillStyle = createBitmapFill (c.bitmap, c.repeat, c.smooth);
 					hasFill = true;
 					
 					if (c.matrix != null) {
@@ -808,10 +823,133 @@ class CanvasGraphics {
 					setSmoothing (true);
 					hasFill = true;
 				
-				case DRAW_TRIANGLES:
+				case BEGIN_SHADER_FILL:
 					
-					// endFill ();
-					// endStroke ();
+					var c = data.readBeginShaderFill ();
+					var shaderBuffer = c.shaderBuffer;
+					
+					if (shaderBuffer.inputCount > 0) {
+						
+						bitmapFill = shaderBuffer.inputs[0];
+						context.fillStyle = createBitmapFill (bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+						hasFill = true;
+						
+						pendingMatrix = null;
+						inversePendingMatrix = null;
+						
+					}
+				
+				case DRAW_QUADS:
+					
+					var c = data.readDrawQuads ();
+					var rects = c.rects;
+					var indices = c.indices;
+					var transforms = c.transforms;
+					
+					var hasIndices = (indices != null);
+					var transformABCD = false, transformXY = false;
+					
+					var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
+					if (length == 0) return;
+					
+					if (transforms != null) {
+						
+						if (transforms.length >= length * 6) {
+							
+							transformABCD = true;
+							transformXY = true;
+							
+						} else if (transforms.length >= length * 4) {
+							
+							transformABCD = true;
+							
+						} else if (transforms.length >= length * 2) {
+							
+							transformXY = true;
+							
+						}
+						
+					}
+					
+					var tileRect = Rectangle.__pool.get ();
+					var tileTransform = Matrix.__pool.get ();
+					
+					var sourceRect = (bitmapFill != null) ? bitmapFill.rect : null;
+					
+					var transform = graphics.__renderTransform;
+					// var roundPixels = renderer.__roundPixels;
+					var alpha = graphics.__owner.__worldAlpha;
+					
+					var ri, ti;
+					
+					context.save (); // TODO: Restore transform without save/restore
+					
+					for (i in 0...length) {
+						
+						ri = (hasIndices ? (indices[i] * 4) : i * 4);
+						if (ri < 0) continue;
+						tileRect.setTo (rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+						
+						if (tileRect.width <= 0 || tileRect.height <= 0) {
+							
+							continue;
+							
+						}
+						
+						if (transformABCD && transformXY) {
+							
+							ti = i * 6;
+							tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+							
+						} else if (transformABCD) {
+							
+							ti = i * 4;
+							tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
+							
+						} else if (transformXY) {
+							
+							ti = i * 2;
+							tileTransform.tx = transforms[ti];
+							tileTransform.ty = transforms[ti + 1];
+							
+						} else {
+							
+							tileTransform.tx = tileRect.x;
+							tileTransform.ty = tileRect.y;
+							
+						}
+						
+						tileTransform.tx += positionX - offsetX;
+						tileTransform.ty += positionY - offsetY;
+						tileTransform.concat (transform);
+						
+						// if (roundPixels) {
+							
+						// 	tileTransform.tx = Math.round (tileTransform.tx);
+						// 	tileTransform.ty = Math.round (tileTransform.ty);
+							
+						// }
+						
+						context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
+						
+						if (bitmapFill != null) {
+							
+							context.drawImage (bitmapFill.image.src, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
+							
+						} else {
+							
+							context.fillRect (0, 0, tileRect.width, tileRect.height);
+							
+						}
+						
+					}
+					
+					Rectangle.__pool.release (tileRect);
+					Matrix.__pool.release (tileTransform);
+					
+					context.restore ();
+				
+				case DRAW_TRIANGLES:
 					
 					var c = data.readDrawTriangles ();
 					
@@ -823,7 +961,6 @@ class CanvasGraphics {
 					
 					if (colorFill && uvt != null) {
 						
-						// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
 						break;
 						
 					}
@@ -929,16 +1066,7 @@ class CanvasGraphics {
 							i += 3;
 							continue;
 							
-						} 
-						
-						context.save ();
-						context.beginPath ();
-						context.moveTo (x1, y1);
-						context.lineTo (x2, y2);
-						context.lineTo (x3, y3);
-						context.closePath ();
-						
-						context.clip ();
+						}
 						
 						uvx1 = uvt[iax] * pattern.width;
 						uvx2 = uvt[ibx] * pattern.width;
@@ -952,9 +1080,18 @@ class CanvasGraphics {
 						if (denom == 0) {
 							
 							i += 3;
+							context.restore ();
 							continue;
 							
 						}
+						
+						context.save ();
+						context.beginPath ();
+						context.moveTo (x1, y1);
+						context.lineTo (x2, y2);
+						context.lineTo (x3, y3);
+						context.closePath ();
+						context.clip ();
 						
 						t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
 						t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
@@ -964,7 +1101,7 @@ class CanvasGraphics {
 						dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 						
 						context.transform (t1, t2, t3, t4, dx, dy);
-						context.drawImage (pattern, 0, 0);
+						context.drawImage (pattern, 0, 0, pattern.width, pattern.height);
 						context.restore ();
 						
 						i += 3;
@@ -1029,6 +1166,7 @@ class CanvasGraphics {
 					
 					if (!optimizationUsed) {
 						
+						hasPath = true;
 						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
 						
 					}
@@ -1054,43 +1192,47 @@ class CanvasGraphics {
 		
 		data.destroy ();
 		
-		if (stroke && hasStroke) {
+		if (hasPath) {
 			
-			if (hasFill && closeGap) {
+			if (stroke && hasStroke) {
 				
-				context.lineTo (startX - offsetX, startY - offsetY);
-				closePath (false);
-				
-			} else if (closeGap && positionX == startX && positionY == startY) {
-				
-				closePath (false);
-				
-			}
-			
-			if (!hitTesting) context.stroke ();
-			
-		}
-		
-		if (!stroke) {
-			
-			if (hasFill || bitmapFill != null) {
-				
-				context.translate (-bounds.x, -bounds.y);
-				
-				if (pendingMatrix != null) {
+				if (hasFill && closeGap) {
 					
-					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill (windingRule);
-					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
+					context.lineTo (startX - offsetX, startY - offsetY);
+					closePath (false);
 					
-				} else {
+				} else if (closeGap && positionX == startX && positionY == startY) {
 					
-					if (!hitTesting) context.fill (windingRule);
+					closePath (false);
 					
 				}
 				
-				context.translate (bounds.x, bounds.y);
-				context.closePath ();
+				if (!hitTesting) context.stroke ();
+				
+			}
+			
+			if (!stroke) {
+				
+				if (hasFill || bitmapFill != null) {
+					
+					context.translate (-bounds.x, -bounds.y);
+					
+					if (pendingMatrix != null) {
+						
+						context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
+						if (!hitTesting) context.fill (windingRule);
+						context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
+						
+					} else {
+						
+						if (!hitTesting) context.fill (windingRule);
+						
+					}
+					
+					context.translate (bounds.x, bounds.y);
+					context.closePath ();
+					
+				}
 				
 			}
 			
@@ -1100,18 +1242,18 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
+	public static function render (graphics:Graphics, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		
-		graphics.__update ();
+		graphics.__update (renderer.__worldTransform);
 		
 		if (graphics.__dirty) {
 			
 			hitTesting = false;
 			
 			CanvasGraphics.graphics = graphics;
-			CanvasGraphics.allowSmoothing = renderSession.allowSmoothing;
+			CanvasGraphics.allowSmoothing = renderer.__allowSmoothing;
 			bounds = graphics.__bounds;
 			
 			var width = graphics.__width;
@@ -1136,11 +1278,11 @@ class CanvasGraphics {
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 				
-				var scale = CanvasRenderer.scale;
+				var scale = renderer.pixelRatio;
 				var scaledWidth = Std.int (width * scale);
 				var scaledHeight = Std.int (height * scale);
 				
-				if (renderSession.renderType == DOM) {
+				if (renderer.__isDOM) {
 					
 					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 						
@@ -1162,18 +1304,20 @@ class CanvasGraphics {
 					
 					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 						
+						context.closePath ();
+						context.setTransform (1, 0, 0, 1, 0, 0);
 						context.clearRect (0, 0, scaledWidth, scaledHeight);
 						
 					} else {
 						
-						canvas.width  = width;
+						canvas.width = width;
 						canvas.height = height;
 						
 					}
 					
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					
 				}
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				
 				fillCommands.clear ();
 				strokeCommands.clear ();
@@ -1319,7 +1463,7 @@ class CanvasGraphics {
 							hasLineStyle = c.thickness != null;
 							strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 						
-						case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
+						case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 							
 							endFill ();
 							endStroke ();
@@ -1335,6 +1479,12 @@ class CanvasGraphics {
 								var c = data.readBeginGradientFill ();
 								fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 								strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+								
+							} else if (type == BEGIN_SHADER_FILL) {
+								
+								var c = data.readBeginShaderFill ();
+								fillCommands.beginShaderFill (c.shaderBuffer);
+								strokeCommands.beginShaderFill (c.shaderBuffer);
 								
 							} else {
 								
@@ -1388,6 +1538,11 @@ class CanvasGraphics {
 								
 							}
 						
+						case DRAW_QUADS:
+							
+							var c = data.readDrawQuads ();
+							fillCommands.drawQuads (c.rects, c.indices, c.transforms);
+						
 						case DRAW_TRIANGLES:
 							
 							var c = data.readDrawTriangles ();
@@ -1439,13 +1594,16 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
+	public static function renderMask (graphics:Graphics, renderer:CanvasRenderer) {
 		
 		#if (js && html5)
 		
+		// TODO: Move to normal render method, browsers appear to support more than
+		// one path in clipping now
+		
 		if (graphics.__commands.length != 0) {
 			
-			context = cast renderSession.context;
+			context = cast renderer.context;
 			
 			var positionX = 0.0;
 			var positionY = 0.0;
@@ -1509,7 +1667,9 @@ class CanvasGraphics {
 					case DRAW_RECT:
 						
 						var c = data.readDrawRect ();
+						context.beginPath ();
 						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
+						context.closePath ();
 					
 					case DRAW_ROUND_RECT:
 						

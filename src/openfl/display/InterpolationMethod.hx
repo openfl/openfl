@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract InterpolationMethod(Null<Int>) {
@@ -31,3 +31,17 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract InterpolationMethod(String) from String to String {
+	
+	public var LINEAR_RGB = "linearRGB";
+	public var RGB = "rgb";
+	
+}
+
+
+#end

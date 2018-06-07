@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !openfljs
 
 
 @:enum abstract FontType(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.text;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract FontType(String) from String to String {
+	
+	public var DEVICE = "device";
+	public var EMBEDDED = "embedded";
+	public var EMBEDDED_CFF = "embeddedCFF";
+	
+}
+
+
+#end

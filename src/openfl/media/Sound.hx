@@ -13,8 +13,14 @@ import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
+@:access(openfl.media.SoundChannel.new)
 
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
 
@@ -67,6 +73,7 @@ class Sound extends EventDispatcher {
 		if (__buffer != null) {
 			
 			__buffer.dispose ();
+			__buffer = null;
 			
 		}
 		
@@ -194,7 +201,7 @@ class Sound extends EventDispatcher {
 	
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
-		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS) {
+		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS) {
 			
 			return null;
 			

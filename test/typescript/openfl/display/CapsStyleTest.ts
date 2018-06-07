@@ -11,7 +11,7 @@ describe ("TypeScript | CapsStyle", function () {
 		//assert.equal (1, Type.enumIndex (CapsStyle.NONE));
 		//assert.equal (2, Type.enumIndex (CapsStyle.SQUARE));
 		
-		switch (+CapsStyle.SQUARE) {
+		switch (""+CapsStyle.SQUARE) {
 			
 			case CapsStyle.ROUND:
 			case CapsStyle.NONE:

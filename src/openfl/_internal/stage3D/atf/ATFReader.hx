@@ -1,11 +1,17 @@
 package openfl._internal.stage3D.atf;
 
+
 import haxe.io.Bytes;
 import openfl.utils.ByteArray;
 import openfl.errors.IllegalOperationError;
 import openfl.display3D.Context3DTextureFormat;
 
-typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> lime.utils.DataPointer -> Void;
+typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> Bytes -> Void;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 /**
 	This class can read textures from Adobe Texture Format containers.
@@ -21,30 +27,31 @@ typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> lim
 	<https://www.adobe.com/devnet/archive/flashruntimes/articles/atf-file-format.html>
 **/
 class ATFReader {
-
-	var data: ByteArray;
-
-	var version = 0;
-	var cubeMap:Bool;
-	var width:Int;
-	var height:Int;
-	var mipCount:Int;
-
-
+	
+	
+	private var atfFormat:ATFFormat;
+	private var cubeMap:Bool;
+	private var data:ByteArray;
+	private var height:Int;
+	private var mipCount:Int;
+	private var version = 0;
+	private var width:Int;
+	
+	
 	public function new (data:ByteArray, byteArrayOffset:UInt) {
-
+		
 		data.position = byteArrayOffset;
 		var signature:String = data.readUTFBytes (3);
 		data.position = byteArrayOffset;
-
+		
 		if (signature != "ATF") {
 			
 			throw new IllegalOperationError ("ATF signature not found");
 			
 		}
-
+		
 		var length = 0;
-
+		
 		// When the 6th byte is 0xff, we have one of the new formats
 		if (data[byteArrayOffset+6] == 0xff) {
 			
@@ -52,8 +59,7 @@ class ATFReader {
 			data.position = byteArrayOffset+8;
 			length = __readUInt32 (data);
 		
-		}
-		else {
+		} else {
 			
 			version = 0;
 			data.position = byteArrayOffset+3;
@@ -61,30 +67,29 @@ class ATFReader {
 		
 		}
 		
-		
 		if (cast ((byteArrayOffset + length), Int) > data.length) {
 			
 			throw new IllegalOperationError ("ATF length exceeds byte array length");
 			
 		}
-
+		
 		this.data = data;
-
+		
 	}
-
-
+	
+	
 	public function readHeader (__width:Int, __height:Int, cubeMap:Bool):Bool {
-
-		var tdata = data.readUnsignedByte();
+		
+		var tdata = data.readUnsignedByte ();
 		var type:ATFType = cast (tdata >> 7);
 		
-		if ( !cubeMap && (type != ATFType.NORMAL) ) {
+		if (!cubeMap && (type != ATFType.NORMAL)) {
 			
 			throw new IllegalOperationError ("ATF Cube map not expected");
 			
 		}
 		
-		if ( cubeMap && (type != ATFType.CUBE_MAP) ) {
+		if (cubeMap && (type != ATFType.CUBE_MAP)) {
 			
 			throw new IllegalOperationError ("ATF Cube map expected");
 			
@@ -92,15 +97,14 @@ class ATFReader {
 		
 		this.cubeMap = cubeMap;
 		
-		var atfFormat:ATFFormat = cast (tdata & 0x7f);
+		atfFormat = cast (tdata & 0x7f);
 		
 		// Make sure it is one of the supported formats
 		if (atfFormat != ATFFormat.RAW_COMPRESSED && atfFormat != ATFFormat.RAW_COMPRESSED_ALPHA) {
 			
-			throw new IllegalOperationError("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
+			throw new IllegalOperationError ("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
 		
 		}
-		
 		
 		width = (1 << cast data.readUnsignedByte ());
 		height = (1 << cast data.readUnsignedByte ());
@@ -113,13 +117,13 @@ class ATFReader {
 		
 		mipCount = cast data.readUnsignedByte ();
 		
-		return (atfFormat == openfl._internal.stage3D.atf.ATFFormat.RAW_COMPRESSED);
+		return (atfFormat == ATFFormat.RAW_COMPRESSED_ALPHA);
 		
 	}
 	
 	
 	public function readTextures (uploadCallback:UploadCallback):Void {
-
+		
 		// DXT1/5, ETC1, PVRTC4, ETC2
 		// ETC2 is available with ATF version 3 
 		var gpuFormats = (version < 3) ? 3 : 4;
@@ -134,16 +138,16 @@ class ATFReader {
 					
 					if ((data.position + blockLength) > data.length) {
 						
-						throw new IllegalOperationError("Block length exceeds ATF file length");
+						throw new IllegalOperationError ("Block length exceeds ATF file length");
 					
 					}
 					
 					if (blockLength > 0) {
-					
-						var bytes:Bytes = Bytes.alloc(blockLength);
-						data.readBytes(bytes, 0, blockLength);
-							
-						uploadCallback(side, level, gpuFormat, width>>level, height>>level, blockLength, bytes);
+						
+						var bytes = Bytes.alloc (blockLength);
+						data.readBytes (bytes, 0, blockLength);
+						
+						uploadCallback (side, level, gpuFormat, width>>level, height>>level, blockLength, bytes);
 						
 					}
 					
@@ -153,7 +157,8 @@ class ATFReader {
 		}
 		
 	}
-
+	
+	
 	private function __readUInt24 (data:ByteArray):UInt {
 		
 		var value:UInt;
@@ -175,4 +180,6 @@ class ATFReader {
 		return value;
 		
 	}
+	
+	
 }

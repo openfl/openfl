@@ -51,15 +51,15 @@ class ColorTransform {
 	
 	public function concat (second:ColorTransform):Void {
 		
-		redMultiplier *= second.redMultiplier;   
+		redOffset = second.redOffset * redMultiplier + redOffset;
+		greenOffset = second.greenOffset * greenMultiplier + greenOffset;
+		blueOffset = second.blueOffset * blueMultiplier + blueOffset;
+		alphaOffset = second.alphaOffset * alphaMultiplier + alphaOffset;
+		
+		redMultiplier *= second.redMultiplier;
 		greenMultiplier *= second.greenMultiplier;
 		blueMultiplier *= second.blueMultiplier;
 		alphaMultiplier *= second.alphaMultiplier;
-		
-		redOffset = second.redMultiplier * redOffset + second.redOffset;
-		greenOffset = second.greenMultiplier * greenOffset + second.greenOffset;
-		blueOffset = second.blueMultiplier * blueOffset + second.blueOffset;
-		alphaOffset = second.alphaMultiplier * alphaOffset + second.alphaOffset;
 		
 	}
 	
@@ -122,6 +122,20 @@ class ColorTransform {
 	}
 	
 	
+	private function __invert ():Void {
+		
+		redMultiplier = 1 / redMultiplier;
+		greenMultiplier = 1 / greenMultiplier;
+		blueMultiplier = 1 / blueMultiplier;
+		alphaMultiplier = 1 / alphaMultiplier;
+		redOffset = -redOffset;
+		greenOffset = -greenOffset;
+		blueOffset = -blueOffset;
+		alphaOffset = -alphaOffset;
+		
+	}
+	
+	
 	private function __equals (ct:ColorTransform, ?skipAlphaMultiplier:Bool = false):Bool {
 		
 		return (ct != null && redMultiplier == ct.redMultiplier && greenMultiplier == ct.greenMultiplier && blueMultiplier == ct.blueMultiplier && (skipAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier) && redOffset == ct.redOffset && greenOffset == ct.greenOffset && blueOffset == ct.blueOffset && alphaOffset == ct.alphaOffset);
@@ -132,6 +146,20 @@ class ColorTransform {
 	private function __isDefault ():Bool {
 		
 		return (redMultiplier == 1 && greenMultiplier == 1 && blueMultiplier == 1 && alphaMultiplier == 1 && redOffset == 0 && greenOffset == 0 && blueOffset == 0 && alphaOffset == 0);
+		
+	}
+	
+	
+	private function __setArrays (colorMultipliers:Array<Float>, colorOffsets:Array<Float>):Void {
+		
+		colorMultipliers[0] = redMultiplier;
+		colorMultipliers[1] = greenMultiplier;
+		colorMultipliers[2] = blueMultiplier;
+		colorMultipliers[3] = alphaMultiplier;
+		colorOffsets[0] = redOffset;
+		colorOffsets[1] = greenOffset;
+		colorOffsets[2] = blueOffset;
+		colorOffsets[3] = alphaOffset;
 		
 	}
 	

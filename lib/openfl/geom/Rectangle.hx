@@ -53,13 +53,19 @@ extern class Rectangle {
 	/**
 	 * The sum of the `y` and `height` properties.
 	 */
-	public var bottom:Float;
+	public var bottom (get, set):Float;
+	
+	@:noCompletion private function get_bottom ():Float;
+	@:noCompletion private function set_bottom (value:Float):Float;
 	
 	/**
 	 * The location of the Rectangle object's bottom-right corner, determined by
 	 * the values of the `right` and `bottom` properties.
 	 */
-	public var bottomRight:Point;
+	public var bottomRight (get, set):Point;
+	
+	@:noCompletion private function get_bottomRight ():Point;
+	@:noCompletion private function set_bottomRight (value:Point):Point;
 	
 	/**
 	 * The height of the rectangle, in pixels. Changing the `height`
@@ -78,18 +84,27 @@ extern class Rectangle {
 	 * The value of the `left` property is equal to the value of
 	 * the `x` property.
 	 */
-	public var left:Float;
+	public var left (get, set):Float;
+	
+	@:noCompletion private function get_left ():Float;
+	@:noCompletion private function set_left (value:Float):Float;
 	
 	/**
 	 * The sum of the `x` and `width` properties.
 	 */
-	public var right:Float;
+	public var right (get, set):Float;
+	
+	@:noCompletion private function get_right ():Float;
+	@:noCompletion private function set_right (value:Float):Float;
 	
 	/**
 	 * The size of the Rectangle object, expressed as a Point object with the
 	 * values of the `width` and `height` properties.
 	 */
-	public var size:Point;
+	public var size (get, set):Point;
+	
+	@:noCompletion private function get_size ():Point;
+	@:noCompletion private function set_size (value:Point):Point;
 	
 	/**
 	 * The _y_ coordinate of the top-left corner of the rectangle. Changing
@@ -101,13 +116,19 @@ extern class Rectangle {
 	 * The value of the `top` property is equal to the value of the
 	 * `y` property.
 	 */
-	public var top:Float;
+	public var top (get, set):Float;
+	
+	@:noCompletion private function get_top ():Float;
+	@:noCompletion private function set_top (value:Float):Float;
 	
 	/**
 	 * The location of the Rectangle object's top-left corner, determined by the
 	 * _x_ and _y_ coordinates of the point.
 	 */
-	public var topLeft:Point;
+	public var topLeft (get, set):Point;
+	
+	@:noCompletion private function get_topLeft ():Point;
+	@:noCompletion private function set_topLeft (value:Point):Point;
 	
 	/**
 	 * The width of the rectangle, in pixels. Changing the `width`

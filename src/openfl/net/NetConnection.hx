@@ -4,6 +4,11 @@ package openfl.net;
 import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class NetConnection extends EventDispatcher {
 	

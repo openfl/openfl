@@ -747,6 +747,7 @@ class SWFLiteExporter {
 		
 		symbol.wordWrap = tag.wordWrap;
 		symbol.input = !tag.readOnly;
+		symbol.password = tag.password;
 		
 		// embedded fonts
 		if (tag.hasFont) {
@@ -791,11 +792,12 @@ class SWFLiteExporter {
 		
 		var records = [];
 		
+		var font:FontSymbol = null;
+		var defineFont:TagDefineFont2 = null;
+		
 		for (record in tag.records) {
 			
 			var textRecord = new StaticTextRecord ();
-			var font:FontSymbol = null;
-			var defineFont:TagDefineFont2 = null;
 			
 			if (record.hasFont) {
 				
@@ -809,7 +811,7 @@ class SWFLiteExporter {
 			
 			if (record.hasColor) textRecord.color = record.textColor;
 			if (record.hasXOffset) textRecord.offsetX = record.xOffset;
-			if (record.hasYOffset) textRecord.offsetY= record.yOffset;
+			if (record.hasYOffset) textRecord.offsetY = record.yOffset;
 			textRecord.fontHeight = record.textHeight;
 			
 			var advances = [];
@@ -945,7 +947,7 @@ class SWFLiteExporter {
 			if (cls.fields.length > 0) {
 				for (field in cls.fields) {
 					switch (field.kind) {
-						case FMethod(idx, _, _, _):
+						case FMethod(var idx, _, _, _):
 							var methodName = data.abcData.resolveMultiNameByIndex(field.name);
 							if (AVM2.FRAME_SCRIPT_METHOD_NAME.match(methodName.name)) {
 								var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
@@ -1323,7 +1325,7 @@ class AVM2 {
 
 		for (field in cls.fields) {
 			switch (field.kind) {
-				case FMethod(idx, _, _, _):
+				case FMethod(var idx, _, _, _):
 					var methodName = abcData.resolveMultiNameByIndex(field.name);
 					if (methodName.name == name)
 					{

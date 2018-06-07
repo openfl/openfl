@@ -1,6 +1,12 @@
 package openfl.media;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 class SoundLoaderContext {
 	
 	

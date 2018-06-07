@@ -1,5 +1,9 @@
-package openfl.display3D;
+package openfl.display3D; #if !openfljs
+
+
+#if cs
 import openfl._internal.utils.NullUtils;
+#end
 
 
 @:enum abstract Context3DWrapMode(Null<Int>) {
@@ -14,9 +18,9 @@ import openfl._internal.utils.NullUtils;
 		return switch (value) {
 			
 			case "clamp": CLAMP;
-			case "clamp_u_repeat_y": CLAMP_U_REPEAT_V;
+			case "clamp_u_repeat_v": CLAMP_U_REPEAT_V;
 			case "repeat": REPEAT;
-			case "repeat_u_clamp_y": REPEAT_U_CLAMP_V;
+			case "repeat_u_clamp_v": REPEAT_U_CLAMP_V;
 			default: null;
 			
 		}
@@ -28,9 +32,9 @@ import openfl._internal.utils.NullUtils;
 		return switch (value) {
 			
 			case Context3DWrapMode.CLAMP: "clamp";
-			case Context3DWrapMode.CLAMP_U_REPEAT_V: "clamp_u_repeat_y";
+			case Context3DWrapMode.CLAMP_U_REPEAT_V: "clamp_u_repeat_v";
 			case Context3DWrapMode.REPEAT: "repeat";
-			case Context3DWrapMode.REPEAT_U_CLAMP_V: "repeat_u_clamp_y";
+			case Context3DWrapMode.REPEAT_U_CLAMP_V: "repeat_u_clamp_v";
 			default: null;
 			
 		}
@@ -54,3 +58,19 @@ import openfl._internal.utils.NullUtils;
 	#end
 	
 }
+
+
+#else
+
+
+@:enum abstract Context3DWrapMode(String) from String to String {
+	
+	public var CLAMP = "clamp";
+	public var CLAMP_U_REPEAT_V = "clamp_u_repeat_v";
+	public var REPEAT = "repeat";
+	public var REPEAT_U_CLAMP_V = "repeat_u_clamp_v";
+	
+}
+
+
+#end

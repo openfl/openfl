@@ -9,7 +9,12 @@ package openfl.filters; #if (display || !flash)
 	public var clamp:Bool;
 	public var color:Int;
 	public var divisor:Float;
-	public var matrix (default, set):Array<Float>;
+	
+	public var matrix (get, set):Array<Float>;
+	
+	@:noCompletion private function get_matrix ():Array<Float>;
+	@:noCompletion private function set_matrix (value:Array<Float>):Array<Float>;
+	
 	public var matrixX:Int;
 	public var matrixY:Int;
 	public var preserveAlpha:Bool;

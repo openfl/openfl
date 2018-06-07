@@ -1,6 +1,9 @@
 package openfl.utils;
 
 
+import openfl.net.ObjectEncoding;
+
+
 @:jsRequire("openfl/utils/IDataInput", "default")
 
 #if flash
@@ -12,16 +15,21 @@ extern interface IDataInput {
 	#if (flash && !display)
 	public var bytesAvailable (default, null):UInt;
 	#else
-	public var bytesAvailable (default, never):UInt;
+	public var bytesAvailable (get, never):UInt;
+	
+	@:noCompletion private function get_bytesAvailable ():UInt;
 	#end
 	
 	#if (flash && !display)
 	public var endian:Endian;
 	#else
-	public var endian:Endian;
+	public var endian (get, set):Endian;
+	
+	@:noCompletion private function get_endian ():Endian;
+	@:noCompletion private function set_endian (value:Endian):Endian;
 	#end
 	
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	public function readBoolean ():Bool;
 	public function readByte ():Int;

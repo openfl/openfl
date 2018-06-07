@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract StageScaleMode(Null<Int>) {
@@ -37,3 +37,19 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract StageScaleMode(String) from String to String {
+	
+	public var EXACT_FIT = "exactFit";
+	public var NO_BORDER = "noBorder";
+	public var NO_SCALE = "noScale";
+	public var SHOW_ALL = "showAll";
+	
+}
+
+
+#end

@@ -4,6 +4,11 @@ package openfl.events;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class SampleDataEvent extends Event {
 	

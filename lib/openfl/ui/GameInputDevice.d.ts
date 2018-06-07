@@ -1,7 +1,6 @@
 import GameInputControl from "./GameInputControl";
 import ByteArray from "./../utils/ByteArray";
-
-type Vector<T> = any;
+import Vector from "./../Vector";
 
 
 declare namespace openfl.ui {
@@ -31,6 +30,8 @@ declare namespace openfl.ui {
 		 * Returns the number of controls on this device.
 		 */
 		public readonly numControls:number;
+		
+		protected get_numControls ():number;
 		
 		/**
 		 * Specifies the rate (in milliseconds) at which to retrieve control values.

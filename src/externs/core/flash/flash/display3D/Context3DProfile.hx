@@ -9,6 +9,9 @@ package flash.display3D; #if (!display && flash)
 	public var STANDARD = "standard";
 	public var STANDARD_CONSTRAINED = "standardConstrained";
 	public var STANDARD_EXTENDED = "standardExtended";
+	#if air
+	public var ENHANCED = "enhanced";
+	#end
 	
 }
 

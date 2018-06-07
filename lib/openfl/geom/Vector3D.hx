@@ -6,12 +6,24 @@ package openfl.geom; #if (display || !flash)
 extern class Vector3D {
 	
 	
-	public static var X_AXIS (default, never):Vector3D;
-	public static var Y_AXIS (default, never):Vector3D;
-	public static var Z_AXIS (default, never):Vector3D;
+	public static var X_AXIS (get, never):Vector3D;
 	
-	public var length (default, never):Float;
-	public var lengthSquared (default, never):Float;
+	@:noCompletion private static function get_X_AXIS ():Vector3D;
+	
+	public static var Y_AXIS (get, never):Vector3D;
+	
+	@:noCompletion private static function get_Y_AXIS ():Vector3D;
+	
+	public static var Z_AXIS (get, never):Vector3D;
+	
+	@:noCompletion private static function get_Z_AXIS ():Vector3D;
+	
+	
+	public var length (get, never):Float;
+	
+	@:noCompletion private function get_length ():Float;
+	
+	public var lengthSquared (get, never):Float;
 	
 	public var w:Float;
 	public var x:Float;

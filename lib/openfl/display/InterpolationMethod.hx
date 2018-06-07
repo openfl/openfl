@@ -1,4 +1,4 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
 
 /**
@@ -8,7 +8,7 @@ package openfl.display; #if (display || !flash)
  * `Graphics.lineGradientStyle()` methods. This parameter
  * determines the RGB space to use when rendering the gradient.
  */
-@:enum abstract InterpolationMethod(Null<Int>) {
+@:enum abstract InterpolationMethod(String) from String to String {
 	
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means
@@ -22,7 +22,7 @@ package openfl.display; #if (display || !flash)
 	 * `SpreadMethod.REFLECT`). The different interpolation methods
 	 * affect the appearance as follows: 
 	 */
-	public var LINEAR_RGB = 0;
+	public var LINEAR_RGB = "linearRGB";
 	
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means
@@ -36,35 +36,6 @@ package openfl.display; #if (display || !flash)
 	 * `SpreadMethod.REFLECT`). The different interpolation methods
 	 * affect the appearance as follows: 
 	 */
-	public var RGB = 1;
-	
-	@:from private static function fromString (value:String):InterpolationMethod {
-		
-		return switch (value) {
-			
-			case "linearRGB": LINEAR_RGB;
-			case "rgb": RGB;
-			default: null;
-			
-		}
-		
-	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case InterpolationMethod.LINEAR_RGB: "linearRGB";
-			case InterpolationMethod.RGB: "rgb";
-			default: null;
-			
-		}
-		
-	}
+	public var RGB = "rgb";
 	
 }
-
-
-#else
-typedef InterpolationMethod = flash.display.InterpolationMethod;
-#end

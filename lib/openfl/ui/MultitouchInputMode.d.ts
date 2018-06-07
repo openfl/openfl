@@ -14,15 +14,15 @@ declare namespace openfl.ui {
 		 * supported by the current environment, and other touch events(such as a
 		 * simple tap) are interpreted as mouse events.
 		 */
-		GESTURE = 0,
+		GESTURE = "gesture",
 		
-		NONE = 1,
+		NONE = "none",
 		
 		/**
 		 * Specifies that all user contact with a touch-enabled device is interpreted
 		 * as a type of mouse event.
 		 */
-		TOUCH_POINT = 2
+		TOUCH_POINT = "touchPoint"
 		
 	}
 	

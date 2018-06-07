@@ -7,7 +7,7 @@ describe ("ES6 | ClipboardFormats", function () {
 	
 	it ("test", function () {
 		
-		switch (+ClipboardFormats.HTML_FORMAT) {
+		switch (""+ClipboardFormats.HTML_FORMAT) {
 			
 			case ClipboardFormats.HTML_FORMAT:
 			case ClipboardFormats.RICH_TEXT_FORMAT:

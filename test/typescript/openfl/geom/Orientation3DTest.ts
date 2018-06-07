@@ -7,7 +7,7 @@ describe ("TypeScript | Orientation", function () {
 	
 	it ("test", function () {
 		
-		switch (+Orientation3D.AXIS_ANGLE) {
+		switch (""+Orientation3D.AXIS_ANGLE) {
 			
 			case Orientation3D.AXIS_ANGLE:
 			case Orientation3D.EULER_ANGLES:

@@ -12,11 +12,16 @@ import openfl.utils.ByteArray;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class LoaderInfo extends EventDispatcher {
 	
 	
-	private static var __rootURL = #if (js && html5) Browser.document.URL #else "" #end;
+	private static var __rootURL = #if (js && html5) (Browser.supported ? Browser.document.URL : "") #else "" #end;
 	
 	public var applicationDomain (default, null):ApplicationDomain;
 	public var bytes (default, null):ByteArray;

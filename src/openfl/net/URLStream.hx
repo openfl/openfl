@@ -10,6 +10,11 @@ import openfl.utils.IDataInput;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class URLStream extends EventDispatcher implements IDataInput {
 	
@@ -17,7 +22,7 @@ class URLStream extends EventDispatcher implements IDataInput {
 	public var bytesAvailable (get, never):UInt;
 	public var connected (get, never):Bool;
 	public var endian (get, set):Endian;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	private var __data:ByteArray;
 	private var __loader:URLLoader;

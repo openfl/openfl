@@ -3,6 +3,11 @@ package openfl.display;
 
 import openfl.display.IGraphicsData;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
 	

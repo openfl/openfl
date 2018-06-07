@@ -10,28 +10,28 @@ declare namespace openfl.text {
 		 * in the `setAdvancedAntiAliasingTable()` method. Use the syntax
 		 * `FontStyle.BOLD`.
 		 */
-		BOLD = 0,
+		BOLD = "bold",
 		
 		/**
 		 * Defines the italic style of a font for the `fontStyle`
 		 * parameter in the `setAdvancedAntiAliasingTable()` method. Use
 		 * the syntax `FontStyle.ITALIC`.
 		 */
-		BOLD_ITALIC = 1,
+		BOLD_ITALIC = "boldItalic",
 		
 		/**
 		 * Defines the italic style of a font for the `fontStyle`
 		 * parameter in the `setAdvancedAntiAliasingTable()` method. Use
 		 * the syntax `FontStyle.ITALIC`.
 		 */
-		ITALIC = 2,
+		ITALIC = "italic",
 		
 		/**
 		 * Defines the plain style of a font for the `fontStyle` parameter
 		 * in the `setAdvancedAntiAliasingTable()` method. Use the syntax
 		 * `FontStyle.REGULAR`.
 		 */
-		REGULAR = 3
+		REGULAR = "regular"
 		
 	}
 	

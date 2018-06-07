@@ -238,7 +238,7 @@ class Rectangle {
 	}
 	
 	
-	public function __contract (x:Float, y:Float, width:Float, height:Float):Void {
+	private function __contract (x:Float, y:Float, width:Float, height:Float):Void {
 		
 		if (this.width == 0 && this.height == 0) {
 			
@@ -264,7 +264,7 @@ class Rectangle {
 	}
 	
 	
-	public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
+	private function __expand (x:Float, y:Float, width:Float, height:Float):Void {
 		
 		if (this.width == 0 && this.height == 0) {
 			

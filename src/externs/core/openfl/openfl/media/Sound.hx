@@ -125,6 +125,8 @@ extern class Sound extends EventDispatcher {
 	 */
 	public var id3 (get, never):ID3Info;
 	
+	@:noCompletion private function get_id3 ():ID3Info;
+	
 	/**
 	 * Returns the buffering state of external MP3 files. If the value is
 	 * `true`, any playback is currently suspended while the object
@@ -140,6 +142,8 @@ extern class Sound extends EventDispatcher {
 	 * The length of the current sound in milliseconds.
 	 */
 	public var length (get, never):Float;
+	
+	@:noCompletion private function get_length ():Float;
 	
 	/**
 	 * The URL from which this sound was loaded. This property is applicable only
@@ -300,6 +304,7 @@ extern class Sound extends EventDispatcher {
 	
 	
 	public static function loadFromFile (path:String):Future<Sound>;
+	public static function loadFromFiles (paths:Array<String>):Future<Sound>;
 	
 	
 	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void;

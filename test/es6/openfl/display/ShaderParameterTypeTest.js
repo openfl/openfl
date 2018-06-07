@@ -7,7 +7,7 @@ describe ("ES6 | ShaderParameterType", function () {
 	
 	it ("test", function () {
 		
-		switch (+ShaderParameterType.BOOL) {
+		switch (""+ShaderParameterType.BOOL) {
 			
 			case ShaderParameterType.BOOL:
 			case ShaderParameterType.BOOL2:

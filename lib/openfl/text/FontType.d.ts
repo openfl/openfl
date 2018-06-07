@@ -22,7 +22,7 @@ declare namespace openfl.text {
 		 * installed on the system. For the same reason, device fonts are not
 		 * anti-aliased and may appear jagged at large point sizes.
 		 */
-		DEVICE = 0,
+		DEVICE = "device",
 		
 		/**
 		 * Indicates that this is an embedded font. Font outlines are embedded in the
@@ -41,9 +41,9 @@ declare namespace openfl.text {
 		 * flash.text.engine classes are directed to use such a font they will fall
 		 * back to device fonts.
 		 */
-		EMBEDDED = 1,
+		EMBEDDED = "embedded",
 		
-		EMBEDDED_CFF = 2
+		EMBEDDED_CFF = "embeddedCFF"
 		
 	}
 	

@@ -16,6 +16,11 @@ import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.text.Font;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.text.Font)
 @:access(openfl.utils.AssetLibrary)
@@ -123,7 +128,8 @@ class Assets {
 			#if flash
 			var font = limeFont.src;
 			#else
-			var font = Font.__fromLimeFont (limeFont);
+			var font = new Font ();
+			font.__fromLimeFont (limeFont);
 			#end
 			
 			if (useCache && cache.enabled) {
@@ -460,7 +466,8 @@ class Assets {
 			#if flash
 			var font = limeFont.src;
 			#else
-			var font = Font.__fromLimeFont (limeFont);
+			var font = new Font ();
+			font.__fromLimeFont (limeFont);
 			#end
 			
 			if (useCache && cache.enabled) {
@@ -480,10 +487,31 @@ class Assets {
 	}
 	
 	
-	public static function loadLibrary (name:String):Future<LimeAssetLibrary> {
+	public static function loadLibrary (name:String):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
-		var future = LimeAssets.loadLibrary (name);
-		return future;
+		return LimeAssets.loadLibrary (name).then (function (library) {
+			
+			var _library:AssetLibrary = null;
+			
+			if (library != null) {
+				
+				if (Std.is (library, AssetLibrary)) {
+					
+					_library = cast library;
+					
+				} else {
+					
+					_library = new AssetLibrary ();
+					_library.__proxy = library;
+					LimeAssets.registerLibrary (name, _library);
+					
+				}
+				
+			}
+			
+			return Future.withValue (_library);
+			
+		});
 		
 	}
 	

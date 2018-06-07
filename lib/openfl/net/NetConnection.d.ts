@@ -1,4 +1,5 @@
 import EventDispatcher from "./../events/EventDispatcher";
+import ObjectEncoding from "./ObjectEncoding";
 
 
 declare namespace openfl.net {
@@ -10,7 +11,7 @@ declare namespace openfl.net {
 		//public static inline var CONNECT_SUCCESS:string = "connectSuccess";
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) public static var defaultObjectEncoding:UInt;
+		// @:noCompletion @:dox(hide) public static var defaultObjectEncoding:ObjectEncoding;
 		// #end
 		
 		// #if flash
@@ -46,7 +47,7 @@ declare namespace openfl.net {
 		// #end
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) public var objectEncoding:UInt;
+		// @:noCompletion @:dox(hide) public var objectEncoding:ObjectEncoding;
 		// #end
 		
 		// #if flash

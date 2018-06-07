@@ -62,12 +62,17 @@ extern class Accelerometer extends EventDispatcher {
 	 */
 	public static var isSupported (get, never):Bool;
 	
+	@:noCompletion private static function get_isSupported ():Bool;
+	
 	/**
 	 * Specifies whether the user has denied access to the accelerometer
 	 * (`true`) or allowed access(`false`). When this
 	 * value changes, a `status` event is dispatched.
 	 */
-	public var muted (default, set):Bool;
+	public var muted (get, set):Bool;
+	
+	@:noCompletion private function get_muted ():Bool;
+	@:noCompletion private function set_muted (value:Bool):Bool;
 	
 	
 	/**

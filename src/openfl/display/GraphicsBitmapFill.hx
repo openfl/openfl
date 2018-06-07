@@ -6,6 +6,11 @@ import openfl.display.IGraphicsData;
 import openfl.display.IGraphicsFill;
 import openfl.geom.Matrix;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {
 	

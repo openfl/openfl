@@ -24,6 +24,8 @@ extern class Shape extends DisplayObject {
 	 */
 	public var graphics (get, never):Graphics;
 	
+	@:noCompletion private function get_graphics ():Graphics;
+	
 	
 	/**
 	 * Creates a new Shape object.

@@ -101,13 +101,36 @@ $(document).ready(function(){
 	setPlatform(readCookie("platform") == null ? "all" : readCookie("platform"));
 	//setVersion(readCookie("version") == null ? "3_0" : readCookie("version"));
 
-	$("#search").focus();
-	$("#search").on("input", function(e){
+	var searchBox = $("#search");
+	searchBox.on("input", function(e){
 		searchQuery(e.target.value);
 	});
-	$(window).keypress(function(e){
-		$("#search").focus();
-	})
+	$(window).keydown(function(e){
+		if (searchBox.is(":focus")) {
+			return true;
+		} else if (e.key === "/" || e.keyCode == 191 /* slash */) {
+			searchBox.focus();
+			return false;
+		} else if (!e.ctrlKey && !e.metaKey && (
+			// e.key is only available in newer browsers. On older
+			// browsers, we use an ugly blacklist of well-known
+			// non-printable keyCodes, and assume everything else is
+			// printable.
+			(typeof e.key == "string" && e.key.length == 1 && e.key != " ") ||
+			(typeof e.key == "undefined" && [8, 9, 13, 16, 17, 32, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 91, 92, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 144, 145].indexOf(e.keyCode) >= 0))) {
+			searchBox.focus();
+			return true;
+		} else {
+			return true;
+		}
+	});
+	searchBox.keydown(function(e){
+		if (e.keyCode == 27 /* Esc */) {
+			this.blur();
+			return false;
+		}
+		return true;
+	});
 	
 	$("#select-platform").selectpicker().on("change", function(e){
 		var value = $(":selected", this).val();

@@ -1,7 +1,6 @@
+import Vector from "./../Vector";
 import Orientation3D from "./Orientation3D";
 import Vector3D from "./Vector3D";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.geom {
@@ -11,7 +10,15 @@ declare namespace openfl.geom {
 		
 		
 		public readonly determinant:number;
+		
+		protected get_determinant ():number;
+		protected set_determinant (value:number):number;
+		
 		public position:Vector3D;
+		
+		protected get_position ():Vector3D;
+		protected set_position (value:Vector3D):Vector3D;
+		
 		public rawData:Vector<number>;
 		
 		

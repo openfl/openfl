@@ -43,7 +43,7 @@ class TagDefineFontInfo implements ITag
 		var fontNameRaw:ByteArray = new ByteArray();
 		fontNameRaw.endian = BIG_ENDIAN;
 		data.readBytes(fontNameRaw, 0, fontNameLen);
-		#if (cpp || neko)
+		#if (cpp || neko || nodejs)
 		fontName = fontNameRaw.readUTFBytes(fontNameLen - 1);
 		#else
 		fontName = fontNameRaw.readUTFBytes(fontNameLen);

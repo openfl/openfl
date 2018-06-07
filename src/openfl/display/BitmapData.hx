@@ -25,12 +25,6 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-// import openfl.Lib;
-import openfl._internal.renderer.canvas.CanvasBlendModeManager;
-import openfl._internal.renderer.canvas.CanvasMaskManager;
-import openfl._internal.renderer.RenderSession;
-import openfl._internal.renderer.opengl.GLMaskManager;
-import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
 import openfl.errors.Error;
@@ -55,9 +49,7 @@ import js.Browser;
 #end
 
 #if lime_cairo
-import openfl._internal.renderer.cairo.CairoBlendModeManager;
-import openfl._internal.renderer.cairo.CairoRenderer;
-import openfl._internal.renderer.cairo.CairoMaskManager;
+import openfl.display.CairoRenderer;
 #end
 
 #if gl_stats
@@ -69,11 +61,11 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
-@:access(openfl._internal.renderer.opengl.GLMaskManager)
-@:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.Shader)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
@@ -91,7 +83,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class BitmapData implements IBitmapDrawable {
 	
 	
-	private static inline var __bufferStride = 26;
+	private static inline var __bufferStride = 14;
 	private static var __supportsBGRA:Null<Bool> = null;
 	private static var __tempVector:Vector2 = new Vector2 ();
 	private static var __textureFormat:Int;
@@ -114,12 +106,16 @@ class BitmapData implements IBitmapDrawable {
 	private var __framebufferContext:GLRenderContext;
 	private var __isMask:Bool;
 	private var __isValid:Bool;
+	private var __mask:DisplayObject;
 	private var __renderable:Bool;
+	private var __renderTransform:Matrix;
+	private var __scrollRect:Rectangle;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
 	private var __transform:Matrix;
+	private var __uvRect:Rectangle;
 	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
@@ -196,6 +192,8 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
+		__renderTransform = new Matrix ();
+		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderable = true;
@@ -207,20 +205,58 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		
-		filter.__applyFilter (this, sourceBitmapData, sourceRect, destPoint);
+		// TODO: Ways to optimize this?
+		
+		var needSecondBitmapData = filter.__needSecondBitmapData;
+		var needCopyOfOriginal = filter.__preserveObject;
+		
+		var bitmapData2 = null;
+		var bitmapData3 = null;
+		
+		if (needSecondBitmapData) {
+			bitmapData2 = new BitmapData (width, height, true, 0);
+		} else {
+			bitmapData2 = this;
+		}
+		
+		if (needCopyOfOriginal) {
+			bitmapData3 = new BitmapData (width, height, true, 0);
+		}
+		
+		if (filter.__preserveObject) {
+			bitmapData3.copyPixels (this, rect, destPoint);
+		}
+		
+		var lastBitmap = filter.__applyFilter (bitmapData2, this, sourceRect, destPoint);
+		
+		if (filter.__preserveObject) {
+			lastBitmap.draw (bitmapData3, null, null);
+		}
+		
+		if (needSecondBitmapData && lastBitmap == bitmapData2) {
+			
+			bitmapData2.image.version = image.version;
+			image = bitmapData2.image;
+			
+		}
+		
+		image.dirty = true;
+		image.version++;
 		
 	}
 	
 	
 	public function clone ():BitmapData {
 		
+		var bitmapData;
+		
 		if (!__isValid) {
 			
-			return new BitmapData (width, height, transparent, 0);
+			bitmapData = new BitmapData (width, height, transparent, 0);
 			
 		} else if (!readable && image == null) {
 			
-			var bitmapData = new BitmapData (0, 0, transparent, 0);
+			bitmapData = new BitmapData (0, 0, transparent, 0);
 			
 			bitmapData.width = width;
 			bitmapData.height = height;
@@ -232,13 +268,16 @@ class BitmapData implements IBitmapDrawable {
 			bitmapData.__textureContext = __textureContext;
 			bitmapData.__isValid = true;
 			
-			return bitmapData;
-			
 		} else {
 			
-			return BitmapData.fromImage (image.clone (), transparent);
+			bitmapData = BitmapData.fromImage (image.clone (), transparent);
 			
 		}
+		
+		bitmapData.__worldTransform.copyFrom (__worldTransform);
+		bitmapData.__renderTransform.copyFrom (__renderTransform);
+		
+		return bitmapData;
 		
 	}
 	
@@ -448,8 +487,8 @@ class BitmapData implements IBitmapDrawable {
 			//
 			//if(renderer != null) {
 				//
-				//var renderSession = @:privateAccess renderer.renderSession;
-				//var gl = renderSession.gl;
+				//var renderer = @:privateAccess renderer.renderer;
+				//var gl = renderer.__gl;
 				//
 				//if (gl != null) {
 					//
@@ -474,204 +513,147 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
-		if (matrix == null) {
+		if (source == null) return;
+		
+		source.__update (false, true);
+		
+		var transform = Matrix.__pool.get ();
+		
+		transform.copyFrom (source.__renderTransform);
+		transform.invert ();
+		
+		if (matrix != null) {
 			
-			matrix = new Matrix ();
-			
-			if (source.__transform != null) {
-				
-				matrix.copyFrom (source.__transform);
-				matrix.tx = 0;
-				matrix.ty = 0;
-				
-			}
+			transform.concat (matrix);
 			
 		}
 		
-		if (!readable /*|| !source.readable*/) {
+		var clipMatrix = null;
+		
+		if (clipRect != null) {
 			
-			if (GL.context != null) {
+			clipMatrix = Matrix.__pool.get ();
+			clipMatrix.copyFrom (transform);
+			clipMatrix.invert ();
+			
+		}
+		
+		var _colorTransform = new ColorTransform ();
+		_colorTransform.__copyFrom (source.__worldColorTransform);
+		_colorTransform.__invert ();
+		
+		if (!readable) {
+			
+			if (__textureContext == null) {
 				
-				var gl = GL.context;
+				// TODO: Some way to select current GL context for renderer?
+				__textureContext = GL.context;
 				
-				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
-				gl.viewport (0, 0, width, height);
+			}
+			
+			if (colorTransform != null) {
 				
-				var renderer = new GLRenderer (null, gl, this);
+				_colorTransform.__combine (colorTransform);
 				
-				var renderSession = renderer.renderSession;
-				renderSession.clearRenderDirty = false;
-				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
+			}
+			
+			var renderer = new OpenGLRenderer (__textureContext, this);
+			renderer.__allowSmoothing = smoothing;
+			renderer.__setBlendMode (blendMode);
+			
+			renderer.__worldTransform = transform;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = _colorTransform;
+			
+			renderer.__resize (width, height);
+			
+			if (clipRect != null) {
 				
-				var matrixCache = source.__worldTransform;
-				source.__updateTransforms (matrix);
-				source.__updateChildren (false);
-				source.__renderGL (renderer.renderSession);
-				source.__updateTransforms (matrixCache);
-				source.__updateChildren (true);
+				renderer.__pushMaskRect (clipRect, clipMatrix);
 				
-				gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			}
+			
+			__drawGL (source, renderer);
+			
+			if (clipRect != null) {
+				
+				renderer.__popMaskRect ();
+				Matrix.__pool.release (clipMatrix);
 				
 			}
 			
 		} else {
 			
+			#if ((js && html5) || lime_cairo)
+			
+			if (colorTransform != null) {
+				
+				var bounds = Rectangle.__pool.get ();
+				var boundsMatrix = Matrix.__pool.get ();
+				
+				source.__getBounds (bounds, boundsMatrix);
+				
+				var width:Int = Math.ceil (bounds.width);
+				var height:Int = Math.ceil (bounds.height);
+				
+				boundsMatrix.tx = -bounds.x;
+				boundsMatrix.ty = -bounds.y;
+				
+				var copy = new BitmapData (width, height, true, 0);
+				copy.draw (source, boundsMatrix);
+				
+				copy.colorTransform (copy.rect, colorTransform);
+				copy.__renderTransform.identity ();
+				copy.__renderTransform.tx = bounds.x;
+				copy.__renderTransform.ty = bounds.y;
+				copy.__renderTransform.concat (source.__renderTransform);
+				copy.__worldAlpha = source.__worldAlpha;
+				copy.__worldColorTransform.__copyFrom (source.__worldColorTransform);
+				source = copy;
+				
+				Rectangle.__pool.release (bounds);
+				Matrix.__pool.release (boundsMatrix);
+				
+			}
+			
 			#if (js && html5)
-			
-			if (colorTransform != null) {
-				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
-				
-			}
-			
 			ImageCanvasUtil.convertToCanvas (image);
+			var renderer = new CanvasRenderer (image.buffer.__srcContext);
+			#else
+			var renderer = new CairoRenderer (new Cairo (getSurface ()));
+			#end
 			
-			var buffer = image.buffer;
+			renderer.__allowSmoothing = smoothing;
+			renderer.__setBlendMode (blendMode);
 			
-			var renderSession = new RenderSession ();
-			renderSession.renderType = CANVAS;
-			// renderSession.lockTransform = true;
-			renderSession.clearRenderDirty = false;
-			renderSession.context = cast buffer.__srcContext;
-			renderSession.allowSmoothing = smoothing;
-			//renderSession.roundPixels = true;
-			renderSession.maskManager = new CanvasMaskManager (renderSession);
-			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
-			renderSession.blendModeManager.setBlendMode(blendMode);
-			
-			if (!smoothing) {
-				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = false;
-				
-			}
+			renderer.__worldTransform = transform;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = _colorTransform;
 			
 			if (clipRect != null) {
 				
-				renderSession.maskManager.pushRect (clipRect, new Matrix ());
+				renderer.__pushMaskRect (clipRect, clipMatrix);
 				
 			}
 			
-			var matrixCache = source.__worldTransform;
-			source.__updateTransforms (matrix);
-			source.__updateChildren (false);
-			source.__renderCanvas (renderSession);
-			source.__updateTransforms (matrixCache);
-			source.__updateChildren (true);
-			
-			if (!smoothing) {
-				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = true;
-				
-			}
+			#if (js && html5)
+			__drawCanvas (source, renderer);
+			#else
+			__drawCairo (source, renderer);
+			#end
 			
 			if (clipRect != null) {
 				
-				renderSession.maskManager.popRect ();
+				renderer.__popMaskRect ();
+				Matrix.__pool.release (clipMatrix);
 				
 			}
-			
-			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
-			buffer.__srcImageData = null;
-			buffer.data = null;
-			
-			image.dirty = true;
-			image.version++;
-			
-			#elseif lime_cairo
-			
-			if (source == this) {
-				
-				source = clone ();
-				
-			}
-			
-			if (colorTransform != null) {
-				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
-				
-			}
-			
-			var surface = getSurface ();
-			var cairo = new Cairo (surface);
-			
-			if (!smoothing) {
-				
-				cairo.antialias = NONE;
-				
-			}
-			
-			var renderSession = new RenderSession ();
-			renderSession.renderType = CAIRO;
-			// renderSession.lockTransform = true;
-			renderSession.clearRenderDirty = false;
-			renderSession.cairo = cairo;
-			renderSession.allowSmoothing = smoothing;
-			//renderSession.roundPixels = true;
-			renderSession.maskManager = new CairoMaskManager (renderSession);
-			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
-			renderSession.blendModeManager.setBlendMode(blendMode);
-			
-			if (clipRect != null) {
-				
-				renderSession.maskManager.pushRect (clipRect, new Matrix ());
-				
-			}
-			
-			var matrixCache = source.__worldTransform;
-			source.__updateTransforms (matrix);
-			source.__updateChildren (false);
-			source.__renderCairo (renderSession);
-			source.__updateTransforms (matrixCache);
-			source.__updateChildren (true);
-			
-			if (clipRect != null) {
-				
-				renderSession.maskManager.popRect ();
-				
-			}
-			
-			surface.flush ();
-			
-			image.dirty = true;
-			image.version++;
 			
 			#end
 			
 		}
+		
+		Matrix.__pool.release (transform);
 		
 	}
 	
@@ -724,45 +706,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
-		if (rect == null) return;
-		
-		if (transparent && (color & 0xFF000000) == 0) {
-			
-			color = 0;
-			
-		}
-		
-		if (readable) {
-			
-			image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
-			
-		} else if (__framebuffer != null) {
-			
-			var gl = GL.context;
-			var color:ARGB = (color:ARGB);
-			var useScissor = !this.rect.equals (rect);
-			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-			
-			if (useScissor) {
-				
-				gl.enable (gl.SCISSOR_TEST);
-				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
-				
-			}
-			
-			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
-			gl.clear (gl.COLOR_BUFFER_BIT);
-			
-			if (useScissor) {
-				
-				gl.disable (gl.SCISSOR_TEST);
-				
-			}
-			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
-			
-		}
+		__fillRect (rect, color, true);
 		
 	}
 	
@@ -777,18 +721,26 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromBase64 (base64:String, type:String):BitmapData {
 		
+		#if (js && html5)
+		return null;
+		#else
 		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromBase64 (base64, type);
 		return bitmapData;
+		#end
 		
 	}
 	
 	
 	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData {
 		
+		#if (js && html5)
+		return null;
+		#else
 		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromBytes (bytes, rawAlpha);
 		return bitmapData;
+		#end
 		
 	}
 	
@@ -809,9 +761,13 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromFile (path:String):BitmapData {
 		
+		#if (js && html5)
+		return null;
+		#else
 		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromFile (path);
 		return bitmapData;
+		#end
 		
 	}
 	
@@ -849,7 +805,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getBuffer (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):GLBuffer {
+	public function getBuffer (gl:GLRenderContext):GLBuffer {
 		
 		if (__buffer == null || __bufferContext != gl) {
 			
@@ -870,10 +826,14 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
+			__uvRect = new Rectangle (0, 0, newWidth, newHeight);
+			
 			var uvWidth = width / newWidth;
 			var uvHeight = height / newHeight;
 			
 			#else
+			
+			__uvRect = new Rectangle (0, 0, width, height);
 			
 			var uvWidth = 1;
 			var uvHeight = 1;
@@ -904,34 +864,27 @@ class BitmapData implements IBitmapDrawable {
 			__bufferData[__bufferStride * 2] = width;
 			__bufferData[__bufferStride * 2 + 3] = uvWidth;
 			
-			for (i in 0...4) {
+			// for (i in 0...4) {
 				
-				__bufferData[__bufferStride * i + 5] = alpha;
+			// 	__bufferData[__bufferStride * i + 5] = alpha;
 				
-				if (colorTransform != null) {
+			// 	if (colorTransform != null) {
 					
-					__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-					__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-					__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-					__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-					__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-					__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-					__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-					__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+			// 		__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+			// 		__bufferData[__bufferStride * i + 7] = colorTransform.greenMultiplier;
+			// 		__bufferData[__bufferStride * i + 8] = colorTransform.blueMultiplier;
+			// 		__bufferData[__bufferStride * i + 9] = colorTransform.alphaMultiplier;
+			// 		__bufferData[__bufferStride * i + 10] = colorTransform.redOffset / 255;
+			// 		__bufferData[__bufferStride * i + 11] = colorTransform.greenOffset / 255;
+			// 		__bufferData[__bufferStride * i + 12] = colorTransform.blueOffset / 255;
+			// 		__bufferData[__bufferStride * i + 13] = colorTransform.alphaOffset / 255;
 					
-				} else {
-					
-					__bufferData[__bufferStride * i + 6] = 1;
-					__bufferData[__bufferStride * i + 11] = 1;
-					__bufferData[__bufferStride * i + 16] = 1;
-					__bufferData[__bufferStride * i + 21] = 1;
-					
-				}
+			// 	}
 				
-			}
+			// }
 			
-			__bufferAlpha = alpha;
-			__bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+			// __bufferAlpha = alpha;
+			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
 			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
@@ -945,62 +898,73 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else {
 			
-			if (__bufferAlpha != alpha) {
-				
-				for (i in 0...4) {
-					
-					__bufferData[__bufferStride * i + 5] = alpha;
-					
-				}
-				
-				__bufferAlpha = alpha;
-				
-			}
+			// var dirty = false;
 			
-			if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+			// if (__bufferAlpha != alpha) {
 				
-				if (colorTransform != null) {
-					
-					if (__bufferColorTransform == null) {
-						__bufferColorTransform = colorTransform.__clone ();
-					} else {
-						__bufferColorTransform.__copyFrom (colorTransform);
-					}
-					
-					for (i in 0...4) {
-						
-						__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-						__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-						__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-						__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-						__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-						__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-						__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-						__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
-						
-					}
-					
-				} else {
-					
-					for (i in 0...4) {
-						
-						__bufferData[__bufferStride * i + 6] = 1;
-						__bufferData[__bufferStride * i + 11] = 1;
-						__bufferData[__bufferStride * i + 16] = 1;
-						__bufferData[__bufferStride * i + 21] = 1;
-						__bufferData[__bufferStride * i + 22] = 0;
-						__bufferData[__bufferStride * i + 23] = 0;
-						__bufferData[__bufferStride * i + 24] = 0;
-						__bufferData[__bufferStride * i + 25] = 0;
-						
-					}
-					
-				}
+			// 	dirty = true;
 				
-			}
+			// 	for (i in 0...4) {
+					
+			// 		__bufferData[__bufferStride * i + 5] = alpha;
+					
+			// 	}
+				
+			// 	__bufferAlpha = alpha;
+				
+			// }
+			
+			// if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+				
+			// 	dirty = true;
+				
+			// 	if (colorTransform != null) {
+					
+			// 		if (__bufferColorTransform == null) {
+			// 			__bufferColorTransform = colorTransform.__clone ();
+			// 		} else {
+			// 			__bufferColorTransform.__copyFrom (colorTransform);
+			// 		}
+					
+			// 		for (i in 0...4) {
+						
+			// 			__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
+			// 			__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
+			// 			__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
+			// 			__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
+			// 			__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
+			// 			__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
+			// 			__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
+			// 			__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+						
+			// 		}
+					
+			// 	} else {
+					
+			// 		for (i in 0...4) {
+						
+			// 			__bufferData[__bufferStride * i + 6] = 1;
+			// 			__bufferData[__bufferStride * i + 11] = 1;
+			// 			__bufferData[__bufferStride * i + 16] = 1;
+			// 			__bufferData[__bufferStride * i + 21] = 1;
+			// 			__bufferData[__bufferStride * i + 22] = 0;
+			// 			__bufferData[__bufferStride * i + 23] = 0;
+			// 			__bufferData[__bufferStride * i + 24] = 0;
+			// 			__bufferData[__bufferStride * i + 25] = 0;
+						
+			// 		}
+					
+			// 	}
+				
+			// }
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			
+			// if (dirty) {
+			
+			// 	gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			
+			// }
 			
 		}
 		
@@ -1060,7 +1024,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__surface == null) {
 			
-			
 			__surface = CairoImageSurface.fromImage (image);
 			
 		}
@@ -1092,7 +1055,7 @@ class BitmapData implements IBitmapDrawable {
 		ImageCanvasUtil.sync (image, false);
 		#end
 		
-		if (image != null && image.version != __textureVersion) {
+		if (image != null && image.version > __textureVersion) {
 			
 			var internalFormat, format;
 			
@@ -1262,13 +1225,13 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!readable) return false;
 		
-		#if !openfljs
+		// #if !openfljs
 		if (Std.is (secondObject, Bitmap)) {
 			
 			secondObject = cast (secondObject, Bitmap).__bitmapData;
 			
 		}
-		#end
+		// #end
 		
 		if (Std.is (secondObject, Point)) {
 			
@@ -1621,232 +1584,106 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
+	private function __drawCairo (source:IBitmapDrawable, renderer:CairoRenderer):Void {
 		
-		if (matrix == null) {
+		#if lime_cairo
+		
+		var cairo = renderer.cairo;
+		
+		if (source == this) {
 			
-			matrix = new Matrix ();
-			
-			if (source.__transform != null) {
-				
-				matrix.copyFrom (source.__transform);
-				matrix.tx = 0;
-				matrix.ty = 0;
-				
-			}
+			source = clone ();
 			
 		}
 		
-		if (!readable /*|| !source.readable*/) {
+		if (!renderer.__allowSmoothing) cairo.antialias = NONE;
+		
+		renderer.__render (source);
+		
+		if (!renderer.__allowSmoothing) cairo.antialias = GOOD;
+		
+		cairo.target.flush ();
+		
+		image.dirty = true;
+		image.version++;
+		
+		#end
+		
+	}
+	
+	
+	private function __drawCanvas (source:IBitmapDrawable, renderer:CanvasRenderer):Void {
+		
+		var buffer = image.buffer;
+		
+		if (!renderer.__allowSmoothing) renderer.applySmoothing (buffer.__srcContext, false);
+		
+		renderer.__render (source);
+		
+		if (!renderer.__allowSmoothing) renderer.applySmoothing (buffer.__srcContext, true);
+		
+		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
+		buffer.__srcImageData = null;
+		buffer.data = null;
+		
+		image.dirty = true;
+		image.version++;
+		
+	}
+	
+	
+	private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
+		
+		var gl = renderer.__gl;
+		
+		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
+		
+		renderer.__render (source);
+		
+		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		
+	}
+	
+	
+	private function __fillRect (rect:Rectangle, color:Int, allowFramebuffer:Bool):Void {
+		
+		if (rect == null) return;
+		
+		if (transparent && (color & 0xFF000000) == 0) {
 			
-			if (GL.context != null) {
+			color = 0;
+			
+		}
+		
+		if (allowFramebuffer && __framebuffer != null) {
+			
+			var gl = GL.context;
+			var color:ARGB = (color:ARGB);
+			var useScissor = !this.rect.equals (rect);
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			
+			if (useScissor) {
 				
-				var gl = GL.context;
-				
-				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
-				gl.viewport (0, 0, width, height);
-				
-				var renderer = new GLRenderer (null, gl, this);
-				
-				var renderSession = renderer.renderSession;
-				renderSession.clearRenderDirty = true;
-				renderSession.shaderManager = cast (null, GLRenderer).renderSession.shaderManager;
-				
-				var matrixCache = source.__worldTransform;
-				source.__updateTransforms (matrix);
-				source.__updateChildren (false);
-				source.__renderGL (renderer.renderSession);
-				source.__updateTransforms (matrixCache);
-				source.__updateChildren (true);
-				
-				gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+				gl.enable (gl.SCISSOR_TEST);
+				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
 				
 			}
 			
-		} else {
+			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
+			gl.clear (gl.COLOR_BUFFER_BIT);
 			
-			#if (js && html5)
-			
-			if (colorTransform != null) {
+			if (useScissor) {
 				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
+				gl.disable (gl.SCISSOR_TEST);
 				
 			}
 			
-			ImageCanvasUtil.convertToCanvas (image);
+			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 			
-			var buffer = image.buffer;
+		} else if (readable) {
 			
-			var renderSession = new RenderSession ();
-			renderSession.renderType = CANVAS;
-			// renderSession.lockTransform = true;
-			renderSession.clearRenderDirty = true;
-			renderSession.context = cast buffer.__srcContext;
-			renderSession.allowSmoothing = smoothing;
-			//renderSession.roundPixels = true;
-			renderSession.maskManager = new CanvasMaskManager (renderSession);
-			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
-			
-			if (!smoothing) {
-				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = false;
-				
-			}
-			
-			if (clipRect != null) {
-				
-				renderSession.maskManager.pushRect (clipRect, new Matrix ());
-				
-			}
-			
-			var matrixCache = source.__worldTransform;
-			source.__updateTransforms (matrix);
-			source.__updateChildren (false);
-			
-			var cacheRenderable = source.__renderable;
-			if (source.__isMask) {
-				
-				source.__renderable = true;
-				
-			}
-			
-			var cacheAlpha = source.__worldAlpha;
- 			source.__worldAlpha = 1;
- 			
-			source.__renderCanvas (renderSession);
-			source.__renderable = cacheRenderable;
-			source.__worldAlpha = cacheAlpha;
-			
-			source.__updateTransforms (matrixCache);
-			source.__updateChildren (true);
-			
-			if (!smoothing) {
-				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = true;
-				
-			}
-			
-			if (clipRect != null) {
-				
-				renderSession.maskManager.popRect ();
-				
-			}
-			
-			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
-			buffer.__srcImageData = null;
-			buffer.data = null;
-			
-			image.dirty = true;
-			image.version++;
-			
-			#elseif lime_cairo
-			
-			if (source == this) {
-				
-				source = clone ();
-				
-			}
-			
-			if (colorTransform != null) {
-				
-				var bounds = Rectangle.__pool.get ();
-				var boundsMatrix = Matrix.__pool.get ();
-				
-				source.__getBounds (bounds, boundsMatrix);
-				
-				var width:Int = Math.ceil (bounds.width);
-				var height:Int = Math.ceil (bounds.height);
-				
-				var copy = new BitmapData (width, height, true, 0);
-				copy.draw (source);
-				copy.colorTransform (copy.rect, colorTransform);
-				source = copy;
-				
-				Rectangle.__pool.release (bounds);
-				Matrix.__pool.release (boundsMatrix);
-				
-			}
-			
-			var surface = getSurface ();
-			var cairo = new Cairo (surface);
-			
-			if (!smoothing) {
-				
-				cairo.antialias = NONE;
-				
-			}
-			
-			var renderSession = new RenderSession ();
-			renderSession.renderType = CAIRO;
-			// renderSession.lockTransform = true;
-			renderSession.clearRenderDirty = true;
-			renderSession.cairo = cairo;
-			renderSession.allowSmoothing = smoothing;
-			//renderSession.roundPixels = true;
-			renderSession.maskManager = new CairoMaskManager (renderSession);
-			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
-			
-			if (clipRect != null) {
-				
-				renderSession.maskManager.pushRect (clipRect, new Matrix ());
-				
-			}
-			
-			var matrixCache = source.__worldTransform;
-			source.__updateTransforms (matrix);
-			source.__updateChildren (false);
-			
-			// TODO: Force renderable using render session?
-			
-			var cacheRenderable = source.__renderable;
-			if (source.__isMask) {
-				
-				source.__renderable = true;
-				
-			}
-			
-			var cacheAlpha = source.__worldAlpha;
- 			source.__worldAlpha = 1;
- 			
-			source.__renderCairo (renderSession);
-			source.__renderable = cacheRenderable;
-			source.__worldAlpha = cacheAlpha;
-			
-			source.__updateTransforms (matrixCache);
-			source.__updateChildren (true);
-			
-			if (clipRect != null) {
-				
-				renderSession.maskManager.popRect ();
-				
-			}
-			
-			surface.flush ();
-			
-			image.dirty = true;
-			image.version++;
-			
-			#end
+			image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
 			
 		}
 		
@@ -1928,6 +1765,12 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
 			
+			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
+				
+				trace (gl.getError ());
+				
+			}
+			
 		}
 		
 		return __framebuffer;
@@ -1978,29 +1821,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __renderCairo (renderSession:RenderSession):Void {
+	private function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		if (!readable) return;
 		
-		var cairo = renderSession.cairo;
+		var cairo = renderer.cairo;
 		
-		if (__worldTransform == null) __worldTransform = new Matrix ();
-		
-		var transform = __worldTransform;
-		
-		if (renderSession.roundPixels) {
-			
-			var matrix = transform.__toMatrix3 ();
-			matrix.tx = Math.round (matrix.tx);
-			matrix.ty = Math.round (matrix.ty);
-			cairo.matrix = matrix;
-			
-		} else {
-			
-			cairo.matrix = transform.__toMatrix3 ();
-			
-		}
+		renderer.applyMatrix (__renderTransform, cairo);
 		
 		var surface = getSurface ();
 		
@@ -2008,7 +1836,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var pattern = CairoPattern.createForSurface (surface);
 			
-			if (!renderSession.allowSmoothing || cairo.antialias == NONE) {
+			if (!renderer.__allowSmoothing || cairo.antialias == NONE) {
 				
 				pattern.filter = CairoFilter.NEAREST;
 				
@@ -2027,14 +1855,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __renderCairoMask (renderSession:RenderSession):Void {
+	private function __renderCairoMask (renderer:CairoRenderer):Void {
 		
 		
 		
 	}
 	
 	
-	private function __renderCanvas (renderSession:RenderSession):Void {
+	private function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
 		if (!readable) return;
@@ -2045,55 +1873,50 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		var context = renderSession.context;
-		
-		if (__worldTransform == null) __worldTransform = new Matrix ();
-		
+		var context = renderer.context;
 		context.globalAlpha = 1;
-		var transform = __worldTransform;
 		
-		if (renderSession.roundPixels) {
-			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-			
-		} else {
-			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-			
-		}
+		renderer.setTransform (__renderTransform, context);
 		
-		context.drawImage (image.src, 0, 0);
+		context.drawImage (image.src, 0, 0, image.width, image.height);
 		#end
 		
 	}
 	
 	
-	private function __renderCanvasMask (renderSession:RenderSession):Void {
+	private function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
 		
 		
 	}
 	
 	
-	private function __renderGL (renderSession:RenderSession):Void {
+	private function __renderDOM (renderer:DOMRenderer):Void {
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		var gl = renderSession.gl;
 		
-		renderSession.blendModeManager.setBlendMode (NORMAL);
 		
-		var shader = renderSession.shaderManager.defaultShader;
+	}
+	
+	
+	private function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		shader.data.uImage0.input = this;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
-		shader.data.uMatrix.value = renderer.getMatrix (__worldTransform);
+		var gl = renderer.__gl;
 		
-		renderSession.shaderManager.setShader (shader);
+		renderer.__setBlendMode (NORMAL);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl, 1, __worldColorTransform));
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		var shader = renderer.__defaultDisplayShader;
+		renderer.setShader (shader);
+		renderer.applyBitmapData (this, renderer.__allowSmoothing && (renderer.__upscaled));
+		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
+		renderer.applyAlpha (__worldAlpha);
+		renderer.applyColorTransform (__worldColorTransform);
+		renderer.updateShader ();
+		
+		// alpha == 1, __worldColorTransform
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl));
+		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+		if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
@@ -2101,31 +1924,32 @@ class BitmapData implements IBitmapDrawable {
 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
 		#end
 		
+		renderer.__clearShader ();
+		
 	}
 	
 	
-	private function __renderGLMask (renderSession:RenderSession):Void {
+	private function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
-		var shader = GLMaskManager.maskShader;
+		var shader = renderer.__maskShader;
+		renderer.setShader (shader);
+		renderer.applyBitmapData (this, renderer.__allowSmoothing && (renderer.__upscaled));
+		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
+		renderer.updateShader ();
 		
-		shader.data.uImage0.input = this;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
-		shader.data.uMatrix.value = renderer.getMatrix (__worldTransform);
-		
-		renderSession.shaderManager.setShader (shader);
-		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl, 1, __worldColorTransform));
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl));
+		gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
 		#if gl_stats
 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
 		#end
+		
+		renderer.__clearShader ();
 		
 	}
 	
@@ -2140,6 +1964,44 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	private function __setUVRect (gl:GLRenderContext, x:Float, y:Float, width:Float, height:Float):Void {
+		
+		var buffer = getBuffer (gl);
+		
+		if (buffer != null && (width != __uvRect.width || height != __uvRect.height || x != __uvRect.x || y != __uvRect.y)) {
+			
+			if (__uvRect == null) __uvRect = new Rectangle ();
+			__uvRect.setTo (x, y, width, height);
+			
+			var uvX = x / this.width;
+			var uvY = y / this.height;
+			var uvWidth = width / this.width;
+			var uvHeight = height / this.height;
+			
+			__bufferData[0] = width;
+			__bufferData[1] = height;
+			__bufferData[3] = uvX + uvWidth;
+			__bufferData[4] = uvY + uvHeight;
+			__bufferData[__bufferStride + 1] = height;
+			__bufferData[__bufferStride + 3] = uvX;
+			__bufferData[__bufferStride + 4] = uvY + uvHeight;
+			__bufferData[__bufferStride * 2] = width;
+			__bufferData[__bufferStride * 2 + 3] = uvX + uvWidth;
+			__bufferData[__bufferStride * 2 + 4] = uvY;
+			__bufferData[__bufferStride * 3 + 3] = uvX;
+			__bufferData[__bufferStride * 3 + 4] = uvY;
+			
+			#if (js && html5)
+			(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			#else
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			#end
+			
+		}
+		
+	}
+	
+	
 	private function __sync ():Void {
 		
 		#if (js && html5)
@@ -2149,21 +2011,28 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function __updateChildren (transformOnly:Bool):Void {
+	private function __update (transformOnly:Bool, updateChildren:Bool):Void {
+		
+		__updateTransforms ();
+		
+	}
+	
+	
+	private function __updateChildren (transformOnly:Bool):Void {
 		
 		
 		
 	}
 	
 	
-	public function __updateMask (maskGraphics:Graphics):Void {
+	private function __updateMask (maskGraphics:Graphics):Void {
 		
 		
 		
 	}
 	
 	
-	public function __updateTransforms (overrideTransform:Matrix = null):Void {
+	private function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		if (overrideTransform == null) {
 			
@@ -2171,9 +2040,11 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else {
 			
-			__worldTransform = overrideTransform;
+			__worldTransform.copyFrom (overrideTransform);
 			
 		}
+		
+		__renderTransform.copyFrom (__worldTransform);
 		
 	}
 	

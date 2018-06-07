@@ -1,8 +1,8 @@
 package openfl._internal.renderer.dom;
 
 
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
+import openfl.display.DOMRenderer;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
@@ -27,12 +27,12 @@ class DOMTextField {
 	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
 	
 	
-	public static function clear (textField:TextField, renderSession:RenderSession):Void {
+	public static function clear (textField:TextField, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (textField.__div != null) {
 			
-			renderSession.element.removeChild (textField.__div);
+			renderer.element.removeChild (textField.__div);
 			textField.__div = null;
 			textField.__style = null;
 			
@@ -85,7 +85,7 @@ class DOMTextField {
 	}
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
+	public static inline function render (textField:TextField, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		
@@ -100,7 +100,7 @@ class DOMTextField {
 					if (textField.__div == null) {
 						
 						textField.__div = cast Browser.document.createElement ("div");
-						DOMRenderer.initializeElement (textField, textField.__div, renderSession);
+						renderer.__initializeElement (textField, textField.__div);
 						textField.__style.setProperty ("outline", "none", null);
 						
 						textField.__div.addEventListener ("input", function (event) {
@@ -216,8 +216,8 @@ class DOMTextField {
 						
 					#end
 						
-						w = Math.ceil(w * scale);
-						h = Math.ceil(h * scale);
+						w = Math.ceil (w * scale);
+						h = Math.ceil (h * scale);
 						
 					}
 					
@@ -336,7 +336,7 @@ class DOMTextField {
 					
 					if (textField.__div != null) {
 						
-						renderSession.element.removeChild (textField.__div);
+						renderer.element.removeChild (textField.__div);
 						textField.__div = null;
 						
 					}
@@ -350,19 +350,19 @@ class DOMTextField {
 				// force roundPixels = true for TextFields
 				// Chrome shows blurry text if coordinates are fractional
 				
-				var old = renderSession.roundPixels;
-				renderSession.roundPixels = true;
+				var old = renderer.__roundPixels;
+				renderer.__roundPixels = true;
 				
-				DOMRenderer.updateClip (textField, renderSession);
-				DOMRenderer.applyStyle (textField, renderSession, true, true, true);
+				renderer.__updateClip (textField);
+				renderer.__applyStyle (textField, true, true, true);
 				
-				renderSession.roundPixels = old;
+				renderer.__roundPixels = old;
 				
 			}
 			
 		} else {
 			
-			clear (textField, renderSession);
+			clear (textField, renderer);
 			
 		}
 		

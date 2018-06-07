@@ -108,7 +108,7 @@ extern class NetStream extends EventDispatcher {
 	@:require(flash10) public var nearNonce (default, never):String;
 	#end
 	
-	public var objectEncoding (default, never):UInt;
+	public var objectEncoding (default, never):ObjectEncoding;
 	
 	#if flash
 	@:require(flash10) public var peerStreams (default, never):Array<Dynamic>;
@@ -166,8 +166,9 @@ extern class NetStream extends EventDispatcher {
 	public function close ():Void;
 	
 	#if flash
-	@:require(flash11_2) public function dispose ():Void;
+	@:require(flash11_2)
 	#end
+	public function dispose ():Void;
 	
 	#if flash
 	@:require(flash10) public function onPeerConnect (subscriber:NetStream):Bool;
