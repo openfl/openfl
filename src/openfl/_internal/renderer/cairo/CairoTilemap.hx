@@ -41,7 +41,7 @@ class CairoTilemap {
 		
 		if (alpha <= 0) return;
 		
-		if (!tilemap.tileAlphaEnabled) {
+		if (!tilemap.tileBlendModeEnabled) {
 			
 			renderer.__setBlendMode (tilemap.__worldBlendMode);
 			
