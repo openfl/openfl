@@ -41,7 +41,12 @@ class CairoTilemap {
 		
 		if (alpha <= 0) return;
 		
-		renderer.__setBlendMode (tilemap.__worldBlendMode);
+		if (!tilemap.tileAlphaEnabled) {
+			
+			renderer.__setBlendMode (tilemap.__worldBlendMode);
+			
+		}
+		
 		renderer.__pushMaskObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
