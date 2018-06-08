@@ -1,6 +1,7 @@
 package openfl._internal.renderer.opengl;
 
 
+import flash.display.BlendMode;
 import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl.display.BitmapData;
@@ -44,6 +45,7 @@ class GLTilemap {
 	private static var cacheColorTransform:ColorTransform;
 	private static var currentBitmapData:BitmapData;
 	private static var currentShader:Shader;
+	private static var currentBlendMode:BlendMode;
 	private static var lastFlushedPosition:Int;
 	private static var lastUsedBitmapData:BitmapData;
 	private static var lastUsedShader:Shader;
@@ -300,7 +302,7 @@ class GLTilemap {
 	}
 	
 	
-	private static function flush (tilemap:Tilemap, renderer:OpenGLRenderer):Void {
+	private static function flush (tilemap:Tilemap, renderer:OpenGLRenderer, blendMode:BlendMode):Void {
 		
 		if (currentShader == null) {
 			
@@ -309,6 +311,8 @@ class GLTilemap {
 		}
 		
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
+			
+			renderer.__setBlendMode (blendMode);
 			
 			var gl:WebGLContext = renderer.__gl;
 			
@@ -421,7 +425,6 @@ class GLTilemap {
 		
 		var gl = renderer.__gl;
 		
-		renderer.__setBlendMode (tilemap.__worldBlendMode);
 		renderer.__pushMaskObject (tilemap);
 		// renderer.filterManager.pushObject (tilemap);
 		
@@ -429,8 +432,11 @@ class GLTilemap {
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		renderTileContainer (tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null);
-		flush (tilemap, renderer);
+		currentBlendMode = tilemap.__worldBlendMode;
+		// renderer.__setBlendMode (currentBlendMode);
+		
+		renderTileContainer (tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, stride, tilemap.__tileset, tilemap.__worldAlpha, null, currentBlendMode);
+		flush (tilemap, renderer, currentBlendMode);
 		
 		// renderer.filterManager.popObject (tilemap);
 		renderer.__popMaskRect ();
@@ -439,13 +445,16 @@ class GLTilemap {
 	}
 	
 	
-	private static function renderTileContainer (tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:Shader, stride:Int, defaultTileset:Tileset, worldAlpha:Float, cacheBitmapData:BitmapData):Void {
+	private static function renderTileContainer (tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:Shader, stride:Int, defaultTileset:Tileset, worldAlpha:Float, cacheBitmapData:BitmapData, blendMode:BlendMode):Void {
 		
 		var tiles = group.__tiles;
 		var length = group.__length;
 		
 		var tile, tileset, alpha, visible, id, tileData, tileRect, shader:Shader, bitmapData;
 		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, offset;
+		var tileBlendMode:BlendMode;
+		
+		currentBlendMode = blendMode;
 		
 		for (tile in tiles) {
 			
@@ -456,10 +465,11 @@ class GLTilemap {
 			if (!visible || alpha <= 0) continue;
 			
 			shader = tile.shader != null ? tile.shader : defaultShader;
+			tileBlendMode = (tile.__blendMode != null) ? tile.__blendMode : blendMode;
 			
 			if (tile.__length > 0) {
 				
-				renderTileContainer (tilemap, renderer, cast tile, shader, stride, tileset, alpha, cacheBitmapData);
+				renderTileContainer (tilemap, renderer, cast tile, shader, stride, tileset, alpha, cacheBitmapData, tileBlendMode);
 				
 			} else {
 				
@@ -482,19 +492,22 @@ class GLTilemap {
 					
 				}
 				
-				if ((shader != currentShader && currentShader != null) || (bitmapData != currentBitmapData && currentBitmapData != null)) {
+				if ((shader != currentShader && currentShader != null) || (bitmapData != currentBitmapData && currentBitmapData != null) || (blendMode != tileBlendMode)) {
 					
-					flush (tilemap, renderer);
+					flush (tilemap, renderer, currentBlendMode);
 					
 				}
 				
 				currentBitmapData = bitmapData;
 				currentShader = shader;
+				currentBlendMode = tileBlendMode;
 				bufferPosition += (stride * 6);
 				
 			}
 			
 		}
+		
+		currentBlendMode = blendMode; // put blend mode back (for nested tile containers)
 		
 	}
 	
