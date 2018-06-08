@@ -30,9 +30,14 @@ class CanvasTilemap {
 		
 		var context = renderer.context;
 		
+		var blendMode = null;
 		if (!tilemap.tileBlendModeEnabled) {
 			
 			renderer.__setBlendMode (tilemap.__worldBlendMode);
+			
+		} else {
+			
+			blendMode = tilemap.__worldBlendMode;
 			
 		}
 		
@@ -51,7 +56,6 @@ class CanvasTilemap {
 			
 		}
 		
-		var blendMode = null;
 		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap.tileBlendModeEnabled, blendMode, null, null, rect);
 		
 		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
