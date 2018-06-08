@@ -41,6 +41,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public var numTiles (get, never):Int;
 	public var tileAlphaEnabled:Bool;
 	public var tileColorTransformEnabled:Bool;
+	public var tileBlendModeEnabled:Bool;
 	public var tileset (get, set):Tileset;
 	
 	#if !flash
@@ -86,6 +87,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		tileAlphaEnabled = true;
 		tileColorTransformEnabled = true;
+		tileBlendModeEnabled = false;
 		
 		__group = new TileContainer ();
 		
