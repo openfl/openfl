@@ -7,6 +7,7 @@ import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display.CairoRenderer;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
@@ -47,7 +48,8 @@ class CairoTilemap {
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, null, null, null, rect, new Matrix3 ());
+		var blendMode:BlendMode = null;
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, blendMode, null, null, null, rect, new Matrix3 ());
 		
 		renderer.__popMaskRect ();
 		renderer.__popMaskObject (tilemap);
@@ -57,7 +59,7 @@ class CairoTilemap {
 	}
 	
 	
-	private static function renderTileContainer (group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
+	private static function renderTileContainer (group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
 		
 		var cairo = renderer.cairo;
 		var roundPixels = renderer.__roundPixels;
@@ -68,6 +70,8 @@ class CairoTilemap {
 		var length = group.__length;
 		
 		var tile, tileset, alpha, visible, id, tileData, tileRect, bitmapData;
+		
+		var tileBlendMode:BlendMode = defaultBlendMode;
 		
 		for (tile in tiles) {
 			
@@ -83,9 +87,17 @@ class CairoTilemap {
 			
 			if (!alphaEnabled) alpha = 1;
 			
+			tileBlendMode = null;
+			
+			if (blendModeEnabled) {
+				
+				tileBlendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+				
+			}
+			
 			if (tile.__length > 0) {
 				
-				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, surface, pattern, rect, matrix);
+				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, tileBlendMode, cacheBitmapData, surface, pattern, rect, matrix);
 				
 			} else {
 				
@@ -119,6 +131,12 @@ class CairoTilemap {
 					
 					cairo.source = pattern;
 					cacheBitmapData = bitmapData;
+					
+				}
+				
+				if (blendModeEnabled) {
+					
+					renderer.__setBlendMode (tileBlendMode);
 					
 				}
 				
