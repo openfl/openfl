@@ -30,7 +30,12 @@ class CanvasTilemap {
 		
 		var context = renderer.context;
 		
-		renderer.__setBlendMode (tilemap.__worldBlendMode);
+		if (!tilemap.tileBlendModeEnabled) {
+			
+			renderer.__setBlendMode (tilemap.__worldBlendMode);
+			
+		}
+		
 		renderer.__pushMaskObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
