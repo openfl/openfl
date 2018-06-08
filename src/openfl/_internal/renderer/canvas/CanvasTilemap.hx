@@ -3,6 +3,7 @@ package openfl._internal.renderer.canvas;
 
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display.CanvasRenderer;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
@@ -21,7 +22,6 @@ import openfl.geom.Rectangle;
 
 
 class CanvasTilemap {
-	
 	
 	public static inline function render (tilemap:Tilemap, renderer:CanvasRenderer):Void {
 		
@@ -46,7 +46,8 @@ class CanvasTilemap {
 			
 		}
 		
-		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, null, null, rect);
+		var blendMode = null;
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap.tileBlendModeEnabled, blendMode, null, null, rect);
 		
 		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
@@ -66,7 +67,7 @@ class CanvasTilemap {
 	}
 	
 	
-	private static function renderTileContainer (group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, cacheBitmapData:BitmapData, source:Dynamic, rect:Rectangle):Void {
+	private static function renderTileContainer (group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, source:Dynamic, rect:Rectangle):Void {
 		
 		#if (js && html5)
 		var context = renderer.context;
@@ -78,6 +79,8 @@ class CanvasTilemap {
 		var length = group.__length;
 		
 		var tile, tileset, alpha, visible, id, tileData, tileRect, bitmapData;
+		
+		var tileBlendMode:BlendMode = defaultBlendMode;
 		
 		for (i in 0...length) {
 			
@@ -102,9 +105,17 @@ class CanvasTilemap {
 			
 			if (!alphaEnabled) alpha = 1;
 			
+			tileBlendMode = null;
+			
+			if (blendModeEnabled) {
+				
+				tileBlendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+				
+			}
+			
 			if (tile.__length > 0) {
 				
-				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, cacheBitmapData, source, rect);
+				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, tileBlendMode, cacheBitmapData, source, rect);
 				
 			} else {
 				
@@ -144,6 +155,12 @@ class CanvasTilemap {
 				}
 				
 				context.globalAlpha = alpha;
+				
+				if (blendModeEnabled) {
+					
+					renderer.__setBlendMode (tileBlendMode);
+					
+				}
 				
 				renderer.setTransform (tileTransform, context);
 				context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
