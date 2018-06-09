@@ -1137,7 +1137,8 @@ class TextEngine {
 					
 					for (temp in tempPositions) {
 						
-						positions.push(temp);
+						if (temp.advance.x != 0)
+							positions.push(temp);
 						
 					}
 					
@@ -1188,7 +1189,9 @@ class TextEngine {
 				offsetX += widthValue;
 				
 			} else {
+			
 				// fill in all text from start to end, including any format changes
+				
 				while (true) {
 					
 					var tempRangeEnd = endIndex < formatRange.end ? endIndex : formatRange.end;
@@ -1527,14 +1530,13 @@ class TextEngine {
 						
 					} else {
 						
-						setFormattedPositions (endIndex);
-						
 						if (layoutGroup != null && textIndex == spaceIndex) {
+							
 							// TODO: does this case ever happen?
 							if (lineFormat.align != JUSTIFY) {
 								
 								layoutGroup.endIndex = spaceIndex;
-								layoutGroup.positions = layoutGroup.positions.concat (positions);
+								layoutGroup.positions = if (__textLayout.direction == LEFT_TO_RIGHT) layoutGroup.positions.concat (positions) else positions.concat (layoutGroup.positions);
 								layoutGroup.width += widthValue;
 								
 							}
@@ -1550,7 +1552,9 @@ class TextEngine {
 						} else {
 							
 							layoutGroup.endIndex = endIndex;
-							layoutGroup.positions = layoutGroup.positions.concat (positions);
+							// TODO: is this robust enough for bidirectional text?
+							// the concatenation order determines if words are strung together LTR or RTL
+							layoutGroup.positions = if (__textLayout.direction == LEFT_TO_RIGHT) layoutGroup.positions.concat (positions) else positions.concat (layoutGroup.positions);
 							layoutGroup.width += widthValue;
 							
 							// If next char is newline, process it immediately and prevent useless extra layout groups
