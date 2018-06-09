@@ -465,7 +465,7 @@ class GLTilemap {
 			
 			shader = tile.shader != null ? tile.shader : defaultShader;
 			
-			tileBlendMode = null;
+			tileBlendMode = defaultBlendMode;
 			
 			if (blendModeEnabled) {
 				
