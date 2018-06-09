@@ -1137,8 +1137,7 @@ class TextEngine {
 					
 					for (temp in tempPositions) {
 						
-						if (temp.advance.x != 0)
-							positions.push(temp);
+						positions.push(temp);
 						
 					}
 					
