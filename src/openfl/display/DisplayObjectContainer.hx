@@ -884,6 +884,107 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	
+	private override function __renderKha (renderer:KhaRenderer):Void {
+		
+		if (/*!__renderable ||*/ __worldAlpha <= 0) return;
+		
+		super.__renderKha (renderer);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
+		if (__children.length > 0) {
+			
+			renderer.maskManager.pushObject (this);
+			renderer.filterManager.pushObject (this);
+			
+			if (renderer.clearRenderDirty) {
+				
+				for (child in __children) {
+					
+					child.__renderKha (renderer);
+					child.__renderDirty = false;
+					
+				}
+				
+				__renderDirty = false;
+				
+			} else {
+				
+				for (child in __children) {
+					
+					child.__renderKha (renderer);
+					
+				}
+				
+			}
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
+		
+		__removedChildren.length = 0;
+		
+		if (__children.length > 0) {
+			
+			renderer.filterManager.popObject (this);
+			renderer.maskManager.popObject (this);
+			
+		}
+		
+	}
+	
+	
+	private override function __renderKhaMask (renderer:KhaRenderer):Void {
+		
+		super.__renderKhaMask (renderer);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		
+		if (renderSession.clearRenderDirty) {
+			
+			for (child in __children) {
+				
+				child.__renderKhaMask (renderer);
+				child.__renderDirty = false;
+				
+			}
+			
+			__renderDirty = false;
+			
+		} else {
+			
+			for (child in __children) {
+				
+				child.__renderKhaMask (renderer);
+				
+			}
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
+		
+		__removedChildren.length = 0;
+		
+	}
+	
+	
 	private override function __setStageReference (stage:Stage):Void {
 		
 		super.__setStageReference (stage);

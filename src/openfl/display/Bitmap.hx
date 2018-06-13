@@ -4,6 +4,7 @@ package openfl.display;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.kha.KhaBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -268,6 +269,40 @@ class Bitmap extends DisplayObject {
 	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
 		GLBitmap.renderMask (this, renderer);
+		
+	}
+	
+	
+	private override function __renderKha (renderer:KhaRenderer):Void {
+		
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			KhaBitmap.render (__cacheBitmap, renderer);
+			
+		} else {
+			
+			KhaBitmap.render (this, renderer);
+			
+		}
+		
+	}
+	
+	
+	private override function __renderKhaMask (renderer:KhaRenderer):Void {
+		
+		__updateCacheBitmap (renderSession, false);
+		
+		if (__cacheBitmap != null && !__cacheBitmapRender) {
+			
+			KhaBitmap.renderMask (__cacheBitmap, renderSession);
+			
+		} else {
+			
+			KhaBitmap.renderMask (this, renderSession);
+			
+		}
 		
 	}
 	

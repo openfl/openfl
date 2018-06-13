@@ -16,6 +16,7 @@ import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.kha.KhaTextField;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLTextField;
@@ -1505,6 +1506,15 @@ class TextField extends InteractiveObject {
 		GLTextField.render (this, renderer, __worldTransform);
 		
 		super.__renderGLMask (renderer);
+		
+	}
+	
+	
+	private override function __renderKha (renderer:KhaRenderer):Void {
+		
+		KhaTextField.render (this, renderer, __worldTransform);
+		
+		super.__renderKha (renderer);
 		
 	}
 	

@@ -10,6 +10,10 @@ import lime.utils.Log;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl.utils.ByteArray;
 
+#if (kha && !macro)
+import kha.graphics4.PipelineState;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -57,6 +61,10 @@ class Shader {
 	private var __textureCoord:ShaderParameter<Float>;
 	private var __texture:ShaderInput<BitmapData>;
 	private var __textureSize:ShaderParameter<Float>;
+	
+	#if (kha && !macro)
+	private var __pipeline:PipelineState;
+	#end
 	
 	
 	#if openfljs
@@ -307,6 +315,35 @@ class Shader {
 	
 	private function __init ():Void {
 		
+		#if (kha && !macro)
+
+		if (__pipeline == null) {
+
+			__pipeline = new kha.graphics4.PipelineState();
+			__pipeline.vertexShader = kha.Shaders.standard_vert;
+			__pipeline.fragmentShader = kha.Shaders.standard_frag;
+			__pipeline.blendSource = kha.graphics4.BlendingFactor.BlendOne;
+			__pipeline.blendDestination = kha.graphics4.BlendingFactor.InverseSourceAlpha;
+			__pipeline.alphaBlendSource = kha.graphics4.BlendingFactor.SourceAlpha;
+			__pipeline.alphaBlendDestination = kha.graphics4.BlendingFactor.InverseSourceAlpha;
+
+			var structure = new kha.graphics4.VertexStructure();
+			structure.add("aPosition", kha.graphics4.VertexData.Float2);
+			structure.add("aTexCoord", kha.graphics4.VertexData.Float2);
+			structure.add("aAlpha", kha.graphics4.VertexData.Float1);
+			structure.add("aColorMultipliers0", kha.graphics4.VertexData.Float4);
+			structure.add("aColorMultipliers1", kha.graphics4.VertexData.Float4);
+			structure.add("aColorMultipliers2", kha.graphics4.VertexData.Float4);
+			structure.add("aColorMultipliers3", kha.graphics4.VertexData.Float4);
+			structure.add("aColorOffsets", kha.graphics4.VertexData.Float4);
+			__pipeline.inputLayout = [structure];
+
+			__pipeline.compile();
+
+		}
+
+		#else
+		
 		if (__data == null) {
 			
 			__data = cast new ShaderData (null);
@@ -318,6 +355,8 @@ class Shader {
 			__initGL ();
 			
 		}
+		
+		#end
 		
 	}
 	

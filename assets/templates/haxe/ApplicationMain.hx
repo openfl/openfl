@@ -18,7 +18,18 @@ import haxe.macro.Expr;
 	#if !macro
 	
 	
+	#if kha
 	public static function main () {
+		
+		kha.System.init ({ title: "::title::", width: ::width::, height: ::height:: }, function () {
+			kha.Assets.loadEverything (main2);
+		});
+	}	
+	
+	public static function main2 () {
+	#else
+	public static function main () {
+	#end
 		
 		var projectName = "::APP_FILE::";
 		

@@ -1056,6 +1056,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		switch (window.renderer.context) {
 			
+			case KHA:
+				
+				#if kha
+				__renderer = new KhaRenderer (this);
+				#end
+			
 			case OPENGL (gl):
 				
 				#if (!disable_cffi && (!html5 || !canvas))
