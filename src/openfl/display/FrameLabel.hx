@@ -3,6 +3,11 @@ package openfl.display;
 
 import openfl.events.EventDispatcher;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class FrameLabel extends EventDispatcher {
 	

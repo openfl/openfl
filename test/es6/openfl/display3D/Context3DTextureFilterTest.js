@@ -7,7 +7,7 @@ describe ("ES6 | Context3DTextureFilter", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DTextureFilter.ANISOTROPIC16X) {
+		switch (""+Context3DTextureFilter.ANISOTROPIC16X) {
 			
 			case Context3DTextureFilter.ANISOTROPIC16X:
 			case Context3DTextureFilter.ANISOTROPIC2X:

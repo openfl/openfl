@@ -3,8 +3,8 @@ package openfl._internal.renderer.dom;
 
 import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.display.DOMRenderer;
 
 #if (js && html5)
 import js.Browser;
@@ -18,12 +18,12 @@ import js.Browser;
 class DOMBitmap {
 	
 	
-	public static function clear (bitmap:Bitmap, renderSession:RenderSession):Void {
+	public static function clear (bitmap:Bitmap, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (bitmap.__image != null) {
 			
-			renderSession.element.removeChild (bitmap.__image);
+			renderer.element.removeChild (bitmap.__image);
 			bitmap.__image = null;
 			bitmap.__style = null;
 			
@@ -31,7 +31,7 @@ class DOMBitmap {
 		
 		if (bitmap.__canvas != null) {
 			
-			renderSession.element.removeChild (bitmap.__canvas);
+			renderer.element.removeChild (bitmap.__canvas);
 			bitmap.__canvas = null;
 			bitmap.__style = null;
 			
@@ -41,28 +41,28 @@ class DOMBitmap {
 	}
 	
 	
-	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
+	public static inline function render (bitmap:Bitmap, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable) {
 			
-			renderSession.maskManager.pushObject (bitmap);
+			renderer.__pushMaskObject (bitmap);
 			
 			if (bitmap.__bitmapData.image.buffer.__srcImage != null) {
 				
-				renderImage (bitmap, renderSession);
+				renderImage (bitmap, renderer);
 				
 			} else {
 				
-				renderCanvas (bitmap, renderSession);
+				renderCanvas (bitmap, renderer);
 				
 			}
 			
-			renderSession.maskManager.popObject (bitmap);
+			renderer.__popMaskObject (bitmap);
 			
 		} else {
 			
-			clear (bitmap, renderSession);
+			clear (bitmap, renderer);
 			
 		}
 		#end
@@ -70,12 +70,12 @@ class DOMBitmap {
 	}
 	
 	
-	private static function renderCanvas (bitmap:Bitmap, renderSession:RenderSession):Void {
+	private static function renderCanvas (bitmap:Bitmap, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (bitmap.__image != null) {
 			
-			renderSession.element.removeChild (bitmap.__image);
+			renderer.element.removeChild (bitmap.__image);
 			bitmap.__image = null;
 			
 		}
@@ -86,7 +86,7 @@ class DOMBitmap {
 			bitmap.__context = bitmap.__canvas.getContext ("2d");
 			bitmap.__imageVersion = -1;
 			
-			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
+			if (!renderer.__allowSmoothing || !bitmap.smoothing) {
 				
 				untyped (bitmap.__context).mozImageSmoothingEnabled = false;
 				//untyped (bitmap.__context).webkitImageSmoothingEnabled = false;
@@ -95,7 +95,7 @@ class DOMBitmap {
 				
 			}
 			
-			DOMRenderer.initializeElement (bitmap, bitmap.__canvas, renderSession);
+			renderer.__initializeElement (bitmap, bitmap.__canvas);
 			
 		}
 		
@@ -114,19 +114,19 @@ class DOMBitmap {
 			
 		}
 		
-		DOMRenderer.updateClip (bitmap, renderSession);
-		DOMRenderer.applyStyle (bitmap, renderSession, true, true, true);
+		renderer.__updateClip (bitmap);
+		renderer.__applyStyle (bitmap, true, true, true);
 		#end
 		
 	}
 	
 	
-	private static function renderImage (bitmap:Bitmap, renderSession:RenderSession):Void {
+	private static function renderImage (bitmap:Bitmap, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (bitmap.__canvas != null) {
 			
-			renderSession.element.removeChild (bitmap.__canvas);
+			renderer.element.removeChild (bitmap.__canvas);
 			bitmap.__canvas = null;
 			
 		}
@@ -136,12 +136,12 @@ class DOMBitmap {
 			bitmap.__image = cast Browser.document.createElement ("img");
 			bitmap.__image.crossOrigin = "Anonymous";
 			bitmap.__image.src = bitmap.__bitmapData.image.buffer.__srcImage.src;
-			DOMRenderer.initializeElement (bitmap, bitmap.__image, renderSession);
+			renderer.__initializeElement (bitmap, bitmap.__image);
 			
 		}
 		
-		DOMRenderer.updateClip (bitmap, renderSession);
-		DOMRenderer.applyStyle (bitmap, renderSession, true, true, true);
+		renderer.__updateClip (bitmap);
+		renderer.__applyStyle (bitmap, true, true, true);
 		#end
 		
 	}

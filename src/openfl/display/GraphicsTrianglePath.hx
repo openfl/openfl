@@ -4,6 +4,11 @@ package openfl.display;
 import openfl.display.IGraphicsData;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class GraphicsTrianglePath implements IGraphicsData implements IGraphicsPath {
 	

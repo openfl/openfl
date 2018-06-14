@@ -7,7 +7,7 @@ describe ("TypeScript | AntiAliasType", function () {
 	
 	it ("test", function () {
 		
-		switch (+AntiAliasType.ADVANCED) {
+		switch (""+AntiAliasType.ADVANCED) {
 			
 			case AntiAliasType.ADVANCED:
 			case AntiAliasType.NORMAL:

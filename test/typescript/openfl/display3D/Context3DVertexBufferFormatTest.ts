@@ -7,7 +7,7 @@ describe ("TypeScript | Context3DVertexBuffer", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DVertexBufferFormat.BYTES_4) {
+		switch (""+Context3DVertexBufferFormat.BYTES_4) {
 			
 			case Context3DVertexBufferFormat.BYTES_4:
 			case Context3DVertexBufferFormat.FLOAT_1:

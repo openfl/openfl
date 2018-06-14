@@ -2,12 +2,17 @@ package openfl.filters;
 
 
 import lime.graphics.utils.ImageDataUtil;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
@@ -16,7 +21,7 @@ import openfl.geom.Rectangle;
 @:final class GlowFilter extends BitmapFilter {
 	
 	
-	//private static var __glowShader = new GlowShader ();
+	private static var __glowShader = new GlowShader ();
 	
 	public var alpha (get, set):Float;
 	public var blurX (get, set):Float;
@@ -101,32 +106,30 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
-		// var data = __glowShader.data;
-		
-		// if (pass <= horizontalPasses) {
+		#if !macro
+		if (pass <= __horizontalPasses) {
 			
-		// 	var scale = Math.pow (0.5, pass >> 1);
-		// 	data.uRadius.value[0] = blurX * scale;
-		// 	data.uRadius.value[1] = 0;
+			var scale = Math.pow (0.5, pass >> 1);
+			__glowShader.uRadius.value[0] = blurX * scale;
+			__glowShader.uRadius.value[1] = 0;
 			
-		// } else {
+		} else {
 			
-		// 	var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
-		// 	data.uRadius.value[0] = 0;
-		// 	data.uRadius.value[1] = blurY * scale;
+			var scale = Math.pow (0.5, (pass - __horizontalPasses) >> 1);
+			__glowShader.uRadius.value[0] = 0;
+			__glowShader.uRadius.value[1] = blurY * scale;
 			
-		// }
+		}
 		
-		// data.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-		// data.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-		// data.uColor.value[2] = (color & 0xFF) / 255;
-		// data.uColor.value[3] = alpha;
+		__glowShader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+		__glowShader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+		__glowShader.uColor.value[2] = (color & 0xFF) / 255;
+		__glowShader.uColor.value[3] = alpha;
+		#end
 		
-		// return __glowShader;
-		
-		return null;
+		return __glowShader;
 		
 	}
 	
@@ -165,7 +168,7 @@ import openfl.geom.Rectangle;
 		if (value != __blurX) {
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__leftExtension = (value > 0 ? Math.ceil (value * 1.5) : 0);
 			__rightExtension = __leftExtension;
 		}
 		return value;
@@ -185,7 +188,7 @@ import openfl.geom.Rectangle;
 		if (value != __blurY) {
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil (value) : 0);
+			__topExtension = (value > 0 ? Math.ceil (value * 1.5) : 0);
 			__bottomExtension = __topExtension;
 		}
 		return value;
@@ -284,14 +287,12 @@ import openfl.geom.Rectangle;
 #end
 
 
-private class GlowShader extends Shader {
+private class GlowShader extends BitmapFilterShader {
 	
 	
 	@:glFragmentSource( 
 		
-		"varying float vAlpha;
-		varying vec2 vTexCoord;
-		uniform sampler2D uImage0;
+		"uniform sampler2D openfl_Texture;
 		
 		uniform vec4 uColor;
 		
@@ -300,13 +301,13 @@ private class GlowShader extends Shader {
 		void main(void) {
 			
 			float a = 0.0;
-			a += texture2D(uImage0, vBlurCoords[0]).a * 0.00443;
-			a += texture2D(uImage0, vBlurCoords[1]).a * 0.05399;
-			a += texture2D(uImage0, vBlurCoords[2]).a * 0.24197;
-			a += texture2D(uImage0, vBlurCoords[3]).a * 0.39894;
-			a += texture2D(uImage0, vBlurCoords[4]).a * 0.24197;
-			a += texture2D(uImage0, vBlurCoords[5]).a * 0.05399;
-			a += texture2D(uImage0, vBlurCoords[6]).a * 0.00443;
+			a += texture2D(openfl_Texture, vBlurCoords[0]).a * 0.00443;
+			a += texture2D(openfl_Texture, vBlurCoords[1]).a * 0.05399;
+			a += texture2D(openfl_Texture, vBlurCoords[2]).a * 0.24197;
+			a += texture2D(openfl_Texture, vBlurCoords[3]).a * 0.39894;
+			a += texture2D(openfl_Texture, vBlurCoords[4]).a * 0.24197;
+			a += texture2D(openfl_Texture, vBlurCoords[5]).a * 0.05399;
+			a += texture2D(openfl_Texture, vBlurCoords[6]).a * 0.00443;
 			a *= uColor.a;
 			
 			gl_FragColor = vec4(uColor.rgb * a, a);
@@ -318,32 +319,27 @@ private class GlowShader extends Shader {
 	
 	@:glVertexSource(
 		
-		"attribute float aAlpha;
-		attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
-		varying float vAlpha;
-		varying vec2 vTexCoord;
+		"attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
 		
-		uniform mat4 uMatrix;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
 		
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
-		uniform vec2 uTextureSize;
 		
 		void main(void) {
 			
-			vAlpha = aAlpha;
-			vTexCoord = aTexCoord;
-			gl_Position = uMatrix * aPosition;
+			gl_Position = openfl_Matrix * openfl_Position;
 			
-			vec2 r = uRadius / uTextureSize;
-			vBlurCoords[0] = aTexCoord - r * 1.0;
-			vBlurCoords[1] = aTexCoord - r * 0.75;
-			vBlurCoords[2] = aTexCoord - r * 0.5;
-			vBlurCoords[3] = aTexCoord;
-			vBlurCoords[4] = aTexCoord + r * 0.5;
-			vBlurCoords[5] = aTexCoord + r * 0.75;
-			vBlurCoords[6] = aTexCoord + r * 1.0;
+			vec2 r = uRadius / openfl_TextureSize;
+			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
+			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TextureCoord;
+			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
 			
 		}"
 		
@@ -355,18 +351,9 @@ private class GlowShader extends Shader {
 		super ();
 		
 		#if !macro
-		data.uRadius.value = [ 0, 0 ];
-		data.uColor.value = [ 0, 0, 0, 0 ];
+		uRadius.value = [ 0, 0 ];
+		uColor.value = [ 0, 0, 0, 0 ];
 		#end
-		
-	}
-	
-	
-	private override function __update ():Void {
-		
-		data.uTextureSize.value = [ data.uImage0.input.width, data.uImage0.input.height ];
-		
-		super.__update ();
 		
 	}
 	

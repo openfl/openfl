@@ -244,7 +244,7 @@ class VectorTest {
 			
 		}
 		
-		Assert.areNotSame (vector, vector2);
+		Assert.areNotEqual (vector, vector2);
 		
 		var vector2 = vector.slice (2);
 		

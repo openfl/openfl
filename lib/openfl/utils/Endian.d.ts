@@ -16,8 +16,8 @@ declare namespace openfl.utils {
 	 */
 	export enum Endian {
 		
-		BIG_ENDIAN = 0,
-		LITTLE_ENDIAN = 1
+		BIG_ENDIAN = "bigEndian",
+		LITTLE_ENDIAN = "littleEndian"
 		
 	}
 	

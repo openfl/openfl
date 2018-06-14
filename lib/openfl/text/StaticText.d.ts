@@ -9,7 +9,7 @@ declare namespace openfl.text {
 	
 		public readonly text:string;
 		
-		// private constructor ();
+		// protected constructor ();
 		
 		
 	}

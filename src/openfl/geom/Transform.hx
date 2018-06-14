@@ -73,13 +73,6 @@ class Transform {
 		if (!__colorTransform.__equals (value)) {
 			
 			__colorTransform.__copyFrom (value);
-			
-			if (value != null) {
-				
-				__displayObject.alpha = value.alphaMultiplier;
-				
-			}
-			
 			__displayObject.__setRenderDirty ();
 			
 		}

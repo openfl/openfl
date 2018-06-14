@@ -9,17 +9,17 @@ declare namespace openfl.display {
 		/**
 		 * Specifies that the Stage is in full-screen mode.
 		 */
-		FULL_SCREEN = 0,
+		FULL_SCREEN = "fullScreen",
 		
 		/**
 		 * Specifies that the Stage is in full-screen mode with keyboard interactivity enabled.
 		 */
-		FULL_SCREEN_INTERACTIVE = 1,
+		FULL_SCREEN_INTERACTIVE = "fullScreenInteractive",
 		
 		/**
 		 * Specifies that the Stage is in normal mode.
 		 */
-		NORMAL = 2
+		NORMAL = "normal"
 		
 	}
 	

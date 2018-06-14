@@ -5,6 +5,7 @@ import Matrix from "./../geom/Matrix";
 import Point from "./../geom/Point";
 import Rectangle from "./../geom/Rectangle";
 import ByteArray from "./../utils/ByteArray";
+import Vector from "./../Vector";
 import Bitmap from "./Bitmap";
 import BitmapDataChannel from "./BitmapDataChannel";
 import BlendMode from "./BlendMode";
@@ -12,7 +13,6 @@ import IBitmapDrawable from "./IBitmapDrawable";
 import StageQuality from "./StageQuality";
 
 type Image = any;
-type Vector<T> = any;
 
 
 declare namespace openfl.display {

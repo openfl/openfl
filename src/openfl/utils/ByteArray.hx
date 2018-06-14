@@ -3,7 +3,12 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import haxe.io.BytesInput;
+import haxe.io.BytesOutput;
 import haxe.io.FPHelper;
+import haxe.Json;
+import haxe.Serializer;
+import haxe.Unserializer;
 import lime.app.Future;
 import lime.system.System;
 import lime.utils.compress.Deflate;
@@ -14,16 +19,26 @@ import lime.utils.BytePointer;
 import lime.utils.Bytes in LimeBytes;
 import lime.utils.DataPointer;
 import openfl.errors.EOFError;
+import openfl.net.ObjectEncoding;
+
+#if format
+import format.amf.Reader in AMFReader;
+import format.amf.Tools in AMFTools;
+import format.amf.Writer in AMFWriter;
+import format.amf3.Reader in AMF3Reader;
+import format.amf3.Tools in AMF3Tools;
+import format.amf3.Writer in AMF3Writer;
+#end
 
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
-@:forward(bytesAvailable, endian, objectEncoding, position, clear, compress, deflate, inflate, readBoolean, readByte, readBytes, readDouble, readFloat, readInt, readMultiByte, readShort, readUnsignedByte, readUnsignedInt, readUnsignedShort, readUTF, readUTFBytes, toString, uncompress, writeBoolean, writeByte, writeBytes, writeDouble, writeFloat, writeInt, writeMultiByte, writeShort, writeUnsignedInt, writeUTF, writeUTFBytes)
+@:forward(bytesAvailable, endian, objectEncoding, position, clear, compress, deflate, inflate, readBoolean, readByte, readBytes, readDouble, readFloat, readInt, readMultiByte, readObject, readShort, readUnsignedByte, readUnsignedInt, readUnsignedShort, readUTF, readUTFBytes, toString, uncompress, writeBoolean, writeByte, writeBytes, writeDouble, writeFloat, writeInt, writeMultiByte, writeObject, writeShort, writeUnsignedInt, writeUTF, writeUTFBytes)
 
 
 abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
-	public static var defaultObjectEncoding:UInt;
+	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 	
 	private static var __bytePointer = new BytePointer ();
 	
@@ -289,7 +304,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
-// TODO: Export as "ByteArray" in OpenFL-JS
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 
@@ -300,7 +318,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public var bytesAvailable (get, never):UInt;
 	public var endian (get, set):Endian;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	public var position:Int;
 	
 	private var __endian:Endian;
@@ -332,7 +350,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		#end
 		
-		#if js
+		#if hl
+		super (bytes.getData (), length);
+		#elseif js
 		super (bytes.b.buffer);
 		#else
 		super (length, bytes.getData ());
@@ -496,14 +516,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		var ch1 = readInt ();
-		var ch2 = readInt ();
-		
 		if (endian == LITTLE_ENDIAN) {
 			
-			return FPHelper.i64ToDouble (ch1, ch2);
+			if (position + 8 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 8;
+			return getDouble (position - 8);
 			
 		} else {
+			
+			var ch1 = readInt ();
+			var ch2 = readInt ();
 			
 			return FPHelper.i64ToDouble (ch2, ch1);
 			
@@ -514,7 +542,23 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readFloat ():Float {
 		
-		return FPHelper.i32ToFloat (readInt ());
+		if (endian == LITTLE_ENDIAN) {
+			
+			if (position + 4 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 4;
+			return getFloat (position - 4);
+			
+		} else {
+			
+			return FPHelper.i32ToFloat (readInt ());
+			
+		}
 		
 	}
 	
@@ -542,6 +586,48 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function readMultiByte (length:Int, charSet:String):String {
 		
 		return readUTFBytes (length);
+		
+	}
+	
+	
+	public function readObject ():Dynamic {
+		
+		switch (objectEncoding) {
+			
+			#if format
+			case AMF0:
+				
+				var input = new BytesInput (this, position);
+				var reader = new AMFReader (input);
+				var data = reader.read ();
+				position = input.position;
+				return data;
+			
+			case AMF3:
+				
+				var input = new BytesInput (this, position);
+				var reader = new AMF3Reader (input);
+				var data = reader.read ();
+				position = input.position;
+				return data;
+				
+			#end
+			
+			case HXSF:
+				
+				var data = readUTF ();
+				return Unserializer.run (data);
+			
+			case JSON:
+				
+				var data = readUTF ();
+				return Json.parse (data);
+			
+			default:
+				
+				return null;
+			
+		}
 		
 	}
 	
@@ -647,7 +733,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		
 		position += length;
-		
 		
 		return getString (position - length, length);
 		
@@ -789,6 +874,48 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeMultiByte (value:String, charSet:String):Void {
 		
 		writeUTFBytes (value);
+		
+	}
+	
+	
+	public function writeObject (object:Dynamic):Void {
+		
+		switch (objectEncoding) {
+			
+			#if format
+			case AMF0:
+				
+				var value = AMFTools.encode (object);
+				var output = new BytesOutput ();
+				var writer = new AMFWriter (output);
+				writer.write (value);
+				writeBytes (output.getBytes ());
+			
+			case AMF3:
+				
+				var value = AMF3Tools.encode (object);
+				var output = new BytesOutput ();
+				var writer = new AMF3Writer (output);
+				writer.write (value);
+				writeBytes (output.getBytes ());
+				
+			#end
+			
+			case HXSF:
+				
+				var value = Serializer.run (object);
+				writeUTF (value);
+			
+			case JSON:
+				
+				var value = Json.stringify (object);
+				writeUTF (value);
+			
+			default:
+				
+				return null;
+			
+		}
 		
 	}
 	
@@ -998,7 +1125,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
 	 * used. The value is a constant from the ObjectEncoding class.
 	 */
-	public static var defaultObjectEncoding:UInt;
+	public static var defaultObjectEncoding:ObjectEncoding;
 	
 	/**
 	 * The number of bytes of data available for reading from the current
@@ -1043,7 +1170,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * ActionScript 1.0 format should be used when writing to, or reading from, a
 	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 	 */
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	
 	/**
 	 * Moves, or returns the current position, in bytes, of the file pointer into
@@ -1298,9 +1425,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * @return The deserialized object.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	#if flash
-	@:noCompletion @:dox(hide) public function readObject ():Dynamic;
-	#end
+	public function readObject ():Dynamic;
 	
 	
 	/**
@@ -1503,9 +1628,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * 
 	 * @param object The object to serialize.
 	 */
-	#if flash
-	@:noCompletion @:dox(hide) public function writeObject (object:Dynamic):Void;
-	#end
+	public function writeObject (object:Dynamic):Void;
 	
 	
 	/**

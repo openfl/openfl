@@ -9,42 +9,42 @@ declare namespace openfl.display {
 		/**
 		 * Specifies that the Stage is aligned at the bottom.
 		 */
-		BOTTOM = 0,
+		BOTTOM = "bottom",
 		
 		/**
 		 * Specifies that the Stage is aligned on the left.
 		 */
-		BOTTOM_LEFT = 1,
+		BOTTOM_LEFT = "bottomLeft",
 		
 		/**
 		 * Specifies that the Stage is aligned to the right.
 		 */
-		BOTTOM_RIGHT = 2,
+		BOTTOM_RIGHT = "bottomRight",
 		
 		/**
 		 * Specifies that the Stage is aligned on the left.
 		 */
-		LEFT = 3,
+		LEFT = "left",
 		
 		/**
 		 * Specifies that the Stage is aligned to the right.
 		 */
-		RIGHT = 4,
+		RIGHT = "right",
 		
 		/**
 		 * Specifies that the Stage is aligned at the top.
 		 */
-		TOP = 5,
+		TOP = "top",
 		
 		/**
 		 * Specifies that the Stage is aligned on the left.
 		 */
-		TOP_LEFT = 6,
+		TOP_LEFT = "topLeft",
 		
 		/**
 		 * Specifies that the Stage is aligned to the right.
 		 */
-		TOP_RIGHT = 7
+		TOP_RIGHT = "topRight",
 		
 	}
 	

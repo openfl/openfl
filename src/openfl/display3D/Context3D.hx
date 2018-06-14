@@ -4,7 +4,6 @@ package openfl.display3D;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.utils.Float32Array;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.opengl.GLContext3D;
 import openfl._internal.stage3D.Context3DStateCache;
 import openfl._internal.stage3D.SamplerState;
@@ -14,6 +13,7 @@ import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.VideoTexture;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Stage3D;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
@@ -73,7 +73,7 @@ import openfl.Vector;
 	private var __maxAnisotropyTexture2D:Int;
 	private var __positionScale:Float32Array;
 	private var __program:Program3D;
-	private var __renderSession:RenderSession;
+	private var __renderer:DisplayObjectRenderer;
 	private var __renderToTexture:TextureBase;
 	private var __rttDepthAndStencil:Bool;
 	private var __samplerDirty:Int;
@@ -98,12 +98,12 @@ import openfl.Vector;
 	#end
 	
 	
-	private function new (stage3D:Stage3D, renderSession:RenderSession) {
+	private function new (stage3D:Stage3D, renderer:DisplayObjectRenderer) {
 		
 		super ();
 		
 		__stage3D = stage3D;
-		__renderSession = renderSession;
+		__renderer = renderer;
 		
 		GLContext3D.create (this);
 		

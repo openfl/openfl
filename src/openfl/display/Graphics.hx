@@ -2,11 +2,16 @@ package openfl.display;
 
 
 import lime.graphics.cairo.Cairo;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
+import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
+import openfl._internal.renderer.ShaderBuffer;
 //import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl.display.Shader;
 import openfl.errors.ArgumentError;
@@ -34,6 +39,7 @@ import js.html.CanvasRenderingContext2D;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.GraphicsPath)
+@:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -45,6 +51,10 @@ import js.html.CanvasRenderingContext2D;
 	private static var maxTextureWidth:Null<Int> = null;
 	
 	private var __bounds:Rectangle;
+	private var __buffer:GLBuffer;
+	private var __bufferContext:GLRenderContext;
+	private var __bufferData:Float32Array;
+	private var __bufferLength:Int;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
 	private var __height:Int;
@@ -52,8 +62,10 @@ import js.html.CanvasRenderingContext2D;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __renderTransform:Matrix;
+	private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	private var __strokePadding:Float;
 	private var __transformDirty:Bool;
+	private var __usedShaderBuffers:List<ShaderBuffer>;
 	private var __visible:Bool;
 	//private var __cachedTexture:RenderTexture;
 	private var __owner:DisplayObject;
@@ -75,10 +87,12 @@ import js.html.CanvasRenderingContext2D;
 		__owner = owner;
 		
 		__commands = new DrawCommandBuffer ();
+		__shaderBufferPool = new ObjectPool<ShaderBuffer> (function () return new ShaderBuffer ());
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
 		__renderTransform = new Matrix ();
+		__usedShaderBuffers = new List<ShaderBuffer> ();
 		__worldTransform = new Matrix ();
 		__width = 0;
 		__height = 0;
@@ -110,6 +124,34 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void {
 		
+		if (colors == null || colors.length == 0) return;
+		
+		if (alphas == null) {
+			
+			alphas = [];
+			
+			for (i in 0...colors.length) {
+				
+				alphas.push (1);
+				
+			}
+			
+		}
+		
+		if (ratios == null) {
+			
+			ratios = [];
+			
+			for (i in 0...colors.length) {
+				
+				ratios.push (Math.ceil ((i / colors.length) * 255));
+				
+			}
+			
+		}
+		
+		if (alphas.length < colors.length || ratios.length < colors.length) return;
+		
 		__commands.beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 		
 		for (alpha in alphas) {
@@ -126,8 +168,30 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
+	public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void {
+		
+		if (shader != null) {
+			
+			var shaderBuffer = __shaderBufferPool.get ();
+			__usedShaderBuffers.add (shaderBuffer);
+			shaderBuffer.update (cast shader);
+			
+			__commands.beginShaderFill (shaderBuffer);
+			
+		}
+		
+	}
+	
+	
 	public function clear ():Void {
 		
+		for (shaderBuffer in __usedShaderBuffers) {
+			
+			__shaderBufferPool.release (shaderBuffer);
+			
+		}
+		
+		__usedShaderBuffers.clear ();
 		__commands.clear ();
 		__strokePadding = 0;
 		
@@ -140,6 +204,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__visible = false;
+		__positionX = 0;
+		__positionY = 0;
 		
 		#if (js && html5)
 		moveTo (0, 0);
@@ -314,9 +380,11 @@ import js.html.CanvasRenderingContext2D;
 		var fill:GraphicsSolidFill;
 		var bitmapFill:GraphicsBitmapFill;
 		var gradientFill:GraphicsGradientFill;
+		var shaderFill:GraphicsShaderFill;
 		var stroke:GraphicsStroke;
 		var path:GraphicsPath;
 		var trianglePath:GraphicsTrianglePath;
+		var quadPath:GraphicsQuadPath;
 		
 		for (graphics in graphicsData) {
 			
@@ -336,6 +404,11 @@ import js.html.CanvasRenderingContext2D;
 					
 					gradientFill = cast graphics;
 					beginGradientFill (gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+				
+				case SHADER:
+					
+					shaderFill = cast graphics;
+					beginShaderFill (shaderFill.shader, shaderFill.matrix);
 				
 				case STROKE:
 					
@@ -393,6 +466,11 @@ import js.html.CanvasRenderingContext2D;
 				case END:
 					
 					endFill ();
+				
+				case QUAD_PATH:
+					
+					quadPath = cast graphics;
+					drawQuads (quadPath.rects, quadPath.indices, quadPath.transforms);
 				
 			}
 			
@@ -453,12 +531,112 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
+	public function drawQuads (rects:Vector<Float>, indices:Vector<Int> = null, transforms:Vector<Float> = null):Void {
+		
+		if (rects == null) return;
+		
+		var hasIndices = (indices != null);
+		var transformABCD = false, transformXY = false;
+		
+		var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
+		if (length == 0) return;
+		
+		if (transforms != null) {
+			
+			if (transforms.length >= length * 6) {
+				
+				transformABCD = true;
+				transformXY = true;
+				
+			} else if (transforms.length >= length * 4) {
+				
+				transformABCD = true;
+				
+			} else if (transforms.length >= length * 2) {
+				
+				transformXY = true;
+				
+			}
+			
+		}
+		
+		var tileRect = Rectangle.__pool.get ();
+		var tileTransform = Matrix.__pool.get ();
+		
+		var minX = Math.POSITIVE_INFINITY;
+		var minY = Math.POSITIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;
+		
+		var ri, ti;
+		
+		for (i in 0...length) {
+			
+			ri = (hasIndices ? (indices[i] * 4) : i * 4);
+			if (ri < 0) continue;
+			tileRect.setTo (rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+			
+			if (tileRect.width <= 0 || tileRect.height <= 0) {
+				
+				continue;
+				
+			}
+			
+			if (transformABCD && transformXY) {
+				
+				ti = i * 6;
+				tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+				
+			} else if (transformABCD) {
+				
+				ti = i * 4;
+				tileTransform.setTo (transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
+				
+			} else if (transformXY) {
+				
+				ti = i * 2;
+				tileTransform.tx = transforms[ti];
+				tileTransform.ty = transforms[ti + 1];
+				
+			} else {
+				
+				tileTransform.tx = tileRect.x;
+				tileTransform.ty = tileRect.y;
+				
+			}
+			
+			tileRect.__transform (tileRect, tileTransform);
+			
+			if (minX > tileRect.x) minX = tileRect.x;
+			if (minY > tileRect.y) minY = tileRect.y;
+			if (maxX < tileRect.right) maxX = tileRect.right;
+			if (maxY < tileRect.bottom) maxY = tileRect.bottom;
+			
+		}
+		
+		__inflateBounds (minX, minY);
+		__inflateBounds (maxX, maxY);
+		
+		__commands.drawQuads (rects, indices, transforms);
+		
+		__dirty = true;
+		__visible = true;
+		
+		Rectangle.__pool.release (tileRect);
+		Matrix.__pool.release (tileTransform);
+		
+	}
+	
+	
 	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void {
 		
-		if (width <= 0 || height <= 0) return;
+		if(width == 0 && height == 0) return;
 		
-		__inflateBounds (x - __strokePadding, y - __strokePadding);
-		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
+		var xSign = width < 0 ? -1 : 1;
+		var ySign = height < 0 ? -1 : 1;
+		
+		__inflateBounds (x - __strokePadding * xSign, y - __strokePadding * ySign);
+		__inflateBounds (x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
 		
 		__commands.drawRect (x, y, width, height);
 		
@@ -469,10 +647,13 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float> = null):Void {
 		
-		if (width <= 0 || height <= 0) return;
+		if(width == 0 && height == 0) return;
 		
-		__inflateBounds (x - __strokePadding, y - __strokePadding);
-		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
+		var xSign = width < 0 ? -1 : 1;
+		var ySign = height < 0 ? -1 : 1;
+		
+		__inflateBounds (x - __strokePadding * xSign, y - __strokePadding * ySign);
+		__inflateBounds (x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
 		
 		__commands.drawRoundRect (x, y, width, height, ellipseWidth, ellipseHeight);
 		
@@ -483,7 +664,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
-		if (width <= 0 || height <= 0) return;
+		if(width <= 0 || height <= 0) return;
 		
 		__inflateBounds (x - __strokePadding, y - __strokePadding);
 		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
@@ -531,19 +712,15 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
 		
-		if (vertices == null) return;
+		if (vertices == null || vertices.length == 0) return;
 		
-		var vlen = Std.int (vertices.length / 2);
-		
-		if (culling == null) {
-			
-			culling = NONE;
-			
-		}
+		var vertLength = Std.int (vertices.length / 2);
 		
 		if (indices == null) {
 			
-			if (vlen % 3 != 0) {
+			// TODO: Allow null indices
+			
+			if (vertLength % 3 != 0) {
 				
 				throw new ArgumentError ("Not enough vertices to close a triangle.");
 				
@@ -551,7 +728,7 @@ import js.html.CanvasRenderingContext2D;
 			
 			indices = new Vector<Int> ();
 			
-			for (i in 0...vlen) {
+			for (i in 0...vertLength) {
 				
 				indices.push (i);
 				
@@ -559,23 +736,33 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__inflateBounds (0, 0);
-		
-		var tmpx = Math.NEGATIVE_INFINITY;
-		var tmpy = Math.NEGATIVE_INFINITY;
-		var maxX = Math.NEGATIVE_INFINITY;
-		var maxY = Math.NEGATIVE_INFINITY;
-		
-		for (i in 0...vlen) {
+		if (culling == null) {
 			
-			tmpx = vertices[i * 2];
-			tmpy = vertices[i * 2 + 1];
-			if (maxX < tmpx) maxX = tmpx;
-			if (maxY < tmpy) maxY = tmpy;
+			culling = NONE;
 			
 		}
 		
+		var x, y;
+		var minX = Math.POSITIVE_INFINITY;
+		var minY = Math.POSITIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;
+		
+		for (i in 0...vertLength) {
+			
+			x = vertices[i * 2];
+			y = vertices[i * 2 + 1];
+			
+			if (minX > x) minX = x;
+			if (minY > y) minY = y;
+			if (maxX < x) maxX = x;
+			if (maxY < y) maxY = y;
+			
+		}
+		
+		__inflateBounds (minX, minY);
 		__inflateBounds (maxX, maxY);
+		
 		__commands.drawTriangles (vertices, indices, uvtData, culling);
 		
 		__dirty = true;
@@ -907,6 +1094,9 @@ import js.html.CanvasRenderingContext2D;
 					var c = data.readBeginGradientFill ();
 					graphicsData.push (new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio));
 				
+				case BEGIN_SHADER_FILL:
+					
+					
 				
 				default:
 					
@@ -925,7 +1115,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	private function __update ():Void {
+	private function __update (displayMatrix:Matrix):Void {
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 		
@@ -957,6 +1147,30 @@ import js.html.CanvasRenderingContext2D;
 		} else {
 			
 			return;
+			
+		}
+		
+		if (displayMatrix != null) {
+			
+			if (displayMatrix.b == 0) {
+				
+				scaleX *= displayMatrix.a;
+				
+			} else {
+				
+				scaleX *= Math.sqrt (displayMatrix.a * displayMatrix.a + displayMatrix.b * displayMatrix.b);
+				
+			}
+			
+			if (displayMatrix.c == 0) {
+				
+				scaleY *= displayMatrix.d;
+				
+			} else {
+				
+				scaleY *= Math.sqrt (displayMatrix.c * displayMatrix.c + displayMatrix.d * displayMatrix.d);
+				
+			}
 			
 		}
 		
@@ -1016,8 +1230,8 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.ty = __worldTransform.__transformInverseY (tx, ty);
 		
 		// Calculate the size to contain the graphics and the extra subpixel
-		var newWidth  = Math.ceil(width  + __renderTransform.tx);
-		var newHeight = Math.ceil(height + __renderTransform.ty);
+		var newWidth  = Math.ceil (width  + __renderTransform.tx);
+		var newHeight = Math.ceil (height + __renderTransform.ty);
 		
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height) {

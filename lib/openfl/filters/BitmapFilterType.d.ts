@@ -9,17 +9,17 @@ declare namespace openfl.filters {
 		/**
 		 * Defines the setting that applies a filter to the entire area of an object.
 		 */
-		FULL = 0,
+		FULL = "full",
 		
 		/**
 		 * Defines the setting that applies a filter to the inner area of an object.
 		 */
-		INNER = 1,
+		INNER = "inner",
 		
 		/**
 		 * Defines the setting that applies a filter to the outer area of an object.
 		 */
-		OUTER = 2
+		OUTER = "outer"
 		
 	}
 	

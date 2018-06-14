@@ -1116,8 +1116,16 @@ extern class InteractiveObject extends DisplayObject {
 	 */
 	public var needsSoftKeyboard:Bool;
 	public var softKeyboardInputAreaOfInterest:Rectangle;
-	public var tabEnabled:Bool;
-	public var tabIndex:Int;
+	
+	public var tabEnabled (get, set):Bool;
+	
+	@:noCompletion private function get_tabEnabled ():Bool;
+	@:noCompletion private function set_tabEnabled (value:Bool):Bool;
+	
+	public var tabIndex (get, set):Int;
+	
+	@:noCompletion private function get_tabIndex ():Int;
+	@:noCompletion private function set_tabIndex (value:Int):Int;
 	
 	
 	/**
@@ -1132,7 +1140,7 @@ extern class InteractiveObject extends DisplayObject {
 	 *  * `new MovieClip()`
 	 * 
 	 */
-	public function new ();
+	private function new ();
 	
 	
 	/**

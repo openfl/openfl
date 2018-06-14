@@ -10,29 +10,29 @@ declare namespace openfl.text {
 		 * Constant; centers the text in the text field. Use the syntax
 		 * `TextFormatAlign.CENTER`.
 		 */
-		CENTER = 0,
+		CENTER = "center",
 		
-		END = 1,
+		END = "end",
 		
 		/**
 		 * Constant; justifies text within the text field. Use the syntax
 		 * `TextFormatAlign.JUSTIFY`.
 		 */
-		JUSTIFY = 2,
+		JUSTIFY = "justify",
 		
 		/**
 		 * Constant; aligns text to the left within the text field. Use the syntax
 		 * `TextFormatAlign.LEFT`.
 		 */
-		LEFT = 3,
+		LEFT = "left",
 		
 		/**
 		 * Constant; aligns text to the right within the text field. Use the syntax
 		 * `TextFormatAlign.RIGHT`.
 		 */
-		RIGHT = 4,
+		RIGHT = "right",
 		
-		START = 5
+		START = "start"
 		
 	}
 	

@@ -48,7 +48,10 @@ extern class Timer extends EventDispatcher {
 	 * @throws Error Throws an exception if the delay specified is negative or
 	 *               not a finite number.
 	 */
-	public var delay:Float;
+	public var delay (get, set):Float;
+	
+	@:noCompletion private function get_delay ():Float;
+	@:noCompletion private function set_delay (value:Float):Float;
 	
 	/**
 	 * The total number of times the timer is set to run. If the repeat count is
@@ -58,7 +61,10 @@ extern class Timer extends EventDispatcher {
 	 * is set to a total that is the same or less then `currentCount`
 	 * the timer stops and will not fire again.
 	 */
-	public var repeatCount:Int;
+	public var repeatCount (get, set):Int;
+	
+	@:noCompletion private function get_repeatCount ():Int;
+	@:noCompletion private function set_repeatCount (value:Int):Int;
 	
 	/**
 	 * The timer's current state; `true` if the timer is running,

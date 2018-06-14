@@ -172,7 +172,10 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	/**
 	 * The window background color.
 	 */
-	public var color:UInt;
+	public var color (get, set):UInt;
+	
+	@:noCompletion private function get_color ():UInt;
+	@:noCompletion private function set_color (value:UInt):UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
@@ -182,7 +185,9 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
 	#end
 	
-	public var contentsScaleFactor (default, never):Float;
+	public var contentsScaleFactor (get, never):Float;
+	
+	@:noCompletion private function get_contentsScaleFactor ():Float;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
@@ -275,7 +280,10 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       `allowFullScreen` attribute is not set to
 	 *                       `true` throws a security error.
 	 */
-	public var displayState:StageDisplayState;
+	public var displayState (get, set):StageDisplayState;
+	
+	@:noCompletion private function get_displayState ():StageDisplayState;
+	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState;
 	
 	public var element (default, never):js.html.Element;
 	
@@ -286,7 +294,10 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * 
 	 * @throws Error Throws an error if focus cannot be set to the target.
 	 */
-	public var focus:InteractiveObject;
+	public var focus (get, set):InteractiveObject;
+	
+	@:noCompletion private function get_focus ():InteractiveObject;
+	@:noCompletion private function set_focus (value:InteractiveObject):InteractiveObject;
 	
 	/**
 	 * Gets and sets the frame rate of the stage. The frame rate is defined as
@@ -316,15 +327,22 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var frameRate:Float;
+	public var frameRate (get, set):Float;
 	
-	public var fullScreenHeight (default, never):UInt;
+	@:noCompletion private function get_frameRate ():Float;
+	@:noCompletion private function set_frameRate (value:Float):Float;
+	
+	public var fullScreenHeight (get, never):UInt;
+	
+	@:noCompletion private function get_fullScreenHeight ():UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
 	#end
 	
-	public var fullScreenWidth (default, never):UInt;
+	public var fullScreenWidth (get, never):UInt;
+	
+	@:noCompletion private function get_fullScreenWidth ():UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
@@ -385,7 +403,10 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var quality:StageQuality;
+	public var quality (get, set):StageQuality;
+	
+	@:noCompletion private function get_quality ():StageQuality;
+	@:noCompletion private function set_quality (value:StageQuality):StageQuality;
 	
 	/**
 	 * A value from the StageScaleMode class that specifies which scale mode to
@@ -420,6 +441,9 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var scaleMode:StageScaleMode;
+	
+	@:noCompletion private function get_scaleMode ():StageScaleMode;
+	@:noCompletion private function set_scaleMode (value:StageScaleMode):StageScaleMode;
 	
 	public var showDefaultContextMenu:Bool;
 	
@@ -571,7 +595,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * `Security.allowDomain()` method.
 	 * 
 	 */
-	public function invalidate ():Void;
+	public override function invalidate ():Void;
 	
 	
 	#if flash

@@ -50,12 +50,16 @@ declare namespace openfl.display {
 		 */
 		public readonly currentFrame:number;
 		
+		protected get_currentFrame ():number;
+		
 		/**
 		 * The label at the current frame in the timeline of the MovieClip instance.
 		 * If the current frame has no label, `currentLabel` is
 		 * `null`.
 		 */
 		public readonly currentFrameLabel:string;
+		
+		protected get_currentFrameLabel ():string;
 		
 		/**
 		 * The current label in which the playhead is located in the timeline of the
@@ -66,12 +70,16 @@ declare namespace openfl.display {
 		 */
 		public readonly currentLabel:string;
 		
+		protected get_currentLabel ():string;
+		
 		/**
 		 * Returns an array of FrameLabel objects from the current scene. If the
 		 * MovieClip instance does not use scenes, the array includes all frame
 		 * labels from the entire MovieClip instance.
 		 */
 		public readonly currentLabels:Array<FrameLabel>;
+		
+		protected get_currentLabels ():Array<FrameLabel>;
 		
 		/**
 		 * A Boolean value that indicates whether a movie clip is enabled. The
@@ -104,7 +112,11 @@ declare namespace openfl.display {
 		 */
 		public readonly framesLoaded:number;
 		
+		protected get_framesLoaded ():number;
+		
 		public readonly isPlaying:boolean;
+		
+		protected get_isPlaying ():boolean;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public scenes (default, null):Array<flash.display.Scene>;
@@ -118,6 +130,8 @@ declare namespace openfl.display {
 		 * _all_ scenes in the movie clip.
 		 */
 		public readonly totalFrames:number;
+		
+		protected get_totalFrames ():number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public trackAsMenu:boolean;

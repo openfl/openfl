@@ -7,7 +7,7 @@ describe ("ES6 | Context3DProfile", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DProfile.BASELINE) {
+		switch (""+Context3DProfile.BASELINE) {
 			
 			case Context3DProfile.BASELINE:
 			case Context3DProfile.BASELINE_CONSTRAINED:

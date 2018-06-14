@@ -16,21 +16,25 @@ class URLVariablesTest { public static function __init__ () { Mocha.describe ("H
 	
 	Mocha.it ("decode", function () {
 		
-		// TODO: Confirm functionality
+		var urlVariables = new URLVariables ("firstName=Tom&lastName=Jones");
+		urlVariables.decode ("firstName=Tom&lastName=Jones");
+		Assert.equal ("Tom", urlVariables.firstName);
+		Assert.equal ("Jones", urlVariables.lastName);
 		
 		var urlVariables = new URLVariables ();
-		var exists = urlVariables.decode;
-		
-		Assert.notEqual (exists, null);
+		urlVariables.decode ("firstName=Tom&lastName=Jones");
+		Assert.equal ("Tom", urlVariables.firstName);
+		Assert.equal ("Jones", urlVariables.lastName);
 		
 	});
 	
 	
-	/*public function toString", function () {
+	Mocha.it ("toString", function () {
 		
+		var urlVariables = new URLVariables ("firstName=Tom&lastName=Jones");
+		Assert.equal ("firstName=Tom&lastName=Jones", urlVariables.toString ());
 		
-		
-	}*/
+	});
 	
 	
 }); }}

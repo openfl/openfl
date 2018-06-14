@@ -7,7 +7,7 @@ describe ("TypeScript | TextFieldAutoSize", function () {
 	
 	it ("test", function () {
 		
-		switch (+TextFieldAutoSize.CENTER) {
+		switch (""+TextFieldAutoSize.CENTER) {
 			
 			case TextFieldAutoSize.CENTER:
 			case TextFieldAutoSize.LEFT:

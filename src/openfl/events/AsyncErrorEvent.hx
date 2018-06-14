@@ -3,6 +3,11 @@ package openfl.events;
 
 import haxe.io.Error;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class AsyncErrorEvent extends ErrorEvent {
 	

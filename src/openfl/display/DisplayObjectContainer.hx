@@ -2,9 +2,9 @@ package openfl.display;
 
 
 import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.RenderSession;
+import openfl._internal.renderer.opengl.GLGraphics;
+import openfl._internal.renderer.opengl.GLShape;
 import openfl.display.Stage;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
@@ -25,6 +25,7 @@ import openfl.Vector;
 @:access(openfl.display.Graphics)
 @:access(openfl.errors.Error)
 @:access(openfl.geom.Point)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 
@@ -403,27 +404,20 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__getBounds (rect, matrix);
 		
 		if (__children.length == 0) return;
-		
-		if (matrix != null) {
 			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0) continue;
-			child.__getBounds (rect, child.__worldTransform);
+			
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+			
+			child.__getBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -434,26 +428,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-			child.__getFilterBounds (rect, child.__worldTransform);
+
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+
+			child.__getFilterBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -473,26 +460,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
 		for (child in __children) {
 			
 			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-			child.__getRenderBounds (rect, child.__worldTransform);
+			
+			DisplayObject.__calculateAbsoluteTransform (child.__transform, matrix, childWorldTransform);
+			
+			child.__getRenderBounds (rect, childWorldTransform);
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -629,22 +609,22 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		super.__renderCairo (renderSession);
+		super.__renderCairo (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
+		renderer.__pushMaskObject (this);
 		
-		if (renderSession.clearRenderDirty) {
+		if (renderer.__stage != null) {
 			
 			for (child in __children) {
 				
-				child.__renderCairo (renderSession);
+				child.__renderCairo (renderer);
 				child.__renderDirty = false;
 				
 			}
@@ -655,7 +635,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__renderCairo (renderSession);
+				child.__renderCairo (renderer);
 				
 			}
 			
@@ -673,24 +653,24 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.maskManager.popObject (this);
+		renderer.__popMaskObject (this);
 		#end
 		
 	}
 	
 	
-	private override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		if (__graphics != null) {
 			
-			CairoGraphics.renderMask (__graphics, renderSession);
+			CairoGraphics.renderMask (__graphics, renderer);
 			
 		}
 		
 		for (child in __children) {
 			
-			child.__renderCairoMask (renderSession);
+			child.__renderCairoMask (renderer);
 			
 		}
 		#end
@@ -698,23 +678,23 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
 		
 		#if !neko
 		
-		super.__renderCanvas (renderSession);
+		super.__renderCanvas (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
+		renderer.__pushMaskObject (this);
 		
-		if (renderSession.clearRenderDirty) {
+		if (renderer.__stage != null) {
 			
 			for (child in __children) {
 				
-				child.__renderCanvas (renderSession);
+				child.__renderCanvas (renderer);
 				child.__renderDirty = false;
 				
 			}
@@ -725,7 +705,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__renderCanvas (renderSession);
+				child.__renderCanvas (renderer);
 				
 			}
 			
@@ -743,49 +723,43 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.maskManager.popObject (this);
+		renderer.__popMaskObject (this);
 		
 		#end
 		
 	}
 	
 	
-	private override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
 		if (__graphics != null) {
 			
-			CanvasGraphics.renderMask (__graphics, renderSession);
+			CanvasGraphics.renderMask (__graphics, renderer);
 			
 		}
 		
-		var bounds = Rectangle.__pool.get ();
-		__getLocalBounds (bounds);
-		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
-		
-		Rectangle.__pool.release (bounds);
-		/*for (child in __children) {
+		for (child in __children) {
 			
-			child.__renderMask (renderSession);
+			child.__renderCanvasMask (renderer);
 			
-		}*/
+		}
 		
 	}
 	
 	
-	private override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		super.__renderDOM (renderSession);
+		super.__renderDOM (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
-		renderSession.maskManager.pushObject (this);
+		renderer.__pushMaskObject (this);
 		
-		if (renderSession.clearRenderDirty) {
+		if (renderer.__stage != null) {
 			
 			for (child in __children) {
 				
-				child.__renderDOM (renderSession);
+				child.__renderDOM (renderer);
 				child.__renderDirty = false;
 				
 			}
@@ -796,7 +770,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__renderDOM (renderSession);
+				child.__renderDOM (renderer);
 				
 			}
 			
@@ -806,7 +780,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (orphan.stage == null) {
 				
-				orphan.__renderDOM (renderSession);
+				orphan.__renderDOM (renderer);
 				
 			}
 			
@@ -814,44 +788,44 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
-		renderSession.maskManager.popObject (this);
+		renderer.__popMaskObject (this);
 		
 	}
 	
 	
-	private override function __renderDOMClear (renderSession:RenderSession):Void {
+	private override function __renderDOMClear (renderer:DOMRenderer):Void {
 		
 		for (child in __children) {
-			child.__renderDOMClear (renderSession);
+			child.__renderDOMClear (renderer);
 		}
 		
 		for (orphan in __removedChildren) {
 			if (orphan.stage == null) {
-				orphan.__renderDOMClear (renderSession);
+				orphan.__renderDOMClear (renderer);
 			}
 		}
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		super.__renderGL (renderSession);
+		super.__renderGL (renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
 		
 		if (__children.length > 0) {
 			
-			renderSession.maskManager.pushObject (this);
-			renderSession.filterManager.pushObject (this);
+			renderer.__pushMaskObject (this);
+			// renderer.filterManager.pushObject (this);
 			
-			if (renderSession.clearRenderDirty) {
+			if (renderer.__stage != null) {
 				
 				for (child in __children) {
 					
-					child.__renderGL (renderSession);
+					child.__renderGL (renderer);
 					child.__renderDirty = false;
 					
 				}
@@ -862,7 +836,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				for (child in __children) {
 					
-					child.__renderGL (renderSession);
+					child.__renderGL (renderer);
 					
 				}
 				
@@ -884,52 +858,28 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length > 0) {
 			
-			renderSession.filterManager.popObject (this);
-			renderSession.maskManager.popObject (this);
+			// renderer.filterManager.popObject (this);
+			renderer.__popMaskObject (this);
 			
 		}
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		super.__renderGLMask (renderSession);
-		
-		if (__cacheBitmap != null && !__cacheBitmapRender) return;
-		
-		if (renderSession.clearRenderDirty) {
+		if (__graphics != null) {
 			
-			for (child in __children) {
-				
-				child.__renderGLMask (renderSession);
-				child.__renderDirty = false;
-				
-			}
-			
-			__renderDirty = false;
-			
-		} else {
-			
-			for (child in __children) {
-				
-				child.__renderGLMask (renderSession);
-				
-			}
+			//GLGraphics.renderMask (__graphics, renderer);
+			GLShape.renderMask (this, renderer);
 			
 		}
 		
-		for (orphan in __removedChildren) {
+		for (child in __children) {
 			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
+			child.__renderGLMask (renderer);
 			
 		}
-		
-		__removedChildren.length = 0;
 		
 	}
 	
@@ -970,8 +920,30 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 	}
-
-
+	
+	
+	private override function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
+		
+		if (value == true) return true;
+		value = super.__shouldCacheHardware (value);
+		if (value == true) return true;
+		
+		if (__children != null) {
+			
+			for (child in __children) {
+				
+				value = child.__shouldCacheHardware (value);
+				if (value == true) return true;
+				
+			}
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	private override function __stopAllMovieClips ():Void {
 		
 		for (child in __children) {
@@ -983,15 +955,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics);
+		super.__update (transformOnly, updateChildren);
 		
 		if (updateChildren) {
 			
 			for (child in __children) {
 				
-				child.__update (transformOnly, true, maskGraphics);
+				child.__update (transformOnly, true);
 				
 			}
 			

@@ -16,7 +16,9 @@ import openfl._internal.timeline.FrameObject;
 import openfl._internal.timeline.FrameObjectType;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
+import openfl.events.MouseEvent;
 import openfl.filters.*;
+import openfl.geom.ColorTransform;
 import openfl.text.TextField;
 
 #if hscript
@@ -30,13 +32,20 @@ import hscript.Parser;
 #end
 
 @:access(openfl._internal.symbols.SWFSymbol)
+@:access(openfl.geom.ColorTransform)
 
 
-class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
+class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __initSWF:SWFLite;
 	private static var __initSymbol:SpriteSymbol;
+	
+	#if openfljs
+	private static var __useParentFPS:Bool;
+	#else
+	private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
+	#end
 	
 	public var currentFrame (get, never):Int;
 	public var currentFrameLabel (get, never):String;
@@ -55,8 +64,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private var __currentLabels:Array<FrameLabel>;
 	private var __frameScripts:Map<Int, Void->Void>;
 	private var __frameTime:Int;
+	private var __hasDown:Bool;
+	private var __hasOver:Bool;
+	private var __hasUp:Bool;
 	private var __lastFrameScriptEval:Int;
 	private var __lastFrameUpdate:Int;
+	private var __mouseIsDown:Bool;
 	private var __playing:Bool;
 	private var __swf:SWFLite;
 	private var __symbol:SpriteSymbol;
@@ -66,6 +79,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	#if openfljs
 	private static function __init__ () {
+		
+		__useParentFPS = true;
+		untyped __js__("/// #if (typeof swf-parent-fps === 'undefined' || !swf-parent-fps) && (typeof swflite-parent-fps === 'undefined' || !swflite-parent-fps)");
+		__useParentFPS = false;
+		untyped __js__("/// #endif");
 		
 		untyped Object.defineProperties (MovieClip.prototype, {
 			"currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }") },
@@ -159,10 +177,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__playing = true;
 		
-		#if (!swflite_parent_fps && !swf_parent_fps)
-		__frameTime = Std.int (1000 / __swf.frameRate);
-		__timeElapsed = 0;
-		#end
+		if (!__useParentFPS) {
+			
+			__frameTime = Std.int (1000 / __swf.frameRate);
+			__timeElapsed = 0;
+			
+		}
 		
 	}
 	
@@ -252,7 +272,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 							if (instance != null) {
 								
 								currentInstancesByFrameObjectID.set (frameObject.id, instance);
-								__updateDisplayObject (instance.displayObject, frameObject);
+								__updateDisplayObject (instance.displayObject, frameObject, true);
 								
 							}
 						
@@ -359,6 +379,13 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 				for (instance in __activeInstances) {
 					
 					if (instance.displayObject == child) {
+						
+						//set MovieClips back to initial state (autoplay)
+						if (Std.is(child, MovieClip))
+						{
+							var movie : MovieClip = cast child;
+							movie.gotoAndPlay(1);
+						}
 						
 						removeChild (child);
 						i--;
@@ -654,7 +681,8 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__enterFrame (0);
 		
-		#if !openfl_dynamic
+		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+		// TODO: Speed this up
 		for (field in Type.getInstanceFields (Type.getClass (this))) {
 			
 			for (child in __children) {
@@ -675,20 +703,22 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	private function __getNextFrame (deltaTime:Int):Int {
 		
-		#if (!swflite_parent_fps && !swf_parent_fps)
+		var nextFrame:Int = 0;
 		
-		__timeElapsed += deltaTime;
-		var nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
-		if (nextFrame < 1) nextFrame = 1;
-		if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
-		__timeElapsed = (__timeElapsed % __frameTime);
-		
-		#else
-		
-		var nextFrame = __currentFrame + 1;
-		if (nextFrame > __totalFrames) nextFrame = 1;
-		
-		#end
+		if (!__useParentFPS) {
+			
+			__timeElapsed += deltaTime;
+			nextFrame = __currentFrame + Math.floor (__timeElapsed / __frameTime);
+			if (nextFrame < 1) nextFrame = 1;
+			if (nextFrame > __totalFrames) nextFrame = Math.floor ((nextFrame - 1) % __totalFrames) + 1;
+			__timeElapsed = (__timeElapsed % __frameTime);
+			
+		} else {
+			
+			nextFrame = __currentFrame + 1;
+			if (nextFrame > __totalFrames) nextFrame = 1;
+			
+		}
 		
 		return nextFrame;
 		
@@ -753,7 +783,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject):Void {
+	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject, reset : Bool = false):Void {
 		
 		if (displayObject == null) return;
 		
@@ -772,6 +802,11 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		if (frameObject.colorTransform != null) {
 			
 			displayObject.transform.colorTransform = frameObject.colorTransform;
+			
+		}
+		else if (reset && !displayObject.transform.colorTransform.__isDefault()) {
+			
+			displayObject.transform.colorTransform = new ColorTransform();
 			
 		}
 		
@@ -829,7 +864,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
-		#if (openfl_dynamic || openfl_dynamic_fields_only)
+		#if (openfljs || ((openfl_dynamic || openfl_dynamic_fields_only) && haxe_ver <= "4.0.0"))
 		Reflect.setField (this, displayObject.name, displayObject);
 		#end
 		
@@ -869,9 +904,129 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 	
+	// Event Handlers
+	
+	
+	
+	
+	private function __onMouseDown (event:MouseEvent):Void {
+		
+		if (__hasDown) {
+			
+			gotoAndStop ("_down");
+			
+		}
+		
+		__mouseIsDown = true;
+		stage.addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+		
+	}
+	
+	
+	private function __onMouseUp (event:MouseEvent):Void {
+		
+		__mouseIsDown = false;
+		
+		if (stage != null) {
+			
+			stage.removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+			
+		}
+		
+		if (event.currentTarget == this && __hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		} else if (__hasUp) {
+			
+			gotoAndStop ("_up");
+			
+		}
+		
+	}
+	
+	
+	private function __onRollOut (event:MouseEvent):Void {
+		
+		if (__mouseIsDown && __hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		} else if (__hasUp) {
+			
+			gotoAndStop ("_up");
+			
+		}
+		
+	}
+	
+	
+	private function __onRollOver (event:MouseEvent):Void {
+		
+		if (__hasOver) {
+			
+			gotoAndStop ("_over");
+			
+		}
+		
+	}
+	
+	
+	
+	
 	// Getters & Setters
 	
 	
+	
+	
+	private override function set_buttonMode (value:Bool):Bool {
+		
+		if (__buttonMode != value) {
+			
+			if (value) {
+				
+				__hasDown = false;
+				__hasOver = false;
+				__hasUp = false;
+				
+				for (frameLabel in __currentLabels) {
+					
+					switch (frameLabel.name) {
+						
+						case "_up": __hasUp = true;
+						case "_over": __hasOver = true;
+						case "_down": __hasDown = true;
+						default:
+						
+					}
+					
+				}
+				
+				if (__hasDown || __hasOver || __hasUp) {
+					
+					addEventListener (MouseEvent.ROLL_OVER, __onRollOver);
+					addEventListener (MouseEvent.ROLL_OUT, __onRollOut);
+					addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+					addEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
+						
+				}
+				
+			} else {
+				
+				removeEventListener (MouseEvent.ROLL_OVER, __onRollOver);
+				removeEventListener (MouseEvent.ROLL_OUT, __onRollOut);
+				removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+				removeEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
+				
+			}
+			
+			__buttonMode = value;
+			
+		}
+		
+		return value;
+		
+	}
 	
 	
 	private function get_currentFrame ():Int { return __currentFrame; }

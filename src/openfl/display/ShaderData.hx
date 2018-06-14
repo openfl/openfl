@@ -8,22 +8,15 @@ import openfl.utils.ByteArray;
 @:noDebug
 #end
 
-#if ((!cs && !java) || display) @:final #end
 
+@:forward()
 
-class ShaderData implements Dynamic {
-	
-	
-	public var aAlpha:ShaderParameter<Float>;
-	public var aPosition:ShaderParameter<Float>;
-	public var aTexCoord:ShaderParameter<Float>;
-	public var uImage0:ShaderInput<BitmapData>;
-	public var uMatrix:ShaderParameter<Float>;
+abstract ShaderData(Dynamic) from Dynamic to Dynamic {
 	
 	
 	public function new (byteArray:ByteArray) {
 		
-		
+		this = {};
 		
 	}
 	

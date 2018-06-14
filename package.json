@@ -1,6 +1,6 @@
 {
   "name": "openfl",
-  "version": "7.1.1",
+  "version": "8.2.2",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "openfl",
@@ -25,7 +25,11 @@
   "bin": {
     "openfljs": "bin/openfl.js"
   },
-  "module": "lib/openfl/index.js",
+  "module": "lib-esm/openfl/index.js",
+  "types": "lib/openfl/index.d.ts",
+  "sideEffects": [
+    "./lib-esm/openfl/utils/AssetLibrary.js"
+  ],
   "files": [
     "bin",
     "dist",
@@ -39,19 +43,22 @@
     "url": "https://github.com/openfl/openfl.git"
   },
   "scripts": {
-    "build": "npm run build-lib && npm run build-dist && npm run build-tools && npm run build-docs",
+    "build": "npm run build-lib && npm run build-lib-esm && npm run build-dist && npm run build-tools && npm run build-swc && npm run build-docs",
     "build-dist": "npm run build-dist:dev && npm run build-dist:prod",
     "build-dist:dev": "webpack --config webpack.dev.js",
     "build-dist:prod": "webpack --config webpack.prod.js",
     "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint openfl --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,test}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
     "build-lib": "cd scripts && haxe build.hxml",
+    "build-lib-esm": "cd scripts && node generate-es2015 gen",
+    "build-lib-esm-reexports-barrels": "cd scripts && node generate-es2015 non-gen",
+    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF -output=dist/openfl.swc",
     "build-tools": "cd scripts && haxe tools-npm.hxml",
     "build-test-es5": "cd test/es5 && webpack",
     "build-test-es6": "cd test/es6 && webpack",
     "build-test-haxe": "cd test/haxe && haxe build.hxml && webpack",
     "build-test-typescript": "cd test/typescript && tsc -p tsconfig.json && webpack",
     "dev-link": "npm link lime && npm link hxgenjs && npm link hxnodejs && npm link format",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run dev-link && npm run build",
     "serve": "http-server -c-1 --cors",
     "test": "npm run build-test-es5 && npm run build-test-es6 && npm run build-test-haxe && npm run build-test-typescript && mocha-chrome test/index.html --old-and-busted",
     "test-es5": "npm run build-test-es5 && mocha-chrome test/es5/index.html --old-and-busted",
@@ -73,33 +80,38 @@
     "start": "npm run watch",
     "watch": "watch \"echo watch: Compiling... && npm run build-lib -s && echo watch: Compiled successfully.\" ./src ./scripts ./node_modules/lime/lime"
   },
-  "config": {
-    "haxe": "3.4.4",
-    "haxelib_version": "3.2.0-rc.3"
-  },
   "devDependencies": {
-    "@types/lodash": "^4.14.99",
-    "@types/mocha": "^2.2.46",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
+    "@apache-royale/royale-js": "^0.9.3",
+    "@types/lodash": "^4.14.109",
+    "@types/mocha": "^5.2.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
     "babel-preset-stage-1": "^6.24.1",
+    "brotli-webpack-plugin": "^1.0.0",
     "chai": "^4.1.2",
+    "compression-webpack-plugin": "^1.1.11",
     "format": "jgranick/format",
-    "haxe": "^4.1.0",
+    "globby": "^8.0.1",
+    "haxe": "^5.0.10",
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
     "lime": "openfl/lime#develop",
-    "mocha": "^4.0.1",
-    "mocha-chrome": "^1.0.2",
-    "typedoc": "^0.9.0",
-    "typescript": "^2.7.1",
-    "uglifyjs-webpack-plugin": "^1.1.6",
+    "mocha": "^5.2.0",
+    "mocha-chrome": "^1.1.0",
+    "typedoc": "^0.11.1",
+    "typescript": "^2.8.3",
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "watch": "^1.0.2",
-    "webpack": "^3.10.0",
-    "webpack-merge": "^4.1.1"
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3",
+    "webpack-merge": "^4.1.2"
   },
   "dependencies": {
+    "file-saver": "^1.3.8",
     "howler": "^2.0.6",
     "pako": "^1.0.6"
+  },
+  "haxeDependencies": {
+    "haxe": "3.4.4"
   }
 }

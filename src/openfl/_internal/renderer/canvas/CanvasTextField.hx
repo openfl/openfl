@@ -3,10 +3,10 @@ package openfl._internal.renderer.canvas;
 
 import haxe.Utf8;
 import openfl._internal.renderer.dom.DOMTextField;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
+import openfl.display.CanvasRenderer;
 import openfl.display.Graphics;
 import openfl.events.Event;
 import openfl.filters.GlowFilter;
@@ -26,6 +26,7 @@ import js.html.ImageData;
 
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
 
 
@@ -38,12 +39,12 @@ class CanvasTextField {
 	#end
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
+	public static inline function render (textField:TextField, renderer:CanvasRenderer, transform:Matrix):Void {
 		
 		#if (js && html5)
 		
 		var textEngine = textField.__textEngine;
-		var bounds = textEngine.bounds;
+		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
 		var graphics = textField.__graphics;
 		
 		if (textField.__dirty) {
@@ -60,7 +61,7 @@ class CanvasTextField {
 			
 		}
 		
-		graphics.__update ();
+		graphics.__update (renderer.__worldTransform);
 		
 		if (textField.__dirty || graphics.__dirty) {
 			
@@ -88,16 +89,22 @@ class CanvasTextField {
 				
 				var transform = graphics.__renderTransform;
 				
-				if (renderSession.renderType == DOM) {
+				if (renderer.__isDOM) {
 					
-					var scale = CanvasRenderer.scale;
+					var scale = renderer.pixelRatio;
 					
 					graphics.__canvas.width = Std.int (width * scale);
 					graphics.__canvas.height = Std.int (height * scale);
 					graphics.__canvas.style.width = width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
+					var matrix = Matrix.__pool.get ();
+					matrix.copyFrom (transform);
+					matrix.scale (scale, scale);
+					
+					renderer.setTransform (matrix, context);
+					
+					Matrix.__pool.release (matrix);
 					
 				} else {
 					
@@ -124,7 +131,7 @@ class CanvasTextField {
 					
 					var text = textEngine.text;
 					
-					if (!renderSession.allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)) {
+					if (!renderer.__allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)) {
 						
 						untyped (graphics.__context).mozImageSmoothingEnabled = false;
 						//untyped (graphics.__context).webkitImageSmoothingEnabled = false;
@@ -191,8 +198,8 @@ class CanvasTextField {
 							context.beginPath ();
 							context.strokeStyle = "#000000";
 							context.lineWidth = .5;
-							var x = group.offsetX + scrollX;
-							var y = group.offsetY + offsetY + scrollY + group.ascent;
+							var x = group.offsetX + scrollX - bounds.x;
+							var y = group.offsetY + offsetY + scrollY + group.ascent - bounds.y;
 							context.moveTo (x, y);
 							context.lineTo (x + group.width, y);
 							context.stroke ();
@@ -208,7 +215,7 @@ class CanvasTextField {
 							
 						}
 						
-						if (textField.__filters != null && textField.__filters.length > 0) {
+						if (textField.__filters != null) {
 							
 							// Hack, force outline
 							
@@ -221,7 +228,7 @@ class CanvasTextField {
 								
 								context.strokeStyle = "#" + StringTools.hex (glowFilter.color & 0xFFFFFF, 6);
 								context.lineWidth = Math.max (glowFilter.blurX, glowFilter.blurY);
-								context.strokeText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
+								context.strokeText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX - bounds.x, group.offsetY + offsetY + scrollY - bounds.y);
 								
 								context.strokeStyle = null;
 								context.globalAlpha = cacheAlpha;
@@ -230,7 +237,7 @@ class CanvasTextField {
 							
 						}
 						
-						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
+						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX - bounds.x, group.offsetY + offsetY + scrollY - bounds.y);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
 							
@@ -257,9 +264,9 @@ class CanvasTextField {
 									
 									context.beginPath ();
 									context.strokeStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
-									context.moveTo (group.offsetX + advance - textField.scrollH, scrollY + 2);
+									context.moveTo (group.offsetX + advance - textField.scrollH - bounds.x, scrollY + 2 - bounds.y);
 									context.lineWidth = 1;
-									context.lineTo (group.offsetX + advance - textField.scrollH, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
+									context.lineTo (group.offsetX + advance - textField.scrollH - bounds.x, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1 - bounds.y);
 									context.stroke ();
 									context.closePath ();
 									

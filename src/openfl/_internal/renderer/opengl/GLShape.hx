@@ -4,8 +4,9 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectShader;
+import openfl.display.OpenGLRenderer;
 import openfl.geom.Matrix;
 
 #if gl_stats
@@ -21,6 +22,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.Shader)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
@@ -29,7 +31,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class GLShape {
 	
 	
-	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function render (shape:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		
@@ -37,70 +39,48 @@ class GLShape {
 		
 		if (graphics != null) {
 			
-			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
-			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
-			#end
+			renderer.__setBlendMode (shape.__worldBlendMode);
+			renderer.__pushMaskObject (shape);
+			// renderer.filterManager.pushObject (shape);
+			
+			GLGraphics.render (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			
 			if (graphics.__bitmap != null && graphics.__visible) {
 				
-				var renderer:GLRenderer = cast renderSession.renderer;
-				var gl = renderSession.gl;
+				var gl = renderer.__gl;
 				
-				renderSession.blendModeManager.setBlendMode (shape.__worldBlendMode);
-				renderSession.maskManager.pushObject (shape);
+				var shader = renderer.__initDisplayShader (cast shape.__worldShader);
+				renderer.setShader (shader);
+				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
+				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
+				renderer.applyAlpha (shape.__worldAlpha);
+				renderer.applyColorTransform (shape.__worldColorTransform);
+				renderer.updateShader ();
 				
-				var shader = renderSession.filterManager.pushObject (shape);
-				
-				//var shader = renderSession.shaderManager.initShader (shape.shader);
-				renderSession.shaderManager.setShader (shader);
-				
-				shader.data.uImage0.input = graphics.__bitmap;
-				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
-				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
-				
-				var useColorTransform = !shape.__worldColorTransform.__isDefault ();
-				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-				shader.data.uColorTransform.value[0] = useColorTransform;
-				
-				renderSession.shaderManager.updateShader (shader);
-				
-				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha, shape.__worldColorTransform));
-				
-				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
-				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-				gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
-				
-				if (true || useColorTransform) {
-					
-					gl.vertexAttribPointer (shader.data.aColorMultipliers0.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
-					gl.vertexAttribPointer (shader.data.aColorMultipliers1.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 10 * Float32Array.BYTES_PER_ELEMENT);
-					gl.vertexAttribPointer (shader.data.aColorMultipliers2.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 14 * Float32Array.BYTES_PER_ELEMENT);
-					gl.vertexAttribPointer (shader.data.aColorMultipliers3.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 18 * Float32Array.BYTES_PER_ELEMENT);
-					gl.vertexAttribPointer (shader.data.aColorOffsets.index, 4, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 22 * Float32Array.BYTES_PER_ELEMENT);
-					
-				}
-				
+				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl));
+				if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+				if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				
 				#if gl_stats
 					GLStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
 				
-				renderSession.filterManager.popObject (shape);
-				renderSession.maskManager.popObject (shape);
+				renderer.__clearShader ();
 				
 			}
+			
+			// renderer.filterManager.popObject (shape);
+			renderer.__popMaskObject (shape);
 			
 		}
 		
 	}
 	
 	
-	public static inline function renderMask (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function renderMask (shape:DisplayObject, renderer:OpenGLRenderer):Void {
 		
 		var graphics = shape.__graphics;
 		
@@ -108,40 +88,30 @@ class GLShape {
 			
 			// TODO: Support invisible shapes
 			
-			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
-			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
-			#end
+			GLGraphics.renderMask (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			
 			if (graphics.__bitmap != null) {
 				
-				var renderer:GLRenderer = cast renderSession.renderer;
-				var gl = renderSession.gl;
+				var gl = renderer.__gl;
 				
-				var shader = GLMaskManager.maskShader;
+				var shader = renderer.__maskShader;
+				renderer.setShader (shader);
+				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
+				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
+				renderer.updateShader ();
 				
-				//var shader = renderSession.shaderManager.initShader (shape.shader);
-				renderSession.shaderManager.setShader (shader);
-				
-				shader.data.uImage0.input = graphics.__bitmap;
-				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
-				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
-				
-				renderSession.shaderManager.updateShader (shader);
-				
-				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha, shape.__worldColorTransform));
-				
-				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
-				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-				
+				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl));
+				gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				
 				#if gl_stats
 					GLStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
+				
+				renderer.__clearShader ();
 				
 			}
 			

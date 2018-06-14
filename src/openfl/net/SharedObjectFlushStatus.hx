@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !openfljs
 
 
 @:enum abstract SharedObjectFlushStatus(Null<Int>) {
@@ -31,3 +31,17 @@ package openfl.net;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract SharedObjectFlushStatus(String) from String to String {
+	
+	public var FLUSHED = "flushed";
+	public var PENDING = "pending";
+	
+}
+
+
+#end

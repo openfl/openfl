@@ -2,10 +2,10 @@ declare namespace openfl.display3D {
 	
 	export enum Context3DTriangleFace {
 		
-		BACK = 0,
-		FRONT = 1,
-		FRONT_AND_BACK = 2,
-		NONE = 3
+		BACK = "back",
+		FRONT = "front",
+		FRONT_AND_BACK = "frontAndBack",
+		NONE = "none"
 		
 	}
 	

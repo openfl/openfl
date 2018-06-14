@@ -12,6 +12,11 @@ import js.html.VideoElement;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class NetStream extends EventDispatcher {
 	
@@ -26,12 +31,13 @@ class NetStream extends EventDispatcher {
 	public var currentFPS (default, null):Float;
 	public var decodedFrames (default, null):Int;
 	public var liveDelay (default, null):Float;
-	public var objectEncoding (default, null):Int;
+	public var objectEncoding (default, null):ObjectEncoding;
 	public var soundTransform:SoundTransform;
 	public var speed (get, set):Float;
 	public var time (default, null):Float;
 	public var videoCode (default, null):Int;
 	
+	private var __closed:Bool;
 	private var __connection:NetConnection;
 	private var __timer:Timer;
 	
@@ -82,6 +88,9 @@ class NetStream extends EventDispatcher {
 	public function close ():Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
+		
+		__closed = true;
 		__video.pause ();
 		__video.src = "";
 		time = 0;
@@ -90,10 +99,20 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
+	public function dispose ():Void {
+		
+		#if (js && html5)
+		close ();
+		__video = null;
+		#end
+		
+	}
+	
+	
 	public function pause ():Void {
 		
 		#if (js && html5)
-		__video.pause ();
+		if (__video != null) __video.pause ();
 		#end
 		
 	}
@@ -102,6 +121,8 @@ class NetStream extends EventDispatcher {
 	public function play (url:String, ?_, ?_, ?_, ?_, ?_):Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
+		
 		__video.src = url;
 		__video.play ();
 		#end
@@ -112,6 +133,8 @@ class NetStream extends EventDispatcher {
 	public function requestVideoStatus ():Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
+		
 		if (__timer == null) {
 			
 			__timer = new Timer (1);
@@ -141,7 +164,7 @@ class NetStream extends EventDispatcher {
 	public function resume ():Void {
 		
 		#if (js && html5)
-		__video.play ();
+		if (__video != null) __video.play ();
 		#end
 		
 	}
@@ -150,6 +173,7 @@ class NetStream extends EventDispatcher {
 	public function seek (time:Float):Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
 		
 		if (time < 0) {
 			
@@ -162,6 +186,8 @@ class NetStream extends EventDispatcher {
 		}
 		
 		__video.currentTime = time;
+		
+		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Seek.Complete" } ));
 		#end
 		
 	}
@@ -170,6 +196,8 @@ class NetStream extends EventDispatcher {
 	public function togglePause ():Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
+		
 		if (__video.paused) {
 			
 			__video.play ();
@@ -187,6 +215,8 @@ class NetStream extends EventDispatcher {
 	private function __playStatus (code:String):Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
+		
 		if (client != null) {
 			
 			try {
@@ -257,6 +287,8 @@ class NetStream extends EventDispatcher {
 	private function video_onLoadMetaData (event:Dynamic):Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
+		
 		if (client != null) {
 			
 			try {
@@ -317,6 +349,8 @@ class NetStream extends EventDispatcher {
 	private function video_onTimeUpdate (event:Dynamic):Void {
 		
 		#if (js && html5)
+		if (__video == null) return;
+		
 		time = __video.currentTime;
 		#end
 		
@@ -342,7 +376,7 @@ class NetStream extends EventDispatcher {
 	private function get_speed ():Float {
 		
 		#if (js && html5)
-		return __video.playbackRate;
+		return __video != null ? __video.playbackRate : 1;
 		#else
 		return 1;
 		#end
@@ -353,7 +387,7 @@ class NetStream extends EventDispatcher {
 	private function set_speed (value:Float):Float {
 		
 		#if (js && html5)
-		return __video.playbackRate = value;
+		return __video != null ? __video.playbackRate = value : value;
 		#else
 		return value;
 		#end

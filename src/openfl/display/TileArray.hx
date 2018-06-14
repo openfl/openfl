@@ -3,6 +3,7 @@ package openfl.display;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -15,7 +16,8 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 
 
-@:beta class TileArray implements ITile {
+#if ((openfl < "9.0.0") && enable_tile_array)
+@:deprecated class TileArray implements ITile {
 	
 	
 	private static inline var ID_INDEX = 0;
@@ -47,6 +49,7 @@ import openfl.Vector;
 	private var __bufferContext:GLRenderContext;
 	private var __bufferDirty:Bool;
 	private var __bufferData:Float32Array;
+	private var __bufferLength:Int;
 	private var __bufferSkipped:Vector<Bool>;
 	private var __cacheAlpha:Float;
 	private var __cacheDefaultTileset:Tileset;
@@ -121,7 +124,7 @@ import openfl.Vector;
 		
 		// TODO: More closely align internal data format with GL buffer format?
 		
-		var attributeLength = 25;
+		var attributeLength = 13;
 		var stride = attributeLength * 6;
 		var bufferLength = __length * stride;
 		
@@ -346,14 +349,14 @@ import openfl.Vector;
 					
 					// 4 x 4 matrix
 					__bufferData[offset + (attributeLength * i) + 5] = redMultiplier;
-					__bufferData[offset + (attributeLength * i) + 10] = greenMultiplier;
-					__bufferData[offset + (attributeLength * i) + 15] = blueMultiplier;
-					__bufferData[offset + (attributeLength * i) + 20] = alphaMultiplier;
+					__bufferData[offset + (attributeLength * i) + 6] = greenMultiplier;
+					__bufferData[offset + (attributeLength * i) + 7] = blueMultiplier;
+					__bufferData[offset + (attributeLength * i) + 8] = alphaMultiplier;
 					
-					__bufferData[offset + (attributeLength * i) + 21] = redOffset / 255;
-					__bufferData[offset + (attributeLength * i) + 22] = greenOffset / 255;
-					__bufferData[offset + (attributeLength * i) + 23] = blueOffset / 255;
-					__bufferData[offset + (attributeLength * i) + 24] = alphaOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 9] = redOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 10] = greenOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 11] = blueOffset / 255;
+					__bufferData[offset + (attributeLength * i) + 12] = alphaOffset / 255;
 					
 				}
 				
@@ -361,7 +364,17 @@ import openfl.Vector;
 				
 			}
 			
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.DYNAMIC_DRAW);
+			if (__bufferLength >= __bufferData.byteLength) {
+				
+				(gl:WebGLContext).bufferSubData (gl.ARRAY_BUFFER, 0, __bufferData);
+				
+			} else {
+				
+				(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, __bufferData, gl.DYNAMIC_DRAW);
+				
+			}
+			
+			__bufferLength = __bufferData.byteLength;
 			
 			__cacheAlpha = worldAlpha;
 			__cacheDefaultTileset = defaultTileset;
@@ -676,3 +689,4 @@ private class TileArrayIterator {
 	
 	
 }
+#end

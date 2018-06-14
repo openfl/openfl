@@ -10,6 +10,11 @@ import openfl._internal.Lib;
 import sys.io.Process;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class Capabilities {
 	
@@ -249,6 +254,8 @@ import sys.io.Process;
 		var stage = Lib.current.stage;
 		var resolutionX = 0;
 		
+		if (stage == null) return 0;
+		
 		if (stage.window != null) {
 			
 			var display = stage.window.display;
@@ -276,6 +283,8 @@ import sys.io.Process;
 		
 		var stage = Lib.current.stage;
 		var resolutionY = 0;
+		
+		if (stage == null) return 0;
 		
 		if (stage.window != null) {
 			

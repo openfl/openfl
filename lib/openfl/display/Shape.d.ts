@@ -28,6 +28,8 @@ declare namespace openfl.display {
 		 */
 		public readonly graphics:Graphics;
 		
+		protected get_graphics ():Graphics;
+		
 		
 		/**
 		 * Creates a new Shape object.

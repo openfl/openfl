@@ -5,9 +5,7 @@ import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
-import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 #if (js && html5)
@@ -25,12 +23,11 @@ import js.html.ImageElement;
 @:access(openfl.geom.Rectangle)
 
 
-class Bitmap extends DisplayObject implements IShaderDrawable {
+class Bitmap extends DisplayObject {
 	
 	
 	public var bitmapData (get, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
-	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	
 	#if (js && html5)
@@ -69,19 +66,11 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __enterFrame (deltaTime:Int):Void {
 		
-		// TODO: Do not set as dirty for DOM render
-		
-		// #if (!js || !dom)
-		if (__bitmapData != null && __bitmapData.image != null) {
+		if (__bitmapData != null && __bitmapData.image != null && __bitmapData.image.version != __imageVersion) {
 			
-			var image = __bitmapData.image;
-			if (__bitmapData.image.version != __imageVersion) {
-				__setRenderDirty ();
-				__imageVersion = image.version;
-			}
+			__setRenderDirty ();
 			
 		}
-		// #end
 		
 	}
 	
@@ -156,121 +145,139 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
-	private override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderer:CairoRenderer):Void {
+		
+		if (__bitmapData != null && __bitmapData.image != null) {
+			
+			__imageVersion = __bitmapData.image.version;
+			
+		}
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			CairoBitmap.render (__cacheBitmap, renderSession);
+			CairoBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			CairoBitmap.render (this, renderSession);
+			CairoBitmap.render (this, renderer);
 			
 		}
+		
+		__renderEvent (renderer);
 		#end
 		
 	}
 	
 	
-	private override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderer:CairoRenderer):Void {
 		
-		renderSession.cairo.rectangle (0, 0, width, height);
+		renderer.cairo.rectangle (0, 0, width, height);
 		
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
-		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__bitmapData != null && __bitmapData.image != null) {
 			
-			CanvasBitmap.render (__cacheBitmap, renderSession);
-			
-		} else {
-			
-			CanvasBitmap.render (this, renderSession);
+			__imageVersion = __bitmapData.image.version;
 			
 		}
 		
-	}
-	
-	
-	private override function __renderCanvasMask (renderSession:RenderSession):Void {
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
 		
-		renderSession.context.rect (0, 0, width, height);
-		
-	}
-	
-	
-	private override function __renderDOM (renderSession:RenderSession):Void {
-		
-		__updateCacheBitmap (renderSession, !__worldColorTransform.__isDefault ());
-		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			__renderDOMClear (renderSession);
+			CanvasBitmap.render (__cacheBitmap, renderer);
+			
+		} else {
+			
+			CanvasBitmap.render (this, renderer);
+			
+		}
+		
+		__renderEvent (renderer);
+		
+	}
+	
+	
+	private override function __renderCanvasMask (renderer:CanvasRenderer):Void {
+		
+		renderer.context.rect (0, 0, width, height);
+		
+	}
+	
+	
+	private override function __renderDOM (renderer:DOMRenderer):Void {
+		
+		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
+			
+			__renderDOMClear (renderer);
 			__cacheBitmap.stage = stage;
 			
-			DOMBitmap.render (__cacheBitmap, renderSession);
+			DOMBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			DOMBitmap.render (this, renderSession);
+			DOMBitmap.render (this, renderer);
 			
 		}
 		
-	}
-	
-	
-	private override function __renderDOMClear (renderSession: RenderSession):Void {
-		
-		DOMBitmap.clear (this, renderSession);
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderDOMClear (renderer:DOMRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, false);
+		DOMBitmap.clear (this, renderer);
 		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
+	}
+	
+	
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
+		
+		if (__bitmapData != null && __bitmapData.image != null) {
 			
-			GLBitmap.render (__cacheBitmap, renderSession);
+			__imageVersion = __bitmapData.image.version;
+			
+		}
+		
+		__updateCacheBitmap (renderer, false);
+		
+		if (__cacheBitmap != null && !__isCacheBitmapRender) {
+			
+			GLBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			GLBitmap.render (this, renderSession);
+			GLBitmap.render (this, renderer);
 			
 		}
+		
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderSession, false);
-		
-		if (__cacheBitmap != null && !__cacheBitmapRender) {
-			
-			GLBitmap.renderMask (__cacheBitmap, renderSession);
-			
-		} else {
-			
-			GLBitmap.renderMask (this, renderSession);
-			
-		}
+		GLBitmap.renderMask (this, renderer);
 		
 	}
 	
 	
-	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
+	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
-		if (filters == null) return false;
-		return super.__updateCacheBitmap (renderSession, force);
+		// TODO: Handle filters without an intermediate draw
+		
+		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null) return false;
+		return super.__updateCacheBitmap (renderer, force);
 		
 	}
 	
@@ -321,7 +328,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		__setRenderDirty ();
 		
-		if (__filters != null && __filters.length > 0) {
+		if (__filters != null) {
 			
 			//__updateFilters = true;
 			

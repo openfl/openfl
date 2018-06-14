@@ -7,17 +7,20 @@ import haxe.macro.Type;
 
 using haxe.macro.ExprTools;
 using haxe.macro.Tools;
+using haxe.macro.TypeTools;
 
 
 class ShaderMacro {
 	
 	
-	private static var defaultFields = new Map<String, Bool> ();
-	
-	
 	public static function build ():Array<Field> {
 		
 		var fields = Context.getBuildFields ();
+		
+		var glFragmentHeader = "";
+		var glFragmentBody = "";
+		var glVertexHeader = "";
+		var glVertexBody = "";
 		
 		var glFragmentSource = null;
 		var glVertexSource = null;
@@ -36,6 +39,22 @@ class ShaderMacro {
 						
 						glVertexSource = meta.params[0].getValue ();
 					
+					case "glFragmentHeader", ":glFragmentHeader":
+						
+						glFragmentHeader = meta.params[0].getValue ();
+						
+					case "glFragmentBody", ":glFragmentBody":
+						
+						glFragmentBody = meta.params[0].getValue ();
+					
+					case "glVertexHeader", ":glVertexHeader":
+						
+						glVertexHeader = meta.params[0].getValue ();
+						
+					case "glVertexBody", ":glVertexBody":
+						
+						glVertexBody = meta.params[0].getValue ();
+					
 					default:
 					
 				}
@@ -44,46 +63,118 @@ class ShaderMacro {
 			
 		}
 		
-		if (glVertexSource != null || glFragmentSource != null) {
+		var pos = Context.currentPos ();
+		var localClass = Context.getLocalClass ().get ();
+		var superClass = localClass.superClass != null ? localClass.superClass.t.get () : null;
+		var parent = superClass;
+		var parentFields;
+		
+		while (parent != null) {
 			
-			var pos = Context.currentPos ();
-			var localClass = Context.getLocalClass ().get ();
+			parentFields = [ parent.constructor.get () ].concat (parent.fields.get ());
 			
-			var isBaseClass = (localClass.name == "Shader" && localClass.pack.length == 2 && localClass.pack[0] == "openfl" && localClass.pack[1] == "display");
-			
-			var shaderDataFields = new Array<Field> ();
-			var dataClassName;
-			
-			processFields (glVertexSource, "attribute", shaderDataFields, isBaseClass, pos);
-			processFields (glVertexSource, "uniform", shaderDataFields, isBaseClass, pos);
-			processFields (glFragmentSource, "uniform", shaderDataFields, isBaseClass, pos);
-			
-			if (isBaseClass) {
+			for (field in parentFields) {
 				
-				dataClassName = "ShaderData";
-				
-			} else if (shaderDataFields.length > 0) {
-				
-				dataClassName = "_" + localClass.name + "_ShaderData";
-				
-				Context.defineType ({
+				for (meta in field.meta.get ()) {
 					
-					pos: pos,
-					pack: localClass.pack,
-					name: dataClassName,
-					kind: TDClass ({ pack: [ "openfl", "display" ], name: "ShaderData", params: [] }, null, false),
-					fields: shaderDataFields,
-					params: [],
-					meta: [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":hack", pos: pos } ]
+					switch (meta.name) {
+						
+						case "glFragmentSource", ":glFragmentSource":
+							
+							if (glFragmentSource == null) glFragmentSource = meta.params[0].getValue ();
+						
+						case "glVertexSource", ":glVertexSource":
+							
+							if (glVertexSource == null) glVertexSource = meta.params[0].getValue ();
+						
+						case "glFragmentHeader", ":glFragmentHeader":
+							
+							glFragmentHeader = meta.params[0].getValue () + "\n" + glFragmentHeader;
+						
+						case "glFragmentBody", ":glFragmentBody":
+							
+							glFragmentBody = meta.params[0].getValue () + "\n" + glFragmentBody;
+						
+						case "glVertexHeader", ":glVertexHeader":
+							
+							glVertexHeader = meta.params[0].getValue () + "\n" + glVertexHeader;
+						
+						case "glVertexBody", ":glVertexBody":
+							
+							glVertexBody = meta.params[0].getValue () + "\n" + glVertexBody;
+						
+						default:
+						
+					}
 					
-				});
-				
-			} else {
-				
-				dataClassName = "_Shader_ShaderData";
+				}
 				
 			}
 			
+			parent = parent.superClass != null ? parent.superClass.t.get () : null;
+			
+		}
+		
+		if (glVertexSource != null || glFragmentSource != null) {
+			
+			if (glFragmentSource != null && glFragmentHeader != null && glFragmentBody != null) {
+				
+				glFragmentSource = StringTools.replace (glFragmentSource, "#pragma header", glFragmentHeader);
+				glFragmentSource = StringTools.replace (glFragmentSource, "#pragma body", glFragmentBody);
+				
+			}
+			
+			if (glVertexSource != null && glVertexHeader != null && glVertexBody != null) {
+				
+				glVertexSource = StringTools.replace (glVertexSource, "#pragma header", glVertexHeader);
+				glVertexSource = StringTools.replace (glVertexSource, "#pragma body", glVertexBody);
+				
+			}
+			
+			var shaderDataFields = new Array<Field> ();
+			var uniqueFields = [];
+			
+			processFields (glVertexSource, "attribute", shaderDataFields, pos);
+			processFields (glVertexSource, "uniform", shaderDataFields, pos);
+			processFields (glFragmentSource, "uniform", shaderDataFields, pos);
+			
+			if (shaderDataFields.length > 0) {
+				
+				var fieldNames = new Map<String, Bool> ();
+				
+				for (field in shaderDataFields) {
+					
+					parent = superClass;
+					
+					while (parent != null) {
+						
+						for (parentField in parent.fields.get ()) {
+							
+							if (parentField.name == field.name) {
+								
+								fieldNames.set (field.name, true);
+								
+							}
+							
+						}
+						
+						parent = parent.superClass != null ? parent.superClass.t.get () : null;
+						
+					}
+					
+					if (!fieldNames.exists (field.name)) {
+						
+						uniqueFields.push (field);
+						
+					}
+					
+					fieldNames[field.name] = true;
+					
+				}
+				
+			}
+			
+			#if !display
 			for (field in fields) {
 				
 				switch (field.name) {
@@ -109,28 +200,17 @@ class ShaderMacro {
 						
 						if (glVertexSource != null) block.unshift (macro if (__glVertexSource == null) __glVertexSource = $v{glVertexSource});
 						if (glFragmentSource != null) block.unshift (macro if (__glFragmentSource == null) __glFragmentSource = $v{glFragmentSource});
-					
-					case "__data":
-						
-						field.kind = FVar (TPath ({ name: dataClassName, pack: localClass.pack, params: [] }), Context.parse ("new " + dataClassName + " (null)", pos));
-					
-					case "get_data":
-						
-						switch (field.kind) {
-							
-							case FFun (f):
-								
-								f.ret = TPath ({ name: dataClassName, pack: localClass.pack, params: [] });
-							
-							default:
-							
-						}
+						block.push (Context.parse ("__isGenerated = true", pos));
+						block.push (Context.parse ("__initGL ()", pos));
 					
 					default:
 					
 				}
 				
 			}
+			#end
+			
+			fields = fields.concat (uniqueFields);
 			
 		}
 		
@@ -139,42 +219,48 @@ class ShaderMacro {
 	}
 	
 	
-	private static function processFields (source:String, storageType:String, fields:Array<Field>, isBaseClass:Bool, pos:Position):Void {
+	private static function processFields (source:String, storageType:String, fields:Array<Field>, pos:Position):Void {
 		
 		if (source == null) return;
 		
-		var lastMatch = 0, position, regex, name, type;
+		var lastMatch = 0, position, regex, field:Field, name, type;
 		
 		if (storageType == "uniform") {
 			
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
 			
 		} else {
 			
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
 			
 		}
+		
+		var fieldAccess;
 		
 		while (regex.matchSub (source, lastMatch)) {
 			
 			type = regex.matched (1);
 			name = regex.matched (2);
 			
-			if (isBaseClass) {
+			if (StringTools.startsWith (name, "gl_")) {
 				
-				defaultFields.set (name, true);
-				
-			} else if (defaultFields.exists (name)) {
-				
-				position = regex.matchedPos ();
-				lastMatch = position.pos + position.len;
 				continue;
+				
+			}
+			
+			if (StringTools.startsWith (name, "openfl_")) {
+				
+				fieldAccess = APrivate;
+				
+			} else {
+				
+				fieldAccess = APublic;
 				
 			}
 			
 			if (StringTools.startsWith (type, "sampler")) {
 				
-				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderInput<openfl.display.BitmapData>), pos: pos } );
+				field = { name: name, meta: [], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderInput<openfl.display.BitmapData>), pos: pos };
 				
 			} else {
 				
@@ -209,19 +295,31 @@ class ShaderMacro {
 					
 					case BOOL, BOOL2, BOOL3, BOOL4:
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Bool>), pos: pos } );
+						field = { name: name, meta: [ { name: ":keep", pos: pos } ], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Bool>), pos: pos };
 					
 					case INT, INT2, INT3, INT4:
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Int>), pos: pos } );
+						field = { name: name, meta: [ { name: ":keep", pos: pos } ], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Int>), pos: pos };
 					
 					default:
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos } );
+						field = { name: name, meta: [ { name: ":keep", pos: pos } ], access: [ fieldAccess ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos };
 					
 				}
 				
 			}
+			
+			if (StringTools.startsWith (name, "openfl_")) {
+				
+				field.meta = [ { name: ":keep", pos: pos }, { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":allow", params: [ macro openfl._internal ], pos: pos } ];
+				
+			} else {
+				
+				field.meta = [ { name: ":keep", pos: pos } ];
+				
+			}
+			
+			fields.push (field);
 			
 			position = regex.matchedPos ();
 			lastMatch = position.pos + position.len;

@@ -1,9 +1,7 @@
-// import AssetManifest from "./AssetManifest";
+import AssetManifest from "./AssetManifest";
 import ByteArray from "./ByteArray";
 import Future from "./Future";
 import MovieClip from "./../display/MovieClip";
-
-type AssetManifest = any;
 
 
 declare namespace openfl.utils {

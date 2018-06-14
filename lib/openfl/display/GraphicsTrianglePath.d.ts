@@ -1,8 +1,7 @@
+import Vector from "./../Vector";
 import IGraphicsData from "./IGraphicsData";
 import IGraphicsPath from "./IGraphicsPath";
 import TriangleCulling from "./TriangleCulling";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.display {

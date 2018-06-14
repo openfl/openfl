@@ -1,5 +1,9 @@
-package openfl.display3D;
+package openfl.display3D; #if !openfljs
+
+
+#if cs
 import openfl._internal.utils.NullUtils;
+#end
 
 
 @:enum abstract Context3DTriangleFace(Null<Int>) {
@@ -54,3 +58,19 @@ import openfl._internal.utils.NullUtils;
 	#end
 	
 }
+
+
+#else
+
+
+@:enum abstract Context3DTriangleFace(String) from String to String {
+	
+	public var BACK = "back";
+	public var FRONT = "front";
+	public var FRONT_AND_BACK = "frontAndBack";
+	public var NONE = "none";
+	
+}
+
+
+#end

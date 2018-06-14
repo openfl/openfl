@@ -48,6 +48,9 @@ declare namespace openfl.utils {
 		 */
 		public delay:number;
 		
+		protected get_delay ():number;
+		protected set_delay (value:number):number;
+		
 		/**
 		 * The total number of times the timer is set to run. If the repeat count is
 		 * set to 0, the timer continues forever or until the `stop()`
@@ -57,6 +60,9 @@ declare namespace openfl.utils {
 		 * the timer stops and will not fire again.
 		 */
 		public repeatCount:number;
+		
+		protected get_repeatCount ():number;
+		protected set_repeatCount (value:number):number;
 		
 		/**
 		 * The timer's current state; `true` if the timer is running,

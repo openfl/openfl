@@ -12,12 +12,22 @@ import openfl.utils.IDataInput;
 extern class URLStream extends EventDispatcher implements IDataInput {
 	
 	
-	public var bytesAvailable (default, never):UInt;
+	public var bytesAvailable (get, never):UInt;
+	
+	@:noCompletion private function get_bytesAvailable ():UInt;
+	
 	public var connected (default, null):Bool;
+	
 	//@:require(flash11_4) public var diskCacheEnabled (default, null):Bool;
-	public var endian:Endian;
+	
+	public var endian (get, set):Endian;
+	
+	@:noCompletion private function get_endian ():Endian;
+	@:noCompletion private function set_endian (value:Endian):Endian;
+	
 	//@:require(flash11_4) public var length (default, null):Float;
-	public var objectEncoding:UInt;
+	
+	public var objectEncoding:ObjectEncoding;
 	//@:require(flash11_4) public var position:Float;
 	
 	public function new ():Void;
@@ -38,10 +48,6 @@ extern class URLStream extends EventDispatcher implements IDataInput {
 	public function readUnsignedInt ():UInt;
 	public function readUnsignedShort ():UInt;
 	//@:require(flash11_4) public function stop ():Void;
-	
-	@:noCompletion @:dox(hide) private function get_bytesAvailable ():UInt;
-	@:noCompletion @:dox(hide) private function get_endian ():Endian;
-	@:noCompletion @:dox(hide) private function set_endian (value:Endian):Endian;
 	
 }
 

@@ -7,7 +7,7 @@ describe ("ES6 | InterpolationMethod", function () {
 	
 	it ("test", function () {
 		
-		switch (+InterpolationMethod.RGB) {
+		switch (""+InterpolationMethod.RGB) {
 			
 			case InterpolationMethod.LINEAR_RGB:
 			case InterpolationMethod.RGB:

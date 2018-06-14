@@ -1,7 +1,7 @@
 package flash.errors; #if (!display && flash)
 
 
-extern class Error #if openfl_dynamic implements Dynamic #end {
+@:native("Error") extern class Error #if openfl_dynamic implements Dynamic #end {
 	
 	
 	#if flash

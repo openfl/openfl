@@ -13,7 +13,7 @@ declare namespace openfl.system {
 		// #end
 		
 		
-		// private function new () {
+		// protected function new () {
 			
 			
 			

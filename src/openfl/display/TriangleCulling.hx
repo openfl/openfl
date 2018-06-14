@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !openfljs
 
 
 @:enum abstract TriangleCulling(Null<Int>) {
@@ -34,3 +34,18 @@ package openfl.display;
 	}
 	
 }
+
+
+#else
+
+
+@:enum abstract TriangleCulling(String) from String to String {
+	
+	public var NEGATIVE = "negative";
+	public var NONE = "none";
+	public var POSITIVE = "positive";
+	
+}
+
+
+#end

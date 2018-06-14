@@ -35,7 +35,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
-		GLTexture.create (this, __context.__renderSession);
+		GLTexture.create (this, cast __context.__renderer);
 		
 	}
 	
@@ -44,13 +44,13 @@ import openfl.utils.ByteArray;
 		
 		if (!async) {
 			
-			GLTexture.uploadCompressedTextureFromByteArray (this, __context.__renderSession, data, byteArrayOffset);
+			GLTexture.uploadCompressedTextureFromByteArray (this, cast __context.__renderer, data, byteArrayOffset);
 			
 		} else {
 			
 			Timer.delay (function () {
 				
-				GLTexture.uploadCompressedTextureFromByteArray (this, __context.__renderSession, data, byteArrayOffset);
+				GLTexture.uploadCompressedTextureFromByteArray (this, cast __context.__renderer, data, byteArrayOffset);
 				dispatchEvent (new Event (Event.TEXTURE_READY));
 				
 			}, 1);
@@ -62,28 +62,28 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromBitmapData (source:BitmapData, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
-		GLTexture.uploadFromBitmapData (this, __context.__renderSession, source, miplevel, generateMipmap);
+		GLTexture.uploadFromBitmapData (this, cast __context.__renderer, source, miplevel, generateMipmap);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
-		GLTexture.uploadFromByteArray (this, __context.__renderSession, data, byteArrayOffset, miplevel);
+		GLTexture.uploadFromByteArray (this, cast __context.__renderer, data, byteArrayOffset, miplevel);
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
-		GLTexture.uploadFromTypedArray (this, __context.__renderSession, data, miplevel);
+		GLTexture.uploadFromTypedArray (this, cast __context.__renderer, data, miplevel);
 		
 	}
 	
 	
 	private override function __setSamplerState (state:SamplerState) {
 		
-		GLTexture.setSamplerState (this, __context.__renderSession, state);
+		GLTexture.setSamplerState (this, cast __context.__renderer, state);
 		
 	}
 	

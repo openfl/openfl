@@ -3,6 +3,11 @@ package openfl.ui;
 
 import lime.ui.Mouse in LimeMouse;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.Stage)
 
 

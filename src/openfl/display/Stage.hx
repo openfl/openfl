@@ -2,21 +2,11 @@ package openfl.display;
 
 
 import haxe.CallStack;
-import haxe.EnumFlags;
 import lime.app.Application;
 import lime.app.IModule;
 import lime.app.Preloader;
-import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLUniformLocation;
-import lime.graphics.CanvasRenderContext;
-import lime.graphics.ConsoleRenderContext;
-import lime.graphics.DOMRenderContext;
-import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
 import lime.graphics.Renderer;
-import lime.math.Matrix4;
-import lime.system.System;
 import lime.ui.Touch;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
@@ -26,21 +16,11 @@ import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse in LimeMouse;
+import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
-import lime.utils.GLUtils;
 import lime.utils.Log;
-import openfl._internal.renderer.AbstractRenderer;
-import openfl._internal.renderer.cairo.CairoRenderer;
-import openfl._internal.renderer.canvas.CanvasRenderer;
-import openfl._internal.renderer.console.ConsoleRenderer;
-import openfl._internal.renderer.dom.DOMRenderer;
-import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.TouchData;
-import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
-import openfl.display.Window in OpenFLWindow;
-import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
@@ -55,10 +35,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
-import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
-import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 
@@ -84,7 +62,7 @@ typedef Element = Dynamic;
 @:noDebug
 #end
 
-@:access(openfl._internal.renderer.AbstractRenderer)
+@:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Sprite)
 @:access(openfl.display.Stage3D)
@@ -114,8 +92,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var frameRate (get, set):Float;
 	public var fullScreenHeight (get, never):UInt;
 	public var fullScreenWidth (get, never):UInt;
-	public var quality:StageQuality;
-	public var scaleMode:StageScaleMode;
+	public var quality (get, set):StageQuality;
+	public var scaleMode (get, set):StageScaleMode;
 	public var showDefaultContextMenu:Bool;
 	public var softKeyboardRect:Rectangle;
 	public var stage3Ds (default, null):Vector<Stage3D>;
@@ -131,7 +109,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorString:String;
 	private var __contentsScaleFactor:Float;
 	#if (commonjs && !nodejs)
-	private var __cursor:MouseCursor;
+	private var __cursor:LimeMouseCursor;
 	#end
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
@@ -142,6 +120,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __dragOffsetX:Float;
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
+	private var __forceRender:Bool;
 	private var __fullscreen:Bool;
 	private var __invalidated:Bool;
 	private var __lastClickTime:Int;
@@ -155,10 +134,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseX:Float;
 	private var __mouseY:Float;
 	private var __primaryTouch:Touch;
-	private var __renderer:AbstractRenderer;
+	private var __quality:StageQuality;
+	private var __renderer:DisplayObjectRenderer;
 	private var __rendering:Bool;
 	private var __rollOutStack:Array<DisplayObject>;
-	private var __mouseOutStack:Array<DisplayObject>;
+	private var __scaleMode:StageScaleMode;
 	private var __stack:Array<DisplayObject>;
 	private var __touchData:Map<Int, TouchData>;
 	private var __transparent:Bool;
@@ -177,6 +157,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			"frameRate": { get: untyped __js__ ("function () { return this.get_frameRate (); }"), set: untyped __js__ ("function (v) { return this.set_frameRate (v); }") },
 			"fullScreenHeight": { get: untyped __js__ ("function () { return this.get_fullScreenHeight (); }") },
 			"fullScreenWidth": { get: untyped __js__ ("function () { return this.get_fullScreenWidth (); }") },
+			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
+			"scaleMode": { get: untyped __js__ ("function () { return this.get_scaleMode (); }"), set: untyped __js__ ("function (v) { return this.set_scaleMode (v); }") },
 		});
 		
 	}
@@ -191,6 +173,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		super ();
 		
 		#if commonjs
+		var app = null;
 		
 		if (!Math.isNaN (width)) {
 			
@@ -232,10 +215,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			// if (Application.current == null) {
 				
-				var app = new Application ();
+				app = new Application ();
 				app.create ({});
 				app.createWindow (window);
-				app.exec ();
+				// app.exec ();
 				
 			// } else {
 				
@@ -292,8 +275,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
 		#end
-		quality = StageQuality.HIGH;
-		scaleMode = StageScaleMode.NO_SCALE;
+		__quality = StageQuality.HIGH;
+		__scaleMode = StageScaleMode.NO_SCALE;
 		showDefaultContextMenu = true;
 		softKeyboardRect = new Rectangle ();
 		stageFocusRect = true;
@@ -305,9 +288,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__clearBeforeRender = true;
+		__forceRender = false;
 		__stack = [];
 		__rollOutStack = [];
-		__mouseOutStack = [];
 		__touchData = new Map<Int, TouchData>();
 		
 		if (Lib.current.stage == null) {
@@ -331,13 +314,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		Application.current.addModule (this);
+		if (app != null) {
+			
+			app.addModule (this);
+			app.exec ();
+			
+		}
 		#end
 		
 	}
 	
 	
 	@:noCompletion public function addRenderer (renderer:Renderer):Void {
+		
+		if (this.window == null || this.window.renderer != renderer) return;
 		
 		renderer.onRender.add (render.bind (renderer));
 		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
@@ -356,6 +346,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		window.onDeactivate.add (onWindowDeactivate.bind (window));
 		window.onDropFile.add (onWindowDropFile.bind (window));
 		window.onEnter.add (onWindowEnter.bind (window));
+		window.onExpose.add (onWindowExpose.bind (window));
 		window.onFocusIn.add (onWindowFocusIn.bind (window));
 		window.onFocusOut.add (onWindowFocusOut.bind (window));
 		window.onFullscreen.add (onWindowFullscreen.bind (window));
@@ -420,9 +411,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function invalidate ():Void {
+	public override function invalidate ():Void {
 		
 		__invalidated = true;
+		__renderDirty = true;
 		
 	}
 	
@@ -811,6 +803,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onWindowExpose (window:Window):Void {
+		
+		if (this.window == null || this.window != window) return;
+		
+		__renderDirty = true;
+		
+	}
+	
+	
 	public function onWindowFocusIn (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
@@ -818,7 +819,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__renderDirty = true;
 		__broadcastEvent (new Event (Event.ACTIVATE));
 		
+		#if !desktop
 		focus = __cacheFocus;
+		#end
 		
 	}
 	
@@ -856,7 +859,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowLeave (window:Window):Void {
 		
-		if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window || MouseEvent.__buttonDown) return;
 		
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
@@ -884,8 +887,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__renderDirty = true;
 		__resize ();
+		
+		#if android // workaround for newer behavior
+		__forceRender = true;
+		Lib.setTimeout (function () {
+			__forceRender = false;
+		}, 500);
+		#end
 		
 		if (__wasFullscreen && !window.fullscreen) {
 			
@@ -924,8 +933,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null && (Stage3D.__active || stage3Ds[0].__contextRequested)) {
 			
-			__renderer.clear ();
-			__renderer.renderStage3D ();
+			__renderer.__clear ();
+			__renderer.__renderStage3D (this);
 			__renderDirty = true;
 			
 		}
@@ -952,15 +961,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
+		if (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) {
 			
 			if (!Stage3D.__active) {
 				
-				__renderer.clear ();
+				__renderer.__clear ();
 				
 			}
 			
-			if (renderer.type == CAIRO) {
+			if (__renderer.__type == CAIRO) {
 				
 				switch (renderer.context) {
 					
@@ -968,7 +977,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						#if lime_cairo
 						cast (__renderer, CairoRenderer).cairo = cairo;
-						@:privateAccess (__renderer.renderSession).cairo = cairo;
 						#end
 					
 					default:
@@ -977,7 +985,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			__renderer.render ();
+			__renderer.__render (this);
 			
 		} else {
 			
@@ -1036,35 +1044,68 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __createRenderer ():Void {
 		
+		#if (js && html5)
+		var pixelRatio = 1;
+		
+		if (window.config != null && Reflect.hasField (window.config, "allowHighDPI") && window.config.allowHighDPI) {
+			
+			pixelRatio = untyped window.devicePixelRatio || 1;
+			
+		}
+		#end
+		
 		switch (window.renderer.context) {
 			
 			case OPENGL (gl):
 				
 				#if (!disable_cffi && (!html5 || !canvas))
-				__renderer = new GLRenderer (this, gl);
+				__renderer = new OpenGLRenderer (gl);
+				
+				if (stage3Ds[0].context3D == null) {
+					
+					stage3Ds[0].__createContext (this, __renderer);
+					
+				}
 				#end
 			
 			case CANVAS (context):
 				
-				__renderer = new CanvasRenderer (this, context);
+				#if (js && html5)
+				__renderer = new CanvasRenderer (context);
+				cast (__renderer, CanvasRenderer).pixelRatio = pixelRatio;
+				#end
 			
 			case DOM (element):
 				
-				__renderer = new DOMRenderer (this, element);
+				#if (js && html5)
+				__renderer = new DOMRenderer (element);
+				cast (__renderer, DOMRenderer).pixelRatio = pixelRatio;
+				#end
 			
 			case CAIRO (cairo):
 				
 				#if lime_cairo
-				__renderer = new CairoRenderer (this, cairo);
+				__renderer = new CairoRenderer (cairo);
+				
 				#end
 			
 			case CONSOLE (ctx):
 				
 				#if lime_console
-				__renderer = new ConsoleRenderer (this, ctx);
+				__renderer = new ConsoleRenderer (ctx);
 				#end
 			
 			default:
+			
+		}
+		
+		if (__renderer != null) {
+			
+			__renderer.__allowSmoothing = (quality != LOW);
+			__renderer.__worldTransform = __displayMatrix;
+			__renderer.__stage = this;
+			
+			__renderer.__resize (Std.int (window.width * window.scale), Std.int (window.height * window.scale));
 			
 		}
 		
@@ -1247,7 +1288,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private function __handleError (e:Dynamic):Void {
 		
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
-		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+		
+		try {
+			
+			Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+			
+		} catch (e:Dynamic) {}
 		
 		if (!event.__preventDefault) {
 			
@@ -1408,7 +1454,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					MouseEvent.__buttonDown = false;
 					
-					if (__mouseX < 0 || __mouseY < 0) {
+					if (__mouseX < 0 || __mouseY < 0 || __mouseX > stageWidth || __mouseY > stageHeight) {
 						
 						__dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
 						
@@ -1547,7 +1593,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (__mouseOverTarget != null) {
 				
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
-				__dispatchStack (event, __mouseOutStack);
+				__dispatchTarget (__mouseOverTarget, event);
 				
 			}
 			
@@ -1594,12 +1640,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (target != null) {
 				
 				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), cast target);
-				__dispatchStack (event, stack);
+				event.bubbles = true;
+				__dispatchTarget (target, event);
 				
 			}
 			
 			__mouseOverTarget = target;
-			__mouseOutStack = stack;
 			
 		}
 		
@@ -1893,11 +1939,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null) {
 			
-			__renderer.resize (windowWidth, windowHeight);
+			__renderer.__resize (windowWidth, windowHeight);
 			
 		}
 		
 		if (stageWidth != cacheWidth || stageHeight != cacheHeight) {
+			
+			__renderDirty = true;
+			__setTransformDirty ();
 			
 			__dispatchEvent (new Event (Event.RESIZE));
 			
@@ -1959,13 +2008,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		if (transformOnly) {
 			
 			if (__transformDirty) {
 				
-				super.__update (true, updateChildren, maskGraphics);
+				super.__update (true, updateChildren);
 				
 				if (updateChildren) {
 					
@@ -1980,7 +2029,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (__transformDirty || __renderDirty) {
 				
-				super.__update (false, updateChildren, maskGraphics);
+				super.__update (false, updateChildren);
 				
 				if (updateChildren) {
 					
@@ -1997,12 +2046,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 				}
 				
-			} /*#if dom*/ else if (__wasDirty) {
+			} /*#if dom*/ else if (!__renderDirty && __wasDirty) {
 				
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
 				
-				super.__update (false, updateChildren, maskGraphics);
+				super.__update (false, updateChildren);
 				
 				if (updateChildren) {
 					
@@ -2206,9 +2255,47 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	private function get_quality ():StageQuality {
+		
+		return __quality;
+		
+	}
+	
+	
+	private function set_quality (value:StageQuality):StageQuality {
+		
+		__quality = value;
+		
+		if (__renderer != null) {
+			
+			__renderer.__allowSmoothing = (quality != LOW);
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	private override function set_rotation (value:Float):Float {
 		
 		return 0;
+		
+	}
+	
+	
+	private function get_scaleMode ():StageScaleMode {
+		
+		return __scaleMode;
+		
+	}
+	
+	
+	private function set_scaleMode (value:StageScaleMode):StageScaleMode {
+		
+		// TODO
+		
+		return __scaleMode = value;
 		
 	}
 	

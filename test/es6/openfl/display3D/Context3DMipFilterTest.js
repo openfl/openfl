@@ -7,7 +7,7 @@ describe ("ES6 | Context3DMipFilter", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DMipFilter.MIPLINEAR) {
+		switch (""+Context3DMipFilter.MIPLINEAR) {
 			
 			case Context3DMipFilter.MIPLINEAR:
 			case Context3DMipFilter.MIPNEAREST:

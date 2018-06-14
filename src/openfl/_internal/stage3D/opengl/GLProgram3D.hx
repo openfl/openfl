@@ -6,12 +6,12 @@ import lime.graphics.GLRenderContext;
 import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import lime.utils.Log;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.AGALConverter;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
+import openfl.display.OpenGLRenderer;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -29,13 +29,13 @@ class GLProgram3D {
 	
 	
 	private static var program:Program3D;
-	private static var renderSession:RenderSession;
+	private static var renderer:OpenGLRenderer;
 	
 	
-	public static function dispose (program:Program3D, renderSession:RenderSession):Void {
+	public static function dispose (program:Program3D, renderer:OpenGLRenderer):Void {
 		
 		GLProgram3D.program = program;
-		GLProgram3D.renderSession = renderSession;
+		GLProgram3D.renderer = renderer;
 		
 		__deleteShaders ();
 		
@@ -62,19 +62,19 @@ class GLProgram3D {
 	}
 	
 	
-	public static function setPositionScale (program:Program3D, renderSession:RenderSession, positionScale:Float32Array):Void {
+	public static function setPositionScale (program:Program3D, renderer:OpenGLRenderer, positionScale:Float32Array):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		gl.uniform4fv (program.__positionScale.location, 1, positionScale);
 		GLUtils.CheckGLError ();
 		
 	}
 	
 	
-	public static function upload (program:Program3D, renderSession:RenderSession, vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
+	public static function upload (program:Program3D, renderer:OpenGLRenderer, vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
 		
 		GLProgram3D.program = program;
-		GLProgram3D.renderSession = renderSession;
+		GLProgram3D.renderer = renderer;
 		
 		//var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		var samplerStates = new Array<SamplerState> ();
@@ -93,9 +93,9 @@ class GLProgram3D {
 	}
 	
 	
-	public static function use (program:Program3D, renderSession:RenderSession):Void {
+	public static function use (program:Program3D, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		gl.useProgram (program.__programID);
 		GLUtils.CheckGLError ();
@@ -155,11 +155,12 @@ class GLProgram3D {
 	
 	private static function __buildUniformList ():Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		program.__uniforms.clear ();
 		program.__samplerUniforms.clear ();
 		program.__alphaSamplerUniforms.clear ();
+		program.__alphaSamplerEnabled = [];
 		
 		program.__samplerUsageMask = 0;
 		
@@ -223,7 +224,7 @@ class GLProgram3D {
 				uniform.regData = program.__context.__fragmentConstants;
 				fragmentUniforms.add (uniform);
 				
-			} else if (StringTools.startsWith (uniform.name, "sampler") && !StringTools.endsWith (uniform.name, "_alpha")) {
+			} else if (StringTools.startsWith (uniform.name, "sampler") && uniform.name.indexOf ("alpha") == -1) {
 				
 				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
 				program.__samplerUniforms.add (uniform);
@@ -239,6 +240,11 @@ class GLProgram3D {
 				var len = uniform.name.indexOf ("_") - 7;
 				uniform.regIndex = Std.parseInt (uniform.name.substring (7, 7 + len)) + 4;
 				program.__alphaSamplerUniforms.add (uniform);
+				
+			} else if (StringTools.startsWith (uniform.name, "sampler") && StringTools.endsWith (uniform.name, "_alphaEnabled")) {
+				
+				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
+				program.__alphaSamplerEnabled[uniform.regIndex] = uniform;
 				
 			}
 			
@@ -258,7 +264,7 @@ class GLProgram3D {
 	
 	private static function __deleteShaders ():Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		if (program.__programID != null) {
 			
@@ -313,7 +319,7 @@ class GLProgram3D {
 	
 	private static function __uploadFromGLSL (vertexShaderSource:String, fragmentShaderSource:String):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		__deleteShaders ();
 		

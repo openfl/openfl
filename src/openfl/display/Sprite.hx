@@ -5,7 +5,6 @@ import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
-import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -23,17 +22,22 @@ import openfl.geom.Rectangle;
 class Sprite extends DisplayObjectContainer {
 	
 	
-	public var buttonMode:Bool;
+	public var buttonMode (get, set):Bool;
 	public var dropTarget (default, null):DisplayObject;
 	public var graphics (get, never):Graphics;
 	public var hitArea:Sprite;
 	public var useHandCursor:Bool;
 	
+	private var __buttonMode:Bool;
+	
 	
 	#if openfljs
 	private static function __init__ () {
 		
-		untyped Object.defineProperty (Sprite.prototype, "graphics", { get: untyped __js__ ("function () { return this.get_graphics (); }") });
+		untyped Object.defineProperties (Sprite.prototype, {
+			"buttonMode": { get: untyped __js__ ("function () { return this.get_buttonMode (); }"), set: untyped __js__ ("function (v) { return this.set_buttonMode (v); }") },
+			"graphics": { get: untyped __js__ ("function () { return this.get_graphics (); }") },
+		});
 		
 	}
 	#end
@@ -43,7 +47,7 @@ class Sprite extends DisplayObjectContainer {
 		
 		super ();
 		
-		buttonMode = false;
+		__buttonMode = false;
 		useHandCursor = true;
 		
 	}
@@ -73,7 +77,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	private override function __getCursor ():MouseCursor {
 		
-		return (buttonMode && useHandCursor) ? POINTER : null;
+		return (__buttonMode && useHandCursor) ? POINTER : null;
 		
 	}
 	
@@ -132,7 +136,7 @@ class Sprite extends DisplayObjectContainer {
 				var hitTest = hitArea.__hitTest (x, y, shapeFlag, null, true, hitObject);
 				hitArea.mouseEnabled = false;
 				
-				if (hitTest) {
+				if (stack != null && hitTest) {
 					
 					stack[stack.length] = hitObject;
 					
@@ -188,7 +192,21 @@ class Sprite extends DisplayObjectContainer {
 	
 	private override function get_tabEnabled ():Bool {
 		
-		return (__tabEnabled == null ? buttonMode : __tabEnabled);
+		return (__tabEnabled == null ? __buttonMode : __tabEnabled);
+		
+	}
+	
+	
+	private function get_buttonMode ():Bool {
+		
+		return __buttonMode;
+		
+	}
+	
+	
+	private function set_buttonMode (value:Bool):Bool {
+		
+		return __buttonMode = value;
 		
 	}
 	

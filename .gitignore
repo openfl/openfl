@@ -5,6 +5,7 @@ node_modules
 *.hash
 .idea
 .svn
+.vscode
 test/unit/build
 test/unit/report
 test/unit/src
@@ -19,6 +20,7 @@ test/unit/test/*/*/TestMain.hx
 test/unit/test/*/*/TestSuite.hx
 dist
 docs
+docs-api
 scripts/xml
 scripts/*.n
 haxedoc.xml
@@ -26,9 +28,10 @@ haxedoc.xml
 dump
 */dump/*
 lib/_gen
+lib-esm/_gen
 test/*/bundle.js
-package-lock.json
 npm-debug.log
 *.map
 *.tgz
 bin/tools.js
+*.bak

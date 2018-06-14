@@ -1,5 +1,9 @@
-package openfl.display3D;
+package openfl.display3D; #if !openfljs
+
+
+#if cs
 import openfl._internal.utils.NullUtils;
+#end
 
 
 @:enum abstract Context3DStencilAction(Null<Int>) {
@@ -66,3 +70,23 @@ import openfl._internal.utils.NullUtils;
 	#end
 	
 }
+
+
+#else
+
+
+@:enum abstract Context3DStencilAction(String) from String to String {
+	
+	public var DECREMENT_SATURATE = "decrementSaturate";
+	public var DECREMENT_WRAP = "decrementWrap";
+	public var INCREMENT_SATURATE = "incrementSaturate";
+	public var INCREMENT_WRAP = "incrementWrap";
+	public var INVERT = "invert";
+	public var KEEP = "keep";
+	public var SET = "set";
+	public var ZERO = "zero";
+	
+}
+
+
+#end

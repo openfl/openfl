@@ -1,14 +1,15 @@
 package openfl._internal.stage3D.opengl;
 
 
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
 import openfl.utils.ByteArray;
 
 #if !openfl_debug
@@ -24,46 +25,63 @@ import openfl.utils.ByteArray;
 class GLRectangleTexture {
 	
 	
-	public static function create (rectangleTexture:RectangleTexture, renderSession:RenderSession):Void {
+	public static function create (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		rectangleTexture.__textureTarget = gl.TEXTURE_2D;
-		uploadFromTypedArray (rectangleTexture, renderSession, null);
+		uploadFromTypedArray (rectangleTexture, renderer, null);
 		
 	}
 	
 	
-	public static function uploadFromBitmapData (rectangleTexture:RectangleTexture, renderSession:RenderSession, source:BitmapData):Void {
+	public static function uploadFromBitmapData (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, source:BitmapData):Void {
 		
 		if (source == null) return;
 		
 		var image = rectangleTexture.__getImage (source);
-		
 		if (image == null) return;
 		
-		uploadFromTypedArray (rectangleTexture, renderSession, image.data);
-		
-	}
-	
-	
-	public static function uploadFromByteArray (rectangleTexture:RectangleTexture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
-		
-		#if js
-		if (byteArrayOffset == 0) {
+		#if (js && html5)
+		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			uploadFromTypedArray (rectangleTexture, renderSession, @:privateAccess (data:ByteArrayData).b);
+			var gl:WebGLContext = renderer.__gl;
+			
+			gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2D (rectangleTexture.__textureTarget, 0, rectangleTexture.__internalFormat, rectangleTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (rectangleTexture.__textureTarget, null);
+			GLUtils.CheckGLError ();
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (rectangleTexture, renderSession, new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		uploadFromTypedArray (rectangleTexture, renderer, image.data);
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (rectangleTexture:RectangleTexture, renderSession:RenderSession, data:ArrayBufferView):Void {
+	public static function uploadFromByteArray (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
+		
+		#if js
+		if (byteArrayOffset == 0) {
+			
+			uploadFromTypedArray (rectangleTexture, renderer, @:privateAccess (data:ByteArrayData).b);
+			return;
+			
+		}
+		#end
+		
+		uploadFromTypedArray (rectangleTexture, renderer, new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		
+	}
+	
+	
+	public static function uploadFromTypedArray (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, data:ArrayBufferView):Void {
 		
 		//if (__format != Context3DTextureFormat.BGRA) {
 			//
@@ -71,7 +89,7 @@ class GLRectangleTexture {
 			//
 		//}
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
 		GLUtils.CheckGLError ();
@@ -88,11 +106,11 @@ class GLRectangleTexture {
 	}
 	
 	
-	public static function setSamplerState (rectangleTexture:RectangleTexture, renderSession:RenderSession, state:SamplerState) {
+	public static function setSamplerState (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, state:SamplerState) {
 		
 		if (!state.equals (rectangleTexture.__samplerState)) {
 			
-			var gl = renderSession.gl;
+			var gl = renderer.__gl;
 			
 			if (state.maxAniso != 0.0) {
 				
@@ -103,7 +121,7 @@ class GLRectangleTexture {
 			
 		}
 		
-		GLTextureBase.setSamplerState (rectangleTexture, renderSession, state);
+		GLTextureBase.setSamplerState (rectangleTexture, renderer, state);
 		
 	}
 	

@@ -170,4 +170,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -o ../docs -i xml -ex flash --title "API Reference" -D website "http://www.openfl.org" -D logo "http://www.openfl.org/images/logo.png" -D textColor 0x777777 -theme ../assets/docs-theme
+-cmd haxelib run dox -o ../docs-api -i xml -in openfl -in lime --title "API Reference" -D website "http://www.openfl.org" -D logo "/images/logo.png" -D textColor 0x777777 -theme ../assets/docs-theme

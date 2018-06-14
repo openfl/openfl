@@ -130,6 +130,8 @@ declare namespace openfl.media {
 		 */
 		public readonly id3:ID3Info;
 		
+		protected get_id3 ():ID3Info;
+		
 		/**
 		 * Returns the buffering state of external MP3 files. If the value is
 		 * `true`, any playback is currently suspended while the object
@@ -145,6 +147,8 @@ declare namespace openfl.media {
 		 * The length of the current sound in milliseconds.
 		 */
 		public readonly length:number;
+		
+		protected get_length ():number;
 		
 		/**
 		 * The URL from which this sound was loaded. This property is applicable only

@@ -2,9 +2,9 @@ declare namespace openfl.system {
 	
 	export enum TouchscreenType {
 		
-		FINGER = 0,
-		NONE = 1,
-		STYLUS = 2
+		FINGER = "finger",
+		NONE = "none",
+		STYLUS = "stylus"
 		
 	}
 	

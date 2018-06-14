@@ -1,6 +1,7 @@
 package openfl.text; #if (display || !flash)
 
 
+import lime.app.Future;
 import lime.text.Font in LimeFont;
 import openfl.utils.ByteArray;
 
@@ -19,6 +20,9 @@ extern class Font extends LimeFont {
 	 * The name of an embedded font.
 	 */
 	public var fontName (get, set):String;
+	
+	@:noCompletion private function get_fontName ():String;
+	@:noCompletion private function set_fontName (value:String):String;
 	
 	/**
 	 * The style of the font. This value can be any of the values defined in the
@@ -56,6 +60,11 @@ extern class Font extends LimeFont {
 	
 	
 	public static function fromFile (path:String):Font;
+	
+	
+	public static function loadFromBytes (bytes:ByteArray):Future<Font>;
+	public static function loadFromFile (path:String):Future<Font>;
+	public static function loadFromName (path:String):Future<Font>;
 	
 	
 	#if flash

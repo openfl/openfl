@@ -3,12 +3,12 @@ package openfl._internal.stage3D.opengl;
 
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.graphics.Image;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.GLCompressedTextureFormats;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.TextureBase;
 import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -30,9 +30,9 @@ class GLTextureBase {
 	public static var __compressedTextureFormats:Null<GLCompressedTextureFormats> = null;
 	
 	
-	public static function create (textureBase:TextureBase, renderSession:RenderSession):Void {
+	public static function create (textureBase:TextureBase, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		textureBase.__textureID = gl.createTexture ();
 		textureBase.__textureContext = gl;
@@ -75,6 +75,7 @@ class GLTextureBase {
 		if (__compressedTextureFormats == null) {
 			
 			__compressedTextureFormats = new GLCompressedTextureFormats (gl);
+			
 		}
 		
 		textureBase.__internalFormat = __textureInternalFormat;
@@ -83,9 +84,9 @@ class GLTextureBase {
 	}
 	
 	
-	public static function dispose (textureBase:TextureBase, renderSession:RenderSession):Void {
+	public static function dispose (textureBase:TextureBase, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		if (textureBase.__alphaTexture != null) {
 			
@@ -132,9 +133,9 @@ class GLTextureBase {
 	}
 	
 	
-	public static function getImage (textureBase:TextureBase, renderSession:RenderSession, bitmapData:BitmapData):Image {
+	public static function getImage (textureBase:TextureBase, renderer:OpenGLRenderer, bitmapData:BitmapData):Image {
 		
-		var image =	bitmapData.image;
+		var image = bitmapData.image;
 		
 		if (!bitmapData.__isValid || image == null) {
 			
@@ -147,7 +148,7 @@ class GLTextureBase {
 		#end
 		
 		#if (js && html5)
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		if (image.type != DATA && !image.premultiplied) {
 			
@@ -193,11 +194,11 @@ class GLTextureBase {
 	}
 	
 	
-	public static function setSamplerState (textureBase:TextureBase, renderSession:RenderSession, state:SamplerState):Void {
+	public static function setSamplerState (textureBase:TextureBase, renderer:OpenGLRenderer, state:SamplerState):Void {
 		
 		if (!state.equals (textureBase.__samplerState)) {
 			
-			var gl = renderSession.gl;
+			var gl = renderer.__gl;
 			
 			gl.bindTexture (textureBase.__textureTarget, textureBase.__textureID);
 			GLUtils.CheckGLError ();

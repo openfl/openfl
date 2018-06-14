@@ -12,6 +12,11 @@ import sys.FileStat;
 import sys.FileSystem;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.net.FileReference)
 
 

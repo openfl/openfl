@@ -1,3 +1,4 @@
+import Vector from "./../Vector";
 // import Application from "./Application";
 import DisplayObjectContainer from "./DisplayObjectContainer";
 import InteractiveObject from "./InteractiveObject";
@@ -7,7 +8,6 @@ import StageDisplayState from "./StageDisplayState";
 import StageQuality from "./StageQuality";
 import StageScaleMode from "./StageScaleMode";
 
-type Vector<T> = any;
 type Window = any;
 
 
@@ -168,6 +168,9 @@ declare namespace openfl.display {
 		 */
 		public color:number;
 		
+		protected get_color ():number;
+		protected set_color (value:number):number;
+		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) public colorCorrection:flash.display.ColorCorrection;
 		// #end
@@ -177,6 +180,8 @@ declare namespace openfl.display {
 		// #end
 		
 		public readonly contentsScaleFactor:number;
+		
+		protected get_contentsScaleFactor ():number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash11) public displayContextInfo (default, null):string;
@@ -271,6 +276,9 @@ declare namespace openfl.display {
 		 */
 		public displayState:StageDisplayState;
 		
+		protected get_displayState ():StageDisplayState;
+		protected set_displayState (value:StageDisplayState):StageDisplayState;
+		
 		public readonly element:HTMLElement;
 		
 		/**
@@ -281,6 +289,9 @@ declare namespace openfl.display {
 		 * @throws Error Throws an error if focus cannot be set to the target.
 		 */
 		public focus:InteractiveObject;
+		
+		protected get_focus ():InteractiveObject;
+		protected set_focus (value:InteractiveObject):InteractiveObject;
 		
 		/**
 		 * Gets and sets the frame rate of the stage. The frame rate is defined as
@@ -312,13 +323,20 @@ declare namespace openfl.display {
 		 */
 		public frameRate:number;
 		
+		protected get_frameRate ():number;
+		protected set_frameRate (value:number):number;
+		
 		public readonly fullScreenHeight:number;
+		
+		protected get_fullScreenHeight ():number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) public fullScreenSourceRect:Rectangle;
 		// #end
 		
 		public readonly fullScreenWidth:number;
+		
+		protected get_fullScreenWidth ():number;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash11_2) public mouseLock:boolean;
@@ -381,6 +399,9 @@ declare namespace openfl.display {
 		 */
 		public quality:StageQuality;
 		
+		protected get_quality ():StageQuality;
+		protected set_quality (value:StageQuality):StageQuality;
+		
 		/**
 		 * A value from the StageScaleMode class that specifies which scale mode to
 		 * use. The following are valid values:
@@ -414,6 +435,9 @@ declare namespace openfl.display {
 		 *                       the _ActionScript 3.0 Developer's Guide_.
 		 */
 		public scaleMode:StageScaleMode;
+		
+		protected get_scaleMode ():StageScaleMode;
+		protected set_scaleMode (value:StageScaleMode):StageScaleMode;
 		
 		public showDefaultContextMenu:boolean;
 		
@@ -565,7 +589,7 @@ declare namespace openfl.display {
 		 * `Security.allowDomain()` method.
 		 * 
 		 */
-		public invalidate ():void;
+		//override invalidate ():void;
 		
 		
 		// #if flash

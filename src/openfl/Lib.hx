@@ -174,7 +174,7 @@ import js.Browser;
 		#else
 		var uri = request.url;
 		
-		if (Std.is (request.data, URLVariables)) {
+		if (Type.typeof(request.data) == Type.ValueType.TObject) {
 			
 			var query = "";
 			var fields = Reflect.fields (request.data);
@@ -249,14 +249,14 @@ import js.Browser;
 	}
 	
 	
-	public static function setInterval (closure:Function, delay:Int, args:Array<Dynamic>):UInt {
+	public static function setInterval (closure:Function, delay:Int, args:Array<Dynamic> = null):UInt {
 		
 		var id = ++__lastTimerID;
 		var timer = new Timer (delay);
 		__timers[id] = timer;
 		timer.run = function () {
 			
-			Reflect.callMethod (closure, closure, args);
+			Reflect.callMethod (closure, closure, args == null ? [] : args);
 			
 		};
 		return id;
@@ -264,12 +264,12 @@ import js.Browser;
 	}
 	
 	
-	public static function setTimeout (closure:Function, delay:Int, args:Array<Dynamic>):UInt {
+	public static function setTimeout (closure:Function, delay:Int, args:Array<Dynamic> = null):UInt {
 		
 		var id = ++__lastTimerID;
 		__timers[id] = Timer.delay (function () {
 			
-			Reflect.callMethod (closure, closure, args);
+			Reflect.callMethod (closure, closure, args == null ? [] : args);
 			
 		}, delay);
 		return id;

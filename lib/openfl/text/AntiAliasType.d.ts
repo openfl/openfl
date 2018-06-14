@@ -15,7 +15,7 @@ declare namespace openfl.text {
 		 * in the TextField class. Use the syntax
 		 * `AntiAliasType.ADVANCED`.
 		 */
-		ADVANCED = 0,
+		ADVANCED = "advanced",
 		
 		/**
 		 * Sets anti-aliasing to the anti-aliasing that is used in Flash Player 7 and
@@ -24,7 +24,7 @@ declare namespace openfl.text {
 		 * property in the TextField class. Use the syntax
 		 * `AntiAliasType.NORMAL`.
 		 */
-		NORMAL = 1
+		NORMAL = "normal"
 		
 	}
 	

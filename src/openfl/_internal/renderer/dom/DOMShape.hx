@@ -3,6 +3,7 @@ package openfl._internal.renderer.dom;
 
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
+import openfl.display.DOMRenderer;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -19,12 +20,12 @@ import js.Browser;
 class DOMShape {
 	
 	
-	public static function clear (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function clear (shape:DisplayObject, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (shape.__canvas != null) {
 			
-			renderSession.element.removeChild (shape.__canvas);
+			renderer.element.removeChild (shape.__canvas);
 			shape.__canvas = null;
 			shape.__style = null;
 			
@@ -34,14 +35,14 @@ class DOMShape {
 	}
 	
 	
-	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static inline function render (shape:DisplayObject, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		var graphics = shape.__graphics;
 		
 		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null) {
 			
-			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
+			CanvasGraphics.render (graphics, renderer.__canvasRenderer);
 			
 			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas != graphics.__canvas)) {
 				
@@ -51,20 +52,20 @@ class DOMShape {
 						
 						if (shape.__canvas != null) {
 							
-							renderSession.element.removeChild (shape.__canvas);
+							renderer.element.removeChild (shape.__canvas);
 							
 						}
 						
 						shape.__canvas = graphics.__canvas;
 						shape.__context = graphics.__context;
 						
-						DOMRenderer.initializeElement (shape, shape.__canvas, renderSession);
+						renderer.__initializeElement (shape, shape.__canvas);
 						
 					}
 					
 				} else {
 					
-					clear (shape, renderSession);
+					clear (shape, renderer);
 					
 				}
 				
@@ -72,7 +73,7 @@ class DOMShape {
 			
 			if (shape.__canvas != null) {
 				
-				renderSession.maskManager.pushObject (shape);
+				renderer.__pushMaskObject (shape);
 				
 				var cacheTransform = shape.__renderTransform;
 				shape.__renderTransform = graphics.__worldTransform;
@@ -84,18 +85,18 @@ class DOMShape {
 					
 				}
 				
-				DOMRenderer.updateClip (shape, renderSession);
-				DOMRenderer.applyStyle (shape, renderSession, true, true, true);
+				renderer.__updateClip (shape);
+				renderer.__applyStyle (shape, true, true, true);
 				
 				shape.__renderTransform = cacheTransform;
 				
-				renderSession.maskManager.popObject (shape);
+				renderer.__popMaskObject (shape);
 				
 			}
 			
 		} else {
 			
-			clear (shape, renderSession);
+			clear (shape, renderer);
 			
 		}
 		#end

@@ -1,4 +1,4 @@
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![NPM Version](https://img.shields.io/npm/v/openfl.svg?style=flat)](http://npmjs.com/package/openfl) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/develop.svg)](https://circleci.com/gh/openfl/openfl)
+[![MIT License](https://img.shields.io/github/license/openfl/openfl.svg?style=flat)](LICENSE.md) [![NPM Version](https://img.shields.io/npm/v/openfl.svg?style=flat)](http://npmjs.com/package/openfl) [![CDNJS version](https://img.shields.io/cdnjs/v/openfl.svg?style=flat)](https://cdnjs.com/libraries/openfl) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/develop.svg?style=flat)](https://circleci.com/gh/openfl/openfl)
 
 
 <br />
@@ -16,7 +16,7 @@ Two Versions
 
 There are two versions of OpenFL, the first is primarily distributed using haxelib, and blends native support for Windows, macOS, Linux, iOS, Android, Flash, HTML5 and WebAssembly. You can read more about the haxelib distributed version of OpenFL, [here](README-haxelib.md).
 
-The second edition of OpenFL is distributed using NPM, and is designed for use from TypeScript, JavaScript (EcmaScript 5 or 6+) or Haxe, the latter of which can be used in both versions of OpenFL. The NPM version of OpenFL is designed to be used in a browser environment.
+The second edition of OpenFL is distributed using NPM, and is designed for use from TypeScript, JavaScript (EcmaScript 5 or 6+) or Haxe, the latter of which can be used in both versions of OpenFL. The NPM version of OpenFL is designed to be used in a browser environment. The NPM version also has (beta) support for ActionScript 3.0.
 
 
 Getting Started
@@ -300,33 +300,32 @@ Clone the OpenFL repository:
 git clone https://github.com/openfl/openfl
 ```
 
-If you wish to use a development version of `hxgenjs` and/or `lime`, link them:
+## Using OpenFL with NPM
 
-```bash
-cd path/to/lime
-npm link
-cd path/to/hxgenjs
-npm link
-
-cd path/to/openfl
-npm link lime
-npm link hxgenjs
-```
-
-Then install necessary development dependencies:
+First, install any NPM dependencies:
 
 ```bash
 cd openfl
 npm install
 ```
 
-Generate ES6 modules for OpenFL:
+Optionally, you may choose to link with a clone of a dependency library (such as `lime`):
 
 ```bash
-npm run build
+cd path/to/lime
+npm link
+
+cd path/to/openfl
+npm link lime
 ```
 
-You may want to `npm link` OpenFL for use with other projects:
+Build OpenFL:
+
+```bash
+npm run build -s
+```
+
+Once built, you may want to `npm link` to use your version with other projects:
 
 ```bash
 npm link
@@ -334,3 +333,19 @@ npm link
 cd path/to/your-project
 npm link openfl
 ```
+
+## Using OpenFL with Haxelib
+
+First, tell haxelib where your development copy of OpenFL is installed:
+
+    haxelib dev openfl openfl
+
+Second, you may want to build the OpenFL tools for processing SWF assets:
+
+    openfl rebuild tools
+
+Later, if you decide to return to release builds:
+
+    haxelib dev openfl
+
+_You may also need a development build of Lime installed._

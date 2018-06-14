@@ -230,7 +230,7 @@ import lime.ui.KeyCode;
 			case KeyCode.NUMPAD_MULTIPLY: Keyboard.NUMPAD_MULTIPLY;
 			case KeyCode.NUMPAD_MINUS: Keyboard.NUMPAD_SUBTRACT;
 			case KeyCode.NUMPAD_PLUS: Keyboard.NUMPAD_ADD;
-			case KeyCode.NUMPAD_ENTER: Keyboard.NUMPAD_ENTER;
+			case KeyCode.NUMPAD_ENTER: #if openfl_numpad_enter Keyboard.NUMPAD_ENTER #else Keyboard.ENTER #end;
 			case KeyCode.NUMPAD_1: Keyboard.NUMPAD_1;
 			case KeyCode.NUMPAD_2: Keyboard.NUMPAD_2;
 			case KeyCode.NUMPAD_3: Keyboard.NUMPAD_3;

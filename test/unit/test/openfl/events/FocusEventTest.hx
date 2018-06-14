@@ -89,7 +89,7 @@ class FocusEventTest {
 			
 			Assert.areSame (sprite, e.target);
 			Assert.areSame (sprite, e.currentTarget);
-			Assert.areSame (sprite2, e.relatedObject);
+			Assert.areSame (sprite2, cast e.relatedObject);
 			
 		}
 		
@@ -99,7 +99,7 @@ class FocusEventTest {
 			
 			Assert.areSame (sprite2, e.target);
 			Assert.areSame (sprite2, e.currentTarget);
-			Assert.areSame (sprite, e.relatedObject);
+			Assert.areSame (sprite, cast e.relatedObject);
 			
 		}
 		
@@ -144,11 +144,11 @@ class FocusEventTest {
 		var checkEvent = function (e:FocusEvent) {
 			var nextEvt = expect.shift();
 			Assert.isNotNull(nextEvt);
-			Assert.areSame(nextEvt.type,  e.type);
-			Assert.areSame(nextEvt.phase, e.eventPhase);
-			Assert.areSame(nextEvt.cur,   e.currentTarget);
-			Assert.areSame(nextEvt.tgt,   e.target);
-			Assert.areSame(nextEvt.rel,   e.relatedObject);
+			Assert.areSame(cast nextEvt.type,  e.type);
+			Assert.areSame(cast nextEvt.phase, cast e.eventPhase);
+			Assert.areSame(cast nextEvt.cur,   cast e.currentTarget);
+			Assert.areSame(cast nextEvt.tgt,   cast e.target);
+			Assert.areSame(cast nextEvt.rel,   e.relatedObject);
 		}
 		
 		// Build this scene graph...
@@ -215,7 +215,7 @@ class FocusEventTest {
 		Lib.current.stage.focus = new2;
 		
 		// Ensure that all events were actually delivered...
-		Assert.areSame(0, expect.length);
+		Assert.areEqual(0, expect.length);
 		
 		Lib.current.stage.removeChild (root);
 		

@@ -75,7 +75,7 @@ class DisplayObjectContainerTest {
 		sprite.addChild (sprite2);
 		
 		Assert.areEqual (1, sprite.numChildren);
-		Assert.areSame (sprite2, sprite.getChildAt (0));
+		Assert.areSame (sprite2, cast sprite.getChildAt (0));
 		
 		var sprite3 = new Sprite ();
 		
@@ -105,7 +105,7 @@ class DisplayObjectContainerTest {
 		sprite.addChildAt (sprite2, 0);
 		
 		Assert.areEqual (1, sprite.numChildren);
-		Assert.areSame (sprite2, sprite.getChildAt (0));
+		Assert.areSame (sprite2, cast sprite.getChildAt (0));
 		
 		var sprite3 = new Sprite ();
 		
@@ -180,16 +180,16 @@ class DisplayObjectContainerTest {
 		
 		sprite.addChild (sprite2);
 		
-		Assert.areSame (sprite2, sprite.getChildAt (0));
+		Assert.areSame (sprite2, cast sprite.getChildAt (0));
 		
 		var sprite3 = new Sprite ();
 		sprite.addChild (sprite3);
 		
-		Assert.areSame (sprite3, sprite.getChildAt (1));
+		Assert.areSame (sprite3, cast sprite.getChildAt (1));
 		
 		sprite2.addChild (sprite3);
 		
-		Assert.areSame (sprite3, sprite2.getChildAt (0));
+		Assert.areSame (sprite3, cast sprite2.getChildAt (0));
 		
 		try {
 			
@@ -214,11 +214,11 @@ class DisplayObjectContainerTest {
 		sprite.addChild (sprite3);
 		
 		Assert.isNull (sprite.getChildByName ("b"));
-		Assert.areSame (sprite2, sprite.getChildByName ("a"));
+		Assert.areSame (sprite2, cast sprite.getChildByName ("a"));
 		
 		sprite3.name = "b";
 		
-		Assert.areSame (sprite3, sprite.getChildByName ("b"));
+		Assert.areSame (sprite3, cast sprite.getChildByName ("b"));
 		
 	}
 	

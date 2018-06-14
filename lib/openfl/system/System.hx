@@ -49,7 +49,9 @@ package openfl.system; #if (display || !flash)
 	 * property is set to 0. The `System.totalMemoryNumber` property
 	 * allows larger values.
 	 */
-	public static var totalMemory (default, never):Int;
+	public static var totalMemory (get, never):Int;
+	
+	@:noCompletion private static function get_totalMemory ():Int;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
@@ -102,7 +104,9 @@ package openfl.system; #if (display || !flash)
 	 */
 	public static var useCodePage:Bool;
 	
-	public static var vmVersion (default, never):String;
+	public static var vmVersion (get, never):String;
+	
+	@:noCompletion private static function get_vmVersion ():String;
 	
 	
 	#if flash

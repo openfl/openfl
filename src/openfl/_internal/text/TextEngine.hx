@@ -89,6 +89,7 @@ class TextEngine {
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text (default, set):UTF8String;
+	public var textBounds:Rectangle;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
@@ -127,6 +128,7 @@ class TextEngine {
 		text = "";
 		
 		bounds = new Rectangle (0, 0, 0, 0);
+		textBounds = new Rectangle (0, 0, 0, 0);
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -261,6 +263,20 @@ class TextEngine {
 		
 		bounds.width = width + padding;
 		bounds.height = height + padding;
+		
+		var x = width, y = width;
+		
+		for (group in layoutGroups) {
+			
+			if (group.offsetX < x) x = group.offsetX;
+			if (group.offsetY < y) y = group.offsetY;
+			
+		}
+		
+		if (x >= width) x = 2;
+		if (y >= height) y = 2;
+		
+		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), textWidth + 4, textHeight + 4);
 		
 	}
 	
@@ -708,7 +724,7 @@ class TextEngine {
 			
 		}
 		
-		if (textHeight == 0 && textField != null) {
+		if (textHeight == 0 && textField != null && textField.type == INPUT) {
 			
 			var currentFormat = textField.__textFormat;
 			var ascent, descent, leading, heightValue;
@@ -825,6 +841,9 @@ class TextEngine {
 		
 		maxScrollV = numLines - bottomScrollV + 1;
 		
+		if (scrollV > maxScrollV) scrollV = maxScrollV;
+		if (scrollH > maxScrollH) scrollH = maxScrollH;
+		
 	}
 	
 	
@@ -934,6 +953,9 @@ class TextEngine {
 				
 			}
 			
+			// __textLayout.direction = RIGHT_TO_LEFT;
+			// __textLayout.script = ARABIC;
+			
 			__textLayout.text = text.substring (startIndex, endIndex);
 			return __textLayout.positions;
 			
@@ -983,6 +1005,9 @@ class TextEngine {
 				__textLayout.size = formatRange.format.size;
 				
 			}
+			
+			// __textLayout.direction = RIGHT_TO_LEFT;
+			// __textLayout.script = ARABIC;
 			
 			__textLayout.text = text;
 			
@@ -1390,7 +1415,7 @@ class TextEngine {
 						
 						if (textIndex == previousSpaceIndex + 1) {
 							
-							alignBaseline();
+							alignBaseline ();
 							
 						}
 						
@@ -1412,7 +1437,7 @@ class TextEngine {
 							
 						}
 						
-						if (width >= 4) breakLongWords(endIndex);
+						if (width >= 4) breakLongWords (endIndex);
 						
 						nextLayoutGroup (textIndex, endIndex);
 						
@@ -1575,6 +1600,31 @@ class TextEngine {
 	}
 	
 	
+	public function restrictText (value:UTF8String):UTF8String {
+		
+		if (value == null) {
+			
+			return value;
+			
+		}
+		
+		if (__restrictRegexp != null) {
+			
+			value = __restrictRegexp.split (value).join ('');
+			
+		}
+		
+		// if (maxChars > 0 && value.length > maxChars) {
+			
+		// 	value = value.substr (0, maxChars);
+			
+		// }
+		
+		return value;
+		
+	}
+	
+	
 	private function setTextAlignment ():Void {
 		
 		var lineIndex = -1;
@@ -1649,15 +1699,15 @@ class TextEngine {
 									
 									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
 									
-									var j = 0;
+									var j = 1;
 									do {
 										
-										if (j > 1 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+										// if (text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
 											
-											layoutGroups[i + j].offsetX += (offsetX * (j-1));
-											j++;
+										// 	layoutGroups[i + j].offsetX += (offsetX * (j-1));
+										// 	j++;
 											
-										}
+										// }
 										
 										layoutGroups[i + j].offsetX += (offsetX * j);
 										
@@ -1686,6 +1736,25 @@ class TextEngine {
 			}
 			
 		}
+		
+	}
+	
+	
+	public function trimText (value:UTF8String):UTF8String {
+		
+		if (value == null) {
+			
+			return value;
+			
+		}
+		
+		if (maxChars > 0 && value.length > maxChars) {
+			
+			value = value.substr (0, maxChars);
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -1755,27 +1824,7 @@ class TextEngine {
 	
 	private function set_text (value:String):String {
 		
-		if (value == null) {
-			
-			return text = value;
-			
-		}
-		
-		if (__restrictRegexp != null) {
-			
-			value = __restrictRegexp.split (value).join ('');
-			
-		}
-		
-		if (maxChars > 0 && value.length > maxChars) {
-			
-			value = value.substr (0, maxChars);
-			
-		}
-		
-		text = value;
-		
-		return text;
+		return text = value;
 		
 	}
 	

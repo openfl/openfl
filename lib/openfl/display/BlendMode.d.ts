@@ -22,7 +22,7 @@ declare namespace openfl.display {
 		 * resulting RGB value for the displayed pixel is 0xFFC833(because 0xAA +
 		 * 0xDD > 0xFF, 0xA6 + 0x22 = 0xC8, and 0x33 + 0x00 = 0x33).
 		 */
-		ADD = 0,
+		ADD = "add",
 		
 		/**
 		 * Applies the alpha value of each pixel of the display object to the
@@ -32,7 +32,7 @@ declare namespace openfl.display {
 		 *
 		 * Not supported under GPU rendering.
 		 */
-		ALPHA = 1,
+		ALPHA = "alpha",
 		
 		/**
 		 * Selects the darker of the constituent colors of the display object and the
@@ -46,7 +46,7 @@ declare namespace openfl.display {
 		 *
 		 * Not supported under GPU rendering.
 		 */
-		DARKEN = 2,
+		DARKEN = "darken",
 		
 		/**
 		 * Compares the constituent colors of the display object with the colors of
@@ -59,7 +59,7 @@ declare namespace openfl.display {
 		 * resulting RGB value for the displayed pixel is 0x222C33(because 0xFF -
 		 * 0xDD = 0x22, 0xF8 - 0xCC = 0x2C, and 0x33 - 0x00 = 0x33).
 		 */
-		DIFFERENCE = 3,
+		DIFFERENCE = "difference",
 		
 		/**
 		 * Erases the background based on the alpha value of the display object. This
@@ -68,7 +68,7 @@ declare namespace openfl.display {
 		 *
 		 * Not supported under GPU rendering.
 		 */
-		ERASE = 4,
+		ERASE = "erase",
 		
 		/**
 		 * Adjusts the color of each pixel based on the darkness of the display
@@ -80,12 +80,12 @@ declare namespace openfl.display {
 		 *
 		 * Not supported under GPU rendering.
 		 */
-		HARDLIGHT = 5,
+		HARDLIGHT = "hardlight",
 		
 		/**
 		 * Inverts the background.
 		 */
-		INVERT = 6,
+		INVERT = "invert",
 		
 		/**
 		 * Forces the creation of a transparency group for the display object. This
@@ -97,7 +97,7 @@ declare namespace openfl.display {
 		 *
 		 * Not supported under GPU rendering.
 		 */
-		LAYER = 7,
+		LAYER = "layer",
 		
 		/**
 		 * Selects the lighter of the constituent colors of the display object and
@@ -111,7 +111,7 @@ declare namespace openfl.display {
 		 *
 		 * Not supported under GPU rendering.
 		 */
-		LIGHTEN = 8,
+		LIGHTEN = "lighten",
 		
 		/**
 		 * Multiplies the values of the display object constituent colors by the
@@ -126,14 +126,14 @@ declare namespace openfl.display {
 		 * shade than the color of the display object or the color of the
 		 * background.
 		 */
-		MULTIPLY = 9,
+		MULTIPLY = "multiply",
 		
 		/**
 		 * The display object appears in front of the background. Pixel values of the
 		 * display object override the pixel values of the background. Where the
 		 * display object is transparent, the background is visible.
 		 */
-		NORMAL = 10,
+		NORMAL = "normal",
 		
 		/**
 		 * Adjusts the color of each pixel based on the darkness of the background.
@@ -145,7 +145,7 @@ declare namespace openfl.display {
 		 *
 		 * Not supported under GPU rendering.
 		 */
-		OVERLAY = 11,
+		OVERLAY = "overlay",
 		
 		/**
 		 * Multiplies the complement(inverse) of the display object color by the
@@ -153,9 +153,9 @@ declare namespace openfl.display {
 		 * setting is commonly used for highlights or to remove black areas of the
 		 * display object.
 		 */
-		SCREEN = 12,
+		SCREEN = "screen",
 		
-		SHADER = 13,
+		SHADER = "shader",
 		
 		/**
 		 * Subtracts the values of the constituent colors in the display object from
@@ -167,7 +167,7 @@ declare namespace openfl.display {
 		 * resulting RGB value for the displayed pixel is 0x338400(because 0xDD -
 		 * 0xAA = 0x33, 0xA6 - 0x22 = 0x84, and 0x00 - 0x33 < 0x00).
 		 */
-		SUBTRACT = 14
+		SUBTRACT = "subtract"
 		
 	}
 	

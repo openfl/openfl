@@ -48,6 +48,8 @@ declare namespace openfl.system {
 		 */
 		public static readonly cpuArchitecture:string;
 		
+		protected static get_cpuArchitecture ():string;
+		
 		/**
 		 * Specifies whether the system supports(`true`) or does not
 		 * support(`false`) communication with accessibility aids. The
@@ -179,6 +181,8 @@ declare namespace openfl.system {
 		 */
 		public static readonly language:string;
 		
+		protected static get_language ():string;
+		
 		/**
 		 * Specifies whether read access to the user's hard disk has been
 		 * administratively prohibited(`true`) or allowed
@@ -219,6 +223,8 @@ declare namespace openfl.system {
 		 */
 		public static readonly manufacturer:string;
 		
+		protected static get_manufacturer ():string;
+		
 		/**
 		 * Retrieves the highest H.264 Level IDC that the client hardware supports.
 		 * Media run at this level are guaranteed to run; however, media run at the
@@ -247,11 +253,15 @@ declare namespace openfl.system {
 		 */
 		public static readonly os:string;
 		
+		protected static get_os ():string;
+		
 		/**
 		 * Specifies the pixel aspect ratio of the screen. The server string is
 		 * `AR`.
 		 */
 		public static readonly pixelAspectRatio:number;
+		
+		protected static get_pixelAspectRatio ():number;
 		
 		/**
 		 * Specifies the type of runtime environment. This property can have one of
@@ -287,6 +297,8 @@ declare namespace openfl.system {
 		 */
 		public static readonly screenDPI:number;
 		
+		protected static get_screenDPI ():number;
+		
 		/**
 		 * Specifies the maximum horizontal resolution of the screen. The server
 		 * string is `R`(which returns both the width and height of the
@@ -297,6 +309,8 @@ declare namespace openfl.system {
 		 */
 		public static readonly screenResolutionX:number;
 		
+		protected static get_screenResolutionX ():number;
+		
 		/**
 		 * Specifies the maximum vertical resolution of the screen. The server string
 		 * is `R`(which returns both the width and height of the screen).
@@ -305,6 +319,8 @@ declare namespace openfl.system {
 		 * application started. Also, the value only specifies the primary screen.
 		 */
 		public static readonly screenResolutionY:number;
+		
+		protected static get_screenResolutionY ():number;
 		
 		/**
 		 * A URL-encoded string that specifies values for each Capabilities property.
@@ -358,6 +374,8 @@ declare namespace openfl.system {
 		 * The server string is `V`.
 		 */
 		public static readonly version:string;
+		
+		protected static get_version ():string;
 		
 		
 		public static hasMultiChannelAudio (type:string):boolean;

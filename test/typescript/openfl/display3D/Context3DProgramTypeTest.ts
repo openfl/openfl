@@ -7,7 +7,7 @@ describe ("TypeScript | Context3DProgramType", function () {
 	
 	it ("test", function () {
 		
-		switch (+Context3DProgramType.FRAGMENT) {
+		switch (""+Context3DProgramType.FRAGMENT) {
 			
 			case Context3DProgramType.FRAGMENT:
 			case Context3DProgramType.VERTEX:

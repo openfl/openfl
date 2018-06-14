@@ -7,7 +7,7 @@ describe ("TypeScript | TextFieldType", function () {
 	
 	it ("test", function () {
 		
-		switch (+TextFieldType.DYNAMIC) {
+		switch (""+TextFieldType.DYNAMIC) {
 			
 			case TextFieldType.DYNAMIC:
 			case TextFieldType.INPUT:

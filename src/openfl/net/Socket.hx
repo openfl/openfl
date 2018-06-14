@@ -3,6 +3,7 @@ package openfl.net;
 
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
+import haxe.io.Eof;
 import haxe.io.Error;
 import haxe.Timer;
 import openfl._internal.Lib;
@@ -28,6 +29,11 @@ import sys.net.Host;
 import sys.net.Socket in SysSocket;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
@@ -35,7 +41,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	public var bytesAvailable (get, never):Int;
 	public var bytesPending (get, never):Int;
 	public var connected (get, never):Bool;
-	public var objectEncoding:UInt;
+	public var objectEncoding:ObjectEncoding;
 	public var secure:Bool;
 	public var timeout:Int;
 	public var endian (get, set):Endian;
@@ -159,12 +165,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		#else
 		
 		__socket = new SysSocket ();
-		__socket.setBlocking (false);
-		__socket.setFastSend (true);
 		
 		try {
 			
 			__socket.connect (h, port);
+			__socket.setBlocking (false);
+			__socket.setFastSend (true);
 			
 		} catch (e:Dynamic) {}
 		
@@ -685,6 +691,10 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 					}
 					
 				} while (l == __buffer.length);
+				
+			} catch (e:Eof) {
+				
+				// ignore
 				
 			} catch (e:Error) {
 				

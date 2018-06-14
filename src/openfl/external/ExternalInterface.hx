@@ -3,6 +3,11 @@ package openfl.external;
 
 import openfl._internal.Lib;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.Stage)
 @:access(lime.ui.Window)
 

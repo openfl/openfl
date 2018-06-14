@@ -12,9 +12,7 @@ var banner = "/*!\n"
  + " */";
 
 module.exports = merge (common, {
-	output: {
-		filename: "openfl.js"
-	},
+	mode: "development",
 	plugins: [
 		new webpack.BannerPlugin ({
 			banner: banner,

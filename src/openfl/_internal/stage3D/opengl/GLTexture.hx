@@ -2,16 +2,19 @@ package openfl._internal.stage3D.opengl;
 
 
 import haxe.io.Bytes;
+import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
+import lime.utils.BytePointer;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.atf.ATFReader;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
@@ -28,9 +31,9 @@ import openfl.utils.ByteArray;
 class GLTexture {
 	
 	
-	public static function create (texture:Texture, renderSession:RenderSession):Void {
+	public static function create (texture:Texture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		texture.__textureTarget = gl.TEXTURE_2D;
 		
@@ -42,24 +45,22 @@ class GLTexture {
 		
 		gl.bindTexture (texture.__textureTarget, null);
 		
-		uploadFromTypedArray (texture, renderSession, null);
-		
 	}
 	
 	
-	public static function uploadCompressedTextureFromByteArray (texture:Texture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt):Void {
+	public static function uploadCompressedTextureFromByteArray (texture:Texture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader (texture.__width, texture.__height, false);
 		
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		gl.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		var hasTexture = false;
 		
-		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes) {
+		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes:Bytes) {
 			
 			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat (alpha, gpuFormat);
 			if (format == 0) return;
@@ -68,8 +69,31 @@ class GLTexture {
 			texture.__format = format;
 			texture.__internalFormat = format;
 			
-			gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, blockLength, bytes);
-			GLUtils.CheckGLError ();
+			if (alpha && gpuFormat == 2) {
+				
+				var size = Std.int (blockLength / 2);
+				
+				gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, size, bytes);
+				GLUtils.CheckGLError ();
+				
+				var alphaTexture = new Texture (texture.__context, texture.__width, texture.__height, Context3DTextureFormat.COMPRESSED, texture.__optimizeForRenderToTexture, texture.__streamingLevels);
+				alphaTexture.__format = format;
+				alphaTexture.__internalFormat = format;
+				
+				gl.bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
+				GLUtils.CheckGLError ();
+				
+				gl.compressedTexImage2D (alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0, size, new BytePointer (bytes, size));
+				GLUtils.CheckGLError ();
+				
+				texture.__alphaTexture = alphaTexture;
+				
+			} else {
+				
+				gl.compressedTexImage2D (texture.__textureTarget, level, texture.__internalFormat, width, height, 0, blockLength, bytes);
+				GLUtils.CheckGLError ();
+				
+			}
 			
 			// __trackCompressedMemoryUsage (blockLength);
 			
@@ -89,7 +113,7 @@ class GLTexture {
 	}
 	
 	
-	public static function uploadFromBitmapData (texture:Texture, renderSession:RenderSession, source:BitmapData, miplevel:UInt, generateMipmap:Bool):Void {
+	public static function uploadFromBitmapData (texture:Texture, renderer:OpenGLRenderer, source:BitmapData, miplevel:UInt, generateMipmap:Bool):Void {
 		
 		/* TODO
 			if (LowMemoryMode) {
@@ -120,32 +144,64 @@ class GLTexture {
 		}
 		
 		var image = texture.__getImage (source);
+		if (image == null) return;
 		
-		uploadFromTypedArray (texture, renderSession, image.data, miplevel);
+		// TODO: Improve handling of miplevels with canvas src
 		
-	}
-	
-	
-	public static function uploadFromByteArray (texture:Texture, renderSession:RenderSession, data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
-		
-		#if js
-		if (byteArrayOffset == 0) {
+		#if (js && html5)
+		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			uploadFromTypedArray (texture, renderSession, @:privateAccess (data:ByteArrayData).b, miplevel);
+			var gl:WebGLContext = renderer.__gl;
+			
+			var width = texture.__width >> miplevel;
+			var height = texture.__height >> miplevel;
+			
+			if (width == 0 && height == 0) return;
+			
+			if (width == 0) width = 1;
+			if (height == 0) height = 1;
+			
+			gl.bindTexture (texture.__textureTarget, texture.__textureID);
+			GLUtils.CheckGLError ();
+			
+			gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			GLUtils.CheckGLError ();
+			
+			gl.bindTexture (texture.__textureTarget, null);
+			GLUtils.CheckGLError ();
+			
+			// var memUsage = (width * height) * 4;
+			// __trackMemoryUsage (memUsage);
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (texture, renderSession, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
+		uploadFromTypedArray (texture, renderer, image.data, miplevel);
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (texture:Texture, renderSession:RenderSession, data:ArrayBufferView, miplevel:UInt = 0):Void {
+	public static function uploadFromByteArray (texture:Texture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
+		
+		#if js
+		if (byteArrayOffset == 0) {
+			
+			uploadFromTypedArray (texture, renderer, @:privateAccess (data:ByteArrayData).b, miplevel);
+			return;
+			
+		}
+		#end
+		
+		uploadFromTypedArray (texture, renderer, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
+		
+	}
+	
+	
+	public static function uploadFromTypedArray (texture:Texture, renderer:OpenGLRenderer, data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-		var gl = renderSession.gl;
+		var gl = renderer.__gl;
 		
 		var width = texture.__width >> miplevel;
 		var height = texture.__height >> miplevel;
@@ -170,11 +226,11 @@ class GLTexture {
 	}
 	
 	
-	public static function setSamplerState (texture:Texture, renderSession:RenderSession, state:SamplerState) {
+	public static function setSamplerState (texture:Texture, renderer:OpenGLRenderer, state:SamplerState) {
 		
 		if (!state.equals (texture.__samplerState)) {
 			
-			var gl = renderSession.gl;
+			var gl = renderer.__gl;
 			
 			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
 				
@@ -194,7 +250,7 @@ class GLTexture {
 			
 		}
 		
-		GLTextureBase.setSamplerState (texture, renderSession, state);
+		GLTextureBase.setSamplerState (texture, renderer, state);
 		
 	}
 	

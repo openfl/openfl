@@ -12,6 +12,11 @@ import openfl.utils.ByteArray;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class LoaderInfo extends EventDispatcher {
 	

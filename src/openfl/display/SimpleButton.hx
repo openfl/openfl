@@ -2,7 +2,6 @@ package openfl.display;
 
 
 import lime.ui.MouseCursor;
-import openfl._internal.renderer.RenderSession;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl.display.DisplayObject;
@@ -76,7 +75,7 @@ class SimpleButton extends InteractiveObject {
 		__upState = (upState != null) ? upState : new DisplayObject ();
 		__overState = overState;
 		__downState = downState;
-		__hitTestState = (hitTestState != null) ? hitTestState : new DisplayObject ();
+		this.hitTestState = (hitTestState != null) ? hitTestState : new DisplayObject ();
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, __this_onMouseDown);
 		addEventListener (MouseEvent.MOUSE_OUT, __this_onMouseOut);
@@ -136,21 +135,13 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__getBounds (rect, matrix);
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
-		__currentState.__getBounds (rect, __currentState.__worldTransform);
+		DisplayObject.__calculateAbsoluteTransform (__currentState.__transform, matrix, childWorldTransform);
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getBounds (rect, childWorldTransform);
+		
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -168,21 +159,13 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childWorldTransform = Matrix.__pool.get();
 		
-		__currentState.__getRenderBounds (rect, __currentState.__worldTransform);
+		DisplayObject.__calculateAbsoluteTransform (__currentState.__transform, matrix, childWorldTransform);
 		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getRenderBounds (rect, childWorldTransform);
+		
+		Matrix.__pool.release(childWorldTransform);
 		
 	}
 	
@@ -266,61 +249,62 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
-		renderSession.maskManager.pushObject (this);
-		__currentState.__renderCairo (renderSession);
-		renderSession.maskManager.popObject (this);
+		renderer.__pushMaskObject (this);
+		__currentState.__renderCairo (renderer);
+		renderer.__popMaskObject (this);
+		
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderer:CairoRenderer):Void {
 		
-		__currentState.__renderCairoMask (renderSession);
+		__currentState.__renderCairoMask (renderer);
 		
 	}
 	
 	
-	private override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
 		#if !neko
+		renderer.__pushMaskObject (this);
+		__currentState.__renderCanvas (renderer);
+		renderer.__popMaskObject (this);
 		
-		renderSession.maskManager.pushObject (this);
-		__currentState.__renderCanvas (renderSession);
-		renderSession.maskManager.popObject (this);
-		
+		__renderEvent (renderer);
 		#end
 		
 	}
 	
 	
-	private override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
-		var bounds = Rectangle.__pool.get ();
-		__getLocalBounds (bounds);
+		// var bounds = Rectangle.__pool.get ();
+		// __getLocalBounds (bounds);
 		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
+		// renderer.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
 		
-		Rectangle.__pool.release (bounds);
-		__currentState.__renderCanvasMask (renderSession);
+		// Rectangle.__pool.release (bounds);
+		__currentState.__renderCanvasMask (renderer);
 		
 	}
 	
 	
-	private override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
 		#if !neko
-		
-		renderSession.maskManager.pushObject (this);
+		renderer.__pushMaskObject (this);
 		
 		for (previousState in __previousStates) {
 			
-			previousState.__renderDOM (renderSession);
+			previousState.__renderDOM (renderer);
 			
 		}
 		
@@ -332,33 +316,36 @@ class SimpleButton extends InteractiveObject {
 				__currentState.__setStageReference(stage);
 			}
 
-			__currentState.__renderDOM (renderSession);
+			__currentState.__renderDOM (renderer);
 			
 		}
 		
-		renderSession.maskManager.popObject (this);
+		renderer.__popMaskObject (this);
 		
+		__renderEvent (renderer);
 		#end
 		
 	}
 	
 	
-	private override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
 		
-		renderSession.maskManager.pushObject (this);
-		__currentState.__renderGL (renderSession);
-		renderSession.maskManager.popObject (this);
+		renderer.__pushMaskObject (this);
+		__currentState.__renderGL (renderer);
+		renderer.__popMaskObject (this);
+		
+		__renderEvent (renderer);
 		
 	}
 	
 	
-	private override function __renderGLMask (renderSession:RenderSession):Void {
+	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
 		if (__currentState == null) return;
 		
-		__currentState.__renderGLMask (renderSession);
+		__currentState.__renderGLMask (renderer);
 		
 	}
 	
@@ -401,21 +388,21 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics);
+		super.__update (transformOnly, updateChildren);
 		
 		if (updateChildren) {
 			
 			if (__currentState != null) {
 				
-				__currentState.__update (transformOnly, true, maskGraphics);
+				__currentState.__update (transformOnly, true);
 				
 			}
 			
 			if (hitTestState != null && hitTestState != __currentState) {
 				
-				hitTestState.__update (transformOnly, true, maskGraphics);
+				hitTestState.__update (transformOnly, true);
 				
 			}
 			

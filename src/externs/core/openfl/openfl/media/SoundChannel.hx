@@ -38,6 +38,9 @@ import openfl.events.EventDispatcher;
 	 */
 	public var position (get, set):Float;
 	
+	@:noCompletion private function get_position ():Float;
+	@:noCompletion private function set_position (value:Float):Float;
+	
 	/**
 	 * The current amplitude(volume) of the right channel, from 0(silent) to 1
 	 * (full amplitude).
@@ -50,6 +53,9 @@ import openfl.events.EventDispatcher;
 	 * assignment, and right speaker assignment.
 	 */
 	public var soundTransform (get, set):SoundTransform;
+	
+	@:noCompletion private function get_soundTransform ():SoundTransform;
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
 	
 	
 	#if flash

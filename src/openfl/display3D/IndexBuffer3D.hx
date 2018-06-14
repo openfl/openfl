@@ -33,35 +33,35 @@ import openfl.Vector;
 		__context = context3D;
 		__numIndices = numIndices;
 		
-		GLIndexBuffer3D.create (this, __context.__renderSession, bufferUsage);
+		GLIndexBuffer3D.create (this, cast __context.__renderer, bufferUsage);
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		GLIndexBuffer3D.dispose (this, __context.__renderSession);
+		GLIndexBuffer3D.dispose (this, cast __context.__renderer);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
-		GLIndexBuffer3D.uploadFromByteArray (this, __context.__renderSession, data, byteArrayOffset, startOffset, count);
+		GLIndexBuffer3D.uploadFromByteArray (this, cast __context.__renderer, data, byteArrayOffset, startOffset, count);
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
-		GLIndexBuffer3D.uploadFromTypedArray (this, __context.__renderSession, data);
+		GLIndexBuffer3D.uploadFromTypedArray (this, cast __context.__renderer, data);
 		
 	}
 	
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
-		GLIndexBuffer3D.uploadFromVector (this, __context.__renderSession, data, startOffset, count);
+		GLIndexBuffer3D.uploadFromVector (this, cast __context.__renderer, data, startOffset, count);
 		
 	}
 	

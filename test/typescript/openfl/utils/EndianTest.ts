@@ -7,7 +7,7 @@ describe ("TypeScript | Endian", function () {
 	
 	it ("test", function () {
 		
-		switch (+Endian.BIG_ENDIAN) {
+		switch (""+Endian.BIG_ENDIAN) {
 			
 			case Endian.BIG_ENDIAN:
 			case Endian.LITTLE_ENDIAN:

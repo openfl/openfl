@@ -7,7 +7,7 @@ describe ("TypeScript | ClipboardTransferMode", function () {
 	
 	it ("test", function () {
 		
-		switch (+ClipboardTransferMode.CLONE_ONLY) {
+		switch (""+ClipboardTransferMode.CLONE_ONLY) {
 			
 			case ClipboardTransferMode.CLONE_ONLY:
 			case ClipboardTransferMode.CLONE_PREFERRED:

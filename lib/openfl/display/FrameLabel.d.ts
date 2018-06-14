@@ -8,7 +8,13 @@ declare namespace openfl.display {
 		
 		
 		public readonly frame:number;
+		
+		protected get_frame ():number;
+		
 		public readonly name:string;
+		
+		protected get_name ():string;
+		
 		
 		public constructor (name:string, frame:number);
 		

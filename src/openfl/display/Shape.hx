@@ -9,11 +9,10 @@ package openfl.display;
 @:access(openfl.display.Graphics)
 
 
-class Shape extends DisplayObject implements IShaderDrawable {
+class Shape extends DisplayObject {
 	
 	
 	public var graphics (get, never):Graphics;
-	@:beta public var shader:Shader;
 	
 	
 	#if openfljs

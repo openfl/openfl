@@ -1,6 +1,5 @@
+import Vector from "./../Vector";
 import MultitouchInputMode from "./MultitouchInputMode";
-
-type Vector<T> = any;
 
 
 declare namespace openfl.ui {
@@ -109,6 +108,8 @@ declare namespace openfl.ui {
 		 * as a single finger tap. Touch events are listed in the TouchEvent class.
 		 */
 		public static readonly supportsTouchEvents:boolean;
+		
+		protected static get_supportsTouchEvents ():boolean;
 		
 		
 	}

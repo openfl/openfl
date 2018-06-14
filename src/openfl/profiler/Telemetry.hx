@@ -7,6 +7,11 @@ import hxtelemetry.HxTelemetry;
 
 import openfl._internal.Lib;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:allow(openfl.display.Stage)
 
 

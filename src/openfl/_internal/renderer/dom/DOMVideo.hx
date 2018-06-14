@@ -1,8 +1,7 @@
 package openfl._internal.renderer.dom;
 
 
-import openfl._internal.renderer.dom.DOMRenderer;
-import openfl._internal.renderer.RenderSession;
+import openfl.display.DOMRenderer;
 import openfl.media.Video;
 import openfl.net.NetStream;
 
@@ -13,12 +12,12 @@ import openfl.net.NetStream;
 class DOMVideo {
 	
 	
-	public static function clear (video:Video, renderSession:RenderSession):Void {
+	public static function clear (video:Video, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (video.__active) {
 			
-			renderSession.element.removeChild (video.__stream.__video);
+			renderer.element.removeChild (video.__stream.__video);
 			video.__active = false;
 			
 		}
@@ -27,14 +26,14 @@ class DOMVideo {
 	}
 	
 	
-	public static function render (video:Video, renderSession:RenderSession):Void {
+	public static function render (video:Video, renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (video.stage != null && video.__stream != null && video.__worldVisible && video.__renderable) {
 			
 			if (!video.__active) {
 				
-				DOMRenderer.initializeElement (video, video.__stream.__video, renderSession);
+				renderer.__initializeElement (video, video.__stream.__video);
 				video.__active = true;
 				video.__dirty = true;
 				
@@ -48,12 +47,12 @@ class DOMVideo {
 				
 			}
 			
-			DOMRenderer.updateClip (video, renderSession);
-			DOMRenderer.applyStyle (video, renderSession, true, true, true);
+			renderer.__updateClip (video);
+			renderer.__applyStyle (video, true, true, true);
 			
 		} else {
 			
-			clear (video, renderSession);
+			clear (video, renderer);
 			
 		}
 		#end

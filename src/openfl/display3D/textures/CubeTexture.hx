@@ -33,7 +33,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
-		GLCubeTexture.create (this, __context.__renderSession);
+		GLCubeTexture.create (this, cast __context.__renderer);
 		
 	}
 	
@@ -42,13 +42,13 @@ import openfl.utils.ByteArray;
 		
 		if (!async) {
 			
-			GLCubeTexture.uploadCompressedTextureFromByteArray (this, __context.__renderSession, data, byteArrayOffset);
+			GLCubeTexture.uploadCompressedTextureFromByteArray (this, cast __context.__renderer, data, byteArrayOffset);
 			
 		} else {
 			
 			Timer.delay (function () {
 				
-				GLCubeTexture.uploadCompressedTextureFromByteArray (this, __context.__renderSession, data, byteArrayOffset);
+				GLCubeTexture.uploadCompressedTextureFromByteArray (this, cast __context.__renderer, data, byteArrayOffset);
 				dispatchEvent (new Event (Event.TEXTURE_READY));
 				
 			}, 1);
@@ -61,14 +61,14 @@ import openfl.utils.ByteArray;
 	public function uploadFromBitmapData (source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
 		if (source == null) return;
-		GLCubeTexture.uploadFromBitmapData (this, __context.__renderSession, source, side, miplevel, generateMipmap);
+		GLCubeTexture.uploadFromBitmapData (this, cast __context.__renderer, source, side, miplevel, generateMipmap);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void {
 		
-		GLCubeTexture.uploadFromByteArray (this, __context.__renderSession, data, byteArrayOffset, side, miplevel);
+		GLCubeTexture.uploadFromByteArray (this, cast __context.__renderer, data, byteArrayOffset, side, miplevel);
 		
 	}
 	
@@ -76,14 +76,14 @@ import openfl.utils.ByteArray;
 	public function uploadFromTypedArray (data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-		GLCubeTexture.uploadFromTypedArray (this, __context.__renderSession, data, side, miplevel);
+		GLCubeTexture.uploadFromTypedArray (this, cast __context.__renderer, data, side, miplevel);
 		
 	}
 	
 	
 	private override function __setSamplerState (state:SamplerState) {
 		
-		GLCubeTexture.setSamplerState (this, __context.__renderSession, state);
+		GLCubeTexture.setSamplerState (this, cast __context.__renderer, state);
 		
 	}
 	

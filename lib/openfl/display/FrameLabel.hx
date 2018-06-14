@@ -9,8 +9,13 @@ import openfl.events.EventDispatcher;
 @:final extern class FrameLabel extends EventDispatcher {
 	
 	
-	public var frame (default, never):Int;
-	public var name (default, never):String;
+	public var frame (get, never):Int;
+	
+	@:noCompletion private function get_frame ():Int;
+	
+	public var name (get, never):String;
+	
+	@:noCompletion private function get_name ():String;
 	
 	
 	public function new (name:String, frame:Int):Void;
