@@ -158,6 +158,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __renderer:AbstractRenderer;
 	private var __rendering:Bool;
 	private var __rollOutStack:Array<DisplayObject>;
+	private var __mouseOutStack:Array<DisplayObject>;
 	private var __stack:Array<DisplayObject>;
 	private var __touchData:Map<Int, TouchData>;
 	private var __transparent:Bool;
@@ -306,6 +307,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__clearBeforeRender = true;
 		__stack = [];
 		__rollOutStack = [];
+		__mouseOutStack = [];
 		__touchData = new Map<Int, TouchData>();
 		
 		if (Lib.current.stage == null) {
@@ -1568,7 +1570,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (__mouseOverTarget != null) {
 				
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
-				__dispatchTarget (__mouseOverTarget, event);
+				__dispatchStack (event, __mouseOutStack);
 				
 			}
 			
@@ -1615,12 +1617,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (target != null) {
 				
 				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), cast target);
-				event.bubbles = true;
-				__dispatchTarget (target, event);
+				__dispatchStack (event, stack);
 				
 			}
 			
 			__mouseOverTarget = target;
+			__mouseOutStack = stack;
 			
 		}
 		
