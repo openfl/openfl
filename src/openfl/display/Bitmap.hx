@@ -280,7 +280,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		if (!__hasFilters ()) return false;
+		if (!__hasFilters () && renderSession.gl != null && __cacheBitmap == null) return false;
 		return super.__updateCacheBitmap (renderSession, force);
 		
 	}
