@@ -232,7 +232,7 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		return true;
+		return !event.isDefaultPrevented();
 		
 	}
 	
