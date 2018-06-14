@@ -111,6 +111,8 @@ class GLTilemap {
 			
 			alpha = tile.alpha * worldAlpha;
 			visible = tile.visible;
+			tile.__dirty = false;
+			
 			if (!visible || alpha <= 0) continue;
 			
 			if (colorTransformEnabled) {
@@ -293,6 +295,7 @@ class GLTilemap {
 			
 		}
 		
+		group.__dirty = false;
 		tilemap.__bufferDirty = true;
 		bufferLength = bufferPosition;
 		Matrix.__pool.release (tileTransform);
