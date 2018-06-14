@@ -1323,6 +1323,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#elseif cs
 			throw e;
 			//cs.Lib.rethrow (e);
+			#elseif hl
+			hl.Api.rethrow (e);
 			#else
 			throw e;
 			#end
