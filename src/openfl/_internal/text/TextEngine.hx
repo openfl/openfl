@@ -1135,11 +1135,12 @@ class TextEngine {
 					
 					var tempPositions = getPositions (text, tempIndex, tempRangeEnd);
 					
-					for (temp in tempPositions) {
-						
-						positions.push(temp);
-						
-					}
+					// TODO: see if this actually needs to happen
+					if (__textLayout.direction == LEFT_TO_RIGHT)
+						positions = positions.concat(tempPositions);
+					else
+						positions = tempPositions.concat(positions);
+					
 					
 					widthValue += getPositionsWidth (positions);
 					
@@ -1738,20 +1739,26 @@ class TextEngine {
 								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code) {
 									
 									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
-									
+									// trace(lineLength, groupsInLine, offsetX);
 									// keep track of groups in the line as well as words in the line
 									var j = i, k = 0;
 									do {
-										
+										// if the format changes before the next space, use the previous word's offsetX
 										if (k > 0 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
-											
-											layoutGroups[j].offsetX += (offsetX * (k - 1));
-											
+											//trace(j, layoutGroups[j].offsetX, k);
+											if (__textLayout.direction == LEFT_TO_RIGHT)
+												layoutGroups[j].offsetX += (offsetX * (k - 1));
+											else
+												layoutGroups[j].offsetX += (offsetX * (k - 1));
 										}
 										
 										else {
+											//trace(i, j, k);
+											if (__textLayout.direction == LEFT_TO_RIGHT)
+												layoutGroups[j].offsetX += (offsetX * k);
+											else
+												layoutGroups[j].offsetX += (offsetX * k);
 											
-											layoutGroups[j].offsetX += (offsetX * k);
 											k++;
 											
 										}
