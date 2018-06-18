@@ -30,17 +30,7 @@ class CanvasTilemap {
 		
 		var context = renderer.context;
 		
-		var blendMode = null;
-		if (!tilemap.tileBlendModeEnabled) {
-			
-			renderer.__setBlendMode (tilemap.__worldBlendMode);
-			
-		} else {
-			
-			blendMode = tilemap.__worldBlendMode;
-			
-		}
-		
+		renderer.__setBlendMode (tilemap.__worldBlendMode);
 		renderer.__pushMaskObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
@@ -56,7 +46,7 @@ class CanvasTilemap {
 			
 		}
 		
-		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap.tileBlendModeEnabled, blendMode, null, null, rect);
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, rect);
 		
 		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
@@ -87,9 +77,7 @@ class CanvasTilemap {
 		var tiles = group.__tiles;
 		var length = group.__length;
 		
-		var tile, tileset, alpha, visible, id, tileData, tileRect, bitmapData;
-		
-		var tileBlendMode:BlendMode = defaultBlendMode;
+		var tile, tileset, alpha, visible, blendMode = null, id, tileData, tileRect, bitmapData;
 		
 		for (i in 0...length) {
 			
@@ -114,17 +102,15 @@ class CanvasTilemap {
 			
 			if (!alphaEnabled) alpha = 1;
 			
-			tileBlendMode = null;
-			
 			if (blendModeEnabled) {
 				
-				tileBlendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+				blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
 				
 			}
 			
 			if (tile.__length > 0) {
 				
-				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, tileBlendMode, cacheBitmapData, source, rect);
+				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, blendMode, cacheBitmapData, source, rect);
 				
 			} else {
 				
@@ -167,7 +153,7 @@ class CanvasTilemap {
 				
 				if (blendModeEnabled) {
 					
-					renderer.__setBlendMode (tileBlendMode);
+					renderer.__setBlendMode (blendMode);
 					
 				}
 				

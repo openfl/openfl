@@ -40,7 +40,7 @@ class FlashTilemap {
 		bitmapData.lock ();
 		bitmapData.fillRect (bitmapData.rect, 0);
 		
-		renderTileContainer (tilemap.__group, bitmapData, new Matrix (), tilemap.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1, tilemap.tileColorTransformEnabled, null, tilemap.tileBlendModeEnabled, null, null);
+		renderTileContainer (tilemap.__group, bitmapData, new Matrix (), tilemap.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1, tilemap.tileColorTransformEnabled, null, tilemap.tileBlendModeEnabled, NORMAL, null);
 		
 		bitmapData.unlock ();
 		#end
@@ -56,9 +56,7 @@ class FlashTilemap {
 		var tiles = group.__tiles;
 		var length = group.__length;
 		
-		var tile, tileset, alpha, visible, colorTransform = null, id, tileData, tileRect, sourceBitmapData, cacheAlpha;
-		
-		var tileBlendMode:BlendMode = defaultBlendMode;
+		var tile, tileset, alpha, visible, blendMode = null, colorTransform = null, id, tileData, tileRect, sourceBitmapData, cacheAlpha;
 		
 		for (i in 0...length) {
 			
@@ -81,11 +79,9 @@ class FlashTilemap {
 			visible = tile.visible;
 			if (!visible || alpha <= 0) continue;
 			
-			tileBlendMode = null;
-			
 			if (blendModeEnabled) {
 				
-				tileBlendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+				blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
 				
 			}
 			
@@ -123,7 +119,7 @@ class FlashTilemap {
 			
 			if (tile.__length > 0) {
 				
-				renderTileContainer (cast tile, bitmapData, tileTransform, tileset, smooth, alphaEnabled, alpha, colorTransformEnabled, colorTransform, blendModeEnabled, tileBlendMode, cacheBitmapData);
+				renderTileContainer (cast tile, bitmapData, tileTransform, tileset, smooth, alphaEnabled, alpha, colorTransformEnabled, colorTransform, blendModeEnabled, blendMode, cacheBitmapData);
 				
 			} else {
 				
@@ -158,11 +154,11 @@ class FlashTilemap {
 					bitmap.smoothing = smooth;
 					bitmap.scrollRect = sourceRect;
 					
-					bitmapData.draw (bitmap, tileTransform, colorTransform, tileBlendMode, null, smooth);
+					bitmapData.draw (bitmap, tileTransform, colorTransform, blendMode, null, smooth);
 					
 					colorTransform.alphaMultiplier = cacheAlpha;
 					
-				} else if (alpha == 1 && tileTransform.a == 1 && tileTransform.b == 0 && tileTransform.c == 0 && tileTransform.d == 1 && tileBlendMode == null) {
+				} else if (alpha == 1 && tileTransform.a == 1 && tileTransform.b == 0 && tileTransform.c == 0 && tileTransform.d == 1 && blendMode == NORMAL) {
 					
 					destPoint.x = tileTransform.tx;
 					destPoint.y = tileTransform.ty;
@@ -177,7 +173,15 @@ class FlashTilemap {
 					bitmap.smoothing = smooth;
 					bitmap.scrollRect = sourceRect;
 					
-					bitmapData.draw (bitmap, tileTransform, alphaColorTransform, tileBlendMode, null, smooth);
+					bitmapData.draw (bitmap, tileTransform, alphaColorTransform, blendMode, null, smooth);
+					
+				} else {
+					
+					bitmap.bitmapData = sourceBitmapData;
+					bitmap.smoothing = smooth;
+					bitmap.scrollRect = sourceRect;
+					
+					bitmapData.draw (bitmap, tileTransform, null, blendMode, null, smooth);
 					
 				}
 				

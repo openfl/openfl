@@ -41,24 +41,14 @@ class CairoTilemap {
 		
 		if (alpha <= 0) return;
 		
-		var blendMode:BlendMode = null;
-		if (!tilemap.tileBlendModeEnabled) {
-			
-			renderer.__setBlendMode (tilemap.__worldBlendMode);
-			
-		} else {
-			
-			blendMode = tilemap.__worldBlendMode;
-			
-		}
-		
+		renderer.__setBlendMode (tilemap.__worldBlendMode);
 		renderer.__pushMaskObject (tilemap);
 		
 		var rect = Rectangle.__pool.get ();
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, blendMode, null, null, null, rect, new Matrix3 ());
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, null, rect, new Matrix3 ());
 		
 		renderer.__popMaskRect ();
 		renderer.__popMaskObject (tilemap);
@@ -78,9 +68,7 @@ class CairoTilemap {
 		var tiles = group.__tiles;
 		var length = group.__length;
 		
-		var tile, tileset, alpha, visible, id, tileData, tileRect, bitmapData;
-		
-		var tileBlendMode:BlendMode = defaultBlendMode;
+		var tile, tileset, alpha, visible, blendMode = null, id, tileData, tileRect, bitmapData;
 		
 		for (tile in tiles) {
 			
@@ -96,17 +84,15 @@ class CairoTilemap {
 			
 			if (!alphaEnabled) alpha = 1;
 			
-			tileBlendMode = null;
-			
 			if (blendModeEnabled) {
 				
-				tileBlendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+				blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
 				
 			}
 			
 			if (tile.__length > 0) {
 				
-				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, tileBlendMode, cacheBitmapData, surface, pattern, rect, matrix);
+				renderTileContainer (cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, blendMode, cacheBitmapData, surface, pattern, rect, matrix);
 				
 			} else {
 				
@@ -145,7 +131,7 @@ class CairoTilemap {
 				
 				if (blendModeEnabled) {
 					
-					renderer.__setBlendMode (tileBlendMode);
+					renderer.__setBlendMode (blendMode);
 					
 				}
 				
