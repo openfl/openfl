@@ -120,6 +120,9 @@ class BitmapData implements IBitmapDrawable {
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
 	
+	private var __textureWidth:Int = 1;
+	private var __textureHeight:Int = 1;
+	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
 		
@@ -831,6 +834,9 @@ class BitmapData implements IBitmapDrawable {
 			var uvWidth = width / newWidth;
 			var uvHeight = height / newHeight;
 			
+			__textureWidth = newWidth;
+			__textureHeight = newHeight;
+			
 			#else
 			
 			__uvRect = new Rectangle (0, 0, width, height);
@@ -1133,16 +1139,26 @@ class BitmapData implements IBitmapDrawable {
 			
 			// TODO: Some way to support BGRA on WebGL?
 			
+			var cloned:Bool = false;
+			
 			if (!__supportsBGRA && textureImage.format != RGBA32) {
 				
 				textureImage = textureImage.clone ();
+				cloned = true;
 				textureImage.format = RGBA32;
 				//textureImage.buffer.premultiplied = true;
-				#if openfl_power_of_two
-				textureImage.powerOfTwo = true;
-				#end
 				
 			}
+			
+			#if openfl_power_of_two
+			if (!cloned) {
+				
+				textureImage = textureImage.clone ();
+				
+			}
+			
+			textureImage.powerOfTwo = true;
+			#end
 			
 			if (textureImage.type == DATA) {
 				
@@ -1172,6 +1188,9 @@ class BitmapData implements IBitmapDrawable {
 			
 			gl.bindTexture (gl.TEXTURE_2D, null);
 			__textureVersion = image.version;
+			
+			__textureWidth = textureImage.buffer.width;
+			__textureHeight = textureImage.buffer.height;
 			
 		}
 		
@@ -1996,10 +2015,10 @@ class BitmapData implements IBitmapDrawable {
 			if (__uvRect == null) __uvRect = new Rectangle ();
 			__uvRect.setTo (x, y, width, height);
 			
-			var uvX = x / this.width;
-			var uvY = y / this.height;
-			var uvWidth = width / this.width;
-			var uvHeight = height / this.height;
+			var uvX = x / __textureWidth;
+			var uvY = y / __textureHeight;
+			var uvWidth = width / __textureWidth;
+			var uvHeight = height / __textureHeight;
 			
 			__bufferData[0] = width;
 			__bufferData[1] = height;
