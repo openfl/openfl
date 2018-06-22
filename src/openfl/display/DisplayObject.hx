@@ -198,13 +198,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		super ();
 		
-		if (__initStage != null) {
-			
-			this.stage = __initStage;
-			__initStage = null;
-			
-		}
-		
 		__alpha = 1;
 		__blendMode = NORMAL;
 		__cacheAsBitmap = false;
@@ -225,6 +218,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__worldVisible = true;
 		
 		name = "instance" + (++__instanceCount);
+		
+		if (__initStage != null) {
+			
+			this.stage = __initStage;
+			__initStage = null;
+			this.stage.addChild (this);
+			
+		}
 		
 	}
 	

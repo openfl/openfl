@@ -315,7 +315,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			DisplayObject.__initStage = this;
 			var sprite:Sprite = cast Type.createInstance (documentClass, []);
-			addChild (sprite);
+			// addChild (sprite); // done by init stage
+			sprite.dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
 			
 		}
 		
