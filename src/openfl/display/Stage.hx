@@ -173,6 +173,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		super ();
 		
+		__colorSplit = [ 0xFF, 0xFF, 0xFF ];
+		__colorString = "#FFFFFF";
+		
 		#if commonjs
 		var app = null;
 		
@@ -2097,14 +2100,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		var r = (value & 0xFF0000) >>> 16;
-		var g = (value & 0x00FF00) >>> 8;
-		var b = (value & 0x0000FF);
+		if (__color != value) {
+			
+			var r = (value & 0xFF0000) >>> 16;
+			var g = (value & 0x00FF00) >>> 8;
+			var b = (value & 0x0000FF);
+			
+			__colorSplit[0] = r / 0xFF;
+			__colorSplit[1] = g / 0xFF;
+			__colorSplit[2] = b / 0xFF;
+			__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
+			__renderDirty = true;
+			__color = value;
+			
+		}
 		
-		__colorSplit = [ r / 0xFF, g / 0xFF, b / 0xFF ];
-		__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
-		
-		return __color = value;
+		return value;
 		
 	}
 	
