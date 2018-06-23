@@ -1631,6 +1631,7 @@ class TextEngine {
 		var offsetX = 0.0;
 		var totalWidth = this.width - 4;
 		var group, lineLength;
+		var lineMeasurementsDirty = false;
 		
 		for (i in 0...layoutGroups.length) {
 			
@@ -1698,6 +1699,7 @@ class TextEngine {
 								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code) {
 									
 									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
+									lineMeasurementsDirty = true;
 									
 									var j = 1;
 									do {
@@ -1734,6 +1736,14 @@ class TextEngine {
 				group.offsetX += offsetX;
 				
 			}
+			
+		}
+		
+		if (lineMeasurementsDirty) {
+			
+			// TODO: Better way to fix justify textWidth?
+			
+			getLineMeasurements ();
 			
 		}
 		

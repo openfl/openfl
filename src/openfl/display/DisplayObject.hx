@@ -214,7 +214,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();		
+		__renderTransform = new Matrix ();
 		__worldVisible = true;
 		
 		name = "instance" + (++__instanceCount);
