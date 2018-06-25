@@ -343,7 +343,7 @@ import lime.media.HTML5AudioContext;
 import lime.media.WebAudioContext;
 import lime.net.curl.CURL;
 import lime.net.curl.CURLCode;
-import lime.net.curl.CURLEasy;
+// import lime.net.curl.CURLEasy;
 import lime.net.curl.CURLInfo;
 import lime.net.curl.CURLOption;
 import lime.net.curl.CURLVersion;
