@@ -51,7 +51,6 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private var __endian:Endian;
 	private var __host:String;
 	private var __input:ByteArray;
-	private var __inputBuffer:ByteArray;
 	private var __output:ByteArray;
 	private var __port:Int;
 	private var __socket:#if sys SysSocket #else Dynamic #end;
@@ -135,11 +134,6 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		
 		__input = new ByteArray ();
 		__input.endian = __endian;
-		
-		#if (js && html5)
-		__inputBuffer = new ByteArray ();
-		__inputBuffer.endian = __endian;
-		#end
 		
 		#if (js && html5)
 		
@@ -594,36 +588,29 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private function socket_onMessage (msg:Dynamic):Void {
 		
 		#if (js && html5)
+		if (__input.position == __input.length) {
+			
+			__input.clear ();
+			
+		}
+		
 		if (Std.is (msg.data, String)) {
-
-			__inputBuffer.position = __inputBuffer.length;
-			var cachePosition = __inputBuffer.position;
-			__inputBuffer.writeUTFBytes (msg.data);
-			__inputBuffer.position = cachePosition;
+			
+			__input.position = __input.length;
+			var cachePosition = __input.position;
+			__input.writeUTFBytes (msg.data);
+			__input.position = cachePosition;
 			
 		} else {
 			
 			var newData:ByteArray = (msg.data:ArrayBuffer);
-			newData.readBytes (__inputBuffer, __inputBuffer.length);
+			newData.readBytes (__input, __input.length);
 			
 		}
 		
-		if (__inputBuffer.bytesAvailable > 0) {
+		if (__input.bytesAvailable > 0) {
 			
-			var newInput = new ByteArray ();
-			var newDataLength = __inputBuffer.bytesAvailable;
-			
-			__input.readBytes (newInput, 0, __input.bytesAvailable);
-			__inputBuffer.position = 0;
-			__inputBuffer.readBytes (newInput, newInput.position, __inputBuffer.length);
-			
-			newInput.position = 0;
-			
-			__input = newInput;
-			__input.endian = __endian;
-			__inputBuffer.clear ();
-			
-			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0));
+			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, __input.bytesAvailable, 0));
 			
 		}
 		#end
@@ -807,7 +794,6 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		__endian = value;
 		
 		if (__input != null) __input.endian = value;
-		if (__inputBuffer != null) __inputBuffer.endian = value;
 		if (__output != null) __output.endian = value;
 		
 		return __endian;
