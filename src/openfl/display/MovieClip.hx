@@ -611,8 +611,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 							
 							if (displayObject != null) {
 								
-								displayObject.parent = this;
-								displayObject.stage = stage;
 								instance = new FrameSymbolInstance (frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject.clipDepth);
 								
 							}
