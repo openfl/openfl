@@ -1701,13 +1701,6 @@ class TextField extends InteractiveObject {
 		
 		if (super.__updateCacheBitmap (renderer, force || __dirty)) {
 			
-			if (__cacheBitmap != null) {
-				
-				__cacheBitmap.__renderTransform.tx -= __offsetX;
-				__cacheBitmap.__renderTransform.ty -= __offsetY;
-				
-			}
-			
 			return true;
 			
 		}
