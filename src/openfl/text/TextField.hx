@@ -1082,8 +1082,10 @@ class TextField extends InteractiveObject {
 		
 		var bounds = Rectangle.__pool.get ();
 		bounds.copyFrom (__textEngine.bounds);
-		bounds.x += __offsetX;
-		bounds.y += __offsetY;
+		
+		matrix.tx += __offsetX;
+		matrix.ty += __offsetY;
+		
 		bounds.__transform (bounds, matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
@@ -1701,6 +1703,13 @@ class TextField extends InteractiveObject {
 		
 		if (super.__updateCacheBitmap (renderer, force || __dirty)) {
 			
+			if (__cacheBitmap != null) {
+				
+				__cacheBitmap.__renderTransform.tx -= __offsetX;
+				__cacheBitmap.__renderTransform.ty -= __offsetY;
+				
+			}
+
 			return true;
 			
 		}
