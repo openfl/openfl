@@ -454,6 +454,8 @@ class GLTilemap {
 		renderer.__popMaskRect ();
 		renderer.__popMaskObject (tilemap);
 		
+		Rectangle.__pool.release (rect);
+		
 	}
 	
 	
