@@ -287,12 +287,12 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			// if (input.input != null) {
+			if (input.input != null) {
 				
 				gl.uniform1i (input.index, textureCount);
 				textureCount++;
 				
-			// }
+			}
 			
 		}
 		
@@ -631,12 +631,12 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			// if (input.input != null) {
+			if (input.input != null) {
 				
 				input.__updateGL (gl, textureCount);
 				textureCount++;
 				
-			// }
+			}
 			
 		}
 		
