@@ -981,7 +981,7 @@ class TextEngine {
 			
 		}
 		
-		inline function getTextWidth (text:String):Float {
+		inline function getTextWidth (text:UTF8String):Float {
 			
 			#if (js && html5)
 			
@@ -1444,12 +1444,15 @@ class TextEngine {
 							
 							wrap = true;
 							
+							// TODO: this causes incorrect wrapping on RTL if the space causes it to wrap... rethink?
+							/*
 							if (positions.length > 0 && endIndex == spaceIndex + 1) {
 								
 								// if last letter is a space, avoid word wrap if possible
 								// TODO: Handle multiple spaces
 								
 								var lastPosition = positions[positions.length - 1];
+								
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 								
 								if (offsetX + widthValue - spaceWidth <= width - 2) {
@@ -1459,6 +1462,7 @@ class TextEngine {
 								}
 								
 							}
+							*/
 							
 						}
 						
@@ -1474,7 +1478,19 @@ class TextEngine {
 							}
 							
 							// For correct selection rectangles and alignment, trim the trailing space of the previous line:
-							previous.width -= previous.getAdvance (previous.positions.length - 1);
+							if (__textLayout.direction == LEFT_TO_RIGHT) {
+								
+								previous.width -= previous.getAdvance (previous.positions.length - 1);
+								
+							}
+							
+							else {
+								
+								// the trailing space is the leading position in RTL
+								previous.width -= previous.getAdvance (0);
+								
+							}
+							
 							previous.endIndex--;
 							
 						}
@@ -1552,7 +1568,6 @@ class TextEngine {
 						} else {
 							
 							layoutGroup.endIndex = endIndex;
-							// TODO: is this robust enough for bidirectional text?
 							// the concatenation order determines if words are strung together LTR or RTL
 							layoutGroup.positions = if (__textLayout.direction == LEFT_TO_RIGHT) layoutGroup.positions.concat (positions) else positions.concat (layoutGroup.positions);
 							layoutGroup.width += widthValue;
@@ -1610,11 +1625,16 @@ class TextEngine {
 				}
 				
 			} else {
-				// if there are no line breaks or spaces to deal with next, place all remaining text
-				setFormattedPositions (text.length);
-				placeText (text.length);
 				
-				alignBaseline ();
+				if (textIndex < text.length) {
+				
+					// if there are no line breaks or spaces to deal with next, place all remaining text
+					setFormattedPositions (text.length);
+					placeText (text.length);
+					
+					alignBaseline ();
+					
+				}
 				
 				textIndex++;
 				
