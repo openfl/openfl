@@ -582,7 +582,6 @@ class GLGraphics {
 								if (updatedBuffer) {
 									
 									gl.bufferData (gl.ARRAY_BUFFER, graphics.__bufferData, gl.DYNAMIC_DRAW);
-									updatedBuffer = false;
 									
 								}
 								
@@ -700,7 +699,6 @@ class GLGraphics {
 							if (updatedBuffer) {
 								
 								gl.bufferData (gl.ARRAY_BUFFER, graphics.__bufferData, gl.DYNAMIC_DRAW);
-								updatedBuffer = false;
 								
 							}
 							
