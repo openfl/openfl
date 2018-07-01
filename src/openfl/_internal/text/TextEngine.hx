@@ -897,7 +897,6 @@ class TextEngine {
 				var previousWidth = 0.0;
 				var width;
 				
-				// TODO: might have to reverse positions in html5 at the end...
 				for (i in startIndex...endIndex) {
 					
 					width = __context.measureText (text.substring (startIndex, i + 1)).width;
@@ -930,6 +929,13 @@ class TextEngine {
 					positions.push (advance);
 					
 				}
+				
+			}
+			
+			// TODO: is this correct? how do browsers deal with RTL?
+			if (__textLayout.direction == RIGHT_TO_LEFT) {
+				
+				positions.reverse();
 				
 			}
 			
@@ -1116,17 +1122,17 @@ class TextEngine {
 			}
 		}
 		
-		inline function setFormattedPositions (endIndex:Int) {
+		inline function setFormattedPositions (startIndex:Int, endIndex:Int) {
 			// sets the positions of the text from start to end, including format changes if there are any
 			
 			if (endIndex <= formatRange.end) {
 				
-				positions = getPositions (text, textIndex, endIndex);
+				positions = getPositions (text, startIndex, endIndex);
 				widthValue = getPositionsWidth (positions);
 				
 			} else {
 				
-				var tempIndex = textIndex;
+				var tempIndex = startIndex;
 				var tempRangeEnd = formatRange.end;
 				var countRanges = 0;
 				
@@ -1147,7 +1153,7 @@ class TextEngine {
 					
 					if (tempRangeEnd != endIndex) {
 						
-						// TODO: use a different function that only sets the font, ignoring ascent, height, leading, etc
+						// TODO: use a different function? merges the format and sets the font only, no ascent, height, etc
 						nextFormatRange (true);
 						
 						tempIndex = tempRangeEnd;
@@ -1268,22 +1274,20 @@ class TextEngine {
 			
 		}
 		
-		inline function breakLongWords (remainingPositions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Void {
+		inline function breakLongWords (endIndex:Int, remainingPositions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Void {
 			// breaks up words that are too long to fit in a single line
 			
 			var tempWidth = getPositionsWidth (remainingPositions);
 			
-			var i = 0;
-			var positionWidth = 0.0;
-			var currentPosition;
-			var tempPositions;
+			var i, positionWidth;
+			var currentPosition, tempPositions;
 			
 			while (offsetX + tempWidth > width - 2) {
 				
 				i = 0;
 				positionWidth = 0.0;
 				
-				while (offsetX + positionWidth < width - 2 && textIndex + i < text.length) {
+				while (offsetX + positionWidth < width - 2) {
 					
 					if (__textLayout.direction == LEFT_TO_RIGHT) {
 						
@@ -1301,6 +1305,7 @@ class TextEngine {
 					if (#if (js && html5) currentPosition #else currentPosition.advance.x #end == 0.0) {
 						
 						// skip Unicode character buffer positions
+						// TODO: make sure this works
 						i++;
 						
 					}
@@ -1314,45 +1319,65 @@ class TextEngine {
 					
 				}
 				
-				if (i == 0 && tempWidth > width - 4) {
-					// if the textfield is smaller than a single character, don't worry about wrapping
+				if (i < 2 && positionWidth > width - 4) {
+					// if the textfield is smaller than the first character in a line, automatically wrap the next character
 					
-					// TODO: double check if this even runs anymore or needs to be reworked
-					i = text.length;
-					
-				} else {
-					
-					// remove characters until the text fits one line
-					do {
-					
-						i--;
-						positionWidth = getPositionsWidth (getPositions (text, textIndex, textIndex + i));
+					// unless it's the last line of the long word
+					if (textIndex + i == endIndex) {
 						
-					} while (offsetX + positionWidth > width - 2);
-				}
-				
-				placeFormattedText (textIndex + i);
-				
-				alignBaseline();
-				
-				if (__textLayout.direction == LEFT_TO_RIGHT) {
-					
-					remainingPositions = remainingPositions.slice (i);
+						break;
+						
+					}
 					
 				}
 				
 				else {
 					
-					remainingPositions = remainingPositions.slice (0, i);
+					// remove characters until the text fits one line
+					// because of combining letters potentially being broken up now, we have to redo the formatted positions each time
+					while (offsetX + positionWidth > width - 2) {
+					
+						i--;
+						
+						if (i > 0) {
+							
+							setFormattedPositions (textIndex, textIndex + i);
+							positionWidth = widthValue;
+							
+						}
+						
+						else {
+							
+							i = 1;
+							
+						}
+						
+					}
 					
 				}
 				
-				tempWidth = getPositionsWidth (remainingPositions);
+				placeFormattedText (textIndex + i);
+				alignBaseline();
+				
+				if (__textLayout.direction == LEFT_TO_RIGHT) {
+					
+					setFormattedPositions (i, remainingPositions.length);
+					
+				}
+				
+				else {
+					
+					setFormattedPositions (0, i);
+					
+				}
+				
+				remainingPositions = positions;
+				tempWidth = widthValue;
 				
 			}
 			
-			positions = remainingPositions; // this only contains the final unbroken line
-			widthValue = tempWidth;
+			// positions = remainingPositions; // this only contains the final unbroken line
+			// widthValue = tempWidth;
 			
 		}
 		
@@ -1360,7 +1385,7 @@ class TextEngine {
 			
 			if (width >= 4 && wordWrap) {
 				
-				breakLongWords (positions);
+				breakLongWords (endIndex, positions);
 				
 			}
 			
@@ -1381,7 +1406,7 @@ class TextEngine {
 				
 				if (textIndex <= breakIndex) {
 					
-					setFormattedPositions (breakIndex);
+					setFormattedPositions (textIndex, breakIndex);
 					placeText (breakIndex);
 					
 					layoutGroup = null;
@@ -1459,7 +1484,7 @@ class TextEngine {
 						
 					}
 					
-					setFormattedPositions (endIndex);
+					setFormattedPositions (textIndex, endIndex);
 					
 					if (lineFormat.align == JUSTIFY) {
 						
@@ -1492,14 +1517,12 @@ class TextEngine {
 							
 							wrap = true;
 							
-							// TODO: this causes incorrect wrapping on RTL if the space causes it to wrap... rethink?
-							/*
 							if (positions.length > 0 && endIndex == spaceIndex + 1) {
 								
 								// if last letter is a space, avoid word wrap if possible
 								// TODO: Handle multiple spaces
 								
-								var lastPosition = positions[positions.length - 1];
+								var lastPosition = if (__textLayout.direction == LEFT_TO_RIGHT) positions[positions.length - 1] else positions[0];
 								
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 								
@@ -1510,7 +1533,6 @@ class TextEngine {
 								}
 								
 							}
-							*/
 							
 						}
 						
@@ -1678,7 +1700,7 @@ class TextEngine {
 				
 					// if there are no line breaks or spaces to deal with next, place all remaining text
 					
-					setFormattedPositions (text.length);
+					setFormattedPositions (textIndex, text.length);
 					placeText (text.length);
 					
 					alignBaseline ();
