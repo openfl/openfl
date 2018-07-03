@@ -205,7 +205,7 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		iterator.reset (list);
+		iterator.start ();
 		
 		for (listener in iterator) {
 			
@@ -225,11 +225,17 @@ class EventDispatcher implements IEventDispatcher {
 			}
 			
 		}
+
+		iterator.stop ();
 		
 		if (iterator != iterators[0]) {
 			
 			iterators.remove (iterator);
 			
+		} else {
+
+			iterator.reset (list);
+
 		}
 		
 		return !event.isDefaultPrevented();
@@ -288,8 +294,8 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function new (list:Array<Listener>) {
 		
-		this.list = list;
-		index = list.length;
+		active = false;
+		reset(list);
 		
 	}
 	
@@ -308,16 +314,7 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function hasNext ():Bool {
 		
-		if (index < list.length) {
-			
-			return true;
-			
-		} else {
-			
-			active = false;
-			return false;
-			
-		}
+		return index < list.length;
 		
 	}
 	
@@ -365,9 +362,20 @@ class EventDispatcher implements IEventDispatcher {
 		
 		this.list = list;
 		
-		active = true;
 		isCopy = false;
 		index = 0;
+		
+	}
+	
+	public function start ():Void {
+		
+		active = true;
+		
+	}
+	
+	public function stop ():Void {
+		
+		active = false;
 		
 	}
 	
