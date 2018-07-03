@@ -122,13 +122,13 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
-	public function getMatrix (transform:Matrix):Array<Float> {
+	public function getMatrix (transform:Matrix, snapToPixel: Bool = false):Array<Float> {
 		
 		var _matrix = Matrix.__pool.get ();
 		_matrix.copyFrom (transform);
 		_matrix.concat (displayMatrix);
 		
-		if (renderSession.roundPixels) {
+		if (renderSession.roundPixels || snapToPixel) {
 			
 			_matrix.tx = Math.round (_matrix.tx);
 			_matrix.ty = Math.round (_matrix.ty);
