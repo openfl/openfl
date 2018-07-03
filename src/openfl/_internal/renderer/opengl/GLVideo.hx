@@ -50,7 +50,7 @@ class GLVideo {
 			
 			// TODO: Support ShaderInput<Video>
 			renderer.applyBitmapData (null, renderer.__allowSmoothing, false);
-			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (gl));
+			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (renderer.__context));
 			
 			//shader.uImage0.input = bitmap.__bitmapData;
 			//shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
