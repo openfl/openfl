@@ -4,9 +4,7 @@ package openfl.display;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.app.IModule;
-import lime.app.Preloader;
 import lime.graphics.RenderContext;
-import lime.graphics.Renderer;
 import lime.ui.Touch;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
@@ -39,6 +37,11 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+
+#if (lime < "7.0.0")
+import lime.app.Preloader;
+import lime.graphics.Renderer;
+#end
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -331,92 +334,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function addRenderer (renderer:Renderer):Void {
-		
-		if (this.window == null || this.window.renderer != renderer) return;
-		
-		renderer.onRender.add (render.bind (renderer));
-		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
-		renderer.onContextRestored.add (onRenderContextRestored.bind (renderer));
-		
-	}
-	
-	
-	@:noCompletion public function addWindow (window:Window):Void {
-		
-		if (this.window != window) return;
-		
-		window.onActivate.add (onWindowActivate.bind (window));
-		window.onClose.add (onWindowClose.bind (window), false, -9000);
-		window.onCreate.add (onWindowCreate.bind (window));
-		window.onDeactivate.add (onWindowDeactivate.bind (window));
-		window.onDropFile.add (onWindowDropFile.bind (window));
-		window.onEnter.add (onWindowEnter.bind (window));
-		window.onExpose.add (onWindowExpose.bind (window));
-		window.onFocusIn.add (onWindowFocusIn.bind (window));
-		window.onFocusOut.add (onWindowFocusOut.bind (window));
-		window.onFullscreen.add (onWindowFullscreen.bind (window));
-		window.onKeyDown.add (onKeyDown.bind (window));
-		window.onKeyUp.add (onKeyUp.bind (window));
-		window.onLeave.add (onWindowLeave.bind (window));
-		window.onMinimize.add (onWindowMinimize.bind (window));
-		window.onMouseDown.add (onMouseDown.bind (window));
-		window.onMouseMove.add (onMouseMove.bind (window));
-		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
-		window.onMouseUp.add (onMouseUp.bind (window));
-		window.onMouseWheel.add (onMouseWheel.bind (window));
-		window.onMove.add (onWindowMove.bind (window));
-		window.onResize.add (onWindowResize.bind (window));
-		window.onRestore.add (onWindowRestore.bind (window));
-		window.onTextEdit.add (onTextEdit.bind (window));
-		window.onTextInput.add (onTextInput.bind (window));
-		
-		if (window.id > -1) {
-			
-			onWindowCreate (window);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion public function registerModule (application:Application):Void {
-		
-		application.onExit.add (onModuleExit, false, 0);
-		application.onUpdate.add (update);
-		
-		for (gamepad in Gamepad.devices) {
-			
-			__onGamepadConnect (gamepad);
-			
-		}
-		
-		Gamepad.onConnect.add (__onGamepadConnect);
-		Touch.onStart.add (onTouchStart);
-		Touch.onMove.add (onTouchMove);
-		Touch.onEnd.add (onTouchEnd);
-		
-	}
-	
-	
-	@:noCompletion public function removeRenderer (renderer:Renderer):Void { }
-	@:noCompletion public function removeWindow (window:Window):Void { }
-	@:noCompletion public function setPreloader (preloader:Preloader):Void { }
-	
-	
-	@:noCompletion public function unregisterModule (application:Application):Void {
-		
-		application.onExit.remove (onModuleExit);
-		application.onUpdate.remove (update);
-		
-		Gamepad.onConnect.remove (__onGamepadConnect);
-		Touch.onStart.remove (onTouchStart);
-		Touch.onMove.remove (onTouchMove);
-		Touch.onEnd.remove (onTouchEnd);
-		
-	}
-	
-	
 	public override function invalidate ():Void {
 		
 		__invalidated = true;
@@ -664,14 +581,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onRenderContextLost (renderer:Renderer):Void {
+	public function onRenderContextLost (#if (lime < "7.0.0") renderer:Renderer #end):Void {
 		
 		__renderer = null;
 		
 	}
 	
 	
-	public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
+	public function onRenderContextRestored (#if (lime < "7.0.0") renderer:Renderer, #end context:RenderContext):Void {
 		
 		__createRenderer ();
 		
@@ -776,7 +693,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		if (window.renderer != null) {
+		if (#if (lime >= "7.0.0") window.context != null #else window.renderer != null #end) {
 			
 			__createRenderer ();
 			
@@ -922,9 +839,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function render (renderer:Renderer):Void {
+	public function render (#if (lime >= "7.0.0") context:RenderContext #else renderer:Renderer #end):Void {
 		
+		#if (lime < "7.0.0")
 		if (renderer.window == null || renderer.window != window) return;
+		#end
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -977,17 +896,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (__renderer.__type == CAIRO) {
 				
+				#if lime_cairo
+				#if (lime >= "7.0.0")
+				cast (__renderer, CairoRenderer).cairo = context.cairo;
+				#else
 				switch (renderer.context) {
 					
 					case CAIRO (cairo):
 						
-						#if lime_cairo
 						cast (__renderer, CairoRenderer).cairo = cairo;
-						#end
 					
 					default:
-						
+					
 				}
+				#end
+				#end
 				
 			}
 			
@@ -995,7 +918,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else {
 			
+			#if (lime >= "7.0.0")
+			window.onRender.cancel ();
+			#else
 			renderer.onRender.cancel ();
+			#end
 			
 		}
 		
@@ -1014,6 +941,44 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = deltaTime;
 		
 	}
+	
+	
+	#if (lime >= "7.0.0")
+	private function __addWindow (window:Window):Void {
+		
+		if (this.window != window) return;
+		
+		window.onActivate.add (onWindowActivate.bind (window));
+		window.onClose.add (onWindowClose.bind (window), false, -9000);
+		window.onDeactivate.add (onWindowDeactivate.bind (window));
+		window.onDropFile.add (onWindowDropFile.bind (window));
+		window.onEnter.add (onWindowEnter.bind (window));
+		window.onExpose.add (onWindowExpose.bind (window));
+		window.onFocusIn.add (onWindowFocusIn.bind (window));
+		window.onFocusOut.add (onWindowFocusOut.bind (window));
+		window.onFullscreen.add (onWindowFullscreen.bind (window));
+		window.onKeyDown.add (onKeyDown.bind (window));
+		window.onKeyUp.add (onKeyUp.bind (window));
+		window.onLeave.add (onWindowLeave.bind (window));
+		window.onMinimize.add (onWindowMinimize.bind (window));
+		window.onMouseDown.add (onMouseDown.bind (window));
+		window.onMouseMove.add (onMouseMove.bind (window));
+		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
+		window.onMouseUp.add (onMouseUp.bind (window));
+		window.onMouseWheel.add (onMouseWheel.bind (window));
+		window.onMove.add (onWindowMove.bind (window));
+		window.onRender.add (render);
+		window.onRenderContextLost.add (onRenderContextLost);
+		window.onRenderContextRestored.add (onRenderContextRestored);
+		window.onResize.add (onWindowResize.bind (window));
+		window.onRestore.add (onWindowRestore.bind (window));
+		window.onTextEdit.add (onTextEdit.bind (window));
+		window.onTextInput.add (onTextInput.bind (window));
+		
+		onWindowCreate (window);
+		
+	}
+	#end
 	
 	
 	private function __broadcastEvent (event:Event):Void {
@@ -1053,13 +1018,61 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#if (js && html5)
 		var pixelRatio = 1;
 		
+		#if (lime >= "7.0.0")
+		if (window.scale > 1) {
+			
+			// TODO: Does this check work?
+			pixelRatio = untyped window.devicePixelRatio || 1;
+			
+		}
+		#else
 		if (window.config != null && Reflect.hasField (window.config, "allowHighDPI") && window.config.allowHighDPI) {
 			
 			pixelRatio = untyped window.devicePixelRatio || 1;
 			
 		}
 		#end
+		#end
 		
+		#if (lime >= "7.0.0")
+		switch (window.context.type) {
+			
+			case OPENGL, OPENGLES, WEBGL:
+				
+				#if (!disable_cffi && (!html5 || !canvas))
+				__renderer = new OpenGLRenderer (window.context);
+				
+				if (stage3Ds[0].context3D == null) {
+					
+					stage3Ds[0].__createContext (this, __renderer);
+					
+				}
+				#end
+			
+			case CANVAS:
+				
+				#if (js && html5)
+				__renderer = new CanvasRenderer (window.context.canvas2D);
+				cast (__renderer, CanvasRenderer).pixelRatio = pixelRatio;
+				#end
+			
+			case DOM:
+				
+				#if (js && html5)
+				__renderer = new DOMRenderer (window.context.dom);
+				cast (__renderer, DOMRenderer).pixelRatio = pixelRatio;
+				#end
+			
+			case CAIRO:
+				
+				#if lime_cairo
+				__renderer = new CairoRenderer (window.context.cairo);
+				#end
+			
+			default:
+			
+		}
+		#else
 		switch (window.renderer.context) {
 			
 			case OPENGL (gl):
@@ -1095,15 +1108,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				#end
 			
-			case CONSOLE (ctx):
-				
-				#if lime_console
-				__renderer = new ConsoleRenderer (ctx);
-				#end
-			
 			default:
 			
 		}
+		#end
 		
 		if (__renderer != null) {
 			
@@ -1902,6 +1910,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	#if (lime >= "7.0.0")
+	private function __registerLimeModule (application:Application):Void {
+		
+		application.onExit.add (onModuleExit, false, 0);
+		application.onUpdate.add (update);
+		application.onWindowCreate.add (__addWindow);
+		
+		for (gamepad in Gamepad.devices) {
+			
+			__onGamepadConnect (gamepad);
+			
+		}
+		
+		Gamepad.onConnect.add (__onGamepadConnect);
+		Touch.onStart.add (onTouchStart);
+		Touch.onMove.add (onTouchMove);
+		Touch.onEnd.add (onTouchEnd);
+		
+	}
+	#end
+	
+	
 	private function __resize ():Void {
 		
 		var cacheWidth = stageWidth;
@@ -2016,6 +2046,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	#if (lime >= "7.0.0")
+	private function __unregisterLimeModule (application:Application):Void {
+		
+		application.onExit.remove (onModuleExit);
+		application.onUpdate.remove (update);
+		application.onWindowCreate.remove (__addWindow);
+		
+		Gamepad.onConnect.remove (__onGamepadConnect);
+		Touch.onStart.remove (onTouchStart);
+		Touch.onMove.remove (onTouchMove);
+		Touch.onEnd.remove (onTouchEnd);
+		
+	}
+	#end
+	
+	
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		if (transformOnly) {
@@ -2072,6 +2118,95 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 	}
+	
+	
+	#if (lime < "7.0.0")
+	@:noCompletion public function addRenderer (renderer:Renderer):Void {
+		
+		if (this.window == null || this.window.renderer != renderer) return;
+		
+		renderer.onRender.add (render.bind (renderer));
+		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
+		renderer.onContextRestored.add (onRenderContextRestored.bind (renderer));
+		
+	}
+	
+	
+	@:noCompletion public function addWindow (window:Window):Void {
+		
+		if (this.window != window) return;
+		
+		window.onActivate.add (onWindowActivate.bind (window));
+		window.onClose.add (onWindowClose.bind (window), false, -9000);
+		window.onCreate.add (onWindowCreate.bind (window));
+		window.onDeactivate.add (onWindowDeactivate.bind (window));
+		window.onDropFile.add (onWindowDropFile.bind (window));
+		window.onEnter.add (onWindowEnter.bind (window));
+		window.onExpose.add (onWindowExpose.bind (window));
+		window.onFocusIn.add (onWindowFocusIn.bind (window));
+		window.onFocusOut.add (onWindowFocusOut.bind (window));
+		window.onFullscreen.add (onWindowFullscreen.bind (window));
+		window.onKeyDown.add (onKeyDown.bind (window));
+		window.onKeyUp.add (onKeyUp.bind (window));
+		window.onLeave.add (onWindowLeave.bind (window));
+		window.onMinimize.add (onWindowMinimize.bind (window));
+		window.onMouseDown.add (onMouseDown.bind (window));
+		window.onMouseMove.add (onMouseMove.bind (window));
+		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
+		window.onMouseUp.add (onMouseUp.bind (window));
+		window.onMouseWheel.add (onMouseWheel.bind (window));
+		window.onMove.add (onWindowMove.bind (window));
+		window.onResize.add (onWindowResize.bind (window));
+		window.onRestore.add (onWindowRestore.bind (window));
+		window.onTextEdit.add (onTextEdit.bind (window));
+		window.onTextInput.add (onTextInput.bind (window));
+		
+		if (window.id > -1) {
+			
+			onWindowCreate (window);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public function registerModule (application:Application):Void {
+		
+		application.onExit.add (onModuleExit, false, 0);
+		application.onUpdate.add (update);
+		
+		for (gamepad in Gamepad.devices) {
+			
+			__onGamepadConnect (gamepad);
+			
+		}
+		
+		Gamepad.onConnect.add (__onGamepadConnect);
+		Touch.onStart.add (onTouchStart);
+		Touch.onMove.add (onTouchMove);
+		Touch.onEnd.add (onTouchEnd);
+		
+	}
+	
+	
+	@:noCompletion public function removeRenderer (renderer:Renderer):Void { }
+	@:noCompletion public function removeWindow (window:Window):Void { }
+	@:noCompletion public function setPreloader (preloader:Preloader):Void { }
+	
+	
+	
+	@:noCompletion public function unregisterModule (application:Application):Void {
+		
+		application.onExit.remove (onModuleExit);
+		application.onUpdate.remove (update);
+		
+		Gamepad.onConnect.remove (__onGamepadConnect);
+		Touch.onStart.remove (onTouchStart);
+		Touch.onMove.remove (onTouchMove);
+		Touch.onEnd.remove (onTouchEnd);
+		
+	}
+	#end
 	
 	
 	
@@ -2212,11 +2347,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function get_frameRate ():Float {
 		
+		#if (lime >= "7.0.0")
+		if (window != null) {
+			
+			return window.frameRate;
+			
+		}
+		#else
 		if (application != null) {
 			
 			return application.frameRate;
 			
 		}
+		#end
 		
 		return 0;
 		
@@ -2225,11 +2368,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function set_frameRate (value:Float):Float {
 		
+		#if (lime >= "7.0.0")
+		if (window != null) {
+			
+			return window.frameRate = value;
+			
+		}
+		#else
 		if (application != null) {
 			
 			return application.frameRate = value;
 			
 		}
+		#end
 		
 		return value;
 		

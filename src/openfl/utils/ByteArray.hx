@@ -11,15 +11,18 @@ import haxe.Serializer;
 import haxe.Unserializer;
 import lime.app.Future;
 import lime.system.System;
-import lime.utils.compress.Deflate;
-import lime.utils.compress.LZMA;
-import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes in LimeBytes;
 import lime.utils.DataPointer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
+
+#if (lime < "7.0.0")
+import lime.utils.compress.Deflate;
+import lime.utils.compress.LZMA;
+import lime.utils.compress.Zlib;
+#end
 
 #if format
 import format.amf.Reader in AMFReader;
@@ -416,11 +419,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		#end
 		
+		var limeBytes:LimeBytes = this;
+		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.compress (this);
-			case CompressionAlgorithm.LZMA: LZMA.compress (this);
-			default: Zlib.compress (this);
+			case CompressionAlgorithm.DEFLATE: #if (lime >= "7.0.0") limeBytes.compress (DEFLATE) #else Deflate.compress (this) #end;
+			case CompressionAlgorithm.LZMA: #if (lime >= "7.0.0") limeBytes.compress (LZMA) #else LZMA.compress (this) #end;
+			default: #if (lime >= "7.0.0") limeBytes.compress (ZLIB) #else Zlib.compress (this) #end;
 			
 		}
 		
@@ -762,11 +767,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		#end
 		
+		var limeBytes:LimeBytes = this;
+		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this);
-			case CompressionAlgorithm.LZMA: LZMA.decompress (this);
-			default: Zlib.decompress (this);
+			case CompressionAlgorithm.DEFLATE: #if (lime >= "7.0.0") limeBytes.compress (DEFLATE) #else Deflate.compress (this) #end;
+			case CompressionAlgorithm.LZMA: #if (lime >= "7.0.0") limeBytes.compress (LZMA) #else LZMA.compress (this) #end;
+			default: #if (lime >= "7.0.0") limeBytes.compress (ZLIB) #else Zlib.compress (this) #end;
 			
 		};
 		

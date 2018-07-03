@@ -2,9 +2,14 @@ package openfl._internal.renderer.dom;
 
 
 import lime.graphics.ImageBuffer;
-import lime.graphics.utils.ImageCanvasUtil;
 import openfl.display.Bitmap;
 import openfl.display.DOMRenderer;
+
+#if (lime >= "7.0.0")
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+#else
+import lime.graphics.utils.ImageCanvasUtil;
+#end
 
 #if (js && html5)
 import js.Browser;

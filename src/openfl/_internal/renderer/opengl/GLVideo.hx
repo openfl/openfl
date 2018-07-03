@@ -35,7 +35,11 @@ class GLVideo {
 		
 		if (video.__stream.__video != null) {
 			
-			var gl = renderer.__gl;
+			#if (lime >= "7.0.0")
+			var gl = renderer.__context.webgl;
+			#else
+			var gl = renderer.__context;
+			#end
 			
 			renderer.__setBlendMode (video.__worldBlendMode);
 			renderer.__pushMaskObject (video);
@@ -76,13 +80,13 @@ class GLVideo {
 				
 			}
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl));
+			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (renderer.__context));
 			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
-				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			GLStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
 			
 			renderer.__clearShader ();
@@ -103,7 +107,11 @@ class GLVideo {
 		
 		if (video.__stream.__video != null) {
 			
-			var gl = renderer.__gl;
+			#if (lime >= "7.0.0")
+			var gl = renderer.__context.webgl;
+			#else
+			var gl = renderer.__context;
+			#end
 			
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
@@ -111,7 +119,7 @@ class GLVideo {
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.updateShader ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (gl));
+			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (renderer.__context));
 			
 			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
@@ -119,7 +127,7 @@ class GLVideo {
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
-				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			GLStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
 			
 			renderer.__clearShader ();

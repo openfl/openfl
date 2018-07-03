@@ -13,6 +13,7 @@ import openfl.display.Stage3D;
 @:access(openfl._internal.stage3D.GLUtils)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
+@:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.OpenGLRenderer)
 
 

@@ -1,13 +1,18 @@
 package openfl.filters;
 
 
-import lime.graphics.utils.ImageDataUtil;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime._internal.graphics.ImageDataUtil; // TODO
+#else
+import lime.graphics.utils.ImageDataUtil;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

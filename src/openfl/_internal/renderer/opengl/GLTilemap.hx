@@ -1,7 +1,6 @@
 package openfl._internal.renderer.opengl;
 
 
-import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -15,6 +14,10 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if (lime < "7.0.0")
+import lime.graphics.opengl.WebGLContext;
+#end
 
 #if gl_stats
 import openfl._internal.renderer.opengl.stats.GLStats;
@@ -315,7 +318,11 @@ class GLTilemap {
 		
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
 			
-			var gl:WebGLContext = renderer.__gl;
+			#if (lime >= "7.0.0")
+			var gl = renderer.__context.webgl;
+			#else
+			var gl = renderer.__context;
+			#end
 			
 			var shader = renderer.__initDisplayShader (cast currentShader);
 			renderer.setShader (shader);
@@ -355,9 +362,9 @@ class GLTilemap {
 			if (tilemap.tileAlphaEnabled) stride++;
 			if (tilemap.tileColorTransformEnabled) stride += 8;
 			
-			if (tilemap.__buffer == null || tilemap.__bufferContext != gl) {
+			if (tilemap.__buffer == null || tilemap.__bufferContext != renderer.__context) {
 				
-				tilemap.__bufferContext = cast gl;
+				tilemap.__bufferContext = cast renderer.__context;
 				tilemap.__buffer = gl.createBuffer ();
 				
 			}
@@ -432,7 +439,11 @@ class GLTilemap {
 		
 		currentBlendMode = tilemap.__worldBlendMode;
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		if (!tilemap.tileBlendModeEnabled) {
 			

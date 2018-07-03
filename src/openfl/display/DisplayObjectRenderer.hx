@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import lime.graphics.RendererType;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
@@ -9,6 +8,13 @@ import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
+#else
+import lime.graphics.RendererType;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -25,11 +31,12 @@ class DisplayObjectRenderer extends EventDispatcher {
 	
 	private var __allowSmoothing:Bool;
 	private var __blendMode:BlendMode;
+	private var __context:#if (lime >= "7.0.0") RenderContext #else Dynamic #end;
 	private var __roundPixels:Bool;
 	private var __stage:Stage;
 	private var __tempColorTransform:ColorTransform;
 	private var __transparent:Bool;
-	private var __type:RendererType;
+	private var __type:#if (lime >= "7.0.0") RenderContextType #else RendererType #end;
 	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;

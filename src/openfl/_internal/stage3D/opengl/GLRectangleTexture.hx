@@ -1,7 +1,6 @@
 package openfl._internal.stage3D.opengl;
 
 
-import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
@@ -12,6 +11,12 @@ import openfl.display.BitmapData;
 import openfl.display.OpenGLRenderer;
 import openfl.utils.ByteArray;
 
+#if (lime >= "7.0.0")
+import lime.graphics.WebGLRenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -20,6 +25,7 @@ import openfl.utils.ByteArray;
 @:access(openfl._internal.stage3D.SamplerState)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.DisplayObjectRenderer)
 
 
 class GLRectangleTexture {
@@ -27,7 +33,11 @@ class GLRectangleTexture {
 	
 	public static function create (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		rectangleTexture.__textureTarget = gl.TEXTURE_2D;
 		uploadFromTypedArray (rectangleTexture, renderer, null);
@@ -45,7 +55,11 @@ class GLRectangleTexture {
 		#if (js && html5)
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			var gl:WebGLContext = renderer.__gl;
+			#if (lime >= "7.0.0")
+			var gl = renderer.__context.webgl;
+			#else
+			var gl:WebGLContext = renderer.__context;
+			#end
 			
 			gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
 			GLUtils.CheckGLError ();
@@ -89,7 +103,11 @@ class GLRectangleTexture {
 			//
 		//}
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
 		GLUtils.CheckGLError ();
@@ -110,7 +128,11 @@ class GLRectangleTexture {
 		
 		if (!state.equals (rectangleTexture.__samplerState)) {
 			
-			var gl = renderer.__gl;
+			#if (lime >= "7.0.0")
+			var gl = renderer.__context.webgl;
+			#else
+			var gl = renderer.__context;
+			#end
 			
 			if (state.maxAniso != 0.0) {
 				

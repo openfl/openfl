@@ -3,8 +3,6 @@ package openfl.media;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
@@ -22,6 +20,13 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -48,7 +53,7 @@ class Video extends DisplayObject {
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
 	private var __bufferColorTransform:ColorTransform;
-	private var __bufferContext:WebGLContext;
+	private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else WebGLContext #end;
 	private var __bufferData:Float32Array;
 	private var __dirty:Bool;
 	private var __height:Float;
@@ -133,9 +138,15 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getBuffer (gl:GLRenderContext):GLBuffer {
+	private function __getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
 		
-		if (__buffer == null || __bufferContext != gl) {
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl:WebGLContext = context;
+		#end
+		
+		if (__buffer == null || __bufferContext != context) {
 			
 			#if openfl_power_of_two
 			
@@ -209,7 +220,7 @@ class Video extends DisplayObject {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = gl;
+			__bufferContext = context;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);

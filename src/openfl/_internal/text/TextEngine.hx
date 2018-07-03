@@ -6,8 +6,6 @@ import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
-import lime.text.GlyphPosition;
-import lime.text.TextLayout;
 import lime.text.UTF8String;
 import openfl.Vector;
 import openfl.events.Event;
@@ -507,19 +505,6 @@ class TextEngine {
 					fontList = [ systemFontDirectory + "/" + format.font ];
 				
 			}
-			
-			#if lime_console
-				
-				// TODO(james4k): until we figure out our story for the above switch
-				// statement, always load arial unless a file is specified.
-				if (format == null
-					|| StringTools.startsWith (format.font,  "_")
-					|| format.font.indexOf(".") == -1
-				) {
-					fontList = [ "arial.ttf" ];
-				}
-				
-			#end
 			
 			if (fontList != null) {
 				

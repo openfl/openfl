@@ -2,13 +2,19 @@ package openfl.display;
 
 
 import lime.graphics.opengl.GLBuffer;
-import lime.graphics.GLRenderContext;
-import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+
+#if (lime >= "7.0.0")
+import lime.graphics.OpenGLRenderContext;
+import lime.graphics.WebGLRenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
+#end
 
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.ColorTransform)

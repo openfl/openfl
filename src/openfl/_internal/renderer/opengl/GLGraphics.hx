@@ -1,8 +1,6 @@
 package openfl._internal.renderer.opengl;
 
 
-import lime.graphics.opengl.WebGLContext;
-import lime.math.color.ARGB;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -13,6 +11,13 @@ import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime.math.ARGB;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.math.color.ARGB;
+#end
 
 #if gl_stats
 import openfl._internal.renderer.opengl.stats.GLStats;
@@ -46,7 +51,11 @@ class GLGraphics {
 		
 		var data = new DrawCommandReader (graphics.__commands);
 		
-		var gl:WebGLContext = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl:WebGLContext = renderer.__context;
+		#end
 		
 		var tileRect = Rectangle.__pool.get ();
 		var tileTransform = Matrix.__pool.get ();
@@ -471,7 +480,11 @@ class GLGraphics {
 				
 				var data = new DrawCommandReader (graphics.__commands);
 				
-				var gl:WebGLContext = renderer.__gl;
+				#if (lime >= "7.0.0")
+				var gl = renderer.__context.webgl;
+				#else
+				var gl:WebGLContext = renderer.__context;
+				#end
 				
 				var matrix = Matrix.__pool.get ();
 				
