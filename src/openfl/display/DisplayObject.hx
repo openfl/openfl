@@ -1177,7 +1177,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 
 			}
 			
-			__cacheBitmap.smoothing = renderSession.allowSmoothing;
+			__cacheBitmap.smoothing = false;
 			__cacheBitmap.__renderable = __renderable;
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
