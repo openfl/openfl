@@ -98,7 +98,7 @@ class GLBitmap {
 			
 			shader.data.uImage0.input = bitmap.__bitmapData;
 			shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
-			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform);
+			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform, bitmap.__snapToPixel());
 			
 			var vaoRendered = GLVAORenderHelper.renderMask (bitmap, renderSession, shader, bitmap.__bitmapData);
 			
