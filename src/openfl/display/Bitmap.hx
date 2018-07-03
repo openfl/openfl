@@ -311,7 +311,11 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
-	
+	private inline function __snapToPixel (): Bool {
+		
+		return pixelSnapping == PixelSnapping.ALWAYS || (pixelSnapping == PixelSnapping.AUTO && __rotation == 0 && __renderTransform.a > 0 && __renderTransform.d > 0);
+		
+	}
 	
 	// Get & Set Methods
 	
