@@ -361,7 +361,7 @@ class SubBitmapData extends BitmapData {
 			ImageCanvasUtil.convertToCanvas(parentImage);
 		}
 
-		context.setTransform(a, b, c, d, tx + __offsetX, ty + __offsetY);
+		context.setTransform(a, b, c, d, tx + __offsetX * a, ty + __offsetY * d);
 		if (__rotated) {
 			context.rotate(-90 * Math.PI / 180);
 			context.translate(-__texWidth, 0);
