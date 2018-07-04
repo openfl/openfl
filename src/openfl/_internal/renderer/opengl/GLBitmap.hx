@@ -46,7 +46,7 @@ class GLBitmap {
 			var shader = renderer.__initDisplayShader (cast bitmap.__worldShader);
 			renderer.setShader (shader);
 			renderer.applyBitmapData (bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
-			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform));
+			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform, bitmap.__snapToPixel ()));
 			renderer.applyAlpha (bitmap.__worldAlpha);
 			renderer.applyColorTransform (bitmap.__worldColorTransform);
 			renderer.updateShader ();
@@ -83,7 +83,7 @@ class GLBitmap {
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
 			renderer.applyBitmapData (GLMaskShader.opaqueBitmapData, true);
-			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform));
+			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform, bitmap.__snapToPixel ()));
 			renderer.updateShader ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (renderer.__context));

@@ -483,13 +483,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __getMatrix (transform:Matrix):Array<Float> {
+	private function __getMatrix (transform:Matrix, snapToPixel:Bool = false):Array<Float> {
 		
 		var _matrix = Matrix.__pool.get ();
 		_matrix.copyFrom (transform);
 		_matrix.concat (__worldTransform);
 		
-		if (__roundPixels) {
+		if (__roundPixels || snapToPixel) {
 			
 			_matrix.tx = Math.round (_matrix.tx);
 			_matrix.ty = Math.round (_matrix.ty);
