@@ -91,9 +91,12 @@ class Application extends LimeApplication {
 	
 	
 	#if (lime >= "7.0.0")
-	public override function createWindow (attributes:WindowAttributes):Void {
+	public override function createWindow (attributes:WindowAttributes):Window {
 		
 		var window = new Window (this, attributes);
+		
+		__windows.push (window);
+		__windowByID.set (window.id, window);
 		
 		window.onClose.add (__onWindowClose.bind (window), false, -10000);
 		
@@ -127,12 +130,13 @@ class Application extends LimeApplication {
 			window.onTextEdit.add (onTextEdit);
 			window.onTextInput.add (onTextInput);
 			
+			onWindowCreate ();
+			
 		}
 		
-		__windows.push (window);
-		__windowByID.set (window.id, window);
+		onCreateWindow.dispatch (window);
 		
-		onWindowCreate.dispatch (window);
+		return window;
 		
 	}
 	#end

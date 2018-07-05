@@ -12,7 +12,8 @@ import format.swf.data.SWFButtonRecord;
 import openfl._internal.swf.FilterType;
 import openfl._internal.swf.ShapeCommand;
 import format.swf.instance.Bitmap;
-import lime.tools.helpers.LogHelper;
+import hxp.helpers.LogHelper;
+import lime.graphics.Image;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl._internal.symbols.DynamicTextSymbol;
@@ -46,7 +47,6 @@ import format.swf.SWFTimelineContainer;
 import format.tools.Deflate;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
-import lime.graphics.format.JPEG;
 import openfl.display.PNGEncoderOptions;
 import format.abc.Data;
 import format.abc.Data.ABCData;
@@ -322,10 +322,7 @@ class SWFLiteExporter {
 					
 				}
 				
-				var tempFile = lime.tools.helpers.PathHelper.getTemporaryFile ("jpg");
-				sys.io.File.saveBytes (tempFile, data.bitmapData);
-				var image = lime.graphics.format.JPEG.decodeFile (tempFile, false);
-				try { sys.FileSystem.deleteFile (tempFile); } catch (e:Dynamic) {}
+				var image = Image.fromBytes (data.bitmapData);
 				
 				var values = Bytes.alloc ((image.width + 1) * image.height);
 				var index = 0;

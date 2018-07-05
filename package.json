@@ -57,7 +57,7 @@
     "build-test-es6": "cd test/es6 && webpack",
     "build-test-haxe": "cd test/haxe && haxe build.hxml && webpack",
     "build-test-typescript": "cd test/typescript && tsc -p tsconfig.json && webpack",
-    "dev-link": "npm link lime && npm link hxgenjs && npm link hxnodejs && npm link format",
+    "dev-link": "npm link lime && npm link hxgenjs && npm link hxnodejs && npm link hxp && npm link format",
     "prepublishOnly": "npm run dev-link && npm run build",
     "serve": "http-server -c-1 --cors",
     "test": "npm run build-test-es5 && npm run build-test-es6 && npm run build-test-haxe && npm run build-test-typescript && mocha-chrome test/index.html --old-and-busted",
@@ -78,7 +78,7 @@
     "docker-test-haxe": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-haxe -s\"",
     "docker-test-typescript": "cd scripts && node docker-run.js openfl/ci-openfl-js:0.0.2 \"npm run test-typescript -s\"",
     "start": "npm run watch",
-    "watch": "watch \"echo watch: Compiling... && npm run build-lib -s && echo watch: Compiled successfully.\" ./src ./scripts ./node_modules/lime/lime"
+    "watch": "watch \"echo watch: Compiling... && npm run build-lib -s && echo watch: Compiled successfully.\" ./src ./scripts ./node_modules/lime/src"
   },
   "devDependencies": {
     "@apache-royale/royale-js": "^0.9.3",
@@ -95,6 +95,7 @@
     "haxe": "^5.0.10",
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
+    "hxp": "openfl/hxp",
     "lime": "openfl/lime#develop",
     "mocha": "^5.2.0",
     "mocha-chrome": "^1.1.0",

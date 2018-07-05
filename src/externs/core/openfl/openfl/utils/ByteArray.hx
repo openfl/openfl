@@ -312,7 +312,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 @:noDebug
 #end
 
+#if (lime >= "7.0.0")
+@:autoBuild(lime._internal.macros.AssetsMacro.embedByteArray())
+#else
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
+#end
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	

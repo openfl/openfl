@@ -1,13 +1,18 @@
 package openfl.display;
 
 
-import lime.app.Config;
-import lime.app.Preloader in LimePreloader;
 import lime.utils.AssetType;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
+
+#if (lime >= "7.0.0")
+import lime.utils.Preloader in LimePreloader;
+#else
+import lime.app.Config;
+import lime.app.Preloader in LimePreloader;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -181,6 +186,19 @@ class Preloader extends LimePreloader {
 	
 	public function getBackgroundColor ():Int {
 		
+		#if (lime >= "7.0.0")
+		var attributes = Lib.current.stage.window.context.attributes;
+		
+		if (Reflect.hasField (attributes, "background") && attributes.background != null) {
+			
+			return attributes.background;
+			
+		} else {
+			
+			return 0;
+			
+		}
+		#else
 		var config = Lib.current.stage.window.config;
 		
 		if (Reflect.hasField (config, "background") && config.background != null) {
@@ -192,13 +210,18 @@ class Preloader extends LimePreloader {
 			return 0;
 			
 		}
+		#end
 		
 	}
 	
 	
 	public function getHeight ():Float {
 		
+		#if (lime >= "7.0.0")
+		var height = Lib.current.stage.window.height;
+		#else
 		var height = Lib.current.stage.window.config.height;
+		#end
 		
 		if (height > 0) {
 			
@@ -215,7 +238,11 @@ class Preloader extends LimePreloader {
 	
 	public function getWidth ():Float {
 		
+		#if (lime >= "7.0.0")
+		var width = Lib.current.stage.window.width;
+		#else
 		var width = Lib.current.stage.window.config.width;
+		#end
 		
 		if (width > 0) {
 			

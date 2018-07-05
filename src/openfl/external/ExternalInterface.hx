@@ -23,11 +23,19 @@ import openfl._internal.Lib;
 	public static function addCallback (functionName:String, closure:Dynamic):Void {
 		
 		#if (js && html5)
+		#if (lime >= "7.0.0")
+		if (Lib.application.window.__backend.element != null) {
+			
+			untyped Lib.application.window.__backend.element[functionName] = closure;
+			
+		}
+		#else
 		if (Lib.application.window.backend.element != null) {
 			
 			untyped Lib.application.window.backend.element[functionName] = closure;
 			
 		}
+		#end
 		#end
 		
 	}
@@ -44,25 +52,26 @@ import openfl._internal.Lib;
 				functionName += '.bind(${thisArg})';
 			}
 		}
-
+		
 		// Flash does not throw an error or attempt to execute
 		// if the function does not exist.
 		var fn:Dynamic;
 		try {
-
+			
 			fn = js.Lib.eval (functionName);
-
+			
 		} catch (e:Dynamic) {
-
+			
 			return null;
-
+			
 		}
-		if (Type.ValueType.TFunction != Type.typeof(fn)) {
-
+		
+		if (Type.typeof (fn) != Type.ValueType.TFunction) {
+			
 			return null;
-
+			
 		}
-
+		
 		if (p1 == null) {
 			
 			callResponse = fn ();

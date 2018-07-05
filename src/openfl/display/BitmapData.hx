@@ -827,6 +827,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
 		
+		
 		#if (lime >= "7.0.0")
 		var gl = context.webgl;
 		#else

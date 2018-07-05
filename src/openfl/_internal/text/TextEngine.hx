@@ -286,12 +286,12 @@ class TextEngine {
 		#if (js && html5)
 		
 		__context.font = getFont (format);
-
+		
 		if (format.__ascent != null) {
-
+			
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-
+			
 		} else {
 			
 			ascent = format.size;
@@ -306,15 +306,15 @@ class TextEngine {
 		var font = getFontInstance (format);
 		
 		if (format.__ascent != null) {
-
+			
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-
+			
 		} else if (font != null) {
-
+			
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
-
+			
 		} else {
 			
 			ascent = format.size;

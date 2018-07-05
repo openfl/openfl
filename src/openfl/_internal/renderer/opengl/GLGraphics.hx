@@ -583,9 +583,9 @@ class GLGraphics {
 									
 								}
 								
-								if (graphics.__buffer == null || graphics.__bufferContext != gl) {
+								if (graphics.__buffer == null || graphics.__bufferContext != renderer.__context) {
 									
-									graphics.__bufferContext = cast gl;
+									graphics.__bufferContext = renderer.__context;
 									graphics.__buffer = gl.createBuffer ();
 									
 								}
@@ -642,7 +642,7 @@ class GLGraphics {
 								renderer.applyColorTransform (tempColorTransform);
 								renderer.updateShader ();
 								
-								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (cast gl));
+								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (renderer.__context));
 								if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 								if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 								gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
@@ -700,9 +700,9 @@ class GLGraphics {
 								
 							}
 							
-							if (graphics.__buffer == null || graphics.__bufferContext != gl) {
+							if (graphics.__buffer == null || graphics.__bufferContext != renderer.__context) {
 								
-								graphics.__bufferContext = cast gl;
+								graphics.__bufferContext = renderer.__context;
 								graphics.__buffer = gl.createBuffer ();
 								
 							}

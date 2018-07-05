@@ -18,7 +18,9 @@ import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.TouchData;
+import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
+import openfl.display.Window in OpenFLWindow;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
@@ -168,7 +170,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	#end
 	
-	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowConfig:Dynamic = null #else window:Window, color:Null<Int> = null #end) {
+	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end) {
 		
 		#if hxtelemetry
 		Telemetry.__initialize ();
@@ -208,15 +210,32 @@ class Stage extends DisplayObjectContainer implements IModule {
 			element = null;
 			#end
 			
-			if (windowConfig == null) windowConfig = {};
-			windowConfig.width = width;
-			windowConfig.height = height;
-			windowConfig.element = element;
-			windowConfig.resizable = resizable;
-			if (!Reflect.hasField (windowConfig, "stencilBuffer")) windowConfig.stencilBuffer = true;
-			if (!Reflect.hasField (windowConfig, "depthBuffer")) windowConfig.depthBuffer = true;
-			if (!Reflect.hasField (windowConfig, "background")) windowConfig.background = null;
+			if (windowAttributes == null) windowAttributes = {};
+			windowAttributes.width = width;
+			windowAttributes.height = height;
+			windowAttributes.element = element;
+			windowAttributes.resizable = resizable;
 			
+			#if (lime >= "7.0.0")
+			if (!Reflect.hasField (windowAttributes, "context")) windowAttributes.context = {};
+			var contextAttributes = windowAttributes.context;
+			if (!Reflect.hasField (contextAttributes, "stencil")) contextAttributes.stencil = true;
+			if (!Reflect.hasField (contextAttributes, "depth")) contextAttributes.depth = true;
+			if (!Reflect.hasField (contextAttributes, "background")) contextAttributes.background = null;
+			#else
+			if (!Reflect.hasField (windowAttributes, "stencilBuffer")) windowAttributes.stencilBuffer = true;
+			if (!Reflect.hasField (windowAttributes, "depthBuffer")) windowAttributes.depthBuffer = true;
+			if (!Reflect.hasField (windowAttributes, "background")) windowAttributes.background = null;
+			#end
+			
+			#if (lime >= "7.0.0")
+			
+			app = new OpenFLApplication ();
+			var window:OpenFLWindow = app.createWindow (windowAttributes);
+			app.removeModule (window.stage);
+			@:privateAccess window.stage = this;
+			
+			#else
 			window = new Window (windowConfig);
 			window.stage = this;
 			
@@ -234,6 +253,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			// 	app.addModule (this);
 				
 			// }
+			#end
 			
 			// this.color = 0xFFFFFF;
 			this.color = color;
@@ -308,9 +328,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		#if commonjs
-		if (!window.config.resizable) {
+		if (Reflect.hasField (windowAttributes, "resizable") && !windowAttributes.resizable) {
 			
-			__setLogicalSize (window.config.width, window.config.height);
+			__setLogicalSize (windowAttributes.width, windowAttributes.height);
 			
 		}
 		
@@ -1552,9 +1572,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						#if (commonjs && !nodejs)
 						// TODO: Formal API
-						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
+						if (cursor != __cursor && #if (lime >= "7.0.0") @:privateAccess !lime._internal.backend.html5.HTML5Mouse.__hidden #else @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden #end) {
 							
-							@:privateAccess window.backend.element.style.cursor = switch (cursor) {
+							#if (lime >= "7.0.0") @:privateAccess window.__backend.element.style.cursor #else @:privateAccess window.backend.element.style.cursor #end = switch (cursor) {
 								
 								case ARROW: "default";
 								case CROSSHAIR: "crosshair";
@@ -1588,9 +1608,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (cursor == null) {
 				
 				#if (commonjs && !nodejs)
-				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
+				if (__cursor != null && #if (lime >= "7.0.0") @:privateAccess !lime._internal.backend.html5.HTML5Mouse.__hidden #else @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden #end) {
 					
-					@:privateAccess window.backend.element.style.cursor = "default";
+					#if (lime >= "7.0.0") @:privateAccess window.__backend.element.style.cursor #else @:privateAccess window.backend.element.style.cursor #end = "default";
 					__cursor = null;
 					
 				}
@@ -1913,9 +1933,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	#if (lime >= "7.0.0")
 	private function __registerLimeModule (application:Application):Void {
 		
-		application.onExit.add (onModuleExit, false, 0);
+		application.onCreateWindow.add (__addWindow);
 		application.onUpdate.add (update);
-		application.onWindowCreate.add (__addWindow);
+		application.onExit.add (onModuleExit, false, 0);
 		
 		for (gamepad in Gamepad.devices) {
 			
@@ -2049,9 +2069,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	#if (lime >= "7.0.0")
 	private function __unregisterLimeModule (application:Application):Void {
 		
-		application.onExit.remove (onModuleExit);
+		application.onCreateWindow.remove (__addWindow);
 		application.onUpdate.remove (update);
-		application.onWindowCreate.remove (__addWindow);
+		application.onExit.remove (onModuleExit);
 		
 		Gamepad.onConnect.remove (__onGamepadConnect);
 		Touch.onStart.remove (onTouchStart);

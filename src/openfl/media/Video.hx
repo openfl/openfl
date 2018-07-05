@@ -287,11 +287,17 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getTexture (gl:GLRenderContext):GLTexture {
+	private function __getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
 		
 		#if (js && html5)
 		
 		if (__stream == null || __stream.__video == null) return null;
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl:WebGLContext = context;
+		#end
 		
 		if (__texture == null) {
 			
@@ -311,7 +317,7 @@ class Video extends DisplayObject {
 			var format = gl.RGBA;
 			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texImage2DWEBGL (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;
 			
