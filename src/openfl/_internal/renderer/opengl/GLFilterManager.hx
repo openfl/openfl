@@ -8,7 +8,6 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
-import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.text.TextField;
 import openfl.Vector;
@@ -60,13 +59,6 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		if (object.__hasFilters ()) {
 			
-			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
-				
-				// Hack, force outline
-				return renderSession.shaderManager.defaultShader;
-				
-			}
-			
 			if (object.__filters.length == 1 && object.__filters[0].__numShaderPasses == 0) {
 				
 				renderer.getRenderTarget (false);
@@ -94,13 +86,6 @@ class GLFilterManager extends AbstractFilterManager {
 		// TEMPORARILY DISABLED
 		
 		if (object.__hasFilters ()) {
-			
-			if (Std.is (object.__filters[0], GlowFilter) && Std.is (object, TextField)) {
-				
-				// Hack, force outline
-				return;
-				
-			}
 			
 			var numPasses:Int = 0;
 			
