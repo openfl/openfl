@@ -4,6 +4,13 @@ package openfl._internal.text; #if (lime >= "7.0.0")
 import haxe.io.Bytes;
 import lime.math.Vector2;
 import lime.system.System;
+import lime.text.harfbuzz.HBBuffer;
+import lime.text.harfbuzz.HBBufferClusterLevel;
+import lime.text.harfbuzz.HBDirection;
+import lime.text.harfbuzz.HBFTFont;
+import lime.text.harfbuzz.HBLanguage;
+import lime.text.harfbuzz.HBScript;
+import lime.text.harfbuzz.HB;
 import lime.text.Font;
 import lime.text.Glyph;
 
@@ -16,6 +23,33 @@ import lime.text.Glyph;
 class TextLayout {
 	
 	
+	private static inline var FT_LOAD_DEFAULT = 0;
+	private static inline var FT_LOAD_NO_SCALE = 1;
+	private static inline var FT_LOAD_NO_HINTING = 2;
+	private static inline var FT_LOAD_RENDER = 4;
+	private static inline var FT_LOAD_NO_BITMAP = 8;
+	private static inline var FT_LOAD_VERTICAL_LAYOUT = 16;
+	private static inline var FT_LOAD_FORCE_AUTOHINT = 32;
+	private static inline var FT_LOAD_CROP_BITMAP = 64;
+	private static inline var FT_LOAD_PEDANTIC = 128;
+	private static inline var FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH = 256;
+	private static inline var FT_LOAD_NO_RECURSE = 512;
+	private static inline var FT_LOAD_IGNORE_TRANSFORM = 1024;
+	private static inline var FT_LOAD_MONOCHROME = 2048;
+	private static inline var FT_LOAD_LINEAR_DESIGN = 4096;
+	private static inline var FT_LOAD_NO_AUTOHINT = 8192;
+	private static inline var FT_LOAD_COLOR = 16384;
+	private static inline var FT_LOAD_COMPUTE_METRICS = 32768;
+	private static inline var FT_LOAD_BITMAP_METRICS_ONLY = 65536;
+	
+	// define FT_LOAD_TARGET_( x )   ( (FT_Int32)( (x) & 15 ) << 16 )
+
+	private static inline var FT_LOAD_TARGET_NORMAL = (0 & 15) << 16; //FT_LOAD_TARGET_( FT_RENDER_MODE_NORMAL )
+	private static inline var FT_LOAD_TARGET_LIGHT = ((((0 & 15) << 16) & 15) << 16);//  FT_LOAD_TARGET_( FT_RENDER_MODE_LIGHT  )
+	// private static inline var FT_LOAD_TARGET_MONO    FT_LOAD_TARGET_( FT_RENDER_MODE_MONO   )
+	// private static inline var FT_LOAD_TARGET_LCD     FT_LOAD_TARGET_( FT_RENDER_MODE_LCD    )
+	// private static inline var FT_LOAD_TARGET_LCD_V   FT_LOAD_TARGET_( FT_RENDER_MODE_LCD_V  )
+	
 	public var direction (get, set):TextDirection;
 	public var font (default, set):Font;
 	public var glyphs (get, null):Array<Glyph>;
@@ -25,13 +59,16 @@ class TextLayout {
 	public var size (default, set):Int;
 	public var text (default, set):String;
 	
+	private var __buffer:Bytes;
+	private var __direction:TextDirection;
 	private var __dirty:Bool;
+	private var __handle:Dynamic;
+	private var __language:String;
+	private var __script:TextScript;
 	
-	@:noCompletion private var __buffer:Bytes;
-	@:noCompletion private var __direction:TextDirection;
-	@:noCompletion private var __handle:Dynamic;
-	@:noCompletion private var __language:String;
-	@:noCompletion private var __script:TextScript;
+	private var __font:Font;
+	private var __hbBuffer:HBBuffer;
+	private var __hbFont:HBFTFont;
 	
 	
 	public function new (text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON, language:String = "en") {
@@ -48,26 +85,17 @@ class TextLayout {
 		
 		__create (__direction, __script, __language);
 		
-		// #if (lime_cffi && !macro)
-		// __handle = NativeCFFI.lime_text_layout_create (__direction, __script, __language);
-		// #end
 	}
 	
 	
 	private function __create (direction:TextDirection, script:TextScript, language:String):Void {
 		
-		// if (strlen (script) != 4) return;
+		if (language.length != 4) return;
 		
-		// mFont = 0;
-		// mHBFont = 0;
-		// mDirection = (hb_direction_t)direction;
-		// mLanguage = (void *)hb_language_from_string (language, strlen (language));
-		// mScript = hb_script_from_string (script, -1);
-		
-		// mBuffer = hb_buffer_create ();
-		// hb_buffer_set_direction ((hb_buffer_t*)mBuffer, (hb_direction_t)mDirection);
-		// hb_buffer_set_script ((hb_buffer_t*)mBuffer, (hb_script_t)mScript);
-		// hb_buffer_set_language ((hb_buffer_t*)mBuffer, (hb_language_t)mLanguage);
+		__hbBuffer = new HBBuffer ();
+		__hbBuffer.direction = direction;
+		__hbBuffer.script = script;
+		__hbBuffer.language = new HBLanguage (language);
 		
 	}
 	
@@ -76,136 +104,75 @@ class TextLayout {
 		
 		positions = [];
 		
-		// if (mFont != font) {
+		#if (lime_cffi && !macro)
+		if (text != null && text != "" && font != null && font.src != null) {
 			
-		// 	mFont = font;
-		// 	hb_font_destroy ((hb_font_t*)mHBFont);
-		// 	font->SetSize (size);
-		// 	mHBFont = hb_ft_font_create ((FT_Face)font->face, NULL);
-		// 	// hb_ft_font_set_funcs ((hb_font_t*)mHBFont);
-		// 	hb_ft_font_set_load_flags ((hb_font_t*)mHBFont, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
-			
-		// } else {
-			
-		// 	font->SetSize (size);
-			
-		// }
-		
-		// // reset buffer
-		// hb_buffer_reset ((hb_buffer_t*)mBuffer);
-		// hb_buffer_set_direction ((hb_buffer_t*)mBuffer, (hb_direction_t)mDirection);
-		// hb_buffer_set_script ((hb_buffer_t*)mBuffer, (hb_script_t)mScript);
-		// hb_buffer_set_language ((hb_buffer_t*)mBuffer, (hb_language_t)mLanguage);
-		// hb_buffer_set_cluster_level ((hb_buffer_t*)mBuffer, HB_BUFFER_CLUSTER_LEVEL_CHARACTERS);
-		
-		// // layout the text
-		// hb_buffer_add_utf8 ((hb_buffer_t*)mBuffer, text, strlen (text), 0, -1);
-		
-		// // const hb_tag_t kerningTag = HB_TAG('k', 'e', 'r', 'n');
-		// // static hb_feature_t useKerning = { kerningTag, 1, 0, std::numeric_limits<unsigned int>::max() };
-		// // std::vector<hb_feature_t> features;
-		// // features.push_back (useKerning);
-		
-		// // hb_shape ((hb_font_t*)mHBFont, (hb_buffer_t*)mBuffer, &features[0], features.size());
-		// hb_shape ((hb_font_t*)mHBFont, (hb_buffer_t*)mBuffer, NULL, 0);
-		
-		// uint32_t glyph_count;
-		// hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos ((hb_buffer_t*)mBuffer, &glyph_count);
-		// hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions ((hb_buffer_t*)mBuffer, &glyph_count);
-		
-		// //float hres = 100;
-		// int posIndex = 0;
-		
-		// int glyphSize = sizeof (GlyphPosition);
-		// uint32_t dataSize = 5 + (glyph_count * glyphSize);
-		
-		// if (bytes->length < dataSize) {
-			
-		// 	bytes->Resize (dataSize);
-			
-		// }
-		
-		// unsigned char* bytesPosition = bytes->b;
-		
-		// *(uint32_t *)(bytesPosition) = glyph_count;
-		// bytesPosition += 4;
-		
-		// hb_glyph_position_t pos;
-		// hb_position_t kern;
-		// GlyphPosition *data;
-		
-		// for (int i = 0; i < glyph_count; i++) {
-			
-		// 	pos = glyph_pos[i];
-			
-		// 	data = (GlyphPosition*)(bytesPosition);
-			
-		// 	data->codepoint = glyph_info[i].codepoint;
-		// 	data->index = glyph_info[i].cluster;
-		// 	data->advanceX = (float)(pos.x_advance / (float)(64));
-		// 	data->advanceY = (float)(pos.y_advance / (float)64);
-		// 	data->offsetX = (float)(pos.x_offset / (float)(64));
-		// 	data->offsetY = (float)(pos.y_offset / (float)64);
-			
-		// 	// if (i < glyph_count - 1) {
+			if (__buffer == null) {
 				
-		// 		// Manually add kerning, hb_shape seems to ignore kern feature?
-		// 		// kern = hb_font_get_glyph_h_kerning ((hb_font_t*)mHBFont, glyph_info[i].codepoint, glyph_info[i + 1].codepoint);
-		// 		// data->advanceX += (float)(kern / (float)(64));
+				__buffer = Bytes.alloc (text.length * 5);
+				//__buffer.endian = (System.endianness == BIG_ENDIAN ? "bigEndian" : "littleEndian");
 				
-		// 	// }
+			}
 			
-		// 	bytesPosition += glyphSize;
-			
-		// }
-		
-		
-		// #if (lime_cffi && !macro)
-		
-		// if (__handle != null && text != null && text != "" && font != null && font.src != null) {
-			
-		// 	if (__buffer == null) {
+			if (__font != font) {
 				
-		// 		__buffer = Bytes.alloc (text.length * 5);
-		// 		//__buffer.endian = (System.endianness == BIG_ENDIAN ? "bigEndian" : "littleEndian");
+				__font = font;
+				// 	hb_font_destroy ((hb_font_t*)mHBFont);
+				@:privateAccess font.__setSize (size);
+				__hbFont = new HBFTFont (font);
+				__hbFont.loadFlags = FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT;
 				
-		// 	}
+			} else {
+				
+				@:privateAccess font.__setSize (size);
+				
+			}
 			
-		// 	var data = NativeCFFI.lime_text_layout_position (__handle, font.src, size, text, #if cs null #else __buffer #end);
-		// 	var position = 0;
+			if (__hbBuffer == null) {
+				
+				__hbBuffer = new HBBuffer ();
+				
+			} else {
+				
+				__hbBuffer.reset ();
+				
+			}
 			
-		// 	if (__buffer.length > 4) {
+			__hbBuffer.direction = direction;
+			__hbBuffer.script = script;
+			__hbBuffer.language = new HBLanguage (language);
+			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
+			__hbBuffer.addUTF8 (text, 0, -1);
+			
+			HB.shape (__hbFont, __hbBuffer);
+			
+			var _info = __hbBuffer.getGlyphInfo ();
+			var _positions = __hbBuffer.getGlyphPositions ();
+			
+			var info, position;
+			var lastCluster = -1;
+			
+			for (i in 0..._info.length) {
 				
-		// 		var count = __buffer.getInt32 (position); position += 4;
-		// 		var codepoint, index, advanceX, advanceY, offsetX, offsetY;
-		// 		var lastIndex = -1;
+				info = _info[i];
+				position = _positions[i];
 				
-		// 		for (i in 0...count) {
+				for (j in lastCluster + 1...info.cluster) {
 					
-		// 			codepoint = __buffer.getInt32 (position); position += 4;
-		// 			index = __buffer.getInt32 (position); position += 4;
-		// 			advanceX = __buffer.getFloat (position); position += 4;
-		// 			advanceY = __buffer.getFloat (position); position += 4;
-		// 			offsetX = __buffer.getFloat (position); position += 4;
-		// 			offsetY = __buffer.getFloat (position); position += 4;
+					// TODO: Handle differently?
 					
-		// 			for (j in lastIndex + 1...index) {
-						
-		// 				// TODO: Handle differently?
-						
-		// 				positions.push (new GlyphPosition (0, new Vector2 (0, 0), new Vector2 (0, 0)));
-						
-		// 			}
+					positions.push (new GlyphPosition (0, new Vector2 (0, 0), new Vector2 (0, 0)));
 					
-		// 			positions.push (new GlyphPosition (codepoint, new Vector2 (advanceX, advanceY), new Vector2 (offsetX, offsetY)));
-		// 			lastIndex = index;
-					
-		// 		}
+				}
 				
-		// 	}
-		// }
+				positions.push (new GlyphPosition (info.codepoint, new Vector2 (position.xAdvance / 64, position.yAdvance / 64), new Vector2 (position.xOffset / 64, position.yOffset / 64)));
+				lastCluster = info.cluster;
+				
+			}
+			
+		}
 		
-		// #end
+		#end
 		
 	}
 	
@@ -243,15 +210,6 @@ class TextLayout {
 		if (value == __direction) return value;
 		
 		__direction = value;
-		
-		
-		// mDirection = (hb_direction_t)direction;
-		
-		
-		// #if (lime_cffi && !macro)
-		// NativeCFFI.lime_text_layout_set_direction (__handle, value);
-		// #end
-		
 		__dirty = true;
 		
 		return value;
@@ -297,14 +255,6 @@ class TextLayout {
 		if (value == __language) return value;
 		
 		__language = value;
-		
-		
-		// mLanguage = (void *)hb_language_from_string (language, strlen (language));
-		
-		// #if (lime_cffi && !macro)
-		// NativeCFFI.lime_text_layout_set_language (__handle, value);
-		// #end
-		
 		__dirty = true;
 		
 		return value;
@@ -324,14 +274,6 @@ class TextLayout {
 		if (value == __script) return value;
 		
 		__script = value;
-		
-		
-		// mScript = hb_script_from_string (script, -1);
-		
-		// #if (lime_cffi && !macro)
-		// NativeCFFI.lime_text_layout_set_script (__handle, value);
-		// #end
-		
 		__dirty = true;
 		
 		return value;
@@ -396,6 +338,21 @@ class TextLayout {
 			case TOP_TO_BOTTOM: "topToBottom";
 			case BOTTOM_TO_TOP: "bottomToTop";
 			default: "";
+			
+		}
+		
+	}
+	
+	
+	@:to private inline function toHBDirection ():HBDirection {
+		
+		return switch (this) {
+			
+			case LEFT_TO_RIGHT: LTR;
+			case RIGHT_TO_LEFT: RTL;
+			case TOP_TO_BOTTOM: TTB;
+			case BOTTOM_TO_TOP: BTT;
+			default: HBDirection.INVALID;
 			
 		}
 		
@@ -578,6 +535,17 @@ class TextLayout {
 	
 	
 	public var rightToLeft (get, never):Bool;
+	
+	
+	@:to private inline function toHBScript ():HBScript {
+		
+		return switch (this) {
+			
+			default: HBScript.COMMON;
+			
+		}
+		
+	}
 	
 	
 	private inline function get_rightToLeft ():Bool {
