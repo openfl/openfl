@@ -1,11 +1,7 @@
 package openfl.events;
 
 
-import lime.graphics.CairoRenderContext;
-import lime.graphics.CanvasRenderContext;
-import lime.graphics.GLRenderContext;
-import lime.math.Matrix3;
-import lime.math.Matrix4;
+import openfl.display.DisplayObjectRenderer;
 import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -21,19 +17,11 @@ import openfl.geom.Matrix;
 	public static inline var RENDER_OPENGL = "renderOpenGL";
 	
 	public var allowSmoothing:Bool;
-	public var cairo (default, null):CairoRenderContext;
-	public var context (default, null):CanvasRenderContext;
-	public var element (default, null):Dynamic;
-	public var gl (default, null):GLRenderContext;
-	public var renderTransform:Matrix;
-	public var worldColorTransform:ColorTransform;
-	public var worldTransform:Matrix;
+	public var objectColorTransform:ColorTransform;
+	public var objectMatrix:Matrix;
+	public var renderer (default, null):DisplayObjectRenderer;
 	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false):Void;
-	public function applyDOMStyle (childElement:Dynamic):Void;
-	public function clearDOMStyle (childElement:Dynamic):Void;
-	public function getCairoMatrix (transform:Matrix):Matrix3;
-	public function getOpenGLMatrix (transform:Matrix):Matrix4;
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, objectMatrix:Matrix = null, objectColorTransform:ColorTransform = null, allowSmoothing:Bool = true):Void;
 	
 	
 }
