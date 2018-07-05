@@ -194,7 +194,11 @@ class TextEngine {
 	
 	private static function findFont (name:String):Font {
 		
-		#if (lime_cffi)
+		#if (js && html5)
+		
+		return Font.__fontByName[name];
+		
+		#elseif (lime_cffi)
 		
 		for (registeredFont in Font.__registeredFonts) {
 			
@@ -234,6 +238,7 @@ class TextEngine {
 		var bold = format.bold;
 		var italic = format.italic;
 		
+		if (fontName == null) fontName = "_serif";
 		var fontNamePrefix = StringTools.replace (StringTools.replace (fontName, " Normal", ""), " Regular", "");
 		
 		if (bold && italic && Font.__fontByName.exists (fontNamePrefix + " Bold Italic")) {
@@ -283,25 +288,11 @@ class TextEngine {
 		
 		var ascent:Float, descent:Float, leading:Int;
 		
+		#if (js && html5 || lime_cffi)
+		
 		#if (js && html5)
-		
 		__context.font = getFont (format);
-
-		if (format.__ascent != null) {
-
-			ascent = format.size * format.__ascent;
-			descent = format.size * format.__descent;
-
-		} else {
-			
-			ascent = format.size;
-			descent = format.size * 0.185;
-			
-		}
-		
-		leading = format.leading;
-		
-		#elseif (lime_cffi)
+		#end
 		
 		var font = getFontInstance (format);
 		
@@ -310,7 +301,7 @@ class TextEngine {
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
 
-		} else if (font != null) {
+		} else if (font != null && font.unitsPerEM != null) { // font metrics might be missing in html5
 
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
@@ -400,7 +391,11 @@ class TextEngine {
 	
 	public static function getFontInstance (format:TextFormat):Font {
 		
-		#if (lime_cffi)
+		#if (js && html5)
+		
+		return findFontVariant (format);
+		
+		#elseif (lime_cffi)
 		
 		var instance = null;
 		var fontList = null;
@@ -1033,27 +1028,11 @@ class TextEngine {
 				formatRange = textFormatRanges[rangeIndex];
 				currentFormat.__merge (formatRange.format);
 				
+				#if (js && html5 || lime_cffi)
+				
 				#if (js && html5)
-				
 				__context.font = getFont (currentFormat);
-				
-				if (currentFormat.__ascent != null) {
-					
-					ascent = currentFormat.size * currentFormat.__ascent;
-					descent = currentFormat.size * currentFormat.__descent;
-					
-				} else {
-					
-					ascent = currentFormat.size;
-					descent = currentFormat.size * 0.185;
-					
-				}
-				
-				leading = currentFormat.leading;
-				
-				heightValue = ascent + descent + leading;
-				
-				#elseif (lime_cffi)
+				#end
 				
 				font = getFontInstance (currentFormat);
 				
@@ -1062,7 +1041,7 @@ class TextEngine {
 					ascent = currentFormat.size * currentFormat.__ascent;
 					descent = currentFormat.size * currentFormat.__descent;
 					
-				} else if (font != null) {
+				} else if (font != null && font.unitsPerEM != null) { // font metrics might be missing in html5
 					
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
