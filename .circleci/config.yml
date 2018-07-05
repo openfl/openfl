@@ -17,8 +17,20 @@ jobs:
          name: Clone Lime (Develop)
          command: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
      - run:
+         name: Clone HXP
+         command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
+     - run:
+         name: Set HXP Development Directory
+         command: haxelib dev hxp ../hxp
+     - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
+     - run:
+         name: Clone HXP
+         command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
+     - run:
+         name: Set HXP Development Directory
+         command: haxelib dev hxp ../hxp
      - run:
          name: Rebuild Lime Tools
          command: haxelib run lime rebuild tools -nocffi
@@ -47,6 +59,12 @@ jobs:
      - run:
          name: Clone Lime (Develop)
          command: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run:
+         name: Clone HXP
+         command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
+     - run:
+         name: Set HXP Development Directory
+         command: haxelib dev hxp ../hxp
      - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
@@ -281,6 +299,12 @@ jobs:
      - run:
          name: Clone Lime (Develop)
          command: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
+     - run:
+         name: Clone HXP
+         command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
+     - run:
+         name: Set HXP Development Directory
+         command: haxelib dev hxp ../hxp
      - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
