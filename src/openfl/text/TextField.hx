@@ -1784,13 +1784,21 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (value != __textEngine.autoSize) {
 			
-			__dirty = true;
+			__textEngine.autoSize = value;
 			__layoutDirty = true;
+			
+			if (value == RIGHT || value == CENTER) {
+				
+				__updateLayout ();
+				
+			}
+			
+			__dirty = true;
 			__setRenderDirty ();
 			
 		}
 		
-		return __textEngine.autoSize = value;
+		return value;
 		
 	}
 	
