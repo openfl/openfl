@@ -113,11 +113,10 @@ import lime.graphics.utils.ImageDataUtil;
 		
 		// TODO: Support knockout, inner
 		
-		var a = (__color >> 24) & 0xFF;
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
-		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, 1, r, g, b, a));
+		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0));
 		
 		destPoint.x += __offsetX;
 		destPoint.y += __offsetY;
