@@ -182,6 +182,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__colorString = "#FFFFFF";
 		
 		#if commonjs
+		if (windowAttributes == null) windowAttributes = {};
 		var app = null;
 		
 		if (!Math.isNaN (width)) {
@@ -210,7 +211,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			element = null;
 			#end
 			
-			if (windowAttributes == null) windowAttributes = {};
 			windowAttributes.width = width;
 			windowAttributes.height = height;
 			windowAttributes.element = element;
@@ -231,9 +231,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#if (lime >= "7.0.0")
 			
 			app = new OpenFLApplication ();
-			var window:OpenFLWindow = app.createWindow (windowAttributes);
-			app.removeModule (window.stage);
-			@:privateAccess window.stage = this;
+			window = app.createWindow (windowAttributes);
+			app.removeModule (cast (window, OpenFLWindow).stage);
+			@:privateAccess cast (window, OpenFLWindow).stage = this;
 			
 			#else
 			window = new Window (windowConfig);
