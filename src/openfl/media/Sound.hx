@@ -15,6 +15,7 @@ import openfl.utils.ByteArray;
 
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
+@:access(openfl.media.SoundChannel.new)
 
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
 
