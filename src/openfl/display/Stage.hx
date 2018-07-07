@@ -1571,10 +1571,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 					if (cursor != null) {
 						
 						#if (commonjs && !nodejs)
-						// TODO: Formal API
-						if (cursor != __cursor && #if (lime >= "7.0.0") @:privateAccess !lime._internal.backend.html5.HTML5Mouse.__hidden #else @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden #end) {
+						// TODO: Formal API?
+						#if (lime >= "7.0.0")
+						@:privateAccess window.__backend.setCursor (cursor);
+						#else
+						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 							
-							#if (lime >= "7.0.0") @:privateAccess window.__backend.element.style.cursor #else @:privateAccess window.backend.element.style.cursor #end = switch (cursor) {
+							@:privateAccess window.backend.element.style.cursor = switch (cursor) {
 								
 								case ARROW: "default";
 								case CROSSHAIR: "crosshair";
@@ -1594,6 +1597,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 							__cursor = cursor;
 							
 						}
+						#end
 						#else
 						LimeMouse.cursor = cursor;
 						#end
@@ -1608,12 +1612,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (cursor == null) {
 				
 				#if (commonjs && !nodejs)
-				if (__cursor != null && #if (lime >= "7.0.0") @:privateAccess !lime._internal.backend.html5.HTML5Mouse.__hidden #else @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden #end) {
+				#if (lime >= "7.0.0")
+				@:privateAccess window.__backend.setCursor (ARROW);
+				#else
+				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 					
-					#if (lime >= "7.0.0") @:privateAccess window.__backend.element.style.cursor #else @:privateAccess window.backend.element.style.cursor #end = "default";
+					@:privateAccess window.backend.element.style.cursor = "default";
 					__cursor = null;
 					
 				}
+				#end
 				#else
 				LimeMouse.cursor = ARROW;
 				#end
