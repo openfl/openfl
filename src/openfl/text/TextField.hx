@@ -293,18 +293,18 @@ class TextField extends InteractiveObject {
 	
 	public function getFirstCharInParagraph (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __text.length - 1) return 0;
+		if (charIndex < 0 || charIndex > text.length + 1) return -1;
 		
 		var index = __textEngine.getLineBreakIndex ();
 		var startIndex = 0;
 		
 		while (index > -1) {
 			
-			if (index <= charIndex) {
+			if (index < charIndex) {
 				
 				startIndex = index + 1;
 				
-			} else if (index > charIndex) {
+			} else if (index >= charIndex) {
 				
 				break;
 				
@@ -476,9 +476,12 @@ class TextField extends InteractiveObject {
 	
 	public function getParagraphLength (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __text.length - 1) return 0;
+		if (charIndex < 0 || charIndex > text.length + 1) return -1;
 		
 		var startIndex = getFirstCharInParagraph (charIndex);
+		
+		if (charIndex >= text.length) return text.length - startIndex + 1;
+		
 		var endIndex = __textEngine.getLineBreakIndex (charIndex) + 1;
 		
 		if (endIndex == 0) endIndex = __text.length;
