@@ -1097,6 +1097,7 @@ class TextEngine {
 		}
 		
 		inline function alignBaseline ():Void {
+			// aligns the baselines of all characters in a single line
 			
 			// since nextFormatRange may not have been called, have to update these manually
 			if (ascent > maxAscent) {
@@ -1111,10 +1112,14 @@ class TextEngine {
 				
 			}
 			
-			for (lg in layoutGroups) {
+			var i = layoutGroups.length;
+			
+			while (--i > -1) {
 				
-				if (lg.lineIndex < lineIndex) continue;
-				if (lg.lineIndex > lineIndex) break;
+				var lg = layoutGroups[i];
+				
+				if (lg.lineIndex < lineIndex) break;
+				if (lg.lineIndex > lineIndex) continue;
 				
 				lg.ascent = maxAscent;
 				lg.height = maxHeightValue;
