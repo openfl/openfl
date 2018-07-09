@@ -13,8 +13,6 @@ import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.Mouse in LimeMouse;
-import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.TouchData;
@@ -40,9 +38,13 @@ import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 
-#if (lime < "7.0.0")
+#if (lime >= "7.0.0")
+import lime.ui.Cursor;
+#else
 import lime.app.Preloader;
 import lime.graphics.Renderer;
+import lime.ui.Mouse in LimeMouse;
+import lime.ui.MouseCursor in Cursor;
 #end
 
 #if hxtelemetry
@@ -114,7 +116,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorString:String;
 	private var __contentsScaleFactor:Float;
 	#if (commonjs && !nodejs)
-	private var __cursor:LimeMouseCursor;
+	private var __cursor:Cursor;
 	#end
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
@@ -1571,9 +1573,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 					if (cursor != null) {
 						
 						#if (commonjs && !nodejs)
-						// TODO: Formal API?
 						#if (lime >= "7.0.0")
-						@:privateAccess window.__backend.setCursor (cursor);
+						window.cursor = cursor;
 						#else
 						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 							
@@ -1597,9 +1598,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 							__cursor = cursor;
 							
 						}
-						#end
-						#else
 						LimeMouse.cursor = cursor;
+						#end
 						#end
 						break;
 						
@@ -1613,7 +1613,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				#if (commonjs && !nodejs)
 				#if (lime >= "7.0.0")
-				@:privateAccess window.__backend.setCursor (ARROW);
+				window.cursor = ARROW;
 				#else
 				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 					
@@ -1621,9 +1621,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 					__cursor = null;
 					
 				}
-				#end
-				#else
 				LimeMouse.cursor = ARROW;
+				#end
 				#end
 				
 			}
@@ -1637,7 +1636,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (__mouseOverTarget != null) {
 				
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
-				__dispatchStack (event, __mouseOutStack);				
+				__dispatchStack (event, __mouseOutStack);
 				
 			}
 			

@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import lime.ui.MouseCursor;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl.display.DisplayObject;
@@ -11,6 +10,12 @@ import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 import openfl.Vector;
+
+#if (lime >= "7.0.0")
+import lime.ui.Cursor;
+#else
+import lime.ui.MouseCursor in Cursor;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -170,7 +175,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __getCursor ():MouseCursor {
+	private override function __getCursor ():Cursor {
 		
 		return (useHandCursor && !__ignoreEvent) ? POINTER : null;
 		

@@ -1,7 +1,11 @@
 package flash.ui; #if (!display && flash)
 
 
-import lime.ui.MouseCursor in LimeMouseCursor;
+#if (lime >= "7.0.0")
+import lime.ui.Cursor;
+#else
+import lime.ui.MouseCursor in Cursor;
+#end
 
 
 @:enum abstract MouseCursor(String) from String to String {
@@ -12,15 +16,15 @@ import lime.ui.MouseCursor in LimeMouseCursor;
 	public var HAND = "hand";
 	public var IBEAM = "ibeam";
 	
-	@:from private static function fromLimeCursor (cursor:LimeMouseCursor):MouseCursor {
+	@:from private static function fromLimeCursor (cursor:Cursor):MouseCursor {
 		
 		return switch (cursor) {
 			
-			case LimeMouseCursor.ARROW: MouseCursor.ARROW;
-			case LimeMouseCursor.DEFAULT: MouseCursor.AUTO;
-			case LimeMouseCursor.POINTER: MouseCursor.BUTTON;
-			case LimeMouseCursor.MOVE: MouseCursor.HAND;
-			case LimeMouseCursor.TEXT: MouseCursor.IBEAM;
+			case Cursor.ARROW: MouseCursor.ARROW;
+			case Cursor.DEFAULT: MouseCursor.AUTO;
+			case Cursor.POINTER: MouseCursor.BUTTON;
+			case Cursor.MOVE: MouseCursor.HAND;
+			case Cursor.TEXT: MouseCursor.IBEAM;
 			default: MouseCursor.AUTO;
 			
 		}

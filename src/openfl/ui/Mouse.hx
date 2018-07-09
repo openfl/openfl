@@ -1,7 +1,12 @@
 package openfl.ui;
 
 
+#if (lime >= "7.0.0")
+import lime.app.Application;
+import lime.ui.Cursor;
+#else
 import lime.ui.Mouse in LimeMouse;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -32,14 +37,28 @@ import lime.ui.Mouse in LimeMouse;
 	
 	public static function hide ():Void {
 		
+		#if (lime >= "7.0.0")
+		for (window in Application.current.windows) {
+			
+			window.cursor = null;
+			
+		}
+		#else
 		LimeMouse.hide ();
+		#end
 		
 	}
 	
 	
 	public static function show ():Void {
 		
+		#if (lime >= "7.0.0")
+		var cacheCursor = __cursor;
+		__cursor = null;
+		cursor = cacheCursor;
+		#else
 		LimeMouse.show ();
+		#end
 		
 	}
 	
@@ -60,6 +79,38 @@ import lime.ui.Mouse in LimeMouse;
 	
 	private static function set_cursor (value:MouseCursor):MouseCursor {
 		
+		#if (lime >= "7.0.0")
+		if (value == null) value = AUTO;
+		var setCursor = null;
+		
+		switch (value) {
+			
+			case MouseCursor.ARROW: setCursor = ARROW;
+			case MouseCursor.BUTTON: setCursor = POINTER;
+			case MouseCursor.HAND: setCursor = MOVE;
+			case MouseCursor.IBEAM: setCursor = TEXT;
+			case MouseCursor.__CROSSHAIR: setCursor = CROSSHAIR;
+			case MouseCursor.__CUSTOM: setCursor = CUSTOM;
+			case MouseCursor.__RESIZE_NESW: setCursor = RESIZE_NESW;
+			case MouseCursor.__RESIZE_NS: setCursor = RESIZE_NS;
+			case MouseCursor.__RESIZE_NWSE: setCursor = RESIZE_NWSE;
+			case MouseCursor.__RESIZE_WE: setCursor = RESIZE_WE;
+			case MouseCursor.__WAIT: setCursor = WAIT;
+			case MouseCursor.__WAIT_ARROW: setCursor = WAIT_ARROW;
+			default:
+			
+		}
+		
+		if (setCursor != null) {
+			
+			for (window in Application.current.windows) {
+				
+				window.cursor = setCursor;
+				
+			}
+			
+		}
+		#else
 		switch (value) {
 			
 			case MouseCursor.ARROW: LimeMouse.cursor = ARROW;
@@ -77,6 +128,7 @@ import lime.ui.Mouse in LimeMouse;
 			default:
 			
 		}
+		#end
 		
 		return __cursor = value;
 		

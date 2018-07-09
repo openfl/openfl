@@ -6,7 +6,6 @@ import lime.system.Clipboard;
 import lime.text.UTF8String;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.MouseCursor;
 import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
@@ -50,6 +49,12 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.DivElement;
+#end
+
+#if (lime >= "7.0.0")
+import lime.ui.Cursor;
+#else
+import lime.ui.MouseCursor in Cursor;
 #end
 
 #if !openfl_debug
@@ -854,7 +859,11 @@ class TextField extends InteractiveObject {
 		
 		if (__inputEnabled && stage != null) {
 			
+			#if (lime >= "7.0.0")
+			stage.window.textInputEnabled = false;
+			#else
 			stage.window.enableTextEvents = false;
+			#end
 			stage.window.onTextInput.remove (window_onTextInput);
 			stage.window.onKeyDown.remove (window_onKeyDown);
 			
@@ -904,11 +913,19 @@ class TextField extends InteractiveObject {
 		
 		if (stage != null) {
 			
+			#if (lime >= "7.0.0")
+			stage.window.textInputEnabled = true;
+			#else
 			stage.window.enableTextEvents = true;
+			#end
 			
 			if (!__inputEnabled) {
 				
+				#if (lime >= "7.0.0")
+				stage.window.textInputEnabled = true;
+				#else
 				stage.window.enableTextEvents = true;
+				#end
 				
 				if (!stage.window.onTextInput.has (window_onTextInput)) {
 					
@@ -1176,7 +1193,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __getCursor ():MouseCursor {
+	private override function __getCursor ():Cursor {
 		
 		var group = __getGroup (mouseX, mouseY, true);
 		
