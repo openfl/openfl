@@ -4,6 +4,7 @@ package openfl._internal.renderer.dom;
 import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.renderer.canvas.CanvasSmoothing;
 import openfl.display.Bitmap;
 
 #if (js && html5)
@@ -88,10 +89,7 @@ class DOMBitmap {
 			
 			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				
-				untyped (bitmap.__context).mozImageSmoothingEnabled = false;
-				//untyped (bitmap.__context).webkitImageSmoothingEnabled = false;
-				untyped (bitmap.__context).msImageSmoothingEnabled = false;
-				untyped (bitmap.__context).imageSmoothingEnabled = false;
+				CanvasSmoothing.setEnabled(bitmap.__context, false);
 				
 			}
 			

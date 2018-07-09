@@ -1563,20 +1563,7 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		if (!allowSmoothing) {
-			
-			smooth = false;
-			
-		}
-		
-		if (untyped (context).imageSmoothingEnabled != smooth) {
-			
-			untyped (context).mozImageSmoothingEnabled = smooth;
-			//untyped (context).webkitImageSmoothingEnabled = smooth;
-			untyped (context).msImageSmoothingEnabled = smooth;
-			untyped (context).imageSmoothingEnabled = smooth;
-			
-		}
+		CanvasSmoothing.setEnabled(context, allowSmoothing && smooth);
 		
 		#end
 		

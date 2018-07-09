@@ -29,6 +29,7 @@ import lime.utils.UInt8Array;
 // import openfl.Lib;
 import openfl._internal.renderer.canvas.CanvasBlendModeManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
+import openfl._internal.renderer.canvas.CanvasSmoothing;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLMaskManager;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -572,10 +573,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (!smoothing) {
 				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = false;
+				CanvasSmoothing.setEnabled(buffer.__srcContext, false);
 				
 			}
 			
@@ -596,10 +594,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (!smoothing) {
 				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = true;
+				CanvasSmoothing.setEnabled(buffer.__srcContext, true);
 				
 			}
 			
@@ -1779,10 +1774,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (!smoothing) {
 				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = false;
+				CanvasSmoothing.setEnabled(buffer.__srcContext, false);
 				
 			}
 			
@@ -1817,10 +1809,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (!smoothing) {
 				
-				untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
-				untyped (buffer.__srcContext).imageSmoothingEnabled = true;
+				CanvasSmoothing.setEnabled(buffer.__srcContext, true);
 				
 			}
 			
