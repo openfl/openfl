@@ -51,15 +51,16 @@ class GLVAORenderHelper {
 			renderSession.shaderManager.updateShader (shader);
 			shader.__skipEnableVertexAttribArray = false;
 			
-			var hasVAO: Bool = bitmapData.__vao != null;
-			if (!hasVAO) {
+			var vaoDirty: Bool = bitmapData.__vaoContext != vaoContext || bitmapData.__vao == null;
+			if (vaoDirty) {
 				
+				bitmapData.__vaoContext = vaoContext;
 				bitmapData.__vao = vaoContext.createVertexArray ();
 				
 			}
 			
 			vaoContext.bindVertexArray (bitmapData.__vao);
-			if (!hasVAO || bitmapData.isBufferDirty (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform)) {
+			if (vaoDirty || bitmapData.isBufferDirty (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform)) {
 				
 				__enableVertexAttribArray (gl, shader);
 				bitmapData.getBuffer (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform);
@@ -96,15 +97,16 @@ class GLVAORenderHelper {
 			renderSession.shaderManager.updateShader (shader);
 			shader.__skipEnableVertexAttribArray = false;
 			
-			var hasVAO: Bool = bitmapData.__vaoMask != null;
-			if (!hasVAO) {
+			var vaoDirty: Bool = bitmapData.__vaoContext != vaoContext || bitmapData.__vaoMask == null;
+			if (vaoDirty) {
 				
+				bitmapData.__vaoContext = vaoContext;
 				bitmapData.__vaoMask = vaoContext.createVertexArray ();
 				
 			}
 			
 			vaoContext.bindVertexArray (bitmapData.__vaoMask);
-			if (!hasVAO || bitmapData.isBufferDirty (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform)) {
+			if (vaoDirty || bitmapData.isBufferDirty (gl, displayObject.__worldAlpha, displayObject.__worldColorTransform)) {
 				
 				gl.enableVertexAttribArray (shader.data.aPosition.index);
 				gl.enableVertexAttribArray (shader.data.aTexCoord.index);
