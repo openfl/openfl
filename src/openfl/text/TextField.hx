@@ -95,6 +95,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	public var type (get, set):TextFieldType;
 	public var wordWrap (get, set):Bool;
 	
+	private var __anchor:Float = 0;
 	private var __bounds:Rectangle;
 	private var __caretIndex:Int;
 	private var __cursorTimer:Timer;
@@ -1156,6 +1157,28 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private inline function __getAnchorFromX ():Float {
+		
+		return __transform.tx + __textEngine.width * __getAutoSizeFactor ();
+		
+	}
+	
+	
+	private inline function __getAutoSizeFactor ():Float {
+		
+		return  switch (__textEngine.autoSize) {
+					
+					case RIGHT: 1;
+					
+					case CENTER: 0.5;
+					
+					default: 0;
+					
+				};
+				
+	}
+	
+	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		__updateLayout ();
@@ -1321,6 +1344,20 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		}
 		
 		return group.endIndex;
+	}
+
+
+	private inline function __getXFromAnchor ():Float {
+		
+		return __anchor - __textEngine.width * __getAutoSizeFactor ();
+		
+	}
+	
+	
+	private inline function __hasAnchor ():Bool {
+		
+		return !wordWrap && (__textEngine.autoSize == RIGHT || __textEngine.autoSize == CENTER);
+		
 	}
 	
 	
@@ -1594,32 +1631,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (__layoutDirty) {
 			
-			var cacheWidth = __textEngine.width;
-			var cacheHeight = __textEngine.height;
-			
 			__textEngine.update ();
 			
 			if (__textEngine.autoSize != NONE) {
 				
-				if (__textEngine.width != cacheWidth) {
-					
-					switch (__textEngine.autoSize) {
-						
-						case RIGHT:
-							
-							x += cacheWidth - __textEngine.width;
-						
-						case CENTER:
-							
-							x += (cacheWidth - __textEngine.width) / 2;
-						
-						default:
-							
-						
-					}
-					
-					
-				}
+				if (__hasAnchor ()) __updateXFromAnchor ();
 				
 				__textEngine.getBounds ();
 				
@@ -1730,6 +1746,19 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private function __updateXFromAnchor ():Void {
+		
+		var value = __getXFromAnchor ();
+		if (value != __transform.tx) {
+			
+			__transform.tx = value;
+			__setTransformDirty ();
+			
+		}
+		
+	}
+	
+	
 	
 	
 	// Getters & Setters
@@ -1769,14 +1798,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		if (value != __textEngine.autoSize) {
 			
 			__textEngine.autoSize = value;
+			
+			if (__hasAnchor ())  {
+				
+				__anchor = __getAnchorFromX ();
+				
+			}
+			
 			__layoutDirty = true;
-			
-			/*if (value == RIGHT || value == CENTER) {
-				
-				__updateLayout ();
-				
-			}*/
-			
 			__dirty = true;
 			__setRenderDirty ();
 			
@@ -2434,10 +2463,20 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 			
 			__setTransformDirty ();
 			__dirty = true;
-			__layoutDirty = true;
 			__setRenderDirty ();
 			
 			__textEngine.width = value;
+			
+			if (__hasAnchor () && __textEngine.text != null)  {
+				
+				if (__layoutDirty) __textEngine.update ();
+				
+				__anchor = __getXFromAnchor () + value * __getAutoSizeFactor ();
+				
+			} 
+			
+			__layoutDirty = true;
+			
 			
 			#if (js && html5)
 			if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM) {
@@ -2485,6 +2524,14 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function get_x ():Float {
 		
+		if (__hasAnchor ()) {
+			
+			if (__layoutDirty) __textEngine.update ();
+				
+			return __getXFromAnchor () + __offsetX;
+			
+		}
+		
 		return __transform.tx + __offsetX;
 		
 	}
@@ -2493,7 +2540,25 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	private override function set_x (value:Float):Float {
 		
 		if (value != __transform.tx + __offsetX) __setTransformDirty ();
-		return __transform.tx = value - __offsetX;
+		__transform.tx = value - __offsetX;
+		
+		if (__hasAnchor ()) {
+			
+			if (__textEngine.autoSize == CENTER) {
+				
+				if (__layoutDirty) __textEngine.update ();
+				
+				__anchor = __getAnchorFromX ();
+				
+			} else {
+				
+				__anchor = __transform.tx;
+				
+			}
+			
+		}
+		
+		return __transform.tx;
 		
 	}
 	
