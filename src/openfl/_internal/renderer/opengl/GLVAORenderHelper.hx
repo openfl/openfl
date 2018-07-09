@@ -51,6 +51,7 @@ class GLVAORenderHelper {
 			renderSession.shaderManager.updateShader (shader);
 			shader.__skipEnableVertexAttribArray = false;
 			
+			bitmapData.__vaoContext = vaoContext;
 			var hasVAO: Bool = bitmapData.__vao != null;
 			if (!hasVAO) {
 				
@@ -96,6 +97,7 @@ class GLVAORenderHelper {
 			renderSession.shaderManager.updateShader (shader);
 			shader.__skipEnableVertexAttribArray = false;
 			
+			bitmapData.__vaoContext = vaoContext;
 			var hasVAO: Bool = bitmapData.__vaoMask != null;
 			if (!hasVAO) {
 				

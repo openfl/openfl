@@ -38,4 +38,11 @@ class VertexArrayObjectExtension implements IVertexArrayObjectContext {
 	}
 	
 	
+	public function isVertexArray (vao:GLVertexArrayObject):Bool {
+		
+		return __vertexArrayObjectsExtension.isVertexArrayOES (vao);
+		
+	}
+	
+	
 }

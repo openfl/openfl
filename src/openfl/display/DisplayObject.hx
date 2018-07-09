@@ -386,7 +386,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __cleanup (renderSession: RenderSession):Void {
+	private function __cleanup ():Void {
 		
 		__cairo = null;
 		

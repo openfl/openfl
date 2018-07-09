@@ -32,6 +32,7 @@ import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLMaskManager;
 import openfl._internal.renderer.opengl.GLRenderer;
+import openfl._internal.renderer.opengl.vao.IVertexArrayObjectContext;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
 import openfl.errors.Error;
@@ -128,6 +129,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private var __vao:GLVertexArrayObject;
 	private var __vaoMask:GLVertexArrayObject;
+	private var __vaoContext: IVertexArrayObjectContext;
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
 		
@@ -1676,22 +1678,25 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	function __cleanup (renderSession: RenderSession):Void {
+	function __cleanup ():Void {
 
-		if (__vao != null) {
+		if (__vaoContext == null) return;
+		
+		if (__vao != null && __vaoContext.isVertexArray (__vao)) {
 			
-			renderSession.vaoContext.deleteVertexArray (__vao);
+			__vaoContext.deleteVertexArray (__vao);
 			__vao = null;
 			
 		}
 		
-		if (__vaoMask != null) {
+		if (__vaoMask != null && __vaoContext.isVertexArray (__vaoMask)) {
 			
-			renderSession.vaoContext.deleteVertexArray (__vaoMask);
+			__vaoContext.deleteVertexArray (__vaoMask);
 			__vaoMask = null;
 			
 		}
 		
+		__vaoContext = null;
 	}
 	
 	
