@@ -10,6 +10,7 @@ import lime.ui.MouseCursor;
 import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl._internal.renderer.canvas.CanvasSmoothing;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -1414,27 +1415,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
 			
-			var smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
-			
-			if (smoothingEnabled) {
-				
-				untyped (renderSession.context).mozImageSmoothingEnabled = false;
-				//untyped (renderSession.context).webkitImageSmoothingEnabled = false;
-				untyped (renderSession.context).msImageSmoothingEnabled = false;
-				untyped (renderSession.context).imageSmoothingEnabled = false;
-				
-			}
+			CanvasSmoothing.setEnabled(renderSession.context, false);
 			
 			super.__renderCanvas (renderSession);
 			
-			if (smoothingEnabled) {
-				
-				untyped (renderSession.context).mozImageSmoothingEnabled = true;
-				//untyped (renderSession.context).webkitImageSmoothingEnabled = true;
-				untyped (renderSession.context).msImageSmoothingEnabled = true;
-				untyped (renderSession.context).imageSmoothingEnabled = true;
-				
-			}
+			CanvasSmoothing.setEnabled(renderSession.context, true);
 			
 		} else {
 			

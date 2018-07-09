@@ -42,10 +42,7 @@ class CanvasTilemap {
 		
 		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
-			untyped (context).mozImageSmoothingEnabled = false;
-			//untyped (context).webkitImageSmoothingEnabled = false;
-			untyped (context).msImageSmoothingEnabled = false;
-			untyped (context).imageSmoothingEnabled = false;
+			CanvasSmoothing.setEnabled(context, false);
 			
 		}
 		
@@ -123,10 +120,7 @@ class CanvasTilemap {
 		
 		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
-			untyped (context).mozImageSmoothingEnabled = true;
-			//untyped (context).webkitImageSmoothingEnabled = true;
-			untyped (context).msImageSmoothingEnabled = true;
-			untyped (context).imageSmoothingEnabled = true;
+			CanvasSmoothing.setEnabled(context, true);
 			
 		}
 		
