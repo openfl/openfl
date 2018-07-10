@@ -115,7 +115,7 @@ extern class MovieClip extends Sprite {
 	@:noCompletion private function get_isPlaying ():Bool;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var scenes (default, null):Array<flash.display.Scene>;
+	@:noCompletion @:dox(hide) public var scenes (default, never):Array<flash.display.Scene>;
 	#end
 	
 	/**

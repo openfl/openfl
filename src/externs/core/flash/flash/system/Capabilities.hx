@@ -20,7 +20,7 @@ package flash.system; #if (!display && flash)
 	public static var hasTLS (default, never):Bool;
 	public static var hasVideoEncoder (default, never):Bool;
 	public static var isDebugger (default, never):Bool;
-	@:require(flash10) public static var isEmbeddedInAcrobat (default, null):Bool;
+	@:require(flash10) public static var isEmbeddedInAcrobat (default, never):Bool;
 	public static var language (default, never):String;
 	
 	#if air

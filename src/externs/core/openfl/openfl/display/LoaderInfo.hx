@@ -108,7 +108,7 @@ extern class LoaderInfo extends EventDispatcher {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var actionScriptVersion (default, null):flash.display.ActionScriptVersion;
+	@:noCompletion @:dox(hide) public var actionScriptVersion (default, never):flash.display.ActionScriptVersion;
 	#end
 	
 	/**
@@ -133,7 +133,7 @@ extern class LoaderInfo extends EventDispatcher {
 	 * @throws SecurityError This security sandbox of the caller is not allowed
 	 *                       to access this ApplicationDomain.
 	 */
-	public var applicationDomain (default, null):ApplicationDomain;
+	public var applicationDomain (default, never):ApplicationDomain;
 	
 	/**
 	 * The bytes associated with a LoaderInfo object.

@@ -75,7 +75,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	public var tabChildren:Bool;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var textSnapshot (default, null):flash.text.TextSnapshot;
+	@:noCompletion @:dox(hide) public var textSnapshot (default, never):flash.text.TextSnapshot;
 	#end
 	
 	

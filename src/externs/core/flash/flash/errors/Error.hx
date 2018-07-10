@@ -8,7 +8,7 @@ package flash.errors; #if (!display && flash)
 	public static var length:Int;
 	#end
 	
-	public var errorID (default, null):Int;
+	public var errorID (default, never):Int;
 	public var message:String; //Dynamic
 	public var name:String; //Dynamic
 	

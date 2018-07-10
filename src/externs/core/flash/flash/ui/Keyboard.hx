@@ -113,8 +113,8 @@ package flash.ui; #if (!display && flash)
 	public static inline var MENU = 0x01000012;
 	#end
 	
-	public static var capsLock (default, null):Bool;
-	public static var numLock (default, null):Bool;
+	public static var capsLock (default, never):Bool;
+	public static var numLock (default, never):Bool;
 	
 	#if flash
 	@:require(flash10_1) public static var hasVirtualKeyboard (default, never):Bool;

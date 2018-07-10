@@ -6,7 +6,7 @@ extern class UncaughtErrorEvent extends ErrorEvent {
 	
 	public static var UNCAUGHT_ERROR (default, never):String;
 	
-	public var error (default, null):Dynamic;
+	public var error (default, never):Dynamic;
 	
 	
 	public function new (type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null);

@@ -10,7 +10,7 @@ import openfl.net.ObjectEncoding;
 extern interface IDataInput {
 	
 	#if (flash && !display)
-	public var bytesAvailable (default, null):UInt;
+	public var bytesAvailable (default, never):UInt;
 	#else
 	public var bytesAvailable (get, never):UInt;
 	

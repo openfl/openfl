@@ -11,7 +11,7 @@ import openfl.ui.GameInputDevice;
 	public static var DEVICE_REMOVED (default, never):String;
 	public static var DEVICE_UNUSABLE (default, never):String;
 	
-	public var device (default, null):GameInputDevice;
+	public var device (default, never):GameInputDevice;
 	
 	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, device:GameInputDevice = null);
 	

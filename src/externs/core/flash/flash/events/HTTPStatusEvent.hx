@@ -13,7 +13,7 @@ extern class HTTPStatusEvent extends Event {
 	public var redirected:Bool;
 	@:require(flash10_1) public var responseHeaders:Array<URLRequestHeader>;
 	@:require(flash10_1) public var responseURL:String;
-	public var status (default, null):Int;
+	public var status (default, never):Int;
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, status:Int = 0, redirected:Bool = false):Void;
 	
