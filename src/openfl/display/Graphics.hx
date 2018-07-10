@@ -3,7 +3,6 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
-import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.utils.Float32Array;
 import lime.utils.ObjectPool;
@@ -26,6 +25,12 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -52,7 +57,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	private var __bounds:Rectangle;
 	private var __buffer:GLBuffer;
-	private var __bufferContext:GLRenderContext;
+	private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
 	private var __bufferData:Float32Array;
 	private var __bufferLength:Int;
 	private var __commands:DrawCommandBuffer;

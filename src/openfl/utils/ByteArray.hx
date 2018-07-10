@@ -11,15 +11,18 @@ import haxe.Serializer;
 import haxe.Unserializer;
 import lime.app.Future;
 import lime.system.System;
-import lime.utils.compress.Deflate;
-import lime.utils.compress.LZMA;
-import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes in LimeBytes;
 import lime.utils.DataPointer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
+
+#if (lime < "7.0.0")
+import lime.utils.compress.Deflate;
+import lime.utils.compress.LZMA;
+import lime.utils.compress.Zlib;
+#end
 
 #if format
 import format.amf.Reader in AMFReader;
@@ -309,7 +312,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 @:noDebug
 #end
 
+#if (lime >= "7.0.0")
+@:autoBuild(lime._internal.macros.AssetsMacro.embedByteArray())
+#else
 @:autoBuild(lime._macros.AssetsMacro.embedByteArray())
+#end
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
@@ -416,11 +423,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		#end
 		
+		var limeBytes:LimeBytes = this;
+		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.compress (this);
-			case CompressionAlgorithm.LZMA: LZMA.compress (this);
-			default: Zlib.compress (this);
+			case CompressionAlgorithm.DEFLATE: #if (lime >= "7.0.0") limeBytes.compress (DEFLATE) #else Deflate.compress (this) #end;
+			case CompressionAlgorithm.LZMA: #if (lime >= "7.0.0") limeBytes.compress (LZMA) #else LZMA.compress (this) #end;
+			default: #if (lime >= "7.0.0") limeBytes.compress (ZLIB) #else Zlib.compress (this) #end;
 			
 		}
 		
@@ -516,14 +525,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		var ch1 = readInt ();
-		var ch2 = readInt ();
-		
 		if (endian == LITTLE_ENDIAN) {
 			
-			return FPHelper.i64ToDouble (ch1, ch2);
+			if (position + 8 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 8;
+			return getDouble (position - 8);
 			
 		} else {
+			
+			var ch1 = readInt ();
+			var ch2 = readInt ();
 			
 			return FPHelper.i64ToDouble (ch2, ch1);
 			
@@ -534,7 +551,23 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readFloat ():Float {
 		
-		return FPHelper.i32ToFloat (readInt ());
+		if (endian == LITTLE_ENDIAN) {
+			
+			if (position + 4 > #if lime_bytes_length_getter l #else length #end) {
+				
+				throw new EOFError ();
+				return 0;
+				
+			}
+			
+			position += 4;
+			return getFloat (position - 4);
+			
+		} else {
+			
+			return FPHelper.i32ToFloat (readInt ());
+			
+		}
 		
 	}
 	
@@ -710,7 +743,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		position += length;
 		
-		
 		return getString (position - length, length);
 		
 	}
@@ -739,11 +771,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		#end
 		
+		var limeBytes:LimeBytes = this;
+		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this);
-			case CompressionAlgorithm.LZMA: LZMA.decompress (this);
-			default: Zlib.decompress (this);
+			case CompressionAlgorithm.DEFLATE: #if (lime >= "7.0.0") limeBytes.compress (DEFLATE) #else Deflate.compress (this) #end;
+			case CompressionAlgorithm.LZMA: #if (lime >= "7.0.0") limeBytes.compress (LZMA) #else LZMA.compress (this) #end;
+			default: #if (lime >= "7.0.0") limeBytes.compress (ZLIB) #else Zlib.compress (this) #end;
 			
 		};
 		

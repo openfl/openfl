@@ -1,9 +1,14 @@
 package openfl._internal.renderer.canvas;
 
 
-import lime.graphics.utils.ImageCanvasUtil;
 import openfl.display.Bitmap;
 import openfl.display.CanvasRenderer;
+
+#if (lime >= "7.0.0")
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+#else
+import lime.graphics.utils.ImageCanvasUtil;
+#end
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)

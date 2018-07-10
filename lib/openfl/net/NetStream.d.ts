@@ -182,8 +182,9 @@ declare namespace openfl.net {
 		
 		
 		// #if flash
-		// @:noCompletion @:dox(hide) @:require(flash11_2) public dispose ():void;
+		// @:noCompletion @:dox(hide) @:require(flash11_2)
 		// #end
+		public dispose ():void;
 		
 		
 		// #if flash

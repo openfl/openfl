@@ -1,7 +1,13 @@
 package flash.errors; #if (!display && flash)
 
 
-@:native("ArgumentError") extern class ArgumentError extends Error {}
+@:native("ArgumentError") extern class ArgumentError extends Error {
+	
+	
+	public function new (message:String = "");
+	
+	
+}
 
 
 #else

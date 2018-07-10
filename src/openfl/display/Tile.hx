@@ -17,6 +17,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	
 	
 	public var alpha (get, set):Float;
+	public var blendMode (get, set):BlendMode;
 	@:beta public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
 	public var id (get, set):Int;
@@ -35,6 +36,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	public var y (get, set):Float;
 	
 	private var __alpha:Float;
+	private var __blendMode:BlendMode;
 	private var __colorTransform:ColorTransform;
 	private var __dirty:Bool;
 	private var __id:Int;
@@ -58,6 +60,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 		
 		untyped Object.defineProperties (Tile.prototype, {
 			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+			"blendMode": { get: untyped __js__ ("function () { return this.get_blendMode (); }"), set: untyped __js__ ("function (v) { return this.set_blendMode (v); }") },
 			"colorTransform": { get: untyped __js__ ("function () { return this.get_colorTransform (); }"), set: untyped __js__ ("function (v) { return this.set_colorTransform (v); }") },
 			"id": { get: untyped __js__ ("function () { return this.get_id (); }"), set: untyped __js__ ("function (v) { return this.set_id (v); }") },
 			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
@@ -94,6 +97,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 		__originX = originX;
 		__originY = originY;
 		__alpha = 1;
+		__blendMode = null;
 		__visible = true;
 		
 	}
@@ -103,6 +107,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 		
 		var tile = new Tile (__id);
 		tile.__alpha = __alpha;
+		tile.__blendMode = __blendMode;
 		tile.__originX = __originX;
 		tile.__originY = __originY;
 		
@@ -172,6 +177,27 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 		if (value != __alpha) {
 			
 			__alpha = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+	private function get_blendMode():BlendMode {
+		
+		return __blendMode;
+		
+	}
+	
+	
+	private function set_blendMode (value:BlendMode):BlendMode {
+		
+		if (value != __blendMode) {
+			
+			__blendMode = value;
 			__setRenderDirty ();
 			
 		}

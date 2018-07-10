@@ -3,7 +3,6 @@ package openfl.media;
 
 import haxe.io.Path;
 import lime.app.Future;
-import lime.app.Preloader;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
 import lime.utils.UInt8Array;

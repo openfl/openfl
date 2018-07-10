@@ -3,7 +3,7 @@ package openfl.display {
 	
 	import openfl.geom.Point;
 	import openfl.geom.Rectangle;
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	
 	/**
@@ -17,7 +17,7 @@ package openfl.display {
 		protected function get_bitmapData ():BitmapData { return null; }
 		protected function set_bitmapData (value:BitmapData):BitmapData { return null; }
 		
-		public var rectData:openfl.Vector;
+		public var rectData:Vector.<Number>;
 		
 		public function get numRects ():int { return 0; }
 		

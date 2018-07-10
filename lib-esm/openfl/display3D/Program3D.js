@@ -1,0 +1,1 @@
+export { default } from "./../../_gen/openfl/display3D/Program3D";

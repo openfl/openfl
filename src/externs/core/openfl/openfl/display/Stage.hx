@@ -3,9 +3,7 @@ package openfl.display; #if (display || !flash)
 
 import lime.app.Application in LimeApplication;
 import lime.app.IModule;
-import lime.app.Preloader;
 import lime.graphics.RenderContext;
-import lime.graphics.Renderer;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
@@ -16,6 +14,11 @@ import lime.ui.KeyModifier;
 import lime.ui.Touch;
 import lime.ui.Window;
 import openfl.geom.Rectangle;
+
+#if (lime < "7.0.0")
+import lime.app.Preloader;
+import lime.graphics.Renderer;
+#end
 
 
 /**
@@ -598,6 +601,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	
+	#if (lime >= "7.0.0")
+	@:noCompletion @:dox(hide) private function __registerLimeModule (application:LimeApplication):Void;
+	@:noCompletion @:dox(hide) private function __unregisterLimeModule (application:LimeApplication):Void;
+	@:noCompletion @:dox(hide) public function onRenderContextLost ():Void;
+	@:noCompletion @:dox(hide) public function onRenderContextRestored (context:RenderContext):Void;
+	@:noCompletion @:dox(hide) public function render (context:RenderContext):Void;
+	#else
 	@:noCompletion @:dox(hide) public function addRenderer (renderer:Renderer):Void;
 	@:noCompletion @:dox(hide) public function addWindow (window:Window):Void;
 	@:noCompletion @:dox(hide) public function registerModule (application:LimeApplication):Void;
@@ -605,6 +615,11 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion @:dox(hide) public function removeWindow (window:Window):Void;
 	@:noCompletion @:dox(hide) public function setPreloader (preloader:Preloader):Void;
 	@:noCompletion @:dox(hide) public function unregisterModule (application:LimeApplication):Void;
+	@:noCompletion @:dox(hide) public function onRenderContextLost (renderer:Renderer):Void;
+	@:noCompletion @:dox(hide) public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void;
+	@:noCompletion @:dox(hide) public function render (renderer:Renderer):Void;
+	#end
+	
 	@:noCompletion @:dox(hide) public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void;
 	@:noCompletion @:dox(hide) public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void;
 	@:noCompletion @:dox(hide) public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void;
@@ -617,38 +632,35 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion @:dox(hide) public function onJoystickDisconnect (joystick:Joystick):Void;
 	@:noCompletion @:dox(hide) public function onJoystickHatMove (joystick:Joystick, hat:Int, position:JoystickHatPosition):Void;
 	@:noCompletion @:dox(hide) public function onJoystickTrackballMove (joystick:Joystick, trackball:Int, value:Float):Void;
-	@:noCompletion @:dox(hide) public function onKeyDown (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void;
-	@:noCompletion @:dox(hide) public function onKeyUp (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void;
+	@:noCompletion @:dox(hide) public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void;
+	@:noCompletion @:dox(hide) public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void;
 	@:noCompletion @:dox(hide) public function onModuleExit (code:Int):Void;
-	@:noCompletion @:dox(hide) public function onMouseDown (window:Window, x:Float, y:Float, button:Int):Void;
-	@:noCompletion @:dox(hide) public function onMouseMove (window:Window, x:Float, y:Float):Void;
-	@:noCompletion @:dox(hide) public function onMouseMoveRelative (window:Window, x:Float, y:Float):Void;
-	@:noCompletion @:dox(hide) public function onMouseUp (window:Window, x:Float, y:Float, button:Int):Void;
-	@:noCompletion @:dox(hide) public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float):Void;
+	@:noCompletion @:dox(hide) public function onMouseDown (x:Float, y:Float, button:Int):Void;
+	@:noCompletion @:dox(hide) public function onMouseMove (x:Float, y:Float):Void;
+	@:noCompletion @:dox(hide) public function onMouseMoveRelative (x:Float, y:Float):Void;
+	@:noCompletion @:dox(hide) public function onMouseUp (x:Float, y:Float, button:Int):Void;
+	@:noCompletion @:dox(hide) public function onMouseWheel (deltaX:Float, deltaY:Float):Void;
 	@:noCompletion @:dox(hide) public function onPreloadComplete ():Void;
 	@:noCompletion @:dox(hide) public function onPreloadProgress (loaded:Int, total:Int):Void;
-	@:noCompletion @:dox(hide) public function onRenderContextLost (renderer:Renderer):Void;
-	@:noCompletion @:dox(hide) public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void;
-	@:noCompletion @:dox(hide) public function onTextEdit (window:Window, text:String, start:Int, length:Int):Void;
-	@:noCompletion @:dox(hide) public function onTextInput (window:Window, text:String):Void;
+	@:noCompletion @:dox(hide) public function onTextEdit (text:String, start:Int, length:Int):Void;
+	@:noCompletion @:dox(hide) public function onTextInput (text:String):Void;
 	@:noCompletion @:dox(hide) public function onTouchMove (touch:Touch):Void;
 	@:noCompletion @:dox(hide) public function onTouchEnd (touch:Touch):Void;
 	@:noCompletion @:dox(hide) public function onTouchStart (touch:Touch):Void;
-	@:noCompletion @:dox(hide) public function onWindowActivate (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowClose (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowCreate (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowDeactivate (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowDropFile (window:Window, file:String):Void;
-	@:noCompletion @:dox(hide) public function onWindowEnter (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowFocusIn (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowFocusOut (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowFullscreen (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowLeave (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowMinimize (window:Window):Void;
-	@:noCompletion @:dox(hide) public function onWindowMove (window:Window, x:Float, y:Float):Void;
-	@:noCompletion @:dox(hide) public function onWindowResize (window:Window, width:Int, height:Int):Void;
-	@:noCompletion @:dox(hide) public function onWindowRestore (window:Window):Void;
-	@:noCompletion @:dox(hide) public function render (renderer:Renderer):Void;
+	@:noCompletion @:dox(hide) public function onWindowActivate ():Void;
+	@:noCompletion @:dox(hide) public function onWindowClose ():Void;
+	@:noCompletion @:dox(hide) public function onWindowCreate ():Void;
+	@:noCompletion @:dox(hide) public function onWindowDeactivate ():Void;
+	@:noCompletion @:dox(hide) public function onWindowDropFile (file:String):Void;
+	@:noCompletion @:dox(hide) public function onWindowEnter ():Void;
+	@:noCompletion @:dox(hide) public function onWindowFocusIn ():Void;
+	@:noCompletion @:dox(hide) public function onWindowFocusOut ():Void;
+	@:noCompletion @:dox(hide) public function onWindowFullscreen ():Void;
+	@:noCompletion @:dox(hide) public function onWindowLeave ():Void;
+	@:noCompletion @:dox(hide) public function onWindowMinimize ():Void;
+	@:noCompletion @:dox(hide) public function onWindowMove (x:Float, y:Float):Void;
+	@:noCompletion @:dox(hide) public function onWindowResize (width:Int, height:Int):Void;
+	@:noCompletion @:dox(hide) public function onWindowRestore ():Void;
 	@:noCompletion @:dox(hide) public function update (deltaTime:Int):Void;
 	
 	

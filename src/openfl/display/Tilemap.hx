@@ -8,7 +8,6 @@ import openfl.geom.Rectangle;
 
 #if !flash
 import lime.graphics.opengl.GLBuffer;
-import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
@@ -22,6 +21,12 @@ import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLTilemap;
+#end
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
 #end
 
 #if !openfl_debug
@@ -40,6 +45,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	public var numTiles (get, never):Int;
 	public var tileAlphaEnabled:Bool;
+	public var tileBlendModeEnabled:Bool;
 	public var tileColorTransformEnabled:Bool;
 	public var tileset (get, set):Tileset;
 	
@@ -56,8 +62,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	#if !flash
 	private var __buffer:GLBuffer;
-	private var __bufferContext:GLRenderContext;
+	private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
 	private var __bufferData:Float32Array;
+	private var __bufferDirty:Bool;
 	private var __bufferLength:Int;
 	private var __height:Int;
 	private var __width:Int;
@@ -84,6 +91,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		this.smoothing = smoothing;
 		
 		tileAlphaEnabled = true;
+		tileBlendModeEnabled = true;
 		tileColorTransformEnabled = true;
 		
 		__group = new TileContainer ();

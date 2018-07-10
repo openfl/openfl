@@ -1,10 +1,15 @@
 package openfl.display;
 
 
-import lime.graphics.GLRenderContext;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -43,7 +48,13 @@ import openfl.display3D.Context3DWrapMode;
 	}
 	
 	
-	private function __updateGL (gl:GLRenderContext, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
+	private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl = context;
+		#end
 		
 		var input = overrideInput != null ? overrideInput : this.input;
 		var filter = overrideFilter != null ? overrideFilter : this.filter;
@@ -57,7 +68,7 @@ import openfl.display3D.Context3DWrapMode;
 			var bitmapData:BitmapData = cast input;
 			
 			gl.activeTexture (gl.TEXTURE0 + id);
-			gl.bindTexture (gl.TEXTURE_2D, bitmapData.getTexture (gl));
+			gl.bindTexture (gl.TEXTURE_2D, bitmapData.getTexture (context));
 			
 			// TODO: Support anisotropic filter modes
 			var smooth = (filter == Context3DTextureFilter.LINEAR);

@@ -1,4 +1,78 @@
+8.3.0 (06/25/2018)
+------------------
+
+* Added `tile.blendMode` and `tilemap.tileBlendModeEnabled`
+* Added `netStream.dispose()` and improved `netStream.close()` support
+* Improved buffer handling for OpenGL `Tilemap` rendering
+* Fixed default HTML5 template after Chrome passive event listener change
+* Fixed a regression in rendering of `TextFormatAlign.JUSTIFY` text
+* Fixed dispatching of `Event.ADDED_TO_STAGE` on document class in NPM builds
+* Fixed missing `loader.contentLoaderInfo.bytes` field
+* Fixed using `bitmapData.hitTest` against another `BitmapData` object
+* Fixed return value of `eventDispatcher.dispatchEvent()` when default is prevented
+* Fixed timing issue with multiple texture units in custom OpenGL shaders
+* Fixed `MouseEvent.MOUSE_OVER`/`MouseEvent.MOUSE_OUT` to dispatch in each event phase
+* Fixed some issues when using `-Dopenfl-power-of-two` textures
+* Fixed `stage.color` to mark rendering as dirty when changed
+* Fixed `openfl.net.Socket` on HTML5 to allow reading of input later
+
+
+8.2.2 (06/05/2018)
+------------------
+
+* Fixed a regression in the `TextField` input cursor
+
+
+8.2.1 (06/05/2018)
+------------------
+
+* Updated default window color depth to 32-bit (`<window color-depth="16" />` to revert)
+* Updated to create a depth buffer by default (`<window depth-buffer="false" />` to revert)
+* Improved the performance of little endian `ByteArray` `readFloat`/`readDouble`
+* Fixed a regression in the behavior of `textField.getTextFormat`
+* Fixed a regression in Stage3D texture uploads on HTML5
+
+
+8.2.0 (06/01/2018)
+------------------
+
+* Updated to Lime 6.4.*
+* Updated `file-saverjs` dependency on NPM to `file-saver`
+* Updated to avoid `implements Dynamic` since it is being removed in Haxe 4
+* Added ES6 modules (as an alternative to the default CommonJS modules)
+* Added `openfl.utils.setTimeout` on NPM-based builds
+* Added `openfl.utils.Dictionary` for NPM builds
+* Added Gzip and Brotli min.js files for NPM builds
+* Improved the texture size used for rendering `TextField`
+* Improved behavior of `texture.uploadFromBitmapData` when the source is HTML5 canvas
+* Improved compilation on AS3 by including `flash.*` versions of OpenFL types
+* Improved extern types for NPM builds
+* Improved using generated SWF classes with dead-code elimination
+* Fixed initialization of the stencil/depth buffers when using Stage3D
+* Fixed the behavior of `textField.getTextFormat` to handle some edge cases
+* Fixed a regression in software bitmap filters for certain cases
+* Fixed cases where HTML5 would dispatch `MOUSE_LEAVE` instead of `RELEASE_OUTSIDE`
+* Fixed support for `Vector.<T>` on the AS3 target
+* Fixed a possible loop when dispatching `UncaughtErrorEvent` throws an error
+* Fixed `Lib.setTimeout` and `Lib.setInterval` to make the last argument optional
+* Fixed a possible `null` issue when hit-testing within `Sprite`
+* Fixed the default value for `vector.lastIndexOf`
+* Fixed some minor issues when forcing power-of-two textures
+* Fixed some edge cases in justified text word-wrapping
+* Fixed the behavior of the `displayObject.visible` property if it is overridden
+* Fixed behavior of setting Stage3D max anisotropy to invalidate less often
+* Fixed keyboard shortcuts to move text cursor to work only if selectable is true
+* Fixed a regression in the SWF generator when using it from Node.js
+
+
+8.1.1 (05/17/2018)
+------------------
+
+* Fixed minor issues with some ActionScript 3.0 externs
+
+
 8.1.0 (05/16/2018)
+------------------
 
 * Added (initial) support for ActionScript 3.0 as a source language on NPM
 * Fixed inconsistencies in mask shape rendering on the Cairo renderer

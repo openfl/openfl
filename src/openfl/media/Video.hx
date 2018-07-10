@@ -3,8 +3,6 @@ package openfl.media;
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
@@ -22,6 +20,13 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -48,7 +53,7 @@ class Video extends DisplayObject {
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
 	private var __bufferColorTransform:ColorTransform;
-	private var __bufferContext:WebGLContext;
+	private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else WebGLContext #end;
 	private var __bufferData:Float32Array;
 	private var __dirty:Bool;
 	private var __height:Float;
@@ -88,7 +93,7 @@ class Video extends DisplayObject {
 		__stream = netStream;
 		
 		#if (js && html5)
-		if (__stream != null) {
+		if (__stream != null && __stream.__video != null && !__stream.__closed) {
 			
 			__stream.__video.play ();
 			
@@ -133,9 +138,15 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getBuffer (gl:GLRenderContext):GLBuffer {
+	private function __getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
 		
-		if (__buffer == null || __bufferContext != gl) {
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl:WebGLContext = context;
+		#end
+		
+		if (__buffer == null || __bufferContext != context) {
 			
 			#if openfl_power_of_two
 			
@@ -209,11 +220,11 @@ class Video extends DisplayObject {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = gl;
+			__bufferContext = context;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
 		} else {
@@ -276,11 +287,17 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getTexture (gl:GLRenderContext):GLTexture {
+	private function __getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
 		
 		#if (js && html5)
 		
-		if (__stream == null) return null;
+		if (__stream == null || __stream.__video == null) return null;
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl:WebGLContext = context;
+		#end
 		
 		if (__texture == null) {
 			
@@ -294,13 +311,13 @@ class Video extends DisplayObject {
 			
 		}
 		
-		if (__stream.__video.currentTime != __textureTime) {
+		if (!__stream.__closed && __stream.__video.currentTime != __textureTime) {
 			
 			var internalFormat = gl.RGBA;
 			var format = gl.RGBA;
 			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texImage2DWEBGL (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;
 			
@@ -422,7 +439,7 @@ class Video extends DisplayObject {
 	private function get_videoHeight ():Int {
 		
 		#if (js && html5)
-		if (__stream != null) {
+		if (__stream != null && __stream.__video != null) {
 			
 			return Std.int (__stream.__video.videoHeight);
 			
@@ -437,7 +454,7 @@ class Video extends DisplayObject {
 	private function get_videoWidth ():Int {
 		
 		#if (js && html5)
-		if (__stream != null) {
+		if (__stream != null && __stream.__video != null) {
 			
 			return Std.int (__stream.__video.videoWidth);
 			

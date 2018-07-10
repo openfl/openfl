@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if ((lime < "7.0.0") || (openfl < "8.4.0"))
 
 
 import lime.graphics.opengl.GL;
@@ -296,3 +296,6 @@ import js.Browser;
 	
 	
 }
+
+
+#end

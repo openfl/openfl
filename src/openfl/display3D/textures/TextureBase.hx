@@ -1,7 +1,6 @@
 package openfl.display3D.textures;
 
 
-import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.graphics.opengl.GLTexture;
 import openfl._internal.stage3D.opengl.GLTextureBase;
@@ -10,6 +9,12 @@ import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -33,7 +38,7 @@ class TextureBase extends EventDispatcher {
 	// private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
 	private var __streamingLevels:Int;
-	private var __textureContext:GLRenderContext;
+	private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
 	private var __textureID:GLTexture;
 	private var __textureTarget:Int;
 	private var __width:Int;

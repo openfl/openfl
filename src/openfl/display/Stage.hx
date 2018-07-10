@@ -4,9 +4,7 @@ package openfl.display;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.app.IModule;
-import lime.app.Preloader;
 import lime.graphics.RenderContext;
-import lime.graphics.Renderer;
 import lime.ui.Touch;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
@@ -15,12 +13,12 @@ import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.Mouse in LimeMouse;
-import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.TouchData;
+import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
+import openfl.display.Window in OpenFLWindow;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
@@ -39,6 +37,15 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+
+#if (lime >= "7.0.0")
+import lime.ui.Cursor;
+#else
+import lime.app.Preloader;
+import lime.graphics.Renderer;
+import lime.ui.Mouse in LimeMouse;
+import lime.ui.MouseCursor in Cursor;
+#end
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -109,7 +116,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorString:String;
 	private var __contentsScaleFactor:Float;
 	#if (commonjs && !nodejs)
-	private var __cursor:LimeMouseCursor;
+	private var __cursor:Cursor;
 	#end
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
@@ -120,6 +127,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __dragOffsetX:Float;
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
+	private var __forceRender:Bool;
 	private var __fullscreen:Bool;
 	private var __invalidated:Bool;
 	private var __lastClickTime:Int;
@@ -129,6 +137,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseDownLeft:InteractiveObject;
 	private var __mouseDownMiddle:InteractiveObject;
 	private var __mouseDownRight:InteractiveObject;
+	private var __mouseOutStack:Array<DisplayObject>;
 	private var __mouseOverTarget:InteractiveObject;
 	private var __mouseX:Float;
 	private var __mouseY:Float;
@@ -163,7 +172,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	#end
 	
-	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowConfig:Dynamic = null #else window:Window, color:Null<Int> = null #end) {
+	public function new (#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end) {
 		
 		#if hxtelemetry
 		Telemetry.__initialize ();
@@ -171,7 +180,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		super ();
 		
+		__colorSplit = [ 0xFF, 0xFF, 0xFF ];
+		__colorString = "#FFFFFF";
+		
 		#if commonjs
+		if (windowAttributes == null) windowAttributes = {};
 		var app = null;
 		
 		if (!Math.isNaN (width)) {
@@ -200,15 +213,31 @@ class Stage extends DisplayObjectContainer implements IModule {
 			element = null;
 			#end
 			
-			if (windowConfig == null) windowConfig = {};
-			windowConfig.width = width;
-			windowConfig.height = height;
-			windowConfig.element = element;
-			windowConfig.resizable = resizable;
-			if (!Reflect.hasField (windowConfig, "stencilBuffer")) windowConfig.stencilBuffer = true;
-			if (!Reflect.hasField (windowConfig, "depthBuffer")) windowConfig.depthBuffer = true;
-			if (!Reflect.hasField (windowConfig, "background")) windowConfig.background = null;
+			windowAttributes.width = width;
+			windowAttributes.height = height;
+			windowAttributes.element = element;
+			windowAttributes.resizable = resizable;
 			
+			#if (lime >= "7.0.0")
+			if (!Reflect.hasField (windowAttributes, "context")) windowAttributes.context = {};
+			var contextAttributes = windowAttributes.context;
+			if (!Reflect.hasField (contextAttributes, "stencil")) contextAttributes.stencil = true;
+			if (!Reflect.hasField (contextAttributes, "depth")) contextAttributes.depth = true;
+			if (!Reflect.hasField (contextAttributes, "background")) contextAttributes.background = null;
+			#else
+			if (!Reflect.hasField (windowAttributes, "stencilBuffer")) windowAttributes.stencilBuffer = true;
+			if (!Reflect.hasField (windowAttributes, "depthBuffer")) windowAttributes.depthBuffer = true;
+			if (!Reflect.hasField (windowAttributes, "background")) windowAttributes.background = null;
+			#end
+			
+			#if (lime >= "7.0.0")
+			
+			app = new OpenFLApplication ();
+			window = app.createWindow (windowAttributes);
+			app.removeModule (cast (window, OpenFLWindow).stage);
+			@:privateAccess cast (window, OpenFLWindow).stage = this;
+			
+			#else
 			window = new Window (windowConfig);
 			window.stage = this;
 			
@@ -226,6 +255,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			// 	app.addModule (this);
 				
 			// }
+			#end
 			
 			// this.color = 0xFFFFFF;
 			this.color = color;
@@ -287,8 +317,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__clearBeforeRender = true;
+		__forceRender = false;
 		__stack = [];
 		__rollOutStack = [];
+		__mouseOutStack = [];
 		__touchData = new Map<Int, TouchData>();
 		
 		if (Lib.current.stage == null) {
@@ -298,9 +330,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		#if commonjs
-		if (!window.config.resizable) {
+		if (Reflect.hasField (windowAttributes, "resizable") && !windowAttributes.resizable) {
 			
-			__setLogicalSize (window.config.width, window.config.height);
+			__setLogicalSize (windowAttributes.width, windowAttributes.height);
 			
 		}
 		
@@ -308,7 +340,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			DisplayObject.__initStage = this;
 			var sprite:Sprite = cast Type.createInstance (documentClass, []);
-			addChild (sprite);
+			// addChild (sprite); // done by init stage
+			sprite.dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
 			
 		}
 		
@@ -319,91 +352,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		#end
-		
-	}
-	
-	
-	@:noCompletion public function addRenderer (renderer:Renderer):Void {
-		
-		if (this.window == null || this.window.renderer != renderer) return;
-		
-		renderer.onRender.add (render.bind (renderer));
-		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
-		renderer.onContextRestored.add (onRenderContextRestored.bind (renderer));
-		
-	}
-	
-	
-	@:noCompletion public function addWindow (window:Window):Void {
-		
-		if (this.window != window) return;
-		
-		window.onActivate.add (onWindowActivate.bind (window));
-		window.onClose.add (onWindowClose.bind (window), false, -9000);
-		window.onCreate.add (onWindowCreate.bind (window));
-		window.onDeactivate.add (onWindowDeactivate.bind (window));
-		window.onDropFile.add (onWindowDropFile.bind (window));
-		window.onEnter.add (onWindowEnter.bind (window));
-		window.onFocusIn.add (onWindowFocusIn.bind (window));
-		window.onFocusOut.add (onWindowFocusOut.bind (window));
-		window.onFullscreen.add (onWindowFullscreen.bind (window));
-		window.onKeyDown.add (onKeyDown.bind (window));
-		window.onKeyUp.add (onKeyUp.bind (window));
-		window.onLeave.add (onWindowLeave.bind (window));
-		window.onMinimize.add (onWindowMinimize.bind (window));
-		window.onMouseDown.add (onMouseDown.bind (window));
-		window.onMouseMove.add (onMouseMove.bind (window));
-		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
-		window.onMouseUp.add (onMouseUp.bind (window));
-		window.onMouseWheel.add (onMouseWheel.bind (window));
-		window.onMove.add (onWindowMove.bind (window));
-		window.onResize.add (onWindowResize.bind (window));
-		window.onRestore.add (onWindowRestore.bind (window));
-		window.onTextEdit.add (onTextEdit.bind (window));
-		window.onTextInput.add (onTextInput.bind (window));
-		
-		if (window.id > -1) {
-			
-			onWindowCreate (window);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion public function registerModule (application:Application):Void {
-		
-		application.onExit.add (onModuleExit, false, 0);
-		application.onUpdate.add (update);
-		
-		for (gamepad in Gamepad.devices) {
-			
-			__onGamepadConnect (gamepad);
-			
-		}
-		
-		Gamepad.onConnect.add (__onGamepadConnect);
-		Touch.onStart.add (onTouchStart);
-		Touch.onMove.add (onTouchMove);
-		Touch.onEnd.add (onTouchEnd);
-		
-	}
-	
-	
-	@:noCompletion public function removeRenderer (renderer:Renderer):Void { }
-	@:noCompletion public function removeWindow (window:Window):Void { }
-	@:noCompletion public function setPreloader (preloader:Preloader):Void { }
-	
-	
-	@:noCompletion public function unregisterModule (application:Application):Void {
-		
-		application.onExit.remove (onModuleExit);
-		application.onUpdate.remove (update);
-		
-		Gamepad.onConnect.remove (__onGamepadConnect);
-		Touch.onStart.remove (onTouchStart);
-		Touch.onMove.remove (onTouchMove);
-		Touch.onEnd.remove (onTouchEnd);
 		
 	}
 	
@@ -655,14 +603,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onRenderContextLost (renderer:Renderer):Void {
+	public function onRenderContextLost (#if (lime < "7.0.0") renderer:Renderer #end):Void {
 		
 		__renderer = null;
 		
 	}
 	
 	
-	public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
+	public function onRenderContextRestored (#if (lime < "7.0.0") renderer:Renderer, #end context:RenderContext):Void {
 		
 		__createRenderer ();
 		
@@ -767,7 +715,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		if (window.renderer != null) {
+		if (#if (lime >= "7.0.0") window.context != null #else window.renderer != null #end) {
 			
 			__createRenderer ();
 			
@@ -796,6 +744,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onWindowEnter (window:Window):Void {
 		
 		//if (this.window == null || this.window != window) return;
+		
+	}
+	
+	
+	public function onWindowExpose (window:Window):Void {
+		
+		if (this.window == null || this.window != window) return;
+		
+		__renderDirty = true;
 		
 	}
 	
@@ -847,7 +804,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowLeave (window:Window):Void {
 		
-		if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window || MouseEvent.__buttonDown) return;
 		
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
@@ -875,8 +832,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__renderDirty = true;
 		__resize ();
+		
+		#if android // workaround for newer behavior
+		__forceRender = true;
+		Lib.setTimeout (function () {
+			__forceRender = false;
+		}, 500);
+		#end
 		
 		if (__wasFullscreen && !window.fullscreen) {
 			
@@ -898,9 +861,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function render (renderer:Renderer):Void {
+	public function render (#if (lime >= "7.0.0") context:RenderContext #else renderer:Renderer #end):Void {
 		
+		#if (lime < "7.0.0")
 		if (renderer.window == null || renderer.window != window) return;
+		#end
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -943,7 +908,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (__renderer != null #if !openfl_always_render && __renderDirty #end) {
+		if (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) {
 			
 			if (!Stage3D.__active) {
 				
@@ -953,17 +918,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (__renderer.__type == CAIRO) {
 				
+				#if lime_cairo
+				#if (lime >= "7.0.0")
+				cast (__renderer, CairoRenderer).cairo = context.cairo;
+				#else
 				switch (renderer.context) {
 					
 					case CAIRO (cairo):
 						
-						#if lime_cairo
 						cast (__renderer, CairoRenderer).cairo = cairo;
-						#end
 					
 					default:
-						
+					
 				}
+				#end
+				#end
 				
 			}
 			
@@ -971,7 +940,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else {
 			
+			#if (lime >= "7.0.0")
+			window.onRender.cancel ();
+			#else
 			renderer.onRender.cancel ();
+			#end
 			
 		}
 		
@@ -990,6 +963,44 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = deltaTime;
 		
 	}
+	
+	
+	#if (lime >= "7.0.0")
+	private function __addWindow (window:Window):Void {
+		
+		if (this.window != window) return;
+		
+		window.onActivate.add (onWindowActivate.bind (window));
+		window.onClose.add (onWindowClose.bind (window), false, -9000);
+		window.onDeactivate.add (onWindowDeactivate.bind (window));
+		window.onDropFile.add (onWindowDropFile.bind (window));
+		window.onEnter.add (onWindowEnter.bind (window));
+		window.onExpose.add (onWindowExpose.bind (window));
+		window.onFocusIn.add (onWindowFocusIn.bind (window));
+		window.onFocusOut.add (onWindowFocusOut.bind (window));
+		window.onFullscreen.add (onWindowFullscreen.bind (window));
+		window.onKeyDown.add (onKeyDown.bind (window));
+		window.onKeyUp.add (onKeyUp.bind (window));
+		window.onLeave.add (onWindowLeave.bind (window));
+		window.onMinimize.add (onWindowMinimize.bind (window));
+		window.onMouseDown.add (onMouseDown.bind (window));
+		window.onMouseMove.add (onMouseMove.bind (window));
+		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
+		window.onMouseUp.add (onMouseUp.bind (window));
+		window.onMouseWheel.add (onMouseWheel.bind (window));
+		window.onMove.add (onWindowMove.bind (window));
+		window.onRender.add (render);
+		window.onRenderContextLost.add (onRenderContextLost);
+		window.onRenderContextRestored.add (onRenderContextRestored);
+		window.onResize.add (onWindowResize.bind (window));
+		window.onRestore.add (onWindowRestore.bind (window));
+		window.onTextEdit.add (onTextEdit.bind (window));
+		window.onTextInput.add (onTextInput.bind (window));
+		
+		onWindowCreate (window);
+		
+	}
+	#end
 	
 	
 	private function __broadcastEvent (event:Event):Void {
@@ -1029,13 +1040,61 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#if (js && html5)
 		var pixelRatio = 1;
 		
+		#if (lime >= "7.0.0")
+		if (window.scale > 1) {
+			
+			// TODO: Does this check work?
+			pixelRatio = untyped window.devicePixelRatio || 1;
+			
+		}
+		#else
 		if (window.config != null && Reflect.hasField (window.config, "allowHighDPI") && window.config.allowHighDPI) {
 			
 			pixelRatio = untyped window.devicePixelRatio || 1;
 			
 		}
 		#end
+		#end
 		
+		#if (lime >= "7.0.0")
+		switch (window.context.type) {
+			
+			case OPENGL, OPENGLES, WEBGL:
+				
+				#if (!disable_cffi && (!html5 || !canvas))
+				__renderer = new OpenGLRenderer (window.context);
+				
+				if (stage3Ds[0].context3D == null) {
+					
+					stage3Ds[0].__createContext (this, __renderer);
+					
+				}
+				#end
+			
+			case CANVAS:
+				
+				#if (js && html5)
+				__renderer = new CanvasRenderer (window.context.canvas2D);
+				cast (__renderer, CanvasRenderer).pixelRatio = pixelRatio;
+				#end
+			
+			case DOM:
+				
+				#if (js && html5)
+				__renderer = new DOMRenderer (window.context.dom);
+				cast (__renderer, DOMRenderer).pixelRatio = pixelRatio;
+				#end
+			
+			case CAIRO:
+				
+				#if lime_cairo
+				__renderer = new CairoRenderer (window.context.cairo);
+				#end
+			
+			default:
+			
+		}
+		#else
 		switch (window.renderer.context) {
 			
 			case OPENGL (gl):
@@ -1071,15 +1130,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				#end
 			
-			case CONSOLE (ctx):
-				
-				#if lime_console
-				__renderer = new ConsoleRenderer (ctx);
-				#end
-			
 			default:
 			
 		}
+		#end
 		
 		if (__renderer != null) {
 			
@@ -1270,7 +1324,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private function __handleError (e:Dynamic):Void {
 		
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
-		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+		
+		try {
+			
+			Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+			
+		} catch (e:Dynamic) {}
 		
 		if (!event.__preventDefault) {
 			
@@ -1298,6 +1357,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#elseif cs
 			throw e;
 			//cs.Lib.rethrow (e);
+			#elseif hl
+			hl.Api.rethrow (e);
 			#else
 			throw e;
 			#end
@@ -1431,7 +1492,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					MouseEvent.__buttonDown = false;
 					
-					if (__mouseX < 0 || __mouseY < 0) {
+					if (__mouseX < 0 || __mouseY < 0 || __mouseX > stageWidth || __mouseY > stageHeight) {
 						
 						__dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
 						
@@ -1512,7 +1573,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 					if (cursor != null) {
 						
 						#if (commonjs && !nodejs)
-						// TODO: Formal API
+						#if (lime >= "7.0.0")
+						window.cursor = cursor;
+						#else
 						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 							
 							@:privateAccess window.backend.element.style.cursor = switch (cursor) {
@@ -1535,8 +1598,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 							__cursor = cursor;
 							
 						}
-						#else
 						LimeMouse.cursor = cursor;
+						#end
 						#end
 						break;
 						
@@ -1549,14 +1612,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (cursor == null) {
 				
 				#if (commonjs && !nodejs)
+				#if (lime >= "7.0.0")
+				window.cursor = ARROW;
+				#else
 				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 					
 					@:privateAccess window.backend.element.style.cursor = "default";
 					__cursor = null;
 					
 				}
-				#else
 				LimeMouse.cursor = ARROW;
+				#end
 				#end
 				
 			}
@@ -1570,7 +1636,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (__mouseOverTarget != null) {
 				
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal (targetPoint, localPoint), cast __mouseOverTarget);
-				__dispatchTarget (__mouseOverTarget, event);
+				__dispatchStack (event, __mouseOutStack);
 				
 			}
 			
@@ -1617,12 +1683,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (target != null) {
 				
 				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal (targetPoint, localPoint), cast target);
-				event.bubbles = true;
-				__dispatchTarget (target, event);
+				__dispatchStack (event, stack);
 				
 			}
 			
 			__mouseOverTarget = target;
+			__mouseOutStack = stack;
 			
 		}
 		
@@ -1871,6 +1937,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	#if (lime >= "7.0.0")
+	private function __registerLimeModule (application:Application):Void {
+		
+		application.onCreateWindow.add (__addWindow);
+		application.onUpdate.add (update);
+		application.onExit.add (onModuleExit, false, 0);
+		
+		for (gamepad in Gamepad.devices) {
+			
+			__onGamepadConnect (gamepad);
+			
+		}
+		
+		Gamepad.onConnect.add (__onGamepadConnect);
+		Touch.onStart.add (onTouchStart);
+		Touch.onMove.add (onTouchMove);
+		Touch.onEnd.add (onTouchEnd);
+		
+	}
+	#end
+	
+	
 	private function __resize ():Void {
 		
 		var cacheWidth = stageWidth;
@@ -1921,6 +2009,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		if (stageWidth != cacheWidth || stageHeight != cacheHeight) {
+			
+			__renderDirty = true;
+			__setTransformDirty ();
 			
 			__dispatchEvent (new Event (Event.RESIZE));
 			
@@ -1982,6 +2073,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	#if (lime >= "7.0.0")
+	private function __unregisterLimeModule (application:Application):Void {
+		
+		application.onCreateWindow.remove (__addWindow);
+		application.onUpdate.remove (update);
+		application.onExit.remove (onModuleExit);
+		
+		Gamepad.onConnect.remove (__onGamepadConnect);
+		Touch.onStart.remove (onTouchStart);
+		Touch.onMove.remove (onTouchMove);
+		Touch.onEnd.remove (onTouchEnd);
+		
+	}
+	#end
+	
+	
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		if (transformOnly) {
@@ -2020,7 +2127,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 				}
 				
-			} /*#if dom*/ else if (__wasDirty) {
+			} /*#if dom*/ else if (!__renderDirty && __wasDirty) {
 				
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
@@ -2038,6 +2145,95 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 	}
+	
+	
+	#if (lime < "7.0.0")
+	@:noCompletion public function addRenderer (renderer:Renderer):Void {
+		
+		if (this.window == null || this.window.renderer != renderer) return;
+		
+		renderer.onRender.add (render.bind (renderer));
+		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
+		renderer.onContextRestored.add (onRenderContextRestored.bind (renderer));
+		
+	}
+	
+	
+	@:noCompletion public function addWindow (window:Window):Void {
+		
+		if (this.window != window) return;
+		
+		window.onActivate.add (onWindowActivate.bind (window));
+		window.onClose.add (onWindowClose.bind (window), false, -9000);
+		window.onCreate.add (onWindowCreate.bind (window));
+		window.onDeactivate.add (onWindowDeactivate.bind (window));
+		window.onDropFile.add (onWindowDropFile.bind (window));
+		window.onEnter.add (onWindowEnter.bind (window));
+		window.onExpose.add (onWindowExpose.bind (window));
+		window.onFocusIn.add (onWindowFocusIn.bind (window));
+		window.onFocusOut.add (onWindowFocusOut.bind (window));
+		window.onFullscreen.add (onWindowFullscreen.bind (window));
+		window.onKeyDown.add (onKeyDown.bind (window));
+		window.onKeyUp.add (onKeyUp.bind (window));
+		window.onLeave.add (onWindowLeave.bind (window));
+		window.onMinimize.add (onWindowMinimize.bind (window));
+		window.onMouseDown.add (onMouseDown.bind (window));
+		window.onMouseMove.add (onMouseMove.bind (window));
+		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
+		window.onMouseUp.add (onMouseUp.bind (window));
+		window.onMouseWheel.add (onMouseWheel.bind (window));
+		window.onMove.add (onWindowMove.bind (window));
+		window.onResize.add (onWindowResize.bind (window));
+		window.onRestore.add (onWindowRestore.bind (window));
+		window.onTextEdit.add (onTextEdit.bind (window));
+		window.onTextInput.add (onTextInput.bind (window));
+		
+		if (window.id > -1) {
+			
+			onWindowCreate (window);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public function registerModule (application:Application):Void {
+		
+		application.onExit.add (onModuleExit, false, 0);
+		application.onUpdate.add (update);
+		
+		for (gamepad in Gamepad.devices) {
+			
+			__onGamepadConnect (gamepad);
+			
+		}
+		
+		Gamepad.onConnect.add (__onGamepadConnect);
+		Touch.onStart.add (onTouchStart);
+		Touch.onMove.add (onTouchMove);
+		Touch.onEnd.add (onTouchEnd);
+		
+	}
+	
+	
+	@:noCompletion public function removeRenderer (renderer:Renderer):Void { }
+	@:noCompletion public function removeWindow (window:Window):Void { }
+	@:noCompletion public function setPreloader (preloader:Preloader):Void { }
+	
+	
+	
+	@:noCompletion public function unregisterModule (application:Application):Void {
+		
+		application.onExit.remove (onModuleExit);
+		application.onUpdate.remove (update);
+		
+		Gamepad.onConnect.remove (__onGamepadConnect);
+		Touch.onStart.remove (onTouchStart);
+		Touch.onMove.remove (onTouchMove);
+		Touch.onEnd.remove (onTouchEnd);
+		
+	}
+	#end
 	
 	
 	
@@ -2067,14 +2263,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		var r = (value & 0xFF0000) >>> 16;
-		var g = (value & 0x00FF00) >>> 8;
-		var b = (value & 0x0000FF);
+		if (__color != value) {
+			
+			var r = (value & 0xFF0000) >>> 16;
+			var g = (value & 0x00FF00) >>> 8;
+			var b = (value & 0x0000FF);
+			
+			__colorSplit[0] = r / 0xFF;
+			__colorSplit[1] = g / 0xFF;
+			__colorSplit[2] = b / 0xFF;
+			__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
+			__renderDirty = true;
+			__color = value;
+			
+		}
 		
-		__colorSplit = [ r / 0xFF, g / 0xFF, b / 0xFF ];
-		__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
-		
-		return __color = value;
+		return value;
 		
 	}
 	
@@ -2170,11 +2374,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function get_frameRate ():Float {
 		
+		#if (lime >= "7.0.0")
+		if (window != null) {
+			
+			return window.frameRate;
+			
+		}
+		#else
 		if (application != null) {
 			
 			return application.frameRate;
 			
 		}
+		#end
 		
 		return 0;
 		
@@ -2183,11 +2395,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function set_frameRate (value:Float):Float {
 		
+		#if (lime >= "7.0.0")
+		if (window != null) {
+			
+			return window.frameRate = value;
+			
+		}
+		#else
 		if (application != null) {
 			
 			return application.frameRate = value;
 			
 		}
+		#end
 		
 		return value;
 		

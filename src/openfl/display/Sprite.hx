@@ -1,13 +1,18 @@
 package openfl.display;
 
 
-import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime.ui.Cursor;
+#else
+import lime.ui.MouseCursor in Cursor;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -75,7 +80,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	private override function __getCursor ():MouseCursor {
+	private override function __getCursor ():Cursor {
 		
 		return (__buttonMode && useHandCursor) ? POINTER : null;
 		
@@ -136,7 +141,7 @@ class Sprite extends DisplayObjectContainer {
 				var hitTest = hitArea.__hitTest (x, y, shapeFlag, null, true, hitObject);
 				hitArea.mouseEnabled = false;
 				
-				if (hitTest) {
+				if (stack != null && hitTest) {
 					
 					stack[stack.length] = hitObject;
 					

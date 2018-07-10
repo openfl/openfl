@@ -85,7 +85,7 @@ package openfl.events {
 		 * (`KeyLocation.STANDARD`) versus the numeric keypad
 		 * (`KeyLocation.NUM_PAD`).
 		 */
-		public var keyLocation:KeyLocation;
+		public var keyLocation:uint;
 		
 		/**
 		 * Indicates whether the Shift key modifier is active(`true`) or

@@ -1,10 +1,15 @@
 package openfl.display;
 
 
-import lime.graphics.CanvasRenderContext;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime.graphics.Canvas2DRenderContext;
+#else
+import lime.graphics.CanvasRenderContext;
+#end
 
 #if (js && html5)
 import js.Browser;
@@ -26,14 +31,14 @@ import js.Browser;
 class CanvasRenderer extends DisplayObjectRenderer {
 	
 	
-	public var context:CanvasRenderContext;
+	public var context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end;
 	public var pixelRatio (default, null):Float = 1;
 	
 	private var __isDOM:Bool;
 	private var __tempMatrix:Matrix;
 	
 	
-	private function new (context:CanvasRenderContext) {
+	private function new (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end) {
 		
 		super ();
 		
@@ -45,7 +50,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applySmoothing (context:CanvasRenderContext, value:Bool) {
+	public function applySmoothing (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end, value:Bool) {
 		
 		untyped (context).mozImageSmoothingEnabled = value;
 		//untyped (context).webkitImageSmoothingEnabled = value;
@@ -55,7 +60,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function setTransform (transform:Matrix, context:CanvasRenderContext = null):Void {
+	public function setTransform (transform:Matrix, context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end = null):Void {
 		
 		if (context == null) {
 			

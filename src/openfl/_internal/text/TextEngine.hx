@@ -6,8 +6,6 @@ import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
-import lime.text.GlyphPosition;
-import lime.text.TextLayout;
 import lime.text.UTF8String;
 import openfl.Vector;
 import openfl.events.Event;
@@ -89,6 +87,7 @@ class TextEngine {
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text (default, set):UTF8String;
+	public var textBounds:Rectangle;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
@@ -127,6 +126,7 @@ class TextEngine {
 		text = "";
 		
 		bounds = new Rectangle (0, 0, 0, 0);
+		textBounds = new Rectangle (0, 0, 0, 0);
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -262,6 +262,20 @@ class TextEngine {
 		bounds.width = width + padding;
 		bounds.height = height + padding;
 		
+		var x = width, y = width;
+		
+		for (group in layoutGroups) {
+			
+			if (group.offsetX < x) x = group.offsetX;
+			if (group.offsetY < y) y = group.offsetY;
+			
+		}
+		
+		if (x >= width) x = 2;
+		if (y >= height) y = 2;
+		
+		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), textWidth + 4, textHeight + 4);
+		
 	}
 	
 	
@@ -272,12 +286,12 @@ class TextEngine {
 		#if (js && html5)
 		
 		__context.font = getFont (format);
-
+		
 		if (format.__ascent != null) {
-
+			
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-
+			
 		} else {
 			
 			ascent = format.size;
@@ -292,15 +306,15 @@ class TextEngine {
 		var font = getFontInstance (format);
 		
 		if (format.__ascent != null) {
-
+			
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-
+			
 		} else if (font != null) {
-
+			
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
-
+			
 		} else {
 			
 			ascent = format.size;
@@ -491,19 +505,6 @@ class TextEngine {
 					fontList = [ systemFontDirectory + "/" + format.font ];
 				
 			}
-			
-			#if lime_console
-				
-				// TODO(james4k): until we figure out our story for the above switch
-				// statement, always load arial unless a file is specified.
-				if (format == null
-					|| StringTools.startsWith (format.font,  "_")
-					|| format.font.indexOf(".") == -1
-				) {
-					fontList = [ "arial.ttf" ];
-				}
-				
-			#end
 			
 			if (fontList != null) {
 				
@@ -1399,7 +1400,7 @@ class TextEngine {
 						
 						if (textIndex == previousSpaceIndex + 1) {
 							
-							alignBaseline();
+							alignBaseline ();
 							
 						}
 						
@@ -1421,7 +1422,7 @@ class TextEngine {
 							
 						}
 						
-						if (width >= 4) breakLongWords(endIndex);
+						if (width >= 4) breakLongWords (endIndex);
 						
 						nextLayoutGroup (textIndex, endIndex);
 						
@@ -1615,6 +1616,7 @@ class TextEngine {
 		var offsetX = 0.0;
 		var totalWidth = this.width - 4;
 		var group, lineLength;
+		var lineMeasurementsDirty = false;
 		
 		for (i in 0...layoutGroups.length) {
 			
@@ -1682,16 +1684,17 @@ class TextEngine {
 								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code) {
 									
 									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
+									lineMeasurementsDirty = true;
 									
-									var j = 0;
+									var j = 1;
 									do {
 										
-										if (j > 1 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+										// if (text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
 											
-											layoutGroups[i + j].offsetX += (offsetX * (j-1));
-											j++;
+										// 	layoutGroups[i + j].offsetX += (offsetX * (j-1));
+										// 	j++;
 											
-										}
+										// }
 										
 										layoutGroups[i + j].offsetX += (offsetX * j);
 										
@@ -1718,6 +1721,14 @@ class TextEngine {
 				group.offsetX += offsetX;
 				
 			}
+			
+		}
+		
+		if (lineMeasurementsDirty) {
+			
+			// TODO: Better way to fix justify textWidth?
+			
+			getLineMeasurements ();
 			
 		}
 		

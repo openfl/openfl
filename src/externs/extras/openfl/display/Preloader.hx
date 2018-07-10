@@ -1,8 +1,13 @@
 package openfl.display;
 
 
-import lime.app.Preloader in LimePreloader;
 import openfl.display.Sprite;
+
+#if (lime >= "7.0.0")
+import lime.utils.Preloader in LimePreloader;
+#else
+import lime.app.Preloader in LimePreloader;
+#end
 
 
 extern class Preloader extends LimePreloader {

@@ -552,9 +552,45 @@ class TextFieldTest {
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
-		var exists = textField.getTextFormat;
+		var textFormat = textField.getTextFormat ();
 		
-		Assert.isNotNull (exists);
+		Assert.isNotNull (textFormat);
+		Assert.areEqual (null, textFormat.font);
+		Assert.areEqual (null, textFormat.size);
+		
+		var textFormat1 = new TextFormat ("_sans", 20, 0xFF0000);
+		var textFormat2 = new TextFormat ("_serif", 40);
+		
+		textField.setTextFormat (textFormat1);
+		
+		Assert.isNotNull (textFormat);
+		Assert.areEqual (null, textFormat.font);
+		Assert.areEqual (null, textFormat.size);
+		
+		textField.text = "1234";
+		textField.setTextFormat (textFormat1, 0, 4);
+		textField.setTextFormat (textFormat2, 2, 4);
+		
+		var textFormat = textField.getTextFormat ();
+		
+		Assert.isNotNull (textFormat);
+		Assert.areEqual (null, textFormat.font);
+		Assert.areEqual (null, textFormat.size);
+		Assert.areEqual (0xFF0000, textFormat.color);
+		
+		var textFormat = textField.getTextFormat (0, 2);
+		
+		Assert.isNotNull (textFormat);
+		Assert.areEqual (textFormat1.font, textFormat.font);
+		Assert.areEqual (textFormat1.size, textFormat.size);
+		Assert.areEqual (textFormat1.color, textFormat.color);
+		
+		var textFormat = textField.getTextFormat (2, 4);
+		
+		Assert.isNotNull (textFormat);
+		Assert.areEqual (textFormat2.font, textFormat.font);
+		Assert.areEqual (textFormat2.size, textFormat.size);
+		Assert.areEqual (textFormat1.color, textFormat.color);
 		
 	}
 	

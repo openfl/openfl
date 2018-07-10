@@ -2,8 +2,6 @@ package openfl.display;
 
 
 import lime.graphics.cairo.Cairo;
-import lime.graphics.utils.ImageCanvasUtil;
-import lime.ui.MouseCursor;
 import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
@@ -34,6 +32,14 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Vector;
 
+#if (lime >= "7.0.0")
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.ui.Cursor;
+#else
+import lime.graphics.utils.ImageCanvasUtil;
+import lime.ui.MouseCursor in Cursor;
+#end
+
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
@@ -62,7 +68,7 @@ import js.html.Element;
 @:access(openfl.geom.Rectangle)
 
 
-class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openfl_dynamic implements Dynamic<DisplayObject> #end {
+class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
@@ -198,13 +204,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		super ();
 		
-		if (__initStage != null) {
-			
-			this.stage = __initStage;
-			__initStage = null;
-			
-		}
-		
 		__alpha = 1;
 		__blendMode = NORMAL;
 		__cacheAsBitmap = false;
@@ -221,10 +220,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();		
+		__renderTransform = new Matrix ();
 		__worldVisible = true;
 		
 		name = "instance" + (++__instanceCount);
+		
+		if (__initStage != null) {
+			
+			this.stage = __initStage;
+			__initStage = null;
+			this.stage.addChild (this);
+			
+		}
 		
 	}
 	
@@ -571,7 +578,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __getCursor ():MouseCursor {
+	private function __getCursor ():Cursor {
 		
 		return null;
 		
@@ -719,7 +726,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__graphics != null) {
 			
-			if (!hitObject.visible || __isMask) return false;
+			if (!hitObject.__visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
 			if (__graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
@@ -1038,7 +1045,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
-		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
+		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms ();
 		
 		//if (updateChildren && __transformDirty) {
@@ -1067,13 +1074,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			}
 			
-			
-			
 			if (renderParent != null) {
 				
 				if (__supportDOM) {
 					
-					var worldVisible = (renderParent.__worldVisible && visible);
+					var worldVisible = (renderParent.__worldVisible && __visible);
 					__worldVisibleChanged = (__worldVisible != worldVisible);
 					__worldVisible = worldVisible;
 					
@@ -1125,8 +1130,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				if (__supportDOM) {
 					
-					__worldVisibleChanged = (__worldVisible != visible);
-					__worldVisible = visible;
+					__worldVisibleChanged = (__worldVisible != __visible);
+					__worldVisible = __visible;
 					
 					__worldAlphaChanged = (__worldAlpha != alpha);
 					
@@ -1363,7 +1368,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					if (renderType == OPENGL) {
 						
-						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).__gl, __cacheBitmapData);
+						__cacheBitmapRenderer = new OpenGLRenderer (renderer.__context, __cacheBitmapData);
 						
 					} else {
 						
@@ -1371,6 +1376,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 							var color = opaqueBackground != null ? (0xFF << 24) | opaqueBackground : 0;
 							__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+							__cacheBitmap.__bitmapData = __cacheBitmapData;
 							
 						}
 						
@@ -1414,7 +1420,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					parentRenderer.__suspendClipAndMask ();
 					childRenderer.__copyShader (parentRenderer);
 					
-					__cacheBitmapData.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
+					__cacheBitmapData.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 					
@@ -1447,7 +1453,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
 							}
-							__cacheBitmapData2.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData2.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
 							bitmap2 = __cacheBitmapData2;
 						// } else {
 						// 	bitmap2 = bitmapData;
@@ -1462,7 +1468,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
 							}
-							__cacheBitmapData3.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData3.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
 							bitmap3 = __cacheBitmapData3;
 						}
 						
@@ -1596,9 +1602,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 							
 						}
 						
+						if (__cacheBitmapData != bitmap) {
+							
+							// TODO: Fix issue with swapping __cacheBitmap.__bitmapData
+							__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
+							
+							// cacheBitmap = __cacheBitmapData;
+							// __cacheBitmapData = bitmap;
+							// __cacheBitmapData2 = cacheBitmap;
+							// __cacheBitmap.__bitmapData = __cacheBitmapData;
+							
+						}
+						
 						Rectangle.__pool.release (sourceRect);
-						__cacheBitmap.__bitmapData = bitmap;
-						__cacheBitmap.__imageVersion = bitmap.__textureVersion;
+						__cacheBitmap.__imageVersion = __cacheBitmapData.__textureVersion;
 						
 					}
 					
@@ -1658,7 +1675,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private function __updateChildren (transformOnly:Bool):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
-		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
+		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__worldAlpha = __alpha;
 		__worldBlendMode = __blendMode;
 		__worldShader = __shader;

@@ -1,0 +1,1 @@
+export { default } from "./../../_gen/openfl/utils/_Dictionary/DictionaryData";

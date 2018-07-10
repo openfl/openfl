@@ -18,18 +18,18 @@ import haxe.Json;
 import haxe.Serializer;
 import haxe.Template;
 import haxe.Unserializer;
-import lime.tools.helpers.AssetHelper;
-import lime.tools.helpers.LogHelper;
-import lime.tools.helpers.PathHelper;
-import lime.tools.helpers.PlatformHelper;
-import lime.tools.helpers.StringHelper;
-import lime.project.Architecture;
-import lime.project.Asset;
-import lime.project.AssetEncoding;
-import lime.project.AssetType;
-import lime.project.Haxelib;
-import lime.project.HXProject;
-import lime.project.Platform;
+import hxp.helpers.AssetHelper;
+import hxp.helpers.LogHelper;
+import hxp.helpers.PathHelper;
+import hxp.helpers.PlatformHelper;
+import hxp.helpers.StringHelper;
+import hxp.project.Architecture;
+import hxp.project.Asset;
+import hxp.project.AssetEncoding;
+import hxp.project.AssetType;
+import hxp.project.Haxelib;
+import hxp.project.HXProject;
+import hxp.project.Platform;
 import lime.utils.AssetManifest;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
@@ -319,8 +319,13 @@ class Tools {
 	
 	private static function generateSWFLiteClasses (targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfID:String, prefix:String = ""):Array<String> {
 		
+		#if commonjs
+		var movieClipTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/MovieClip.mtt"));
+		var simpleButtonTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
+		#else
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		#end
 		
 		var generatedClasses = [];
 		
@@ -708,6 +713,7 @@ class Tools {
 		var prefix = "";
 		var uuid = StringHelper.generateUUID (20);
 		
+		#if !commonjs
 		generateSWFLiteClasses (srcPath, exportedClasses, swfLite, uuid, prefix);
 		
 		for (file in exportedClasses) {
@@ -716,6 +722,7 @@ class Tools {
 			File.saveContent (file.targetPath, file.data);
 			
 		}
+		#end
 		
 		var data = AssetHelper.createManifest (project);
 		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";

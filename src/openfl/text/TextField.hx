@@ -6,7 +6,6 @@ import lime.system.Clipboard;
 import lime.text.UTF8String;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.MouseCursor;
 import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
@@ -50,6 +49,12 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.DivElement;
+#end
+
+#if (lime >= "7.0.0")
+import lime.ui.Cursor;
+#else
+import lime.ui.MouseCursor in Cursor;
 #end
 
 #if !openfl_debug
@@ -487,13 +492,17 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat {
+	public function getTextFormat (beginIndex:Int = -1, endIndex:Int = -1):TextFormat {
 		
 		var format = null;
+		if (beginIndex >= text.length) return new TextFormat ();
+		
+		if (beginIndex == -1) beginIndex = 0;
+		if (endIndex == -1) endIndex = text.length;
 		
 		for (group in __textEngine.textFormatRanges) {
 			
-			if ((group.start <= beginIndex && group.end >= beginIndex) || (group.start <= endIndex && group.end >= endIndex)) {
+			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end >= endIndex)) {
 				
 				if (format == null) {
 					
@@ -526,6 +535,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		if (format == null) format = new TextFormat ();
 		return format;
 		
 	}
@@ -849,7 +859,11 @@ class TextField extends InteractiveObject {
 		
 		if (__inputEnabled && Lib.current.stage != null) {
 			
+			#if (lime >= "7.0.0")
+			Lib.current.stage.window.textInputEnabled = false;
+			#else
 			Lib.current.stage.window.enableTextEvents = false;
+			#end
 			Lib.current.stage.window.onTextInput.remove (window_onTextInput);
 			Lib.current.stage.window.onKeyDown.remove (window_onKeyDown);
 			
@@ -898,12 +912,20 @@ class TextField extends InteractiveObject {
 	private function __enableInput ():Void {
 		
 		if (Lib.current.stage != null) {
-			
+      
+			#if (lime >= "7.0.0")
+			Lib.current.stage.window.textInputEnabled = true;
+			#else
 			Lib.current.stage.window.enableTextEvents = true;
+			#end
 			
 			if (!__inputEnabled) {
 				
+				#if (lime >= "7.0.0")
+				Lib.current.stage.window.textInputEnabled = true;
+				#else
 				Lib.current.stage.window.enableTextEvents = true;
+				#end
 				
 				if (!Lib.current.stage.window.onTextInput.has (window_onTextInput)) {
 					
@@ -1077,8 +1099,10 @@ class TextField extends InteractiveObject {
 		
 		var bounds = Rectangle.__pool.get ();
 		bounds.copyFrom (__textEngine.bounds);
-		bounds.x += __offsetX;
-		bounds.y += __offsetY;
+		
+		matrix.tx += __offsetX;
+		matrix.ty += __offsetY;
+		
 		bounds.__transform (bounds, matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
@@ -1169,7 +1193,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __getCursor ():MouseCursor {
+	private override function __getCursor ():Cursor {
 		
 		var group = __getGroup (mouseX, mouseY, true);
 		
@@ -1702,7 +1726,7 @@ class TextField extends InteractiveObject {
 				__cacheBitmap.__renderTransform.ty -= __offsetY;
 				
 			}
-			
+
 			return true;
 			
 		}
@@ -2863,7 +2887,7 @@ class TextField extends InteractiveObject {
 					
 				}
 			
-			case LEFT:
+			case LEFT if (selectable):
 				
 				if (modifier.metaKey) {
 					
@@ -2899,7 +2923,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case RIGHT:
+			case RIGHT if (selectable):
 				
 				if (modifier.metaKey) {
 					
@@ -2935,7 +2959,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case DOWN:
+			case DOWN if (selectable):
 				
 				if (!__textEngine.multiline) return;
 				
@@ -2963,7 +2987,7 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case UP:
+			case UP if (selectable):
 				
 				if (!__textEngine.multiline) return;
 				
@@ -2991,13 +3015,13 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case HOME:
+			case HOME if (selectable):
 				
 				__caretBeginningOfLine ();
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
-			case END:
+			case END if (selectable):
 				
 				__caretEndOfLine ();
 				__stopCursorTimer ();
@@ -3046,7 +3070,7 @@ class TextField extends InteractiveObject {
 				}
 			#end
 			
-			case A:
+			case A if (selectable):
 				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					

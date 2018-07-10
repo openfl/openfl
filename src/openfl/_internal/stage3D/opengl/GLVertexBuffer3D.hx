@@ -2,7 +2,6 @@ package openfl._internal.stage3D.opengl;
 
 
 import haxe.io.Bytes;
-import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.Float32Array;
 import openfl._internal.stage3D.GLUtils;
@@ -12,12 +11,19 @@ import openfl.display.OpenGLRenderer;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+#if (lime >= "7.0.0")
+import lime.graphics.WebGLRenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
 @:access(openfl.display3D.VertexBuffer3D)
+@:access(openfl.display.DisplayObjectRenderer)
 
 
 class GLVertexBuffer3D {
@@ -25,7 +31,11 @@ class GLVertexBuffer3D {
 	
 	public static function create (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer, bufferUsage:Context3DBufferUsage) {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		vertexBuffer.__id = gl.createBuffer ();
 		GLUtils.CheckGLError ();
@@ -42,7 +52,11 @@ class GLVertexBuffer3D {
 	
 	public static function dispose (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		gl.deleteBuffer (vertexBuffer.__id);
 		
@@ -66,16 +80,16 @@ class GLVertexBuffer3D {
 	public static function uploadFromTypedArray (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer, data:ArrayBufferView):Void {
 		
 		if (data == null) return;
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl:WebGLContext = renderer.__context;
+		#end
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer.__id);
 		GLUtils.CheckGLError ();
 		
-		#if (js && html5)
-		(gl:WebGLContext).bufferData (gl.ARRAY_BUFFER, data, vertexBuffer.__usage);
-		#else
-		gl.bufferData (gl.ARRAY_BUFFER, data.byteLength, data, vertexBuffer.__usage);
-		#end
+		gl.bufferData (gl.ARRAY_BUFFER, data, vertexBuffer.__usage);
 		GLUtils.CheckGLError ();
 		
 		// if (data.byteLength != __memoryUsage) {
@@ -91,7 +105,11 @@ class GLVertexBuffer3D {
 	public static function uploadFromVector (vertexBuffer:VertexBuffer3D, renderer:OpenGLRenderer, data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
 		if (data == null) return;
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		// TODO: Optimize more
 		

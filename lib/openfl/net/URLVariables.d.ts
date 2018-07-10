@@ -46,6 +46,9 @@ declare namespace openfl.net {
 		public toString ():string;
 		
 		
+		[key:string]:any;
+		
+		
 	}
 	
 	

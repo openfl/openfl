@@ -1,9 +1,14 @@
 package openfl._internal.renderer.dom;
 
 
-import lime.math.color.ARGB;
 import openfl.display.DisplayObject;
 import openfl.display.DOMRenderer;
+
+#if (lime >= "7.0.0")
+import lime.math.ARGB;
+#else
+import lime.math.color.ARGB;
+#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)

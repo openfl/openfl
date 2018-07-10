@@ -4,13 +4,18 @@ package openfl.display3D;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.graphics.GLRenderContext;
 import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import openfl._internal.stage3D.opengl.GLProgram3D;
 import openfl._internal.stage3D.SamplerState;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -148,13 +153,13 @@ import openfl.Vector;
 	public var regCount:Int;
 	public var isDirty:Bool;
 	
-	public var gl:GLRenderContext;
+	public var context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
 	public var regDataPointer:BytePointer;
 	
 	
-	public function new (gl:GLRenderContext) {
+	public function new (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end) {
 		
-		this.gl = gl;
+		this.context = context;
 		
 		isDirty = true;
 		regDataPointer = new BytePointer ();
@@ -164,7 +169,13 @@ import openfl.Vector;
 	
 	public function flush ():Void {
 		
-		GLProgram3D.flushUniform (this, gl);
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl = context;
+		#end
+		
+		GLProgram3D.flushUniform (this, context);
 		
 	}
 	
