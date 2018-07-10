@@ -31,9 +31,12 @@ import js.Browser;
 @:noDebug
 #end
 
-@:access(lime.graphics.opengl.GL)
+#if (lime < "7.0.0")
 @:access(lime._backend.html5.HTML5GLRenderContext)
 @:access(lime._backend.native.NativeGLRenderContext)
+#end
+
+@:access(lime.graphics.opengl.GL)
 @:access(openfl.display3D.Context3D)
 
 

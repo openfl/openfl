@@ -28,7 +28,10 @@ import lime.graphics.GLRenderContext;
 @:noDebug
 #end
 
+#if (lime < "7.0.0")
 @:access(lime._backend.html5.HTML5GLRenderContext)
+#end
+
 @:access(lime.graphics.GLRenderContext)
 @:access(openfl._internal.renderer.ShaderBuffer)
 @:access(openfl.display.BitmapData)

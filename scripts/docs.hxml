@@ -5,6 +5,7 @@
 -swf-version 17.0
 -D display
 -D doc_gen
+-D lime-opengl
 ImportAll
 -lib lime
 -lib openfl
@@ -161,6 +162,7 @@ ImportAll
 -D display
 -D html5
 -D doc_gen
+-D lime-opengl
 ImportAll
 -lib lime
 -lib openfl
