@@ -242,10 +242,10 @@ class GLContext3D {
 		
 		__updateBackbufferViewport ();
 		
-		var window = context.__stage3D.__stage.window;
+		var scale = Std.int (context.__stage3D.__stage.window.scale);
 		
-		context.backBufferWidth = width * window.scale;
-		context.backBufferHeight = height * window.scale;
+		context.backBufferWidth = width * scale;
+		context.backBufferHeight = height * scale;
 		
 		context.__backBufferAntiAlias = antiAlias;
 		context.__backBufferEnableDepthAndStencil = enableDepthAndStencil;
