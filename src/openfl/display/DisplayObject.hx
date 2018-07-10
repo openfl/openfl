@@ -1626,7 +1626,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				if (__cacheBitmapColorTransform == null) __cacheBitmapColorTransform = new ColorTransform ();
 				__cacheBitmapColorTransform.__copyFrom (__worldColorTransform);
 				
-				if (!__cacheBitmapColorTransform.__isDefault ()) {
+				if (!__cacheBitmapColorTransform.__isDefault () && __cacheBitmapRenderer.__type != OPENGL) {
 					
 					__cacheBitmapData.colorTransform (__cacheBitmapData.rect, __cacheBitmapColorTransform);
 					
