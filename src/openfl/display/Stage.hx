@@ -1880,8 +1880,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var windowHeight = Std.int (window.height * window.scale);
 		
 		#if (js && html5)
-		__logicalWidth = windowWidth;
-		__logicalHeight = windowHeight;
+		__logicalWidth = window.width;
+		__logicalHeight = window.height;
 		#end
 		
 		__displayMatrix.identity ();
