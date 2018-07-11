@@ -40,13 +40,7 @@ class CanvasRenderer extends AbstractRenderer {
 		#end
 		
 		#if (js && html5)
-		var config = stage.window.config;
-		
-		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
-			
-			scale = untyped window.devicePixelRatio || 1;
-			
-		}
+		scale = stage.window.scale;
 		#end
 		
 	}

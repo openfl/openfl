@@ -2161,7 +2161,7 @@ class BitmapData implements IBitmapDrawable {
 		var shader = renderSession.shaderManager.defaultShader;
 		
 		shader.data.uImage0.input = this;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
+		shader.data.uImage0.smoothing = renderSession.allowSmoothing && renderSession.forceSmoothing;
 		shader.data.uMatrix.value = renderer.getMatrix (__worldTransform);
 		
 		renderSession.shaderManager.setShader (shader);
@@ -2188,7 +2188,7 @@ class BitmapData implements IBitmapDrawable {
 		var shader = GLMaskManager.maskShader;
 		
 		shader.data.uImage0.input = this;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
+		shader.data.uImage0.smoothing = renderSession.allowSmoothing && renderSession.forceSmoothing;
 		shader.data.uMatrix.value = renderer.getMatrix (__worldTransform);
 		
 		renderSession.shaderManager.setShader (shader);

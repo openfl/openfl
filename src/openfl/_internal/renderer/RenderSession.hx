@@ -41,7 +41,7 @@ class RenderSession {
 	public var roundPixels:Bool;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;
-	public var upscaled:Bool;
+	public var forceSmoothing:Bool;
 	public var vendorPrefix:String;
 	public var vaoContext:IVertexArrayObjectContext;
 	public var projectionMatrix:Matrix;	
