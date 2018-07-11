@@ -43,7 +43,7 @@ class GLVideo {
 			renderSession.shaderManager.setShader (shader);
 			
 			//shader.data.uImage0.input = bitmap.__bitmapData;
-			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
+			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.forceSmoothing);
 			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
 			
 			var useColorTransform = !video.__worldColorTransform.__isDefault ();
@@ -111,7 +111,7 @@ class GLVideo {
 			renderSession.shaderManager.setShader (shader);
 			
 			//shader.data.uImage0.input = bitmap.__bitmapData;
-			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled);
+			//shader.data.uImage0.smoothing = renderSession.allowSmoothing && (bitmap.smoothing || renderSession.forceSmoothing);
 			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
 			
 			renderSession.shaderManager.updateShader (shader);

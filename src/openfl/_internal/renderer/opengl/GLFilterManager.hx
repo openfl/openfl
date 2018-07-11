@@ -154,7 +154,7 @@ class GLFilterManager extends AbstractFilterManager {
 		if (target == null || shader == null) return;
 		
 		shader.data.uImage0.input = target;
-		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
+		shader.data.uImage0.smoothing = renderSession.allowSmoothing && renderSession.forceSmoothing;
 		shader.data.uMatrix.value = renderer.getMatrix (matrix);
 		
 		if (shader.data.uColorTransform != null) {

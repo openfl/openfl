@@ -43,13 +43,7 @@ class DOMRenderer extends AbstractRenderer {
 		#if (js && html5)
 		DisplayObject.__supportDOM = true;
 		
-		var config = stage.window.config;
-		
-		if (config != null && Reflect.hasField (config, "allowHighDPI") && config.allowHighDPI) {
-			
-			CanvasRenderer.scale = untyped window.devicePixelRatio || 1;
-			
-		}
+		CanvasRenderer.scale = stage.window.scale;
 		
 		var prefix = untyped __js__ ("(function () {
 		  var styles = window.getComputedStyle(document.documentElement, ''),
