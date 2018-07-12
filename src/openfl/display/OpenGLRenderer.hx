@@ -885,8 +885,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	private function __resumeClipAndMask (childRenderer:OpenGLRenderer):Void {
 		
-		// TODO: Coordinate child renderer to know if masking needs to be reset
-		
 		if (__stencilReference > 0 && childRenderer.__updatedStencil) {
 			
 			__gl.enable (__gl.STENCIL_TEST);
@@ -899,7 +897,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			for (mask in __maskObjects) {
 				
-				var mask = __maskObjects.pop ();
 				mask.__renderGLMask (this);
 				
 			}
