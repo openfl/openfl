@@ -573,11 +573,9 @@ class BitmapData implements IBitmapDrawable {
 			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 			renderSession.blendModeManager.setBlendMode(blendMode);
 			
-			if (!smoothing) {
-				
-				CanvasSmoothing.setEnabled(buffer.__srcContext, false);
-				
-			}
+			buffer.__srcContext.save();
+
+			CanvasSmoothing.setEnabled(buffer.__srcContext, smoothing);
 			
 			if (clipRect != null) {
 				
@@ -594,11 +592,7 @@ class BitmapData implements IBitmapDrawable {
 			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
 			
-			if (!smoothing) {
-				
-				CanvasSmoothing.setEnabled(buffer.__srcContext, true);
-				
-			}
+			buffer.__srcContext.restore();
 			
 			if (clipRect != null) {
 				
@@ -606,7 +600,6 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 			buffer.__srcImageData = null;
 			buffer.data = null;
 			
@@ -1777,11 +1770,9 @@ class BitmapData implements IBitmapDrawable {
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
 			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
 			
-			if (!smoothing) {
-				
-				CanvasSmoothing.setEnabled(buffer.__srcContext, false);
-				
-			}
+			buffer.__srcContext.save();
+			
+			CanvasSmoothing.setEnabled(buffer.__srcContext, smoothing);
 			
 			if (clipRect != null) {
 				
@@ -1812,11 +1803,7 @@ class BitmapData implements IBitmapDrawable {
 			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
 			
-			if (!smoothing) {
-				
-				CanvasSmoothing.setEnabled(buffer.__srcContext, true);
-				
-			}
+			buffer.__srcContext.restore();
 			
 			if (clipRect != null) {
 				
@@ -1824,7 +1811,6 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 			buffer.__srcImageData = null;
 			buffer.data = null;
 			
