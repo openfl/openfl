@@ -1391,7 +1391,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private inline function __snapToPixel (): Bool {
 		
 		return switch __pixelSnapping {
-			case NEVER: false;
+			case null | NEVER: false;
 			case ALWAYS: true;
 			case AUTO: __rotation == 0 && __renderTransform.a != 0 && __renderTransform.d != 0; // only snap when not rotated or skewed
 		}
