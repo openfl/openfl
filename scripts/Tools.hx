@@ -18,18 +18,6 @@ import haxe.Json;
 import haxe.Serializer;
 import haxe.Template;
 import haxe.Unserializer;
-import hxp.helpers.AssetHelper;
-import hxp.helpers.LogHelper;
-import hxp.helpers.PathHelper;
-import hxp.helpers.PlatformHelper;
-import hxp.helpers.StringHelper;
-import hxp.project.Architecture;
-import hxp.project.Asset;
-import hxp.project.AssetEncoding;
-import hxp.project.AssetType;
-import hxp.project.Haxelib;
-import hxp.project.HXProject;
-import hxp.project.Platform;
 import lime.utils.AssetManifest;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
@@ -45,6 +33,34 @@ import openfl.utils.ByteArray;
 import sys.io.File;
 import sys.io.Process;
 import sys.FileSystem;
+
+#if hxp
+import hxp.helpers.AssetHelper;
+import hxp.helpers.LogHelper;
+import hxp.helpers.PathHelper;
+import hxp.helpers.PlatformHelper;
+import hxp.helpers.StringHelper;
+import hxp.project.Architecture;
+import hxp.project.Asset;
+import hxp.project.AssetEncoding;
+import hxp.project.AssetType;
+import hxp.project.Haxelib;
+import hxp.project.HXProject;
+import hxp.project.Platform;
+#else
+import lime.tools.helpers.AssetHelper;
+import lime.tools.helpers.LogHelper;
+import lime.tools.helpers.PathHelper;
+import lime.tools.helpers.PlatformHelper;
+import lime.tools.helpers.StringHelper;
+import lime.project.Architecture;
+import lime.project.Asset;
+import lime.project.AssetEncoding;
+import lime.project.AssetType;
+import lime.project.Haxelib;
+import lime.project.HXProject;
+import lime.project.Platform;
+#end
 
 
 class Tools {
@@ -667,17 +683,17 @@ class Tools {
 			}
 			
 		}
-
+		
 		createdDirectory = false;
 		for (id in exporter.sounds.keys ()) {
-
+			
 			if (!createdDirectory) {
-
+				
 				PathHelper.mkdir (PathHelper.combine (targetPath, "sounds"));
 				createdDirectory = true;
-
+				
 			}
-
+			
 			var symbolClassName = exporter.soundSymbolClassNames.get (id);
 			var typeId = exporter.soundTypes.get (id);
 			
@@ -692,9 +708,9 @@ class Tools {
 			};
 			var path = "sounds/"+ symbolClassName + "." + type;
 			var assetData = exporter.sounds.get (id);
-
+			
 			File.saveBytes (PathHelper.combine (targetPath, path), assetData);
-
+			
 			// NOTICE: everything must be .mp3 in its final form, even though we write out various formats to disk
 			var soundAsset = new Asset ("", "sounds/"+ symbolClassName + ".mp3", AssetType.SOUND);
 			project.assets.push (soundAsset);
