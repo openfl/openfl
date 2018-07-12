@@ -2,9 +2,13 @@ package openfl.display;
 
 
 import openfl._internal.renderer.cairo.CairoBitmap;
+import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.canvas.CanvasBitmap;
+import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -162,6 +166,7 @@ class Bitmap extends DisplayObject {
 			
 		} else {
 			
+			CairoDisplayObject.render (this, renderer);
 			CairoBitmap.render (this, renderer);
 			
 		}
@@ -195,6 +200,7 @@ class Bitmap extends DisplayObject {
 			
 		} else {
 			
+			CanvasDisplayObject.render (this, renderer);
 			CanvasBitmap.render (this, renderer);
 			
 		}
@@ -224,6 +230,7 @@ class Bitmap extends DisplayObject {
 			
 		} else {
 			
+			DOMDisplayObject.render (this, renderer);
 			DOMBitmap.render (this, renderer);
 			
 		}
@@ -256,6 +263,7 @@ class Bitmap extends DisplayObject {
 			
 		} else {
 			
+			GLDisplayObject.render (this, renderer);
 			GLBitmap.render (this, renderer);
 			
 		}
