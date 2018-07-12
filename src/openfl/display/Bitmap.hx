@@ -154,7 +154,7 @@ class Bitmap extends DisplayObject {
 		}
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -187,7 +187,7 @@ class Bitmap extends DisplayObject {
 			
 		}
 		
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -213,7 +213,7 @@ class Bitmap extends DisplayObject {
 	
 	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			

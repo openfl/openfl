@@ -352,7 +352,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -373,7 +373,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -393,7 +393,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -452,18 +452,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderer, false);
+		// __updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__isCacheBitmapRender) {
+		// if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			GLBitmap.renderMask (__cacheBitmap, renderer);
+		// 	GLBitmap.renderMask (__cacheBitmap, renderer);
 			
-		} else {
+		// } else {
 			
 			GLDisplayObject.renderMask (this, renderer);
 			GLTilemap.renderMask (this, renderer);
 			
-		}
+		// }
 		
 	}
 	

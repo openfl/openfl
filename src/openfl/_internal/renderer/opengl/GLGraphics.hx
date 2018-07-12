@@ -41,6 +41,7 @@ class GLGraphics {
 	
 	
 	private static var blankBitmapData = new BitmapData (1, 1, false, 0);
+	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform (0, 0, 0, 1, 0, 0, 0, 0);
 	
 	
@@ -560,7 +561,7 @@ class GLGraphics {
 								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 								var shader;
 								
-								if (shaderBuffer != null) {
+								if (shaderBuffer != null && !maskRender) {
 									
 									shader = renderer.__initShaderBuffer (shaderBuffer);
 									
@@ -573,7 +574,7 @@ class GLGraphics {
 									
 								} else {
 									
-									shader = renderer.__initGraphicsShader (null);
+									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 									renderer.setShader (shader);
 									renderer.applyMatrix (uMatrix);
 									renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
@@ -634,7 +635,7 @@ class GLGraphics {
 								matrix.ty = y;
 								matrix.concat (graphics.__owner.__renderTransform);
 								
-								var shader = renderer.__initGraphicsShader (null);
+								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 								renderer.setShader (shader);
 								renderer.applyMatrix (renderer.__getMatrix (matrix));
 								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, true);
@@ -677,7 +678,7 @@ class GLGraphics {
 							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 							var shader;
 							
-							if (shaderBuffer != null) {
+							if (shaderBuffer != null && !maskRender) {
 								
 								shader = renderer.__initShaderBuffer (shaderBuffer);
 								
@@ -690,7 +691,7 @@ class GLGraphics {
 								
 							} else {
 								
-								shader = renderer.__initGraphicsShader (null);
+								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 								renderer.setShader (shader);
 								renderer.applyMatrix (uMatrix);
 								renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
@@ -786,13 +787,9 @@ class GLGraphics {
 		
 		// TODO: Support invisible shapes
 		
+		maskRender = true;
 		render (graphics, renderer);
-		
-		// #if (js && html5)
-		// CanvasGraphics.render (graphics, cast renderer.__softwareRenderer);
-		// #elseif lime_cairo
-		// CairoGraphics.render (graphics, cast renderer.__softwareRenderer);
-		// #end
+		maskRender = false;
 		
 	}
 	

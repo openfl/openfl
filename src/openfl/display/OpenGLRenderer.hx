@@ -97,6 +97,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	private var __softwareRenderer:DisplayObjectRenderer;
 	private var __stencilReference:Int;
 	private var __tempRect:Rectangle;
+	private var __updatedStencil:Bool;
 	private var __upscaled:Bool;
 	private var __values:Array<Float>;
 	private var __width:Int;
@@ -676,6 +677,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__gl.enable (__gl.STENCIL_TEST);
 			__gl.stencilMask (0xFF);
 			__gl.clear (__gl.STENCIL_BUFFER_BIT);
+			__updatedStencil = true;
 			
 		}
 		
@@ -881,21 +883,40 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __resumeClipAndMask ():Void {
+	private function __resumeClipAndMask (childRenderer:OpenGLRenderer):Void {
 		
 		// TODO: Coordinate child renderer to know if masking needs to be reset
 		
-		if (__stencilReference > 0) {
+		if (__stencilReference > 0 && childRenderer.__updatedStencil) {
 			
 			__gl.enable (__gl.STENCIL_TEST);
 			__gl.stencilMask (0xFF);
 			__gl.clear (__gl.STENCIL_BUFFER_BIT);
 			
+			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
+			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			__gl.colorMask (false, false, false, false);
+			
+			for (mask in __maskObjects) {
+				
+				var mask = __maskObjects.pop ();
+				mask.__renderGLMask (this);
+				
+			}
+			
+			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
+			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			__gl.colorMask (true, true, true, true);
+			
 		}
 		
-		for (i in 0...__numClipRects) {
+		if (__numClipRects > 0) {
 			
-			__scissorRect (__clipRects[i]);
+			__scissorRect (__clipRects[__numClipRects - 1]);
+			
+		} else {
+			
+			__scissorRect ();
 			
 		}
 		

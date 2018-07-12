@@ -39,8 +39,6 @@ class ExtraParams {
 					
 					var openflPath = parts.join ("/");
 					
-					trace (openflPath);
-					
 					Compiler.addClassPath (openflPath + "/lib");
 					
 				}

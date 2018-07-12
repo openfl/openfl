@@ -1353,7 +1353,7 @@ class TextField extends InteractiveObject {
 	private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -1402,7 +1402,7 @@ class TextField extends InteractiveObject {
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+			__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 			
 			if (__cacheBitmap != null && !__isCacheBitmapRender) {
 				
@@ -1453,7 +1453,7 @@ class TextField extends InteractiveObject {
 		
 		#if (js && html5)
 		__domRender = true;
-		__updateCacheBitmap (renderer, __forceCachedBitmapUpdate || !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, __forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
 		__forceCachedBitmapUpdate = false;
 		__domRender = false;
 		
