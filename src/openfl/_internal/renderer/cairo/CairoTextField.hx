@@ -14,7 +14,6 @@ import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
 import openfl.display.Graphics;
-import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
@@ -247,70 +246,31 @@ class CairoTextField {
 					cairo.setFontSize (size);
 					
 					cairo.moveTo (group.offsetX + scrollX - bounds.x, group.offsetY + group.ascent + scrollY - bounds.y);
-					
-					var usedHack = false;
-					
-					if (textField.__filters != null) {
 						
-						// Hack, force outline
+					#if openfl_cairo_show_text
+					cairo.showText (text.substring (group.startIndex, group.endIndex));
+					#else
+					
+					// TODO: Improve performance
+					
+					cairo.translate (0, 0);
+					
+					var glyphs = [];
+					var x:Float = group.offsetX + scrollX - bounds.x;
+					var y:Float = group.offsetY + group.ascent + scrollY - bounds.y;
+					var j = 0;
+					
+					for (position in group.positions) {
 						
-						if (Std.is (textField.__filters[0], GlowFilter)) {
-							
-							cairo.textPath (text.substring (group.startIndex, group.endIndex));
-							
-							var glowFilter:GlowFilter = cast textField.__filters[0];
-							
-							color = glowFilter.color;
-							r = ((color & 0xFF0000) >>> 16) / 0xFF;
-							g = ((color & 0x00FF00) >>> 8) / 0xFF;
-							b = (color & 0x0000FF) / 0xFF;
-							
-							cairo.setSourceRGBA (r, g, b, glowFilter.alpha);
-							cairo.lineWidth = Math.max (glowFilter.blurX, glowFilter.blurY);
-							cairo.strokePreserve ();
-							
-							color = group.format.color;
-							r = ((color & 0xFF0000) >>> 16) / 0xFF;
-							g = ((color & 0x00FF00) >>> 8) / 0xFF;
-							b = (color & 0x0000FF) / 0xFF;
-							
-							cairo.setSourceRGB (r, g, b);
-							
-							cairo.fillPreserve ();
-							usedHack = true;
-							
-						}
+						if (position == null || position.glyph == 0) continue;
+						glyphs.push (new CairoGlyph (position.glyph, x + position.offset.x + 0.5, y - position.offset.y + 0.5));
+						x += position.advance.x;
+						y -= position.advance.y;
 						
 					}
 					
-					if (!usedHack) {
-						
-						#if openfl_cairo_show_text
-						cairo.showText (text.substring (group.startIndex, group.endIndex));
-						#else
-						
-						// TODO: Improve performance
-						
-						cairo.translate (0, 0);
-						
-						var glyphs = [];
-						var x:Float = group.offsetX + scrollX - bounds.x;
-						var y:Float = group.offsetY + group.ascent + scrollY - bounds.y;
-						var j = 0;
-						
-						for (position in group.positions) {
-							
-							if (position == null || position.glyph == 0) continue;
-							glyphs.push (new CairoGlyph (position.glyph, x + position.offset.x + 0.5, y - position.offset.y + 0.5));
-							x += position.advance.x;
-							y -= position.advance.y;
-							
-						}
-						
-						cairo.showGlyphs (glyphs);
-						#end
-						
-					}
+					cairo.showGlyphs (glyphs);
+					#end
 					
 					if (textField.__caretIndex > -1 && textEngine.selectable) {
 						
