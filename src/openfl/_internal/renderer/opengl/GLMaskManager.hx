@@ -207,14 +207,14 @@ class GLMaskManager extends AbstractMaskManager {
 			rect.__transform (clipRect, renderer.displayMatrix);
 			
 			var x = Math.floor (clipRect.x);
-			var y = Math.floor (renderer.height - clipRect.y - clipRect.height);
-			var width = Math.ceil (clipRect.width);
-			var height = Math.ceil (clipRect.height);
+			var y = Math.floor (clipRect.y);
+			var width = Math.ceil (clipRect.right) - x;
+			var height = Math.ceil (clipRect.bottom) - y;
 			
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			gl.scissor (x, y, width, height);
+			gl.scissor (x, renderer.height - y - height, width, height);
 			
 		} else {
 			
