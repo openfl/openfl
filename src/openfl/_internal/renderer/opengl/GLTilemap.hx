@@ -54,7 +54,7 @@ class GLTilemap {
 		
 		var shader = renderSession.shaderManager.initShader (tilemap.shader);
 		
-		var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
+		var uMatrix = renderer.getMatrix (tilemap.__renderTransform, tilemap.__snapToPixel ());
 		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		
 		var useColorTransform = true || !tilemap.__worldColorTransform.__isDefault ();
