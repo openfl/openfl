@@ -375,8 +375,8 @@ class SubBitmapData extends BitmapData {
 		var tx = transform.tx;
 		var ty = transform.ty;
 		if (renderSession.roundPixels) {
-			tx = Std.int(tx);
-			ty = Std.int(ty);
+			tx = Math.round(tx);
+			ty = Math.round(ty);
 		}
 
 		var context = renderSession.context;
