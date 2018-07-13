@@ -24,9 +24,9 @@ import openfl._internal.Lib;
 		
 		#if (js && html5)
 		#if (lime >= "7.0.0")
-		if (Lib.application.window.__backend.element != null) {
+		if (Lib.application.window.element != null) {
 			
-			untyped Lib.application.window.__backend.element[functionName] = closure;
+			untyped Lib.application.window.element[functionName] = closure;
 			
 		}
 		#else

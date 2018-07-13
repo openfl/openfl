@@ -11,10 +11,6 @@ import lime.app.Config;
 extern class Window extends LimeWindow {
 	
 	
-	#if (lime >= "7.0.0")
-	public var stage (default, null):Stage;
-	#end
-	
 	#if (lime < "7.0.0")
 	public function new (config:WindowConfig = null);
 	#end
