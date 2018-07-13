@@ -926,14 +926,14 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__gl.enable (__gl.SCISSOR_TEST);
 			
 			var x = Math.floor (clipRect.x);
-			var y = __flipped ? Math.floor (__height - clipRect.y - clipRect.height) : Math.floor (clipRect.y);
-			var width = Math.ceil (clipRect.width);
-			var height = Math.ceil (clipRect.height);
+			var y = Math.floor (clipRect.y);
+			var width = Math.ceil (clipRect.right) - x;
+			var height = Math.ceil (clipRect.bottom) - y;
 			
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			__gl.scissor (x, y, width, height);
+			__gl.scissor (x, __flipped ? __height - y - height : y, width, height);
 			
 		} else {
 			
