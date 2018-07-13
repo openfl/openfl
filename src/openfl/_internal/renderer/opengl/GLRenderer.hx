@@ -72,6 +72,9 @@ class GLRenderer extends AbstractRenderer {
 		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
 		renderSession.renderType = OPENGL;
+		#if (js && html5)
+		renderSession.scale = stage.window.scale;
+		#end
 		renderSession.blendModeManager = new GLBlendModeManager (gl);
 		renderSession.filterManager = new GLFilterManager (this, renderSession);
 		renderSession.shaderManager = new GLShaderManager (gl);
@@ -92,9 +95,6 @@ class GLRenderer extends AbstractRenderer {
 			
 		}
 		
-		#if (js && html5)
-		CanvasRenderer.scale = stage.window.scale;
-		#end
 	}
 	
 	

@@ -103,14 +103,15 @@ class CanvasTilemap {
 			
 			tileTransform = tile.matrix;
 			tileTransform.concat (transform);
+			var scale = renderSession.scale;
 			
 			if (roundPixels) {
 				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, Std.int (tileTransform.tx), Std.int (tileTransform.ty));
+				context.setTransform (tileTransform.a * scale, tileTransform.b, tileTransform.c, tileTransform.d * scale, Std.int (tileTransform.tx * scale), Std.int (tileTransform.ty * scale));
 				
 			} else {
 				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
+				context.setTransform (tileTransform.a * scale, tileTransform.b, tileTransform.c, tileTransform.d * scale, tileTransform.tx * scale, tileTransform.ty * scale);
 				
 			}
 			

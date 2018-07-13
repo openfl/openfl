@@ -1,6 +1,7 @@
 package openfl._internal.renderer; #if (!display && !flash)
 
 
+import lime.graphics.RenderContext;
 import openfl._internal.renderer.opengl.vao.VertexArrayObjectExtension;
 import lime.graphics.opengl.GLContextType;
 import openfl._internal.renderer.opengl.vao.VertexArrayObjectContext;
@@ -28,20 +29,23 @@ import openfl.geom.Point;
 
 class RenderSession {
 	
-	
+	public static var renderContext (get, never):RenderContext;
+	private static var __renderContext:RenderContext;
+
 	public var allowSmoothing:Bool;
 	public var cairo:CairoRenderContext;
 	public var clearRenderDirty:Bool;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
+	public var forceSmoothing:Bool;
 	public var gl(default, set):GLRenderContext;
 	// public var lockTransform:Bool;
 	public var renderer:AbstractRenderer;
 	public var renderType:RendererType;
 	public var roundPixels:Bool;
+	public var scale:Float = 1.0;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;
-	public var forceSmoothing:Bool;
 	public var vendorPrefix:String;
 	public var vaoContext:IVertexArrayObjectContext;
 	public var projectionMatrix:Matrix;	
@@ -101,8 +105,12 @@ class RenderSession {
 		//maskManager = new MaskManager (this);
 		
 	}
-	
-	
+
+	static function get_renderContext():RenderContext {
+		return __renderContext;
+	}
+
+
 }
 
 #else

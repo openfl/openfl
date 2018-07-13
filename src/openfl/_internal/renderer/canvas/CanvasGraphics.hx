@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+import lime.graphics.RenderContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
@@ -1146,46 +1147,32 @@ class CanvasGraphics {
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 				
-				var scale = CanvasRenderer.scale;
+				var scale = renderSession.scale;
 				var scaledWidth = Std.int (width * scale);
 				var scaledHeight = Std.int (height * scale);
 				
-				if (renderSession.renderType == DOM) {
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 					
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
-						
-						context.clearRect (0, 0, scaledWidth, scaledHeight);
-						
-					} else {
+					context.closePath ();
+					context.setTransform (1, 0, 0, 1, 0, 0);
+					context.clearRect (0, 0, scaledWidth, scaledHeight);
 					
-						canvas.width = scaledWidth;
-						canvas.height = scaledHeight;
+				} else {
+				
+					canvas.width = scaledWidth;
+					canvas.height = scaledHeight;
+					
+					if (RenderSession.renderContext.match(DOM(_)) && scale != 1) {
+						
 						canvas.style.width = width + "px";
 						canvas.style.height = height + "px";
 						
 					}
 					
-					var transform = graphics.__renderTransform;
-					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
-					
-				} else {
-					
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
-						
-						context.closePath ();
-						context.setTransform (1, 0, 0, 1, 0, 0);
-						context.clearRect (0, 0, scaledWidth, scaledHeight);
-						
-					} else {
-						
-						canvas.width  = width;
-						canvas.height = height;
-						
-					}
-					
-					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-					
 				}
+				
+				var transform = graphics.__renderTransform;
+				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * scale, transform.ty * scale);
 				
 				fillCommands.clear ();
 				strokeCommands.clear ();
@@ -1439,6 +1426,7 @@ class CanvasGraphics {
 				
 				data.destroy ();
 				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas);
+				@:privateAccess graphics.__bitmap.__scale = scale;
 				
 			}
 			

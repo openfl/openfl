@@ -118,6 +118,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __isMask:Bool;
 	private var __isValid:Bool;
 	private var __renderable:Bool;
+	private var __scale:Float = 1.0;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureContext:GLRenderContext;
@@ -919,6 +920,9 @@ class BitmapData implements IBitmapDrawable {
 			//[ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 			
 			__bufferData = new Float32Array (__bufferStride * 4);
+			
+			var width = this.width / __scale;
+			var height = this.height / __scale;
 			
 			__bufferData[0] = width;
 			__bufferData[1] = height;
@@ -1773,6 +1777,7 @@ class BitmapData implements IBitmapDrawable {
 			renderSession.clearRenderDirty = true;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
+			renderSession.scale = __scale;
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
 			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);

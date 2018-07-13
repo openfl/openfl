@@ -29,14 +29,16 @@ class CanvasBitmap {
 			context.globalAlpha = bitmap.__worldAlpha;
 			var transform = bitmap.__renderTransform;
 			var scrollRect = bitmap.__scrollRect;
+			var scale = renderSession.scale;
+			@:privateAccess var sizeScale = scale / bitmap.__bitmapData.__scale;
 			
 			if (renderSession.roundPixels) {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+				context.setTransform (transform.a * sizeScale, transform.b, transform.c, transform.d * sizeScale, Std.int(transform.tx * scale), Std.int (transform.ty * scale));
 				
 			} else {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				context.setTransform (transform.a * sizeScale, transform.b, transform.c, transform.d * sizeScale, transform.tx * scale, transform.ty * scale);
 				
 			}
 			

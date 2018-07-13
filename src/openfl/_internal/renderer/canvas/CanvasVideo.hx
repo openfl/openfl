@@ -28,14 +28,15 @@ class CanvasVideo {
 			var transform = video.__worldTransform;
 			var scrollRect = video.__scrollRect;
 			var smoothing = video.smoothing;
-			
+			var scale = renderSession.scale;
+			 
 			if (renderSession.roundPixels) {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Std.int(transform.tx * scale), Std.int (transform.ty * scale));
 				
 			} else {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * scale, transform.ty * scale);
 				
 			}
 			

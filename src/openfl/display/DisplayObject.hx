@@ -1099,6 +1099,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics!= null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = __hasFilters ();
+			var scale = renderSession.scale;
 			
 			if (hasFilters && !needRender) {
 				
@@ -1123,8 +1124,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__getFilterBounds (rect, __renderTransform);
 				
-				bitmapWidth = Math.ceil (rect.width);
-				bitmapHeight = Math.ceil (rect.height);
+				bitmapWidth = Math.ceil (rect.width * scale);
+				bitmapHeight = Math.ceil (rect.height * scale);
 				
 				if (!needRender && __cacheBitmap != null && (bitmapWidth != __cacheBitmap.width || bitmapHeight !=__cacheBitmap.height)) {
 					
@@ -1193,7 +1194,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				matrix.copyFrom (__renderTransform);
 				matrix.tx -= Math.round (rect.x);
 				matrix.ty -= Math.round (rect.y);
-
+				
+				@:privateAccess __cacheBitmapData.__scale = scale;
 				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
 
 				Matrix.__pool.release (matrix);
@@ -1255,7 +1257,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					}
 					
-					__cacheBitmap.bitmapData = bitmapData;
+					if (__cacheBitmapData != bitmapData) {
+						
+						__cacheBitmapData = bitmapData;
+						@:privateAccess __cacheBitmapData.__scale = scale;
+						__cacheBitmap.bitmapData = __cacheBitmapData;
+						
+					}
+					
 					
 				}
 				

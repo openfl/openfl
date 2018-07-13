@@ -1,6 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
+import lime.graphics.RenderContext;
 import haxe.Utf8;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.RenderSession;
@@ -37,13 +38,14 @@ class CanvasTextField {
 	#end
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
+	public static function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
 		
 		#if (js && html5)
 		
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
+		var scale = renderSession.scale;
 		
 		if (textField.__dirty) {
 			
@@ -91,25 +93,18 @@ class CanvasTextField {
 				
 				var transform = graphics.__renderTransform;
 				
-				if (renderSession.renderType == DOM) {
+				graphics.__canvas.width = Std.int (width * scale);
+				graphics.__canvas.height = Std.int (height * scale);
+				
+				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * scale, transform.ty * scale);
+				
+				if (RenderSession.renderContext.match(DOM(_)) && scale != 1) {
 					
-					var scale = CanvasRenderer.scale;
-					
-					graphics.__canvas.width = Std.int (width * scale);
-					graphics.__canvas.height = Std.int (height * scale);
 					graphics.__canvas.style.width = width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
-					
-				} else {
-					
-					graphics.__canvas.width = width;
-					graphics.__canvas.height = height;
-					
-					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-					
 				}
+					
 				
 				if (clearRect == null) {
 					
@@ -348,6 +343,7 @@ class CanvasTextField {
 				}
 				
 				graphics.__bitmap = BitmapData.fromCanvas (textField.__graphics.__canvas);
+				@:privateAccess graphics.__bitmap.__scale = scale;
 				graphics.__visible = true;
 				textField.__dirty = false;
 				graphics.__dirty = false;
