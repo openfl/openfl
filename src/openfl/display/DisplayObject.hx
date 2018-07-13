@@ -1176,9 +1176,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault ())) {
 			
-			var matrix = null, rect = null;
-			
-			__update (false, true);
+			var rect = null;
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform)));
 			var updateTransform = (needRender || (renderer.__type == OPENGL && !__cacheBitmap.__worldTransform.equals (__worldTransform)));
@@ -1641,19 +1639,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 			}
 			
-			if (updateTransform) {
-				
-				__update (false, true);
+			if (updateTransform || needRender) {
 				
 				Rectangle.__pool.release (rect);
 				
-				return true;
-				
-			} else {
-				
-				return false;
-				
 			}
+			
+			return updateTransform;
 			
 		} else if (__cacheBitmap != null) {
 			
