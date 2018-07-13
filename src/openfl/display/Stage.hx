@@ -1572,10 +1572,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					if (cursor != null) {
 						
-						#if (commonjs && !nodejs)
 						#if (lime >= "7.0.0")
 						window.cursor = cursor;
-						#else
+						#elseif (commonjs && !nodejs)
 						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 							
 							@:privateAccess window.backend.element.style.cursor = switch (cursor) {
@@ -1598,8 +1597,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 							__cursor = cursor;
 							
 						}
+						#else
 						LimeMouse.cursor = cursor;
-						#end
 						#end
 						break;
 						
@@ -1611,18 +1610,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (cursor == null) {
 				
-				#if (commonjs && !nodejs)
 				#if (lime >= "7.0.0")
 				window.cursor = ARROW;
-				#else
+				#elseif (commonjs && !nodejs)
 				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
 					
 					@:privateAccess window.backend.element.style.cursor = "default";
 					__cursor = null;
 					
 				}
+				#else
 				LimeMouse.cursor = ARROW;
-				#end
 				#end
 				
 			}

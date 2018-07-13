@@ -246,7 +246,7 @@ class CairoTextField {
 					cairo.setFontSize (size);
 					
 					cairo.moveTo (group.offsetX + scrollX - bounds.x, group.offsetY + group.ascent + scrollY - bounds.y);
-						
+					
 					#if openfl_cairo_show_text
 					cairo.showText (text.substring (group.startIndex, group.endIndex));
 					#else
