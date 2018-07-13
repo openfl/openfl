@@ -608,13 +608,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference == 0) return;
 		
+		var mask = __maskObjects.pop ();
 		if (__stencilReference > 1) {
 			
 			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
 			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
 			__gl.colorMask (false, false, false, false);
 			
-			var mask = __maskObjects.pop ();
 			mask.__renderGLMask (this);
 			__stencilReference--;
 			
