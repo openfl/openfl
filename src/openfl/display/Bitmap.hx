@@ -280,6 +280,17 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
+	private inline function __snapToPixel ():Bool {
+		
+		return switch pixelSnapping {
+			case NEVER: false;
+			case ALWAYS: true;
+			case AUTO: __rotation == 0 && __renderTransform.a != 0 && __renderTransform.d != 0; // only snap when not rotated or skewed
+		}
+ 		
+ 	}
+	
+	
 	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		// TODO: Handle filters without an intermediate draw
