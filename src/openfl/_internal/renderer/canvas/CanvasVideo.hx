@@ -32,7 +32,7 @@ class CanvasVideo {
 			 
 			if (renderSession.roundPixels) {
 				
-				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Std.int(transform.tx * scale), Std.int (transform.ty * scale));
+				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Math.round (transform.tx * scale), Math.round (transform.ty * scale));
 				
 			} else {
 				

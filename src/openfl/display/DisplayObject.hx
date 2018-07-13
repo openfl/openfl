@@ -139,6 +139,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __worldVisibleChanged:Bool;
 	private var __worldTransformInvalid:Bool;
 	private var __worldZ:Int;
+	private var __pixelSnapping:PixelSnapping;
 	
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -1396,11 +1397,36 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private inline function __snapToPixel (): Bool {
+		
+		return switch __pixelSnapping {
+			case null | NEVER: false;
+			case ALWAYS: true;
+			case AUTO: __rotation == 0 && __renderTransform.a != 0 && __renderTransform.d != 0; // only snap when not rotated or skewed
+		}
+		
+	}
 	
 	
 	// Get & Set Methods
 	
 	
+	inline function get_pixelSnapping() {
+		
+		return __pixelSnapping;
+		
+	}
+	
+	function set_pixelSnapping(value) {
+		
+		if (__pixelSnapping != value) {
+			__pixelSnapping = value;
+			__setRenderDirty ();
+		}
+		
+		return value;
+		
+	}
 	
 	
 	private function get_alpha ():Float {

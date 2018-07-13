@@ -35,7 +35,7 @@ class CairoBitmap {
 			
 			var transform = bitmap.__renderTransform;
 			
-			if (renderSession.roundPixels) {
+			if (renderSession.roundPixels || bitmap.__snapToPixel ()) {
 				
 				var matrix = transform.__toMatrix3 ();
 				matrix.tx = Math.round (matrix.tx);

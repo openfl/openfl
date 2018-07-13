@@ -38,7 +38,7 @@ class CanvasTilemap {
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
 		var transform = tilemap.__renderTransform;
-		var roundPixels = renderSession.roundPixels;
+		var roundPixels = renderSession.roundPixels || tilemap.__snapToPixel ();
 		
 		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
@@ -107,7 +107,7 @@ class CanvasTilemap {
 			
 			if (roundPixels) {
 				
-				context.setTransform (tileTransform.a * scale, tileTransform.b, tileTransform.c, tileTransform.d * scale, Std.int (tileTransform.tx * scale), Std.int (tileTransform.ty * scale));
+				context.setTransform (tileTransform.a * scale, tileTransform.b, tileTransform.c, tileTransform.d * scale, Math.round (tileTransform.tx * scale), Math.round (tileTransform.ty * scale));
 				
 			} else {
 				

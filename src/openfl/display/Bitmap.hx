@@ -29,7 +29,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	
 	
 	public var bitmapData (get, set):BitmapData;
-	public var pixelSnapping:PixelSnapping;
+	public var pixelSnapping (get, set):PixelSnapping;
 	@:beta public var shader:Shader;
 	public var smoothing:Bool;
 	
@@ -55,14 +55,11 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		super ();
 		
 		__bitmapData = bitmapData;
-		this.pixelSnapping = pixelSnapping;
+
+		if (pixelSnapping == null) pixelSnapping = PixelSnapping.AUTO;
+		__pixelSnapping = pixelSnapping;
+
 		this.smoothing = smoothing;
-		
-		if (pixelSnapping == null) {
-			
-			this.pixelSnapping = PixelSnapping.AUTO;
-			
-		}
 		
 	}
 	
@@ -310,17 +307,6 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 	}
 	
-	
-	private inline function __snapToPixel (): Bool {
-
-		return switch pixelSnapping {
-			case NEVER: false;
-			case ALWAYS: true;
-			case AUTO: __rotation == 0 && __renderTransform.a != 0 && __renderTransform.d != 0; // only snap when not rotated or skewed
-		
-		}
-
-	}
 	
 	// Get & Set Methods
 	

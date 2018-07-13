@@ -32,9 +32,9 @@ class CanvasBitmap {
 			var scale = renderSession.scale;
 			@:privateAccess var sizeScale = scale / bitmap.__bitmapData.__scale;
 			
-			if (renderSession.roundPixels) {
+			if (renderSession.roundPixels || bitmap.__snapToPixel ()) {
 				
-				context.setTransform (transform.a * sizeScale, transform.b, transform.c, transform.d * sizeScale, Std.int(transform.tx * scale), Std.int (transform.ty * scale));
+				context.setTransform (transform.a * sizeScale, transform.b, transform.c, transform.d * sizeScale, Math.round (transform.tx * scale), Math.round  (transform.ty * scale));
 				
 			} else {
 				

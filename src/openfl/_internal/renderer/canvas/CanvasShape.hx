@@ -48,7 +48,7 @@ class CanvasShape {
 					
 					if (renderSession.roundPixels) {
 						
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int(transform.tx * scale), Std.int (transform.ty * scale));
+						context.setTransform (transform.a, transform.b, transform.c, transform.d, Math.round (transform.tx * scale), Math.round (transform.ty * scale));
 						
 					} else {
 						

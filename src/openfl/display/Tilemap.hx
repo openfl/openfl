@@ -42,6 +42,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public var tileset (get, set):Tileset;
 	
 	#if !flash
+	public var pixelSnapping (get, set):PixelSnapping;
 	public var smoothing:Bool;
 	#end
 	
@@ -65,11 +66,15 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
-	public function new (width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true) {
+	public function new (width:Int, height:Int, tileset:Tileset = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = true) {
 		
 		super ();
 		
 		__tileset = tileset;
+
+		if (pixelSnapping == null) pixelSnapping = PixelSnapping.AUTO;
+		__pixelSnapping = pixelSnapping;
+
 		this.smoothing = smoothing;
 		
 		__tiles = new Vector ();
@@ -80,7 +85,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__height = height;
 		#else
 		bitmapData = new BitmapData (width, height, true, 0);
-		this.smoothing = smoothing;
 		FlashRenderer.register (this);
 		#end
 		
