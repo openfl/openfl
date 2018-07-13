@@ -19,5 +19,6 @@
 -D nocffi
 -D disable-cffi
 -D openfl
+-D tools
 -D commonjs
 --remap flash:openfl

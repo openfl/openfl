@@ -14,9 +14,11 @@ ImportAll
 # -D tsextern
 -D openfl-dynamic
 -D openfljs
--D lime-opengl
 -D lime-bytes-length-getter
 -D html5
+-D lime-canvas
+-D lime-dom
+-D lime-webgl
 -D tools
 -D commonjs
 -D howlerjs
