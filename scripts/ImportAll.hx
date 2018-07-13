@@ -189,6 +189,8 @@ import openfl.net.URLRequestMethod;
 import openfl.net.URLStream;
 import openfl.net.URLVariables;
 import openfl.net.XMLSocket;
+import openfl.profiler.Profiler;
+import openfl.profiler.Result;
 import openfl.profiler.Telemetry;
 import openfl.sensors.Accelerometer;
 import openfl.system.ApplicationDomain;
