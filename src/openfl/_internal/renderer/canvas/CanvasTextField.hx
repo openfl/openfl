@@ -1,12 +1,12 @@
 package openfl._internal.renderer.canvas;
 
 
-import lime.graphics.RenderContext;
 import haxe.Utf8;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
@@ -24,8 +24,10 @@ import js.Browser;
 import js.html.ImageData;
 #end
 
+@:access(openfl.display.BitmapData)
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.DisplayObject)
 @:access(openfl.text.TextField)
 
 
@@ -45,7 +47,7 @@ class CanvasTextField {
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
-		var scale = renderSession.scale;
+		var pixelRatio = renderSession.pixelRatio;
 		
 		if (textField.__dirty) {
 			
@@ -93,12 +95,12 @@ class CanvasTextField {
 				
 				var transform = graphics.__renderTransform;
 				
-				graphics.__canvas.width = Std.int (width * scale);
-				graphics.__canvas.height = Std.int (height * scale);
+				graphics.__canvas.width = Std.int (width * pixelRatio);
+				graphics.__canvas.height = Std.int (height * pixelRatio);
 				
-				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * scale, transform.ty * scale);
+				context.setTransform (transform.a * pixelRatio, transform.b, transform.c, transform.d * pixelRatio, transform.tx * pixelRatio, transform.ty * pixelRatio);
 				
-				if (RenderSession.renderContext.match(DOM(_)) && scale != 1) {
+				if (DisplayObject.__supportDOM && pixelRatio != 1) {
 					
 					graphics.__canvas.style.width = width + "px";
 					graphics.__canvas.style.height = height + "px";
@@ -343,7 +345,7 @@ class CanvasTextField {
 				}
 				
 				graphics.__bitmap = BitmapData.fromCanvas (textField.__graphics.__canvas);
-				@:privateAccess graphics.__bitmap.__scale = scale;
+				graphics.__bitmap.__pixelRatio = pixelRatio;
 				graphics.__visible = true;
 				textField.__dirty = false;
 				graphics.__dirty = false;

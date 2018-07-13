@@ -73,7 +73,7 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.renderer = this;
 		renderSession.renderType = OPENGL;
 		#if (js && html5)
-		renderSession.scale = stage.window.scale;
+		renderSession.pixelRatio = stage.window.scale;
 		#end
 		renderSession.blendModeManager = new GLBlendModeManager (gl);
 		renderSession.filterManager = new GLFilterManager (this, renderSession);

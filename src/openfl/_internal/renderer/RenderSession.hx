@@ -29,9 +29,7 @@ import openfl.geom.Point;
 
 class RenderSession {
 	
-	public static var renderContext (get, never):RenderContext;
-	private static var __renderContext:RenderContext;
-
+	
 	public var allowSmoothing:Bool;
 	public var cairo:CairoRenderContext;
 	public var clearRenderDirty:Bool;
@@ -43,11 +41,11 @@ class RenderSession {
 	public var renderer:AbstractRenderer;
 	public var renderType:RendererType;
 	public var roundPixels:Bool;
-	public var scale:Float = 1.0;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;
 	public var vendorPrefix:String;
 	public var vaoContext:IVertexArrayObjectContext;
+	public var pixelRatio:Float = 1.0;
 	public var projectionMatrix:Matrix;	
 	public var z:Int;
 	
@@ -104,10 +102,6 @@ class RenderSession {
 		clearRenderDirty = false;
 		//maskManager = new MaskManager (this);
 		
-	}
-
-	static function get_renderContext():RenderContext {
-		return __renderContext;
 	}
 
 

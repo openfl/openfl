@@ -44,15 +44,15 @@ class CanvasShape {
 					context.globalAlpha = shape.__worldAlpha;
 					
 					var transform = graphics.__worldTransform;
-					var scale = renderSession.scale;
+					var pixelRatio = renderSession.pixelRatio;
 					
 					if (renderSession.roundPixels) {
 						
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, Math.round (transform.tx * scale), Math.round (transform.ty * scale));
+						context.setTransform (transform.a, transform.b, transform.c, transform.d, Math.round (transform.tx * pixelRatio), Math.round (transform.ty * pixelRatio));
 						
 					} else {
 						
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx * scale, transform.ty * scale);
+						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx * pixelRatio, transform.ty * pixelRatio);
 						
 					}
 					

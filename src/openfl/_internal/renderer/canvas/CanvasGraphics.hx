@@ -1,6 +1,5 @@
 package openfl._internal.renderer.canvas;
 
-import lime.graphics.RenderContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
@@ -1147,9 +1146,9 @@ class CanvasGraphics {
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 				
-				var scale = renderSession.scale;
-				var scaledWidth = Std.int (width * scale);
-				var scaledHeight = Std.int (height * scale);
+				var pixelRatio = renderSession.pixelRatio;
+				var scaledWidth = Std.int (width * pixelRatio);
+				var scaledHeight = Std.int (height * pixelRatio);
 				
 				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 					
@@ -1162,7 +1161,7 @@ class CanvasGraphics {
 					canvas.width = scaledWidth;
 					canvas.height = scaledHeight;
 					
-					if (RenderSession.renderContext.match(DOM(_)) && scale != 1) {
+					if (DisplayObject.__supportDOM && pixelRatio != 1) {
 						
 						canvas.style.width = width + "px";
 						canvas.style.height = height + "px";
@@ -1172,7 +1171,7 @@ class CanvasGraphics {
 				}
 				
 				var transform = graphics.__renderTransform;
-				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * scale, transform.ty * scale);
+				context.setTransform (transform.a * pixelRatio, transform.b, transform.c, transform.d * pixelRatio, transform.tx * pixelRatio, transform.ty * pixelRatio);
 				
 				fillCommands.clear ();
 				strokeCommands.clear ();
@@ -1426,7 +1425,7 @@ class CanvasGraphics {
 				
 				data.destroy ();
 				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas);
-				@:privateAccess graphics.__bitmap.__scale = scale;
+				graphics.__bitmap.__pixelRatio = pixelRatio;
 				
 			}
 			

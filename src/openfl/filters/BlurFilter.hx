@@ -67,8 +67,8 @@ import openfl.geom.Rectangle;
 	
 	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
-		@:privateAccess var scale = sourceBitmapData.__scale; 
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX * scale, __blurY * scale, __quality);
+		@:privateAccess var pixelRatio = sourceBitmapData.__pixelRatio; 
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX * pixelRatio, __blurY * pixelRatio, __quality);
 		if (finalImage == bitmapData.image) return bitmapData;
 		return sourceBitmapData;
 		

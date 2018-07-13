@@ -84,7 +84,6 @@ typedef Element = Dynamic;
 @:noDebug
 #end
 
-@:access(openfl._internal.renderer.RenderSession)
 @:access(openfl._internal.renderer.AbstractRenderer)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Sprite)
@@ -1057,8 +1056,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	private function __createRenderer ():Void {
-		
-		RenderSession.__renderContext = window.renderer.context;
 		
 		switch (window.renderer.context) {
 			

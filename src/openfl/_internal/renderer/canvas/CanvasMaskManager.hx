@@ -27,8 +27,8 @@ class CanvasMaskManager extends AbstractMaskManager {
 		
 		//var cacheAlpha = mask.__worldAlpha;
 		var transform = mask.__renderTransform;
-		var scale = renderSession.scale;
-		context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * scale, transform.ty * scale);
+		var pixelRatio = renderSession.pixelRatio;
+		context.setTransform (transform.a * pixelRatio, transform.b, transform.c, transform.d * pixelRatio, transform.tx * pixelRatio, transform.ty * pixelRatio);
 		
 		context.beginPath ();
 		mask.__renderCanvasMask (renderSession);
@@ -62,8 +62,8 @@ class CanvasMaskManager extends AbstractMaskManager {
 		var context = renderSession.context;
 		context.save ();
 		
-		var scale = renderSession.scale;
-		context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * scale, transform.ty * scale);
+		var pixelRatio = renderSession.pixelRatio;
+		context.setTransform (transform.a * pixelRatio, transform.b, transform.c, transform.d * pixelRatio, transform.tx * pixelRatio, transform.ty * pixelRatio);
 		
 		context.beginPath ();
 		context.rect (rect.x, rect.y, rect.width, rect.height);

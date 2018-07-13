@@ -38,7 +38,7 @@ class CanvasRenderer extends AbstractRenderer {
 		#end
 		
 		#if (js && html5)
-		renderSession.scale = stage.window.scale;
+		renderSession.pixelRatio = stage.window.scale;
 		#end
 		
 	}
