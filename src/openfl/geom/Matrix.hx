@@ -76,14 +76,14 @@ class Matrix {
 		} else if (column == 0) {
 			
 			a = vector3D.x;
-			c = vector3D.y;
+			b = vector3D.y;
 			
-		}else if (column == 1) {
+		} else if (column == 1) {
 			
-			b = vector3D.x;
+			c = vector3D.x;
 			d = vector3D.y;
 			
-		}else {
+		} else {
 			
 			tx = vector3D.x;
 			ty = vector3D.y;
@@ -102,12 +102,12 @@ class Matrix {
 		} else if (column == 0) {
 			
 			vector3D.x = a;
-			vector3D.y = c;
+			vector3D.y = b;
 			vector3D.z = 0;
 			
 		} else if (column == 1) {
 			
-			vector3D.x = b;
+			vector3D.x = c;
 			vector3D.y = d;
 			vector3D.z = 0;
 			
@@ -144,16 +144,13 @@ class Matrix {
 			
 			a = vector3D.x;
 			c = vector3D.y;
+			tx = vector3D.z;
 			
 		} else if (row == 1) {
 			
 			b = vector3D.x;
 			d = vector3D.y;
-			
-		} else {
-			
-			tx = vector3D.x;
-			ty = vector3D.y;
+			ty = vector3D.z;
 			
 		}
 		
@@ -169,16 +166,16 @@ class Matrix {
 		} else if (row == 0) {
 			
 			vector3D.x = a;
-			vector3D.y = b;
+			vector3D.y = c;
 			vector3D.z = tx;
 			
 		} else if (row == 1) {
 			
-			vector3D.x = c;
+			vector3D.x = b;
 			vector3D.y = d;
 			vector3D.z = ty;
 			
-		}else {
+		} else {
 			
 			vector3D.setTo (0, 0, 1);
 			
@@ -255,7 +252,7 @@ class Matrix {
 	}
 	
 	
-	public function equals (matrix):Bool {
+	public function equals (matrix:Matrix):Bool {
 		
 		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
 		
@@ -389,7 +386,7 @@ class Matrix {
 	}
 	
 	
-	public inline function to3DString (roundPixels:Bool = false):String {
+	@:dox(hide) @:noCompletion public inline function to3DString (roundPixels:Bool = false):String {
 		
 		if (roundPixels) {
 			
@@ -404,7 +401,7 @@ class Matrix {
 	}
 	
 	
-	public inline function toMozString () {
+	@:dox(hide) @:noCompletion public inline function toMozString () {
 		
 		return 'matrix($a, $b, $c, $d, ${tx}px, ${ty}px)';
 		
