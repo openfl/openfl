@@ -1696,28 +1696,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __updateMask (maskGraphics:Graphics):Void {
-		
-		if (__graphics != null) {
-			
-			maskGraphics.__commands.overrideMatrix (this.__worldTransform);
-			maskGraphics.__commands.append (__graphics.__commands);
-			maskGraphics.__dirty = true;
-			maskGraphics.__visible = true;
-			
-			if (maskGraphics.__bounds == null) {
-				
-				maskGraphics.__bounds = new Rectangle();
-				
-			}
-			
-			__graphics.__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
-			
-		}
-		
-	}
-	
-	
 	private function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		var overrided = overrideTransform != null;
