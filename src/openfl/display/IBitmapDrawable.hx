@@ -27,6 +27,4 @@ interface IBitmapDrawable {
 	private function __updateChildren (transformOnly:Bool):Void;
 	private function __updateTransforms (?overrideTransform:Matrix = null):Void;
 	
-	private function __updateMask (maskGraphics:Graphics):Void;
-	
 }

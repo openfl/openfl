@@ -2209,13 +2209,6 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function __updateMask (maskGraphics:Graphics):Void {
-		
-		
-		
-	}
-	
-	
 	public function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		if (overrideTransform == null) {

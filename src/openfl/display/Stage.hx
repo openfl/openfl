@@ -1982,13 +1982,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?resetUpdateDirty:Bool = false):Void {
 		
 		if (transformOnly) {
 			
 			if (__transformDirty) {
 				
-				super.__update (true, updateChildren, maskGraphics, resetUpdateDirty);
+				super.__update (true, updateChildren, resetUpdateDirty);
 				
 				if (updateChildren) {
 					
@@ -2003,7 +2003,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (__transformDirty || __renderDirty) {
 				
-				super.__update (false, updateChildren, maskGraphics, resetUpdateDirty);
+				super.__update (false, updateChildren, resetUpdateDirty);
 				
 				if (updateChildren) {
 					
@@ -2025,7 +2025,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
 				
-				super.__update (false, updateChildren, maskGraphics, resetUpdateDirty);
+				super.__update (false, updateChildren, resetUpdateDirty);
 				
 				if (updateChildren) {
 					

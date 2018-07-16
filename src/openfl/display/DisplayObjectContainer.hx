@@ -981,7 +981,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__updateDirty) {
 			
-			__update (false, true, null, true);
+			__update (false, true, true);
 			
 		} else if (__updateTraverse) {
 			
@@ -999,15 +999,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?resetUpdateDirty:Bool = false):Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics, resetUpdateDirty);
+		super.__update (transformOnly, updateChildren, resetUpdateDirty);
 		
 		if (updateChildren) {
 			
 			for (child in __children) {
 				
-				child.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
+				child.__update (transformOnly, true, resetUpdateDirty);
 				
 			}
 			

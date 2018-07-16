@@ -966,13 +966,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (__updateDirty) {
 			
-			__update (false, true, null, true);
+			__update (false, true, true);
 			
 		}
 	}
 	
 	
-	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+	public function __update (transformOnly:Bool, updateChildren:Bool, ?resetUpdateDirty:Bool = false):Void {
 		
 		if (resetUpdateDirty) {
 			
@@ -994,12 +994,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__worldTransformInvalid = false;
 
-		if (maskGraphics != null) {
-			
-			__updateMask (maskGraphics);
-			
-		}
-		
 		if (!transformOnly) {
 			
 			if (__supportDOM) {
@@ -1080,7 +1074,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (updateChildren && mask != null) {
 			
-			mask.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
+			mask.__update (transformOnly, true, resetUpdateDirty);
 			
 		}
 		
@@ -1312,28 +1306,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (__transformDirty) {
 			
 			__transformDirty = false;
-			
-		}
-		
-	}
-	
-	
-	public function __updateMask (maskGraphics:Graphics):Void {
-		
-		if (__graphics != null) {
-			
-			maskGraphics.__commands.overrideMatrix (this.__worldTransform);
-			maskGraphics.__commands.append (__graphics.__commands);
-			maskGraphics.__dirty = true;
-			maskGraphics.__visible = true;
-			
-			if (maskGraphics.__bounds == null) {
-				
-				maskGraphics.__bounds = new Rectangle();
-				
-			}
-			
-			__graphics.__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
 			
 		}
 		
