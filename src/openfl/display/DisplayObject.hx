@@ -1651,12 +1651,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function set_rotation (value:Float):Float {
 
-		value = __normalizeAngle(value);
+		value = __normalizeAngle (value);
 
 		if (value != __rotation) {
 			
 			__rotation = value;
-
 			var radians = __rotation * (Math.PI / 180);
 			__rotationSine = Math.sin (radians);
 			__rotationCosine = Math.cos (radians);
