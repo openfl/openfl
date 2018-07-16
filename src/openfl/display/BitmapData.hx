@@ -569,6 +569,7 @@ class BitmapData implements IBitmapDrawable {
 			renderSession.clearRenderDirty = false;
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
+			renderSession.pixelRatio = __pixelRatio;
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
 			renderSession.blendModeManager = new CanvasBlendModeManager (renderSession);
