@@ -11,6 +11,7 @@ import openfl.errors.RangeError;
 import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.EventPhase;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -678,11 +679,19 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	@:access(openfl.geom.ColorTransform)
 	private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
 		
 		#if !neko
+		
+		var needRender = __objectTransform != null && !__objectTransform.colorTransform.__isDefault();
+		
+		if (needRender) 
+		{
+			__renderDirty = true;
+		}
 		
 		super.__renderCanvas (renderer);
 		
@@ -695,7 +704,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			for (child in __children) {
 				
 				child.__renderCanvas (renderer);
-				child.__renderDirty = false;
+				child.__renderDirty = needRender;
 				
 			}
 			
