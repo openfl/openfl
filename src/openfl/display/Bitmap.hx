@@ -290,31 +290,6 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
-	public override function __updateMask (maskGraphics:Graphics):Void {
-		
-		if (__bitmapData == null) {
-			
-			return;
-			
-		}
-		
-		maskGraphics.__commands.overrideMatrix (this.__worldTransform);
-		maskGraphics.beginFill (0);
-		maskGraphics.drawRect (0, 0, __bitmapData.width, __bitmapData.height);
-		
-		if (maskGraphics.__bounds == null) {
-			
-			maskGraphics.__bounds = new Rectangle ();
-			
-		}
-		
-		__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
-		
-		super.__updateMask (maskGraphics);
-		
-	}
-	
-	
 	
 	
 	// Get & Set Methods
