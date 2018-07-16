@@ -153,6 +153,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__clipRects = new Array ();
 		__maskObjects = new Array ();
 		__numClipRects = 0;
+		__projection = new Matrix4 ();
+		__projectionFlipped = new Matrix4 ();
 		__stencilReference = 0;
 		__tempRect = new Rectangle ();
 		
@@ -877,8 +879,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__displayWidth = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (w, 0) - __offsetX) : w;
 		__displayHeight = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, h) - __offsetY) : h;
 		
-		__projection = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
-		__projectionFlipped = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
+		__projection.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
+		__projectionFlipped.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
 		
 	}
 	
