@@ -1650,7 +1650,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	
 	private function set_rotation (value:Float):Float {
-		
+
+		value = __normalizeAngle (value);
+
 		if (value != __rotation) {
 			
 			__rotation = value;
@@ -1669,6 +1671,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		return value;
 		
+	}
+
+
+	private static inline function __normalizeAngle (value:Float):Float {
+
+		var normalized: Float = value % 360;
+
+		if (normalized > 180) {
+			normalized -= 360;
+		} else if (normalized < -180) {
+			normalized += 360;
+		}
+
+		return normalized;
+
 	}
 	
 	
