@@ -651,6 +651,7 @@ class BitmapData implements IBitmapDrawable {
 			renderSession.clearRenderDirty = false;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
+			renderSession.pixelRatio = __pixelRatio;
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
@@ -1866,6 +1867,7 @@ class BitmapData implements IBitmapDrawable {
 			renderSession.clearRenderDirty = true;
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
+			renderSession.pixelRatio = __pixelRatio;
 			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
