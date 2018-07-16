@@ -385,21 +385,21 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null, ?resetUpdateDirty:Bool = false):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?resetUpdateDirty:Bool = false):Void {
 		
-		super.__update (transformOnly, updateChildren, maskGraphics, resetUpdateDirty);
+		super.__update (transformOnly, updateChildren, resetUpdateDirty);
 		
 		if (updateChildren) {
 			
 			if (__currentState != null) {
 				
-				__currentState.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
+				__currentState.__update (transformOnly, true, resetUpdateDirty);
 				
 			}
 			
 			if (hitTestState != null && hitTestState != __currentState) {
 				
-				hitTestState.__update (transformOnly, true, maskGraphics, resetUpdateDirty);
+				hitTestState.__update (transformOnly, true, resetUpdateDirty);
 				
 			}
 			
