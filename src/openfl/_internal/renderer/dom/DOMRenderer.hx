@@ -43,7 +43,7 @@ class DOMRenderer extends AbstractRenderer {
 		#if (js && html5)
 		DisplayObject.__supportDOM = true;
 		
-		CanvasRenderer.scale = stage.window.scale;
+		renderSession.pixelRatio = stage.window.scale;
 		
 		var prefix = untyped __js__ ("(function () {
 		  var styles = window.getComputedStyle(document.documentElement, ''),

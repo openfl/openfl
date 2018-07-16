@@ -6,6 +6,7 @@ import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
@@ -23,8 +24,10 @@ import js.Browser;
 import js.html.ImageData;
 #end
 
+@:access(openfl.display.BitmapData)
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.DisplayObject)
 @:access(openfl.text.TextField)
 
 
@@ -37,13 +40,14 @@ class CanvasTextField {
 	#end
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
+	public static function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
 		
 		#if (js && html5)
 		
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
+		var pixelRatio = renderSession.pixelRatio;
 		
 		if (textField.__dirty) {
 			
@@ -91,25 +95,17 @@ class CanvasTextField {
 				
 				var transform = graphics.__renderTransform;
 				
-				if (renderSession.renderType == DOM) {
+				graphics.__canvas.width = Std.int (width * pixelRatio);
+				graphics.__canvas.height = Std.int (height * pixelRatio);
+				
+				if (DisplayObject.__supportDOM && pixelRatio != 1) {
 					
-					var scale = CanvasRenderer.scale;
-					
-					graphics.__canvas.width = Std.int (width * scale);
-					graphics.__canvas.height = Std.int (height * scale);
 					graphics.__canvas.style.width = width + "px";
 					graphics.__canvas.style.height = height + "px";
 					
-					context.setTransform (transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale, transform.ty * scale);
-					
-				} else {
-					
-					graphics.__canvas.width = width;
-					graphics.__canvas.height = height;
-					
-					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-					
 				}
+				
+				context.setTransform (transform.a * pixelRatio, transform.b, transform.c, transform.d * pixelRatio, transform.tx * pixelRatio, transform.ty * pixelRatio);
 				
 				if (clearRect == null) {
 					
@@ -348,6 +344,7 @@ class CanvasTextField {
 				}
 				
 				graphics.__bitmap = BitmapData.fromCanvas (textField.__graphics.__canvas);
+				graphics.__bitmap.__pixelRatio = pixelRatio;
 				graphics.__visible = true;
 				textField.__dirty = false;
 				graphics.__dirty = false;

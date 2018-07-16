@@ -29,14 +29,16 @@ class CanvasBitmap {
 			context.globalAlpha = bitmap.__worldAlpha;
 			var transform = bitmap.__renderTransform;
 			var scrollRect = bitmap.__scrollRect;
+			var pixelRatio = renderSession.pixelRatio;
+			var scale = pixelRatio / bitmap.__bitmapData.__pixelRatio; // Bitmaps can have different pixelRatio than display, therefore we need to scale them properly
 			
-			if (renderSession.roundPixels || bitmap.__snapToPixel()) {
+			if (renderSession.roundPixels || bitmap.__snapToPixel ()) {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Math.round (transform.tx), Math.round (transform.ty));
+				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Math.round (transform.tx * pixelRatio), Math.round  (transform.ty * pixelRatio));
 				
 			} else {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * pixelRatio, transform.ty * pixelRatio);
 				
 			}
 			

@@ -87,13 +87,13 @@ import openfl.geom.Rectangle;
 	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
 		// TODO: Support knockout, inner
-		
+		@:privateAccess var pixelRatio = sourceBitmapData.__pixelRatio; 
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
 		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0));
 		
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality, __strength);
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX * pixelRatio, __blurY * pixelRatio, __quality, __strength);
 		
 		if (finalImage == bitmapData.image) return bitmapData;
 		return sourceBitmapData;

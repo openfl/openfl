@@ -34,6 +34,7 @@ class RenderSession {
 	public var clearRenderDirty:Bool;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
+	public var forceSmoothing:Bool;
 	public var gl(default, set):GLRenderContext;
 	// public var lockTransform:Bool;
 	public var renderer:AbstractRenderer;
@@ -41,9 +42,9 @@ class RenderSession {
 	public var roundPixels:Bool;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;
-	public var forceSmoothing:Bool;
 	public var vendorPrefix:String;
 	public var vaoContext:IVertexArrayObjectContext;
+	public var pixelRatio:Float = 1.0;
 	public var projectionMatrix:Matrix;	
 	public var z:Int;
 	

@@ -28,14 +28,15 @@ class CanvasVideo {
 			var transform = video.__worldTransform;
 			var scrollRect = video.__scrollRect;
 			var smoothing = video.smoothing;
-			
+			var pixelRatio = renderSession.pixelRatio;
+			 
 			if (renderSession.roundPixels) {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Math.round (transform.tx), Math.round (transform.ty));
+				context.setTransform (transform.a * pixelRatio, transform.b, transform.c, transform.d * pixelRatio, Math.round (transform.tx * pixelRatio), Math.round (transform.ty * pixelRatio));
 				
 			} else {
 				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				context.setTransform (transform.a * pixelRatio, transform.b, transform.c, transform.d * pixelRatio, transform.tx * pixelRatio, transform.ty * pixelRatio);
 				
 			}
 			

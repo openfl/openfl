@@ -1094,6 +1094,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics!= null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
 			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = __hasFilters ();
+			var pixelRatio = renderSession.pixelRatio;
 			
 			if (hasFilters && !needRender) {
 				
@@ -1118,8 +1119,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__getFilterBounds (rect, __renderTransform);
 				
-				bitmapWidth = Math.ceil (rect.width);
-				bitmapHeight = Math.ceil (rect.height);
+				bitmapWidth = Math.ceil (rect.width * pixelRatio);
+				bitmapHeight = Math.ceil (rect.height * pixelRatio);
 				
 				if (!needRender && __cacheBitmap != null && (bitmapWidth != __cacheBitmap.width || bitmapHeight !=__cacheBitmap.height)) {
 					
@@ -1139,6 +1140,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					if (__cacheBitmap == null || bitmapWidth != __cacheBitmap.width || bitmapHeight != __cacheBitmap.height) {
 						
 						__cacheBitmapData = new BitmapData (bitmapWidth, bitmapHeight, true, color);
+						@:privateAccess __cacheBitmapData.__pixelRatio = pixelRatio;
 						//__cacheBitmapData.disposeImage ();
 						
 						// #if !openfljs
@@ -1188,7 +1190,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				matrix.copyFrom (__renderTransform);
 				matrix.tx -= Math.round (rect.x);
 				matrix.ty -= Math.round (rect.y);
-
+				
 				@:privateAccess __cacheBitmapData.__draw (this, matrix, null, null, null, renderSession.allowSmoothing);
 
 				Matrix.__pool.release (matrix);
@@ -1215,12 +1217,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					
 					if (needSecondBitmapData) {
 						bitmapData2 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+						@:privateAccess bitmapData2.__pixelRatio = pixelRatio;
 					} else {
 						bitmapData2 = bitmapData;
 					}
 					
 					if (needCopyOfOriginal) {
 						bitmapData3 = new BitmapData (bitmapData.width, bitmapData.height, true, 0);
+						@:privateAccess bitmapData3.__pixelRatio = pixelRatio;
 					}
 					
 					var sourceRect = bitmapData.rect;
@@ -1250,6 +1254,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 						
 					}
 					
+					__cacheBitmapData = bitmapData;
 					__cacheBitmap.bitmapData = bitmapData;
 					
 				}

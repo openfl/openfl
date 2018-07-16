@@ -44,23 +44,19 @@ class CanvasShape {
 					context.globalAlpha = shape.__worldAlpha;
 					
 					var transform = graphics.__worldTransform;
+					var pixelRatio = renderSession.pixelRatio;
+					var scale = 1; // As opposed of CanvasBitmap, canvases have the same pixelRatio as display, therefore we don't need to scale them and so scale is always 1
 					
 					if (renderSession.roundPixels) {
 						
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, Math.round (transform.tx), Math.round (transform.ty));
+						context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Math.round (transform.tx * pixelRatio), Math.round (transform.ty * pixelRatio));
 						
 					} else {
 						
-						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+						context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * pixelRatio, transform.ty * pixelRatio);
 						
 					}
 					
-					if (renderSession.renderType == DOM) {
-						
-						var reverseScale = 1 / CanvasRenderer.scale;
-						context.scale (reverseScale, reverseScale);
-						
-					}
 					
 					context.drawImage (graphics.__canvas, 0, 0);
 					

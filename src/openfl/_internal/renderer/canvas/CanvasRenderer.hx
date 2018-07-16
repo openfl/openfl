@@ -17,8 +17,6 @@ import js.Browser;
 class CanvasRenderer extends AbstractRenderer {
 	
 	
-	public static var scale (default, null):Float = 1;
-	
 	private var context:CanvasRenderContext;
 	
 	
@@ -40,7 +38,7 @@ class CanvasRenderer extends AbstractRenderer {
 		#end
 		
 		#if (js && html5)
-		scale = stage.window.scale;
+		renderSession.pixelRatio = stage.window.scale;
 		#end
 		
 	}

@@ -38,7 +38,7 @@ class CanvasTilemap {
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
 		var transform = tilemap.__renderTransform;
-		var roundPixels = renderSession.roundPixels || tilemap.__snapToPixel();
+		var roundPixels = renderSession.roundPixels || tilemap.__snapToPixel ();
 		
 		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
@@ -103,14 +103,15 @@ class CanvasTilemap {
 			
 			tileTransform = tile.matrix;
 			tileTransform.concat (transform);
+			var pixelRatio = renderSession.pixelRatio;
 			
 			if (roundPixels) {
 				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, Math.round (tileTransform.tx), Math.round (tileTransform.ty));
+				context.setTransform (tileTransform.a * pixelRatio, tileTransform.b, tileTransform.c, tileTransform.d * pixelRatio, Math.round (tileTransform.tx * pixelRatio), Math.round (tileTransform.ty * pixelRatio));
 				
 			} else {
 				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
+				context.setTransform (tileTransform.a * pixelRatio, tileTransform.b, tileTransform.c, tileTransform.d * pixelRatio, tileTransform.tx * pixelRatio, tileTransform.ty * pixelRatio);
 				
 			}
 			
