@@ -1,7 +1,6 @@
 package openfl._internal.renderer; #if (!display && !flash)
 
 
-import lime.graphics.RenderContext;
 import openfl._internal.renderer.opengl.vao.VertexArrayObjectExtension;
 import lime.graphics.opengl.GLContextType;
 import openfl._internal.renderer.opengl.vao.VertexArrayObjectContext;
@@ -103,8 +102,8 @@ class RenderSession {
 		//maskManager = new MaskManager (this);
 		
 	}
-
-
+	
+	
 }
 
 #else

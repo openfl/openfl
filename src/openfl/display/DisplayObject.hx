@@ -1261,7 +1261,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					}
 					
 					__cacheBitmapData = bitmapData;
-					__cacheBitmap.bitmapData = __cacheBitmapData;
+					__cacheBitmap.bitmapData = bitmapData;
 					
 				}
 				
