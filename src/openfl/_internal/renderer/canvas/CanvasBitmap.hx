@@ -30,7 +30,7 @@ class CanvasBitmap {
 			var transform = bitmap.__renderTransform;
 			var scrollRect = bitmap.__scrollRect;
 			var pixelRatio = renderSession.pixelRatio;
-			var scale = pixelRatio / bitmap.__bitmapData.__pixelRatio;
+			var scale = pixelRatio / bitmap.__bitmapData.__pixelRatio; // Bitmaps can have different pixelRatio than display, therefore we need to scale them properly
 			
 			if (renderSession.roundPixels || bitmap.__snapToPixel ()) {
 				
