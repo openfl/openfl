@@ -1653,7 +1653,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (value != __rotation) {
 			
-			__rotation = value;
+			__rotation = __normalizeAngleAS3(value);
+			
 			var radians = __rotation * (Math.PI / 180);
 			__rotationSine = Math.sin (radians);
 			__rotationCosine = Math.cos (radians);
@@ -1669,6 +1670,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		return value;
 		
+	}
+
+
+	private inline function __normalizeAngleAS3(value:Float):Float {
+
+		var normalized: Float = value % 360;
+
+		if (normalized > 180) {
+			normalized -= 360;
+		} else if (normalized < -180) {
+			normalized += 360;
+		}
+
+		return normalized;
+
 	}
 	
 	
