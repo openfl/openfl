@@ -1370,7 +1370,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		return switch __pixelSnapping {
 			case null | NEVER: false;
 			case ALWAYS: true;
-			case AUTO: __rotation == 0 && __renderTransform.a != 0 && __renderTransform.d != 0; // only snap when not rotated or skewed
+			case AUTO: Math.abs(__renderTransform.a) == 1 && Math.abs(__renderTransform.d) == 1; // only snap when not scaled/rotated/skewed
 		}
 		
 	}
