@@ -972,19 +972,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __updateChildren (transformOnly:Bool):Void {
-		
-		super.__updateChildren (transformOnly);
-		
-		for (child in __children) {
-			
-			child.__update (transformOnly, true);
-			
-		}
-		
-	}
-	
-	
 	
 	
 	// Get & Set Methods

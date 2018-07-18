@@ -1679,23 +1679,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __updateChildren (transformOnly:Bool):Void {
-		
-		var renderParent = __renderParent != null ? __renderParent : parent;
-		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
-		__worldAlpha = __alpha;
-		__worldBlendMode = __blendMode;
-		__worldShader = __shader;
-		
-		if (__transformDirty) {
-			
-			__transformDirty = false;
-			
-		}
-		
-	}
-	
-	
 	private function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		var overrided = overrideTransform != null;

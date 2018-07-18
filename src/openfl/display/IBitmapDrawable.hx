@@ -26,7 +26,6 @@ interface IBitmapDrawable {
 	private function __renderGL (renderer:OpenGLRenderer):Void;
 	private function __renderGLMask (renderer:OpenGLRenderer):Void;
 	private function __update (transformOnly:Bool, updateChildren:Bool):Void;
-	private function __updateChildren (transformOnly:Bool):Void;
 	private function __updateTransforms (?overrideTransform:Matrix = null):Void;
 	
 	private var __mask:DisplayObject;
