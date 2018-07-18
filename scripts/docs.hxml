@@ -14,6 +14,7 @@
 -cpp obj/docs
 -D display
 -D flash_doc_gen
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
@@ -27,6 +28,7 @@ ImportAll
 -D display
 -D native
 -D windows
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
@@ -40,6 +42,7 @@ ImportAll
 -D display
 -D native
 -D mac
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
@@ -53,6 +56,7 @@ ImportAll
 -D display
 -D native
 -D linux
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
@@ -65,6 +69,7 @@ ImportAll
 -neko obj/docs
 -D display
 -D native
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
@@ -78,6 +83,7 @@ ImportAll
 -D display
 -D native
 -D ios
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
@@ -91,6 +97,7 @@ ImportAll
 -D display
 -D native
 -D android
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
@@ -103,6 +110,7 @@ ImportAll
 -js obj/docs
 -D display
 -D html5
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime

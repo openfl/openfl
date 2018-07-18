@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if (!openfl_doc_gen || (js && html5))
 
 
 import openfl.display.Sprite;
@@ -60,3 +60,6 @@ class DOMElement extends DisplayObject {
 	
 	
 }
+
+
+#end

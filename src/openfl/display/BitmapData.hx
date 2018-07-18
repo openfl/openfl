@@ -168,6 +168,7 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public var image (default, null):Image;
 	
+	// #if !flash_doc_gen
 	/**
 	 * Defines whether the bitmap image is readable. Hardware-only bitmap images
 	 * do not support `getPixels`, `setPixels` and other 
@@ -181,6 +182,7 @@ class BitmapData implements IBitmapDrawable {
 	 * will need to be recreated if the current hardware rendering context is lost.
 	 */
 	@:beta public var readable (default, null):Bool;
+	// #end
 	
 	/**
 	 * The rectangle that defines the size and location of the bitmap image. The
@@ -1108,6 +1110,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
 	public static function fromBase64 (base64:String, type:String):BitmapData {
 		
 		#if (js && html5)
@@ -1119,8 +1122,10 @@ class BitmapData implements IBitmapDrawable {
 		#end
 		
 	}
+	#end
 	
 	
+	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
 	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData {
 		
 		#if (js && html5)
@@ -1132,6 +1137,7 @@ class BitmapData implements IBitmapDrawable {
 		#end
 		
 	}
+	#end
 	
 	
 	#if (js && html5)
@@ -1148,6 +1154,7 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
+	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
 	public static function fromFile (path:String):BitmapData {
 		
 		#if (js && html5)
@@ -1159,6 +1166,7 @@ class BitmapData implements IBitmapDrawable {
 		#end
 		
 	}
+	#end
 	
 	
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
@@ -1221,7 +1229,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
+	@:dox(hide) public function getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
 		
 		
 		#if (lime >= "7.0.0")
@@ -1528,7 +1536,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getSurface ():CairoImageSurface {
+	@:dox(hide) public function getSurface ():CairoImageSurface {
 		
 		if (!readable) return null;
 		
@@ -1543,7 +1551,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
+	@:dox(hide) public function getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
 		
 		if (!__isValid) return null;
 		
