@@ -1,9 +1,19 @@
 # Generate platform-specific XML for documentation output
 
+# -xml xml/Flash.xml
+# -swf obj/docs
+# -swf-version 17.0
+# -D display
+# -D doc_gen
+# ImportAll
+# -lib lime
+# -lib openfl
+# --no-output
+
 -xml xml/Flash.xml
--swf obj/docs
--swf-version 17.0
+-cpp obj/docs
 -D display
+-D flash_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
