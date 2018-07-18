@@ -11,6 +11,7 @@ import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.GL;
 import lime.graphics.Image;
@@ -221,6 +222,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __scrollRect:Rectangle;
+	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@:noCompletion private var __surface:CairoSurface;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
@@ -2453,7 +2455,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var gl = renderer.__gl;
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (renderer.__context));
+		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (renderer.__context, true));
 		
 		renderer.__render (source);
 		
@@ -2570,7 +2572,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __getFramebuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLFramebuffer {
+	@:noCompletion private function __getFramebuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, requireStencil:Bool):GLFramebuffer {
 		
 		if (__framebuffer == null || __framebufferContext != context) {
 			
@@ -2593,6 +2595,31 @@ class BitmapData implements IBitmapDrawable {
 				trace (gl.getError ());
 				
 			}
+			
+		}
+		
+		if (requireStencil && __stencilBuffer == null) {
+			
+			#if (lime >= "7.0.0")
+			var gl = context.webgl;
+			#else
+			var gl = context;
+			#end
+			
+			__stencilBuffer = gl.createRenderbuffer ();
+			gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
+			gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
+			
+			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
+				
+				trace (gl.getError ());
+				
+			}
+			
+			gl.bindRenderbuffer (gl.RENDERBUFFER, null);
 			
 		}
 		

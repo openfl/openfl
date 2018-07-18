@@ -611,6 +611,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__stencilReference == 0) return;
 		
 		var mask = __maskObjects.pop ();
+		
 		if (__stencilReference > 1) {
 			
 			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
@@ -829,7 +830,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
-		__gl.bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (__context));
+		__gl.bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (__context, false));
 		
 		if (clear) {
 			
@@ -895,25 +896,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	@:noCompletion private function __resumeClipAndMask (childRenderer:OpenGLRenderer):Void {
 		
-		if (__stencilReference > 0 && childRenderer.__updatedStencil) {
+		if (__stencilReference > 0) {
 			
 			__gl.enable (__gl.STENCIL_TEST);
-			__gl.stencilMask (0xFF);
-			__gl.clear (__gl.STENCIL_BUFFER_BIT);
 			
-			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
-			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			__gl.colorMask (false, false, false, false);
+		} else {
 			
-			for (mask in __maskObjects) {
-				
-				mask.__renderGLMask (this);
-				
-			}
-			
-			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
-			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			__gl.colorMask (true, true, true, true);
+			__gl.disable (__gl.STENCIL_TEST);
 			
 		}
 		
