@@ -3459,9 +3459,17 @@ class TextField extends InteractiveObject {
 				
 				if (__textEngine.multiline) {
 					
-					__replaceSelectedText ("\n", true);
+					var te = new TextEvent (TextEvent.TEXT_INPUT, true, true, "\n");
 					
-					dispatchEvent (new Event (Event.CHANGE, true));
+					dispatchEvent (te);
+					
+					if (!te.isDefaultPrevented()) {
+						
+						__replaceSelectedText ("\n", true);
+						
+						dispatchEvent (new Event (Event.CHANGE, true));
+						
+					}
 					
 				}
 			
@@ -3671,12 +3679,25 @@ class TextField extends InteractiveObject {
 				
 				if (#if mac modifier.metaKey #else modifier.ctrlKey #end) {
 					
-					__replaceSelectedText (Clipboard.text, true);
+					if (Clipboard.text != null) {
+						
+						var te = new TextEvent (TextEvent.TEXT_INPUT, true, true, Clipboard.text);
+						
+						dispatchEvent (te);
+						
+						if (!te.isDefaultPrevented()) {
+							
+							__replaceSelectedText (Clipboard.text, true);
+							
+							dispatchEvent (new Event (Event.CHANGE, true));
+						}
+						
+					}
 					
-					dispatchEvent (new Event (Event.CHANGE, true));
 					
 				} else {
 					
+					// TODO: does this need to occur?
 					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 					
 				}
