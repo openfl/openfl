@@ -1742,7 +1742,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private inline function __setRenderDirty ():Void {
+	@:noCompletion private inline function __setRenderDirty ():Void {
 		
 		if (!__renderDirty) {
 			

@@ -31,7 +31,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	@:require(flash11_3) public var allowsFullScreenInteractive (default, never):Bool;
 	public var application (get, never):Application;
 	
-	private inline function get_application ():Application { return Lib.application; }
+	@:noCompletion private inline function get_application ():Application { return Lib.application; }
 	
 	#if air
 	public var autoOrients:Bool;
@@ -101,7 +101,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var window (get, never):Window;
 	
-	private inline function get_window ():Window { return Lib.application.window; }
+	@:noCompletion private inline function get_window ():Window { return Lib.application.window; }
 	
 	#if flash
 	@:require(flash10_1) public var wmodeGPU (default, never):Bool;

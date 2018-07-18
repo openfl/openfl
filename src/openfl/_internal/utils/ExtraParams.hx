@@ -52,16 +52,17 @@ class ExtraParams {
 	
 	public static function includeExterns ():Void {
 		
-		var childPath = Context.resolvePath ("externs/flash");
+		var childPath = Context.resolvePath ("openfl/_internal/symbols");
 		
 		var parts = StringTools.replace (childPath, "\\", "/").split ("/");
-		parts.pop ();
+		parts.pop (); // _internal
+		parts.pop (); // openfl
+		parts.pop (); // src
+		parts.pop (); // root
 		
-		var externsPath = parts.join ("/");
+		var externsPath = parts.join ("/") + "/externs";
 		
-		// Compiler.addClassPath (externsPath + "/core/openfl");
 		Compiler.addClassPath (externsPath + "/flash");
-		// Compiler.addClassPath (externsPath + "/extras");
 		
 	}
 	

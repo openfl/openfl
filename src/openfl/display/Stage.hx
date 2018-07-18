@@ -2590,7 +2590,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	@:noCompletion private override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		if (transformOnly) {
 			

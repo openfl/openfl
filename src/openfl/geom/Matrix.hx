@@ -730,7 +730,7 @@ class Matrix {
 	}
 	
 	
-	private inline function __cleanValues ():Void {
+	@:noCompletion private inline function __cleanValues ():Void {
 		
 		a = Math.round (a * 1000) / 1000;
 		b = Math.round (b * 1000) / 1000;

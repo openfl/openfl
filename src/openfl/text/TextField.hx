@@ -1708,7 +1708,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private inline function __getAdvance (position):Float {
+	@:noCompletion private inline function __getAdvance (position):Float {
 		
 		#if (js && html5)
 		return position;
@@ -2495,7 +2495,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+	@:noCompletion private override function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		super.__updateTransforms (overrideTransform);
 		__renderTransform.__translateTransformed (__offsetX, __offsetY);

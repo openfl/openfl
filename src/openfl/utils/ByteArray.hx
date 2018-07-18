@@ -1014,7 +1014,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	private inline function __setData (bytes:Bytes):Void {
+	@:noCompletion private inline function __setData (bytes:Bytes):Void {
 		
 		#if eval
 		// TODO: Not quite correct, but this will probably

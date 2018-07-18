@@ -20,13 +20,13 @@ extern class Shader {
 	public function new (code:ByteArray = null):Void;
 	
 	
-	private inline function get_glFragmentSource ():String { return null; }
-	private inline function set_glFragmentSource (value:String):String { return null; }
+	@:noCompletion private inline function get_glFragmentSource ():String { return null; }
+	@:noCompletion private inline function set_glFragmentSource (value:String):String { return null; }
 	
-	private inline function get_glProgram ():String { return null; }
+	@:noCompletion private inline function get_glProgram ():String { return null; }
 	
-	private inline function get_glVertexSource ():String { return null; }
-	private inline function set_glVertexSource (value:String):String { return null; }
+	@:noCompletion private inline function get_glVertexSource ():String { return null; }
+	@:noCompletion private inline function set_glVertexSource (value:String):String { return null; }
 	
 	
 }

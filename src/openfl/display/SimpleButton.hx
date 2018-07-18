@@ -492,7 +492,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	@:noCompletion private override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		super.__update (transformOnly, updateChildren);
 		
@@ -515,7 +515,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __updateChildren (transformOnly:Bool):Void {
+	@:noCompletion private override function __updateChildren (transformOnly:Bool):Void {
 		
 		super.__updateChildren (transformOnly);
 		
@@ -534,7 +534,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+	@:noCompletion private override function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		super.__updateTransforms (overrideTransform);
 		

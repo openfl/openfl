@@ -30,8 +30,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var cacheAsBitmapMatrix:Matrix;
 	#else
 	public var cacheAsBitmapMatrix (get, set):Matrix;
-	private inline function get_cacheAsBitmapMatrix ():Matrix { return transform.concatenatedMatrix; }
-	private inline function set_cacheAsBitmapMatrix (value:Matrix):Matrix { return value; }
+	@:noCompletion private inline function get_cacheAsBitmapMatrix ():Matrix { return transform.concatenatedMatrix; }
+	@:noCompletion private inline function set_cacheAsBitmapMatrix (value:Matrix):Matrix { return value; }
 	#end
 	
 	public var filters:Array<BitmapFilter>;

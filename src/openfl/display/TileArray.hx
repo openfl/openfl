@@ -109,7 +109,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private inline function __init (position:Int):Void {
+	@:noCompletion private inline function __init (position:Int):Void {
 		
 		this.position = position;
 		
@@ -401,14 +401,14 @@ import lime.graphics.GLRenderContext;
 	
 	
 	
-	private inline function get_alpha ():Float {
+	@:noCompletion private inline function get_alpha ():Float {
 		
 		return __data[ALPHA_INDEX + (position * DATA_LENGTH)];
 		
 	}
 	
 	
-	private inline function set_alpha (value:Float):Float {
+	@:noCompletion private inline function set_alpha (value:Float):Float {
 		
 		__dirty[ALPHA_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		return __data[ALPHA_INDEX + (position * DATA_LENGTH)] = value;
@@ -467,14 +467,14 @@ import lime.graphics.GLRenderContext;
 	
 	
 	
-	private inline function get_id ():Int {
+	@:noCompletion private inline function get_id ():Int {
 		
 		return Std.int (__data[ID_INDEX + (position * DATA_LENGTH)]);
 		
 	}
 	
 	
-	private inline function set_id (value:Int):Int {
+	@:noCompletion private inline function set_id (value:Int):Int {
 		
 		__dirty[SOURCE_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		__data[ID_INDEX + (position * DATA_LENGTH)] = value;
@@ -483,7 +483,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private inline function get_length ():Int {
+	@:noCompletion private inline function get_length ():Int {
 		
 		return __length;
 		
@@ -603,14 +603,14 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private inline function get_shader ():Shader {
+	@:noCompletion private inline function get_shader ():Shader {
 		
 		return __shaders[position];
 		
 	}
 	
 	
-	private inline function set_shader (value:Shader):Shader {
+	@:noCompletion private inline function set_shader (value:Shader):Shader {
 		
 		__shaders[position] = value;
 		return value;
@@ -618,14 +618,14 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private inline function get_tileset ():Tileset {
+	@:noCompletion private inline function get_tileset ():Tileset {
 		
 		return __tilesets[position];
 		
 	}
 	
 	
-	private inline function set_tileset (value:Tileset):Tileset {
+	@:noCompletion private inline function set_tileset (value:Tileset):Tileset {
 		
 		__tilesets[position] = value;
 		return value;
@@ -633,14 +633,14 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private inline function get_visible ():Bool {
+	@:noCompletion private inline function get_visible ():Bool {
 		
 		return __visible[position];
 		
 	}
 	
 	
-	private inline function set_visible (value:Bool):Bool {
+	@:noCompletion private inline function set_visible (value:Bool):Bool {
 		
 		__visible[position] = value;
 		return value;

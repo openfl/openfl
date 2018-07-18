@@ -21,10 +21,10 @@ extern class BitmapData implements IBitmapDrawable {
 	public var height (default, never):Int;
 	
 	public var image (get, never):Image;
-	private inline function get_image ():Image { return null; }
+	@:noCompletion private inline function get_image ():Image { return null; }
 	
 	public var readable (get, never):Bool;
-	private inline function get_readable ():Bool { return true; }
+	@:noCompletion private inline function get_readable ():Bool { return true; }
 	
 	public var rect (default, never):Rectangle;
 	public var transparent (default, never):Bool;

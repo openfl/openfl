@@ -221,14 +221,14 @@ class Font extends LimeFont {
 	
 	
 	
-	private inline function get_fontName ():String {
+	@:noCompletion private inline function get_fontName ():String {
 		
 		return name;
 		
 	}
 	
 	
-	private inline function set_fontName (value:String):String {
+	@:noCompletion private inline function set_fontName (value:String):String {
 		
 		return name = value;
 		

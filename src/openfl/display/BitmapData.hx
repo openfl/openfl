@@ -2499,7 +2499,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __fromBase64 (base64:String, type:String):Void {
+	@:noCompletion private inline function __fromBase64 (base64:String, type:String):Void {
 		
 		var image = Image.fromBase64 (base64, type);
 		__fromImage (image);
@@ -2507,7 +2507,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Void {
+	@:noCompletion private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Void {
 		
 		var image = Image.fromBytes (bytes);
 		__fromImage (image);
@@ -2593,7 +2593,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __loadFromBase64 (base64:String, type:String):Future<BitmapData> {
+	@:noCompletion private inline function __loadFromBase64 (base64:String, type:String):Future<BitmapData> {
 		
 		return Image.loadFromBase64 (base64, type).then (function (image) {
 			
@@ -2605,7 +2605,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData> {
+	@:noCompletion private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData> {
 		
 		return Image.loadFromBytes (bytes).then (function (image) {
 			
