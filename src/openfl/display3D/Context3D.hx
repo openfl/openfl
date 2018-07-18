@@ -1,4 +1,4 @@
-package openfl.display3D;
+package openfl.display3D; #if !flash
 
 
 import lime.graphics.opengl.GLFramebuffer;
@@ -42,14 +42,14 @@ import openfl.Vector;
 	
 	public static var supportsVideoTexture (default, null):Bool = #if (js && html5) true #else false #end;
 	
-	private static inline var MAX_SAMPLERS = 8;
-	private static inline var MAX_ATTRIBUTES = 16;
-	private static inline var MAX_PROGRAM_REGISTERS = 128;
+	@:noCompletion private static inline var MAX_SAMPLERS = 8;
+	@:noCompletion private static inline var MAX_ATTRIBUTES = 16;
+	@:noCompletion private static inline var MAX_PROGRAM_REGISTERS = 128;
 	
-	private static var TEXTURE_MAX_ANISOTROPY_EXT:Int = 0;
-	private static var DEPTH_STENCIL:Int = 0;
+	@:noCompletion private static var TEXTURE_MAX_ANISOTROPY_EXT:Int = 0;
+	@:noCompletion private static var DEPTH_STENCIL:Int = 0;
 	
-	private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
+	@:noCompletion private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
 	
 	public var backBufferHeight (default, null):Int = 0;
 	public var backBufferWidth (default, null):Int = 0;
@@ -60,36 +60,36 @@ import openfl.Vector;
 	public var profile (default, null):Context3DProfile = BASELINE;
 	public var totalGPUMemory (default, null):Int = 0;
 	
-	private var __backBufferAntiAlias:Int;
-	private var __backBufferEnableDepthAndStencil:Bool;
-	private var __backBufferWantsBestResolution:Bool;
-	private var __depthRenderBuffer:GLRenderbuffer;
-	private var __depthStencilRenderBuffer:GLRenderbuffer;
-	private var __enableErrorChecking:Bool;
-	private var __fragmentConstants:Float32Array;
-	private var __framebuffer:GLFramebuffer;
-	private var __frameCount:Int;
-	private var __maxAnisotropyCubeTexture:Int;
-	private var __maxAnisotropyTexture2D:Int;
-	private var __positionScale:Float32Array;
-	private var __program:Program3D;
-	private var __renderer:DisplayObjectRenderer;
-	private var __renderToTexture:TextureBase;
-	private var __rttDepthAndStencil:Bool;
-	private var __samplerDirty:Int;
-	private var __samplerTextures:Vector<TextureBase>;
-	private var __samplerStates:Array<SamplerState>;
-	private var __scissorRectangle:Rectangle;
-	private var __stage3D:Stage3D;
-	private var __stats:Vector<Int>;
-	private var __statsCache:Vector<Int>;
-	private var __stencilCompareMode:Context3DCompareMode;
-	private var __stencilRef:Int;
-	private var __stencilReadMask:Int;
-	private var __stencilRenderBuffer:GLRenderbuffer;
-	private var __supportsAnisotropicFiltering:Bool;
-	private var __supportsPackedDepthStencil:Bool;
-	private var __vertexConstants:Float32Array;
+	@:noCompletion private var __backBufferAntiAlias:Int;
+	@:noCompletion private var __backBufferEnableDepthAndStencil:Bool;
+	@:noCompletion private var __backBufferWantsBestResolution:Bool;
+	@:noCompletion private var __depthRenderBuffer:GLRenderbuffer;
+	@:noCompletion private var __depthStencilRenderBuffer:GLRenderbuffer;
+	@:noCompletion private var __enableErrorChecking:Bool;
+	@:noCompletion private var __fragmentConstants:Float32Array;
+	@:noCompletion private var __framebuffer:GLFramebuffer;
+	@:noCompletion private var __frameCount:Int;
+	@:noCompletion private var __maxAnisotropyCubeTexture:Int;
+	@:noCompletion private var __maxAnisotropyTexture2D:Int;
+	@:noCompletion private var __positionScale:Float32Array;
+	@:noCompletion private var __program:Program3D;
+	@:noCompletion private var __renderer:DisplayObjectRenderer;
+	@:noCompletion private var __renderToTexture:TextureBase;
+	@:noCompletion private var __rttDepthAndStencil:Bool;
+	@:noCompletion private var __samplerDirty:Int;
+	@:noCompletion private var __samplerTextures:Vector<TextureBase>;
+	@:noCompletion private var __samplerStates:Array<SamplerState>;
+	@:noCompletion private var __scissorRectangle:Rectangle;
+	@:noCompletion private var __stage3D:Stage3D;
+	@:noCompletion private var __stats:Vector<Int>;
+	@:noCompletion private var __statsCache:Vector<Int>;
+	@:noCompletion private var __stencilCompareMode:Context3DCompareMode;
+	@:noCompletion private var __stencilRef:Int;
+	@:noCompletion private var __stencilReadMask:Int;
+	@:noCompletion private var __stencilRenderBuffer:GLRenderbuffer;
+	@:noCompletion private var __supportsAnisotropicFiltering:Bool;
+	@:noCompletion private var __supportsPackedDepthStencil:Bool;
+	@:noCompletion private var __vertexConstants:Float32Array;
 	
 	#if telemetry
 	//private var __spanPresent:Telemetry.Span;
@@ -98,7 +98,7 @@ import openfl.Vector;
 	#end
 	
 	
-	private function new (stage3D:Stage3D, renderer:DisplayObjectRenderer) {
+	@:noCompletion private function new (stage3D:Stage3D, renderer:DisplayObjectRenderer) {
 		
 		super ();
 		
@@ -336,14 +336,14 @@ import openfl.Vector;
 	}
 	
 	
-	private function __updateBackbufferViewport ():Void {
+	@:noCompletion private function __updateBackbufferViewport ():Void {
 		
 		GLContext3D.__updateBackbufferViewportTEMP (this);
 		
 	}
 	
 	
-	private function __updateBlendFactors ():Void {
+	@:noCompletion private function __updateBlendFactors ():Void {
 		
 		GLContext3D.__updateBlendFactorsTEMP (this);
 		
@@ -357,14 +357,14 @@ import openfl.Vector;
 	
 	
 	
-	private function get_enableErrorChecking ():Bool {
+	@:noCompletion private function get_enableErrorChecking ():Bool {
 		
 		return __enableErrorChecking;
 		
 	}
 	
 	
-	private function set_enableErrorChecking (value:Bool):Bool {
+	@:noCompletion private function set_enableErrorChecking (value:Bool):Bool {
 		
 		GLContext3D.setEnableErrorChecking (value);
 		return __enableErrorChecking = value;
@@ -392,3 +392,8 @@ import openfl.Vector;
 	public static inline var length = 11;
 	
 }
+
+
+#else
+typedef Context3D = flash.display3D.Context3D;
+#end

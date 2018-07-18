@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 #if !openfl_debug
@@ -43,3 +43,8 @@ class ActivityEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef ActivityEvent = flash.events.ActivityEvent;
+#end

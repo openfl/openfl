@@ -12,8 +12,8 @@ import js.html.Element;
 @:deprecated class DOMSprite extends Sprite {
 	
 	
-	private var __active:Bool;
-	private var __element:#if (js && html5) Element #else Dynamic #end;
+	@:noCompletion private var __active:Bool;
+	@:noCompletion private var __element:#if (js && html5) Element #else Dynamic #end;
 	
 	
 	public function new (element:#if (js && html5) Element #else Dynamic #end) {
@@ -26,7 +26,7 @@ import js.html.Element;
 	
 	
 	#if !flash
-	private override function __renderDOM (renderer:DOMRenderer):Void {
+	@:noCompletion private override function __renderDOM (renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {

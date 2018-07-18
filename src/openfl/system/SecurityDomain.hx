@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !flash
 
 
 #if !openfl_debug
@@ -12,8 +12,10 @@ class SecurityDomain {
 	
 	public static var currentDomain (default, null) = new SecurityDomain ();
 	
+	// @:noCompletion @:dox(hide) @:require(flash11_3) public var domainID (default, null):String;
 	
-	private function new () {
+	
+	@:noCompletion private function new () {
 		
 		
 		
@@ -21,3 +23,8 @@ class SecurityDomain {
 	
 	
 }
+
+
+#else
+typedef SecurityDomain = flash.system.SecurityDomain;
+#end

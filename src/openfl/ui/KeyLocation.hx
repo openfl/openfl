@@ -1,4 +1,4 @@
-package openfl.ui;
+package openfl.ui; #if !flash
 
 
 @:enum abstract KeyLocation(Int) from Int to Int from UInt to UInt {
@@ -9,3 +9,8 @@ package openfl.ui;
 	public var STANDARD = 0;
 	
 }
+
+
+#else
+typedef KeyLocation = flash.ui.KeyLocation;
+#end

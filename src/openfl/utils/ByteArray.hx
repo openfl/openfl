@@ -43,7 +43,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 	
-	private static var __bytePointer = new BytePointer ();
+	@:noCompletion private static var __bytePointer = new BytePointer ();
 	
 	public var length (get, set):Int;
 	
@@ -321,19 +321,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
 	
-	private static var __defaultEndian:Endian = null;
+	@:noCompletion private static var __defaultEndian:Endian = null;
 	
 	public var bytesAvailable (get, never):UInt;
 	public var endian (get, set):Endian;
 	public var objectEncoding:ObjectEncoding;
 	public var position:Int;
 	
-	private var __endian:Endian;
-	private var __length:Int;
+	@:noCompletion private var __endian:Endian;
+	@:noCompletion private var __length:Int;
 	
 	
 	#if lime_bytes_length_getter
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped global.Object.defineProperties (ByteArrayData.prototype, {
 			"bytesAvailable": { get: untyped __js__ ("function () { return this.get_bytesAvailable (); }") },
@@ -975,7 +975,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	private function __fromBytes (bytes:Bytes):Void {
+	@:noCompletion private function __fromBytes (bytes:Bytes):Void {
 		
 		__setData (bytes);
 		#if lime_bytes_length_getter l = bytes.l #else length = bytes.length #end;
@@ -983,7 +983,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	private function __resize (size:Int) {
+	@:noCompletion private function __resize (size:Int) {
 		
 		if (size > __length) {
 			
@@ -1146,7 +1146,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * read methods each time you access a ByteArray object to ensure that you
 	 * are reading valid data.
 	 */
-	#if (flash && !display)
+	// #if (flash && !display)
+	#if flash
 	public var bytesAvailable (default, never):UInt;
 	#else
 	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
@@ -1156,13 +1157,14 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * Changes or reads the byte order for the data; either
 	 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 	 */
-	#if (flash && !display)
+	// #if (flash && !display)
+	#if flash
 	public var endian:Endian;
 	#else
 	public var endian (get, set):Endian;
 	
-	private function get_endian ():Endian;
-	private function set_endian (value:Endian):Endian;
+	@:noCompletion private function get_endian ():Endian;
+	@:noCompletion private function set_endian (value:Endian):Endian;
 	#end
 	
 	/**

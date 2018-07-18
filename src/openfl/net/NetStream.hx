@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 import haxe.Timer;
@@ -21,33 +21,77 @@ import js.Browser;
 class NetStream extends EventDispatcher {
 	
 	
+	// @:noCompletion @:dox(hide) @:require(flash10) public static var CONNECT_TO_FMS:String;
+	// @:noCompletion @:dox(hide) @:require(flash10) public static var DIRECT_CONNECTIONS:String;
+	
 	public var audioCodec (default, null):Int;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var audioReliable:Bool;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var audioSampleAccess:Bool;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var backBufferLength (default, null):Float;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var backBufferTime:Float;
+	
 	public var bufferLength (default, null):Float;
 	public var bufferTime:Float;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var bufferTimeMax:Float;
+	
 	public var bytesLoaded (default, null):Int;
 	public var bytesTotal (default, null):Int;
 	public var checkPolicyFile:Bool;
 	public var client:Dynamic;
 	public var currentFPS (default, null):Float;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var dataReliable:Bool;
+	
 	public var decodedFrames (default, null):Int;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public var farID (default, null):String;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var farNonce (default, null):String;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var inBufferSeek:Bool;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var info (default, null):flash.net.NetStreamInfo;
+	
 	public var liveDelay (default, null):Float;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public var maxPauseBufferTime:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastAvailabilitySendToAll:Bool;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastAvailabilityUpdatePeriod:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastFetchPeriod:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastInfo (default, null):flash.net.NetStreamMulticastInfo;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastPushNeighborLimit:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastRelayMarginDuration:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastWindowDuration:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var nearNonce (default, null):String;
+	
 	public var objectEncoding (default, null):ObjectEncoding;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public var peerStreams (default, null):Array<Dynamic>;
+	
 	public var soundTransform:SoundTransform;
 	public var speed (get, set):Float;
 	public var time (default, null):Float;
+	
+	// @:noCompletion @:dox(hide) @:require(flash11) public var useHardwareDecoder:Bool;
+	// @:noCompletion @:dox(hide) @:require(flash11_3) public var useJitterBuffer:Bool;
+	
 	public var videoCode (default, null):Int;
 	
-	private var __closed:Bool;
-	private var __connection:NetConnection;
-	private var __timer:Timer;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var videoReliable:Bool;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var videoSampleAccess:Bool;
+	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:flash.media.VideoStreamSettings;
+	
+	
+	@:noCompletion private var __closed:Bool;
+	@:noCompletion private var __connection:NetConnection;
+	@:noCompletion private var __timer:Timer;
 	
 	#if (js && html5)
-	private var __video (default, null):VideoElement;
+	@:noCompletion private var __video (default, null):VideoElement;
 	#end
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperty (NetStream.prototype, "speed", { get: untyped __js__ ("function () { return this.get_speed (); }"), set: untyped __js__ ("function (v) { return this.set_speed (v); }") });
 		
@@ -85,6 +129,13 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public function appendBytes (bytes:ByteArray):Void;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public function appendBytesAction (netStreamAppendBytesAction:String):Void;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public function attach (connection:NetConnection):Void;
+	// @:noCompletion @:dox(hide) public function attachAudio (microphone:flash.media.Microphone):Void;
+	// @:noCompletion @:dox(hide) public function attachCamera (theCamera:flash.media.Camera, snapshotMilliseconds:Int = -1):Void;
+	
+	
 	public function close ():Void {
 		
 		#if (js && html5)
@@ -109,6 +160,9 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
+	// @:noCompletion @:dox(hide) @:require(flash10) public function onPeerConnect (subscriber:NetStream):Bool;
+	
+	
 	public function pause ():Void {
 		
 		#if (js && html5)
@@ -128,6 +182,15 @@ class NetStream extends EventDispatcher {
 		#end
 		
 	}
+	
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public function play2 (param:flash.net.NetStreamPlayOptions):Void;
+	// @:noCompletion @:dox(hide) public function publish (?name:String, ?type:String):Void;
+	// @:noCompletion @:dox(hide) public function receiveAudio (flag:Bool):Void;
+	// @:noCompletion @:dox(hide) public function receiveVideo (flag:Bool):Void;
+	// @:noCompletion @:dox(hide) public function receiveVideoFPS (FPS:Float):Void;
+	// //public function requestVideoStatus ():Void;
+	// @:noCompletion @:dox(hide) public static function resetDRMVouchers ():Void;
 	
 	
 	public function requestVideoStatus ():Void {
@@ -193,6 +256,10 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
+	// @:noCompletion @:dox(hide) public function send (handlerName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public function step (frames:Int):Void;
+	
+	
 	public function togglePause ():Void {
 		
 		#if (js && html5)
@@ -212,7 +279,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	private function __playStatus (code:String):Void {
+	@:noCompletion private function __playStatus (code:String):Void {
 		
 		#if (js && html5)
 		if (__video == null) return;
@@ -247,28 +314,28 @@ class NetStream extends EventDispatcher {
 	
 	
 	
-	private function video_onCanPlay (event:Dynamic):Void {
+	@:noCompletion private function video_onCanPlay (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.canplay");
 		
 	}
 	
 	
-	private function video_onCanPlayThrough (event:Dynamic):Void {
+	@:noCompletion private function video_onCanPlayThrough (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.canplaythrough");
 		
 	}
 	
 	
-	private function video_onDurationChanged (event:Dynamic):Void {
+	@:noCompletion private function video_onDurationChanged (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.durationchanged");
 		
 	}
 	
 	
-	private function video_onEnd (event:Dynamic):Void {
+	@:noCompletion private function video_onEnd (event:Dynamic):Void {
 		
 		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Stop" } ));
 		__playStatus ("NetStream.Play.Complete");
@@ -276,7 +343,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	private function video_onError (event:Dynamic):Void {
+	@:noCompletion private function video_onError (event:Dynamic):Void {
 		
 		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Stop" } ));
 		__playStatus ("NetStream.Play.error");
@@ -284,7 +351,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	private function video_onLoadMetaData (event:Dynamic):Void {
+	@:noCompletion private function video_onLoadMetaData (event:Dynamic):Void {
 		
 		#if (js && html5)
 		if (__video == null) return;
@@ -310,21 +377,21 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	private function video_onLoadStart (event:Dynamic):Void {
+	@:noCompletion private function video_onLoadStart (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.loadstart");
 		
 	}
 	
 	
-	private function video_onPause (event:Dynamic):Void {
+	@:noCompletion private function video_onPause (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.pause");
 		
 	}
 	
 	
-	private function video_onPlaying (event:Dynamic):Void {
+	@:noCompletion private function video_onPlaying (event:Dynamic):Void {
 		
 		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Start" } ));
 		__playStatus ("NetStream.Play.playing");
@@ -332,21 +399,21 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	private function video_onSeeking (event:Dynamic):Void {
+	@:noCompletion private function video_onSeeking (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.seeking");
 		
 	}
 	
 	
-	private function video_onStalled (event:Dynamic):Void {
+	@:noCompletion private function video_onStalled (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.stalled");
 		
 	}
 	
 	
-	private function video_onTimeUpdate (event:Dynamic):Void {
+	@:noCompletion private function video_onTimeUpdate (event:Dynamic):Void {
 		
 		#if (js && html5)
 		if (__video == null) return;
@@ -359,7 +426,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	private function video_onWaiting (event:Dynamic):Void {
+	@:noCompletion private function video_onWaiting (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.waiting");
 		
@@ -373,7 +440,7 @@ class NetStream extends EventDispatcher {
 	
 	
 	
-	private function get_speed ():Float {
+	@:noCompletion private function get_speed ():Float {
 		
 		#if (js && html5)
 		return __video != null ? __video.playbackRate : 1;
@@ -384,7 +451,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	private function set_speed (value:Float):Float {
+	@:noCompletion private function set_speed (value:Float):Float {
 		
 		#if (js && html5)
 		return __video != null ? __video.playbackRate = value : value;
@@ -396,3 +463,8 @@ class NetStream extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef NetStream = flash.net.NetStream;
+#end

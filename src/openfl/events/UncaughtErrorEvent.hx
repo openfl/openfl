@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 #if !openfl_debug
@@ -43,3 +43,8 @@ class UncaughtErrorEvent extends ErrorEvent {
 	
 	
 }
+
+
+#else
+typedef UncaughtErrorEvent = flash.events.UncaughtErrorEvent;
+#end

@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 import openfl.geom.Orientation3D;
@@ -21,7 +21,7 @@ class Matrix3D {
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Matrix3D.prototype, {
 			"determinant": { get: untyped __js__ ("function () { return this.get_determinant (); }"), set: untyped __js__ ("function (v) { return this.set_determinant (v); }") },
@@ -1023,7 +1023,7 @@ class Matrix3D {
 	}
 	
 	
-	private static function __getAxisRotation (x:Float, y:Float, z:Float, degrees:Float):Matrix3D {
+	@:noCompletion private static function __getAxisRotation (x:Float, y:Float, z:Float, degrees:Float):Matrix3D {
 		
 		var m = new Matrix3D ();
 		
@@ -1092,3 +1092,8 @@ class Matrix3D {
 	
 	
 }
+
+
+#else
+typedef Matrix3D = flash.geom.Matrix3D;
+#end

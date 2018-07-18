@@ -1,4 +1,4 @@
-package openfl.display; #if !openfljs
+package openfl.display; #if !flash #if !openfljs
 
 
 @:enum abstract ShaderParameterType(Null<Int>) {
@@ -120,4 +120,7 @@ package openfl.display; #if !openfljs
 }
 
 
+#end
+#else
+typedef ShaderParameterType = flash.display.ShaderParameterType;
 #end

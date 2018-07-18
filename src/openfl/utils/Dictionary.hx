@@ -164,8 +164,8 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 @:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements Map.IMap<K, V> {
 	
 	
-	private var types:Map<String, K>;
-	private var values:Map<String, V>;
+	@:noCompletion private var types:Map<String, K>;
+	@:noCompletion private var values:Map<String, V>;
 	
 	
 	public function new ():Void {
@@ -252,8 +252,8 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 @:dox(hide) private class FloatMap<K:Float, V> implements Map.IMap<K, V> {
 	
 	
-	private var floatKeys:Array<K>;
-	private var values:Array<V>;
+	@:noCompletion private var floatKeys:Array<K>;
+	@:noCompletion private var values:Array<V>;
 	
 	
 	public function new ():Void {
@@ -332,7 +332,7 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	* Binary search through floatKeys array, which is sorted, to find an index of a given key. If the array
 	* doesn't contain such key -1 is returned.
 	*/
-	private function indexOf (key:K):Int {
+	@:noCompletion private function indexOf (key:K):Int {
 		
 		var len:Int = floatKeys.length;
 		var startIndex:Int = 0;
@@ -383,7 +383,7 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	*	Insert the key at a proper index in the array and return the index. The array must will remain sorted. 
 	*   The keys are unique so if the key already existis in the array it isn't added but it's index is returned.
 	*/
-	private function insertSorted(key:K, value: V): Void {
+	@:noCompletion private function insertSorted(key:K, value: V): Void {
 		
 		var len:Int = floatKeys.length;
 		var startIndex:Int = 0;
@@ -457,7 +457,7 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 @:dox(hide) private class UtilsObjectMap<K:Object, V> implements Map.IMap<K, V> {
 	
 	
-	private var map:ObjectMap<{}, V>;
+	@:noCompletion private var map:ObjectMap<{}, V>;
 	
 	
 	public function new ():Void {

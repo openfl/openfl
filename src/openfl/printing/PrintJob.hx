@@ -1,4 +1,4 @@
-package openfl.printing;
+package openfl.printing; #if !flash
 
 
 import haxe.Timer;
@@ -38,8 +38,8 @@ class PrintJob {
 	public var paperHeight (default, null):Int;
 	public var paperWidth (default, null):Int;
 	
-	private var __bitmapData:Array<BitmapData>;
-	private var __started:Bool;
+	@:noCompletion private var __bitmapData:Array<BitmapData>;
+	@:noCompletion private var __started:Bool;
 	
 	
 	public function new () {
@@ -148,3 +148,8 @@ class PrintJob {
 	
 	
 }
+
+
+#else
+typedef PrintJob = flash.printing.PrintJob;
+#end

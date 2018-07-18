@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 #if !openfl_debug
@@ -48,3 +48,8 @@ class FullScreenEvent extends ActivityEvent {
 	
 	
 }
+
+
+#else
+typedef FullScreenEvent = flash.events.FullScreenEvent;
+#end

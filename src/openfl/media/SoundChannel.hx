@@ -1,10 +1,22 @@
-package openfl.media;
+package openfl.media; #if !flash
 
 
 import lime.media.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
+
+
+/**
+ * The SoundChannel class controls a sound in an application. Every sound is
+ * assigned to a sound channel, and the application can have multiple sound
+ * channels that are mixed together. The SoundChannel class contains a
+ * `stop()` method, properties for monitoring the amplitude
+ * (volume) of the channel, and a property for assigning a SoundTransform
+ * object to the channel.
+ * 
+ * @event soundComplete Dispatched when a sound has finished playing.
+ */
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -17,18 +29,48 @@ import openfl.media.Sound;
 @:final @:keep class SoundChannel extends EventDispatcher {
 	
 	
+	/**
+	 * The current amplitude(volume) of the left channel, from 0(silent) to 1
+	 * (full amplitude).
+	 */
 	public var leftPeak (default, null):Float;
+	
+	/**
+	 * When the sound is playing, the `position` property indicates in
+	 * milliseconds the current point that is being played in the sound file.
+	 * When the sound is stopped or paused, the `position` property
+	 * indicates the last point that was played in the sound file.
+	 *
+	 * A common use case is to save the value of the `position`
+	 * property when the sound is stopped. You can resume the sound later by
+	 * restarting it from that saved position. 
+	 *
+	 * If the sound is looped, `position` is reset to 0 at the
+	 * beginning of each loop.
+	 */
 	public var position (get, set):Float;
+	
+	/**
+	 * The current amplitude(volume) of the right channel, from 0(silent) to 1
+	 * (full amplitude).
+	 */
 	public var rightPeak (default, null):Float;
+	
+	/**
+	 * The SoundTransform object assigned to the sound channel. A SoundTransform
+	 * object includes properties for setting volume, panning, left speaker
+	 * assignment, and right speaker assignment.
+	 */
 	public var soundTransform (get, set):SoundTransform;
 	
-	private var __isValid:Bool;
-	private var __soundTransform:SoundTransform;
-	private var __source:AudioSource;
+	
+	@:noCompletion private var __isValid:Bool;
+	@:noCompletion private var __soundTransform:SoundTransform;
+	@:noCompletion private var __source:AudioSource;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (SoundChannel.prototype, {
 			"position": { get: untyped __js__ ("function () { return this.get_position (); }"), set: untyped __js__ ("function (v) { return this.set_position (v); }") },
@@ -39,7 +81,7 @@ import openfl.media.Sound;
 	#end
 	
 	
-	private function new (source:AudioSource = null, soundTransform:SoundTransform = null):Void {
+	@:noCompletion private function new (source:AudioSource = null, soundTransform:SoundTransform = null):Void {
 		
 		super (this);
 		
@@ -71,6 +113,10 @@ import openfl.media.Sound;
 	}
 	
 	
+	/**
+	 * Stops the sound playing in the channel.
+	 * 
+	 */
 	public function stop ():Void {
 		
 		SoundMixer.__unregisterSoundChannel (this);
@@ -83,7 +129,7 @@ import openfl.media.Sound;
 	}
 	
 	
-	private function __dispose ():Void {
+	@:noCompletion private function __dispose ():Void {
 		
 		if (!__isValid) return;
 		
@@ -94,7 +140,7 @@ import openfl.media.Sound;
 	}
 	
 	
-	private function __updateTransform ():Void {
+	@:noCompletion private function __updateTransform ():Void {
 		
 		this.soundTransform = soundTransform;
 		
@@ -108,7 +154,7 @@ import openfl.media.Sound;
 	
 	
 	
-	private function get_position ():Float {
+	@:noCompletion private function get_position ():Float {
 		
 		if (!__isValid) return 0;
 		
@@ -117,7 +163,7 @@ import openfl.media.Sound;
 	}
 	
 	
-	private function set_position (value:Float):Float {
+	@:noCompletion private function set_position (value:Float):Float {
 		
 		if (!__isValid) return 0;
 		
@@ -127,14 +173,14 @@ import openfl.media.Sound;
 	}
 	
 	
-	private function get_soundTransform ():SoundTransform {
+	@:noCompletion private function get_soundTransform ():SoundTransform {
 		
 		return __soundTransform.clone ();
 		
 	}
 	
 	
-	private function set_soundTransform (value:SoundTransform):SoundTransform {
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform {
 		
 		if (value != null) {
 			
@@ -175,7 +221,7 @@ import openfl.media.Sound;
 	
 	
 	
-	private function source_onComplete ():Void {
+	@:noCompletion private function source_onComplete ():Void {
 		
 		SoundMixer.__unregisterSoundChannel (this);
 		
@@ -186,3 +232,8 @@ import openfl.media.Sound;
 	
 	
 }
+
+
+#else
+typedef SoundChannel = flash.media.SoundChannel;
+#end

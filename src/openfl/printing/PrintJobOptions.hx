@@ -1,4 +1,4 @@
-package openfl.printing;
+package openfl.printing; #if !flash
 
 
 #if !openfl_debug
@@ -21,3 +21,8 @@ class PrintJobOptions {
 	
 	
 }
+
+
+#else
+typedef PrintJobOptions = flash.printing.PrintJobOptions;
+#end

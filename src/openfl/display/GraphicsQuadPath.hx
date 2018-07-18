@@ -18,7 +18,7 @@ import openfl.Vector;
 	public var transforms:Vector<Float>;
 	
 	#if !flash
-	public var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
 	#end
 	
 	

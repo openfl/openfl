@@ -41,136 +41,136 @@ import openfl.Lib;
 class AGALMiniAssembler {
 	
 	
-	private static var OPMAP = new Map<String, OpCode> ();
-	private static var REGMAP = new Map<String, Register> ();
-	private static var SAMPLEMAP = new Map<String, Sampler> ();
+	@:noCompletion private static var OPMAP = new Map<String, OpCode> ();
+	@:noCompletion private static var REGMAP = new Map<String, Register> ();
+	@:noCompletion private static var SAMPLEMAP = new Map<String, Sampler> ();
 	
-	private static inline var MAX_NESTING = 4;
-	private static inline var MAX_OPCODES = 4096;
+	@:noCompletion private static inline var MAX_NESTING = 4;
+	@:noCompletion private static inline var MAX_OPCODES = 4096;
 	
-	private static inline var FRAGMENT = "fragment";
-	private static inline var VERTEX = "vertex";
+	@:noCompletion private static inline var FRAGMENT = "fragment";
+	@:noCompletion private static inline var VERTEX = "vertex";
 	
 	// masks and shifts
-	private static inline var SAMPLER_TYPE_SHIFT = 8;
-	private static inline var SAMPLER_DIM_SHIFT = 12;
-	private static inline var SAMPLER_SPECIAL_SHIFT = 16;
-	private static inline var SAMPLER_REPEAT_SHIFT = 20;
-	private static inline var SAMPLER_MIPMAP_SHIFT = 24;
-	private static inline var SAMPLER_FILTER_SHIFT = 28;
+	@:noCompletion private static inline var SAMPLER_TYPE_SHIFT = 8;
+	@:noCompletion private static inline var SAMPLER_DIM_SHIFT = 12;
+	@:noCompletion private static inline var SAMPLER_SPECIAL_SHIFT = 16;
+	@:noCompletion private static inline var SAMPLER_REPEAT_SHIFT = 20;
+	@:noCompletion private static inline var SAMPLER_MIPMAP_SHIFT = 24;
+	@:noCompletion private static inline var SAMPLER_FILTER_SHIFT = 28;
 	
 	// regmap flags
-	private static inline var REG_WRITE = 0x1;
-	private static inline var REG_READ = 0x2;
-	private static inline var REG_FRAG = 0x20;
-	private static inline var REG_VERT = 0x40;
+	@:noCompletion private static inline var REG_WRITE = 0x1;
+	@:noCompletion private static inline var REG_READ = 0x2;
+	@:noCompletion private static inline var REG_FRAG = 0x20;
+	@:noCompletion private static inline var REG_VERT = 0x40;
 	
 	// opmap flags
-	private static inline var OP_SCALAR = 0x1;
-	private static inline var OP_SPECIAL_TEX = 0x8;
-	private static inline var OP_SPECIAL_MATRIX = 0x10;
-	private static inline var OP_FRAG_ONLY = 0x20;
-	private static inline var OP_VERT_ONLY = 0x40;
-	private static inline var OP_NO_DEST = 0x80;
-	private static inline var OP_VERSION2 = 0x100;
-	private static inline var OP_INCNEST = 0x200;
-	private static inline var OP_DECNEST = 0x400;
+	@:noCompletion private static inline var OP_SCALAR = 0x1;
+	@:noCompletion private static inline var OP_SPECIAL_TEX = 0x8;
+	@:noCompletion private static inline var OP_SPECIAL_MATRIX = 0x10;
+	@:noCompletion private static inline var OP_FRAG_ONLY = 0x20;
+	@:noCompletion private static inline var OP_VERT_ONLY = 0x40;
+	@:noCompletion private static inline var OP_NO_DEST = 0x80;
+	@:noCompletion private static inline var OP_VERSION2 = 0x100;
+	@:noCompletion private static inline var OP_INCNEST = 0x200;
+	@:noCompletion private static inline var OP_DECNEST = 0x400;
 	
 	// opcodes
-	private static inline var MOV = "mov";
-	private static inline var ADD = "add";
-	private static inline var SUB = "sub";
-	private static inline var MUL = "mul";
-	private static inline var DIV = "div";
-	private static inline var RCP = "rcp";
-	private static inline var MIN = "min";
-	private static inline var MAX = "max";
-	private static inline var FRC = "frc";
-	private static inline var SQT = "sqt";
-	private static inline var RSQ = "rsq";
-	private static inline var POW = "pow";
-	private static inline var LOG = "log";
-	private static inline var EXP = "exp";
-	private static inline var NRM = "nrm";
-	private static inline var SIN = "sin";
-	private static inline var COS = "cos";
-	private static inline var CRS = "crs";
-	private static inline var DP3 = "dp3";
-	private static inline var DP4 = "dp4";
-	private static inline var ABS = "abs";
-	private static inline var NEG = "neg";
-	private static inline var SAT = "sat";
-	private static inline var M33 = "m33";
-	private static inline var M44 = "m44";
-	private static inline var M34 = "m34";
-	private static inline var DDX = "ddx";
-	private static inline var DDY = "ddy";
-	private static inline var IFE = "ife";
-	private static inline var INE = "ine";
-	private static inline var IFG = "ifg";
-	private static inline var IFL = "ifl";
-	private static inline var IEG = "ieg";
-	private static inline var IEL = "iel";
-	private static inline var ELS = "els";
-	private static inline var EIF = "eif";
-	private static inline var TED = "ted";
-	private static inline var KIL = "kil";
-	private static inline var TEX = "tex";
-	private static inline var SGE = "sge";
-	private static inline var SLT = "slt";
-	private static inline var SGN = "sgn";
-	private static inline var SEQ = "seq";
-	private static inline var SNE = "sne";
+	@:noCompletion private static inline var MOV = "mov";
+	@:noCompletion private static inline var ADD = "add";
+	@:noCompletion private static inline var SUB = "sub";
+	@:noCompletion private static inline var MUL = "mul";
+	@:noCompletion private static inline var DIV = "div";
+	@:noCompletion private static inline var RCP = "rcp";
+	@:noCompletion private static inline var MIN = "min";
+	@:noCompletion private static inline var MAX = "max";
+	@:noCompletion private static inline var FRC = "frc";
+	@:noCompletion private static inline var SQT = "sqt";
+	@:noCompletion private static inline var RSQ = "rsq";
+	@:noCompletion private static inline var POW = "pow";
+	@:noCompletion private static inline var LOG = "log";
+	@:noCompletion private static inline var EXP = "exp";
+	@:noCompletion private static inline var NRM = "nrm";
+	@:noCompletion private static inline var SIN = "sin";
+	@:noCompletion private static inline var COS = "cos";
+	@:noCompletion private static inline var CRS = "crs";
+	@:noCompletion private static inline var DP3 = "dp3";
+	@:noCompletion private static inline var DP4 = "dp4";
+	@:noCompletion private static inline var ABS = "abs";
+	@:noCompletion private static inline var NEG = "neg";
+	@:noCompletion private static inline var SAT = "sat";
+	@:noCompletion private static inline var M33 = "m33";
+	@:noCompletion private static inline var M44 = "m44";
+	@:noCompletion private static inline var M34 = "m34";
+	@:noCompletion private static inline var DDX = "ddx";
+	@:noCompletion private static inline var DDY = "ddy";
+	@:noCompletion private static inline var IFE = "ife";
+	@:noCompletion private static inline var INE = "ine";
+	@:noCompletion private static inline var IFG = "ifg";
+	@:noCompletion private static inline var IFL = "ifl";
+	@:noCompletion private static inline var IEG = "ieg";
+	@:noCompletion private static inline var IEL = "iel";
+	@:noCompletion private static inline var ELS = "els";
+	@:noCompletion private static inline var EIF = "eif";
+	@:noCompletion private static inline var TED = "ted";
+	@:noCompletion private static inline var KIL = "kil";
+	@:noCompletion private static inline var TEX = "tex";
+	@:noCompletion private static inline var SGE = "sge";
+	@:noCompletion private static inline var SLT = "slt";
+	@:noCompletion private static inline var SGN = "sgn";
+	@:noCompletion private static inline var SEQ = "seq";
+	@:noCompletion private static inline var SNE = "sne";
 	
 	// registers
-	private static inline var VA = "va";
-	private static inline var VC = "vc";
-	private static inline var VT = "vt";
-	private static inline var VO = "vo";
-	private static inline var VI = "vi";
-	private static inline var FC = "fc";
-	private static inline var FT = "ft";
-	private static inline var FS = "fs";
-	private static inline var FO = "fo";
-	private static inline var FD = "fd";
-	private static inline var IID = "iid";
+	@:noCompletion private static inline var VA = "va";
+	@:noCompletion private static inline var VC = "vc";
+	@:noCompletion private static inline var VT = "vt";
+	@:noCompletion private static inline var VO = "vo";
+	@:noCompletion private static inline var VI = "vi";
+	@:noCompletion private static inline var FC = "fc";
+	@:noCompletion private static inline var FT = "ft";
+	@:noCompletion private static inline var FS = "fs";
+	@:noCompletion private static inline var FO = "fo";
+	@:noCompletion private static inline var FD = "fd";
+	@:noCompletion private static inline var IID = "iid";
 	
 	// samplers
-	private static inline var D2 = "2d";
-	private static inline var D3 = "3d";
-	private static inline var CUBE = "cube";
-	private static inline var MIPNEAREST = "mipnearest";
-	private static inline var MIPLINEAR = "miplinear";
-	private static inline var MIPNONE = "mipnone";
-	private static inline var NOMIP = "nomip";
-	private static inline var NEAREST = "nearest";
-	private static inline var LINEAR = "linear";
-	private static inline var ANISOTROPIC2X = "anisotropic2x"; //Introduced by Flash 14
-	private static inline var ANISOTROPIC4X = "anisotropic4x"; //Introduced by Flash 14
-	private static inline var ANISOTROPIC8X = "anisotropic8x"; //Introduced by Flash 14
-	private static inline var ANISOTROPIC16X = "anisotropic16x"; //Introduced by Flash 14
-	private static inline var CENTROID = "centroid";
-	private static inline var SINGLE = "single";
-	private static inline var IGNORESAMPLER = "ignoresampler";
-	private static inline var REPEAT = "repeat";
-	private static inline var WRAP = "wrap";
-	private static inline var CLAMP = "clamp";
-	private static inline var REPEAT_U_CLAMP_V:String = "repeat_u_clamp_v"; //Introduced by Flash 13
-	private static inline var CLAMP_U_REPEAT_V:String = "clamp_u_repeat_v"; //Introduced by Flash 13
-	private static inline var RGBA = "rgba";
-	private static inline var COMPRESSED = "compressed";
-	private static inline var COMPRESSEDALPHA = "compressedalpha";
-	private static inline var DXT1 = "dxt1";
-	private static inline var DXT5 = "dxt5";
-	private static inline var VIDEO = "video";
+	@:noCompletion private static inline var D2 = "2d";
+	@:noCompletion private static inline var D3 = "3d";
+	@:noCompletion private static inline var CUBE = "cube";
+	@:noCompletion private static inline var MIPNEAREST = "mipnearest";
+	@:noCompletion private static inline var MIPLINEAR = "miplinear";
+	@:noCompletion private static inline var MIPNONE = "mipnone";
+	@:noCompletion private static inline var NOMIP = "nomip";
+	@:noCompletion private static inline var NEAREST = "nearest";
+	@:noCompletion private static inline var LINEAR = "linear";
+	@:noCompletion private static inline var ANISOTROPIC2X = "anisotropic2x"; //Introduced by Flash 14
+	@:noCompletion private static inline var ANISOTROPIC4X = "anisotropic4x"; //Introduced by Flash 14
+	@:noCompletion private static inline var ANISOTROPIC8X = "anisotropic8x"; //Introduced by Flash 14
+	@:noCompletion private static inline var ANISOTROPIC16X = "anisotropic16x"; //Introduced by Flash 14
+	@:noCompletion private static inline var CENTROID = "centroid";
+	@:noCompletion private static inline var SINGLE = "single";
+	@:noCompletion private static inline var IGNORESAMPLER = "ignoresampler";
+	@:noCompletion private static inline var REPEAT = "repeat";
+	@:noCompletion private static inline var WRAP = "wrap";
+	@:noCompletion private static inline var CLAMP = "clamp";
+	@:noCompletion private static inline var REPEAT_U_CLAMP_V:String = "repeat_u_clamp_v"; //Introduced by Flash 13
+	@:noCompletion private static inline var CLAMP_U_REPEAT_V:String = "clamp_u_repeat_v"; //Introduced by Flash 13
+	@:noCompletion private static inline var RGBA = "rgba";
+	@:noCompletion private static inline var COMPRESSED = "compressed";
+	@:noCompletion private static inline var COMPRESSEDALPHA = "compressedalpha";
+	@:noCompletion private static inline var DXT1 = "dxt1";
+	@:noCompletion private static inline var DXT5 = "dxt5";
+	@:noCompletion private static inline var VIDEO = "video";
 	
-	private static var initialized = false;
+	@:noCompletion private static var initialized = false;
 	
 	public var agalcode (default, null):ByteArray;
 	public var error (default, null):String;
 	public var verbose:Bool;
 	
-	private var debugEnabled = false;
+	@:noCompletion private var debugEnabled = false;
 	
 	
 	public function new (debugging:Bool = false) {
@@ -751,7 +751,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	private function initregmap (version:Int, ignorelimits:Bool):Void {
+	@:noCompletion private function initregmap (version:Int, ignorelimits:Bool):Void {
 		
 		REGMAP[VA] = new Register (VA, "vertex attribute", 0x0, ignorelimits ? 1024 : ((version == 1 || version == 2) ? 7 : 15), REG_VERT | REG_READ);
 		REGMAP[VC] = new Register (VC, "vertex constant", 0x1, ignorelimits ? 1024 : (version == 1 ? 127 : 249), REG_VERT | REG_READ);
@@ -776,7 +776,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	private static function init ():Void {
+	@:noCompletion private static function init ():Void {
 		
 		initialized = true;
 		
@@ -856,7 +856,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	private function match (value:String, reg:EReg):Array<String> {
+	@:noCompletion private function match (value:String, reg:EReg):Array<String> {
 		
 		var matches = [];
 		var index = 0;

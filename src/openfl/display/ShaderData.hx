@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.utils.ByteArray;
@@ -22,3 +22,8 @@ abstract ShaderData(Dynamic) from Dynamic to Dynamic {
 	
 	
 }
+
+
+#else
+typedef ShaderData = flash.display.ShaderData;
+#end

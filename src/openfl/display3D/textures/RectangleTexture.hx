@@ -1,4 +1,4 @@
-package openfl.display3D.textures;
+package openfl.display3D.textures; #if !flash
 
 
 import lime.utils.ArrayBufferView;
@@ -18,7 +18,7 @@ import openfl.utils.ByteArray;
 @:final class RectangleTexture extends TextureBase {
 	
 	
-	private function new (context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool) {
+	@:noCompletion private function new (context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool) {
 		
 		super (context);
 		
@@ -53,7 +53,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	private override function __setSamplerState (state:SamplerState) {
+	@:noCompletion private override function __setSamplerState (state:SamplerState) {
 		
 		GLRectangleTexture.setSamplerState (this, cast __context.__renderer, state);
 		
@@ -61,3 +61,8 @@ import openfl.utils.ByteArray;
 	
 	
 }
+
+
+#else
+typedef RectangleTexture = flash.display3D.textures.RectangleTexture;
+#end

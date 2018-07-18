@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 #if !openfl_debug
@@ -16,12 +16,12 @@ class PerspectiveProjection {
 	public var focalLength:Float;
 	public var projectionCenter:Point; // FIXME: does this do anything at all?
 	
-	private var __fieldOfView:Float;
-	private var matrix3D:Matrix3D;
+	@:noCompletion private var __fieldOfView:Float;
+	@:noCompletion private var matrix3D:Matrix3D;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperty (PerspectiveProjection.prototype, "fieldOfView", { get: untyped __js__ ("function () { return this.get_fieldOfView (); }"), set: untyped __js__ ("function (v) { return this.set_fieldOfView (v); }") });
 		
@@ -63,14 +63,14 @@ class PerspectiveProjection {
 	
 	
 	
-	private function get_fieldOfView ():Float {
+	@:noCompletion private function get_fieldOfView ():Float {
 		
 		return __fieldOfView;
 		
 	}
 	
 	
-	private function set_fieldOfView (fieldOfView:Float):Float {
+	@:noCompletion private function set_fieldOfView (fieldOfView:Float):Float {
 		
 		var p_nFovY = fieldOfView * TO_RADIAN;
 		__fieldOfView = p_nFovY;
@@ -82,3 +82,8 @@ class PerspectiveProjection {
 	
 	
 }
+
+
+#else
+typedef PerspectiveProjection = flash.geom.PerspectiveProjection;
+#end

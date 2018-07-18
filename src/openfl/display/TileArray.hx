@@ -26,19 +26,19 @@ import lime.graphics.GLRenderContext;
 @:deprecated class TileArray implements ITile {
 	
 	
-	private static inline var ID_INDEX = 0;
-	private static inline var RECT_INDEX = 1;
-	private static inline var MATRIX_INDEX = 5;
-	private static inline var ALPHA_INDEX = 11;
-	private static inline var COLOR_TRANSFORM_INDEX = 12;
-	private static inline var DATA_LENGTH = 21;
+	@:noCompletion private static inline var ID_INDEX = 0;
+	@:noCompletion private static inline var RECT_INDEX = 1;
+	@:noCompletion private static inline var MATRIX_INDEX = 5;
+	@:noCompletion private static inline var ALPHA_INDEX = 11;
+	@:noCompletion private static inline var COLOR_TRANSFORM_INDEX = 12;
+	@:noCompletion private static inline var DATA_LENGTH = 21;
 	
-	private static inline var SOURCE_DIRTY_INDEX = 0;
-	private static inline var MATRIX_DIRTY_INDEX = 1;
-	private static inline var ALPHA_DIRTY_INDEX = 2;
-	private static inline var COLOR_TRANSFORM_DIRTY_INDEX = 3;
-	private static inline var ALL_DIRTY_INDEX = 4;
-	private static inline var DIRTY_LENGTH = 5;
+	@:noCompletion private static inline var SOURCE_DIRTY_INDEX = 0;
+	@:noCompletion private static inline var MATRIX_DIRTY_INDEX = 1;
+	@:noCompletion private static inline var ALPHA_DIRTY_INDEX = 2;
+	@:noCompletion private static inline var COLOR_TRANSFORM_DIRTY_INDEX = 3;
+	@:noCompletion private static inline var ALL_DIRTY_INDEX = 4;
+	@:noCompletion private static inline var DIRTY_LENGTH = 5;
 	
 	public var alpha (get, set):Float;
 	public var colorTransform (get, set):ColorTransform;
@@ -51,27 +51,27 @@ import lime.graphics.GLRenderContext;
 	public var tileset (get, set):Tileset;
 	public var visible (get, set):Bool;
 	
-	private var __buffer:GLBuffer;
-	private var __bufferContext:GLRenderContext;
-	private var __bufferDirty:Bool;
-	private var __bufferData:Float32Array;
-	private var __bufferLength:Int;
-	private var __bufferSkipped:Vector<Bool>;
-	private var __cacheAlpha:Float;
-	private var __cacheDefaultTileset:Tileset;
-	private var __colorTransform:ColorTransform;
-	private var __data:Vector<Float>;
-	private var __dirty:Vector<Bool>;
-	private var __length:Int;
-	private var __matrix:Matrix;
-	private var __rect:Rectangle;
-	private var __shaders:Vector<Shader>;
-	private var __tilesets:Vector<Tileset>;
-	private var __visible:Vector<Bool>;
+	@:noCompletion private var __buffer:GLBuffer;
+	@:noCompletion private var __bufferContext:GLRenderContext;
+	@:noCompletion private var __bufferDirty:Bool;
+	@:noCompletion private var __bufferData:Float32Array;
+	@:noCompletion private var __bufferLength:Int;
+	@:noCompletion private var __bufferSkipped:Vector<Bool>;
+	@:noCompletion private var __cacheAlpha:Float;
+	@:noCompletion private var __cacheDefaultTileset:Tileset;
+	@:noCompletion private var __colorTransform:ColorTransform;
+	@:noCompletion private var __data:Vector<Float>;
+	@:noCompletion private var __dirty:Vector<Bool>;
+	@:noCompletion private var __length:Int;
+	@:noCompletion private var __matrix:Matrix;
+	@:noCompletion private var __rect:Rectangle;
+	@:noCompletion private var __shaders:Vector<Shader>;
+	@:noCompletion private var __tilesets:Vector<Tileset>;
+	@:noCompletion private var __visible:Vector<Bool>;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (TileArray.prototype, {
 			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
@@ -126,7 +126,7 @@ import lime.graphics.GLRenderContext;
 	
 	
 	#if !flash
-	private function __updateGLBuffer (gl:GLRenderContext, defaultTileset:Tileset, worldAlpha:Float, defaultColorTransform:ColorTransform):GLBuffer {
+	@:noCompletion private function __updateGLBuffer (gl:GLRenderContext, defaultTileset:Tileset, worldAlpha:Float, defaultColorTransform:ColorTransform):GLBuffer {
 		
 		// TODO: More closely align internal data format with GL buffer format?
 		
@@ -415,7 +415,7 @@ import lime.graphics.GLRenderContext;
 		
 	}
 	
-	private function get_colorTransform ():ColorTransform {
+	@:noCompletion private function get_colorTransform ():ColorTransform {
 		
 		if (__colorTransform == null) __colorTransform = new ColorTransform ();
 		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
@@ -432,7 +432,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function set_colorTransform (value:ColorTransform):ColorTransform {
+	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
 		
 		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
 		
@@ -490,7 +490,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function set_length (value:Int):Int {
+	@:noCompletion private function set_length (value:Int):Int {
 		
 		__data.length = value * DATA_LENGTH;
 		__dirty.length = value * DIRTY_LENGTH;
@@ -518,7 +518,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function get_matrix ():Matrix {
+	@:noCompletion private function get_matrix ():Matrix {
 		
 		if (__matrix == null) __matrix = new Matrix ();
 		var i = MATRIX_INDEX + (position * DATA_LENGTH);
@@ -533,7 +533,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function set_matrix (value:Matrix):Matrix {
+	@:noCompletion private function set_matrix (value:Matrix):Matrix {
 		
 		var i = MATRIX_INDEX + (position * DATA_LENGTH);
 		
@@ -563,7 +563,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function get_rect ():Rectangle {
+	@:noCompletion private function get_rect ():Rectangle {
 		
 		if (__rect == null) __rect = new Rectangle ();
 		var i = RECT_INDEX + (position * DATA_LENGTH);
@@ -576,7 +576,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function set_rect (value:Rectangle):Rectangle {
+	@:noCompletion private function set_rect (value:Rectangle):Rectangle {
 		
 		if (value != null) {
 			
@@ -656,12 +656,12 @@ import lime.graphics.GLRenderContext;
 private class TileArrayIterator {
 	
 	
-	private var cachePosition:Int;
-	private var data:TileArray;
-	private var position:Int;
+	@:noCompletion private var cachePosition:Int;
+	@:noCompletion private var data:TileArray;
+	@:noCompletion private var position:Int;
 	
 	
-	private function new (data:TileArray) {
+	@:noCompletion private function new (data:TileArray) {
 		
 		this.data = data;
 		cachePosition = data.position;

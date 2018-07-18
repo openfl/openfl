@@ -1,6 +1,10 @@
-package openfl.display; #if !openfljs
+package openfl.display; #if !flash #if !openfljs
 
 
+/**
+ * The StageScaleMode class provides values for the
+ * `Stage.scaleMode` property.
+ */
 @:enum abstract StageScaleMode(Null<Int>) {
 	
 	public var EXACT_FIT = 0;
@@ -52,4 +56,7 @@ package openfl.display; #if !openfljs
 }
 
 
+#end
+#else
+typedef StageScaleMode = flash.display.StageScaleMode;
 #end

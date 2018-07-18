@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 #if !openfl_debug
@@ -21,3 +21,8 @@ package openfl.display;
 	
 	
 }
+
+
+#else
+typedef PNGEncoderOptions = flash.display.PNGEncoderOptions;
+#end
