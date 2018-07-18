@@ -618,7 +618,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		var event = new TextEvent (TextEvent.TEXT_INPUT, true, false, text);
+		var event = new TextEvent (TextEvent.TEXT_INPUT, true, true, text);
 		if (stack.length > 0) {
 			
 			stack.reverse ();
@@ -627,6 +627,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		} else {
 			
 			__dispatchEvent (event);
+			
+		}
+		
+		if (event.isDefaultPrevented ()) {
+			
+			window.onTextInput.cancel ();
 			
 		}
 		
