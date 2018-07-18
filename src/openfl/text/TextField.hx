@@ -3463,7 +3463,7 @@ class TextField extends InteractiveObject {
 					
 					dispatchEvent (te);
 					
-					if (!te.isDefaultPrevented()) {
+					if (!te.isDefaultPrevented ()) {
 						
 						__replaceSelectedText ("\n", true);
 						
@@ -3685,7 +3685,7 @@ class TextField extends InteractiveObject {
 						
 						dispatchEvent (te);
 						
-						if (!te.isDefaultPrevented()) {
+						if (!te.isDefaultPrevented ()) {
 							
 							__replaceSelectedText (Clipboard.text, true);
 							
