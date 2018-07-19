@@ -344,6 +344,8 @@ class CairoTextField {
 								// TODO: draw only once
 								
 								cairo.moveTo (scrollX + start.x, group.offsetY + group.ascent + scrollY);
+								
+								// TODO: Use `showGlyphs` not `showText`
 								cairo.showText (text.substring (selectionStart, selectionEnd));
 								
 							}

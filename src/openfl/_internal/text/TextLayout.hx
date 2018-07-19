@@ -54,7 +54,8 @@ class TextLayout {
 	public var font (default, set):Font;
 	public var glyphs (get, null):Array<Glyph>;
 	public var language (get, set):String;
-	 @:isVar public var positions (get, null):Array<GlyphPosition>;
+	public var letterSpacing:Float;
+	@:isVar public var positions (get, null):Array<GlyphPosition>;
 	public var script (get, set):TextScript;
 	public var size (default, set):Int;
 	public var text (default, set):String;
@@ -165,7 +166,7 @@ class TextLayout {
 					
 				}
 				
-				positions.push (new GlyphPosition (info.codepoint, new Vector2 (position.xAdvance / 64, position.yAdvance / 64), new Vector2 (position.xOffset / 64, position.yOffset / 64)));
+				positions.push (new GlyphPosition (info.codepoint, new Vector2 (position.xAdvance / 64 + letterSpacing, position.yAdvance / 64), new Vector2 (position.xOffset / 64, position.yOffset / 64)));
 				lastCluster = info.cluster;
 				
 			}
