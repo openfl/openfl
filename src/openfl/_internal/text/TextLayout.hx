@@ -50,6 +50,7 @@ class TextLayout {
 	// private static inline var FT_LOAD_TARGET_LCD     FT_LOAD_TARGET_( FT_RENDER_MODE_LCD    )
 	// private static inline var FT_LOAD_TARGET_LCD_V   FT_LOAD_TARGET_( FT_RENDER_MODE_LCD_V  )
 	
+	public var autoHint:Bool;
 	public var direction (get, set):TextDirection;
 	public var font (default, set):Font;
 	public var glyphs (get, null):Array<Glyph>;
@@ -121,7 +122,12 @@ class TextLayout {
 				// 	hb_font_destroy ((hb_font_t*)mHBFont);
 				@:privateAccess font.__setSize (size);
 				__hbFont = new HBFTFont (font);
-				__hbFont.loadFlags = FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT;
+				
+				if (autoHint) {
+					
+					__hbFont.loadFlags = FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT;
+					
+				}
 				
 			} else {
 				

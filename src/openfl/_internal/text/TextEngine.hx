@@ -949,6 +949,7 @@ class TextEngine {
 			}
 			
 			__textLayout.letterSpacing = letterSpacing;
+			__textLayout.autoHint = (antiAliasType != ADVANCED || sharpness < 400);
 			
 			// __textLayout.direction = RIGHT_TO_LEFT;
 			// __textLayout.script = ARABIC;
