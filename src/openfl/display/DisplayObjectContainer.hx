@@ -676,6 +676,23 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	inline function __cleanupRemovedChildren () {
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
+		
+		__removedChildren.length = 0;
+		
+	}
+	
+	
 	@:noCompletion private override function __dispatchChildren (event:Event):Void {
 		
 		if (__children != null) {
@@ -952,17 +969,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
+		__cleanupRemovedChildren ();
 		
 		renderer.__popMaskObject (this);
 		#end
@@ -1022,17 +1029,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
+		__cleanupRemovedChildren ();
 		
 		renderer.__popMaskObject (this);
 		
@@ -1087,17 +1084,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__renderDOM (renderer);
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
+		__cleanupRemovedChildren ();
 		
 		renderer.__popMaskObject (this);
 		
@@ -1110,11 +1097,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__renderDOMClear (renderer);
 		}
 		
-		for (orphan in __removedChildren) {
-			if (orphan.stage == null) {
-				orphan.__renderDOMClear (renderer);
-			}
-		}
+		__cleanupRemovedChildren ();
 		
 	}
 	
@@ -1155,17 +1138,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
+		__cleanupRemovedChildren ();
 		
 		if (__children.length > 0) {
 			
@@ -1191,6 +1164,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__renderGLMask (renderer);
 			
 		}
+		
+		__cleanupRemovedChildren ();
 		
 	}
 	
