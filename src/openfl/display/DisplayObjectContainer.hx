@@ -365,6 +365,38 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	inline function __cleanupRemovedChildren () {
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
+		
+		__removedChildren.length = 0;
+		
+	}
+	
+	
+	override function __cleanup ():Void {
+		
+		super.__cleanup ();
+		
+		for (child in __children) {
+			
+			child.__cleanup ();
+			
+		}
+		
+		__cleanupRemovedChildren ();
+		
+	}
+	
+	
 	private override function __dispatchChildren (event:Event):Void {
 		
 		if (__children != null) {
@@ -626,6 +658,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
+		__cleanupRemovedChildren ();
+
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		super.__renderCairo (renderSession);
@@ -655,18 +689,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
-		
 		renderSession.maskManager.popObject (this);
 		#end
 		
@@ -693,6 +715,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
 		
@@ -724,18 +748,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 		}
-		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -769,6 +781,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
+		__cleanupRemovedChildren ();
+		
 		super.__renderDOM (renderSession);
 		
 		if (__cacheBitmap != null && !__cacheBitmapRender) return;
@@ -796,18 +810,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__renderDOM (renderSession);
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
-		
 		renderSession.maskManager.popObject (this);
 		
 	}
@@ -829,6 +831,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __renderGL (renderSession:RenderSession):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -864,18 +868,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
-		
 		if (__children.length > 0) {
 			
 			renderSession.filterManager.popObject (this);
@@ -887,6 +879,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __renderGLMask (renderSession:RenderSession):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		super.__renderGLMask (renderSession);
 		
@@ -912,18 +906,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 		}
-		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__cleanup ();
-				
-			}
-			
-		}
-		
-		__removedChildren.length = 0;
 		
 	}
 	
