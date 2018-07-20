@@ -2514,14 +2514,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	
 	
 	
-	@:noCompletion private function get_alpha ():Float {
+	@:keep @:noCompletion private function get_alpha ():Float {
 		
 		return __alpha;
 		
 	}
 	
 	
-	@:noCompletion private function set_alpha (value:Float):Float {
+	@:keep @:noCompletion private function set_alpha (value:Float):Float {
 		
 		if (value > 1.0) value = 1.0;
 		if (value != __alpha) __setRenderDirty ();
@@ -2612,7 +2612,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function get_height ():Float {
+	@:keep @:noCompletion private function get_height ():Float {
 		
 		var rect = Rectangle.__pool.get ();
 		__getLocalBounds (rect);
@@ -2623,7 +2623,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function set_height (value:Float):Float {
+	@:keep @:noCompletion private function set_height (value:Float):Float {
 		
 		var rect = Rectangle.__pool.get ();
 		var matrix = Matrix.__pool.get ();
@@ -2759,14 +2759,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function get_rotation ():Float {
+	@:keep @:noCompletion private function get_rotation ():Float {
 		
 		return __rotation;
 		
 	}
 	
 	
-	@:noCompletion private function set_rotation (value:Float):Float {
+	@:keep @:noCompletion private function set_rotation (value:Float):Float {
 		
 		if (value != __rotation) {
 			
@@ -2919,7 +2919,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function get_transform ():Transform {
+	@:keep @:noCompletion private function get_transform ():Transform {
 		
 		if (__objectTransform == null) {
 			
@@ -2932,7 +2932,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function set_transform (value:Transform):Transform {
+	@:keep @:noCompletion private function set_transform (value:Transform):Transform {
 		
 		if (value == null) {
 			
@@ -2976,7 +2976,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function get_width ():Float {
+	@:keep @:noCompletion private function get_width ():Float {
 		
 		var rect = Rectangle.__pool.get ();
 		__getLocalBounds (rect);
@@ -2987,7 +2987,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function set_width (value:Float):Float {
+	@:keep @:noCompletion private function set_width (value:Float):Float {
 		
 		var rect = Rectangle.__pool.get ();
 		var matrix = Matrix.__pool.get ();
@@ -3013,14 +3013,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function get_x ():Float {
+	@:keep @:noCompletion private function get_x ():Float {
 		
 		return __transform.tx;
 		
 	}
 	
 	
-	@:noCompletion private function set_x (value:Float):Float {
+	@:keep @:noCompletion private function set_x (value:Float):Float {
 		
 		if (value != __transform.tx) __setTransformDirty ();
 		return __transform.tx = value;
@@ -3028,14 +3028,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function get_y ():Float {
+	@:keep @:noCompletion private function get_y ():Float {
 		
 		return __transform.ty;
 		
 	}
 	
 	
-	@:noCompletion private function set_y (value:Float):Float {
+	@:keep @:noCompletion private function set_y (value:Float):Float {
 		
 		if (value != __transform.ty) __setTransformDirty ();
 		return __transform.ty = value;
