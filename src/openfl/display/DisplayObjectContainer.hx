@@ -676,6 +676,21 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	override function __cleanup ():Void {
+		
+		super.__cleanup ();
+		
+		for (child in __children) {
+			
+			child.__cleanup ();
+			
+		}
+		
+		__cleanupRemovedChildren ();
+		
+	}
+	
+	
 	inline function __cleanupRemovedChildren () {
 		
 		for (orphan in __removedChildren) {
