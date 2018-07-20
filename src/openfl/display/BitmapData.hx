@@ -434,6 +434,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function dispose ():Void {
 		
+		__cleanup ();
+		
 		image = null;
 		
 		width = 0;
