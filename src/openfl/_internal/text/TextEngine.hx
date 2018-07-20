@@ -948,8 +948,10 @@ class TextEngine {
 				
 			}
 			
+			#if (lime >= "7.0.0")
 			__textLayout.letterSpacing = letterSpacing;
 			__textLayout.autoHint = (antiAliasType != ADVANCED || sharpness < 400);
+			#end
 			
 			// __textLayout.direction = RIGHT_TO_LEFT;
 			// __textLayout.script = ARABIC;
