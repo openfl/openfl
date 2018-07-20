@@ -3,7 +3,7 @@ package openfl.ui; #if !flash
 
 #if (lime >= "7.0.0")
 import lime.app.Application;
-import lime.ui.Cursor;
+import lime.ui.MouseCursor in LimeMouseCursor;
 #else
 import lime.ui.Mouse in LimeMouse;
 #end
@@ -112,7 +112,7 @@ import lime.ui.Mouse in LimeMouse;
 		
 		#if (lime >= "7.0.0")
 		if (value == null) value = AUTO;
-		var setCursor = null;
+		var setCursor:LimeMouseCursor = null;
 		
 		switch (value) {
 			

@@ -13,6 +13,7 @@ import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
+import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.TouchData;
@@ -39,12 +40,11 @@ import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 
 #if (lime >= "7.0.0")
-import lime.ui.Cursor;
+import lime.ui.MouseWheelMode;
 #else
 import lime.app.Preloader;
 import lime.graphics.Renderer;
 import lime.ui.Mouse in LimeMouse;
-import lime.ui.MouseCursor in Cursor;
 #end
 
 #if hxtelemetry
@@ -593,7 +593,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __colorString:String;
 	@:noCompletion private var __contentsScaleFactor:Float;
 	#if (commonjs && !nodejs)
-	@:noCompletion private var __cursor:Cursor;
+	@:noCompletion private var __cursor:LimeMouseCursor;
 	#end
 	@:noCompletion private var __deltaTime:Int;
 	@:noCompletion private var __dirty:Bool;
@@ -1083,11 +1083,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float):Void {
+	public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float #if (lime >= "7.0.0"), deltaMode:MouseWheelMode #end):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
+		#if (lime >= "7.0.0")
+		if (deltaMode == PIXELS) {
+			
+			__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale), deltaMode);
+			
+		} else {
+			
+			__onMouseWheel (Std.int (deltaX), Std.int (deltaY), deltaMode);
+			
+		}
+		#else
 		__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
+		#end
 		
 	}
 	
@@ -2234,7 +2246,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private function __onMouseWheel (deltaX:Float, deltaY:Float):Void {
+	@:noCompletion private function __onMouseWheel (deltaX:Float, deltaY:Float #if (lime >= "7.0.0"), deltaMode:MouseWheelMode #end):Void {
 		
 		var x = __mouseX;
 		var y = __mouseY;

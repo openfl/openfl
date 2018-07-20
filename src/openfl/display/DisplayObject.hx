@@ -2,6 +2,7 @@ package openfl.display; #if !flash
 
 
 import lime.graphics.cairo.Cairo;
+import lime.ui.MouseCursor;
 import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
@@ -34,10 +35,8 @@ import openfl.Vector;
 
 #if (lime >= "7.0.0")
 import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.ui.Cursor;
 #else
 import lime.graphics.utils.ImageCanvasUtil;
-import lime.ui.MouseCursor in Cursor;
 #end
 
 #if (js && html5)
@@ -1341,7 +1340,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:noCompletion private function __getCursor ():Cursor {
+	@:noCompletion private function __getCursor ():MouseCursor {
 		
 		return null;
 		

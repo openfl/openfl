@@ -6,6 +6,7 @@ import lime.system.Clipboard;
 import lime.text.UTF8String;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
+import lime.ui.MouseCursor;
 import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
@@ -48,12 +49,6 @@ import openfl.Lib;
 
 #if (js && html5)
 import js.html.DivElement;
-#end
-
-#if (lime >= "7.0.0")
-import lime.ui.Cursor;
-#else
-import lime.ui.MouseCursor in Cursor;
 #end
 
 
@@ -1819,7 +1814,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __getCursor ():Cursor {
+	@:noCompletion private override function __getCursor ():MouseCursor {
 		
 		var group = __getGroup (mouseX, mouseY, true);
 		

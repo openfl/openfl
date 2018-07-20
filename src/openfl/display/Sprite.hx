@@ -1,18 +1,13 @@
 package openfl.display; #if !flash
 
 
+import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
-#if (lime >= "7.0.0")
-import lime.ui.Cursor;
-#else
-import lime.ui.MouseCursor in Cursor;
-#end
 
 
 /**
@@ -195,7 +190,7 @@ class Sprite extends DisplayObjectContainer {
 	// @:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
 	
 	
-	@:noCompletion private override function __getCursor ():Cursor {
+	@:noCompletion private override function __getCursor ():MouseCursor {
 		
 		return (__buttonMode && useHandCursor) ? POINTER : null;
 		
