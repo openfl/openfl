@@ -955,6 +955,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	@:noCompletion private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
+		__cleanupRemovedChildren ();
+		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		super.__renderCairo (renderer);
@@ -984,8 +986,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__cleanupRemovedChildren ();
-		
 		renderer.__popMaskObject (this);
 		#end
 		
@@ -1012,6 +1012,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	@:noCompletion private override function __renderCanvas (renderer:CanvasRenderer):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
 		
@@ -1044,8 +1046,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__cleanupRemovedChildren ();
-		
 		renderer.__popMaskObject (this);
 		
 		#end
@@ -1071,6 +1071,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	@:noCompletion private override function __renderDOM (renderer:DOMRenderer):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		super.__renderDOM (renderer);
 		
@@ -1099,8 +1101,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__cleanupRemovedChildren ();
-		
 		renderer.__popMaskObject (this);
 		
 	}
@@ -1108,16 +1108,18 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	@:noCompletion private override function __renderDOMClear (renderer:DOMRenderer):Void {
 		
+		__cleanupRemovedChildren ();
+		
 		for (child in __children) {
 			child.__renderDOMClear (renderer);
 		}
-		
-		__cleanupRemovedChildren ();
 		
 	}
 	
 	
 	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -1153,8 +1155,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__cleanupRemovedChildren ();
-		
 		if (__children.length > 0) {
 			
 			// renderer.filterManager.popObject (this);
@@ -1166,6 +1166,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		if (__graphics != null) {
 			
@@ -1179,8 +1181,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__renderGLMask (renderer);
 			
 		}
-		
-		__cleanupRemovedChildren ();
 		
 	}
 	
