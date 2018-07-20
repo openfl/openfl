@@ -995,6 +995,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	@:noCompletion private override function __renderCairoMask (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
+		__cleanupRemovedChildren ();
+		
 		if (__graphics != null) {
 			
 			CairoGraphics.renderMask (__graphics, renderer);
@@ -1054,6 +1056,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	@:noCompletion private override function __renderCanvasMask (renderer:CanvasRenderer):Void {
+		
+		__cleanupRemovedChildren ();
 		
 		if (__graphics != null) {
 			
