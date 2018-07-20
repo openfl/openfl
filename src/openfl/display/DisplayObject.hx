@@ -1213,6 +1213,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 		}
 		
+		if (__cacheBitmap != null) {
+			
+			__cacheBitmap.__cleanup();
+			__cacheBitmap = null;
+			
+		}
+		
+		if (__cacheBitmapData != null) {
+			
+			__cacheBitmapData.dispose();
+			__cacheBitmapData = null;
+			
+		}
+		
 	}
 	
 	
