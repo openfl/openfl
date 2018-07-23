@@ -510,25 +510,6 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __updateChildren (transformOnly:Bool):Void {
-		
-		super.__updateChildren (transformOnly);
-		
-		if (__currentState != null) {
-			
-			__currentState.__updateChildren (transformOnly);
-			
-		}
-		
-		if (hitTestState != null && hitTestState != __currentState) {
-			
-			hitTestState.__updateChildren (transformOnly);
-			
-		}
-		
-	}
-	
-	
 	@:noCompletion private override function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		super.__updateTransforms (overrideTransform);

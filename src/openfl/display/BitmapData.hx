@@ -2874,13 +2874,6 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __updateChildren (transformOnly:Bool):Void {
-		
-		
-		
-	}
-	
-	
 	@:noCompletion private function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		if (overrideTransform == null) {
