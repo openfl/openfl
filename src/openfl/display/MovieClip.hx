@@ -187,7 +187,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private static function __init__ () {
 		
 		__useParentFPS = true;
-		untyped __js__("/// #if (typeof defines == 'undefined' || (!defines['swf-parent-fps'] && !defines['swflite-parent-fps']))");
+		untyped __js__("/// #if (typeof swf_parent_fps !== 'undefined' && swf_parent_fps) || (typeof swflite_parent_fps !== 'undefined' && swflite-parent-fps) || (typeof defines !== 'undefined' && (defines['swf-parent-fps'] || defines['swflite-parent-fps']))");
 		__useParentFPS = false;
 		untyped __js__("/// #endif");
 		
