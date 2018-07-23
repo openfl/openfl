@@ -618,6 +618,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __mouseOverTarget:InteractiveObject;
 	@:noCompletion private var __mouseX:Float;
 	@:noCompletion private var __mouseY:Float;
+	@:noCompletion private var __pendingMouseEvent:Bool;
+	@:noCompletion private var __pendingMouseX:Int;
+	@:noCompletion private var __pendingMouseY:Int;
 	@:noCompletion private var __primaryTouch:Touch;
 	@:noCompletion private var __quality:StageQuality;
 	@:noCompletion private var __renderer:DisplayObjectRenderer;
@@ -1031,7 +1034,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		dispatchPendingMouseMove ();
+		__dispatchPendingMouseEvent ();
 		
 		var type = switch (button) {
 			
@@ -1045,28 +1048,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 	}
 	
-	var hasPendingMouseMove = false;
-	var pendingMouseMoveX:Int;
-	var pendingMouseMoveY:Int;
 	
 	public function onMouseMove (window:Window, x:Float, y:Float):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
-		hasPendingMouseMove = true;
-		pendingMouseMoveX = Std.int (x * window.scale);
-		pendingMouseMoveY = Std.int (y * window.scale);
+		#if openfl_always_dispatch_mouse_events
+		__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+		#else
+		__pendingMouseEvent = true;
+		__pendingMouseX = Std.int (x * window.scale);
+		__pendingMouseY = Std.int (y * window.scale);
+		#end
 		
 	}
 	
-	function dispatchPendingMouseMove () {
-		
-		if (hasPendingMouseMove) {
-			__onMouse (MouseEvent.MOUSE_MOVE, pendingMouseMoveX, pendingMouseMoveY, 0);
-			hasPendingMouseMove = false;
-		}
-		
-	}
 	
 	public function onMouseMoveRelative (window:Window, x:Float, y:Float):Void {
 		
@@ -1079,7 +1075,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		dispatchPendingMouseMove ();
+		__dispatchPendingMouseEvent ();
 		
 		var type = switch (button) {
 			
@@ -1104,7 +1100,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		dispatchPendingMouseMove ();
+		__dispatchPendingMouseEvent ();
 		
 		#if (lime >= "7.0.0")
 		if (deltaMode == PIXELS) {
@@ -1502,7 +1498,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__deltaTime = deltaTime;
 		
-		dispatchPendingMouseMove ();
+		__dispatchPendingMouseEvent ();
 		
 	}
 	
@@ -1700,6 +1696,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__handleError (e);
 			return false;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __dispatchPendingMouseEvent () {
+		
+		if (__pendingMouseEvent) {
+			
+			__onMouse (MouseEvent.MOUSE_MOVE, __pendingMouseX, __pendingMouseY, 0);
+			__pendingMouseEvent = false;
 			
 		}
 		
@@ -1913,7 +1921,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function __onKey (type:String, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
-		dispatchPendingMouseMove ();
+		__dispatchPendingMouseEvent ();
 		
 		MouseEvent.__altKey = modifier.altKey;
 		MouseEvent.__commandKey = modifier.metaKey;
