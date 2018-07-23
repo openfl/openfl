@@ -1,6 +1,7 @@
 -main Tools
 -neko tools.n
 -cp ../src
+-lib hxp
 -lib lime
 -lib format
 -D lime-cairo

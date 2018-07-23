@@ -22,7 +22,7 @@ declare namespace openfl.filters {
 		public matrixY:number;
 		public preserveAlpha:boolean;
 		
-		public constructor (matrixX?:number, matrixY?:number, matrix?:Array<Float>, divisor?:number, bias?:number, preserveAlpha?:boolean, clamp?:boolean, color?:number, alpha?:number):Void;
+		public constructor (matrixX?:number, matrixY?:number, matrix?:Array<number>, divisor?:number, bias?:number, preserveAlpha?:boolean, clamp?:boolean, color?:number, alpha?:number);
 		
 	}
 	

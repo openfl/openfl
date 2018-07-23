@@ -1,4 +1,4 @@
-package openfl.utils; #if !openfljs
+package openfl.utils; #if !flash #if !openfljs
 
 
 @:enum abstract CompressionAlgorithm(Null<Int>) {
@@ -50,4 +50,7 @@ package openfl.utils; #if !openfljs
 }
 
 
+#end
+#else
+typedef CompressionAlgorithm = flash.utils.CompressionAlgorithm;
 #end

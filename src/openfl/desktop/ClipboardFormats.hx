@@ -1,4 +1,4 @@
-package openfl.desktop; #if !openfljs
+package openfl.desktop; #if !flash #if !openfljs
 
 
 @:enum abstract ClipboardFormats(Null<Int>) {
@@ -48,4 +48,7 @@ package openfl.desktop; #if !openfljs
 }
 
 
+#end
+#else
+typedef ClipboardFormats = flash.desktop.ClipboardFormats;
 #end

@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.IGraphicsData;
@@ -23,8 +23,8 @@ import openfl.geom.Matrix;
 	public var spreadMethod:SpreadMethod;
 	public var type:GradientType;
 	
-	public var __graphicsDataType (default, null):GraphicsDataType;
-	public var __graphicsFillType (default, null):GraphicsFillType;
+	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion private var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
 	public function new (type:GradientType = null, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Int> = null, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0) {
@@ -62,3 +62,8 @@ import openfl.geom.Matrix;
 	
 	
 }
+
+
+#else
+typedef GraphicsGradientFill = flash.display.GraphicsGradientFill;
+#end

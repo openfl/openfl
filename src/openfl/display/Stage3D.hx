@@ -1,9 +1,8 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import haxe.Timer;
 import lime.graphics.opengl.GL;
-import lime.graphics.GLRenderContext;
 import openfl._internal.stage3D.opengl.GLStage3D;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
@@ -13,6 +12,12 @@ import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.Vector;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if (js && html5)
 import js.html.webgl.RenderingContext;
@@ -26,37 +31,40 @@ import js.Browser;
 @:noDebug
 #end
 
-@:access(lime.graphics.opengl.GL)
+#if (lime < "7.0.0")
 @:access(lime._backend.html5.HTML5GLRenderContext)
 @:access(lime._backend.native.NativeGLRenderContext)
+#end
+
+@:access(lime.graphics.opengl.GL)
 @:access(openfl.display3D.Context3D)
 
 
 class Stage3D extends EventDispatcher {
 	
 	
-	private static var __active:Bool;
+	@:noCompletion private static var __active:Bool;
 	
 	public var context3D (default, null):Context3D;
 	public var visible:Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
-	private var __contextRequested:Bool;
-	private var __stage:Stage;
-	private var __x:Float;
-	private var __y:Float;
+	@:noCompletion private var __contextRequested:Bool;
+	@:noCompletion private var __stage:Stage;
+	@:noCompletion private var __x:Float;
+	@:noCompletion private var __y:Float;
 	
 	#if (js && html5)
-	private var __canvas:CanvasElement;
-	private var __renderContext:GLRenderContext;
-	private var __style:CSSStyleDeclaration;
-	private var __webgl:RenderingContext;
+	@:noCompletion private var __canvas:CanvasElement;
+	@:noCompletion private var __renderContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __style:CSSStyleDeclaration;
+	@:noCompletion private var __webgl:RenderingContext;
 	#end
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Stage3D.prototype, {
 			"x": { get: untyped __js__ ("function () { return this.get_x (); }"), set: untyped __js__ ("function (v) { return this.set_x (v); }") },
@@ -67,7 +75,7 @@ class Stage3D extends EventDispatcher {
 	#end
 	
 	
-	private function new () {
+	@:noCompletion private function new () {
 		
 		super ();
 		
@@ -99,7 +107,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __createContext (stage:Stage, renderer:DisplayObjectRenderer):Void {
+	@:noCompletion private function __createContext (stage:Stage, renderer:DisplayObjectRenderer):Void {
 		
 		__stage = stage;
 		
@@ -116,16 +124,23 @@ class Stage3D extends EventDispatcher {
 			__canvas.height = stage.stageHeight;
 			
 			var window = stage.window;
-			var transparentBackground = Reflect.hasField (window.config, "background") && window.config.background == null;
-			var colorDepth = Reflect.hasField (window.config, "colorDepth") ? window.config.colorDepth : 16;
+			
+			#if (lime >= "7.0.0")
+			var attributes = renderer.__context.attributes;
+			#else
+			var attributes = window.config;
+			#end
+			
+			var transparentBackground = Reflect.hasField (attributes, "background") && attributes.background == null;
+			var colorDepth = Reflect.hasField (attributes, "colorDepth") ? attributes.colorDepth : 32;
 			
 			var options = {
 				
 				alpha: (transparentBackground || colorDepth > 16) ? true : false,
-				antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
-				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
+				antialias: Reflect.hasField (attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
+				depth: #if (lime < "7.0.0") Reflect.hasField (attributes, "depthBuffer") ? attributes.depthBuffer : #end true,
 				premultipliedAlpha: true,
-				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false,
+				stencil: #if (lime < "7.0.0") Reflect.hasField (attributes, "stencilBuffer") ? attributes.stencilBuffer : #end false,
 				preserveDrawingBuffer: false
 				
 			};
@@ -140,6 +155,9 @@ class Stage3D extends EventDispatcher {
 				
 				// TODO: Need to handle renderer/context better
 				
+				#if (lime >= "7.0.0")
+				// TODO
+				#else
 				__renderContext = new GLRenderContext (cast __webgl);
 				GL.context = __renderContext;
 				
@@ -156,6 +174,7 @@ class Stage3D extends EventDispatcher {
 				__style.setProperty ("z-index", "-1", null);
 				
 				__dispatchCreate ();
+				#end
 				
 			} else {
 				
@@ -170,7 +189,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __dispatchError ():Void {
+	@:noCompletion private function __dispatchError ():Void {
 		
 		__contextRequested = false;
 		dispatchEvent (new ErrorEvent (ErrorEvent.ERROR, false, false, "Context3D not available"));
@@ -178,7 +197,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __dispatchCreate ():Void {
+	@:noCompletion private function __dispatchCreate ():Void {
 		
 		if (__contextRequested) {
 			
@@ -190,7 +209,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __renderCairo (stage:Stage, renderer:CairoRenderer):Void {
+	@:noCompletion private function __renderCairo (stage:Stage, renderer:CairoRenderer):Void {
 		
 		if (!visible) return;
 		
@@ -204,7 +223,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __renderCanvas (stage:Stage, renderer:CanvasRenderer):Void {
+	@:noCompletion private function __renderCanvas (stage:Stage, renderer:CanvasRenderer):Void {
 		
 		if (!visible) return;
 		
@@ -218,7 +237,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __renderDOM (stage:Stage, renderer:DOMRenderer):Void {
+	@:noCompletion private function __renderDOM (stage:Stage, renderer:DOMRenderer):Void {
 		
 		if (!visible) return;
 		
@@ -242,7 +261,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __renderGL (stage:Stage, renderer:OpenGLRenderer):Void {
+	@:noCompletion private function __renderGL (stage:Stage, renderer:OpenGLRenderer):Void {
 		
 		if (!visible) return;
 		
@@ -262,7 +281,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __resize (width:Int, height:Int):Void {
+	@:noCompletion private function __resize (width:Int, height:Int):Void {
 		
 		#if (js && html5)
 		if (__canvas != null) {
@@ -276,7 +295,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __resetContext3DStates ():Void {
+	@:noCompletion private function __resetContext3DStates ():Void {
 		
 		// TODO: Better blend mode fix
 		context3D.__updateBlendFactors ();
@@ -286,14 +305,14 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function get_x ():Float {
+	@:noCompletion private function get_x ():Float {
 		
 		return __x;
 		
 	}
 	
 	
-	private function set_x (value:Float):Float {
+	@:noCompletion private function set_x (value:Float):Float {
 		
 		if (__x == value) return value;
 		
@@ -310,14 +329,14 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function get_y ():Float {
+	@:noCompletion private function get_y ():Float {
 		
 		return __y;
 		
 	}
 	
 	
-	private function set_y (value:Float):Float {
+	@:noCompletion private function set_y (value:Float):Float {
 		
 		if (__y == value) return value;
 		
@@ -335,3 +354,8 @@ class Stage3D extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef Stage3D = flash.display.Stage3D;
+#end

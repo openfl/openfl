@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 import openfl.display.DisplayObject;
@@ -18,7 +18,7 @@ class StaticText extends DisplayObject {
 	public var text (default, null):String;
 	
 	
-	private function new () {
+	@:noCompletion private function new () {
 		
 		super ();
 		
@@ -28,3 +28,8 @@ class StaticText extends DisplayObject {
 	
 	
 }
+
+
+#else
+typedef StaticText = flash.text.StaticText;
+#end

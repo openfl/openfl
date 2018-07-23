@@ -1,4 +1,4 @@
-package openfl.media;
+package openfl.media; #if !flash
 
 
 #if !openfl_debug
@@ -12,17 +12,17 @@ package openfl.media;
 @:final class SoundMixer {
 	
 	
-	private static inline var MAX_ACTIVE_CHANNELS = 32;
+	@:noCompletion private static inline var MAX_ACTIVE_CHANNELS = 32;
 	
 	public static var bufferTime:Int;
 	public static var soundTransform (get, set):SoundTransform;
 	
-	private static var __soundChannels = new Array<SoundChannel> ();
-	private static var __soundTransform = #if (mute || mute_sound) new SoundTransform (0) #else new SoundTransform () #end;
+	@:noCompletion private static var __soundChannels = new Array<SoundChannel> ();
+	@:noCompletion private static var __soundTransform = #if (mute || mute_sound) new SoundTransform (0) #else new SoundTransform () #end;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperty (SoundMixer, "soundTransform", { get: function () { return SoundMixer.get_soundTransform (); }, set: function (value) { return SoundMixer.set_soundTransform (value); } });
 		
@@ -37,6 +37,9 @@ package openfl.media;
 	}
 	
 	
+	// @:noCompletion @:dox(hide) public static function computeSpectrum (outputArray:ByteArray, FFTMode:Bool = false, stretchFactor:Int = 0):Void;
+	
+	
 	public static function stopAll ():Void {
 		
 		for (channel in __soundChannels) {
@@ -48,14 +51,14 @@ package openfl.media;
 	}
 	
 	
-	private static function __registerSoundChannel (soundChannel:SoundChannel):Void {
+	@:noCompletion private static function __registerSoundChannel (soundChannel:SoundChannel):Void {
 		
 		__soundChannels.push (soundChannel);
 		
 	}
 	
 	
-	private static function __unregisterSoundChannel (soundChannel:SoundChannel):Void {
+	@:noCompletion private static function __unregisterSoundChannel (soundChannel:SoundChannel):Void {
 		
 		__soundChannels.remove (soundChannel);
 		
@@ -69,14 +72,14 @@ package openfl.media;
 	
 	
 	
-	private static function get_soundTransform ():SoundTransform {
+	@:noCompletion private static function get_soundTransform ():SoundTransform {
 		
 		return __soundTransform;
 		
 	}
 	
 	
-	private static function set_soundTransform (value:SoundTransform):SoundTransform {
+	@:noCompletion private static function set_soundTransform (value:SoundTransform):SoundTransform {
 		
 		__soundTransform = value.clone ();
 		
@@ -92,3 +95,8 @@ package openfl.media;
 	
 	
 }
+
+
+#else
+typedef SoundMixer = flash.media.SoundMixer;
+#end

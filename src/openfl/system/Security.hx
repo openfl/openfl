@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !flash
 
 
 #if !openfl_debug
@@ -10,6 +10,8 @@ package openfl.system;
 class Security {
 	
 	
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var APPLICATION:String;
+	
 	public static inline var LOCAL_TRUSTED = "localTrusted";
 	public static inline var LOCAL_WITH_FILE = "localWithFile";
 	public static inline var LOCAL_WITH_NETWORK = "localWithNetwork";
@@ -17,6 +19,9 @@ class Security {
 	
 	public static var disableAVM1Loading:Bool;
 	public static var exactSettings:Bool;
+	
+	// @:noCompletion @:dox(hide) @:require(flash11) public static var pageDomain (default, null):String;
+	
 	public static var sandboxType (default, null):String;
 	
 	
@@ -34,6 +39,10 @@ class Security {
 	}
 	
 	
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function duplicateSandboxBridgeInputArguments (toplevel:Dynamic, args:Array<Dynamic>):Array<Dynamic>;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function duplicateSandboxBridgeOutputArgument (toplevel:Dynamic, arg:Dynamic):Dynamic;
+	
+	
 	public static function loadPolicyFile (url:String):Void {
 		
 		//var res = haxe.Http.requestUrl( url );
@@ -41,4 +50,12 @@ class Security {
 	}
 	
 	
+	// @:noCompletion @:dox(hide) public static function showSettings (panel:flash.system.SecurityPanel = null):Void;
+	
+	
 }
+
+
+#else
+typedef Security = flash.system.Security;
+#end

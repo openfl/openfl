@@ -1,10 +1,15 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
-import lime.graphics.CanvasRenderContext;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime.graphics.Canvas2DRenderContext;
+#else
+import lime.graphics.CanvasRenderContext;
+#end
 
 #if (js && html5)
 import js.Browser;
@@ -26,14 +31,14 @@ import js.Browser;
 class CanvasRenderer extends DisplayObjectRenderer {
 	
 	
-	public var context:CanvasRenderContext;
+	public var context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end;
 	public var pixelRatio (default, null):Float = 1;
 	
-	private var __isDOM:Bool;
-	private var __tempMatrix:Matrix;
+	@:noCompletion private var __isDOM:Bool;
+	@:noCompletion private var __tempMatrix:Matrix;
 	
 	
-	private function new (context:CanvasRenderContext) {
+	@:noCompletion private function new (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end) {
 		
 		super ();
 		
@@ -45,7 +50,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applySmoothing (context:CanvasRenderContext, value:Bool) {
+	public function applySmoothing (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end, value:Bool) {
 		
 		untyped (context).mozImageSmoothingEnabled = value;
 		//untyped (context).webkitImageSmoothingEnabled = value;
@@ -55,7 +60,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function setTransform (transform:Matrix, context:CanvasRenderContext = null):Void {
+	public function setTransform (transform:Matrix, context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end = null):Void {
 		
 		if (context == null) {
 			
@@ -82,7 +87,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __clear ():Void {
+	@:noCompletion private override function __clear ():Void {
 		
 		if (__stage != null) {
 			
@@ -111,14 +116,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMask ():Void {
+	@:noCompletion private override function __popMask ():Void {
 		
 		context.restore ();
 		
 	}
 	
 	
-	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (!object.__isCacheBitmapRender && object.__mask != null) {
 			
@@ -135,14 +140,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMaskRect ():Void {
+	@:noCompletion private override function __popMaskRect ():Void {
 		
 		context.restore ();
 		
 	}
 	
 	
-	private override function __pushMask (mask:DisplayObject):Void {
+	@:noCompletion private override function __pushMask (mask:DisplayObject):Void {
 		
 		context.save ();
 		
@@ -157,7 +162,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
@@ -174,7 +179,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	@:noCompletion private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		context.save ();
 		
@@ -187,14 +192,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __render (object:IBitmapDrawable):Void {
+	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
 		object.__renderCanvas (this);
 		
 	}
 	
 	
-	private override function __renderStage3D (stage:Stage):Void {
+	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
 		
 		for (stage3D in stage.stage3Ds) {
 			
@@ -205,7 +210,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __setBlendMode (value:BlendMode):Void {
+	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;
 		
@@ -279,3 +284,8 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	
 	
 }
+
+
+#else
+typedef CanvasRenderer = Dynamic;
+#end

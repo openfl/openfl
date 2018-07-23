@@ -1,16 +1,24 @@
 # Generate platform-specific XML for documentation output
 
+# -xml xml/Flash.xml
+# -swf obj/docs
+# -swf-version 17.0
+# -D display
+# -D doc_gen
+# ImportAll
+# -lib lime
+# -lib openfl
+# --no-output
+
 -xml xml/Flash.xml
--swf obj/docs
--swf-version 17.0
+-cpp obj/docs
 -D display
+-D flash_doc_gen
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/core/flash
--cp ../externs/extras
 --no-output
 
 --next
@@ -19,14 +27,12 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
--D lime-cffi
 -D windows
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
 --no-output
 
 --next
@@ -35,14 +41,12 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
--D lime-cffi
 -D mac
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
 --no-output
 
 --next
@@ -51,14 +55,12 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
--D lime-cffi
 -D linux
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
 --no-output
 
 --next
@@ -67,13 +69,11 @@ ImportAll
 -neko obj/docs
 -D display
 -D native
--D lime-cffi
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
 --no-output
 
 --next
@@ -82,14 +82,12 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
--D lime-cffi
 -D ios
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
 --no-output
 
 --next
@@ -98,76 +96,27 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
--D lime-cffi
 -D android
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
 --no-output
 
 --next
-
-#-xml xml/BlackBerry.xml
-#-cpp obj/docs
-#-D display
-#-D native
-#-D lime-cffi
-#-D blackberry
-#-D doc_gen
-#ImportAll
-#-lib lime
-#-lib openfl
-#-cp ../externs/core/openfl
-#-cp ../externs/extras
-#--no-output
-#
-#--next
-
-#-xml xml/Tizen.xml
-#-cpp obj/docs
-#-D display
-#-D native
-#-D lime-cffi
-#-D tizen
-#ImportAll
-#-lib lime
-#-lib openfl
-#-cp ../externs/core/openfl
-#-cp ../externs/extras
-#--no-output
-#
-#--next
-
-#-xml xml/Firefox.xml
-#-js obj/docs
-#-D display
-#-D html5
-#-D firefox
-#-D doc_gen
-#ImportAll
-#-lib lime
-#-lib openfl
-#-cp ../externs/core/openfl
-#-cp ../externs/extras
-#--no-output
-#
-#--next
 
 -xml xml/HTML5.xml
 -js obj/docs
 -D display
 -D html5
+-D openfl_doc_gen
 -D doc_gen
 ImportAll
 -lib lime
 -lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
 --no-output
 
 --next
 
--cmd haxelib run dox -o ../docs-api -i xml -in openfl -in lime --title "API Reference" -D website "http://www.openfl.org" -D logo "/images/logo.png" -D textColor 0x777777 -theme ../assets/docs-theme
+-cmd haxelib run dox -o ../docs-api -i xml -in openfl --title "API Reference" -D website "http://www.openfl.org" -D logo "/images/logo.png" -D textColor 0x777777 -theme ../assets/docs-theme --toplevel-package openfl

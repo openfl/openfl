@@ -47,7 +47,7 @@ class DrawCommandReader {
 	}
 	
 	
-	private inline function advance ():Void {
+	@:noCompletion private inline function advance ():Void {
 		
 		switch (prev) {
 			
@@ -152,7 +152,7 @@ class DrawCommandReader {
 	}
 	
 	
-	private inline function bool (index:Int):Bool {
+	@:noCompletion private inline function bool (index:Int):Bool {
 		
 		return buffer.b[bPos + index];
 		
@@ -167,35 +167,35 @@ class DrawCommandReader {
 	}
 	
 	
-	private inline function fArr (index:Int):Array<Float> {
+	@:noCompletion private inline function fArr (index:Int):Array<Float> {
 		
 		return buffer.ff[ffPos + index];
 		
 	}
 	
 	
-	private inline function float (index:Int):Float {
+	@:noCompletion private inline function float (index:Int):Float {
 		
 		return buffer.f[fPos + index];
 		
 	}
 	
 	
-	private inline function iArr (index:Int):Array<Int> {
+	@:noCompletion private inline function iArr (index:Int):Array<Int> {
 		
 		return buffer.ii[iiPos + index];
 		
 	}
 	
 	
-	private inline function int (index:Int):Int {
+	@:noCompletion private inline function int (index:Int):Int {
 		
 		return buffer.i[iPos + index];
 		
 	}
 	
 	
-	private inline function obj (index:Int):Dynamic {
+	@:noCompletion private inline function obj (index:Int):Dynamic {
 		
 		return buffer.o[oPos + index];
 		

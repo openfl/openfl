@@ -2,6 +2,7 @@
 -neko scripts/tools.n
 -cp scripts
 -cp src
+-lib hxp
 -lib lime
 -lib format
 -D lime-cairo

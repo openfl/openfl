@@ -6,8 +6,6 @@ import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
-import lime.text.GlyphPosition;
-import lime.text.TextLayout;
 import lime.text.UTF8String;
 import openfl.Vector;
 import openfl.events.Event;
@@ -288,12 +286,12 @@ class TextEngine {
 		#if (js && html5)
 		
 		__context.font = getFont (format);
-
+		
 		if (format.__ascent != null) {
-
+			
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-
+			
 		} else {
 			
 			ascent = format.size;
@@ -308,15 +306,15 @@ class TextEngine {
 		var font = getFontInstance (format);
 		
 		if (format.__ascent != null) {
-
+			
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-
+			
 		} else if (font != null) {
-
+			
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
-
+			
 		} else {
 			
 			ascent = format.size;
@@ -507,19 +505,6 @@ class TextEngine {
 					fontList = [ systemFontDirectory + "/" + format.font ];
 				
 			}
-			
-			#if lime_console
-				
-				// TODO(james4k): until we figure out our story for the above switch
-				// statement, always load arial unless a file is specified.
-				if (format == null
-					|| StringTools.startsWith (format.font,  "_")
-					|| format.font.indexOf(".") == -1
-				) {
-					fontList = [ "arial.ttf" ];
-				}
-				
-			#end
 			
 			if (fontList != null) {
 				
@@ -881,6 +866,13 @@ class TextEngine {
 			// TODO: optimize
 			
 			var positions = [];
+			var letterSpacing = 0.0;
+			
+			if (formatRange.format.letterSpacing != null) {
+				
+				letterSpacing = formatRange.format.letterSpacing;
+				
+			}
 			
 			#if (js && html5)
 			
@@ -900,6 +892,7 @@ class TextEngine {
 				for (i in startIndex...endIndex) {
 					
 					width = __context.measureText (text.substring (startIndex, i + 1)).width;
+					// if (i > 0) width += letterSpacing;
 					
 					positions.push (width - previousWidth);
 					
@@ -925,6 +918,8 @@ class TextEngine {
 						advance = __context.measureText (text.charAt (i)).width;
 						
 					}
+					
+					// if (i > 0) advance += letterSpacing;
 					
 					positions.push (advance);
 					
@@ -952,6 +947,11 @@ class TextEngine {
 				__textLayout.size = formatRange.format.size;
 				
 			}
+			
+			#if (lime >= "7.0.0")
+			__textLayout.letterSpacing = letterSpacing;
+			__textLayout.autoHint = (antiAliasType != ADVANCED || sharpness < 400);
+			#end
 			
 			// __textLayout.direction = RIGHT_TO_LEFT;
 			// __textLayout.script = ARABIC;
@@ -1112,6 +1112,7 @@ class TextEngine {
 		}
 		
 		inline function alignBaseline ():Void {
+			// aligns the baselines of all characters in a single line
 			
 			// since nextFormatRange may not have been called, have to update these manually
 			if (ascent > maxAscent) {
@@ -1126,10 +1127,14 @@ class TextEngine {
 				
 			}
 			
-			for (lg in layoutGroups) {
+			var i = layoutGroups.length;
+			
+			while (--i > -1) {
 				
-				if (lg.lineIndex < lineIndex) continue;
-				if (lg.lineIndex > lineIndex) break;
+				var lg = layoutGroups[i];
+				
+				if (lg.lineIndex < lineIndex) break;
+				if (lg.lineIndex > lineIndex) continue;
 				
 				lg.ascent = maxAscent;
 				lg.height = maxHeightValue;

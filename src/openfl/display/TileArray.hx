@@ -2,13 +2,19 @@ package openfl.display;
 
 
 import lime.graphics.opengl.GLBuffer;
-import lime.graphics.GLRenderContext;
-import lime.graphics.opengl.WebGLContext;
 import lime.utils.Float32Array;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+
+#if (lime >= "7.0.0")
+import lime.graphics.OpenGLRenderContext;
+import lime.graphics.WebGLRenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
+#end
 
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.ColorTransform)
@@ -20,19 +26,19 @@ import openfl.Vector;
 @:deprecated class TileArray implements ITile {
 	
 	
-	private static inline var ID_INDEX = 0;
-	private static inline var RECT_INDEX = 1;
-	private static inline var MATRIX_INDEX = 5;
-	private static inline var ALPHA_INDEX = 11;
-	private static inline var COLOR_TRANSFORM_INDEX = 12;
-	private static inline var DATA_LENGTH = 21;
+	@:noCompletion private static inline var ID_INDEX = 0;
+	@:noCompletion private static inline var RECT_INDEX = 1;
+	@:noCompletion private static inline var MATRIX_INDEX = 5;
+	@:noCompletion private static inline var ALPHA_INDEX = 11;
+	@:noCompletion private static inline var COLOR_TRANSFORM_INDEX = 12;
+	@:noCompletion private static inline var DATA_LENGTH = 21;
 	
-	private static inline var SOURCE_DIRTY_INDEX = 0;
-	private static inline var MATRIX_DIRTY_INDEX = 1;
-	private static inline var ALPHA_DIRTY_INDEX = 2;
-	private static inline var COLOR_TRANSFORM_DIRTY_INDEX = 3;
-	private static inline var ALL_DIRTY_INDEX = 4;
-	private static inline var DIRTY_LENGTH = 5;
+	@:noCompletion private static inline var SOURCE_DIRTY_INDEX = 0;
+	@:noCompletion private static inline var MATRIX_DIRTY_INDEX = 1;
+	@:noCompletion private static inline var ALPHA_DIRTY_INDEX = 2;
+	@:noCompletion private static inline var COLOR_TRANSFORM_DIRTY_INDEX = 3;
+	@:noCompletion private static inline var ALL_DIRTY_INDEX = 4;
+	@:noCompletion private static inline var DIRTY_LENGTH = 5;
 	
 	public var alpha (get, set):Float;
 	public var colorTransform (get, set):ColorTransform;
@@ -45,27 +51,27 @@ import openfl.Vector;
 	public var tileset (get, set):Tileset;
 	public var visible (get, set):Bool;
 	
-	private var __buffer:GLBuffer;
-	private var __bufferContext:GLRenderContext;
-	private var __bufferDirty:Bool;
-	private var __bufferData:Float32Array;
-	private var __bufferLength:Int;
-	private var __bufferSkipped:Vector<Bool>;
-	private var __cacheAlpha:Float;
-	private var __cacheDefaultTileset:Tileset;
-	private var __colorTransform:ColorTransform;
-	private var __data:Vector<Float>;
-	private var __dirty:Vector<Bool>;
-	private var __length:Int;
-	private var __matrix:Matrix;
-	private var __rect:Rectangle;
-	private var __shaders:Vector<Shader>;
-	private var __tilesets:Vector<Tileset>;
-	private var __visible:Vector<Bool>;
+	@:noCompletion private var __buffer:GLBuffer;
+	@:noCompletion private var __bufferContext:GLRenderContext;
+	@:noCompletion private var __bufferDirty:Bool;
+	@:noCompletion private var __bufferData:Float32Array;
+	@:noCompletion private var __bufferLength:Int;
+	@:noCompletion private var __bufferSkipped:Vector<Bool>;
+	@:noCompletion private var __cacheAlpha:Float;
+	@:noCompletion private var __cacheDefaultTileset:Tileset;
+	@:noCompletion private var __colorTransform:ColorTransform;
+	@:noCompletion private var __data:Vector<Float>;
+	@:noCompletion private var __dirty:Vector<Bool>;
+	@:noCompletion private var __length:Int;
+	@:noCompletion private var __matrix:Matrix;
+	@:noCompletion private var __rect:Rectangle;
+	@:noCompletion private var __shaders:Vector<Shader>;
+	@:noCompletion private var __tilesets:Vector<Tileset>;
+	@:noCompletion private var __visible:Vector<Bool>;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (TileArray.prototype, {
 			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
@@ -103,7 +109,7 @@ import openfl.Vector;
 	}
 	
 	
-	private inline function __init (position:Int):Void {
+	@:noCompletion private inline function __init (position:Int):Void {
 		
 		this.position = position;
 		
@@ -120,7 +126,7 @@ import openfl.Vector;
 	
 	
 	#if !flash
-	private function __updateGLBuffer (gl:GLRenderContext, defaultTileset:Tileset, worldAlpha:Float, defaultColorTransform:ColorTransform):GLBuffer {
+	@:noCompletion private function __updateGLBuffer (gl:GLRenderContext, defaultTileset:Tileset, worldAlpha:Float, defaultColorTransform:ColorTransform):GLBuffer {
 		
 		// TODO: More closely align internal data format with GL buffer format?
 		
@@ -395,21 +401,21 @@ import openfl.Vector;
 	
 	
 	
-	private inline function get_alpha ():Float {
+	@:noCompletion private inline function get_alpha ():Float {
 		
 		return __data[ALPHA_INDEX + (position * DATA_LENGTH)];
 		
 	}
 	
 	
-	private inline function set_alpha (value:Float):Float {
+	@:noCompletion private inline function set_alpha (value:Float):Float {
 		
 		__dirty[ALPHA_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		return __data[ALPHA_INDEX + (position * DATA_LENGTH)] = value;
 		
 	}
 	
-	private function get_colorTransform ():ColorTransform {
+	@:noCompletion private function get_colorTransform ():ColorTransform {
 		
 		if (__colorTransform == null) __colorTransform = new ColorTransform ();
 		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
@@ -426,7 +432,7 @@ import openfl.Vector;
 	}
 	
 	
-	private function set_colorTransform (value:ColorTransform):ColorTransform {
+	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
 		
 		var i = COLOR_TRANSFORM_INDEX + (position * DATA_LENGTH);
 		
@@ -461,14 +467,14 @@ import openfl.Vector;
 	
 	
 	
-	private inline function get_id ():Int {
+	@:noCompletion private inline function get_id ():Int {
 		
 		return Std.int (__data[ID_INDEX + (position * DATA_LENGTH)]);
 		
 	}
 	
 	
-	private inline function set_id (value:Int):Int {
+	@:noCompletion private inline function set_id (value:Int):Int {
 		
 		__dirty[SOURCE_DIRTY_INDEX + (position * DIRTY_LENGTH)] = true;
 		__data[ID_INDEX + (position * DATA_LENGTH)] = value;
@@ -477,14 +483,14 @@ import openfl.Vector;
 	}
 	
 	
-	private inline function get_length ():Int {
+	@:noCompletion private inline function get_length ():Int {
 		
 		return __length;
 		
 	}
 	
 	
-	private function set_length (value:Int):Int {
+	@:noCompletion private function set_length (value:Int):Int {
 		
 		__data.length = value * DATA_LENGTH;
 		__dirty.length = value * DIRTY_LENGTH;
@@ -512,7 +518,7 @@ import openfl.Vector;
 	}
 	
 	
-	private function get_matrix ():Matrix {
+	@:noCompletion private function get_matrix ():Matrix {
 		
 		if (__matrix == null) __matrix = new Matrix ();
 		var i = MATRIX_INDEX + (position * DATA_LENGTH);
@@ -527,7 +533,7 @@ import openfl.Vector;
 	}
 	
 	
-	private function set_matrix (value:Matrix):Matrix {
+	@:noCompletion private function set_matrix (value:Matrix):Matrix {
 		
 		var i = MATRIX_INDEX + (position * DATA_LENGTH);
 		
@@ -557,7 +563,7 @@ import openfl.Vector;
 	}
 	
 	
-	private function get_rect ():Rectangle {
+	@:noCompletion private function get_rect ():Rectangle {
 		
 		if (__rect == null) __rect = new Rectangle ();
 		var i = RECT_INDEX + (position * DATA_LENGTH);
@@ -570,7 +576,7 @@ import openfl.Vector;
 	}
 	
 	
-	private function set_rect (value:Rectangle):Rectangle {
+	@:noCompletion private function set_rect (value:Rectangle):Rectangle {
 		
 		if (value != null) {
 			
@@ -597,14 +603,14 @@ import openfl.Vector;
 	}
 	
 	
-	private inline function get_shader ():Shader {
+	@:noCompletion private inline function get_shader ():Shader {
 		
 		return __shaders[position];
 		
 	}
 	
 	
-	private inline function set_shader (value:Shader):Shader {
+	@:noCompletion private inline function set_shader (value:Shader):Shader {
 		
 		__shaders[position] = value;
 		return value;
@@ -612,14 +618,14 @@ import openfl.Vector;
 	}
 	
 	
-	private inline function get_tileset ():Tileset {
+	@:noCompletion private inline function get_tileset ():Tileset {
 		
 		return __tilesets[position];
 		
 	}
 	
 	
-	private inline function set_tileset (value:Tileset):Tileset {
+	@:noCompletion private inline function set_tileset (value:Tileset):Tileset {
 		
 		__tilesets[position] = value;
 		return value;
@@ -627,14 +633,14 @@ import openfl.Vector;
 	}
 	
 	
-	private inline function get_visible ():Bool {
+	@:noCompletion private inline function get_visible ():Bool {
 		
 		return __visible[position];
 		
 	}
 	
 	
-	private inline function set_visible (value:Bool):Bool {
+	@:noCompletion private inline function set_visible (value:Bool):Bool {
 		
 		__visible[position] = value;
 		return value;
@@ -650,12 +656,12 @@ import openfl.Vector;
 private class TileArrayIterator {
 	
 	
-	private var cachePosition:Int;
-	private var data:TileArray;
-	private var position:Int;
+	@:noCompletion private var cachePosition:Int;
+	@:noCompletion private var data:TileArray;
+	@:noCompletion private var position:Int;
 	
 	
-	private function new (data:TileArray) {
+	@:noCompletion private function new (data:TileArray) {
 		
 		this.data = data;
 		cachePosition = data.position;

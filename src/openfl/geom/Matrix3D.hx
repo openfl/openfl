@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 import openfl.geom.Orientation3D;
@@ -21,7 +21,7 @@ class Matrix3D {
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Matrix3D.prototype, {
 			"determinant": { get: untyped __js__ ("function () { return this.get_determinant (); }"), set: untyped __js__ ("function (v) { return this.set_determinant (v); }") },
@@ -371,7 +371,7 @@ class Matrix3D {
 	}
 	
 	
-	public static function create2D (x:Float, y:Float, scale:Float = 1, rotation:Float = 0):Matrix3D {
+	@:dox(hide) @:noCompletion public static function create2D (x:Float, y:Float, scale:Float = 1, rotation:Float = 0):Matrix3D {
 		
 		var theta = rotation * Math.PI / 180.0;
 		var c = Math.cos (theta);
@@ -382,14 +382,14 @@ class Matrix3D {
 	}
 	
 	
-	public static function createABCD (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Matrix3D {
+	@:dox(hide) @:noCompletion public static function createABCD (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Matrix3D {
 		
 		return new Matrix3D (Vector.ofArray ([ a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, tx, ty, 0, 1 ]));
 		
 	}
 	
 	
-	public static function createOrtho (x0:Float, x1:Float, y0:Float, y1:Float, zNear:Float, zFar:Float):Matrix3D {
+	@:dox(hide) @:noCompletion public static function createOrtho (x0:Float, x1:Float, y0:Float, y1:Float, zNear:Float, zFar:Float):Matrix3D {
 		
 		var sx = 1.0 / (x1 - x0);
 		var sy = 1.0 / (y1 - y0);
@@ -607,6 +607,98 @@ class Matrix3D {
 	
 	
 	public function pointAt (pos:Vector3D, at:Vector3D = null, up:Vector3D = null):Void {
+		
+		/**
+			
+			TODO: Need to fix this method
+			
+			```
+			trace ("[0.7071067690849304,0,-0.7071067690849304,0,0.5773502588272095,0.5773502588272095,0.5773502588272095,0,0.40824827551841736,-0.8164965510368347,0.40824827551841736,0,0,0,0,1]");
+			
+			var matrix3D = new Matrix3D ();
+			matrix3D.pointAt (new Vector3D (2, 2, 2, 2), new Vector3D (0, 1, 0, 0), new Vector3D (0, 0, 1, 0));
+			```
+			
+			Below is progress toward the solution (I think), the current implementation is broken
+			
+			I believe the Flash implementation returns an identity matrix if at and/or up are not normalized
+			
+		**/
+		
+		// zaxis = normal(Eye - At)
+		// xaxis = normal(cross(Up, zaxis))
+		// yaxis = cross(zaxis, xaxis)
+		
+		// xaxis.x           yaxis.x           zaxis.x          0
+		// xaxis.y           yaxis.y           zaxis.y          0
+		// xaxis.z           yaxis.z           zaxis.z          0
+		// dot(xaxis, eye)   dot(yaxis, eye)   dot(zaxis, eye)  1
+		
+		// if (at == null) at = new Vector3D (0, 1, 0);
+		// if (up == null) up = new Vector3D (0, 0, 1);
+		
+		// var eye = position;
+		// var target = pos;
+		
+		// // how to include `at`?
+		
+		// var zaxis = eye.subtract (target);
+		// zaxis.normalize ();
+		// // zaxis = zaxis.crossProduct (at);
+		// // zaxis.normalize ();
+		
+		// var xaxis = up.crossProduct (zaxis);
+		// xaxis.normalize ();
+		
+		// var yaxis = zaxis.crossProduct (xaxis);
+		
+		// var dec = decompose (QUATERNION);
+		
+		// rawData[0] = xaxis.x;
+		// rawData[1] = xaxis.y;
+		// rawData[2] = xaxis.z;
+		// rawData[3] = xaxis.dotProduct (eye);
+		
+		// rawData[4] = yaxis.x;
+		// rawData[5] = yaxis.y;
+		// rawData[6] = yaxis.z;
+		// rawData[7] = yaxis.dotProduct (eye);
+		
+		// rawData[8] = zaxis.x;
+		// rawData[9] = zaxis.y;
+		// rawData[10] = zaxis.z;
+		// rawData[11] = zaxis.dotProduct (eye);
+		
+		// rawData[12] = 0;
+		// rawData[13] = 0;
+		// rawData[14] = 0;
+		// rawData[15] = 1.0;
+		
+		// var dec2 = decompose (QUATERNION);
+		// dec[1] = dec2[1];
+		// recompose (dec, QUATERNION);
+		
+		// rawData[0] = xaxis.x;
+		// rawData[4] = xaxis.y;
+		// rawData[8] = xaxis.z;
+		// rawData[12] = xaxis.dotProduct (eye);
+		
+		// rawData[1] = yaxis.x;
+		// rawData[5] = yaxis.y;
+		// rawData[9] = yaxis.z;
+		// rawData[13] = yaxis.dotProduct (eye);
+		
+		// rawData[2] = zaxis.x;
+		// rawData[6] = zaxis.y;
+		// rawData[10] = zaxis.z;
+		// rawData[14] = zaxis.dotProduct (eye);
+		
+		// rawData[3] = 0;
+		// rawData[7] = 0;
+		// rawData[11] = 0;
+		// rawData[15] = 1.0;
+		
+		/** **/
 		
 		if (at == null) {
 			
@@ -931,7 +1023,7 @@ class Matrix3D {
 	}
 	
 	
-	private static function __getAxisRotation (x:Float, y:Float, z:Float, degrees:Float):Matrix3D {
+	@:noCompletion private static function __getAxisRotation (x:Float, y:Float, z:Float, degrees:Float):Matrix3D {
 		
 		var m = new Matrix3D ();
 		
@@ -1000,3 +1092,8 @@ class Matrix3D {
 	
 	
 }
+
+
+#else
+typedef Matrix3D = flash.geom.Matrix3D;
+#end

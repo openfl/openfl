@@ -1,10 +1,8 @@
-package openfl.media;
+package openfl.media; #if !flash
 
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
@@ -23,6 +21,13 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -37,29 +42,29 @@ import openfl.net.NetStream;
 class Video extends DisplayObject {
 	
 	
-	private static inline var __bufferStride = 5;
+	@:noCompletion private static inline var __bufferStride = 5;
 	
 	public var deblocking:Int;
 	public var smoothing:Bool;
 	public var videoHeight (get, never):Int;
 	public var videoWidth (get, never):Int;
 	
-	private var __active:Bool;
-	private var __buffer:GLBuffer;
-	private var __bufferAlpha:Float;
-	private var __bufferColorTransform:ColorTransform;
-	private var __bufferContext:WebGLContext;
-	private var __bufferData:Float32Array;
-	private var __dirty:Bool;
-	private var __height:Float;
-	private var __stream:NetStream;
-	private var __texture:GLTexture;
-	private var __textureTime:Float;
-	private var __width:Float;
+	@:noCompletion private var __active:Bool;
+	@:noCompletion private var __buffer:GLBuffer;
+	@:noCompletion private var __bufferAlpha:Float;
+	@:noCompletion private var __bufferColorTransform:ColorTransform;
+	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else WebGLContext #end;
+	@:noCompletion private var __bufferData:Float32Array;
+	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __height:Float;
+	@:noCompletion private var __stream:NetStream;
+	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __textureTime:Float;
+	@:noCompletion private var __width:Float;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Video.prototype, {
 			"videoHeight": { get: untyped __js__ ("function () { return this.get_videoHeight (); }") },
@@ -105,7 +110,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __enterFrame (deltaTime:Int):Void {
+	@:noCompletion private override function __enterFrame (deltaTime:Int):Void {
 		
 		#if (js && html5)
 		
@@ -120,7 +125,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = Rectangle.__pool.get ();
 		bounds.setTo (0, 0, __width, __height);
@@ -133,9 +138,15 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getBuffer (gl:GLRenderContext):GLBuffer {
+	@:noCompletion private function __getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
 		
-		if (__buffer == null || __bufferContext != gl) {
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl:WebGLContext = context;
+		#end
+		
+		if (__buffer == null || __bufferContext != context) {
 			
 			#if openfl_power_of_two
 			
@@ -209,11 +220,11 @@ class Video extends DisplayObject {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = gl;
+			__bufferContext = context;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
 		} else {
@@ -276,11 +287,17 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function __getTexture (gl:GLRenderContext):GLTexture {
+	@:noCompletion private function __getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
 		
 		#if (js && html5)
 		
 		if (__stream == null || __stream.__video == null) return null;
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl:WebGLContext = context;
+		#end
 		
 		if (__texture == null) {
 			
@@ -300,7 +317,7 @@ class Video extends DisplayObject {
 			var format = gl.RGBA;
 			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texImage2DWEBGL (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;
 			
@@ -317,7 +334,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
@@ -344,7 +361,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __hitTestMask (x:Float, y:Float):Bool {
+	@:noCompletion private override function __hitTestMask (x:Float, y:Float):Bool {
 		
 		var point = Point.__pool.get ();
 		point.setTo (x, y);
@@ -359,7 +376,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __renderCanvas (renderer:CanvasRenderer):Void {
+	@:noCompletion private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		CanvasVideo.render (this, renderer);
 		__renderEvent (renderer);
@@ -367,7 +384,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __renderDOM (renderer:DOMRenderer):Void {
+	@:noCompletion private override function __renderDOM (renderer:DOMRenderer):Void {
 		
 		DOMVideo.render (this, renderer);
 		__renderEvent (renderer);
@@ -375,7 +392,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __renderGL (renderer:OpenGLRenderer):Void {
+	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		GLVideo.render (this, renderer);
 		__renderEvent (renderer);
@@ -383,7 +400,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
+	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
 		GLVideo.renderMask (this, renderer);
 		
@@ -397,14 +414,14 @@ class Video extends DisplayObject {
 	
 	
 	
-	private override function get_height ():Float {
+	@:noCompletion private override function get_height ():Float {
 		
 		return __height * scaleY;
 		
 	}
 	
 	
-	private override function set_height (value:Float):Float {
+	@:noCompletion private override function set_height (value:Float):Float {
 		
 		if (scaleY != 1 || value != __height) {
 			
@@ -419,7 +436,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function get_videoHeight ():Int {
+	@:noCompletion private function get_videoHeight ():Int {
 		
 		#if (js && html5)
 		if (__stream != null && __stream.__video != null) {
@@ -434,7 +451,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private function get_videoWidth ():Int {
+	@:noCompletion private function get_videoWidth ():Int {
 		
 		#if (js && html5)
 		if (__stream != null && __stream.__video != null) {
@@ -449,14 +466,14 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function get_width ():Float {
+	@:noCompletion private override function get_width ():Float {
 		
 		return __width * __scaleX;
 		
 	}
 	
 	
-	private override function set_width (value:Float):Float {
+	@:noCompletion private override function set_width (value:Float):Float {
 		
 		if (__scaleX != 1 || __width != value) {
 			
@@ -472,3 +489,8 @@ class Video extends DisplayObject {
 	
 	
 }
+
+
+#else
+typedef Video = flash.media.Video;
+#end

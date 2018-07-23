@@ -305,7 +305,7 @@ abstract Vector<T>(IVector<T>) {
 	public var fixed:Bool;
 	public var length (get, set):Int;
 	
-	private var __array:Array<Bool>;
+	@:noCompletion private var __array:Array<Bool>;
 	
 	
 	public function new (?length:Int, ?fixed:Bool, ?array:Array<Bool>):Void {
@@ -627,7 +627,7 @@ abstract Vector<T>(IVector<T>) {
 	public var fixed:Bool;
 	public var length (get, set):Int;
 	
-	private var __array:Array<Float>;
+	@:noCompletion private var __array:Array<Float>;
 	
 	
 	public function new (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void {
@@ -959,7 +959,7 @@ abstract Vector<T>(IVector<T>) {
 	public var fixed:Bool;
 	public var length (get, set):Int;
 	
-	private var __array:Array<Function>;
+	@:noCompletion private var __array:Array<Function>;
 	
 	
 	public function new (?length:Int, ?fixed:Bool, ?array:Array<Function>):Void {
@@ -1282,7 +1282,7 @@ abstract Vector<T>(IVector<T>) {
 	public var fixed:Bool;
 	public var length (get, set):Int;
 	
-	private var __array:Array<Int>;
+	@:noCompletion private var __array:Array<Int>;
 	
 	
 	public function new (?length:Int, ?fixed:Bool, ?array:Array<Int>):Void {
@@ -1596,7 +1596,7 @@ abstract Vector<T>(IVector<T>) {
 	public var fixed:Bool;
 	public var length (get, set):Int;
 	
-	private var __array:Array<T>;
+	@:noCompletion private var __array:Array<T>;
 	
 	
 	public function new (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void {
@@ -2231,7 +2231,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	public var length (get, set):Int;
 	
 	
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped __js__ ("var prefix = (typeof openfl_VectorData !== 'undefined');
 		var ref = (prefix ? openfl_VectorData : VectorData);
@@ -2277,7 +2277,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 	}
 	
 	
-	private function construct (instance:Dynamic, ?length:Int, ?fixed:Bool) {
+	@:noCompletion private function construct (instance:Dynamic, ?length:Int, ?fixed:Bool) {
 		
 		if (length != null) {
 			
@@ -2592,8 +2592,8 @@ abstract Vector<T>(VectorData<T>) from VectorData<T> {
 private class VectorIterator<T> {
 	
 	
-	private var index:Int;
-	private var vector:Vector<T>;
+	@:noCompletion private var index:Int;
+	@:noCompletion private var vector:Vector<T>;
 	
 	
 	public function new (vector:Vector<T>) {
@@ -2924,8 +2924,8 @@ abstract Vector<T>(VectorData<T>) {
 @:dox(hide) private class VectorDataIterator<T> {
 	
 	
-	private var index:Int;
-	private var vectorData:VectorData<T>;
+	@:noCompletion private var index:Int;
+	@:noCompletion private var vectorData:VectorData<T>;
 	
 	
 	public function new (data:VectorData<T>) {

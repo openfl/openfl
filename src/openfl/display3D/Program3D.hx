@@ -1,16 +1,21 @@
-package openfl.display3D;
+package openfl.display3D; #if !flash
 
 
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.graphics.GLRenderContext;
 import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import openfl._internal.stage3D.opengl.GLProgram3D;
 import openfl._internal.stage3D.SamplerState;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -23,25 +28,25 @@ import openfl.Vector;
 @:final class Program3D {
 	
 	
-	private var __alphaSamplerEnabled:Array<Uniform>;
-	private var __alphaSamplerUniforms:List<Uniform>;
-	private var __context:Context3D;
-	private var __fragmentShaderID:GLShader;
-	private var __fragmentSource:String;
-	private var __fragmentUniformMap:UniformMap;
-	private var __memUsage:Int;
-	private var __positionScale:Uniform;
-	private var __programID:GLProgram;
-	private var __samplerStates:Vector<SamplerState>;
-	private var __samplerUniforms:List<Uniform>;
-	private var __samplerUsageMask:Int;
-	private var __uniforms:List<Uniform>;
-	private var __vertexShaderID:GLShader;
-	private var __vertexSource:String;
-	private var __vertexUniformMap:UniformMap;
+	@:noCompletion private var __alphaSamplerEnabled:Array<Uniform>;
+	@:noCompletion private var __alphaSamplerUniforms:List<Uniform>;
+	@:noCompletion private var __context:Context3D;
+	@:noCompletion private var __fragmentShaderID:GLShader;
+	@:noCompletion private var __fragmentSource:String;
+	@:noCompletion private var __fragmentUniformMap:UniformMap;
+	@:noCompletion private var __memUsage:Int;
+	@:noCompletion private var __positionScale:Uniform;
+	@:noCompletion private var __programID:GLProgram;
+	@:noCompletion private var __samplerStates:Vector<SamplerState>;
+	@:noCompletion private var __samplerUniforms:List<Uniform>;
+	@:noCompletion private var __samplerUsageMask:Int;
+	@:noCompletion private var __uniforms:List<Uniform>;
+	@:noCompletion private var __vertexShaderID:GLShader;
+	@:noCompletion private var __vertexSource:String;
+	@:noCompletion private var __vertexUniformMap:UniformMap;
 	
 	
-	private function new (context3D:Context3D) {
+	@:noCompletion private function new (context3D:Context3D) {
 		
 		__context = context3D;
 		
@@ -72,7 +77,7 @@ import openfl.Vector;
 	}
 	
 	
-	private function __flush ():Void {
+	@:noCompletion private function __flush ():Void {
 		
 		__vertexUniformMap.flush ();
 		__fragmentUniformMap.flush ();
@@ -80,14 +85,14 @@ import openfl.Vector;
 	}
 	
 	
-	private function __getSamplerState (sampler:Int):SamplerState {
+	@:noCompletion private function __getSamplerState (sampler:Int):SamplerState {
 		
 		return __samplerStates[sampler];
 		
 	}
 	
 	
-	private function __markDirty (isVertex:Bool, index:Int, count:Int):Void {
+	@:noCompletion private function __markDirty (isVertex:Bool, index:Int, count:Int):Void {
 		
 		if (isVertex) {
 			
@@ -102,7 +107,7 @@ import openfl.Vector;
 	}
 	
 	
-	private function __setPositionScale (positionScale:Float32Array):Void {
+	@:noCompletion private function __setPositionScale (positionScale:Float32Array):Void {
 		
 		if (__positionScale != null) {
 			
@@ -113,14 +118,14 @@ import openfl.Vector;
 	}
 	
 	
-	private function __setSamplerState (sampler:Int, state:SamplerState):Void {
+	@:noCompletion private function __setSamplerState (sampler:Int, state:SamplerState):Void {
 		
 		__samplerStates[sampler] = state;
 		
 	}
 	
 	
-	private function __use ():Void {
+	@:noCompletion private function __use ():Void {
 		
 		GLProgram3D.use (this, cast __context.__renderer);
 		
@@ -148,13 +153,13 @@ import openfl.Vector;
 	public var regCount:Int;
 	public var isDirty:Bool;
 	
-	public var gl:GLRenderContext;
+	public var context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
 	public var regDataPointer:BytePointer;
 	
 	
-	public function new (gl:GLRenderContext) {
+	public function new (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end) {
 		
-		this.gl = gl;
+		this.context = context;
 		
 		isDirty = true;
 		regDataPointer = new BytePointer ();
@@ -164,7 +169,13 @@ import openfl.Vector;
 	
 	public function flush ():Void {
 		
-		GLProgram3D.flushUniform (this, gl);
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl = context;
+		#end
+		
+		GLProgram3D.flushUniform (this, context);
 		
 	}
 	
@@ -183,10 +194,10 @@ import openfl.Vector;
 	
 	// TODO: it would be better to use a bitmask with a dirty bit per uniform, but not super important now
 	
-	private var __allDirty:Bool;
-	private var __anyDirty:Bool;
-	private var __registerLookup:Vector<Uniform>;
-	private var __uniforms:Array<Uniform>;
+	@:noCompletion private var __allDirty:Bool;
+	@:noCompletion private var __anyDirty:Bool;
+	@:noCompletion private var __registerLookup:Vector<Uniform>;
+	@:noCompletion private var __uniforms:Array<Uniform>;
 	
 	
 	public function new (list:Array<Uniform>) {
@@ -299,3 +310,8 @@ import openfl.Vector;
 	
 	
 }
+
+
+#else
+typedef Program3D = flash.display3D.Program3D;
+#end

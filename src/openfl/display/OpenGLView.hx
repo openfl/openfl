@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if ((lime < "7.0.0") || (openfl < "8.4.0"))
 
 
 import lime.graphics.opengl.GL;
@@ -17,8 +17,11 @@ import js.Browser;
 @:noDebug
 #end
 
+#if (lime < "7.0.0")
 @:access(lime._backend.html5.HTML5GLRenderContext)
 @:access(lime._backend.native.NativeGLRenderContext)
+#end
+
 @:access(lime.graphics.opengl.GL)
 
 
@@ -30,8 +33,8 @@ import js.Browser;
 	
 	public static var isSupported (get, never):Bool;
 	
-	private var __added:Bool;
-	private var __initialized:Bool;
+	@:noCompletion private var __added:Bool;
+	@:noCompletion private var __initialized:Bool;
 	
 	
 	public function new () {
@@ -85,7 +88,7 @@ import js.Browser;
 	
 	
 	#if !flash
-	private override function __enterFrame (deltaTime:Int):Void {
+	@:noCompletion private override function __enterFrame (deltaTime:Int):Void {
 		
 		if (__render != null) __setRenderDirty ();
 		
@@ -94,7 +97,7 @@ import js.Browser;
 	
 	
 	#if !flash
-	private override function __renderCanvas (renderer:CanvasRenderer):Void {
+	@:noCompletion private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		/*if (!__added) {
 			
@@ -110,7 +113,7 @@ import js.Browser;
 	
 	
 	#if !flash
-	private override function __renderDOM (renderer:DOMRenderer):Void {
+	@:noCompletion private override function __renderDOM (renderer:DOMRenderer):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
@@ -186,7 +189,7 @@ import js.Browser;
 	
 	
 	#if !flash
-	private override function __renderGL (renderer:OpenGLRenderer):Void {
+	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		if (stage != null && __renderable) {
 			
@@ -212,7 +215,7 @@ import js.Browser;
 	}
 	
 	
-	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
+	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
 		
 		
@@ -226,7 +229,7 @@ import js.Browser;
 	
 	
 	
-	private static function get_isSupported ():Bool {
+	@:noCompletion private static function get_isSupported ():Bool {
 		
 		#if flash
 		
@@ -274,7 +277,7 @@ import js.Browser;
 	
 	
 	#if (js && html5 && dom)
-	private override function set_width (value:Float):Float {
+	@:noCompletion private override function set_width (value:Float):Float {
 		
 		super.set_width (value);
 		
@@ -284,7 +287,7 @@ import js.Browser;
 	}
 	
 	
-	private override function set_height (value:Float):Float {
+	@:noCompletion private override function set_height (value:Float):Float {
 		
 		super.set_height (value);
 		
@@ -296,3 +299,6 @@ import js.Browser;
 	
 	
 }
+
+
+#end

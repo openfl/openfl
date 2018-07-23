@@ -33,7 +33,11 @@ class GLBitmap {
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
-			var gl = renderer.__gl;
+			#if (lime >= "7.0.0")
+			var gl = renderer.__context.webgl;
+			#else
+			var gl = renderer.__context;
+			#end
 			
 			renderer.__setBlendMode (bitmap.__worldBlendMode);
 			renderer.__pushMaskObject (bitmap);
@@ -47,13 +51,13 @@ class GLBitmap {
 			renderer.applyColorTransform (bitmap.__worldColorTransform);
 			renderer.updateShader ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl));
+			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (renderer.__context));
 			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 			if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
-				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			GLStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
 			
 			renderer.__clearShader ();
@@ -70,7 +74,11 @@ class GLBitmap {
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
-			var gl = renderer.__gl;
+			#if (lime >= "7.0.0")
+			var gl = renderer.__context.webgl;
+			#else
+			var gl = renderer.__context;
+			#end
 			
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
@@ -78,13 +86,13 @@ class GLBitmap {
 			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform));
 			renderer.updateShader ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (gl));
+			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (renderer.__context));
 			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
-				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			GLStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
 			
 			renderer.__clearShader ();

@@ -1,7 +1,6 @@
 package openfl._internal.text;
 
 
-import lime.text.GlyphPosition;
 import openfl.text.TextFormat;
 
 #if !openfl_debug

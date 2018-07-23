@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 #if !openfl_debug
@@ -23,7 +23,7 @@ class Vector3D {
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Vector3D, {
 			"X_AXIS": { get: function () { return Vector3D.get_X_AXIS (); } },
@@ -227,14 +227,14 @@ class Vector3D {
 	
 	
 	
-	private function get_length ():Float {
+	@:noCompletion private function get_length ():Float {
 		
 		return Math.sqrt (x * x + y * y + z * z);
 		
 	}
 	
 	
-	private function get_lengthSquared ():Float {
+	@:noCompletion private function get_lengthSquared ():Float {
 		
 		return x * x + y * y + z * z;
 		
@@ -263,3 +263,8 @@ class Vector3D {
 	
 	
 }
+
+
+#else
+typedef Vector3D = flash.geom.Vector3D;
+#end

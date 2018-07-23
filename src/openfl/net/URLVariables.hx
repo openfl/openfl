@@ -1,13 +1,5 @@
-package openfl.net;
+package openfl.net; #if !flash
 
-
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-
-
-@:forward()
 
 /**
  * The URLVariables class allows you to transfer variables between an
@@ -15,6 +7,15 @@ package openfl.net;
  * URLLoader class, with the `data` property of the URLRequest
  * class, and with flash.net package functions.
  */
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+@:forward
+
+
 abstract URLVariables(Dynamic) from Dynamic to Dynamic {
 	
 	
@@ -106,3 +107,8 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic {
 	
 	
 }
+
+
+#else
+typedef URLVariables = flash.net.URLVariables;
+#end

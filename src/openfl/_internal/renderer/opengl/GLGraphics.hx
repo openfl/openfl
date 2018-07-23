@@ -1,8 +1,6 @@
 package openfl._internal.renderer.opengl;
 
 
-import lime.graphics.opengl.WebGLContext;
-import lime.math.color.ARGB;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -13,6 +11,13 @@ import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime.math.ARGB;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.math.color.ARGB;
+#end
 
 #if gl_stats
 import openfl._internal.renderer.opengl.stats.GLStats;
@@ -36,6 +41,7 @@ class GLGraphics {
 	
 	
 	private static var blankBitmapData = new BitmapData (1, 1, false, 0);
+	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform (0, 0, 0, 1, 0, 0, 0, 0);
 	
 	
@@ -46,7 +52,11 @@ class GLGraphics {
 		
 		var data = new DrawCommandReader (graphics.__commands);
 		
-		var gl:WebGLContext = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl:WebGLContext = renderer.__context;
+		#end
 		
 		var tileRect = Rectangle.__pool.get ();
 		var tileTransform = Matrix.__pool.get ();
@@ -471,7 +481,11 @@ class GLGraphics {
 				
 				var data = new DrawCommandReader (graphics.__commands);
 				
-				var gl:WebGLContext = renderer.__gl;
+				#if (lime >= "7.0.0")
+				var gl = renderer.__context.webgl;
+				#else
+				var gl:WebGLContext = renderer.__context;
+				#end
 				
 				var matrix = Matrix.__pool.get ();
 				
@@ -547,7 +561,7 @@ class GLGraphics {
 								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 								var shader;
 								
-								if (shaderBuffer != null) {
+								if (shaderBuffer != null && !maskRender) {
 									
 									shader = renderer.__initShaderBuffer (shaderBuffer);
 									
@@ -560,7 +574,7 @@ class GLGraphics {
 									
 								} else {
 									
-									shader = renderer.__initGraphicsShader (null);
+									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 									renderer.setShader (shader);
 									renderer.applyMatrix (uMatrix);
 									renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
@@ -570,9 +584,9 @@ class GLGraphics {
 									
 								}
 								
-								if (graphics.__buffer == null || graphics.__bufferContext != gl) {
+								if (graphics.__buffer == null || graphics.__bufferContext != renderer.__context) {
 									
-									graphics.__bufferContext = cast gl;
+									graphics.__bufferContext = renderer.__context;
 									graphics.__buffer = gl.createBuffer ();
 									
 								}
@@ -582,7 +596,6 @@ class GLGraphics {
 								if (updatedBuffer) {
 									
 									gl.bufferData (gl.ARRAY_BUFFER, graphics.__bufferData, gl.DYNAMIC_DRAW);
-									updatedBuffer = false;
 									
 								}
 								
@@ -622,7 +635,7 @@ class GLGraphics {
 								matrix.ty = y;
 								matrix.concat (graphics.__owner.__renderTransform);
 								
-								var shader = renderer.__initGraphicsShader (null);
+								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 								renderer.setShader (shader);
 								renderer.applyMatrix (renderer.__getMatrix (matrix));
 								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, true);
@@ -630,7 +643,7 @@ class GLGraphics {
 								renderer.applyColorTransform (tempColorTransform);
 								renderer.updateShader ();
 								
-								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (cast gl));
+								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (renderer.__context));
 								if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 								if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 								gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
@@ -665,7 +678,7 @@ class GLGraphics {
 							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
 							var shader;
 							
-							if (shaderBuffer != null) {
+							if (shaderBuffer != null && !maskRender) {
 								
 								shader = renderer.__initShaderBuffer (shaderBuffer);
 								
@@ -678,7 +691,7 @@ class GLGraphics {
 								
 							} else {
 								
-								shader = renderer.__initGraphicsShader (null);
+								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 								renderer.setShader (shader);
 								renderer.applyMatrix (uMatrix);
 								renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
@@ -688,9 +701,9 @@ class GLGraphics {
 								
 							}
 							
-							if (graphics.__buffer == null || graphics.__bufferContext != gl) {
+							if (graphics.__buffer == null || graphics.__bufferContext != renderer.__context) {
 								
-								graphics.__bufferContext = cast gl;
+								graphics.__bufferContext = renderer.__context;
 								graphics.__buffer = gl.createBuffer ();
 								
 							}
@@ -700,7 +713,6 @@ class GLGraphics {
 							if (updatedBuffer) {
 								
 								gl.bufferData (gl.ARRAY_BUFFER, graphics.__bufferData, gl.DYNAMIC_DRAW);
-								updatedBuffer = false;
 								
 							}
 							
@@ -775,13 +787,9 @@ class GLGraphics {
 		
 		// TODO: Support invisible shapes
 		
+		maskRender = true;
 		render (graphics, renderer);
-		
-		// #if (js && html5)
-		// CanvasGraphics.render (graphics, cast renderer.__softwareRenderer);
-		// #elseif lime_cairo
-		// CairoGraphics.render (graphics, cast renderer.__softwareRenderer);
-		// #end
+		maskRender = false;
 		
 	}
 	

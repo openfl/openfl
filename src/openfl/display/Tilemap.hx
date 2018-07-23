@@ -8,7 +8,6 @@ import openfl.geom.Rectangle;
 
 #if !flash
 import lime.graphics.opengl.GLBuffer;
-import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
@@ -22,6 +21,12 @@ import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLTilemap;
+#end
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
 #end
 
 #if !openfl_debug
@@ -48,26 +53,26 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public var smoothing:Bool;
 	#end
 	
-	private var __group:TileContainer;
-	private var __tileset:Tileset;
+	@:noCompletion private var __group:TileContainer;
+	@:noCompletion private var __tileset:Tileset;
 	
 	#if ((openfl < "9.0.0") && enable_tile_array)
-	private var __tileArray:TileArray;
+	@:noCompletion private var __tileArray:TileArray;
 	#end
 	
 	#if !flash
-	private var __buffer:GLBuffer;
-	private var __bufferContext:GLRenderContext;
-	private var __bufferData:Float32Array;
-	private var __bufferDirty:Bool;
-	private var __bufferLength:Int;
-	private var __height:Int;
-	private var __width:Int;
+	@:noCompletion private var __buffer:GLBuffer;
+	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __bufferData:Float32Array;
+	@:noCompletion private var __bufferDirty:Bool;
+	@:noCompletion private var __bufferLength:Int;
+	@:noCompletion private var __height:Int;
+	@:noCompletion private var __width:Int;
 	#end
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Tilemap.prototype, {
 			"numTiles": { get: untyped __js__ ("function () { return this.get_numTiles (); }") },
@@ -289,7 +294,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function __enterFrame (deltaTime:Int):Void {
+	@:noCompletion private override function __enterFrame (deltaTime:Int):Void {
 		
 		if (__group.__dirty) {
 			
@@ -302,7 +307,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = Rectangle.__pool.get ();
 		bounds.setTo (0, 0, __width, __height);
@@ -317,7 +322,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
@@ -344,10 +349,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function __renderCairo (renderer:CairoRenderer):Void {
+	@:noCompletion private override function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -366,9 +371,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	private override function __renderCanvas (renderer:CanvasRenderer):Void {
+	@:noCompletion private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -386,9 +391,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	private override function __renderDOM (renderer:DOMRenderer):Void {
+	@:noCompletion private override function __renderDOM (renderer:DOMRenderer):Void {
 		
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -409,7 +414,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	private override function __renderDOMClear (renderer:DOMRenderer):Void {
+	@:noCompletion private override function __renderDOMClear (renderer:DOMRenderer):Void {
 		
 		DOMTilemap.clear (this, renderer);
 		
@@ -417,7 +422,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
-	private function __renderFlash ():Void {
+	@:noCompletion private function __renderFlash ():Void {
 		
 		FlashTilemap.render (this);
 		
@@ -425,7 +430,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function __renderGL (renderer:OpenGLRenderer):Void {
+	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		__updateCacheBitmap (renderer, false);
 		
@@ -445,32 +450,32 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	private override function __renderGLMask (renderer:OpenGLRenderer):Void {
+	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		__updateCacheBitmap (renderer, false);
+		// __updateCacheBitmap (renderer, false);
 		
-		if (__cacheBitmap != null && !__isCacheBitmapRender) {
+		// if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			GLBitmap.renderMask (__cacheBitmap, renderer);
+		// 	GLBitmap.renderMask (__cacheBitmap, renderer);
 			
-		} else {
+		// } else {
 			
 			GLDisplayObject.renderMask (this, renderer);
 			GLTilemap.renderMask (this, renderer);
 			
-		}
+		// }
 		
 	}
 	
 	
-	private override function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
+	@:noCompletion private override function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
 		
 		return true;
 		
 	}
 	
 	
-	private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
+	@:noCompletion private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null) return false;
 		return super.__updateCacheBitmap (renderer, force);
@@ -487,7 +492,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function get_height ():Float {
+	@:noCompletion private override function get_height ():Float {
 		
 		return __height * Math.abs (scaleY);
 		
@@ -496,7 +501,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function set_height (value:Float):Float {
+	@:noCompletion private override function set_height (value:Float):Float {
 		
 		__height = Std.int (value);
 		return __height * Math.abs (scaleY);
@@ -517,21 +522,21 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
-	private function get_numTiles ():Int {
+	@:noCompletion private function get_numTiles ():Int {
 		
 		return __group.__length;
 		
 	}
 	
 	
-	private function get_tileset ():Tileset {
+	@:noCompletion private function get_tileset ():Tileset {
 		
 		return __tileset;
 		
 	}
 	
 	
-	private function set_tileset (value:Tileset):Tileset {
+	@:noCompletion private function set_tileset (value:Tileset):Tileset {
 		
 		if (value != __tileset) {
 			
@@ -550,7 +555,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function get_width ():Float {
+	@:noCompletion private override function get_width ():Float {
 		
 		return __width * Math.abs (__scaleX);
 		
@@ -559,7 +564,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	private override function set_width (value:Float):Float {
+	@:noCompletion private override function set_width (value:Float):Float {
 		
 		__width = Std.int (value);
 		return __width * Math.abs (__scaleX);

@@ -112,7 +112,7 @@ typedef Iterable_<T> = cs.internal.Iterator.Iterable<T>;
 
 
 #if !flash
-typedef ObjectType = Dynamic;
+@:dox(hide) @:noCompletion typedef ObjectType = Dynamic;
 #else
-typedef ObjectType = flash.utils.Object;
+@:dox(hide) typedef ObjectType = flash.utils.Object;
 #end

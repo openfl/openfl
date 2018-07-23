@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 #if !openfl_debug
@@ -44,3 +44,8 @@ class DataEvent extends TextEvent {
 	
 	
 }
+
+
+#else
+typedef DataEvent = flash.events.DataEvent;
+#end

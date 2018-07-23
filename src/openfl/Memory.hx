@@ -1,4 +1,4 @@
-package openfl;
+package openfl; #if !flash
 
 
 import haxe.io.BytesData;
@@ -13,11 +13,11 @@ import openfl.utils.ByteArray;
 class Memory {
 	
 	
-	private static var gcRef:ByteArray;
-	private static var len:Int;
+	@:noCompletion private static var gcRef:ByteArray;
+	@:noCompletion private static var len:Int;
 	
 	
-	private static function _setPositionTemporarily<T> (position:Int, action:Void -> T):T {
+	@:noCompletion private static function _setPositionTemporarily<T> (position:Int, action:Void -> T):T {
 		
 		var oldPosition:Int = gcRef.position;
 		gcRef.position = position;
@@ -160,3 +160,8 @@ class Memory {
 	
 	
 }
+
+
+#else
+typedef Memory = flash.Memory;
+#end

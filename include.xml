@@ -3,7 +3,7 @@
 	
 	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
 	
-	<set name="lime-version" value="6.4.*" />
+	<set name="lime-version" value="7.0.*" />
 	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
@@ -30,15 +30,13 @@
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 6.4.* is required)" if="${lime < 6.4.0} || ${lime >= 6.5.0}" unless="setup || disable-version-check" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 6.4.* or 7.0.* is required)" if="${lime < 6.4.0} || ${lime >= 7.1.0}" unless="setup || disable-version-check" />
 		
 	</section>
 	
 	<template path="assets/templates" />
 	
-	<source path="src/externs/core/flash" if="flash" />
-	<source path="src/externs/core/openfl" if="display || flash" />
-	<source path="src/externs/extras" if="display" />
+	<source path="externs/flash" if="flash" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />

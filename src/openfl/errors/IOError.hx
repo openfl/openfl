@@ -1,4 +1,4 @@
-package openfl.errors;
+package openfl.errors; #if !flash
 
 
 #if !openfl_debug
@@ -20,3 +20,8 @@ class IOError extends Error {
 	
 	
 }
+
+
+#else
+typedef IOError = flash.errors.IOError;
+#end
