@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl._internal.Lib;
@@ -20,8 +20,8 @@ import openfl.geom.Matrix;
 	public var repeat:Bool;
 	public var smooth:Bool;
 	
-	public var __graphicsDataType (default, null):GraphicsDataType;
-	public var __graphicsFillType (default, null):GraphicsFillType;
+	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion private var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
 	public function new (bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
@@ -38,3 +38,8 @@ import openfl.geom.Matrix;
 	
 	
 }
+
+
+#else
+typedef GraphicsBitmapFill = flash.display.GraphicsBitmapFill;
+#end

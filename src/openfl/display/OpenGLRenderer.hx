@@ -1,9 +1,8 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import lime.graphics.opengl.ext.KHR_debug;
 import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.GLRenderContext;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLMaskShader;
@@ -17,12 +16,22 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
+#if (lime < "7.0.0")
 @:access(lime._backend.html5.HTML5GLRenderContext)
+#end
+
 @:access(lime.graphics.GLRenderContext)
 @:access(openfl._internal.renderer.ShaderBuffer)
 @:access(openfl.display.BitmapData)
@@ -45,69 +54,75 @@ import openfl.geom.Rectangle;
 class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	
-	private static var __alphaValue = [ 1. ];
-	private static var __colorMultipliersValue = [ 0, 0, 0, 0. ];
-	private static var __colorOffsetsValue = [ 0, 0, 0, 0. ];
-	private static var __defaultColorMultipliersValue = [ 1, 1, 1, 1. ];
-	private static var __emptyColorValue = [ 0, 0, 0, 0. ];
-	private static var __emptyAlphaValue = [ 1. ];
-	private static var __hasColorTransformValue = [ false ];
-	private static var __textureSizeValue = [ 0, 0. ];
+	@:noCompletion private static var __alphaValue = [ 1. ];
+	@:noCompletion private static var __colorMultipliersValue = [ 0, 0, 0, 0. ];
+	@:noCompletion private static var __colorOffsetsValue = [ 0, 0, 0, 0. ];
+	@:noCompletion private static var __defaultColorMultipliersValue = [ 1, 1, 1, 1. ];
+	@:noCompletion private static var __emptyColorValue = [ 0, 0, 0, 0. ];
+	@:noCompletion private static var __emptyAlphaValue = [ 1. ];
+	@:noCompletion private static var __hasColorTransformValue = [ false ];
+	@:noCompletion private static var __textureSizeValue = [ 0, 0. ];
 	
-	#if openfljs
+	#if (lime >= "7.0.0")
+	public var gl:WebGLRenderContext;
+	#elseif openfljs
 	public var gl:js.html.webgl.RenderingContext;
 	#else
 	public var gl:GLRenderContext;
 	#end
 	
-	private var __clipRects:Array<Rectangle>;
-	private var __currentDisplayShader:Shader;
-	private var __currentGraphicsShader:Shader;
-	private var __currentRenderTarget:BitmapData;
-	private var __currentShader:Shader;
-	private var __currentShaderBuffer:ShaderBuffer;
-	private var __defaultDisplayShader:DisplayObjectShader;
-	private var __defaultGraphicsShader:GraphicsShader;
-	private var __defaultRenderTarget:BitmapData;
-	private var __defaultShader:Shader;
-	private var __displayHeight:Int;
-	private var __displayWidth:Int;
-	private var __flipped:Bool;
-	private var __gl:GLRenderContext;
-	private var __height:Int;
-	private var __maskShader:GLMaskShader;
-	private var __matrix:Matrix4;
-	private var __maskObjects:Array<DisplayObject>;
-	private var __numClipRects:Int;
-	private var __offsetX:Int;
-	private var __offsetY:Int;
-	private var __projection:Matrix4;
-	private var __projectionFlipped:Matrix4;
-	private var __softwareRenderer:DisplayObjectRenderer;
-	private var __stencilReference:Int;
-	private var __tempRect:Rectangle;
-	private var __upscaled:Bool;
-	private var __values:Array<Float>;
-	private var __width:Int;
+	@:noCompletion private var __clipRects:Array<Rectangle>;
+	@:noCompletion private var __currentDisplayShader:Shader;
+	@:noCompletion private var __currentGraphicsShader:Shader;
+	@:noCompletion private var __currentRenderTarget:BitmapData;
+	@:noCompletion private var __currentShader:Shader;
+	@:noCompletion private var __currentShaderBuffer:ShaderBuffer;
+	@:noCompletion private var __defaultDisplayShader:DisplayObjectShader;
+	@:noCompletion private var __defaultGraphicsShader:GraphicsShader;
+	@:noCompletion private var __defaultRenderTarget:BitmapData;
+	@:noCompletion private var __defaultShader:Shader;
+	@:noCompletion private var __displayHeight:Int;
+	@:noCompletion private var __displayWidth:Int;
+	@:noCompletion private var __flipped:Bool;
+	@:noCompletion private var __gl:#if (lime >= "7.0.0") WebGLRenderContext #else GLRenderContext #end;
+	@:noCompletion private var __height:Int;
+	@:noCompletion private var __maskShader:GLMaskShader;
+	@:noCompletion private var __matrix:Matrix4;
+	@:noCompletion private var __maskObjects:Array<DisplayObject>;
+	@:noCompletion private var __numClipRects:Int;
+	@:noCompletion private var __offsetX:Int;
+	@:noCompletion private var __offsetY:Int;
+	@:noCompletion private var __projection:Matrix4;
+	@:noCompletion private var __projectionFlipped:Matrix4;
+	@:noCompletion private var __softwareRenderer:DisplayObjectRenderer;
+	@:noCompletion private var __stencilReference:Int;
+	@:noCompletion private var __tempRect:Rectangle;
+	@:noCompletion private var __updatedStencil:Bool;
+	@:noCompletion private var __upscaled:Bool;
+	@:noCompletion private var __values:Array<Float>;
+	@:noCompletion private var __width:Int;
 	
 	
-	private function new (gl:GLRenderContext, ?defaultRenderTarget:BitmapData) {
+	@:noCompletion private function new (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, ?defaultRenderTarget:BitmapData) {
 		
 		super ();
 		
-		#if openfljs
-		this.gl = gl.__context;
+		#if (lime >= "7.0.0")
+		gl = context.webgl;
+		__gl = gl;
 		#else
-		this.gl = gl;
+		gl = #if openfljs context.__context #else context #end;
+		__gl = context;
 		#end
+		
+		__context = context;
 		
 		this.__defaultRenderTarget = defaultRenderTarget;
 		this.__flipped = (__defaultRenderTarget == null);
-		this.__gl = gl;
 		
 		if (Graphics.maxTextureWidth == null) {
 			
-			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getInteger (__gl.MAX_TEXTURE_SIZE);
+			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter (__gl.MAX_TEXTURE_SIZE);
 			
 		}
 		
@@ -138,6 +153,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__clipRects = new Array ();
 		__maskObjects = new Array ();
 		__numClipRects = 0;
+		__projection = new Matrix4 ();
+		__projectionFlipped = new Matrix4 ();
 		__stencilReference = 0;
 		__tempRect = new Rectangle ();
 		
@@ -175,8 +192,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (bitmapData != null) {
 				
-				__textureSizeValue[0] = bitmapData.width;
-				__textureSizeValue[1] = bitmapData.height;
+				__textureSizeValue[0] = bitmapData.__textureWidth;
+				__textureSizeValue[1] = bitmapData.__textureHeight;
+				
 				__currentShaderBuffer.addOverride ("openfl_TextureSize", __textureSizeValue);
 				
 			}
@@ -205,10 +223,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 				if (bitmapData != null) {
 					
-					// __textureSizeValue[0] = bitmapData.__textureWidth;
-					// __textureSizeValue[1] = bitmapData.__textureHeight;
-					__textureSizeValue[0] = bitmapData.width;
-					__textureSizeValue[1] = bitmapData.height;
+					__textureSizeValue[0] = bitmapData.__textureWidth;
+					__textureSizeValue[1] = bitmapData.__textureHeight;
+					
 					__currentShader.__textureSize.value = __textureSizeValue;
 					
 				} else {
@@ -400,7 +417,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __cleanup ():Void {
+	@:noCompletion private function __cleanup ():Void {
 		
 		if (__stencilReference > 0) {
 			
@@ -419,7 +436,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __clear ():Void {
+	@:noCompletion private override function __clear ():Void {
 		
 		if (__stage == null || __stage.__transparent) {
 			
@@ -436,7 +453,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __clearShader ():Void {
+	@:noCompletion private function __clearShader ():Void {
 		
 		if (__currentShader != null) {
 			
@@ -462,7 +479,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __copyShader (other:OpenGLRenderer):Void {
+	@:noCompletion private function __copyShader (other:OpenGLRenderer):Void {
 		
 		__currentShader = other.__currentShader;
 		__currentShaderBuffer = other.__currentShaderBuffer;
@@ -472,7 +489,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __getMatrix (transform:Matrix):Array<Float> {
+	@:noCompletion private function __getMatrix (transform:Matrix):Array<Float> {
 		
 		var _matrix = Matrix.__pool.get ();
 		_matrix.copyFrom (transform);
@@ -507,15 +524,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __initShader (shader:Shader):Shader {
+	@:noCompletion private function __initShader (shader:Shader):Shader {
 		
 		if (shader != null) {
 			
 			// TODO: Change of GL context?
 			
-			if (shader.gl == null) {
+			if (shader.__context == null) {
 				
-				shader.gl = __gl;
+				shader.__context = __context;
 				shader.__init ();
 				
 			}
@@ -530,15 +547,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __initDisplayShader (shader:Shader):Shader {
+	@:noCompletion private function __initDisplayShader (shader:Shader):Shader {
 		
 		if (shader != null) {
 			
 			// TODO: Change of GL context?
 			
-			if (shader.gl == null) {
+			if (shader.__context == null) {
 				
-				shader.gl = __gl;
+				shader.__context = __context;
 				shader.__init ();
 				
 			}
@@ -553,15 +570,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __initGraphicsShader (shader:Shader):Shader {
+	@:noCompletion private function __initGraphicsShader (shader:Shader):Shader {
 		
 		if (shader != null) {
 			
 			// TODO: Change of GL context?
 			
-			if (shader.gl == null) {
+			if (shader.__context == null) {
 				
-				shader.gl = __gl;
+				shader.__context = __context;
 				shader.__init ();
 				
 			}
@@ -576,7 +593,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __initShaderBuffer (shaderBuffer:ShaderBuffer):Shader {
+	@:noCompletion private function __initShaderBuffer (shaderBuffer:ShaderBuffer):Shader {
 		
 		if (shaderBuffer != null) {
 			
@@ -589,9 +606,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMask ():Void {
+	@:noCompletion private override function __popMask ():Void {
 		
 		if (__stencilReference == 0) return;
+		
+		var mask = __maskObjects.pop ();
 		
 		if (__stencilReference > 1) {
 			
@@ -599,7 +618,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
 			__gl.colorMask (false, false, false, false);
 			
-			var mask = __maskObjects.pop ();
 			mask.__renderGLMask (this);
 			__stencilReference--;
 			
@@ -617,7 +635,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (object.__mask != null) {
 			
@@ -634,7 +652,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMaskRect ():Void {
+	@:noCompletion private override function __popMaskRect ():Void {
 		
 		if (__numClipRects > 0) {
 			
@@ -655,13 +673,14 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMask (mask:DisplayObject):Void {
+	@:noCompletion private override function __pushMask (mask:DisplayObject):Void {
 		
 		if (__stencilReference == 0) {
 			
 			__gl.enable (__gl.STENCIL_TEST);
 			__gl.stencilMask (0xFF);
 			__gl.clear (__gl.STENCIL_BUFFER_BIT);
+			__updatedStencil = true;
 			
 		}
 		
@@ -680,7 +699,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
@@ -697,7 +716,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	@:noCompletion private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		// TODO: Handle rotation?
 		
@@ -741,7 +760,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __render (object:IBitmapDrawable):Void {
+	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
+		
+		// TODO: Handle restoration of state after Stage3D render better?
+		__gl.disable (gl.CULL_FACE);
 		
 		if (__defaultRenderTarget == null) {
 			
@@ -803,12 +825,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __renderFilterPass (source:BitmapData, shader:Shader, clear:Bool = true):Void {
+	@:noCompletion private function __renderFilterPass (source:BitmapData, shader:Shader, clear:Bool = true):Void {
 		
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
-		__gl.bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (__gl));
+		__gl.bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (__context, false));
 		
 		if (clear) {
 			
@@ -825,7 +847,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		applyMatrix (__getMatrix (source.__renderTransform));
 		updateShader ();
 		
-		__gl.bindBuffer (__gl.ARRAY_BUFFER, source.getBuffer (__gl));
+		__gl.bindBuffer (__gl.ARRAY_BUFFER, source.getBuffer (__context));
 		if (shader.__position != null) __gl.vertexAttribPointer (shader.__position.index, 3, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 		if (shader.__textureCoord != null) __gl.vertexAttribPointer (shader.__textureCoord.index, 2, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		__gl.drawArrays (__gl.TRIANGLE_STRIP, 0, 4);
@@ -837,7 +859,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __renderStage3D (stage:Stage):Void {
+	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
 		
 		for (stage3D in stage.stage3Ds) {
 			
@@ -848,7 +870,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __resize (width:Int, height:Int):Void {
+	@:noCompletion private override function __resize (width:Int, height:Int):Void {
 		
 		__width = width;
 		__height = height;
@@ -861,48 +883,57 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__displayWidth = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (w, 0) - __offsetX) : w;
 		__displayHeight = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, h) - __offsetY) : h;
 		
+		#if (lime >= "7.0.0")
+		__projection.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
+		__projectionFlipped.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
+		#else
 		__projection = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
 		__projectionFlipped = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
+		#end
 		
 	}
 	
 	
-	private function __resumeClipAndMask ():Void {
-		
-		// TODO: Coordinate child renderer to know if masking needs to be reset
+	@:noCompletion private function __resumeClipAndMask (childRenderer:OpenGLRenderer):Void {
 		
 		if (__stencilReference > 0) {
 			
 			__gl.enable (__gl.STENCIL_TEST);
-			__gl.stencilMask (0xFF);
-			__gl.clear (__gl.STENCIL_BUFFER_BIT);
+			
+		} else {
+			
+			__gl.disable (__gl.STENCIL_TEST);
 			
 		}
 		
-		for (i in 0...__numClipRects) {
+		if (__numClipRects > 0) {
 			
-			__scissorRect (__clipRects[i]);
+			__scissorRect (__clipRects[__numClipRects - 1]);
+			
+		} else {
+			
+			__scissorRect ();
 			
 		}
 		
 	}
 	
 	
-	private function __scissorRect (clipRect:Rectangle = null):Void {
+	@:noCompletion private function __scissorRect (clipRect:Rectangle = null):Void {
 		
 		if (clipRect != null) {
 			
 			__gl.enable (__gl.SCISSOR_TEST);
 			
 			var x = Math.floor (clipRect.x);
-			var y = __flipped ? Math.floor (__height - clipRect.y - clipRect.height) : Math.floor (clipRect.y);
-			var width = Math.ceil (clipRect.width);
-			var height = Math.ceil (clipRect.height);
+			var y = Math.floor (clipRect.y);
+			var width = Math.ceil (clipRect.right) - x;
+			var height = Math.ceil (clipRect.bottom) - y;
 			
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			__gl.scissor (x, y, width, height);
+			__gl.scissor (x, __flipped ? __height - y - height : y, width, height);
 			
 		} else {
 			
@@ -913,7 +944,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __setBlendMode (value:BlendMode):Void {
+	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;
 		
@@ -963,7 +994,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __setRenderTarget (renderTarget:BitmapData):Void {
+	@:noCompletion private function __setRenderTarget (renderTarget:BitmapData):Void {
 		
 		__defaultRenderTarget = renderTarget;
 		__flipped = (renderTarget == null);
@@ -977,7 +1008,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __setShaderBuffer (shaderBuffer:ShaderBuffer):Void {
+	@:noCompletion private function __setShaderBuffer (shaderBuffer:ShaderBuffer):Void {
 		
 		setShader (shaderBuffer.shader);
 		__currentShaderBuffer = shaderBuffer;
@@ -985,7 +1016,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __suspendClipAndMask ():Void {
+	@:noCompletion private function __suspendClipAndMask ():Void {
 		
 		if (__stencilReference > 0) {
 			
@@ -1002,7 +1033,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __updateShaderBuffer ():Void {
+	@:noCompletion private function __updateShaderBuffer ():Void {
 		
 		if (__currentShader != null && __currentShaderBuffer != null) {
 			
@@ -1014,3 +1045,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	
 }
+
+
+#else
+typedef OpenGLRenderer = Dynamic;
+#end

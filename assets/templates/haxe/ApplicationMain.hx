@@ -20,6 +20,20 @@ import haxe.macro.Expr;
 	
 	public static function main () {
 		
+		#if (lime >= "7.0.0")
+		
+		lime.system.System.__registerEntryPoint ("::APP_FILE::", create);
+		
+		#if (js && html5)
+		#if (munit || utest)
+		lime.system.System.embed ("::APP_FILE::", null, ::WIN_WIDTH::, ::WIN_HEIGHT::);
+		#end
+		#else
+		create (null);
+		#end
+		
+		#else
+		
 		var projectName = "::APP_FILE::";
 		
 		var config = {
@@ -84,12 +98,100 @@ import haxe.macro.Expr;
 		create (config);
 		#end
 		
+		#end
+		
 	}
 	
 	
-	public static function create (config:lime.app.Config):Void {
+	public static function create (config):Void {
 		
 		var app = new openfl.display.Application ();
+		
+		#if (lime >= "7.0.0")
+		ManifestResources.init (config);
+		
+		app.meta["build"] = "::meta.buildNumber::";
+		app.meta["company"] = "::meta.company::";
+		app.meta["file"] = "::APP_FILE::";
+		app.meta["name"] = "::meta.title::";
+		app.meta["packageName"] = "::meta.packageName::";
+		
+		#if !flash
+		::foreach windows::
+		var attributes:lime.ui.WindowAttributes = {
+			
+			allowHighDPI: ::allowHighDPI::,
+			alwaysOnTop: ::alwaysOnTop::,
+			borderless: ::borderless::,
+			// display: ::display::,
+			element: null,
+			frameRate: ::fps::,
+			#if !web fullscreen: ::fullscreen::, #end
+			height: ::height::,
+			hidden: #if munit true #else ::hidden:: #end,
+			maximized: ::maximized::,
+			minimized: ::minimized::,
+			parameters: ::parameters::,
+			resizable: ::resizable::,
+			title: "::title::",
+			width: ::width::,
+			x: ::x::,
+			y: ::y::,
+			
+		};
+		
+		attributes.context = {
+			
+			antialiasing: ::antialiasing::,
+			background: ::background::,
+			colorDepth: ::colorDepth::,
+			depth: ::depthBuffer::,
+			hardware: ::hardware::,
+			stencil: ::stencilBuffer::,
+			type: null,
+			vsync: ::vsync::
+			
+		};
+		
+		if (app.window == null) {
+			
+			if (config != null) {
+				
+				for (field in Reflect.fields (config)) {
+					
+					if (Reflect.hasField (attributes, field)) {
+						
+						Reflect.setField (attributes, field, Reflect.field (config, field));
+						
+					} else if (Reflect.hasField (attributes.context, field)) {
+						
+						Reflect.setField (attributes.context, field, Reflect.field (config, field));
+						
+					}
+					
+				}
+				
+			}
+			
+			#if sys
+			lime.system.System.__parseArguments (attributes);
+			#end
+			
+		}
+		
+		app.createWindow (attributes);
+		::end::
+		#elseif !air
+		
+		app.window.context.attributes.background = ::WIN_BACKGROUND::;
+		app.window.frameRate = ::WIN_FPS::;
+		
+		#end
+		
+		var preloader = app.preloader;
+		
+		#else
+		
 		app.create (config);
 		
 		ManifestResources.init (config);
@@ -97,7 +199,10 @@ import haxe.macro.Expr;
 		var preloader = getPreloader ();
 		app.setPreloader (preloader);
 		preloader.create (config);
-		preloader.onComplete.add (start.bind (app.window.stage));
+		
+		#end
+		
+		preloader.onComplete.add (start.bind (cast (app.window, openfl.display.Window).stage));
 		
 		for (library in ManifestResources.preloadLibraries) {
 			

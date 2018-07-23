@@ -1,7 +1,6 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
-import lime.graphics.RendererType;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
@@ -9,6 +8,13 @@ import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
+#else
+import lime.graphics.RendererType;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -23,19 +29,20 @@ import openfl.geom.Rectangle;
 class DisplayObjectRenderer extends EventDispatcher {
 	
 	
-	private var __allowSmoothing:Bool;
-	private var __blendMode:BlendMode;
-	private var __roundPixels:Bool;
-	private var __stage:Stage;
-	private var __tempColorTransform:ColorTransform;
-	private var __transparent:Bool;
-	private var __type:RendererType;
-	private var __worldAlpha:Float;
-	private var __worldColorTransform:ColorTransform;
-	private var __worldTransform:Matrix;
+	@:noCompletion private var __allowSmoothing:Bool;
+	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __context:#if (lime >= "7.0.0") RenderContext #else Dynamic #end;
+	@:noCompletion private var __roundPixels:Bool;
+	@:noCompletion private var __stage:Stage;
+	@:noCompletion private var __tempColorTransform:ColorTransform;
+	@:noCompletion private var __transparent:Bool;
+	@:noCompletion private var __type:#if (lime >= "7.0.0") RenderContextType #else RendererType #end;
+	@:noCompletion private var __worldAlpha:Float;
+	@:noCompletion private var __worldColorTransform:ColorTransform;
+	@:noCompletion private var __worldTransform:Matrix;
 	
 	
-	private function new () {
+	@:noCompletion private function new () {
 		
 		super ();
 		
@@ -46,21 +53,21 @@ class DisplayObjectRenderer extends EventDispatcher {
 	}
 	
 	
-	private function __clear ():Void {
+	@:noCompletion private function __clear ():Void {
 		
 		
 		
 	}
 	
 	
-	private function __getAlpha (value:Float):Float {
+	@:noCompletion private function __getAlpha (value:Float):Float {
 		
 		return value * __worldAlpha;
 		
 	}
 	
 	
-	private function __getColorTransform (value:ColorTransform):ColorTransform {
+	@:noCompletion private function __getColorTransform (value:ColorTransform):ColorTransform {
 		
 		if (__worldColorTransform != null) {
 			
@@ -77,70 +84,70 @@ class DisplayObjectRenderer extends EventDispatcher {
 	}
 	
 	
-	private function __popMask ():Void {
+	@:noCompletion private function __popMask ():Void {
 		
 		
 		
 	}
 	
 	
-	private function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		
 		
 	}
 	
 	
-	private function __popMaskRect ():Void {
+	@:noCompletion private function __popMaskRect ():Void {
 		
 		
 		
 	}
 	
 	
-	private function __pushMask (mask:DisplayObject):Void {
+	@:noCompletion private function __pushMask (mask:DisplayObject):Void {
 		
 		
 		
 	}
 	
 	
-	private function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		
 		
 	}
 	
 	
-	private function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	@:noCompletion private function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		
 		
 	}
 	
 	
-	private function __render (object:IBitmapDrawable):Void {
+	@:noCompletion private function __render (object:IBitmapDrawable):Void {
 		
 		
 		
 	}
 	
 	
-	private function __renderStage3D (stage:Stage):Void {
+	@:noCompletion private function __renderStage3D (stage:Stage):Void {
 		
 		
 		
 	}
 	
 	
-	private function __resize (width:Int, height:Int):Void {
+	@:noCompletion private function __resize (width:Int, height:Int):Void {
 		
 		
 		
 	}
 	
 	
-	private function __setBlendMode (value:BlendMode):Void {
+	@:noCompletion private function __setBlendMode (value:BlendMode):Void {
 		
 		
 		
@@ -148,3 +155,8 @@ class DisplayObjectRenderer extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef DisplayObjectRenderer = Dynamic;
+#end

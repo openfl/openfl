@@ -17,6 +17,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	
 	
 	public var alpha (get, set):Float;
+	public var blendMode (get, set):BlendMode;
 	@:beta public var colorTransform (get, set):ColorTransform;
 	public var data:Dynamic;
 	public var id (get, set):Int;
@@ -34,30 +35,32 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
-	private var __alpha:Float;
-	private var __colorTransform:ColorTransform;
-	private var __dirty:Bool;
-	private var __id:Int;
-	private var __length:Int;
-	private var __matrix:Matrix;
-	private var __originX:Float;
-	private var __originY:Float;
-	private var __rect:Rectangle;
-	private var __rotation:Null<Float>;
-	private var __rotationCosine:Float;
-	private var __rotationSine:Float;
-	private var __scaleX:Null<Float>;
-	private var __scaleY:Null<Float>;
-	private var __shader:Shader;
-	private var __tileset:Tileset;
-	private var __visible:Bool;
+	@:noCompletion private var __alpha:Float;
+	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __colorTransform:ColorTransform;
+	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __id:Int;
+	@:noCompletion private var __length:Int;
+	@:noCompletion private var __matrix:Matrix;
+	@:noCompletion private var __originX:Float;
+	@:noCompletion private var __originY:Float;
+	@:noCompletion private var __rect:Rectangle;
+	@:noCompletion private var __rotation:Null<Float>;
+	@:noCompletion private var __rotationCosine:Float;
+	@:noCompletion private var __rotationSine:Float;
+	@:noCompletion private var __scaleX:Null<Float>;
+	@:noCompletion private var __scaleY:Null<Float>;
+	@:noCompletion private var __shader:Shader;
+	@:noCompletion private var __tileset:Tileset;
+	@:noCompletion private var __visible:Bool;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Tile.prototype, {
 			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+			"blendMode": { get: untyped __js__ ("function () { return this.get_blendMode (); }"), set: untyped __js__ ("function (v) { return this.set_blendMode (v); }") },
 			"colorTransform": { get: untyped __js__ ("function () { return this.get_colorTransform (); }"), set: untyped __js__ ("function (v) { return this.set_colorTransform (v); }") },
 			"id": { get: untyped __js__ ("function () { return this.get_id (); }"), set: untyped __js__ ("function (v) { return this.set_id (v); }") },
 			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
@@ -94,6 +97,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 		__originX = originX;
 		__originY = originY;
 		__alpha = 1;
+		__blendMode = null;
 		__visible = true;
 		
 	}
@@ -103,6 +107,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 		
 		var tile = new Tile (__id);
 		tile.__alpha = __alpha;
+		tile.__blendMode = __blendMode;
 		tile.__originX = __originX;
 		tile.__originY = __originY;
 		
@@ -134,7 +139,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function __setRenderDirty ():Void {
+	@:noCompletion private function __setRenderDirty ():Void {
 		
 		#if !flash
 		if (!__dirty) {
@@ -160,14 +165,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	
 	
 	
-	private function get_alpha ():Float {
+	@:noCompletion private function get_alpha ():Float {
 		
 		return __alpha;
 		
 	}
 	
 	
-	private function set_alpha (value:Float):Float {
+	@:noCompletion private function set_alpha (value:Float):Float {
 		
 		if (value != __alpha) {
 			
@@ -181,14 +186,35 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_colorTransform ():ColorTransform {
+	@:noCompletion private function get_blendMode():BlendMode {
+		
+		return __blendMode;
+		
+	}
+	
+	
+	@:noCompletion private function set_blendMode (value:BlendMode):BlendMode {
+		
+		if (value != __blendMode) {
+			
+			__blendMode = value;
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+	@:noCompletion private function get_colorTransform ():ColorTransform {
 		
 		return __colorTransform;
 		
 	}
 	
 	
-	private function set_colorTransform (value:ColorTransform):ColorTransform {
+	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
 		
 		if (value != __colorTransform) {
 			
@@ -202,14 +228,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_id ():Int {
+	@:noCompletion private function get_id ():Int {
 		
 		return __id;
 		
 	}
 	
 	
-	private function set_id (value:Int):Int {
+	@:noCompletion private function set_id (value:Int):Int {
 		
 		if (value != __id) {
 			
@@ -223,14 +249,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_matrix ():Matrix {
+	@:noCompletion private function get_matrix ():Matrix {
 		
 		return __matrix;
 		
 	}
 	
 	
-	private function set_matrix (value:Matrix):Matrix {
+	@:noCompletion private function set_matrix (value:Matrix):Matrix {
 		
 		if (value != __matrix) {
 			
@@ -247,14 +273,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_originX ():Float {
+	@:noCompletion private function get_originX ():Float {
 		
 		return __originX;
 		
 	}
 	
 	
-	private function set_originX (value:Float):Float {
+	@:noCompletion private function set_originX (value:Float):Float {
 		
 		if (value != __originX) {
 			
@@ -268,14 +294,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_originY ():Float {
+	@:noCompletion private function get_originY ():Float {
 		
 		return __originY;
 		
 	}
 	
 	
-	private function set_originY (value:Float):Float {
+	@:noCompletion private function set_originY (value:Float):Float {
 		
 		if (value != __originY) {
 			
@@ -289,14 +315,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_rect ():Rectangle {
+	@:noCompletion private function get_rect ():Rectangle {
 		
 		return __rect;
 		
 	}
 	
 	
-	private function set_rect (value:Rectangle):Rectangle {
+	@:noCompletion private function set_rect (value:Rectangle):Rectangle {
 		
 		if (value != __rect) {
 			
@@ -310,7 +336,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_rotation ():Float {
+	@:noCompletion private function get_rotation ():Float {
 		
 		if (__rotation == null) {
 			
@@ -337,7 +363,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function set_rotation (value:Float):Float {
+	@:noCompletion private function set_rotation (value:Float):Float {
 		
 		if (value != __rotation) {
 			
@@ -363,7 +389,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_scaleX ():Float {
+	@:noCompletion private function get_scaleX ():Float {
 		
 		if (__scaleX == null) {
 			
@@ -384,7 +410,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function set_scaleX (value:Float):Float {
+	@:noCompletion private function set_scaleX (value:Float):Float {
 		
 		if (value != __scaleX) {
 			
@@ -415,7 +441,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_scaleY ():Float {
+	@:noCompletion private function get_scaleY ():Float {
 		
 		if (__scaleY == null) {
 			
@@ -436,7 +462,7 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function set_scaleY (value:Float):Float {
+	@:noCompletion private function set_scaleY (value:Float):Float {
 		
 		if (value != __scaleY) {
 			
@@ -467,14 +493,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_shader ():Shader {
+	@:noCompletion private function get_shader ():Shader {
 		
 		return __shader;
 		
 	}
 	
 	
-	private function set_shader (value:Shader):Shader {
+	@:noCompletion private function set_shader (value:Shader):Shader {
 		
 		if (value != __shader) {
 			
@@ -488,14 +514,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_tileset ():Tileset {
+	@:noCompletion private function get_tileset ():Tileset {
 		
 		return __tileset;
 		
 	}
 	
 	
-	private function set_tileset (value:Tileset):Tileset {
+	@:noCompletion private function set_tileset (value:Tileset):Tileset {
 		
 		if (value != __tileset) {
 			
@@ -509,14 +535,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_visible ():Bool {
+	@:noCompletion private function get_visible ():Bool {
 		
 		return __visible;
 		
 	}
 	
 	
-	private function set_visible (value:Bool):Bool {
+	@:noCompletion private function set_visible (value:Bool):Bool {
 		
 		if (value != __visible) {
 			
@@ -530,14 +556,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_x ():Float {
+	@:noCompletion private function get_x ():Float {
 		
 		return __matrix.tx;
 		
 	}
 	
 	
-	private function set_x (value:Float):Float {
+	@:noCompletion private function set_x (value:Float):Float {
 		
 		if (value != __matrix.tx) {
 			
@@ -551,14 +577,14 @@ class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
 	}
 	
 	
-	private function get_y ():Float {
+	@:noCompletion private function get_y ():Float {
 		
 		return __matrix.ty;
 		
 	}
 	
 	
-	private function set_y (value:Float):Float {
+	@:noCompletion private function set_y (value:Float):Float {
 		
 		if (value != __matrix.ty) {
 			

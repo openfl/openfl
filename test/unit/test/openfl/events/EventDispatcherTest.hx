@@ -174,7 +174,6 @@ class EventDispatcherTest {
 		
 		// Capture event bubbling
 		
-		#if flash // todo
 		var sprite = new Sprite ();
 		var sprite2 = new Sprite ();
 		
@@ -210,7 +209,6 @@ class EventDispatcherTest {
 		Assert.isTrue (spriteEvent);
 		Assert.isFalse (sprite2Event);
 		Assert.isTrue (correctOrder);
-		#end
 		
 	}
 	

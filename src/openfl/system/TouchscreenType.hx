@@ -1,4 +1,4 @@
-package openfl.system; #if !openfljs
+package openfl.system; #if !flash #if !openfljs
 
 
 @:enum abstract TouchscreenType(Null<Int>) {
@@ -48,4 +48,7 @@ package openfl.system; #if !openfljs
 }
 
 
+#end
+#else
+typedef TouchscreenType = flash.system.TouchscreenType;
 #end

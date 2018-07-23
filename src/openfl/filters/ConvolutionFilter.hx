@@ -1,4 +1,4 @@
-package openfl.filters;
+package openfl.filters; #if !flash
 
 
 import openfl.display.BitmapData;
@@ -17,7 +17,7 @@ import openfl.geom.Rectangle;
 class ConvolutionFilter extends BitmapFilter {
 	
 	
-	private static var __convolutionShader = new ConvolutionShader ();
+	@:noCompletion private static var __convolutionShader = new ConvolutionShader ();
 	
 	public var alpha:Float;
 	public var bias:Float;
@@ -29,11 +29,11 @@ class ConvolutionFilter extends BitmapFilter {
 	public var matrixY:Int;
 	public var preserveAlpha:Bool;
 	
-	private var __matrix:Array<Float>;
+	@:noCompletion private var __matrix:Array<Float>;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (ConvolutionFilter.prototype, {
 			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
@@ -69,7 +69,7 @@ class ConvolutionFilter extends BitmapFilter {
 	}
 	
 	
-	private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
+	@:noCompletion private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
 		
 		__convolutionShader.uConvoMatrix.value = matrix;
 		__convolutionShader.uDivisor.value[0] = divisor;
@@ -88,14 +88,14 @@ class ConvolutionFilter extends BitmapFilter {
 	
 	
 	
-	private function get_matrix ():Array<Float> {
+	@:noCompletion private function get_matrix ():Array<Float> {
 		
 		return __matrix;
 		
 	}
 	
 	
-	private function set_matrix (v:Array<Float>):Array<Float> {
+	@:noCompletion private function set_matrix (v:Array<Float>):Array<Float> {
 		
 		if (v == null) {
 			
@@ -220,3 +220,8 @@ private class ConvolutionShader extends BitmapFilterShader {
 	
 	
 }
+
+
+#else
+typedef ConvolutionFilter = flash.filters.ConvolutionFilter;
+#end

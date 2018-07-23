@@ -1,4 +1,4 @@
-package openfl.profiler;
+package openfl.profiler; #if !flash
 
 
 #if ((cpp || neko) && hxtelemetry && !macro)
@@ -22,12 +22,12 @@ import openfl._internal.Lib;
 	public static var spanMarker (default, null) = 0.0;
 	
 	#if ((cpp || neko) && hxtelemetry && !macro)
-	private static var telemetry:HxTelemetry;
+	@:noCompletion private static var telemetry:HxTelemetry;
 	#end
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperty (Telemetry, "connected", { get: function () { return Telemetry.get_connected (); } });
 		
@@ -63,7 +63,7 @@ import openfl._internal.Lib;
 	}
 	
 	
-	private static inline function __advanceFrame ():Void {
+	@:noCompletion private static inline function __advanceFrame ():Void {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.advance_frame ();
@@ -72,7 +72,7 @@ import openfl._internal.Lib;
 	}
 	
 	
-	private static inline function __endTiming (name:String):Void {
+	@:noCompletion private static inline function __endTiming (name:String):Void {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.end_timing (name);
@@ -81,7 +81,7 @@ import openfl._internal.Lib;
 	}
 	
 	
-	private static inline function __initialize ():Void {
+	@:noCompletion private static inline function __initialize ():Void {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		var config:hxtelemetry.Config = (Lib.application.config:Dynamic).telemetry;
@@ -92,7 +92,7 @@ import openfl._internal.Lib;
 	}
 	
 	
-	private static inline function __rewindStack (stack:String):Void {
+	@:noCompletion private static inline function __rewindStack (stack:String):Void {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.rewind_stack (stack);
@@ -101,7 +101,7 @@ import openfl._internal.Lib;
 	}
 	
 	
-	private static inline function __startTiming (name:String):Void {
+	@:noCompletion private static inline function __startTiming (name:String):Void {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		telemetry.start_timing (name);
@@ -110,7 +110,7 @@ import openfl._internal.Lib;
 	}
 	
 	
-	private static inline function __unwindStack ():String {
+	@:noCompletion private static inline function __unwindStack ():String {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		return telemetry.unwind_stack ();
@@ -128,7 +128,7 @@ import openfl._internal.Lib;
 	
 	
 	
-	private static function get_connected ():Bool {
+	@:noCompletion private static function get_connected ():Bool {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		return true;
@@ -149,3 +149,8 @@ import openfl._internal.Lib;
 	var RENDER = ".render";
 	
 }
+
+
+#else
+typedef Telemetry = flash.profiler.Telemetry;
+#end

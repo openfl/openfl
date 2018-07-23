@@ -1,13 +1,65 @@
-package openfl.filters;
+package openfl.filters; #if !flash
 
 
-import lime.graphics.utils.ImageDataUtil;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if (lime >= "7.0.0")
+import lime._internal.graphics.ImageDataUtil; // TODO
+#else
+import lime.graphics.utils.ImageDataUtil;
+#end
+
+
+/**
+ * The DropShadowFilter class lets you add a drop shadow to display objects.
+ * The shadow algorithm is based on the same box filter that the blur filter
+ * uses. You have several options for the style of the drop shadow, including
+ * inner or outer shadow and knockout mode. You can apply the filter to any
+ * display object(that is, objects that inherit from the DisplayObject
+ * class), such as MovieClip, SimpleButton, TextField, and Video objects, as
+ * well as to BitmapData objects.
+ *
+ * The use of filters depends on the object to which you apply the
+ * filter:
+ *
+ * 
+ *  * To apply filters to display objects use the `filters`
+ * property(inherited from DisplayObject). Setting the `filters`
+ * property of an object does not modify the object, and you can remove the
+ * filter by clearing the `filters` property. 
+ *  * To apply filters to BitmapData objects, use the
+ * `BitmapData.applyFilter()` method. Calling
+ * `applyFilter()` on a BitmapData object takes the source
+ * BitmapData object and the filter object and generates a filtered image as a
+ * result.
+ * 
+ *
+ * If you apply a filter to a display object, the value of the
+ * `cacheAsBitmap` property of the display object is set to
+ * `true`. If you clear all filters, the original value of
+ * `cacheAsBitmap` is restored.
+ *
+ * This filter supports Stage scaling. However, it does not support general
+ * scaling, rotation, and skewing. If the object itself is scaled(if
+ * `scaleX` and `scaleY` are set to a value other than
+ * 1.0), the filter is not scaled. It is scaled only when the user zooms in on
+ * the Stage.
+ *
+ * A filter is not applied if the resulting image exceeds the maximum
+ * dimensions. In AIR 1.5 and Flash Player 10, the maximum is 8,191 pixels in
+ * width or height, and the total number of pixels cannot exceed 16,777,215
+ * pixels.(So, if an image is 8,191 pixels wide, it can only be 2,048 pixels
+ * high.) In Flash Player 9 and earlier and AIR 1.1 and earlier, the
+ * limitation is 2,880 pixels in height and 2,880 pixels in width. If, for
+ * example, you zoom in on a large movie clip with a filter applied, the
+ * filter is turned off if the resulting image exceeds the maximum
+ * dimensions.
+ */
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -21,35 +73,106 @@ import openfl.geom.Rectangle;
 @:final class DropShadowFilter extends BitmapFilter {
 	
 	
+	/**
+	 * The alpha transparency value for the shadow color. Valid values are 0.0 to
+	 * 1.0. For example, .25 sets a transparency value of 25%. The default value
+	 * is 1.0.
+	 */
 	public var alpha (get, set):Float;
+	
+	/**
+	 * The angle of the shadow. Valid values are 0 to 360 degrees(floating
+	 * point). The default value is 45.
+	 */
 	public var angle (get, set):Float;
+	
+	/**
+	 * The amount of horizontal blur. Valid values are 0 to 255.0(floating
+	 * point). The default value is 4.0.
+	 */
 	public var blurX (get, set):Float;
+	
+	/**
+	 * The amount of vertical blur. Valid values are 0 to 255.0(floating point).
+	 * The default value is 4.0.
+	 */
 	public var blurY (get, set):Float;
+	
+	/**
+	 * The color of the shadow. Valid values are in hexadecimal format
+	 * _0xRRGGBB_. The default value is 0x000000.
+	 */
 	public var color (get, set):Int;
+	
+	/**
+	 * The offset distance for the shadow, in pixels. The default value is 4.0
+	 * (floating point).
+	 */
 	public var distance (get, set):Float;
+	
+	/**
+	 * Indicates whether or not the object is hidden. The value `true`
+	 * indicates that the object itself is not drawn; only the shadow is visible.
+	 * The default is `false`(the object is shown).
+	 */
 	public var hideObject (get, set):Bool;
+	
+	/**
+	 * Indicates whether or not the shadow is an inner shadow. The value
+	 * `true` indicates an inner shadow. The default is
+	 * `false`, an outer shadow(a shadow around the outer edges of
+	 * the object).
+	 */
 	public var inner (get, set):Bool;
+	
+	/**
+	 * Applies a knockout effect(`true`), which effectively makes the
+	 * object's fill transparent and reveals the background color of the
+	 * document. The default is `false`(no knockout).
+	 */
 	public var knockout (get, set):Bool;
+	
+	/**
+	 * The number of times to apply the filter. The default value is
+	 * `BitmapFilterQuality.LOW`, which is equivalent to applying the
+	 * filter once. The value `BitmapFilterQuality.MEDIUM` applies the
+	 * filter twice; the value `BitmapFilterQuality.HIGH` applies it
+	 * three times. Filters with lower values are rendered more quickly.
+	 *
+	 * For most applications, a quality value of low, medium, or high is
+	 * sufficient. Although you can use additional numeric values up to 15 to
+	 * achieve different effects, higher values are rendered more slowly. Instead
+	 * of increasing the value of `quality`, you can often get a
+	 * similar effect, and with faster rendering, by simply increasing the values
+	 * of the `blurX` and `blurY` properties.
+	 */
 	public var quality (get, set):Int;
+	
+	/**
+	 * The strength of the imprint or spread. The higher the value, the more
+	 * color is imprinted and the stronger the contrast between the shadow and
+	 * the background. Valid values are from 0 to 255.0. The default is 1.0.
+	 */
 	public var strength (get, set):Float;
 	
-	private var __alpha:Float;
-	private var __angle:Float;
-	private var __blurX:Float;
-	private var __blurY:Float;
-	private var __color:Int;
-	private var __distance:Float;
-	private var __hideObject:Bool;
-	private var __inner:Bool;
-	private var __knockout:Bool;
-	private var __offsetX:Float;
-	private var __offsetY:Float;
-	private var __quality:Int;
-	private var __strength:Float;
+	
+	@:noCompletion private var __alpha:Float;
+	@:noCompletion private var __angle:Float;
+	@:noCompletion private var __blurX:Float;
+	@:noCompletion private var __blurY:Float;
+	@:noCompletion private var __color:Int;
+	@:noCompletion private var __distance:Float;
+	@:noCompletion private var __hideObject:Bool;
+	@:noCompletion private var __inner:Bool;
+	@:noCompletion private var __knockout:Bool;
+	@:noCompletion private var __offsetX:Float;
+	@:noCompletion private var __offsetY:Float;
+	@:noCompletion private var __quality:Int;
+	@:noCompletion private var __strength:Float;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (DropShadowFilter.prototype, {
 			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
@@ -69,6 +192,45 @@ import openfl.geom.Rectangle;
 	#end
 	
 	
+	/**
+	 * Creates a new DropShadowFilter instance with the specified parameters.
+	 * 
+	 * @param distance   Offset distance for the shadow, in pixels.
+	 * @param angle      Angle of the shadow, 0 to 360 degrees(floating point).
+	 * @param color      Color of the shadow, in hexadecimal format
+	 *                   _0xRRGGBB_. The default value is 0x000000.
+	 * @param alpha      Alpha transparency value for the shadow color. Valid
+	 *                   values are 0.0 to 1.0. For example, .25 sets a
+	 *                   transparency value of 25%.
+	 * @param blurX      Amount of horizontal blur. Valid values are 0 to 255.0
+	 *                  (floating point).
+	 * @param blurY      Amount of vertical blur. Valid values are 0 to 255.0
+	 *                  (floating point).
+	 * @param strength   The strength of the imprint or spread. The higher the
+	 *                   value, the more color is imprinted and the stronger the
+	 *                   contrast between the shadow and the background. Valid
+	 *                   values are 0 to 255.0.
+	 * @param quality    The number of times to apply the filter. Use the
+	 *                   BitmapFilterQuality constants:
+	 *                   
+	 *                    * `BitmapFilterQuality.LOW`
+	 *                    * `BitmapFilterQuality.MEDIUM`
+	 *                    * `BitmapFilterQuality.HIGH`
+	 *                   
+	 *
+	 *                   For more information about these values, see the
+	 *                   `quality` property description.
+	 * @param inner      Indicates whether or not the shadow is an inner shadow.
+	 *                   A value of `true` specifies an inner shadow.
+	 *                   A value of `false` specifies an outer shadow
+	 *                  (a shadow around the outer edges of the object).
+	 * @param knockout   Applies a knockout effect(`true`), which
+	 *                   effectively makes the object's fill transparent and
+	 *                   reveals the background color of the document.
+	 * @param hideObject Indicates whether or not the object is hidden. A value
+	 *                   of `true` indicates that the object itself is
+	 *                   not drawn; only the shadow is visible.
+	 */
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false) {
 		
 		super ();
@@ -104,15 +266,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
+	@:noCompletion private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
 		// TODO: Support knockout, inner
 		
-		var a = (__color >> 24) & 0xFF;
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
-		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, 1, r, g, b, a));
+		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0));
 		
 		destPoint.x += __offsetX;
 		destPoint.y += __offsetY;
@@ -125,7 +286,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function __updateSize ():Void {
+	@:noCompletion private function __updateSize ():Void {
 		
 		__offsetX = Std.int (__distance * Math.cos (__angle * Math.PI / 180));
 		__offsetY = Std.int (__distance * Math.sin (__angle * Math.PI / 180));
@@ -144,14 +305,14 @@ import openfl.geom.Rectangle;
 	
 	
 	
-	private function get_alpha ():Float {
+	@:noCompletion private function get_alpha ():Float {
 		
 		return __alpha;
 		
 	}
 	
 	
-	private function set_alpha (value:Float):Float {
+	@:noCompletion private function set_alpha (value:Float):Float {
 		
 		if (value != __alpha) __renderDirty = true;
 		return __alpha = value;
@@ -159,14 +320,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_angle ():Float {
+	@:noCompletion private function get_angle ():Float {
 		
 		return __angle;
 		
 	}
 	
 	
-	private function set_angle (value:Float):Float {
+	@:noCompletion private function set_angle (value:Float):Float {
 		
 		if (value != __angle) {
 			__angle = value;
@@ -178,14 +339,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_blurX ():Float {
+	@:noCompletion private function get_blurX ():Float {
 		
 		return __blurX;
 		
 	}
 	
 	
-	private function set_blurX (value:Float):Float {
+	@:noCompletion private function set_blurX (value:Float):Float {
 		
 		if (value != __blurX) {
 			__blurX = value;
@@ -197,14 +358,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_blurY ():Float {
+	@:noCompletion private function get_blurY ():Float {
 		
 		return __blurY;
 		
 	}
 	
 	
-	private function set_blurY (value:Float):Float {
+	@:noCompletion private function set_blurY (value:Float):Float {
 		
 		if (value != __blurY) {
 			__blurY = value;
@@ -216,14 +377,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_color ():Int {
+	@:noCompletion private function get_color ():Int {
 		
 		return __color;
 		
 	}
 	
 	
-	private function set_color (value:Int):Int {
+	@:noCompletion private function set_color (value:Int):Int {
 		
 		if (value != __color) __renderDirty = true;
 		return __color = value;
@@ -231,14 +392,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_distance ():Float {
+	@:noCompletion private function get_distance ():Float {
 		
 		return __distance;
 		
 	}
 	
 	
-	private function set_distance (value:Float):Float {
+	@:noCompletion private function set_distance (value:Float):Float {
 		
 		if (value != __distance) {
 			__distance = value;
@@ -250,14 +411,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_hideObject ():Bool {
+	@:noCompletion private function get_hideObject ():Bool {
 		
 		return __hideObject;
 		
 	}
 	
 	
-	private function set_hideObject (value:Bool):Bool {
+	@:noCompletion private function set_hideObject (value:Bool):Bool {
 		
 		if (value != __hideObject) {
 			__renderDirty = true;
@@ -268,14 +429,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_inner ():Bool {
+	@:noCompletion private function get_inner ():Bool {
 		
 		return __inner;
 		
 	}
 	
 	
-	private function set_inner (value:Bool):Bool {
+	@:noCompletion private function set_inner (value:Bool):Bool {
 		
 		if (value != __inner) __renderDirty = true;
 		return __inner = value;
@@ -283,14 +444,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_knockout ():Bool {
+	@:noCompletion private function get_knockout ():Bool {
 		
 		return __knockout;
 		
 	}
 	
 	
-	private function set_knockout (value:Bool):Bool {
+	@:noCompletion private function set_knockout (value:Bool):Bool {
 		
 		if (value != __knockout) __renderDirty = true;
 		return __knockout = value;
@@ -298,14 +459,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_quality ():Int {
+	@:noCompletion private function get_quality ():Int {
 		
 		return __quality;
 		
 	}
 	
 	
-	private function set_quality (value:Int):Int {
+	@:noCompletion private function set_quality (value:Int):Int {
 		
 		if (value != __quality) __renderDirty = true;
 		return __quality = value;
@@ -313,14 +474,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private function get_strength ():Float {
+	@:noCompletion private function get_strength ():Float {
 		
 		return __strength;
 		
 	}
 	
 	
-	private function set_strength (value:Float):Float {
+	@:noCompletion private function set_strength (value:Float):Float {
 		
 		if (value != __strength) __renderDirty = true;
 		return __strength = value;
@@ -329,3 +490,8 @@ import openfl.geom.Rectangle;
 	
 	
 }
+
+
+#else
+typedef DropShadowFilter = flash.filters.DropShadowFilter;
+#end

@@ -2,9 +2,14 @@ package openfl._internal.stage3D;
 
 
 import lime.graphics.opengl.GL;
-import lime.graphics.GLRenderContext;
 import openfl._internal.stage3D.atf.ATFGPUFormat;
 import openfl.errors.IllegalOperationError;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -19,16 +24,22 @@ class GLCompressedTextureFormats {
 	private var __formatMapAlpha = new Map<Int, Int> ();
 	
 	
-	public function new (gl:GLRenderContext) {
+	public function new (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end) {
 		
-		checkDXT (gl);
-		checkETC1 (gl);
-		checkPVRTC (gl);
+		checkDXT (context);
+		checkETC1 (context);
+		checkPVRTC (context);
 		
 	}
 	
 	
-	public function checkDXT (gl:GLRenderContext):Void {
+	public function checkDXT (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl = context;
+		#end
 		
 		#if (js && html5)
 		var compressedExtension = gl.getExtension ("WEBGL_compressed_texture_s3tc");
@@ -46,7 +57,13 @@ class GLCompressedTextureFormats {
 	}
 	
 	
-	public function checkETC1 (gl:GLRenderContext):Void {
+	public function checkETC1 (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl = context;
+		#end
 		
 		#if (js && html5)
 		
@@ -73,7 +90,13 @@ class GLCompressedTextureFormats {
 	}
 	
 	
-	public function checkPVRTC (gl:GLRenderContext):Void {
+	public function checkPVRTC (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl = context;
+		#end
 		
 		#if (js && html5)
 		// WEBGL_compressed_texture_pvrtc is not available on iOS Safari

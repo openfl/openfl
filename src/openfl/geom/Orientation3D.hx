@@ -1,4 +1,4 @@
-package openfl.geom; #if !openfljs
+package openfl.geom; #if !flash #if !openfljs
 
 
 @:enum abstract Orientation3D(Null<Int>) {
@@ -48,4 +48,7 @@ package openfl.geom; #if !openfljs
 }
 
 
+#end
+#else
+typedef Orientation3D = flash.geom.Orientation3D;
 #end

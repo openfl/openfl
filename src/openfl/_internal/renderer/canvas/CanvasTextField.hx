@@ -9,7 +9,6 @@ import openfl.display.BitmapDataChannel;
 import openfl.display.CanvasRenderer;
 import openfl.display.Graphics;
 import openfl.events.Event;
-import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
@@ -215,28 +214,6 @@ class CanvasTextField {
 							
 						}
 						
-						if (textField.__filters != null) {
-							
-							// Hack, force outline
-							
-							if (Std.is (textField.__filters[0], GlowFilter)) {
-								
-								var glowFilter:GlowFilter = cast textField.__filters[0];
-								
-								var cacheAlpha = context.globalAlpha;
-								context.globalAlpha = cacheAlpha * glowFilter.alpha;
-								
-								context.strokeStyle = "#" + StringTools.hex (glowFilter.color & 0xFFFFFF, 6);
-								context.lineWidth = Math.max (glowFilter.blurX, glowFilter.blurY);
-								context.strokeText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX - bounds.x, group.offsetY + offsetY + scrollY - bounds.y);
-								
-								context.strokeStyle = null;
-								context.globalAlpha = cacheAlpha;
-								
-							}
-							
-						}
-						
 						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX - bounds.x, group.offsetY + offsetY + scrollY - bounds.y);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
@@ -264,9 +241,9 @@ class CanvasTextField {
 									
 									context.beginPath ();
 									context.strokeStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
-									context.moveTo (group.offsetX + advance - textField.scrollV - bounds.x, scrollY + 2 - bounds.y);
+									context.moveTo (group.offsetX + advance - textField.scrollH - bounds.x, scrollY + 2 - bounds.y);
 									context.lineWidth = 1;
-									context.lineTo (group.offsetX + advance - textField.scrollV - bounds.x, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1 - bounds.y);
+									context.lineTo (group.offsetX + advance - textField.scrollH - bounds.x, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1 - bounds.y);
 									context.stroke ();
 									context.closePath ();
 									

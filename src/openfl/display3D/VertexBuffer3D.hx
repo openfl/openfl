@@ -1,4 +1,4 @@
-package openfl.display3D;
+package openfl.display3D; #if !flash
 
 
 import haxe.io.Bytes;
@@ -21,18 +21,18 @@ import openfl.Vector;
 class VertexBuffer3D {
 	
 	
-	private var __context:Context3D;
-	private var __data:Vector<Float>;
-	private var __id:GLBuffer;
-	private var __memoryUsage:Int;
-	private var __numVertices:Int;
-	private var __stride:Int;
-	private var __tempFloat32Array:Float32Array;
-	private var __usage:Int;
-	private var __vertexSize:Int;
+	@:noCompletion private var __context:Context3D;
+	@:noCompletion private var __data:Vector<Float>;
+	@:noCompletion private var __id:GLBuffer;
+	@:noCompletion private var __memoryUsage:Int;
+	@:noCompletion private var __numVertices:Int;
+	@:noCompletion private var __stride:Int;
+	@:noCompletion private var __tempFloat32Array:Float32Array;
+	@:noCompletion private var __usage:Int;
+	@:noCompletion private var __vertexSize:Int;
 	
 	
-	private function new (context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:String) {
+	@:noCompletion private function new (context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:String) {
 		
 		__context = context3D;
 		__numVertices = numVertices;
@@ -72,3 +72,8 @@ class VertexBuffer3D {
 	
 	
 }
+
+
+#else
+typedef VertexBuffer3D = flash.display3D.VertexBuffer3D;
+#end

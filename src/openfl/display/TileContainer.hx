@@ -12,11 +12,11 @@ class TileContainer extends Tile implements ITileContainer {
 	
 	public var numTiles (get, never):Int;
 	
-	private var __tiles:Array<Tile>;
+	@:noCompletion private var __tiles:Array<Tile>;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperty (TileContainer.prototype, "numTiles", { get: untyped __js__ ("function () { return this.get_numTiles (); }") });
 		
@@ -223,7 +223,7 @@ class TileContainer extends Tile implements ITileContainer {
 	
 	
 	
-	private function get_numTiles ():Int {
+	@:noCompletion private function get_numTiles ():Int {
 		
 		return __length;
 		

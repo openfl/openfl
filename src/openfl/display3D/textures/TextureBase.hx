@@ -1,7 +1,6 @@
-package openfl.display3D.textures;
+package openfl.display3D.textures; #if !flash
 
 
-import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.graphics.opengl.GLTexture;
 import openfl._internal.stage3D.opengl.GLTextureBase;
@@ -10,6 +9,12 @@ import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
+
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+#else
+import lime.graphics.GLRenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -22,24 +27,24 @@ import openfl.utils.ByteArray;
 class TextureBase extends EventDispatcher {
 	
 	
-	private var __alphaTexture:TextureBase;
+	@:noCompletion private var __alphaTexture:TextureBase;
 	// private var __compressedMemoryUsage:Int;
-	private var __context:Context3D;
-	private var __format:Int;
-	private var __height:Int;
-	private var __internalFormat:Int;
+	@:noCompletion private var __context:Context3D;
+	@:noCompletion private var __format:Int;
+	@:noCompletion private var __height:Int;
+	@:noCompletion private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
-	private var __optimizeForRenderToTexture:Bool;
+	@:noCompletion private var __optimizeForRenderToTexture:Bool;
 	// private var __outputTextureMemoryUsage:Bool = false;
-	private var __samplerState:SamplerState;
-	private var __streamingLevels:Int;
-	private var __textureContext:GLRenderContext;
-	private var __textureID:GLTexture;
-	private var __textureTarget:Int;
-	private var __width:Int;
+	@:noCompletion private var __samplerState:SamplerState;
+	@:noCompletion private var __streamingLevels:Int;
+	@:noCompletion private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __textureID:GLTexture;
+	@:noCompletion private var __textureTarget:Int;
+	@:noCompletion private var __width:Int;
 	
 	
-	private function new (context:Context3D) {
+	@:noCompletion private function new (context:Context3D) {
 		
 		super ();
 		
@@ -61,21 +66,21 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
-	private function __getImage (bitmapData:BitmapData):Image {
+	@:noCompletion private function __getImage (bitmapData:BitmapData):Image {
 		
 		return GLTextureBase.getImage (this, cast __context.__renderer, bitmapData);
 		
 	}
 	
 	
-	private function __getTexture ():GLTexture {
+	@:noCompletion private function __getTexture ():GLTexture {
 		
 		return __textureID;
 		
 	}
 	
 	
-	private function __setSamplerState (state:SamplerState):Void {
+	@:noCompletion private function __setSamplerState (state:SamplerState):Void {
 		
 		GLTextureBase.setSamplerState (this, cast __context.__renderer, state);
 		
@@ -129,3 +134,8 @@ class TextureBase extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef TextureBase = flash.display3D.textures.TextureBase;
+#end

@@ -3,7 +3,7 @@ package openfl._internal.symbols;
 
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
-import lime.Assets in LimeAssets;
+import lime.utils.Assets in LimeAssets;
 import openfl._internal.swf.SWFLite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;

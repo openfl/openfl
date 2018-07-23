@@ -1,16 +1,53 @@
-package openfl.display; #if !openfljs
+package openfl.display; #if !flash #if !openfljs
 
 
+/**
+ * The StageAlign class provides constant values to use for the
+ * `Stage.align` property.
+ */
 @:enum abstract StageAlign(Null<Int>) {
 	
+	
+	/**
+	 * Specifies that the Stage is aligned at the bottom.
+	 */
 	public var BOTTOM = 0;
+	
+	/**
+	 * Specifies that the Stage is aligned on the left.
+	 */
 	public var BOTTOM_LEFT = 1;
+	
+	/**
+	 * Specifies that the Stage is aligned to the right.
+	 */
 	public var BOTTOM_RIGHT = 2;
+	
+	/**
+	 * Specifies that the Stage is aligned on the left.
+	 */
 	public var LEFT = 3;
+	
+	/**
+	 * Specifies that the Stage is aligned to the right.
+	 */
 	public var RIGHT = 4;
+	
+	/**
+	 * Specifies that the Stage is aligned at the top.
+	 */
 	public var TOP = 5;
+	
+	/**
+	 * Specifies that the Stage is aligned on the left.
+	 */
 	public var TOP_LEFT = 6;
+	
+	/**
+	 * Specifies that the Stage is aligned to the right.
+	 */
 	public var TOP_RIGHT = 7;
+	
 	
 	@:from private static function fromString (value:String):StageAlign {
 		
@@ -30,6 +67,7 @@ package openfl.display; #if !openfljs
 		
 	}
 	
+	
 	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
@@ -47,6 +85,7 @@ package openfl.display; #if !openfljs
 		}
 		
 	}
+	
 	
 }
 
@@ -68,4 +107,7 @@ package openfl.display; #if !openfljs
 }
 
 
+#end
+#else
+typedef StageAlign = flash.display.StageAlign;
 #end

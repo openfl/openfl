@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 import openfl.net.ObjectEncoding;
@@ -23,3 +23,8 @@ interface IDataOutput {
 	public function writeUnsignedInt (value:Int):Void;
 	
 }
+
+
+#else
+typedef IDataOutput = flash.utils.IDataOutput;
+#end

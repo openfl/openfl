@@ -7,7 +7,7 @@ import Font from "./../text/Font";
 declare namespace openfl.utils {
 	
 	
-	/*@:dox(hide)*/ export class AssetCache implements IAssetCache {
+	/*@:dox(hide)*/ export class AssetCache extends IAssetCache {
 	
 	
 		public enabled:boolean;

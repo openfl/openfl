@@ -42,20 +42,24 @@ import openfl.geom.Matrix;
 	
 	public override function clone ():Event {
 		
-		var event = new RenderEvent (type, bubbles, cancelable, objectMatrix.clone (), objectColorTransform.__clone (), allowSmoothing);
+		var event = new RenderEvent (type, bubbles, cancelable, objectMatrix.clone (), #if flash null #else objectColorTransform.__clone () #end, allowSmoothing);
+		#if !flash
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
+		#end
 		return event;
 		
 	}
 	
 	
+	#if !flash
 	public override function toString ():String {
 		
-		return __formatToString ("RenderEvent",  [ "type", "bubbles", "cancelable" ]);
+		return __formatToString ("RenderEvent", [ "type", "bubbles", "cancelable" ]);
 		
 	}
+	#end
 	
 	
 }

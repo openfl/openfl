@@ -33,11 +33,17 @@ class Matrix3DTest {
 		
 		Assert.isNotNull (exists);
 		
-		matrix3D.position = new Vector3D (10, 20, 30);
+		matrix3D.position = new Vector3D (10, 20, 30, 40);
 		
-		Assert.isTrue (nearEquals (10, matrix3D.position.x));
-		Assert.isTrue (nearEquals (20, matrix3D.position.y));
-		Assert.isTrue (nearEquals (30, matrix3D.position.z));
+		Assert.areEqual (10, matrix3D.position.x);
+		Assert.areEqual (20, matrix3D.position.y);
+		Assert.areEqual (30, matrix3D.position.z);
+		Assert.areEqual (0, matrix3D.position.w);
+		Assert.areEqual (1, matrix3D.rawData[15]);
+		
+		matrix3D.rawData[15] = 40;
+		
+		Assert.areEqual (0, matrix3D.position.w);
 		
 	}
 	
@@ -496,24 +502,35 @@ class Matrix3DTest {
 		Assert.isNotNull (exists);
 		
 		matrix3D = new Matrix3D(Vector.ofArray ([ 1.0, 2.0, 3.0, 4.0, 2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 2.0, 4.0, 3.0, 2.0, 1.0 ]));
-		var inverted = matrix3D.invert(); 
+		var inverted = matrix3D.invert();
 		var expected = new Matrix3D(Vector.ofArray ([ -0.4, 0.5, 0, 0.1, 0.5, -1, 0.5, 0, 0, 0.5, -1, 0.5, 0.1, 0, 0.5, -0.4 ]));
 		
 		Assert.isTrue(inverted);
 		
-		assertMatrix3DnearEquals(expected, matrix3D ); 
+		assertMatrix3DnearEquals(expected, matrix3D );
 		
 	}
 	
 	
 	@Test public function pointAt () {
 		
-		// TODO: Confirm functionality
-		
+		#if flash
 		var matrix3D = new Matrix3D ();
-		var exists = matrix3D.pointAt;
+		matrix3D.pointAt (new Vector3D (1, 1, 1, 1), new Vector3D (2, 2, 2, 2), new Vector3D (3, 3, 3, 3));
 		
-		Assert.isNotNull (exists);
+		// var expected = new Matrix3D (Vector.ofArray ([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]));
+		// assertMatrix3DnearEquals (expected, matrix3D);
+		
+		matrix3D.pointAt (new Vector3D (1, 1, 1, 1));
+		
+		var expected = new Matrix3D (Vector.ofArray ([0.7071067690849304,0,-0.7071067690849304,0,0.5773502588272095,0.5773502588272095,0.5773502588272095,0,0.40824827551841736,-0.8164965510368347,0.40824827551841736,0,0,0,0,1]));
+		assertMatrix3DnearEquals (expected, matrix3D);
+		
+		matrix3D.pointAt (new Vector3D (2, 2, 2, 2), new Vector3D (1, 1, 1, 1));
+		
+		var expected = new Matrix3D (Vector.ofArray ([0.6666666269302368,0.6666666269302368,-0.3333333134651184,0,-0.3333333134651184,0.6666666269302368,0.6666666269302368,0,0.6666666269302368,-0.3333333134651184,0.6666666269302368,0,0,0,0,1]));
+		assertMatrix3DnearEquals (expected, matrix3D);
+		#end
 		
 	}
 	
@@ -742,9 +759,9 @@ class Matrix3DTest {
 		var rdExpected = expected.rawData;
 		var rdActual = actual.rawData;
 		
-		//trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
-		//trace("Expected (Matrix3D)("+tolerance+"):"+rdExpected.join(", "));
-		//trace("Actual   (Matrix3D)("+tolerance+"):"+rdActual.join(", "));
+		// trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
+		// trace("Expected (Matrix3D)("+tolerance+"):"+rdExpected.join(", "));
+		// trace("Actual   (Matrix3D)("+tolerance+"):"+rdActual.join(", "));
 		
 		Assert.isTrue (nearEquals (rdExpected[  0 ], rdActual[  0 ], tolerance));
 		Assert.isTrue (nearEquals (rdExpected[  1 ], rdActual[  1 ], tolerance));

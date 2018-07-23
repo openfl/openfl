@@ -2,7 +2,6 @@ package openfl._internal.stage3D.opengl;
 
 
 import lime.graphics.opengl.GL;
-import lime.graphics.GLRenderContext;
 import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import lime.utils.Log;
@@ -16,6 +15,14 @@ import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
+#if (lime >= "7.0.0")
+import lime.graphics.RenderContext;
+import lime.utils.LogLevel;
+#else
+import lime.graphics.opengl.WebGLContext;
+import lime.graphics.GLRenderContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -23,6 +30,7 @@ import openfl.utils.ByteArray;
 
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
+@:access(openfl.display.DisplayObjectRenderer)
 
 
 class GLProgram3D {
@@ -42,11 +50,34 @@ class GLProgram3D {
 	}
 	
 	
-	public static function flushUniform (uniform:Uniform, gl:GLRenderContext):Void {
+	public static function flushUniform (uniform:Uniform, context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+		
+		#if (js && html5)
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl:WebGLContext = renderer.__context;
+		#end
+		#else
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.gles2;
+		#else
+		var gl = renderer.__context;
+		#end
+		#end
 		
 		var index:Int = uniform.regIndex * 4;
 		switch (uniform.type) {
 			
+			#if (js && html5)
+			case GL.FLOAT_MAT2: gl.uniformMatrix2fv (uniform.location, false, __getUniformRegisters (uniform, index, uniform.size * 2 * 2));
+			case GL.FLOAT_MAT3: gl.uniformMatrix3fv (uniform.location, false, __getUniformRegisters (uniform, index, uniform.size * 3 * 3));
+			case GL.FLOAT_MAT4: gl.uniformMatrix4fv (uniform.location, false, __getUniformRegisters (uniform, index, uniform.size * 4 * 4));
+			case GL.FLOAT_VEC2: gl.uniform2fv (uniform.location, __getUniformRegisters (uniform, index, uniform.regCount * 2));
+			case GL.FLOAT_VEC3: gl.uniform3fv (uniform.location, __getUniformRegisters (uniform, index, uniform.regCount * 3));
+			case GL.FLOAT_VEC4: gl.uniform4fv (uniform.location, __getUniformRegisters (uniform, index, uniform.regCount * 4));
+			default: gl.uniform4fv (uniform.location, __getUniformRegisters (uniform, index, uniform.regCount * 4));
+			#else
 			case GL.FLOAT_MAT2: gl.uniformMatrix2fv (uniform.location, uniform.size, false, __getUniformRegisters (uniform, index, uniform.size * 2 * 2));
 			case GL.FLOAT_MAT3: gl.uniformMatrix3fv (uniform.location, uniform.size, false, __getUniformRegisters (uniform, index, uniform.size * 3 * 3));
 			case GL.FLOAT_MAT4: gl.uniformMatrix4fv (uniform.location, uniform.size, false, __getUniformRegisters (uniform, index, uniform.size * 4 * 4));
@@ -54,6 +85,7 @@ class GLProgram3D {
 			case GL.FLOAT_VEC3: gl.uniform3fv (uniform.location, uniform.regCount, __getUniformRegisters (uniform, index, uniform.regCount * 3));
 			case GL.FLOAT_VEC4: gl.uniform4fv (uniform.location, uniform.regCount, __getUniformRegisters (uniform, index, uniform.regCount * 4));
 			default: gl.uniform4fv (uniform.location, uniform.regCount, __getUniformRegisters (uniform, index, uniform.regCount * 4));
+			#end
 			
 		}
 		
@@ -64,8 +96,12 @@ class GLProgram3D {
 	
 	public static function setPositionScale (program:Program3D, renderer:OpenGLRenderer, positionScale:Float32Array):Void {
 		
-		var gl = renderer.__gl;
-		gl.uniform4fv (program.__positionScale.location, 1, positionScale);
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl:WebGLContext = renderer.__context;
+		#end
+		gl.uniform4fv (program.__positionScale.location, positionScale);
 		GLUtils.CheckGLError ();
 		
 	}
@@ -95,7 +131,11 @@ class GLProgram3D {
 	
 	public static function use (program:Program3D, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		gl.useProgram (program.__programID);
 		GLUtils.CheckGLError ();
@@ -155,7 +195,11 @@ class GLProgram3D {
 	
 	private static function __buildUniformList ():Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		program.__uniforms.clear ();
 		program.__samplerUniforms.clear ();
@@ -179,7 +223,7 @@ class GLProgram3D {
 			var uniformType = info.type;
 			GLUtils.CheckGLError ();
 			
-			var uniform = new Uniform (gl);
+			var uniform = new Uniform (renderer.__context);
 			uniform.name = name;
 			uniform.size = size;
 			uniform.type = uniformType;
@@ -264,7 +308,11 @@ class GLProgram3D {
 	
 	private static function __deleteShaders ():Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		if (program.__programID != null) {
 			
@@ -319,7 +367,11 @@ class GLProgram3D {
 	
 	private static function __uploadFromGLSL (vertexShaderSource:String, fragmentShaderSource:String):Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		__deleteShaders ();
 		

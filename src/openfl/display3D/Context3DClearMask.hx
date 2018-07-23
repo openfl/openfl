@@ -1,4 +1,4 @@
-package openfl.display3D;
+package openfl.display3D; #if !flash
 
 
 @:enum abstract Context3DClearMask(UInt) from UInt to UInt from Int to Int {
@@ -9,3 +9,8 @@ package openfl.display3D;
 	public var STENCIL = 0x04;
 	
 }
+
+
+#else
+typedef Context3DClearMask = flash.display3D.Context3DClearMask;
+#end

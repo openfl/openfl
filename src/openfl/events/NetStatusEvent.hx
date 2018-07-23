@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 #if !openfl_debug
@@ -43,3 +43,8 @@ class NetStatusEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef NetStatusEvent = flash.events.NetStatusEvent;
+#end

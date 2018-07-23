@@ -1,8 +1,7 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import lime.graphics.cairo.Cairo;
-import lime.graphics.utils.ImageCanvasUtil;
 import lime.ui.MouseCursor;
 import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
@@ -34,12 +33,149 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Vector;
 
+#if (lime >= "7.0.0")
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+#else
+import lime.graphics.utils.ImageCanvasUtil;
+#end
+
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
 import js.html.Element;
 #end
+
+
+/**
+ * The DisplayObject class is the base class for all objects that can be
+ * placed on the display list. The display list manages all objects displayed
+ * in openfl. Use the DisplayObjectContainer class to arrange the
+ * display objects in the display list. DisplayObjectContainer objects can
+ * have child display objects, while other display objects, such as Shape and
+ * TextField objects, are "leaf" nodes that have only parents and siblings, no
+ * children.
+ *
+ * The DisplayObject class supports basic functionality like the _x_
+ * and _y_ position of an object, as well as more advanced properties of
+ * the object such as its transformation matrix. 
+ *
+ * DisplayObject is an abstract base class; therefore, you cannot call
+ * DisplayObject directly. Invoking `new DisplayObject()` throws an
+ * `ArgumentError` exception. 
+ *
+ * All display objects inherit from the DisplayObject class.
+ *
+ * The DisplayObject class itself does not include any APIs for rendering
+ * content onscreen. For that reason, if you want create a custom subclass of
+ * the DisplayObject class, you will want to extend one of its subclasses that
+ * do have APIs for rendering content onscreen, such as the Shape, Sprite,
+ * Bitmap, SimpleButton, TextField, or MovieClip class.
+ *
+ * The DisplayObject class contains several broadcast events. Normally, the
+ * target of any particular event is a specific DisplayObject instance. For
+ * example, the target of an `added` event is the specific
+ * DisplayObject instance that was added to the display list. Having a single
+ * target restricts the placement of event listeners to that target and in
+ * some cases the target's ancestors on the display list. With broadcast
+ * events, however, the target is not a specific DisplayObject instance, but
+ * rather all DisplayObject instances, including those that are not on the
+ * display list. This means that you can add a listener to any DisplayObject
+ * instance to listen for broadcast events. In addition to the broadcast
+ * events listed in the DisplayObject class's Events table, the DisplayObject
+ * class also inherits two broadcast events from the EventDispatcher class:
+ * `activate` and `deactivate`.
+ *
+ * Some properties previously used in the ActionScript 1.0 and 2.0
+ * MovieClip, TextField, and Button classes(such as `_alpha`,
+ * `_height`, `_name`, `_width`,
+ * `_x`, `_y`, and others) have equivalents in the
+ * ActionScript 3.0 DisplayObject class that are renamed so that they no
+ * longer begin with the underscore(_) character.
+ *
+ * For more information, see the "Display Programming" chapter of the
+ * _ActionScript 3.0 Developer's Guide_.
+ * 
+ * @event added            Dispatched when a display object is added to the
+ *                         display list. The following methods trigger this
+ *                         event:
+ *                         `DisplayObjectContainer.addChild()`,
+ *                         `DisplayObjectContainer.addChildAt()`.
+ * @event addedToStage     Dispatched when a display object is added to the on
+ *                         stage display list, either directly or through the
+ *                         addition of a sub tree in which the display object
+ *                         is contained. The following methods trigger this
+ *                         event:
+ *                         `DisplayObjectContainer.addChild()`,
+ *                         `DisplayObjectContainer.addChildAt()`.
+ * @event enterFrame       [broadcast event] Dispatched when the playhead is
+ *                         entering a new frame. If the playhead is not
+ *                         moving, or if there is only one frame, this event
+ *                         is dispatched continuously in conjunction with the
+ *                         frame rate. This event is a broadcast event, which
+ *                         means that it is dispatched by all display objects
+ *                         with a listener registered for this event.
+ * @event exitFrame        [broadcast event] Dispatched when the playhead is
+ *                         exiting the current frame. All frame scripts have
+ *                         been run. If the playhead is not moving, or if
+ *                         there is only one frame, this event is dispatched
+ *                         continuously in conjunction with the frame rate.
+ *                         This event is a broadcast event, which means that
+ *                         it is dispatched by all display objects with a
+ *                         listener registered for this event.
+ * @event frameConstructed [broadcast event] Dispatched after the constructors
+ *                         of frame display objects have run but before frame
+ *                         scripts have run. If the playhead is not moving, or
+ *                         if there is only one frame, this event is
+ *                         dispatched continuously in conjunction with the
+ *                         frame rate. This event is a broadcast event, which
+ *                         means that it is dispatched by all display objects
+ *                         with a listener registered for this event.
+ * @event removed          Dispatched when a display object is about to be
+ *                         removed from the display list. Two methods of the
+ *                         DisplayObjectContainer class generate this event:
+ *                         `removeChild()` and
+ *                         `removeChildAt()`.
+ *
+ *                         The following methods of a
+ *                         DisplayObjectContainer object also generate this
+ *                         event if an object must be removed to make room for
+ *                         the new object: `addChild()`,
+ *                         `addChildAt()`, and
+ *                         `setChildIndex()`. 
+ * @event removedFromStage Dispatched when a display object is about to be
+ *                         removed from the display list, either directly or
+ *                         through the removal of a sub tree in which the
+ *                         display object is contained. Two methods of the
+ *                         DisplayObjectContainer class generate this event:
+ *                         `removeChild()` and
+ *                         `removeChildAt()`.
+ *
+ *                         The following methods of a
+ *                         DisplayObjectContainer object also generate this
+ *                         event if an object must be removed to make room for
+ *                         the new object: `addChild()`,
+ *                         `addChildAt()`, and
+ *                         `setChildIndex()`. 
+ * @event render           [broadcast event] Dispatched when the display list
+ *                         is about to be updated and rendered. This event
+ *                         provides the last opportunity for objects listening
+ *                         for this event to make changes before the display
+ *                         list is rendered. You must call the
+ *                         `invalidate()` method of the Stage
+ *                         object each time you want a `render`
+ *                         event to be dispatched. `Render` events
+ *                         are dispatched to an object only if there is mutual
+ *                         trust between it and the object that called
+ *                         `Stage.invalidate()`. This event is a
+ *                         broadcast event, which means that it is dispatched
+ *                         by all display objects with a listener registered
+ *                         for this event.
+ *
+ *                         **Note: **This event is not dispatched if the
+ *                         display is not rendering. This is the case when the
+ *                         content is either minimized or obscured. 
+ */
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -65,105 +201,621 @@ import js.html.Element;
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
-	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
-	private static var __initStage:Stage;
-	private static var __instanceCount = 0;
-	private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
-	private static var __tempColorTransform = new ColorTransform ();
-	private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
+	@:noCompletion private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
+	@:noCompletion private static var __initStage:Stage;
+	@:noCompletion private static var __instanceCount = 0;
+	@:noCompletion private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
+	@:noCompletion private static var __tempColorTransform = new ColorTransform ();
+	@:noCompletion private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
 	
+	
+	// @:noCompletion @:dox(hide) public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
+	
+	/**
+	 * Indicates the alpha transparency value of the object specified. Valid
+	 * values are 0(fully transparent) to 1(fully opaque). The default value is
+	 * 1. Display objects with `alpha` set to 0 _are_ active,
+	 * even though they are invisible.
+	 */
 	@:keep public var alpha (get, set):Float;
+	
+	/**
+	 * A value from the BlendMode class that specifies which blend mode to use. A
+	 * bitmap can be drawn internally in two ways. If you have a blend mode
+	 * enabled or an external clipping mask, the bitmap is drawn by adding a
+	 * bitmap-filled square shape to the vector render. If you attempt to set
+	 * this property to an invalid value, Flash runtimes set the value to
+	 * `BlendMode.NORMAL`.
+	 *
+	 * The `blendMode` property affects each pixel of the display
+	 * object. Each pixel is composed of three constituent colors(red, green,
+	 * and blue), and each constituent color has a value between 0x00 and 0xFF.
+	 * Flash Player or Adobe AIR compares each constituent color of one pixel in
+	 * the movie clip with the corresponding color of the pixel in the
+	 * background. For example, if `blendMode` is set to
+	 * `BlendMode.LIGHTEN`, Flash Player or Adobe AIR compares the red
+	 * value of the display object with the red value of the background, and uses
+	 * the lighter of the two as the value for the red component of the displayed
+	 * color.
+	 *
+	 * The following table describes the `blendMode` settings. The
+	 * BlendMode class defines string values you can use. The illustrations in
+	 * the table show `blendMode` values applied to a circular display
+	 * object(2) superimposed on another display object(1).
+	 */
 	public var blendMode (get, set):BlendMode;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public var blendShader (null, default):Shader;
+	
+	/**
+	 * All vector data for a display object that has a cached bitmap is drawn
+	 * to the bitmap instead of the main display. If
+	 * `cacheAsBitmapMatrix` is null or unsupported, the bitmap is
+	 * then copied to the main display as unstretched, unrotated pixels snapped
+	 * to the nearest pixel boundaries. Pixels are mapped 1 to 1 with the parent
+	 * object. If the bounds of the bitmap change, the bitmap is recreated
+	 * instead of being stretched.
+	 *
+	 * If `cacheAsBitmapMatrix` is non-null and supported, the
+	 * object is drawn to the off-screen bitmap using that matrix and the
+	 * stretched and/or rotated results of that rendering are used to draw the
+	 * object to the main display.
+	 *
+	 * No internal bitmap is created unless the `cacheAsBitmap`
+	 * property is set to `true`.
+	 *
+	 * After you set the `cacheAsBitmap` property to
+	 * `true`, the rendering does not change, however the display
+	 * object performs pixel snapping automatically. The animation speed can be
+	 * significantly faster depending on the complexity of the vector content.
+	 * 
+	 *
+	 * The `cacheAsBitmap` property is automatically set to
+	 * `true` whenever you apply a filter to a display object(when
+	 * its `filter` array is not empty), and if a display object has a
+	 * filter applied to it, `cacheAsBitmap` is reported as
+	 * `true` for that display object, even if you set the property to
+	 * `false`. If you clear all filters for a display object, the
+	 * `cacheAsBitmap` setting changes to what it was last set to.
+	 *
+	 * A display object does not use a bitmap even if the
+	 * `cacheAsBitmap` property is set to `true` and
+	 * instead renders from vector data in the following cases:
+	 *
+	 * 
+	 *  * The bitmap is too large. In AIR 1.5 and Flash Player 10, the maximum
+	 * size for a bitmap image is 8,191 pixels in width or height, and the total
+	 * number of pixels cannot exceed 16,777,215 pixels.(So, if a bitmap image
+	 * is 8,191 pixels wide, it can only be 2,048 pixels high.) In Flash Player 9
+	 * and earlier, the limitation is is 2880 pixels in height and 2,880 pixels
+	 * in width.
+	 *  * The bitmap fails to allocate(out of memory error). 
+	 * 
+	 *
+	 * The `cacheAsBitmap` property is best used with movie clips
+	 * that have mostly static content and that do not scale and rotate
+	 * frequently. With such movie clips, `cacheAsBitmap` can lead to
+	 * performance increases when the movie clip is translated(when its _x_
+	 * and _y_ position is changed).
+	 */
 	public var cacheAsBitmap (get, set):Bool;
+	
 	public var cacheAsBitmapMatrix (get, set):Matrix;
+	
+	/**
+	 * An indexed array that contains each filter object currently associated
+	 * with the display object. The openfl.filters package contains several
+	 * classes that define specific filters you can use.
+	 *
+	 * Filters can be applied in Flash Professional at design time, or at run
+	 * time by using ActionScript code. To apply a filter by using ActionScript,
+	 * you must make a temporary copy of the entire `filters` array,
+	 * modify the temporary array, then assign the value of the temporary array
+	 * back to the `filters` array. You cannot directly add a new
+	 * filter object to the `filters` array.
+	 *
+	 * To add a filter by using ActionScript, perform the following steps
+	 * (assume that the target display object is named
+	 * `myDisplayObject`):
+	 *
+	 *  1. Create a new filter object by using the constructor method of your
+	 * chosen filter class.
+	 *  2. Assign the value of the `myDisplayObject.filters` array
+	 * to a temporary array, such as one named `myFilters`.
+	 *  3. Add the new filter object to the `myFilters` temporary
+	 * array.
+	 *  4. Assign the value of the temporary array to the
+	 * `myDisplayObject.filters` array.
+	 *
+	 * If the `filters` array is undefined, you do not need to use
+	 * a temporary array. Instead, you can directly assign an array literal that
+	 * contains one or more filter objects that you create. The first example in
+	 * the Examples section adds a drop shadow filter by using code that handles
+	 * both defined and undefined `filters` arrays.
+	 *
+	 * To modify an existing filter object, you must use the technique of
+	 * modifying a copy of the `filters` array:
+	 *
+	 *  1. Assign the value of the `filters` array to a temporary
+	 * array, such as one named `myFilters`.
+	 *  2. Modify the property by using the temporary array,
+	 * `myFilters`. For example, to set the quality property of the
+	 * first filter in the array, you could use the following code:
+	 * `myFilters[0].quality = 1;`
+	 *  3. Assign the value of the temporary array to the `filters`
+	 * array.
+	 *
+	 * At load time, if a display object has an associated filter, it is
+	 * marked to cache itself as a transparent bitmap. From this point forward,
+	 * as long as the display object has a valid filter list, the player caches
+	 * the display object as a bitmap. This source bitmap is used as a source
+	 * image for the filter effects. Each display object usually has two bitmaps:
+	 * one with the original unfiltered source display object and another for the
+	 * final image after filtering. The final image is used when rendering. As
+	 * long as the display object does not change, the final image does not need
+	 * updating.
+	 *
+	 * The openfl.filters package includes classes for filters. For example, to
+	 * create a DropShadow filter, you would write:
+	 * 
+	 * @throws ArgumentError When `filters` includes a ShaderFilter
+	 *                       and the shader output type is not compatible with
+	 *                       this operation(the shader must specify a
+	 *                       `pixel4` output).
+	 * @throws ArgumentError When `filters` includes a ShaderFilter
+	 *                       and the shader doesn't specify any image input or
+	 *                       the first input is not an `image4` input.
+	 * @throws ArgumentError When `filters` includes a ShaderFilter
+	 *                       and the shader specifies an image input that isn't
+	 *                       provided.
+	 * @throws ArgumentError When `filters` includes a ShaderFilter, a
+	 *                       ByteArray or Vector.<Number> instance as a shader
+	 *                       input, and the `width` and
+	 *                       `height` properties aren't specified for
+	 *                       the ShaderInput object, or the specified values
+	 *                       don't match the amount of data in the input data.
+	 *                       See the `ShaderInput.input` property for
+	 *                       more information.
+	 */
 	public var filters (get, set):Array<BitmapFilter>;
+	
+	/**
+	 * Indicates the height of the display object, in pixels. The height is
+	 * calculated based on the bounds of the content of the display object. When
+	 * you set the `height` property, the `scaleY` property
+	 * is adjusted accordingly, as shown in the following code:
+	 *
+	 * Except for TextField and Video objects, a display object with no
+	 * content(such as an empty sprite) has a height of 0, even if you try to
+	 * set `height` to a different value.
+	 */
 	@:keep public var height (get, set):Float;
+	
+	/**
+	 * Returns a LoaderInfo object containing information about loading the file
+	 * to which this display object belongs. The `loaderInfo` property
+	 * is defined only for the root display object of a SWF file or for a loaded
+	 * Bitmap(not for a Bitmap that is drawn with ActionScript). To find the
+	 * `loaderInfo` object associated with the SWF file that contains
+	 * a display object named `myDisplayObject`, use
+	 * `myDisplayObject.root.loaderInfo`.
+	 *
+	 * A large SWF file can monitor its download by calling
+	 * `this.root.loaderInfo.addEventListener(Event.COMPLETE,
+	 * func)`.
+	 */
 	public var loaderInfo (get, never):LoaderInfo;
+	
+	/**
+	 * The calling display object is masked by the specified `mask`
+	 * object. To ensure that masking works when the Stage is scaled, the
+	 * `mask` display object must be in an active part of the display
+	 * list. The `mask` object itself is not drawn. Set
+	 * `mask` to `null` to remove the mask.
+	 *
+	 * To be able to scale a mask object, it must be on the display list. To
+	 * be able to drag a mask Sprite object(by calling its
+	 * `startDrag()` method), it must be on the display list. To call
+	 * the `startDrag()` method for a mask sprite based on a
+	 * `mouseDown` event being dispatched by the sprite, set the
+	 * sprite's `buttonMode` property to `true`.
+	 *
+	 * When display objects are cached by setting the
+	 * `cacheAsBitmap` property to `true` an the
+	 * `cacheAsBitmapMatrix` property to a Matrix object, both the
+	 * mask and the display object being masked must be part of the same cached
+	 * bitmap. Thus, if the display object is cached, then the mask must be a
+	 * child of the display object. If an ancestor of the display object on the
+	 * display list is cached, then the mask must be a child of that ancestor or
+	 * one of its descendents. If more than one ancestor of the masked object is
+	 * cached, then the mask must be a descendent of the cached container closest
+	 * to the masked object in the display list.
+	 *
+	 * **Note:** A single `mask` object cannot be used to mask
+	 * more than one calling display object. When the `mask` is
+	 * assigned to a second display object, it is removed as the mask of the
+	 * first object, and that object's `mask` property becomes
+	 * `null`.
+	 */
 	public var mask (get, set):DisplayObject;
+	
+	/**
+	 * Indicates the x coordinate of the mouse or user input device position, in
+	 * pixels.
+	 *
+	 * **Note**: For a DisplayObject that has been rotated, the returned x
+	 * coordinate will reflect the non-rotated object.
+	 */
 	public var mouseX (get, never):Float;
+	
+	/**
+	 * Indicates the y coordinate of the mouse or user input device position, in
+	 * pixels.
+	 *
+	 * **Note**: For a DisplayObject that has been rotated, the returned y
+	 * coordinate will reflect the non-rotated object.
+	 */
 	public var mouseY (get, never):Float;
+	
+	/**
+	 * Indicates the instance name of the DisplayObject. The object can be
+	 * identified in the child list of its parent display object container by
+	 * calling the `getChildByName()` method of the display object
+	 * container.
+	 * 
+	 * @throws IllegalOperationError If you are attempting to set this property
+	 *                               on an object that was placed on the timeline
+	 *                               in the Flash authoring tool.
+	 */
 	public var name (get, set):String;
+	
+	/**
+	 * Specifies whether the display object is opaque with a certain background
+	 * color. A transparent bitmap contains alpha channel data and is drawn
+	 * transparently. An opaque bitmap has no alpha channel(and renders faster
+	 * than a transparent bitmap). If the bitmap is opaque, you specify its own
+	 * background color to use.
+	 *
+	 * If set to a number value, the surface is opaque(not transparent) with
+	 * the RGB background color that the number specifies. If set to
+	 * `null`(the default value), the display object has a
+	 * transparent background.
+	 *
+	 * The `opaqueBackground` property is intended mainly for use
+	 * with the `cacheAsBitmap` property, for rendering optimization.
+	 * For display objects in which the `cacheAsBitmap` property is
+	 * set to true, setting `opaqueBackground` can improve rendering
+	 * performance.
+	 *
+	 * The opaque background region is _not_ matched when calling the
+	 * `hitTestPoint()` method with the `shapeFlag`
+	 * parameter set to `true`.
+	 *
+	 * The opaque background region does not respond to mouse events.
+	 */
 	public var opaqueBackground:Null<Int>;
+	
+	/**
+	 * Indicates the DisplayObjectContainer object that contains this display
+	 * object. Use the `parent` property to specify a relative path to
+	 * display objects that are above the current display object in the display
+	 * list hierarchy.
+	 *
+	 * You can use `parent` to move up multiple levels in the
+	 * display list as in the following:
+	 * 
+	 * @throws SecurityError The parent display object belongs to a security
+	 *                       sandbox to which you do not have access. You can
+	 *                       avoid this situation by having the parent movie call
+	 *                       the `Security.allowDomain()` method.
+	 */
 	public var parent (default, null):DisplayObjectContainer;
+	
+	/**
+	 * For a display object in a loaded SWF file, the `root` property
+	 * is the top-most display object in the portion of the display list's tree
+	 * structure represented by that SWF file. For a Bitmap object representing a
+	 * loaded image file, the `root` property is the Bitmap object
+	 * itself. For the instance of the main class of the first SWF file loaded,
+	 * the `root` property is the display object itself. The
+	 * `root` property of the Stage object is the Stage object itself.
+	 * The `root` property is set to `null` for any display
+	 * object that has not been added to the display list, unless it has been
+	 * added to a display object container that is off the display list but that
+	 * is a child of the top-most display object in a loaded SWF file.
+	 *
+	 * For example, if you create a new Sprite object by calling the
+	 * `Sprite()` constructor method, its `root` property
+	 * is `null` until you add it to the display list(or to a display
+	 * object container that is off the display list but that is a child of the
+	 * top-most display object in a SWF file).
+	 *
+	 * For a loaded SWF file, even though the Loader object used to load the
+	 * file may not be on the display list, the top-most display object in the
+	 * SWF file has its `root` property set to itself. The Loader
+	 * object does not have its `root` property set until it is added
+	 * as a child of a display object for which the `root` property is
+	 * set.
+	 */
 	public var root (get, never):DisplayObject;
+	
+	/**
+	 * Indicates the rotation of the DisplayObject instance, in degrees, from its
+	 * original orientation. Values from 0 to 180 represent clockwise rotation;
+	 * values from 0 to -180 represent counterclockwise rotation. Values outside
+	 * this range are added to or subtracted from 360 to obtain a value within
+	 * the range. For example, the statement `my_video.rotation = 450`
+	 * is the same as ` my_video.rotation = 90`.
+	 */
 	@:keep public var rotation (get, set):Float;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationZ:Float;
+	
+	/**
+	 * The current scaling grid that is in effect. If set to `null`,
+	 * the entire display object is scaled normally when any scale transformation
+	 * is applied.
+	 *
+	 * When you define the `scale9Grid` property, the display
+	 * object is divided into a grid with nine regions based on the
+	 * `scale9Grid` rectangle, which defines the center region of the
+	 * grid. The eight other regions of the grid are the following areas: 
+	 *
+	 * 
+	 *  * The upper-left corner outside of the rectangle
+	 *  * The area above the rectangle 
+	 *  * The upper-right corner outside of the rectangle
+	 *  * The area to the left of the rectangle
+	 *  * The area to the right of the rectangle
+	 *  * The lower-left corner outside of the rectangle
+	 *  * The area below the rectangle
+	 *  * The lower-right corner outside of the rectangle
+	 * 
+	 *
+	 * You can think of the eight regions outside of the center(defined by
+	 * the rectangle) as being like a picture frame that has special rules
+	 * applied to it when scaled.
+	 *
+	 * When the `scale9Grid` property is set and a display object
+	 * is scaled, all text and gradients are scaled normally; however, for other
+	 * types of objects the following rules apply:
+	 *
+	 * 
+	 *  * Content in the center region is scaled normally. 
+	 *  * Content in the corners is not scaled. 
+	 *  * Content in the top and bottom regions is scaled horizontally only.
+	 * Content in the left and right regions is scaled vertically only.
+	 *  * All fills(including bitmaps, video, and gradients) are stretched to
+	 * fit their shapes.
+	 * 
+	 *
+	 * If a display object is rotated, all subsequent scaling is normal(and
+	 * the `scale9Grid` property is ignored).
+	 *
+	 * For example, consider the following display object and a rectangle that
+	 * is applied as the display object's `scale9Grid`:
+	 *
+	 * A common use for setting `scale9Grid` is to set up a display
+	 * object to be used as a component, in which edge regions retain the same
+	 * width when the component is scaled.
+	 * 
+	 * @throws ArgumentError If you pass an invalid argument to the method.
+	 */
 	public var scale9Grid:Rectangle;
+	
+	/**
+	 * Indicates the horizontal scale(percentage) of the object as applied from
+	 * the registration point. The default registration point is(0,0). 1.0
+	 * equals 100% scale.
+	 *
+	 * Scaling the local coordinate system changes the `x` and
+	 * `y` property values, which are defined in whole pixels. 
+	 */
 	@:keep public var scaleX (get, set):Float;
+	
+	/**
+	 * Indicates the vertical scale(percentage) of an object as applied from the
+	 * registration point of the object. The default registration point is(0,0).
+	 * 1.0 is 100% scale.
+	 *
+	 * Scaling the local coordinate system changes the `x` and
+	 * `y` property values, which are defined in whole pixels. 
+	 */
 	@:keep public var scaleY (get, set):Float;
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public var scaleZ:Float;
+	
+	/**
+	 * The scroll rectangle bounds of the display object. The display object is
+	 * cropped to the size defined by the rectangle, and it scrolls within the
+	 * rectangle when you change the `x` and `y` properties
+	 * of the `scrollRect` object.
+	 *
+	 * The properties of the `scrollRect` Rectangle object use the
+	 * display object's coordinate space and are scaled just like the overall
+	 * display object. The corner bounds of the cropped window on the scrolling
+	 * display object are the origin of the display object(0,0) and the point
+	 * defined by the width and height of the rectangle. They are not centered
+	 * around the origin, but use the origin to define the upper-left corner of
+	 * the area. A scrolled display object always scrolls in whole pixel
+	 * increments. 
+	 *
+	 * You can scroll an object left and right by setting the `x`
+	 * property of the `scrollRect` Rectangle object. You can scroll
+	 * an object up and down by setting the `y` property of the
+	 * `scrollRect` Rectangle object. If the display object is rotated
+	 * 90° and you scroll it left and right, the display object actually scrolls
+	 * up and down.
+	 */
 	public var scrollRect (get, set):Rectangle;
+	
 	@:beta public var shader (get, set):Shader;
+	
+	/**
+	 * The Stage of the display object. A Flash runtime application has only one
+	 * Stage object. For example, you can create and load multiple display
+	 * objects into the display list, and the `stage` property of each
+	 * display object refers to the same Stage object(even if the display object
+	 * belongs to a loaded SWF file).
+	 *
+	 * If a display object is not added to the display list, its
+	 * `stage` property is set to `null`.
+	 */
 	public var stage (default, null):Stage;
+	
+	/**
+	 * An object with properties pertaining to a display object's matrix, color
+	 * transform, and pixel bounds. The specific properties  -  matrix,
+	 * colorTransform, and three read-only properties
+	 * (`concatenatedMatrix`, `concatenatedColorTransform`,
+	 * and `pixelBounds`)  -  are described in the entry for the
+	 * Transform class.
+	 *
+	 * Each of the transform object's properties is itself an object. This
+	 * concept is important because the only way to set new values for the matrix
+	 * or colorTransform objects is to create a new object and copy that object
+	 * into the transform.matrix or transform.colorTransform property.
+	 *
+	 * For example, to increase the `tx` value of a display
+	 * object's matrix, you must make a copy of the entire matrix object, then
+	 * copy the new object into the matrix property of the transform object:
+	 * ` var myMatrix:Matrix =
+	 * myDisplayObject.transform.matrix; myMatrix.tx += 10;
+	 * myDisplayObject.transform.matrix = myMatrix; `
+	 *
+	 * You cannot directly set the `tx` property. The following
+	 * code has no effect on `myDisplayObject`: 
+	 * ` myDisplayObject.transform.matrix.tx +=
+	 * 10; `
+	 *
+	 * You can also copy an entire transform object and assign it to another
+	 * display object's transform property. For example, the following code
+	 * copies the entire transform object from `myOldDisplayObj` to
+	 * `myNewDisplayObj`:
+	 * `myNewDisplayObj.transform = myOldDisplayObj.transform;`
+	 *
+	 * The resulting display object, `myNewDisplayObj`, now has the
+	 * same values for its matrix, color transform, and pixel bounds as the old
+	 * display object, `myOldDisplayObj`.
+	 *
+	 * Note that AIR for TV devices use hardware acceleration, if it is
+	 * available, for color transforms.
+	 */
 	@:keep public var transform (get, set):Transform;
+	
+	/**
+	 * Whether or not the display object is visible. Display objects that are not
+	 * visible are disabled. For example, if `visible=false` for an
+	 * InteractiveObject instance, it cannot be clicked.
+	 */
 	public var visible (get, set):Bool;
+	
+	/**
+	 * Indicates the width of the display object, in pixels. The width is
+	 * calculated based on the bounds of the content of the display object. When
+	 * you set the `width` property, the `scaleX` property
+	 * is adjusted accordingly, as shown in the following code:
+	 *
+	 * Except for TextField and Video objects, a display object with no
+	 * content(such as an empty sprite) has a width of 0, even if you try to set
+	 * `width` to a different value.
+	 */
 	@:keep public var width (get, set):Float;
+	
+	/**
+	 * Indicates the _x_ coordinate of the DisplayObject instance relative
+	 * to the local coordinates of the parent DisplayObjectContainer. If the
+	 * object is inside a DisplayObjectContainer that has transformations, it is
+	 * in the local coordinate system of the enclosing DisplayObjectContainer.
+	 * Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
+	 * DisplayObjectContainer's children inherit a coordinate system that is
+	 * rotated 90° counterclockwise. The object's coordinates refer to the
+	 * registration point position.
+	 */
 	@:keep public var x (get, set):Float;
+	
+	/**
+	 * Indicates the _y_ coordinate of the DisplayObject instance relative
+	 * to the local coordinates of the parent DisplayObjectContainer. If the
+	 * object is inside a DisplayObjectContainer that has transformations, it is
+	 * in the local coordinate system of the enclosing DisplayObjectContainer.
+	 * Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
+	 * DisplayObjectContainer's children inherit a coordinate system that is
+	 * rotated 90° counterclockwise. The object's coordinates refer to the
+	 * registration point position.
+	 */
 	@:keep public var y (get, set):Float;
 	
-	private var __alpha:Float;
-	private var __blendMode:BlendMode;
-	private var __cacheAsBitmap:Bool;
-	private var __cacheAsBitmapMatrix:Matrix;
-	private var __cacheBitmap:Bitmap;
-	private var __cacheBitmapBackground:Null<Int>;
-	private var __cacheBitmapColorTransform:ColorTransform;
-	private var __cacheBitmapData:BitmapData;
-	private var __cacheBitmapData2:BitmapData;
-	private var __cacheBitmapData3:BitmapData;
-	private var __cacheBitmapMatrix:Matrix;
-	private var __cacheBitmapRenderer:DisplayObjectRenderer;
-	private var __cairo:Cairo;
-	private var __children:Array<DisplayObject>;
-	private var __customRenderClear:Bool;
-	private var __customRenderEvent:RenderEvent;
-	private var __filters:Array<BitmapFilter>;
-	private var __graphics:Graphics;
-	private var __interactive:Bool;
-	private var __isCacheBitmapRender:Bool;
-	private var __isMask:Bool;
-	private var __loaderInfo:LoaderInfo;
-	private var __mask:DisplayObject;
-	private var __maskTarget:DisplayObject;
-	private var __name:String;
-	private var __objectTransform:Transform;
-	private var __renderable:Bool;
-	private var __renderDirty:Bool;
-	private var __renderParent:DisplayObject;
-	private var __renderTransform:Matrix;
-	private var __renderTransformCache:Matrix;
-	private var __renderTransformChanged:Bool;
-	private var __rotation:Float;
-	private var __rotationCosine:Float;
-	private var __rotationSine:Float;
-	private var __scaleX:Float;
-	private var __scaleY:Float;
-	private var __scrollRect:Rectangle;
-	private var __shader:Shader;
-	private var __tempPoint:Point;
-	private var __transform:Matrix;
-	private var __transformDirty:Bool;
-	private var __visible:Bool;
-	private var __worldAlpha:Float;
-	private var __worldAlphaChanged:Bool;
-	private var __worldBlendMode:BlendMode;
-	private var __worldClip:Rectangle;
-	private var __worldClipChanged:Bool;
-	private var __worldColorTransform:ColorTransform;
-	private var __worldShader:Shader;
-	private var __worldTransform:Matrix;
-	private var __worldVisible:Bool;
-	private var __worldVisibleChanged:Bool;
-	private var __worldTransformInvalid:Bool;
-	private var __worldZ:Int;
+	// @:noCompletion @:dox(hide) @:require(flash10) var z:Float;
+	
+	
+	@:noCompletion private var __alpha:Float;
+	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __cacheAsBitmap:Bool;
+	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
+	@:noCompletion private var __cacheBitmap:Bitmap;
+	@:noCompletion private var __cacheBitmapBackground:Null<Int>;
+	@:noCompletion private var __cacheBitmapColorTransform:ColorTransform;
+	@:noCompletion private var __cacheBitmapData:BitmapData;
+	@:noCompletion private var __cacheBitmapData2:BitmapData;
+	@:noCompletion private var __cacheBitmapData3:BitmapData;
+	@:noCompletion private var __cacheBitmapMatrix:Matrix;
+	@:noCompletion private var __cacheBitmapRenderer:DisplayObjectRenderer;
+	@:noCompletion private var __cairo:Cairo;
+	@:noCompletion private var __children:Array<DisplayObject>;
+	@:noCompletion private var __customRenderClear:Bool;
+	@:noCompletion private var __customRenderEvent:RenderEvent;
+	@:noCompletion private var __filters:Array<BitmapFilter>;
+	@:noCompletion private var __graphics:Graphics;
+	@:noCompletion private var __interactive:Bool;
+	@:noCompletion private var __isCacheBitmapRender:Bool;
+	@:noCompletion private var __isMask:Bool;
+	@:noCompletion private var __loaderInfo:LoaderInfo;
+	@:noCompletion private var __mask:DisplayObject;
+	@:noCompletion private var __maskTarget:DisplayObject;
+	@:noCompletion private var __name:String;
+	@:noCompletion private var __objectTransform:Transform;
+	@:noCompletion private var __renderable:Bool;
+	@:noCompletion private var __renderDirty:Bool;
+	@:noCompletion private var __renderParent:DisplayObject;
+	@:noCompletion private var __renderTransform:Matrix;
+	@:noCompletion private var __renderTransformCache:Matrix;
+	@:noCompletion private var __renderTransformChanged:Bool;
+	@:noCompletion private var __rotation:Float;
+	@:noCompletion private var __rotationCosine:Float;
+	@:noCompletion private var __rotationSine:Float;
+	@:noCompletion private var __scaleX:Float;
+	@:noCompletion private var __scaleY:Float;
+	@:noCompletion private var __scrollRect:Rectangle;
+	@:noCompletion private var __shader:Shader;
+	@:noCompletion private var __tempPoint:Point;
+	@:noCompletion private var __transform:Matrix;
+	@:noCompletion private var __transformDirty:Bool;
+	@:noCompletion private var __visible:Bool;
+	@:noCompletion private var __worldAlpha:Float;
+	@:noCompletion private var __worldAlphaChanged:Bool;
+	@:noCompletion private var __worldBlendMode:BlendMode;
+	@:noCompletion private var __worldClip:Rectangle;
+	@:noCompletion private var __worldClipChanged:Bool;
+	@:noCompletion private var __worldColorTransform:ColorTransform;
+	@:noCompletion private var __worldShader:Shader;
+	@:noCompletion private var __worldTransform:Matrix;
+	@:noCompletion private var __worldVisible:Bool;
+	@:noCompletion private var __worldVisibleChanged:Bool;
+	@:noCompletion private var __worldTransformInvalid:Bool;
+	@:noCompletion private var __worldZ:Int;
 	
 	#if (js && html5)
-	private var __canvas:CanvasElement;
-	private var __context:CanvasRenderingContext2D;
-	private var __style:CSSStyleDeclaration;
+	@:noCompletion private var __canvas:CanvasElement;
+	@:noCompletion private var __context:CanvasRenderingContext2D;
+	@:noCompletion private var __style:CSSStyleDeclaration;
 	#end
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (DisplayObject.prototype, {
 			"alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
@@ -194,16 +846,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	#end
 	
 	
-	private function new () {
+	@:noCompletion private function new () {
 		
 		super ();
-		
-		if (__initStage != null) {
-			
-			this.stage = __initStage;
-			__initStage = null;
-			
-		}
 		
 		__alpha = 1;
 		__blendMode = NORMAL;
@@ -221,10 +866,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		__renderTransform = new Matrix ();		
+		__renderTransform = new Matrix ();
 		__worldVisible = true;
 		
 		name = "instance" + (++__instanceCount);
+		
+		if (__initStage != null) {
+			
+			this.stage = __initStage;
+			__initStage = null;
+			this.stage.addChild (this);
+			
+		}
 		
 	}
 	
@@ -290,6 +943,30 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
+	/**
+	 * Returns a rectangle that defines the area of the display object relative
+	 * to the coordinate system of the `targetCoordinateSpace` object.
+	 * Consider the following code, which shows how the rectangle returned can
+	 * vary depending on the `targetCoordinateSpace` parameter that
+	 * you pass to the method:
+	 *
+	 * **Note:** Use the `localToGlobal()` and
+	 * `globalToLocal()` methods to convert the display object's local
+	 * coordinates to display coordinates, or display coordinates to local
+	 * coordinates, respectively.
+	 *
+	 * The `getBounds()` method is similar to the
+	 * `getRect()` method; however, the Rectangle returned by the
+	 * `getBounds()` method includes any strokes on shapes, whereas
+	 * the Rectangle returned by the `getRect()` method does not. For
+	 * an example, see the description of the `getRect()` method.
+	 * 
+	 * @param targetCoordinateSpace The display object that defines the
+	 *                              coordinate system to use.
+	 * @return The rectangle that defines the area of the display object relative
+	 *         to the `targetCoordinateSpace` object's coordinate
+	 *         system.
+	 */
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
 		var matrix = Matrix.__pool.get ();
@@ -323,6 +1000,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
+	/**
+	 * Returns a rectangle that defines the boundary of the display object, based
+	 * on the coordinate system defined by the `targetCoordinateSpace`
+	 * parameter, excluding any strokes on shapes. The values that the
+	 * `getRect()` method returns are the same or smaller than those
+	 * returned by the `getBounds()` method.
+	 *
+	 * **Note:** Use `localToGlobal()` and
+	 * `globalToLocal()` methods to convert the display object's local
+	 * coordinates to Stage coordinates, or Stage coordinates to local
+	 * coordinates, respectively.
+	 * 
+	 * @param targetCoordinateSpace The display object that defines the
+	 *                              coordinate system to use.
+	 * @return The rectangle that defines the area of the display object relative
+	 *         to the `targetCoordinateSpace` object's coordinate
+	 *         system.
+	 */
 	public function getRect (targetCoordinateSpace:DisplayObject):Rectangle {
 		
 		// should not account for stroke widths, but is that possible?
@@ -331,6 +1026,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
+	/**
+	 * Converts the `point` object from the Stage(global) coordinates
+	 * to the display object's(local) coordinates.
+	 *
+	 * To use this method, first create an instance of the Point class. The
+	 * _x_ and _y_ values that you assign represent global coordinates
+	 * because they relate to the origin(0,0) of the main display area. Then
+	 * pass the Point instance as the parameter to the
+	 * `globalToLocal()` method. The method returns a new Point object
+	 * with _x_ and _y_ values that relate to the origin of the display
+	 * object instead of the origin of the Stage.
+	 * 
+	 * @param point An object created with the Point class. The Point object
+	 *              specifies the _x_ and _y_ coordinates as
+	 *              properties.
+	 * @return A Point object with coordinates relative to the display object.
+	 */
 	public function globalToLocal (pos:Point):Point {
 		
 		return __globalToLocal (pos, new Point ());
@@ -338,6 +1050,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
+	// @:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
+	
+	
+	/**
+	 * Evaluates the bounding box of the display object to see if it overlaps or
+	 * intersects with the bounding box of the `obj` display object.
+	 * 
+	 * @param obj The display object to test against.
+	 * @return `true` if the bounding boxes of the display objects
+	 *         intersect; `false` if not.
+	 */
 	public function hitTestObject (obj:DisplayObject):Bool {
 		
 		if (obj != null && obj.parent != null && parent != null) {
@@ -354,6 +1077,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
+	/**
+	 * Evaluates the display object to see if it overlaps or intersects with the
+	 * point specified by the `x` and `y` parameters. The
+	 * `x` and `y` parameters specify a point in the
+	 * coordinate space of the Stage, not the display object container that
+	 * contains the display object(unless that display object container is the
+	 * Stage).
+	 * 
+	 * @param x         The _x_ coordinate to test against this object.
+	 * @param y         The _y_ coordinate to test against this object.
+	 * @param shapeFlag Whether to check against the actual pixels of the object
+	 *                 (`true`) or the bounding box
+	 *                 (`false`).
+	 * @return `true` if the display object overlaps or intersects
+	 *         with the specified point; `false` otherwise.
+	 */
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool {
 		
 		if (stage != null) {
@@ -369,6 +1108,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
+	/**
+	 * Calling the `invalidate()` method signals to have the current object 
+	 * redrawn the next time the object is eligible to be rendered.
+	**/
 	public function invalidate ():Void {
 		
 		__setRenderDirty ();
@@ -376,11 +1119,37 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
+	/**
+	 * Converts the `point` object from the display object's(local)
+	 * coordinates to the Stage(global) coordinates.
+	 *
+	 * This method allows you to convert any given _x_ and _y_
+	 * coordinates from values that are relative to the origin(0,0) of a
+	 * specific display object(local coordinates) to values that are relative to
+	 * the origin of the Stage(global coordinates).
+	 *
+	 * To use this method, first create an instance of the Point class. The
+	 * _x_ and _y_ values that you assign represent local coordinates
+	 * because they relate to the origin of the display object.
+	 *
+	 * You then pass the Point instance that you created as the parameter to
+	 * the `localToGlobal()` method. The method returns a new Point
+	 * object with _x_ and _y_ values that relate to the origin of the
+	 * Stage instead of the origin of the display object.
+	 * 
+	 * @param point The name or identifier of a point created with the Point
+	 *              class, specifying the _x_ and _y_ coordinates as
+	 *              properties.
+	 * @return A Point object with coordinates relative to the Stage.
+	 */
 	public function localToGlobal (point:Point):Point {
 		
 		return __getRenderTransform ().transformPoint (point);
 		
 	}
+	
+	
+	// @:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
 	
 	
 	public override function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
@@ -416,7 +1185,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private static inline function __calculateAbsoluteTransform (local:Matrix, parentTransform:Matrix, target:Matrix):Void {
+	@:noCompletion private static inline function __calculateAbsoluteTransform (local:Matrix, parentTransform:Matrix, target:Matrix):Void {
 		
 		target.a = local.a * parentTransform.a + local.b * parentTransform.c;
 		target.b = local.a * parentTransform.b + local.b * parentTransform.d;
@@ -428,7 +1197,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __cleanup ():Void {
+	@:noCompletion private function __cleanup ():Void {
 		
 		__cairo = null;
 		
@@ -443,10 +1212,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 		}
 		
+		if (__cacheBitmap != null) {
+			
+			__cacheBitmap.__cleanup();
+			__cacheBitmap = null;
+			
+		}
+		
+		if (__cacheBitmapData != null) {
+			
+			__cacheBitmapData.dispose();
+			__cacheBitmapData = null;
+			
+		}
+		
 	}
 	
 	
-	private function __dispatch (event:Event):Bool {
+	@:noCompletion private function __dispatch (event:Event):Bool {
 		
 		if (__eventMap != null && hasEventListener (event.type)) {
 			
@@ -467,14 +1250,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __dispatchChildren (event:Event):Void {
+	@:noCompletion private function __dispatchChildren (event:Event):Void {
 		
 		
 		
 	}
 	
 	
-	private override function __dispatchEvent (event:Event):Bool {
+	@:noCompletion private override function __dispatchEvent (event:Event):Bool {
 		
 		var parent = event.bubbles ? this.parent : null;
 		var result = super.__dispatchEvent (event);
@@ -504,7 +1287,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __dispatchWithCapture (event:Event):Bool {
+	@:noCompletion private function __dispatchWithCapture (event:Event):Bool {
 		
 		if (event.target == null) {
 			
@@ -553,14 +1336,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __enterFrame (deltaTime:Int):Void {
+	@:noCompletion private function __enterFrame (deltaTime:Int):Void {
 		
 		
 		
 	}
 	
 	
-	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__graphics != null) {
 			
@@ -571,14 +1354,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __getCursor ():MouseCursor {
+	@:noCompletion private function __getCursor ():MouseCursor {
 		
 		return null;
 		
 	}
 	
 	
-	private function __getFilterBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private function __getFilterBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		// TODO: Should this be __getRenderBounds, to account for scrollRect?
 		
@@ -604,14 +1387,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __getInteractive (stack:Array<DisplayObject>):Bool {
+	@:noCompletion private function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
 		return false;
 		
 	}
 	
 	
-	private function __getLocalBounds (rect:Rectangle):Void {
+	@:noCompletion private function __getLocalBounds (rect:Rectangle):Void {
 		
 		//var cacheX = __transform.tx;
 		//var cacheY = __transform.ty;
@@ -628,7 +1411,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__scrollRect == null) {
 			
@@ -647,7 +1430,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __getRenderTransform ():Matrix {
+	@:noCompletion private function __getRenderTransform ():Matrix {
 		
 		__getWorldTransform ();
 		return __renderTransform;
@@ -655,7 +1438,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __getWorldTransform ():Matrix {
+	@:noCompletion private function __getWorldTransform ():Matrix {
 		
 		var transformDirty = __transformDirty || __worldTransformInvalid;
 		
@@ -695,7 +1478,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __globalToLocal (global:Point, local:Point):Point {
+	@:noCompletion private function __globalToLocal (global:Point, local:Point):Point {
 		
 		__getRenderTransform ();
 		
@@ -715,7 +1498,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (__graphics != null) {
 			
@@ -741,7 +1524,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __hitTestMask (x:Float, y:Float):Bool {
+	@:noCompletion private function __hitTestMask (x:Float, y:Float):Bool {
 		
 		if (__graphics != null) {
 			
@@ -758,7 +1541,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
+	@:noCompletion private function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
 		
 		if (__graphics != null) {
 			
@@ -769,10 +1552,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderCairo (renderer:CairoRenderer):Void {
+	@:noCompletion private function __renderCairo (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -790,7 +1573,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderCairoMask (renderer:CairoRenderer):Void {
+	@:noCompletion private function __renderCairoMask (renderer:CairoRenderer):Void {
 		
 		#if lime_cairo
 		if (__graphics != null) {
@@ -803,11 +1586,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderCanvas (renderer:CanvasRenderer):Void {
+	@:noCompletion private function __renderCanvas (renderer:CanvasRenderer):Void {
 		
 		if (mask == null || (mask.width > 0 && mask.height > 0)) {
 			
-			__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+			__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 			
 			if (__cacheBitmap != null && !__isCacheBitmapRender) {
 				
@@ -826,7 +1609,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderCanvasMask (renderer:CanvasRenderer):Void {
+	@:noCompletion private function __renderCanvasMask (renderer:CanvasRenderer):Void {
 		
 		if (__graphics != null) {
 			
@@ -837,9 +1620,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderDOM (renderer:DOMRenderer):Void {
+	@:noCompletion private function __renderDOM (renderer:DOMRenderer):Void {
 		
-		__updateCacheBitmap (renderer, !__worldColorTransform.__isDefault ());
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -859,14 +1642,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderDOMClear (renderer:DOMRenderer):Void {
+	@:noCompletion private function __renderDOMClear (renderer:DOMRenderer):Void {
 		
 		DOMDisplayObject.clear (this, renderer);
 		
 	}
 	
 	
-	private function __renderEvent (renderer:DisplayObjectRenderer):Void {
+	@:noCompletion private function __renderEvent (renderer:DisplayObjectRenderer):Void {
 		
 		if (__customRenderEvent != null && __renderable) {
 			
@@ -928,7 +1711,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderGL (renderer:OpenGLRenderer):Void {
+	@:noCompletion private function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		__updateCacheBitmap (renderer, false);
 		
@@ -947,7 +1730,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __renderGLMask (renderer:OpenGLRenderer):Void {
+	@:noCompletion private function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
 		if (__graphics != null) {
 			
@@ -959,7 +1742,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __setParentRenderDirty ():Void {
+	@:noCompletion private function __setParentRenderDirty ():Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (renderParent != null && !renderParent.__renderDirty) {
@@ -972,7 +1755,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private inline function __setRenderDirty ():Void {
+	@:noCompletion private inline function __setRenderDirty ():Void {
 		
 		if (!__renderDirty) {
 			
@@ -984,14 +1767,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __setStageReference (stage:Stage):Void {
+	@:noCompletion private function __setStageReference (stage:Stage):Void {
 		
 		this.stage = stage;
 		
 	}
 	
 	
-	private function __setTransformDirty ():Void {
+	@:noCompletion private function __setTransformDirty ():Void {
 		
 		if (!__transformDirty) {
 			
@@ -1005,14 +1788,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __setWorldTransformInvalid ():Void {
+	@:noCompletion private function __setWorldTransformInvalid ():Void {
 		
 		__worldTransformInvalid = true;
 		
 	}
 	
 	
-	private function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
+	@:noCompletion private function __shouldCacheHardware (value:Null<Bool>):Null<Bool> {
 		
 		if (value == true || __filters != null) return true;
 		
@@ -1027,14 +1810,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __stopAllMovieClips ():Void {
+	@:noCompletion private function __stopAllMovieClips ():Void {
 		
 		
 		
 	}
 	
 	
-	private function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	@:noCompletion private function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
@@ -1159,18 +1942,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
+	@:noCompletion private function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		if (__isCacheBitmapRender) return false;
 		
-		if (cacheAsBitmap || (renderer.__type != OPENGL && !__worldColorTransform.__isDefault ())) {
+		var colorTransform = __tempColorTransform;
+		colorTransform.__copyFrom (__worldColorTransform);
+		if (renderer.__worldColorTransform != null) colorTransform.__combine (renderer.__worldColorTransform);
+		
+		if (cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault ())) {
 			
-			var matrix = null, rect = null;
+			var rect = null;
 			
-			__update (false, true);
-			
-			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
-			var updateTransform = (needRender || (!__cacheBitmap.__worldTransform.equals (__worldTransform)));
+			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform)));
+			var updateTransform = (needRender || (renderer.__type == OPENGL && !__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = __filters != null;
 			
 			if (hasFilters && !needRender) {
@@ -1361,7 +2146,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					
 					if (renderType == OPENGL) {
 						
-						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).__gl, __cacheBitmapData);
+						__cacheBitmapRenderer = new OpenGLRenderer (renderer.__context, __cacheBitmapData);
 						
 					} else {
 						
@@ -1387,6 +2172,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					
 				}
 				
+				if (__cacheBitmapColorTransform == null) __cacheBitmapColorTransform = new ColorTransform ();
+				
 				__cacheBitmapRenderer.__stage = stage;
 				
 				__cacheBitmapRenderer.__allowSmoothing = renderer.__allowSmoothing;
@@ -1399,7 +2186,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				__cacheBitmapRenderer.__worldTransform.tx -= offsetX;
 				__cacheBitmapRenderer.__worldTransform.ty -= offsetY;
 				
-				__cacheBitmapRenderer.__worldColorTransform.__copyFrom (__worldColorTransform);
+				__cacheBitmapRenderer.__worldColorTransform.__copyFrom (colorTransform);
 				__cacheBitmapRenderer.__worldColorTransform.__invert ();
 				
 				__isCacheBitmapRender = true;
@@ -1413,7 +2200,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					parentRenderer.__suspendClipAndMask ();
 					childRenderer.__copyShader (parentRenderer);
 					
-					__cacheBitmapData.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
+					__cacheBitmapData.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 					
@@ -1446,7 +2233,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
 							}
-							__cacheBitmapData2.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData2.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
 							bitmap2 = __cacheBitmapData2;
 						// } else {
 						// 	bitmap2 = bitmapData;
@@ -1461,7 +2248,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
 							}
-							__cacheBitmapData3.__setUVRect (childRenderer.__gl, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData3.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
 							bitmap3 = __cacheBitmapData3;
 						}
 						
@@ -1516,8 +2303,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					parentRenderer.__blendMode = NORMAL;
 					parentRenderer.__setBlendMode (cacheBlendMode);
 					parentRenderer.__copyShader (childRenderer);
-					parentRenderer.__resumeClipAndMask ();
+					parentRenderer.__resumeClipAndMask (childRenderer);
 					parentRenderer.setViewport ();
+					
+					__cacheBitmapColorTransform.__copyFrom (colorTransform);
 					
 				} else {
 					
@@ -1612,34 +2401,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 						
 					}
 					
+					__cacheBitmapColorTransform.__copyFrom (colorTransform);
+					
+					if (!__cacheBitmapColorTransform.__isDefault ()) {
+						
+						__cacheBitmapData.colorTransform (__cacheBitmapData.rect, __cacheBitmapColorTransform);
+						
+					}
+					
 				}
 				
 				__isCacheBitmapRender = false;
 				
-				if (__cacheBitmapColorTransform == null) __cacheBitmapColorTransform = new ColorTransform ();
-				__cacheBitmapColorTransform.__copyFrom (__worldColorTransform);
-				
-				if (!__cacheBitmapColorTransform.__isDefault ()) {
-					
-					__cacheBitmapData.colorTransform (__cacheBitmapData.rect, __cacheBitmapColorTransform);
-					
-				}
-				
 			}
 			
-			if (updateTransform) {
-				
-				__update (false, true);
+			if (updateTransform || needRender) {
 				
 				Rectangle.__pool.release (rect);
 				
-				return true;
-				
-			} else {
-				
-				return false;
-				
 			}
+			
+			return updateTransform;
 			
 		} else if (__cacheBitmap != null) {
 			
@@ -1665,46 +2447,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function __updateChildren (transformOnly:Bool):Void {
-		
-		var renderParent = __renderParent != null ? __renderParent : parent;
-		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
-		__worldAlpha = __alpha;
-		__worldBlendMode = __blendMode;
-		__worldShader = __shader;
-		
-		if (__transformDirty) {
-			
-			__transformDirty = false;
-			
-		}
-		
-	}
-	
-	
-	private function __updateMask (maskGraphics:Graphics):Void {
-		
-		if (__graphics != null) {
-			
-			maskGraphics.__commands.overrideMatrix (this.__worldTransform);
-			maskGraphics.__commands.append (__graphics.__commands);
-			maskGraphics.__dirty = true;
-			maskGraphics.__visible = true;
-			
-			if (maskGraphics.__bounds == null) {
-				
-				maskGraphics.__bounds = new Rectangle();
-				
-			}
-			
-			__graphics.__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
-			
-		}
-		
-	}
-	
-	
-	private function __updateTransforms (overrideTransform:Matrix = null):Void {
+	@:noCompletion private function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		var overrided = overrideTransform != null;
 		var local = overrided ? overrideTransform : __transform;
@@ -1759,14 +2502,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	
 	
 	
-	private function get_alpha ():Float {
+	@:keep @:noCompletion private function get_alpha ():Float {
 		
 		return __alpha;
 		
 	}
 	
 	
-	private function set_alpha (value:Float):Float {
+	@:keep @:noCompletion private function set_alpha (value:Float):Float {
 		
 		if (value > 1.0) value = 1.0;
 		if (value != __alpha) __setRenderDirty ();
@@ -1775,14 +2518,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_blendMode ():BlendMode {
+	@:noCompletion private function get_blendMode ():BlendMode {
 		
 		return __blendMode;
 		
 	}
 	
 	
-	private function set_blendMode (value:BlendMode):BlendMode {
+	@:noCompletion private function set_blendMode (value:BlendMode):BlendMode {
 		
 		if (value == null) value = NORMAL;
 		if (value != __blendMode) __setRenderDirty ();
@@ -1791,14 +2534,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_cacheAsBitmap ():Bool {
+	@:noCompletion private function get_cacheAsBitmap ():Bool {
 		
 		return (__filters == null ? __cacheAsBitmap : true);
 		
 	}
 	
 	
-	private function set_cacheAsBitmap (value:Bool):Bool {
+	@:noCompletion private function set_cacheAsBitmap (value:Bool):Bool {
 		
 		__setRenderDirty ();
 		return __cacheAsBitmap = value;
@@ -1806,14 +2549,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_cacheAsBitmapMatrix ():Matrix {
+	@:noCompletion private function get_cacheAsBitmapMatrix ():Matrix {
 		
 		return __cacheAsBitmapMatrix;
 		
 	}
 	
 	
-	private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
+	@:noCompletion private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
 		
 		__setRenderDirty ();
 		return __cacheAsBitmapMatrix = (value != null ? value.clone () : value);
@@ -1821,7 +2564,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_filters ():Array<BitmapFilter> {
+	@:noCompletion private function get_filters ():Array<BitmapFilter> {
 		
 		if (__filters == null) {
 			
@@ -1836,7 +2579,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
+	@:noCompletion private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
 		
 		if (value != null && value.length > 0) {
 			
@@ -1857,7 +2600,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_height ():Float {
+	@:keep @:noCompletion private function get_height ():Float {
 		
 		var rect = Rectangle.__pool.get ();
 		__getLocalBounds (rect);
@@ -1868,7 +2611,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function set_height (value:Float):Float {
+	@:keep @:noCompletion private function set_height (value:Float):Float {
 		
 		var rect = Rectangle.__pool.get ();
 		var matrix = Matrix.__pool.get ();
@@ -1894,7 +2637,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_loaderInfo ():LoaderInfo {
+	@:noCompletion private function get_loaderInfo ():LoaderInfo {
 		
 		if (stage != null) {
 			
@@ -1907,14 +2650,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_mask ():DisplayObject {
+	@:noCompletion private function get_mask ():DisplayObject {
 		
 		return __mask;
 		
 	}
 	
 	
-	private function set_mask (value:DisplayObject):DisplayObject {
+	@:noCompletion private function set_mask (value:DisplayObject):DisplayObject {
 		
 		if (value == __mask) {
 			
@@ -1957,7 +2700,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_mouseX ():Float {
+	@:noCompletion private function get_mouseX ():Float {
 		
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
@@ -1967,7 +2710,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_mouseY ():Float {
+	@:noCompletion private function get_mouseY ():Float {
 		
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
@@ -1977,21 +2720,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_name ():String {
+	@:noCompletion private function get_name ():String {
 		
 		return __name;
 		
 	}
 	
 	
-	private function set_name (value:String):String {
+	@:noCompletion private function set_name (value:String):String {
 		
 		return __name = value;
 		
 	}
 	
 	
-	private function get_root ():DisplayObject {
+	@:noCompletion private function get_root ():DisplayObject {
 		
 		if (stage != null) {
 			
@@ -2004,14 +2747,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_rotation ():Float {
+	@:keep @:noCompletion private function get_rotation ():Float {
 		
 		return __rotation;
 		
 	}
 	
 	
-	private function set_rotation (value:Float):Float {
+	@:keep @:noCompletion private function set_rotation (value:Float):Float {
 		
 		if (value != __rotation) {
 			
@@ -2116,7 +2859,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_scrollRect ():Rectangle {
+	@:noCompletion private function get_scrollRect ():Rectangle {
 		
 		if (__scrollRect == null) {
 			
@@ -2129,7 +2872,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function set_scrollRect (value:Rectangle):Rectangle {
+	@:noCompletion private function set_scrollRect (value:Rectangle):Rectangle {
 		
 		if (value != __scrollRect) {
 			
@@ -2148,14 +2891,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_shader ():Shader {
+	@:noCompletion private function get_shader ():Shader {
 		
 		return __shader;
 		
 	}
 	
 	
-	private function set_shader (value:Shader):Shader {
+	@:noCompletion private function set_shader (value:Shader):Shader {
 		
 		__shader = value;
 		__setRenderDirty ();
@@ -2164,7 +2907,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_transform ():Transform {
+	@:keep @:noCompletion private function get_transform ():Transform {
 		
 		if (__objectTransform == null) {
 			
@@ -2177,7 +2920,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function set_transform (value:Transform):Transform {
+	@:keep @:noCompletion private function set_transform (value:Transform):Transform {
 		
 		if (value == null) {
 			
@@ -2206,14 +2949,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_visible ():Bool {
+	@:noCompletion private function get_visible ():Bool {
 		
 		return __visible;
 		
 	}
 	
 	
-	private function set_visible (value:Bool):Bool {
+	@:noCompletion private function set_visible (value:Bool):Bool {
 		
 		if (value != __visible) __setRenderDirty ();
 		return __visible = value;
@@ -2221,7 +2964,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_width ():Float {
+	@:keep @:noCompletion private function get_width ():Float {
 		
 		var rect = Rectangle.__pool.get ();
 		__getLocalBounds (rect);
@@ -2232,7 +2975,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function set_width (value:Float):Float {
+	@:keep @:noCompletion private function set_width (value:Float):Float {
 		
 		var rect = Rectangle.__pool.get ();
 		var matrix = Matrix.__pool.get ();
@@ -2258,14 +3001,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_x ():Float {
+	@:keep @:noCompletion private function get_x ():Float {
 		
 		return __transform.tx;
 		
 	}
 	
 	
-	private function set_x (value:Float):Float {
+	@:keep @:noCompletion private function set_x (value:Float):Float {
 		
 		if (value != __transform.tx) __setTransformDirty ();
 		return __transform.tx = value;
@@ -2273,14 +3016,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	private function get_y ():Float {
+	@:keep @:noCompletion private function get_y ():Float {
 		
 		return __transform.ty;
 		
 	}
 	
 	
-	private function set_y (value:Float):Float {
+	@:keep @:noCompletion private function set_y (value:Float):Float {
 		
 		if (value != __transform.ty) __setTransformDirty ();
 		return __transform.ty = value;
@@ -2289,3 +3032,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	
 	
 }
+
+
+#else
+typedef DisplayObject = flash.display.DisplayObject;
+#end

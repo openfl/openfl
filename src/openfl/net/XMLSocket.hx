@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 import openfl.events.DataEvent;
@@ -22,9 +22,9 @@ class XMLSocket extends EventDispatcher {
 	public var timeout:Int;
 	
 	#if !js
-	private var __inputBuffer:ByteArray;
+	@:noCompletion private var __inputBuffer:ByteArray;
 	#end
-	private var __socket:Socket;
+	@:noCompletion private var __socket:Socket;
 	
 	
 	public function new (host:String = null, port:Int = 80) {
@@ -88,7 +88,7 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	
-	private function __onClose (_):Void {
+	@:noCompletion private function __onClose (_):Void {
 		
 		connected = false;
 		dispatchEvent (new Event (Event.CLOSE));
@@ -96,7 +96,7 @@ class XMLSocket extends EventDispatcher {
 	}
 	
 	
-	private function __onConnect (_):Void {
+	@:noCompletion private function __onConnect (_):Void {
 		
 		connected = true;
 		dispatchEvent (new Event (Event.CONNECT));
@@ -104,14 +104,14 @@ class XMLSocket extends EventDispatcher {
 	}
 	
 	
-	private function __onError (_):Void {
+	@:noCompletion private function __onError (_):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		
 	}
 	
 	
-	private function __onSocketData (_):Void {
+	@:noCompletion private function __onSocketData (_):Void {
 		
 		#if !js
 		var bytesAvailable = __socket.bytesAvailable;
@@ -143,3 +143,8 @@ class XMLSocket extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef XMLSocket = flash.net.XMLSocket;
+#end

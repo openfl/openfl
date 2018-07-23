@@ -1,9 +1,9 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 interface IGraphicsFill {
 	
-	var __graphicsFillType (default, null):GraphicsFillType;
+	@:noCompletion private var __graphicsFillType (default, null):GraphicsFillType;
 	
 }
 
@@ -17,3 +17,8 @@ interface IGraphicsFill {
 	SHADER_FILL;
 	
 }
+
+
+#else
+typedef IGraphicsFill = flash.display.IGraphicsFill;
+#end

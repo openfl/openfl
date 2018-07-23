@@ -1,4 +1,4 @@
-package openfl.text; #if !openfljs
+package openfl.text; #if !flash #if !openfljs
 
 
 @:enum abstract GridFitType(Null<Int>) {
@@ -48,4 +48,7 @@ package openfl.text; #if !openfljs
 }
 
 
+#end
+#else
+typedef GridFitType = flash.text.GridFitType;
 #end

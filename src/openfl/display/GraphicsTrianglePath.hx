@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.IGraphicsData;
@@ -18,7 +18,7 @@ import openfl.Vector;
 	public var uvtData:Vector<Float>;
 	public var vertices:Vector<Float>;
 	
-	public var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
 	
 	
 	public function new (vertices:Vector<Float> = null, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = NONE) {
@@ -33,3 +33,8 @@ import openfl.Vector;
 	
 	
 }
+
+
+#else
+typedef GraphicsTrianglePath = flash.display.GraphicsTrianglePath;
+#end

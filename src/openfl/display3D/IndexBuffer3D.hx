@@ -1,4 +1,4 @@
-package openfl.display3D;
+package openfl.display3D; #if !flash
 
 
 import lime.graphics.opengl.GLBuffer;
@@ -19,16 +19,16 @@ import openfl.Vector;
 @:final class IndexBuffer3D {
 	
 	
-	private var __context:Context3D;
-	private var __elementType:Int;
-	private var __id:GLBuffer;
-	private var __memoryUsage:Int;
-	private var __numIndices:Int;
-	private var __tempInt16Array:Int16Array;
-	private var __usage:Int;
+	@:noCompletion private var __context:Context3D;
+	@:noCompletion private var __elementType:Int;
+	@:noCompletion private var __id:GLBuffer;
+	@:noCompletion private var __memoryUsage:Int;
+	@:noCompletion private var __numIndices:Int;
+	@:noCompletion private var __tempInt16Array:Int16Array;
+	@:noCompletion private var __usage:Int;
 	
 	
-	private function new (context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage) {
+	@:noCompletion private function new (context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage) {
 		
 		__context = context3D;
 		__numIndices = numIndices;
@@ -67,3 +67,8 @@ import openfl.Vector;
 	
 	
 }
+
+
+#else
+typedef IndexBuffer3D = flash.display3D.IndexBuffer3D;
+#end

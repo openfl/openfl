@@ -1,3 +1,38 @@
+8.3.0 (06/25/2018)
+------------------
+
+* Added `tile.blendMode` and `tilemap.tileBlendModeEnabled`
+* Added `netStream.dispose()` and improved `netStream.close()` support
+* Improved buffer handling for OpenGL `Tilemap` rendering
+* Fixed default HTML5 template after Chrome passive event listener change
+* Fixed a regression in rendering of `TextFormatAlign.JUSTIFY` text
+* Fixed dispatching of `Event.ADDED_TO_STAGE` on document class in NPM builds
+* Fixed missing `loader.contentLoaderInfo.bytes` field
+* Fixed using `bitmapData.hitTest` against another `BitmapData` object
+* Fixed return value of `eventDispatcher.dispatchEvent()` when default is prevented
+* Fixed timing issue with multiple texture units in custom OpenGL shaders
+* Fixed `MouseEvent.MOUSE_OVER`/`MouseEvent.MOUSE_OUT` to dispatch in each event phase
+* Fixed some issues when using `-Dopenfl-power-of-two` textures
+* Fixed `stage.color` to mark rendering as dirty when changed
+* Fixed `openfl.net.Socket` on HTML5 to allow reading of input later
+
+
+8.2.2 (06/05/2018)
+------------------
+
+* Fixed a regression in the `TextField` input cursor
+
+
+8.2.1 (06/05/2018)
+------------------
+
+* Updated default window color depth to 32-bit (`<window color-depth="16" />` to revert)
+* Updated to create a depth buffer by default (`<window depth-buffer="false" />` to revert)
+* Improved the performance of little endian `ByteArray` `readFloat`/`readDouble`
+* Fixed a regression in the behavior of `textField.getTextFormat`
+* Fixed a regression in Stage3D texture uploads on HTML5
+
+
 8.2.0 (06/01/2018)
 ------------------
 

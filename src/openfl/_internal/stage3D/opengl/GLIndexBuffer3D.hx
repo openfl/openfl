@@ -1,7 +1,6 @@
 package openfl._internal.stage3D.opengl;
 
 
-import lime.graphics.opengl.WebGLContext;
 import lime.utils.ArrayBufferView;
 import lime.utils.Int16Array;
 import openfl._internal.stage3D.GLUtils;
@@ -11,12 +10,19 @@ import openfl.display.OpenGLRenderer;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+#if (lime >= "7.0.0")
+import lime.graphics.WebGLRenderContext;
+#else
+import lime.graphics.opengl.WebGLContext;
+#end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
 @:access(openfl.display3D.IndexBuffer3D)
+@:access(openfl.display.DisplayObjectRenderer)
 
 
 class GLIndexBuffer3D {
@@ -24,7 +30,11 @@ class GLIndexBuffer3D {
 	
 	public static function create (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, bufferUsage:Context3DBufferUsage):Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		indexBuffer.__elementType = gl.UNSIGNED_SHORT;
 		
@@ -41,7 +51,11 @@ class GLIndexBuffer3D {
 	
 	public static function dispose (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		gl.deleteBuffer (indexBuffer.__id);
 		
@@ -64,16 +78,16 @@ class GLIndexBuffer3D {
 	public static function uploadFromTypedArray (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, data:ArrayBufferView):Void {
 		
 		if (data == null) return;
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl:WebGLContext = renderer.__context;
+		#end
 		
 		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
 		GLUtils.CheckGLError ();
 		
-		#if (js && html5)
-		(gl:WebGLContext).bufferData (gl.ELEMENT_ARRAY_BUFFER, data, indexBuffer.__usage);
-		#else
-		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, data.byteLength, data, indexBuffer.__usage);
-		#end
+		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, data, indexBuffer.__usage);
 		GLUtils.CheckGLError ();
 		
 		// if (data.byteLength != __memoryUsage) {
@@ -91,7 +105,11 @@ class GLIndexBuffer3D {
 		// TODO: Optimize more
 		
 		if (data == null) return;
-		var gl = renderer.__gl;
+		#if (lime >= "7.0.0")
+		var gl = renderer.__context.webgl;
+		#else
+		var gl = renderer.__context;
+		#end
 		
 		var length = startOffset + count;
 		var existingInt16Array = indexBuffer.__tempInt16Array;
