@@ -5,7 +5,9 @@ import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import haxe.io.Eof;
 import haxe.io.Error;
+import haxe.Serializer;
 import haxe.Timer;
+import haxe.Unserializer;
 import openfl._internal.Lib;
 import openfl.errors.IOError;
 import openfl.errors.SecurityError;
@@ -17,8 +19,6 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
-import haxe.Unserializer;
-import haxe.Serializer;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
@@ -317,7 +317,18 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	
 	
 	public function readObject ():Dynamic {
-		return new Unserializer(readUTF()).unserialize();
+		
+		if (objectEncoding == HXSF) {
+			
+			return Unserializer.run (readUTF ());
+			
+		} else {
+			
+			// TODO: Add support for AMF if haxelib "format" is included
+			return null;
+			
+		}
+		
 	}
 	
 	
@@ -490,9 +501,17 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	
 	
 	public function writeObject (object:Dynamic):Void {
-		var ser = new Serializer();
-		ser.serialize(object);
-		__output.writeUTF(ser.toString());
+		
+		if (objectEncoding == HXSF) {
+			
+			__output.writeUTF (Serializer.run (object));
+			
+		} else {
+			
+			// TODO: Add support for AMF if haxelib "format" is included
+			
+		}
+		
 	}
 	
 	
