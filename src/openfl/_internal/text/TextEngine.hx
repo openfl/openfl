@@ -1265,11 +1265,11 @@ class TextEngine {
 		inline function breakLongWords (endIndex:Int):Void {
 			// breaks up words that are too long to fit in a single line
 			
+			var tempWidth = getPositionsWidth (remainingPositions);
+			
 			var remainingPositions = positions;
 			var i, positionWidth;
 			var currentPosition, tempPositions;
-			
-			var tempWidth = getPositionsWidth (remainingPositions);
 			
 			while (offsetX + tempWidth > width - 2) {
 				
