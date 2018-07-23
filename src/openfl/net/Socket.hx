@@ -17,6 +17,8 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
+import haxe.Unserializer;
+import haxe.Serializer;
 
 #if (js && html5)
 import js.html.ArrayBuffer;
@@ -314,11 +316,9 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 	
 	
-	//public function readObject ():Dynamic {
-		//
-		//return __input.readObject ();
-		//
-	//}
+	public function readObject ():Dynamic {
+		return new Unserializer(readUTF()).unserialize();
+	}
 	
 	
 	public function readShort ():Int {
@@ -489,11 +489,11 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 	
 	
-	//public function writeObject (object:Dynamic):Void {
-		//
-		//__output.writeObject (object);
-		//
-	//}
+	public function writeObject (object:Dynamic):Void {
+		var ser = new Serializer();
+		ser.serialize(object);
+		__output.writeUTF(ser.toString());
+	}
 	
 	
 	public function writeShort (value:Int):Void {
