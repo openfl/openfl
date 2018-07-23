@@ -1,4 +1,4 @@
-package openfl.display3D.textures;
+package openfl.display3D.textures; #if !flash
 
 
 import haxe.Timer;
@@ -20,11 +20,11 @@ import openfl.utils.ByteArray;
 @:final class CubeTexture extends TextureBase {
 	
 	
-	private var __size:Int;
-	private var __uploadedSides:Int;
+	@:noCompletion private var __size:Int;
+	@:noCompletion private var __uploadedSides:Int;
 	
 	
-	private function new (context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
+	@:noCompletion private function new (context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
 		
 		super (context);
 		
@@ -81,7 +81,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	private override function __setSamplerState (state:SamplerState) {
+	@:noCompletion private override function __setSamplerState (state:SamplerState) {
 		
 		GLCubeTexture.setSamplerState (this, cast __context.__renderer, state);
 		
@@ -89,3 +89,8 @@ import openfl.utils.ByteArray;
 	
 	
 }
+
+
+#else
+typedef CubeTexture = flash.display3D.textures.CubeTexture;
+#end

@@ -91,12 +91,16 @@ class Vector3DTest {
 	
 	@Test public function add () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (1, 1, 1, 1);
+		var vector2 = new Vector3D (2, 2, 2, 2);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.add;
+		var result = vector.add (vector2);
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (3, result.x);
+		Assert.areEqual (3, result.y);
+		Assert.areEqual (3, result.z);
+		
+		Assert.areEqual (0, result.w); // stays default
 		
 	}
 	
@@ -115,12 +119,16 @@ class Vector3DTest {
 	
 	@Test public function copyFrom () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (1, 1, 1, 1);
+		var vector2 = new Vector3D (2, 2, 2, 2);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.copyFrom;
+		vector2.copyFrom (vector);
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (1, vector2.x);
+		Assert.areEqual (1, vector2.y);
+		Assert.areEqual (1, vector2.z);
+		
+		Assert.areEqual (2, vector2.w); // ignored
 		
 	}
 	
@@ -139,12 +147,16 @@ class Vector3DTest {
 	
 	@Test public function decrementBy () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (1, 1, 1, 1);
+		var vector2 = new Vector3D (2, 2, 2, 2);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.decrementBy;
+		vector2.decrementBy (vector);
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (1, vector2.x);
+		Assert.areEqual (1, vector2.y);
+		Assert.areEqual (1, vector2.z);
+		
+		Assert.areEqual (2, vector2.w); // ignored
 		
 	}
 	
@@ -175,12 +187,16 @@ class Vector3DTest {
 	
 	@Test public function incrementBy () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (1, 1, 1, 1);
+		var vector2 = new Vector3D (2, 2, 2, 2);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.incrementBy;
+		vector.incrementBy (vector2);
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (3, vector.x);
+		Assert.areEqual (3, vector.y);
+		Assert.areEqual (3, vector.z);
+		
+		Assert.areEqual (1, vector.w); // ignored
 		
 	}
 	
@@ -199,24 +215,30 @@ class Vector3DTest {
 	
 	@Test public function negate () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (1, 1, 1, 1);
+		vector.negate ();
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.negate;
+		Assert.areEqual (-1, vector.x);
+		Assert.areEqual (-1, vector.y);
+		Assert.areEqual (-1, vector.z);
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (1, vector.w); // ignored
 		
 	}
 	
 	
 	@Test public function normalize () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (4, 4, 4, 4);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.normalize;
+		var normalizedValue = 4 / vector.length;
+		vector.normalize ();
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (normalizedValue, vector.x);
+		Assert.areEqual (normalizedValue, vector.y);
+		Assert.areEqual (normalizedValue, vector.z);
+		
+		Assert.areEqual (4, vector.w); // ignored
 		
 	}
 	
@@ -235,36 +257,43 @@ class Vector3DTest {
 	
 	@Test public function scaleBy () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (1, 1, 1, 1);
+		vector.scaleBy (4);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.scaleBy;
+		Assert.areEqual (4, vector.x);
+		Assert.areEqual (4, vector.y);
+		Assert.areEqual (4, vector.z);
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (1, vector.w); // ignored
 		
 	}
 	
 	
 	@Test public function setTo () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (1, 1, 1, 1);
+		vector.setTo (4, 4, 4);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.setTo;
-		
-		Assert.isNotNull (exists);
+		Assert.areEqual (4, vector.x);
+		Assert.areEqual (4, vector.y);
+		Assert.areEqual (4, vector.z);
+		Assert.areEqual (1, vector.w);
 		
 	}
 	
 	
 	@Test public function subtract () {
 		
-		// TODO: Confirm functionality
+		var vector = new Vector3D (5, 5, 5, 5);
+		var vector2 = new Vector3D (2, 2, 2, 2);
 		
-		var vector3D = new Vector3D ();
-		var exists = vector3D.subtract;
+		var result = vector.subtract (vector2);
 		
-		Assert.isNotNull (exists);
+		Assert.areEqual (3, result.x);
+		Assert.areEqual (3, result.y);
+		Assert.areEqual (3, result.z);
+		
+		Assert.areEqual (0, result.w); // ignored
 		
 	}
 	

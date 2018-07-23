@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import lime.graphics.DOMRenderContext;
@@ -30,17 +30,17 @@ class DOMRenderer extends DisplayObjectRenderer {
 	public var element:DOMRenderContext;
 	public var pixelRatio (default, null):Float = 1;
 	
-	private var __canvasRenderer:CanvasRenderer;
-	private var __clipRects:Array<Rectangle>;
-	private var __currentClipRect:Rectangle;
-	private var __numClipRects:Int;
-	private var __transformOriginProperty:String;
-	private var __transformProperty:String;
-	private var __vendorPrefix:String;
-	private var __z:Int;
+	@:noCompletion private var __canvasRenderer:CanvasRenderer;
+	@:noCompletion private var __clipRects:Array<Rectangle>;
+	@:noCompletion private var __currentClipRect:Rectangle;
+	@:noCompletion private var __numClipRects:Int;
+	@:noCompletion private var __transformOriginProperty:String;
+	@:noCompletion private var __transformProperty:String;
+	@:noCompletion private var __vendorPrefix:String;
+	@:noCompletion private var __z:Int;
 	
 	
-	private function new (element:DOMRenderContext) {
+	@:noCompletion private function new (element:DOMRenderContext) {
 		
 		super ();
 		
@@ -117,7 +117,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __applyStyle (displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void {
+	@:noCompletion private function __applyStyle (displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void {
 		
 		#if (js && html5)
 		var style = displayObject.__style;
@@ -171,7 +171,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	
 	
 	#if (js && html5)
-	private function __initializeElement (displayObject:DisplayObject, element:Element):Void {
+	@:noCompletion private function __initializeElement (displayObject:DisplayObject, element:Element):Void {
 		
 		var style = displayObject.__style = element.style;
 		
@@ -193,14 +193,14 @@ class DOMRenderer extends DisplayObjectRenderer {
 	#end
 	
 	
-	private override function __popMask ():Void {
+	@:noCompletion private override function __popMask ():Void {
 		
 		__popMaskRect ();
 		
 	}
 	
 	
-	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (object.__mask != null) {
 			
@@ -217,7 +217,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMaskRect ():Void {
+	@:noCompletion private override function __popMaskRect ():Void {
 		
 		if (__numClipRects > 0) {
 			
@@ -238,7 +238,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMask (mask:DisplayObject):Void {
+	@:noCompletion private override function __pushMask (mask:DisplayObject):Void {
 		
 		// TODO: Handle true mask shape, as well as alpha test
 		
@@ -247,7 +247,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
@@ -264,7 +264,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	@:noCompletion private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		// TODO: Handle rotation?
 		
@@ -302,7 +302,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __render (object:IBitmapDrawable):Void {
+	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
 		if (!__stage.__transparent) {
 			
@@ -320,7 +320,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __renderStage3D (stage:Stage):Void {
+	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
 		
 		for (stage3D in stage.stage3Ds) {
 			
@@ -331,7 +331,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __setBlendMode (value:BlendMode):Void {
+	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;
 		
@@ -408,7 +408,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private function __updateClip (displayObject:DisplayObject):Void {
+	@:noCompletion private function __updateClip (displayObject:DisplayObject):Void {
 		
 		if (__currentClipRect == null) {
 			
@@ -451,3 +451,8 @@ class DOMRenderer extends DisplayObjectRenderer {
 	
 	
 }
+
+
+#else
+typedef DOMRenderer = Dynamic;
+#end

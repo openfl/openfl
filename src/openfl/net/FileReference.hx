@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 import haxe.io.Path;
@@ -27,17 +27,45 @@ import sys.FileSystem;
 class FileReference extends EventDispatcher {
 	
 	
+	/**
+	 * The creation date of the file on the local disk.
+	 */
 	public var creationDate (default, null):Date;
+	
+	/**
+	 * The Macintosh creator type of the file, which is only used in Mac OS versions prior to Mac OS X.
+	 */
 	public var creator (default, null):String;
+	
+	/**
+	 * The ByteArray object representing the data from the loaded file after a successful call to the load() method.
+	 */
 	public var data (default, null):ByteArray;
+	
+	/**
+	 * The date that the file on the local disk was last modified.
+	 */
 	public var modificationDate (default, null):Date;
+	
+	/**
+	 * The name of the file on the local disk.
+	 */
 	public var name (default, null):String;
+	
+	/**
+	 * The size of the file on the local disk in bytes.
+	 */
 	public var size (default, null):Int;
+	
+	/**
+	 * The file type.
+	 */
 	public var type (default, null):String;
 	
-	private var __data:ByteArray;
-	private var __path:String;
-	private var __urlLoader:URLLoader;
+	
+	@:noCompletion private var __data:ByteArray;
+	@:noCompletion private var __path:String;
+	@:noCompletion private var __urlLoader:URLLoader;
 	
 	
 	public function new () {
@@ -191,21 +219,21 @@ class FileReference extends EventDispatcher {
 	
 	
 	
-	private function openFileDialog_onCancel ():Void {
+	@:noCompletion private function openFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
 		
 	}
 	
 	
-	private function openFileDialog_onComplete ():Void {
+	@:noCompletion private function openFileDialog_onComplete ():Void {
 		
 		dispatchEvent (new Event (Event.COMPLETE));
 		
 	}
 	
 	
-	private function openFileDialog_onSelect (path:String):Void {
+	@:noCompletion private function openFileDialog_onSelect (path:String):Void {
 		
 		#if sys
 		var fileInfo = FileSystem.stat (path);
@@ -223,14 +251,14 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	private function saveFileDialog_onCancel ():Void {
+	@:noCompletion private function saveFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
 		
 	}
 	
 	
-	private function saveFileDialog_onSave (path:String):Void {
+	@:noCompletion private function saveFileDialog_onSave (path:String):Void {
 		
 		Timer.delay (function () {
 			
@@ -241,7 +269,7 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	private function saveFileDialog_onSelect (path:String):Void {
+	@:noCompletion private function saveFileDialog_onSelect (path:String):Void {
 		
 		#if desktop
 		
@@ -267,7 +295,7 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	private function urlLoader_onComplete (event:Event):Void {
+	@:noCompletion private function urlLoader_onComplete (event:Event):Void {
 		
 		#if desktop
 		
@@ -298,14 +326,14 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	private function urlLoader_onIOError (event:IOErrorEvent):Void {
+	@:noCompletion private function urlLoader_onIOError (event:IOErrorEvent):Void {
 		
 		dispatchEvent (event);
 		
 	}
 	
 	
-	private function urlLoader_onProgress (event:ProgressEvent):Void {
+	@:noCompletion private function urlLoader_onProgress (event:ProgressEvent):Void {
 		
 		dispatchEvent (event);
 		
@@ -313,3 +341,8 @@ class FileReference extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef FileReference = flash.net.FileReference;
+#end

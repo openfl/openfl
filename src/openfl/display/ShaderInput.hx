@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display3D.Context3DMipFilter;
@@ -32,7 +32,7 @@ import lime.graphics.GLRenderContext;
 	public var width:Int;
 	public var wrap:Context3DWrapMode;
 	
-	private var __isUniform:Bool;
+	@:noCompletion private var __isUniform:Bool;
 	
 	
 	public function new () {
@@ -48,7 +48,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
+	@:noCompletion private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
 		
 		#if (lime >= "7.0.0")
 		var gl = context.webgl;
@@ -110,3 +110,8 @@ import lime.graphics.GLRenderContext;
 	
 	
 }
+
+
+#else
+typedef ShaderInput<T> = flash.display.ShaderInput<T>;
+#end

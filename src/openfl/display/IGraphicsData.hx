@@ -1,9 +1,9 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 interface IGraphicsData {
 	
-	var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
 	
 }
 
@@ -21,3 +21,8 @@ interface IGraphicsData {
 	SHADER;
 	
 }
+
+
+#else
+typedef IGraphicsData = flash.display.IGraphicsData;
+#end

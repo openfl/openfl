@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import lime.utils.Log;
@@ -26,6 +26,43 @@ import hscript.Interp;
 import hscript.Parser;
 #end
 
+
+/**
+ * The MovieClip class inherits from the following classes: Sprite,
+ * DisplayObjectContainer, InteractiveObject, DisplayObject, and
+ * EventDispatcher.
+ *
+ * Unlike the Sprite object, a MovieClip object has a timeline.
+ *
+ * In Flash Professional, the methods for the MovieClip class provide the
+ * same functionality as actions that target movie clips. Some additional
+ * methods do not have equivalent actions in the Actions toolbox in the
+ * Actions panel in the Flash authoring tool. 
+ *
+ * Children instances placed on the Stage in Flash Professional cannot be
+ * accessed by code from within the constructor of a parent instance since
+ * they have not been created at that point in code execution. Before
+ * accessing the child, the parent must instead either create the child
+ * instance by code or delay access to a callback function that listens for
+ * the child to dispatch its `Event.ADDED_TO_STAGE` event.
+ *
+ * If you modify any of the following properties of a MovieClip object that
+ * contains a motion tween, the playhead is stopped in that MovieClip object:
+ * `alpha`, `blendMode`, `filters`,
+ * `height`, `opaqueBackground`, `rotation`,
+ * `scaleX`, `scaleY`, `scale9Grid`,
+ * `scrollRect`, `transform`, `visible`,
+ * `width`, `x`, or `y`. However, it does not
+ * stop the playhead in any child MovieClip objects of that MovieClip
+ * object.
+ *
+ * **Note:**Flash Lite 4 supports the MovieClip.opaqueBackground
+ * property only if FEATURE_BITMAPCACHE is defined. The default configuration
+ * of Flash Lite 4 does not define FEATURE_BITMAPCACHE. To enable the
+ * MovieClip.opaqueBackground property for a suitable device, define
+ * FEATURE_BITMAPCACHE in your project.
+ */
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -38,47 +75,116 @@ import hscript.Parser;
 class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end {
 	
 	
-	private static var __initSWF:SWFLite;
-	private static var __initSymbol:SpriteSymbol;
+	@:noCompletion private static var __initSWF:SWFLite;
+	@:noCompletion private static var __initSymbol:SpriteSymbol;
 	
 	#if openfljs
-	private static var __useParentFPS:Bool;
+	@:noCompletion private static var __useParentFPS:Bool;
 	#else
-	private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
+	@:noCompletion private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
 	#end
 	
+	
+	/**
+	 * Specifies the number of the frame in which the playhead is located in the
+	 * timeline of the MovieClip instance. If the movie clip has multiple scenes,
+	 * this value is the frame number in the current scene.
+	 */
 	public var currentFrame (get, never):Int;
+	
+	/**
+	 * The label at the current frame in the timeline of the MovieClip instance.
+	 * If the current frame has no label, `currentLabel` is
+	 * `null`.
+	 */
 	public var currentFrameLabel (get, never):String;
+	
+	/**
+	 * The current label in which the playhead is located in the timeline of the
+	 * MovieClip instance. If the current frame has no label,
+	 * `currentLabel` is set to the name of the previous frame that
+	 * includes a label. If the current frame and previous frames do not include
+	 * a label, `currentLabel` returns `null`.
+	 */
 	public var currentLabel (get, never):String;
+	
+	/**
+	 * Returns an array of FrameLabel objects from the current scene. If the
+	 * MovieClip instance does not use scenes, the array includes all frame
+	 * labels from the entire MovieClip instance.
+	 */
 	public var currentLabels (get, never):Array<FrameLabel>;
+	
+	/**
+	 * A Boolean value that indicates whether a movie clip is enabled. The
+	 * default value of `enabled` is `true`. If
+	 * `enabled` is set to `false`, the movie clip's Over,
+	 * Down, and Up frames are disabled. The movie clip continues to receive
+	 * events(for example, `mouseDown`, `mouseUp`,
+	 * `keyDown`, and `keyUp`).
+	 *
+	 * The `enabled` property governs only the button-like
+	 * properties of a movie clip. You can change the `enabled`
+	 * property at any time; the modified movie clip is immediately enabled or
+	 * disabled. If `enabled` is set to `false`, the object
+	 * is not included in automatic tab ordering.
+	 */
 	public var enabled:Bool;
+	
+	/**
+	 * The number of frames that are loaded from a streaming SWF file. You can
+	 * use the `framesLoaded` property to determine whether the
+	 * contents of a specific frame and all the frames before it loaded and are
+	 * available locally in the browser. You can also use it to monitor the
+	 * downloading of large SWF files. For example, you might want to display a
+	 * message to users indicating that the SWF file is loading until a specified
+	 * frame in the SWF file finishes loading.
+	 *
+	 * If the movie clip contains multiple scenes, the
+	 * `framesLoaded` property returns the number of frames loaded for
+	 * _all_ scenes in the movie clip.
+	 */
 	public var framesLoaded (get, never):Int;
+	
 	public var isPlaying (get, never):Bool;
+	
+	// @:noCompletion @:dox(hide) public var scenes (default, never):Array<flash.display.Scene>;
+	
+	/**
+	 * The total number of frames in the MovieClip instance.
+	 *
+	 * If the movie clip contains multiple frames, the
+	 * `totalFrames` property returns the total number of frames in
+	 * _all_ scenes in the movie clip.
+	 */
 	public var totalFrames (get, never):Int;
 	
-	private var __activeInstances:Array<FrameSymbolInstance>;
-	private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
-	private var __currentFrame:Int;
-	private var __currentFrameLabel:String;
-	private var __currentLabel:String;
-	private var __currentLabels:Array<FrameLabel>;
-	private var __frameScripts:Map<Int, Void->Void>;
-	private var __frameTime:Int;
-	private var __hasDown:Bool;
-	private var __hasOver:Bool;
-	private var __hasUp:Bool;
-	private var __lastFrameScriptEval:Int;
-	private var __lastFrameUpdate:Int;
-	private var __mouseIsDown:Bool;
-	private var __playing:Bool;
-	private var __swf:SWFLite;
-	private var __symbol:SpriteSymbol;
-	private var __timeElapsed:Int;
-	private var __totalFrames:Int;
+	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
+	
+	
+	@:noCompletion private var __activeInstances:Array<FrameSymbolInstance>;
+	@:noCompletion private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
+	@:noCompletion private var __currentFrame:Int;
+	@:noCompletion private var __currentFrameLabel:String;
+	@:noCompletion private var __currentLabel:String;
+	@:noCompletion private var __currentLabels:Array<FrameLabel>;
+	@:noCompletion private var __frameScripts:Map<Int, Void->Void>;
+	@:noCompletion private var __frameTime:Int;
+	@:noCompletion private var __hasDown:Bool;
+	@:noCompletion private var __hasOver:Bool;
+	@:noCompletion private var __hasUp:Bool;
+	@:noCompletion private var __lastFrameScriptEval:Int;
+	@:noCompletion private var __lastFrameUpdate:Int;
+	@:noCompletion private var __mouseIsDown:Bool;
+	@:noCompletion private var __playing:Bool;
+	@:noCompletion private var __swf:SWFLite;
+	@:noCompletion private var __symbol:SpriteSymbol;
+	@:noCompletion private var __timeElapsed:Int;
+	@:noCompletion private var __totalFrames:Int;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		__useParentFPS = true;
 		untyped __js__("/// #if (typeof swf-parent-fps === 'undefined' || !swf-parent-fps) && (typeof swflite-parent-fps === 'undefined' || !swflite-parent-fps)");
@@ -99,6 +205,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	#end
 	
 	
+	/**
+	 * Creates a new MovieClip instance. After creating the MovieClip, call the
+	 * `addChild()` or `addChildAt()` method of a display
+	 * object container that is onstage.
+	 */
 	public function new () {
 		
 		super ();
@@ -147,6 +258,20 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
+	/**
+	 * Starts playing the SWF file at the specified frame. This happens after all
+	 * remaining actions in the frame have finished executing. To specify a scene
+	 * as well as a frame, specify a value for the `scene` parameter.
+	 * 
+	 * @param frame A number representing the frame number, or a string
+	 *              representing the label of the frame, to which the playhead is
+	 *              sent. If you specify a number, it is relative to the scene
+	 *              you specify. If you do not specify a scene, the current scene
+	 *              determines the global frame number to play. If you do specify
+	 *              a scene, the playhead jumps to the frame number in the
+	 *              specified scene.
+	 * @param scene The name of the scene to play. This parameter is optional.
+	 */
 	public function gotoAndPlay (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
 		
 		play ();
@@ -155,6 +280,23 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
+	/**
+	 * Brings the playhead to the specified frame of the movie clip and stops it
+	 * there. This happens after all remaining actions in the frame have finished
+	 * executing. If you want to specify a scene in addition to a frame, specify
+	 * a `scene` parameter.
+	 * 
+	 * @param frame A number representing the frame number, or a string
+	 *              representing the label of the frame, to which the playhead is
+	 *              sent. If you specify a number, it is relative to the scene
+	 *              you specify. If you do not specify a scene, the current scene
+	 *              determines the global frame number at which to go to and
+	 *              stop. If you do specify a scene, the playhead goes to the
+	 *              frame number in the specified scene and stops.
+	 * @param scene The name of the scene. This parameter is optional.
+	 * @throws ArgumentError If the `scene` or `frame`
+	 *                       specified are not found in this movie clip.
+	 */
 	public function gotoAndStop (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void {
 		
 		stop ();
@@ -163,6 +305,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
+	/**
+	 * Sends the playhead to the next frame and stops it. This happens after all
+	 * remaining actions in the frame have finished executing.
+	 * 
+	 */
 	public function nextFrame ():Void {
 		
 		stop ();
@@ -171,6 +318,13 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
+	// @:noCompletion @:dox(hide) public function nextScene ():Void;
+	
+	
+	/**
+	 * Moves the playhead in the timeline of the movie clip.
+	 * 
+	 */
 	public function play ():Void {
 		
 		if (__symbol == null || __playing || __totalFrames < 2) return;
@@ -187,6 +341,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
+	/**
+	 * Sends the playhead to the previous frame and stops it. This happens after
+	 * all remaining actions in the frame have finished executing.
+	 * 
+	 */
 	public function prevFrame ():Void {
 		
 		stop ();
@@ -195,6 +354,13 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
+	// @:noCompletion @:dox(hide) public function prevScene ():Void;
+	
+	
+	/**
+	 * Stops the playhead in the movie clip.
+	 * 
+	 */
 	public function stop ():Void {
 		
 		__playing = false;
@@ -408,7 +574,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __evaluateFrameScripts (advanceToFrame:Int):Bool {
+	@:noCompletion private function __evaluateFrameScripts (advanceToFrame:Int):Bool {
 		
 		for (frame in __currentFrame...advanceToFrame + 1) {
 			
@@ -443,7 +609,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
+	@:noCompletion private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
 		
 		if (__activeInstances != null) return;
 		
@@ -701,7 +867,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __getNextFrame (deltaTime:Int):Int {
+	@:noCompletion private function __getNextFrame (deltaTime:Int):Int {
 		
 		var nextFrame:Int = 0;
 		
@@ -725,7 +891,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __goto (frame:Int) {
+	@:noCompletion private function __goto (frame:Int) {
 		
 		if (__symbol == null) return;
 		
@@ -738,7 +904,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __resolveFrameReference (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int {
+	@:noCompletion private function __resolveFrameReference (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int {
 		
 		if (Std.is (frame, Int)) {
 			
@@ -768,14 +934,14 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __sortDepths (a:FrameSymbolInstance, b:FrameSymbolInstance):Int {
+	@:noCompletion private function __sortDepths (a:FrameSymbolInstance, b:FrameSymbolInstance):Int {
 		
 		return a.depth - b.depth;
 		
 	}
 	
 	
-	private override function __stopAllMovieClips ():Void {
+	@:noCompletion private override function __stopAllMovieClips ():Void {
 		
 		super.__stopAllMovieClips ();
 		stop ();
@@ -783,7 +949,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject, reset : Bool = false):Void {
+	@:noCompletion private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject, reset : Bool = false):Void {
 		
 		if (displayObject == null) return;
 		
@@ -871,7 +1037,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __updateFrameLabel ():Void {
+	@:noCompletion private function __updateFrameLabel ():Void {
 		
 		__currentFrameLabel = __symbol.frames[__currentFrame - 1].label;
 		
@@ -909,7 +1075,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	
 	
 	
-	private function __onMouseDown (event:MouseEvent):Void {
+	@:noCompletion private function __onMouseDown (event:MouseEvent):Void {
 		
 		if (__hasDown) {
 			
@@ -923,7 +1089,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __onMouseUp (event:MouseEvent):Void {
+	@:noCompletion private function __onMouseUp (event:MouseEvent):Void {
 		
 		__mouseIsDown = false;
 		
@@ -946,7 +1112,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __onRollOut (event:MouseEvent):Void {
+	@:noCompletion private function __onRollOut (event:MouseEvent):Void {
 		
 		if (__mouseIsDown && __hasOver) {
 			
@@ -961,7 +1127,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function __onRollOver (event:MouseEvent):Void {
+	@:noCompletion private function __onRollOver (event:MouseEvent):Void {
 		
 		if (__hasOver) {
 			
@@ -979,7 +1145,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	
 	
 	
-	private override function set_buttonMode (value:Bool):Bool {
+	@:noCompletion private override function set_buttonMode (value:Bool):Bool {
 		
 		if (__buttonMode != value) {
 			
@@ -1029,13 +1195,13 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	private function get_currentFrame ():Int { return __currentFrame; }
-	private function get_currentFrameLabel ():String { return __currentFrameLabel; }
-	private function get_currentLabel ():String { return __currentLabel; }
-	private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
-	private function get_framesLoaded ():Int { return __totalFrames; }
-	private function get_isPlaying ():Bool { return __playing; }
-	private function get_totalFrames ():Int { return __totalFrames; }
+	@:noCompletion private function get_currentFrame ():Int { return __currentFrame; }
+	@:noCompletion private function get_currentFrameLabel ():String { return __currentFrameLabel; }
+	@:noCompletion private function get_currentLabel ():String { return __currentLabel; }
+	@:noCompletion private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
+	@:noCompletion private function get_framesLoaded ():Int { return __totalFrames; }
+	@:noCompletion private function get_isPlaying ():Bool { return __playing; }
+	@:noCompletion private function get_totalFrames ():Int { return __totalFrames; }
 	
 	
 }
@@ -1058,7 +1224,7 @@ private class FrameSymbolInstance {
 	
 	
 	public function new (initFrame:Int, initFrameObjectID:Int, characterID:Int, depth:Int, displayObject:DisplayObject, clipDepth:Int) {
-
+		
 		this.initFrame = initFrame;
 		this.initFrameObjectID = initFrameObjectID;
 		this.characterID = characterID;
@@ -1070,3 +1236,8 @@ private class FrameSymbolInstance {
 	
 	
 }
+
+
+#else
+typedef MovieClip = flash.display.MovieClip;
+#end

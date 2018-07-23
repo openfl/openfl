@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.Stage;
@@ -34,11 +34,11 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	public var context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end;
 	public var pixelRatio (default, null):Float = 1;
 	
-	private var __isDOM:Bool;
-	private var __tempMatrix:Matrix;
+	@:noCompletion private var __isDOM:Bool;
+	@:noCompletion private var __tempMatrix:Matrix;
 	
 	
-	private function new (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end) {
+	@:noCompletion private function new (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end) {
 		
 		super ();
 		
@@ -87,7 +87,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __clear ():Void {
+	@:noCompletion private override function __clear ():Void {
 		
 		if (__stage != null) {
 			
@@ -116,14 +116,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMask ():Void {
+	@:noCompletion private override function __popMask ():Void {
 		
 		context.restore ();
 		
 	}
 	
 	
-	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (!object.__isCacheBitmapRender && object.__mask != null) {
 			
@@ -140,14 +140,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMaskRect ():Void {
+	@:noCompletion private override function __popMaskRect ():Void {
 		
 		context.restore ();
 		
 	}
 	
 	
-	private override function __pushMask (mask:DisplayObject):Void {
+	@:noCompletion private override function __pushMask (mask:DisplayObject):Void {
 		
 		context.save ();
 		
@@ -162,7 +162,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
@@ -179,7 +179,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	@:noCompletion private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		context.save ();
 		
@@ -192,14 +192,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __render (object:IBitmapDrawable):Void {
+	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
 		object.__renderCanvas (this);
 		
 	}
 	
 	
-	private override function __renderStage3D (stage:Stage):Void {
+	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
 		
 		for (stage3D in stage.stage3Ds) {
 			
@@ -210,7 +210,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __setBlendMode (value:BlendMode):Void {
+	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;
 		
@@ -284,3 +284,8 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	
 	
 }
+
+
+#else
+typedef CanvasRenderer = Dynamic;
+#end

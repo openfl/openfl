@@ -1,4 +1,4 @@
-package openfl.display3D.textures;
+package openfl.display3D.textures; #if !flash
 
 
 import lime.graphics.Image;
@@ -27,24 +27,24 @@ import lime.graphics.GLRenderContext;
 class TextureBase extends EventDispatcher {
 	
 	
-	private var __alphaTexture:TextureBase;
+	@:noCompletion private var __alphaTexture:TextureBase;
 	// private var __compressedMemoryUsage:Int;
-	private var __context:Context3D;
-	private var __format:Int;
-	private var __height:Int;
-	private var __internalFormat:Int;
+	@:noCompletion private var __context:Context3D;
+	@:noCompletion private var __format:Int;
+	@:noCompletion private var __height:Int;
+	@:noCompletion private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
-	private var __optimizeForRenderToTexture:Bool;
+	@:noCompletion private var __optimizeForRenderToTexture:Bool;
 	// private var __outputTextureMemoryUsage:Bool = false;
-	private var __samplerState:SamplerState;
-	private var __streamingLevels:Int;
-	private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
-	private var __textureID:GLTexture;
-	private var __textureTarget:Int;
-	private var __width:Int;
+	@:noCompletion private var __samplerState:SamplerState;
+	@:noCompletion private var __streamingLevels:Int;
+	@:noCompletion private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __textureID:GLTexture;
+	@:noCompletion private var __textureTarget:Int;
+	@:noCompletion private var __width:Int;
 	
 	
-	private function new (context:Context3D) {
+	@:noCompletion private function new (context:Context3D) {
 		
 		super ();
 		
@@ -66,21 +66,21 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
-	private function __getImage (bitmapData:BitmapData):Image {
+	@:noCompletion private function __getImage (bitmapData:BitmapData):Image {
 		
 		return GLTextureBase.getImage (this, cast __context.__renderer, bitmapData);
 		
 	}
 	
 	
-	private function __getTexture ():GLTexture {
+	@:noCompletion private function __getTexture ():GLTexture {
 		
 		return __textureID;
 		
 	}
 	
 	
-	private function __setSamplerState (state:SamplerState):Void {
+	@:noCompletion private function __setSamplerState (state:SamplerState):Void {
 		
 		GLTextureBase.setSamplerState (this, cast __context.__renderer, state);
 		
@@ -134,3 +134,8 @@ class TextureBase extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef TextureBase = flash.display3D.textures.TextureBase;
+#end

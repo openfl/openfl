@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.IGraphicsData;
@@ -17,8 +17,8 @@ import openfl.geom.Matrix;
 	public var shader:Shader;
 	public var matrix:Matrix;
 	
-	public var __graphicsDataType (default, null):GraphicsDataType;
-	public var __graphicsFillType (default, null):GraphicsFillType;
+	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion private var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
 	public function new (shader:Shader, matrix:Matrix = null) {
@@ -33,3 +33,8 @@ import openfl.geom.Matrix;
 	
 	
 }
+
+
+#else
+typedef GraphicsShaderFill = flash.display.GraphicsShaderFill;
+#end

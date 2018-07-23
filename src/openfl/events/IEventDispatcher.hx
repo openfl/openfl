@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 interface IEventDispatcher {
@@ -10,3 +10,8 @@ interface IEventDispatcher {
 	public function willTrigger (type:String):Bool;
 	
 }
+
+
+#else
+typedef IEventDispatcher = flash.events.IEventDispatcher;
+#end

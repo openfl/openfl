@@ -22,8 +22,8 @@ class FPS extends TextField {
 	
 	public var currentFPS (default, null):Int;
 	
-	private var cacheCount:Int;
-	private var times:Array <Float>;
+	@:noCompletion private var cacheCount:Int;
+	@:noCompletion private var times:Array <Float>;
 	
 	
 	public function new (x:Float = 10, y:Float = 10, color:Int = 0x000000) {

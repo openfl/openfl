@@ -205,7 +205,7 @@ class GLTexture {
 	
 	public static function uploadFromByteArray (texture:Texture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
-		#if js
+		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
 			uploadFromTypedArray (texture, renderer, @:privateAccess (data:ByteArrayData).b, miplevel);

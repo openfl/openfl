@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import lime.graphics.cairo.Cairo;
@@ -27,11 +27,11 @@ class CairoRenderer extends DisplayObjectRenderer {
 	
 	public var cairo:CairoRenderContext;
 	
-	private var __matrix:Matrix;
-	private var __matrix3:Matrix3;
+	@:noCompletion private var __matrix:Matrix;
+	@:noCompletion private var __matrix3:Matrix3;
 	
 	
-	private function new (cairo:Cairo) {
+	@:noCompletion private function new (cairo:Cairo) {
 		
 		super ();
 		
@@ -81,7 +81,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __clear ():Void {
+	@:noCompletion private override function __clear ():Void {
 		
 		if (cairo == null) return;
 		
@@ -102,14 +102,14 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMask ():Void {
+	@:noCompletion private override function __popMask ():Void {
 		
 		cairo.restore ();
 		
 	}
 	
 	
-	private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __popMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (!object.__isCacheBitmapRender && object.__mask != null) {
 			
@@ -126,14 +126,14 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __popMaskRect ():Void {
+	@:noCompletion private override function __popMaskRect ():Void {
 		
 		cairo.restore ();
 		
 	}
 	
 	
-	private override function __pushMask (mask:DisplayObject):Void {
+	@:noCompletion private override function __pushMask (mask:DisplayObject):Void {
 		
 		cairo.save ();
 		
@@ -146,7 +146,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+	@:noCompletion private override function __pushMaskObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
@@ -163,7 +163,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
+	@:noCompletion private override function __pushMaskRect (rect:Rectangle, transform:Matrix):Void {
 		
 		cairo.save ();
 		
@@ -176,7 +176,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __render (object:IBitmapDrawable):Void {
+	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
 		if (cairo == null) return;
 		
@@ -185,7 +185,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __renderStage3D (stage:Stage):Void {
+	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
 		
 		if (cairo == null) return;
 		
@@ -198,7 +198,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	private override function __setBlendMode (value:BlendMode):Void {
+	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;
 		
@@ -272,3 +272,8 @@ class CairoRenderer extends DisplayObjectRenderer {
 	
 	
 }
+
+
+#else
+typedef CairoRenderer = Dynamic;
+#end

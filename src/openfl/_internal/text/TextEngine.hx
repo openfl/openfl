@@ -866,6 +866,13 @@ class TextEngine {
 			// TODO: optimize
 			
 			var positions = [];
+			var letterSpacing = 0.0;
+			
+			if (formatRange.format.letterSpacing != null) {
+				
+				letterSpacing = formatRange.format.letterSpacing;
+				
+			}
 			
 			#if (js && html5)
 			
@@ -885,6 +892,7 @@ class TextEngine {
 				for (i in startIndex...endIndex) {
 					
 					width = __context.measureText (text.substring (startIndex, i + 1)).width;
+					// if (i > 0) width += letterSpacing;
 					
 					positions.push (width - previousWidth);
 					
@@ -910,6 +918,8 @@ class TextEngine {
 						advance = __context.measureText (text.charAt (i)).width;
 						
 					}
+					
+					// if (i > 0) advance += letterSpacing;
 					
 					positions.push (advance);
 					
@@ -937,6 +947,11 @@ class TextEngine {
 				__textLayout.size = formatRange.format.size;
 				
 			}
+			
+			#if (lime >= "7.0.0")
+			__textLayout.letterSpacing = letterSpacing;
+			__textLayout.autoHint = (antiAliasType != ADVANCED || sharpness < 400);
+			#end
 			
 			// __textLayout.direction = RIGHT_TO_LEFT;
 			// __textLayout.script = ARABIC;

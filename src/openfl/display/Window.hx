@@ -24,7 +24,7 @@ class Window extends LimeWindow {
 	
 	
 	#if (lime >= "7.0.0")
-	private function new (application:Application, attributes:WindowAttributes) {
+	@:noCompletion private function new (application:Application, attributes:WindowAttributes) {
 		
 		super (application, attributes);
 		

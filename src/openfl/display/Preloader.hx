@@ -25,8 +25,8 @@ import lime.app.Preloader in LimePreloader;
 class Preloader extends LimePreloader {
 	
 	
-	private var display:Sprite;
-	private var ready:Bool;
+	@:noCompletion private var display:Sprite;
+	@:noCompletion private var ready:Bool;
 	
 	
 	public function new (display:Sprite = null) {
@@ -45,7 +45,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	private override function start ():Void {
+	@:noCompletion private override function start ():Void {
 		
 		if (simulateProgress) return;
 		
@@ -75,7 +75,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	private override function update (loaded:Int, total:Int):Void {
+	@:noCompletion private override function update (loaded:Int, total:Int):Void {
 		
 		#if !flash
 		Lib.current.loaderInfo.__update (loaded, total);
@@ -97,7 +97,7 @@ class Preloader extends LimePreloader {
 	
 	
 	
-	private function display_onUnload (event:Event):Void {
+	@:noCompletion private function display_onUnload (event:Event):Void {
 		
 		if (display != null) {
 			
@@ -129,10 +129,10 @@ class Preloader extends LimePreloader {
 @:dox(hide) class DefaultPreloader extends Sprite {
 	
 	
-	private var endAnimation:Int;
-	private var outline:Sprite;
-	private var progress:Sprite;
-	private var startAnimation:Int;
+	@:noCompletion private var endAnimation:Int;
+	@:noCompletion private var outline:Sprite;
+	@:noCompletion private var progress:Sprite;
+	@:noCompletion private var startAnimation:Int;
 	
 	
 	public function new () {
@@ -301,7 +301,7 @@ class Preloader extends LimePreloader {
 	
 	
 	
-	private function this_onAddedToStage (event:Event):Void {
+	@:noCompletion private function this_onAddedToStage (event:Event):Void {
 		
 		removeEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 		
@@ -314,7 +314,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	private function this_onComplete (event:Event):Void {
+	@:noCompletion private function this_onComplete (event:Event):Void {
 		
 		event.preventDefault ();
 		
@@ -326,7 +326,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	private function this_onEnterFrame (event:Event):Void {
+	@:noCompletion private function this_onEnterFrame (event:Event):Void {
 		
 		var elapsed = Lib.getTimer () - startAnimation;
 		var total = endAnimation - startAnimation;
@@ -342,7 +342,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	private function this_onProgress (event:ProgressEvent):Void {
+	@:noCompletion private function this_onProgress (event:ProgressEvent):Void {
 		
 		onUpdate (Std.int (event.bytesLoaded), Std.int (event.bytesTotal));
 		

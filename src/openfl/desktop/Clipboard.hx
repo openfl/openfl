@@ -1,4 +1,4 @@
-package openfl.desktop;
+package openfl.desktop; #if !flash
 
 
 import lime.system.Clipboard in LimeClipboard;
@@ -15,18 +15,19 @@ class Clipboard {
 	
 	public static var generalClipboard (get, never):Clipboard;
 	
-	private static var __generalClipboard:Clipboard;
+	@:noCompletion private static var __generalClipboard:Clipboard;
 	
 	public var formats (get, never):Array<ClipboardFormats>;
 	
-	private var __htmlText:String;
-	private var __richText:String;
-	private var __systemClipboard:Bool;
-	private var __text:String;
+	
+	@:noCompletion private var __htmlText:String;
+	@:noCompletion private var __richText:String;
+	@:noCompletion private var __systemClipboard:Bool;
+	@:noCompletion private var __text:String;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped global.Object.defineProperty (Clipboard, "generalClipboard", { get: function () { return Clipboard.get_generalClipboard (); } });
 		untyped global.Object.defineProperty (Clipboard.prototype, "formats", { get: untyped __js__ ("function () { return this.get_formats (); }") });
@@ -35,7 +36,7 @@ class Clipboard {
 	#end
 	
 	
-	private function new () {
+	@:noCompletion private function new () {
 		
 		
 		
@@ -220,7 +221,7 @@ class Clipboard {
 	
 	
 	
-	private function get_formats ():Array<ClipboardFormats> {
+	@:noCompletion private function get_formats ():Array<ClipboardFormats> {
 		
 		var formats = [ ClipboardFormats.TEXT_FORMAT ];
 		if (hasFormat (HTML_FORMAT)) formats.push (HTML_FORMAT);
@@ -231,7 +232,7 @@ class Clipboard {
 	}
 	
 	
-	private static function get_generalClipboard ():Clipboard {
+	@:noCompletion private static function get_generalClipboard ():Clipboard {
 		
 		if (__generalClipboard == null) {
 			
@@ -246,3 +247,8 @@ class Clipboard {
 	
 	
 }
+
+
+#else
+typedef Clipboard = flash.desktop.Clipboard;
+#end

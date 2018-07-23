@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 #if !openfl_debug
@@ -28,3 +28,8 @@ class URLRequestDefaults {
 	
 	
 }
+
+
+#else
+typedef URLRequestDefaults = flash.net.URLRequestDefaults;
+#end

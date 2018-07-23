@@ -1,10 +1,24 @@
-package openfl.net; #if !openfljs
+package openfl.net; #if !flash #if !openfljs
 
 
+/**
+ * The SharedObjectFlushStatus class provides values for the code returned
+ * from a call to the `SharedObject.flush()` method.
+ */
 @:enum abstract SharedObjectFlushStatus(Null<Int>) {
 	
+	
+	/**
+	 * Indicates that the flush completed successfully.
+	 */
 	public var FLUSHED = 0;
+	
+	/**
+	 * Indicates that the user is being prompted to increase disk space for the
+	 * shared object before the flush can occur.
+	 */
 	public var PENDING = 1;
+	
 	
 	@:from private static function fromString (value:String):SharedObjectFlushStatus {
 		
@@ -18,6 +32,7 @@ package openfl.net; #if !openfljs
 		
 	}
 	
+	
 	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
@@ -29,6 +44,7 @@ package openfl.net; #if !openfljs
 		}
 		
 	}
+	
 	
 }
 
@@ -44,4 +60,7 @@ package openfl.net; #if !openfljs
 }
 
 
+#end
+#else
+typedef SharedObjectFlushStatus = flash.net.SharedObjectFlushStatus;
 #end

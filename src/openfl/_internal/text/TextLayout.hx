@@ -50,11 +50,13 @@ class TextLayout {
 	// private static inline var FT_LOAD_TARGET_LCD     FT_LOAD_TARGET_( FT_RENDER_MODE_LCD    )
 	// private static inline var FT_LOAD_TARGET_LCD_V   FT_LOAD_TARGET_( FT_RENDER_MODE_LCD_V  )
 	
+	public var autoHint:Bool;
 	public var direction (get, set):TextDirection;
 	public var font (default, set):Font;
 	public var glyphs (get, null):Array<Glyph>;
 	public var language (get, set):String;
-	 @:isVar public var positions (get, null):Array<GlyphPosition>;
+	public var letterSpacing:Float;
+	@:isVar public var positions (get, null):Array<GlyphPosition>;
 	public var script (get, set):TextScript;
 	public var size (default, set):Int;
 	public var text (default, set):String;
@@ -120,7 +122,12 @@ class TextLayout {
 				// 	hb_font_destroy ((hb_font_t*)mHBFont);
 				@:privateAccess font.__setSize (size);
 				__hbFont = new HBFTFont (font);
-				__hbFont.loadFlags = FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT;
+				
+				if (autoHint) {
+					
+					__hbFont.loadFlags = FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT;
+					
+				}
 				
 			} else {
 				
@@ -165,7 +172,7 @@ class TextLayout {
 					
 				}
 				
-				positions.push (new GlyphPosition (info.codepoint, new Vector2 (position.xAdvance / 64, position.yAdvance / 64), new Vector2 (position.xOffset / 64, position.yOffset / 64)));
+				positions.push (new GlyphPosition (info.codepoint, new Vector2 (position.xAdvance / 64 + letterSpacing, position.yAdvance / 64), new Vector2 (position.xOffset / 64, position.yOffset / 64)));
 				lastCluster = info.cluster;
 				
 			}
@@ -359,28 +366,28 @@ class TextLayout {
 	}
 	
 	
-	private inline function get_backward ():Bool {
+	@:noCompletion private inline function get_backward ():Bool {
 		
 		return (this & ~2) == 5;
 		
 	}
 	
 	
-	private inline function get_forward ():Bool {
+	@:noCompletion private inline function get_forward ():Bool {
 		
 		return (this & ~2) == 4;
 		
 	}
 	
 	
-	private inline function get_horizontal ():Bool {
+	@:noCompletion private inline function get_horizontal ():Bool {
 		
 		return (this & ~1) == 4;
 		
 	}
 	
 	
-	private inline function get_vertical ():Bool {
+	@:noCompletion private inline function get_vertical ():Bool {
 		
 		return (this & ~1) == 6;
 		
@@ -548,7 +555,7 @@ class TextLayout {
 	}
 	
 	
-	private inline function get_rightToLeft ():Bool {
+	@:noCompletion private inline function get_rightToLeft ():Bool {
 		
 		return switch (this) {
 			

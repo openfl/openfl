@@ -1,4 +1,4 @@
-package openfl.display3D.textures;
+package openfl.display3D.textures; #if !flash
 
 
 import haxe.Timer;
@@ -22,10 +22,10 @@ import openfl.utils.ByteArray;
 @:final class Texture extends TextureBase {
 	
 	
-	private static var __lowMemoryMode:Bool = false;
+	@:noCompletion private static var __lowMemoryMode:Bool = false;
 	
 	
-	private function new (context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
+	@:noCompletion private function new (context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
 		
 		super (context);
 		
@@ -81,7 +81,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	private override function __setSamplerState (state:SamplerState) {
+	@:noCompletion private override function __setSamplerState (state:SamplerState) {
 		
 		GLTexture.setSamplerState (this, cast __context.__renderer, state);
 		
@@ -89,3 +89,8 @@ import openfl.utils.ByteArray;
 	
 	
 }
+
+
+#else
+typedef Texture = flash.display3D.textures.Texture;
+#end

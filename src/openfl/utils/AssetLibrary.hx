@@ -19,7 +19,7 @@ import openfl.display.MovieClip;
 @:dox(hide) class AssetLibrary extends LimeAssetLibrary {
 	
 	
-	private var __proxy:LimeAssetLibrary;
+	@:noCompletion private var __proxy:LimeAssetLibrary;
 	
 	
 	public function new () {

@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 @:enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt {
@@ -15,3 +15,8 @@ package openfl.net;
 	#end
 	
 }
+
+
+#else
+typedef ObjectEncoding = flash.net.ObjectEncoding;
+#end

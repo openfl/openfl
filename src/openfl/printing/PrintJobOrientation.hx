@@ -1,4 +1,4 @@
-package openfl.printing; #if !openfljs
+package openfl.printing; #if !flash #if !openfljs
 
 
 @:enum abstract PrintJobOrientation(Null<Int>) {
@@ -44,4 +44,7 @@ package openfl.printing; #if !openfljs
 }
 
 
+#end
+#else
+typedef PrintJobOrientation = flash.printing.PrintJobOrientation;
 #end

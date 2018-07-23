@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import lime.utils.Float32Array;
@@ -26,14 +26,14 @@ import lime.graphics.GLRenderContext;
 	public var type (default, null):ShaderParameterType;
 	public var value:Array<T>;
 	
-	private var __arrayLength:Int;
-	private var __isBool:Bool;
-	private var __isFloat:Bool;
-	private var __isInt:Bool;
-	private var __isUniform:Bool;
-	private var __length:Int;
-	private var __uniformMatrix:Float32Array;
-	private var __useArray:Bool;
+	@:noCompletion private var __arrayLength:Int;
+	@:noCompletion private var __isBool:Bool;
+	@:noCompletion private var __isFloat:Bool;
+	@:noCompletion private var __isInt:Bool;
+	@:noCompletion private var __isUniform:Bool;
+	@:noCompletion private var __length:Int;
+	@:noCompletion private var __uniformMatrix:Float32Array;
+	@:noCompletion private var __useArray:Bool;
 	
 	
 	public function new () {
@@ -43,7 +43,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function __disableGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+	@:noCompletion private function __disableGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
 		
 		#if (lime >= "7.0.0")
 		var gl = context.webgl;
@@ -64,7 +64,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, overrideValue:Array<T> = null):Void {
+	@:noCompletion private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, overrideValue:Array<T> = null):Void {
 		
 		#if (lime >= "7.0.0")
 		var gl = context.webgl;
@@ -262,7 +262,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function __updateGLFromBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, buffer:Float32Array, position:Int, length:Int):Void {
+	@:noCompletion private function __updateGLFromBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, buffer:Float32Array, position:Int, length:Int):Void {
 		
 		#if (lime >= "7.0.0")
 		var gl = context.webgl;
@@ -415,3 +415,8 @@ import lime.graphics.GLRenderContext;
 	
 	
 }
+
+
+#else
+typedef ShaderParameter<T> = flash.display.ShaderParameter<T>;
+#end

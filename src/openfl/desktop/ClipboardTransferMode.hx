@@ -1,4 +1,4 @@
-package openfl.desktop; #if !openfljs
+package openfl.desktop; #if !flash #if !openfljs
 
 
 @:enum abstract ClipboardTransferMode(Null<Int>) {
@@ -52,4 +52,7 @@ package openfl.desktop; #if !openfljs
 }
 
 
+#end
+#else
+typedef ClipboardTransferMode = flash.desktop.ClipboardTransferMode;
 #end

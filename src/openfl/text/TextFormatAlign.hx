@@ -1,14 +1,41 @@
-package openfl.text; #if !openfljs
+package openfl.text; #if !flash #if !openfljs
 
 
+/**
+ * The TextFormatAlign class provides values for text alignment in the
+ * TextFormat class.
+ */
 @:enum abstract TextFormatAlign(Null<Int>) {
 	
+	
+	/**
+	 * Constant; centers the text in the text field. Use the syntax
+	 * `TextFormatAlign.CENTER`.
+	 */
 	public var CENTER = 0;
+	
 	public var END = 1;
+	
+	/**
+	 * Constant; justifies text within the text field. Use the syntax
+	 * `TextFormatAlign.JUSTIFY`.
+	 */
 	public var JUSTIFY = 2;
+	
+	/**
+	 * Constant; aligns text to the left within the text field. Use the syntax
+	 * `TextFormatAlign.LEFT`.
+	 */
 	public var LEFT = 3;
+	
+	/**
+	 * Constant; aligns text to the right within the text field. Use the syntax
+	 * `TextFormatAlign.RIGHT`.
+	 */
 	public var RIGHT = 4;
+	
 	public var START = 5;
+	
 	
 	@:from private static function fromString (value:String):TextFormatAlign {
 		
@@ -26,6 +53,7 @@ package openfl.text; #if !openfljs
 		
 	}
 	
+	
 	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
@@ -41,6 +69,7 @@ package openfl.text; #if !openfljs
 		}
 		
 	}
+	
 	
 }
 
@@ -60,4 +89,7 @@ package openfl.text; #if !openfljs
 }
 
 
+#end
+#else
+typedef TextFormatAlign = flash.text.TextFormatAlign;
 #end

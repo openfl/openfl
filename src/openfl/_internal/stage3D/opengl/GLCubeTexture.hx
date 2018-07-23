@@ -174,7 +174,7 @@ class GLCubeTexture {
 	
 	public static function uploadFromByteArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt):Void {
 		
-		#if js
+		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
 			uploadFromTypedArray (cubeTexture, renderer, @:privateAccess (data:ByteArrayData).b, side, miplevel);

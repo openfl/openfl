@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import lime.graphics.opengl.GLProgram;
@@ -23,7 +23,8 @@ import lime.graphics.GLRenderContext;
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 
-#if (!display && !macro)
+// #if (!display && !macro)
+#if !macro
 @:autoBuild(openfl._internal.macros.ShaderMacro.build())
 #end
 
@@ -31,7 +32,7 @@ import lime.graphics.GLRenderContext;
 class Shader {
 	
 	
-	private static var __glPrograms = new Map<String, GLProgram> ();
+	@:noCompletion private static var __glPrograms = new Map<String, GLProgram> ();
 	
 	public var byteCode (null, default):ByteArray;
 	public var data (get, set):ShaderData;
@@ -40,31 +41,31 @@ class Shader {
 	public var glVertexSource (get, set):String;
 	public var precisionHint:ShaderPrecision;
 	
-	private var __alpha:ShaderParameter<Float>;
-	private var __bitmap:ShaderInput<BitmapData>;
-	private var __colorMultiplier:ShaderParameter<Float>;
-	private var __colorOffset:ShaderParameter<Float>;
-	private var __context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
-	private var __data:ShaderData;
-	private var __glFragmentSource:String;
-	private var __glSourceDirty:Bool;
-	private var __glVertexSource:String;
-	private var __hasColorTransform:ShaderParameter<Bool>;
-	private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
-	private var __isGenerated:Bool;
-	private var __matrix:ShaderParameter<Float>;
-	private var __numPasses:Int;
-	private var __paramBool:Array<ShaderParameter<Bool>>;
-	private var __paramFloat:Array<ShaderParameter<Float>>;
-	private var __paramInt:Array<ShaderParameter<Int>>;
-	private var __position:ShaderParameter<Float>;
-	private var __textureCoord:ShaderParameter<Float>;
-	private var __texture:ShaderInput<BitmapData>;
-	private var __textureSize:ShaderParameter<Float>;
+	@:noCompletion private var __alpha:ShaderParameter<Float>;
+	@:noCompletion private var __bitmap:ShaderInput<BitmapData>;
+	@:noCompletion private var __colorMultiplier:ShaderParameter<Float>;
+	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
+	@:noCompletion private var __context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __data:ShaderData;
+	@:noCompletion private var __glFragmentSource:String;
+	@:noCompletion private var __glSourceDirty:Bool;
+	@:noCompletion private var __glVertexSource:String;
+	@:noCompletion private var __hasColorTransform:ShaderParameter<Bool>;
+	@:noCompletion private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
+	@:noCompletion private var __isGenerated:Bool;
+	@:noCompletion private var __matrix:ShaderParameter<Float>;
+	@:noCompletion private var __numPasses:Int;
+	@:noCompletion private var __paramBool:Array<ShaderParameter<Bool>>;
+	@:noCompletion private var __paramFloat:Array<ShaderParameter<Float>>;
+	@:noCompletion private var __paramInt:Array<ShaderParameter<Int>>;
+	@:noCompletion private var __position:ShaderParameter<Float>;
+	@:noCompletion private var __textureCoord:ShaderParameter<Float>;
+	@:noCompletion private var __texture:ShaderInput<BitmapData>;
+	@:noCompletion private var __textureSize:ShaderParameter<Float>;
 	
 	
 	#if openfljs
-	private static function __init__ () {
+	@:noCompletion private static function __init__ () {
 		
 		untyped Object.defineProperties (Shader.prototype, {
 			"data": { get: untyped __js__ ("function () { return this.get_data (); }"), set: untyped __js__ ("function (v) { return this.set_data (v); }") },
@@ -88,7 +89,7 @@ class Shader {
 	}
 	
 	
-	private function __clearUseArray ():Void {
+	@:noCompletion private function __clearUseArray ():Void {
 		
 		for (parameter in __paramBool) {
 			
@@ -167,7 +168,7 @@ class Shader {
 	// }
 	
 	
-	private function __createGLShader (source:String, type:Int):GLShader {
+	@:noCompletion private function __createGLShader (source:String, type:Int):GLShader {
 		
 		#if (lime >= "7.0.0")
 		var gl = __context.webgl;
@@ -193,7 +194,7 @@ class Shader {
 	}
 	
 	
-	private function __createGLProgram (vertexSource:String, fragmentSource:String):GLProgram {
+	@:noCompletion private function __createGLProgram (vertexSource:String, fragmentSource:String):GLProgram {
 		
 		#if (lime >= "7.0.0")
 		var gl = __context.webgl;
@@ -235,7 +236,7 @@ class Shader {
 	}
 	
 	
-	private function __disable ():Void {
+	@:noCompletion private function __disable ():Void {
 		
 		if (glProgram != null) {
 			
@@ -246,7 +247,7 @@ class Shader {
 	}
 	
 	
-	private function __disableGL ():Void {
+	@:noCompletion private function __disableGL ():Void {
 		
 		#if (lime >= "7.0.0")
 		var gl = __context.webgl;
@@ -290,7 +291,7 @@ class Shader {
 	}
 	
 	
-	private function __enable ():Void {
+	@:noCompletion private function __enable ():Void {
 		
 		__init ();
 		
@@ -303,7 +304,7 @@ class Shader {
 	}
 	
 	
-	private function __enableGL ():Void {
+	@:noCompletion private function __enableGL ():Void {
 		
 		var textureCount = 0;
 		
@@ -333,7 +334,7 @@ class Shader {
 	}
 	
 	
-	private function __init ():Void {
+	@:noCompletion private function __init ():Void {
 		
 		if (__data == null) {
 			
@@ -350,7 +351,7 @@ class Shader {
 	}
 	
 	
-	private function __initGL ():Void {
+	@:noCompletion private function __initGL ():Void {
 		
 		if (__glSourceDirty || __paramBool == null) {
 			
@@ -464,7 +465,7 @@ class Shader {
 	}
 	
 	
-	private function __processGLData (source:String, storageType:String):Void {
+	@:noCompletion private function __processGLData (source:String, storageType:String):Void {
 		
 		var lastMatch = 0, position, regex, name, type;
 		
@@ -637,7 +638,7 @@ class Shader {
 	}
 	
 	
-	private function __update ():Void {
+	@:noCompletion private function __update ():Void {
 		
 		if (glProgram != null) {
 			
@@ -648,7 +649,7 @@ class Shader {
 	}
 	
 	
-	private function __updateFromBuffer (shaderBuffer:ShaderBuffer):Void {
+	@:noCompletion private function __updateFromBuffer (shaderBuffer:ShaderBuffer):Void {
 		
 		if (glProgram != null) {
 			
@@ -659,7 +660,7 @@ class Shader {
 	}
 	
 	
-	private function __updateGL ():Void {
+	@:noCompletion private function __updateGL ():Void {
 		
 		var textureCount = 0;
 		
@@ -695,7 +696,7 @@ class Shader {
 	}
 	
 	
-	private function __updateGLFromBuffer (shaderBuffer:ShaderBuffer):Void {
+	@:noCompletion private function __updateGLFromBuffer (shaderBuffer:ShaderBuffer):Void {
 		
 		var textureCount = 0;
 		var input, inputData, inputFilter, inputMipFilter, inputWrap;
@@ -857,7 +858,7 @@ class Shader {
 	
 	
 	
-	private function get_data ():ShaderData {
+	@:noCompletion private function get_data ():ShaderData {
 		
 		if (__glSourceDirty || __data == null) {
 			
@@ -870,21 +871,21 @@ class Shader {
 	}
 	
 	
-	private function set_data (value:ShaderData):ShaderData {
+	@:noCompletion private function set_data (value:ShaderData):ShaderData {
 		
 		return __data = cast value;
 		
 	}
 	
 	
-	private function get_glFragmentSource ():String {
+	@:noCompletion private function get_glFragmentSource ():String {
 		
 		return __glFragmentSource;
 		
 	}
 	
 	
-	private function set_glFragmentSource (value:String):String {
+	@:noCompletion private function set_glFragmentSource (value:String):String {
 		
 		if (value != __glFragmentSource) {
 			
@@ -897,14 +898,14 @@ class Shader {
 	}
 	
 	
-	private function get_glVertexSource ():String {
+	@:noCompletion private function get_glVertexSource ():String {
 		
 		return __glVertexSource;
 		
 	}
 	
 	
-	private function set_glVertexSource (value:String):String {
+	@:noCompletion private function set_glVertexSource (value:String):String {
 		
 		if (value != __glVertexSource) {
 			
@@ -918,3 +919,8 @@ class Shader {
 	
 	
 }
+
+
+#else
+typedef Shader = flash.display.Shader;
+#end

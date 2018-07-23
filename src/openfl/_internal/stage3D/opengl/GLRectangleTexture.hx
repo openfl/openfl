@@ -81,7 +81,7 @@ class GLRectangleTexture {
 	
 	public static function uploadFromByteArray (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		#if js
+		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
 			uploadFromTypedArray (rectangleTexture, renderer, @:privateAccess (data:ByteArrayData).b);
