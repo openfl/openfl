@@ -1401,14 +1401,16 @@ class GLContext3D {
 		var dest = gl.ZERO;
 		switch (Context3D.__stateCache._srcBlendFactor) {
 			
-			case Context3DBlendFactor.ONE: src = gl.ONE;
-			case Context3DBlendFactor.ZERO: src = gl.ZERO;
-			case Context3DBlendFactor.SOURCE_ALPHA: src = gl.SRC_ALPHA;
 			case Context3DBlendFactor.DESTINATION_ALPHA: src = gl.DST_ALPHA;
 			case Context3DBlendFactor.DESTINATION_COLOR: src = gl.DST_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = gl.ONE_MINUS_SRC_ALPHA;
+			case Context3DBlendFactor.ONE: src = gl.ONE;
 			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = gl.ONE_MINUS_DST_ALPHA;
 			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = gl.ONE_MINUS_DST_COLOR;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = gl.ONE_MINUS_SRC_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: src = gl.ONE_MINUS_SRC_COLOR;
+			case Context3DBlendFactor.SOURCE_ALPHA: src = gl.SRC_ALPHA;
+			case Context3DBlendFactor.SOURCE_COLOR: src = gl.SRC_COLOR;
+			case Context3DBlendFactor.ZERO: src = gl.ZERO;
 			default:
 				throw new IllegalOperationError ();
 			
@@ -1416,14 +1418,16 @@ class GLContext3D {
 		
 		switch (Context3D.__stateCache._destBlendFactor) {
 			
-			case Context3DBlendFactor.ONE: dest = gl.ONE;
-			case Context3DBlendFactor.ZERO: dest = gl.ZERO;
-			case Context3DBlendFactor.SOURCE_ALPHA: dest = gl.SRC_ALPHA;
-			case Context3DBlendFactor.SOURCE_COLOR: dest = gl.SRC_COLOR;
 			case Context3DBlendFactor.DESTINATION_ALPHA: dest = gl.DST_ALPHA;
+			case Context3DBlendFactor.DESTINATION_COLOR: dest = gl.DST_COLOR;
+			case Context3DBlendFactor.ONE: dest = gl.ONE;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = gl.ONE_MINUS_DST_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: dest = gl.ONE_MINUS_DST_COLOR;
 			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = gl.ONE_MINUS_SRC_ALPHA;
 			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = gl.ONE_MINUS_SRC_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = gl.ONE_MINUS_DST_ALPHA;
+			case Context3DBlendFactor.SOURCE_ALPHA: dest = gl.SRC_ALPHA;
+			case Context3DBlendFactor.SOURCE_COLOR: dest = gl.SRC_COLOR;
+			case Context3DBlendFactor.ZERO: dest = gl.ZERO;
 			default:
 				throw new IllegalOperationError ();
 			
