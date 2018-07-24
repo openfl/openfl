@@ -2218,7 +2218,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 				}
 				
-				if (target.hasEventListener (MouseEvent.ROLL_OUT)) {
+				if (target.hasEventListener (MouseEvent.ROLL_OUT) || target.hasEventListener (MouseEvent.ROLL_OVER)) {
 					
 					__rollOutStack.push (target);
 					
