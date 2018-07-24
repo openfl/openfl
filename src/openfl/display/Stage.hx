@@ -1392,7 +1392,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		//__broadcastEvent (new Event (Event.ACTIVATE));
+		if (__wasFullscreen && !window.fullscreen) {
+			
+			__wasFullscreen = false;
+			__displayState = NORMAL;
+			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
+			
+		}
 		
 	}
 	
