@@ -52,8 +52,9 @@
 			
 			<section if="telemetry || advanced-telemetry || openfl-telemetry">
 				
-				<haxelib name="hxtelemetry" />
-				<config:hxtelemetry allocations="true" host="localhost" />
+				<haxelib name="hxtelemetry" unless="flash" />
+				<config:hxtelemetry allocations="true" host="localhost" unless="flash" />
+				<haxedef name="advanced-telemetry" if="flash" />
 				
 			</section>
 			
