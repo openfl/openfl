@@ -701,6 +701,8 @@ class Loader extends DisplayObjectContainer {
 		
 		content = new Bitmap (bitmapData);
 		contentLoaderInfo.content = content;
+		contentLoaderInfo.width = Std.int(content.width);
+		contentLoaderInfo.height = Std.int(content.height);
 		addChild (content);
 		
 		contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
