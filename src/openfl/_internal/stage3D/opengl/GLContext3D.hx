@@ -268,7 +268,6 @@ class GLContext3D {
 		#end
 		
 		__updateBackbufferViewport ();
-		__updateDepthAndStencilState ();
 		
 		context.backBufferWidth = width;
 		context.backBufferHeight = height;
@@ -276,6 +275,8 @@ class GLContext3D {
 		context.__backBufferAntiAlias = antiAlias;
 		context.__backBufferEnableDepthAndStencil = enableDepthAndStencil;
 		context.__backBufferWantsBestResolution = wantsBestResolution;
+		
+		__updateDepthAndStencilState ();
 		
 		Context3D.__stateCache.clearSettings ();
 		
