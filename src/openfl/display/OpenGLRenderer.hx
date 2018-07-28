@@ -764,6 +764,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		// TODO: Handle restoration of state after Stage3D render better?
 		__gl.disable (gl.CULL_FACE);
+		__gl.disable (gl.DEPTH_TEST);
+		__gl.disable (gl.STENCIL_TEST);
 		
 		if (__defaultRenderTarget == null) {
 			

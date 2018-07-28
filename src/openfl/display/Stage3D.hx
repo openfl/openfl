@@ -301,6 +301,8 @@ class Stage3D extends EventDispatcher {
 		context3D.__updateBlendFactors ();
 		// TODO: Better viewport fix
 		context3D.__updateBackbufferViewport ();
+		// TODO: Better stencil test fix
+		context3D.__updateDepthAndStencilState ();
 		
 	}
 	

@@ -350,6 +350,13 @@ import openfl.Vector;
 	}
 	
 	
+	@:noCompletion private function __updateDepthAndStencilState ():Void {
+		
+		GLContext3D.__updateDepthAndStencilStateTEMP (this);
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods
