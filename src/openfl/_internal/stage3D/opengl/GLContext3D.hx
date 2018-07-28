@@ -460,21 +460,26 @@ class GLContext3D {
 		#else
 		var gl = renderer.__context;
 		#end
-		var depthTestEnabled = context.__backBufferEnableDepthAndStencil;
 		
-		if (Context3D.__stateCache.updateDepthTestEnabled (depthTestEnabled)) {
+		// TODO: Should depth mask and compare mode be set if depth is disabled?
+		// __updateDepthAndStencilState ();
+		
+		// var depthTestEnabled = context.__renderToTexture != null ? context.__rttDepthAndStencil : context.__backBufferEnableDepthAndStencil;
+		// if (!depthTestEnabled) return;
+		
+		// if (Context3D.__stateCache.updateDepthTestEnabled (depthTestEnabled)) {
 			
-			if (depthTestEnabled) {
+		// 	if (depthTestEnabled) {
 				
-				gl.enable (gl.DEPTH_TEST);
+		// 		gl.enable (gl.DEPTH_TEST);
 				
-			} else {
+		// 	} else {
 				
-				gl.disable (gl.DEPTH_TEST);
+		// 		gl.disable (gl.DEPTH_TEST);
 				
-			}
+		// 	}
 			
-		}
+		// }
 		
 		if (Context3D.__stateCache.updateDepthTestMask (depthMask)) {
 			
