@@ -763,9 +763,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
 		// TODO: Handle restoration of state after Stage3D render better?
-		__gl.disable (gl.CULL_FACE);
-		__gl.disable (gl.DEPTH_TEST);
-		__gl.disable (gl.STENCIL_TEST);
+		__gl.disable (__gl.CULL_FACE);
+		__gl.disable (__gl.DEPTH_TEST);
+		__gl.disable (__gl.STENCIL_TEST);
 		
 		if (__defaultRenderTarget == null) {
 			
