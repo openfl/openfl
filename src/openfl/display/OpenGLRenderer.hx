@@ -766,6 +766,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__gl.disable (__gl.CULL_FACE);
 		__gl.disable (__gl.DEPTH_TEST);
 		__gl.disable (__gl.STENCIL_TEST);
+		__gl.disable (__gl.SCISSOR_TEST);
 		
 		if (__defaultRenderTarget == null) {
 			

@@ -357,6 +357,13 @@ import openfl.Vector;
 	}
 	
 	
+	@:noCompletion private function __updateScissorRectangle ():Void {
+		
+		GLContext3D.__updateScissorRectangleTEMP (this);
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods

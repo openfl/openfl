@@ -1536,4 +1536,19 @@ class GLContext3D {
 	}
 	
 	
+	public static function __updateScissorRectangleTEMP (context:Context3D):Void {
+		
+		GLContext3D.context = context;
+		var renderer:OpenGLRenderer = cast context.__renderer;
+		#if (lime >= "7.0.0")
+		GLContext3D.gl = renderer.__context.webgl;
+		#else
+		GLContext3D.gl = renderer.__context;
+		#end
+		
+		__updateScissorRectangle ();
+		
+	}
+	
+	
 }
