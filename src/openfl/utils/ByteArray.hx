@@ -924,7 +924,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 			default:
 				
-				return null;
+				return;
 			
 		}
 		
