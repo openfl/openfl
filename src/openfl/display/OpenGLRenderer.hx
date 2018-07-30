@@ -84,6 +84,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __displayHeight:Int;
 	@:noCompletion private var __displayWidth:Int;
 	@:noCompletion private var __flipped:Bool;
+	@:noCompletion private var __framebuffers:Array<GLFramebuffer>;
 	@:noCompletion private var __gl:#if (lime >= "7.0.0") WebGLRenderContext #else GLRenderContext #end;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:GLMaskShader;
@@ -151,6 +152,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__gl.enable (__gl.BLEND);
 		
 		__clipRects = new Array ();
+		__framebuffers = new Array ();
 		__maskObjects = new Array ();
 		__numClipRects = 0;
 		__projection = new Matrix4 ();
@@ -606,6 +608,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
+	@:noCompletion private function __popFramebuffer ():Void {
+		
+		__framebuffers.pop ();
+		var framebuffer = __framebuffers.length > 0 ? __framebuffers[__framebuffers.length - 1] : null;
+		__gl.bindFramebuffer (__gl.FRAMEBUFFER, framebuffer);
+		
+	}
+	
+	
 	@:noCompletion private override function __popMask ():Void {
 		
 		if (__stencilReference == 0) return;
@@ -669,6 +680,14 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			}
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private function __pushFramebuffer (framebuffer:GLFramebuffer):Void {
+		
+		__gl.bindFramebuffer (__gl.FRAMEBUFFER, framebuffer);
+		__framebuffers.push (framebuffer);
 		
 	}
 	
@@ -833,7 +852,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
-		__gl.bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (__context, false));
+		__pushFramebuffer (__defaultRenderTarget.__getFramebuffer (__context, false));
 		
 		if (clear) {
 			
@@ -855,7 +874,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (shader.__textureCoord != null) __gl.vertexAttribPointer (shader.__textureCoord.index, 2, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		__gl.drawArrays (__gl.TRIANGLE_STRIP, 0, 4);
 		
-		__gl.bindFramebuffer (__gl.FRAMEBUFFER, null);
+		__popFramebuffer ();
 		
 		__clearShader ();
 		

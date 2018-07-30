@@ -1233,7 +1233,6 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:dox(hide) public function getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
 		
-		
 		#if (lime >= "7.0.0")
 		var gl = context.webgl;
 		#else
@@ -2453,13 +2452,9 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
-		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (renderer.__context, true));
-		
+		renderer.__pushFramebuffer (__getFramebuffer (renderer.__context, true));
 		renderer.__render (source);
-		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		renderer.__popFramebuffer ();
 		
 	}
 	
@@ -2480,6 +2475,7 @@ class BitmapData implements IBitmapDrawable {
 			var color:ARGB = (color:ARGB);
 			var useScissor = !this.rect.equals (rect);
 			
+			var cacheFramebuffer = gl.getParameter (gl.FRAMEBUFFER_BINDING);
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			
 			if (useScissor) {
@@ -2498,7 +2494,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			gl.bindFramebuffer (gl.FRAMEBUFFER, cacheFramebuffer);
 			
 		} else if (readable) {
 			
@@ -2587,6 +2583,7 @@ class BitmapData implements IBitmapDrawable {
 			__framebufferContext = context;
 			__framebuffer = gl.createFramebuffer ();
 			
+			var cacheFramebuffer = gl.getParameter (gl.FRAMEBUFFER_BINDING);
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
 			
@@ -2595,6 +2592,8 @@ class BitmapData implements IBitmapDrawable {
 				trace (gl.getError ());
 				
 			}
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, cacheFramebuffer);
 			
 		}
 		
@@ -2610,6 +2609,7 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
 			gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
 			
+			var cacheFramebuffer = gl.getParameter (gl.FRAMEBUFFER_BINDING);
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
 			
@@ -2620,6 +2620,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			gl.bindRenderbuffer (gl.RENDERBUFFER, null);
+			gl.bindFramebuffer (gl.FRAMEBUFFER, cacheFramebuffer);
 			
 		}
 		
