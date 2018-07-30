@@ -116,7 +116,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var fullScreenWidth (get, never):UInt;
 	public var quality:StageQuality;
 	public var scaleMode:StageScaleMode;
-	public var showDefaultContextMenu:Bool;
+	public var showDefaultContextMenu (get, set):Bool;
 	public var softKeyboardRect:Rectangle;
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
@@ -297,7 +297,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		showDefaultContextMenu = true;
 		softKeyboardRect = new Rectangle ();
 		stageFocusRect = true;
-		
+
 		#if mac
 		__macKeyboard = true;
 		#elseif (js && html5)
@@ -650,13 +650,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
-		
-		if (!showDefaultContextMenu && button == 2) {
-			
-			window.onMouseUp.cancel ();
-			
-		}
-		
+
 	}
 	
 	
@@ -2206,8 +2200,33 @@ class Stage extends DisplayObjectContainer implements IModule {
 		return Math.ceil (window.display.currentMode.width * window.scale);
 		
 	}
-	
-	
+
+	private function set_showDefaultContextMenu (value:Bool):Bool {
+
+		if (window != null) {
+
+			return window.enableContextMenuEvents = value;
+
+		}
+
+		return value;
+
+	}
+
+
+	private function get_showDefaultContextMenu ():Bool {
+
+		if (window != null) {
+
+			return window.enableContextMenuEvents;
+
+		}
+
+		return true;
+
+	}
+
+
 	private override function set_height (value:Float):Float {
 		
 		return this.height;
