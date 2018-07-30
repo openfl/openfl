@@ -48,6 +48,20 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
+	@:noCompletion private function __disableGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, id:Int):Void {
+		
+		#if (lime >= "7.0.0")
+		var gl = context.webgl;
+		#else
+		var gl = context;
+		#end
+		
+		gl.activeTexture (gl.TEXTURE0 + id);
+		gl.bindTexture (gl.TEXTURE_2D, null);
+		
+	}
+	
+	
 	@:noCompletion private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
 		
 		#if (lime >= "7.0.0")

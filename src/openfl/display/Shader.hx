@@ -255,11 +255,13 @@ class Shader {
 		var gl = __context;
 		#end
 		
-		// if (data.uImage0 != null) {
+		var textureCount = 0;
+		for (input in __inputBitmapData) {
 			
-		// 	data.uImage0.input = null;
+			input.__disableGL (__context, textureCount);
+			textureCount++;
 			
-		// }
+		}
 		
 		for (parameter in __paramBool) {
 			
@@ -280,7 +282,6 @@ class Shader {
 		}
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, null);
-		gl.bindTexture (gl.TEXTURE_2D, null);
 		
 		if (__context.type == OPENGL) {
 			
@@ -316,12 +317,8 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			if (input.input != null) {
-				
-				gl.uniform1i (input.index, textureCount);
-				textureCount++;
-				
-			}
+			gl.uniform1i (input.index, textureCount);
+			textureCount++;
 			
 		}
 		
@@ -666,12 +663,8 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			if (input.input != null) {
-				
-				input.__updateGL (__context, textureCount);
-				textureCount++;
-				
-			}
+			input.__updateGL (__context, textureCount);
+			textureCount++;
 			
 		}
 		
