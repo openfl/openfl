@@ -55,7 +55,7 @@ class TextLayout {
 	public var font (default, set):Font;
 	public var glyphs (get, null):Array<Glyph>;
 	public var language (get, set):String;
-	public var letterSpacing:Float;
+	public var letterSpacing:Float = 0;
 	@:isVar public var positions (get, null):Array<GlyphPosition>;
 	public var script (get, set):TextScript;
 	public var size (default, set):Int;
