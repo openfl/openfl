@@ -12,7 +12,11 @@ import format.swf.data.SWFButtonRecord;
 import openfl._internal.swf.FilterType;
 import openfl._internal.swf.ShapeCommand;
 import format.swf.instance.Bitmap;
+#if (hxp <= "1.0.0")
 import hxp.helpers.LogHelper;
+#else
+import hxp.LogHelper;
+#end
 import lime.graphics.Image;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;

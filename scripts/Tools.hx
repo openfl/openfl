@@ -34,7 +34,7 @@ import sys.io.File;
 import sys.io.Process;
 import sys.FileSystem;
 
-#if hxp
+#if (hxp <= "1.0.0")
 import hxp.helpers.AssetHelper;
 import hxp.helpers.LogHelper;
 import hxp.helpers.PathHelper;
@@ -45,8 +45,21 @@ import hxp.project.Asset;
 import hxp.project.AssetEncoding;
 import hxp.project.AssetType;
 import hxp.project.Haxelib;
-import hxp.project.HXProject;
+import hxp.project.HXProject in Project;
 import hxp.project.Platform;
+#elseif hxp
+import hxp.Architecture;
+import hxp.Asset;
+import hxp.AssetEncoding;
+import hxp.AssetHelper;
+import hxp.AssetType;
+import hxp.Haxelib;
+import hxp.LogHelper;
+import hxp.PathHelper;
+import hxp.Platform;
+import hxp.PlatformHelper;
+import hxp.Project;
+import hxp.StringHelper;
 #else
 import lime.tools.helpers.AssetHelper;
 import lime.tools.helpers.LogHelper;
@@ -58,7 +71,7 @@ import lime.project.Asset;
 import lime.project.AssetEncoding;
 import lime.project.AssetType;
 import lime.project.Haxelib;
-import lime.project.HXProject;
+import lime.project.HXProject in Project;
 import lime.project.Platform;
 #end
 
@@ -189,7 +202,7 @@ class Tools {
 	}
 	
 	
-	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Array<String> {
+	private static function generateSWFClasses (project:Project, output:Project, swfAsset:Asset, prefix:String = ""):Array<String> {
 		
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
@@ -589,7 +602,7 @@ class Tools {
 					
 					var unserializer = new Unserializer (projectData);
 					unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass });
-					var project:HXProject = unserializer.unserialize ();
+					var project:Project = unserializer.unserialize ();
 					
 					var output = processLibraries (project);
 					
@@ -647,7 +660,7 @@ class Tools {
 		
 		PathHelper.mkdir (targetPath);
 		
-		var project = new HXProject ();
+		var project = new Project ();
 		var createdDirectory = false;
 		
 		for (id in exporter.bitmaps.keys ()) {
@@ -762,17 +775,17 @@ class Tools {
 	}
 	
 	
-	private static function processLibraries (project:HXProject):HXProject {
+	private static function processLibraries (project:Project):Project {
 		
-		//HXProject._command = project.command;
-		HXProject._debug = project.debug;
-		HXProject._environment = project.environment;
-		HXProject._target = project.target;
-		HXProject._targetFlags = project.targetFlags;
-		HXProject._templatePaths = project.templatePaths;
-		HXProject._userDefines = project.defines;
+		//Project._command = project.command;
+		Project._debug = project.debug;
+		Project._environment = project.environment;
+		Project._target = project.target;
+		Project._targetFlags = project.targetFlags;
+		Project._templatePaths = project.templatePaths;
+		Project._userDefines = project.defines;
 		
-		var output = new HXProject ();
+		var output = new Project ();
 		var embeddedSWF = false;
 		var embeddedSWFLite = false;
 		//var filterClasses = [];
@@ -867,7 +880,7 @@ class Tools {
 					
 					var cacheAvailable = false;
 					var cacheDirectory = null;
-					var merge = new HXProject ();
+					var merge = new Project ();
 					
 					if (targetDirectory != null) {
 						
@@ -1188,7 +1201,7 @@ class Tools {
 		
 		if (result == null) {
 			
-			result = HXProject;
+			result = Project;
 			
 		}
 		
