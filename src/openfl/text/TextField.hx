@@ -1008,6 +1008,15 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	}
 	
 	
+	private override function __forceRenderDirty ():Void {
+		
+		super.__forceRenderDirty();
+		
+		__dirty = true;
+		
+	}
+	
+	
 	private function __fromSymbol (swf:SWFLite, symbol:DynamicTextSymbol):Void {
 		
 		__symbol = symbol;

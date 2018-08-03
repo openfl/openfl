@@ -431,6 +431,19 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	private override function __forceRenderDirty ():Void {
+		
+		super.__forceRenderDirty();
+		
+		for (child in __children) {
+			
+			child.__forceRenderDirty ();
+			
+		}
+		
+	}
+	
+	
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		super.__getBounds (rect, matrix);

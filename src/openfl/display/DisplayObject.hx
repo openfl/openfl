@@ -533,6 +533,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
+	private function __forceRenderDirty ():Void {
+		
+		__renderDirty = true;
+		
+		if (__graphics != null) {
+			
+			__graphics.__dirty = true;
+			
+		}
+		
+	}
+	
+	
 	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__graphics != null) {

@@ -1920,6 +1920,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		if (__contentsScaleFactor != window.scale && __renderer != null) {
+			
+			__contentsScaleFactor = window.scale;
+			
+			#if (js && html5)
+				@:privateAccess (__renderer.renderSession).pixelRatio = window.scale;
+			#end
+			
+			__forceRenderDirty();
+			
+		}
+		
 	}
 	
 	
