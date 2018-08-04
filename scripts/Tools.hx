@@ -34,35 +34,22 @@ import sys.io.File;
 import sys.io.Process;
 import sys.FileSystem;
 
-#if (hxp <= "1.0.0")
-import hxp.helpers.AssetHelper;
-import hxp.helpers.LogHelper;
-import hxp.helpers.PathHelper;
-import hxp.helpers.PlatformHelper;
-import hxp.helpers.StringHelper;
-import hxp.project.Architecture;
-import hxp.project.Asset;
-import hxp.project.AssetEncoding;
-import hxp.project.AssetType;
-import hxp.project.Haxelib;
-import hxp.project.HXProject in Project;
-import hxp.project.Platform;
-#elseif hxp
-import hxp.Architecture;
-import hxp.Asset;
-import hxp.AssetEncoding;
-import hxp.AssetHelper;
-import hxp.AssetType;
+#if hxp
 import hxp.Haxelib;
-import hxp.LogHelper;
+import hxp.Log;
 import hxp.PathHelper;
-import hxp.Platform;
 import hxp.PlatformHelper;
-import hxp.Project;
 import hxp.StringHelper;
+import lime.tools.AssetHelper;
+import lime.tools.Architecture;
+import lime.tools.Asset;
+import lime.tools.AssetEncoding;
+import lime.tools.AssetType;
+import lime.tools.Project;
+import lime.tools.Platform;
 #else
 import lime.tools.helpers.AssetHelper;
-import lime.tools.helpers.LogHelper;
+import lime.tools.helpers.LogHelper in Log;
 import lime.tools.helpers.PathHelper;
 import lime.tools.helpers.PlatformHelper;
 import lime.tools.helpers.StringHelper;
@@ -148,7 +135,7 @@ class Tools {
 					
 					untyped $loader.path = $array (path + "RPi/", $loader.path);
 					
-				} else if (PlatformHelper.hostArchitecture == Architecture.X64) {
+				} else if (PlatformHelper.hostArchitecture == X64) {
 					
 					untyped $loader.path = $array (path + "Linux64/", $loader.path);
 					
@@ -554,7 +541,7 @@ class Tools {
 					if (argument == "-v" || argument == "-verbose") {
 						
 						argument = "-verbose";
-						LogHelper.verbose = true;
+						Log.verbose = true;
 						
 					}
 					
@@ -574,7 +561,7 @@ class Tools {
 			
 			if (words.length == 1) {
 				
-				LogHelper.error ("Incorrect number of arguments for command 'process'");
+				Log.error ("Incorrect number of arguments for command 'process'");
 				return;
 				
 			}
@@ -586,12 +573,12 @@ class Tools {
 				
 				if (words.length > 3) {
 					
-					LogHelper.error ("Incorrect number of arguments for command 'process'");
+					Log.error ("Incorrect number of arguments for command 'process'");
 					return;
 					
 				}
 				
-				LogHelper.info ("", LogHelper.accentColor + "Running command: PROCESS" + LogHelper.resetColor);
+				Log.info ("", Log.accentColor + "Running command: PROCESS" + Log.resetColor);
 				processFile (inputPath, outputPath, filePrefix);
 				
 			} else if (words.length > 2) {
@@ -614,7 +601,7 @@ class Tools {
 					
 				} catch (e:Dynamic) {
 					
-					LogHelper.error (e);
+					Log.error (e);
 					
 				}
 				
@@ -710,7 +697,7 @@ class Tools {
 			var symbolClassName = exporter.soundSymbolClassNames.get (id);
 			var typeId = exporter.soundTypes.get (id);
 			
-			LogHelper.info ("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
+			Log.info ("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
 			
 			var type;
 			switch (typeId) {
@@ -808,12 +795,12 @@ class Tools {
 					
 					if (!FileSystem.exists (library.sourcePath)) {
 						
-						LogHelper.warn ("Could not find library file: " + library.sourcePath);
+						Log.warn ("Could not find library file: " + library.sourcePath);
 						continue;
 						
 					}
 					
-					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
+					Log.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
 					swf.id = "lib/" + library.name + "/" + library.name + ".swf";
@@ -869,12 +856,12 @@ class Tools {
 					
 					if (!FileSystem.exists (library.sourcePath)) {
 						
-						LogHelper.warn ("Could not find library file: " + library.sourcePath);
+						Log.warn ("Could not find library file: " + library.sourcePath);
 						continue;
 						
 					}
 					
-					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
+					Log.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					//project.haxelibs.push (new Haxelib ("swf"));
 					
