@@ -13,7 +13,6 @@ import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
 import format.swf.SWFTimelineContainer;
 import format.SWF;
-import haxe.io.Path;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Template;
@@ -35,11 +34,7 @@ import sys.io.Process;
 import sys.FileSystem;
 
 #if hxp
-import hxp.Haxelib;
-import hxp.Log;
-import hxp.PathHelper;
-import hxp.PlatformHelper;
-import hxp.StringHelper;
+import hxp.*;
 import lime.tools.AssetHelper;
 import lime.tools.Architecture;
 import lime.tools.Asset;
@@ -48,6 +43,7 @@ import lime.tools.AssetType;
 import lime.tools.Project;
 import lime.tools.Platform;
 #else
+import haxe.io.Path;
 import lime.tools.helpers.AssetHelper;
 import lime.tools.helpers.LogHelper in Log;
 import lime.tools.helpers.PathHelper;
@@ -109,7 +105,7 @@ class Tools {
 		
 		path += "/ndll/";
 		
-		switch (PlatformHelper.hostPlatform) {
+		switch (#if hxp System.hostPlatform #else PlatformHelper.hostPlatform #end) {
 			
 			case WINDOWS:
 				
@@ -135,7 +131,7 @@ class Tools {
 					
 					untyped $loader.path = $array (path + "RPi/", $loader.path);
 					
-				} else if (PlatformHelper.hostArchitecture == X64) {
+				} else if (#if hxp System.hostArchitecture #else PlatformHelper.hostArchitecture #end == X64) {
 					
 					untyped $loader.path = $array (path + "Linux64/", $loader.path);
 					
@@ -191,8 +187,8 @@ class Tools {
 	
 	private static function generateSWFClasses (project:Project, output:Project, swfAsset:Asset, prefix:String = ""):Array<String> {
 		
-		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		var movieClipTemplate = File.getContent (#if hxp Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent (#if hxp Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
 		
 		var swf = new SWF (ByteArray.fromBytes (File.getBytes (swfAsset.sourcePath)));
 		
@@ -318,7 +314,7 @@ class Tools {
 					
 				// }
 				
-				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (className.split (".").join ("/"))) + "/" + prefix + name + ".hx", AssetType.TEMPLATE);
+				var templateFile = new Asset ("", #if hxp Path.combine #else PathHelper.combine #end (targetPath, Path.directory (className.split (".").join ("/"))) + "/" + prefix + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
 				output.assets.push (templateFile);
 				
@@ -336,11 +332,11 @@ class Tools {
 	private static function generateSWFLiteClasses (targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfID:String, prefix:String = ""):Array<String> {
 		
 		#if commonjs
-		var movieClipTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/MovieClip.mtt"));
-		var simpleButtonTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
+		var movieClipTemplate = File.getContent (#if hxp Path.combine #else PathHelper.combine #end (js.Node.__dirname, "../assets/templates/swf/MovieClip.mtt"));
+		var simpleButtonTemplate = File.getContent (#if hxp Path.combine #else PathHelper.combine #end (js.Node.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
 		#else
-		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		var movieClipTemplate = File.getContent (#if hxp Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent (#if hxp Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
 		#end
 		
 		var generatedClasses = [];
@@ -444,7 +440,7 @@ class Tools {
 				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfID, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				
-				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (symbol.className.split (".").join ("/"))) + "/" + name + ".hx", AssetType.TEMPLATE);
+				var templateFile = new Asset ("", #if hxp Path.combine #else PathHelper.combine #end (targetPath, Path.directory (symbol.className.split (".").join ("/"))) + "/" + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
 				output.push (templateFile);
 				
@@ -641,11 +637,11 @@ class Tools {
 		
 		try {
 			
-			PathHelper.removeDirectory (targetPath);
+			#if hxp System.removeDirectory #else PathHelper.removeDirectory #end (targetPath);
 			
 		} catch (e:Dynamic) {}
 		
-		PathHelper.mkdir (targetPath);
+		#if hxp System.mkdir #else PathHelper.mkdir #end (targetPath);
 		
 		var project = new Project ();
 		var createdDirectory = false;
@@ -654,7 +650,7 @@ class Tools {
 			
 			if (!createdDirectory) {
 				
-				PathHelper.mkdir (PathHelper.combine (targetPath, "symbols"));
+				#if hxp System.mkdir #else PathHelper.mkdir #end (#if hxp Path.combine #else PathHelper.combine #end (targetPath, "symbols"));
 				createdDirectory = true;
 				
 			}
@@ -668,7 +664,7 @@ class Tools {
 			var assetData = exporter.bitmaps.get (id);
 			project.assets.push (asset);
 			
-			File.saveBytes (PathHelper.combine (targetPath, symbol.path), assetData);
+			File.saveBytes (#if hxp Path.combine #else PathHelper.combine #end (targetPath, symbol.path), assetData);
 			
 			if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
 				
@@ -678,7 +674,7 @@ class Tools {
 				var assetData = exporter.bitmapAlpha.get (id);
 				project.assets.push (asset);
 				
-				File.saveBytes (PathHelper.combine (targetPath, symbol.alpha), assetData);
+				File.saveBytes (#if hxp Path.combine #else PathHelper.combine #end (targetPath, symbol.alpha), assetData);
 				
 			}
 			
@@ -689,7 +685,7 @@ class Tools {
 			
 			if (!createdDirectory) {
 				
-				PathHelper.mkdir (PathHelper.combine (targetPath, "sounds"));
+				#if hxp System.mkdir #else PathHelper.mkdir #end (#if hxp Path.combine #else PathHelper.combine #end (targetPath, "sounds"));
 				createdDirectory = true;
 				
 			}
@@ -709,7 +705,7 @@ class Tools {
 			var path = "sounds/"+ symbolClassName + "." + type;
 			var assetData = exporter.sounds.get (id);
 			
-			File.saveBytes (PathHelper.combine (targetPath, path), assetData);
+			File.saveBytes (#if hxp Path.combine #else PathHelper.combine #end (targetPath, path), assetData);
 			
 			// NOTICE: everything must be .mp3 in its final form, even though we write out various formats to disk
 			var soundAsset = new Asset ("", "sounds/"+ symbolClassName + ".mp3", AssetType.SOUND);
@@ -720,21 +716,21 @@ class Tools {
 		var swfLiteAssetData = swfLite.serialize ();
 		project.assets.push (swfLiteAsset);
 		
-		File.saveContent (PathHelper.combine (targetPath, swfLiteAsset.targetPath), swfLiteAssetData);
+		File.saveContent (#if hxp Path.combine #else PathHelper.combine #end (targetPath, swfLiteAsset.targetPath), swfLiteAssetData);
 		
-		var srcPath = PathHelper.combine (targetPath, "src");
+		var srcPath = #if hxp Path.combine #else PathHelper.combine #end (targetPath, "src");
 		var exportedClasses = [];
 		
 		// TODO: Allow prefix, fix generated class SWFLite references
 		var prefix = "";
-		var uuid = StringHelper.generateUUID (20);
+		var uuid = #if hxp StringTools.generateUUID #else StringHelper.generateUUID #end (20);
 		
 		#if !commonjs
 		generateSWFLiteClasses (srcPath, exportedClasses, swfLite, uuid, prefix);
 		
 		for (file in exportedClasses) {
 			
-			PathHelper.mkdir (Path.directory (file.targetPath));
+			#if hxp System.mkdir #else PathHelper.mkdir #end (Path.directory (file.targetPath));
 			File.saveContent (file.targetPath, file.data);
 			
 		}
@@ -745,7 +741,7 @@ class Tools {
 		data.libraryArgs = [ "swflite" + SWFLITE_DATA_SUFFIX, uuid ];
 		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
 		
-		File.saveContent (PathHelper.combine (targetPath, "library.json"), data.serialize ());
+		File.saveContent (#if hxp Path.combine #else PathHelper.combine #end (targetPath, "library.json"), data.serialize ());
 		
 		var includeXML = 
 '<?xml version="1.0" encoding="utf-8"?>
@@ -755,7 +751,7 @@ class Tools {
 	
 </library>';
 		
-		File.saveContent (PathHelper.combine (targetPath, "include.xml"), includeXML);
+		File.saveContent (#if hxp Path.combine #else PathHelper.combine #end (targetPath, "include.xml"), includeXML);
 		
 		return true;
 		
@@ -877,7 +873,7 @@ class Tools {
 						if (FileSystem.exists (cacheFile)) {
 							
 							var cacheDate = FileSystem.stat (cacheFile).mtime;
-							var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/scripts/tools.n").mtime;
+							var swfToolDate = FileSystem.stat (#if hxp Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/scripts/tools.n").mtime;
 							var sourceDate = FileSystem.stat (library.sourcePath).mtime;
 							
 							if (sourceDate.getTime () < cacheDate.getTime () && swfToolDate.getTime () < cacheDate.getTime ()) {
@@ -938,7 +934,7 @@ class Tools {
 						
 						if (cacheDirectory != null) {
 							
-							PathHelper.mkdir (cacheDirectory);
+							#if hxp System.mkdir #else PathHelper.mkdir #end (cacheDirectory);
 							
 						}
 						
@@ -981,7 +977,7 @@ class Tools {
 								
 							} else {
 								
-								asset.data = StringHelper.base64Encode (cast assetData);
+								asset.data = #if hxp StringTools.base64Encode #else StringHelper.base64Encode #end (cast assetData);
 								//asset.data = bitmapData.encode ("png");
 								asset.encoding = AssetEncoding.BASE64;
 								
@@ -1010,7 +1006,7 @@ class Tools {
 									
 								} else {
 									
-									asset.data = StringHelper.base64Encode (cast assetData);
+									asset.data = #if hxp StringTools.base64Encode #else StringHelper.base64Encode #end (cast assetData);
 									//asset.data = bitmapData.encode ("png");
 									asset.encoding = AssetEncoding.BASE64;
 									
@@ -1065,11 +1061,11 @@ class Tools {
 							
 							if (project.target == IOS) {
 								
-								targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
+								targetPath = #if hxp Path.tryFullPath #else PathHelper.tryFullPath #end (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
 								
 							} else {
 								
-								targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe/_generated";
+								targetPath = #if hxp Path.tryFullPath #else PathHelper.tryFullPath #end (targetDirectory) + "/haxe/_generated";
 								
 							}
 							
@@ -1154,11 +1150,11 @@ class Tools {
 			
 			if (project.target == IOS) {
 				
-				generatedPath = PathHelper.combine (targetDirectory, project.app.file + "/" + "/haxe/_generated");
+				generatedPath = #if hxp Path.combine #else PathHelper.combine #end (targetDirectory, project.app.file + "/" + "/haxe/_generated");
 				
 			} else {
 				
-				generatedPath = PathHelper.combine (targetDirectory, "haxe/_generated");
+				generatedPath = #if hxp Path.combine #else PathHelper.combine #end (targetDirectory, "haxe/_generated");
 				
 			}
 			
