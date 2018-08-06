@@ -40,7 +40,7 @@ import lime.tools.Architecture;
 import lime.tools.Asset;
 import lime.tools.AssetEncoding;
 import lime.tools.AssetType;
-import lime.tools.Project;
+import lime.tools.HXProject;
 import lime.tools.Platform;
 #else
 import haxe.io.Path;
@@ -54,7 +54,7 @@ import lime.project.Asset;
 import lime.project.AssetEncoding;
 import lime.project.AssetType;
 import lime.project.Haxelib;
-import lime.project.HXProject in Project;
+import lime.project.HXProject;
 import lime.project.Platform;
 #end
 
@@ -185,7 +185,7 @@ class Tools {
 	}
 	
 	
-	private static function generateSWFClasses (project:Project, output:Project, swfAsset:Asset, prefix:String = ""):Array<String> {
+	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Array<String> {
 		
 		var movieClipTemplate = File.getContent (#if hxp Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (#if hxp Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
@@ -585,7 +585,7 @@ class Tools {
 					
 					var unserializer = new Unserializer (projectData);
 					unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass });
-					var project:Project = unserializer.unserialize ();
+					var project:HXProject = unserializer.unserialize ();
 					
 					var output = processLibraries (project);
 					
@@ -643,7 +643,7 @@ class Tools {
 		
 		#if hxp System.mkdir #else PathHelper.mkdir #end (targetPath);
 		
-		var project = new Project ();
+		var project = new HXProject ();
 		var createdDirectory = false;
 		
 		for (id in exporter.bitmaps.keys ()) {
@@ -758,17 +758,17 @@ class Tools {
 	}
 	
 	
-	private static function processLibraries (project:Project):Project {
+	private static function processLibraries (project:HXProject):HXProject {
 		
-		//Project._command = project.command;
-		Project._debug = project.debug;
-		Project._environment = project.environment;
-		Project._target = project.target;
-		Project._targetFlags = project.targetFlags;
-		Project._templatePaths = project.templatePaths;
-		Project._userDefines = project.defines;
+		//HXProject._command = project.command;
+		HXProject._debug = project.debug;
+		HXProject._environment = project.environment;
+		HXProject._target = project.target;
+		HXProject._targetFlags = project.targetFlags;
+		HXProject._templatePaths = project.templatePaths;
+		HXProject._userDefines = project.defines;
 		
-		var output = new Project ();
+		var output = new HXProject ();
 		var embeddedSWF = false;
 		var embeddedSWFLite = false;
 		//var filterClasses = [];
@@ -863,7 +863,7 @@ class Tools {
 					
 					var cacheAvailable = false;
 					var cacheDirectory = null;
-					var merge = new Project ();
+					var merge = new HXProject ();
 					
 					if (targetDirectory != null) {
 						
@@ -1184,7 +1184,7 @@ class Tools {
 		
 		if (result == null) {
 			
-			result = Project;
+			result = HXProject;
 			
 		}
 		
