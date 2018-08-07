@@ -1010,7 +1010,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __forceRenderDirty ():Void {
 		
-		super.__forceRenderDirty();
+		super.__forceRenderDirty ();
 		
 		__dirty = true;
 		
