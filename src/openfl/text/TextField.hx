@@ -2228,7 +2228,30 @@ class TextField extends InteractiveObject {
 			if (range.start <= beginIndex && range.end >= endIndex) {
 				
 				range.end += offset;
-				i++;
+				
+				if (range.start == range.end) {
+					
+					__textEngine.textFormatRanges.splice (i, 1);
+					
+				} else {
+					
+					i++;
+					
+				}
+				
+			} else if (range.start <= beginIndex && range.end < endIndex && range.end > beginIndex) {
+				
+				range.end = beginIndex + newText.length;
+				
+				if (range.start == range.end) {
+					
+					__textEngine.textFormatRanges.splice (i, 1);
+					
+				} else {
+					
+					i++;
+					
+				}
 				
 			} else if (range.start >= beginIndex && range.end <= endIndex) {
 				
@@ -2244,11 +2267,17 @@ class TextField extends InteractiveObject {
 					
 				}
 				
-				offset -= (range.end - range.start);
+			} else if (range.start >= beginIndex && range.end > endIndex && endIndex > range.start) {
 				
-			} else if (range.start > beginIndex && range.start <= endIndex) {
+				range.start = beginIndex;
+				range.end += offset;
+				i++;
+			
+			} else if (range.start >= endIndex) {
 				
 				range.start += offset;
+				range.end += offset;
+				
 				i++;
 				
 			} else {
