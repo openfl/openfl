@@ -101,6 +101,19 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
+	private override function __forceRenderDirty ():Void {
+		
+		super.__forceRenderDirty();
+		
+		if (__currentState != null) {
+			
+			__currentState.__forceRenderDirty ();
+			
+		}
+		
+	}
+	
+	
 	private function __fromSymbol (swf:SWFLite, symbol:ButtonSymbol):Void {
 		
 		__symbol = symbol;
