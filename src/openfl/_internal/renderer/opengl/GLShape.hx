@@ -59,7 +59,7 @@ class GLShape {
 				renderSession.shaderManager.setShader (shader);
 				
 				shader.data.uImage0.input = graphics.__bitmap;
-				shader.data.uImage0.smoothing = false;
+				shader.data.uImage0.smoothing = renderSession.allowSmoothing;
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
 				
 				var useColorTransform = !shape.__worldColorTransform.__isDefault ();

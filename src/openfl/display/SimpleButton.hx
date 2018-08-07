@@ -105,7 +105,11 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__forceRenderDirty();
 		
-		__currentState.__forceRenderDirty();
+		if (__currentState != null) {
+			
+			__currentState.__forceRenderDirty ();
+			
+		}
 		
 	}
 	
