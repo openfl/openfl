@@ -68,7 +68,11 @@ class Preloader extends LimePreloader {
 			
 		} else {
 			
+			#if (lime >= "7.0.0")
+			onComplete.dispatch ();
+			#else
 			super.start ();
+			#end
 			
 		}
 		
@@ -116,7 +120,11 @@ class Preloader extends LimePreloader {
 		
 		if (ready && !simulateProgress) {
 			
+			#if (lime >= "7.0.0")
+			onComplete.dispatch ();
+			#else
 			super.start ();
+			#end
 			
 		}
 		
