@@ -262,12 +262,12 @@ class GLCubeTexture {
 		
 		return switch (side) {
 			
-			case 0: gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
-			case 1: gl.TEXTURE_CUBE_MAP_POSITIVE_X;
-			case 2: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
-			case 3: gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
-			case 4: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
-			case 5: gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
+			case 0: gl.TEXTURE_CUBE_MAP_POSITIVE_X;
+			case 1: gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
+			case 2: gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
+			case 3: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
+			case 4: gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
+			case 5: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
 			default: throw new IllegalOperationError ();
 			
 		}

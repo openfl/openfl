@@ -66,6 +66,7 @@ import openfl.Vector;
 	@:noCompletion private var __depthRenderBuffer:GLRenderbuffer;
 	@:noCompletion private var __depthStencilRenderBuffer:GLRenderbuffer;
 	@:noCompletion private var __enableErrorChecking:Bool;
+	@:noCompletion private var __culling:Context3DTriangleFace = NONE;
 	@:noCompletion private var __fragmentConstants:Float32Array;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
 	@:noCompletion private var __frameCount:Int;
@@ -346,6 +347,13 @@ import openfl.Vector;
 	@:noCompletion private function __updateBlendFactors ():Void {
 		
 		GLContext3D.__updateBlendFactorsTEMP (this);
+		
+	}
+	
+	
+	@:noCompletion private function __updateCulling ():Void {
+		
+		setCulling (__culling);
 		
 	}
 	

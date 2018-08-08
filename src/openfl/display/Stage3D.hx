@@ -302,6 +302,7 @@ class Stage3D extends EventDispatcher {
 		context3D.__updateBackbufferViewport ();
 		context3D.__updateScissorRectangle ();
 		context3D.__updateDepthAndStencilState ();
+		context3D.__updateCulling ();
 		
 	}
 	

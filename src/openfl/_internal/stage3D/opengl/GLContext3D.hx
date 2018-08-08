@@ -445,6 +445,8 @@ class GLContext3D {
 				
 			}
 			
+			context.__culling = triangleFaceToCull;
+			
 		}
 		
 		return null;
