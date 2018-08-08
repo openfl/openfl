@@ -2,6 +2,7 @@ package openfl._internal.stage3D.atf;
 
 
 import haxe.io.Bytes;
+import lime.utils.Log;
 import openfl.utils.ByteArray;
 import openfl.errors.IllegalOperationError;
 import openfl.display3D.Context3DTextureFormat;
@@ -102,7 +103,7 @@ class ATFReader {
 		// Make sure it is one of the supported formats
 		if (atfFormat != ATFFormat.RAW_COMPRESSED && atfFormat != ATFFormat.RAW_COMPRESSED_ALPHA) {
 			
-			throw new IllegalOperationError ("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
+			Log.warn ("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
 		
 		}
 		
