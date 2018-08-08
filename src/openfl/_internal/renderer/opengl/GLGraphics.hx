@@ -491,7 +491,7 @@ class GLGraphics {
 				
 				var shaderBuffer = null;
 				var bitmap = null;
-				var repeat = true;
+				var repeat = false;
 				var smooth = false;
 				var fill:Null<Int> = null;
 				
@@ -567,7 +567,7 @@ class GLGraphics {
 									
 									renderer.__setShaderBuffer (shaderBuffer);
 									renderer.applyMatrix (uMatrix);
-									renderer.applyBitmapData (bitmap, false, false);
+									renderer.applyBitmapData (bitmap, false, repeat);
 									renderer.applyAlpha (graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform (graphics.__owner.__worldColorTransform);
 									renderer.__updateShaderBuffer ();
@@ -638,7 +638,7 @@ class GLGraphics {
 								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 								renderer.setShader (shader);
 								renderer.applyMatrix (renderer.__getMatrix (matrix));
-								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, true);
+								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, repeat);
 								renderer.applyAlpha ((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform (tempColorTransform);
 								renderer.updateShader ();
@@ -684,7 +684,7 @@ class GLGraphics {
 								
 								renderer.__setShaderBuffer (shaderBuffer);
 								renderer.applyMatrix (uMatrix);
-								renderer.applyBitmapData (bitmap, false, false);
+								renderer.applyBitmapData (bitmap, false, repeat);
 								renderer.applyAlpha (1);
 								renderer.applyColorTransform (null);
 								renderer.__updateShaderBuffer ();
