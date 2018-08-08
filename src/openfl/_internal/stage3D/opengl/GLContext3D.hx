@@ -73,13 +73,8 @@ class GLContext3D {
 	
 	public static function create (context:Context3D) {
 		
+		__setContext (context);
 		var renderer:OpenGLRenderer = cast context.__renderer;
-		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:GLRenderContext = renderer.__context;
-		#end
 		
 		context.__vertexConstants = new Float32Array (4 * Context3D.MAX_PROGRAM_REGISTERS);
 		context.__fragmentConstants = new Float32Array (4 * Context3D.MAX_PROGRAM_REGISTERS);
@@ -214,13 +209,7 @@ class GLContext3D {
 	
 	public static function clear (context:Context3D, red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
-		
+		__setContext (context);
 		var clearMask = 0;
 		
 		if (mask & Context3DClearMask.COLOR != 0) {
@@ -259,14 +248,7 @@ class GLContext3D {
 	
 	public static function configureBackBuffer (context:Context3D, width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		__updateBackbufferViewport ();
 		
 		context.backBufferWidth = width;
@@ -292,6 +274,7 @@ class GLContext3D {
 	
 	public static function drawToBitmapData (context:Context3D, destination:BitmapData):Void {
 		
+		__setContext (context);
 		var window = context.__stage3D.__stage.window;
 		
 		if (window != null) {
@@ -316,14 +299,7 @@ class GLContext3D {
 			
 		}
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		__flushSamplerState ();
 		context.__program.__flush ();
 		
@@ -367,14 +343,7 @@ class GLContext3D {
 		
 		if (updateSrc || updateDest) {
 			
-			GLContext3D.context = context;
-			var renderer:OpenGLRenderer = cast context.__renderer;
-			#if (lime >= "7.0.0")
-			GLContext3D.gl = renderer.__context.webgl;
-			#else
-			GLContext3D.gl = renderer.__context;
-			#end
-			
+			__setContext (context);
 			__updateBlendFactors ();
 			
 		}
@@ -384,13 +353,7 @@ class GLContext3D {
 	
 	public static function setColorMask (context:Context3D, red:Bool, green:Bool, blue:Bool, alpha:Bool):Void {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		gl.colorMask (red, green, blue, alpha);
 		
 	}
@@ -398,12 +361,7 @@ class GLContext3D {
 	
 	public static function setCulling (context:Context3D, triangleFaceToCull:Context3DTriangleFace):Error {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		__setContext (context);
 		
 		if (Context3D.__stateCache.updateCullingMode (triangleFaceToCull)) {
 			
@@ -456,12 +414,7 @@ class GLContext3D {
 	
 	public static function setDepthTest (context:Context3D, depthMask:Bool, passCompareMode:Context3DCompareMode):Void {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		__setContext (context);
 		
 		// TODO: Should depth mask and compare mode be set if depth is disabled?
 		// __updateDepthAndStencilState ();
@@ -543,12 +496,7 @@ class GLContext3D {
 	
 	public static function setProgramConstantsFromByteArray (context:Context3D, programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		__setContext (context);
 		
 		if (numRegisters == -1) {
 			
@@ -675,13 +623,7 @@ class GLContext3D {
 	
 	public static function setRenderToBackBuffer (context:Context3D):Void {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 		GLUtils.CheckGLError ();
 		
@@ -707,13 +649,7 @@ class GLContext3D {
 	
 	public static function setRenderToTexture (context:Context3D, texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0):Void {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		var width = 0;
 		var height = 0;
 		
@@ -862,12 +798,7 @@ class GLContext3D {
 			
 		}
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		__setContext (context);
 		var state = context.__samplerStates[sampler];
 		
 		switch (wrap) {
@@ -983,14 +914,7 @@ class GLContext3D {
 	
 	public static function setScissorRectangle (context:Context3D, rectangle:Rectangle):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		context.__scissorRectangle = rectangle != null ? rectangle.clone () : null;
 		__updateScissorRectangle ();
 		
@@ -999,14 +923,7 @@ class GLContext3D {
 	
 	public static function setStencilActions (context:Context3D, triangleFace:Context3DTriangleFace = FRONT_AND_BACK, compareMode:Context3DCompareMode = ALWAYS, actionOnBothPass:Context3DStencilAction = KEEP, actionOnDepthFail:Context3DStencilAction = KEEP, actionOnDepthPassStencilFail:Context3DStencilAction = KEEP):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		context.__stencilCompareMode = compareMode;
 		gl.stencilOpSeparate (__getGLTriangleFace (triangleFace), __getGLStencilAction (actionOnDepthPassStencilFail), __getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnBothPass));
 		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
@@ -1016,14 +933,7 @@ class GLContext3D {
 	
 	public static function setStencilReferenceValue (context:Context3D, referenceValue:UInt, readMask:UInt = 0xFF, writeMask:UInt = 0xFF):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		context.__stencilReadMask = readMask;
 		context.__stencilRef = referenceValue;
 		
@@ -1047,12 +957,7 @@ class GLContext3D {
 	
 	public static function setVertexBufferAt (context:Context3D, index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		__setContext (context);
 		
 		if (buffer == null) {
 			
@@ -1243,6 +1148,19 @@ class GLContext3D {
 	}
 	
 	
+	private static inline function __setContext (context:Context3D):Void {
+		
+		GLContext3D.context = context;
+		var renderer:OpenGLRenderer = cast context.__renderer;
+		#if (lime >= "7.0.0")
+		GLContext3D.gl = renderer.__context.webgl;
+		#else
+		GLContext3D.gl = renderer.__context;
+		#end
+		
+	}
+	
+	
 	private static function __setViewport (originX:Int, originY:Int, width:Int, height:Int):Void {
 		
 		if (context.__renderToTexture != null) originY *= -1;
@@ -1345,14 +1263,7 @@ class GLContext3D {
 	
 	public static function __updateBackbufferViewportTEMP (context:Context3D):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		__updateBackbufferViewport ();
 		
 	}
@@ -1384,14 +1295,7 @@ class GLContext3D {
 	
 	public static function __updateBlendFactorsTEMP (context:Context3D):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		__updateBlendFactors ();
 		
 	}
@@ -1474,14 +1378,7 @@ class GLContext3D {
 	
 	public static function __updateDepthAndStencilStateTEMP (context:Context3D):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		__updateDepthAndStencilState ();
 		
 	}
@@ -1540,14 +1437,7 @@ class GLContext3D {
 	
 	public static function __updateScissorRectangleTEMP (context:Context3D):Void {
 		
-		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
-		#if (lime >= "7.0.0")
-		GLContext3D.gl = renderer.__context.webgl;
-		#else
-		GLContext3D.gl = renderer.__context;
-		#end
-		
+		__setContext (context);
 		__updateScissorRectangle ();
 		
 	}
