@@ -124,7 +124,7 @@ class GLContext3D {
 		if (#if (lime >= "7.0.0") renderer.__context.type == OPENGLES && Std.parseFloat (renderer.__context.version) >= 3 #else gl.type == GLES && gl.version >= 3 #end) {
 			
 			context.__supportsPackedDepthStencil = true;
-			Context3D.DEPTH_STENCIL = #if (lime >= "7.0.0") renderer.__context.gles3.DEPTH24_STENCIL8 #else gl.DEPTH24_STENCIL8 #end;
+			Context3D.DEPTH_STENCIL = #if (lime >= "7.0.0") renderer.__context.gles3.DEPTH24_STENCIL8 #else lime.graphics.opengl.GL.DEPTH24_STENCIL8 #end;
 			
 		} else {
 			
