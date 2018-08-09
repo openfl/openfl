@@ -40,6 +40,7 @@ import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 
 #if (lime >= "7.0.0")
+import lime.graphics.RenderContextType;
 import lime.ui.MouseWheelMode;
 #else
 import lime.app.Preloader;
@@ -660,10 +661,49 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		super ();
+		
+		this.name = null;
 	
 		__color = 0xFFFFFF;
 		__colorSplit = [ 0xFF, 0xFF, 0xFF ];
 		__colorString = "#FFFFFF";
+		__contentsScaleFactor = 1;
+		__deltaTime = 0;
+		__displayState = NORMAL;
+		__mouseX = 0;
+		__mouseY = 0;
+		__lastClickTime = 0;
+		__logicalWidth = 0;
+		__logicalHeight = 0;
+		__displayMatrix = new Matrix ();
+		__renderDirty = true;
+		
+		stage3Ds = new Vector ();
+		stage3Ds.push (new Stage3D ());
+		
+		this.stage = this;
+		
+		align = StageAlign.TOP_LEFT;
+		allowsFullScreen = true;
+		allowsFullScreenInteractive = true;
+		__quality = StageQuality.HIGH;
+		__scaleMode = StageScaleMode.NO_SCALE;
+		showDefaultContextMenu = true;
+		softKeyboardRect = new Rectangle ();
+		stageFocusRect = true;
+		
+		#if mac
+		__macKeyboard = true;
+		#elseif (js && html5)
+		__macKeyboard = untyped __js__ ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
+		#end
+		
+		__clearBeforeRender = true;
+		__forceRender = false;
+		__stack = [];
+		__rollOutStack = [];
+		__mouseOutStack = [];
+		__touchData = new Map<Int, TouchData>();
 		
 		#if commonjs
 		if (windowAttributes == null) windowAttributes = {};
@@ -701,8 +741,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 			windowAttributes.resizable = resizable;
 			
 			#if (lime >= "7.0.0")
+			windowAttributes.stage = this;
+			
 			if (!Reflect.hasField (windowAttributes, "context")) windowAttributes.context = {};
 			var contextAttributes = windowAttributes.context;
+			if (Reflect.hasField (windowAttributes, "renderer")) {
+				var type = Std.string (windowAttributes.renderer);
+				if (type == "webgl1") {
+					contextAttributes.type = RenderContextType.WEBGL;
+					contextAttributes.version = "1";
+				} else if (type == "webgl2") {
+					contextAttributes.type = RenderContextType.WEBGL;
+					contextAttributes.version = "2";
+				} else {
+					Reflect.setField (contextAttributes, "type", windowAttributes.renderer);
+				}
+			}
 			if (!Reflect.hasField (contextAttributes, "stencil")) contextAttributes.stencil = true;
 			if (!Reflect.hasField (contextAttributes, "depth")) contextAttributes.depth = true;
 			if (!Reflect.hasField (contextAttributes, "background")) contextAttributes.background = null;
@@ -716,30 +770,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			app = new OpenFLApplication ();
 			window = app.createWindow (windowAttributes);
-			app.removeModule (cast (window, OpenFLWindow).stage);
-			@:privateAccess cast (window, OpenFLWindow).stage = this;
 			
 			#else
 			window = new Window (windowConfig);
 			window.stage = this;
 			
-			// if (Application.current == null) {
-				
-				app = new Application ();
-				app.create ({});
-				app.createWindow (window);
-				// app.exec ();
-				
-			// } else {
-				
-			// 	var app = Application.current;
-			// 	app.createWindow (window);
-			// 	app.addModule (this);
-				
-			// }
+			app = new Application ();
+			app.create ({});
+			app.createWindow (window);
 			#end
 			
-			// this.color = 0xFFFFFF;
 			this.color = color;
 			
 		} else {
@@ -757,53 +797,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		#end
 		
-		this.name = null;
-		
 		__contentsScaleFactor = window.scale;
-		__deltaTime = 0;
-		__displayState = NORMAL;
-		__mouseX = 0;
-		__mouseY = 0;
-		__lastClickTime = 0;
-		__logicalWidth = 0;
-		__logicalHeight = 0;
-		__displayMatrix = new Matrix ();
-		__renderDirty = true;
 		__wasFullscreen = window.fullscreen;
 		
-		stage3Ds = new Vector ();
-		stage3Ds.push (new Stage3D ());
-		
 		__resize ();
-		
-		this.stage = this;
-		
-		align = StageAlign.TOP_LEFT;
-		#if html5
-		allowsFullScreen = false;
-		allowsFullScreenInteractive = false;
-		#else
-		allowsFullScreen = true;
-		allowsFullScreenInteractive = true;
-		#end
-		__quality = StageQuality.HIGH;
-		__scaleMode = StageScaleMode.NO_SCALE;
-		showDefaultContextMenu = true;
-		softKeyboardRect = new Rectangle ();
-		stageFocusRect = true;
-		
-		#if mac
-		__macKeyboard = true;
-		#elseif (js && html5)
-		__macKeyboard = untyped __js__ ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
-		#end
-		
-		__clearBeforeRender = true;
-		__forceRender = false;
-		__stack = [];
-		__rollOutStack = [];
-		__mouseOutStack = [];
-		__touchData = new Map<Int, TouchData>();
 		
 		if (Lib.current.stage == null) {
 			
@@ -812,12 +809,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		#if commonjs
-		if (Reflect.hasField (windowAttributes, "resizable") && !windowAttributes.resizable) {
-			
-			__setLogicalSize (windowAttributes.width, windowAttributes.height);
-			
-		}
-		
 		if (documentClass != null) {
 			
 			DisplayObject.__initStage = this;
