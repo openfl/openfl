@@ -1,3 +1,38 @@
+8.4.0 (08/08/2018)
+------------------
+
+* Updated to Lime 7.0.0 (with backward support for Lime 6.4)
+* Merged doc sources into runtime sources for better display server support
+* Removed generated documentation from NPM releases to make them smaller
+* Added support for `readObject` and `writeObject` in `openfl.net.Socket`
+* Improved native font auto-hinting (disabled when `sharpness = 400`)
+* Improved performance by dispatching mouse move events more sparingly
+* Improved state management between `Stage3D` and display list rendering
+* Improved object cleanup when removing children and using DOM rendering
+* Improved OpenGL rendering when mask objects are on a half-pixel
+* Fixed support for multiple `BitmapData` inputs in a custom shader
+* Fixed GL `cacheAsBitmap` and `bitmapData.draw` rendering that uses masks
+* Fixed `openfl.net.Socket` to not block while connecting
+* Fixed support for `MouseEvent.ROLL_OVER` events when not using `ROLL_OUT`
+* Fixed renderer support for `bitmap.opaqueBackground`
+* Fixed `FullScreenEvent` to dispatch with the proper boolean value
+* Fixed the behavior of `copyColumn` and `copyRow` in `Matrix`
+* Fixed a small memory leak when using multiple textures in GL `Tilemap`
+* Fixed ability to `preventDefault` on `TextEvent.TEXT_INPUT` events
+* Fixed missing dispatch of `TextEvent.TEXT_INPUT` in some cases
+* Fixed minor issues in `textField.getFirstCharInParagraph`
+* Fixed minor issues in `textField.getParagraphLength`
+* Fixed optimizations in `EventDispatcher` if dispatch is re-entrant
+* Fixed missing `Event.ADDED_TO_STAGE` event for SWF-based children
+* Fixed fullscreen exit event to properly dispatch on HTML5 target
+* Fixed minor issues in the behavior of `bitmapData.draw`
+* Fixed `-Dtelemetry` to properly enabled advanced-telemetry on Flash
+* Fixed `loader.loaderInfo.width` and `height` values when loading bitmaps
+* Fixed a regression in setting `stage.color` to 0
+* Fixed the orientation of cube textures in Stage3D
+* Fixed "JPEG-XR+LZMA" warning to output instead of causing an error
+
+
 8.3.0 (06/25/2018)
 ------------------
 
