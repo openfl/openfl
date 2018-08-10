@@ -109,7 +109,7 @@ import openfl._internal.Lib;
 	 * Internet Explorer, or the `name` attribute of the
 	 * `embed` tag in Netscape.
 	 */
-	public static var objectID (default, null):String;
+	public static var objectID (get, null):String;
 	
 	
 	/**
@@ -315,6 +315,29 @@ import openfl._internal.Lib;
 		#else
 		return null;
 		#end
+		
+	}
+	
+	
+	private static function get_objectID ():String {
+		
+		#if (js && html5)
+		#if (lime >= "7.0.0")
+		if (Lib.application.window.element != null) {
+			
+			return Lib.application.window.element.id;
+			
+		}
+		#else
+		if (Lib.application.window.backend.element != null) {
+			
+			return Lib.application.window.backend.element.id;
+			
+		}
+		#end
+		#end
+		
+		return null;
 		
 	}
 	
