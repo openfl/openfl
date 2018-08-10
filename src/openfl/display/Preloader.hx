@@ -22,16 +22,23 @@ import lime.app.Preloader in LimePreloader;
 @:access(openfl.display.LoaderInfo)
 
 
-class Preloader extends LimePreloader {
+class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 	
 	
+	#if (lime >= "7.0.0")
+	public var onComplete = new lime.app.Event<Void->Void> ();
+	#end
+	
+	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
 	@:noCompletion private var ready:Bool;
 	
 	
 	public function new (display:Sprite = null) {
 		
+		#if (lime < "7.0.0")
 		super ();
+		#end
 		
 		this.display = display;
 		
@@ -45,9 +52,9 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	@:noCompletion private override function start ():Void {
+	@:noCompletion private #if (lime < "7.0.0") override #end function start ():Void {
 		
-		if (simulateProgress) return;
+		#if (lime < "7.0.0") if (simulateProgress) return; #end
 		
 		ready = true;
 		
@@ -69,7 +76,10 @@ class Preloader extends LimePreloader {
 		} else {
 			
 			#if (lime >= "7.0.0")
-			onComplete.dispatch ();
+			if (!complete) {
+				complete = true;
+				onComplete.dispatch ();
+			}
 			#else
 			super.start ();
 			#end
@@ -79,7 +89,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	@:noCompletion private override function update (loaded:Int, total:Int):Void {
+	@:noCompletion private #if (lime < "7.0.0") override #end function update (loaded:Int, total:Int):Void {
 		
 		#if !flash
 		Lib.current.loaderInfo.__update (loaded, total);
@@ -118,10 +128,13 @@ class Preloader extends LimePreloader {
 			
 		}
 		
-		if (ready && !simulateProgress) {
+		if (ready #if (lime < "7.0.0") && !simulateProgress #end) {
 			
 			#if (lime >= "7.0.0")
-			onComplete.dispatch ();
+			if (!complete) {
+				complete = true;
+				onComplete.dispatch ();
+			}
 			#else
 			super.start ();
 			#end
