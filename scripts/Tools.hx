@@ -74,36 +74,28 @@ class Tools {
 		
 		var haxePath = Sys.getEnv ("HAXEPATH");
 		var command = (haxePath != null && haxePath != "") ? haxePath + "/haxelib" : "haxelib";
-		
-		var process = new Process (command, [ "path", "lime" ]);
 		var path = "";
+		
+		var process = new Process ("haxelib", [ "path", "lime" ]);
 		
 		try {
 			
-			var lines = new Array <String> ();
-			
 			while (true) {
 				
-				var length = lines.length;
 				var line = StringTools.trim (process.stdout.readLine ());
 				
-				if (length > 0 && (line == "-D lime" || StringTools.startsWith (line, "-D lime="))) {
+				if (StringTools.startsWith (line, "-L ")) {
 					
-					path = StringTools.trim (lines[length - 1]);
+					path = StringTools.trim (line.substr (2));
+					break;
 					
 				}
-				
-				lines.push (line);
-				
+			
 			}
 			
-		} catch (e:Dynamic) {
-			
-			process.close ();
-			
-		}
+		} catch (e:Dynamic) {}
 		
-		path += #if (lime >= "7.0.0") "/../ndll/" #else "/ndll/" #end;
+		process.close ();
 		
 		switch (#if (lime >= "7.0.0") System.hostPlatform #else PlatformHelper.hostPlatform #end) {
 			
