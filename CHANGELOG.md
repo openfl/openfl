@@ -2,7 +2,7 @@
 ------------------
 
 * Fixed an issue where the Flash preloader could dispatch complete multiple times
-* Fixed a regression in process SWF assets on Haxelib releases
+* Fixed a regression in processing SWF assets for Haxelib releases
 * Fixed an issue with stenciling on Stage3D projects that use display list masks
 * Fixed the value of `ExternalInterface.objectID` on single HTML5 embeds
 
