@@ -103,7 +103,7 @@ class Tools {
 			
 		}
 		
-		path += "/ndll/";
+		path += #if (lime >= "7.0.0") "/../ndll/" #else "/ndll/" #end;
 		
 		switch (#if (lime >= "7.0.0") System.hostPlatform #else PlatformHelper.hostPlatform #end) {
 			
