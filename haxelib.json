@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.4.0",
-	"releasenote": "Improved native font auto-hinting, updated for Lime 7, better Stage3D state management",
+	"version": "8.4.1",
+	"releasenote": "Minor fixes",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
