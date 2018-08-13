@@ -1363,6 +1363,7 @@ class GLContext3D {
 			GLUtils.CheckGLError ();
 			gl.enable (gl.STENCIL_TEST);
 			GLUtils.CheckGLError ();
+			gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 			
 		} else {
 			
