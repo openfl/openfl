@@ -244,5 +244,5 @@ import openfl.Memory;
 import openfl.Vector;
 
 #if !display
-import openfl._internal.swf.SWFLiteLibrary;
+import openfl._internal.formats.swf.SWFLiteLibrary;
 #end

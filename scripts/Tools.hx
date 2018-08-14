@@ -24,9 +24,9 @@ import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.ShapeSymbol;
 import openfl._internal.symbols.SpriteSymbol;
 import openfl._internal.symbols.StaticTextSymbol;
-import openfl._internal.swf.SWFLibrary;
-import openfl._internal.swf.SWFLiteLibrary;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLibrary;
+import openfl._internal.formats.swf.SWFLiteLibrary;
+import openfl._internal.formats.swf.SWFLite;
 import openfl.display.PNGEncoderOptions;
 import openfl.utils.ByteArray;
 import sys.io.File;
@@ -729,7 +729,7 @@ class Tools {
 		#end
 		
 		var data = AssetHelper.createManifest (project);
-		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+		data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
 		data.libraryArgs = [ "swflite" + SWFLITE_DATA_SUFFIX, uuid ];
 		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
 		
@@ -812,7 +812,7 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (output, library.name);
-					data.libraryType = "openfl._internal.swf.SWFLibrary";
+					data.libraryType = "openfl._internal.formats.swf.SWFLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
 					data.name = library.name;
 					
@@ -1082,7 +1082,7 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (merge);
-					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+					data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX ];
 					data.name = library.name;
 					
@@ -1125,8 +1125,8 @@ class Tools {
 			
 			output.haxedefs.set ("swf", "1");
 			
-			//output.haxeflags.push ("--macro include('openfl._internal.swf.SWFLiteLibrary')");
-			//output.haxeflags.push ("openfl._internal.swf.SWFLiteLibrary");
+			//output.haxeflags.push ("--macro include('openfl._internal.formats.swf.SWFLiteLibrary')");
+			//output.haxeflags.push ("openfl._internal.formats.swf.SWFLiteLibrary");
 			
 			//for (filterClass in filterClasses) {
 				

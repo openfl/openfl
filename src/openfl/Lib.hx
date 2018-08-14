@@ -16,9 +16,9 @@ import openfl.net.URLVariables;
 
 #if swf
 #if flash
-import openfl._internal.swf.SWFLibrary;
+import openfl._internal.formats.swf.SWFLibrary;
 #else
-import openfl._internal.swf.SWFLiteLibrary; // workaround
+import openfl._internal.formats.swf.SWFLiteLibrary; // workaround
 #end
 #end
 

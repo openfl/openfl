@@ -2,8 +2,8 @@ package openfl.display3D.textures; #if !flash
 
 
 import lime.utils.ArrayBufferView;
-import openfl._internal.stage3D.opengl.GLRectangleTexture;
-import openfl._internal.stage3D.SamplerState;
+import openfl._internal.renderer.opengl.GLRectangleTexture;
+import openfl._internal.formats.agal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 

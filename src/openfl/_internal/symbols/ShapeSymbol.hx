@@ -1,8 +1,8 @@
 package openfl._internal.symbols;
 
 
-import openfl._internal.swf.ShapeCommand;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.ShapeCommand;
+import openfl._internal.formats.swf.SWFLite;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
 

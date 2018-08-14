@@ -4,7 +4,7 @@ package openfl.display3D; #if !flash
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.Int16Array;
-import openfl._internal.stage3D.opengl.GLIndexBuffer3D;
+import openfl._internal.renderer.opengl.GLIndexBuffer3D;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 

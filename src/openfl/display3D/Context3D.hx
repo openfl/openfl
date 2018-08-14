@@ -4,9 +4,9 @@ package openfl.display3D; #if !flash
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.utils.Float32Array;
-import openfl._internal.stage3D.opengl.GLContext3D;
-import openfl._internal.stage3D.Context3DStateCache;
-import openfl._internal.stage3D.SamplerState;
+import openfl._internal.renderer.opengl.GLContext3D;
+import openfl._internal.renderer.opengl.Context3DStateCache;
+import openfl._internal.formats.agal.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;

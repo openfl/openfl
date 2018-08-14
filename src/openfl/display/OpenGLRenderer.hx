@@ -45,7 +45,7 @@ import lime.graphics.GLRenderContext;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:allow(openfl._internal.renderer.opengl)
-@:allow(openfl._internal.stage3D.opengl)
+@:allow(openfl._internal.renderer.opengl)
 @:allow(openfl.display3D.textures)
 @:allow(openfl.display3D)
 @:allow(openfl.display)

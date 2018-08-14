@@ -4,7 +4,7 @@ package openfl._internal.symbols;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
 import lime.utils.Assets in LimeAssets;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.PixelSnapping;

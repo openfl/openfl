@@ -3,8 +3,8 @@ package openfl.display3D.textures; #if !flash
 
 import haxe.Timer;
 import lime.graphics.opengl.GLTexture;
-import openfl._internal.stage3D.opengl.GLVideoTexture;
-import openfl._internal.stage3D.GLUtils;
+import openfl._internal.renderer.opengl.GLVideoTexture;
+import openfl._internal.renderer.opengl.GLUtils;
 import openfl.events.Event;
 import openfl.net.NetStream;
 

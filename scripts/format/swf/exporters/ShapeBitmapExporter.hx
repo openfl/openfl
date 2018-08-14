@@ -2,7 +2,7 @@ package format.swf.exporters;
 
 
 import haxe.ds.Option;
-import openfl._internal.swf.ShapeCommand;
+import openfl._internal.formats.swf.ShapeCommand;
 import openfl.geom.Matrix;
 
 

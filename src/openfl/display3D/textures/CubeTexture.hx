@@ -3,8 +3,8 @@ package openfl.display3D.textures; #if !flash
 
 import haxe.Timer;
 import lime.utils.ArrayBufferView;
-import openfl._internal.stage3D.opengl.GLCubeTexture;
-import openfl._internal.stage3D.SamplerState;
+import openfl._internal.renderer.opengl.GLCubeTexture;
+import openfl._internal.formats.agal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.utils.ByteArray;

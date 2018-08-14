@@ -3,8 +3,8 @@ package openfl.display3D.textures; #if !flash
 
 import lime.graphics.Image;
 import lime.graphics.opengl.GLTexture;
-import openfl._internal.stage3D.opengl.GLTextureBase;
-import openfl._internal.stage3D.SamplerState;
+import openfl._internal.renderer.opengl.GLTextureBase;
+import openfl._internal.formats.agal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;

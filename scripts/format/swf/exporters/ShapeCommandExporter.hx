@@ -10,7 +10,7 @@ import flash.display.SpreadMethod;
 import flash.geom.Matrix;
 import format.swf.SWFTimelineContainer;
 import format.swf.exporters.core.DefaultShapeExporter;
-import openfl._internal.swf.ShapeCommand;
+import openfl._internal.formats.swf.ShapeCommand;
 import format.swf.utils.NumberUtils;
 import format.swf.utils.StringUtils;
 

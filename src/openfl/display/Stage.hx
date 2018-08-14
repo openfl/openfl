@@ -16,7 +16,7 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
-import openfl._internal.TouchData;
+import openfl._internal.utils.TouchData;
 import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Window in OpenFLWindow;

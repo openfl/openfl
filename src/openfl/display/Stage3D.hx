@@ -3,7 +3,7 @@ package openfl.display; #if !flash
 
 import haxe.Timer;
 import lime.graphics.opengl.GL;
-import openfl._internal.stage3D.opengl.GLStage3D;
+import openfl._internal.renderer.opengl.GLStage3D;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
