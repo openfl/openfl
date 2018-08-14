@@ -885,7 +885,7 @@ class SWFLiteExporter {
 
 		}
 
-		return null;
+		return;
 
 	}	
 	
