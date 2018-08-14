@@ -2777,14 +2777,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:keep private function get_scaleX ():Float {
+	@:keep @:noCompletion private function get_scaleX ():Float {
 		
 		return __scaleX;
 		
 	}
 	
 	
-	@:keep private function set_scaleX (value:Float):Float {
+	@:keep @:noCompletion private function set_scaleX (value:Float):Float {
 		
 		if (value != __scaleX) {
 			
@@ -2818,14 +2818,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:keep private function get_scaleY ():Float {
+	@:keep @:noCompletion private function get_scaleY ():Float {
 		
 		return __scaleY;
 		
 	}
 	
 	
-	@:keep private function set_scaleY (value:Float):Float {
+	@:keep @:noCompletion private function set_scaleY (value:Float):Float {
 		
 		if (value != __scaleY) {
 			
