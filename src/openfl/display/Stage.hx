@@ -2,6 +2,7 @@ package openfl.display; #if !flash
 
 
 import haxe.CallStack;
+import haxe.ds.ArraySort;
 import lime.app.Application;
 import lime.app.IModule;
 import lime.graphics.RenderContext;
@@ -20,6 +21,7 @@ import openfl._internal.TouchData;
 import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Window in OpenFLWindow;
+import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
@@ -593,6 +595,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __colorSplit:Array<Float>;
 	@:noCompletion private var __colorString:String;
 	@:noCompletion private var __contentsScaleFactor:Float;
+	@:noCompletion private var __currentTabOrderIndex:Int;
 	#if (commonjs && !nodejs)
 	@:noCompletion private var __cursor:LimeMouseCursor;
 	#end
@@ -668,6 +671,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__colorSplit = [ 0xFF, 0xFF, 0xFF ];
 		__colorString = "#FFFFFF";
 		__contentsScaleFactor = 1;
+		__currentTabOrderIndex = 0;
 		__deltaTime = 0;
 		__displayState = NORMAL;
 		__mouseX = 0;
@@ -1965,6 +1969,118 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
+			else {
+				
+				if (type == KeyboardEvent.KEY_DOWN && keyCode == Keyboard.TAB) {
+					
+					var tabStack = new Array <InteractiveObject> ();
+					
+					__tabTest (tabStack);
+					
+					// do it without relying on ctoi
+					// so always index check focus in tabstack
+					
+					var nextIndex = -1;
+					var nextObject:InteractiveObject = null;
+					
+					if (tabStack.length > 1) {
+						
+						ArraySort.sort (tabStack, function (a, b) { return a.tabIndex - b.tabIndex; } );
+						
+						if (tabStack[tabStack.length - 1].tabIndex == -1) {
+							
+							// all tabIndices are equal to -1
+							if (focus != null) nextIndex = 0;
+							else nextIndex = __currentTabOrderIndex;
+							
+						} else {
+							
+							var i = 0;
+							while (i < tabStack.length) {
+								
+								if (tabStack[i].tabIndex > -1) {
+									
+									if (i > 0) tabStack.splice (0, i);
+									break;
+									
+								}
+								
+								i++;
+								
+							}
+							
+							if (focus != null) {
+								
+								var index = tabStack.indexOf (focus);
+								
+								if (index < 0) nextIndex = 0;
+								else nextIndex = index + 1;
+								
+							} else {
+								
+								nextIndex = __currentTabOrderIndex;
+								
+							}
+							
+						}
+						
+					} else if (tabStack.length == 1) {
+						
+						nextObject = tabStack[0];
+						
+						if (focus == nextObject) nextObject = null;
+						
+					}
+					
+					if (tabStack.length == 1 || tabStack.length == 0 && focus != null) {
+						
+						nextIndex = 0;
+						
+					} else if (tabStack.length > 1) {
+						
+						nextIndex %= tabStack.length;
+						nextObject = tabStack[nextIndex];
+						
+						if (nextObject == focus) {
+							
+							nextIndex++;
+							nextIndex %= tabStack.length;
+							nextObject = tabStack[nextIndex];
+							
+						}
+						
+					}
+					
+					var focusEvent = null;
+					
+					if (focus != null) {
+						
+						focusEvent = new FocusEvent (FocusEvent.KEY_FOCUS_CHANGE, true, true, nextObject, modifier.shiftKey, 0);
+						
+						stack = [];
+						
+						focus.__getInteractive (stack);
+						stack.reverse();
+						
+						__dispatchStack (focusEvent, stack);
+					
+					}
+					
+					if (focusEvent == null || !focusEvent.isDefaultPrevented()) {
+						
+						__currentTabOrderIndex = nextIndex;
+						if (nextObject != null) focus = nextObject;
+						
+						// TODO: handle border around focus
+						
+					}
+					
+				}
+				
+				// TODO: handle arrow keys changing the focus
+				
+			}
+			
 		}
 		
 	}
@@ -3052,6 +3168,34 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private override function set_scaleY (value:Float):Float {
 		
 		return 0;
+		
+	}
+	
+	
+	@:noCompletion private override function get_tabEnabled ():Bool {
+		
+		return false;
+		
+	}
+	
+	
+	@:noCompletion private override function set_tabEnabled (value:Bool):Bool {
+		
+		throw new IllegalOperationError("Error: The Stage class does not implement this property or method.");
+		
+	}
+	
+	
+	@:noCompletion private override function get_tabIndex ():Int {
+		
+		return -1;
+		
+	}
+	
+	
+	@:noCompletion private override function set_tabIndex (value:Int):Int {
+		
+		throw new IllegalOperationError("Error: The Stage class does not implement this property or method.");
 		
 	}
 	
