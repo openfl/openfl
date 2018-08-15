@@ -2133,7 +2133,25 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				if (target.__allowMouseFocus ()) {
 					
-					focus = target;
+					if (focus != null) {
+						
+						var focusEvent = new FocusEvent(FocusEvent.MOUSE_FOCUS_CHANGE, true, true, target, false, 0);
+						
+						__dispatchStack (focusEvent, stack);
+						
+						if (!focusEvent.isDefaultPrevented()) {
+							
+							focus = target;
+							
+						}
+						
+					}
+					
+					else {
+						
+						focus = target;
+						
+					}
 					
 				} else {
 					
