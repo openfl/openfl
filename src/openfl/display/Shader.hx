@@ -377,8 +377,12 @@ class Shader {
 			var prefix = 
 				
 				"#ifdef GL_ES
-				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
-				#endif
+					#ifdef GL_FRAGMENT_PRECISION_HIGH
+					precision highp float;
+					#else
+					precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
+					#endif // GL_FRAGMENT_PRECISION_HIGH
+				#endif // GL_ES
 				";
 			
 			var vertex = prefix + glVertexSource;
