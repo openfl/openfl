@@ -223,7 +223,7 @@ class GLTextureBase {
 			var gl = renderer.__context;
 			#end
 			
-			gl.bindTexture (textureBase.__textureTarget, textureBase.__textureID);
+			renderer.bindTexture (textureBase.__textureTarget, textureBase.__textureID);
 			GLUtils.CheckGLError ();
 			gl.texParameteri (textureBase.__textureTarget, gl.TEXTURE_MIN_FILTER, state.minFilter);
 			GLUtils.CheckGLError ();

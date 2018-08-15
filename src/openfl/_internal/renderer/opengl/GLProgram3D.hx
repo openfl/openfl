@@ -137,7 +137,7 @@ class GLProgram3D {
 		var gl = renderer.__context;
 		#end
 		
-		gl.useProgram (program.__programID);
+		renderer.useProgram (program.__programID);
 		GLUtils.CheckGLError ();
 		
 		program.__vertexUniformMap.markAllDirty ();

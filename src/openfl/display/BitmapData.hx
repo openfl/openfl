@@ -1231,16 +1231,16 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
+	@:dox(hide) public function getBuffer (renderer:OpenGLRenderer):GLBuffer {
 		
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl:WebGLContext = context;
+		var gl:WebGLContext = renderer.__context;
 		#end
 		
-		if (__buffer == null || __bufferContext != context) {
+		if (__buffer == null || __bufferContext != renderer.__context) {
 			
 			#if openfl_power_of_two
 			
@@ -1321,10 +1321,10 @@ class BitmapData implements IBitmapDrawable {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = context;
+			__bufferContext = renderer.__context;
 			__buffer = gl.createBuffer ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			renderer.bindBuffer (gl.ARRAY_BUFFER, __buffer);
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
@@ -1390,7 +1390,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			// }
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			renderer.bindBuffer (gl.ARRAY_BUFFER, __buffer);
 			
 			// if (dirty) {
 			
@@ -1553,22 +1553,22 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
+	@:dox(hide) public function getTexture (renderer:OpenGLRenderer):GLTexture {
 		
 		if (!__isValid) return null;
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl:WebGLContext = context;
+		var gl:WebGLContext = renderer.__context;
 		#end
 		
-		if (__texture == null || __textureContext != context) {
+		if (__texture == null || __textureContext != renderer.__context) {
 			
-			__textureContext = context;
+			__textureContext = renderer.__context;
 			__texture = gl.createTexture ();
 			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			renderer.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -1617,7 +1617,7 @@ class BitmapData implements IBitmapDrawable {
 						__textureFormat = bgraExtension.BGRA_EXT;
 						
 						#if (!ios && !tvos)
-						if (context.type == #if (lime >= "7.0.0") OPENGLES #else GLES #end) {
+						if (renderer.__context.type == #if (lime >= "7.0.0") OPENGLES #else GLES #end) {
 							
 							__textureInternalFormat = bgraExtension.BGRA_EXT;
 							
@@ -1638,7 +1638,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			renderer.bindTexture (gl.TEXTURE_2D, __texture);
 			
 			var textureImage = image;
 			
@@ -1706,7 +1706,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#end
 			
-			gl.bindTexture (gl.TEXTURE_2D, null);
+			renderer.bindTexture (gl.TEXTURE_2D, null);
 			__textureVersion = image.version;
 			
 			__textureWidth = textureImage.buffer.width;
@@ -2455,11 +2455,11 @@ class BitmapData implements IBitmapDrawable {
 		
 		var gl = renderer.__gl;
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (renderer.__context, true));
+		renderer.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (renderer, true));
 		
 		renderer.__render (source);
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		renderer.bindFramebuffer (gl.FRAMEBUFFER, null);
 		
 	}
 	
@@ -2474,31 +2474,32 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (allowFramebuffer && __framebuffer != null) {
+		if (allowFramebuffer && __framebuffer != null && Lib.current.stage.__renderer.__type == OPENGL) {
 			
-			var gl = GL.context;
+			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
+			var gl = renderer.__gl;
 			var color:ARGB = (color:ARGB);
 			var useScissor = !this.rect.equals (rect);
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			renderer.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			
 			if (useScissor) {
 				
-				gl.enable (gl.SCISSOR_TEST);
-				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
+				renderer.enable (gl.SCISSOR_TEST);
+				renderer.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
 				
 			}
 			
-			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
+			renderer.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
 			gl.clear (gl.COLOR_BUFFER_BIT);
 			
 			if (useScissor) {
 				
-				gl.disable (gl.SCISSOR_TEST);
+				renderer.disable (gl.SCISSOR_TEST);
 				
 			}
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			renderer.bindFramebuffer (gl.FRAMEBUFFER, null);
 			
 		} else if (readable) {
 			
@@ -2572,22 +2573,22 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __getFramebuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, requireStencil:Bool):GLFramebuffer {
+	@:noCompletion private function __getFramebuffer (renderer:OpenGLRenderer, requireStencil:Bool):GLFramebuffer {
 		
-		if (__framebuffer == null || __framebufferContext != context) {
+		if (__framebuffer == null || __framebufferContext != renderer.__context) {
 			
 			#if (lime >= "7.0.0")
-			var gl = context.webgl;
+			var gl = renderer.__context.webgl;
 			#else
-			var gl = context;
+			var gl = renderer.__context;
 			#end
 			
-			getTexture (context);
+			getTexture (renderer);
 			
-			__framebufferContext = context;
+			__framebufferContext = renderer.__context;
 			__framebuffer = gl.createFramebuffer ();
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			renderer.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
 			
 			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
@@ -2601,16 +2602,16 @@ class BitmapData implements IBitmapDrawable {
 		if (requireStencil && __stencilBuffer == null) {
 			
 			#if (lime >= "7.0.0")
-			var gl = context.webgl;
+			var gl = renderer.__context.webgl;
 			#else
-			var gl = context;
+			var gl = renderer.__context;
 			#end
 			
 			__stencilBuffer = gl.createRenderbuffer ();
-			gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
+			renderer.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
 			gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			renderer.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
 			
 			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
@@ -2619,7 +2620,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			gl.bindRenderbuffer (gl.RENDERBUFFER, null);
+			renderer.bindRenderbuffer (gl.RENDERBUFFER, null);
 			
 		}
 		
@@ -2755,7 +2756,7 @@ class BitmapData implements IBitmapDrawable {
 		renderer.__setBlendMode (NORMAL);
 		
 		var shader = renderer.__defaultDisplayShader;
-		renderer.setShader (shader);
+		renderer.useShader (shader);
 		renderer.applyBitmapData (this, renderer.__allowSmoothing && (renderer.__upscaled));
 		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
 		renderer.applyAlpha (__worldAlpha);
@@ -2764,7 +2765,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		// alpha == 1, __worldColorTransform
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (renderer.__context));
+		renderer.bindBuffer (gl.ARRAY_BUFFER, getBuffer (renderer));
 		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 		if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
@@ -2784,12 +2785,12 @@ class BitmapData implements IBitmapDrawable {
 		var gl = renderer.__gl;
 		
 		var shader = renderer.__maskShader;
-		renderer.setShader (shader);
+		renderer.useShader (shader);
 		renderer.applyBitmapData (this, renderer.__allowSmoothing && (renderer.__upscaled));
 		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
 		renderer.updateShader ();
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (renderer.__context));
+		renderer.bindBuffer (gl.ARRAY_BUFFER, getBuffer (renderer));
 		gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
 		gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
@@ -2817,16 +2818,16 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __setUVRect (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, x:Float, y:Float, width:Float, height:Float):Void {
+	@:noCompletion private function __setUVRect (renderer:OpenGLRenderer, x:Float, y:Float, width:Float, height:Float):Void {
 		
-		var buffer = getBuffer (context);
+		var buffer = getBuffer (renderer);
 		
 		if (buffer != null && (width != __uvRect.width || height != __uvRect.height || x != __uvRect.x || y != __uvRect.y)) {
 			
 			#if (lime >= "7.0.0")
-			var gl = context.webgl;
+			var gl = renderer.__context.webgl;
 			#else
-			var gl:WebGLContext = context;
+			var gl:WebGLContext = renderer.__context;
 			#end
 			
 			if (__uvRect == null) __uvRect = new Rectangle ();

@@ -205,7 +205,7 @@ import js.Browser;
 				
 			}
 			
-			renderer.setShader (null);
+			renderer.useShader (null);
 			renderer.__setBlendMode (null);
 			
 			if (__render != null) __render (rect);

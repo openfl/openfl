@@ -48,26 +48,26 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __disableGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, id:Int):Void {
+	@:noCompletion private function __disableGL (renderer:OpenGLRenderer, id:Int):Void {
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl = context;
+		var gl = renderer.__context;
 		#end
 		
-		gl.activeTexture (gl.TEXTURE0 + id);
-		gl.bindTexture (gl.TEXTURE_2D, null);
+		renderer.activeTexture (gl.TEXTURE0 + id);
+		renderer.bindTexture (gl.TEXTURE_2D, null);
 		
 	}
 	
 	
-	@:noCompletion private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
+	@:noCompletion private function __updateGL (renderer:OpenGLRenderer, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl = context;
+		var gl = renderer.__context;
 		#end
 		
 		var input = overrideInput != null ? overrideInput : this.input;
@@ -81,8 +81,8 @@ import lime.graphics.GLRenderContext;
 			
 			var bitmapData:BitmapData = cast input;
 			
-			gl.activeTexture (gl.TEXTURE0 + id);
-			gl.bindTexture (gl.TEXTURE_2D, bitmapData.getTexture (context));
+			renderer.activeTexture (gl.TEXTURE0 + id);
+			renderer.bindTexture (gl.TEXTURE_2D, bitmapData.getTexture (renderer));
 			
 			// TODO: Support anisotropic filter modes
 			var smooth = (filter == Context3DTextureFilter.LINEAR);
@@ -115,8 +115,8 @@ import lime.graphics.GLRenderContext;
 			
 		} else {
 			
-			gl.activeTexture (gl.TEXTURE0 + id);
-			gl.bindTexture (gl.TEXTURE_2D, null);
+			renderer.activeTexture (gl.TEXTURE0 + id);
+			renderer.bindTexture (gl.TEXTURE_2D, null);
 			
 		}
 		

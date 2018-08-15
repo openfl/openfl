@@ -84,7 +84,7 @@ class GLIndexBuffer3D {
 		var gl:WebGLContext = renderer.__context;
 		#end
 		
-		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
+		renderer.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
 		GLUtils.CheckGLError ();
 		
 		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, data, indexBuffer.__usage);

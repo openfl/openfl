@@ -47,7 +47,7 @@ class GLVideoTexture {
 			var gl:WebGLContext = renderer.__context;
 			#end
 			
-			gl.bindTexture (videoTexture.__textureTarget, videoTexture.__textureID);
+			renderer.bindTexture (videoTexture.__textureTarget, videoTexture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, videoTexture.__netStream.__video);

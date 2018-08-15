@@ -152,13 +152,13 @@ class GLCubeTexture {
 			
 			var target = __sideToTarget (renderer.__context, side);
 			
-			gl.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
+			renderer.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			gl.texImage2D (target, miplevel, cubeTexture.__internalFormat, cubeTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
-			gl.bindTexture (cubeTexture.__textureTarget, null);
+			renderer.bindTexture (cubeTexture.__textureTarget, null);
 			GLUtils.CheckGLError ();
 			
 			cubeTexture.__uploadedSides |= 1 << side;
@@ -202,13 +202,13 @@ class GLCubeTexture {
 		
 		var target = __sideToTarget (renderer.__context, side);
 		
-		gl.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
+		renderer.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (target, miplevel, cubeTexture.__internalFormat, size, size, 0, cubeTexture.__format, gl.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
-		gl.bindTexture (cubeTexture.__textureTarget, null);
+		renderer.bindTexture (cubeTexture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 		cubeTexture.__uploadedSides |= 1 << side;

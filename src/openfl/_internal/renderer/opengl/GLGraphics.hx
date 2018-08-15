@@ -575,7 +575,7 @@ class GLGraphics {
 								} else {
 									
 									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
-									renderer.setShader (shader);
+									renderer.useShader (shader);
 									renderer.applyMatrix (uMatrix);
 									renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
 									renderer.applyAlpha (graphics.__owner.__worldAlpha);
@@ -591,7 +591,7 @@ class GLGraphics {
 									
 								}
 								
-								gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
+								renderer.bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
 								
 								if (updatedBuffer) {
 									
@@ -636,14 +636,14 @@ class GLGraphics {
 								matrix.concat (graphics.__owner.__renderTransform);
 								
 								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
-								renderer.setShader (shader);
+								renderer.useShader (shader);
 								renderer.applyMatrix (renderer.__getMatrix (matrix));
 								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, repeat);
 								renderer.applyAlpha ((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform (tempColorTransform);
 								renderer.updateShader ();
 								
-								gl.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (renderer.__context));
+								renderer.bindBuffer (gl.ARRAY_BUFFER, blankBitmapData.getBuffer (renderer));
 								if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 								if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 								gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
@@ -692,7 +692,7 @@ class GLGraphics {
 							} else {
 								
 								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
-								renderer.setShader (shader);
+								renderer.useShader (shader);
 								renderer.applyMatrix (uMatrix);
 								renderer.applyBitmapData (bitmap, renderer.__allowSmoothing && smooth, repeat);
 								renderer.applyAlpha (graphics.__owner.__worldAlpha);
@@ -708,7 +708,7 @@ class GLGraphics {
 								
 							}
 							
-							gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
+							renderer.bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
 							
 							if (updatedBuffer) {
 								
@@ -723,13 +723,13 @@ class GLGraphics {
 								
 								case POSITIVE:
 									
-									gl.enable (gl.CULL_FACE);
-									gl.cullFace (gl.FRONT);
+									renderer.enable (gl.CULL_FACE);
+									renderer.cullFace (gl.FRONT);
 								
 								case NEGATIVE:
 									
-									gl.enable (gl.CULL_FACE);
-									gl.cullFace (gl.BACK);
+									renderer.enable (gl.CULL_FACE);
+									renderer.cullFace (gl.BACK);
 								
 								default:
 								
@@ -740,8 +740,8 @@ class GLGraphics {
 							
 							if (culling != NONE) {
 								
-								gl.disable (gl.CULL_FACE);
-								gl.cullFace (gl.BACK);
+								renderer.disable (gl.CULL_FACE);
+								renderer.cullFace (gl.BACK);
 								
 							}
 							

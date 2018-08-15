@@ -86,7 +86,7 @@ class GLVertexBuffer3D {
 		var gl:WebGLContext = renderer.__context;
 		#end
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer.__id);
+		renderer.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer.__id);
 		GLUtils.CheckGLError ();
 		
 		gl.bufferData (gl.ARRAY_BUFFER, data, vertexBuffer.__usage);

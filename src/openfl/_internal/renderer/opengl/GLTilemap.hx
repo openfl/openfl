@@ -325,7 +325,7 @@ class GLTilemap {
 			#end
 			
 			var shader = renderer.__initDisplayShader (cast currentShader);
-			renderer.setShader (shader);
+			renderer.useShader (shader);
 			renderer.applyBitmapData (currentBitmapData, renderer.__allowSmoothing && tilemap.smoothing);
 			renderer.applyMatrix (renderer.__getMatrix (tilemap.__renderTransform));
 			

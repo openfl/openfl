@@ -138,12 +138,12 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private function __getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
+	@:noCompletion private function __getBuffer (renderer:OpenGLRenderer):GLBuffer {
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl:WebGLContext = context;
+		var gl:WebGLContext = renderer.__context;
 		#end
 		
 		if (__buffer == null || __bufferContext != context) {
@@ -223,7 +223,7 @@ class Video extends DisplayObject {
 			__bufferContext = context;
 			__buffer = gl.createBuffer ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			renderer.bindBuffer (gl.ARRAY_BUFFER, __buffer);
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
@@ -277,7 +277,7 @@ class Video extends DisplayObject {
 				
 			// }
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			renderer.bindBuffer (gl.ARRAY_BUFFER, __buffer);
 			// gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			
 		}
@@ -287,22 +287,22 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private function __getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
+	@:noCompletion private function __getTexture (renderer:OpenGLRenderer):GLTexture {
 		
 		#if (js && html5)
 		
 		if (__stream == null || __stream.__video == null) return null;
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl:WebGLContext = context;
+		var gl:WebGLContext = renderer.__context;
 		#end
 		
 		if (__texture == null) {
 			
 			__texture = gl.createTexture ();
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			renderer.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -316,7 +316,7 @@ class Video extends DisplayObject {
 			var internalFormat = gl.RGBA;
 			var format = gl.RGBA;
 			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			renderer.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;

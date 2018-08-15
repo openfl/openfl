@@ -46,11 +46,11 @@ class GLVideo {
 			// renderer.filterManager.pushObject (video);
 			
 			var shader = renderer.__initDisplayShader (cast video.__worldShader);
-			renderer.setShader (shader);
+			renderer.useShader (shader);
 			
 			// TODO: Support ShaderInput<Video>
 			renderer.applyBitmapData (null, renderer.__allowSmoothing, false);
-			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (renderer.__context));
+			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (renderer));
 			
 			//shader.uImage0.input = bitmap.__bitmapData;
 			//shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
@@ -114,12 +114,12 @@ class GLVideo {
 			#end
 			
 			var shader = renderer.__maskShader;
-			renderer.setShader (shader);
+			renderer.useShader (shader);
 			renderer.applyBitmapData (GLMaskShader.opaqueBitmapData, true);
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.updateShader ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (renderer.__context));
+			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (renderer));
 			
 			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);

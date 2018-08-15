@@ -61,13 +61,13 @@ class GLRectangleTexture {
 			var gl:WebGLContext = renderer.__context;
 			#end
 			
-			gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
+			renderer.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			gl.texImage2D (rectangleTexture.__textureTarget, 0, rectangleTexture.__internalFormat, rectangleTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
-			gl.bindTexture (rectangleTexture.__textureTarget, null);
+			renderer.bindTexture (rectangleTexture.__textureTarget, null);
 			GLUtils.CheckGLError ();
 			return;
 			

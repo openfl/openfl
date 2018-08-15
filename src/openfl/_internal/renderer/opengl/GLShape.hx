@@ -56,14 +56,14 @@ class GLShape {
 				#end
 				
 				var shader = renderer.__initDisplayShader (cast shape.__worldShader);
-				renderer.setShader (shader);
+				renderer.useShader (shader);
 				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
 				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
 				renderer.applyAlpha (shape.__worldAlpha);
 				renderer.applyColorTransform (shape.__worldColorTransform);
 				renderer.updateShader ();
 				
-				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (renderer.__context));
+				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (renderer));
 				if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 				if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
@@ -105,12 +105,12 @@ class GLShape {
 				#end
 				
 				var shader = renderer.__maskShader;
-				renderer.setShader (shader);
+				renderer.useShader (shader);
 				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
 				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
 				renderer.updateShader ();
 				
-				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (renderer.__context));
+				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (renderer));
 				gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
 				gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);

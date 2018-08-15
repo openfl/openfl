@@ -48,13 +48,13 @@ class GLTexture {
 		
 		texture.__textureTarget = gl.TEXTURE_2D;
 		
-		gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		renderer.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (texture.__textureTarget, 0, texture.__internalFormat, texture.__width, texture.__height, 0, texture.__format, gl.UNSIGNED_BYTE, #if (lime >= "7.0.0") null #else 0 #end);
 		GLUtils.CheckGLError ();
 		
-		gl.bindTexture (texture.__textureTarget, null);
+		renderer.bindTexture (texture.__textureTarget, null);
 		
 	}
 	
@@ -70,7 +70,7 @@ class GLTexture {
 		var gl:GLRenderContext = renderer.__context;
 		#end
 		
-		gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		renderer.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		var hasTexture = false;
@@ -96,7 +96,7 @@ class GLTexture {
 				alphaTexture.__format = format;
 				alphaTexture.__internalFormat = format;
 				
-				gl.bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
+				renderer.bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
 				GLUtils.CheckGLError ();
 				
 				gl.compressedTexImage2D (alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0, size, new BytePointer (bytes, size));
@@ -124,7 +124,7 @@ class GLTexture {
 			
 		}
 		
-		gl.bindTexture (texture.__textureTarget, null);
+		renderer.bindTexture (texture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 	}
@@ -182,13 +182,13 @@ class GLTexture {
 			if (width == 0) width = 1;
 			if (height == 0) height = 1;
 			
-			gl.bindTexture (texture.__textureTarget, texture.__textureID);
+			renderer.bindTexture (texture.__textureTarget, texture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
-			gl.bindTexture (texture.__textureTarget, null);
+			renderer.bindTexture (texture.__textureTarget, null);
 			GLUtils.CheckGLError ();
 			
 			// var memUsage = (width * height) * 4;
@@ -236,13 +236,13 @@ class GLTexture {
 		if (width == 0) width = 1;
 		if (height == 0) height = 1;
 		
-		gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		renderer.bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, width, height, 0, texture.__format, gl.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
-		gl.bindTexture (texture.__textureTarget, null);
+		renderer.bindTexture (texture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 		// var memUsage = (width * height) * 4;

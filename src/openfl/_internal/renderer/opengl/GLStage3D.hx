@@ -28,7 +28,7 @@ class GLStage3D {
 			
 			if (renderer.__currentShader != null) {
 				
-				renderer.setShader (null);
+				renderer.useShader (null);
 				
 				if (stage3D.context3D.__program != null) {
 					

@@ -43,12 +43,12 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __disableGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+	@:noCompletion private function __disableGL (renderer:OpenGLRenderer):Void {
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl = context;
+		var gl = renderer.__context;
 		#end
 		
 		if (!__isUniform) {
@@ -64,12 +64,12 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __updateGL (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, overrideValue:Array<T> = null):Void {
+	@:noCompletion private function __updateGL (renderer:OpenGLRenderer, overrideValue:Array<T> = null):Void {
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl:WebGLContext = context;
+		var gl:WebGLContext = renderer.__context;
 		#end
 		
 		var value = overrideValue != null ? overrideValue : this.value;
@@ -262,12 +262,12 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __updateGLFromBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, buffer:Float32Array, position:Int, length:Int):Void {
+	@:noCompletion private function __updateGLFromBuffer (renderer:OpenGLRenderer, buffer:Float32Array, position:Int, length:Int):Void {
 		
 		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = renderer.__context.webgl;
 		#else
-		var gl:WebGLContext = context;
+		var gl:WebGLContext = renderer.__context;
 		#end
 		
 		if (__isUniform) {
