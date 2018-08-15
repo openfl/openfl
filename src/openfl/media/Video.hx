@@ -146,7 +146,7 @@ class Video extends DisplayObject {
 		var gl:WebGLContext = renderer.__context;
 		#end
 		
-		if (__buffer == null || __bufferContext != context) {
+		if (__buffer == null || __bufferContext != renderer.__context) {
 			
 			#if openfl_power_of_two
 			
@@ -220,7 +220,7 @@ class Video extends DisplayObject {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = context;
+			__bufferContext = renderer.__context;
 			__buffer = gl.createBuffer ();
 			
 			renderer.bindBuffer (gl.ARRAY_BUFFER, __buffer);
