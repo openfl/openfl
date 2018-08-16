@@ -113,7 +113,11 @@ class Stage3D extends EventDispatcher {
 		
 		if (renderer.__type == OPENGL) {
 			
-			context3D = new Context3D (this, renderer);
+			context3D = new Context3D (renderer);
+			context3D.__x = __x;
+			context3D.__y = __y;
+			context3D.__updateBackbufferViewport ();
+			
 			__dispatchCreate ();
 			
 		} else if (renderer.__type == DOM) {
@@ -322,6 +326,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (context3D != null) {
 			
+			context3D.__x = value;
 			context3D.__updateBackbufferViewport ();
 			
 		}
@@ -346,6 +351,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (context3D != null) {
 			
+			context3D.__y = value;
 			context3D.__updateBackbufferViewport ();
 			
 		}

@@ -17,6 +17,7 @@ import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.utils.TouchData;
+import openfl.display3D.Context3D;
 import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Window in OpenFLWindow;
@@ -188,6 +189,7 @@ typedef Element = Dynamic;
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Sprite)
@@ -239,6 +241,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
 	
 	public var contentsScaleFactor (get, never):Float;
+	
+	public var context3D (default, null):Context3D;
 	
 	// @:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
 	
@@ -1599,12 +1603,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				#if (!disable_cffi && (!html5 || !canvas))
 				__renderer = new OpenGLRenderer (window.context);
-				
-				if (stage3Ds[0].context3D == null) {
-					
-					stage3Ds[0].__createContext (this, __renderer);
-					
-				}
+				context3D = new Context3D (__renderer);
 				#end
 			
 			case CANVAS:

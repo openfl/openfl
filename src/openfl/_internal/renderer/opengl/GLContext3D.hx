@@ -275,14 +275,14 @@ class GLContext3D {
 	public static function drawToBitmapData (context:Context3D, destination:BitmapData):Void {
 		
 		__setContext (context);
-		var window = context.__stage3D.__stage.window;
+		var window = context.__renderer.__stage.window;
 		
 		if (window != null) {
 			
 			var image = #if (lime >= "7.0.0") window.readPixels () #else window.renderer.readPixels () #end;
 			
-			var offsetX = (context.__stage3D.x > 0) ? Std.int (-context.__stage3D.x) : 0;
-			var offsetY = (context.__stage3D.y < 0) ? Std.int (-context.__stage3D.y) : 0;
+			var offsetX = (context.__x > 0) ? Std.int (-context.__x) : 0;
+			var offsetY = (context.__y < 0) ? Std.int (-context.__y) : 0;
 			
 			destination.image.copyPixels (image, new LimeRectangle (0, 0, context.backBufferWidth, context.backBufferHeight), new Vector2 (offsetX, offsetY));
 			
@@ -1281,10 +1281,10 @@ class GLContext3D {
 		
 		if (context.__renderToTexture == null && context.backBufferWidth > 0 && context.backBufferHeight > 0) {
 			
-			var window = context.__stage3D.__stage.window;
+			var window = context.__renderer.__stage.window;
 			
-			var x = Std.int (context.__stage3D.x);
-			var y = Std.int ((window.height * window.scale) - context.backBufferHeight - context.__stage3D.y);
+			var x = Std.int (context.__x);
+			var y = Std.int ((window.height * window.scale) - context.backBufferHeight - context.__y);
 			
 			__setViewport (x > 0 ? x : 0, (y > 0 ? y : 0), context.backBufferWidth, context.backBufferHeight);
 			
@@ -1418,11 +1418,11 @@ class GLContext3D {
 			
 		} else {
 			
-			var window = context.__stage3D.__stage.window;
+			var window = context.__renderer.__stage.window;
 			
 			height = context.backBufferHeight;
-			offsetX = Std.int (context.__stage3D.x);
-			offsetY = Std.int (window.height * window.scale) - height - Std.int (context.__stage3D.y);
+			offsetX = Std.int (context.__x);
+			offsetY = Std.int (window.height * window.scale) - height - Std.int (context.__y);
 			
 		}
 		

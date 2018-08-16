@@ -91,6 +91,8 @@ import openfl.Vector;
 	@:noCompletion private var __supportsAnisotropicFiltering:Bool;
 	@:noCompletion private var __supportsPackedDepthStencil:Bool;
 	@:noCompletion private var __vertexConstants:Float32Array;
+	@:noCompletion private var __x:Float;
+	@:noCompletion private var __y:Float;
 	
 	#if telemetry
 	//private var __spanPresent:Telemetry.Span;
@@ -99,12 +101,13 @@ import openfl.Vector;
 	#end
 	
 	
-	@:noCompletion private function new (stage3D:Stage3D, renderer:DisplayObjectRenderer) {
+	@:noCompletion private function new (renderer:DisplayObjectRenderer) {
 		
 		super ();
 		
-		__stage3D = stage3D;
 		__renderer = renderer;
+		__x = 0;
+		__y = 0;
 		
 		GLContext3D.create (this);
 		
