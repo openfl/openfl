@@ -860,10 +860,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		applyMatrix (__getMatrix (source.__renderTransform));
 		updateShader ();
 		
-		__context3D.__bindBuffer (__gl.ARRAY_BUFFER, source.getBuffer (__context3D));
-		if (shader.__position != null) __gl.vertexAttribPointer (shader.__position.index, 3, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-		if (shader.__textureCoord != null) __gl.vertexAttribPointer (shader.__textureCoord.index, 2, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		__gl.drawArrays (__gl.TRIANGLE_STRIP, 0, 4);
+		var vertexBuffer = source.getVertexBuffer (__context3D);
+		if (shader.__position != null) __context3D.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) __context3D.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = source.getIndexBuffer (__context3D);
+		__context3D.drawTriangles (indexBuffer);
 		
 		__context3D.__bindFramebuffer (__gl.FRAMEBUFFER, null);
 		

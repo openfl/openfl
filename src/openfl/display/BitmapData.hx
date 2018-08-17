@@ -22,10 +22,13 @@ import lime.math.ColorMatrix;
 import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
+import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.errors.Error;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
@@ -153,7 +156,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class BitmapData implements IBitmapDrawable {
 	
 	
-	@:noCompletion private static inline var __bufferStride = 14;
+	@:noCompletion private static inline var __vertexBufferStride = 14;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __tempVector:Vector2 = new Vector2 ();
 	@:noCompletion private static var __textureFormat:Int;
@@ -210,15 +213,14 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public var width (default, null):Int;
 	
-	
 	@:noCompletion private var __blendMode:BlendMode;
-	@:noCompletion private var __buffer:GLBuffer;
-	@:noCompletion private var __bufferColorTransform:ColorTransform;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
-	@:noCompletion private var __bufferAlpha:Float;
-	@:noCompletion private var __bufferData:Float32Array;
+	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
+	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
 	@:noCompletion private var __framebufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __indexBuffer:IndexBuffer3D;
+	@:noCompletion private var __indexBufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __indexBufferData:Int16Array;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __mask:DisplayObject;
@@ -234,6 +236,9 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __uvRect:Rectangle;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __vertexBufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -763,7 +768,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		__surface = null;
 		
-		__buffer = null;
+		__vertexBuffer = null;
 		__framebuffer = null;
 		__framebufferContext = null;
 		__texture = null;
@@ -1234,12 +1239,36 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function getBuffer (context:Context3D):GLBuffer {
-		
+	@:dox(hide) public function getIndexBuffer (context:Context3D):IndexBuffer3D {
 		
 		var gl = context.__gl;
 		
-		if (__buffer == null || __bufferContext != context.__context) {
+		if (__indexBuffer == null || __indexBufferContext != context.__context) {
+			
+			__indexBufferData = new Int16Array (6);
+			__indexBufferData[0] = 0;
+			__indexBufferData[1] = 1;
+			__indexBufferData[2] = 2;
+			__indexBufferData[3] = 2;
+			__indexBufferData[4] = 1;
+			__indexBufferData[5] = 3;
+			
+			__indexBufferContext = context.__context;
+			__indexBuffer = context.createIndexBuffer (6);
+			__indexBuffer.uploadFromTypedArray (__indexBufferData);
+			
+		}
+		
+		return __indexBuffer;
+		
+	}
+	
+	
+	@:dox(hide) public function getVertexBuffer (context:Context3D):VertexBuffer3D {
+		
+		var gl = context.__gl;
+		
+		if (__vertexBuffer == null || __vertexBufferContext != context.__context) {
 			
 			#if openfl_power_of_two
 			
@@ -1275,7 +1304,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#end
 			
-			//__bufferData = new Float32Array ([
+			//__vertexBufferData = new Float32Array ([
 				//
 				//width, height, 0, uvWidth, uvHeight, alpha, (color transform, color offset...)
 				//0, height, 0, 0, uvHeight, alpha, (color transform, color offset...)
@@ -1288,85 +1317,83 @@ class BitmapData implements IBitmapDrawable {
 			//[ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
 			//[ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 			
-			__bufferData = new Float32Array (__bufferStride * 4);
+			__vertexBufferData = new Float32Array (__vertexBufferStride * 4);
 			
-			__bufferData[0] = width;
-			__bufferData[1] = height;
-			__bufferData[3] = uvWidth;
-			__bufferData[4] = uvHeight;
-			__bufferData[__bufferStride + 1] = height;
-			__bufferData[__bufferStride + 4] = uvHeight;
-			__bufferData[__bufferStride * 2] = width;
-			__bufferData[__bufferStride * 2 + 3] = uvWidth;
+			__vertexBufferData[0] = width;
+			__vertexBufferData[1] = height;
+			__vertexBufferData[3] = uvWidth;
+			__vertexBufferData[4] = uvHeight;
+			__vertexBufferData[__vertexBufferStride + 1] = height;
+			__vertexBufferData[__vertexBufferStride + 4] = uvHeight;
+			__vertexBufferData[__vertexBufferStride * 2] = width;
+			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvWidth;
 			
 			// for (i in 0...4) {
 				
-			// 	__bufferData[__bufferStride * i + 5] = alpha;
+			// 	__vertexBufferData[__vertexBufferStride * i + 5] = alpha;
 				
 			// 	if (colorTransform != null) {
 					
-			// 		__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-			// 		__bufferData[__bufferStride * i + 7] = colorTransform.greenMultiplier;
-			// 		__bufferData[__bufferStride * i + 8] = colorTransform.blueMultiplier;
-			// 		__bufferData[__bufferStride * i + 9] = colorTransform.alphaMultiplier;
-			// 		__bufferData[__bufferStride * i + 10] = colorTransform.redOffset / 255;
-			// 		__bufferData[__bufferStride * i + 11] = colorTransform.greenOffset / 255;
-			// 		__bufferData[__bufferStride * i + 12] = colorTransform.blueOffset / 255;
-			// 		__bufferData[__bufferStride * i + 13] = colorTransform.alphaOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 6] = colorTransform.redMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 7] = colorTransform.greenMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 8] = colorTransform.blueMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 9] = colorTransform.alphaMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 10] = colorTransform.redOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 11] = colorTransform.greenOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 12] = colorTransform.blueOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 13] = colorTransform.alphaOffset / 255;
 					
 			// 	}
 				
 			// }
 			
-			// __bufferAlpha = alpha;
-			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = context.__context;
-			__buffer = gl.createBuffer ();
+			// __vertexBufferAlpha = alpha;
+			// __vertexBufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+			__vertexBufferContext = context.__context;
+			__vertexBuffer = context.createVertexBuffer (3, __vertexBufferStride);
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
-			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			__vertexBuffer.uploadFromTypedArray (__vertexBufferData);
 			
 		} else {
 			
 			// var dirty = false;
 			
-			// if (__bufferAlpha != alpha) {
+			// if (__vertexBufferAlpha != alpha) {
 				
 			// 	dirty = true;
 				
 			// 	for (i in 0...4) {
 					
-			// 		__bufferData[__bufferStride * i + 5] = alpha;
+			// 		__vertexBufferData[__vertexBufferStride * i + 5] = alpha;
 					
 			// 	}
 				
-			// 	__bufferAlpha = alpha;
+			// 	__vertexBufferAlpha = alpha;
 				
 			// }
 			
-			// if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+			// if ((__vertexBufferColorTransform == null && colorTransform != null) || (__vertexBufferColorTransform != null && !__vertexBufferColorTransform.__equals (colorTransform))) {
 				
 			// 	dirty = true;
 				
 			// 	if (colorTransform != null) {
 					
-			// 		if (__bufferColorTransform == null) {
-			// 			__bufferColorTransform = colorTransform.__clone ();
+			// 		if (__vertexBufferColorTransform == null) {
+			// 			__vertexBufferColorTransform = colorTransform.__clone ();
 			// 		} else {
-			// 			__bufferColorTransform.__copyFrom (colorTransform);
+			// 			__vertexBufferColorTransform.__copyFrom (colorTransform);
 			// 		}
 					
 			// 		for (i in 0...4) {
 						
-			// 			__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-			// 			__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-			// 			__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-			// 			__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-			// 			__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-			// 			__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-			// 			__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-			// 			__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 6] = colorTransform.redMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 11] = colorTransform.greenMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 16] = colorTransform.blueMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 21] = colorTransform.alphaMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 22] = colorTransform.redOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 23] = colorTransform.greenOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 24] = colorTransform.blueOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 25] = colorTransform.alphaOffset / 255;
 						
 			// 		}
 					
@@ -1374,14 +1401,14 @@ class BitmapData implements IBitmapDrawable {
 					
 			// 		for (i in 0...4) {
 						
-			// 			__bufferData[__bufferStride * i + 6] = 1;
-			// 			__bufferData[__bufferStride * i + 11] = 1;
-			// 			__bufferData[__bufferStride * i + 16] = 1;
-			// 			__bufferData[__bufferStride * i + 21] = 1;
-			// 			__bufferData[__bufferStride * i + 22] = 0;
-			// 			__bufferData[__bufferStride * i + 23] = 0;
-			// 			__bufferData[__bufferStride * i + 24] = 0;
-			// 			__bufferData[__bufferStride * i + 25] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 6] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 11] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 16] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 21] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 22] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 23] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 24] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 25] = 0;
 						
 			// 		}
 					
@@ -1389,17 +1416,17 @@ class BitmapData implements IBitmapDrawable {
 				
 			// }
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			// context.__bindBuffer (gl.ARRAY_BUFFER, __vertexBuffer);
 			
 			// if (dirty) {
 			
-			// 	gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			// 	gl.bufferData (gl.ARRAY_BUFFER, __vertexBufferData.byteLength, __vertexBufferData, gl.STATIC_DRAW);
 			
 			// }
 			
 		}
 		
-		return __buffer;
+		return __vertexBuffer;
 		
 	}
 	
@@ -2755,11 +2782,11 @@ class BitmapData implements IBitmapDrawable {
 		
 		// alpha == 1, __worldColorTransform
 		
-		context.__bindBuffer (gl.ARRAY_BUFFER, getBuffer (context));
-		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-		if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		
-		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		var vertexBuffer = getVertexBuffer (context);
+		if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer (context);
+		context.drawTriangles (indexBuffer);
 		
 		#if gl_stats
 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -2781,11 +2808,11 @@ class BitmapData implements IBitmapDrawable {
 		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
 		renderer.updateShader ();
 		
-		context.__bindBuffer (gl.ARRAY_BUFFER, getBuffer (context));
-		gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		
-		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		var vertexBuffer = getVertexBuffer (context);
+		if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer (context);
+		context.drawTriangles (indexBuffer);
 		
 		#if gl_stats
 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -2811,7 +2838,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private function __setUVRect (context:Context3D, x:Float, y:Float, width:Float, height:Float):Void {
 		
-		var buffer = getBuffer (context);
+		var buffer = getVertexBuffer (context);
 		
 		if (buffer != null && (width != __uvRect.width || height != __uvRect.height || x != __uvRect.x || y != __uvRect.y)) {
 			
@@ -2825,21 +2852,20 @@ class BitmapData implements IBitmapDrawable {
 			var uvWidth = __textureWidth > 0 ? width / __textureWidth : 0;
 			var uvHeight = __textureHeight > 0 ? height / __textureHeight : 0;
 			
-			__bufferData[0] = width;
-			__bufferData[1] = height;
-			__bufferData[3] = uvX + uvWidth;
-			__bufferData[4] = uvY + uvHeight;
-			__bufferData[__bufferStride + 1] = height;
-			__bufferData[__bufferStride + 3] = uvX;
-			__bufferData[__bufferStride + 4] = uvY + uvHeight;
-			__bufferData[__bufferStride * 2] = width;
-			__bufferData[__bufferStride * 2 + 3] = uvX + uvWidth;
-			__bufferData[__bufferStride * 2 + 4] = uvY;
-			__bufferData[__bufferStride * 3 + 3] = uvX;
-			__bufferData[__bufferStride * 3 + 4] = uvY;
+			__vertexBufferData[0] = width;
+			__vertexBufferData[1] = height;
+			__vertexBufferData[3] = uvX + uvWidth;
+			__vertexBufferData[4] = uvY + uvHeight;
+			__vertexBufferData[__vertexBufferStride + 1] = height;
+			__vertexBufferData[__vertexBufferStride + 3] = uvX;
+			__vertexBufferData[__vertexBufferStride + 4] = uvY + uvHeight;
+			__vertexBufferData[__vertexBufferStride * 2] = width;
+			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvX + uvWidth;
+			__vertexBufferData[__vertexBufferStride * 2 + 4] = uvY;
+			__vertexBufferData[__vertexBufferStride * 3 + 3] = uvX;
+			__vertexBufferData[__vertexBufferStride * 3 + 4] = uvY;
 			
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
-			
+			__vertexBuffer.uploadFromTypedArray (__vertexBufferData);
 			
 		}
 		

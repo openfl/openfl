@@ -6,7 +6,6 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.Float32Array;
-import openfl._internal.renderer.opengl.GLVertexBuffer3D;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -39,35 +38,98 @@ class VertexBuffer3D {
 		__numVertices = numVertices;
 		__vertexSize = dataPerVertex;
 		
-		GLVertexBuffer3D.create (this, bufferUsage);
+		var gl = __context.__gl;
+		
+		__id = gl.createBuffer ();
+		// GLUtils.CheckGLError ();
+		
+		__stride = __vertexSize * 4;
+		
+		// __memoryUsage = 0;
+		
+		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+		
+		// __context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_VERTEX_BUFFER);
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		GLVertexBuffer3D.dispose (this);
+		var gl = __context.__gl;
+		
+		gl.deleteBuffer (__id);
+		
+		// __context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_VERTEX_BUFFER);
+		// __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, __memoryUsage);
+		// __memoryUsage = 0;
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void {
 		
-		GLVertexBuffer3D.uploadFromByteArray (this, data, byteArrayOffset, startVertex, numVertices);
+		var offset = byteArrayOffset + startVertex * __stride;
+		var length = numVertices * __vertexSize;
+		
+		uploadFromTypedArray (new Float32Array (data, offset, length));
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, byteLength:Int = -1):Void {
 		
-		GLVertexBuffer3D.uploadFromTypedArray (this, data);
+		if (data == null) return;
+		var gl = __context.__gl;
+		
+		__context.__bindBuffer (gl.ARRAY_BUFFER, __id);
+		// GLUtils.CheckGLError ();
+		
+		gl.bufferData (gl.ARRAY_BUFFER, data, __usage);
+		// GLUtils.CheckGLError ();
+		
+		// if (data.byteLength != __memoryUsage) {
+			
+		// 	__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, data.byteLength - __memoryUsage);
+		// 	__memoryUsage = data.byteLength;
+			
+		// }
 		
 	}
 	
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
-		GLVertexBuffer3D.uploadFromVector (this, data, startVertex, numVertices);
+		if (data == null) return;
+		var gl = __context.__gl;
+		
+		// TODO: Optimize more
+		
+		var start = startVertex * __vertexSize;
+		var count = numVertices * __vertexSize;
+		var length = start + count;
+		
+		var existingFloat32Array = __tempFloat32Array;
+		
+		if (__tempFloat32Array == null || __tempFloat32Array.length < count) {
+			
+			__tempFloat32Array = new Float32Array (count);
+			
+			if (existingFloat32Array != null) {
+				
+				__tempFloat32Array.set (existingFloat32Array);
+				
+			}
+			
+		}
+		
+		for (i in start...length) {
+			
+			__tempFloat32Array[i - start] = data[i];
+			
+		}
+		
+		uploadFromTypedArray (__tempFloat32Array);
 		
 	}
 	

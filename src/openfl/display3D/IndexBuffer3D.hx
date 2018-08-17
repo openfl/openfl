@@ -4,7 +4,6 @@ package openfl.display3D; #if !flash
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.Int16Array;
-import openfl._internal.renderer.opengl.GLIndexBuffer3D;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -34,35 +33,93 @@ import openfl.Vector;
 		__context = context3D;
 		__numIndices = numIndices;
 		
-		GLIndexBuffer3D.create (this, bufferUsage);
+		var gl = __context.__gl;
+		
+		__elementType = gl.UNSIGNED_SHORT;
+		
+		__id = gl.createBuffer ();
+		// GLUtils.CheckGLError ();
+		
+		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+		
+		// ____context.__statsIncrement (__context3D.__context3DTelemetry.COUNT_INDEX_BUFFER);
+		// __memoryUsage = 0;
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		GLIndexBuffer3D.dispose (this);
+		var gl = __context.__gl;
+		
+		gl.deleteBuffer (__id);
+		
+		// ____context.__statsDecrement(__context3D.__context3DTelemetry.COUNT_INDEX_BUFFER);
+		// ____context.__statsSubtract(__context3D.__context3DTelemetry.MEM_INDEX_BUFFER, __memoryUsage);
+		// __memoryUsage = 0;
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
-		GLIndexBuffer3D.uploadFromByteArray (this, data, byteArrayOffset, startOffset, count);
+		var offset = byteArrayOffset + startOffset * 2;
+		
+		uploadFromTypedArray (new Int16Array (data.toArrayBuffer (), offset, count));
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, byteLength:Int = -1):Void {
 		
-		GLIndexBuffer3D.uploadFromTypedArray (this, data);
+		if (data == null) return;
+		var gl = __context.__gl;
+		
+		__context.__bindBuffer (gl.ELEMENT_ARRAY_BUFFER, __id);
+		// GLUtils.CheckGLError ();
+		
+		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, data, __usage);
+		// GLUtils.CheckGLError ();
+		
+		// if (data.byteLength != __memoryUsage) {
+			
+		// 	____context.__statsAdd (__context3D.__context3DTelemetry.MEM_INDEX_BUFFER, data.byteLength - __memoryUsage);
+		// 	__memoryUsage = data.byteLength;
+			
+		// }
 		
 	}
 	
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
-		GLIndexBuffer3D.uploadFromVector (this, data, startOffset, count);
+		// TODO: Optimize more
+		
+		if (data == null) return;
+		var gl = __context.__gl;
+		
+		var length = startOffset + count;
+		var existingInt16Array = __tempInt16Array;
+		
+		if (__tempInt16Array == null || __tempInt16Array.length < count) {
+			
+			__tempInt16Array = new Int16Array (count);
+			
+			if (existingInt16Array != null) {
+				
+				__tempInt16Array.set (existingInt16Array);
+				
+			}
+			
+		}
+		
+		for (i in startOffset...length) {
+			
+			__tempInt16Array[i - startOffset] = data[i];
+			
+		}
+		
+		uploadFromTypedArray (__tempInt16Array);
 		
 	}
 	

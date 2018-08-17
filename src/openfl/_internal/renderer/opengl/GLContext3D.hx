@@ -295,28 +295,28 @@ class GLContext3D {
 	
 	public static function drawTriangles (context:Context3D, indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		if (context.__program == null) {
+		// if (context.__program == null) {
 			
-			return;
+		// 	return;
 			
-		}
+		// }
 		
-		__setContext (context);
-		__flushSamplerState ();
-		context.__program.__flush ();
+		// __setContext (context);
+		// __flushSamplerState ();
+		// context.__program.__flush ();
 		
-		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
+		// var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 		
-		context.__bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
-		GLUtils.CheckGLError ();
+		// context.__bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
+		// GLUtils.CheckGLError ();
 		
-		gl.drawElements (gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
-		GLUtils.CheckGLError ();
+		// gl.drawElements (gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
+		// GLUtils.CheckGLError ();
 		
-		#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE3D);
-		#end
-		// __statsIncrement (Context3DTelemetry.DRAW_CALLS);
+		// #if gl_stats
+		// 	GLStats.incrementDrawCall (DrawCallContext.STAGE3D);
+		// #end
+		// // __statsIncrement (Context3DTelemetry.DRAW_CALLS);
 		
 	}
 	
@@ -959,60 +959,60 @@ class GLContext3D {
 	
 	public static function setVertexBufferAt (context:Context3D, index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
-		__setContext (context);
+		// __setContext (context);
 		
-		if (buffer == null) {
+		// if (buffer == null) {
 			
-			gl.disableVertexAttribArray (index);
-			GLUtils.CheckGLError ();
+		// 	gl.disableVertexAttribArray (index);
+		// 	GLUtils.CheckGLError ();
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, null);
-			GLUtils.CheckGLError ();
+		// 	context.__bindBuffer (gl.ARRAY_BUFFER, null);
+		// 	GLUtils.CheckGLError ();
 			
-			return;
+		// 	return;
 			
-		}
+		// }
 		
-		gl.enableVertexAttribArray (index);
-		GLUtils.CheckGLError ();
+		// gl.enableVertexAttribArray (index);
+		// GLUtils.CheckGLError ();
 		
-		context.__bindBuffer (gl.ARRAY_BUFFER, buffer.__id);
-		GLUtils.CheckGLError ();
+		// context.__bindBuffer (gl.ARRAY_BUFFER, buffer.__id);
+		// GLUtils.CheckGLError ();
 		
-		var byteOffset = bufferOffset * 4;
+		// var byteOffset = bufferOffset * 4;
 		
-		switch (format) {
+		// switch (format) {
 			
-			case BYTES_4:
+		// 	case BYTES_4:
 				
-				gl.vertexAttribPointer (index, 4, gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
-				GLUtils.CheckGLError ();
+		// 		gl.vertexAttribPointer (index, 4, gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
+		// 		GLUtils.CheckGLError ();
 				
-			case FLOAT_4:
+		// 	case FLOAT_4:
 				
-				gl.vertexAttribPointer (index, 4, gl.FLOAT, false, buffer.__stride, byteOffset);
-				GLUtils.CheckGLError ();
+		// 		gl.vertexAttribPointer (index, 4, gl.FLOAT, false, buffer.__stride, byteOffset);
+		// 		GLUtils.CheckGLError ();
 			
-			case FLOAT_3:
+		// 	case FLOAT_3:
 				
-				gl.vertexAttribPointer (index, 3, gl.FLOAT, false, buffer.__stride, byteOffset);
-				GLUtils.CheckGLError ();
+		// 		gl.vertexAttribPointer (index, 3, gl.FLOAT, false, buffer.__stride, byteOffset);
+		// 		GLUtils.CheckGLError ();
 			
-			case FLOAT_2:
+		// 	case FLOAT_2:
 				
-				gl.vertexAttribPointer (index, 2, gl.FLOAT, false, buffer.__stride, byteOffset);
-				GLUtils.CheckGLError ();
+		// 		gl.vertexAttribPointer (index, 2, gl.FLOAT, false, buffer.__stride, byteOffset);
+		// 		GLUtils.CheckGLError ();
 			
-			case FLOAT_1:
+		// 	case FLOAT_1:
 				
-				gl.vertexAttribPointer (index, 1, gl.FLOAT, false, buffer.__stride, byteOffset);
-				GLUtils.CheckGLError ();
+		// 		gl.vertexAttribPointer (index, 1, gl.FLOAT, false, buffer.__stride, byteOffset);
+		// 		GLUtils.CheckGLError ();
 			
-			default:
+		// 	default:
 				
-				throw new IllegalOperationError ();
+		// 		throw new IllegalOperationError ();
 			
-		}
+		// }
 		
 	}
 	

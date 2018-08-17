@@ -38,6 +38,7 @@ import lime.graphics.GLRenderContext;
 @:noDebug
 #end
 
+@:access(openfl._internal.renderer.opengl.GLContext3D)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.Texture)
@@ -275,13 +276,28 @@ import lime.graphics.GLRenderContext;
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		if (__program == null) {
+		if (__glProgram == null && __program == null) return;
+		
+		if (__program != null) {
 			
-			return;
+			GLContext3D.__setContext (this);
+			GLContext3D.__flushSamplerState ();
+			__program.__flush ();
 			
 		}
 		
-		GLContext3D.drawTriangles (this, indexBuffer, firstIndex, numTriangles);
+		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
+		
+		__bindBuffer (__gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
+		// GLUtils.CheckGLError ();
+		
+		__gl.drawElements (__gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
+		// GLUtils.CheckGLError ();
+		
+		#if gl_stats
+			GLStats.incrementDrawCall (DrawCallContext.STAGE3D);
+		#end
+		// __statsIncrement (Context3DTelemetry.DRAW_CALLS);
 		
 	}
 	
@@ -411,7 +427,58 @@ import lime.graphics.GLRenderContext;
 	
 	public function setVertexBufferAt (index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
-		GLContext3D.setVertexBufferAt (this, index, buffer, bufferOffset, format);
+		if (buffer == null) {
+			
+			__gl.disableVertexAttribArray (index);
+			// GLUtils.CheckGLError ();
+			
+			__bindBuffer (__gl.ARRAY_BUFFER, null);
+			// GLUtils.CheckGLError ();
+			
+			return;
+			
+		}
+		
+		__gl.enableVertexAttribArray (index);
+		// GLUtils.CheckGLError ();
+		
+		__bindBuffer (__gl.ARRAY_BUFFER, buffer.__id);
+		// GLUtils.CheckGLError ();
+		
+		var byteOffset = bufferOffset * 4;
+		
+		switch (format) {
+			
+			case BYTES_4:
+				
+				__gl.vertexAttribPointer (index, 4, __gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
+				// GLUtils.CheckGLError ();
+				
+			case FLOAT_4:
+				
+				__gl.vertexAttribPointer (index, 4, __gl.FLOAT, false, buffer.__stride, byteOffset);
+				// GLUtils.CheckGLError ();
+			
+			case FLOAT_3:
+				
+				__gl.vertexAttribPointer (index, 3, __gl.FLOAT, false, buffer.__stride, byteOffset);
+				// GLUtils.CheckGLError ();
+			
+			case FLOAT_2:
+				
+				__gl.vertexAttribPointer (index, 2, __gl.FLOAT, false, buffer.__stride, byteOffset);
+				// GLUtils.CheckGLError ();
+			
+			case FLOAT_1:
+				
+				__gl.vertexAttribPointer (index, 1, __gl.FLOAT, false, buffer.__stride, byteOffset);
+				// GLUtils.CheckGLError ();
+			
+			default:
+				
+				throw new IllegalOperationError ();
+			
+		}
 		
 	}
 	
