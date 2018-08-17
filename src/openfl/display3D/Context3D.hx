@@ -193,7 +193,39 @@ import lime.graphics.GLRenderContext;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
-		GLContext3D.clear (this, red, green, blue, alpha, depth, stencil, mask);
+		var clearMask = 0;
+		
+		if (mask & Context3DClearMask.COLOR != 0) {
+			
+			clearMask |= __gl.COLOR_BUFFER_BIT;
+			
+			__clearColor (red, green, blue, alpha);
+			// GLUtils.CheckGLError ();
+			
+		}
+		
+		if (mask & Context3DClearMask.DEPTH != 0) {
+			
+			clearMask |= __gl.DEPTH_BUFFER_BIT;
+			
+			__depthMask (true);
+			__clearDepth (depth);
+			// GLUtils.CheckGLError ();
+			
+		}
+		
+		if (mask & Context3DClearMask.STENCIL != 0) {
+			
+			clearMask |= __gl.STENCIL_BUFFER_BIT;
+			
+			// context.__clearStencil (stencil);
+			__gl.clearStencil (stencil);
+			// GLUtils.CheckGLError ();
+			
+		}
+		
+		__gl.clear (clearMask);
+		// GLUtils.CheckGLError ();
 		
 	}
 	

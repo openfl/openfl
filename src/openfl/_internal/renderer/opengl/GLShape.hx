@@ -51,7 +51,6 @@ class GLShape {
 			if (graphics.__bitmap != null && graphics.__visible) {
 				
 				var context = renderer.__context3D;
-				var gl = context.__gl;
 				
 				var shader = renderer.__initDisplayShader (cast shape.__worldShader);
 				renderer.setShader (shader);
@@ -98,7 +97,6 @@ class GLShape {
 			if (graphics.__bitmap != null) {
 				
 				var context = renderer.__context3D;
-				var gl = context.__gl;
 				
 				var shader = renderer.__maskShader;
 				renderer.setShader (shader);

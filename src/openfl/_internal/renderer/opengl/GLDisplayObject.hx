@@ -1,6 +1,7 @@
 package openfl._internal.renderer.opengl;
 
 
+import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
 import openfl.geom.Rectangle;
@@ -36,15 +37,13 @@ class GLDisplayObject {
 			renderer.__pushMaskObject (displayObject);
 			
 			var context = renderer.__context3D;
-			var gl = context.__gl;
 			
 			var rect = Rectangle.__pool.get ();
 			rect.setTo (0, 0, displayObject.width, displayObject.height);
 			renderer.__pushMaskRect (rect, displayObject.__renderTransform);
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
-			context.__clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
-			gl.clear (gl.COLOR_BUFFER_BIT);
+			context.clear (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
 			
 			renderer.__popMaskRect ();
 			renderer.__popMaskObject (displayObject);
@@ -68,11 +67,11 @@ class GLDisplayObject {
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			// #if (lime >= "7.0.0")
+			// var gl = renderer.__context.webgl;
+			// #else
+			// var gl = renderer.__context;
+			// #end
 			
 			// TODO
 			

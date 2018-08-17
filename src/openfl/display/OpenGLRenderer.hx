@@ -11,6 +11,7 @@ import lime.math.Matrix4;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
@@ -448,15 +449,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stage == null || __stage.__transparent) {
 			
-			__context3D.__clearColor (0, 0, 0, 0);
+			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
 			
 		} else {
 			
-			__context3D.__clearColor (__stage.__colorSplit[0], __stage.__colorSplit[1], __stage.__colorSplit[2], 1);
+			__context3D.clear (__stage.__colorSplit[0], __stage.__colorSplit[1], __stage.__colorSplit[2], 1, 0, 0, Context3DClearMask.COLOR);
 			
 		}
-		
-		__gl.clear (__gl.COLOR_BUFFER_BIT);
 		
 	}
 	
@@ -689,7 +688,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			__context3D.__enable (__gl.STENCIL_TEST);
 			__context3D.__stencilMask (0xFF);
-			__gl.clear (__gl.STENCIL_BUFFER_BIT);
+			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
 			__updatedStencil = true;
 			
 		}
@@ -794,20 +793,20 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				if (__offsetX > 0) {
 					
 					__context3D.__scissor (0, 0, __offsetX, __height);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 					__context3D.__scissor (__offsetX + __displayWidth, 0, __width, __height);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
 				if (__offsetY > 0) {
 					
 					__context3D.__scissor (0, 0, __width, __offsetY);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 					__context3D.__scissor (0, __offsetY + __displayHeight, __width, __height);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
@@ -847,8 +846,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (clear) {
 			
-			__context3D.__clearColor (0, 0, 0, 0);
-			__gl.clear (__gl.COLOR_BUFFER_BIT);
+			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
 			
 		}
 		

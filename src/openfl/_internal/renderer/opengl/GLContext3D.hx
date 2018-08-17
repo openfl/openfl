@@ -210,40 +210,7 @@ class GLContext3D {
 	
 	public static function clear (context:Context3D, red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
-		__setContext (context);
-		var clearMask = 0;
 		
-		if (mask & Context3DClearMask.COLOR != 0) {
-			
-			clearMask |= gl.COLOR_BUFFER_BIT;
-			
-			context.__clearColor (red, green, blue, alpha);
-			GLUtils.CheckGLError ();
-			
-		}
-		
-		if (mask & Context3DClearMask.DEPTH != 0) {
-			
-			clearMask |= gl.DEPTH_BUFFER_BIT;
-			
-			context.__depthMask (true);
-			context.__clearDepth (depth);
-			GLUtils.CheckGLError ();
-			
-		}
-		
-		if (mask & Context3DClearMask.STENCIL != 0) {
-			
-			clearMask |= gl.STENCIL_BUFFER_BIT;
-			
-			// context.__clearStencil (stencil);
-			gl.clearStencil (stencil);
-			GLUtils.CheckGLError ();
-			
-		}
-		
-		gl.clear (clearMask);
-		GLUtils.CheckGLError ();
 		
 	}
 	
@@ -295,28 +262,7 @@ class GLContext3D {
 	
 	public static function drawTriangles (context:Context3D, indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		// if (context.__program == null) {
-			
-		// 	return;
-			
-		// }
 		
-		// __setContext (context);
-		// __flushSamplerState ();
-		// context.__program.__flush ();
-		
-		// var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
-		
-		// context.__bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
-		// GLUtils.CheckGLError ();
-		
-		// gl.drawElements (gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
-		// GLUtils.CheckGLError ();
-		
-		// #if gl_stats
-		// 	GLStats.incrementDrawCall (DrawCallContext.STAGE3D);
-		// #end
-		// // __statsIncrement (Context3DTelemetry.DRAW_CALLS);
 		
 	}
 	
@@ -959,60 +905,7 @@ class GLContext3D {
 	
 	public static function setVertexBufferAt (context:Context3D, index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
-		// __setContext (context);
 		
-		// if (buffer == null) {
-			
-		// 	gl.disableVertexAttribArray (index);
-		// 	GLUtils.CheckGLError ();
-			
-		// 	context.__bindBuffer (gl.ARRAY_BUFFER, null);
-		// 	GLUtils.CheckGLError ();
-			
-		// 	return;
-			
-		// }
-		
-		// gl.enableVertexAttribArray (index);
-		// GLUtils.CheckGLError ();
-		
-		// context.__bindBuffer (gl.ARRAY_BUFFER, buffer.__id);
-		// GLUtils.CheckGLError ();
-		
-		// var byteOffset = bufferOffset * 4;
-		
-		// switch (format) {
-			
-		// 	case BYTES_4:
-				
-		// 		gl.vertexAttribPointer (index, 4, gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
-		// 		GLUtils.CheckGLError ();
-				
-		// 	case FLOAT_4:
-				
-		// 		gl.vertexAttribPointer (index, 4, gl.FLOAT, false, buffer.__stride, byteOffset);
-		// 		GLUtils.CheckGLError ();
-			
-		// 	case FLOAT_3:
-				
-		// 		gl.vertexAttribPointer (index, 3, gl.FLOAT, false, buffer.__stride, byteOffset);
-		// 		GLUtils.CheckGLError ();
-			
-		// 	case FLOAT_2:
-				
-		// 		gl.vertexAttribPointer (index, 2, gl.FLOAT, false, buffer.__stride, byteOffset);
-		// 		GLUtils.CheckGLError ();
-			
-		// 	case FLOAT_1:
-				
-		// 		gl.vertexAttribPointer (index, 1, gl.FLOAT, false, buffer.__stride, byteOffset);
-		// 		GLUtils.CheckGLError ();
-			
-		// 	default:
-				
-		// 		throw new IllegalOperationError ();
-			
-		// }
 		
 	}
 	

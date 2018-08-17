@@ -26,6 +26,7 @@ import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -2514,8 +2515,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			context.__clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
-			gl.clear (gl.COLOR_BUFFER_BIT);
+			context.clear (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
 			
 			if (useScissor) {
 				

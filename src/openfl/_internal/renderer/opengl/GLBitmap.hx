@@ -35,7 +35,6 @@ class GLBitmap {
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
 			var context = renderer.__context3D;
-			var gl = context.__gl;
 			
 			renderer.__setBlendMode (bitmap.__worldBlendMode);
 			renderer.__pushMaskObject (bitmap);
@@ -74,7 +73,6 @@ class GLBitmap {
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
 			var context = renderer.__context3D;
-			var gl = context.__gl;
 			
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
