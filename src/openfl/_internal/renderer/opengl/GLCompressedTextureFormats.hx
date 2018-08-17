@@ -3,18 +3,15 @@ package openfl._internal.renderer.opengl;
 
 import lime.graphics.opengl.GL;
 import openfl._internal.formats.atf.ATFGPUFormat;
+import openfl.display3D.Context3D;
 import openfl.errors.IllegalOperationError;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+
+@:access(openfl.display3D.Context3D)
 
 
 class GLCompressedTextureFormats {
@@ -24,7 +21,7 @@ class GLCompressedTextureFormats {
 	private var __formatMapAlpha = new Map<Int, Int> ();
 	
 	
-	public function new (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end) {
+	public function new (context:Context3D) {
 		
 		checkDXT (context);
 		checkETC1 (context);
@@ -33,13 +30,9 @@ class GLCompressedTextureFormats {
 	}
 	
 	
-	public function checkDXT (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+	public function checkDXT (context:Context3D):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl = context;
-		#end
+		var gl = context.__gl;
 		
 		#if (js && html5)
 		var compressedExtension = gl.getExtension ("WEBGL_compressed_texture_s3tc");
@@ -57,13 +50,9 @@ class GLCompressedTextureFormats {
 	}
 	
 	
-	public function checkETC1 (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+	public function checkETC1 (context:Context3D):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl = context;
-		#end
+		var gl = context.__gl;
 		
 		#if (js && html5)
 		
@@ -90,13 +79,9 @@ class GLCompressedTextureFormats {
 	}
 	
 	
-	public function checkPVRTC (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+	public function checkPVRTC (context:Context3D):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl = context;
-		#end
+		var gl = context.__gl;
 		
 		#if (js && html5)
 		// WEBGL_compressed_texture_pvrtc is not available on iOS Safari

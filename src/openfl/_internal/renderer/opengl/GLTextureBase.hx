@@ -6,8 +6,8 @@ import openfl._internal.renderer.opengl.GLUtils;
 import openfl._internal.renderer.opengl.GLCompressedTextureFormats;
 import openfl._internal.formats.agal.SamplerState;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
-import openfl.display.OpenGLRenderer;
 
 #if (lime >= "7.0.0")
 import lime._internal.graphics.ImageCanvasUtil; // TODO
@@ -23,8 +23,8 @@ import lime.graphics.GLRenderContext;
 
 @:access(openfl._internal.formats.agal.SamplerState)
 @:access(openfl.display3D.textures.TextureBase)
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
-@:access(openfl.display.DisplayObjectRenderer)
 
 
 class GLTextureBase {
@@ -37,16 +37,13 @@ class GLTextureBase {
 	public static var __compressedTextureFormats:Null<GLCompressedTextureFormats> = null;
 	
 	
-	public static function create (textureBase:TextureBase, renderer:OpenGLRenderer):Void {
+	public static function create (textureBase:TextureBase):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:GLRenderContext = renderer.__context;
-		#end
+		var context = textureBase.__context;
+		var gl = context.__gl;
 		
 		textureBase.__textureID = gl.createTexture ();
-		textureBase.__textureContext = renderer.__context;
+		textureBase.__textureContext = context.__context;
 		
 		if (__supportsBGRA == null) {
 			
@@ -67,7 +64,7 @@ class GLTextureBase {
 				__textureFormat = bgraExtension.BGRA_EXT;
 				
 				#if (!ios && !tvos)
-				if (#if (lime >= "7.0.0") renderer.__context.type == OPENGLES #else gl.type == GLES #end) {
+				if (#if (lime >= "7.0.0") context.__context.type == OPENGLES #else gl.type == GLES #end) {
 					
 					__textureInternalFormat = bgraExtension.BGRA_EXT;
 					
@@ -85,7 +82,7 @@ class GLTextureBase {
 		
 		if (__compressedTextureFormats == null) {
 			
-			__compressedTextureFormats = new GLCompressedTextureFormats (renderer.__context);
+			__compressedTextureFormats = new GLCompressedTextureFormats (context);
 			
 		}
 		
@@ -95,13 +92,9 @@ class GLTextureBase {
 	}
 	
 	
-	public static function dispose (textureBase:TextureBase, renderer:OpenGLRenderer):Void {
+	public static function dispose (textureBase:TextureBase):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var gl = textureBase.__context.__gl;
 		
 		if (textureBase.__alphaTexture != null) {
 			
@@ -148,7 +141,7 @@ class GLTextureBase {
 	}
 	
 	
-	public static function getImage (textureBase:TextureBase, renderer:OpenGLRenderer, bitmapData:BitmapData):Image {
+	public static function getImage (textureBase:TextureBase, bitmapData:BitmapData):Image {
 		
 		var image = bitmapData.image;
 		
@@ -163,11 +156,8 @@ class GLTextureBase {
 		#end
 		
 		#if (js && html5)
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = textureBase.__context;
+		var gl = context.__gl;
 		
 		if (image.type != DATA && !image.premultiplied) {
 			
@@ -213,17 +203,14 @@ class GLTextureBase {
 	}
 	
 	
-	public static function setSamplerState (textureBase:TextureBase, renderer:OpenGLRenderer, state:SamplerState):Void {
+	public static function setSamplerState (textureBase:TextureBase, state:SamplerState):Void {
 		
 		if (!state.equals (textureBase.__samplerState)) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = textureBase.__context;
+			var gl = context.__gl;
 			
-			renderer.bindTexture (textureBase.__textureTarget, textureBase.__textureID);
+			context.__bindTexture (textureBase.__textureTarget, textureBase.__textureID);
 			GLUtils.CheckGLError ();
 			gl.texParameteri (textureBase.__textureTarget, gl.TEXTURE_MIN_FILTER, state.minFilter);
 			GLUtils.CheckGLError ();

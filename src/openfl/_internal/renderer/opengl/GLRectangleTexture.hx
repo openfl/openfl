@@ -11,12 +11,6 @@ import openfl.display.BitmapData;
 import openfl.display.OpenGLRenderer;
 import openfl.utils.ByteArray;
 
-#if (lime >= "7.0.0")
-import lime.graphics.WebGLRenderContext;
-#else
-import lime.graphics.opengl.WebGLContext;
-#end
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -31,21 +25,17 @@ import lime.graphics.opengl.WebGLContext;
 class GLRectangleTexture {
 	
 	
-	public static function create (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer):Void {
+	public static function create (rectangleTexture:RectangleTexture):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var gl = rectangleTexture.__context.__gl;
 		
 		rectangleTexture.__textureTarget = gl.TEXTURE_2D;
-		uploadFromTypedArray (rectangleTexture, renderer, null);
+		uploadFromTypedArray (rectangleTexture, null);
 		
 	}
 	
 	
-	public static function uploadFromBitmapData (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, source:BitmapData):Void {
+	public static function uploadFromBitmapData (rectangleTexture:RectangleTexture, source:BitmapData):Void {
 		
 		if (source == null) return;
 		
@@ -55,47 +45,44 @@ class GLRectangleTexture {
 		#if (js && html5)
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl:WebGLContext = renderer.__context;
-			#end
+			var context = rectangleTexture.__context;
+			var gl = context.__gl;
 			
-			renderer.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
+			context.__bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			gl.texImage2D (rectangleTexture.__textureTarget, 0, rectangleTexture.__internalFormat, rectangleTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
-			renderer.bindTexture (rectangleTexture.__textureTarget, null);
+			context.__bindTexture (rectangleTexture.__textureTarget, null);
 			GLUtils.CheckGLError ();
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (rectangleTexture, renderer, image.data);
+		uploadFromTypedArray (rectangleTexture, image.data);
 		
 	}
 	
 	
-	public static function uploadFromByteArray (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
+	public static function uploadFromByteArray (rectangleTexture:RectangleTexture, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (rectangleTexture, renderer, @:privateAccess (data:ByteArrayData).b);
+			uploadFromTypedArray (rectangleTexture, @:privateAccess (data:ByteArrayData).b);
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (rectangleTexture, renderer, new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		uploadFromTypedArray (rectangleTexture, new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, data:ArrayBufferView):Void {
+	public static function uploadFromTypedArray (rectangleTexture:RectangleTexture, data:ArrayBufferView):Void {
 		
 		//if (__format != Context3DTextureFormat.BGRA) {
 			//
@@ -103,19 +90,16 @@ class GLRectangleTexture {
 			//
 		//}
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = rectangleTexture.__context;
+		var gl = context.__gl;
 		
-		gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
+		context.__bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (rectangleTexture.__textureTarget, 0, rectangleTexture.__internalFormat, rectangleTexture.__width, rectangleTexture.__height, 0, rectangleTexture.__format, gl.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
-		gl.bindTexture (rectangleTexture.__textureTarget, null);
+		context.__bindTexture (rectangleTexture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 		// var memUsage = (__width * __height) * 4;
@@ -124,15 +108,12 @@ class GLRectangleTexture {
 	}
 	
 	
-	public static function setSamplerState (rectangleTexture:RectangleTexture, renderer:OpenGLRenderer, state:SamplerState) {
+	public static function setSamplerState (rectangleTexture:RectangleTexture, state:SamplerState) {
 		
 		if (!state.equals (rectangleTexture.__samplerState)) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = rectangleTexture.__context;
+			var gl = context.__gl;
 			
 			if (state.maxAniso != 0.0) {
 				
@@ -143,7 +124,7 @@ class GLRectangleTexture {
 			
 		}
 		
-		GLTextureBase.setSamplerState (rectangleTexture, renderer, state);
+		GLTextureBase.setSamplerState (rectangleTexture, state);
 		
 	}
 	

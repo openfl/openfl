@@ -29,6 +29,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.Shader)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
@@ -318,14 +319,11 @@ class GLTilemap {
 		
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = renderer.__context3D;
+			var gl = context.__gl;
 			
 			var shader = renderer.__initDisplayShader (cast currentShader);
-			renderer.useShader (shader);
+			renderer.setShader (shader);
 			renderer.applyBitmapData (currentBitmapData, renderer.__allowSmoothing && tilemap.smoothing);
 			renderer.applyMatrix (renderer.__getMatrix (tilemap.__renderTransform));
 			
@@ -369,7 +367,7 @@ class GLTilemap {
 				
 			}
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
+			context.__bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
 			
 			if (tilemap.__bufferDirty) {
 				
@@ -439,11 +437,8 @@ class GLTilemap {
 		
 		currentBlendMode = tilemap.__worldBlendMode;
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = renderer.__context3D;
+		var gl = context.__gl;
 		
 		if (!tilemap.tileBlendModeEnabled) {
 			

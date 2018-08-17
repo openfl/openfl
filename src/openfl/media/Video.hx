@@ -7,6 +7,7 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.opengl.GLVideo;
+import openfl.display3D.Context3D;
 import openfl.display.CanvasRenderer;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
@@ -33,10 +34,11 @@ import lime.graphics.GLRenderContext;
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
-@:access(openfl.geom.Point)
 
 
 class Video extends DisplayObject {
@@ -138,15 +140,11 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private function __getBuffer (renderer:OpenGLRenderer):GLBuffer {
+	@:noCompletion private function __getBuffer (context:Context3D):GLBuffer {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
+		var gl = context.__gl;
 		
-		if (__buffer == null || __bufferContext != renderer.__context) {
+		if (__buffer == null || __bufferContext != context.__context) {
 			
 			#if openfl_power_of_two
 			
@@ -220,10 +218,10 @@ class Video extends DisplayObject {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = renderer.__context;
+			__bufferContext = context.__context;
 			__buffer = gl.createBuffer ();
 			
-			renderer.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			context.__bindBuffer (gl.ARRAY_BUFFER, __buffer);
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
 			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
@@ -277,7 +275,7 @@ class Video extends DisplayObject {
 				
 			// }
 			
-			renderer.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			context.__bindBuffer (gl.ARRAY_BUFFER, __buffer);
 			// gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			
 		}
@@ -287,22 +285,18 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private function __getTexture (renderer:OpenGLRenderer):GLTexture {
+	@:noCompletion private function __getTexture (context:Context3D):GLTexture {
 		
 		#if (js && html5)
 		
 		if (__stream == null || __stream.__video == null) return null;
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
+		var gl = context.__gl;
 		
 		if (__texture == null) {
 			
 			__texture = gl.createTexture ();
-			renderer.bindTexture (gl.TEXTURE_2D, __texture);
+			context.__bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -316,7 +310,7 @@ class Video extends DisplayObject {
 			var internalFormat = gl.RGBA;
 			var format = gl.RGBA;
 			
-			renderer.bindTexture (gl.TEXTURE_2D, __texture);
+			context.__bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;

@@ -10,7 +10,6 @@ import openfl._internal.renderer.opengl.GLUtils;
 import openfl._internal.formats.agal.SamplerState;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
-import openfl.display.OpenGLRenderer;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -30,39 +29,34 @@ import lime.graphics.GLRenderContext;
 
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
-@:access(openfl.display.DisplayObjectRenderer)
 
 
 class GLProgram3D {
 	
 	
 	private static var program:Program3D;
-	private static var renderer:OpenGLRenderer;
 	
 	
-	public static function dispose (program:Program3D, renderer:OpenGLRenderer):Void {
+	public static function dispose (program:Program3D):Void {
 		
 		GLProgram3D.program = program;
-		GLProgram3D.renderer = renderer;
 		
 		__deleteShaders ();
 		
 	}
 	
 	
-	public static function flushUniform (uniform:Uniform, context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):Void {
+	public static function flushUniform (uniform:Uniform):Void {
+		
+		var context = uniform.context;
 		
 		#if (js && html5)
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
+		var gl = context.__gl;
 		#else
 		#if (lime >= "7.0.0")
-		var gl = renderer.__context.gles2;
+		var gl = context.__context.gles2;
 		#else
-		var gl = renderer.__context;
+		var gl = context.__context;
 		#end
 		#end
 		
@@ -94,23 +88,18 @@ class GLProgram3D {
 	}
 	
 	
-	public static function setPositionScale (program:Program3D, renderer:OpenGLRenderer, positionScale:Float32Array):Void {
+	public static function setPositionScale (program:Program3D, positionScale:Float32Array):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
+		var gl = program.__context.__gl;
 		gl.uniform4fv (program.__positionScale.location, positionScale);
 		GLUtils.CheckGLError ();
 		
 	}
 	
 	
-	public static function upload (program:Program3D, renderer:OpenGLRenderer, vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
+	public static function upload (program:Program3D, vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
 		
 		GLProgram3D.program = program;
-		GLProgram3D.renderer = renderer;
 		
 		//var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		var samplerStates = new Array<SamplerState> ();
@@ -129,15 +118,12 @@ class GLProgram3D {
 	}
 	
 	
-	public static function use (program:Program3D, renderer:OpenGLRenderer):Void {
+	public static function use (program:Program3D):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = program.__context;
+		var gl = context.__gl;
 		
-		renderer.useProgram (program.__programID);
+		context.__useProgram (program.__programID);
 		GLUtils.CheckGLError ();
 		
 		program.__vertexUniformMap.markAllDirty ();
@@ -195,11 +181,7 @@ class GLProgram3D {
 	
 	private static function __buildUniformList ():Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var gl = program.__context.__gl;
 		
 		program.__uniforms.clear ();
 		program.__samplerUniforms.clear ();
@@ -223,7 +205,7 @@ class GLProgram3D {
 			var uniformType = info.type;
 			GLUtils.CheckGLError ();
 			
-			var uniform = new Uniform (renderer.__context);
+			var uniform = new Uniform (program.__context);
 			uniform.name = name;
 			uniform.size = size;
 			uniform.type = uniformType;
@@ -308,11 +290,7 @@ class GLProgram3D {
 	
 	private static function __deleteShaders ():Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var gl = program.__context.__gl;
 		
 		if (program.__programID != null) {
 			
@@ -367,11 +345,7 @@ class GLProgram3D {
 	
 	private static function __uploadFromGLSL (vertexShaderSource:String, fragmentShaderSource:String):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var gl = program.__context.__gl;
 		
 		__deleteShaders ();
 		

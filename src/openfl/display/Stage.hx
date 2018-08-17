@@ -1418,9 +1418,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null && (Stage3D.__active || stage3Ds[0].__contextRequested)) {
 			
+			// if (stage3Ds[0].context3D != null) {
+				
+			// 	stage3Ds[0].context3D.__restoreState (context3D);
+				
+			// }
+			
 			__renderer.__clear ();
 			__renderer.__renderStage3D (this);
 			__renderDirty = true;
+			
+			if (stage3Ds[0].context3D != null) {
+				
+				stage3Ds[0].context3D.__copyState (context3D);
+				
+			}
 			
 		}
 		
@@ -1447,6 +1459,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__update (false, true);
 		
 		if (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) {
+			
+			if (stage3Ds[0].context3D != null) {
+				
+				context3D.__copyState (stage3Ds[0].context3D);
+				
+			}
 			
 			if (!Stage3D.__active) {
 				
@@ -1602,8 +1620,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case OPENGL, OPENGLES, WEBGL:
 				
 				#if (!disable_cffi && (!html5 || !canvas))
-				__renderer = new OpenGLRenderer (window.context);
 				context3D = new Context3D (this);
+				__renderer = new OpenGLRenderer (context3D);
 				#end
 			
 			case CANVAS:
@@ -1635,13 +1653,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case OPENGL (gl):
 				
 				#if (!disable_cffi && (!html5 || !canvas))
-				__renderer = new OpenGLRenderer (gl);
-				
-				if (stage3Ds[0].context3D == null) {
-					
-					stage3Ds[0].__createContext (this, __renderer);
-					
-				}
+				context3D = new Context3D (this);
+				__renderer = new OpenGLRenderer (context3D);
 				#end
 			
 			case CANVAS (context):

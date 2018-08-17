@@ -16,6 +16,7 @@ import lime.math.color.ARGB;
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -34,18 +35,15 @@ class GLDisplayObject {
 			renderer.__setBlendMode (displayObject.__worldBlendMode);
 			renderer.__pushMaskObject (displayObject);
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = renderer.__context3D;
+			var gl = context.__gl;
 			
 			var rect = Rectangle.__pool.get ();
 			rect.setTo (0, 0, displayObject.width, displayObject.height);
 			renderer.__pushMaskRect (rect, displayObject.__renderTransform);
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
-			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
+			context.__clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
 			gl.clear (gl.COLOR_BUFFER_BIT);
 			
 			renderer.__popMaskRect ();

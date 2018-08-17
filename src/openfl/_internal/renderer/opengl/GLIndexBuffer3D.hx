@@ -21,6 +21,7 @@ import lime.graphics.opengl.WebGLContext;
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display.DisplayObjectRenderer)
 
@@ -28,13 +29,10 @@ import lime.graphics.opengl.WebGLContext;
 class GLIndexBuffer3D {
 	
 	
-	public static function create (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, bufferUsage:Context3DBufferUsage):Void {
+	public static function create (indexBuffer:IndexBuffer3D, bufferUsage:Context3DBufferUsage):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = indexBuffer.__context;
+		var gl = context.__gl;
 		
 		indexBuffer.__elementType = gl.UNSIGNED_SHORT;
 		
@@ -49,13 +47,10 @@ class GLIndexBuffer3D {
 	}
 	
 	
-	public static function dispose (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer):Void {
+	public static function dispose (indexBuffer:IndexBuffer3D):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = indexBuffer.__context;
+		var gl = context.__gl;
 		
 		gl.deleteBuffer (indexBuffer.__id);
 		
@@ -66,25 +61,22 @@ class GLIndexBuffer3D {
 	}
 	
 	
-	public static function uploadFromByteArray (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
+	public static function uploadFromByteArray (indexBuffer:IndexBuffer3D, data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
 		var offset = byteArrayOffset + startOffset * 2;
 		
-		uploadFromTypedArray (indexBuffer, renderer, new Int16Array (data.toArrayBuffer (), offset, count));
+		uploadFromTypedArray (indexBuffer, new Int16Array (data.toArrayBuffer (), offset, count));
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, data:ArrayBufferView):Void {
+	public static function uploadFromTypedArray (indexBuffer:IndexBuffer3D, data:ArrayBufferView):Void {
 		
 		if (data == null) return;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
+		var context = indexBuffer.__context;
+		var gl = context.__gl;
 		
-		renderer.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
+		context.__bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
 		GLUtils.CheckGLError ();
 		
 		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, data, indexBuffer.__usage);
@@ -100,16 +92,13 @@ class GLIndexBuffer3D {
 	}
 	
 	
-	public static function uploadFromVector (indexBuffer:IndexBuffer3D, renderer:OpenGLRenderer, data:Vector<UInt>, startOffset:Int, count:Int):Void {
+	public static function uploadFromVector (indexBuffer:IndexBuffer3D, data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
 		// TODO: Optimize more
 		
 		if (data == null) return;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = indexBuffer.__context;
+		var gl = context.__gl;
 		
 		var length = startOffset + count;
 		var existingInt16Array = indexBuffer.__tempInt16Array;
@@ -132,7 +121,7 @@ class GLIndexBuffer3D {
 			
 		}
 		
-		uploadFromTypedArray (indexBuffer, renderer, indexBuffer.__tempInt16Array);
+		uploadFromTypedArray (indexBuffer, indexBuffer.__tempInt16Array);
 		
 	}
 	

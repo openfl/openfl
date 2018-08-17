@@ -66,14 +66,14 @@ import lime.graphics.GLRenderContext;
 	
 	public function dispose ():Void {
 		
-		GLProgram3D.dispose (this, cast __context.__stage.__renderer);
+		GLProgram3D.dispose (this);
 		
 	}
 	
 	
 	public function upload (vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
 		
-		GLProgram3D.upload (this, cast __context.__stage.__renderer, vertexProgram, fragmentProgram);
+		GLProgram3D.upload (this, vertexProgram, fragmentProgram);
 		
 	}
 	
@@ -112,7 +112,7 @@ import lime.graphics.GLRenderContext;
 		
 		if (__positionScale != null) {
 			
-			GLProgram3D.setPositionScale (this, cast __context.__stage.__renderer, positionScale);
+			GLProgram3D.setPositionScale (this, positionScale);
 			
 		}
 		
@@ -128,7 +128,7 @@ import lime.graphics.GLRenderContext;
 	
 	@:noCompletion private function __use ():Void {
 		
-		GLProgram3D.use (this, cast __context.__stage.__renderer);
+		GLProgram3D.use (this);
 		
 	}
 	
@@ -154,11 +154,11 @@ import lime.graphics.GLRenderContext;
 	public var regCount:Int;
 	public var isDirty:Bool;
 	
-	public var context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	public var context:Context3D;
 	public var regDataPointer:BytePointer;
 	
 	
-	public function new (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end) {
+	public function new (context:Context3D) {
 		
 		this.context = context;
 		
@@ -170,13 +170,7 @@ import lime.graphics.GLRenderContext;
 	
 	public function flush ():Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl = context;
-		#end
-		
-		GLProgram3D.flushUniform (this, context);
+		GLProgram3D.flushUniform (this);
 		
 	}
 	

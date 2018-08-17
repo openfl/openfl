@@ -36,7 +36,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
-		GLTexture.create (this, cast __context.__stage.__renderer);
+		GLTexture.create (this);
 		
 	}
 	
@@ -45,13 +45,13 @@ import openfl.utils.ByteArray;
 		
 		if (!async) {
 			
-			GLTexture.uploadCompressedTextureFromByteArray (this, cast __context.__stage.__renderer, data, byteArrayOffset);
+			GLTexture.uploadCompressedTextureFromByteArray (this, data, byteArrayOffset);
 			
 		} else {
 			
 			Timer.delay (function () {
 				
-				GLTexture.uploadCompressedTextureFromByteArray (this, cast __context.__stage.__renderer, data, byteArrayOffset);
+				GLTexture.uploadCompressedTextureFromByteArray (this, data, byteArrayOffset);
 				dispatchEvent (new Event (Event.TEXTURE_READY));
 				
 			}, 1);
@@ -63,28 +63,28 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromBitmapData (source:BitmapData, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
-		GLTexture.uploadFromBitmapData (this, cast __context.__stage.__renderer, source, miplevel, generateMipmap);
+		GLTexture.uploadFromBitmapData (this, source, miplevel, generateMipmap);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
-		GLTexture.uploadFromByteArray (this, cast __context.__stage.__renderer, data, byteArrayOffset, miplevel);
+		GLTexture.uploadFromByteArray (this, data, byteArrayOffset, miplevel);
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
-		GLTexture.uploadFromTypedArray (this, cast __context.__stage.__renderer, data, miplevel);
+		GLTexture.uploadFromTypedArray (this, data, miplevel);
 		
 	}
 	
 	
 	@:noCompletion private override function __setSamplerState (state:SamplerState) {
 		
-		GLTexture.setSamplerState (this, cast __context.__stage.__renderer, state);
+		GLTexture.setSamplerState (this, state);
 		
 	}
 	

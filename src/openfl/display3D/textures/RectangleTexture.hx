@@ -28,35 +28,35 @@ import openfl.utils.ByteArray;
 		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
-		GLRectangleTexture.create (this, cast __context.__stage.__renderer);
+		GLRectangleTexture.create (this);
 		
 	}
 	
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
-		GLRectangleTexture.uploadFromBitmapData (this, cast __context.__stage.__renderer, source);
+		GLRectangleTexture.uploadFromBitmapData (this, source);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		GLRectangleTexture.uploadFromByteArray (this, cast __context.__stage.__renderer, data, byteArrayOffset);
+		GLRectangleTexture.uploadFromByteArray (this, data, byteArrayOffset);
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
-		GLRectangleTexture.uploadFromTypedArray (this, cast __context.__stage.__renderer, data);
+		GLRectangleTexture.uploadFromTypedArray (this, data);
 		
 	}
 	
 	
 	@:noCompletion private override function __setSamplerState (state:SamplerState) {
 		
-		GLRectangleTexture.setSamplerState (this, cast __context.__stage.__renderer, state);
+		GLRectangleTexture.setSamplerState (this, state);
 		
 	}
 	

@@ -1,19 +1,15 @@
 package openfl.display; #if !flash
 
 
+import openfl.display3D.Context3D;
 import lime.utils.Float32Array;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+
+@:access(openfl.display3D.Context3D)
 
 #if (!js && !display) @:generic #end
 
@@ -43,13 +39,9 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __disableGL (renderer:OpenGLRenderer):Void {
+	@:noCompletion private function __disableGL (context:Context3D):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var gl = context.__gl;
 		
 		if (!__isUniform) {
 			
@@ -64,13 +56,9 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __updateGL (renderer:OpenGLRenderer, overrideValue:Array<T> = null):Void {
+	@:noCompletion private function __updateGL (context:Context3D, overrideValue:Array<T> = null):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
+		var gl = context.__gl;
 		
 		var value = overrideValue != null ? overrideValue : this.value;
 		
@@ -262,13 +250,9 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __updateGLFromBuffer (renderer:OpenGLRenderer, buffer:Float32Array, position:Int, length:Int):Void {
+	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:Float32Array, position:Int, length:Int):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = renderer.__context;
-		#end
+		var gl = context.__gl;
 		
 		if (__isUniform) {
 			

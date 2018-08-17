@@ -1663,7 +1663,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				case OPENGL:
 					
 					var renderer:OpenGLRenderer = cast renderer;
-					renderer.useShader (__worldShader);
+					renderer.setShader (__worldShader);
 					__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
 				
 				case CAIRO:
@@ -1702,7 +1702,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			if (renderer.__type == OPENGL) {
 				
 				var renderer:OpenGLRenderer = cast renderer;
-				renderer.viewport ();
+				renderer.setViewport ();
 				
 			}
 			
@@ -2146,7 +2146,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					
 					if (renderType == OPENGL) {
 						
-						__cacheBitmapRenderer = new OpenGLRenderer (renderer.__context, __cacheBitmapData);
+						__cacheBitmapRenderer = new OpenGLRenderer (stage.context3D, __cacheBitmapData);
 						
 					} else {
 						
@@ -2199,9 +2199,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var cacheBlendMode = parentRenderer.__blendMode;
 					parentRenderer.__suspendClipAndMask ();
 					childRenderer.__copyShader (parentRenderer);
-					childRenderer.__copyState (parentRenderer);
+					// childRenderer.__copyState (parentRenderer);
 					
-					__cacheBitmapData.__setUVRect (childRenderer, 0, 0, filterWidth, filterHeight);
+					__cacheBitmapData.__setUVRect (stage.context3D, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 					
@@ -2234,7 +2234,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
 							}
-							__cacheBitmapData2.__setUVRect (childRenderer, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData2.__setUVRect (stage.context3D, 0, 0, filterWidth, filterHeight);
 							bitmap2 = __cacheBitmapData2;
 						// } else {
 						// 	bitmap2 = bitmapData;
@@ -2249,7 +2249,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
 							}
-							__cacheBitmapData3.__setUVRect (childRenderer, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData3.__setUVRect (stage.context3D, 0, 0, filterWidth, filterHeight);
 							bitmap3 = __cacheBitmapData3;
 						}
 						
@@ -2304,9 +2304,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					parentRenderer.__blendMode = NORMAL;
 					parentRenderer.__setBlendMode (cacheBlendMode);
 					parentRenderer.__copyShader (childRenderer);
-					parentRenderer.__restoreState (childRenderer);
+					// parentRenderer.__restoreState (childRenderer);
 					parentRenderer.__resumeClipAndMask (childRenderer);
-					parentRenderer.viewport ();
+					parentRenderer.setViewport ();
 					
 					__cacheBitmapColorTransform.__copyFrom (colorTransform);
 					

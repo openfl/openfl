@@ -17,13 +17,6 @@ import openfl.display.OpenGLRenderer;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
-#if (lime >= "7.0.0")
-import lime.graphics.WebGLRenderContext;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
-#end
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -38,39 +31,33 @@ import lime.graphics.GLRenderContext;
 class GLTexture {
 	
 	
-	public static function create (texture:Texture, renderer:OpenGLRenderer):Void {
+	public static function create (texture:Texture):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = texture.__context;
+		var gl = context.__gl;
 		
 		texture.__textureTarget = gl.TEXTURE_2D;
 		
-		renderer.bindTexture (texture.__textureTarget, texture.__textureID);
+		context.__bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (texture.__textureTarget, 0, texture.__internalFormat, texture.__width, texture.__height, 0, texture.__format, gl.UNSIGNED_BYTE, #if (lime >= "7.0.0") null #else 0 #end);
 		GLUtils.CheckGLError ();
 		
-		renderer.bindTexture (texture.__textureTarget, null);
+		context.__bindTexture (texture.__textureTarget, null);
 		
 	}
 	
 	
-	public static function uploadCompressedTextureFromByteArray (texture:Texture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
+	public static function uploadCompressedTextureFromByteArray (texture:Texture, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader (texture.__width, texture.__height, false);
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:GLRenderContext = renderer.__context;
-		#end
+		var context = texture.__context;
+		var gl = context.__gl;
 		
-		renderer.bindTexture (texture.__textureTarget, texture.__textureID);
+		context.__bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		var hasTexture = false;
@@ -96,7 +83,7 @@ class GLTexture {
 				alphaTexture.__format = format;
 				alphaTexture.__internalFormat = format;
 				
-				renderer.bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
+				context.__bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
 				GLUtils.CheckGLError ();
 				
 				gl.compressedTexImage2D (alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0, size, new BytePointer (bytes, size));
@@ -124,13 +111,13 @@ class GLTexture {
 			
 		}
 		
-		renderer.bindTexture (texture.__textureTarget, null);
+		context.__bindTexture (texture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 	}
 	
 	
-	public static function uploadFromBitmapData (texture:Texture, renderer:OpenGLRenderer, source:BitmapData, miplevel:UInt, generateMipmap:Bool):Void {
+	public static function uploadFromBitmapData (texture:Texture, source:BitmapData, miplevel:UInt, generateMipmap:Bool):Void {
 		
 		/* TODO
 			if (LowMemoryMode) {
@@ -168,11 +155,8 @@ class GLTexture {
 		#if (js && html5)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl:WebGLContext = renderer.__context;
-			#end
+			var context = texture.__context;
+			var gl = context.__gl;
 			
 			var width = texture.__width >> miplevel;
 			var height = texture.__height >> miplevel;
@@ -182,13 +166,13 @@ class GLTexture {
 			if (width == 0) width = 1;
 			if (height == 0) height = 1;
 			
-			renderer.bindTexture (texture.__textureTarget, texture.__textureID);
+			context.__bindTexture (texture.__textureTarget, texture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
-			renderer.bindTexture (texture.__textureTarget, null);
+			context.__bindTexture (texture.__textureTarget, null);
 			GLUtils.CheckGLError ();
 			
 			// var memUsage = (width * height) * 4;
@@ -198,35 +182,32 @@ class GLTexture {
 		}
 		#end
 		
-		uploadFromTypedArray (texture, renderer, image.data, miplevel);
+		uploadFromTypedArray (texture, image.data, miplevel);
 		
 	}
 	
 	
-	public static function uploadFromByteArray (texture:Texture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
+	public static function uploadFromByteArray (texture:Texture, data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (texture, renderer, @:privateAccess (data:ByteArrayData).b, miplevel);
+			uploadFromTypedArray (texture, @:privateAccess (data:ByteArrayData).b, miplevel);
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (texture, renderer, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
+		uploadFromTypedArray (texture, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (texture:Texture, renderer:OpenGLRenderer, data:ArrayBufferView, miplevel:UInt = 0):Void {
+	public static function uploadFromTypedArray (texture:Texture, data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = texture.__context;
+		var gl = context.__gl;
 		
 		var width = texture.__width >> miplevel;
 		var height = texture.__height >> miplevel;
@@ -236,13 +217,13 @@ class GLTexture {
 		if (width == 0) width = 1;
 		if (height == 0) height = 1;
 		
-		renderer.bindTexture (texture.__textureTarget, texture.__textureID);
+		context.__bindTexture (texture.__textureTarget, texture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, width, height, 0, texture.__format, gl.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
-		renderer.bindTexture (texture.__textureTarget, null);
+		context.__bindTexture (texture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 		// var memUsage = (width * height) * 4;
@@ -251,15 +232,12 @@ class GLTexture {
 	}
 	
 	
-	public static function setSamplerState (texture:Texture, renderer:OpenGLRenderer, state:SamplerState) {
+	public static function setSamplerState (texture:Texture, state:SamplerState) {
 		
 		if (!state.equals (texture.__samplerState)) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = texture.__context;
+			var gl = context.__gl;
 			
 			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
 				
@@ -279,7 +257,7 @@ class GLTexture {
 			
 		}
 		
-		GLTextureBase.setSamplerState (texture, renderer, state);
+		GLTextureBase.setSamplerState (texture, state);
 		
 	}
 	

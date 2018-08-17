@@ -12,16 +12,8 @@ import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
-import openfl.display.OpenGLRenderer;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -37,13 +29,9 @@ import lime.graphics.GLRenderContext;
 class GLCubeTexture {
 	
 	
-	public static function create (cubeTexture:CubeTexture, renderer:OpenGLRenderer):Void {
+	public static function create (cubeTexture:CubeTexture):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var gl = cubeTexture.__context.__gl;
 		
 		cubeTexture.__textureTarget = gl.TEXTURE_CUBE_MAP;
 		cubeTexture.__uploadedSides = 0;
@@ -51,18 +39,15 @@ class GLCubeTexture {
 	}
 	
 	
-	public static function uploadCompressedTextureFromByteArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt):Void {
+	public static function uploadCompressedTextureFromByteArray (cubeTexture:CubeTexture, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		var reader = new ATFReader (data, byteArrayOffset);
 		var alpha = reader.readHeader (cubeTexture.__size, cubeTexture.__size, true);
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl:GLRenderContext = renderer.__context;
-		#end
+		var context = cubeTexture.__context;
+		var gl = context.__gl;
 		
-		gl.bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureID);
+		context.__bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		var hasTexture = false;
@@ -90,7 +75,7 @@ class GLCubeTexture {
 				alphaTexture.__format = format;
 				alphaTexture.__internalFormat = format;
 				
-				gl.bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
+				context.__bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
 				GLUtils.CheckGLError ();
 				
 				gl.compressedTexImage2D (target, level, alphaTexture.__internalFormat, width, height, 0, size, new BytePointer (bytes, size));
@@ -115,20 +100,20 @@ class GLCubeTexture {
 			for (side in 0...6) {
 				
 				var data = new UInt8Array (cubeTexture.__size * cubeTexture.__size * 4);
-				gl.texImage2D (__sideToTarget (renderer.__context, side), 0, cubeTexture.__internalFormat, cubeTexture.__size, cubeTexture.__size, 0, cubeTexture.__format, gl.UNSIGNED_BYTE, data);
+				gl.texImage2D (__sideToTarget (context, side), 0, cubeTexture.__internalFormat, cubeTexture.__size, cubeTexture.__size, 0, cubeTexture.__format, gl.UNSIGNED_BYTE, data);
 				GLUtils.CheckGLError ();
 				
 			}
 			
 		}
 		
-		gl.bindTexture (cubeTexture.__textureTarget, null);
+		context.__bindTexture (cubeTexture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 	}
 	
 	
-	public static function uploadFromBitmapData (cubeTexture:CubeTexture, renderer:OpenGLRenderer, source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
+	public static function uploadFromBitmapData (cubeTexture:CubeTexture, source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
 		var size = cubeTexture.__size >> miplevel;
 		if (size == 0) return;
@@ -141,24 +126,21 @@ class GLCubeTexture {
 		#if (js && html5)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl:WebGLContext = renderer.__context;
-			#end
+			var context = cubeTexture.__context;
+			var gl = context.__gl;
 			
 			var size = cubeTexture.__size >> miplevel;
 			if (size == 0) return;
 			
-			var target = __sideToTarget (renderer.__context, side);
+			var target = __sideToTarget (context, side);
 			
-			renderer.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
+			context.__bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
 			GLUtils.CheckGLError ();
 			
 			gl.texImage2D (target, miplevel, cubeTexture.__internalFormat, cubeTexture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
 			GLUtils.CheckGLError ();
 			
-			renderer.bindTexture (cubeTexture.__textureTarget, null);
+			context.__bindTexture (cubeTexture.__textureTarget, null);
 			GLUtils.CheckGLError ();
 			
 			cubeTexture.__uploadedSides |= 1 << side;
@@ -167,48 +149,45 @@ class GLCubeTexture {
 		}
 		#end
 		
-		uploadFromTypedArray (cubeTexture, renderer, image.data, side, miplevel);
+		uploadFromTypedArray (cubeTexture, image.data, side, miplevel);
 		
 	}
 	
 	
-	public static function uploadFromByteArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt):Void {
+	public static function uploadFromByteArray (cubeTexture:CubeTexture, data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt):Void {
 		
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (cubeTexture, renderer, @:privateAccess (data:ByteArrayData).b, side, miplevel);
+			uploadFromTypedArray (cubeTexture, @:privateAccess (data:ByteArrayData).b, side, miplevel);
 			return;
 			
 		}
 		#end
 		
-		uploadFromTypedArray (cubeTexture, renderer, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), side, miplevel);
+		uploadFromTypedArray (cubeTexture, new UInt8Array (data.toArrayBuffer (), byteArrayOffset), side, miplevel);
 		
 	}
 	
 	
-	public static function uploadFromTypedArray (cubeTexture:CubeTexture, renderer:OpenGLRenderer, data:ArrayBufferView, side:UInt, miplevel:UInt):Void {
+	public static function uploadFromTypedArray (cubeTexture:CubeTexture, data:ArrayBufferView, side:UInt, miplevel:UInt):Void {
 		
 		if (data == null) return;
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
+		var context = cubeTexture.__context;
+		var gl = context.__gl;
 		
 		var size = cubeTexture.__size >> miplevel;
 		if (size == 0) return;
 		
-		var target = __sideToTarget (renderer.__context, side);
+		var target = __sideToTarget (context, side);
 		
-		renderer.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
+		context.__bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (target, miplevel, cubeTexture.__internalFormat, size, size, 0, cubeTexture.__format, gl.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
-		renderer.bindTexture (cubeTexture.__textureTarget, null);
+		context.__bindTexture (cubeTexture.__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 		cubeTexture.__uploadedSides |= 1 << side;
@@ -219,15 +198,12 @@ class GLCubeTexture {
 	}
 	
 	
-	public static function setSamplerState (cubeTexture:CubeTexture, renderer:OpenGLRenderer, state:SamplerState) {
+	public static function setSamplerState (cubeTexture:CubeTexture, state:SamplerState) {
 		
 		if (!state.equals (cubeTexture.__samplerState)) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = cubeTexture.__context;
+			var gl = context.__gl;
 			
 			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
 				
@@ -247,18 +223,14 @@ class GLCubeTexture {
 			
 		}
 		
-		GLTextureBase.setSamplerState (cubeTexture, renderer, state);
+		GLTextureBase.setSamplerState (cubeTexture, state);
 		
 	}
 	
 	
-	private static function __sideToTarget (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, side:UInt) {
+	private static function __sideToTarget (context:Context3D, side:UInt) {
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl = context;
-		#end
+		var gl = context.__gl;
 		
 		return switch (side) {
 			

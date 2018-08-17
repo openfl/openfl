@@ -4,12 +4,9 @@ package openfl.display; #if !flash
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
+import openfl.display3D.Context3D;
 
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
+@:access(openfl.display3D.Context3D)
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -48,28 +45,18 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __disableGL (renderer:OpenGLRenderer, id:Int):Void {
+	@:noCompletion private function __disableGL (context:Context3D, id:Int):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
-		
-		renderer.activeTexture (gl.TEXTURE0 + id);
-		renderer.bindTexture (gl.TEXTURE_2D, null);
+		var gl = context.__gl;
+		context.__activeTexture (gl.TEXTURE0 + id);
+		context.__bindTexture (gl.TEXTURE_2D, null);
 		
 	}
 	
 	
-	@:noCompletion private function __updateGL (renderer:OpenGLRenderer, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
+	@:noCompletion private function __updateGL (context:Context3D, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = renderer.__context.webgl;
-		#else
-		var gl = renderer.__context;
-		#end
-		
+		var gl = context.__gl;
 		var input = overrideInput != null ? overrideInput : this.input;
 		var filter = overrideFilter != null ? overrideFilter : this.filter;
 		var mipFilter = overrideMipFilter != null ? overrideMipFilter : this.mipFilter;
@@ -81,8 +68,8 @@ import lime.graphics.GLRenderContext;
 			
 			var bitmapData:BitmapData = cast input;
 			
-			renderer.activeTexture (gl.TEXTURE0 + id);
-			renderer.bindTexture (gl.TEXTURE_2D, bitmapData.getTexture (renderer));
+			context.__activeTexture (gl.TEXTURE0 + id);
+			context.__bindTexture (gl.TEXTURE_2D, bitmapData.getTexture (context));
 			
 			// TODO: Support anisotropic filter modes
 			var smooth = (filter == Context3DTextureFilter.LINEAR);
@@ -115,8 +102,8 @@ import lime.graphics.GLRenderContext;
 			
 		} else {
 			
-			renderer.activeTexture (gl.TEXTURE0 + id);
-			renderer.bindTexture (gl.TEXTURE_2D, null);
+			context.__activeTexture (gl.TEXTURE0 + id);
+			context.__bindTexture (gl.TEXTURE_2D, null);
 			
 		}
 		

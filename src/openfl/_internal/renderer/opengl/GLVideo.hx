@@ -16,6 +16,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.Shader)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.media.Video)
@@ -35,22 +36,19 @@ class GLVideo {
 		
 		if (video.__stream.__video != null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = renderer.__context3D;
+			var gl = context.__gl;
 			
 			renderer.__setBlendMode (video.__worldBlendMode);
 			renderer.__pushMaskObject (video);
 			// renderer.filterManager.pushObject (video);
 			
 			var shader = renderer.__initDisplayShader (cast video.__worldShader);
-			renderer.useShader (shader);
+			renderer.setShader (shader);
 			
 			// TODO: Support ShaderInput<Video>
 			renderer.applyBitmapData (null, renderer.__allowSmoothing, false);
-			gl.bindTexture (gl.TEXTURE_2D, video.__getTexture (renderer));
+			context.__bindTexture (gl.TEXTURE_2D, video.__getTexture (context));
 			
 			//shader.uImage0.input = bitmap.__bitmapData;
 			//shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
@@ -80,7 +78,7 @@ class GLVideo {
 				
 			}
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (renderer));
+			context.__bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (context));
 			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
@@ -107,19 +105,16 @@ class GLVideo {
 		
 		if (video.__stream.__video != null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = renderer.__context3D;
+			var gl = context.__gl;
 			
 			var shader = renderer.__maskShader;
-			renderer.useShader (shader);
+			renderer.setShader (shader);
 			renderer.applyBitmapData (GLMaskShader.opaqueBitmapData, true);
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.updateShader ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (renderer));
+			context.__bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (context));
 			
 			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);

@@ -6,20 +6,15 @@ import lime.graphics.opengl.GLShader;
 import lime.utils.Float32Array;
 import lime.utils.Log;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl.display3D.Context3D;
 import openfl.utils.ByteArray;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 
@@ -45,6 +40,7 @@ class Shader {
 	@:noCompletion private var __bitmap:ShaderInput<BitmapData>;
 	@:noCompletion private var __colorMultiplier:ShaderParameter<Float>;
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
+	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:ShaderData;
 	@:noCompletion private var __glFragmentSource:String;
 	@:noCompletion private var __glSourceDirty:Bool;
@@ -58,7 +54,6 @@ class Shader {
 	@:noCompletion private var __paramFloat:Array<ShaderParameter<Float>>;
 	@:noCompletion private var __paramInt:Array<ShaderParameter<Int>>;
 	@:noCompletion private var __position:ShaderParameter<Float>;
-	@:noCompletion private var __renderer:OpenGLRenderer;
 	@:noCompletion private var __textureCoord:ShaderParameter<Float>;
 	@:noCompletion private var __texture:ShaderInput<BitmapData>;
 	@:noCompletion private var __textureSize:ShaderParameter<Float>;
@@ -170,11 +165,7 @@ class Shader {
 	
 	@:noCompletion private function __createGLShader (source:String, type:Int):GLShader {
 		
-		#if (lime >= "7.0.0")
-		var gl = __renderer.__context.webgl;
-		#else
-		var gl = __renderer.__context;
-		#end
+		var gl = __context.__gl;
 		
 		var shader = gl.createShader (type);
 		gl.shaderSource (shader, source);
@@ -196,11 +187,7 @@ class Shader {
 	
 	@:noCompletion private function __createGLProgram (vertexSource:String, fragmentSource:String):GLProgram {
 		
-		#if (lime >= "7.0.0")
-		var gl = __renderer.__context.webgl;
-		#else
-		var gl = __renderer.__context;
-		#end
+		var gl = __context.__gl;
 		
 		var vertexShader = __createGLShader (vertexSource, gl.VERTEX_SHADER);
 		var fragmentShader = __createGLShader (fragmentSource, gl.FRAGMENT_SHADER);
@@ -249,43 +236,39 @@ class Shader {
 	
 	@:noCompletion private function __disableGL ():Void {
 		
-		#if (lime >= "7.0.0")
-		var gl = __renderer.__context.webgl;
-		#else
-		var gl = __renderer.__context;
-		#end
+		var gl = __context.__gl;
 		
 		var textureCount = 0;
 		for (input in __inputBitmapData) {
 			
-			input.__disableGL (__renderer, textureCount);
+			input.__disableGL (__context, textureCount);
 			textureCount++;
 			
 		}
 		
 		for (parameter in __paramBool) {
 			
-			parameter.__disableGL (__renderer);
+			parameter.__disableGL (__context);
 			
 		}
 		
 		for (parameter in __paramFloat) {
 			
-			parameter.__disableGL (__renderer);
+			parameter.__disableGL (__context);
 			
 		}
 		
 		for (parameter in __paramInt) {
 			
-			parameter.__disableGL (__renderer);
+			parameter.__disableGL (__context);
 			
 		}
 		
-		__renderer.bindBuffer (gl.ARRAY_BUFFER, null);
+		__context.__bindBuffer (gl.ARRAY_BUFFER, null);
 		
-		if (__renderer.__context.type == OPENGL) {
+		if (__context.__context.type == OPENGL) {
 			
-			__renderer.disable (gl.TEXTURE_2D);
+			__context.__disable (gl.TEXTURE_2D);
 			
 		}
 		
@@ -309,11 +292,7 @@ class Shader {
 		
 		var textureCount = 0;
 		
-		#if (lime >= "7.0.0")
-		var gl = __renderer.__context.webgl;
-		#else
-		var gl = __renderer.__context;
-		#end
+		var gl = __context.__gl;
 		
 		for (input in __inputBitmapData) {
 			
@@ -322,9 +301,9 @@ class Shader {
 			
 		}
 		
-		if (__renderer.__context.type == OPENGL && textureCount > 0) {
+		if (__context.__context.type == OPENGL && textureCount > 0) {
 			
-			__renderer.enable (gl.TEXTURE_2D);
+			__context.__enable (gl.TEXTURE_2D);
 			
 		}
 		
@@ -366,13 +345,9 @@ class Shader {
 			
 		}
 		
-		if (__renderer != null && glProgram == null) {
+		if (__context != null && glProgram == null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = __renderer.__context.webgl;
-			#else
-			var gl = __renderer.__context;
-			#end
+			var gl = __context.__gl;
 			
 			var prefix = 
 				
@@ -667,26 +642,26 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			input.__updateGL (__renderer, textureCount);
+			input.__updateGL (__context, textureCount);
 			textureCount++;
 			
 		}
 		
 		for (parameter in __paramBool) {
 			
-			parameter.__updateGL (__renderer);
+			parameter.__updateGL (__context);
 			
 		}
 		
 		for (parameter in __paramFloat) {
 			
-			parameter.__updateGL (__renderer);
+			parameter.__updateGL (__context);
 			
 		}
 		
 		for (parameter in __paramInt) {
 			
-			parameter.__updateGL (__renderer);
+			parameter.__updateGL (__context);
 			
 		}
 		
@@ -708,18 +683,14 @@ class Shader {
 			
 			if (inputData != null) {
 				
-				input.__updateGL (__renderer, textureCount, inputData, inputFilter, inputMipFilter, inputWrap);
+				input.__updateGL (__context, textureCount, inputData, inputFilter, inputMipFilter, inputWrap);
 				textureCount++;
 				
 			}
 			
 		}
 		
-		#if (lime >= "7.0.0")
-		var gl = __renderer.__context.webgl;
-		#else
-		var gl:WebGLContext = __renderer.__context;
-		#end
+		var gl = __context.__gl;
 		
 		if (shaderBuffer.paramDataLength > 0) {
 			
@@ -731,14 +702,14 @@ class Shader {
 			
 			//Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
 			
-			__renderer.bindBuffer (gl.ARRAY_BUFFER, shaderBuffer.paramDataBuffer);
+			__context.__bindBuffer (gl.ARRAY_BUFFER, shaderBuffer.paramDataBuffer);
 			gl.bufferData (gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
 			
 		} else {
 			
 			//Log.verbose ("bind buffer null");
 			
-			__renderer.bindBuffer (gl.ARRAY_BUFFER, null);
+			__context.__bindBuffer (gl.ARRAY_BUFFER, null);
 			
 		}
 		
@@ -775,11 +746,11 @@ class Shader {
 				
 				if (hasOverride) {
 					
-					boolRef.__updateGL (__renderer, overrideBoolValue);
+					boolRef.__updateGL (__context, overrideBoolValue);
 					
 				} else {
 					
-					boolRef.__updateGLFromBuffer (__renderer, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
+					boolRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
 					
 				}
 				
@@ -803,11 +774,11 @@ class Shader {
 				
 				if (hasOverride) {
 					
-					floatRef.__updateGL (__renderer, overrideFloatValue);
+					floatRef.__updateGL (__context, overrideFloatValue);
 					
 				} else {
 					
-					floatRef.__updateGLFromBuffer (__renderer, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
+					floatRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
 					
 				}
 				
@@ -831,11 +802,11 @@ class Shader {
 				
 				if (hasOverride) {
 					
-					intRef.__updateGL (__renderer, overrideIntValue);
+					intRef.__updateGL (__context, overrideIntValue);
 					
 				} else {
 					
-					intRef.__updateGLFromBuffer (__renderer, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
+					intRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
 					
 				}
 				
