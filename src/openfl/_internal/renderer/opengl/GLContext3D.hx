@@ -62,6 +62,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.OpenGLRenderer)
 @:access(openfl.display.Stage3D)
+@:access(openfl.display.Stage)
 
 
 class GLContext3D {
@@ -74,7 +75,7 @@ class GLContext3D {
 	public static function create (context:Context3D) {
 		
 		__setContext (context);
-		var renderer:OpenGLRenderer = cast context.__renderer;
+		var renderer:OpenGLRenderer = cast context.__stage.__renderer;
 		
 		context.__vertexConstants = new Float32Array (4 * Context3D.MAX_PROGRAM_REGISTERS);
 		context.__fragmentConstants = new Float32Array (4 * Context3D.MAX_PROGRAM_REGISTERS);
@@ -275,7 +276,7 @@ class GLContext3D {
 	public static function drawToBitmapData (context:Context3D, destination:BitmapData):Void {
 		
 		__setContext (context);
-		var window = context.__renderer.__stage.window;
+		var window = context.__stage.window;
 		
 		if (window != null) {
 			
@@ -1151,7 +1152,7 @@ class GLContext3D {
 	private static inline function __setContext (context:Context3D):Void {
 		
 		GLContext3D.context = context;
-		var renderer:OpenGLRenderer = cast context.__renderer;
+		var renderer:OpenGLRenderer = cast context.__stage.__renderer;
 		#if (lime >= "7.0.0")
 		GLContext3D.gl = renderer.__context.webgl;
 		#else
@@ -1274,14 +1275,14 @@ class GLContext3D {
 		if (!Stage3D.__active) {
 			
 			Stage3D.__active = true;
-			var renderer:OpenGLRenderer = cast context.__renderer;
+			var renderer:OpenGLRenderer = cast context.__stage.__renderer;
 			renderer.__clear ();
 			
 		}
 		
 		if (context.__renderToTexture == null && context.backBufferWidth > 0 && context.backBufferHeight > 0) {
 			
-			var window = context.__renderer.__stage.window;
+			var window = context.__stage.window;
 			
 			var x = Std.int (context.__x);
 			var y = Std.int ((window.height * window.scale) - context.backBufferHeight - context.__y);
@@ -1418,7 +1419,7 @@ class GLContext3D {
 			
 		} else {
 			
-			var window = context.__renderer.__stage.window;
+			var window = context.__stage.window;
 			
 			height = context.backBufferHeight;
 			offsetX = Std.int (context.__x);

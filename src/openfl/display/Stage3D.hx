@@ -113,7 +113,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (renderer.__type == OPENGL) {
 			
-			context3D = new Context3D (renderer);
+			context3D = new Context3D (stage);
 			context3D.__x = __x;
 			context3D.__y = __y;
 			context3D.__updateBackbufferViewport ();

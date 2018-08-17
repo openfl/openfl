@@ -13,6 +13,7 @@ import openfl.utils.ByteArray;
 #end
 
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.Stage)
 
 
 @:final class RectangleTexture extends TextureBase {
@@ -27,35 +28,35 @@ import openfl.utils.ByteArray;
 		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
-		GLRectangleTexture.create (this, cast __context.__renderer);
+		GLRectangleTexture.create (this, cast __context.__stage.__renderer);
 		
 	}
 	
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
-		GLRectangleTexture.uploadFromBitmapData (this, cast __context.__renderer, source);
+		GLRectangleTexture.uploadFromBitmapData (this, cast __context.__stage.__renderer, source);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		GLRectangleTexture.uploadFromByteArray (this, cast __context.__renderer, data, byteArrayOffset);
+		GLRectangleTexture.uploadFromByteArray (this, cast __context.__stage.__renderer, data, byteArrayOffset);
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
-		GLRectangleTexture.uploadFromTypedArray (this, cast __context.__renderer, data);
+		GLRectangleTexture.uploadFromTypedArray (this, cast __context.__stage.__renderer, data);
 		
 	}
 	
 	
 	@:noCompletion private override function __setSamplerState (state:SamplerState) {
 		
-		GLRectangleTexture.setSamplerState (this, cast __context.__renderer, state);
+		GLRectangleTexture.setSamplerState (this, cast __context.__stage.__renderer, state);
 		
 	}
 	

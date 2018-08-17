@@ -22,6 +22,7 @@ import lime.graphics.GLRenderContext;
 #end
 
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.Stage)
 
 
 class TextureBase extends EventDispatcher {
@@ -51,7 +52,7 @@ class TextureBase extends EventDispatcher {
 		__context = context;
 		//__textureTarget = target;
 		
-		GLTextureBase.create (this, cast __context.__renderer);
+		GLTextureBase.create (this, cast __context.__stage.__renderer);
 		
 		// __memoryUsage = 0;
 		// __compressedMemoryUsage = 0;
@@ -61,14 +62,14 @@ class TextureBase extends EventDispatcher {
 	
 	public function dispose ():Void {
 		
-		GLTextureBase.dispose (this, cast __context.__renderer);
+		GLTextureBase.dispose (this, cast __context.__stage.__renderer);
 		
 	}
 	
 	
 	@:noCompletion private function __getImage (bitmapData:BitmapData):Image {
 		
-		return GLTextureBase.getImage (this, cast __context.__renderer, bitmapData);
+		return GLTextureBase.getImage (this, cast __context.__stage.__renderer, bitmapData);
 		
 	}
 	
@@ -82,7 +83,7 @@ class TextureBase extends EventDispatcher {
 	
 	@:noCompletion private function __setSamplerState (state:SamplerState):Void {
 		
-		GLTextureBase.setSamplerState (this, cast __context.__renderer, state);
+		GLTextureBase.setSamplerState (this, cast __context.__stage.__renderer, state);
 		
 	}
 	

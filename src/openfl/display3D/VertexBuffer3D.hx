@@ -16,6 +16,7 @@ import openfl.Vector;
 #end
 
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.Stage)
 
 
 class VertexBuffer3D {
@@ -38,35 +39,35 @@ class VertexBuffer3D {
 		__numVertices = numVertices;
 		__vertexSize = dataPerVertex;
 		
-		GLVertexBuffer3D.create (this, cast __context.__renderer, bufferUsage);
+		GLVertexBuffer3D.create (this, cast __context.__stage.__renderer, bufferUsage);
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		GLVertexBuffer3D.dispose (this, cast __context.__renderer);
+		GLVertexBuffer3D.dispose (this, cast __context.__stage.__renderer);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void {
 		
-		GLVertexBuffer3D.uploadFromByteArray (this, cast __context.__renderer, data, byteArrayOffset, startVertex, numVertices);
+		GLVertexBuffer3D.uploadFromByteArray (this, cast __context.__stage.__renderer, data, byteArrayOffset, startVertex, numVertices);
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
-		GLVertexBuffer3D.uploadFromTypedArray (this, cast __context.__renderer, data);
+		GLVertexBuffer3D.uploadFromTypedArray (this, cast __context.__stage.__renderer, data);
 		
 	}
 	
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
-		GLVertexBuffer3D.uploadFromVector (this, cast __context.__renderer, data, startVertex, numVertices);
+		GLVertexBuffer3D.uploadFromVector (this, cast __context.__stage.__renderer, data, startVertex, numVertices);
 		
 	}
 	

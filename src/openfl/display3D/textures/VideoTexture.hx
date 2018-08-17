@@ -14,6 +14,7 @@ import openfl.net.NetStream;
 #end
 
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.Stage)
 @:access(openfl.net.NetStream)
 
 
@@ -30,7 +31,7 @@ import openfl.net.NetStream;
 		
 		super (context);
 		
-		GLVideoTexture.create (this, cast __context.__renderer);
+		GLVideoTexture.create (this, cast __context.__stage.__renderer);
 		
 	}
 	
@@ -69,7 +70,7 @@ import openfl.net.NetStream;
 	
 	@:noCompletion private override function __getTexture ():GLTexture {
 		
-		return GLVideoTexture.getTexture (this, cast __context.__renderer);
+		return GLVideoTexture.getTexture (this, cast __context.__stage.__renderer);
 		
 	}
 	

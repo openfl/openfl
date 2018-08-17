@@ -14,6 +14,7 @@ import openfl.Vector;
 #end
 
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.Stage)
 
 
 @:final class IndexBuffer3D {
@@ -33,35 +34,35 @@ import openfl.Vector;
 		__context = context3D;
 		__numIndices = numIndices;
 		
-		GLIndexBuffer3D.create (this, cast __context.__renderer, bufferUsage);
+		GLIndexBuffer3D.create (this, cast __context.__stage.__renderer, bufferUsage);
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		GLIndexBuffer3D.dispose (this, cast __context.__renderer);
+		GLIndexBuffer3D.dispose (this, cast __context.__stage.__renderer);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
-		GLIndexBuffer3D.uploadFromByteArray (this, cast __context.__renderer, data, byteArrayOffset, startOffset, count);
+		GLIndexBuffer3D.uploadFromByteArray (this, cast __context.__stage.__renderer, data, byteArrayOffset, startOffset, count);
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView, byteLength: Int = -1):Void {
 		
-		GLIndexBuffer3D.uploadFromTypedArray (this, cast __context.__renderer, data);
+		GLIndexBuffer3D.uploadFromTypedArray (this, cast __context.__stage.__renderer, data);
 		
 	}
 	
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
-		GLIndexBuffer3D.uploadFromVector (this, cast __context.__renderer, data, startOffset, count);
+		GLIndexBuffer3D.uploadFromVector (this, cast __context.__stage.__renderer, data, startOffset, count);
 		
 	}
 	

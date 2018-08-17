@@ -1603,7 +1603,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				#if (!disable_cffi && (!html5 || !canvas))
 				__renderer = new OpenGLRenderer (window.context);
-				context3D = new Context3D (__renderer);
+				context3D = new Context3D (this);
 				#end
 			
 			case CANVAS:

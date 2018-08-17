@@ -23,6 +23,7 @@ import lime.graphics.GLRenderContext;
 #end
 
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.Stage)
 
 
 @:final class Program3D {
@@ -65,14 +66,14 @@ import lime.graphics.GLRenderContext;
 	
 	public function dispose ():Void {
 		
-		GLProgram3D.dispose (this, cast __context.__renderer);
+		GLProgram3D.dispose (this, cast __context.__stage.__renderer);
 		
 	}
 	
 	
 	public function upload (vertexProgram:ByteArray, fragmentProgram:ByteArray):Void {
 		
-		GLProgram3D.upload (this, cast __context.__renderer, vertexProgram, fragmentProgram);
+		GLProgram3D.upload (this, cast __context.__stage.__renderer, vertexProgram, fragmentProgram);
 		
 	}
 	
@@ -111,7 +112,7 @@ import lime.graphics.GLRenderContext;
 		
 		if (__positionScale != null) {
 			
-			GLProgram3D.setPositionScale (this, cast __context.__renderer, positionScale);
+			GLProgram3D.setPositionScale (this, cast __context.__stage.__renderer, positionScale);
 			
 		}
 		
@@ -127,7 +128,7 @@ import lime.graphics.GLRenderContext;
 	
 	@:noCompletion private function __use ():Void {
 		
-		GLProgram3D.use (this, cast __context.__renderer);
+		GLProgram3D.use (this, cast __context.__stage.__renderer);
 		
 	}
 	

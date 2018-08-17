@@ -13,7 +13,7 @@ import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.VideoTexture;
 import openfl.display.BitmapData;
-import openfl.display.DisplayObjectRenderer;
+import openfl.display.Stage;
 import openfl.display.Stage3D;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
@@ -74,14 +74,14 @@ import openfl.Vector;
 	@:noCompletion private var __maxAnisotropyTexture2D:Int;
 	@:noCompletion private var __positionScale:Float32Array;
 	@:noCompletion private var __program:Program3D;
-	@:noCompletion private var __renderer:DisplayObjectRenderer;
 	@:noCompletion private var __renderToTexture:TextureBase;
 	@:noCompletion private var __rttDepthAndStencil:Bool;
 	@:noCompletion private var __samplerDirty:Int;
 	@:noCompletion private var __samplerTextures:Vector<TextureBase>;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
 	@:noCompletion private var __scissorRectangle:Rectangle;
-	@:noCompletion private var __stage3D:Stage3D;
+	@:noCompletion private var __stage:Stage;
+	// @:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __stats:Vector<Int>;
 	@:noCompletion private var __statsCache:Vector<Int>;
 	@:noCompletion private var __stencilCompareMode:Context3DCompareMode;
@@ -101,11 +101,11 @@ import openfl.Vector;
 	#end
 	
 	
-	@:noCompletion private function new (renderer:DisplayObjectRenderer) {
+	@:noCompletion private function new (stage:Stage) {
 		
 		super ();
 		
-		__renderer = renderer;
+		__stage = stage;
 		__x = 0;
 		__y = 0;
 		
