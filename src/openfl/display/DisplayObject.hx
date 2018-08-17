@@ -186,6 +186,7 @@ import js.html.Element;
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl._internal.renderer.opengl.GLGraphics)
 @:access(openfl.events.Event)
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectContainer)
@@ -2196,12 +2197,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var parentRenderer:OpenGLRenderer = cast renderer;
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
 					
+					var context = stage.context3D;
+					var cacheFramebuffer = context.__glFramebuffers[context.__gl.FRAMEBUFFER];
+					
 					var cacheBlendMode = parentRenderer.__blendMode;
 					parentRenderer.__suspendClipAndMask ();
 					childRenderer.__copyShader (parentRenderer);
 					// childRenderer.__copyState (parentRenderer);
 					
-					__cacheBitmapData.__setUVRect (stage.context3D, 0, 0, filterWidth, filterHeight);
+					__cacheBitmapData.__setUVRect (context, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 					
@@ -2234,7 +2238,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
 							}
-							__cacheBitmapData2.__setUVRect (stage.context3D, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData2.__setUVRect (context, 0, 0, filterWidth, filterHeight);
 							bitmap2 = __cacheBitmapData2;
 						// } else {
 						// 	bitmap2 = bitmapData;
@@ -2249,7 +2253,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
 							}
-							__cacheBitmapData3.__setUVRect (stage.context3D, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData3.__setUVRect (context, 0, 0, filterWidth, filterHeight);
 							bitmap3 = __cacheBitmapData3;
 						}
 						
@@ -2304,6 +2308,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					parentRenderer.__blendMode = NORMAL;
 					parentRenderer.__setBlendMode (cacheBlendMode);
 					parentRenderer.__copyShader (childRenderer);
+					
+					context.__bindFramebuffer (context.__gl.FRAMEBUFFER, cacheFramebuffer);
+					
 					// parentRenderer.__restoreState (childRenderer);
 					parentRenderer.__resumeClipAndMask (childRenderer);
 					parentRenderer.setViewport ();
