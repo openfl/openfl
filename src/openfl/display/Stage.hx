@@ -1936,11 +1936,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					__tabTest (tabStack);
 					
-					// do it without relying on ctoi
-					// so always index check focus in tabstack
-					
 					var nextIndex = -1;
 					var nextObject:InteractiveObject = null;
+					var nextOffset = modifier.shiftKey ? -1 : 1;
 					
 					if (tabStack.length > 1) {
 						
@@ -1973,7 +1971,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 								var index = tabStack.indexOf (focus);
 								
 								if (index < 0) nextIndex = 0;
-								else nextIndex = index + 1;
+								else nextIndex = index + nextOffset;
 								
 							} else {
 								
@@ -1997,12 +1995,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 					} else if (tabStack.length > 1) {
 						
+						if (nextIndex < 0) nextIndex += tabStack.length;
+						
 						nextIndex %= tabStack.length;
 						nextObject = tabStack[nextIndex];
 						
 						if (nextObject == focus) {
 							
-							nextIndex++;
+							nextIndex += nextOffset;
+							
+							if (nextIndex < 0) nextIndex += tabStack.length;
+							
 							nextIndex %= tabStack.length;
 							nextObject = tabStack[nextIndex];
 							
