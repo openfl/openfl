@@ -48,8 +48,7 @@ import openfl.display3D.Context3D;
 	@:noCompletion private function __disableGL (context:Context3D, id:Int):Void {
 		
 		var gl = context.__gl;
-		context.__activeTexture (gl.TEXTURE0 + id);
-		context.__bindTexture (gl.TEXTURE_2D, null);
+		context.setTextureAt (id, null);
 		
 	}
 	
@@ -67,43 +66,12 @@ import openfl.display3D.Context3D;
 			// TODO: Improve for other input types? Use an interface perhaps
 			
 			var bitmapData:BitmapData = cast input;
-			
-			context.__activeTexture (gl.TEXTURE0 + id);
-			context.__bindTexture (gl.TEXTURE_2D, bitmapData.getTexture (context));
-			
-			// TODO: Support anisotropic filter modes
-			var smooth = (filter == Context3DTextureFilter.LINEAR);
-			
-			switch (mipFilter) {
-				
-				case Context3DMipFilter.MIPLINEAR:
-					
-					gl.generateMipmap (gl.TEXTURE_2D);
-					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, smooth ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_LINEAR);
-				
-				case Context3DMipFilter.MIPNEAREST:
-					
-					gl.generateMipmap (gl.TEXTURE_2D);
-					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, smooth ? gl.LINEAR_MIPMAP_NEAREST : gl.NEAREST_MIPMAP_NEAREST);
-				
-				default:
-					
-					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, smooth ? gl.LINEAR : gl.NEAREST);
-				
-			}
-			
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, smooth ? gl.LINEAR : gl.NEAREST);
-			
-			var repeatS = (wrap == Context3DWrapMode.REPEAT || wrap == Context3DWrapMode.REPEAT_U_CLAMP_V);
-			var repeatT = (wrap == Context3DWrapMode.REPEAT || wrap == Context3DWrapMode.CLAMP_U_REPEAT_V);
-			
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, repeatS ? gl.REPEAT : gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, repeatT ? gl.REPEAT : gl.CLAMP_TO_EDGE);
+			context.setTextureAt (id, bitmapData.getTexture (context));
+			context.setSamplerStateAt (id, wrap, filter, mipFilter);
 			
 		} else {
 			
-			context.__activeTexture (gl.TEXTURE0 + id);
-			context.__bindTexture (gl.TEXTURE_2D, null);
+			context.setTextureAt (id, null);
 			
 		}
 		

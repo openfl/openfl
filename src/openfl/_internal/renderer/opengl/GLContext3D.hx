@@ -740,122 +740,7 @@ class GLContext3D {
 	
 	public static function setSamplerStateAt (context:Context3D, sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void {
 		
-		if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
-			
-			throw new Error ("sampler out of range");
-			
-		}
 		
-		__setContext (context);
-		var state = context.__samplerStates[sampler];
-		
-		switch (wrap) {
-			
-			case Context3DWrapMode.CLAMP:
-				
-				state.wrapModeS = gl.CLAMP_TO_EDGE;
-				state.wrapModeT = gl.CLAMP_TO_EDGE;
-			
-			case Context3DWrapMode.CLAMP_U_REPEAT_V:
-				
-				state.wrapModeS = gl.CLAMP_TO_EDGE;
-				state.wrapModeT = gl.REPEAT;
-			
-			case Context3DWrapMode.REPEAT:
-				
-				state.wrapModeS = gl.REPEAT;
-				state.wrapModeT = gl.REPEAT;
-			
-			case Context3DWrapMode.REPEAT_U_CLAMP_V:
-				
-				state.wrapModeS = gl.REPEAT;
-				state.wrapModeT = gl.CLAMP_TO_EDGE;
-			
-			default:
-				
-				throw new Error ("wrap bad enum");
-			
-		}
-		
-		switch (filter) {
-			
-			case Context3DTextureFilter.LINEAR:
-				
-				state.magFilter = gl.LINEAR;
-				
-				if (context.__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = 1;
-					
-				}
-			
-			case Context3DTextureFilter.NEAREST:
-				
-				state.magFilter = gl.NEAREST;
-				
-				if (context.__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = 1;
-					
-				}
-			
-			case Context3DTextureFilter.ANISOTROPIC2X:
-				
-				if (context.__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (context.__maxAnisotropyTexture2D < 2 ? context.__maxAnisotropyTexture2D : 2);
-					
-				}
-			
-			case Context3DTextureFilter.ANISOTROPIC4X:
-				
-				if (context.__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (context.__maxAnisotropyTexture2D < 4 ? context.__maxAnisotropyTexture2D : 4);
-					
-				}
-			
-			case Context3DTextureFilter.ANISOTROPIC8X:
-				
-				if (context.__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (context.__maxAnisotropyTexture2D < 8 ? context.__maxAnisotropyTexture2D : 8);
-					
-				}
-				
-			case Context3DTextureFilter.ANISOTROPIC16X:
-				
-				if (context.__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (context.__maxAnisotropyTexture2D < 16 ? context.__maxAnisotropyTexture2D : 0);
-					
-				}
-			
-			default:
-				
-				throw new Error ("filter bad enum");
-			
-		}
-		
-		switch (mipfilter) {
-			
-			case Context3DMipFilter.MIPLINEAR:
-				
-				state.minFilter = filter == Context3DTextureFilter.NEAREST ? gl.NEAREST_MIPMAP_LINEAR : gl.LINEAR_MIPMAP_LINEAR;
-			
-			case Context3DMipFilter.MIPNEAREST:
-				
-				state.minFilter = filter == Context3DTextureFilter.NEAREST ? gl.NEAREST_MIPMAP_NEAREST : gl.LINEAR_MIPMAP_NEAREST;
-			
-			case Context3DMipFilter.MIPNONE:
-				
-				state.minFilter = filter == Context3DTextureFilter.NEAREST ? gl.NEAREST : gl.LINEAR;
-			
-			default:
-				
-				throw new Error ("mipfiter bad enum");
-			
-		}
 		
 	}
 	
@@ -893,12 +778,7 @@ class GLContext3D {
 	
 	public static function setTextureAt (context:Context3D, sampler:Int, texture:TextureBase):Void {
 		
-		if (context.__samplerTextures[sampler] != texture) {
-			
-			context.__samplerTextures[sampler] = texture;
-			context.__samplerDirty |= (1 << sampler);
-			
-		}
+		
 		
 	}
 	

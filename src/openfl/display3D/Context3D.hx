@@ -42,6 +42,7 @@ import lime.graphics.GLRenderContext;
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.Texture)
+@:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.textures.VideoTexture)
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
@@ -424,7 +425,127 @@ import lime.graphics.GLRenderContext;
 	
 	public function setSamplerStateAt (sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void {
 		
-		GLContext3D.setSamplerStateAt (this, sampler, wrap, filter, mipfilter);
+		if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
+			
+			throw new Error ("sampler out of range");
+			
+		}
+		
+		var state = __samplerStates[sampler];
+		
+		switch (wrap) {
+			
+			case Context3DWrapMode.CLAMP:
+				
+				state.wrapModeS = __gl.CLAMP_TO_EDGE;
+				state.wrapModeT = __gl.CLAMP_TO_EDGE;
+			
+			case Context3DWrapMode.CLAMP_U_REPEAT_V:
+				
+				state.wrapModeS = __gl.CLAMP_TO_EDGE;
+				state.wrapModeT = __gl.REPEAT;
+			
+			case Context3DWrapMode.REPEAT:
+				
+				state.wrapModeS = __gl.REPEAT;
+				state.wrapModeT = __gl.REPEAT;
+			
+			case Context3DWrapMode.REPEAT_U_CLAMP_V:
+				
+				state.wrapModeS = __gl.REPEAT;
+				state.wrapModeT = __gl.CLAMP_TO_EDGE;
+			
+			default:
+				
+				throw new Error ("wrap bad enum");
+			
+		}
+		
+		switch (filter) {
+			
+			case Context3DTextureFilter.LINEAR:
+				
+				state.magFilter = __gl.LINEAR;
+				
+				if (__supportsAnisotropicFiltering) {
+					
+					state.maxAniso = 1;
+					
+				}
+			
+			case Context3DTextureFilter.NEAREST:
+				
+				state.magFilter = __gl.NEAREST;
+				
+				if (__supportsAnisotropicFiltering) {
+					
+					state.maxAniso = 1;
+					
+				}
+			
+			case Context3DTextureFilter.ANISOTROPIC2X:
+				
+				if (__supportsAnisotropicFiltering) {
+					
+					state.maxAniso = (__maxAnisotropyTexture2D < 2 ? __maxAnisotropyTexture2D : 2);
+					
+				}
+			
+			case Context3DTextureFilter.ANISOTROPIC4X:
+				
+				if (__supportsAnisotropicFiltering) {
+					
+					state.maxAniso = (__maxAnisotropyTexture2D < 4 ? __maxAnisotropyTexture2D : 4);
+					
+				}
+			
+			case Context3DTextureFilter.ANISOTROPIC8X:
+				
+				if (__supportsAnisotropicFiltering) {
+					
+					state.maxAniso = (__maxAnisotropyTexture2D < 8 ? __maxAnisotropyTexture2D : 8);
+					
+				}
+				
+			case Context3DTextureFilter.ANISOTROPIC16X:
+				
+				if (__supportsAnisotropicFiltering) {
+					
+					state.maxAniso = (__maxAnisotropyTexture2D < 16 ? __maxAnisotropyTexture2D : 0);
+					
+				}
+			
+			default:
+				
+				throw new Error ("filter bad enum");
+			
+		}
+		
+		switch (mipfilter) {
+			
+			case Context3DMipFilter.MIPLINEAR:
+				
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? __gl.NEAREST_MIPMAP_LINEAR : __gl.LINEAR_MIPMAP_LINEAR;
+			
+			case Context3DMipFilter.MIPNEAREST:
+				
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? __gl.NEAREST_MIPMAP_NEAREST : __gl.LINEAR_MIPMAP_NEAREST;
+			
+			case Context3DMipFilter.MIPNONE:
+				
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? __gl.NEAREST : __gl.LINEAR;
+			
+			default:
+				
+				throw new Error ("mipfiter bad enum");
+			
+		}
+		
+		if (__program == null && __samplerTextures[sampler] != null) {
+			
+			__samplerTextures[sampler].__setSamplerState (__samplerStates[sampler]);
+			
+		}
 		
 	}
 	
@@ -452,7 +573,22 @@ import lime.graphics.GLRenderContext;
 	
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
-		GLContext3D.setTextureAt (this, sampler, texture);
+		if (__program == null) {
+			
+			__activeTexture (__gl.TEXTURE0 + sampler);
+			__bindTexture (__gl.TEXTURE_2D, texture != null ? texture.__textureID : null);
+			__samplerTextures[sampler] = texture;
+			
+		} else {
+			
+			if (__samplerTextures[sampler] != texture) {
+				
+				__samplerTextures[sampler] = texture;
+				__samplerDirty |= (1 << sampler);
+				
+			}
+			
+		}
 		
 	}
 	

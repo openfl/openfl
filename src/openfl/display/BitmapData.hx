@@ -24,8 +24,10 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
+import openfl._internal.renderer.opengl.GLTextureBase;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -230,7 +232,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@:noCompletion private var __surface:CairoSurface;
-	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __texture:RectangleTexture;
 	@:noCompletion private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
@@ -1192,13 +1194,13 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromTexture (texture:TextureBase):BitmapData {
+	public static function fromTexture (texture:RectangleTexture):BitmapData {
 		
 		if (texture == null) return null;
 		
 		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
-		bitmapData.__texture = texture.__textureID;
+		bitmapData.__texture = texture;
 		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.image = null;
 		return bitmapData;
@@ -1580,22 +1582,20 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function getTexture (context:Context3D):GLTexture {
+	@:dox(hide) public function getTexture (context:Context3D):RectangleTexture {
 		
 		if (!__isValid) return null;
-		
-		var gl = context.__gl;
 		
 		if (__texture == null || __textureContext != context.__context) {
 			
 			__textureContext = context.__context;
-			__texture = gl.createTexture ();
+			__texture = context.createRectangleTexture (width, height, BGRA, false);
 			
-			context.__bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			// context.__bindTexture (gl.TEXTURE_2D, __texture);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 			__textureVersion = -1;
 			
 		}
@@ -1606,110 +1606,24 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (image != null && image.version > __textureVersion) {
 			
-			var internalFormat, format;
-			
 			if (__surface != null) {
 				
 				__surface.flush ();
 				
 			}
 			
-			if (image.buffer.bitsPerPixel == 1) {
-				
-				internalFormat = gl.ALPHA;
-				format = gl.ALPHA;
-				
-			} else {
-				
-				if (__supportsBGRA == null) {
-					
-					__textureInternalFormat = gl.RGBA;
-					
-					var bgraExtension = null;
-					#if (!js || !html5)
-					bgraExtension = gl.getExtension ("EXT_bgra");
-					if (bgraExtension == null)
-						bgraExtension = gl.getExtension ("EXT_texture_format_BGRA8888");
-					if (bgraExtension == null)
-						bgraExtension = gl.getExtension ("APPLE_texture_format_BGRA8888");
-					#end
-					
-					if (bgraExtension != null) {
-						
-						__supportsBGRA = true;
-						__textureFormat = bgraExtension.BGRA_EXT;
-						
-						#if (!ios && !tvos)
-						if (context.__context.type == #if (lime >= "7.0.0") OPENGLES #else GLES #end) {
-							
-							__textureInternalFormat = bgraExtension.BGRA_EXT;
-							
-						}
-						#end
-						
-					} else {
-						
-						__supportsBGRA = false;
-						__textureFormat = gl.RGBA;
-						
-					}
-					
-				}
-				
-				internalFormat = __textureInternalFormat;
-				format = __textureFormat;
-				
-			}
-			
-			context.__bindTexture (gl.TEXTURE_2D, __texture);
-			
 			var textureImage = image;
 			
 			#if (js && html5)
 			
-			if (textureImage.type != DATA && !textureImage.premultiplied) {
-				
-				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
-				
-			} else if (!textureImage.premultiplied && textureImage.transparent) {
-				
-				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
-				//gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
-				//textureImage = textureImage.clone ();
-				//textureImage.premultiplied = true;
-				
-			}
-			
-			// TODO: Some way to support BGRA on WebGL?
-			
-			var cloned:Bool = false;
-			
-			if (!__supportsBGRA && textureImage.format != RGBA32) {
+			if (#if openfl_power_of_two true || #end (!GLTextureBase.__supportsBGRA && textureImage.format != RGBA32)) {
 				
 				textureImage = textureImage.clone ();
-				cloned = true;
 				textureImage.format = RGBA32;
 				//textureImage.buffer.premultiplied = true;
-				
-			}
-			
-			#if openfl_power_of_two
-			if (!cloned) {
-				
-				textureImage = textureImage.clone ();
-				
-			}
-			
-			textureImage.powerOfTwo = true;
-			#end
-			
-			if (textureImage.type == DATA) {
-				
-				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, textureImage.buffer.width, textureImage.buffer.height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
-				
-			} else {
-				
-				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, textureImage.src);
+				#if openfl_power_of_two
+				textureImage.powerOfTwo = true;
+				#end
 				
 			}
 			
@@ -1725,11 +1639,10 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, textureImage.buffer.width, textureImage.buffer.height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
-			
 			#end
 			
-			context.__bindTexture (gl.TEXTURE_2D, null);
+			__texture.__uploadFromImage (textureImage);
+			
 			__textureVersion = image.version;
 			
 			__textureWidth = textureImage.buffer.width;
@@ -2602,14 +2515,14 @@ class BitmapData implements IBitmapDrawable {
 		if (__framebuffer == null || __framebufferContext != context.__context) {
 			
 			var gl = context.__gl;
-			
-			getTexture (context);
+			var texture = getTexture (context);
+			context.__bindTexture (gl.TEXTURE_2D, texture.__textureID);
 			
 			__framebufferContext = context.__context;
 			__framebuffer = gl.createFramebuffer ();
 			
 			context.__bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
+			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
 			
 			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
 				

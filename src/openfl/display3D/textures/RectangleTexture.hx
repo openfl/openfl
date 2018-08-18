@@ -1,8 +1,10 @@
 package openfl.display3D.textures; #if !flash
 
 
+import lime.graphics.Image;
 import lime.utils.ArrayBufferView;
 import openfl._internal.renderer.opengl.GLRectangleTexture;
+import openfl._internal.renderer.opengl.GLTextureBase;
 import openfl._internal.formats.agal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
@@ -57,6 +59,61 @@ import openfl.utils.ByteArray;
 	@:noCompletion private override function __setSamplerState (state:SamplerState) {
 		
 		GLRectangleTexture.setSamplerState (this, state);
+		
+	}
+	
+	
+	@:noCompletion private function __uploadFromImage (image:Image):Void {
+		
+		var gl = __context.__gl;
+		var internalFormat, format;
+		
+		if (image.buffer.bitsPerPixel == 1) {
+			
+			internalFormat = gl.ALPHA;
+			format = gl.ALPHA;
+			
+		} else {
+			
+			internalFormat = GLTextureBase.__textureInternalFormat;
+			format = GLTextureBase.__textureFormat;
+			
+		}
+		
+		__context.__bindTexture (gl.TEXTURE_2D, __textureID);
+		
+		#if (js && html5)
+		
+		if (image.type != DATA && !image.premultiplied) {
+			
+			gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+			
+		} else if (!image.premultiplied && image.transparent) {
+			
+			gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+			//gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+			//textureImage = textureImage.clone ();
+			//textureImage.premultiplied = true;
+			
+		}
+		
+		if (image.type == DATA) {
+			
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+			
+		} else {
+			
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, image.src);
+			
+		}
+		
+		#else
+		
+		gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+		
+		#end
+		
+		__context.__bindTexture (gl.TEXTURE_2D, null);
 		
 	}
 	
