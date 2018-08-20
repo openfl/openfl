@@ -7,7 +7,7 @@ import lime.utils.Float32Array;
 import lime.utils.Log;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.opengl.GLUtils;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.errors.Error;

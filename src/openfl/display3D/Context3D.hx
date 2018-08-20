@@ -9,7 +9,7 @@ import lime.graphics.opengl.GLTexture;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLContext3D;
 import openfl._internal.renderer.opengl.Context3DStateCache;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -39,6 +39,7 @@ import lime.graphics.GLRenderContext;
 #end
 
 @:access(openfl._internal.renderer.opengl.GLContext3D)
+@:access(openfl._internal.renderer.SamplerState)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.Texture)
@@ -124,7 +125,7 @@ import lime.graphics.GLRenderContext;
 	@:noCompletion private var __program:Program3D;
 	@:noCompletion private var __renderToTexture:TextureBase;
 	@:noCompletion private var __rttDepthAndStencil:Bool;
-	@:noCompletion private var __samplerDirty:Int;
+	@:noCompletion private var __samplerDirty:Bool;
 	@:noCompletion private var __samplerTextures:Vector<TextureBase>;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
 	@:noCompletion private var __scissorRectangle:Rectangle;
@@ -380,11 +381,15 @@ import lime.graphics.GLRenderContext;
 			
 			__program = program;
 			
-			__samplerDirty |= __program.__samplerUsageMask;
+			var usageMask = __program.__samplerUsageMask;
 			
 			for (i in 0...Context3D.MAX_SAMPLERS) {
 				
-				__samplerStates[i].copyFrom (__program.__getSamplerState (i));
+				if ((usageMask & (1 << i)) != 0) {
+					
+					__samplerStates[i].copyFrom (__program.__getSamplerState (i));
+					
+				}
 				
 			}
 			
@@ -550,6 +555,8 @@ import lime.graphics.GLRenderContext;
 			
 		}
 		
+		if (state.__dirty) __samplerDirty = true;
+		
 		// if (__program == null && __samplerTextures[sampler] != null) {
 			
 		// 	__samplerTextures[sampler].__setSamplerState (__samplerStates[sampler]);
@@ -582,10 +589,22 @@ import lime.graphics.GLRenderContext;
 	
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
+		if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
+			
+			throw new Error ("sampler out of range");
+			
+		}
+		
 		if (__samplerTextures[sampler] != texture) {
 			
 			__samplerTextures[sampler] = texture;
-			__samplerDirty |= (1 << sampler);
+			__samplerDirty = true;
+			
+			if (texture != null && (texture.__samplerState == null || !__samplerStates[sampler].equals (texture.__samplerState))) {
+				
+				__samplerStates[sampler].__dirty = true;
+				
+			}
 			
 		}
 		
@@ -967,10 +986,11 @@ import lime.graphics.GLRenderContext;
 	private function __flushSamplerState ():Void {
 		
 		var sampler = 0;
+		var texture;
 		
-		while (__samplerDirty != 0) {
+		if (__samplerDirty) {
 			
-			if ((__samplerDirty & (1 << sampler)) != 0) {
+			for (i in 0...__samplerTextures.length) {
 				
 				// if (Context3D.__stateCache.updateActiveTextureSample (sampler)) {
 					
@@ -979,16 +999,16 @@ import lime.graphics.GLRenderContext;
 					
 				// }
 				
-				var texture = __samplerTextures[sampler];
+				texture = __samplerTextures[sampler];
 				
 				if (texture != null) {
 					
 					var target = texture.__textureTarget;
 					
-					__bindTexture (target, texture.__getTexture ());
+					__bindTexture (target, texture.__textureID);
 					// GLUtils.CheckGLError ();
 					
-					texture.__setSamplerState (__samplerStates[sampler]);
+					if (__samplerStates[sampler].__dirty) texture.__setSamplerState (__samplerStates[sampler]);
 					
 				} else {
 					
@@ -1026,11 +1046,12 @@ import lime.graphics.GLRenderContext;
 					
 				}
 				
-				__samplerDirty &= ~(1 << sampler);
+				__samplerStates[sampler].__dirty = false;
+				sampler++;
 				
 			}
 			
-			sampler++;
+			__samplerDirty = false;
 			
 		}
 		

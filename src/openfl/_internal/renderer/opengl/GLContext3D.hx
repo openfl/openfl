@@ -5,7 +5,7 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLUtils;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -81,7 +81,6 @@ class GLContext3D {
 		context.__fragmentConstants = new Float32Array (4 * Context3D.MAX_PROGRAM_REGISTERS);
 		
 		context.__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
-		context.__samplerDirty = 0;
 		context.__samplerTextures = new Vector<TextureBase> (Context3D.MAX_SAMPLERS);
 		context.__samplerStates = [];
 		
@@ -103,7 +102,6 @@ class GLContext3D {
 		
 		context.__frameCount = 0;
 		context.__rttDepthAndStencil = false;
-		context.__samplerDirty = 0;
 		context.__stencilCompareMode = Context3DCompareMode.ALWAYS;
 		context.__stencilRef = 0;
 		context.__stencilReadMask = 0xFF;

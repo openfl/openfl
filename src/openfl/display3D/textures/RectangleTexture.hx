@@ -4,8 +4,7 @@ package openfl.display3D.textures; #if !flash
 import lime.graphics.Image;
 import lime.utils.ArrayBufferView;
 import openfl._internal.renderer.opengl.GLRectangleTexture;
-import openfl._internal.renderer.opengl.GLTextureBase;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 
@@ -56,9 +55,24 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	@:noCompletion private override function __setSamplerState (state:SamplerState) {
+	@:noCompletion private override function __setSamplerState (state:SamplerState):Bool {
 		
-		GLRectangleTexture.setSamplerState (this, state);
+		if (super.__setSamplerState (state)) {
+			
+			var gl = __context.__gl;
+			
+			if (state.maxAniso != 0.0) {
+				
+				gl.texParameterf (gl.TEXTURE_2D, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				// GLUtils.CheckGLError ();
+				
+			}
+			
+			return true;
+			
+		}
+		
+		return false;
 		
 	}
 	
@@ -75,8 +89,8 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			internalFormat = GLTextureBase.__textureInternalFormat;
-			format = GLTextureBase.__textureFormat;
+			internalFormat = TextureBase.__textureInternalFormat;
+			format = TextureBase.__textureFormat;
 			
 		}
 		

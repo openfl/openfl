@@ -24,7 +24,6 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.opengl.GLTextureBase;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.RectangleTexture;
@@ -1616,7 +1615,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if (js && html5)
 			
-			if (#if openfl_power_of_two true || #end (!GLTextureBase.__supportsBGRA && textureImage.format != RGBA32)) {
+			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32)) {
 				
 				textureImage = textureImage.clone ();
 				textureImage.format = RGBA32;

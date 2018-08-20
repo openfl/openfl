@@ -6,7 +6,7 @@ import lime.graphics.opengl.GL;
 import lime.utils.ArrayBufferView;
 import openfl._internal.renderer.opengl.GLTexture;
 import openfl._internal.renderer.opengl.GLUtils;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
@@ -82,9 +82,33 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	@:noCompletion private override function __setSamplerState (state:SamplerState) {
+	@:noCompletion private override function __setSamplerState (state:SamplerState):Bool {
 		
-		GLTexture.setSamplerState (this, state);
+		if (super.__setSamplerState (state)) {
+			
+			var gl = __context.__gl;
+			
+			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !__samplerState.mipmapGenerated) {
+				
+				gl.generateMipmap (gl.TEXTURE_2D);
+				// GLUtils.CheckGLError ();
+				
+				__samplerState.mipmapGenerated = true;
+				
+			}
+			
+			if (state.maxAniso != 0.0) {
+				
+				gl.texParameterf (gl.TEXTURE_2D, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				// GLUtils.CheckGLError ();
+				
+			}
+			
+			return true;
+			
+		}
+		
+		return false;
 		
 	}
 	

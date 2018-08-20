@@ -1,4 +1,4 @@
-package openfl._internal.formats.agal;
+package openfl._internal.renderer;
 
 
 #if !openfl_debug
@@ -10,19 +10,19 @@ package openfl._internal.formats.agal;
 class SamplerState {
 	
 	
-	public var lodBias(default, set):Float;
-	public var magFilter(default, set):Int;
-	public var maxAniso(default, set):Float;
-	public var minFilter(default, set):Int;
-	public var wrapModeS(default, set):Int;
-	public var wrapModeT(default, set):Int;
+	public var lodBias (default, set):Float;
+	public var magFilter (default, set):Int;
+	public var maxAniso (default, set):Float;
+	public var minFilter (default, set):Int;
+	public var wrapModeS (default, set):Int;
+	public var wrapModeT (default, set):Int;
 	
 	public var centroid:Bool;
 	public var ignoreSampler:Bool;
 	public var mipmapGenerated:Bool;
 	public var textureAlpha:Bool;
 	
-	private var __samplerDirty:Bool;
+	private var __dirty:Bool;
 	
 	
 	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0, ignoreSampler:Bool = false, centroid:Bool = false, mipmapGenerated:Bool = false, textureAlpha:Bool = false) {
@@ -38,7 +38,15 @@ class SamplerState {
 		this.mipmapGenerated = mipmapGenerated;
 		this.textureAlpha = textureAlpha;
 		
-		__samplerDirty = true;
+		__dirty = true;
+		
+	}
+	
+	
+	public function clone ():SamplerState {
+		
+		var copy = new SamplerState (minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso, ignoreSampler, centroid, mipmapGenerated, textureAlpha);
+		return copy;
 		
 	}
 	
@@ -64,7 +72,7 @@ class SamplerState {
 		
 		if (this == other) {
 			
-			return !__samplerDirty;
+			return !__dirty;
 			
 		}
 		
@@ -88,7 +96,7 @@ class SamplerState {
 	
 	private function set_lodBias (value:Float):Float {
 		
-		if (lodBias != value) __samplerDirty = true;
+		if (lodBias != value) __dirty = true;
 		return lodBias = value;
 		
 	}
@@ -96,7 +104,7 @@ class SamplerState {
 	
 	private function set_magFilter (value:Int):Int {
 		
-		if (magFilter != value) __samplerDirty = true;
+		if (magFilter != value) __dirty = true;
 		return magFilter = value;
 		
 	}
@@ -104,7 +112,7 @@ class SamplerState {
 	
 	private function set_maxAniso (value:Float):Float {
 		
-		if (maxAniso != value) __samplerDirty = true;
+		if (maxAniso != value) __dirty = true;
 		return maxAniso = value;
 		
 	}
@@ -112,7 +120,7 @@ class SamplerState {
 	
 	private function set_minFilter (value:Int):Int {
 		
-		if (minFilter != value) __samplerDirty = true;
+		if (minFilter != value) __dirty = true;
 		return minFilter = value;
 		
 	}
@@ -120,7 +128,7 @@ class SamplerState {
 	
 	private function set_wrapModeS (value:Int):Int {
 		
-		if (wrapModeS != value) __samplerDirty = true;
+		if (wrapModeS != value) __dirty = true;
 		return wrapModeS = value;
 		
 	}
@@ -128,7 +136,7 @@ class SamplerState {
 	
 	private function set_wrapModeT (value:Int):Int {
 		
-		if (wrapModeT != value) __samplerDirty = true;
+		if (wrapModeT != value) __dirty = true;
 		return wrapModeT = value;
 		
 	}

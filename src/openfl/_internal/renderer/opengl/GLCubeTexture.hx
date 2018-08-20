@@ -7,7 +7,7 @@ import lime.utils.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.opengl.GLUtils;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DTextureFormat;
@@ -20,7 +20,7 @@ import openfl.utils.ByteArray;
 @:noDebug
 #end
 
-@:access(openfl._internal.formats.agal.SamplerState)
+@:access(openfl._internal.renderer.SamplerState)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObjectRenderer)
@@ -55,7 +55,7 @@ class GLCubeTexture {
 		reader.readTextures (function (side, level, gpuFormat, width, height, blockLength, bytes) {
 			
 			#if (lime < "7.0.0") // TODO
-			var format = GLTextureBase.__compressedTextureFormats.toTextureFormat (alpha, gpuFormat);
+			var format = TextureBase.__compressedTextureFormats.toTextureFormat (alpha, gpuFormat);
 			if (format == 0) return;
 			
 			hasTexture = true;
@@ -200,30 +200,7 @@ class GLCubeTexture {
 	
 	public static function setSamplerState (cubeTexture:CubeTexture, state:SamplerState) {
 		
-		if (!state.equals (cubeTexture.__samplerState)) {
-			
-			var context = cubeTexture.__context;
-			var gl = context.__gl;
-			
-			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !state.mipmapGenerated) {
-				
-				gl.generateMipmap (gl.TEXTURE_CUBE_MAP);
-				GLUtils.CheckGLError ();
-				
-				state.mipmapGenerated = true;
-				
-			}
-			
-			if (state.maxAniso != 0.0) {
-				
-				gl.texParameterf (gl.TEXTURE_CUBE_MAP, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
-				GLUtils.CheckGLError ();
-				
-			}
-			
-		}
 		
-		GLTextureBase.setSamplerState (cubeTexture, state);
 		
 	}
 	

@@ -4,7 +4,7 @@ package openfl._internal.renderer.opengl;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.opengl.GLUtils;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
@@ -16,7 +16,7 @@ import openfl.utils.ByteArray;
 @:noDebug
 #end
 
-@:access(openfl._internal.formats.agal.SamplerState)
+@:access(openfl._internal.renderer.SamplerState)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObjectRenderer)
@@ -110,21 +110,7 @@ class GLRectangleTexture {
 	
 	public static function setSamplerState (rectangleTexture:RectangleTexture, state:SamplerState) {
 		
-		if (!state.equals (rectangleTexture.__samplerState)) {
-			
-			var context = rectangleTexture.__context;
-			var gl = context.__gl;
-			
-			if (state.maxAniso != 0.0) {
-				
-				gl.texParameterf (gl.TEXTURE_2D, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
-				GLUtils.CheckGLError ();
-				
-			}
-			
-		}
 		
-		GLTextureBase.setSamplerState (rectangleTexture, state);
 		
 	}
 	

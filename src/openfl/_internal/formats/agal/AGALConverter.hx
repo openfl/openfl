@@ -3,7 +3,7 @@ package openfl._internal.formats.agal;
 
 import haxe.Int64;
 import lime.graphics.opengl.GL;
-import openfl._internal.formats.agal.SamplerState;
+import openfl._internal.renderer.SamplerState;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
