@@ -56,7 +56,7 @@ import lime.graphics.GLRenderContext;
 	
 	public static var supportsVideoTexture (default, null):Bool = #if (js && html5) true #else false #end;
 	
-	@:noCompletion private static inline var MAX_SAMPLERS = 8;
+	@:noCompletion private static inline var MAX_SAMPLERS = 32; // 8; TODO: Adapt based on shader type, GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
 	@:noCompletion private static inline var MAX_ATTRIBUTES = 16;
 	@:noCompletion private static inline var MAX_PROGRAM_REGISTERS = 128;
 	
@@ -311,10 +311,10 @@ import lime.graphics.GLRenderContext;
 		
 		if (__glProgram == null && __program == null) return;
 		
+		__flushSamplerState ();
+		
 		if (__program != null) {
 			
-			GLContext3D.__setContext (this);
-			GLContext3D.__flushSamplerState ();
 			__program.__flush ();
 			
 		}
@@ -373,13 +373,22 @@ import lime.graphics.GLRenderContext;
 	
 	public function setProgram (program:Program3D):Void {
 		
-		if (program == null) {
+		// if (Context3D.__stateCache.updateProgram3D (program)) {
 			
-			throw new IllegalOperationError ();
+			program.__use ();
+			program.__setPositionScale (__positionScale);
 			
-		}
-		
-		GLContext3D.setProgram (this, program);
+			__program = program;
+			
+			__samplerDirty |= __program.__samplerUsageMask;
+			
+			for (i in 0...Context3D.MAX_SAMPLERS) {
+				
+				__samplerStates[i].copyFrom (__program.__getSamplerState (i));
+				
+			}
+			
+		// }
 		
 	}
 	
@@ -541,11 +550,11 @@ import lime.graphics.GLRenderContext;
 			
 		}
 		
-		if (__program == null && __samplerTextures[sampler] != null) {
+		// if (__program == null && __samplerTextures[sampler] != null) {
 			
-			__samplerTextures[sampler].__setSamplerState (__samplerStates[sampler]);
+		// 	__samplerTextures[sampler].__setSamplerState (__samplerStates[sampler]);
 			
-		}
+		// }
 		
 	}
 	
@@ -573,20 +582,10 @@ import lime.graphics.GLRenderContext;
 	
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
-		if (__program == null) {
+		if (__samplerTextures[sampler] != texture) {
 			
-			__activeTexture (__gl.TEXTURE0 + sampler);
-			__bindTexture (__gl.TEXTURE_2D, texture != null ? texture.__textureID : null);
 			__samplerTextures[sampler] = texture;
-			
-		} else {
-			
-			if (__samplerTextures[sampler] != texture) {
-				
-				__samplerTextures[sampler] = texture;
-				__samplerDirty |= (1 << sampler);
-				
-			}
+			__samplerDirty |= (1 << sampler);
 			
 		}
 		
@@ -959,6 +958,79 @@ import lime.graphics.GLRenderContext;
 			
 			__glEnabled[cap] = true;
 			__gl.enable (cap);
+			
+		}
+		
+	}
+	
+	
+	private function __flushSamplerState ():Void {
+		
+		var sampler = 0;
+		
+		while (__samplerDirty != 0) {
+			
+			if ((__samplerDirty & (1 << sampler)) != 0) {
+				
+				// if (Context3D.__stateCache.updateActiveTextureSample (sampler)) {
+					
+					__activeTexture (__gl.TEXTURE0 + sampler);
+					// GLUtils.CheckGLError ();
+					
+				// }
+				
+				var texture = __samplerTextures[sampler];
+				
+				if (texture != null) {
+					
+					var target = texture.__textureTarget;
+					
+					__bindTexture (target, texture.__getTexture ());
+					// GLUtils.CheckGLError ();
+					
+					texture.__setSamplerState (__samplerStates[sampler]);
+					
+				} else {
+					
+					__bindTexture (__gl.TEXTURE_2D, null);
+					// GLUtils.CheckGLError ();
+					
+				}
+				
+				if (__program != null && __samplerStates[sampler].textureAlpha) {
+					
+					__activeTexture (__gl.TEXTURE0 + sampler + 4);
+					// GLUtils.CheckGLError ();
+					
+					if (texture != null && texture.__alphaTexture != null) {
+						
+						var target = texture.__alphaTexture.__textureTarget;
+						
+						__bindTexture (target, texture.__alphaTexture.__getTexture ());
+						// GLUtils.CheckGLError ();
+						
+						texture.__alphaTexture.__setSamplerState (__samplerStates[sampler]);
+						
+						__gl.uniform1i (__program.__alphaSamplerEnabled[sampler].location, 1);
+						// GLUtils.CheckGLError ();
+						
+					} else {
+						
+						__bindTexture (__gl.TEXTURE_2D, null);
+						// GLUtils.CheckGLError ();
+						
+						__gl.uniform1i (__program.__alphaSamplerEnabled[sampler].location, 0);
+						// GLUtils.CheckGLError ();
+						
+					}
+					
+				}
+				
+				__samplerDirty &= ~(1 << sampler);
+				
+			}
+			
+			sampler++;
 			
 		}
 		

@@ -228,7 +228,8 @@ class GLTextureBase {
 				
 			}
 			
-			textureBase.__samplerState = state;
+			if (textureBase.__samplerState == null) textureBase.__samplerState = new SamplerState (gl.LINEAR, gl.LINEAR, gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
+			textureBase.__samplerState.copyFrom (state);
 			textureBase.__samplerState.__samplerDirty = false;
 			
 		}

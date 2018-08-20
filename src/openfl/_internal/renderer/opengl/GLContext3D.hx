@@ -422,22 +422,7 @@ class GLContext3D {
 	
 	public static function setProgram (context:Context3D, program:Program3D):Void {
 		
-		if (Context3D.__stateCache.updateProgram3D (program)) {
-			
-			program.__use ();
-			program.__setPositionScale (context.__positionScale);
-			
-			context.__program = program;
-			
-			context.__samplerDirty |= context.__program.__samplerUsageMask;
-			
-			for (i in 0...Context3D.MAX_SAMPLERS) {
-				
-				context.__samplerStates[i].copyFrom (context.__program.__getSamplerState (i));
-				
-			}
-			
-		}
+		
 		
 	}
 	
@@ -786,79 +771,6 @@ class GLContext3D {
 	public static function setVertexBufferAt (context:Context3D, index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
 		
-		
-	}
-	
-	
-	private static function __flushSamplerState ():Void {
-		
-		var sampler = 0;
-		
-		while (context.__samplerDirty != 0) {
-			
-			if ((context.__samplerDirty & (1 << sampler)) != 0) {
-				
-				if (Context3D.__stateCache.updateActiveTextureSample (sampler)) {
-					
-					context.__activeTexture (gl.TEXTURE0 + sampler);
-					GLUtils.CheckGLError ();
-					
-				}
-				
-				var texture = context.__samplerTextures[sampler];
-				
-				if (texture != null) {
-					
-					var target = texture.__textureTarget;
-					
-					context.__bindTexture (target, texture.__getTexture ());
-					GLUtils.CheckGLError ();
-					
-					texture.__setSamplerState (context.__samplerStates[sampler]);
-					
-				} else {
-					
-					context.__bindTexture (gl.TEXTURE_2D, null);
-					GLUtils.CheckGLError ();
-					
-				}
-				
-				if (context.__samplerStates[sampler].textureAlpha) {
-					
-					context.__activeTexture (gl.TEXTURE0 + sampler + 4);
-					GLUtils.CheckGLError ();
-					
-					if (texture != null && texture.__alphaTexture != null) {
-						
-						var target = texture.__alphaTexture.__textureTarget;
-						
-						context.__bindTexture (target, texture.__alphaTexture.__getTexture ());
-						GLUtils.CheckGLError ();
-						
-						texture.__alphaTexture.__setSamplerState (context.__samplerStates[sampler]);
-						
-						gl.uniform1i (context.__program.__alphaSamplerEnabled[sampler].location, 1);
-						GLUtils.CheckGLError ();
-						
-					} else {
-						
-						context.__bindTexture (gl.TEXTURE_2D, null);
-						GLUtils.CheckGLError ();
-						
-						gl.uniform1i (context.__program.__alphaSamplerEnabled[sampler].location, 0);
-						GLUtils.CheckGLError ();
-						
-					}
-					
-				}
-				
-				context.__samplerDirty &= ~(1 << sampler);
-				
-			}
-			
-			sampler++;
-			
-		}
 		
 	}
 	
