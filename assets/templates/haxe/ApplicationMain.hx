@@ -115,6 +115,7 @@ import haxe.macro.Expr;
 		app.meta["file"] = "::APP_FILE::";
 		app.meta["name"] = "::meta.title::";
 		app.meta["packageName"] = "::meta.packageName::";
+		app.meta["version"] = "::meta.version::";
 		
 		#if !flash
 		::foreach windows::
