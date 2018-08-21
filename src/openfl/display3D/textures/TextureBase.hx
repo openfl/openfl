@@ -4,7 +4,7 @@ package openfl.display3D.textures; #if !flash
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.opengl.GLTexture;
-import openfl._internal.renderer.opengl.GLCompressedTextureFormats;
+import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
@@ -31,7 +31,8 @@ import lime.graphics.GLRenderContext;
 class TextureBase extends EventDispatcher {
 	
 	
-	@:noCompletion private static var __compressedTextureFormats:Null<GLCompressedTextureFormats> = null;
+	@:noCompletion private static var __compressedFormats:Map<Int, Int>;
+	@:noCompletion private static var __compressedFormatsAlpha:Map<Int, Int>;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
@@ -97,11 +98,39 @@ class TextureBase extends EventDispatcher {
 				
 			}
 			
-		}
-		
-		if (__compressedTextureFormats == null) {
+			__compressedFormats = new Map ();
+			__compressedFormatsAlpha = new Map ();
 			
-			__compressedTextureFormats = new GLCompressedTextureFormats (context);
+			#if (js && html5)
+			var dxtExtension = gl.getExtension ("WEBGL_compressed_texture_s3tc");
+			var etc1Extension = gl.getExtension ("WEBGL_compressed_texture_etc1");
+			// WEBGL_compressed_texture_pvrtc is not available on iOS Safari
+			var pvrtcExtension = gl.getExtension ("WEBKIT_WEBGL_compressed_texture_pvrtc");
+			#else
+			var dxtExtension = gl.getExtension ("EXT_texture_compression_s3tc");
+			var etc1Extension = gl.getExtension ("OES_compressed_ETC1_RGB8_texture");
+			var pvrtcExtension = gl.getExtension ("IMG_texture_compression_pvrtc");
+			#end
+			
+			if (dxtExtension != null) {
+				__compressedFormats[ATFGPUFormat.DXT] = dxtExtension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				__compressedFormatsAlpha[ATFGPUFormat.DXT] = dxtExtension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			}
+			
+			if (etc1Extension != null) {
+				#if (js && html5)
+				__compressedFormats[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
+				__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
+				#else
+				__compressedFormats[ATFGPUFormat.ETC1] = etc1Extension.ETC1_RGB8_OES;
+				__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.ETC1_RGB8_OES;
+				#end
+			}
+			
+			if (pvrtcExtension != null) {
+				__compressedFormats[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+				__compressedFormatsAlpha[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+			}
 			
 		}
 		

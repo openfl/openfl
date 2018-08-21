@@ -232,7 +232,7 @@ import openfl.utils.ByteArray;
 		
 		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes:Bytes) {
 			
-			var format = TextureBase.__compressedTextureFormats.toTextureFormat (alpha, gpuFormat);
+			var format = alpha ? TextureBase.__compressedFormatsAlpha[gpuFormat] : TextureBase.__compressedFormats[gpuFormat];
 			if (format == 0) return;
 			
 			hasTexture = true;
