@@ -1,6 +1,7 @@
 package openfl.display3D.textures; #if !flash
 
 
+import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.opengl.GLTexture;
 import openfl._internal.renderer.opengl.GLCompressedTextureFormats;

@@ -3,7 +3,7 @@ package openfl.display3D.textures; #if !flash
 
 import lime.graphics.Image;
 import lime.utils.ArrayBufferView;
-import openfl._internal.renderer.opengl.GLRectangleTexture;
+import lime.utils.UInt8Array;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
@@ -29,28 +29,79 @@ import openfl.utils.ByteArray;
 		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
-		GLRectangleTexture.create (this);
+		__textureTarget = __context.__gl.TEXTURE_2D;
+		uploadFromTypedArray (null);
 		
 	}
 	
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
-		GLRectangleTexture.uploadFromBitmapData (this, source);
+		if (source == null) return;
+		
+		var image = __getImage (source);
+		if (image == null) return;
+		
+		#if (js && html5)
+		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
+			
+			var gl = __context.__gl;
+			
+			__context.__bindTexture (__textureTarget, __textureID);
+			// GLUtils.CheckGLError ();
+			
+			gl.texImage2D (__textureTarget, 0, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
+			// GLUtils.CheckGLError ();
+			
+			__context.__bindTexture (__textureTarget, null);
+			// GLUtils.CheckGLError ();
+			return;
+			
+		}
+		#end
+		
+		uploadFromTypedArray (image.data);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		GLRectangleTexture.uploadFromByteArray (this, data, byteArrayOffset);
+		#if (js && !display)
+		if (byteArrayOffset == 0) {
+			
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b);
+			return;
+			
+		}
+		#end
+		
+		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
 		
 	}
 	
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
-		GLRectangleTexture.uploadFromTypedArray (this, data);
+		//if (__format != Context3DTextureFormat.BGRA) {
+			//
+			//throw new IllegalOperationError ();
+			//
+		//}
+		
+		var gl = __context.__gl;
+		
+		__context.__bindTexture (__textureTarget, __textureID);
+		// GLUtils.CheckGLError ();
+		
+		gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
+		// GLUtils.CheckGLError ();
+		
+		__context.__bindTexture (__textureTarget, null);
+		// GLUtils.CheckGLError ();
+		
+		// var memUsage = (__width * __height) * 4;
+		// __trackMemoryUsage (memUsage);
 		
 	}
 	
