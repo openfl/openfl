@@ -92,7 +92,7 @@ import openfl.utils.ByteArray;
 			__context.__bindTexture (__textureTarget, null);
 			// GLUtils.CheckGLError ();
 			
-			cubeTexture.__uploadedSides |= 1 << side;
+			__uploadedSides |= 1 << side;
 			return;
 			
 		}
@@ -108,7 +108,7 @@ import openfl.utils.ByteArray;
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (cubeTexture, @:privateAccess (data:ByteArrayData).b, side, miplevel);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, side, miplevel);
 			return;
 			
 		}
@@ -224,7 +224,7 @@ import openfl.utils.ByteArray;
 				
 				var size = Std.int (blockLength / 2);
 				
-				gl.compressedTexImage2D (target, level, __internalFormat, width, height, 0, new UInt8Array (bytes, 0, size));
+				gl.compressedTexImage2D (target, level, __internalFormat, width, height, 0, new UInt8Array (#if (js && html5) @:privateAccess bytes.b #else bytes #end, 0, size));
 				// GLUtils.CheckGLError ();
 				
 				var alphaTexture = new CubeTexture (__context, __size, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
@@ -234,14 +234,14 @@ import openfl.utils.ByteArray;
 				__context.__bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
 				// GLUtils.CheckGLError ();
 				
-				gl.compressedTexImage2D (target, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (bytes, 0, size));
+				gl.compressedTexImage2D (target, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (#if (js && html5) @:privateAccess bytes.b #else bytes #end, 0, size));
 				// GLUtils.CheckGLError ();
 				
 				__alphaTexture = alphaTexture;
 				
 			} else {
 				
-				gl.compressedTexImage2D (target, level, __internalFormat, width, height, 0, new UInt8Array (bytes, 0, blockLength));
+				gl.compressedTexImage2D (target, level, __internalFormat, width, height, 0, new UInt8Array (#if (js && html5) @:privateAccess bytes.b #else bytes #end, 0, blockLength));
 				// GLUtils.CheckGLError ();
 				
 			}

@@ -112,21 +112,21 @@ import openfl.utils.ByteArray;
 			
 			var gl = __context.__gl;
 			
-			var width = texture.__width >> miplevel;
-			var height = texture.__height >> miplevel;
+			var width = __width >> miplevel;
+			var height = __height >> miplevel;
 			
 			if (width == 0 && height == 0) return;
 			
 			if (width == 0) width = 1;
 			if (height == 0) height = 1;
 			
-			__context.__bindTexture (texture.__textureTarget, texture.__textureID);
+			__context.__bindTexture (__textureTarget, __textureID);
 			// GLUtils.CheckGLError ();
 			
-			gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, texture.__format, gl.UNSIGNED_BYTE, image.buffer.src);
+			gl.texImage2D (__textureTarget, miplevel, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
 			// GLUtils.CheckGLError ();
 			
-			__context.__bindTexture (texture.__textureTarget, null);
+			__context.__bindTexture (__textureTarget, null);
 			// GLUtils.CheckGLError ();
 			
 			// var memUsage = (width * height) * 4;
@@ -146,7 +146,7 @@ import openfl.utils.ByteArray;
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (texture, @:privateAccess (data:ByteArrayData).b, miplevel);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, miplevel);
 			return;
 			
 		}
@@ -243,7 +243,7 @@ import openfl.utils.ByteArray;
 				
 				var size = Std.int (blockLength / 2);
 				
-				gl.compressedTexImage2D (__textureTarget, level, __internalFormat, width, height, 0, new UInt8Array (bytes, 0, size));
+				gl.compressedTexImage2D (__textureTarget, level, __internalFormat, width, height, 0, new UInt8Array (#if (js && html5) @:privateAccess bytes.b #else bytes #end, 0, size));
 				// GLUtils.CheckGLError ();
 				
 				var alphaTexture = new Texture (__context, __width, __height, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
@@ -253,14 +253,14 @@ import openfl.utils.ByteArray;
 				__context.__bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
 				// GLUtils.CheckGLError ();
 				
-				gl.compressedTexImage2D (alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (bytes, 0, size));
+				gl.compressedTexImage2D (alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (#if (js && html5) @:privateAccess bytes.b #else bytes #end, 0, size));
 				// GLUtils.CheckGLError ();
 				
 				__alphaTexture = alphaTexture;
 				
 			} else {
 				
-				gl.compressedTexImage2D (__textureTarget, level, __internalFormat, width, height, 0, new UInt8Array (bytes, 0, blockLength));
+				gl.compressedTexImage2D (__textureTarget, level, __internalFormat, width, height, 0, new UInt8Array (#if (js && html5) @:privateAccess bytes.b #else bytes #end, 0, blockLength));
 				// GLUtils.CheckGLError ();
 				
 			}
