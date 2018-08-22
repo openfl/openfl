@@ -32,6 +32,7 @@ class DisplayObjectRenderer extends EventDispatcher {
 	
 	@:noCompletion private var __allowSmoothing:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __cleared:Bool;
 	@:noCompletion private var __context:#if (lime >= "7.0.0") RenderContext #else Dynamic #end;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;

@@ -457,6 +457,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		}
 		
+		__cleared = true;
+		
 	}
 	
 	

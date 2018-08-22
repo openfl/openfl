@@ -633,7 +633,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __rendering:Bool;
 	@:noCompletion private var __rollOutStack:Array<DisplayObject>;
 	@:noCompletion private var __scaleMode:StageScaleMode;
-	@:noCompletion private var __shouldClear:Bool;
 	@:noCompletion private var __stack:Array<DisplayObject>;
 	@:noCompletion private var __touchData:Map<Int, TouchData>;
 	@:noCompletion private var __transparent:Bool;
@@ -683,7 +682,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
 		__renderDirty = true;
-		__shouldClear = true;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -1425,9 +1423,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			GLStats.resetDrawCalls();
 		#end
 		
-		if (__shouldClear && __renderer != null) {
+		if (context3D == null && __renderer != null) {
 			
-			// TODO: Move into Context3D, run before first `drawTriangles`
 			__renderer.__clear ();
 			
 		}
@@ -1458,11 +1455,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
 		
-		if (__invalidated && (shouldRender || __shouldClear)) {
+		if (__invalidated && shouldRender) {
 			
 			__invalidated = false;
 			__broadcastEvent (new Event (Event.RENDER));
-			if (!shouldRender) __renderDirty = false; // TODO: Remove when clear is moved to Context3D
 			
 		}
 		
@@ -1517,20 +1513,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 					renderer.onRender.cancel ();
 					#end
 					
-					__shouldClear = false;
-					
 				} else {
 					
+					if (!__renderer.__cleared) {
+						
+						__renderer.__clear ();
+						
+					}
+					
 					context3D.__present = false;
-					__shouldClear = true;
 					
 				}
 				
 			}
 			
 		} else {
-			
-			__shouldClear = false;
 			
 			#if (lime >= "7.0.0")
 			window.onRender.cancel ();
@@ -1539,6 +1536,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#end
 			
 		}
+		
+		if (__renderer != null) __renderer.__cleared = false;
 		
 		#if hxtelemetry
 		Telemetry.__endTiming (TelemetryCommandName.RENDER);

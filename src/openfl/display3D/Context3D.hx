@@ -132,7 +132,7 @@ import lime.graphics.GLRenderContext;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
 	@:noCompletion private var __scissorRectangle:Rectangle;
 	@:noCompletion private var __stage:Stage;
-	// @:noCompletion private var __stage3D:Stage3D;
+	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __stats:Vector<Int>;
 	@:noCompletion private var __statsCache:Vector<Int>;
 	@:noCompletion private var __stencilCompareMode:Context3DCompareMode;
@@ -157,6 +157,7 @@ import lime.graphics.GLRenderContext;
 		super ();
 		
 		__stage = stage;
+		__stage3D = stage3D;
 		__x = 0;
 		__y = 0;
 		
@@ -218,6 +219,12 @@ import lime.graphics.GLRenderContext;
 			
 			__clearColor (red, green, blue, alpha);
 			// GLUtils.CheckGLError ();
+			
+			if (__renderToTexture == null && /*__stage3D == null &&*/ __stage.__renderer != null) {
+				
+				__stage.__renderer.__cleared = true;
+				
+			}
 			
 		}
 		
@@ -337,6 +344,12 @@ import lime.graphics.GLRenderContext;
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
 		if (__glProgram == null && __program == null) return;
+		
+		if (__renderToTexture == null && /*__stage3D == null &&*/ __stage.__renderer != null && !__stage.__renderer.__cleared) {
+			
+			__stage.__renderer.__clear ();
+			
+		}
 		
 		__flushSamplerState ();
 		
