@@ -8,7 +8,57 @@ import openfl.utils.ByteArray;
 	
 	
 	public function dispose () : Void;
+	
+	
+	public inline function getFragmentConstantIndex (name:String):Int {
+		
+		if (StringTools.startsWith (name, "fc")) {
+			
+			return Std.parseInt (name.substring (2));
+			
+		} else {
+			
+			return -1;
+			
+		}
+		
+	}
+	
+	
+	public inline function getVertexAttributeIndex (name:String):Int {
+		
+		if (StringTools.startsWith (name, "va")) {
+			
+			return Std.parseInt (name.substring (2));
+			
+		} else {
+			
+			return -1;
+			
+		}
+		
+	}
+	
+	
+	public function getVertexConstantIndex (name:String):Int {
+		
+		if (StringTools.startsWith (name, "vc")) {
+			
+			return Std.parseInt (name.substring (2));
+			
+		} else {
+			
+			return -1;
+			
+		}
+		
+	}
+	
+	
 	public function upload (vertexProgram:ByteArray, fragmentProgram:ByteArray):Void;
+	
+	
+	public inline function uploadSources (vertexSource:String, fragmentSource:String):Void {}
 	
 	
 }

@@ -3,7 +3,6 @@ package openfl.display; #if !flash
 
 import haxe.Timer;
 import lime.graphics.opengl.GL;
-import openfl._internal.renderer.opengl.GLStage3D;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
@@ -38,6 +37,7 @@ import js.Browser;
 
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.Program3D)
 
 
 class Stage3D extends EventDispatcher {
@@ -278,7 +278,26 @@ class Stage3D extends EventDispatcher {
 		if (context3D != null) {
 			
 			__resetContext3DStates ();
-			GLStage3D.render (this, renderer);
+			
+			renderer.__setBlendMode (null);
+			
+			if (renderer.__currentShader != null) {
+				
+				renderer.setShader (null);
+				
+				if (context3D.__program != null) {
+					
+					context3D.__program.__use ();
+					
+				}
+				
+			}
+			
+			// if (GLUtils.debug) {
+				
+			// 	renderer.gl.getError ();
+				
+			// }
 			
 		}
 		

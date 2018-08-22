@@ -253,9 +253,9 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	public function createProgram ():Program3D {
+	public function createProgram (format:Context3DProgramFormat = AGAL):Program3D {
 		
-		return new Program3D (this);
+		return new Program3D (this, format);
 		
 	}
 	

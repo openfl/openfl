@@ -7,6 +7,7 @@ import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.VideoTexture;
+import openfl.display3D.Context3DProgramFormat;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
@@ -30,7 +31,14 @@ import openfl.Vector;
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void;
 	public function createCubeTexture (size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture;
 	public function createIndexBuffer (numIndices:Int, ?bufferUsage:Context3DBufferUsage):IndexBuffer3D;
-	public function createProgram ():Program3D;
+	
+	@:native("createProgram") @:noCompletion private function __createProgram ():Program3D;
+	public inline function createProgram (format:Context3DProgramFormat = AGAL):Program3D {
+		
+		if (format != AGAL) throw new openfl.errors.IllegalOperationError ("Invalid program format: " + format);
+		return this.__createProgram ();
+		
+	}
 	
 	#if flash
 	@:require(flash11_8)

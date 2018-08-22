@@ -18,7 +18,6 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
-import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
@@ -2133,7 +2132,11 @@ class TextField extends InteractiveObject {
 			
 		} else {
 			
-			GLTextField.render (this, renderer, __worldTransform);
+			#if (js && html5)
+			CanvasTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+			#elseif lime_cairo
+			CairoTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+			#end
 			GLDisplayObject.render (this, renderer);
 			
 		}
@@ -2145,7 +2148,11 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		GLTextField.render (this, renderer, __worldTransform);
+		#if (js && html5)
+		CanvasTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+		#elseif lime_cairo
+		CairoTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+		#end
 		
 		super.__renderGLMask (renderer);
 		
