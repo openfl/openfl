@@ -600,6 +600,9 @@ class GLGraphics {
 								if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, bufferPosition * Float32Array.BYTES_PER_ELEMENT);
 								if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
 								
+								// TODO: Use context.drawTriangles
+								context.__flushSamplerState ();
+								
 								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
 								bufferPosition += (4 * length * 6);
 								
@@ -733,6 +736,9 @@ class GLGraphics {
 								default:
 								
 							}
+							
+							// TODO: Use context.drawTriangles
+							context.__flushSamplerState ();
 							
 							gl.drawArrays (gl.TRIANGLES, 0, length);
 							bufferPosition += (stride * length);

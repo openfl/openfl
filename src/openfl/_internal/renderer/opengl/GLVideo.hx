@@ -81,6 +81,10 @@ class GLVideo {
 			context.__bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (context));
 			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			
+			// TODO: Use context.drawTriangles
+			context.__flushSamplerState ();
+			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
@@ -118,6 +122,9 @@ class GLVideo {
 			
 			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			
+			// TODO: Use context.drawTriangles
+			context.__flushSamplerState ();
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			

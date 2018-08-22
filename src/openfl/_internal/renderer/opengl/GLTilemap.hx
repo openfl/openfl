@@ -397,6 +397,9 @@ class GLTilemap {
 			var start = lastFlushedPosition == 0 ? 0 : Std.int (lastFlushedPosition / stride);
 			var length = Std.int ((bufferPosition - lastFlushedPosition) / stride);
 			
+			// TODO: Use context.drawTriangles
+			context.__flushSamplerState ();
+			
 			gl.drawArrays (gl.TRIANGLES, start, length);
 			
 			#if gl_stats

@@ -345,12 +345,6 @@ import lime.graphics.GLRenderContext;
 		
 		if (__glProgram == null && __program == null) return;
 		
-		if (__renderToTexture == null && /*__stage3D == null &&*/ __stage.__renderer != null && !__stage.__renderer.__cleared) {
-			
-			__stage.__renderer.__clear ();
-			
-		}
-		
 		__flushSamplerState ();
 		
 		if (__program != null) {
@@ -1111,6 +1105,12 @@ import lime.graphics.GLRenderContext;
 	
 	
 	@:noCompletion private function __flushSamplerState ():Void {
+		
+		if (__renderToTexture == null && /*__stage3D == null &&*/ __stage.__renderer != null && !__stage.__renderer.__cleared) {
+			
+			__stage.__renderer.__clear ();
+			
+		}
 		
 		var sampler = 0;
 		var texture;
