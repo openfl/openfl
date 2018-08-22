@@ -123,9 +123,11 @@ class Context3DTest {
 		
 		if (context3D != null) {
 			
+			#if !flash
 			var exists = context3D.createProgram;
 			
 			Assert.isNotNull (exists);
+			#end
 			
 		}
 		
