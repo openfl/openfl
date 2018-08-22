@@ -38,6 +38,7 @@ import lime.graphics.GLRenderContext;
 @:noDebug
 #end
 
+@:access(openfl._internal.renderer.opengl.Context3DStateCache)
 @:access(openfl._internal.renderer.opengl.GLContext3D)
 @:access(openfl._internal.renderer.SamplerState)
 @:access(openfl.display3D.textures.CubeTexture)
@@ -122,6 +123,7 @@ import lime.graphics.GLRenderContext;
 	@:noCompletion private var __maxAnisotropyCubeTexture:Int;
 	@:noCompletion private var __maxAnisotropyTexture2D:Int;
 	@:noCompletion private var __positionScale:Float32Array;
+	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __program:Program3D;
 	@:noCompletion private var __renderToTexture:TextureBase;
 	@:noCompletion private var __rttDepthAndStencil:Bool;
@@ -150,7 +152,7 @@ import lime.graphics.GLRenderContext;
 	#end
 	
 	
-	@:noCompletion private function new (stage:Stage) {
+	@:noCompletion private function new (stage:Stage, stage3D:Stage3D = null) {
 		
 		super ();
 		
@@ -187,6 +189,19 @@ import lime.graphics.GLRenderContext;
 		__glStencilOp = [ -1, -1, -1 ];
 		__glStencilOpSeparate = [ -1, -1, -1, -1 ];
 		__glTextures = new Map ();
+		
+		if (stage3D == null) {
+			
+			backBufferWidth = stage.stageWidth;
+			backBufferHeight = stage.stageHeight;
+			
+			__backBufferAntiAlias = 0;
+			__backBufferEnableDepthAndStencil = true;
+			__backBufferWantsBestResolution = true;
+			
+			__viewport (0, 0, stage.stageWidth, stage.stageHeight);
+			
+		}
 		
 		GLContext3D.create (this);
 		
@@ -234,7 +249,18 @@ import lime.graphics.GLRenderContext;
 	
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void {
 		
-		GLContext3D.configureBackBuffer (this, width, height, antiAlias, enableDepthAndStencil, wantsBestResolution, wantsBestResolutionOnBrowserZoom);
+		__updateBackbufferViewport ();
+		
+		backBufferWidth = width;
+		backBufferHeight = height;
+		
+		__backBufferAntiAlias = antiAlias;
+		__backBufferEnableDepthAndStencil = enableDepthAndStencil;
+		__backBufferWantsBestResolution = wantsBestResolution;
+		
+		__updateDepthAndStencilState ();
+		
+		// Context3D.__stateCache.clearSettings ();
 		
 	}
 	
@@ -339,14 +365,33 @@ import lime.graphics.GLRenderContext;
 	
 	public function present ():Void {
 		
-		GLContext3D.present (this);
+		__present = true;
+		
+		// __statsSendToTelemetry ();
+		
+		#if telemetry
+		//__spanPresent.End ();
+		//__spanPresent.Begin ();
+		#end
+		
+		// __statsClear (Context3DTelemetry.DRAW_CALLS);
+		
+		// __frameCount++;
 		
 	}
 	
 	
 	public function setBlendFactors (sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		GLContext3D.setBlendFactors (this, sourceFactor, destinationFactor);
+		var updateSrc = Context3D.__stateCache.updateBlendSrcFactor (sourceFactor);
+		var updateDest = Context3D.__stateCache.updateBlendDestFactor (destinationFactor);
+		
+		// if (updateSrc || updateDest) {
+			
+		// 	__setContext (context);
+			__updateBlendFactors ();
+			
+		// }
 		
 	}
 	
@@ -409,7 +454,76 @@ import lime.graphics.GLRenderContext;
 	
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
-		GLContext3D.setProgramConstantsFromMatrix (this, programType, firstRegister, matrix, transposedMatrix);
+		if (__program != null && __program.__format == GLSL) {
+			
+			// TODO: Cache value, prevent need to copy
+			var data = new Float32Array (16);
+			for (i in 0...16) {
+				data[i] = matrix.rawData[i];
+			}
+			
+			__gl.uniformMatrix4fv (cast firstRegister, transposedMatrix, data);
+			
+		} else {
+			
+			var isVertex = (programType == Context3DProgramType.VERTEX);
+			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var source = matrix.rawData;
+			var i = firstRegister * 4;
+			
+			if (transposedMatrix) {
+				
+				dest[i++] = source[0];
+				dest[i++] = source[4];
+				dest[i++] = source[8];
+				dest[i++] = source[12];
+				
+				dest[i++] = source[1];
+				dest[i++] = source[5];
+				dest[i++] = source[9];
+				dest[i++] = source[13];
+				
+				dest[i++] = source[2];
+				dest[i++] = source[6];
+				dest[i++] = source[10];
+				dest[i++] = source[14];
+				
+				dest[i++] = source[3];
+				dest[i++] = source[7];
+				dest[i++] = source[11];
+				dest[i++] = source[15];
+				
+			} else {
+				
+				dest[i++] = source[0];
+				dest[i++] = source[1];
+				dest[i++] = source[2];
+				dest[i++] = source[3];
+				
+				dest[i++] = source[4];
+				dest[i++] = source[5];
+				dest[i++] = source[6];
+				dest[i++] = source[7];
+				
+				dest[i++] = source[8];
+				dest[i++] = source[9];
+				dest[i++] = source[10];
+				dest[i++] = source[11];
+				
+				dest[i++] = source[12];
+				dest[i++] = source[13];
+				dest[i++] = source[14];
+				dest[i++] = source[15];
+				
+			}
+			
+			if (__program != null) {
+				
+				__program.__markDirty (isVertex, firstRegister, 4);
+				
+			}
+			
+		}
 		
 	}
 	
@@ -983,7 +1097,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	private function __flushSamplerState ():Void {
+	@:noCompletion private function __flushSamplerState ():Void {
 		
 		var sampler = 0;
 		var texture;
@@ -1400,7 +1514,52 @@ import lime.graphics.GLRenderContext;
 	
 	@:noCompletion private function __updateBlendFactors ():Void {
 		
-		GLContext3D.__updateBlendFactorsTEMP (this);
+		if (__stateCache._srcBlendFactor == null || __stateCache._destBlendFactor == null) {
+			
+			return;
+			
+		}
+		
+		var src = __gl.ONE;
+		var dest = __gl.ZERO;
+		switch (__stateCache._srcBlendFactor) {
+			
+			case Context3DBlendFactor.DESTINATION_ALPHA: src = __gl.DST_ALPHA;
+			case Context3DBlendFactor.DESTINATION_COLOR: src = __gl.DST_COLOR;
+			case Context3DBlendFactor.ONE: src = __gl.ONE;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = __gl.ONE_MINUS_DST_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = __gl.ONE_MINUS_DST_COLOR;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = __gl.ONE_MINUS_SRC_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: src = __gl.ONE_MINUS_SRC_COLOR;
+			case Context3DBlendFactor.SOURCE_ALPHA: src = __gl.SRC_ALPHA;
+			case Context3DBlendFactor.SOURCE_COLOR: src = __gl.SRC_COLOR;
+			case Context3DBlendFactor.ZERO: src = __gl.ZERO;
+			default:
+				throw new IllegalOperationError ();
+			
+		}
+		
+		switch (__stateCache._destBlendFactor) {
+			
+			case Context3DBlendFactor.DESTINATION_ALPHA: dest = __gl.DST_ALPHA;
+			case Context3DBlendFactor.DESTINATION_COLOR: dest = __gl.DST_COLOR;
+			case Context3DBlendFactor.ONE: dest = __gl.ONE;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = __gl.ONE_MINUS_DST_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: dest = __gl.ONE_MINUS_DST_COLOR;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = __gl.ONE_MINUS_SRC_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = __gl.ONE_MINUS_SRC_COLOR;
+			case Context3DBlendFactor.SOURCE_ALPHA: dest = __gl.SRC_ALPHA;
+			case Context3DBlendFactor.SOURCE_COLOR: dest = __gl.SRC_COLOR;
+			case Context3DBlendFactor.ZERO: dest = __gl.ZERO;
+			default:
+				throw new IllegalOperationError ();
+			
+		}
+		
+		__enable (__gl.BLEND);
+		// GLUtils.CheckGLError ();
+		__blendFunc (src, dest);
+		// GLUtils.CheckGLError ();
 		
 	}
 	

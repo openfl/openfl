@@ -80,49 +80,7 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	public function getFragmentConstantIndex (name:String):Int {
-		
-		if (__format == AGAL) {
-			
-			// TODO: Validate that it exists in the current program
-			
-			if (StringTools.startsWith (name, "fc")) {
-				
-				return Std.parseInt (name.substring (2));
-				
-			} else {
-				
-				return -1;
-				
-			}
-			
-		} else {
-			
-			if (!__location.exists (name)) {
-				
-				if (__programID != null) {
-					
-					__location[name] = cast __context.__gl.getUniformLocation (__programID, name);
-					return __location[name];
-					
-				} else {
-					
-					return -1;
-					
-				}
-				
-			} else {
-				
-				return __location[name];
-				
-			}
-			
-		}
-		
-	}
-	
-	
-	public function getVertexAttributeIndex (name:String):Int {
+	public function getAttributeIndex (name:String):Int {
 		
 		if (__format == AGAL) {
 			
@@ -164,13 +122,17 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	public function getVertexConstantIndex (name:String):Int {
+	public function getConstantIndex (name:String):Int {
 		
 		if (__format == AGAL) {
 			
 			// TODO: Validate that it exists in the current program
 			
 			if (StringTools.startsWith (name, "vc")) {
+				
+				return Std.parseInt (name.substring (2));
+				
+			} else if (StringTools.startsWith (name, "fc")) {
 				
 				return Std.parseInt (name.substring (2));
 				

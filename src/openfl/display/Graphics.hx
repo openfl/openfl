@@ -1489,12 +1489,14 @@ import js.html.CanvasRenderingContext2D;
 	
 	@:noCompletion private function __cleanup ():Void {
 		
-		if (__bounds != null) {
+		#if (js && html5)
+		if (__bounds != null && __canvas != null) {
 			
 			__dirty = true;
 			__transformDirty = true;
 			
 		}
+		#end
 		
 		__bitmap = null;
 		
@@ -1796,7 +1798,7 @@ import js.html.CanvasRenderingContext2D;
 		if (width < 1 || height < 1) {
 			
 			if (__width >= 1 || __height >= 1) __dirty = true;
-			__width  = 0;
+			__width = 0;
 			__height = 0;
 			return;
 			
@@ -1816,7 +1818,7 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__renderTransform.a = width  / __bounds.width;
+		__renderTransform.a = width / __bounds.width;
 		__renderTransform.d = height / __bounds.height;
 		var inverseA = (1 / __renderTransform.a);
 		var inverseD = (1 / __renderTransform.d);
@@ -1841,7 +1843,7 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.ty = __worldTransform.__transformInverseY (tx, ty);
 		
 		// Calculate the size to contain the graphics and the extra subpixel
-		var newWidth  = Math.ceil (width  + __renderTransform.tx);
+		var newWidth = Math.ceil (width + __renderTransform.tx);
 		var newHeight = Math.ceil (height + __renderTransform.ty);
 		
 		// Mark dirty if render size changed
@@ -1853,7 +1855,7 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__width  = newWidth;
+		__width = newWidth;
 		__height = newHeight;
 		
 	}

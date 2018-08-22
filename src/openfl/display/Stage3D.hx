@@ -113,7 +113,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (renderer.__type == OPENGL) {
 			
-			context3D = new Context3D (stage);
+			context3D = new Context3D (stage, this);
 			context3D.__x = __x;
 			context3D.__y = __y;
 			context3D.__updateBackbufferViewport ();
@@ -165,7 +165,7 @@ class Stage3D extends EventDispatcher {
 				__renderContext = new GLRenderContext (cast __webgl);
 				GL.context = __renderContext;
 				
-				context3D = new Context3D (this, renderer);
+				context3D = new Context3D (stage, this);
 				
 				var renderer:DOMRenderer = cast renderer;
 				renderer.element.appendChild (__canvas);

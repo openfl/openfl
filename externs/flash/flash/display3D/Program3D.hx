@@ -10,22 +10,7 @@ import openfl.utils.ByteArray;
 	public function dispose () : Void;
 	
 	
-	public inline function getFragmentConstantIndex (name:String):Int {
-		
-		if (StringTools.startsWith (name, "fc")) {
-			
-			return Std.parseInt (name.substring (2));
-			
-		} else {
-			
-			return -1;
-			
-		}
-		
-	}
-	
-	
-	public inline function getVertexAttributeIndex (name:String):Int {
+	public inline function getAttributeIndex (name:String):Int {
 		
 		if (StringTools.startsWith (name, "va")) {
 			
@@ -40,9 +25,13 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	public function getVertexConstantIndex (name:String):Int {
+	public inline function getConstantIndex (name:String):Int {
 		
 		if (StringTools.startsWith (name, "vc")) {
+			
+			return Std.parseInt (name.substring (2));
+			
+		} else if (StringTools.startsWith (name, "fc")) {
 			
 			return Std.parseInt (name.substring (2));
 			

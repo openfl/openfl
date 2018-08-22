@@ -834,6 +834,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		}
 		
+		__context3D.present ();
+		
 	}
 	
 	

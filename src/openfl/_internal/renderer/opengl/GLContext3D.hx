@@ -215,19 +215,7 @@ class GLContext3D {
 	
 	public static function configureBackBuffer (context:Context3D, width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void {
 		
-		__setContext (context);
-		__updateBackbufferViewport ();
 		
-		context.backBufferWidth = width;
-		context.backBufferHeight = height;
-		
-		context.__backBufferAntiAlias = antiAlias;
-		context.__backBufferEnableDepthAndStencil = enableDepthAndStencil;
-		context.__backBufferWantsBestResolution = wantsBestResolution;
-		
-		__updateDepthAndStencilState ();
-		
-		Context3D.__stateCache.clearSettings ();
 		
 	}
 	
@@ -268,31 +256,14 @@ class GLContext3D {
 	
 	public static function present (context:Context3D):Void {
 		
-		// __statsSendToTelemetry ();
 		
-		#if telemetry
-		//__spanPresent.End ();
-		//__spanPresent.Begin ();
-		#end
-		
-		// __statsClear (Context3DTelemetry.DRAW_CALLS);
-		
-		// __frameCount++;
 		
 	}
 	
 	
 	public static function setBlendFactors (context:Context3D, sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		var updateSrc = Context3D.__stateCache.updateBlendSrcFactor (sourceFactor);
-		var updateDest = Context3D.__stateCache.updateBlendDestFactor (destinationFactor);
 		
-		if (updateSrc || updateDest) {
-			
-			__setContext (context);
-			__updateBlendFactors ();
-			
-		}
 		
 	}
 	
@@ -459,62 +430,7 @@ class GLContext3D {
 	
 	public static function setProgramConstantsFromMatrix (context:Context3D, programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
-		var isVertex = (programType == Context3DProgramType.VERTEX);
-		var dest = isVertex ? context.__vertexConstants : context.__fragmentConstants;
-		var source = matrix.rawData;
-		var i = firstRegister * 4;
 		
-		if (transposedMatrix) {
-			
-			dest[i++] = source[0];
-			dest[i++] = source[4];
-			dest[i++] = source[8];
-			dest[i++] = source[12];
-			
-			dest[i++] = source[1];
-			dest[i++] = source[5];
-			dest[i++] = source[9];
-			dest[i++] = source[13];
-			
-			dest[i++] = source[2];
-			dest[i++] = source[6];
-			dest[i++] = source[10];
-			dest[i++] = source[14];
-			
-			dest[i++] = source[3];
-			dest[i++] = source[7];
-			dest[i++] = source[11];
-			dest[i++] = source[15];
-			
-		} else {
-			
-			dest[i++] = source[0];
-			dest[i++] = source[1];
-			dest[i++] = source[2];
-			dest[i++] = source[3];
-			
-			dest[i++] = source[4];
-			dest[i++] = source[5];
-			dest[i++] = source[6];
-			dest[i++] = source[7];
-			
-			dest[i++] = source[8];
-			dest[i++] = source[9];
-			dest[i++] = source[10];
-			dest[i++] = source[11];
-			
-			dest[i++] = source[12];
-			dest[i++] = source[13];
-			dest[i++] = source[14];
-			dest[i++] = source[15];
-			
-		}
-		
-		if (context.__program != null) {
-			
-			context.__program.__markDirty (isVertex, firstRegister, 4);
-			
-		}
 		
 	}
 	
@@ -969,66 +885,6 @@ class GLContext3D {
 			__setViewport (x > 0 ? x : 0, (y > 0 ? y : 0), context.backBufferWidth, context.backBufferHeight);
 			
 		}
-		
-	}
-	
-	
-	public static function __updateBlendFactorsTEMP (context:Context3D):Void {
-		
-		__setContext (context);
-		__updateBlendFactors ();
-		
-	}
-	
-	
-	private static function __updateBlendFactors ():Void {
-		
-		if (Context3D.__stateCache._srcBlendFactor == null || Context3D.__stateCache._destBlendFactor == null) {
-			
-			return;
-			
-		}
-		
-		var src = gl.ONE;
-		var dest = gl.ZERO;
-		switch (Context3D.__stateCache._srcBlendFactor) {
-			
-			case Context3DBlendFactor.DESTINATION_ALPHA: src = gl.DST_ALPHA;
-			case Context3DBlendFactor.DESTINATION_COLOR: src = gl.DST_COLOR;
-			case Context3DBlendFactor.ONE: src = gl.ONE;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = gl.ONE_MINUS_DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = gl.ONE_MINUS_DST_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: src = gl.ONE_MINUS_SRC_COLOR;
-			case Context3DBlendFactor.SOURCE_ALPHA: src = gl.SRC_ALPHA;
-			case Context3DBlendFactor.SOURCE_COLOR: src = gl.SRC_COLOR;
-			case Context3DBlendFactor.ZERO: src = gl.ZERO;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		switch (Context3D.__stateCache._destBlendFactor) {
-			
-			case Context3DBlendFactor.DESTINATION_ALPHA: dest = gl.DST_ALPHA;
-			case Context3DBlendFactor.DESTINATION_COLOR: dest = gl.DST_COLOR;
-			case Context3DBlendFactor.ONE: dest = gl.ONE;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = gl.ONE_MINUS_DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: dest = gl.ONE_MINUS_DST_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = gl.ONE_MINUS_SRC_COLOR;
-			case Context3DBlendFactor.SOURCE_ALPHA: dest = gl.SRC_ALPHA;
-			case Context3DBlendFactor.SOURCE_COLOR: dest = gl.SRC_COLOR;
-			case Context3DBlendFactor.ZERO: dest = gl.ZERO;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		context.__enable (gl.BLEND);
-		GLUtils.CheckGLError ();
-		context.__blendFunc (src, dest);
-		GLUtils.CheckGLError ();
 		
 	}
 	

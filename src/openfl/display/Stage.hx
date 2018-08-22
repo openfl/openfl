@@ -17,6 +17,7 @@ import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.utils.TouchData;
+import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
@@ -632,6 +633,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __rendering:Bool;
 	@:noCompletion private var __rollOutStack:Array<DisplayObject>;
 	@:noCompletion private var __scaleMode:StageScaleMode;
+	@:noCompletion private var __shouldClear:Bool;
 	@:noCompletion private var __stack:Array<DisplayObject>;
 	@:noCompletion private var __touchData:Map<Int, TouchData>;
 	@:noCompletion private var __transparent:Bool;
@@ -681,6 +683,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
 		__renderDirty = true;
+		__shouldClear = true;
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -858,6 +861,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public override function invalidate ():Void {
 		
 		__invalidated = true;
+		
+		// TODO: Should this not mark as dirty?
 		__renderDirty = true;
 		
 	}
@@ -1293,7 +1298,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
+		#if !desktop
+		// TODO: Is this needed?
 		__renderDirty = true;
+		#end
+		
 		__broadcastEvent (new Event (Event.ACTIVATE));
 		
 		#if !desktop
@@ -1416,6 +1425,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 			GLStats.resetDrawCalls();
 		#end
 		
+		if (__shouldClear && __renderer != null) {
+			
+			// TODO: Move into Context3D, run before first `drawTriangles`
+			__renderer.__clear ();
+			
+		}
+		
 		if (__renderer != null && (Stage3D.__active || stage3Ds[0].__contextRequested)) {
 			
 			// if (stage3Ds[0].context3D != null) {
@@ -1424,7 +1440,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			// }
 			
-			__renderer.__clear ();
+			// 
 			__renderer.__renderStage3D (this);
 			__renderDirty = true;
 			
@@ -1440,10 +1456,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__broadcastEvent (new Event (Event.FRAME_CONSTRUCTED));
 		__broadcastEvent (new Event (Event.EXIT_FRAME));
 		
-		if (__invalidated) {
+		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
+		
+		if (__invalidated && (shouldRender || __shouldClear)) {
 			
 			__invalidated = false;
 			__broadcastEvent (new Event (Event.RENDER));
+			if (!shouldRender) __renderDirty = false; // TODO: Remove when clear is moved to Context3D
 			
 		}
 		
@@ -1458,17 +1477,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) {
+		if (shouldRender) {
 			
 			if (stage3Ds[0].context3D != null) {
 				
 				context3D.__copyState (stage3Ds[0].context3D);
-				
-			}
-			
-			if (!Stage3D.__active) {
-				
-				__renderer.__clear ();
 				
 			}
 			
@@ -1494,7 +1507,30 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__renderer.__render (this);
 			
+			if (context3D != null) {
+				
+				if (!context3D.__present) {
+					
+					#if (lime >= "7.0.0")
+					window.onRender.cancel ();
+					#else
+					renderer.onRender.cancel ();
+					#end
+					
+					__shouldClear = false;
+					
+				} else {
+					
+					context3D.__present = false;
+					__shouldClear = true;
+					
+				}
+				
+			}
+			
 		} else {
+			
+			__shouldClear = false;
 			
 			#if (lime >= "7.0.0")
 			window.onRender.cancel ();
