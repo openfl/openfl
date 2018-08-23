@@ -704,10 +704,13 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 				
 			} catch (e:Error) {
 				
-				if (e != Error.Blocked) {
-					
-					doClose = true;
-					
+				switch(e)
+				{
+					case Blocked: //ignore Blocked
+					case Custom(customError):
+						doClose = (customError != "EOF"); //ignore Custom(EOF)
+					default:
+						doClose = true;
 				}
 				
 			} catch (e:Dynamic) {
