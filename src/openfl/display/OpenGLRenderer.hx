@@ -385,14 +385,17 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function bindFramebuffer (target:Int, framebuffer:GLFramebuffer):Void {
+	public function bindFramebuffer (target:Int, framebuffer:GLFramebuffer):GLFramebuffer {
 		
-		if (__framebuffers[target] != framebuffer) {
+		var old = __framebuffers[target];
+		
+		if (old != framebuffer) {
 			
 			__framebuffers[target] = framebuffer;
 			__gl.bindFramebuffer (target, framebuffer);
-			
 		}
+		
+		return old;
 		
 	}
 	
@@ -1254,6 +1257,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
+		var oldFramebuffer = __framebuffers[__gl.FRAMEBUFFER];
 		bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (this, false));
 		
 		if (clear) {
@@ -1276,7 +1280,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (shader.__textureCoord != null) __gl.vertexAttribPointer (shader.__textureCoord.index, 2, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		__gl.drawArrays (__gl.TRIANGLE_STRIP, 0, 4);
 		
-		bindFramebuffer (__gl.FRAMEBUFFER, null);
+		bindFramebuffer (__gl.FRAMEBUFFER, oldFramebuffer);
 		
 		__clearShader ();
 		
