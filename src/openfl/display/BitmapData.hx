@@ -2455,11 +2455,12 @@ class BitmapData implements IBitmapDrawable {
 		
 		var gl = renderer.__gl;
 		
+		@:privateAccess var oldFramebuffer = renderer.__framebuffers[gl.FRAMEBUFFER];
 		renderer.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (renderer, true));
 		
 		renderer.__render (source);
 		
-		renderer.bindFramebuffer (gl.FRAMEBUFFER, null);
+		renderer.bindFramebuffer (gl.FRAMEBUFFER, oldFramebuffer);
 		
 	}
 	
@@ -2481,7 +2482,7 @@ class BitmapData implements IBitmapDrawable {
 			var color:ARGB = (color:ARGB);
 			var useScissor = !this.rect.equals (rect);
 			
-			renderer.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			var oldFramebuffer = renderer.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 			
 			if (useScissor) {
 				
@@ -2499,7 +2500,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			renderer.bindFramebuffer (gl.FRAMEBUFFER, null);
+			renderer.bindFramebuffer (gl.FRAMEBUFFER, oldFramebuffer);
 			
 		} else if (readable) {
 			
