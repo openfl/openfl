@@ -92,6 +92,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __currentShader:Shader;
 	@:noCompletion private var __currentShaderBuffer:ShaderBuffer;
 	@:noCompletion private var __defaultDisplayShader:DisplayObjectShader;
+	@:noCompletion private var __defaultFramebuffers:Map<Int, GLFramebuffer>;
 	@:noCompletion private var __defaultGraphicsShader:GraphicsShader;
 	@:noCompletion private var __defaultRenderTarget:BitmapData;
 	@:noCompletion private var __defaultShader:Shader;
@@ -160,6 +161,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__clearColor = [ 0, 0, 0, 0 ];
 		__colorMask = [ true, true, true, true ];
 		__cullFace = -1;
+		__defaultFramebuffers = new Map ();
 		__enabled = new Map ();
 		__framebuffers = new Map ();
 		__renderbuffers = new Map ();
@@ -381,6 +383,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__gl.bindBuffer (target, buffer);
 			
 		}
+		
+	}
+	
+	
+	public function bindDefaultFramebuffer (target:Int):Void {
+		
+		bindFramebuffer (target, __defaultFramebuffers[target]);
 		
 	}
 	
@@ -620,6 +629,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:deprecated("Use 'viewport' instead") public function setViewport ():Void {
 		
 		viewport ();
+		
+	}
+	
+	
+	public function setDefaultFramebuffer (id:Int, framebuffer:GLFramebuffer):Void {
+		
+		__defaultFramebuffers[id] = framebuffer;
 		
 	}
 	
@@ -1276,7 +1292,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (shader.__textureCoord != null) __gl.vertexAttribPointer (shader.__textureCoord.index, 2, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		__gl.drawArrays (__gl.TRIANGLE_STRIP, 0, 4);
 		
-		bindFramebuffer (__gl.FRAMEBUFFER, null);
+		bindDefaultFramebuffer (__gl.FRAMEBUFFER);
 		
 		__clearShader ();
 		
