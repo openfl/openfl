@@ -1456,7 +1456,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (shouldRender) {
+		if (shouldRender || context3D.__present) {
 			
 			// if (stage3Ds[0].context3D != null) {
 				

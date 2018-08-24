@@ -903,17 +903,13 @@ import openfl.utils.ByteArray;
 		
 		if (__contextState.culling != __state.culling) {
 			
-			if (__contextState.culling == NONE) {
-				
-				__setGLCullFace (true);
-				
-			}
-			
 			if (__state.culling == NONE) {
 				
 				__setGLCullFace (false);
 				
 			} else {
+				
+				__setGLCullFace (true);
 				
 				switch (__state.culling) {
 					
@@ -1080,14 +1076,6 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			// context.__positionScale[1] = -1.0;
-			
-			// if (context.__program != null) {
-				
-			// 	context.__program.__setPositionScale (context.__positionScale);
-				
-			// }
-			
 		} else {
 			
 			if (backBufferWidth == 0 && backBufferHeight == 0) {
@@ -1107,14 +1095,6 @@ import openfl.utils.ByteArray;
 				
 				// TODO: Is this correct?
 				gl.frontFace (gl.CCW);
-				
-				// context.__positionScale[1] = 1.0;
-				
-				// if (context.__program != null) {
-					
-				// 	context.__program.__setPositionScale (context.__positionScale);
-					
-				// }
 				
 			}
 			
@@ -1281,6 +1261,10 @@ import openfl.utils.ByteArray;
 			
 			texture = __state.textures[i];
 			samplerState = __state.samplerStates[i];
+			if (samplerState == null) {
+				__state.samplerStates[i] = new SamplerState ();
+				samplerState = __state.samplerStates[i];
+			}
 			
 			gl.activeTexture (gl.TEXTURE0 + sampler);
 			
