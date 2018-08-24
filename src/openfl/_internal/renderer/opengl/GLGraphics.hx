@@ -725,13 +725,11 @@ class GLGraphics {
 								
 								case POSITIVE:
 									
-									context.__setGLCullFace (true);
-									gl.cullFace (gl.FRONT);
+									context.setCulling (FRONT);
 								
 								case NEGATIVE:
 									
-									context.__setGLCullFace (true);
-									gl.cullFace (gl.BACK);
+									context.setCulling (BACK);
 								
 								default:
 								
@@ -745,8 +743,7 @@ class GLGraphics {
 							
 							if (culling != NONE) {
 								
-								context.__setGLCullFace (false);
-								gl.cullFace (gl.BACK);
+								context.setCulling (BACK);
 								
 							}
 							

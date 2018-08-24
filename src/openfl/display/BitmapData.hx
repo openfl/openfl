@@ -2422,8 +2422,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (useScissor) {
 				
-				context.__setGLScissorTest (true);
-				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
+				context.setScissorRectangle (rect);
 				
 			}
 			
@@ -2431,7 +2430,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (useScissor) {
 				
-				context.__setGLScissorTest (false);
+				context.setScissorRectangle (null);
 				
 			}
 			
