@@ -5,6 +5,7 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.GL;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DCompareMode;
@@ -58,6 +59,7 @@ class Context3DState {
 	private var __enableGLScissorTest:Bool;
 	private var __enableGLStencilTest:Bool;
 	private var __frontFaceGLCCW:Bool;
+	private var __glBlendEquation:Int;
 	private var __primaryGLFramebuffer:GLFramebuffer;
 	private var __rttDepthGLRenderbuffer:GLRenderbuffer;
 	private var __rttGLFramebuffer:GLFramebuffer;
@@ -89,6 +91,7 @@ class Context3DState {
 		stencilWriteMask = 0xFF;
 		textures = new Array ();
 		__frontFaceGLCCW = true;
+		__glBlendEquation = GL.FUNC_ADD;
 		
 	}
 	

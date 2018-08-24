@@ -980,40 +980,36 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			case ADD:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
 			
 			case MULTIPLY:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.DST_COLOR, __gl.ONE_MINUS_SRC_ALPHA);
+				__context3D.setBlendFactors (DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
 			
 			case SCREEN:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.ONE, __gl.ONE_MINUS_SRC_COLOR);
+				__context3D.setBlendFactors (ONE, ONE_MINUS_SOURCE_COLOR);
 			
 			case SUBTRACT:
 				
-				__gl.blendEquation (__gl.FUNC_REVERSE_SUBTRACT);
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
+				__context3D.__setGLBlendEquation (__gl.FUNC_REVERSE_SUBTRACT);
 			
 			#if desktop
 			case DARKEN:
 				
-				__gl.blendEquation (0x8007); // GL_MIN
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
+				__context3D.__setGLBlendEquation (0x8007); // GL_MIN
 				
 			case LIGHTEN:
 				
-				__gl.blendEquation (0x8008); // GL_MAX
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
+				__context3D.__setGLBlendEquation (0x8008); // GL_MAX
 			#end
 			
 			default:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.ONE, __gl.ONE_MINUS_SRC_ALPHA);
+				__context3D.setBlendFactors (ONE, ONE_MINUS_SOURCE_ALPHA);
 			
 		}
 		

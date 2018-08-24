@@ -426,6 +426,9 @@ import openfl.utils.ByteArray;
 		__state.blendSourceFactor = sourceFactor;
 		__state.blendDestinationFactor = destinationFactor;
 		
+		// TODO: Better way to handle this?
+		__setGLBlendEquation (gl.FUNC_ADD);
+		
 	}
 	
 	
@@ -1383,6 +1386,16 @@ import openfl.utils.ByteArray;
 				gl.disable (gl.BLEND);
 			}
 			__contextState.__enableGLBlend = enable;
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __setGLBlendEquation (value:Int):Void {
+		
+		if (#if openfl_disable_context_cache true #else __contextState.__glBlendEquation != value #end) {
+			gl.blendEquation (value);
+			__contextState.__glBlendEquation = value;
 		}
 		
 	}
