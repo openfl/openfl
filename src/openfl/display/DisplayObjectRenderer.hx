@@ -135,13 +135,6 @@ class DisplayObjectRenderer extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function __renderStage3D (stage:Stage):Void {
-		
-		
-		
-	}
-	
-	
 	@:noCompletion private function __resize (width:Int, height:Int):Void {
 		
 		

@@ -65,8 +65,25 @@ class Context3DState {
 	
 	public function new () {
 		
+		blendDestinationFactor = ZERO;
+		blendSourceFactor = ONE;
+		colorMaskRed = true;
+		colorMaskGreen = true;
+		colorMaskBlue = true;
+		colorMaskAlpha = true;
+		culling = NONE;
+		depthCompareMode = LESS;
+		depthMask = true;
 		samplerStates = new Array ();
 		scissorRectangle = new Rectangle ();
+		stencilCompareMode = ALWAYS;
+		stencilDepthFail = KEEP;
+		stencilFail = KEEP;
+		stencilPass = KEEP;
+		stencilReadMask = 0xFF;
+		stencilReferenceValue = 0;
+		stencilTriangleFace = FRONT_AND_BACK;
+		stencilWriteMask = 0xFF;
 		textures = new Array ();
 		
 	}

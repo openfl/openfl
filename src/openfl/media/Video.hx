@@ -144,7 +144,7 @@ class Video extends DisplayObject {
 		
 		var gl = context.gl;
 		
-		if (__buffer == null || __bufferContext != gl.context) {
+		if (__buffer == null || __bufferContext != context.__context) {
 			
 			#if openfl_power_of_two
 			
@@ -218,10 +218,10 @@ class Video extends DisplayObject {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = gl.context;
+			__bufferContext = context.__context;
 			__buffer = gl.createBuffer ();
 			
-			__context.__bindGLArrayBuffer (__buffer);
+			context.__bindGLArrayBuffer (__buffer);
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
 			//context.__bindGLArrayBuffer (null);
 			
@@ -275,7 +275,7 @@ class Video extends DisplayObject {
 				
 			// }
 			
-			__context.__bindGLArrayBuffer (__buffer);
+			context.__bindGLArrayBuffer (__buffer);
 			// gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			
 		}

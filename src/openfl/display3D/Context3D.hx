@@ -3,6 +3,7 @@ package openfl.display3D; #if !flash
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
@@ -38,8 +39,10 @@ import openfl.utils.ByteArray;
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 
 
 @:final class Context3D extends EventDispatcher {
@@ -66,7 +69,12 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var gl:WebGLRenderContext;
 	
 	@:noCompletion private var __backBufferAntiAlias:Int;
+	@:noCompletion private var __backBufferDepthGLRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __backBufferEnableDepthAndStencil:Bool;
+	@:noCompletion private var __backBufferGLFramebuffer:GLFramebuffer;
+	@:noCompletion private var __backBufferGLRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __backBufferStencilGLRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
 	@:noCompletion private var __context:RenderContext;
@@ -224,7 +232,81 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			// TODO: Framebuffer resize for Stage3D instances
+			if (__backBufferGLFramebuffer == null) {
+				__backBufferGLFramebuffer = gl.createFramebuffer ();
+			}
+			
+			if (__backBufferTexture == null || backBufferWidth != width || backBufferHeight != height) {
+				// TODO: Create framebuffer when optimize for render-to-texture is true?
+				__backBufferTexture = createRectangleTexture (width, height, BGRA, true);
+				__bindGLFramebuffer (__backBufferGLFramebuffer);
+				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __backBufferTexture.__textureID, 0);
+			}
+			
+			if (enableDepthAndStencil) {
+				
+				if (GL_DEPTH_STENCIL != 0) {
+					
+					// TODO: Cache?
+					
+					if (__backBufferGLRenderbuffer == null) {
+						__backBufferGLRenderbuffer = gl.createRenderbuffer ();
+					}
+					
+					gl.bindRenderbuffer (gl.RENDERBUFFER, __backBufferGLRenderbuffer);
+					gl.renderbufferStorage (gl.RENDERBUFFER, GL_DEPTH_STENCIL, width, height);
+					gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, __backBufferGLRenderbuffer);
+					
+				} else {
+					
+					if (__backBufferDepthGLRenderbuffer == null) {
+						__backBufferDepthGLRenderbuffer = gl.createRenderbuffer ();
+					}
+					
+					if (__backBufferStencilGLRenderbuffer == null) {
+						__backBufferStencilGLRenderbuffer = gl.createRenderbuffer ();
+					}
+					
+					gl.bindRenderbuffer (gl.RENDERBUFFER, __backBufferDepthGLRenderbuffer);
+					gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+					gl.bindRenderbuffer (gl.RENDERBUFFER, __backBufferStencilGLRenderbuffer);
+					gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, width, height);
+					
+					gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, __backBufferDepthGLRenderbuffer);
+					gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __backBufferStencilGLRenderbuffer);
+					
+				}
+				
+				gl.bindRenderbuffer (gl.RENDERBUFFER, null);
+					
+			}
+			
+			if (__enableErrorChecking) {
+				
+				var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
+				
+				if (code != gl.FRAMEBUFFER_COMPLETE) {
+					
+					trace ('Error: Context3D.configureBackBuffer status:${code} width:${width} height:${height}');
+					
+				}
+				
+			}
+			
+			backBufferWidth = width;
+			backBufferHeight = height;
+			
+			__backBufferAntiAlias = antiAlias;
+			__backBufferEnableDepthAndStencil = enableDepthAndStencil;
+			__backBufferWantsBestResolution = wantsBestResolution;
+			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
+			// __state.__primaryGLFramebuffer = __backBufferGLFramebuffer;
+			
+			// quick hack
+			__stage3D.__bitmapData.__texture = __backBufferTexture;
+			__stage3D.__bitmapData.width = width;
+			__stage3D.__bitmapData.height = height;
+			__stage3D.__bitmapData.__isValid = true;
 			
 		}
 		
@@ -698,6 +780,7 @@ import openfl.utils.ByteArray;
 		__flushGLScissor ();
 		__flushGLStencil ();
 		__flushGLTextures ();
+		__flushGLViewport ();
 		
 	}
 	
@@ -953,7 +1036,13 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			if (__contextState.renderToTexture != null || __contextState.__primaryGLFramebuffer != __state.__primaryGLFramebuffer) {
+			if (backBufferWidth == 0 && backBufferHeight == 0) {
+				
+				throw new Error ("Context3D backbuffer has not been configured");
+				
+			}
+			
+			if (__contextState.renderToTexture != null || __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer) {
 				
 				__bindGLFramebuffer (__state.__primaryGLFramebuffer);
 				
@@ -961,7 +1050,6 @@ import openfl.utils.ByteArray;
 				__setGLStencilTest (__backBufferEnableDepthAndStencil);
 				
 				__contextState.renderToTexture = null;
-				__contextState.__primaryGLFramebuffer = __state.__primaryGLFramebuffer;
 				
 				// TODO: Is this correct?
 				gl.frontFace (gl.CCW);

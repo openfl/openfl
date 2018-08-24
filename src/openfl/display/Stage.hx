@@ -16,6 +16,7 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor in LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
+import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
@@ -684,12 +685,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__renderDirty = true;
 		
 		stage3Ds = new Vector ();
-		stage3Ds.push (new Stage3D ());
-		stage3Ds.push (new Stage3D ());
-		#if !mobile
-		stage3Ds.push (new Stage3D ());
-		stage3Ds.push (new Stage3D ());
-		#end
+		for (i in 0...#if mobile 2 #else 4 #end) {
+			stage3Ds.push (new Stage3D (this));
+		}
 		
 		this.stage = this;
 		
@@ -1434,26 +1432,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		if (__renderer != null && (Stage3D.__active || stage3Ds[0].__contextRequested)) {
-			
-			// if (stage3Ds[0].context3D != null) {
-				
-			// 	stage3Ds[0].context3D.__restoreState (context3D);
-				
-			// }
-			
-			// 
-			__renderer.__renderStage3D (this);
-			__renderDirty = true;
-			
-			// if (stage3Ds[0].context3D != null) {
-				
-			// 	stage3Ds[0].context3D.__copyState (context3D);
-				
-			// }
-			
-		}
-		
 		__broadcastEvent (new Event (Event.ENTER_FRAME));
 		__broadcastEvent (new Event (Event.FRAME_CONSTRUCTED));
 		__broadcastEvent (new Event (Event.EXIT_FRAME));
@@ -1507,6 +1485,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 			
 			__renderer.__render (this);
+			
+			for (stage3D in stage3Ds) {
+				if (stage3D.context3D != null && stage3D.context3D.__present) {
+					// quick hack, TODO: DOM
+					GLBitmap.render (stage3D.__bitmap, cast __renderer);
+					stage3D.context3D.__present = false;
+				}
+			}
 			
 			if (context3D != null) {
 				
@@ -1654,13 +1640,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		#end
 		
-		#if (lime >= "7.0.0")
 		switch (window.context.type) {
 			
 			case OPENGL, OPENGLES, WEBGL:
 				
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D (this);
+				context3D.configureBackBuffer (stageWidth, stageHeight, 0, true, true, true);
 				__renderer = new OpenGLRenderer (context3D);
 				#end
 			
@@ -1687,41 +1673,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			default:
 			
 		}
-		#else
-		switch (window.renderer.context) {
-			
-			case OPENGL (gl):
-				
-				#if (!disable_cffi && (!html5 || !canvas))
-				context3D = new Context3D (this);
-				__renderer = new OpenGLRenderer (context3D);
-				#end
-			
-			case CANVAS (context):
-				
-				#if (js && html5)
-				__renderer = new CanvasRenderer (context);
-				cast (__renderer, CanvasRenderer).pixelRatio = pixelRatio;
-				#end
-			
-			case DOM (element):
-				
-				#if (js && html5)
-				__renderer = new DOMRenderer (element);
-				cast (__renderer, DOMRenderer).pixelRatio = pixelRatio;
-				#end
-			
-			case CAIRO (cairo):
-				
-				#if lime_cairo
-				__renderer = new CairoRenderer (cairo);
-				
-				#end
-			
-			default:
-			
-		}
-		#end
 		
 		if (__renderer != null) {
 			

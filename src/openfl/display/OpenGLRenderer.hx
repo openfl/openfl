@@ -870,17 +870,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
-		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderGL (stage, this);
-			
-		}
-		
-	}
-	
-	
 	@:noCompletion private override function __resize (width:Int, height:Int):Void {
 		
 		__width = width;
