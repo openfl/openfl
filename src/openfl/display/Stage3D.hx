@@ -134,7 +134,10 @@ class Stage3D extends EventDispatcher {
 		
 		if (renderer.__type == OPENGL) {
 			
-			context3D = new Context3D (stage, stage.context3D.__contextState, this);
+			// another hack
+			context3D = stage.context3D;
+			
+			// context3D = new Context3D (stage, stage.context3D.__contextState, this);
 			__dispatchCreate ();
 			
 		} else if (renderer.__type == DOM) {

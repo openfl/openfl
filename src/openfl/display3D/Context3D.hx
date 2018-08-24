@@ -236,10 +236,11 @@ import openfl.utils.ByteArray;
 				__backBufferGLFramebuffer = gl.createFramebuffer ();
 			}
 			
+			__bindGLFramebuffer (__backBufferGLFramebuffer);
+			
 			if (__backBufferTexture == null || backBufferWidth != width || backBufferHeight != height) {
 				// TODO: Create framebuffer when optimize for render-to-texture is true?
 				__backBufferTexture = createRectangleTexture (width, height, BGRA, true);
-				__bindGLFramebuffer (__backBufferGLFramebuffer);
 				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __backBufferTexture.__textureID, 0);
 			}
 			

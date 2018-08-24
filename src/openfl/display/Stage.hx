@@ -685,9 +685,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__renderDirty = true;
 		
 		stage3Ds = new Vector ();
-		for (i in 0...#if mobile 2 #else 4 #end) {
+		// for (i in 0...#if mobile 2 #else 4 #end) {
 			stage3Ds.push (new Stage3D (this));
-		}
+		// }
 		
 		this.stage = this;
 		
@@ -1486,13 +1486,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__renderer.__render (this);
 			
-			for (stage3D in stage3Ds) {
-				if (stage3D.context3D != null && stage3D.context3D.__present) {
-					// quick hack, TODO: DOM
-					GLBitmap.render (stage3D.__bitmap, cast __renderer);
-					stage3D.context3D.__present = false;
-				}
-			}
+			// for (stage3D in stage3Ds) {
+			// 	if (stage3D.context3D != null && stage3D.context3D.__present) {
+			// 		// quick hack, TODO: DOM
+			// 		GLBitmap.render (stage3D.__bitmap, cast __renderer);
+			// 		stage3D.context3D.__present = false;
+			// 	}
+			// }
 			
 			if (context3D != null) {
 				
