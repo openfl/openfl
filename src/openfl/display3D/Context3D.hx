@@ -763,7 +763,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __bindGLArrayBuffer (buffer:GLBuffer):Void {
 		
-		if (__contextState.__currentGLArrayBuffer != buffer) {
+		if (#if openfl_disable_context_cache true #else __contextState.__currentGLArrayBuffer != buffer #end) {
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, buffer);
 			__contextState.__currentGLArrayBuffer = buffer;
@@ -775,7 +775,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __bindGLElementArrayBuffer (buffer:GLBuffer):Void {
 		
-		if (__contextState.__currentGLElementArrayBuffer != buffer) {
+		if (#if openfl_disable_context_cache true #else __contextState.__currentGLElementArrayBuffer != buffer #end) {
 			
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, buffer);
 			__contextState.__currentGLElementArrayBuffer = buffer;
@@ -787,7 +787,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __bindGLFramebuffer (framebuffer:GLFramebuffer):Void {
 		
-		if (__contextState.__currentGLFramebuffer != framebuffer) {
+		if (#if openfl_disable_context_cache true #else __contextState.__currentGLFramebuffer != framebuffer #end) {
 			
 			gl.bindFramebuffer (gl.FRAMEBUFFER, framebuffer);
 			__contextState.__currentGLFramebuffer = framebuffer;
@@ -799,7 +799,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __bindGLTexture2D (texture:GLTexture):Void {
 		
-		if (__contextState.__currentGLTexture2D != texture) {
+		if (#if openfl_disable_context_cache true #else __contextState.__currentGLTexture2D != texture #end) {
 			
 			gl.bindTexture (gl.TEXTURE_2D, texture);
 			__contextState.__currentGLTexture2D = texture;
@@ -811,7 +811,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __bindGLTextureCubeMap (texture:GLTexture):Void {
 		
-		if (__contextState.__currentGLTextureCubeMap != texture) {
+		if (#if openfl_disable_context_cache true #else __contextState.__currentGLTextureCubeMap != texture #end) {
 			
 			gl.bindTexture (gl.TEXTURE_CUBE_MAP, texture);
 			__contextState.__currentGLTextureCubeMap = texture;
@@ -840,7 +840,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLBlend ():Void {
 		
-		if (__contextState.blendDestinationFactor != __state.blendDestinationFactor || __contextState.blendSourceFactor != __state.blendSourceFactor) {
+		if (#if openfl_disable_context_cache true #else __contextState.blendDestinationFactor != __state.blendDestinationFactor || __contextState.blendSourceFactor != __state.blendSourceFactor #end) {
 			
 			var src = gl.ONE;
 			var dest = gl.ZERO;
@@ -885,7 +885,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private inline function __flushGLColor ():Void {
 		
-		if (__contextState.colorMaskRed != __state.colorMaskRed || __contextState.colorMaskGreen != __state.colorMaskGreen || __contextState.colorMaskBlue != __state.colorMaskBlue || __contextState.colorMaskAlpha != __state.colorMaskAlpha) {
+		if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != __state.colorMaskRed || __contextState.colorMaskGreen != __state.colorMaskGreen || __contextState.colorMaskBlue != __state.colorMaskBlue || __contextState.colorMaskAlpha != __state.colorMaskAlpha #end) {
 			
 			gl.colorMask (__state.colorMaskRed, __state.colorMaskGreen, __state.colorMaskBlue, __state.colorMaskAlpha);
 			__contextState.colorMaskRed = __state.colorMaskRed;
@@ -900,7 +900,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLCulling ():Void {
 		
-		if (__contextState.culling != __state.culling) {
+		if (#if openfl_disable_context_cache true #else __contextState.culling != __state.culling #end) {
 			
 			if (__state.culling == NONE) {
 				
@@ -931,14 +931,14 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLDepth ():Void {
 		
-		if (__contextState.depthMask != __state.depthMask) {
+		if (#if openfl_disable_context_cache true #else __contextState.depthMask != __state.depthMask #end) {
 			
 			gl.depthMask (__state.depthMask);
 			__contextState.depthMask = __state.depthMask;
 			
 		}
 		
-		if (__contextState.depthCompareMode != __state.depthCompareMode) {
+		if (#if openfl_disable_context_cache true #else __contextState.depthCompareMode != __state.depthCompareMode #end) {
 			
 			switch (__state.depthCompareMode) {
 				case ALWAYS: gl.depthFunc (gl.ALWAYS);
@@ -963,7 +963,7 @@ import openfl.utils.ByteArray;
 		
 		if (__state.renderToTexture != null) {
 			
-			if (__contextState.renderToTexture != __state.renderToTexture || __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector) {
+			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != __state.renderToTexture || __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector #end) {
 				
 				// TODO: Should there be multiple framebuffers for performance?
 				
@@ -1082,7 +1082,7 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			if (__contextState.renderToTexture != null || __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer || __contextState.backBufferEnableDepthAndStencil != __state.backBufferEnableDepthAndStencil) {
+			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != null || __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer || __contextState.backBufferEnableDepthAndStencil != __state.backBufferEnableDepthAndStencil #end) {
 				
 				__bindGLFramebuffer (__state.__primaryGLFramebuffer);
 				
@@ -1105,7 +1105,7 @@ import openfl.utils.ByteArray;
 		
 		var program = __state.program;
 		
-		if (__contextState.program != program) {
+		if (#if openfl_disable_context_cache true #else __contextState.program != program #end) {
 			
 			if (program != null && program.__format == AGAL) {
 				
@@ -1131,7 +1131,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLScissor ():Void {
 		
-		if (!__contextState.scissorRectangle.equals (__state.scissorRectangle)) {
+		if (#if openfl_disable_context_cache true #else !__contextState.scissorRectangle.equals (__state.scissorRectangle) #end) {
 			
 			if (__state.scissorRectangle.width <= 0 || __state.scissorRectangle.height <= 0) {
 				
@@ -1140,7 +1140,7 @@ import openfl.utils.ByteArray;
 			} else {
 				
 				__setGLScissorTest (true);
-						
+				
 				var height = 0;
 				var offsetX = 0;
 				var offsetY = 0;
@@ -1221,7 +1221,7 @@ import openfl.utils.ByteArray;
 			}
 		}
 		
-		if (__contextState.stencilTriangleFace != __state.stencilTriangleFace || __contextState.stencilPass != __state.stencilPass || __contextState.stencilDepthFail != __state.stencilDepthFail || __contextState.stencilFail != __state.stencilFail) {
+		if (#if openfl_disable_context_cache true #else __contextState.stencilTriangleFace != __state.stencilTriangleFace || __contextState.stencilPass != __state.stencilPass || __contextState.stencilDepthFail != __state.stencilDepthFail || __contextState.stencilFail != __state.stencilFail #end) {
 			
 			gl.stencilOpSeparate (getGLTriangleFace (__state.stencilTriangleFace), getGLStencilAction (__state.stencilFail), getGLStencilAction (__state.stencilDepthFail), getGLStencilAction (__state.stencilPass));
 			__contextState.stencilTriangleFace = __state.stencilTriangleFace;
@@ -1231,14 +1231,14 @@ import openfl.utils.ByteArray;
 			
 		}
 		
-		if (__contextState.stencilWriteMask != __state.stencilWriteMask) {
+		if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != __state.stencilWriteMask #end) {
 			
 			gl.stencilMask (__state.stencilWriteMask);
 			__contextState.stencilWriteMask = __state.stencilWriteMask;
 			
 		}
 		
-		if (__contextState.stencilCompareMode != __state.stencilCompareMode || __contextState.stencilReferenceValue != __state.stencilReferenceValue || __contextState.stencilReadMask != __state.stencilReadMask) {
+		if (#if openfl_disable_context_cache true #else __contextState.stencilCompareMode != __state.stencilCompareMode || __contextState.stencilReferenceValue != __state.stencilReferenceValue || __contextState.stencilReadMask != __state.stencilReadMask #end) {
 			
 			gl.stencilFunc (getGLCompareMode (__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
 			__contextState.stencilCompareMode = __state.stencilCompareMode;
@@ -1268,7 +1268,7 @@ import openfl.utils.ByteArray;
 			
 			if (texture != null) {
 				
-				if (texture != __contextState.textures[i]) {
+				if (#if openfl_disable_context_cache true #else texture != __contextState.textures[i] #end) {
 					
 					// TODO: Cleaner approach?
 					if (texture.__textureTarget == gl.TEXTURE_2D) {
@@ -1376,7 +1376,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __setGLBlend (enable:Bool):Void {
 		
-		if (__contextState.__enableGLBlend != enable) {
+		if (#if openfl_disable_context_cache true #else __contextState.__enableGLBlend != enable #end) {
 			if (enable) {
 				gl.enable (gl.BLEND);
 			} else {
@@ -1390,7 +1390,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __setGLCullFace (enable:Bool):Void {
 		
-		if (__contextState.__enableGLCullFace != enable) {
+		if (#if openfl_disable_context_cache true #else __contextState.__enableGLCullFace != enable #end) {
 			if (enable) {
 				gl.enable (gl.CULL_FACE);
 			} else {
@@ -1404,7 +1404,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __setGLDepthTest (enable:Bool):Void {
 		
-		if (__contextState.__enableGLDepthTest != enable) {
+		if (#if openfl_disable_context_cache true #else __contextState.__enableGLDepthTest != enable #end) {
 			if (enable) {
 				gl.enable (gl.DEPTH_TEST);
 			} else {
@@ -1418,7 +1418,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __setGLFrontFace (counterClockWise:Bool):Void {
 		
-		if (__contextState.__frontFaceGLCCW != counterClockWise) {
+		if (#if openfl_disable_context_cache true #else __contextState.__frontFaceGLCCW != counterClockWise #end) {
 			gl.frontFace (counterClockWise ? gl.CCW : gl.CW);
 			__contextState.__frontFaceGLCCW = counterClockWise;
 		}
@@ -1428,7 +1428,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __setGLScissorTest (enable:Bool):Void {
 		
-		if (__contextState.__enableGLScissorTest != enable) {
+		if (#if openfl_disable_context_cache true #else __contextState.__enableGLScissorTest != enable #end) {
 			if (enable) {
 				gl.enable (gl.SCISSOR_TEST);
 			} else {
@@ -1442,7 +1442,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __setGLStencilTest (enable:Bool):Void {
 		
-		if (__contextState.__enableGLStencilTest != enable) {
+		if (#if openfl_disable_context_cache true #else __contextState.__enableGLStencilTest != enable #end) {
 			if (enable) {
 				gl.enable (gl.STENCIL_TEST);
 			} else {
