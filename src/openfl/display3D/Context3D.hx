@@ -737,13 +737,7 @@ import openfl.utils.ByteArray;
 				default: throw new IllegalOperationError ();
 			}
 			
-			if (!__contextState.__enableBlend) {
-				
-				gl.enable (gl.BLEND);
-				__contextState.__enableBlend = true;
-				
-			}
-			
+			__setGLBlend (true);
 			gl.blendFunc (src, dest);
 			__contextState.blendDestinationFactor = __state.blendDestinationFactor;
 			__contextState.blendSourceFactor = __state.blendSourceFactor;
@@ -774,13 +768,13 @@ import openfl.utils.ByteArray;
 			
 			if (__contextState.culling == NONE) {
 				
-				gl.enable (gl.CULL_FACE);
+				__setGLCullFace (true);
 				
 			}
 			
 			if (__state.culling == NONE) {
 				
-				gl.disable (gl.CULL_FACE);
+				__setGLCullFace (false);
 				
 			} else {
 				
@@ -837,7 +831,7 @@ import openfl.utils.ByteArray;
 		
 		if (__state.renderToTexture != null) {
 			
-			if (__contextState.renderToTexture != __state.renderToTexture) {
+			if (__contextState.renderToTexture != __state.renderToTexture || __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector) {
 				
 				// TODO: Should there be multiple framebuffers for performance?
 				
@@ -849,6 +843,7 @@ import openfl.utils.ByteArray;
 				
 				var width = 0, height = 0;
 				
+				// TODO: AntiAlias
 				// TODO: Solution without Std.is?
 				if (Std.is (__state.renderToTexture, Texture)) {
 					
@@ -872,11 +867,12 @@ import openfl.utils.ByteArray;
 					width = cubeTexture.__size;
 					height = cubeTexture.__size;
 					
-					for (i in 0...6) {
+					var i = __state.renderToTextureSurfaceSelector;
+					// for (i in 0...6) {
 						
 						gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeTexture.__textureID, 0);
 						
-					}
+					// }
 					
 				} else {
 					
@@ -937,7 +933,13 @@ import openfl.utils.ByteArray;
 				// TODO: Is this correct?
 				gl.frontFace (gl.CW);
 				
+				__setGLDepthTest (__state.renderToTextureDepthStencil);
+				__setGLStencilTest (__state.renderToTextureDepthStencil);
+				
 				__contextState.renderToTexture = __state.renderToTexture;
+				__contextState.renderToTextureAntiAlias = __state.renderToTextureAntiAlias;
+				__contextState.renderToTextureDepthStencil = __state.renderToTextureDepthStencil;
+				__contextState.renderToTextureSurfaceSelector = __state.renderToTextureSurfaceSelector;
 				
 			}
 			
@@ -954,6 +956,10 @@ import openfl.utils.ByteArray;
 			if (__contextState.renderToTexture != null || __contextState.__primaryGLFramebuffer != __state.__primaryGLFramebuffer) {
 				
 				__bindGLFramebuffer (__state.__primaryGLFramebuffer);
+				
+				__setGLDepthTest (__backBufferEnableDepthAndStencil);
+				__setGLStencilTest (__backBufferEnableDepthAndStencil);
+				
 				__contextState.renderToTexture = null;
 				__contextState.__primaryGLFramebuffer = __state.__primaryGLFramebuffer;
 				
@@ -1179,6 +1185,71 @@ import openfl.utils.ByteArray;
 			
 			// TODO
 			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __setGLBlend (enable:Bool):Void {
+		
+		if (__contextState.__enableGLBlend != enable) {
+			if (enable) {
+				gl.enable (gl.BLEND);
+			} else {
+				gl.disable (gl.BLEND);
+			}
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __setGLCullFace (enable:Bool):Void {
+		
+		if (__contextState.__enableGLCullFace != enable) {
+			if (enable) {
+				gl.enable (gl.CULL_FACE);
+			} else {
+				gl.disable (gl.CULL_FACE);
+			}
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __setGLDepthTest (enable:Bool):Void {
+		
+		if (__contextState.__enableGLDepthTest != enable) {
+			if (enable) {
+				gl.enable (gl.DEPTH_TEST);
+			} else {
+				gl.disable (gl.DEPTH_TEST);
+			}
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __setGLScissorTest (enable:Bool):Void {
+		
+		if (__contextState.__enableGLScissorTest != enable) {
+			if (enable) {
+				gl.enable (gl.SCISSOR_TEST);
+			} else {
+				gl.disable (gl.SCISSOR_TEST);
+			}
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __setGLStencilTest (enable:Bool):Void {
+		
+		if (__contextState.__enableGLStencilTest != enable) {
+			if (enable) {
+				gl.enable (gl.STENCIL_TEST);
+			} else {
+				gl.disable (gl.STENCIL_TEST);
+			}
 		}
 		
 	}

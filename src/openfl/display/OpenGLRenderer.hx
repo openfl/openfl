@@ -151,7 +151,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__type = OPENGL;
 		
 		__setBlendMode (NORMAL);
-		__gl.enable (__gl.BLEND);
+		__context3D.__setGLBlend (true);
 		
 		__clipRects = new Array ();
 		__maskObjects = new Array ();
@@ -683,7 +683,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference == 0) {
 			
-			__gl.enable (__gl.STENCIL_TEST);
+			__context3D.__setGLStencilTest (true);
 			__gl.stencilMask (0xFF);
 			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
 			__updatedStencil = true;
@@ -785,7 +785,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (__offsetX > 0 || __offsetY > 0) {
 				
 				__gl.clearColor (0, 0, 0, 1);
-				__gl.enable (__gl.SCISSOR_TEST);
+				__context3D.__setGLScissorTest (true);
 				
 				if (__offsetX > 0) {
 					
@@ -909,11 +909,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
-			__gl.enable (__gl.STENCIL_TEST);
+			__context3D.__setGLStencilTest (true);
 			
 		} else {
 			
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -934,7 +934,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (clipRect != null) {
 			
-			__gl.enable (__gl.SCISSOR_TEST);
+			__context3D.__setGLScissorTest (true);
 			
 			var x = Math.floor (clipRect.x);
 			var y = Math.floor (clipRect.y);

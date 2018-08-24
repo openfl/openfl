@@ -685,6 +685,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
+		stage3Ds.push (new Stage3D ());
+		#if !mobile
+		stage3Ds.push (new Stage3D ());
+		stage3Ds.push (new Stage3D ());
+		#end
 		
 		this.stage = this;
 		

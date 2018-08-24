@@ -51,8 +51,11 @@ class Context3DState {
 	private var __currentGLFramebuffer:GLFramebuffer;
 	private var __currentGLTexture2D:GLTexture;
 	private var __currentGLTextureCubeMap:GLTexture;
-	private var __enableBlend:Bool;
-	private var __enableTexture2D:Bool;
+	private var __enableGLBlend:Bool;
+	private var __enableGLCullFace:Bool;
+	private var __enableGLDepthTest:Bool;
+	private var __enableGLScissorTest:Bool;
+	private var __enableGLStencilTest:Bool;
 	private var __primaryGLFramebuffer:GLFramebuffer;
 	private var __rttDepthGLRenderbuffer:GLRenderbuffer;
 	private var __rttGLFramebuffer:GLFramebuffer;
