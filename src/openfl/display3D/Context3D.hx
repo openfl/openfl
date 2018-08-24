@@ -70,7 +70,6 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferDepthGLRenderbuffer:GLRenderbuffer;
-	@:noCompletion private var __backBufferEnableDepthAndStencil:Bool;
 	@:noCompletion private var __backBufferGLFramebuffer:GLFramebuffer;
 	@:noCompletion private var __backBufferGLRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __backBufferStencilGLRenderbuffer:GLRenderbuffer;
@@ -233,7 +232,7 @@ import openfl.utils.ByteArray;
 			backBufferHeight = height;
 			
 			__backBufferAntiAlias = antiAlias;
-			__backBufferEnableDepthAndStencil = enableDepthAndStencil;
+			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
 			__backBufferWantsBestResolution = wantsBestResolution;
 			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
 			
@@ -286,7 +285,7 @@ import openfl.utils.ByteArray;
 				}
 				
 				gl.bindRenderbuffer (gl.RENDERBUFFER, null);
-					
+				
 			}
 			
 			if (__enableErrorChecking) {
@@ -305,7 +304,7 @@ import openfl.utils.ByteArray;
 			backBufferHeight = height;
 			
 			__backBufferAntiAlias = antiAlias;
-			__backBufferEnableDepthAndStencil = enableDepthAndStencil;
+			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
 			__backBufferWantsBestResolution = wantsBestResolution;
 			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
 			__state.__primaryGLFramebuffer = __backBufferGLFramebuffer;
@@ -914,8 +913,8 @@ import openfl.utils.ByteArray;
 				switch (__state.culling) {
 					
 					case NONE: // skip
-					case BACK: gl.cullFace (gl.FRONT);
-					case FRONT: gl.cullFace (gl.BACK);
+					case BACK: gl.cullFace (gl.BACK);
+					case FRONT: gl.cullFace (gl.FRONT);
 					case FRONT_AND_BACK: gl.cullFace (gl.FRONT_AND_BACK);
 					default: throw new IllegalOperationError ();
 					
@@ -1063,9 +1062,6 @@ import openfl.utils.ByteArray;
 					
 				}
 				
-				// TODO: Is this correct?
-				gl.frontFace (gl.CW);
-				
 				__setGLDepthTest (__state.renderToTextureDepthStencil);
 				__setGLStencilTest (__state.renderToTextureDepthStencil);
 				
@@ -1076,6 +1072,8 @@ import openfl.utils.ByteArray;
 				
 			}
 			
+			__setGLFrontFace (true);
+			
 		} else {
 			
 			if (backBufferWidth == 0 && backBufferHeight == 0) {
@@ -1084,19 +1082,19 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			if (__contextState.renderToTexture != null || __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer) {
+			if (__contextState.renderToTexture != null || __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer || __contextState.backBufferEnableDepthAndStencil != __state.backBufferEnableDepthAndStencil) {
 				
 				__bindGLFramebuffer (__state.__primaryGLFramebuffer);
 				
-				__setGLDepthTest (__backBufferEnableDepthAndStencil);
-				__setGLStencilTest (__backBufferEnableDepthAndStencil);
+				__setGLDepthTest (__state.backBufferEnableDepthAndStencil);
+				__setGLStencilTest (__state.backBufferEnableDepthAndStencil);
 				
 				__contextState.renderToTexture = null;
-				
-				// TODO: Is this correct?
-				gl.frontFace (gl.CCW);
+				__contextState.backBufferEnableDepthAndStencil = __state.backBufferEnableDepthAndStencil;
 				
 			}
+			
+			__setGLFrontFace (false);
 			
 		}
 		
@@ -1384,6 +1382,7 @@ import openfl.utils.ByteArray;
 			} else {
 				gl.disable (gl.BLEND);
 			}
+			__contextState.__enableGLBlend = enable;
 		}
 		
 	}
@@ -1397,6 +1396,7 @@ import openfl.utils.ByteArray;
 			} else {
 				gl.disable (gl.CULL_FACE);
 			}
+			__contextState.__enableGLCullFace = enable;
 		}
 		
 	}
@@ -1410,6 +1410,17 @@ import openfl.utils.ByteArray;
 			} else {
 				gl.disable (gl.DEPTH_TEST);
 			}
+			__contextState.__enableGLDepthTest = enable;
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __setGLFrontFace (counterClockWise:Bool):Void {
+		
+		if (__contextState.__frontFaceGLCCW != counterClockWise) {
+			gl.frontFace (counterClockWise ? gl.CCW : gl.CW);
+			__contextState.__frontFaceGLCCW = counterClockWise;
 		}
 		
 	}
@@ -1423,6 +1434,7 @@ import openfl.utils.ByteArray;
 			} else {
 				gl.disable (gl.SCISSOR_TEST);
 			}
+			__contextState.__enableGLScissorTest = enable;
 		}
 		
 	}
@@ -1436,6 +1448,7 @@ import openfl.utils.ByteArray;
 			} else {
 				gl.disable (gl.STENCIL_TEST);
 			}
+			__contextState.__enableGLStencilTest = enable;
 		}
 		
 	}

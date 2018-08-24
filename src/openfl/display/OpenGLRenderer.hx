@@ -67,6 +67,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private static var __emptyColorValue = [ 0, 0, 0, 0. ];
 	@:noCompletion private static var __emptyAlphaValue = [ 1. ];
 	@:noCompletion private static var __hasColorTransformValue = [ false ];
+	@:noCompletion private static var __scissorRectangle = new Rectangle ();
 	@:noCompletion private static var __textureSizeValue = [ 0, 0. ];
 	
 	#if (lime >= "7.0.0")
@@ -362,7 +363,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (shader == null) {
 			
 			__currentShader = null;
-			__gl.useProgram (null);
+			__context3D.setProgram (null);
 			return;
 			
 		} else {
@@ -426,7 +427,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__stencilReference > 0) {
 			
 			__stencilReference = 0;
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -620,21 +621,30 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 1) {
 			
-			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
-			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			__gl.colorMask (false, false, false, false);
+			// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
+			// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			// __gl.colorMask (false, false, false, false);
+			
+			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, DECREMENT_SATURATE, KEEP, KEEP);
+			__context3D.setStencilReferenceValue (__stencilReference);
+			__context3D.setColorMask (false, false, false, false);
 			
 			mask.__renderGLMask (this);
 			__stencilReference--;
 			
-			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
-			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			__gl.colorMask (true, true, true, true);
+			// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
+			// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			// __gl.colorMask (true, true, true, true);
+			
+			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+			__context3D.setStencilReferenceValue (__stencilReference);
+			__context3D.setColorMask (true, true, true, true);
 			
 		} else {
 			
 			__stencilReference = 0;
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.setStencilActions (FRONT_AND_BACK, ALWAYS);
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -684,23 +694,31 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__stencilReference == 0) {
 			
 			__context3D.__setGLStencilTest (true);
-			__gl.stencilMask (0xFF);
+			// __gl.stencilMask (0xFF);
 			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
 			__updatedStencil = true;
 			
 		}
 		
-		__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.INCR);
-		__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-		__gl.colorMask (false, false, false, false);
+		// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.INCR);
+		// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+		// __gl.colorMask (false, false, false, false);
+		
+		__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, INCREMENT_SATURATE, KEEP, KEEP);
+		__context3D.setStencilReferenceValue (__stencilReference);
+		__context3D.setColorMask (false, false, false, false);
 		
 		mask.__renderGLMask (this);
 		__maskObjects.push (mask);
 		__stencilReference++;
 		
-		__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
-		__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-		__gl.colorMask (true, true, true, true);
+		// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
+		// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+		// __gl.colorMask (true, true, true, true);
+		
+		__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+		__context3D.setStencilReferenceValue (__stencilReference);
+		__context3D.setColorMask (true, true, true, true);
 		
 	}
 	
@@ -769,10 +787,14 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
 		// TODO: Handle restoration of state after Stage3D render better?
-		__gl.disable (__gl.CULL_FACE);
-		__gl.disable (__gl.DEPTH_TEST);
-		__gl.disable (__gl.STENCIL_TEST);
-		__gl.disable (__gl.SCISSOR_TEST);
+		// __context3D.__setGLCullFace (false);
+		// __context3D.__setGLDepthTest (false);
+		// __context3D.__setGLStencilTest (false);
+		// __context3D.__setGLScissorTest (false);
+		__context3D.setCulling (NONE);
+		__context3D.setDepthTest (false, ALWAYS);
+		__context3D.setStencilReferenceValue (0, 0, 0);
+		__context3D.setScissorRectangle (null);
 		
 		if (__defaultRenderTarget == null) {
 			
@@ -807,7 +829,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 					
 				}
 				
-				__gl.disable (__gl.SCISSOR_TEST);
+				__context3D.__setGLScissorTest (false);
 				
 			}
 			
@@ -923,7 +945,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (clipRect != null) {
 			
-			__context3D.__setGLScissorTest (true);
+			// __context3D.__setGLScissorTest (true);
 			
 			var x = Math.floor (clipRect.x);
 			var y = Math.floor (clipRect.y);
@@ -933,11 +955,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			__gl.scissor (x, __flipped ? __height - y - height : y, width, height);
+			// __gl.scissor (x, __flipped ? __height - y - height : y, width, height);
+			
+			__scissorRectangle.setTo (x, __flipped ? __height - y - height : y, width, height);
+			__context3D.setScissorRectangle (__scissorRectangle);
 			
 		} else {
 			
-			__gl.disable (__gl.SCISSOR_TEST);
+			// __context3D.__setGLScissorTest (false);
+			__context3D.setScissorRectangle (null);
 			
 		}
 		
@@ -1020,7 +1046,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.__setGLStencilTest (false);
 			
 		}
 		

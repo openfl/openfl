@@ -1456,7 +1456,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (shouldRender || context3D.__present) {
+		#if !openfl_disable_display_render if (context3D.__present) shouldRender = true; #end
+		
+		if (shouldRender) {
 			
 			// if (stage3Ds[0].context3D != null) {
 				

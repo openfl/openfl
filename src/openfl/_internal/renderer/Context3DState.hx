@@ -17,6 +17,7 @@ import openfl.geom.Rectangle;
 class Context3DState {
 	
 	
+	public var backBufferEnableDepthAndStencil:Bool;
 	public var blendDestinationFactor:Context3DBlendFactor;
 	public var blendSourceFactor:Context3DBlendFactor;
 	public var colorMaskRed:Bool;
@@ -56,6 +57,7 @@ class Context3DState {
 	private var __enableGLDepthTest:Bool;
 	private var __enableGLScissorTest:Bool;
 	private var __enableGLStencilTest:Bool;
+	private var __frontFaceGLCCW:Bool;
 	private var __primaryGLFramebuffer:GLFramebuffer;
 	private var __rttDepthGLRenderbuffer:GLRenderbuffer;
 	private var __rttGLFramebuffer:GLFramebuffer;
@@ -65,6 +67,7 @@ class Context3DState {
 	
 	public function new () {
 		
+		backBufferEnableDepthAndStencil = false;
 		blendDestinationFactor = ZERO;
 		blendSourceFactor = ONE;
 		colorMaskRed = true;
@@ -85,6 +88,7 @@ class Context3DState {
 		stencilTriangleFace = FRONT_AND_BACK;
 		stencilWriteMask = 0xFF;
 		textures = new Array ();
+		__frontFaceGLCCW = true;
 		
 	}
 	
