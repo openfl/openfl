@@ -1486,14 +1486,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__renderer.__render (this);
 			
-			// for (stage3D in stage3Ds) {
-			// 	if (stage3D.context3D != null && stage3D.context3D.__present) {
-			// 		// quick hack, TODO: DOM
-			// 		GLBitmap.render (stage3D.__bitmap, cast __renderer);
-			// 		stage3D.context3D.__present = false;
-			// 	}
-			// }
-			
 		} else if (context3D == null) {
 			
 			#if (lime >= "7.0.0")
@@ -1506,6 +1498,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (context3D != null) {
 			
+			for (stage3D in stage3Ds) {
+				if (stage3D.context3D != null && context3D != null && stage3D.context3D != context3D && stage3D.context3D.__present) {
+					// quick hack, TODO: DOM
+					context3D.__bindGLFramebuffer (null);
+					if (!__renderer.__cleared) __renderer.__clear ();
+					GLBitmap.render (stage3D.__bitmap, cast __renderer);
+					stage3D.context3D.__present = false;
+				}
+			}
+			
 			if (!context3D.__present) {
 				
 				window.onRender.cancel ();
@@ -1513,9 +1515,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			} else {
 				
 				if (!__renderer.__cleared) {
-					
 					__renderer.__clear ();
-					
 				}
 				
 				context3D.__present = false;

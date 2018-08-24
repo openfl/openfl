@@ -38,6 +38,7 @@ import js.Browser;
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
+@:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Stage)
 
@@ -131,13 +132,15 @@ class Stage3D extends EventDispatcher {
 		// quick hack
 		__bitmapData = new BitmapData (0, 0);
 		__bitmap = new Bitmap (__bitmapData);
+		__bitmap.__renderable = true;
 		
 		if (renderer.__type == OPENGL) {
 			
-			// another hack
+			// #if openfl_share_context
 			context3D = stage.context3D;
-			
+			// #else
 			// context3D = new Context3D (stage, stage.context3D.__contextState, this);
+			// #end
 			__dispatchCreate ();
 			
 		} else if (renderer.__type == DOM) {

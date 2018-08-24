@@ -459,10 +459,6 @@ import openfl.utils.ByteArray;
 		
 		__state.program = program;
 		
-		if (program.__format == AGAL) {
-			__flushGLProgram ();
-		}
-		
 		for (i in 0...program.__samplerStates.length) {
 			if (__state.samplerStates[i] == null) {
 				__state.samplerStates[i] = program.__samplerStates[i].clone ();
@@ -1136,8 +1132,6 @@ import openfl.utils.ByteArray;
 			if (program != null && program.__format == AGAL) {
 				
 				program.__use ();
-				__positionScale[1] = __state.renderToTexture != null ? -1.0 : 1.0;
-				program.__setPositionScale (__positionScale);
 				
 			} else {
 				
@@ -1147,6 +1141,11 @@ import openfl.utils.ByteArray;
 			
 			__contextState.program = program;
 			
+		}
+		
+		if (program != null && program.__format == AGAL) {
+			__positionScale[1] = __state.renderToTexture != null ? -1.0 : 1.0;
+			program.__setPositionScale (__positionScale);
 		}
 		
 	}
