@@ -1157,11 +1157,42 @@ import openfl.utils.ByteArray;
 			
 			if (__state.scissorRectangle.width <= 0 || __state.scissorRectangle.height <= 0) {
 				
-				gl.scissor (0, 0, 0, 0);
+				__setGLScissorTest (false);
 				
 			} else {
 				
-				gl.scissor (Math.round (__state.scissorRectangle.x), Math.round (__state.scissorRectangle.y), Math.round (__state.scissorRectangle.width), Math.round (__state.scissorRectangle.height));
+				__setGLScissorTest (true);
+						
+				var height = 0;
+				var offsetX = 0;
+				var offsetY = 0;
+				
+				if (__state.renderToTexture != null) {
+				
+					// TODO: Avoid use of Std.is
+					if (Std.is (__state.renderToTexture, Texture)) {
+					
+						var texture2D:Texture = cast __state.renderToTexture;
+						height = texture2D.__height;
+					
+					} else if (Std.is (__state.renderToTexture, RectangleTexture)) {
+						
+						var rectTexture:RectangleTexture = cast __state.renderToTexture;
+						height = rectTexture.__height;
+						
+					}
+					
+				} else {
+					
+					var window = __stage.window;
+					
+					height = backBufferHeight;
+					offsetX = __stage3D != null ? Std.int (__stage3D.x) : 0;
+					offsetY = Std.int (window.height * window.scale) - height - (__stage3D != null ? Std.int (__stage3D.y) : 0);
+					
+				}
+				
+				gl.scissor (Std.int (__state.scissorRectangle.x) + offsetX, height - Std.int (__state.scissorRectangle.y) - Std.int (__state.scissorRectangle.height) + offsetY, Std.int (__state.scissorRectangle.width), Std.int (__state.scissorRectangle.height));
 				
 			}
 			
@@ -1331,7 +1362,30 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			// TODO
+			var width = 0, height = 0;
+			
+			// TODO: Avoid use of Std.is
+			if (Std.is (__state.renderToTexture, Texture)) {
+				
+				var texture2D:Texture = cast __state.renderToTexture;
+				width = texture2D.__width;
+				height = texture2D.__height;
+				
+			} else if (Std.is (__state.renderToTexture, RectangleTexture)) {
+				
+				var rectTexture:RectangleTexture = cast __state.renderToTexture;
+				width = rectTexture.__width;
+				height = rectTexture.__height;
+				
+			} else if (Std.is (__state.renderToTexture, CubeTexture)) {
+				
+				var cubeTexture:CubeTexture = cast __state.renderToTexture;
+				width = cubeTexture.__size;
+				height = cubeTexture.__size;
+				
+			}
+			
+			gl.viewport (0, 0, width, height);
 			
 		}
 		
