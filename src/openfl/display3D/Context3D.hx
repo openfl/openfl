@@ -300,7 +300,7 @@ import openfl.utils.ByteArray;
 			__backBufferEnableDepthAndStencil = enableDepthAndStencil;
 			__backBufferWantsBestResolution = wantsBestResolution;
 			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
-			// __state.__primaryGLFramebuffer = __backBufferGLFramebuffer;
+			__state.__primaryGLFramebuffer = __backBufferGLFramebuffer;
 			
 			// quick hack
 			__stage3D.__bitmapData.__texture = __backBufferTexture;
@@ -499,6 +499,8 @@ import openfl.utils.ByteArray;
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
 		if (__state.program != null && __state.program.__format == GLSL) {
+			
+			__flushGLProgram ();
 			
 			// TODO: Cache value, prevent need to copy
 			var data = new Float32Array (16);
