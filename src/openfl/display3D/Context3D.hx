@@ -3,12 +3,11 @@ package openfl.display3D; #if !flash
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
-import openfl._internal.renderer.opengl.GLContext3D;
-import openfl._internal.renderer.opengl.Context3DStateCache;
+import openfl._internal.renderer.Context3DState;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
@@ -24,27 +23,17 @@ import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
-import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
-@:access(openfl._internal.renderer.opengl.Context3DStateCache)
-@:access(openfl._internal.renderer.opengl.GLContext3D)
-@:access(openfl._internal.renderer.SamplerState)
+@:access(openfl._internal.renderer.Context3DState)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
-@:access(openfl.display3D.textures.Texture)
 @:access(openfl.display3D.textures.TextureBase)
+@:access(openfl.display3D.textures.Texture)
 @:access(openfl.display3D.textures.VideoTexture)
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
@@ -58,14 +47,12 @@ import lime.graphics.GLRenderContext;
 	
 	public static var supportsVideoTexture (default, null):Bool = #if (js && html5) true #else false #end;
 	
-	@:noCompletion private static inline var MAX_SAMPLERS = 32; // 8; TODO: Adapt based on shader type, GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
-	@:noCompletion private static inline var MAX_ATTRIBUTES = 16;
-	@:noCompletion private static inline var MAX_PROGRAM_REGISTERS = 128;
+	@:noCompletion private static var GL_DEPTH_STENCIL:Int = -1;
+	@:noCompletion private static var GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT:Int = -1;
+	@:noCompletion private static var GL_MAX_VIEWPORT_DIMS:Int = -1;
+	@:noCompletion private static var GL_TEXTURE_MAX_ANISOTROPY_EXT:Int = -1;
 	
-	@:noCompletion private static var TEXTURE_MAX_ANISOTROPY_EXT:Int = 0;
-	@:noCompletion private static var DEPTH_STENCIL:Int = 0;
-	
-	@:noCompletion private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
+	@:noCompletion private static var __driverInfo:String;
 	
 	public var backBufferHeight (default, null):Int = 0;
 	public var backBufferWidth (default, null):Int = 0;
@@ -73,201 +60,173 @@ import lime.graphics.GLRenderContext;
 	public var enableErrorChecking (get, set):Bool;
 	public var maxBackBufferHeight (default, null):Int;
 	public var maxBackBufferWidth (default, null):Int;
-	public var profile (default, null):Context3DProfile = BASELINE;
+	public var profile (default, null):Context3DProfile = STANDARD;
 	public var totalGPUMemory (default, null):Int = 0;
 	
+	@:noCompletion private var gl:WebGLRenderContext;
 	
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferEnableDepthAndStencil:Bool;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
-	@:noCompletion private var __depthRenderBuffer:GLRenderbuffer;
-	@:noCompletion private var __depthStencilRenderBuffer:GLRenderbuffer;
+	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
+	@:noCompletion private var __context:RenderContext;
+	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __enableErrorChecking:Bool;
-	@:noCompletion private var __context:#if (lime >= "7.0.0") RenderContext #else Dynamic #end;
-	@:noCompletion private var __culling:Context3DTriangleFace = NONE;
-	@:noCompletion private var __fragmentConstants:Float32Array;
-	@:noCompletion private var __framebuffer:GLFramebuffer;
-	@:noCompletion private var __frameCount:Int;
-	@:noCompletion private var __gl:#if (lime >= "7.0.0") WebGLRenderContext #else GLRenderContext #end;
-	@:noCompletion private var __glActiveTexture:Int;
-	@:noCompletion private var __glBlendColor:Array<Float>;
-	@:noCompletion private var __glBlendEquation:Int;
-	@:noCompletion private var __glBlendEquationSeparate:Array<Int>;
-	@:noCompletion private var __glBlendFunc:Array<Int>;
-	@:noCompletion private var __glBlendFuncSeparate:Array<Int>;
-	@:noCompletion private var __glBuffers:Map<Int, GLBuffer>;
-	@:noCompletion private var __glClearColor:Array<Float>;
-	@:noCompletion private var __glClearDepth:Float;
-	@:noCompletion private var __glColorMask:Array<Bool>;
-	@:noCompletion private var __glCullFace:Int;
-	@:noCompletion private var __glDepthFunc:Int;
-	@:noCompletion private var __glDepthMask:Bool;
-	@:noCompletion private var __glEnabled:Map<Int, Bool>;
-	@:noCompletion private var __glFramebuffers:Map<Int, GLFramebuffer>;
-	@:noCompletion private var __glFrontFace:Int;
-	@:noCompletion private var __glProgram:GLProgram;
-	@:noCompletion private var __glRenderbuffers:Map<Int, GLRenderbuffer>;
-	@:noCompletion private var __glScissorHeight:Int;
-	@:noCompletion private var __glScissorWidth:Int;
-	@:noCompletion private var __glScissorX:Int;
-	@:noCompletion private var __glScissorY:Int;
-	@:noCompletion private var __glStencilFunc:Array<Int>;
-	@:noCompletion private var __glStencilMask:Int;
-	@:noCompletion private var __glStencilOp:Array<Int>;
-	@:noCompletion private var __glStencilOpSeparate:Array<Int>;
-	@:noCompletion private var __glTextures:Map<Int, GLTexture>;
-	@:noCompletion private var __glViewportHeight:Int;
-	@:noCompletion private var __glViewportWidth:Int;
-	@:noCompletion private var __glViewportX:Int;
-	@:noCompletion private var __glViewportY:Int;
-	@:noCompletion private var __maxAnisotropyCubeTexture:Int;
-	@:noCompletion private var __maxAnisotropyTexture2D:Int;
-	@:noCompletion private var __positionScale:Float32Array;
 	@:noCompletion private var __present:Bool;
-	@:noCompletion private var __program:Program3D;
-	@:noCompletion private var __renderToTexture:TextureBase;
-	@:noCompletion private var __rttDepthAndStencil:Bool;
-	@:noCompletion private var __samplerDirty:Bool;
-	@:noCompletion private var __samplerTextures:Vector<TextureBase>;
-	@:noCompletion private var __samplerStates:Array<SamplerState>;
-	@:noCompletion private var __scissorRectangle:Rectangle;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
-	@:noCompletion private var __stats:Vector<Int>;
-	@:noCompletion private var __statsCache:Vector<Int>;
-	@:noCompletion private var __stencilCompareMode:Context3DCompareMode;
-	@:noCompletion private var __stencilRef:Int;
-	@:noCompletion private var __stencilReadMask:Int;
-	@:noCompletion private var __stencilRenderBuffer:GLRenderbuffer;
-	@:noCompletion private var __supportsAnisotropicFiltering:Bool;
-	@:noCompletion private var __supportsPackedDepthStencil:Bool;
-	@:noCompletion private var __vertexConstants:Float32Array;
-	@:noCompletion private var __x:Float;
-	@:noCompletion private var __y:Float;
-	
-	#if telemetry
-	//private var __spanPresent:Telemetry.Span;
-	//private var __statsValues:Array<Telemetry.Value>;
-	//private var __valueFrame:Telemetry.Value;
-	#end
+	@:noCompletion private var __state:Context3DState;
 	
 	
-	@:noCompletion private function new (stage:Stage, stage3D:Stage3D = null) {
+	@:noCompletion private function new (stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null) {
 		
 		super ();
 		
 		__stage = stage;
+		__contextState = contextState;
 		__stage3D = stage3D;
-		__x = 0;
-		__y = 0;
 		
 		__context = stage.window.context;
+		gl = __context.webgl;
 		
-		#if (lime >= "7.0.0")
-		__gl = stage.window.context.webgl;
-		#else
-		__gl = stage.window.context;
-		#end
+		if (__contextState == null) __contextState = new Context3DState ();
+		__state = new Context3DState ();
 		
-		__glActiveTexture = -1;
-		__glBlendColor = [ 0, 0, 0, 0 ];
-		__glBlendEquation = -1;
-		__glBlendEquationSeparate = [ -1, -1 ];
-		__glBlendFunc = [ -1, -1 ];
-		__glBlendFuncSeparate = [ -1, -1, -1, -1 ];
-		__glBuffers = new Map ();
-		__glClearColor = [ 0, 0, 0, 0 ];
-		__glClearDepth = -1;
-		__glColorMask = [ true, true, true, true ];
-		__glCullFace = -1;
-		__glDepthFunc = -1;
-		__glEnabled = new Map ();
-		__glFramebuffers = new Map ();
-		__glFrontFace = -1;
-		__glRenderbuffers = new Map ();
-		__glStencilFunc = [ -1, -1, -1 ];
-		__glStencilMask = -1;
-		__glStencilOp = [ -1, -1, -1 ];
-		__glStencilOpSeparate = [ -1, -1, -1, -1 ];
-		__glTextures = new Map ();
-		
-		if (stage3D == null) {
+		if (GL_MAX_VIEWPORT_DIMS == -1) {
 			
-			backBufferWidth = stage.stageWidth;
-			backBufferHeight = stage.stageHeight;
-			
-			__backBufferAntiAlias = 0;
-			__backBufferEnableDepthAndStencil = true;
-			__backBufferWantsBestResolution = true;
-			
-			__viewport (0, 0, stage.stageWidth, stage.stageHeight);
+			#if (js && html5)
+			GL_MAX_VIEWPORT_DIMS = gl.getParameter (gl.MAX_VIEWPORT_DIMS);
+			#else
+			GL_MAX_VIEWPORT_DIMS = 16384;
+			#end
 			
 		}
 		
-		GLContext3D.create (this);
+		maxBackBufferWidth = GL_MAX_VIEWPORT_DIMS;
+		maxBackBufferHeight = GL_MAX_VIEWPORT_DIMS;
+		
+		if (GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT == -1) {
+			
+			var extension:Dynamic = gl.getExtension ("EXT_texture_filter_anisotropic");
+			
+			#if (js && html5)
+			if (extension == null || !Reflect.hasField (extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT"))
+				extension = gl.getExtension ("MOZ_EXT_texture_filter_anisotropic");
+			if (extension == null || !Reflect.hasField (extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT"))
+				extension = gl.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+			#end
+			
+			if (extension != null) {
+				
+				GL_TEXTURE_MAX_ANISOTROPY_EXT = extension.TEXTURE_MAX_ANISOTROPY_EXT;
+				GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = gl.getParameter (extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+				
+			} else {
+				
+				GL_TEXTURE_MAX_ANISOTROPY_EXT = 0;
+				GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0;
+				
+			}
+			
+		}
+		
+		if (GL_DEPTH_STENCIL == -1) {
+			
+			#if (js && html5)
+			GL_DEPTH_STENCIL = gl.DEPTH_STENCIL;
+			#else
+			if (__context.type == OPENGLES && Std.parseFloat (__context.version) >= 3) {
+				GL_DEPTH_STENCIL = __context.gles3.DEPTH24_STENCIL8;
+			} else {
+				var extension = gl.getExtension ("OES_packed_depth_stencil");
+				if (extension != null) {
+					GL_DEPTH_STENCIL = extension.DEPTH24_STENCIL8_OES;
+				} else {
+					extension = gl.getExtension ("EXT_packed_depth_stencil");
+					if (extension != null) {
+						GL_DEPTH_STENCIL = extension.DEPTH24_STENCIL8_EXT;
+					} else {
+						GL_DEPTH_STENCIL = 0;
+					}
+				}
+			}
+			#end
+			
+		}
+		
+		if (__driverInfo == null) {
+			
+			var vendor = gl.getParameter (gl.VENDOR);
+			var version = gl.getParameter (gl.VERSION);
+			var renderer = gl.getParameter (gl.RENDERER);
+			var glslVersion = gl.getParameter (gl.SHADING_LANGUAGE_VERSION);
+			
+			__driverInfo = "OpenGL Vendor=" + vendor + " Version=" + version + " Renderer=" + renderer + " GLSL=" + glslVersion;
+			
+		}
+		
+		driverInfo = __driverInfo;
 		
 	}
 	
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
+		if (__state.renderToTexture == null) {
+			
+			if (__stage3D == null && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
+			
+		}
+		
+		__flushGLFramebuffer ();
+		
 		var clearMask = 0;
 		
 		if (mask & Context3DClearMask.COLOR != 0) {
 			
-			clearMask |= __gl.COLOR_BUFFER_BIT;
-			
-			__clearColor (red, green, blue, alpha);
-			// GLUtils.CheckGLError ();
-			
-			if (__renderToTexture == null && /*__stage3D == null &&*/ __stage.__renderer != null) {
-				
-				__stage.__renderer.__cleared = true;
-				
-			}
+			clearMask |= gl.COLOR_BUFFER_BIT;
+			gl.clearColor (red, green, blue, alpha);
 			
 		}
 		
 		if (mask & Context3DClearMask.DEPTH != 0) {
 			
-			clearMask |= __gl.DEPTH_BUFFER_BIT;
-			
-			__depthMask (true);
-			__clearDepth (depth);
-			// GLUtils.CheckGLError ();
+			clearMask |= gl.DEPTH_BUFFER_BIT;
+			gl.depthMask (true);
+			gl.clearDepth (depth);
+			__contextState.depthMask = true;
 			
 		}
 		
 		if (mask & Context3DClearMask.STENCIL != 0) {
 			
-			clearMask |= __gl.STENCIL_BUFFER_BIT;
-			
-			// context.__clearStencil (stencil);
-			__gl.clearStencil (stencil);
-			// GLUtils.CheckGLError ();
+			clearMask |= gl.STENCIL_BUFFER_BIT;
+			gl.clearStencil (stencil);
 			
 		}
 		
-		__gl.clear (clearMask);
-		// GLUtils.CheckGLError ();
+		gl.clear (clearMask);
 		
 	}
 	
 	
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void {
 		
-		__updateBackbufferViewport ();
-		
-		backBufferWidth = width;
-		backBufferHeight = height;
-		
-		__backBufferAntiAlias = antiAlias;
-		__backBufferEnableDepthAndStencil = enableDepthAndStencil;
-		__backBufferWantsBestResolution = wantsBestResolution;
-		
-		__updateDepthAndStencilState ();
-		
-		// Context3D.__stateCache.clearSettings ();
+		if (__stage3D == null) {
+			
+			backBufferWidth = width;
+			backBufferHeight = height;
+			
+			__backBufferAntiAlias = antiAlias;
+			__backBufferEnableDepthAndStencil = enableDepthAndStencil;
+			__backBufferWantsBestResolution = wantsBestResolution;
+			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
+			
+		} else {
+			
+			// TODO: Framebuffer resize for Stage3D instances
+			
+		}
 		
 	}
 	
@@ -320,6 +279,7 @@ import lime.graphics.GLRenderContext;
 		return new VideoTexture (this);
 		#else
 		throw new Error ("Video textures are not supported on this platform");
+		return null;
 		#end
 		
 	}
@@ -327,7 +287,7 @@ import lime.graphics.GLRenderContext;
 	
 	public function dispose (recreate:Bool = true):Void {
 		
-		GLContext3D.dispose (this, recreate);
+		// GLContext3D.dispose (this, recreate);
 		
 	}
 	
@@ -336,35 +296,26 @@ import lime.graphics.GLRenderContext;
 		
 		if (destination == null) return;
 		
-		GLContext3D.drawToBitmapData (this, destination);
+		// GLContext3D.drawToBitmapData (this, destination);
 		
 	}
 	
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		if (__glProgram == null && __program == null) return;
+		__flushGL ();
 		
-		__flushSamplerState ();
-		
-		if (__program != null) {
+		if (__state.renderToTexture == null) {
 			
-			__program.__flush ();
+			// TODO: Make sure state is correct for this?
+			if (__stage3D == null && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 			
 		}
 		
 		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 		
-		__bindBuffer (__gl.ELEMENT_ARRAY_BUFFER, indexBuffer.__id);
-		// GLUtils.CheckGLError ();
-		
-		__gl.drawElements (__gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
-		// GLUtils.CheckGLError ();
-		
-		#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE3D);
-		#end
-		// __statsIncrement (Context3DTelemetry.DRAW_CALLS);
+		__bindGLElementArrayBuffer (indexBuffer.__id);
+		gl.drawElements (gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
 		
 	}
 	
@@ -374,94 +325,98 @@ import lime.graphics.GLRenderContext;
 		
 		__present = true;
 		
-		// __statsSendToTelemetry ();
-		
-		#if telemetry
-		//__spanPresent.End ();
-		//__spanPresent.Begin ();
-		#end
-		
-		// __statsClear (Context3DTelemetry.DRAW_CALLS);
-		
-		// __frameCount++;
-		
 	}
 	
 	
 	public function setBlendFactors (sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		var updateSrc = Context3D.__stateCache.updateBlendSrcFactor (sourceFactor);
-		var updateDest = Context3D.__stateCache.updateBlendDestFactor (destinationFactor);
-		
-		// if (updateSrc || updateDest) {
-			
-		// 	__setContext (context);
-			__updateBlendFactors ();
-			
-		// }
+		__state.blendSourceFactor = sourceFactor;
+		__state.blendDestinationFactor = destinationFactor;
 		
 	}
 	
 	
 	public function setColorMask (red:Bool, green:Bool, blue:Bool, alpha:Bool):Void {
 		
-		GLContext3D.setColorMask (this, red, green, blue, alpha);
+		__state.colorMaskRed = red;
+		__state.colorMaskGreen = green;
+		__state.colorMaskBlue = blue;
+		__state.colorMaskAlpha = alpha;
 		
 	}
 	
 	
 	public function setCulling (triangleFaceToCull:Context3DTriangleFace):Void {
 		
-		GLContext3D.setCulling (this, triangleFaceToCull);
+		__state.culling = triangleFaceToCull;
 		
 	}
 	
 	
 	public function setDepthTest (depthMask:Bool, passCompareMode:Context3DCompareMode):Void {
 		
-		GLContext3D.setDepthTest (this, depthMask, passCompareMode);
+		__state.depthMask = depthMask;
+		__state.depthCompareMode = passCompareMode;
 		
 	}
 	
 	
 	public function setProgram (program:Program3D):Void {
 		
-		// if (Context3D.__stateCache.updateProgram3D (program)) {
-			
-			program.__use ();
-			program.__setPositionScale (__positionScale);
-			
-			__program = program;
-			
-			var usageMask = __program.__samplerUsageMask;
-			
-			for (i in 0...Context3D.MAX_SAMPLERS) {
-				
-				if ((usageMask & (1 << i)) != 0) {
-					
-					__samplerStates[i].copyFrom (__program.__getSamplerState (i));
-					
-				}
-				
+		__state.program = program;
+		
+		for (i in 0...program.__samplerStates.length) {
+			if (__state.samplerStates[i] == null) {
+				__state.samplerStates[i] = program.__samplerStates[i].clone ();
+			} else {
+				__state.samplerStates[i].copyFrom (program.__samplerStates[i]);
 			}
-			
-		// }
+		}
 		
 	}
 	
 	
 	public function setProgramConstantsFromByteArray (programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		if (numRegisters == 0) return;
+		if (numRegisters == 0 || __state.program == null) return;
 		
-		GLContext3D.setProgramConstantsFromByteArray (this, programType, firstRegister, numRegisters, data, byteArrayOffset);
+		if (__state.program.__format == GLSL) {
+			
+			// TODO
+			
+		} else {
+			
+			// if (numRegisters == -1) {
+				
+			// 	numRegisters = ((data.length >> 2) - byteArrayOffset);
+				
+			// }
+			
+			// var isVertex = (programType == Context3DProgramType.VERTEX);
+			// var dest = isVertex ? __state.__programVertexConstants : __state.__programFragmentConstants;
+			
+			// var floatData = Float32Array.fromBytes (data, 0, data.length);
+			// var outOffset = firstRegister * 4;
+			// var inOffset = Std.int (byteArrayOffset / 4);
+			
+			// for (i in 0...(numRegisters * 4)) {
+				
+			// 	dest[outOffset + i] = floatData[inOffset + i];
+				
+			// }
+			
+			// __state.__program.__markDirty (isVertex, firstRegister, numRegisters);
+			
+		}
+		
+		
 		
 	}
 	
 	
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
-		if (__program != null && __program.__format == GLSL) {
+		if (__state.program != null && __state.program.__format == GLSL) {
 			
 			// TODO: Cache value, prevent need to copy
 			var data = new Float32Array (16);
@@ -469,66 +424,66 @@ import lime.graphics.GLRenderContext;
 				data[i] = matrix.rawData[i];
 			}
 			
-			__gl.uniformMatrix4fv (cast firstRegister, transposedMatrix, data);
+			gl.uniformMatrix4fv (cast firstRegister, transposedMatrix, data);
 			
 		} else {
 			
-			var isVertex = (programType == Context3DProgramType.VERTEX);
-			var dest = isVertex ? __vertexConstants : __fragmentConstants;
-			var source = matrix.rawData;
-			var i = firstRegister * 4;
+			// var isVertex = (programType == Context3DProgramType.VERTEX);
+			// var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			// var source = matrix.rawData;
+			// var i = firstRegister * 4;
 			
-			if (transposedMatrix) {
+			// if (transposedMatrix) {
 				
-				dest[i++] = source[0];
-				dest[i++] = source[4];
-				dest[i++] = source[8];
-				dest[i++] = source[12];
+			// 	dest[i++] = source[0];
+			// 	dest[i++] = source[4];
+			// 	dest[i++] = source[8];
+			// 	dest[i++] = source[12];
 				
-				dest[i++] = source[1];
-				dest[i++] = source[5];
-				dest[i++] = source[9];
-				dest[i++] = source[13];
+			// 	dest[i++] = source[1];
+			// 	dest[i++] = source[5];
+			// 	dest[i++] = source[9];
+			// 	dest[i++] = source[13];
 				
-				dest[i++] = source[2];
-				dest[i++] = source[6];
-				dest[i++] = source[10];
-				dest[i++] = source[14];
+			// 	dest[i++] = source[2];
+			// 	dest[i++] = source[6];
+			// 	dest[i++] = source[10];
+			// 	dest[i++] = source[14];
 				
-				dest[i++] = source[3];
-				dest[i++] = source[7];
-				dest[i++] = source[11];
-				dest[i++] = source[15];
+			// 	dest[i++] = source[3];
+			// 	dest[i++] = source[7];
+			// 	dest[i++] = source[11];
+			// 	dest[i++] = source[15];
 				
-			} else {
+			// } else {
 				
-				dest[i++] = source[0];
-				dest[i++] = source[1];
-				dest[i++] = source[2];
-				dest[i++] = source[3];
+			// 	dest[i++] = source[0];
+			// 	dest[i++] = source[1];
+			// 	dest[i++] = source[2];
+			// 	dest[i++] = source[3];
 				
-				dest[i++] = source[4];
-				dest[i++] = source[5];
-				dest[i++] = source[6];
-				dest[i++] = source[7];
+			// 	dest[i++] = source[4];
+			// 	dest[i++] = source[5];
+			// 	dest[i++] = source[6];
+			// 	dest[i++] = source[7];
 				
-				dest[i++] = source[8];
-				dest[i++] = source[9];
-				dest[i++] = source[10];
-				dest[i++] = source[11];
+			// 	dest[i++] = source[8];
+			// 	dest[i++] = source[9];
+			// 	dest[i++] = source[10];
+			// 	dest[i++] = source[11];
 				
-				dest[i++] = source[12];
-				dest[i++] = source[13];
-				dest[i++] = source[14];
-				dest[i++] = source[15];
+			// 	dest[i++] = source[12];
+			// 	dest[i++] = source[13];
+			// 	dest[i++] = source[14];
+			// 	dest[i++] = source[15];
 				
-			}
+			// }
 			
-			if (__program != null) {
+			// if (__program != null) {
 				
-				__program.__markDirty (isVertex, firstRegister, 4);
+			// 	__program.__markDirty (isVertex, firstRegister, 4);
 				
-			}
+			// }
 			
 		}
 		
@@ -539,195 +494,88 @@ import lime.graphics.GLRenderContext;
 		
 		if (numRegisters == 0) return;
 		
-		GLContext3D.setProgramConstantsFromVector (this, programType, firstRegister, data, numRegisters);
+		// GLContext3D.setProgramConstantsFromVector (this, programType, firstRegister, data, numRegisters);
 		
 	}
 	
 	
 	public function setRenderToBackBuffer ():Void {
 		
-		GLContext3D.setRenderToBackBuffer (this);
+		__state.renderToTexture = null;
 		
 	}
 	
 	
 	public function setRenderToTexture (texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0):Void {
 		
-		GLContext3D.setRenderToTexture (this, texture, enableDepthAndStencil, antiAlias, surfaceSelector);
+		__state.renderToTexture = texture;
+		__state.renderToTextureDepthStencil = enableDepthAndStencil;
+		__state.renderToTextureAntiAlias = antiAlias;
+		__state.renderToTextureSurfaceSelector = surfaceSelector;
 		
 	}
 	
 	
 	public function setSamplerStateAt (sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void {
 		
-		if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
+		// if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
 			
-			throw new Error ("sampler out of range");
-			
-		}
-		
-		var state = __samplerStates[sampler];
-		
-		switch (wrap) {
-			
-			case Context3DWrapMode.CLAMP:
-				
-				state.wrapModeS = __gl.CLAMP_TO_EDGE;
-				state.wrapModeT = __gl.CLAMP_TO_EDGE;
-			
-			case Context3DWrapMode.CLAMP_U_REPEAT_V:
-				
-				state.wrapModeS = __gl.CLAMP_TO_EDGE;
-				state.wrapModeT = __gl.REPEAT;
-			
-			case Context3DWrapMode.REPEAT:
-				
-				state.wrapModeS = __gl.REPEAT;
-				state.wrapModeT = __gl.REPEAT;
-			
-			case Context3DWrapMode.REPEAT_U_CLAMP_V:
-				
-				state.wrapModeS = __gl.REPEAT;
-				state.wrapModeT = __gl.CLAMP_TO_EDGE;
-			
-			default:
-				
-				throw new Error ("wrap bad enum");
-			
-		}
-		
-		switch (filter) {
-			
-			case Context3DTextureFilter.LINEAR:
-				
-				state.magFilter = __gl.LINEAR;
-				
-				if (__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = 1;
-					
-				}
-			
-			case Context3DTextureFilter.NEAREST:
-				
-				state.magFilter = __gl.NEAREST;
-				
-				if (__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = 1;
-					
-				}
-			
-			case Context3DTextureFilter.ANISOTROPIC2X:
-				
-				if (__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (__maxAnisotropyTexture2D < 2 ? __maxAnisotropyTexture2D : 2);
-					
-				}
-			
-			case Context3DTextureFilter.ANISOTROPIC4X:
-				
-				if (__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (__maxAnisotropyTexture2D < 4 ? __maxAnisotropyTexture2D : 4);
-					
-				}
-			
-			case Context3DTextureFilter.ANISOTROPIC8X:
-				
-				if (__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (__maxAnisotropyTexture2D < 8 ? __maxAnisotropyTexture2D : 8);
-					
-				}
-				
-			case Context3DTextureFilter.ANISOTROPIC16X:
-				
-				if (__supportsAnisotropicFiltering) {
-					
-					state.maxAniso = (__maxAnisotropyTexture2D < 16 ? __maxAnisotropyTexture2D : 0);
-					
-				}
-			
-			default:
-				
-				throw new Error ("filter bad enum");
-			
-		}
-		
-		switch (mipfilter) {
-			
-			case Context3DMipFilter.MIPLINEAR:
-				
-				state.minFilter = filter == Context3DTextureFilter.NEAREST ? __gl.NEAREST_MIPMAP_LINEAR : __gl.LINEAR_MIPMAP_LINEAR;
-			
-			case Context3DMipFilter.MIPNEAREST:
-				
-				state.minFilter = filter == Context3DTextureFilter.NEAREST ? __gl.NEAREST_MIPMAP_NEAREST : __gl.LINEAR_MIPMAP_NEAREST;
-			
-			case Context3DMipFilter.MIPNONE:
-				
-				state.minFilter = filter == Context3DTextureFilter.NEAREST ? __gl.NEAREST : __gl.LINEAR;
-			
-			default:
-				
-				throw new Error ("mipfiter bad enum");
-			
-		}
-		
-		if (state.__dirty) __samplerDirty = true;
-		
-		// if (__program == null && __samplerTextures[sampler] != null) {
-			
-		// 	__samplerTextures[sampler].__setSamplerState (__samplerStates[sampler]);
+		// 	throw new Error ("sampler out of range");
 			
 		// }
+		
+		if (__state.samplerStates[sampler] == null) {
+			__state.samplerStates[sampler] = new SamplerState ();
+		}
+		
+		var state = __state.samplerStates[sampler];
+		state.wrap = wrap;
+		state.filter = filter;
+		state.mipfilter = mipfilter;
 		
 	}
 	
 	
 	public function setScissorRectangle (rectangle:Rectangle):Void {
 		
-		GLContext3D.setScissorRectangle (this, rectangle);
+		if (rectangle != null) {
+			__state.scissorRectangle.copyFrom (rectangle);
+		} else {
+			__state.scissorRectangle.setTo (0, 0, 0, 0);
+		}
 		
 	}
 	
 	
 	public function setStencilActions (triangleFace:Context3DTriangleFace = FRONT_AND_BACK, compareMode:Context3DCompareMode = ALWAYS, actionOnBothPass:Context3DStencilAction = KEEP, actionOnDepthFail:Context3DStencilAction = KEEP, actionOnDepthPassStencilFail:Context3DStencilAction = KEEP):Void {
 		
-		GLContext3D.setStencilActions (this, triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail);
+		__state.stencilTriangleFace = triangleFace;
+		__state.stencilCompareMode = compareMode;
+		__state.stencilPass = actionOnBothPass;
+		__state.stencilDepthFail = actionOnDepthFail;
+		__state.stencilFail = actionOnDepthPassStencilFail;
 		
 	}
 	
 	
 	public function setStencilReferenceValue (referenceValue:UInt, readMask:UInt = 0xFF, writeMask:UInt = 0xFF):Void {
 		
-		GLContext3D.setStencilReferenceValue (this, referenceValue, readMask, writeMask);
+		__state.stencilReferenceValue = referenceValue;
+		__state.stencilReadMask = readMask;
+		__state.stencilWriteMask = writeMask;
 		
 	}
 	
 	
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
-		if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
+		// if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
 			
-			throw new Error ("sampler out of range");
+		// 	throw new Error ("sampler out of range");
 			
-		}
+		// }
 		
-		if (__samplerTextures[sampler] != texture) {
-			
-			__samplerTextures[sampler] = texture;
-			__samplerDirty = true;
-			
-			if (texture != null && (texture.__samplerState == null || !__samplerStates[sampler].equals (texture.__samplerState))) {
-				
-				__samplerStates[sampler].__dirty = true;
-				
-			}
-			
-		}
+		__state.textures[sampler] = texture;
 		
 	}
 	
@@ -736,21 +584,14 @@ import lime.graphics.GLRenderContext;
 		
 		if (buffer == null) {
 			
-			__gl.disableVertexAttribArray (index);
-			// GLUtils.CheckGLError ();
-			
-			__bindBuffer (__gl.ARRAY_BUFFER, null);
-			// GLUtils.CheckGLError ();
-			
+			gl.disableVertexAttribArray (index);
+			__bindGLArrayBuffer (null);
 			return;
 			
 		}
 		
-		__gl.enableVertexAttribArray (index);
-		// GLUtils.CheckGLError ();
-		
-		__bindBuffer (__gl.ARRAY_BUFFER, buffer.__id);
-		// GLUtils.CheckGLError ();
+		gl.enableVertexAttribArray (index);
+		__bindGLArrayBuffer (buffer.__id);
 		
 		var byteOffset = bufferOffset * 4;
 		
@@ -758,28 +599,23 @@ import lime.graphics.GLRenderContext;
 			
 			case BYTES_4:
 				
-				__gl.vertexAttribPointer (index, 4, __gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
-				// GLUtils.CheckGLError ();
+				gl.vertexAttribPointer (index, 4, gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
 				
 			case FLOAT_4:
 				
-				__gl.vertexAttribPointer (index, 4, __gl.FLOAT, false, buffer.__stride, byteOffset);
-				// GLUtils.CheckGLError ();
+				gl.vertexAttribPointer (index, 4, gl.FLOAT, false, buffer.__stride, byteOffset);
 			
 			case FLOAT_3:
 				
-				__gl.vertexAttribPointer (index, 3, __gl.FLOAT, false, buffer.__stride, byteOffset);
-				// GLUtils.CheckGLError ();
+				gl.vertexAttribPointer (index, 3, gl.FLOAT, false, buffer.__stride, byteOffset);
 			
 			case FLOAT_2:
 				
-				__gl.vertexAttribPointer (index, 2, __gl.FLOAT, false, buffer.__stride, byteOffset);
-				// GLUtils.CheckGLError ();
+				gl.vertexAttribPointer (index, 2, gl.FLOAT, false, buffer.__stride, byteOffset);
 			
 			case FLOAT_1:
 				
-				__gl.vertexAttribPointer (index, 1, __gl.FLOAT, false, buffer.__stride, byteOffset);
-				// GLUtils.CheckGLError ();
+				gl.vertexAttribPointer (index, 1, gl.FLOAT, false, buffer.__stride, byteOffset);
 			
 			default:
 				
@@ -790,844 +626,558 @@ import lime.graphics.GLRenderContext;
 	}
 	
 	
-	@:noCompletion private function __activeTexture (texture:Int):Void {
+	@:noCompletion private function __bindGLArrayBuffer (buffer:GLBuffer):Void {
 		
-		if (__glActiveTexture != texture) {
+		if (__contextState.__currentGLArrayBuffer != buffer) {
 			
-			__glActiveTexture = texture;
-			__gl.activeTexture (texture);
+			gl.bindBuffer (gl.ARRAY_BUFFER, buffer);
+			__contextState.__currentGLArrayBuffer = buffer;
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __bindBuffer (target:Int, buffer:GLBuffer):Void {
+	@:noCompletion private function __bindGLElementArrayBuffer (buffer:GLBuffer):Void {
 		
-		if (__glBuffers[target] != buffer) {
+		if (__contextState.__currentGLElementArrayBuffer != buffer) {
 			
-			__glBuffers[target] = buffer;
-			__gl.bindBuffer (target, buffer);
+			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, buffer);
+			__contextState.__currentGLElementArrayBuffer = buffer;
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __bindFramebuffer (target:Int, framebuffer:GLFramebuffer):Void {
+	@:noCompletion private function __bindGLFramebuffer (framebuffer:GLFramebuffer):Void {
 		
-		if (__glFramebuffers[target] != framebuffer) {
+		if (__contextState.__currentGLFramebuffer != framebuffer) {
 			
-			__glFramebuffers[target] = framebuffer;
-			__gl.bindFramebuffer (target, framebuffer);
+			gl.bindFramebuffer (gl.FRAMEBUFFER, framebuffer);
+			__contextState.__currentGLFramebuffer = framebuffer;
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __bindRenderbuffer (target:Int, renderbuffer:GLRenderbuffer):Void {
+	@:noCompletion private function __bindGLTexture2D (texture:GLTexture):Void {
 		
-		if (__glRenderbuffers[target] != renderbuffer) {
+		if (__contextState.__currentGLTexture2D != texture) {
 			
-			__glRenderbuffers[target] = renderbuffer;
-			__gl.bindRenderbuffer (target, renderbuffer);
+			gl.bindTexture (gl.TEXTURE_2D, texture);
+			__contextState.__currentGLTexture2D = texture;
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __bindTexture (target:Int, texture:GLTexture):Void {
+	@:noCompletion private function __bindGLTextureCubeMap (texture:GLTexture):Void {
 		
-		if (__glTextures[target] != texture) {
+		if (__contextState.__currentGLTextureCubeMap != texture) {
 			
-			__glTextures[target] = texture;
-			__gl.bindTexture (target, texture);
+			gl.bindTexture (gl.TEXTURE_CUBE_MAP, texture);
+			__contextState.__currentGLTextureCubeMap = texture;
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __blendColor (red:Float, green:Float, blue:Float, alpha:Float):Void {
+	@:noCompletion private function __flushGL ():Void {
 		
-		if (__glBlendColor[0] != red || __glBlendColor[1] != green || __glBlendColor[2] != blue || __glBlendColor[3] != alpha) {
-			
-			__glBlendColor[0] = red;
-			__glBlendColor[1] = green;
-			__glBlendColor[2] = blue;
-			__glBlendColor[3] = alpha;
-			__gl.blendColor (red, green, blue, alpha);
-			
-		}
+		__flushGLProgram ();
+		__flushGLFramebuffer ();
 		
-	}
-	
-	
-	@:noCompletion private function __blendEquation (mode:Int):Void {
-		
-		if (__glBlendEquation != mode) {
-			
-			__glBlendEquation = mode;
-			__glBlendEquationSeparate[0] = -1;
-			__glBlendEquationSeparate[1] = -1;
-			__gl.blendEquation (mode);
-			
-		}
+		__flushGLBlend ();
+		__flushGLColor ();
+		__flushGLCulling ();
+		__flushGLDepth ();
+		__flushGLScissor ();
+		__flushGLStencil ();
+		__flushGLTextures ();
 		
 	}
 	
 	
-	@:noCompletion private function __blendEquationSeparate (modeRGB:Int, modeAlpha:Int):Void {
+	@:noCompletion private function __flushGLBlend ():Void {
 		
-		if (__glBlendEquationSeparate[0] != modeRGB || __glBlendEquationSeparate[1] != modeAlpha) {
+		if (__contextState.blendDestinationFactor != __state.blendDestinationFactor || __contextState.blendSourceFactor != __state.blendSourceFactor) {
 			
-			__glBlendEquationSeparate[0] = modeRGB;
-			__glBlendEquationSeparate[1] = modeAlpha;
-			__glBlendEquation = -1;
-			__gl.blendEquationSeparate (modeRGB, modeAlpha);
+			var src = gl.ONE;
+			var dest = gl.ZERO;
 			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __blendFunc (sfactor:Int, dfactor:Int):Void {
-		
-		if (__glBlendFunc[0] != sfactor || __glBlendFunc[1] != dfactor) {
+			switch (__state.blendSourceFactor) {
+				case DESTINATION_ALPHA: src = gl.DST_ALPHA;
+				case DESTINATION_COLOR: src = gl.DST_COLOR;
+				case ONE: src = gl.ONE;
+				case ONE_MINUS_DESTINATION_ALPHA: src = gl.ONE_MINUS_DST_ALPHA;
+				case ONE_MINUS_DESTINATION_COLOR: src = gl.ONE_MINUS_DST_COLOR;
+				case ONE_MINUS_SOURCE_ALPHA: src = gl.ONE_MINUS_SRC_ALPHA;
+				case ONE_MINUS_SOURCE_COLOR: src = gl.ONE_MINUS_SRC_COLOR;
+				case SOURCE_ALPHA: src = gl.SRC_ALPHA;
+				case SOURCE_COLOR: src = gl.SRC_COLOR;
+				case ZERO: src = gl.ZERO;
+				default: throw new IllegalOperationError ();
+			}
 			
-			__glBlendFunc[0] = sfactor;
-			__glBlendFunc[1] = dfactor;
-			__glBlendFuncSeparate[0] = -1;
-			__glBlendFuncSeparate[1] = -1;
-			__glBlendFuncSeparate[2] = -1;
-			__glBlendFuncSeparate[3] = -1;
-			__gl.blendFunc (sfactor, dfactor);
+			switch (__state.blendDestinationFactor) {
+				case DESTINATION_ALPHA: dest = gl.DST_ALPHA;
+				case DESTINATION_COLOR: dest = gl.DST_COLOR;
+				case ONE: dest = gl.ONE;
+				case ONE_MINUS_DESTINATION_ALPHA: dest = gl.ONE_MINUS_DST_ALPHA;
+				case ONE_MINUS_DESTINATION_COLOR: dest = gl.ONE_MINUS_DST_COLOR;
+				case ONE_MINUS_SOURCE_ALPHA: dest = gl.ONE_MINUS_SRC_ALPHA;
+				case ONE_MINUS_SOURCE_COLOR: dest = gl.ONE_MINUS_SRC_COLOR;
+				case SOURCE_ALPHA: dest = gl.SRC_ALPHA;
+				case SOURCE_COLOR: dest = gl.SRC_COLOR;
+				case ZERO: dest = gl.ZERO;
+				default: throw new IllegalOperationError ();
+			}
 			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __blendFuncSeparate (srcRGB:Int, dstRGB:Int, srcAlpha:Int, dstAlpha:Int):Void {
-		
-		if (__glBlendFuncSeparate[0] != srcRGB || __glBlendFuncSeparate[1] != dstRGB || __glBlendFuncSeparate[2] != srcAlpha || __glBlendFuncSeparate[3] != dstAlpha) {
-			
-			__glBlendFuncSeparate[0] = srcRGB;
-			__glBlendFuncSeparate[1] = dstRGB;
-			__glBlendFuncSeparate[2] = srcAlpha;
-			__glBlendFuncSeparate[3] = dstAlpha;
-			__glBlendFunc[0] = -1;
-			__glBlendFunc[1] = -1;
-			__gl.blendFuncSeparate (srcRGB, dstRGB, srcAlpha, dstAlpha);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __clearColor (red:Float, green:Float, blue:Float, alpha:Float):Void {
-		
-		if (__glClearColor[0] != red || __glClearColor[1] != green || __glClearColor[2] != blue || __glClearColor[3] != alpha) {
-			
-			__glClearColor[0] = red;
-			__glClearColor[1] = green;
-			__glClearColor[2] = blue;
-			__glClearColor[3] = alpha;
-			__gl.clearColor (red, green, blue, alpha);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __clearDepth (depth:Float):Void {
-		
-		if (__glClearDepth != depth) {
-			
-			__glClearDepth = depth;
-			__gl.clearDepth (depth);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __colorMask (red:Bool, green:Bool, blue:Bool, alpha:Bool):Void {
-		
-		if (__glColorMask[0] != red || __glColorMask[1] != green || __glColorMask[2] != blue || __glColorMask[3] != alpha) {
-			
-			__glColorMask[0] = red;
-			__glColorMask[1] = green;
-			__glColorMask[2] = blue;
-			__glColorMask[3] = alpha;
-			__gl.colorMask (red, green, blue, alpha);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __copyState (other:Context3D):Void {
-		
-		__glActiveTexture = other.__glActiveTexture;
-		__glBlendEquation = other.__glBlendEquation;
-		__glClearDepth = other.__glClearDepth;
-		__glCullFace = other.__glCullFace;
-		__glDepthFunc = other.__glDepthFunc;
-		__glDepthMask = other.__glDepthMask;
-		__glFrontFace = other.__glFrontFace;
-		__glProgram = other.__glProgram;
-		__glScissorHeight = other.__glScissorHeight;
-		__glScissorWidth = other.__glScissorWidth;
-		__glScissorX = other.__glScissorX;
-		__glScissorY = other.__glScissorY;
-		__glStencilMask = other.__glStencilMask;
-		__glViewportHeight = other.__glViewportHeight;
-		__glViewportWidth = other.__glViewportWidth;
-		__glViewportX = other.__glViewportX;
-		__glViewportY = other.__glViewportY;
-		
-		for (i in 0...4) {
-			
-			__glBlendColor[i] = other.__glBlendColor[i];
-			if (i < 3) __glBlendEquationSeparate[i] = other.__glBlendEquationSeparate[i];
-			if (i < 3) __glBlendFunc[i] = other.__glBlendFunc[i];
-			__glBlendFuncSeparate[i] = other.__glBlendFuncSeparate[i];
-			__glClearColor[i] = other.__glClearColor[i];
-			__glColorMask[i] = other.__glColorMask[i];
-			if (i < 4) __glStencilFunc[i] = other.__glStencilFunc[i];
-			if (i < 4) __glStencilOp[i] = other.__glStencilOp[i];
-			__glStencilOpSeparate[i] = other.__glStencilOpSeparate[i];
-			
-		}
-		
-		// TODO: Better way to handle this?
-		
-		__glBuffers = new Map ();
-		__glEnabled = new Map ();
-		__glFramebuffers = new Map ();
-		__glRenderbuffers = new Map ();
-		__glTextures = new Map ();
-		
-		for (key in other.__glBuffers.keys ()) {
-			
-			__glBuffers[key] = other.__glBuffers[key];
-			
-		}
-		
-		for (key in other.__glEnabled.keys ()) {
-			
-			__glEnabled[key] = other.__glEnabled[key];
-			
-		}
-		
-		for (key in other.__glFramebuffers.keys ()) {
-			
-			__glFramebuffers[key] = other.__glFramebuffers[key];
-			
-		}
-		
-		for (key in other.__glRenderbuffers.keys ()) {
-			
-			__glRenderbuffers[key] = other.__glRenderbuffers[key];
-			
-		}
-		
-		for (key in other.__glTextures.keys ()) {
-			
-			__glTextures[key] = other.__glTextures[key];
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __cullFace (face:Int):Void {
-		
-		if (__glCullFace != face) {
-			
-			__glCullFace = face;
-			__gl.cullFace (face);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __depthFunc (func:Int):Void {
-		
-		if (__glDepthFunc != func) {
-			
-			__glDepthFunc = func;
-			__gl.depthFunc (func);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __depthMask (flag:Bool):Void {
-		
-		if (__glDepthMask != flag) {
-			
-			__glDepthMask = flag;
-			__gl.depthMask (flag);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __disable (cap:Int):Void {
-		
-		if (__glEnabled[cap] == true) {
-			
-			__glEnabled[cap] = false;
-			__gl.disable (cap);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __enable (cap:Int):Void {
-		
-		if (__glEnabled[cap] != true) {
-			
-			__glEnabled[cap] = true;
-			__gl.enable (cap);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __flushSamplerState ():Void {
-		
-		if (__renderToTexture == null && /*__stage3D == null &&*/ __stage.__renderer != null && !__stage.__renderer.__cleared) {
-			
-			__stage.__renderer.__clear ();
-			
-		}
-		
-		var sampler = 0;
-		var texture;
-		
-		if (__samplerDirty) {
-			
-			for (i in 0...__samplerTextures.length) {
+			if (!__contextState.__enableBlend) {
 				
-				// if (Context3D.__stateCache.updateActiveTextureSample (sampler)) {
-					
-					__activeTexture (__gl.TEXTURE0 + sampler);
-					// GLUtils.CheckGLError ();
-					
-				// }
+				gl.enable (gl.BLEND);
+				__contextState.__enableBlend = true;
 				
-				texture = __samplerTextures[sampler];
+			}
+			
+			gl.blendFunc (src, dest);
+			__contextState.blendDestinationFactor = __state.blendDestinationFactor;
+			__contextState.blendSourceFactor = __state.blendSourceFactor;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private inline function __flushGLColor ():Void {
+		
+		if (__contextState.colorMaskRed != __state.colorMaskRed || __contextState.colorMaskGreen != __state.colorMaskGreen || __contextState.colorMaskBlue != __state.colorMaskBlue || __contextState.colorMaskAlpha != __state.colorMaskAlpha) {
+			
+			gl.colorMask (__state.colorMaskRed, __state.colorMaskGreen, __state.colorMaskBlue, __state.colorMaskAlpha);
+			__contextState.colorMaskRed = __state.colorMaskRed;
+			__contextState.colorMaskGreen = __state.colorMaskGreen;
+			__contextState.colorMaskBlue = __state.colorMaskBlue;
+			__contextState.colorMaskAlpha = __state.colorMaskAlpha;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __flushGLCulling ():Void {
+		
+		if (__contextState.culling != __state.culling) {
+			
+			if (__contextState.culling == NONE) {
 				
-				if (texture != null) {
+				gl.enable (gl.CULL_FACE);
+				
+			}
+			
+			if (__state.culling == NONE) {
+				
+				gl.disable (gl.CULL_FACE);
+				
+			} else {
+				
+				switch (__state.culling) {
 					
-					var target = texture.__textureTarget;
-					
-					__bindTexture (target, texture.__textureID);
-					// GLUtils.CheckGLError ();
-					
-					if (__samplerStates[sampler].__dirty) texture.__setSamplerState (__samplerStates[sampler]);
-					
-				} else {
-					
-					__bindTexture (__gl.TEXTURE_2D, null);
-					// GLUtils.CheckGLError ();
+					case NONE: // skip
+					case BACK: gl.cullFace (gl.FRONT);
+					case FRONT: gl.cullFace (gl.BACK);
+					case FRONT_AND_BACK: gl.cullFace (gl.FRONT_AND_BACK);
+					default: throw new IllegalOperationError ();
 					
 				}
 				
-				if (__program != null && __samplerStates[sampler].textureAlpha) {
+			}
+			
+			__contextState.culling = __state.culling;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __flushGLDepth ():Void {
+		
+		if (__contextState.depthMask != __state.depthMask) {
+			
+			gl.depthMask (__state.depthMask);
+			__contextState.depthMask = __state.depthMask;
+			
+		}
+		
+		if (__contextState.depthCompareMode != __state.depthCompareMode) {
+			
+			switch (__state.depthCompareMode) {
+				case ALWAYS: gl.depthFunc (gl.ALWAYS);
+				case EQUAL: gl.depthFunc (gl.EQUAL);
+				case GREATER: gl.depthFunc (gl.GREATER);
+				case GREATER_EQUAL: gl.depthFunc (gl.GEQUAL);
+				case LESS: gl.depthFunc (gl.LESS);
+				case LESS_EQUAL: gl.depthFunc (gl.LEQUAL);
+				case NEVER: gl.depthFunc (gl.NEVER);
+				case NOT_EQUAL: gl.depthFunc (gl.NOTEQUAL);
+				default: throw new IllegalOperationError ();
+			}
+			
+			__contextState.depthCompareMode = __state.depthCompareMode;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __flushGLFramebuffer ():Void {
+		
+		if (__state.renderToTexture != null) {
+			
+			if (__contextState.renderToTexture != __state.renderToTexture) {
+				
+				// TODO: Should there be multiple framebuffers for performance?
+				
+				if (__contextState.__rttGLFramebuffer == null) {
+					__contextState.__rttGLFramebuffer = gl.createFramebuffer ();
+				}
+				
+				__bindGLFramebuffer (__contextState.__rttGLFramebuffer);
+				
+				var width = 0, height = 0;
+				
+				// TODO: Solution without Std.is?
+				if (Std.is (__state.renderToTexture, Texture)) {
 					
-					__activeTexture (__gl.TEXTURE0 + sampler + 4);
-					// GLUtils.CheckGLError ();
+					var texture2D:Texture = cast __state.renderToTexture;
+					width = texture2D.__width;
+					height = texture2D.__height;
 					
-					if (texture != null && texture.__alphaTexture != null) {
+					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture2D.__textureID, 0);
+					
+				} else if (Std.is (__state.renderToTexture, RectangleTexture)) {
+					
+					var rectTexture:RectangleTexture = cast __state.renderToTexture;
+					width = rectTexture.__width;
+					height = rectTexture.__height;
+					
+					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rectTexture.__textureID, 0);
+					
+				} else if (Std.is (__state.renderToTexture, CubeTexture)) {
+					
+					var cubeTexture:CubeTexture = cast __state.renderToTexture;
+					width = cubeTexture.__size;
+					height = cubeTexture.__size;
+					
+					for (i in 0...6) {
 						
-						var target = texture.__alphaTexture.__textureTarget;
+						gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeTexture.__textureID, 0);
 						
-						__bindTexture (target, texture.__alphaTexture.__getTexture ());
-						// GLUtils.CheckGLError ();
+					}
+					
+				} else {
+					
+					throw new Error ("Invalid texture");
+					
+				}
+				
+				if (__state.renderToTextureDepthStencil) {
+					
+					if (GL_DEPTH_STENCIL != 0) {
 						
-						texture.__alphaTexture.__setSamplerState (__samplerStates[sampler]);
+						// TODO: Cache?
 						
-						__gl.uniform1i (__program.__alphaSamplerEnabled[sampler].location, 1);
-						// GLUtils.CheckGLError ();
+						if (__contextState.__rttGLRenderbuffer == null) {
+							__contextState.__rttGLRenderbuffer = gl.createRenderbuffer ();
+						}
+						
+						gl.bindRenderbuffer (gl.RENDERBUFFER, __contextState.__rttGLRenderbuffer);
+						gl.renderbufferStorage (gl.RENDERBUFFER, GL_DEPTH_STENCIL, width, height);
+						gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, __contextState.__rttGLRenderbuffer);
 						
 					} else {
 						
-						__bindTexture (__gl.TEXTURE_2D, null);
-						// GLUtils.CheckGLError ();
+						if (__contextState.__rttDepthGLRenderbuffer == null) {
+							__contextState.__rttDepthGLRenderbuffer = gl.createRenderbuffer ();
+						}
 						
-						__gl.uniform1i (__program.__alphaSamplerEnabled[sampler].location, 0);
-						// GLUtils.CheckGLError ();
+						if (__contextState.__rttStencilGLRenderbuffer == null) {
+							__contextState.__rttStencilGLRenderbuffer = gl.createRenderbuffer ();
+						}
+						
+						gl.bindRenderbuffer (gl.RENDERBUFFER, __contextState.__rttDepthGLRenderbuffer);
+						gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+						gl.bindRenderbuffer (gl.RENDERBUFFER, __contextState.__rttStencilGLRenderbuffer);
+						gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, width, height);
+						
+						gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, __contextState.__rttDepthGLRenderbuffer);
+						gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __contextState.__rttStencilGLRenderbuffer);
+						
+					}
+					
+					gl.bindRenderbuffer (gl.RENDERBUFFER, null);
+					
+				}
+				
+				if (__enableErrorChecking) {
+					
+					var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
+					
+					if (code != gl.FRAMEBUFFER_COMPLETE) {
+						
+						trace ('Error: Context3D.setRenderToTexture status:${code} width:${width} height:${height}');
 						
 					}
 					
 				}
 				
-				__samplerStates[sampler].__dirty = false;
-				sampler++;
+				// TODO: Is this correct?
+				gl.frontFace (gl.CW);
+				
+				__contextState.renderToTexture = __state.renderToTexture;
 				
 			}
 			
-			__samplerDirty = false;
+			// context.__positionScale[1] = -1.0;
+			
+			// if (context.__program != null) {
+				
+			// 	context.__program.__setPositionScale (context.__positionScale);
+				
+			// }
+			
+		} else {
+			
+			if (__contextState.renderToTexture != null || __contextState.__primaryGLFramebuffer != __state.__primaryGLFramebuffer) {
+				
+				__bindGLFramebuffer (__state.__primaryGLFramebuffer);
+				__contextState.renderToTexture = null;
+				__contextState.__primaryGLFramebuffer = __state.__primaryGLFramebuffer;
+				
+				// TODO: Is this correct?
+				gl.frontFace (gl.CCW);
+				
+				// context.__positionScale[1] = 1.0;
+				
+				// if (context.__program != null) {
+					
+				// 	context.__program.__setPositionScale (context.__positionScale);
+					
+				// }
+				
+			}
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __frontFace (mode:Int):Void {
+	@:noCompletion private function __flushGLProgram ():Void {
 		
-		if (__glFrontFace != mode) {
+		var program = __state.program;
+		
+		if (__contextState.program != program) {
 			
-			__glFrontFace = mode;
-			__gl.frontFace (mode);
+			gl.useProgram (program.__programID);
+			
+			// if (program != null && program.__format == AGAL) {
+				
+			// 	program.__use ();
+			// 	program.__setPositionScale (__positionScale);
+				
+			// }
+			
+			__contextState.program = program;
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __restoreState (other:Context3D):Void {
+	@:noCompletion private function __flushGLScissor ():Void {
 		
-		if (other.__glActiveTexture != __glActiveTexture) {
-			if (__glActiveTexture != -1) {
-				__gl.activeTexture (__glActiveTexture);
+		if (!__contextState.scissorRectangle.equals (__state.scissorRectangle)) {
+			
+			if (__state.scissorRectangle.width <= 0 || __state.scissorRectangle.height <= 0) {
+				
+				gl.scissor (0, 0, 0, 0);
+				
 			} else {
-				__glActiveTexture = other.__glActiveTexture;
+				
+				gl.scissor (Math.round (__state.scissorRectangle.x), Math.round (__state.scissorRectangle.y), Math.round (__state.scissorRectangle.width), Math.round (__state.scissorRectangle.height));
+				
+			}
+			
+			__contextState.scissorRectangle.copyFrom (__state.scissorRectangle);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __flushGLStencil ():Void {
+		
+		function getGLCompareMode (mode:Context3DCompareMode):Int {
+			return switch (mode) {
+				case ALWAYS: gl.ALWAYS;
+				case EQUAL: gl.EQUAL;
+				case GREATER: gl.GREATER;
+				case GREATER_EQUAL: gl.GEQUAL;
+				case LESS: gl.LESS;
+				case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
+				case NEVER: gl.NEVER;
+				case NOT_EQUAL: gl.NOTEQUAL;
+				default: gl.EQUAL;
 			}
 		}
 		
-		if (other.__glBlendEquation != __glBlendEquation) {
-			if (__glBlendEquation != -1) {
-				__gl.blendEquation (__glBlendEquation);
-			} else {
-				__glBlendEquation = other.__glBlendEquation;
+		function getGLTriangleFace (face:Context3DTriangleFace):Int {
+			return switch (face) {
+				case FRONT: gl.FRONT;
+				case BACK: gl.BACK;
+				case FRONT_AND_BACK: gl.FRONT_AND_BACK;
+				case NONE: gl.NONE;
+				default: gl.FRONT_AND_BACK;
 			}
 		}
 		
-		if (other.__glClearDepth != __glClearDepth) {
-			if (__glClearDepth != -1) {
-				__gl.clearDepth (__glClearDepth);
-			} else {
-				__glClearDepth = other.__glClearDepth;
+		function getGLStencilAction (action:Context3DStencilAction):Int {
+			return switch (action) {
+				case DECREMENT_SATURATE: gl.DECR;
+				case DECREMENT_WRAP: gl.DECR_WRAP;
+				case INCREMENT_SATURATE: gl.INCR;
+				case INCREMENT_WRAP: gl.INCR_WRAP;
+				case INVERT: gl.INVERT;
+				case KEEP: gl.KEEP;
+				case SET: gl.REPLACE;
+				case ZERO: gl.ZERO;
+				default: gl.KEEP;
 			}
 		}
 		
-		if (other.__glCullFace != __glCullFace) {
-			if (__glCullFace != -1) {
-				__gl.cullFace (__glCullFace);
-			} else {
-				__glCullFace = other.__glCullFace;
-			}
+		if (__contextState.stencilTriangleFace != __state.stencilTriangleFace || __contextState.stencilPass != __state.stencilPass || __contextState.stencilDepthFail != __state.stencilDepthFail || __contextState.stencilFail != __state.stencilFail) {
+			
+			gl.stencilOpSeparate (getGLTriangleFace (__state.stencilTriangleFace), getGLStencilAction (__state.stencilFail), getGLStencilAction (__state.stencilDepthFail), getGLStencilAction (__state.stencilPass));
+			__contextState.stencilTriangleFace = __state.stencilTriangleFace;
+			__contextState.stencilPass = __state.stencilPass;
+			__contextState.stencilDepthFail = __state.stencilDepthFail;
+			__contextState.stencilFail = __state.stencilFail;
+			
 		}
 		
-		if (other.__glDepthFunc != __glDepthFunc) {
-			if (__glDepthFunc != -1) {
-				__gl.depthFunc (__glDepthFunc);
-			} else {
-				__glDepthFunc = other.__glDepthFunc;
-			}
+		if (__contextState.stencilWriteMask != __state.stencilWriteMask) {
+			
+			gl.stencilMask (__state.stencilWriteMask);
+			__contextState.stencilWriteMask = __state.stencilWriteMask;
+			
 		}
 		
-		if (other.__glDepthMask != __glDepthMask) {
-			__gl.depthMask (__glDepthMask);
+		if (__contextState.stencilCompareMode != __state.stencilCompareMode || __contextState.stencilReferenceValue != __state.stencilReferenceValue || __contextState.stencilReadMask != __state.stencilReadMask) {
+			
+			gl.stencilFunc (getGLCompareMode (__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
+			__contextState.stencilCompareMode = __state.stencilCompareMode;
+			__contextState.stencilReferenceValue = __state.stencilReferenceValue;
+			__contextState.stencilReadMask = __state.stencilReadMask;
+			
 		}
 		
-		if (other.__glFrontFace != __glFrontFace) {
-			if (__glFrontFace != -1) {
-				__gl.frontFace (__glFrontFace);
-			} else {
-				__glFrontFace = other.__glFrontFace;
-			}
-		}
+	}
+	
+	
+	@:noCompletion private function __flushGLTextures ():Void {
 		
-		if (other.__glProgram != __glProgram) {
-			__gl.useProgram (__glProgram);
-		}
+		var sampler = 0;
+		var texture, samplerState;
 		
-		if (other.__glScissorX != __glScissorX || other.__glScissorY != __glScissorY || other.__glScissorWidth != __glScissorWidth || other.__glScissorHeight != __glScissorHeight) {
-			if (__glScissorWidth != 0 || __glScissorHeight != 0) {
-				__gl.scissor (__glScissorX, __glScissorY, __glScissorWidth, __glScissorHeight);
-			} else {
-				__glScissorX = other.__glScissorX;
-				__glScissorY = other.__glScissorY;
-				__glScissorWidth = other.__glScissorWidth;
-				__glScissorHeight = other.__glScissorHeight;
-			}
-		}
-		
-		if (other.__glStencilMask != __glStencilMask) {
-			if (__glStencilMask != -1) {
-				__gl.stencilMask (__glStencilMask);
-			} else {
-				__glStencilMask = other.__glStencilMask;
-			}
-		}
-		
-		if (other.__glViewportX != __glViewportX || other.__glViewportY != __glViewportY || other.__glViewportWidth != __glViewportWidth || other.__glViewportHeight != __glViewportHeight) {
-			if (__glViewportWidth != 0 || __glViewportHeight != 0) {
-				__gl.viewport (__glViewportX, __glViewportY, __glViewportWidth, __glViewportHeight);
-			} else {
-				__glViewportX = other.__glViewportX;
-				__glViewportY = other.__glViewportY;
-				__glViewportWidth = other.__glViewportWidth;
-				__glViewportHeight = other.__glViewportHeight;
-			}
-		}
-		
-		if (other.__glBlendColor[0] != __glBlendColor[0] || other.__glBlendColor[1] != __glBlendColor[1] || other.__glBlendColor[2] != __glBlendColor[2] || other.__glBlendColor[3] != __glBlendColor[3]) {
-			if (__glBlendColor[0] != -1) {
-				__gl.blendColor (__glBlendColor[0], __glBlendColor[1], __glBlendColor[2], __glBlendColor[3]);
-			} else {
-				__glBlendColor[0] = other.__glBlendColor[0];
-				__glBlendColor[1] = other.__glBlendColor[1];
-				__glBlendColor[2] = other.__glBlendColor[2];
-				__glBlendColor[3] = other.__glBlendColor[3];
-			}
-		}
-		
-		if (other.__glBlendEquationSeparate[0] != __glBlendEquationSeparate[0] || other.__glBlendEquationSeparate[1] != __glBlendEquationSeparate[1]) {
-			if (__glBlendEquationSeparate[0] != -1) {
-				__gl.blendEquationSeparate (__glBlendEquationSeparate[0], __glBlendEquationSeparate[1]);
-			} else {
-				__glBlendEquationSeparate[0] = other.__glBlendEquationSeparate[0];
-				__glBlendEquationSeparate[1] = other.__glBlendEquationSeparate[1];
-			}
-		}
-		
-		if (other.__glBlendFunc[0] != __glBlendFunc[0] || other.__glBlendFunc[1] != __glBlendFunc[1]) {
-			if (__glBlendFunc[0] != -1) {
-				__gl.blendFunc (__glBlendFunc[0], __glBlendFunc[1]);
-			} else {
-				__glBlendFunc[0] = other.__glBlendFunc[0];
-				__glBlendFunc[1] = other.__glBlendFunc[1];
-			}
-		}
-		
-		if (other.__glBlendFuncSeparate[0] != __glBlendFuncSeparate[0] || other.__glBlendFuncSeparate[1] != __glBlendFuncSeparate[1] || other.__glBlendFuncSeparate[2] != __glBlendFuncSeparate[2] || other.__glBlendFuncSeparate[3] != __glBlendFuncSeparate[3]) {
-			if (__glBlendFuncSeparate[0] != -1) {
-				__gl.blendFuncSeparate (__glBlendFuncSeparate[0], __glBlendFuncSeparate[1], __glBlendFuncSeparate[2], __glBlendFuncSeparate[3]);
-			} else {
-				__glBlendFuncSeparate[0] = other.__glBlendFuncSeparate[0];
-				__glBlendFuncSeparate[1] = other.__glBlendFuncSeparate[1];
-				__glBlendFuncSeparate[2] = other.__glBlendFuncSeparate[2];
-				__glBlendFuncSeparate[3] = other.__glBlendFuncSeparate[3];
-			}
-		}
-		
-		if (other.__glClearColor[0] != __glClearColor[0] || other.__glClearColor[1] != __glClearColor[1] || other.__glClearColor[2] != __glClearColor[2] || other.__glClearColor[3] != __glClearColor[3]) {
-			if (__glClearColor[0] != -1) {
-				__gl.clearColor (__glClearColor[0], __glClearColor[1], __glClearColor[2], __glClearColor[3]);
-			} else {
-				__glClearColor[0] = other.__glClearColor[0];
-				__glClearColor[1] = other.__glClearColor[1];
-				__glClearColor[2] = other.__glClearColor[2];
-				__glClearColor[3] = other.__glClearColor[3];
-			}
-		}
-		
-		if (other.__glColorMask[0] != __glColorMask[0] || other.__glColorMask[1] != __glColorMask[1] || other.__glColorMask[2] != __glColorMask[2] || other.__glColorMask[3] != __glColorMask[3]) {
-			__gl.colorMask (__glColorMask[0], __glColorMask[1], __glColorMask[2], __glColorMask[3]);
-		}
-		
-		if (other.__glStencilFunc[0] != __glStencilFunc[0] || other.__glStencilFunc[1] != __glStencilFunc[1] || other.__glStencilFunc[2] != __glStencilFunc[2]) {
-			if (__glStencilFunc[0] != -1) {
-				__gl.stencilFunc (__glStencilFunc[0], __glStencilFunc[1], __glStencilFunc[2]);
-			} else {
-				__glStencilFunc[0] = other.__glStencilFunc[0];
-				__glStencilFunc[1] = other.__glStencilFunc[1];
-				__glStencilFunc[2] = other.__glStencilFunc[2];
-			}
-		}
-		
-		if (other.__glStencilOp[0] != __glStencilOp[0] || other.__glStencilOp[1] != __glStencilOp[1] || other.__glStencilOp[2] != __glStencilOp[2]) {
-			if (__glStencilOp[0] != -1) {
-				__gl.stencilOp (__glStencilOp[0], __glStencilOp[1], __glStencilOp[2]);
-			} else {
-				__glStencilOp[0] = other.__glStencilOp[0];
-				__glStencilOp[1] = other.__glStencilOp[1];
-				__glStencilOp[2] = other.__glStencilOp[2];
-			}
-		}
-		
-		if (other.__glStencilOpSeparate[0] != __glStencilOpSeparate[0] || other.__glStencilOpSeparate[1] != __glStencilOpSeparate[1] || other.__glStencilOpSeparate[2] != __glStencilOpSeparate[2] || other.__glStencilOpSeparate[3] != __glStencilOpSeparate[3]) {
-			if (__glStencilOpSeparate[0] != -1) {
-				__gl.stencilOpSeparate (__glStencilOpSeparate[0], __glStencilOpSeparate[1], __glStencilOpSeparate[2], __glStencilOpSeparate[3]);
-			} else {
-				__glStencilOpSeparate[0] = other.__glStencilOpSeparate[0];
-				__glStencilOpSeparate[1] = other.__glStencilOpSeparate[1];
-				__glStencilOpSeparate[2] = other.__glStencilOpSeparate[2];
-				__glStencilOpSeparate[3] = other.__glStencilOpSeparate[3];
-			}
-		}
-		
-		for (key in __glBuffers.keys ()) {
-			if (other.__glBuffers.exists (key) && other.__glBuffers[key] != __glBuffers[key]) {
-				if (__glBuffers[key] != null) {
-					__gl.bindBuffer (key, __glBuffers[key]);
-				} else {
-					__glBuffers[key] = other.__glBuffers[key];
+		for (i in 0...__state.textures.length) {
+			
+			texture = __state.textures[i];
+			samplerState = __state.samplerStates[i];
+			
+			gl.activeTexture (gl.TEXTURE0 + sampler);
+			
+			if (texture != null) {
+				
+				if (texture != __contextState.textures[i]) {
+					
+					// TODO: Cleaner approach?
+					if (texture.__textureTarget == gl.TEXTURE_2D) {
+						__bindGLTexture2D (texture.__textureID);
+					} else {
+						__bindGLTextureCubeMap (texture.__textureID);
+					}
+					
+					#if desktop
+					// TODO: Cache?
+					gl.enable (gl.TEXTURE_2D);
+					#end
+					
 				}
+				
+				texture.__setSamplerState (samplerState);
+				
+			} else {
+				
+				__bindGLTexture2D (null);
+				
 			}
-		}
-		for (key in other.__glBuffers.keys ()) {
-			if (!__glBuffers.exists (key)) __glBuffers[key] = other.__glBuffers[key];
-		}
-		
-		for (key in __glEnabled.keys ()) {
-			if (other.__glEnabled.exists (key) && other.__glEnabled[key] != __glEnabled[key]) {
-				if (__glEnabled[key] == true) {
-					__gl.enable (key);
+			
+			if (__state.program != null && samplerState.textureAlpha) {
+				
+				gl.activeTexture (gl.TEXTURE0 + sampler + 4);
+				
+				if (texture != null && texture.__alphaTexture != null) {
+					
+					if (texture.__alphaTexture.__textureTarget == gl.TEXTURE_2D) {
+						__bindGLTexture2D (texture.__alphaTexture.__getTexture ());
+					} else {
+						__bindGLTextureCubeMap (texture.__alphaTexture.__getTexture ());
+					}
+					
+					texture.__alphaTexture.__setSamplerState (samplerState);
+					gl.uniform1i (__state.program.__alphaSamplerEnabled[sampler].location, 1);
+					
+					#if desktop
+					// TODO: Cache?
+					gl.enable (gl.TEXTURE_2D);
+					#end
+					
 				} else {
-					__gl.disable (key);
+					
+					__bindGLTexture2D (null);
+					gl.uniform1i (__state.program.__alphaSamplerEnabled[sampler].location, 0);
+					
 				}
+				
 			}
-		}
-		for (key in other.__glEnabled.keys ()) {
-			if (!__glEnabled.exists (key)) __glEnabled[key] = other.__glEnabled[key];
-		}
-		
-		for (key in __glFramebuffers.keys ()) {
-			if (other.__glFramebuffers.exists (key) && other.__glFramebuffers[key] != __glFramebuffers[key]) {
-				if (__glFramebuffers[key] != null) {
-					__gl.bindFramebuffer (key, __glFramebuffers[key]);
-				} else {
-					__glFramebuffers[key] = other.__glFramebuffers[key];
-				}
-			}
-		}
-		for (key in other.__glFramebuffers.keys ()) {
-			if (!__glFramebuffers.exists (key)) __glFramebuffers[key] = other.__glFramebuffers[key];
-		}
-		
-		for (key in __glRenderbuffers.keys ()) {
-			if (other.__glRenderbuffers.exists (key) && other.__glRenderbuffers[key] != __glRenderbuffers[key]) {
-				if (__glRenderbuffers[key] != null) {
-					__gl.bindRenderbuffer (key, __glRenderbuffers[key]);
-				} else {
-					__glRenderbuffers[key] = other.__glRenderbuffers[key];
-				}
-			}
-		}
-		for (key in other.__glRenderbuffers.keys ()) {
-			if (!__glRenderbuffers.exists (key)) __glRenderbuffers[key] = other.__glRenderbuffers[key];
-		}
-		
-		// TODO: Do we need to rebind textures here?
-		
-		for (key in __glTextures.keys ()) {
-			if (other.__glTextures.exists (key) && other.__glTextures[key] != __glTextures[key]) {
-				if (__glTextures[key] != null) {
-					__gl.bindTexture (key, __glTextures[key]);
-				} else {
-					__glTextures[key] = other.__glTextures[key];
-				}
-			}
-		}
-		for (key in other.__glTextures.keys ()) {
-			if (!__glTextures.exists (key)) __glTextures[key] = other.__glTextures[key];
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __scissor (x:Int, y:Int, width:Int, height:Int):Void {
-		
-		if (x != __glScissorX || y != __glScissorY || width != __glScissorWidth || height != __glScissorHeight) {
 			
-			__glScissorX = x;
-			__glScissorY = y;
-			__glScissorWidth = width;
-			__glScissorHeight = height;
-			__gl.scissor (x, y, width, height);
+			sampler++;
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private function __stencilFunc (func:Int, ref:Int, mask:Int):Void {
+	@:noCompletion private function __flushGLViewport ():Void {
 		
-		if (__glStencilFunc[0] != func || __glStencilFunc[1] != ref || __glStencilFunc[2] != mask) {
+		if (__state.renderToTexture == null) {
 			
-			__glStencilFunc[0] = func;
-			__glStencilFunc[1] = ref;
-			__glStencilFunc[2] = mask;
-			__gl.stencilFunc (func, ref, mask);
+			// TODO: Cache viewport, handle Stage3D.x/y changes?
 			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __stencilMask (mask:Int):Void {
-		
-		if (__glStencilMask != mask) {
+			var window = __stage.window;
+			var x = __stage3D == null ? 0 : Std.int (__stage3D.x);
+			var y = __stage3D == null ? 0 : Std.int ((window.height * window.scale) - backBufferHeight - __stage3D.y);
+			if (x < 0) x = 0;
+			if (y < 0) y = 0;
 			
-			__glStencilMask = mask;
-			__gl.stencilMask (mask);
+			gl.viewport (x, y, backBufferWidth, backBufferHeight);
 			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __stencilOp (sfail:Int, dpfail:Int, dppass:Int):Void {
-		
-		if (__glStencilOp[0] != sfail || __glStencilOp[1] != dpfail || __glStencilOp[2] != dppass) {
+		} else {
 			
-			__glStencilOp[0] = sfail;
-			__glStencilOp[1] = dpfail;
-			__glStencilOp[2] = dppass;
-			__glStencilOpSeparate[0] = -1;
-			__glStencilOpSeparate[1] = -1;
-			__glStencilOpSeparate[2] = -1;
-			__glStencilOpSeparate[3] = -1;
-			__gl.stencilOp (sfail, dpfail, dppass);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __stencilOpSeparate (face:Int, sfail:Int, dpfail:Int, dppass:Int):Void {
-		
-		if (__glStencilOpSeparate[0] != face || __glStencilOpSeparate[1] != sfail || __glStencilOpSeparate[2] != dpfail || __glStencilOpSeparate[3] != dppass) {
-			
-			__glStencilOpSeparate[0] = face;
-			__glStencilOpSeparate[1] = sfail;
-			__glStencilOpSeparate[2] = dpfail;
-			__glStencilOpSeparate[3] = dppass;
-			__glStencilOp[0] = -1;
-			__glStencilOp[1] = -1;
-			__glStencilOp[2] = -1;
-			__gl.stencilOpSeparate (face, sfail, dpfail, dppass);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __updateBackbufferViewport ():Void {
-		
-		GLContext3D.__updateBackbufferViewportTEMP (this);
-		
-	}
-	
-	
-	@:noCompletion private function __updateBlendFactors ():Void {
-		
-		if (__stateCache._srcBlendFactor == null || __stateCache._destBlendFactor == null) {
-			
-			return;
-			
-		}
-		
-		var src = __gl.ONE;
-		var dest = __gl.ZERO;
-		switch (__stateCache._srcBlendFactor) {
-			
-			case Context3DBlendFactor.DESTINATION_ALPHA: src = __gl.DST_ALPHA;
-			case Context3DBlendFactor.DESTINATION_COLOR: src = __gl.DST_COLOR;
-			case Context3DBlendFactor.ONE: src = __gl.ONE;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = __gl.ONE_MINUS_DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = __gl.ONE_MINUS_DST_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = __gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: src = __gl.ONE_MINUS_SRC_COLOR;
-			case Context3DBlendFactor.SOURCE_ALPHA: src = __gl.SRC_ALPHA;
-			case Context3DBlendFactor.SOURCE_COLOR: src = __gl.SRC_COLOR;
-			case Context3DBlendFactor.ZERO: src = __gl.ZERO;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		switch (__stateCache._destBlendFactor) {
-			
-			case Context3DBlendFactor.DESTINATION_ALPHA: dest = __gl.DST_ALPHA;
-			case Context3DBlendFactor.DESTINATION_COLOR: dest = __gl.DST_COLOR;
-			case Context3DBlendFactor.ONE: dest = __gl.ONE;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = __gl.ONE_MINUS_DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: dest = __gl.ONE_MINUS_DST_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = __gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = __gl.ONE_MINUS_SRC_COLOR;
-			case Context3DBlendFactor.SOURCE_ALPHA: dest = __gl.SRC_ALPHA;
-			case Context3DBlendFactor.SOURCE_COLOR: dest = __gl.SRC_COLOR;
-			case Context3DBlendFactor.ZERO: dest = __gl.ZERO;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		__enable (__gl.BLEND);
-		// GLUtils.CheckGLError ();
-		__blendFunc (src, dest);
-		// GLUtils.CheckGLError ();
-		
-	}
-	
-	
-	@:noCompletion private function __updateCulling ():Void {
-		
-		setCulling (__culling);
-		
-	}
-	
-	
-	@:noCompletion private function __updateDepthAndStencilState ():Void {
-		
-		GLContext3D.__updateDepthAndStencilStateTEMP (this);
-		
-	}
-	
-	
-	@:noCompletion private function __updateScissorRectangle ():Void {
-		
-		GLContext3D.__updateScissorRectangleTEMP (this);
-		
-	}
-	
-	
-	@:noCompletion private function __useProgram (program:GLProgram):Void {
-		
-		if (__glProgram != program) {
-			
-			__glProgram = program;
-			__gl.useProgram (program);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __viewport (x:Int, y:Int, width:Int, height:Int):Void {
-		
-		// if (width == 0 || height == 0) {
-			
-		// 	x = __offsetX;
-		// 	y = __offsetY;
-		// 	width = __displayWidth;
-		// 	height = __displayHeight;
-			
-		// }
-		
-		if (x != __glViewportX || y != __glViewportY || width != __glViewportWidth || height != __glViewportHeight) {
-			
-			__glViewportX = x;
-			__glViewportY = y;
-			__glViewportWidth = width;
-			__glViewportHeight = height;
-			__gl.viewport (x, y, width, height);
+			// TODO
 			
 		}
 		
@@ -1650,30 +1200,10 @@ import lime.graphics.GLRenderContext;
 	
 	@:noCompletion private function set_enableErrorChecking (value:Bool):Bool {
 		
-		GLContext3D.setEnableErrorChecking (value);
 		return __enableErrorChecking = value;
 		
 	}
 	
-	
-}
-
-
-@:enum abstract Context3DTelemetry(Int) to Int {
-	
-	public var DRAW_CALLS = 0;
-	public var COUNT_INDEX_BUFFER = 1;
-	public var COUNT_VERTEX_BUFFER = 2;
-	public var COUNT_TEXTURE = 3;
-	public var COUNT_TEXTURE_COMPRESSED = 4;
-	public var COUNT_PROGRAM = 5;
-	public var MEM_INDEX_BUFFER = 6;
-	public var MEM_VERTEX_BUFFER = 7;
-	public var MEM_TEXTURE = 8;
-	public var MEM_TEXTURE_COMPRESSED = 9;
-	public var MEM_PROGRAM = 10;
-	
-	public static inline var length = 11;
 	
 }
 

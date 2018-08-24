@@ -36,7 +36,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
-		__textureTarget = __context.__gl.TEXTURE_CUBE_MAP;
+		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
 		__uploadedSides = 0;
 		
 	}
@@ -76,21 +76,15 @@ import openfl.utils.ByteArray;
 		#if (js && html5)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			var gl = __context.__gl;
+			var gl = __context.gl;
 			
 			var size = __size >> miplevel;
 			if (size == 0) return;
 			
 			var target = __sideToTarget (side);
-			
-			__context.__bindTexture (gl.TEXTURE_CUBE_MAP, __textureID);
-			// GLUtils.CheckGLError ();
-			
+			__context.__bindGLTextureCubeMap (__textureID);
 			gl.texImage2D (target, miplevel, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
-			// GLUtils.CheckGLError ();
-			
-			__context.__bindTexture (__textureTarget, null);
-			// GLUtils.CheckGLError ();
+			__context.__bindGLTextureCubeMap (null);
 			
 			__uploadedSides |= 1 << side;
 			return;
@@ -123,26 +117,18 @@ import openfl.utils.ByteArray;
 		
 		if (data == null) return;
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		var size = __size >> miplevel;
 		if (size == 0) return;
 		
 		var target = __sideToTarget (side);
 		
-		__context.__bindTexture (gl.TEXTURE_CUBE_MAP, __textureID);
-		// GLUtils.CheckGLError ();
-		
+		__context.__bindGLTextureCubeMap (__textureID);
 		gl.texImage2D (target, miplevel, __internalFormat, size, size, 0, __format, gl.UNSIGNED_BYTE, data);
-		// GLUtils.CheckGLError ();
-		
-		__context.__bindTexture (__textureTarget, null);
-		// GLUtils.CheckGLError ();
+		__context.__bindGLTextureCubeMap (null);
 		
 		__uploadedSides |= 1 << side;
-		
-		// var memUsage = (__size * __size) * 4;
-		// __trackMemoryUsage (memUsage);
 		
 	}
 	
@@ -151,22 +137,31 @@ import openfl.utils.ByteArray;
 		
 		if (super.__setSamplerState (state)) {
 			
-			var gl = __context.__gl;
+			var gl = __context.gl;
 			
-			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !__samplerState.mipmapGenerated) {
+			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated) {
 				
 				gl.generateMipmap (gl.TEXTURE_CUBE_MAP);
-				// GLUtils.CheckGLError ();
-				
 				__samplerState.mipmapGenerated = true;
-				
+					
 			}
 			
-			if (state.maxAniso != 0.0) {
+			if (Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT != 0) {
 				
-				gl.texParameterf (gl.TEXTURE_CUBE_MAP, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
-				// GLUtils.CheckGLError ();
+				var aniso = switch (state.filter) {
+					case ANISOTROPIC2X: 2;
+					case ANISOTROPIC4X: 4;
+					case ANISOTROPIC8X: 8;
+					case ANISOTROPIC16X: 16;
+					default: 1;
+				}
 				
+				if (aniso > Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT) {
+					aniso = Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
+				}
+				
+				gl.texParameterf (gl.TEXTURE_CUBE_MAP, Context3D.GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+					
 			}
 			
 			return true;
@@ -180,7 +175,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __sideToTarget (side:UInt) {
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		return switch (side) {
 			
@@ -202,10 +197,9 @@ import openfl.utils.ByteArray;
 		var reader = new ATFReader (data, byteArrayOffset);
 		var alpha = reader.readHeader (__size, __size, true);
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
-		__context.__bindTexture (__textureTarget, __textureID);
-		// GLUtils.CheckGLError ();
+		__context.__bindGLTextureCubeMap (__textureID);
 		
 		var hasTexture = false;
 		
@@ -225,28 +219,21 @@ import openfl.utils.ByteArray;
 				var size = Std.int (blockLength / 2);
 				
 				gl.compressedTexImage2D (target, level, __internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
-				// GLUtils.CheckGLError ();
 				
 				var alphaTexture = new CubeTexture (__context, __size, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
 				alphaTexture.__format = format;
 				alphaTexture.__internalFormat = format;
 				
-				__context.__bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
-				// GLUtils.CheckGLError ();
-				
+				__context.__bindGLTextureCubeMap (alphaTexture.__textureID);
 				gl.compressedTexImage2D (target, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
-				// GLUtils.CheckGLError ();
 				
 				__alphaTexture = alphaTexture;
 				
 			} else {
 				
 				gl.compressedTexImage2D (target, level, __internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
-				// GLUtils.CheckGLError ();
 				
 			}
-			
-			// __trackCompressedMemoryUsage (blockLength);
 			
 		});
 		
@@ -256,14 +243,12 @@ import openfl.utils.ByteArray;
 				
 				var data = new UInt8Array (__size * __size * 4);
 				gl.texImage2D (__sideToTarget (side), 0, __internalFormat, __size, __size, 0, __format, gl.UNSIGNED_BYTE, data);
-				// GLUtils.CheckGLError ();
 				
 			}
 			
 		}
 		
-		__context.__bindTexture (__textureTarget, null);
-		// GLUtils.CheckGLError ();
+		__context.__bindGLTextureCubeMap (null);
 		
 	}
 	

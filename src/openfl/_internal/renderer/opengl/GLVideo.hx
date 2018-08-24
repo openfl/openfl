@@ -37,7 +37,7 @@ class GLVideo {
 		if (video.__stream.__video != null) {
 			
 			var context = renderer.__context3D;
-			var gl = context.__gl;
+			var gl = context.gl;
 			
 			renderer.__setBlendMode (video.__worldBlendMode);
 			renderer.__pushMaskObject (video);
@@ -48,7 +48,7 @@ class GLVideo {
 			
 			// TODO: Support ShaderInput<Video>
 			renderer.applyBitmapData (null, renderer.__allowSmoothing, false);
-			context.__bindTexture (gl.TEXTURE_2D, video.__getTexture (context));
+			context.__bindGLTexture2D (video.__getTexture (context));
 			
 			//shader.uImage0.input = bitmap.__bitmapData;
 			//shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
@@ -78,12 +78,12 @@ class GLVideo {
 				
 			}
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (context));
+			context.__bindGLArrayBuffer (video.__getBuffer (context));
 			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			
 			// TODO: Use context.drawTriangles
-			context.__flushSamplerState ();
+			context.__flushGL ();
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
@@ -110,7 +110,7 @@ class GLVideo {
 		if (video.__stream.__video != null) {
 			
 			var context = renderer.__context3D;
-			var gl = context.__gl;
+			var gl = context.gl;
 			
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
@@ -118,13 +118,13 @@ class GLVideo {
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.updateShader ();
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, video.__getBuffer (context));
+			context.__bindGLArrayBuffer (video.__getBuffer (context));
 			
 			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			
 			// TODO: Use context.drawTriangles
-			context.__flushSamplerState ();
+			context.__flushGL ();
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			

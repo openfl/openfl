@@ -185,6 +185,7 @@ import js.html.Element;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl._internal.renderer.opengl.GLGraphics)
+@:access(openfl._internal.renderer.Context3DState)
 @:access(openfl.events.Event)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Bitmap)
@@ -2198,7 +2199,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
 					
 					var context = stage.context3D;
-					var cacheFramebuffer = context.__glFramebuffers[context.__gl.FRAMEBUFFER];
+					var cacheFramebuffer = context.__contextState.__currentGLFramebuffer;
 					
 					var cacheBlendMode = parentRenderer.__blendMode;
 					parentRenderer.__suspendClipAndMask ();
@@ -2309,7 +2310,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					parentRenderer.__setBlendMode (cacheBlendMode);
 					parentRenderer.__copyShader (childRenderer);
 					
-					context.__bindFramebuffer (context.__gl.FRAMEBUFFER, cacheFramebuffer);
+					context.__bindGLFramebuffer (cacheFramebuffer);
 					
 					// parentRenderer.__restoreState (childRenderer);
 					parentRenderer.__resumeClipAndMask (childRenderer);

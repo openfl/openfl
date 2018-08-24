@@ -320,7 +320,7 @@ class GLTilemap {
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
 			
 			var context = renderer.__context3D;
-			var gl = context.__gl;
+			var gl = context.gl;
 			
 			var shader = renderer.__initDisplayShader (cast currentShader);
 			renderer.setShader (shader);
@@ -367,7 +367,7 @@ class GLTilemap {
 				
 			}
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
+			context.__bindGLArrayBuffer (tilemap.__buffer);
 			
 			if (tilemap.__bufferDirty) {
 				
@@ -398,7 +398,7 @@ class GLTilemap {
 			var length = Std.int ((bufferPosition - lastFlushedPosition) / stride);
 			
 			// TODO: Use context.drawTriangles
-			context.__flushSamplerState ();
+			context.__flushGL ();
 			
 			gl.drawArrays (gl.TRIANGLES, start, length);
 			
@@ -441,7 +441,7 @@ class GLTilemap {
 		currentBlendMode = tilemap.__worldBlendMode;
 		
 		var context = renderer.__context3D;
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		if (!tilemap.tileBlendModeEnabled) {
 			

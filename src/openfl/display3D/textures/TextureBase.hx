@@ -8,6 +8,7 @@ import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
+import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
@@ -59,7 +60,7 @@ class TextureBase extends EventDispatcher {
 		super ();
 		
 		__context = context;
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		//__textureTarget = target;
 		
 		__textureID = gl.createTexture ();
@@ -84,10 +85,8 @@ class TextureBase extends EventDispatcher {
 				__textureFormat = bgraExtension.BGRA_EXT;
 				
 				#if (!ios && !tvos)
-				if (#if (lime >= "7.0.0") context.__context.type == OPENGLES #else gl.type == GLES #end) {
-					
+				if (context.__context.type == OPENGLES) {
 					__textureInternalFormat = bgraExtension.BGRA_EXT;
-					
 				}
 				#end
 				
@@ -145,7 +144,7 @@ class TextureBase extends EventDispatcher {
 	
 	public function dispose ():Void {
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		if (__alphaTexture != null) {
 			
@@ -154,40 +153,6 @@ class TextureBase extends EventDispatcher {
 		}
 		
 		gl.deleteTexture (__textureID);
-		
-		// if (__compressedMemoryUsage > 0) {
-			
-		// 	__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
-		// 	var currentCompressedMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, __compressedMemoryUsage);
-			
-		// 	#if debug
-		// 	if (__outputTextureMemoryUsage) {
-				
-		// 		trace (" - Texture Compressed GPU Memory (-" + __compressedMemoryUsage + ") - Current Compressed Memory : " + currentCompressedMemory);
-				
-		// 	}
-		// 	#end
-			
-		// 	__compressedMemoryUsage = 0;
-			
-		// }
-		
-		// if (__memoryUsage > 0) {
-			
-		// 	__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
-		// 	var currentMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE, __memoryUsage);
-			
-		// 	#if debug
-		// 	if (__outputTextureMemoryUsage) {
-				
-		// 		trace (" - Texture GPU Memory (-" + __memoryUsage + ") - Current Memory : " + currentMemory);
-				
-		// 	}
-		// 	#end
-			
-		// 	__memoryUsage = 0;
-			
-		// }
 		
 	}
 	
@@ -207,7 +172,7 @@ class TextureBase extends EventDispatcher {
 		#end
 		
 		#if (js && html5)
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		if (image.type != DATA && !image.premultiplied) {
 			
@@ -264,18 +229,53 @@ class TextureBase extends EventDispatcher {
 		
 		if (!state.equals (__samplerState)) {
 			
-			var gl = __context.__gl;
+			var gl = __context.gl;
 			
-			__context.__bindTexture (__textureTarget, __textureID);
-			// GLUtils.CheckGLError ();
-			gl.texParameteri (__textureTarget, gl.TEXTURE_MIN_FILTER, state.minFilter);
-			// GLUtils.CheckGLError ();
-			gl.texParameteri (__textureTarget, gl.TEXTURE_MAG_FILTER, state.magFilter);
-			// GLUtils.CheckGLError ();
-			gl.texParameteri (__textureTarget, gl.TEXTURE_WRAP_S, state.wrapModeS);
-			// GLUtils.CheckGLError ();
-			gl.texParameteri (__textureTarget, gl.TEXTURE_WRAP_T, state.wrapModeT);
-			// GLUtils.CheckGLError ();
+			__context.__bindGLTexture2D (__textureID);
+			
+			var wrapModeS = 0, wrapModeT = 0;
+			
+			switch (state.wrap) {
+				case CLAMP:
+					wrapModeS = gl.CLAMP_TO_EDGE;
+					wrapModeT = gl.CLAMP_TO_EDGE;
+				case CLAMP_U_REPEAT_V:
+					wrapModeS = gl.CLAMP_TO_EDGE;
+					wrapModeT = gl.REPEAT;
+				case REPEAT:
+					wrapModeS = gl.REPEAT;
+					wrapModeT = gl.REPEAT;
+				case REPEAT_U_CLAMP_V:
+					wrapModeS = gl.REPEAT;
+					wrapModeT = gl.CLAMP_TO_EDGE;
+				default:
+					throw new Error ("wrap bad enum");
+			}
+			
+			var magFilter = 0, minFilter = 0;
+			
+			switch (state.filter) {
+				case NEAREST:
+					magFilter = gl.NEAREST;
+				default:
+					magFilter = gl.LINEAR;
+			}
+			
+			switch (state.mipfilter) {
+				case MIPLINEAR:
+					minFilter = state.filter == NEAREST ? gl.NEAREST_MIPMAP_LINEAR : gl.LINEAR_MIPMAP_LINEAR;
+				case MIPNEAREST:
+					minFilter = state.filter == NEAREST ? gl.NEAREST_MIPMAP_NEAREST : gl.LINEAR_MIPMAP_NEAREST;
+				case Context3DMipFilter.MIPNONE:
+					minFilter = state.filter == NEAREST ? gl.NEAREST : gl.LINEAR;
+				default:
+					throw new Error ("mipfiter bad enum");
+			}
+			
+			gl.texParameteri (__textureTarget, gl.TEXTURE_MIN_FILTER, minFilter);
+			gl.texParameteri (__textureTarget, gl.TEXTURE_MAG_FILTER, magFilter);
+			gl.texParameteri (__textureTarget, gl.TEXTURE_WRAP_S, wrapModeS);
+			gl.texParameteri (__textureTarget, gl.TEXTURE_WRAP_T, wrapModeT);
 			
 			if (state.lodBias != 0.0) {
 				
@@ -286,7 +286,6 @@ class TextureBase extends EventDispatcher {
 			
 			if (__samplerState == null) __samplerState = state.clone ();
 			__samplerState.copyFrom (state);
-			__samplerState.__dirty = false;
 			
 			return true;
 			
@@ -295,52 +294,6 @@ class TextureBase extends EventDispatcher {
 		return false;
 		
 	}
-	
-	
-	// private function __trackCompressedMemoryUsage (memory:Int):Void {
-		
-	// 	if (__compressedMemoryUsage == 0) {
-			
-	// 		__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
-			
-	// 	}
-		
-	// 	__compressedMemoryUsage += memory;
-	// 	var currentCompressedMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, memory);
-		
-	// 	#if debug
-	// 	if (__outputTextureMemoryUsage) {
-			
-	// 		trace (" + Texture Compressed GPU Memory (+" + memory + ") - Current Compressed Memory : " + currentCompressedMemory);
-			
-	// 	}
-	// 	#end
-		
-	// 	__trackMemoryUsage (memory);
-		
-	// }
-	
-	
-	// private function __trackMemoryUsage (memory:Int):Void {
-		
-	// 	if (__memoryUsage == 0) {
-			
-	// 		__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
-			
-	// 	}
-		
-	// 	__memoryUsage += memory;
-	// 	var currentMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE, memory);
-		
-	// 	#if debug
-	// 	if (__outputTextureMemoryUsage) {
-			
-	// 		trace (" + Texture GPU Memory (+" + memory + ") - Current Memory : " + currentMemory);
-			
-	// 	}
-	// 	#end
-		
-	// }
 	
 	
 }

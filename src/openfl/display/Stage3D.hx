@@ -113,10 +113,10 @@ class Stage3D extends EventDispatcher {
 		
 		if (renderer.__type == OPENGL) {
 			
-			context3D = new Context3D (stage, this);
-			context3D.__x = __x;
-			context3D.__y = __y;
-			context3D.__updateBackbufferViewport ();
+			context3D = new Context3D (stage, stage.context3D.__contextState, this);
+			// context3D.__x = __x;
+			// context3D.__y = __y;
+			// context3D.__updateBackbufferViewport ();
 			
 			__dispatchCreate ();
 			
@@ -285,19 +285,13 @@ class Stage3D extends EventDispatcher {
 				
 				renderer.setShader (null);
 				
-				if (context3D.__program != null) {
+				// if (context3D.__program != null) {
 					
-					context3D.__program.__use ();
+				// 	context3D.__program.__use ();
 					
-				}
+				// }
 				
 			}
-			
-			// if (GLUtils.debug) {
-				
-			// 	renderer.gl.getError ();
-				
-			// }
 			
 		}
 		
@@ -321,11 +315,11 @@ class Stage3D extends EventDispatcher {
 	@:noCompletion private function __resetContext3DStates ():Void {
 		
 		// TODO: Do more elegantly
-		context3D.__updateBlendFactors ();
-		context3D.__updateBackbufferViewport ();
-		context3D.__updateScissorRectangle ();
-		context3D.__updateDepthAndStencilState ();
-		context3D.__updateCulling ();
+		// context3D.__updateBlendFactors ();
+		// context3D.__updateBackbufferViewport ();
+		// context3D.__updateScissorRectangle ();
+		// context3D.__updateDepthAndStencilState ();
+		// context3D.__updateCulling ();
 		
 	}
 	
@@ -343,12 +337,12 @@ class Stage3D extends EventDispatcher {
 		
 		__x = value;
 		
-		if (context3D != null) {
+		// if (context3D != null) {
 			
-			context3D.__x = value;
-			context3D.__updateBackbufferViewport ();
+		// 	context3D.__x = value;
+		// 	context3D.__updateBackbufferViewport ();
 			
-		}
+		// }
 		
 		return value;
 		
@@ -368,12 +362,12 @@ class Stage3D extends EventDispatcher {
 		
 		__y = value;
 		
-		if (context3D != null) {
+		// if (context3D != null) {
 			
-			context3D.__y = value;
-			context3D.__updateBackbufferViewport ();
+		// 	context3D.__y = value;
+		// 	context3D.__updateBackbufferViewport ();
 			
-		}
+		// }
 		
 		return value;
 		

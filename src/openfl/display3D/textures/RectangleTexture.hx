@@ -29,7 +29,7 @@ import openfl.utils.ByteArray;
 		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
-		__textureTarget = __context.__gl.TEXTURE_2D;
+		__textureTarget = __context.gl.TEXTURE_2D;
 		uploadFromTypedArray (null);
 		
 	}
@@ -45,16 +45,11 @@ import openfl.utils.ByteArray;
 		#if (js && html5)
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			var gl = __context.__gl;
+			var gl = __context.gl;
 			
-			__context.__bindTexture (__textureTarget, __textureID);
-			// GLUtils.CheckGLError ();
-			
+			__context.__bindGLTexture2D (__textureID);
 			gl.texImage2D (__textureTarget, 0, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
-			// GLUtils.CheckGLError ();
-			
-			__context.__bindTexture (__textureTarget, null);
-			// GLUtils.CheckGLError ();
+			__context.__bindGLTexture2D (null);
 			return;
 			
 		}
@@ -83,25 +78,11 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
-		//if (__format != Context3DTextureFormat.BGRA) {
-			//
-			//throw new IllegalOperationError ();
-			//
-		//}
+		var gl = __context.gl;
 		
-		var gl = __context.__gl;
-		
-		__context.__bindTexture (__textureTarget, __textureID);
-		// GLUtils.CheckGLError ();
-		
+		__context.__bindGLTexture2D (__textureID);
 		gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
-		// GLUtils.CheckGLError ();
-		
-		__context.__bindTexture (__textureTarget, null);
-		// GLUtils.CheckGLError ();
-		
-		// var memUsage = (__width * __height) * 4;
-		// __trackMemoryUsage (memUsage);
+		__context.__bindGLTexture2D (null);
 		
 	}
 	
@@ -110,13 +91,24 @@ import openfl.utils.ByteArray;
 		
 		if (super.__setSamplerState (state)) {
 			
-			var gl = __context.__gl;
+			var gl = __context.gl;
 			
-			if (state.maxAniso != 0.0) {
+			if (Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT != 0) {
 				
-				gl.texParameterf (gl.TEXTURE_2D, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
-				// GLUtils.CheckGLError ();
+				var aniso = switch (state.filter) {
+					case ANISOTROPIC2X: 2;
+					case ANISOTROPIC4X: 4;
+					case ANISOTROPIC8X: 8;
+					case ANISOTROPIC16X: 16;
+					default: 1;
+				}
 				
+				if (aniso > Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT) {
+					aniso = Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
+				}
+				
+				gl.texParameterf (gl.TEXTURE_2D, Context3D.GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+					
 			}
 			
 			return true;
@@ -130,7 +122,7 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __uploadFromImage (image:Image):Void {
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		var internalFormat, format;
 		
 		if (image.buffer.bitsPerPixel == 1) {
@@ -145,7 +137,7 @@ import openfl.utils.ByteArray;
 			
 		}
 		
-		__context.__bindTexture (gl.TEXTURE_2D, __textureID);
+		__context.__bindGLTexture2D (__textureID);
 		
 		#if (js && html5)
 		
@@ -178,7 +170,7 @@ import openfl.utils.ByteArray;
 		
 		#end
 		
-		__context.__bindTexture (gl.TEXTURE_2D, null);
+		__context.__bindGLTexture2D (null);
 		
 	}
 	

@@ -182,7 +182,7 @@ import lime.graphics.GLRenderContext;
 			
 		}
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+		context.__bindGLArrayBuffer (__buffer);
 		
 		// TODO: Handle __dirty flags, copy only changed values
 		

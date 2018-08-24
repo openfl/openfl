@@ -47,7 +47,7 @@ import openfl.display3D.Context3D;
 	
 	@:noCompletion private function __disableGL (context:Context3D, id:Int):Void {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		context.setTextureAt (id, null);
 		
 	}
@@ -55,7 +55,7 @@ import openfl.display3D.Context3D;
 	
 	@:noCompletion private function __updateGL (context:Context3D, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null, overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		var input = overrideInput != null ? overrideInput : this.input;
 		var filter = overrideFilter != null ? overrideFilter : this.filter;
 		var mipFilter = overrideMipFilter != null ? overrideMipFilter : this.mipFilter;

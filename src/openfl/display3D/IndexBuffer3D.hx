@@ -33,30 +33,19 @@ import openfl.Vector;
 		__context = context3D;
 		__numIndices = numIndices;
 		
-		var gl = __context.__gl;
-		
+		var gl = __context.gl;
 		__elementType = gl.UNSIGNED_SHORT;
-		
 		__id = gl.createBuffer ();
-		// GLUtils.CheckGLError ();
 		
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
-		
-		// ____context.__statsIncrement (__context3D.__context3DTelemetry.COUNT_INDEX_BUFFER);
-		// __memoryUsage = 0;
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		var gl = __context.__gl;
-		
+		var gl = __context.gl;
 		gl.deleteBuffer (__id);
-		
-		// ____context.__statsDecrement(__context3D.__context3DTelemetry.COUNT_INDEX_BUFFER);
-		// ____context.__statsSubtract(__context3D.__context3DTelemetry.MEM_INDEX_BUFFER, __memoryUsage);
-		// __memoryUsage = 0;
 		
 	}
 	
@@ -64,7 +53,6 @@ import openfl.Vector;
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
 		var offset = byteArrayOffset + startOffset * 2;
-		
 		uploadFromTypedArray (new Int16Array (data.toArrayBuffer (), offset, count));
 		
 	}
@@ -73,20 +61,9 @@ import openfl.Vector;
 	public function uploadFromTypedArray (data:ArrayBufferView, byteLength:Int = -1):Void {
 		
 		if (data == null) return;
-		var gl = __context.__gl;
-		
-		__context.__bindBuffer (gl.ELEMENT_ARRAY_BUFFER, __id);
-		// GLUtils.CheckGLError ();
-		
+		var gl = __context.gl;
+		__context.__bindGLElementArrayBuffer (__id);
 		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, data, __usage);
-		// GLUtils.CheckGLError ();
-		
-		// if (data.byteLength != __memoryUsage) {
-			
-		// 	____context.__statsAdd (__context3D.__context3DTelemetry.MEM_INDEX_BUFFER, data.byteLength - __memoryUsage);
-		// 	__memoryUsage = data.byteLength;
-			
-		// }
 		
 	}
 	
@@ -96,7 +73,7 @@ import openfl.Vector;
 		// TODO: Optimize more
 		
 		if (data == null) return;
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		var length = startOffset + count;
 		var existingInt16Array = __tempInt16Array;

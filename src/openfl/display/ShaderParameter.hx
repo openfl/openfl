@@ -41,7 +41,7 @@ import lime.utils.Float32Array;
 	
 	@:noCompletion private function __disableGL (context:Context3D):Void {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		if (!__isUniform) {
 			
@@ -58,7 +58,7 @@ import lime.utils.Float32Array;
 	
 	@:noCompletion private function __updateGL (context:Context3D, overrideValue:Array<T> = null):Void {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		var value = overrideValue != null ? overrideValue : this.value;
 		
@@ -252,7 +252,7 @@ import lime.utils.Float32Array;
 	
 	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:Float32Array, position:Int, length:Int):Void {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		if (__isUniform) {
 			

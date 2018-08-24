@@ -38,31 +38,19 @@ class VertexBuffer3D {
 		__numVertices = numVertices;
 		__vertexSize = dataPerVertex;
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		__id = gl.createBuffer ();
-		// GLUtils.CheckGLError ();
-		
 		__stride = __vertexSize * 4;
-		
-		// __memoryUsage = 0;
-		
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
-		
-		// __context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_VERTEX_BUFFER);
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		var gl = __context.__gl;
-		
+		var gl = __context.gl;
 		gl.deleteBuffer (__id);
-		
-		// __context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_VERTEX_BUFFER);
-		// __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, __memoryUsage);
-		// __memoryUsage = 0;
 		
 	}
 	
@@ -80,20 +68,10 @@ class VertexBuffer3D {
 	public function uploadFromTypedArray (data:ArrayBufferView, byteLength:Int = -1):Void {
 		
 		if (data == null) return;
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
-		__context.__bindBuffer (gl.ARRAY_BUFFER, __id);
-		// GLUtils.CheckGLError ();
-		
+		__context.__bindGLArrayBuffer (__id);
 		gl.bufferData (gl.ARRAY_BUFFER, data, __usage);
-		// GLUtils.CheckGLError ();
-		
-		// if (data.byteLength != __memoryUsage) {
-			
-		// 	__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, data.byteLength - __memoryUsage);
-		// 	__memoryUsage = data.byteLength;
-			
-		// }
 		
 	}
 	
@@ -101,7 +79,7 @@ class VertexBuffer3D {
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
 		if (data == null) return;
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		// TODO: Optimize more
 		

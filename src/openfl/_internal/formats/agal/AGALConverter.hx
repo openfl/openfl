@@ -4,6 +4,9 @@ package openfl._internal.formats.agal;
 import haxe.Int64;
 import lime.graphics.opengl.GL;
 import openfl._internal.renderer.SamplerState;
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DWrapMode;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
@@ -993,61 +996,37 @@ private class SamplerRegister {
 	
 	public function toSamplerState ():SamplerState {
 		
-		var magFilter:Int /*TextureMagFilter*/ = 0;
-		var minFilter:Int /*TextureMinFilter*/ = 0;
-		var wrapModeS:Int /*TextureWrapMode*/ = 0;
-		var wrapModeT:Int /*TextureWrapMode*/ = 0;
+		var wrap:Context3DWrapMode;
+		var filter:Context3DTextureFilter;
+		var mipfilter:Context3DMipFilter;
 		
-		// translate mag filter
+		// TODO: anisotropic support?
+		
+		// translate texture filter
 		switch (f) {
-			
-			case 0: magFilter = GL.NEAREST; //TextureMagFilter.Nearest;
-			case 1: magFilter = GL.LINEAR; //TextureMagFilter.Linear;
-			default: throw new IllegalOperationError(); //NotImplementedException();
-			
+			case 0: filter = NEAREST;
+			case 1: filter = LINEAR;
+			default: throw new IllegalOperationError();
 		}
 		
 		// translate min filter
 		switch (m) {
-			
 			// disable
-			case 0:
-				
-				minFilter = (f != 0) ? GL.LINEAR : GL.NEAREST;
-			
+			case 0: mipfilter = MIPNONE;
 			// nearest
-			case 1:
-				
-				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_NEAREST : GL.NEAREST_MIPMAP_NEAREST;
-			
+			case 1: mipfilter = MIPNEAREST;
 			// linear
-			case 2:
-				
-				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_LINEAR : GL.NEAREST_MIPMAP_LINEAR;
-			
-			default:
-				
-				throw new IllegalOperationError ();
-			
+			case 2: mipfilter = MIPLINEAR;
+			default: throw new IllegalOperationError ();
 		}
+		
+		// TODO: Clamp + repeat modes?
 		
 		// translate wrapping mode
 		switch (w) {
-			
-			case 0:
-				
-				wrapModeS = GL.CLAMP_TO_EDGE;
-				wrapModeT = GL.CLAMP_TO_EDGE;
-			
-			case 1:
-				
-				wrapModeS = GL.REPEAT;
-				wrapModeT = GL.REPEAT;
-			
-			default:
-				
-				throw new IllegalOperationError ();
-			
+			case 0: wrap = CLAMP;
+			case 1: wrap = REPEAT;
+			default: throw new IllegalOperationError ();
 		}
 		
 		var ignoreSampler = (s & 4 == 4);
@@ -1056,9 +1035,8 @@ private class SamplerRegister {
 		
 		// translate lod bias, sign extend and /8
 		var lodBias:Float = ((b << 24) >> 24) / 8.0;
-		var maxAniso:Float = 0.0;
 		
-		return new SamplerState (minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso, ignoreSampler, centroid, false, textureAlpha);
+		return new SamplerState (wrap, filter, mipfilter, lodBias, ignoreSampler, centroid, textureAlpha);
 		
 	}
 	

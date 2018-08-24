@@ -483,7 +483,7 @@ class GLGraphics {
 				var data = new DrawCommandReader (graphics.__commands);
 				
 				var context = renderer.__context3D;
-				var gl = context.__gl;
+				var gl = context.gl;
 				
 				var matrix = Matrix.__pool.get ();
 				
@@ -589,7 +589,7 @@ class GLGraphics {
 									
 								}
 								
-								context.__bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
+								context.__bindGLArrayBuffer (graphics.__buffer);
 								
 								if (updatedBuffer) {
 									
@@ -601,7 +601,7 @@ class GLGraphics {
 								if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, (bufferPosition + 2) * Float32Array.BYTES_PER_ELEMENT);
 								
 								// TODO: Use context.drawTriangles
-								context.__flushSamplerState ();
+								context.__flushGL ();
 								
 								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
 								bufferPosition += (4 * length * 6);
@@ -710,7 +710,7 @@ class GLGraphics {
 								
 							}
 							
-							context.__bindBuffer (gl.ARRAY_BUFFER, graphics.__buffer);
+							context.__bindGLArrayBuffer (graphics.__buffer);
 							
 							if (updatedBuffer) {
 								
@@ -725,28 +725,28 @@ class GLGraphics {
 								
 								case POSITIVE:
 									
-									context.__enable (gl.CULL_FACE);
-									context.__cullFace (gl.FRONT);
+									gl.enable (gl.CULL_FACE);
+									gl.cullFace (gl.FRONT);
 								
 								case NEGATIVE:
 									
-									context.__enable (gl.CULL_FACE);
-									context.__cullFace (gl.BACK);
+									gl.enable (gl.CULL_FACE);
+									gl.cullFace (gl.BACK);
 								
 								default:
 								
 							}
 							
 							// TODO: Use context.drawTriangles
-							context.__flushSamplerState ();
+							context.__flushGL ();
 							
 							gl.drawArrays (gl.TRIANGLES, 0, length);
 							bufferPosition += (stride * length);
 							
 							if (culling != NONE) {
 								
-								context.__disable (gl.CULL_FACE);
-								context.__cullFace (gl.BACK);
+								gl.disable (gl.CULL_FACE);
+								gl.cullFace (gl.BACK);
 								
 							}
 							

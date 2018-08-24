@@ -1441,11 +1441,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderer.__renderStage3D (this);
 			__renderDirty = true;
 			
-			if (stage3Ds[0].context3D != null) {
+			// if (stage3Ds[0].context3D != null) {
 				
-				stage3Ds[0].context3D.__copyState (context3D);
+			// 	stage3Ds[0].context3D.__copyState (context3D);
 				
-			}
+			// }
 			
 		}
 		
@@ -1475,11 +1475,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (shouldRender) {
 			
-			if (stage3Ds[0].context3D != null) {
+			// if (stage3Ds[0].context3D != null) {
 				
-				context3D.__copyState (stage3Ds[0].context3D);
+			// 	context3D.__copyState (stage3Ds[0].context3D);
 				
-			}
+			// }
 			
 			if (__renderer.__type == CAIRO) {
 				

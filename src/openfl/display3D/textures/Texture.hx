@@ -6,7 +6,6 @@ import haxe.Timer;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
-import openfl._internal.renderer.opengl.GLUtils;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
@@ -37,17 +36,13 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		__textureTarget = gl.TEXTURE_2D;
 		
-		__context.__bindTexture (__textureTarget, __textureID);
-		// GLUtils.CheckGLError ();
-		
+		__context.__bindGLTexture2D (__textureID);
 		gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, #if (lime >= "7.0.0") null #else 0 #end);
-		// GLUtils.CheckGLError ();
-		
-		__context.__bindTexture (__textureTarget, null);
+		__context.__bindGLTexture2D (null);
 		
 	}
 	
@@ -110,7 +105,7 @@ import openfl.utils.ByteArray;
 		#if (js && html5)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null) {
 			
-			var gl = __context.__gl;
+			var gl = __context.gl;
 			
 			var width = __width >> miplevel;
 			var height = __height >> miplevel;
@@ -120,17 +115,10 @@ import openfl.utils.ByteArray;
 			if (width == 0) width = 1;
 			if (height == 0) height = 1;
 			
-			__context.__bindTexture (__textureTarget, __textureID);
-			// GLUtils.CheckGLError ();
-			
+			__context.__bindGLTexture2D (__textureID);
 			gl.texImage2D (__textureTarget, miplevel, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
-			// GLUtils.CheckGLError ();
+			__context.__bindGLTexture2D (null);
 			
-			__context.__bindTexture (__textureTarget, null);
-			// GLUtils.CheckGLError ();
-			
-			// var memUsage = (width * height) * 4;
-			// __trackMemoryUsage (memUsage);
 			return;
 			
 		}
@@ -161,7 +149,7 @@ import openfl.utils.ByteArray;
 		
 		if (data == null) return;
 		
-		var gl = __context.__gl;
+		var gl = __context.gl;
 		
 		var width = __width >> miplevel;
 		var height = __height >> miplevel;
@@ -171,17 +159,9 @@ import openfl.utils.ByteArray;
 		if (width == 0) width = 1;
 		if (height == 0) height = 1;
 		
-		__context.__bindTexture (__textureTarget, __textureID);
-		// GLUtils.CheckGLError ();
-		
+		__context.__bindGLTexture2D (__textureID);
 		gl.texImage2D (__textureTarget, miplevel, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, data);
-		// GLUtils.CheckGLError ();
-		
-		__context.__bindTexture (__textureTarget, null);
-		// GLUtils.CheckGLError ();
-		
-		// var memUsage = (width * height) * 4;
-		// __trackMemoryUsage (memUsage);
+		__context.__bindGLTexture2D (null);
 		
 	}
 	
@@ -190,22 +170,31 @@ import openfl.utils.ByteArray;
 		
 		if (super.__setSamplerState (state)) {
 			
-			var gl = __context.__gl;
+			var gl = __context.gl;
 			
-			if (state.minFilter != gl.NEAREST && state.minFilter != gl.LINEAR && !__samplerState.mipmapGenerated) {
+			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated) {
 				
 				gl.generateMipmap (gl.TEXTURE_2D);
-				// GLUtils.CheckGLError ();
-				
 				__samplerState.mipmapGenerated = true;
-				
+					
 			}
 			
-			if (state.maxAniso != 0.0) {
+			if (Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT != 0) {
 				
-				gl.texParameterf (gl.TEXTURE_2D, Context3D.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
-				// GLUtils.CheckGLError ();
+				var aniso = switch (state.filter) {
+					case ANISOTROPIC2X: 2;
+					case ANISOTROPIC4X: 4;
+					case ANISOTROPIC8X: 8;
+					case ANISOTROPIC16X: 16;
+					default: 1;
+				}
 				
+				if (aniso > Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT) {
+					aniso = Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
+				}
+				
+				gl.texParameterf (gl.TEXTURE_2D, Context3D.GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+					
 			}
 			
 			return true;
@@ -223,10 +212,9 @@ import openfl.utils.ByteArray;
 		var alpha = reader.readHeader (__width, __height, false);
 		
 		var context = __context;
-		var gl = context.__gl;
+		var gl = context.gl;
 		
-		context.__bindTexture (__textureTarget, __textureID);
-		GLUtils.CheckGLError ();
+		__context.__bindGLTexture2D (__textureID);
 		
 		var hasTexture = false;
 		
@@ -244,28 +232,21 @@ import openfl.utils.ByteArray;
 				var size = Std.int (blockLength / 2);
 				
 				gl.compressedTexImage2D (__textureTarget, level, __internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
-				// GLUtils.CheckGLError ();
 				
 				var alphaTexture = new Texture (__context, __width, __height, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
 				alphaTexture.__format = format;
 				alphaTexture.__internalFormat = format;
 				
-				__context.__bindTexture (alphaTexture.__textureTarget, alphaTexture.__textureID);
-				// GLUtils.CheckGLError ();
-				
+				__context.__bindGLTexture2D (alphaTexture.__textureID);
 				gl.compressedTexImage2D (alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
-				// GLUtils.CheckGLError ();
 				
 				__alphaTexture = alphaTexture;
 				
 			} else {
 				
 				gl.compressedTexImage2D (__textureTarget, level, __internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
-				// GLUtils.CheckGLError ();
 				
 			}
-			
-			// __trackCompressedMemoryUsage (blockLength);
 			
 		});
 		
@@ -273,12 +254,10 @@ import openfl.utils.ByteArray;
 			
 			var data = new UInt8Array (__width * __height * 4);
 			gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
-			// GLUtils.CheckGLError ();
 			
 		}
 		
-		context.__bindTexture (__textureTarget, null);
-		// GLUtils.CheckGLError ();
+		__context.__bindGLTexture2D (null);
 		
 	}
 	

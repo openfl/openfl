@@ -929,7 +929,7 @@ class BitmapData implements IBitmapDrawable {
 				#if (lime >= "7.0.0")
 				__textureContext = lime.app.Application.current.window.context;
 				#else
-				__textureContext = GL.context;
+				__textureContext = context.__context;
 				#end
 				
 			}
@@ -1243,7 +1243,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:dox(hide) public function getIndexBuffer (context:Context3D):IndexBuffer3D {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		if (__indexBuffer == null || __indexBufferContext != context.__context) {
 			
@@ -1268,7 +1268,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:dox(hide) public function getVertexBuffer (context:Context3D):VertexBuffer3D {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		if (__vertexBuffer == null || __vertexBufferContext != context.__context) {
 			
@@ -1418,7 +1418,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			// }
 			
-			// context.__bindBuffer (gl.ARRAY_BUFFER, __vertexBuffer);
+			// context.__bindGLArrayBuffer (__vertexBuffer);
 			
 			// if (dirty) {
 			
@@ -1590,7 +1590,7 @@ class BitmapData implements IBitmapDrawable {
 			__textureContext = context.__context;
 			__texture = context.createRectangleTexture (width, height, BGRA, false);
 			
-			// context.__bindTexture (gl.TEXTURE_2D, __texture);
+			// context.__bindGLTexture2D (__texture);
 			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -2389,13 +2389,13 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
 		
 		var context = renderer.__context3D;
-		var gl = context.__gl;
+		var gl = context.gl;
 		
-		context.__bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (context, true));
+		context.__bindGLFramebuffer (__getFramebuffer (context, true));
 		
 		renderer.__render (source);
 		
-		context.__bindFramebuffer (gl.FRAMEBUFFER, null);
+		context.__bindGLFramebuffer (null);
 		
 	}
 	
@@ -2414,16 +2414,16 @@ class BitmapData implements IBitmapDrawable {
 			
 			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
 			var context = renderer.__context3D;
-			var gl = context.__gl;
+			var gl = context.gl;
 			var color:ARGB = (color:ARGB);
 			var useScissor = !this.rect.equals (rect);
 			
-			context.__bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			context.__bindGLFramebuffer (__framebuffer);
 			
 			if (useScissor) {
 				
-				context.__enable (gl.SCISSOR_TEST);
-				context.__scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
+				gl.enable (gl.SCISSOR_TEST);
+				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
 				
 			}
 			
@@ -2431,11 +2431,11 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (useScissor) {
 				
-				context.__disable (gl.SCISSOR_TEST);
+				gl.disable (gl.SCISSOR_TEST);
 				
 			}
 			
-			context.__bindFramebuffer (gl.FRAMEBUFFER, null);
+			context.__bindGLFramebuffer (null);
 			
 		} else if (readable) {
 			
@@ -2513,14 +2513,14 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__framebuffer == null || __framebufferContext != context.__context) {
 			
-			var gl = context.__gl;
+			var gl = context.gl;
 			var texture = getTexture (context);
-			context.__bindTexture (gl.TEXTURE_2D, texture.__textureID);
+			context.__bindGLTexture2D (texture.__textureID);
 			
 			__framebufferContext = context.__context;
 			__framebuffer = gl.createFramebuffer ();
 			
-			context.__bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			context.__bindGLFramebuffer (__framebuffer);
 			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
 			
 			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
@@ -2533,13 +2533,13 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (requireStencil && __stencilBuffer == null) {
 			
-			var gl = context.__gl;
+			var gl = context.gl;
 			
 			__stencilBuffer = gl.createRenderbuffer ();
-			context.__bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
+			gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
 			gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
 			
-			context.__bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			context.__bindGLFramebuffer (__framebuffer);
 			gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
 			
 			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
@@ -2548,7 +2548,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			context.__bindRenderbuffer (gl.RENDERBUFFER, null);
+			gl.bindRenderbuffer (gl.RENDERBUFFER, null);
 			
 		}
 		
@@ -2680,7 +2680,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private function __renderGL (renderer:OpenGLRenderer):Void {
 		
 		var context = renderer.__context3D;
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		renderer.__setBlendMode (NORMAL);
 		
@@ -2712,7 +2712,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
 		var context = renderer.__context3D;
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		var shader = renderer.__maskShader;
 		renderer.setShader (shader);
@@ -2754,7 +2754,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (buffer != null && (width != __uvRect.width || height != __uvRect.height || x != __uvRect.x || y != __uvRect.y)) {
 			
-			var gl = context.__gl;
+			var gl = context.gl;
 			
 			if (__uvRect == null) __uvRect = new Rectangle ();
 			__uvRect.setTo (x, y, width, height);

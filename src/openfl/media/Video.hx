@@ -142,9 +142,9 @@ class Video extends DisplayObject {
 	
 	@:noCompletion private function __getBuffer (context:Context3D):GLBuffer {
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		
-		if (__buffer == null || __bufferContext != context.__context) {
+		if (__buffer == null || __bufferContext != gl.context) {
 			
 			#if openfl_power_of_two
 			
@@ -218,12 +218,12 @@ class Video extends DisplayObject {
 			
 			// __bufferAlpha = alpha;
 			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = context.__context;
+			__bufferContext = gl.context;
 			__buffer = gl.createBuffer ();
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			__context.__bindGLArrayBuffer (__buffer);
 			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
-			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			//context.__bindGLArrayBuffer (null);
 			
 		} else {
 			
@@ -275,7 +275,7 @@ class Video extends DisplayObject {
 				
 			// }
 			
-			context.__bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			__context.__bindGLArrayBuffer (__buffer);
 			// gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
 			
 		}
@@ -291,12 +291,12 @@ class Video extends DisplayObject {
 		
 		if (__stream == null || __stream.__video == null) return null;
 		
-		var gl = context.__gl;
+		var gl = context.gl;
 		
 		if (__texture == null) {
 			
 			__texture = gl.createTexture ();
-			context.__bindTexture (gl.TEXTURE_2D, __texture);
+			context.__bindGLTexture2D (__texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -310,7 +310,7 @@ class Video extends DisplayObject {
 			var internalFormat = gl.RGBA;
 			var format = gl.RGBA;
 			
-			context.__bindTexture (gl.TEXTURE_2D, __texture);
+			context.__bindGLTexture2D (__texture);
 			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
 			
 			__textureTime = __stream.__video.currentTime;
