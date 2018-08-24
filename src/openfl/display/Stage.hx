@@ -1494,37 +1494,33 @@ class Stage extends DisplayObjectContainer implements IModule {
 			// 	}
 			// }
 			
-			if (context3D != null) {
-				
-				if (!context3D.__present) {
-					
-					#if (lime >= "7.0.0")
-					window.onRender.cancel ();
-					#else
-					renderer.onRender.cancel ();
-					#end
-					
-				} else {
-					
-					if (!__renderer.__cleared) {
-						
-						__renderer.__clear ();
-						
-					}
-					
-					context3D.__present = false;
-					
-				}
-				
-			}
-			
-		} else {
+		} else if (context3D == null) {
 			
 			#if (lime >= "7.0.0")
 			window.onRender.cancel ();
 			#else
 			renderer.onRender.cancel ();
 			#end
+			
+		}
+		
+		if (context3D != null) {
+			
+			if (!context3D.__present) {
+				
+				window.onRender.cancel ();
+				
+			} else {
+				
+				if (!__renderer.__cleared) {
+					
+					__renderer.__clear ();
+					
+				}
+				
+				context3D.__present = false;
+				
+			}
 			
 		}
 		
@@ -2547,11 +2543,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		for (stage3D in stage3Ds) {
+		if (context3D != null) {
 			
-			stage3D.__resize (stageWidth, stageHeight);
+			context3D.configureBackBuffer (stageWidth, stageHeight, 0, true, true, true);
 			
 		}
+		
+		// for (stage3D in stage3Ds) {
+			
+		// 	stage3D.__resize (stageWidth, stageHeight);
+			
+		// }
 		
 		if (__renderer != null) {
 			

@@ -207,106 +207,108 @@ import lime.graphics.GLRenderContext;
 	
 	@:noCompletion private function __buildUniformList ():Void {
 		
-		// var gl = __context.gl;
+		if (__format == GLSL) return;
 		
-		// __uniforms.clear ();
-		// __samplerUniforms.clear ();
-		// __alphaSamplerUniforms.clear ();
-		// __alphaSamplerEnabled = [];
+		var gl = __context.gl;
 		
-		// __samplerUsageMask = 0;
+		__uniforms.clear ();
+		__samplerUniforms.clear ();
+		__alphaSamplerUniforms.clear ();
+		__alphaSamplerEnabled = [];
 		
-		// var numActive = 0;
-		// numActive = gl.getProgramParameter (__programID, gl.ACTIVE_UNIFORMS);
+		__samplerUsageMask = 0;
 		
-		// var vertexUniforms = new List<Uniform> ();
-		// var fragmentUniforms = new List<Uniform> ();
+		var numActive = 0;
+		numActive = gl.getProgramParameter (__programID, gl.ACTIVE_UNIFORMS);
 		
-		// for (i in 0...numActive) {
+		var vertexUniforms = new List<Uniform> ();
+		var fragmentUniforms = new List<Uniform> ();
+		
+		for (i in 0...numActive) {
 			
-		// 	var info = gl.getActiveUniform (__programID, i);
-		// 	var name = info.name;
-		// 	var size = info.size;
-		// 	var uniformType = info.type;
+			var info = gl.getActiveUniform (__programID, i);
+			var name = info.name;
+			var size = info.size;
+			var uniformType = info.type;
 			
-		// 	var uniform = new Uniform (__context);
-		// 	uniform.name = name;
-		// 	uniform.size = size;
-		// 	uniform.type = uniformType;
+			var uniform = new Uniform (__context);
+			uniform.name = name;
+			uniform.size = size;
+			uniform.type = uniformType;
 			
-		// 	uniform.location = gl.getUniformLocation (__programID, uniform.name);
+			uniform.location = gl.getUniformLocation (__programID, uniform.name);
 			
-		// 	var indexBracket = uniform.name.indexOf ('[');
+			var indexBracket = uniform.name.indexOf ('[');
 			
-		// 	if (indexBracket >= 0) {
+			if (indexBracket >= 0) {
 				
-		// 		uniform.name = uniform.name.substring (0, indexBracket);
+				uniform.name = uniform.name.substring (0, indexBracket);
 				
-		// 	}
+			}
 			
-		// 	switch (uniform.type) {
+			switch (uniform.type) {
 				
-		// 		case GL.FLOAT_MAT2: uniform.regCount = 2;
-		// 		case GL.FLOAT_MAT3: uniform.regCount = 3;
-		// 		case GL.FLOAT_MAT4: uniform.regCount = 4;
-		// 		default: uniform.regCount = 1;
+				case GL.FLOAT_MAT2: uniform.regCount = 2;
+				case GL.FLOAT_MAT3: uniform.regCount = 3;
+				case GL.FLOAT_MAT4: uniform.regCount = 4;
+				default: uniform.regCount = 1;
 				
-		// 	}
+			}
 			
-		// 	uniform.regCount *= uniform.size;
+			uniform.regCount *= uniform.size;
 			
-		// 	__uniforms.add (uniform);
+			__uniforms.add (uniform);
 			
-		// 	if (uniform.name == "vcPositionScale") {
+			if (uniform.name == "vcPositionScale") {
 				
-		// 		__positionScale = uniform;
+				__positionScale = uniform;
 				
-		// 	} else if (StringTools.startsWith (uniform.name, "vc")) {
+			} else if (StringTools.startsWith (uniform.name, "vc")) {
 				
-		// 		uniform.regIndex = Std.parseInt (uniform.name.substring (2));
-		// 		uniform.regData = gl.vertexConstants;
-		// 		vertexUniforms.add (uniform);
+				uniform.regIndex = Std.parseInt (uniform.name.substring (2));
+				uniform.regData = __context.__vertexConstants;
+				vertexUniforms.add (uniform);
 				
-		// 	} else if (StringTools.startsWith (uniform.name, "fc")) {
+			} else if (StringTools.startsWith (uniform.name, "fc")) {
 				
-		// 		uniform.regIndex = Std.parseInt (uniform.name.substring (2));
-		// 		uniform.regData = gl.fragmentConstants;
-		// 		fragmentUniforms.add (uniform);
+				uniform.regIndex = Std.parseInt (uniform.name.substring (2));
+				uniform.regData = __context.__fragmentConstants;
+				fragmentUniforms.add (uniform);
 				
-		// 	} else if (StringTools.startsWith (uniform.name, "sampler") && uniform.name.indexOf ("alpha") == -1) {
+			} else if (StringTools.startsWith (uniform.name, "sampler") && uniform.name.indexOf ("alpha") == -1) {
 				
-		// 		uniform.regIndex = Std.parseInt (uniform.name.substring (7));
-		// 		__samplerUniforms.add (uniform);
+				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
+				__samplerUniforms.add (uniform);
 				
-		// 		for (reg in 0...uniform.regCount) {
+				for (reg in 0...uniform.regCount) {
 					
-		// 			__samplerUsageMask |= (1 << (uniform.regIndex + reg));
+					__samplerUsageMask |= (1 << (uniform.regIndex + reg));
 					
-		// 		}
+				}
 				
-		// 	} else if (StringTools.startsWith (uniform.name, "sampler") && StringTools.endsWith (uniform.name, "_alpha")) {
+			} else if (StringTools.startsWith (uniform.name, "sampler") && StringTools.endsWith (uniform.name, "_alpha")) {
 				
-		// 		var len = uniform.name.indexOf ("_") - 7;
-		// 		uniform.regIndex = Std.parseInt (uniform.name.substring (7, 7 + len)) + 4;
-		// 		__alphaSamplerUniforms.add (uniform);
+				var len = uniform.name.indexOf ("_") - 7;
+				uniform.regIndex = Std.parseInt (uniform.name.substring (7, 7 + len)) + 4;
+				__alphaSamplerUniforms.add (uniform);
 				
-		// 	} else if (StringTools.startsWith (uniform.name, "sampler") && StringTools.endsWith (uniform.name, "_alphaEnabled")) {
+			} else if (StringTools.startsWith (uniform.name, "sampler") && StringTools.endsWith (uniform.name, "_alphaEnabled")) {
 				
-		// 		uniform.regIndex = Std.parseInt (uniform.name.substring (7));
-		// 		__alphaSamplerEnabled[uniform.regIndex] = uniform;
+				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
+				__alphaSamplerEnabled[uniform.regIndex] = uniform;
 				
-		// 	}
+			}
 			
-		// 	if (Log.level == LogLevel.VERBOSE) {
+			if (Log.level == LogLevel.VERBOSE) {
 				
-		// 		trace ('${i} name:${uniform.name} type:${uniform.type} size:${uniform.size} location:${uniform.location}');
+				trace ('${i} name:${uniform.name} type:${uniform.type} size:${uniform.size} location:${uniform.location}');
 				
-		// 	}
+			}
 			
-		// }
+		}
 		
-		// __vertexUniformMap = new UniformMap (Lambda.array (vertexUniforms));
-		// __fragmentUniformMap = new UniformMap (Lambda.array (fragmentUniforms));
+		__vertexUniformMap = new UniformMap (Lambda.array (vertexUniforms));
+		__fragmentUniformMap = new UniformMap (Lambda.array (fragmentUniforms));
 		
 	}
 	
@@ -554,38 +556,34 @@ import lime.graphics.GLRenderContext;
 	
 	public function flush ():Void {
 		
-		// #if (js && html5)
-		// var gl = context.gl;
-		// #else
-		// #if (lime >= "7.0.0")
-		// var gl = gl.context.gles2;
-		// #else
-		// var gl = __conte.context;
-		// #end
-		// #end
+		#if (js && html5)
+		var gl = context.gl;
+		#else
+		var gl = context.__context.gles2;
+		#end
 		
-		// var index:Int = regIndex * 4;
-		// switch (type) {
+		var index:Int = regIndex * 4;
+		switch (type) {
 			
-		// 	#if (js && html5)
-		// 	case GL.FLOAT_MAT2: gl.uniformMatrix2fv (location, false, __getUniformRegisters (index, size * 2 * 2));
-		// 	case GL.FLOAT_MAT3: gl.uniformMatrix3fv (location, false, __getUniformRegisters (index, size * 3 * 3));
-		// 	case GL.FLOAT_MAT4: gl.uniformMatrix4fv (location, false, __getUniformRegisters (index, size * 4 * 4));
-		// 	case GL.FLOAT_VEC2: gl.uniform2fv (location, __getUniformRegisters (index, regCount * 2));
-		// 	case GL.FLOAT_VEC3: gl.uniform3fv (location, __getUniformRegisters (index, regCount * 3));
-		// 	case GL.FLOAT_VEC4: gl.uniform4fv (location, __getUniformRegisters (index, regCount * 4));
-		// 	default: gl.uniform4fv (location, __getUniformRegisters (index, regCount * 4));
-		// 	#else
-		// 	case GL.FLOAT_MAT2: gl.uniformMatrix2fv (location, size, false, __getUniformRegisters (index, size * 2 * 2));
-		// 	case GL.FLOAT_MAT3: gl.uniformMatrix3fv (location, size, false, __getUniformRegisters (index, size * 3 * 3));
-		// 	case GL.FLOAT_MAT4: gl.uniformMatrix4fv (location, size, false, __getUniformRegisters (index, size * 4 * 4));
-		// 	case GL.FLOAT_VEC2: gl.uniform2fv (location, regCount, __getUniformRegisters (index, regCount * 2));
-		// 	case GL.FLOAT_VEC3: gl.uniform3fv (location, regCount, __getUniformRegisters (index, regCount * 3));
-		// 	case GL.FLOAT_VEC4: gl.uniform4fv (location, regCount, __getUniformRegisters (index, regCount * 4));
-		// 	default: gl.uniform4fv (location, regCount, __getUniformRegisters (index, regCount * 4));
-		// 	#end
+			#if (js && html5)
+			case GL.FLOAT_MAT2: gl.uniformMatrix2fv (location, false, __getUniformRegisters (index, size * 2 * 2));
+			case GL.FLOAT_MAT3: gl.uniformMatrix3fv (location, false, __getUniformRegisters (index, size * 3 * 3));
+			case GL.FLOAT_MAT4: gl.uniformMatrix4fv (location, false, __getUniformRegisters (index, size * 4 * 4));
+			case GL.FLOAT_VEC2: gl.uniform2fv (location, __getUniformRegisters (index, regCount * 2));
+			case GL.FLOAT_VEC3: gl.uniform3fv (location, __getUniformRegisters (index, regCount * 3));
+			case GL.FLOAT_VEC4: gl.uniform4fv (location, __getUniformRegisters (index, regCount * 4));
+			default: gl.uniform4fv (location, __getUniformRegisters (index, regCount * 4));
+			#else
+			case GL.FLOAT_MAT2: gl.uniformMatrix2fv (location, size, false, __getUniformRegisters (index, size * 2 * 2));
+			case GL.FLOAT_MAT3: gl.uniformMatrix3fv (location, size, false, __getUniformRegisters (index, size * 3 * 3));
+			case GL.FLOAT_MAT4: gl.uniformMatrix4fv (location, size, false, __getUniformRegisters (index, size * 4 * 4));
+			case GL.FLOAT_VEC2: gl.uniform2fv (location, regCount, __getUniformRegisters (index, regCount * 2));
+			case GL.FLOAT_VEC3: gl.uniform3fv (location, regCount, __getUniformRegisters (index, regCount * 3));
+			case GL.FLOAT_VEC4: gl.uniform4fv (location, regCount, __getUniformRegisters (index, regCount * 4));
+			default: gl.uniform4fv (location, regCount, __getUniformRegisters (index, regCount * 4));
+			#end
 			
-		// }
+		}
 		
 	}
 	

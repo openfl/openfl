@@ -80,10 +80,13 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __context:RenderContext;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __enableErrorChecking:Bool;
+	@:noCompletion private var __fragmentConstants:Float32Array;
+	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
+	@:noCompletion private var __vertexConstants:Float32Array;
 	
 	
 	@:noCompletion private function new (stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null) {
@@ -99,6 +102,10 @@ import openfl.utils.ByteArray;
 		
 		if (__contextState == null) __contextState = new Context3DState ();
 		__state = new Context3DState ();
+		
+		__vertexConstants = new Float32Array (4 * 128);
+		__fragmentConstants = new Float32Array (4 * 128);
+		__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
 		
 		if (GL_MAX_VIEWPORT_DIMS == -1) {
 			
@@ -395,6 +402,10 @@ import openfl.utils.ByteArray;
 			
 		}
 		
+		if (__state.program != null && __state.program.__format == AGAL) {
+			__state.program.__flush ();
+		}
+		
 		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 		
 		__bindGLElementArrayBuffer (indexBuffer.__id);
@@ -448,6 +459,10 @@ import openfl.utils.ByteArray;
 		
 		__state.program = program;
 		
+		if (program.__format == AGAL) {
+			__flushGLProgram ();
+		}
+		
 		for (i in 0...program.__samplerStates.length) {
 			if (__state.samplerStates[i] == null) {
 				__state.samplerStates[i] = program.__samplerStates[i].clone ();
@@ -463,32 +478,38 @@ import openfl.utils.ByteArray;
 		
 		if (numRegisters == 0 || __state.program == null) return;
 		
-		if (__state.program.__format == GLSL) {
+		if (__state.program != null && __state.program.__format == GLSL) {
 			
 			// TODO
 			
 		} else {
 			
-			// if (numRegisters == -1) {
-				
-			// 	numRegisters = ((data.length >> 2) - byteArrayOffset);
-				
-			// }
+			// TODO: Cleanup?
 			
-			// var isVertex = (programType == Context3DProgramType.VERTEX);
-			// var dest = isVertex ? __state.__programVertexConstants : __state.__programFragmentConstants;
-			
-			// var floatData = Float32Array.fromBytes (data, 0, data.length);
-			// var outOffset = firstRegister * 4;
-			// var inOffset = Std.int (byteArrayOffset / 4);
-			
-			// for (i in 0...(numRegisters * 4)) {
+			if (numRegisters == -1) {
 				
-			// 	dest[outOffset + i] = floatData[inOffset + i];
+				numRegisters = ((data.length >> 2) - byteArrayOffset);
 				
-			// }
+			}
 			
-			// __state.__program.__markDirty (isVertex, firstRegister, numRegisters);
+			var isVertex = (programType == VERTEX);
+			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			
+			var floatData = Float32Array.fromBytes (data, 0, data.length);
+			var outOffset = firstRegister * 4;
+			var inOffset = Std.int (byteArrayOffset / 4);
+			
+			for (i in 0...(numRegisters * 4)) {
+				
+				dest[outOffset + i] = floatData[inOffset + i];
+				
+			}
+			
+			if (__state.program != null) {
+				
+				__state.program.__markDirty (isVertex, firstRegister, numRegisters);
+				
+			}
 			
 		}
 		
@@ -513,62 +534,62 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			// var isVertex = (programType == Context3DProgramType.VERTEX);
-			// var dest = isVertex ? __vertexConstants : __fragmentConstants;
-			// var source = matrix.rawData;
-			// var i = firstRegister * 4;
+			var isVertex = (programType == VERTEX);
+			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var source = matrix.rawData;
+			var i = firstRegister * 4;
 			
-			// if (transposedMatrix) {
+			if (transposedMatrix) {
 				
-			// 	dest[i++] = source[0];
-			// 	dest[i++] = source[4];
-			// 	dest[i++] = source[8];
-			// 	dest[i++] = source[12];
+				dest[i++] = source[0];
+				dest[i++] = source[4];
+				dest[i++] = source[8];
+				dest[i++] = source[12];
 				
-			// 	dest[i++] = source[1];
-			// 	dest[i++] = source[5];
-			// 	dest[i++] = source[9];
-			// 	dest[i++] = source[13];
+				dest[i++] = source[1];
+				dest[i++] = source[5];
+				dest[i++] = source[9];
+				dest[i++] = source[13];
 				
-			// 	dest[i++] = source[2];
-			// 	dest[i++] = source[6];
-			// 	dest[i++] = source[10];
-			// 	dest[i++] = source[14];
+				dest[i++] = source[2];
+				dest[i++] = source[6];
+				dest[i++] = source[10];
+				dest[i++] = source[14];
 				
-			// 	dest[i++] = source[3];
-			// 	dest[i++] = source[7];
-			// 	dest[i++] = source[11];
-			// 	dest[i++] = source[15];
+				dest[i++] = source[3];
+				dest[i++] = source[7];
+				dest[i++] = source[11];
+				dest[i++] = source[15];
 				
-			// } else {
+			} else {
 				
-			// 	dest[i++] = source[0];
-			// 	dest[i++] = source[1];
-			// 	dest[i++] = source[2];
-			// 	dest[i++] = source[3];
+				dest[i++] = source[0];
+				dest[i++] = source[1];
+				dest[i++] = source[2];
+				dest[i++] = source[3];
 				
-			// 	dest[i++] = source[4];
-			// 	dest[i++] = source[5];
-			// 	dest[i++] = source[6];
-			// 	dest[i++] = source[7];
+				dest[i++] = source[4];
+				dest[i++] = source[5];
+				dest[i++] = source[6];
+				dest[i++] = source[7];
 				
-			// 	dest[i++] = source[8];
-			// 	dest[i++] = source[9];
-			// 	dest[i++] = source[10];
-			// 	dest[i++] = source[11];
+				dest[i++] = source[8];
+				dest[i++] = source[9];
+				dest[i++] = source[10];
+				dest[i++] = source[11];
 				
-			// 	dest[i++] = source[12];
-			// 	dest[i++] = source[13];
-			// 	dest[i++] = source[14];
-			// 	dest[i++] = source[15];
+				dest[i++] = source[12];
+				dest[i++] = source[13];
+				dest[i++] = source[14];
+				dest[i++] = source[15];
 				
-			// }
+			}
 			
-			// if (__program != null) {
+			if (__state.program != null) {
 				
-			// 	__program.__markDirty (isVertex, firstRegister, 4);
+				__state.program.__markDirty (isVertex, firstRegister, 4);
 				
-			// }
+			}
 			
 		}
 		
@@ -579,7 +600,41 @@ import openfl.utils.ByteArray;
 		
 		if (numRegisters == 0) return;
 		
-		// GLContext3D.setProgramConstantsFromVector (this, programType, firstRegister, data, numRegisters);
+		if (__state.program != null && __state.program.__format == GLSL) {
+			
+			
+			
+		} else {
+			
+			if (numRegisters == -1) {
+				
+				numRegisters = (data.length >> 2);
+				
+			}
+			
+			var isVertex = (programType == VERTEX);
+			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var source = data;
+			
+			var sourceIndex = 0;
+			var destIndex = firstRegister * 4;
+			
+			for (i in 0...numRegisters) {
+				
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+				
+			}
+			
+			if (__state.program != null) {
+				
+				__state.program.__markDirty (isVertex, firstRegister, numRegisters);
+				
+			}
+			
+		}
 		
 	}
 	
@@ -1078,14 +1133,17 @@ import openfl.utils.ByteArray;
 		
 		if (__contextState.program != program) {
 			
-			gl.useProgram (program.__programID);
-			
-			// if (program != null && program.__format == AGAL) {
+			if (program != null && program.__format == AGAL) {
 				
-			// 	program.__use ();
-			// 	program.__setPositionScale (__positionScale);
+				program.__use ();
+				__positionScale[1] = __state.renderToTexture != null ? -1.0 : 1.0;
+				program.__setPositionScale (__positionScale);
 				
-			// }
+			} else {
+				
+				gl.useProgram (program.__programID);
+				
+			}
 			
 			__contextState.program = program;
 			
