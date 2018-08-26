@@ -24,6 +24,7 @@ import lime.graphics.RendererType;
 @:access(openfl.geom.ColorTransform)
 @:allow(openfl._internal.renderer)
 @:allow(openfl.display)
+@:allow(openfl.text)
 
 
 class DisplayObjectRenderer extends EventDispatcher {
