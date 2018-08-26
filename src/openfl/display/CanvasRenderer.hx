@@ -26,6 +26,7 @@ import js.Browser;
 @:access(openfl.display.Stage3D)
 @:allow(openfl._internal.renderer.canvas)
 @:allow(openfl.display)
+@:allow(openfl.text)
 
 
 class CanvasRenderer extends DisplayObjectRenderer {
