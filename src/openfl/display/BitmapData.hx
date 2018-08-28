@@ -2459,7 +2459,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		renderer.__render (source);
 		
-		renderer.bindFramebuffer (gl.FRAMEBUFFER, null);
+		renderer.bindDefaultFramebuffer (gl.FRAMEBUFFER);
 		
 	}
 	
@@ -2499,7 +2499,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			renderer.bindFramebuffer (gl.FRAMEBUFFER, null);
+			renderer.bindDefaultFramebuffer (gl.FRAMEBUFFER);
 			
 		} else if (readable) {
 			
