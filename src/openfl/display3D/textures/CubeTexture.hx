@@ -42,6 +42,8 @@ import openfl.utils.ByteArray;
 		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
 		__uploadedSides = 0;
 		
+		// if (optimizeForRenderToTexture) __getFramebuffer (true, 0, 0);
+		
 	}
 	
 	

@@ -32,6 +32,8 @@ import openfl.utils.ByteArray;
 		__textureTarget = __context.gl.TEXTURE_2D;
 		uploadFromTypedArray (null);
 		
+		if (optimizeForRenderToTexture) __getGLFramebuffer (true, 0, 0);
+		
 	}
 	
 	
