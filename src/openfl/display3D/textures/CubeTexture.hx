@@ -2,6 +2,7 @@ package openfl.display3D.textures; #if !flash
 
 
 import haxe.Timer;
+import lime.graphics.opengl.GLFramebuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
@@ -23,6 +24,7 @@ import openfl.utils.ByteArray;
 @:final class CubeTexture extends TextureBase {
 	
 	
+	@:noCompletion private var __framebufferSurface:Int;
 	@:noCompletion private var __size:Int;
 	@:noCompletion private var __uploadedSides:Int;
 	
@@ -32,6 +34,7 @@ import openfl.utils.ByteArray;
 		super (context);
 		
 		__size = size;
+		__width = __height = __size;
 		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
@@ -133,6 +136,43 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	@:noCompletion private override function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer {
+		
+		var gl = __context.gl;
+		
+		if (__glFramebuffer == null) {
+			
+			__glFramebuffer = gl.createFramebuffer ();
+			__framebufferSurface = -1;
+			
+		}
+		
+		if (__framebufferSurface != surfaceSelector) {
+			
+			__framebufferSurface = surfaceSelector;
+			
+			__context.__bindGLFramebuffer (__glFramebuffer);
+			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
+			
+			if (__context.__enableErrorChecking) {
+				
+				var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
+				
+				if (code != gl.FRAMEBUFFER_COMPLETE) {
+					
+					trace ('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
+					
+				}
+				
+			}
+			
+		}
+		
+		return super.__getGLFramebuffer (enableDepthAndStencil, antiAlias, surfaceSelector);
+		
+	}
+	
+	
 	@:noCompletion private override function __setSamplerState (state:SamplerState):Bool {
 		
 		if (super.__setSamplerState (state)) {
@@ -143,7 +183,7 @@ import openfl.utils.ByteArray;
 				
 				gl.generateMipmap (gl.TEXTURE_CUBE_MAP);
 				__samplerState.mipmapGenerated = true;
-					
+				
 			}
 			
 			if (Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT != 0) {

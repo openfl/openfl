@@ -2389,13 +2389,25 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
 		
 		var context = renderer.__context3D;
-		var gl = context.gl;
 		
-		context.__bindGLFramebuffer (__getFramebuffer (context, true));
+		var cacheRTT = context.__state.renderToTexture;
+		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+		
+		context.setRenderToTexture (getTexture (context), true);
 		
 		renderer.__render (source);
 		
-		context.__bindGLFramebuffer (null);
+		if (cacheRTT != null) {
+			
+			context.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+			
+		} else {
+			
+			context.setRenderToBackBuffer ();
+			
+		}
 		
 	}
 	
@@ -2508,52 +2520,52 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __getFramebuffer (context:Context3D, requireStencil:Bool):GLFramebuffer {
+	// @:noCompletion private function __getFramebuffer (context:Context3D, requireStencil:Bool):GLFramebuffer {
 		
-		if (__framebuffer == null || __framebufferContext != context.__context) {
+	// 	if (__framebuffer == null || __framebufferContext != context.__context) {
 			
-			var gl = context.gl;
-			var texture = getTexture (context);
-			context.__bindGLTexture2D (texture.__textureID);
+	// 		var gl = context.gl;
+	// 		var texture = getTexture (context);
+	// 		context.__bindGLTexture2D (texture.__textureID);
 			
-			__framebufferContext = context.__context;
-			__framebuffer = gl.createFramebuffer ();
+	// 		__framebufferContext = context.__context;
+	// 		__framebuffer = gl.createFramebuffer ();
 			
-			context.__bindGLFramebuffer (__framebuffer);
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
+	// 		context.__bindGLFramebuffer (__framebuffer);
+	// 		gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
 			
-			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
+	// 		if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
 				
-				trace (gl.getError ());
+	// 			trace (gl.getError ());
 				
-			}
+	// 		}
 			
-		}
+	// 	}
 		
-		if (requireStencil && __stencilBuffer == null) {
+	// 	if (requireStencil && __stencilBuffer == null) {
 			
-			var gl = context.gl;
+	// 		var gl = context.gl;
 			
-			__stencilBuffer = gl.createRenderbuffer ();
-			gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
-			gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
+	// 		__stencilBuffer = gl.createRenderbuffer ();
+	// 		gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
+	// 		gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
 			
-			context.__bindGLFramebuffer (__framebuffer);
-			gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
+	// 		context.__bindGLFramebuffer (__framebuffer);
+	// 		gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
 			
-			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
+	// 		if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
 				
-				trace (gl.getError ());
+	// 			trace (gl.getError ());
 				
-			}
+	// 		}
 			
-			gl.bindRenderbuffer (gl.RENDERBUFFER, null);
+	// 		gl.bindRenderbuffer (gl.RENDERBUFFER, null);
 			
-		}
+	// 	}
 		
-		return __framebuffer;
+	// 	return __framebuffer;
 		
-	}
+	// }
 	
 	
 	@:noCompletion private inline function __loadFromBase64 (base64:String, type:String):Future<BitmapData> {

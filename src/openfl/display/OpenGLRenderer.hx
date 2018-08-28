@@ -863,7 +863,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
-		__context3D.__bindGLFramebuffer (__defaultRenderTarget.__getFramebuffer (__context3D, false));
+		var cacheRTT = __context3D.__state.renderToTexture;
+		var cacheRTTDepthStencil = __context3D.__state.renderToTextureDepthStencil;
+		var cacheRTTAntiAlias = __context3D.__state.renderToTextureAntiAlias;
+		var cacheRTTSurfaceSelector = __context3D.__state.renderToTextureSurfaceSelector;
+		
+		__context3D.setRenderToTexture (__defaultRenderTarget.getTexture (__context3D), false);
 		
 		if (clear) {
 			
@@ -885,7 +890,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var indexBuffer = source.getIndexBuffer (__context3D);
 		__context3D.drawTriangles (indexBuffer);
 		
-		__context3D.__bindGLFramebuffer (null);
+		if (cacheRTT != null) {
+			
+			__context3D.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+			
+		} else {
+			
+			__context3D.setRenderToBackBuffer ();
+			
+		}
 		
 		__clearShader ();
 		

@@ -2199,7 +2199,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
 					
 					var context = stage.context3D;
-					var cacheFramebuffer = context.__contextState.__currentGLFramebuffer;
+					
+					var cacheRTT = context.__state.renderToTexture;
+					var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+					var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+					var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+					
+					// var cacheFramebuffer = context.__contextState.__currentGLFramebuffer;
 					
 					var cacheBlendMode = parentRenderer.__blendMode;
 					parentRenderer.__suspendClipAndMask ();
@@ -2310,7 +2316,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					parentRenderer.__setBlendMode (cacheBlendMode);
 					parentRenderer.__copyShader (childRenderer);
 					
-					context.__bindGLFramebuffer (cacheFramebuffer);
+					if (cacheRTT != null) {
+						
+						context.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+						
+					} else {
+						
+						context.setRenderToBackBuffer ();
+						
+					}
+					
+					// context.__bindGLFramebuffer (cacheFramebuffer);
 					
 					// parentRenderer.__restoreState (childRenderer);
 					parentRenderer.__resumeClipAndMask (childRenderer);

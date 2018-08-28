@@ -2,8 +2,10 @@ package openfl.display3D.textures; #if !flash
 
 
 import lime._internal.graphics.ImageCanvasUtil;
-import lime.graphics.Image;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.Image;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
@@ -42,6 +44,9 @@ class TextureBase extends EventDispatcher {
 	// private var __compressedMemoryUsage:Int;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Int;
+	@:noCompletion private var __glDepthRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __glFramebuffer:GLFramebuffer;
+	@:noCompletion private var __glStencilRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
@@ -153,6 +158,79 @@ class TextureBase extends EventDispatcher {
 		}
 		
 		gl.deleteTexture (__textureID);
+		
+	}
+	
+	
+	@:noCompletion private function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer {
+		
+		var gl = __context.gl;
+		
+		if (__glFramebuffer == null) {
+			
+			__glFramebuffer = gl.createFramebuffer ();
+			__context.__bindGLFramebuffer (__glFramebuffer);
+			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __textureID, 0);
+			
+			if (__context.__enableErrorChecking) {
+				
+				var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
+				
+				if (code != gl.FRAMEBUFFER_COMPLETE) {
+					
+					trace ('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
+					
+				}
+				
+			}
+			
+		}
+		
+		if (enableDepthAndStencil && __glDepthRenderbuffer == null) {
+			
+			__context.__bindGLFramebuffer (__glFramebuffer);
+			
+			if (Context3D.GL_DEPTH_STENCIL != 0) {
+				
+				__glDepthRenderbuffer = gl.createRenderbuffer ();
+				__glStencilRenderbuffer = __glDepthRenderbuffer;
+				
+				gl.bindRenderbuffer (gl.RENDERBUFFER, __glDepthRenderbuffer);
+				gl.renderbufferStorage (gl.RENDERBUFFER, Context3D.GL_DEPTH_STENCIL, __width, __height);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, __glDepthRenderbuffer);
+				
+			} else {
+				
+				__glDepthRenderbuffer = gl.createRenderbuffer ();
+				__glStencilRenderbuffer = gl.createRenderbuffer ();
+				
+				gl.bindRenderbuffer (gl.RENDERBUFFER, __glDepthRenderbuffer);
+				gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, __width, __height);
+				gl.bindRenderbuffer (gl.RENDERBUFFER, __glStencilRenderbuffer);
+				gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __width, __height);
+				
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, __glDepthRenderbuffer);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __glStencilRenderbuffer);
+				
+			}
+			
+			if (__context.__enableErrorChecking) {
+				
+				var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
+				
+				if (code != gl.FRAMEBUFFER_COMPLETE) {
+					
+					trace ('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
+					
+				}
+				
+			}
+			
+			gl.bindRenderbuffer (gl.RENDERBUFFER, null);
+			
+		}
+		
+		return __glFramebuffer;
 		
 	}
 	
