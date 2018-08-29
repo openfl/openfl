@@ -85,11 +85,10 @@ class CanvasTilemap {
 			bitmapData = tileset.bitmapData;
 			if (bitmapData == null || !bitmapData.__canBeDrawnToCanvas()) continue;
 			
-			context.globalAlpha = tilemap.__worldAlpha * alpha;
-			
 			tileTransform = tile.matrix;
 			tileTransform.concat (transform);
 			
+			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			bitmapData.__drawToCanvas (context, tileTransform, roundPixels, renderSession.pixelRatio, tileRect, false);
 			
 		}
