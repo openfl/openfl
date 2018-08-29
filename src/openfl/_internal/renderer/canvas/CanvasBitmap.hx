@@ -19,45 +19,20 @@ class CanvasBitmap {
 		
 		var context = renderSession.context;
 		
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.__prepareImage()) {
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.__canBeDrawnToCanvas ()) {
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.__worldBlendMode);
 			renderSession.maskManager.pushObject (bitmap, false);
-			
-			ImageCanvasUtil.convertToCanvas (bitmap.__bitmapData.image);
-			
-			context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__renderTransform;
-			var scrollRect = bitmap.__scrollRect;
-			var pixelRatio = renderSession.pixelRatio;
-			var scale = pixelRatio / bitmap.__bitmapData.__pixelRatio; // Bitmaps can have different pixelRatio than display, therefore we need to scale them properly
-			
-			if (renderSession.roundPixels || bitmap.__snapToPixel ()) {
-				
-				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Math.round (transform.tx * pixelRatio), Math.round  (transform.ty * pixelRatio));
-				
-			} else {
-				
-				context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * pixelRatio, transform.ty * pixelRatio);
-				
-			}
-			
+
 			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				
 				CanvasSmoothing.setEnabled(context, false);
 				
 			}
 			
-			if (scrollRect == null) {
-				
-				context.drawImage (bitmap.__bitmapData.image.src, 0, 0);
-				
-			} else {
-				
-				context.drawImage (bitmap.__bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-				
-			}
-			
+			context.globalAlpha = bitmap.__worldAlpha;
+			bitmap.__bitmapData.__drawToCanvas (context, bitmap.__renderTransform, renderSession.roundPixels || bitmap.__snapToPixel (), renderSession.pixelRatio, bitmap.__scrollRect, true);
+
 			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				
 				CanvasSmoothing.setEnabled(context, true);

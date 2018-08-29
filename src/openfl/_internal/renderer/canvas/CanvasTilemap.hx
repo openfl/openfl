@@ -47,7 +47,6 @@ class CanvasTilemap {
 		}
 		
 		var defaultTileset = tilemap.__tileset;
-		var cacheBitmapData = null;
 		var source = null;
 		
 		var alpha, visible, tileset, id, tileData, bitmapData;
@@ -84,38 +83,14 @@ class CanvasTilemap {
 			}
 			
 			bitmapData = tileset.bitmapData;
-			if (bitmapData == null || !bitmapData.__prepareImage()) continue;
-			
-			if (bitmapData != cacheBitmapData) {
-				
-				if (bitmapData.image.buffer.__srcImage == null) {
-					
-					ImageCanvasUtil.convertToCanvas (bitmapData.image);
-					
-				}
-				
-				source = bitmapData.image.src;
-				cacheBitmapData = bitmapData;
-				
-			}
+			if (bitmapData == null || !bitmapData.__canBeDrawnToCanvas()) continue;
 			
 			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
 			tileTransform = tile.matrix;
 			tileTransform.concat (transform);
-			var pixelRatio = renderSession.pixelRatio;
 			
-			if (roundPixels) {
-				
-				context.setTransform (tileTransform.a * pixelRatio, tileTransform.b, tileTransform.c, tileTransform.d * pixelRatio, Math.round (tileTransform.tx * pixelRatio), Math.round (tileTransform.ty * pixelRatio));
-				
-			} else {
-				
-				context.setTransform (tileTransform.a * pixelRatio, tileTransform.b, tileTransform.c, tileTransform.d * pixelRatio, tileTransform.tx * pixelRatio, tileTransform.ty * pixelRatio);
-				
-			}
-			
-			context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
+			bitmapData.__drawToCanvas (context, tileTransform, roundPixels, renderSession.pixelRatio, tileRect, false);
 			
 		}
 		

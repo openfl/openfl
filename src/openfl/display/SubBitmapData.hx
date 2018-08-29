@@ -8,6 +8,7 @@ import js.html.CanvasElement;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
+import openfl.geom.Matrix;
 import openfl.display.BitmapData.TextureRegionResult;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.GLRenderContext;
@@ -17,6 +18,9 @@ import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.WebGLContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.utils.Float32Array;
+#if (js && html5)
+import js.html.CanvasRenderingContext2D;
+#end
 #end
 
 @:access(openfl.geom.ColorTransform)
@@ -410,52 +414,124 @@ class SubBitmapData extends BitmapData {
 			canvas.width = width;
 			canvas.height = height;
 
-			__drawToCanvas (canvas.getContext ("2d"), 1, 0, 0, 1, 0, 0);
+			__drawToCanvas (canvas.getContext ("2d"), @:privateAccess Matrix.__identity, true, 1, null, false);
 
 			image = lime.graphics.Image.fromCanvas (canvas);
 		}
 		return true;
 		
 	}
+
+	override function __renderCanvas (renderSession:RenderSession) {
 	
-	inline function __drawToCanvas (context:CanvasRenderContext, a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float) {
+		renderSession.context.globalAlpha = 1;
+		__drawToCanvas (renderSession.context, __worldTransform, renderSession.roundPixels, renderSession.pixelRatio, null, false);
+	
+	}
+
+	#if (js && html5)
+	override function __canBeDrawnToCanvas ():Bool {
 		
+		return __parentBitmap.__canBeDrawnToCanvas ();
+		
+	} 
+	
+	static var __drawToCanvasTransform = new Matrix();
+
+	override function __drawToCanvas (context:CanvasRenderingContext2D, transform:Matrix, roundPixels:Bool, pixelRatio:Float, scrollRect:Rectangle, useScrollRectCoords:Bool):Void {
+
 		var parentImage = __parentBitmap.image;
 		if (parentImage.type == DATA) {
 			
 			ImageCanvasUtil.convertToCanvas (parentImage);
 			
 		}
+		
+		var sx:Float = __texX;
+		var sy:Float = __texY;
+		var w:Float = __texWidth;
+		var h:Float = __texHeight;
+		var dx:Float = 0;
+		var dy:Float = 0;
+		var offsetX:Float = __offsetX;
+		var offsetY:Float = __offsetY;
+		
+		if (scrollRect != null) {
 
-		context.setTransform (a, b, c, d, tx + __offsetX * a, ty + __offsetY * d);
+			offsetX -= scrollRect.x;
+			offsetY -= scrollRect.y;
+			
+			if (!__rotated) {
+				if (offsetX < 0) {
+					sx += -offsetX;
+					w = Math.min(scrollRect.width, __texWidth + offsetX);
+					offsetX = 0;
+				} else {
+					w = Math.min(scrollRect.width - offsetX, __texWidth);
+				}
+
+				if (offsetY < 0) {
+					sy += -offsetY;
+					h = Math.min(scrollRect.height, __texHeight + offsetY);
+					offsetY = 0;
+				} else {
+					h = Math.min(scrollRect.height - offsetY, __texHeight);
+				}
+			} else {
+				
+				if (offsetX < 0) {
+					sy += -offsetX;
+					h = Math.min(scrollRect.width, __texHeight + offsetX);
+					offsetX = 0;
+				} else {
+					h = Math.min(scrollRect.width - offsetX, __texHeight);
+				}
+
+				if (offsetY < 0) {
+					var rightOffset = scrollRect.height - offsetY;
+					sx = Std.int(Math.max(__texX, __texX + __texWidth - rightOffset));
+					w = scrollRect.height;
+					offsetY = 0;
+				} else {
+					w = scrollRect.height - offsetY;
+					sx = Std.int(Math.max(__texX, __texX + __texWidth - w));
+				}
+			}
+
+			if (useScrollRectCoords) {
+				dx = scrollRect.x;
+				dy = scrollRect.y;
+			}
+		}
+		
+		__drawToCanvasTransform.copyFrom(transform);
+		__drawToCanvasTransform.__translateTransformed(offsetX, offsetY);
+
+		var scale = pixelRatio / this.__pixelRatio; // Bitmaps can have different pixelRatio than display, therefore we need to scale them properly
+		var transform = __drawToCanvasTransform;
+		
+		if (roundPixels) {
+			
+			context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Math.round (transform.tx * pixelRatio), Math.round  (transform.ty * pixelRatio));
+			
+		} else {
+			
+			context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * pixelRatio, transform.ty * pixelRatio);
+			
+		}
+		
 		if (__rotated) {
 			
+			context.translate (0, w);
 			context.rotate (-90 * Math.PI / 180);
-			context.translate (-__texWidth, 0);
 			
 		}
 
-		context.drawImage (parentImage.src, __texX, __texY, __texWidth, __texHeight, 0, 0, __texWidth, __texHeight);
-	
-	}
+		context.drawImage (parentImage.src, sx, sy, w, h, dx, dy, w, h);
 
-	override function __renderCanvas (renderSession:RenderSession) {
-	
-		var transform = __worldTransform;
-		var tx = transform.tx;
-		var ty = transform.ty;
-		if (renderSession.roundPixels) {
-			
-			tx = Math.round (tx);
-			ty = Math.round (ty);
-			
-		}
-
-		var context = renderSession.context;
-		context.globalAlpha = 1;
-		__drawToCanvas (context, transform.a, transform.b, transform.c, transform.d, tx, ty);
-	
 	}
+	#end
+
 	#end
 	
 }
