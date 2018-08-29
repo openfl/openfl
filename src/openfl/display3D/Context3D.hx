@@ -813,24 +813,28 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __bindGLTexture2D (texture:GLTexture):Void {
 		
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLTexture2D != texture #end) {
+		// TODO: Need to consider activeTexture ID
+		
+		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTexture2D != texture #end) {
 			
 			gl.bindTexture (gl.TEXTURE_2D, texture);
 			__contextState.__currentGLTexture2D = texture;
 			
-		}
+		// }
 		
 	}
 	
 	
 	@:noCompletion private function __bindGLTextureCubeMap (texture:GLTexture):Void {
 		
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLTextureCubeMap != texture #end) {
+		// TODO: Need to consider activeTexture ID
+		
+		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTextureCubeMap != texture #end) {
 			
 			gl.bindTexture (gl.TEXTURE_CUBE_MAP, texture);
 			__contextState.__currentGLTextureCubeMap = texture;
 			
-		}
+		// }
 		
 	}
 	
@@ -1190,7 +1194,7 @@ import openfl.utils.ByteArray;
 			
 			if (texture != null) {
 				
-				if (#if openfl_disable_context_cache true #else texture != __contextState.textures[i] #end) {
+				// if (#if openfl_disable_context_cache true #else texture != __contextState.textures[i] #end) {
 					
 					// TODO: Cleaner approach?
 					if (texture.__textureTarget == gl.TEXTURE_2D) {
@@ -1204,7 +1208,9 @@ import openfl.utils.ByteArray;
 					gl.enable (gl.TEXTURE_2D);
 					#end
 					
-				}
+					__contextState.textures[i] = texture;
+					
+				// }
 				
 				texture.__setSamplerState (samplerState);
 				
