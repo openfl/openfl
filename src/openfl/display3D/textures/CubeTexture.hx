@@ -267,7 +267,7 @@ import openfl.utils.ByteArray;
 				alphaTexture.__internalFormat = format;
 				
 				__context.__bindGLTextureCubeMap (alphaTexture.__textureID);
-				gl.compressedTexImage2D (target, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
+				gl.compressedTexImage2D (target, level, alphaTexture.__internalFormat, width, height, 0, new UInt8Array (#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
 				
 				__alphaTexture = alphaTexture;
 				

@@ -226,6 +226,7 @@ import openfl.utils.ByteArray;
 			
 		}
 		
+		__setGLScissorTest (false);
 		gl.clear (clearMask);
 		
 	}
@@ -401,12 +402,14 @@ import openfl.utils.ByteArray;
 		
 		__flushGL ();
 		
+		#if !openfl_disable_display_render
 		if (__state.renderToTexture == null) {
 			
 			// TODO: Make sure state is correct for this?
 			if (__stage3D == null && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 			
 		}
+		#end
 		
 		if (__state.program != null && __state.program.__format == AGAL) {
 			__state.program.__flush ();
@@ -649,9 +652,6 @@ import openfl.utils.ByteArray;
 		
 		__state.renderToTexture = null;
 		
-		// TODO: Is this correct?
-		__state.scissorRectangle.setEmpty ();
-		
 	}
 	
 	
@@ -661,9 +661,6 @@ import openfl.utils.ByteArray;
 		__state.renderToTextureDepthStencil = enableDepthAndStencil;
 		__state.renderToTextureAntiAlias = antiAlias;
 		__state.renderToTextureSurfaceSelector = surfaceSelector;
-		
-		// TODO: Is this correct?
-		__state.scissorRectangle.setEmpty ();
 		
 	}
 	
@@ -948,10 +945,12 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLDepth ():Void {
 		
-		if (#if openfl_disable_context_cache true #else __contextState.depthMask != __state.depthMask #end) {
+		var depthMask = (__state.depthMask && (__state.renderToTexture != null ? __state.renderToTextureDepthStencil : __state.backBufferEnableDepthAndStencil));
+		
+		if (#if openfl_disable_context_cache true #else __contextState.depthMask != depthMask #end) {
 			
-			gl.depthMask (__state.depthMask);
-			__contextState.depthMask = __state.depthMask;
+			gl.depthMask (depthMask);
+			__contextState.depthMask = depthMask;
 			
 		}
 		

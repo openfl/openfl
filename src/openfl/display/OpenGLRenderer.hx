@@ -789,12 +789,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
-		// TODO: Handle restoration of state after Stage3D render better?
-		// __context3D.__setGLCullFace (false);
-		// __context3D.__setGLDepthTest (false);
-		// __context3D.__setGLStencilTest (false);
-		// __context3D.__setGLScissorTest (false);
-		
 		__context3D.setColorMask (true, true, true, true);
 		__context3D.setCulling (NONE);
 		__context3D.setDepthTest (false, ALWAYS);
