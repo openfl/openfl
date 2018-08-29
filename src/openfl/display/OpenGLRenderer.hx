@@ -55,6 +55,7 @@ import lime.graphics.GLRenderContext;
 @:allow(openfl.display3D.textures)
 @:allow(openfl.display3D)
 @:allow(openfl.display)
+@:allow(openfl.text)
 
 
 class OpenGLRenderer extends DisplayObjectRenderer {
