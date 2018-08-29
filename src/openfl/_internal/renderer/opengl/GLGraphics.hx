@@ -602,6 +602,9 @@ class GLGraphics {
 								
 								// TODO: Use context.drawTriangles
 								context.__flushGL ();
+								if (context.__state.renderToTexture == null) {
+									if (!context.__stage.__renderer.__cleared) context.__stage.__renderer.__clear ();
+								}
 								
 								gl.drawArrays (gl.TRIANGLES, 0, length * 6);
 								bufferPosition += (4 * length * 6);
@@ -737,6 +740,9 @@ class GLGraphics {
 							
 							// TODO: Use context.drawTriangles
 							context.__flushGL ();
+							if (context.__state.renderToTexture == null) {
+								if (!context.__stage.__renderer.__cleared) context.__stage.__renderer.__clear ();
+							}
 							
 							gl.drawArrays (gl.TRIANGLES, 0, length);
 							bufferPosition += (stride * length);
