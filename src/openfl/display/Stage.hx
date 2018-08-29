@@ -1645,6 +1645,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D (this);
 				context3D.configureBackBuffer (stageWidth, stageHeight, 0, true, true, true);
+				context3D.present ();
 				__renderer = new OpenGLRenderer (context3D);
 				#end
 			
