@@ -202,6 +202,11 @@ import openfl.utils.ByteArray;
 			
 			clearMask |= gl.COLOR_BUFFER_BIT;
 			gl.clearColor (red, green, blue, alpha);
+			gl.colorMask (true, true, true, true);
+			__contextState.colorMaskRed = true;
+			__contextState.colorMaskGreen = true;
+			__contextState.colorMaskBlue = true;
+			__contextState.colorMaskAlpha = true;
 			
 		}
 		
@@ -418,6 +423,7 @@ import openfl.utils.ByteArray;
 	
 	public function present ():Void {
 		
+		setRenderToBackBuffer ();
 		__present = true;
 		
 	}

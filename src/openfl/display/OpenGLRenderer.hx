@@ -794,10 +794,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		// __context3D.__setGLDepthTest (false);
 		// __context3D.__setGLStencilTest (false);
 		// __context3D.__setGLScissorTest (false);
+		
+		__context3D.setColorMask (true, true, true, true);
 		__context3D.setCulling (NONE);
 		__context3D.setDepthTest (false, ALWAYS);
-		__context3D.setStencilReferenceValue (0, 0, 0);
+		__context3D.setStencilActions ();
 		__context3D.setScissorRectangle (null);
+		
+		__blendMode = null;
+		__setBlendMode (NORMAL);
 		
 		if (__defaultRenderTarget == null) {
 			
