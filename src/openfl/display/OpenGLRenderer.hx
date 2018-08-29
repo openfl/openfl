@@ -806,31 +806,41 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			object.__renderGL (this);
 			
+			// TODO: Handle this in Context3D as a viewport?
+			
 			if (__offsetX > 0 || __offsetY > 0) {
 				
-				__context3D.__setGLScissorTest (true);
+				// __context3D.__setGLScissorTest (true);
 				
 				if (__offsetX > 0) {
 					
-					__gl.scissor (0, 0, __offsetX, __height);
+					// __gl.scissor (0, 0, __offsetX, __height);
+					__scissorRectangle.setTo (0, 0, __offsetX, __height);
+					__context3D.setScissorRectangle (__scissorRectangle);
 					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
-					__gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
+					// __gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
+					__scissorRectangle.setTo (__offsetX + __displayWidth, 0, __width, __height);
+					__context3D.setScissorRectangle (__scissorRectangle);
 					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
 				if (__offsetY > 0) {
 					
-					__gl.scissor (0, 0, __width, __offsetY);
+					// __gl.scissor (0, 0, __width, __offsetY);
+					__scissorRectangle.setTo (0, 0, __width, __offsetY);
+					__context3D.setScissorRectangle (__scissorRectangle);
 					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
-					__gl.scissor (0, __offsetY + __displayHeight, __width, __height);
+					// __gl.scissor (0, __offsetY + __displayHeight, __width, __height);
+					__scissorRectangle.setTo (0, __offsetY + __displayHeight, __width, __height);
+					__context3D.setScissorRectangle (__scissorRectangle);
 					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
-				__context3D.__setGLScissorTest (false);
+				__context3D.setScissorRectangle (null);
 				
 			}
 			
@@ -959,8 +969,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (clipRect != null) {
 			
-			// __context3D.__setGLScissorTest (true);
-			
 			var x = Math.floor (clipRect.x);
 			var y = Math.floor (clipRect.y);
 			var width = Math.ceil (clipRect.right) - x;
@@ -969,14 +977,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			// __gl.scissor (x, __flipped ? __height - y - height : y, width, height);
-			
-			__scissorRectangle.setTo (x, __flipped ? __height - y - height : y, width, height);
+			// __scissorRectangle.setTo (x, __flipped ? __height - y - height : y, width, height);
+			__scissorRectangle.setTo (x, y, width, height);
 			__context3D.setScissorRectangle (__scissorRectangle);
 			
 		} else {
 			
-			// __context3D.__setGLScissorTest (false);
 			__context3D.setScissorRectangle (null);
 			
 		}
