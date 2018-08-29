@@ -2105,36 +2105,63 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
-	
-	private function __renderCanvas (renderSession:RenderSession):Void {
+	#if (js && html5)
+	function __canBeDrawnToCanvas ():Bool {
 		
-		#if (js && html5)
-		if (!readable) return;
+		return image != null;
+		
+	} 
+	
+	
+	function __drawToCanvas (context:CanvasRenderingContext2D, transform:Matrix, roundPixels:Bool, pixelRatio:Float, scrollRect:Rectangle, useScrollRectCoords:Bool):Void {
 		
 		if (image.type == DATA) {
 			
 			ImageCanvasUtil.convertToCanvas (image);
 			
 		}
+
+		var scale = pixelRatio / this.__pixelRatio; // Bitmaps can have different pixelRatio than display, therefore we need to scale them properly
 		
-		var context = renderSession.context;
-		
-		if (__worldTransform == null) __worldTransform = new Matrix ();
-		
-		context.globalAlpha = 1;
-		var transform = __worldTransform;
-		
-		if (renderSession.roundPixels) {
+		if (roundPixels) {
 			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, Math.round (transform.tx), Math.round (transform.ty));
+			context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, Math.round (transform.tx * pixelRatio), Math.round  (transform.ty * pixelRatio));
 			
 		} else {
 			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+			context.setTransform (transform.a * scale, transform.b, transform.c, transform.d * scale, transform.tx * pixelRatio, transform.ty * pixelRatio);
 			
 		}
 		
-		context.drawImage (image.src, 0, 0);
+		if (scrollRect == null) {
+			
+			context.drawImage (image.src, 0, 0);
+			
+		} else {
+			
+			var dx, dy;
+			if (useScrollRectCoords) {
+				dx = scrollRect.x;
+				dy = scrollRect.y;
+			} else {
+				dx = dy = 0;
+			}
+			
+			context.drawImage (image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, dx, dy, scrollRect.width, scrollRect.height);
+			
+		}
+		
+	}
+	#end
+	
+	
+	private function __renderCanvas (renderSession:RenderSession):Void {
+		
+		#if (js && html5)
+		if (!readable) return;
+		
+		renderSession.context.globalAlpha = 1;
+		__drawToCanvas (renderSession.context, __worldTransform, renderSession.roundPixels, renderSession.pixelRatio, null, false);
 		#end
 		
 	}
