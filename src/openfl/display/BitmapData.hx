@@ -2422,15 +2422,19 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (allowFramebuffer && __framebuffer != null && Lib.current.stage.__renderer.__type == OPENGL) {
+		if (allowFramebuffer && __texture != null && __texture.__glFramebuffer != null && Lib.current.stage.__renderer.__type == OPENGL) {
 			
 			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
 			var context = renderer.__context3D;
-			var gl = context.gl;
 			var color:ARGB = (color:ARGB);
 			var useScissor = !this.rect.equals (rect);
 			
-			context.__bindGLFramebuffer (__framebuffer);
+			var cacheRTT = context.__state.renderToTexture;
+			var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+			var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+			var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+			
+			context.setRenderToTexture (__texture);
 			
 			if (useScissor) {
 				
@@ -2446,7 +2450,15 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			context.__bindGLFramebuffer (null);
+			if (cacheRTT != null) {
+				
+				context.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+				
+			} else {
+				
+				context.setRenderToBackBuffer ();
+				
+			}
 			
 		} else if (readable) {
 			

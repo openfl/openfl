@@ -186,17 +186,19 @@ import openfl.utils.ByteArray;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
-		if (__state.renderToTexture == null) {
-			
-			if (__stage3D == null && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
-			
-		}
-		
 		__flushGLFramebuffer ();
+		__flushGLViewport ();
+		__flushGLStencil ();
 		
 		var clearMask = 0;
 		
 		if (mask & Context3DClearMask.COLOR != 0) {
+			
+			if (__state.renderToTexture == null) {
+				
+				if (__stage3D == null && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
+				
+			}
 			
 			clearMask |= gl.COLOR_BUFFER_BIT;
 			gl.clearColor (red, green, blue, alpha);
@@ -641,6 +643,9 @@ import openfl.utils.ByteArray;
 		
 		__state.renderToTexture = null;
 		
+		// TODO: Is this correct?
+		__state.scissorRectangle.setEmpty ();
+		
 	}
 	
 	
@@ -650,6 +655,9 @@ import openfl.utils.ByteArray;
 		__state.renderToTextureDepthStencil = enableDepthAndStencil;
 		__state.renderToTextureAntiAlias = antiAlias;
 		__state.renderToTextureSurfaceSelector = surfaceSelector;
+		
+		// TODO: Is this correct?
+		__state.scissorRectangle.setEmpty ();
 		
 	}
 	
@@ -679,7 +687,7 @@ import openfl.utils.ByteArray;
 		if (rectangle != null) {
 			__state.scissorRectangle.copyFrom (rectangle);
 		} else {
-			__state.scissorRectangle.setTo (0, 0, 0, 0);
+			__state.scissorRectangle.setEmpty ();
 		}
 		
 	}
@@ -828,6 +836,7 @@ import openfl.utils.ByteArray;
 		
 		__flushGLProgram ();
 		__flushGLFramebuffer ();
+		__flushGLViewport ();
 		
 		__flushGLBlend ();
 		__flushGLColor ();
@@ -836,7 +845,6 @@ import openfl.utils.ByteArray;
 		__flushGLScissor ();
 		__flushGLStencil ();
 		__flushGLTextures ();
-		__flushGLViewport ();
 		
 	}
 	

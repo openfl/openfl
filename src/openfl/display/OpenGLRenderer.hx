@@ -443,6 +443,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	@:noCompletion private override function __clear ():Void {
 		
+		__context3D.__setGLStencilTest (false);
+		
 		if (__stage == null || __stage.__transparent) {
 			
 			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
@@ -806,7 +808,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__offsetX > 0 || __offsetY > 0) {
 				
-				__gl.clearColor (0, 0, 0, 1);
 				__context3D.__setGLScissorTest (true);
 				
 				if (__offsetX > 0) {
