@@ -2432,7 +2432,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			context.clear (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
+			context.clear (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
 			
 			if (useScissor) {
 				

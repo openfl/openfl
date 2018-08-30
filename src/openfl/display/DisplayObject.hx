@@ -2235,7 +2235,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							if (__cacheBitmapData2 == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height) {
 								__cacheBitmapData2 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
-								//__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
+								__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
 								if (__cacheBitmapData2.image != null) {
 									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
@@ -2250,7 +2250,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							if (__cacheBitmapData3 == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height) {
 								__cacheBitmapData3 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
-								//__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
+								__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
 								if (__cacheBitmapData3.image != null) {
 									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
