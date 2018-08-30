@@ -1,7 +1,7 @@
 package openfl.ui; #if !flash
 
 
-import lime.ui.MouseCursor in LimeMouseCursor;
+import lime.ui.MouseCursor as LimeMouseCursor;
 
 
 @:enum abstract MouseCursor(String) from String to String {

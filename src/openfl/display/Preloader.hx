@@ -8,10 +8,10 @@ import openfl.events.ProgressEvent;
 import openfl.Lib;
 
 #if (lime >= "7.0.0")
-import lime.utils.Preloader in LimePreloader;
+import lime.utils.Preloader as LimePreloader;
 #else
 import lime.app.Config;
-import lime.app.Preloader in LimePreloader;
+import lime.app.Preloader as LimePreloader;
 #end
 
 #if !openfl_debug

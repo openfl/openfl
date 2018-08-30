@@ -2,7 +2,7 @@ package openfl.display;
 
 
 import lime.app.Application;
-import lime.ui.Window in LimeWindow;
+import lime.ui.Window as LimeWindow;
 import openfl._internal.Lib;
 
 #if (lime >= "7.0.0")

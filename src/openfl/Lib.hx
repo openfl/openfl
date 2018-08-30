@@ -6,7 +6,7 @@ import haxe.PosInfos;
 import haxe.Timer;
 import lime.system.System;
 import lime.utils.Log;
-import openfl._internal.Lib in InternalLib;
+import openfl._internal.Lib as InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;

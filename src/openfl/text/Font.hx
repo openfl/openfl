@@ -2,7 +2,7 @@ package openfl.text; #if !flash
 
 
 import lime.app.Future;
-import lime.text.Font in LimeFont;
+import lime.text.Font as LimeFont;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 

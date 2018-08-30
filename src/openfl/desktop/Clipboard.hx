@@ -1,7 +1,7 @@
 package openfl.desktop; #if !flash
 
 
-import lime.system.Clipboard in LimeClipboard;
+import lime.system.Clipboard as LimeClipboard;
 import openfl.utils.Object;
 
 #if !openfl_debug

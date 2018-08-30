@@ -1,7 +1,7 @@
 package openfl.utils; #if !flash #if !openfljs
 
 
-import lime.system.Endian in LimeEndian;
+import lime.system.Endian as LimeEndian;
 
 
 /**
@@ -83,7 +83,7 @@ import lime.system.Endian in LimeEndian;
 #else
 
 
-import lime.system.Endian in LimeEndian;
+import lime.system.Endian as LimeEndian;
 
 
 @:enum abstract Endian(String) from String to String {

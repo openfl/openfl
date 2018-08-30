@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-import lime.app.Application in LimeApplication;
+import lime.app.Application as LimeApplication;
 import openfl._internal.Lib;
 import openfl.display.MovieClip;
 

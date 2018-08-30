@@ -13,7 +13,7 @@ import lime.app.Future;
 import lime.system.System;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
-import lime.utils.Bytes in LimeBytes;
+import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
@@ -25,12 +25,12 @@ import lime.utils.compress.Zlib;
 #end
 
 #if format
-import format.amf.Reader in AMFReader;
-import format.amf.Tools in AMFTools;
-import format.amf.Writer in AMFWriter;
-import format.amf3.Reader in AMF3Reader;
-import format.amf3.Tools in AMF3Tools;
-import format.amf3.Writer in AMF3Writer;
+import format.amf.Reader as AMFReader;
+import format.amf.Tools as AMFTools;
+import format.amf.Writer as AMFWriter;
+import format.amf3.Reader as AMF3Reader;
+import format.amf3.Tools as AMF3Tools;
+import format.amf3.Writer as AMF3Writer;
 #end
 
 @:access(haxe.io.Bytes)

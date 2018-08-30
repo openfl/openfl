@@ -13,16 +13,16 @@ import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.MouseCursor in LimeMouseCursor;
+import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
-import openfl.display.Application in OpenFLApplication;
+import openfl.display.Application as OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
-import openfl.display.Window in OpenFLWindow;
+import openfl.display.Window as OpenFLWindow;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
@@ -48,7 +48,7 @@ import lime.ui.MouseWheelMode;
 #else
 import lime.app.Preloader;
 import lime.graphics.Renderer;
-import lime.ui.Mouse in LimeMouse;
+import lime.ui.Mouse as LimeMouse;
 #end
 
 #if hxtelemetry

@@ -1,7 +1,7 @@
 package openfl.utils;
 
 
-import lime.utils.AssetManifest in LimeAssetManifest;
+import lime.utils.AssetManifest as LimeAssetManifest;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

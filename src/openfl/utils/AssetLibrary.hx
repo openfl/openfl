@@ -5,7 +5,7 @@ import lime.app.Future;
 import lime.graphics.Image;
 import lime.media.AudioBuffer;
 import lime.text.Font;
-import lime.utils.AssetLibrary in LimeAssetLibrary;
+import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetManifest;
 import lime.utils.Bytes;
 import openfl.display.MovieClip;

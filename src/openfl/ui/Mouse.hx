@@ -3,9 +3,9 @@ package openfl.ui; #if !flash
 
 #if (lime >= "7.0.0")
 import lime.app.Application;
-import lime.ui.MouseCursor in LimeMouseCursor;
+import lime.ui.MouseCursor as LimeMouseCursor;
 #else
-import lime.ui.Mouse in LimeMouse;
+import lime.ui.Mouse as LimeMouse;
 #end
 
 

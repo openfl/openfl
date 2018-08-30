@@ -19,7 +19,7 @@ import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
 import lime.math.ColorMatrix;
-import lime.math.Rectangle in LimeRectangle;
+import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.Int16Array;
