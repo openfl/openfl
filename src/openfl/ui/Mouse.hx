@@ -1,12 +1,8 @@
 package openfl.ui; #if !flash
 
 
-#if (lime >= "7.0.0")
 import lime.app.Application;
 import lime.ui.MouseCursor as LimeMouseCursor;
-#else
-import lime.ui.Mouse as LimeMouse;
-#end
 
 
 /**
@@ -54,15 +50,11 @@ import lime.ui.Mouse as LimeMouse;
 	 */
 	public static function hide ():Void {
 		
-		#if (lime >= "7.0.0")
 		for (window in Application.current.windows) {
 			
 			window.cursor = null;
 			
 		}
-		#else
-		LimeMouse.hide ();
-		#end
 		
 	}
 	
@@ -80,13 +72,9 @@ import lime.ui.Mouse as LimeMouse;
 	 */
 	public static function show ():Void {
 		
-		#if (lime >= "7.0.0")
 		var cacheCursor = __cursor;
 		__cursor = null;
 		cursor = cacheCursor;
-		#else
-		LimeMouse.show ();
-		#end
 		
 	}
 	
@@ -110,7 +98,6 @@ import lime.ui.Mouse as LimeMouse;
 	
 	@:noCompletion private static function set_cursor (value:MouseCursor):MouseCursor {
 		
-		#if (lime >= "7.0.0")
 		if (value == null) value = AUTO;
 		var setCursor:LimeMouseCursor = null;
 		
@@ -141,25 +128,6 @@ import lime.ui.Mouse as LimeMouse;
 			}
 			
 		}
-		#else
-		switch (value) {
-			
-			case MouseCursor.ARROW: LimeMouse.cursor = ARROW;
-			case MouseCursor.BUTTON: LimeMouse.cursor = POINTER;
-			case MouseCursor.HAND: LimeMouse.cursor = MOVE;
-			case MouseCursor.IBEAM: LimeMouse.cursor = TEXT;
-			case MouseCursor.__CROSSHAIR: LimeMouse.cursor = CROSSHAIR;
-			case MouseCursor.__CUSTOM: LimeMouse.cursor = CUSTOM;
-			case MouseCursor.__RESIZE_NESW: LimeMouse.cursor = RESIZE_NESW;
-			case MouseCursor.__RESIZE_NS: LimeMouse.cursor = RESIZE_NS;
-			case MouseCursor.__RESIZE_NWSE: LimeMouse.cursor = RESIZE_NWSE;
-			case MouseCursor.__RESIZE_WE: LimeMouse.cursor = RESIZE_WE;
-			case MouseCursor.__WAIT: LimeMouse.cursor = WAIT;
-			case MouseCursor.__WAIT_ARROW: LimeMouse.cursor = WAIT_ARROW;
-			default:
-			
-		}
-		#end
 		
 		return __cursor = value;
 		

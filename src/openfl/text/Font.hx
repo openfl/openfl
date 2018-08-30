@@ -199,12 +199,12 @@ class Font extends LimeFont {
 				
 				__initialized = true;
 				
-			} #if (lime >= "5.9.0") else if (src == null && __fontID != null && Assets.isLocal (__fontID)) {
+			} else if (src == null && __fontID != null && Assets.isLocal (__fontID)) {
 				
 				__fromBytes (Assets.getBytes (__fontID));
 				__initialized = true;
 				
-			} #end
+			}
 			
 		}
 		#end

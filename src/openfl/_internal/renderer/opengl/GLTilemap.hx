@@ -15,10 +15,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-#if (lime < "7.0.0")
-import lime.graphics.opengl.WebGLContext;
-#end
-
 #if gl_stats
 import openfl._internal.renderer.opengl.stats.GLStats;
 import openfl._internal.renderer.opengl.stats.DrawCallContext;
@@ -34,7 +30,6 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.display.Tile)
-@:access(openfl.display.TileArray)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)

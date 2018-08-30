@@ -18,12 +18,6 @@ import lime.utils.DataPointer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
 
-#if (lime < "7.0.0")
-import lime.utils.compress.Deflate;
-import lime.utils.compress.LZMA;
-import lime.utils.compress.Zlib;
-#end
-
 #if format
 import format.amf.Reader as AMFReader;
 import format.amf.Tools as AMFTools;
@@ -312,11 +306,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 @:noDebug
 #end
 
-#if (lime >= "7.0.0")
 @:autoBuild(lime._internal.macros.AssetsMacro.embedByteArray())
-#else
-@:autoBuild(lime._macros.AssetsMacro.embedByteArray())
-#end
+
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
@@ -427,9 +418,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: #if (lime >= "7.0.0") limeBytes.compress (DEFLATE) #else Deflate.compress (this) #end;
-			case CompressionAlgorithm.LZMA: #if (lime >= "7.0.0") limeBytes.compress (LZMA) #else LZMA.compress (this) #end;
-			default: #if (lime >= "7.0.0") limeBytes.compress (ZLIB) #else Zlib.compress (this) #end;
+			case CompressionAlgorithm.DEFLATE: limeBytes.compress (DEFLATE);
+			case CompressionAlgorithm.LZMA: limeBytes.compress (LZMA);
+			default: limeBytes.compress (ZLIB);
 			
 		}
 		
@@ -775,9 +766,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = switch (algorithm) {
 			
-			case CompressionAlgorithm.DEFLATE: #if (lime >= "7.0.0") limeBytes.decompress (DEFLATE) #else Deflate.decompress (this) #end;
-			case CompressionAlgorithm.LZMA: #if (lime >= "7.0.0") limeBytes.decompress (LZMA) #else LZMA.decompress (this) #end;
-			default: #if (lime >= "7.0.0") limeBytes.decompress (ZLIB) #else Zlib.decompress (this) #end;
+			case CompressionAlgorithm.DEFLATE: limeBytes.decompress (DEFLATE);
+			case CompressionAlgorithm.LZMA: limeBytes.decompress (LZMA);
+			default: limeBytes.decompress (ZLIB);
 			
 		};
 		

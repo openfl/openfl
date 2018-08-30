@@ -5,6 +5,7 @@ import haxe.CallStack;
 import lime.app.Application;
 import lime.app.IModule;
 import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
 import lime.ui.Touch;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
@@ -14,6 +15,7 @@ import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor as LimeMouseCursor;
+import lime.ui.MouseWheelMode;
 import lime.ui.Window;
 import lime.utils.Log;
 import openfl._internal.renderer.opengl.GLBitmap;
@@ -41,15 +43,6 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContextType;
-import lime.ui.MouseWheelMode;
-#else
-import lime.app.Preloader;
-import lime.graphics.Renderer;
-import lime.ui.Mouse as LimeMouse;
-#end
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -748,7 +741,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			windowAttributes.element = element;
 			windowAttributes.resizable = resizable;
 			
-			#if (lime >= "7.0.0")
 			windowAttributes.stage = this;
 			
 			if (!Reflect.hasField (windowAttributes, "context")) windowAttributes.context = {};
@@ -768,25 +760,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (!Reflect.hasField (contextAttributes, "stencil")) contextAttributes.stencil = true;
 			if (!Reflect.hasField (contextAttributes, "depth")) contextAttributes.depth = true;
 			if (!Reflect.hasField (contextAttributes, "background")) contextAttributes.background = null;
-			#else
-			if (!Reflect.hasField (windowAttributes, "stencilBuffer")) windowAttributes.stencilBuffer = true;
-			if (!Reflect.hasField (windowAttributes, "depthBuffer")) windowAttributes.depthBuffer = true;
-			if (!Reflect.hasField (windowAttributes, "background")) windowAttributes.background = null;
-			#end
-			
-			#if (lime >= "7.0.0")
 			
 			app = new OpenFLApplication ();
 			window = app.createWindow (windowAttributes);
-			
-			#else
-			window = new Window (windowConfig);
-			window.stage = this;
-			
-			app = new Application ();
-			app.create ({});
-			app.createWindow (window);
-			#end
 			
 			this.color = color;
 			
@@ -1098,13 +1074,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float #if (lime >= "7.0.0"), deltaMode:MouseWheelMode #end):Void {
+	public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
 		__dispatchPendingMouseEvent ();
 		
-		#if (lime >= "7.0.0")
 		if (deltaMode == PIXELS) {
 			
 			__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale), deltaMode);
@@ -1114,9 +1089,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__onMouseWheel (Std.int (deltaX), Std.int (deltaY), deltaMode);
 			
 		}
-		#else
-		__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
-		#end
 		
 	}
 	
@@ -1135,14 +1107,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onRenderContextLost (#if (lime < "7.0.0") renderer:Renderer #end):Void {
+	public function onRenderContextLost ():Void {
 		
 		__renderer = null;
 		
 	}
 	
 	
-	public function onRenderContextRestored (#if (lime < "7.0.0") renderer:Renderer, #end context:RenderContext):Void {
+	public function onRenderContextRestored (context:RenderContext):Void {
 		
 		__createRenderer ();
 		
@@ -1253,7 +1225,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		if (#if (lime >= "7.0.0") window.context != null #else window.renderer != null #end) {
+		if (window.context != null) {
 			
 			__createRenderer ();
 			
@@ -1409,11 +1381,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function render (#if (lime >= "7.0.0") context:RenderContext #else renderer:Renderer #end):Void {
-		
-		#if (lime < "7.0.0")
-		if (renderer.window == null || renderer.window != window) return;
-		#end
+	public function render (context:RenderContext):Void {
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -1469,19 +1437,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (__renderer.__type == CAIRO) {
 				
 				#if lime_cairo
-				#if (lime >= "7.0.0")
 				cast (__renderer, CairoRenderer).cairo = context.cairo;
-				#else
-				switch (renderer.context) {
-					
-					case CAIRO (cairo):
-						
-						cast (__renderer, CairoRenderer).cairo = cairo;
-					
-					default:
-					
-				}
-				#end
 				#end
 				
 			}
@@ -1490,11 +1446,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else if (context3D == null) {
 			
-			#if (lime >= "7.0.0")
 			window.onRender.cancel ();
-			#else
-			renderer.onRender.cancel ();
-			#end
 			
 		}
 		

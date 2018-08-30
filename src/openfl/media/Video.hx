@@ -3,6 +3,7 @@ package openfl.media; #if !flash
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
@@ -21,13 +22,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -55,7 +49,7 @@ class Video extends DisplayObject {
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __bufferAlpha:Float;
 	@:noCompletion private var __bufferColorTransform:ColorTransform;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else WebGLContext #end;
+	@:noCompletion private var __bufferContext:RenderContext;
 	@:noCompletion private var __bufferData:Float32Array;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __height:Float;

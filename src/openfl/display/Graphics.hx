@@ -4,6 +4,7 @@ package openfl.display; #if !flash
 import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.Image;
+import lime.graphics.RenderContext;
 import lime.utils.Float32Array;
 import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -24,12 +25,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -74,7 +69,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __buffer:GLBuffer;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __bufferContext:RenderContext;
 	@:noCompletion private var __bufferData:Float32Array;
 	@:noCompletion private var __bufferLength:Int;
 	@:noCompletion private var __commands:DrawCommandBuffer;

@@ -2,18 +2,18 @@ package openfl.display;
 
 
 import massive.munit.Assert;
-import openfl.display.DOMSprite;
+import openfl.display.DOMElement;
 
 
-class DOMSpriteTest {
+class DOMElementTest {
 	
 	
 	@Test public function new_ () {
 		
 		// TODO: Confirm functionality
 		
-		var domSprite = new DOMSprite (null);
-		var exists = domSprite;
+		var domElement = new DOMElement (null);
+		var exists = domElement;
 		
 		Assert.isNotNull (exists);
 		

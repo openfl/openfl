@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import lime.graphics.RenderContext;
 import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.flash.FlashTilemap;
 import openfl.geom.Matrix;
@@ -23,19 +24,12 @@ import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLTilemap;
 #end
 
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
 @:access(openfl.display.Tile)
-@:access(openfl.display.TileArray)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 
@@ -56,13 +50,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	@:noCompletion private var __group:TileContainer;
 	@:noCompletion private var __tileset:Tileset;
 	
-	#if ((openfl < "9.0.0") && enable_tile_array)
-	@:noCompletion private var __tileArray:TileArray;
-	#end
-	
 	#if !flash
 	@:noCompletion private var __buffer:GLBuffer;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __bufferContext:RenderContext;
 	@:noCompletion private var __bufferData:Float32Array;
 	@:noCompletion private var __bufferDirty:Bool;
 	@:noCompletion private var __bufferLength:Int;
@@ -150,43 +140,11 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	#if ((openfl < "9.0.0") && enable_tile_array)
-	@:deprecated public function getTiles ():TileArray {
-		
-		if (__tileArray == null) {
-			
-			__tileArray = new TileArray ();
-			
-		}
-		
-		__tileArray.length = numTiles;
-		var tile;
-		
-		for (i in 0...numTiles) {
-			
-			__tileArray.position = i;
-			tile = __tiles[i];
-			
-			__tileArray.alpha = tile.__alpha;
-			__tileArray.colorTransform = tile.__colorTransform;
-			__tileArray.id = tile.__id;
-			__tileArray.matrix = tile.__matrix;
-			__tileArray.shader = tile.__shader;
-			__tileArray.tileset = tile.__tileset;
-			__tileArray.visible = tile.__visible;
-			
-		}
-		
-		return __tileArray;
-		
-	}
-	#else
 	public function getTiles ():TileContainer {
 		
 		return __group.clone ();
 		
 	}
-	#end
 	
 	
 	public function removeTile (tile:Tile):Tile {
@@ -217,56 +175,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	#if ((openfl < "9.0.0") && enable_tile_array)
-	@:deprecated public function setTiles (tileArray:TileArray):Void {
-		
-		if (tileArray != __tileArray) {
-			
-			__tileArray = tileArray;
-			
-		}
-		
-		var length = tileArray.length;
-		
-		for (i in numTiles...length) {
-			
-			addTile (new Tile ());
-			
-		}
-		
-		var tile, colorTransform;
-		
-		for (i in 0...length) {
-			
-			tileArray.position = i;
-			tile = __tiles[i];
-			
-			tile.__alpha = tileArray.alpha;
-			
-			colorTransform = tileArray.colorTransform;
-			
-			if (colorTransform != null) {
-				
-				#if flash
-				tile.__colorTransform = new ColorTransform (colorTransform.redMultiplier, colorTransform.greenMultiplier, colorTransform.blueMultiplier, colorTransform.alphaMultiplier, colorTransform.redOffset, colorTransform.greenOffset, colorTransform.blueOffset, colorTransform.alphaOffset);
-				#else
-				tile.__colorTransform = colorTransform.__clone ();
-				#end
-				
-			}
-			
-			tile.__id = tileArray.id;
-			tile.__matrix.copyFrom (tileArray.matrix);
-			tile.__shader = tileArray.shader;
-			tile.__tileset = tileArray.tileset;
-			tile.__visible = tileArray.visible;
-			
-		}
-		
-		__setRenderDirty ();
-		
-	}
-	#else
 	public function setTiles (group:TileContainer):Void {
 		
 		for (tile in group.__tiles) {
@@ -276,7 +184,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 	}
-	#end
 	
 	
 	public function swapTiles (tile1:Tile, tile2:Tile):Void {

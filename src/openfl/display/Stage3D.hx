@@ -3,6 +3,7 @@ package openfl.display; #if !flash
 
 import haxe.Timer;
 import lime.graphics.opengl.GL;
+import lime.graphics.RenderContext;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
@@ -15,12 +16,6 @@ import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
 
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
-
 #if (js && html5)
 import js.html.webgl.RenderingContext;
 import js.html.CanvasElement;
@@ -31,11 +26,6 @@ import js.Browser;
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
-#end
-
-#if (lime < "7.0.0")
-@:access(lime._backend.html5.HTML5GLRenderContext)
-@:access(lime._backend.native.NativeGLRenderContext)
 #end
 
 @:access(lime.graphics.opengl.GL)
@@ -69,7 +59,7 @@ class Stage3D extends EventDispatcher {
 	
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __renderContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __renderContext:RenderContext;
 	@:noCompletion private var __style:CSSStyleDeclaration;
 	@:noCompletion private var __webgl:RenderingContext;
 	#end
@@ -161,12 +151,7 @@ class Stage3D extends EventDispatcher {
 			__canvas.height = stage.stageHeight;
 			
 			var window = stage.window;
-			
-			#if (lime >= "7.0.0")
 			var attributes = renderer.__context.attributes;
-			#else
-			var attributes = window.config;
-			#end
 			
 			var transparentBackground = Reflect.hasField (attributes, "background") && attributes.background == null;
 			var colorDepth = Reflect.hasField (attributes, "colorDepth") ? attributes.colorDepth : 32;
@@ -175,9 +160,9 @@ class Stage3D extends EventDispatcher {
 				
 				alpha: (transparentBackground || colorDepth > 16) ? true : false,
 				antialias: Reflect.hasField (attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
-				depth: #if (lime < "7.0.0") Reflect.hasField (attributes, "depthBuffer") ? attributes.depthBuffer : #end true,
+				depth: true,
 				premultipliedAlpha: true,
-				stencil: #if (lime < "7.0.0") Reflect.hasField (attributes, "stencilBuffer") ? attributes.stencilBuffer : #end false,
+				stencil: true,
 				preserveDrawingBuffer: false
 				
 			};
@@ -192,26 +177,25 @@ class Stage3D extends EventDispatcher {
 				
 				// TODO: Need to handle renderer/context better
 				
-				#if (lime >= "7.0.0")
 				// TODO
-				#else
-				__renderContext = new GLRenderContext (cast __webgl);
-				GL.context = __renderContext;
 				
-				context3D = new Context3D (stage, this);
+				// __renderContext = new GLRenderContext (cast __webgl);
+				// GL.context = __renderContext;
 				
-				var renderer:DOMRenderer = cast renderer;
-				renderer.element.appendChild (__canvas);
+				// context3D = new Context3D (stage, this);
 				
-				__style = __canvas.style;
-				__style.setProperty ("position", "absolute", null);
-				__style.setProperty ("top", "0", null);
-				__style.setProperty ("left", "0", null);
-				__style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
-				__style.setProperty ("z-index", "-1", null);
+				// var renderer:DOMRenderer = cast renderer;
+				// renderer.element.appendChild (__canvas);
 				
-				__dispatchCreate ();
-				#end
+				// __style = __canvas.style;
+				// __style.setProperty ("position", "absolute", null);
+				// __style.setProperty ("top", "0", null);
+				// __style.setProperty ("left", "0", null);
+				// __style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
+				// __style.setProperty ("z-index", "-1", null);
+				
+				// __dispatchCreate ();
+				__dispatchError ();
 				
 			} else {
 				

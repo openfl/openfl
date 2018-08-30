@@ -1,4 +1,4 @@
-package openfl._internal.text; #if (lime >= "7.0.0")
+package openfl._internal.text;
 
 
 import haxe.io.Bytes;
@@ -568,8 +568,3 @@ class TextLayout {
 	}
 	
 }
-
-
-#else
-typedef TextLayout = lime.text.TextLayout;
-#end

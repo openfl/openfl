@@ -41,7 +41,7 @@ import openfl.utils.ByteArray;
 		__textureTarget = gl.TEXTURE_2D;
 		
 		__context.__bindGLTexture2D (__textureID);
-		gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, #if (lime >= "7.0.0") null #else 0 #end);
+		gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, null);
 		__context.__bindGLTexture2D (null);
 		
 		if (optimizeForRenderToTexture) __getGLFramebuffer (true, 0, 0);

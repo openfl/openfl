@@ -5,6 +5,7 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
+import lime.graphics.RenderContext;
 import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import lime.utils.Log;
@@ -15,12 +16,6 @@ import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

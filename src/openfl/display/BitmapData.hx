@@ -2,6 +2,8 @@ package openfl.display; #if !flash
 
 
 import haxe.macro.Context;
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.app.Application;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.cairo.CairoExtend;
@@ -18,6 +20,8 @@ import lime.graphics.opengl.GL;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
+import lime.graphics.RenderContext;
+import lime.math.ARGB;
 import lime.math.ColorMatrix;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
@@ -41,18 +45,8 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
+import openfl.Lib;
 import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.graphics.RenderContext;
-import lime.math.ARGB;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.utils.ImageCanvasUtil;
-import lime.graphics.GLRenderContext;
-import lime.math.color.ARGB;
-#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -219,9 +213,9 @@ class BitmapData implements IBitmapDrawable {
 	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
 	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
-	@:noCompletion private var __framebufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __framebufferContext:RenderContext;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@:noCompletion private var __indexBufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __indexBufferContext:RenderContext;
 	@:noCompletion private var __indexBufferData:Int16Array;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
@@ -232,14 +226,14 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@:noCompletion private var __surface:CairoSurface;
 	@:noCompletion private var __texture:RectangleTexture;
-	@:noCompletion private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __textureContext:RenderContext;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@:noCompletion private var __vertexBufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __vertexBufferContext:RenderContext;
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
@@ -926,11 +920,7 @@ class BitmapData implements IBitmapDrawable {
 			if (__textureContext == null) {
 				
 				// TODO: Some way to select current GL context for renderer?
-				#if (lime >= "7.0.0")
-				__textureContext = lime.app.Application.current.window.context;
-				#else
-				__textureContext = context.__context;
-				#end
+				__textureContext = Application.current.window.context;
 				
 			}
 			
@@ -940,7 +930,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var renderer = new OpenGLRenderer (openfl.Lib.current.stage.context3D, this);
+			var renderer = new OpenGLRenderer (Lib.current.stage.context3D, this);
 			renderer.__allowSmoothing = smoothing;
 			renderer.__setBlendMode (blendMode);
 			
@@ -1072,12 +1062,12 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (Std.is (compressor, PNGEncoderOptions)) {
 			
-			byteArray.writeBytes (ByteArray.fromBytes (image.encode (#if (lime >= "7.0.0") PNG #else "png" #end)));
+			byteArray.writeBytes (ByteArray.fromBytes (image.encode (PNG)));
 			return byteArray;
 			
 		} else if (Std.is (compressor, JPEGEncoderOptions)) {
 			
-			byteArray.writeBytes (ByteArray.fromBytes (image.encode (#if (lime >= "7.0.0") JPEG #else "jpg" #end, cast (compressor, JPEGEncoderOptions).quality)));
+			byteArray.writeBytes (ByteArray.fromBytes (image.encode (JPEG, cast (compressor, JPEGEncoderOptions).quality)));
 			return byteArray;
 			
 		}

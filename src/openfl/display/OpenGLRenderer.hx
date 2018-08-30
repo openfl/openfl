@@ -6,6 +6,8 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLMaskShader;
@@ -21,20 +23,9 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
-#end
-
-#if (lime < "7.0.0")
-@:access(lime._backend.html5.HTML5GLRenderContext)
 #end
 
 @:access(lime.graphics.GLRenderContext)
@@ -71,13 +62,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private static var __scissorRectangle = new Rectangle ();
 	@:noCompletion private static var __textureSizeValue = [ 0, 0. ];
 	
-	#if (lime >= "7.0.0")
 	public var gl:WebGLRenderContext;
-	#elseif openfljs
-	public var gl:js.html.webgl.RenderingContext;
-	#else
-	public var gl:GLRenderContext;
-	#end
 	
 	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
@@ -93,7 +78,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __displayHeight:Int;
 	@:noCompletion private var __displayWidth:Int;
 	@:noCompletion private var __flipped:Bool;
-	@:noCompletion private var __gl:#if (lime >= "7.0.0") WebGLRenderContext #else GLRenderContext #end;
+	@:noCompletion private var __gl:WebGLRenderContext;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:GLMaskShader;
 	@:noCompletion private var __matrix:Matrix4;
@@ -929,13 +914,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__displayWidth = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (w, 0) - __offsetX) : w;
 		__displayHeight = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, h) - __offsetY) : h;
 		
-		#if (lime >= "7.0.0")
 		__projection.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
 		__projectionFlipped.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
-		#else
-		__projection = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
-		__projectionFlipped = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
-		#end
 		
 	}
 	

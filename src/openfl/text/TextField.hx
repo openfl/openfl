@@ -1482,11 +1482,7 @@ class TextField extends InteractiveObject {
 		
 		if (__inputEnabled && stage != null) {
 			
-			#if (lime >= "7.0.0")
 			stage.window.textInputEnabled = false;
-			#else
-			stage.window.enableTextEvents = false;
-			#end
 			stage.window.onTextInput.remove (window_onTextInput);
 			stage.window.onKeyDown.remove (window_onKeyDown);
 			
@@ -1536,19 +1532,11 @@ class TextField extends InteractiveObject {
 		
 		if (stage != null) {
 			
-			#if (lime >= "7.0.0")
 			stage.window.textInputEnabled = true;
-			#else
-			stage.window.enableTextEvents = true;
-			#end
 			
 			if (!__inputEnabled) {
 				
-				#if (lime >= "7.0.0")
 				stage.window.textInputEnabled = true;
-				#else
-				stage.window.enableTextEvents = true;
-				#end
 				
 				if (!stage.window.onTextInput.has (window_onTextInput)) {
 					
