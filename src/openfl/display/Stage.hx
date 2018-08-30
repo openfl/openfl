@@ -2542,11 +2542,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		// for (stage3D in stage3Ds) {
+		for (stage3D in stage3Ds) {
 			
-		// 	stage3D.__resize (stageWidth, stageHeight);
+			stage3D.__resize (stageWidth, stageHeight);
 			
-		// }
+		}
 		
 		if (__renderer != null) {
 			

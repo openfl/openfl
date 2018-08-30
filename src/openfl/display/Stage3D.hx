@@ -7,9 +7,12 @@ import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import openfl.geom.Matrix3D;
 import openfl.Vector;
 
 #if (lime >= "7.0.0")
@@ -54,7 +57,13 @@ class Stage3D extends EventDispatcher {
 	public var y (get, set):Float;
 	
 	@:noCompletion private var __contextRequested:Bool;
+	@:noCompletion private var __height:Int;
+	@:noCompletion private var __indexBuffer:IndexBuffer3D;
+	@:noCompletion private var __projectionTransform:Matrix3D;
+	@:noCompletion private var __renderTransform:Matrix3D;
 	@:noCompletion private var __stage:Stage;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __width:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
 	
@@ -84,10 +93,18 @@ class Stage3D extends EventDispatcher {
 		
 		__stage = stage;
 		
+		__height = 0;
+		__projectionTransform = new Matrix3D ();
+		__renderTransform = new Matrix3D ();
+		__width = 0;
 		__x = 0;
 		__y = 0;
 		
 		visible = true;
+		
+		if (stage.stageWidth > 0 && stage.stageHeight > 0) {
+			__resize (stage.stageWidth, stage.stageHeight);
+		}
 		
 	}
 	
@@ -231,14 +248,32 @@ class Stage3D extends EventDispatcher {
 	
 	@:noCompletion private function __resize (width:Int, height:Int):Void {
 		
-		#if (js && html5)
-		if (__canvas != null) {
+		if (width != __width || height != __height) {
 			
-			__canvas.width = width;
-			__canvas.height = height;
+			#if (js && html5)
+			if (__canvas != null) {
+				
+				__canvas.width = width;
+				__canvas.height = height;
+				
+			}
+			#end
+			
+			__projectionTransform.copyRawDataFrom (Vector.ofArray ([
+				2.0 / (width > 0 ? width : 1), 0.0, 0.0, 0.0,
+				0.0, (__stage.context3D == context3D ? -2.0 : 2.0) / (height > 0 ? height : 1), 0.0, 0.0,
+				0.0, 0.0, -2.0 / 2000, 0.0,
+				-1.0, 1.0, 0.0, 1.0
+			]));
+			
+			__renderTransform.identity ();
+			__renderTransform.appendTranslation (__x, __y, 0);
+			__renderTransform.append (__projectionTransform);
+			
+			__width = width;
+			__height = height;
 			
 		}
-		#end
 		
 	}
 	
@@ -254,6 +289,9 @@ class Stage3D extends EventDispatcher {
 		
 		if (__x == value) return value;
 		__x = value;
+		__renderTransform.identity ();
+		__renderTransform.appendTranslation (__x, __y, 0);
+		__renderTransform.append (__projectionTransform);
 		return value;
 		
 	}
@@ -270,6 +308,9 @@ class Stage3D extends EventDispatcher {
 		
 		if (__y == value) return value;
 		__y = value;
+		__renderTransform.identity ();
+		__renderTransform.appendTranslation (__x, __y, 0);
+		__renderTransform.append (__projectionTransform);
 		return value;
 		
 	}

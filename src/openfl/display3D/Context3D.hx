@@ -76,11 +76,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
 	@:noCompletion private var __context:RenderContext;
 	@:noCompletion private var __contextState:Context3DState;
-	@:noCompletion private var __drawQuadIndexBuffer:IndexBuffer3D;
-	@:noCompletion private var __drawQuadProgram:Program3D;
-	@:noCompletion private var __drawQuadProjectionTransform:Matrix3D;
-	@:noCompletion private var __drawQuadRenderTransform:Matrix3D;
-	@:noCompletion private var __drawQuadVertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
 	@:noCompletion private var __fragmentConstants:Float32Array;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
@@ -250,11 +246,37 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			// TODO: Implement double-buffer for context.present() behavior
-			
 			if (__backBufferTexture == null || backBufferWidth != width || backBufferHeight != height) {
+				
 				__backBufferTexture = createRectangleTexture (width, height, BGRA, true);
 				__frontBufferTexture = createRectangleTexture (width, height, BGRA, true);
+				
+				if (__stage3D.__vertexBuffer == null) {
+					__stage3D.__vertexBuffer = createVertexBuffer (4, 5);
+				}
+				
+				var vertexData = new Vector<Float> ([
+					width, height, 0, 1, 1,
+					0, height, 0, 0, 1,
+					width, 0, 0, 1, 0,
+					0, 0, 0, 0, 0.0
+				]);
+				
+				__stage3D.__vertexBuffer.uploadFromVector (vertexData, 0, 20);
+				
+				if (__stage3D.__indexBuffer == null) {
+					
+					__stage3D.__indexBuffer = createIndexBuffer (6);
+					
+					var indexData = new Vector<UInt> ([
+						0, 1, 2,
+						2, 1, 3
+					]);
+					
+					__stage3D.__indexBuffer.uploadFromVector (indexData, 0, 6);
+					
+				}
+				
 			}
 			
 			backBufferWidth = width;
@@ -794,70 +816,6 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	@:noCompletion private function __drawQuad (texture:TextureBase, x:Float, y:Float):Void {
-		
-		if (__drawQuadProgram == null) {
-			
-			var vertexAssembler = new AGALMiniAssembler ();
-			vertexAssembler.assemble (Context3DProgramType.VERTEX,
-				"m44 op, va0, vc0\n" +
-				"mov v0, va1"
-			);
-			
-			var fragmentAssembler = new AGALMiniAssembler ();
-			fragmentAssembler.assemble (Context3DProgramType.FRAGMENT,
-				"tex ft1, v0, fs0 <2d,nearest,nomip>\n" +
-				"mov oc, ft1"
-			);
-			
-			__drawQuadProgram = createProgram ();
-			__drawQuadProgram.upload (vertexAssembler.agalcode, fragmentAssembler.agalcode);
-			
-			var vertexData = new Vector<Float> ([
-				1, 1, 0, 1, 1,
-				0, 1, 0, 0, 1,
-				1, 0, 0, 1, 0,
-				0, 0, 0, 0, 0.0
-			]);
-			
-			__drawQuadVertexBuffer = createVertexBuffer (4, 5);
-			__drawQuadVertexBuffer.uploadFromVector (vertexData, 0, 20);
-			
-			var indexData = new Vector<UInt> ([
-				0, 1, 2,
-				2, 1, 3
-			]);
-			
-			__drawQuadIndexBuffer = createIndexBuffer (6);
-			__drawQuadIndexBuffer.uploadFromVector (indexData, 0, 6);
-			
-			__drawQuadProjectionTransform = new Matrix3D ();
-			__drawQuadProjectionTransform.copyRawDataFrom (Vector.ofArray ([
-				2.0, 0.0, 0.0, 0.0,
-				0.0, __stage.context3D == this ? -2.0 : 2.0, 0.0, 0.0,
-				0.0, 0.0, -2.0 / 2000, 0.0,
-				-1.0, 1.0, 0.0, 1.0
-			]));
-			
-			__drawQuadRenderTransform = new Matrix3D ();
-			
-		}
-		
-		__drawQuadRenderTransform.identity ();
-		__drawQuadRenderTransform.appendTranslation (x / backBufferWidth, y / backBufferWidth, 0);
-		__drawQuadRenderTransform.append (__drawQuadProjectionTransform);
-		
-		setProgram (__drawQuadProgram);
-		setBlendFactors (ONE, ONE_MINUS_SOURCE_ALPHA);
-		setTextureAt (0, texture);
-		setVertexBufferAt (0, __drawQuadVertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-		setVertexBufferAt (1, __drawQuadVertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
-		setProgramConstantsFromMatrix (Context3DProgramType.VERTEX, 0, __drawQuadRenderTransform, true);
-		drawTriangles (__drawQuadIndexBuffer);
-		
-	}
-	
-	
 	@:noCompletion private function __flushGL ():Void {
 		
 		__flushGLProgram ();
@@ -1332,10 +1290,37 @@ import openfl.utils.ByteArray;
 		
 		var context = stage3D.context3D;
 		
-		if (context != null && stage3D.visible && context != this) {
+		if (context != null && context != this && context.__frontBufferTexture != null && stage3D.visible) {
 			
 			if (!__stage.__renderer.__cleared) clear (0, 0, 0, __stage.__transparent ? 0 : 1, 1, 0, Context3DClearMask.COLOR);
-			__drawQuad (context.__frontBufferTexture, stage3D.__x, stage3D.__y);
+			
+			if (__renderStage3DProgram == null) {
+				
+				var vertexAssembler = new AGALMiniAssembler ();
+				vertexAssembler.assemble (Context3DProgramType.VERTEX,
+					"m44 op, va0, vc0\n" +
+					"mov v0, va1"
+				);
+				
+				var fragmentAssembler = new AGALMiniAssembler ();
+				fragmentAssembler.assemble (Context3DProgramType.FRAGMENT,
+					"tex ft1, v0, fs0 <2d,nearest,nomip>\n" +
+					"mov oc, ft1"
+				);
+				
+				__renderStage3DProgram = createProgram ();
+				__renderStage3DProgram.upload (vertexAssembler.agalcode, fragmentAssembler.agalcode);
+				
+			}
+			
+			setProgram (__renderStage3DProgram);
+			setBlendFactors (ONE, ONE_MINUS_SOURCE_ALPHA);
+			setTextureAt (0, context.__frontBufferTexture);
+			setVertexBufferAt (0, stage3D.__vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+			setVertexBufferAt (1, stage3D.__vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+			setProgramConstantsFromMatrix (Context3DProgramType.VERTEX, 0, stage3D.__renderTransform, true);
+			drawTriangles (stage3D.__indexBuffer);
+			
 			__present = true;
 			
 		}
