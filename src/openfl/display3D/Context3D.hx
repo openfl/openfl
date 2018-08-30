@@ -23,6 +23,7 @@ import openfl.errors.IllegalOperationError;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
+import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
 
 #if !openfl_debug
@@ -75,6 +76,11 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
 	@:noCompletion private var __context:RenderContext;
 	@:noCompletion private var __contextState:Context3DState;
+	@:noCompletion private var __drawQuadIndexBuffer:IndexBuffer3D;
+	@:noCompletion private var __drawQuadProgram:Program3D;
+	@:noCompletion private var __drawQuadProjectionTransform:Matrix3D;
+	@:noCompletion private var __drawQuadRenderTransform:Matrix3D;
+	@:noCompletion private var __drawQuadVertexBuffer:VertexBuffer3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
 	@:noCompletion private var __fragmentConstants:Float32Array;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
@@ -261,14 +267,6 @@ import openfl.utils.ByteArray;
 			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer (enableDepthAndStencil, antiAlias, 0);
 			__frontBufferTexture.__getGLFramebuffer (enableDepthAndStencil, antiAlias, 0);
 			
-			// quick hack
-			__stage3D.__bitmap.__renderable = true;
-			__stage3D.__bitmapData.__texture = __frontBufferTexture;
-			__stage3D.__bitmapData.__textureContext = __context;
-			__stage3D.__bitmapData.width = width;
-			__stage3D.__bitmapData.height = height;
-			__stage3D.__bitmapData.__isValid = true;
-			
 		}
 		
 	}
@@ -381,9 +379,6 @@ import openfl.utils.ByteArray;
 			__frontBufferTexture = cacheBuffer;
 			
 			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer (__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
-			
-			// quick hack
-			__stage3D.__bitmapData.__texture = __frontBufferTexture;
 			
 		}
 		
@@ -795,6 +790,70 @@ import openfl.utils.ByteArray;
 			__contextState.__currentGLTextureCubeMap = texture;
 			
 		// }
+		
+	}
+	
+	
+	@:noCompletion private function __drawQuad (texture:TextureBase, x:Float, y:Float):Void {
+		
+		if (__drawQuadProgram == null) {
+			
+			var vertexAssembler = new AGALMiniAssembler ();
+			vertexAssembler.assemble (Context3DProgramType.VERTEX,
+				"m44 op, va0, vc0\n" +
+				"mov v0, va1"
+			);
+			
+			var fragmentAssembler = new AGALMiniAssembler ();
+			fragmentAssembler.assemble (Context3DProgramType.FRAGMENT,
+				"tex ft1, v0, fs0 <2d,nearest,nomip>\n" +
+				"mov oc, ft1"
+			);
+			
+			__drawQuadProgram = createProgram ();
+			__drawQuadProgram.upload (vertexAssembler.agalcode, fragmentAssembler.agalcode);
+			
+			var vertexData = new Vector<Float> ([
+				1, 1, 0, 1, 1,
+				0, 1, 0, 0, 1,
+				1, 0, 0, 1, 0,
+				0, 0, 0, 0, 0.0
+			]);
+			
+			__drawQuadVertexBuffer = createVertexBuffer (4, 5);
+			__drawQuadVertexBuffer.uploadFromVector (vertexData, 0, 20);
+			
+			var indexData = new Vector<UInt> ([
+				0, 1, 2,
+				2, 1, 3
+			]);
+			
+			__drawQuadIndexBuffer = createIndexBuffer (6);
+			__drawQuadIndexBuffer.uploadFromVector (indexData, 0, 6);
+			
+			__drawQuadProjectionTransform = new Matrix3D ();
+			__drawQuadProjectionTransform.copyRawDataFrom (Vector.ofArray ([
+				2.0, 0.0, 0.0, 0.0,
+				0.0, __stage.context3D == this ? -2.0 : 2.0, 0.0, 0.0,
+				0.0, 0.0, -2.0 / 2000, 0.0,
+				-1.0, 1.0, 0.0, 1.0
+			]));
+			
+			__drawQuadRenderTransform = new Matrix3D ();
+			
+		}
+		
+		__drawQuadRenderTransform.identity ();
+		__drawQuadRenderTransform.appendTranslation (x / backBufferWidth, y / backBufferWidth, 0);
+		__drawQuadRenderTransform.append (__drawQuadProjectionTransform);
+		
+		setProgram (__drawQuadProgram);
+		setBlendFactors (ONE, ONE_MINUS_SOURCE_ALPHA);
+		setTextureAt (0, texture);
+		setVertexBufferAt (0, __drawQuadVertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+		setVertexBufferAt (1, __drawQuadVertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+		setProgramConstantsFromMatrix (Context3DProgramType.VERTEX, 0, __drawQuadRenderTransform, true);
+		drawTriangles (__drawQuadIndexBuffer);
 		
 	}
 	
@@ -1261,6 +1320,23 @@ import openfl.utils.ByteArray;
 			}
 			
 			gl.viewport (0, 0, width, height);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __renderStage3D (stage3D:Stage3D):Void {
+		
+		// Assume this is the primary Context3D
+		
+		var context = stage3D.context3D;
+		
+		if (context != null && stage3D.visible && context != this) {
+			
+			if (!__stage.__renderer.__cleared) clear (0, 0, 0, __stage.__transparent ? 0 : 1, 1, 0, Context3DClearMask.COLOR);
+			__drawQuad (context.__frontBufferTexture, stage3D.__x, stage3D.__y);
+			__present = true;
 			
 		}
 		

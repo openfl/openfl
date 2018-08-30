@@ -53,8 +53,6 @@ class Stage3D extends EventDispatcher {
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
-	@:noCompletion private var __bitmap:Bitmap; // quick hack
-	@:noCompletion private var __bitmapData:BitmapData; //
 	@:noCompletion private var __contextRequested:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __x:Float;
@@ -129,18 +127,12 @@ class Stage3D extends EventDispatcher {
 			
 		}
 		
-		// quick hack
-		__bitmapData = new BitmapData (0, 0);
-		__bitmap = new Bitmap (__bitmapData);
-		
 		if (renderer.__type == OPENGL) {
 			
 			#if openfl_share_context
 			context3D = stage.context3D;
 			#else
 			context3D = new Context3D (stage, stage.context3D.__contextState, this);
-			__bitmapData.__texture = context3D.__backBufferTexture;
-			__bitmapData.__textureContext = context3D.__context;
 			#end
 			__dispatchCreate ();
 			
@@ -262,7 +254,6 @@ class Stage3D extends EventDispatcher {
 		
 		if (__x == value) return value;
 		__x = value;
-		if (__bitmap != null) __bitmap.x = x;
 		return value;
 		
 	}
@@ -279,7 +270,6 @@ class Stage3D extends EventDispatcher {
 		
 		if (__y == value) return value;
 		__y = value;
-		if (__bitmap != null) __bitmap.y = y;
 		return value;
 		
 	}

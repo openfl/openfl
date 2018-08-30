@@ -1457,16 +1457,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__update (false, true);
 		
 		for (stage3D in stage3Ds) {
-			if (stage3D.context3D != null && stage3D.visible && stage3D.context3D != context3D) {
-				if (stage3D.context3D.__present) context3D.present ();
-				if (context3D.__present) {
-					context3D.setRenderToBackBuffer ();
-					context3D.__flushGL ();
-					if (!__renderer.__cleared) context3D.clear (0, 0, 0, __transparent ? 0 : 1, 1, 0, Context3DClearMask.COLOR);
-					GLBitmap.render (stage3D.__bitmap, cast __renderer);
-					stage3D.context3D.__present = false;
-				}
-			}
+			
+			context3D.__renderStage3D (stage3D);
+			
 		}
 		
 		#if !openfl_disable_display_render if (context3D.__present) shouldRender = true; #end
