@@ -685,9 +685,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__renderDirty = true;
 		
 		stage3Ds = new Vector ();
-		// for (i in 0...#if mobile 2 #else 4 #end) {
+		for (i in 0...#if mobile 2 #else 4 #end) {
 			stage3Ds.push (new Stage3D (this));
-		// }
+		}
 		
 		this.stage = this;
 		
@@ -1456,15 +1456,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
+		for (stage3D in stage3Ds) {
+			if (stage3D.context3D != null && stage3D.visible && stage3D.context3D != context3D) {
+				if (stage3D.context3D.__present) context3D.present ();
+				if (context3D.__present) {
+					context3D.setRenderToBackBuffer ();
+					context3D.__flushGL ();
+					if (!__renderer.__cleared) context3D.clear (0, 0, 0, __transparent ? 0 : 1, 1, 0, Context3DClearMask.COLOR);
+					GLBitmap.render (stage3D.__bitmap, cast __renderer);
+					stage3D.context3D.__present = false;
+				}
+			}
+		}
+		
 		#if !openfl_disable_display_render if (context3D.__present) shouldRender = true; #end
 		
 		if (shouldRender) {
-			
-			// if (stage3Ds[0].context3D != null) {
-				
-			// 	context3D.__copyState (stage3Ds[0].context3D);
-				
-			// }
 			
 			if (__renderer.__type == CAIRO) {
 				
@@ -1499,16 +1506,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		if (context3D != null) {
-			
-			for (stage3D in stage3Ds) {
-				if (stage3D.context3D != null && context3D != null && stage3D.context3D != context3D && stage3D.context3D.__present) {
-					// quick hack, TODO: DOM
-					context3D.__bindGLFramebuffer (null);
-					if (!__renderer.__cleared) __renderer.__clear ();
-					GLBitmap.render (stage3D.__bitmap, cast __renderer);
-					stage3D.context3D.__present = false;
-				}
-			}
 			
 			if (!context3D.__present) {
 				

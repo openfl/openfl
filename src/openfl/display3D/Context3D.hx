@@ -40,6 +40,7 @@ import openfl.utils.ByteArray;
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Bitmap)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
@@ -69,10 +70,6 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var gl:WebGLRenderContext;
 	
 	@:noCompletion private var __backBufferAntiAlias:Int;
-	@:noCompletion private var __backBufferDepthGLRenderbuffer:GLRenderbuffer;
-	@:noCompletion private var __backBufferGLFramebuffer:GLFramebuffer;
-	@:noCompletion private var __backBufferGLRenderbuffer:GLRenderbuffer;
-	@:noCompletion private var __backBufferStencilGLRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
@@ -80,6 +77,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __enableErrorChecking:Bool;
 	@:noCompletion private var __fragmentConstants:Float32Array;
+	@:noCompletion private var __frontBufferTexture:RectangleTexture;
 	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __stage:Stage;
@@ -196,7 +194,7 @@ import openfl.utils.ByteArray;
 			
 			if (__state.renderToTexture == null) {
 				
-				if (__stage3D == null && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
+				if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
 				
 			}
 			
@@ -246,66 +244,11 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			if (__backBufferGLFramebuffer == null) {
-				__backBufferGLFramebuffer = gl.createFramebuffer ();
-			}
-			
-			__bindGLFramebuffer (__backBufferGLFramebuffer);
+			// TODO: Implement double-buffer for context.present() behavior
 			
 			if (__backBufferTexture == null || backBufferWidth != width || backBufferHeight != height) {
-				// TODO: Create framebuffer when optimize for render-to-texture is true?
 				__backBufferTexture = createRectangleTexture (width, height, BGRA, true);
-				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __backBufferTexture.__textureID, 0);
-			}
-			
-			if (enableDepthAndStencil) {
-				
-				if (GL_DEPTH_STENCIL != 0) {
-					
-					// TODO: Cache?
-					
-					if (__backBufferGLRenderbuffer == null) {
-						__backBufferGLRenderbuffer = gl.createRenderbuffer ();
-					}
-					
-					gl.bindRenderbuffer (gl.RENDERBUFFER, __backBufferGLRenderbuffer);
-					gl.renderbufferStorage (gl.RENDERBUFFER, GL_DEPTH_STENCIL, width, height);
-					gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, __backBufferGLRenderbuffer);
-					
-				} else {
-					
-					if (__backBufferDepthGLRenderbuffer == null) {
-						__backBufferDepthGLRenderbuffer = gl.createRenderbuffer ();
-					}
-					
-					if (__backBufferStencilGLRenderbuffer == null) {
-						__backBufferStencilGLRenderbuffer = gl.createRenderbuffer ();
-					}
-					
-					gl.bindRenderbuffer (gl.RENDERBUFFER, __backBufferDepthGLRenderbuffer);
-					gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
-					gl.bindRenderbuffer (gl.RENDERBUFFER, __backBufferStencilGLRenderbuffer);
-					gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, width, height);
-					
-					gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, __backBufferDepthGLRenderbuffer);
-					gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __backBufferStencilGLRenderbuffer);
-					
-				}
-				
-				gl.bindRenderbuffer (gl.RENDERBUFFER, null);
-				
-			}
-			
-			if (__enableErrorChecking) {
-				
-				var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
-				
-				if (code != gl.FRAMEBUFFER_COMPLETE) {
-					
-					trace ('Error: Context3D.configureBackBuffer status:${code} width:${width} height:${height}');
-					
-				}
-				
+				__frontBufferTexture = createRectangleTexture (width, height, BGRA, true);
 			}
 			
 			backBufferWidth = width;
@@ -315,10 +258,13 @@ import openfl.utils.ByteArray;
 			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
 			__backBufferWantsBestResolution = wantsBestResolution;
 			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
-			__state.__primaryGLFramebuffer = __backBufferGLFramebuffer;
+			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer (enableDepthAndStencil, antiAlias, 0);
+			__frontBufferTexture.__getGLFramebuffer (enableDepthAndStencil, antiAlias, 0);
 			
 			// quick hack
-			__stage3D.__bitmapData.__texture = __backBufferTexture;
+			__stage3D.__bitmap.__renderable = true;
+			__stage3D.__bitmapData.__texture = __frontBufferTexture;
+			__stage3D.__bitmapData.__textureContext = __context;
 			__stage3D.__bitmapData.width = width;
 			__stage3D.__bitmapData.height = height;
 			__stage3D.__bitmapData.__isValid = true;
@@ -406,7 +352,7 @@ import openfl.utils.ByteArray;
 		if (__state.renderToTexture == null) {
 			
 			// TODO: Make sure state is correct for this?
-			if (__stage3D == null && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 			
 		}
 		#end
@@ -427,6 +373,20 @@ import openfl.utils.ByteArray;
 	public function present ():Void {
 		
 		setRenderToBackBuffer ();
+		
+		if (__stage3D != null) {
+			
+			var cacheBuffer = __backBufferTexture;
+			__backBufferTexture = __frontBufferTexture;
+			__frontBufferTexture = cacheBuffer;
+			
+			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer (__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
+			
+			// quick hack
+			__stage3D.__bitmapData.__texture = __frontBufferTexture;
+			
+		}
+		
 		__present = true;
 		
 	}
@@ -1020,7 +980,7 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			__setGLFrontFace (false);
+			__setGLFrontFace (__stage.context3D != this);
 			
 		}
 		
@@ -1048,7 +1008,7 @@ import openfl.utils.ByteArray;
 		}
 		
 		if (program != null && program.__format == AGAL) {
-			__positionScale[1] = __state.renderToTexture != null ? -1.0 : 1.0;
+			__positionScale[1] = (__stage.context3D == this && __state.renderToTexture == null) ? 1.0 : -1.0;
 			program.__setPositionScale (__positionScale);
 		}
 		
@@ -1088,11 +1048,14 @@ import openfl.utils.ByteArray;
 					
 				} else {
 					
-					var window = __stage.window;
-					
 					height = backBufferHeight;
-					offsetX = __stage3D != null ? Std.int (__stage3D.x) : 0;
-					offsetY = Std.int (window.height * window.scale) - height - (__stage3D != null ? Std.int (__stage3D.y) : 0);
+					
+					if (__stage.context3D == this) {
+						
+						offsetX = __stage3D != null ? Std.int (__stage3D.x) : 0;
+						offsetY = Std.int (__stage.window.height * __stage.window.scale) - height - (__stage3D != null ? Std.int (__stage3D.y) : 0);
+						
+					}
 					
 				}
 				
@@ -1260,15 +1223,17 @@ import openfl.utils.ByteArray;
 		
 		if (__state.renderToTexture == null) {
 			
-			// TODO: Cache viewport, handle Stage3D.x/y changes?
-			
-			var window = __stage.window;
-			var x = __stage3D == null ? 0 : Std.int (__stage3D.x);
-			var y = __stage3D == null ? 0 : Std.int ((window.height * window.scale) - backBufferHeight - __stage3D.y);
-			if (x < 0) x = 0;
-			if (y < 0) y = 0;
-			
-			gl.viewport (x, y, backBufferWidth, backBufferHeight);
+			if (__stage.context3D == this) {
+				
+				var x = __stage3D == null ? 0 : Std.int (__stage3D.x);
+				var y = Std.int ((__stage.window.height * __stage.window.scale) - backBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
+				gl.viewport (x, y, backBufferWidth, backBufferHeight);
+				
+			} else {
+				
+				gl.viewport (0, 0, backBufferWidth, backBufferHeight);
+				
+			}
 			
 		} else {
 			

@@ -132,15 +132,16 @@ class Stage3D extends EventDispatcher {
 		// quick hack
 		__bitmapData = new BitmapData (0, 0);
 		__bitmap = new Bitmap (__bitmapData);
-		__bitmap.__renderable = true;
 		
 		if (renderer.__type == OPENGL) {
 			
-			// #if openfl_share_context
+			#if openfl_share_context
 			context3D = stage.context3D;
-			// #else
-			// context3D = new Context3D (stage, stage.context3D.__contextState, this);
-			// #end
+			#else
+			context3D = new Context3D (stage, stage.context3D.__contextState, this);
+			__bitmapData.__texture = context3D.__backBufferTexture;
+			__bitmapData.__textureContext = context3D.__context;
+			#end
 			__dispatchCreate ();
 			
 		} else if (renderer.__type == DOM) {
@@ -261,7 +262,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (__x == value) return value;
 		__x = value;
-		// TODO: Invalidate Context3D viewport
+		if (__bitmap != null) __bitmap.x = x;
 		return value;
 		
 	}
@@ -278,7 +279,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (__y == value) return value;
 		__y = value;
-		// TODO: Invalidate Context3D viewport
+		if (__bitmap != null) __bitmap.y = y;
 		return value;
 		
 	}
