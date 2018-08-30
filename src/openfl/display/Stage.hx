@@ -1489,7 +1489,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	#if (lime >= "7.0.0")
 	@:noCompletion private function __addWindow (window:Window):Void {
 		
 		if (this.window != window) return;
@@ -1524,7 +1523,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		onWindowCreate (window);
 		
 	}
-	#end
 	
 	
 	@:noCompletion private function __broadcastEvent (event:Event):Void {
@@ -1564,20 +1562,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#if (js && html5)
 		var pixelRatio = 1;
 		
-		#if (lime >= "7.0.0")
 		if (window.scale > 1) {
 			
 			// TODO: Does this check work?
 			pixelRatio = untyped window.devicePixelRatio || 1;
 			
 		}
-		#else
-		if (window.config != null && Reflect.hasField (window.config, "allowHighDPI") && window.config.allowHighDPI) {
-			
-			pixelRatio = untyped window.devicePixelRatio || 1;
-			
-		}
-		#end
 		#end
 		
 		switch (window.context.type) {
@@ -2066,34 +2056,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					if (cursor != null) {
 						
-						#if (lime >= "7.0.0")
 						window.cursor = cursor;
-						#elseif (commonjs && !nodejs)
-						if (cursor != __cursor && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
-							
-							@:privateAccess window.backend.element.style.cursor = switch (cursor) {
-								
-								case ARROW: "default";
-								case CROSSHAIR: "crosshair";
-								case MOVE: "move";
-								case POINTER: "pointer";
-								case RESIZE_NESW: "nesw-resize";
-								case RESIZE_NS: "ns-resize";
-								case RESIZE_NWSE: "nwse-resize";
-								case RESIZE_WE: "ew-resize";
-								case TEXT: "text";
-								case WAIT: "wait";
-								case WAIT_ARROW: "wait";
-								default: "auto";
-								
-							}
-							
-							__cursor = cursor;
-							
-						}
-						#else
-						LimeMouse.cursor = cursor;
-						#end
 						break;
 						
 					}
@@ -2104,18 +2067,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (cursor == null) {
 				
-				#if (lime >= "7.0.0")
 				window.cursor = ARROW;
-				#elseif (commonjs && !nodejs)
-				if (__cursor != null && @:privateAccess !lime._backend.html5.HTML5Mouse.__hidden) {
-					
-					@:privateAccess window.backend.element.style.cursor = "default";
-					__cursor = null;
-					
-				}
-				#else
-				LimeMouse.cursor = ARROW;
-				#end
 				
 			}
 			
@@ -2225,7 +2177,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private function __onMouseWheel (deltaX:Float, deltaY:Float #if (lime >= "7.0.0"), deltaMode:MouseWheelMode #end):Void {
+	@:noCompletion private function __onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		
 		var x = __mouseX;
 		var y = __mouseY;
@@ -2429,7 +2381,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	#if (lime >= "7.0.0")
 	@:noCompletion private function __registerLimeModule (application:Application):Void {
 		
 		application.onCreateWindow.add (__addWindow);
@@ -2448,7 +2399,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Touch.onEnd.add (onTouchEnd);
 		
 	}
-	#end
 	
 	
 	@:noCompletion private function __resize ():Void {
@@ -2571,7 +2521,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	#if (lime >= "7.0.0")
 	@:noCompletion private function __unregisterLimeModule (application:Application):Void {
 		
 		application.onCreateWindow.remove (__addWindow);
@@ -2584,7 +2533,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Touch.onEnd.remove (onTouchEnd);
 		
 	}
-	#end
 	
 	
 	@:noCompletion private override function __update (transformOnly:Bool, updateChildren:Bool):Void {
@@ -2643,95 +2591,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 	}
-	
-	
-	#if (lime < "7.0.0")
-	@:noCompletion public function addRenderer (renderer:Renderer):Void {
-		
-		if (this.window == null || this.window.renderer != renderer) return;
-		
-		renderer.onRender.add (render.bind (renderer));
-		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
-		renderer.onContextRestored.add (onRenderContextRestored.bind (renderer));
-		
-	}
-	
-	
-	@:noCompletion public function addWindow (window:Window):Void {
-		
-		if (this.window != window) return;
-		
-		window.onActivate.add (onWindowActivate.bind (window));
-		window.onClose.add (onWindowClose.bind (window), false, -9000);
-		window.onCreate.add (onWindowCreate.bind (window));
-		window.onDeactivate.add (onWindowDeactivate.bind (window));
-		window.onDropFile.add (onWindowDropFile.bind (window));
-		window.onEnter.add (onWindowEnter.bind (window));
-		window.onExpose.add (onWindowExpose.bind (window));
-		window.onFocusIn.add (onWindowFocusIn.bind (window));
-		window.onFocusOut.add (onWindowFocusOut.bind (window));
-		window.onFullscreen.add (onWindowFullscreen.bind (window));
-		window.onKeyDown.add (onKeyDown.bind (window));
-		window.onKeyUp.add (onKeyUp.bind (window));
-		window.onLeave.add (onWindowLeave.bind (window));
-		window.onMinimize.add (onWindowMinimize.bind (window));
-		window.onMouseDown.add (onMouseDown.bind (window));
-		window.onMouseMove.add (onMouseMove.bind (window));
-		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
-		window.onMouseUp.add (onMouseUp.bind (window));
-		window.onMouseWheel.add (onMouseWheel.bind (window));
-		window.onMove.add (onWindowMove.bind (window));
-		window.onResize.add (onWindowResize.bind (window));
-		window.onRestore.add (onWindowRestore.bind (window));
-		window.onTextEdit.add (onTextEdit.bind (window));
-		window.onTextInput.add (onTextInput.bind (window));
-		
-		if (window.id > -1) {
-			
-			onWindowCreate (window);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion public function registerModule (application:Application):Void {
-		
-		application.onExit.add (onModuleExit, false, 0);
-		application.onUpdate.add (update);
-		
-		for (gamepad in Gamepad.devices) {
-			
-			__onGamepadConnect (gamepad);
-			
-		}
-		
-		Gamepad.onConnect.add (__onGamepadConnect);
-		Touch.onStart.add (onTouchStart);
-		Touch.onMove.add (onTouchMove);
-		Touch.onEnd.add (onTouchEnd);
-		
-	}
-	
-	
-	@:noCompletion public function removeRenderer (renderer:Renderer):Void { }
-	@:noCompletion public function removeWindow (window:Window):Void { }
-	@:noCompletion public function setPreloader (preloader:Preloader):Void { }
-	
-	
-	
-	@:noCompletion public function unregisterModule (application:Application):Void {
-		
-		application.onExit.remove (onModuleExit);
-		application.onUpdate.remove (update);
-		
-		Gamepad.onConnect.remove (__onGamepadConnect);
-		Touch.onStart.remove (onTouchStart);
-		Touch.onMove.remove (onTouchMove);
-		Touch.onEnd.remove (onTouchEnd);
-		
-	}
-	#end
 	
 	
 	
@@ -2872,19 +2731,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function get_frameRate ():Float {
 		
-		#if (lime >= "7.0.0")
 		if (window != null) {
 			
 			return window.frameRate;
 			
 		}
-		#else
-		if (application != null) {
-			
-			return application.frameRate;
-			
-		}
-		#end
 		
 		return 0;
 		
@@ -2893,19 +2744,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function set_frameRate (value:Float):Float {
 		
-		#if (lime >= "7.0.0")
 		if (window != null) {
 			
 			return window.frameRate = value;
 			
 		}
-		#else
-		if (application != null) {
-			
-			return application.frameRate = value;
-			
-		}
-		#end
 		
 		return value;
 		
