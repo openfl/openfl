@@ -1,13 +1,18 @@
 package openfl.display3D; #if !flash
 
 
+import haxe.io.Bytes;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
+import lime.math.Rectangle as LimeRectangle;
+import lime.math.Vector2;
 import lime.utils.Float32Array;
+import lime.utils.UInt8Array;
 import openfl._internal.renderer.Context3DState;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
@@ -22,6 +27,7 @@ import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
@@ -45,6 +51,8 @@ import openfl.utils.ByteArray;
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
+@:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
 
 
 @:final class Context3D extends EventDispatcher {
@@ -355,11 +363,47 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	public function drawToBitmapData (destination:BitmapData):Void {
+	public function drawToBitmapData (destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void {
 		
 		if (destination == null) return;
 		
-		// GLContext3D.drawToBitmapData (this, destination);
+		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle () : new LimeRectangle (0, 0, backBufferWidth, backBufferHeight);
+		var destVector = destPoint != null ? destPoint.__toLimeVector2 () : new Vector2 ();
+		
+		if (__stage.context3D == this) {
+			
+			if (__stage.window != null) {
+				
+				if (__stage3D != null) {
+					destVector.setTo (Std.int (-__stage3D.x), Std.int (-__stage3D.y));
+				}
+				
+				var image = __stage.window.readPixels ();
+				destination.image.copyPixels (image, sourceRect, destVector);
+				
+			}
+			
+		} else if (__backBufferTexture != null) {
+			
+			var cacheRenderToTexture = __state.renderToTexture;
+			setRenderToBackBuffer ();
+			
+			__flushGLFramebuffer ();
+			__flushGLViewport ();
+			
+			// TODO: Read less pixels if srcRect is smaller
+			
+			var data = new UInt8Array (backBufferWidth * backBufferHeight * 4);
+			gl.readPixels (0, 0, backBufferWidth, backBufferHeight, __backBufferTexture.__format, gl.UNSIGNED_BYTE, data);
+			
+			var image = new Image (new ImageBuffer (data, backBufferWidth, backBufferHeight, 32, BGRA32));
+			destination.image.copyPixels (image, sourceRect, destVector);
+			
+			if (cacheRenderToTexture != null) {
+				setRenderToTexture (cacheRenderToTexture, __state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias, __state.renderToTextureSurfaceSelector);
+			}
+			
+		}
 		
 	}
 	
