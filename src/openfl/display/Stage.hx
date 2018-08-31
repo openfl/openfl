@@ -1320,6 +1320,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window || MouseEvent.__buttonDown) return;
 		
+		__dispatchPendingMouseEvent ();
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
