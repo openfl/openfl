@@ -358,6 +358,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__initShader (shader);
 			__context3D.setProgram (shader.program);
 			__context3D.__flushGLProgram ();
+			__context3D.__flushGLTextures ();
 			__currentShader.__enable ();
 			
 		}
@@ -378,6 +379,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
 			if (__currentShader.__textureCoord != null) __currentShader.__textureCoord.__useArray = true;
+			__context3D.setProgram (__currentShader.program);
+			__context3D.__flushGLProgram ();
+			__context3D.__flushGLTextures ();
 			__currentShader.__update ();
 			
 		}

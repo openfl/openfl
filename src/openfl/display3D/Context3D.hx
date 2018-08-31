@@ -1337,6 +1337,7 @@ import openfl.utils.ByteArray;
 		if (context != null && context != this && context.__frontBufferTexture != null && stage3D.visible) {
 			
 			if (!__stage.__renderer.__cleared) clear (0, 0, 0, __stage.__transparent ? 0 : 1, 1, 0, Context3DClearMask.COLOR);
+			__stage.__renderer.__cleared = true;
 			
 			if (__renderStage3DProgram == null) {
 				
