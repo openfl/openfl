@@ -123,8 +123,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var ext:KHR_debug = __gl.getExtension ("KHR_debug");
 		if (ext != null) {
 			
-			enable (ext.DEBUG_OUTPUT);
-			enable (ext.DEBUG_OUTPUT_SYNCHRONOUS);
+			gl.enable (ext.DEBUG_OUTPUT);
+			gl.enable (ext.DEBUG_OUTPUT_SYNCHRONOUS);
 			
 		}
 		#end
