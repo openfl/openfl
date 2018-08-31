@@ -245,7 +245,7 @@ class Stage3D extends EventDispatcher {
 			
 			__projectionTransform.copyRawDataFrom (Vector.ofArray ([
 				2.0 / (width > 0 ? width : 1), 0.0, 0.0, 0.0,
-				0.0, (__stage.context3D == context3D ? -2.0 : 2.0) / (height > 0 ? height : 1), 0.0, 0.0,
+				0.0, -2.0 / (height > 0 ? height : 1), 0.0, 0.0,
 				0.0, 0.0, -2.0 / 2000, 0.0,
 				-1.0, 1.0, 0.0, 1.0
 			]));
