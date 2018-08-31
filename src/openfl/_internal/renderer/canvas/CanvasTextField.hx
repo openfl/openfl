@@ -65,7 +65,8 @@ class CanvasTextField {
 		
 		graphics.__update ();
 		
-		if (textField.__dirty || graphics.__dirty) {
+		var dirty = textField.__dirty || graphics.__dirty || (graphics.__bitmap != null && @:privateAccess graphics.__bitmap.__pixelRatio != pixelRatio);
+		if (dirty) {
 			
 			var width = graphics.__width;
 			var height = graphics.__height;

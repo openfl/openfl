@@ -1112,7 +1112,8 @@ class CanvasGraphics {
 		
 		graphics.__update ();
 		
-		if (graphics.__dirty) {
+		var dirty = graphics.__dirty || (graphics.__bitmap != null && @:privateAccess graphics.__bitmap.__pixelRatio != renderSession.pixelRatio);
+		if (dirty) {
 			
 			hitTesting = false;
 			
