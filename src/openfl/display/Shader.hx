@@ -188,42 +188,42 @@ class Shader {
 	}
 	
 	
-	// @:noCompletion private function __createGLProgram (vertexSource:String, fragmentSource:String):GLProgram {
+	@:noCompletion private function __createGLProgram (vertexSource:String, fragmentSource:String):GLProgram {
 		
-	// 	var gl = __context.gl;
+		var gl = __context.gl;
 		
-	// 	var vertexShader = __createGLShader (vertexSource, gl.VERTEX_SHADER);
-	// 	var fragmentShader = __createGLShader (fragmentSource, gl.FRAGMENT_SHADER);
+		var vertexShader = __createGLShader (vertexSource, gl.VERTEX_SHADER);
+		var fragmentShader = __createGLShader (fragmentSource, gl.FRAGMENT_SHADER);
 		
-	// 	var program = gl.createProgram ();
+		var program = gl.createProgram ();
 		
-	// 	// Fix support for drivers that don't draw if attribute 0 is disabled
-	// 	for (param in __paramFloat) {
+		// Fix support for drivers that don't draw if attribute 0 is disabled
+		for (param in __paramFloat) {
 			
-	// 		if (param.name.indexOf ("Position") > -1 && StringTools.startsWith (param.name, "openfl_")) {
+			if (param.name.indexOf ("Position") > -1 && StringTools.startsWith (param.name, "openfl_")) {
 				
-	// 			gl.bindAttribLocation (program, 0, param.name);
-	// 			break;
+				gl.bindAttribLocation (program, 0, param.name);
+				break;
 				
-	// 		}
+			}
 			
-	// 	}
+		}
 		
-	// 	gl.attachShader (program, vertexShader);
-	// 	gl.attachShader (program, fragmentShader);
-	// 	gl.linkProgram (program);
+		gl.attachShader (program, vertexShader);
+		gl.attachShader (program, fragmentShader);
+		gl.linkProgram (program);
 		
-	// 	if (gl.getProgramParameter (program, gl.LINK_STATUS) == 0) {
+		if (gl.getProgramParameter (program, gl.LINK_STATUS) == 0) {
 			
-	// 		var message = "Unable to initialize the shader program";
-	// 		message += "\n" + gl.getProgramInfoLog (program);
-	// 		Log.error (message);
+			var message = "Unable to initialize the shader program";
+			message += "\n" + gl.getProgramInfoLog (program);
+			Log.error (message);
 			
-	// 	}
+		}
 		
-	// 	return program;
+		return program;
 		
-	// }
+	}
 	
 	
 	@:noCompletion private function __disable ():Void {
@@ -375,7 +375,11 @@ class Shader {
 			} else {
 				
 				program = __context.createProgram (GLSL);
-				program.uploadSources (vertex, fragment);
+				
+				// TODO
+				// program.uploadSources (vertex, fragment);
+				program.__programID = __createGLProgram (vertex, fragment);
+				
 				__programs.set (id, program);
 				
 			}
