@@ -299,7 +299,7 @@ class TextEngine {
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
 			
-		} else if (font != null && font.unitsPerEM != null) {
+		} else if (font != null && font.unitsPerEM != 0) {
 			
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
@@ -730,7 +730,7 @@ class TextEngine {
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
 				
-			} else if (font != null) {
+			} else if (font != null && font.unitsPerEM != 0) {
 				
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
@@ -848,7 +848,7 @@ class TextEngine {
 		var lineIndex = 0;
 		var lineFormat = null;
 		
-		inline function getPositions (text:UTF8String, startIndex:Int, endIndex:Int) {
+		#if !js inline #end function getPositions (text:UTF8String, startIndex:Int, endIndex:Int) {
 			
 			// TODO: optimize
 			
@@ -948,7 +948,7 @@ class TextEngine {
 			
 		}
 		
-		inline function getPositionsWidth (positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float {
+		#if !js inline #end function getPositionsWidth (positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float {
 			
 			var width = 0.0;
 			
@@ -966,7 +966,7 @@ class TextEngine {
 			
 		}
 		
-		inline function getTextWidth (text:String):Float {
+		#if !js inline #end function getTextWidth (text:String):Float {
 			
 			#if (js && html5)
 			
@@ -1008,7 +1008,7 @@ class TextEngine {
 			
 		}
 		
-		inline function nextLayoutGroup (startIndex, endIndex):Void {
+		#if !js inline #end function nextLayoutGroup (startIndex, endIndex):Void {
 			
 			if (layoutGroup == null || layoutGroup.startIndex != layoutGroup.endIndex) {
 				
@@ -1025,7 +1025,7 @@ class TextEngine {
 			
 		}
 		
-		inline function nextFormatRange ():Void {
+		#if !js inline #end function nextFormatRange ():Void {
 			
 			if (rangeIndex < textFormatRanges.length - 1) {
 				
@@ -1044,7 +1044,7 @@ class TextEngine {
 					ascent = currentFormat.size * currentFormat.__ascent;
 					descent = currentFormat.size * currentFormat.__descent;
 					
-				} else if (font != null && font.unitsPerEM != null) {
+				} else if (font != null && font.unitsPerEM != 0) {
 					
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
@@ -1076,7 +1076,7 @@ class TextEngine {
 			
 		}
 		
-		inline function alignBaseline ():Void {
+		#if !js inline #end function alignBaseline ():Void {
 			// aligns the baselines of all characters in a single line
 			
 			// since nextFormatRange may not have been called, have to update these manually
@@ -1116,7 +1116,7 @@ class TextEngine {
 			
 		}
 		
-		inline function breakLongWords (endIndex:Int):Void {
+		#if !js inline #end function breakLongWords (endIndex:Int):Void {
 			
 			var tempWidth = getTextWidth (text.substring (textIndex, endIndex));
 			
