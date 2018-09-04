@@ -78,7 +78,7 @@ package openfl.text {
 		 * Registers a font in the global font list.
 		 * 
 		 */
-		public static function registerFont (font:Dynamic):void {}
+		public static function registerFont (font:*):void {}
 		
 		
 	}
