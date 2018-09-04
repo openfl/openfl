@@ -39,11 +39,4 @@ class VertexArrayObjectContext implements IVertexArrayObjectContext {
 	}
 	
 	
-	public function isVertexArray (vao:GLVertexArrayObject):Bool {
-		
-		return __gl.isVertexArray (vao);
-		
-	}
-	
-	
 }

@@ -1678,14 +1678,14 @@ class BitmapData implements IBitmapDrawable {
 
 		if (__vaoContext == null) return;
 		
-		if (__vao != null && __vaoContext.isVertexArray (__vao)) {
+		if (__vao != null) {
 			
 			__vaoContext.deleteVertexArray (__vao);
 			__vao = null;
 			
 		}
 		
-		if (__vaoMask != null && __vaoContext.isVertexArray (__vaoMask)) {
+		if (__vaoMask != null) {
 			
 			__vaoContext.deleteVertexArray (__vaoMask);
 			__vaoMask = null;
