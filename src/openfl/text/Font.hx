@@ -160,12 +160,22 @@ class Font extends LimeFont {
 	
 	
 	/**
-	 * Registers a font class in the global font list.
+	 * Registers a font in the global font list.
 	 * 
 	 */
-	public static function registerFont (font:Class<Dynamic>) {
+	public static function registerFont (font:Dynamic) {
 		
-		var instance = cast (Type.createInstance (font, []), Font);
+		var instance:Font = null;
+		
+		if (Type.getClass (font) == null) {
+			
+			instance = cast (Type.createInstance (font, []), Font);
+			
+		} else {
+			
+			instance = cast (font, Font);
+			
+		}
 		
 		if (instance != null) {
 			
