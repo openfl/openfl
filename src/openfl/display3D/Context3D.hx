@@ -760,8 +760,8 @@ import openfl.utils.ByteArray;
 			
 		}
 		
-		gl.enableVertexAttribArray (index);
 		__bindGLArrayBuffer (buffer.__id);
+		gl.enableVertexAttribArray (index);
 		
 		var byteOffset = bufferOffset * 4;
 		

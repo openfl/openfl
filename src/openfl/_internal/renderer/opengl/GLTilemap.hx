@@ -373,11 +373,11 @@ class GLTilemap {
 			}
 			
 			if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
-			if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+			if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 2, FLOAT_2);
 			
 			if (tilemap.tileAlphaEnabled) {
 				
-				if (shader.__alpha != null) context.setVertexBufferAt (shader.__alpha.index, vertexBuffer, 4, FLOAT_1);
+				if (shader.__alpha != null) context.setVertexBufferAt (shader.__alpha.index, vertexBuffer, 3, FLOAT_1);
 				
 			}
 			
@@ -393,7 +393,7 @@ class GLTilemap {
 			var start = lastFlushedPosition;
 			var length = (indexBufferPosition - lastFlushedPosition);
 			
-			context.drawTriangles (indexBuffer, start, indexBufferPosition);
+			context.drawTriangles (indexBuffer, start, length);
 			
 			#if gl_stats
 				GLStats.incrementDrawCall (DrawCallContext.STAGE);
