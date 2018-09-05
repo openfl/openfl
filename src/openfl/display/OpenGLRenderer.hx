@@ -342,6 +342,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentShader != null) {
 			
+			// TODO: Integrate cleanup with Context3D
 			__currentShader.__disable ();
 			
 		}
@@ -350,6 +351,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			__currentShader = null;
 			__context3D.setProgram (null);
+			__context3D.__flushGLProgram ();
 			return;
 			
 		} else {
