@@ -46,7 +46,7 @@ class GLTilemap {
 	private static var currentBitmapData:BitmapData;
 	private static var currentBlendMode:BlendMode;
 	private static var currentShader:Shader;
-	private static var indexBufferPosition:Int;
+	private static var bufferPosition:Int;
 	private static var lastFlushedPosition:Int;
 	private static var lastUsedBitmapData:BitmapData;
 	private static var lastUsedShader:Shader;
@@ -297,7 +297,7 @@ class GLTilemap {
 			
 		}
 		
-		if (indexBufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
+		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null) {
 			
 			var context = renderer.__context3D;
 			var gl = context.gl;
@@ -372,12 +372,12 @@ class GLTilemap {
 				
 			}
 			
-			if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+			if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_2);
 			if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 2, FLOAT_2);
 			
 			if (tilemap.tileAlphaEnabled) {
 				
-				if (shader.__alpha != null) context.setVertexBufferAt (shader.__alpha.index, vertexBuffer, 3, FLOAT_1);
+				if (shader.__alpha != null) context.setVertexBufferAt (shader.__alpha.index, vertexBuffer, 4, FLOAT_1);
 				
 			}
 			
@@ -391,7 +391,7 @@ class GLTilemap {
 			}
 			
 			var start = lastFlushedPosition;
-			var length = (indexBufferPosition - lastFlushedPosition);
+			var length = (bufferPosition - lastFlushedPosition);
 			
 			context.drawTriangles (indexBuffer, start, length);
 			
@@ -403,7 +403,7 @@ class GLTilemap {
 			
 		}
 		
-		lastFlushedPosition = indexBufferPosition;
+		lastFlushedPosition = bufferPosition;
 		lastUsedBitmapData = currentBitmapData;
 		lastUsedShader = currentShader;
 		
@@ -418,7 +418,7 @@ class GLTilemap {
 		
 		if (numTiles == 0) return;
 		
-		indexBufferPosition = 0;
+		bufferPosition = 0;
 		
 		lastFlushedPosition = 0;
 		lastUsedBitmapData = null;
@@ -511,7 +511,7 @@ class GLTilemap {
 				currentBitmapData = bitmapData;
 				currentShader = shader;
 				currentBlendMode = blendMode;
-				indexBufferPosition += 6;
+				bufferPosition += 2;
 				
 			}
 			
