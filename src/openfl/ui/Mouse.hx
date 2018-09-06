@@ -29,6 +29,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	public static var supportsNativeCursor (default, null):Bool = #if !mobile true; #else false; #end
 	
 	@:noCompletion private static var __cursor:MouseCursor = MouseCursor.AUTO;
+	@:noCompletion private static var __hidden:Bool;
 	
 	
 	#if openfljs
@@ -49,6 +50,8 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	 * 
 	 */
 	public static function hide ():Void {
+		
+		__hidden = true;
 		
 		for (window in Application.current.windows) {
 			
@@ -71,6 +74,8 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	 * 
 	 */
 	public static function show ():Void {
+		
+		__hidden = false;
 		
 		var cacheCursor = __cursor;
 		__cursor = null;
@@ -119,7 +124,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 			
 		}
 		
-		if (setCursor != null) {
+		if (setCursor != null && !__hidden) {
 			
 			for (window in Application.current.windows) {
 				

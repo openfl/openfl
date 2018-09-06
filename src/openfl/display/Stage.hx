@@ -2041,7 +2041,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		if (Mouse.__cursor == MouseCursor.AUTO) {
+		if (Mouse.__cursor == MouseCursor.AUTO && !Mouse.__hidden) {
 			
 			var cursor = null;
 			
