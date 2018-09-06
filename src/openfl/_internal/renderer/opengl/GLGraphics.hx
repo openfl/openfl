@@ -836,7 +836,7 @@ class GLGraphics {
 			
 		} else if (length > buffer.length) {
 			
-			var newBuffer = new Int16Array (length);
+			newBuffer = new Int16Array (length);
 			newBuffer.set (buffer);
 			position = buffer.length;
 			
@@ -885,7 +885,7 @@ class GLGraphics {
 			
 		} else if (length > buffer.length) {
 			
-			var newBuffer = new Float32Array (length);
+			newBuffer = new Float32Array (length);
 			newBuffer.set (buffer);
 			
 		}
