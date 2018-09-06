@@ -419,7 +419,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__stencilReference > 0) {
 			
 			__stencilReference = 0;
-			__context3D.__setGLStencilTest (false);
+			// __context3D.setStencilActions ();
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -435,7 +436,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	@:noCompletion private override function __clear ():Void {
 		
-		__context3D.__setGLStencilTest (false);
+		// __context3D.setStencilActions ();
+		// __context3D.__setGLStencilTest (false);
 		
 		if (__stage == null || __stage.__transparent) {
 			
@@ -637,7 +639,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		} else {
 			
 			__stencilReference = 0;
-			__context3D.setStencilActions (FRONT_AND_BACK, ALWAYS);
+			__context3D.setStencilActions ();
 			// __context3D.__setGLStencilTest (false);
 			
 		}
@@ -687,7 +689,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference == 0) {
 			
-			__context3D.__setGLStencilTest (true);
+			// __context3D.__setGLStencilTest (true);
 			// __gl.stencilMask (0xFF);
 			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
 			__updatedStencil = true;
@@ -930,11 +932,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
-			__context3D.__setGLStencilTest (true);
+			// __context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+			// __context3D.__setGLStencilTest (true);
 			
 		} else {
 			
-			__context3D.__setGLStencilTest (false);
+			// __context3D.setStencilActions ();
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -1048,7 +1052,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
-			__context3D.__setGLStencilTest (false);
+			// __context3D.setStencilActions ();
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
