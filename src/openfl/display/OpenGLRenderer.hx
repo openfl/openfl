@@ -419,7 +419,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__stencilReference > 0) {
 			
 			__stencilReference = 0;
-			// __context3D.setStencilActions ();
+			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
 			// __context3D.__setGLStencilTest (false);
 			
 		}
@@ -640,6 +641,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			__stencilReference = 0;
 			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
 			// __context3D.__setGLStencilTest (false);
 			
 		}
@@ -786,6 +788,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__context3D.setCulling (NONE);
 		__context3D.setDepthTest (false, ALWAYS);
 		__context3D.setStencilActions ();
+		__context3D.setStencilReferenceValue (0, 0, 0);
 		__context3D.setScissorRectangle (null);
 		
 		__blendMode = null;
@@ -932,12 +935,14 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
-			// __context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+			__context3D.setStencilReferenceValue (__stencilReference);
 			// __context3D.__setGLStencilTest (true);
 			
 		} else {
 			
-			// __context3D.setStencilActions ();
+			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
 			// __context3D.__setGLStencilTest (false);
 			
 		}
@@ -1052,6 +1057,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
+			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
 			// __context3D.setStencilActions ();
 			// __context3D.__setGLStencilTest (false);
 			

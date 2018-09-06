@@ -196,7 +196,6 @@ import openfl.utils.ByteArray;
 		
 		__flushGLFramebuffer ();
 		__flushGLViewport ();
-		__flushGLStencil ();
 		
 		var clearMask = 0;
 		
@@ -233,6 +232,8 @@ import openfl.utils.ByteArray;
 			gl.clearStencil (stencil);
 			
 		}
+		
+		if (clearMask == 0) return;
 		
 		__setGLScissorTest (false);
 		gl.clear (clearMask);
@@ -410,8 +411,6 @@ import openfl.utils.ByteArray;
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		__flushGL ();
-		
 		#if !openfl_disable_display_render
 		if (__state.renderToTexture == null) {
 			
@@ -419,6 +418,9 @@ import openfl.utils.ByteArray;
 			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 			
 		}
+		
+		__flushGL ();
+		
 		#end
 		
 		if (__state.program != null && __state.program.__format == AGAL) {
@@ -1009,15 +1011,15 @@ import openfl.utils.ByteArray;
 				var framebuffer = __state.renderToTexture.__getGLFramebuffer (__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias, __state.renderToTextureSurfaceSelector);
 				__bindGLFramebuffer (framebuffer);
 				
-				__setGLDepthTest (__state.renderToTextureDepthStencil);
-				__setGLStencilTest (__state.renderToTextureDepthStencil);
-				
 				__contextState.renderToTexture = __state.renderToTexture;
 				__contextState.renderToTextureAntiAlias = __state.renderToTextureAntiAlias;
 				__contextState.renderToTextureDepthStencil = __state.renderToTextureDepthStencil;
 				__contextState.renderToTextureSurfaceSelector = __state.renderToTextureSurfaceSelector;
 				
 			}
+			
+			__setGLDepthTest (__state.renderToTextureDepthStencil);
+			__setGLStencilTest (__state.renderToTextureDepthStencil);
 			
 			__setGLFrontFace (true);
 			
@@ -1033,13 +1035,13 @@ import openfl.utils.ByteArray;
 				
 				__bindGLFramebuffer (__state.__primaryGLFramebuffer);
 				
-				__setGLDepthTest (__state.backBufferEnableDepthAndStencil);
-				__setGLStencilTest (__state.backBufferEnableDepthAndStencil);
-				
 				__contextState.renderToTexture = null;
 				__contextState.backBufferEnableDepthAndStencil = __state.backBufferEnableDepthAndStencil;
 				
 			}
+			
+			__setGLDepthTest (__state.backBufferEnableDepthAndStencil);
+			__setGLStencilTest (__state.backBufferEnableDepthAndStencil);
 			
 			__setGLFrontFace (__stage.context3D != this);
 			
