@@ -9,7 +9,10 @@ import openfl._internal.renderer.RenderSession;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
 import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.filters.BitmapFilter;
 import openfl.display.BitmapData.TextureRegionResult;
+import openfl.utils.ByteArray;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GL;
@@ -100,6 +103,24 @@ class SubBitmapData extends BitmapData {
 
 	#if !display
 	
+	function unsupported() lime.utils.Log.error("SubBitmapData does not support modification methods, please create a normal BitmapData object and draw into it");
+	override function applyFilter(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter) unsupported();
+	override function colorTransform(rect:Rectangle, colorTransform:ColorTransform) unsupported();
+	override function copyChannel(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel, destChannel:BitmapDataChannel) unsupported();
+	override function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false) unsupported();
+	override function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false) unsupported();
+	override function floodFill(x:Int, y:Int, color:Int) unsupported();
+	override function fillRect(rect:Rectangle, color:Int) unsupported();
+	override function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt, alphaMultiplier:UInt) unsupported();
+	override function noise(randomSeed:Int, low:Int = 0, high:Int = 255, channelOptions:Int = 7, grayScale:Bool = false) unsupported();
+	override function paletteMap(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redArray:Array<Int> = null, greenArray:Array<Int> = null, blueArray:Array<Int> = null, alphaArray:Array<Int> = null) unsupported();
+	override function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void unsupported();
+	override function scroll (x:Int, y:Int):Void unsupported();
+	override function setPixel (x:Int, y:Int, color:Int):Void unsupported();
+	override function setPixel32 (x:Int, y:Int, color:Int):Void unsupported();
+	override function setPixels (rect:Rectangle, byteArray:ByteArray):Void unsupported();
+	override function setVector (rect:Rectangle, inputVector:Vector<UInt>) unsupported();
+		
 	// not using Point class here, because we need Int coords, not Float
 	static var __getPixelAbsoluteCoordsX:Int;
 	static var __getPixelAbsoluteCoordsY:Int;
