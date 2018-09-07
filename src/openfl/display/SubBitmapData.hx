@@ -103,7 +103,18 @@ class SubBitmapData extends BitmapData {
 
 	#if !display
 	
-	function unsupported() lime.utils.Log.error("SubBitmapData does not support modification methods, please create a normal BitmapData object and draw into it");
+	function unsupported() {
+		var message = "SubBitmapData does not support modification methods, please create a normal BitmapData object and draw into it";
+		#if debug
+		throw message;
+		#else
+		#if (js && html5)
+		js.Browser.window.console.error(message);
+		#else
+		trace(message);
+		#end
+		#end
+	}
 	override function applyFilter(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter) unsupported();
 	override function colorTransform(rect:Rectangle, colorTransform:ColorTransform) unsupported();
 	override function copyChannel(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel, destChannel:BitmapDataChannel) unsupported();
