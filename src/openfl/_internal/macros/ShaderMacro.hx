@@ -145,7 +145,8 @@ class ShaderMacro {
 		
 		var lastMatch = 0, position, regex, name, type;
 		
-		if (storageType == "uniform") {
+		var isUniform = storageType == "uniform";
+		if (isUniform) {
 			
 			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
 			
@@ -174,7 +175,7 @@ class ShaderMacro {
 			
 			if (StringTools.startsWith (type, "sampler")) {
 				
-				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderInput<openfl.display.BitmapData>), pos: pos } );
+				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter.ShaderParameterSampler), pos: pos } );
 				
 			} else {
 				
@@ -205,21 +206,32 @@ class ShaderMacro {
 					
 				}
 				
-				switch (parameterType) {
+
+				var type =
+					if (!isUniform)
+						macro : openfl.display.ShaderParameter.ShaderParameterAttrib
+					else switch (parameterType) {
 					
-					case BOOL, BOOL2, BOOL3, BOOL4:
+						case BOOL: macro : openfl.display.ShaderParameter.ShaderParameterBool;
+						case BOOL2: macro : openfl.display.ShaderParameter.ShaderParameterBool2;
+						case BOOL3: macro : openfl.display.ShaderParameter.ShaderParameterBool3;
+						case BOOL4: macro : openfl.display.ShaderParameter.ShaderParameterBool4;
+						case FLOAT: macro : openfl.display.ShaderParameter.ShaderParameterFloat;
+						case FLOAT2: macro : openfl.display.ShaderParameter.ShaderParameterFloat2;
+						case FLOAT3: macro : openfl.display.ShaderParameter.ShaderParameterFloat3;
+						case FLOAT4: macro : openfl.display.ShaderParameter.ShaderParameterFloat4;
+						case INT: macro : openfl.display.ShaderParameter.ShaderParameterInt;
+						case INT2: macro : openfl.display.ShaderParameter.ShaderParameterInt2;
+						case INT3: macro : openfl.display.ShaderParameter.ShaderParameterInt3;
+						case INT4: macro : openfl.display.ShaderParameter.ShaderParameterInt4;
+						case MATRIX2X2: macro : openfl.display.ShaderParameter.ShaderParameterMatrix2;
+						case MATRIX3X3: macro : openfl.display.ShaderParameter.ShaderParameterMatrix3;
+						case MATRIX4X4: macro : openfl.display.ShaderParameter.ShaderParameterMatrix4;
+						default: macro : openfl.display.ShaderParameter.ShaderParameterFloat;
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Bool>), pos: pos } );
-					
-					case INT, INT2, INT3, INT4:
-						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Int>), pos: pos } );
-					
-					default:
-						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos } );
-					
-				}
+					}
+								
+				fields.push ( { name: name, access: [ APublic ], kind: FVar (type), pos: pos } );
 				
 			}
 			

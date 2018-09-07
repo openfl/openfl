@@ -46,7 +46,6 @@ class GLRenderer extends AbstractRenderer {
 	private var renderTargetB:BitmapData;
 	private var offsetX:Int;
 	private var offsetY:Int;
-	private var values:Array<Float>;
 	
 	
 	public function new (stage:Stage, gl:GLRenderContext, ?defaultRenderTarget:BitmapData) {
@@ -64,7 +63,6 @@ class GLRenderer extends AbstractRenderer {
 		}
 		
 		matrix = new Matrix4 ();
-		values = new Array ();
 		
 		renderSession = new RenderSession ();
 		renderSession.clearRenderDirty = true;
@@ -126,10 +124,10 @@ class GLRenderer extends AbstractRenderer {
 		
 	}
 	
-	
-	public function getMatrix (transform:Matrix, snapToPixel: Bool = false):Array<Float> {
-		
+
+	public function getMatrix (transform:Matrix, snapToPixel: Bool = false):Matrix4 {
 		var _matrix = Matrix.__pool.get ();
+		
 		_matrix.copyFrom (transform);
 		_matrix.concat (displayMatrix);
 		
@@ -149,15 +147,9 @@ class GLRenderer extends AbstractRenderer {
 		matrix[13] = _matrix.ty;
 		matrix.append (flipped ? projectionFlipped : projection);
 		
-		for (i in 0...16) {
-			
-			values[i] = matrix[i];
-			
-		}
-		
 		Matrix.__pool.release (_matrix);
 		
-		return values;
+		return matrix;
 		
 	}
 	

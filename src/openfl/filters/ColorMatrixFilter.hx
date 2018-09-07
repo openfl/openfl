@@ -3,9 +3,11 @@ package openfl.filters;
 
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.color.RGBA;
+import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.display.ShaderParameter;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
@@ -194,40 +196,20 @@ private class ColorMatrixShader extends Shader {
 		
 		super ();
 		
-		#if !macro
-		data.uMultipliers.value = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
-		data.uOffsets.value = [ 0, 0, 0, 0 ];
-		#end
 		
 	}
 	
 	
 	public function init (matrix:Array<Float>):Void {
 		
-		var multipliers = data.uMultipliers.value;
-		var offsets = data.uOffsets.value;
+		var multipliers:ShaderParameterMatrix4 = cast data.uMultipliers;
+		var offsets:ShaderParameterFloat4 = cast data.uOffsets;
 		
-		multipliers[0] = matrix[0];
-		multipliers[1] = matrix[1];
-		multipliers[2] = matrix[2];
-		multipliers[3] = matrix[3];
-		multipliers[4] = matrix[5];
-		multipliers[5] = matrix[6];
-		multipliers[6] = matrix[7];
-		multipliers[7] = matrix[8];
-		multipliers[8] = matrix[10];
-		multipliers[9] = matrix[11];
-		multipliers[10] = matrix[12];
-		multipliers[11] = matrix[13];
-		multipliers[12] = matrix[15];
-		multipliers[13] = matrix[16];
-		multipliers[14] = matrix[17];
-		multipliers[15] = matrix[18];
-		
-		offsets[0] = matrix[4] / 255.0;
-		offsets[1] = matrix[9] / 255.0;
-		offsets[2] = matrix[14] / 255.0;
-		offsets[3] = matrix[19] / 255.0;
+		multipliers.value = new Float32Array(matrix);
+		offsets.value0 = matrix[4] / 255.0;
+		offsets.value1 = matrix[9] / 255.0;
+		offsets.value2 = matrix[14] / 255.0;
+		offsets.value3 = matrix[19] / 255.0;
 		
 	}
 	

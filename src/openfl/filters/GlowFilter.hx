@@ -5,6 +5,7 @@ import lime.graphics.utils.ImageDataUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.display.ShaderParameter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -353,18 +354,15 @@ private class GlowShader extends Shader {
 	public function new () {
 		
 		super ();
-		
-		#if !macro
-		data.uRadius.value = [ 0, 0 ];
-		data.uColor.value = [ 0, 0, 0, 0 ];
-		#end
-		
+				
 	}
 	
 	
 	private override function __update ():Void {
 		
-		data.uTextureSize.value = [ data.uImage0.input.width, data.uImage0.input.height ];
+		var u:ShaderParameterFloat2 = cast data.uTextureSize;
+		u.value0 = data.uImage0.input.width;
+		u.value1 = data.uImage0.input.height;
 		
 		super.__update ();
 		
