@@ -24,9 +24,9 @@ import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.ShapeSymbol;
 import openfl._internal.symbols.SpriteSymbol;
 import openfl._internal.symbols.StaticTextSymbol;
-import openfl._internal.swf.SWFLibrary;
-import openfl._internal.swf.SWFLiteLibrary;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLibrary;
+import openfl._internal.formats.swf.SWFLiteLibrary;
+import openfl._internal.formats.swf.SWFLite;
 import openfl.display.PNGEncoderOptions;
 import openfl.utils.ByteArray;
 import sys.io.File;
@@ -74,36 +74,28 @@ class Tools {
 		
 		var haxePath = Sys.getEnv ("HAXEPATH");
 		var command = (haxePath != null && haxePath != "") ? haxePath + "/haxelib" : "haxelib";
-		
-		var process = new Process (command, [ "path", "lime" ]);
 		var path = "";
+		
+		var process = new Process ("haxelib", [ "path", "lime" ]);
 		
 		try {
 			
-			var lines = new Array <String> ();
-			
 			while (true) {
 				
-				var length = lines.length;
 				var line = StringTools.trim (process.stdout.readLine ());
 				
-				if (length > 0 && (line == "-D lime" || StringTools.startsWith (line, "-D lime="))) {
+				if (StringTools.startsWith (line, "-L ")) {
 					
-					path = StringTools.trim (lines[length - 1]);
+					path = StringTools.trim (line.substr (2));
+					break;
 					
 				}
-				
-				lines.push (line);
-				
+			
 			}
 			
-		} catch (e:Dynamic) {
-			
-			process.close ();
-			
-		}
+		} catch (e:Dynamic) {}
 		
-		path += "/ndll/";
+		process.close ();
 		
 		switch (#if (lime >= "7.0.0") System.hostPlatform #else PlatformHelper.hostPlatform #end) {
 			
@@ -737,7 +729,7 @@ class Tools {
 		#end
 		
 		var data = AssetHelper.createManifest (project);
-		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+		data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
 		data.libraryArgs = [ "swflite" + SWFLITE_DATA_SUFFIX, uuid ];
 		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
 		
@@ -820,7 +812,7 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (output, library.name);
-					data.libraryType = "openfl._internal.swf.SWFLibrary";
+					data.libraryType = "openfl._internal.formats.swf.SWFLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
 					data.name = library.name;
 					
@@ -1090,7 +1082,7 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (merge);
-					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+					data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX ];
 					data.name = library.name;
 					
@@ -1133,8 +1125,8 @@ class Tools {
 			
 			output.haxedefs.set ("swf", "1");
 			
-			//output.haxeflags.push ("--macro include('openfl._internal.swf.SWFLiteLibrary')");
-			//output.haxeflags.push ("openfl._internal.swf.SWFLiteLibrary");
+			//output.haxeflags.push ("--macro include('openfl._internal.formats.swf.SWFLiteLibrary')");
+			//output.haxeflags.push ("openfl._internal.formats.swf.SWFLiteLibrary");
 			
 			//for (filterClass in filterClasses) {
 				

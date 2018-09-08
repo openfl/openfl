@@ -1,4 +1,7 @@
 {
+    "haxe.displayConfigurations": [
+        [ "scripts/completion.hxml" ]
+    ],
     "editor.trimAutoWhitespace": false,
     "files.trimTrailingWhitespace": false,
     "editor.insertSpaces": false,
@@ -10,5 +13,6 @@
         "paramFormat": "",
         "returnFormat": "",
         "neverAskTemplate": true
-    }
+    },
+    "editor.codeLens": false,
 }

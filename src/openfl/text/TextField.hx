@@ -18,11 +18,10 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
-import openfl._internal.renderer.opengl.GLTextField;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
-import openfl._internal.text.HTMLParser;
+import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
@@ -1483,11 +1482,7 @@ class TextField extends InteractiveObject {
 		
 		if (__inputEnabled && stage != null) {
 			
-			#if (lime >= "7.0.0")
 			stage.window.textInputEnabled = false;
-			#else
-			stage.window.enableTextEvents = false;
-			#end
 			stage.window.onTextInput.remove (window_onTextInput);
 			stage.window.onKeyDown.remove (window_onKeyDown);
 			
@@ -1537,19 +1532,11 @@ class TextField extends InteractiveObject {
 		
 		if (stage != null) {
 			
-			#if (lime >= "7.0.0")
 			stage.window.textInputEnabled = true;
-			#else
-			stage.window.enableTextEvents = true;
-			#end
 			
 			if (!__inputEnabled) {
 				
-				#if (lime >= "7.0.0")
 				stage.window.textInputEnabled = true;
-				#else
-				stage.window.enableTextEvents = true;
-				#end
 				
 				if (!stage.window.onTextInput.has (window_onTextInput)) {
 					
@@ -2133,7 +2120,11 @@ class TextField extends InteractiveObject {
 			
 		} else {
 			
-			GLTextField.render (this, renderer, __worldTransform);
+			#if (js && html5)
+			CanvasTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+			#elseif lime_cairo
+			CairoTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+			#end
 			GLDisplayObject.render (this, renderer);
 			
 		}
@@ -2145,7 +2136,11 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		GLTextField.render (this, renderer, __worldTransform);
+		#if (js && html5)
+		CanvasTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+		#elseif lime_cairo
+		CairoTextField.render (this, cast renderer.__softwareRenderer, __worldTransform);
+		#end
 		
 		super.__renderGLMask (renderer);
 		

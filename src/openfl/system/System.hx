@@ -2,7 +2,7 @@ package openfl.system; #if !flash
 
 
 import lime.system.Clipboard;
-import lime.system.System in LimeSystem;
+import lime.system.System as LimeSystem;
 
 #if neko
 import neko.vm.Gc;

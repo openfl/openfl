@@ -16,6 +16,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:noDebug
 #end
 
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Shader)
@@ -33,11 +34,7 @@ class GLBitmap {
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = renderer.__context3D;
 			
 			renderer.__setBlendMode (bitmap.__worldBlendMode);
 			renderer.__pushMaskObject (bitmap);
@@ -51,10 +48,11 @@ class GLBitmap {
 			renderer.applyColorTransform (bitmap.__worldColorTransform);
 			renderer.updateShader ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (renderer.__context));
-			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-			if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer (context);
+			if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+			if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+			var indexBuffer = bitmap.__bitmapData.getIndexBuffer (context);
+			context.drawTriangles (indexBuffer);
 			
 			#if gl_stats
 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -74,11 +72,7 @@ class GLBitmap {
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
-			#if (lime >= "7.0.0")
-			var gl = renderer.__context.webgl;
-			#else
-			var gl = renderer.__context;
-			#end
+			var context = renderer.__context3D;
 			
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
@@ -86,10 +80,11 @@ class GLBitmap {
 			renderer.applyMatrix (renderer.__getMatrix (bitmap.__renderTransform));
 			renderer.updateShader ();
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.__bitmapData.getBuffer (renderer.__context));
-			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer (context);
+			if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+			if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+			var indexBuffer = bitmap.__bitmapData.getIndexBuffer (context);
+			context.drawTriangles (indexBuffer);
 			
 			#if gl_stats
 			GLStats.incrementDrawCall (DrawCallContext.STAGE);

@@ -12,7 +12,6 @@ export { default as DisplayObjectRenderer } from "./DisplayObjectRenderer";
 export { default as DisplayObjectShader } from "./DisplayObjectShader";
 export { default as DOMElement } from "./DOMElement";
 export { default as DOMRenderer } from "./DOMRenderer";
-export { default as DOMSprite } from "./DOMSprite";
 export { default as FPS } from "./FPS";
 export { default as FrameLabel } from "./FrameLabel";
 export { default as GradientType } from "./GradientType";

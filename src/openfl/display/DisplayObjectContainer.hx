@@ -678,7 +678,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	override function __cleanup ():Void {
+	@:noCompletion private override function __cleanup ():Void {
 		
 		super.__cleanup ();
 		
@@ -693,7 +693,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	inline function __cleanupRemovedChildren () {
+	@:noCompletion private inline function __cleanupRemovedChildren ():Void {
 		
 		for (orphan in __removedChildren) {
 			

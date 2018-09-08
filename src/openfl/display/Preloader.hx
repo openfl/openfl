@@ -2,17 +2,11 @@ package openfl.display;
 
 
 import lime.utils.AssetType;
+import lime.utils.Preloader as LimePreloader;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
-
-#if (lime >= "7.0.0")
-import lime.utils.Preloader in LimePreloader;
-#else
-import lime.app.Config;
-import lime.app.Preloader in LimePreloader;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -22,12 +16,10 @@ import lime.app.Preloader in LimePreloader;
 @:access(openfl.display.LoaderInfo)
 
 
-class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
+class Preloader {
 	
 	
-	#if (lime >= "7.0.0")
 	public var onComplete = new lime.app.Event<Void->Void> ();
-	#end
 	
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
@@ -35,10 +27,6 @@ class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 	
 	
 	public function new (display:Sprite = null) {
-		
-		#if (lime < "7.0.0")
-		super ();
-		#end
 		
 		this.display = display;
 		
@@ -52,9 +40,7 @@ class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 	}
 	
 	
-	@:noCompletion private #if (lime < "7.0.0") override #end function start ():Void {
-		
-		#if (lime < "7.0.0") if (simulateProgress) return; #end
+	@:noCompletion private function start ():Void {
 		
 		ready = true;
 		
@@ -75,21 +61,17 @@ class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 			
 		} else {
 			
-			#if (lime >= "7.0.0")
 			if (!complete) {
 				complete = true;
 				onComplete.dispatch ();
 			}
-			#else
-			super.start ();
-			#end
 			
 		}
 		
 	}
 	
 	
-	@:noCompletion private #if (lime < "7.0.0") override #end function update (loaded:Int, total:Int):Void {
+	@:noCompletion private function update (loaded:Int, total:Int):Void {
 		
 		#if !flash
 		Lib.current.loaderInfo.__update (loaded, total);
@@ -128,16 +110,12 @@ class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 			
 		}
 		
-		if (ready #if (lime < "7.0.0") && !simulateProgress #end) {
+		if (ready) {
 			
-			#if (lime >= "7.0.0")
 			if (!complete) {
 				complete = true;
 				onComplete.dispatch ();
 			}
-			#else
-			super.start ();
-			#end
 			
 		}
 		
@@ -207,7 +185,6 @@ class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 	
 	public function getBackgroundColor ():Int {
 		
-		#if (lime >= "7.0.0")
 		var attributes = Lib.current.stage.window.context.attributes;
 		
 		if (Reflect.hasField (attributes, "background") && attributes.background != null) {
@@ -219,30 +196,13 @@ class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 			return 0;
 			
 		}
-		#else
-		var config = Lib.current.stage.window.config;
-		
-		if (Reflect.hasField (config, "background") && config.background != null) {
-			
-			return config.background;
-			
-		} else {
-			
-			return 0;
-			
-		}
-		#end
 		
 	}
 	
 	
 	public function getHeight ():Float {
 		
-		#if (lime >= "7.0.0")
 		var height = Lib.current.stage.window.height;
-		#else
-		var height = Lib.current.stage.window.config.height;
-		#end
 		
 		if (height > 0) {
 			
@@ -259,11 +219,7 @@ class Preloader #if (lime < "7.0.0") extends LimePreloader #end {
 	
 	public function getWidth ():Float {
 		
-		#if (lime >= "7.0.0")
 		var width = Lib.current.stage.window.width;
-		#else
-		var width = Lib.current.stage.window.config.width;
-		#end
 		
 		if (width > 0) {
 			

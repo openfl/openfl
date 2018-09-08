@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import lime.graphics.RenderContext;
 import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.flash.FlashTilemap;
 import openfl.geom.Matrix;
@@ -9,6 +10,7 @@ import openfl.geom.Rectangle;
 #if !flash
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.Float32Array;
+import lime.utils.Int16Array;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTilemap;
@@ -21,12 +23,8 @@ import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLTilemap;
-#end
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 #end
 
 #if !openfl_debug
@@ -35,7 +33,6 @@ import lime.graphics.GLRenderContext;
 #end
 
 @:access(openfl.display.Tile)
-@:access(openfl.display.TileArray)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 
@@ -56,17 +53,17 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	@:noCompletion private var __group:TileContainer;
 	@:noCompletion private var __tileset:Tileset;
 	
-	#if ((openfl < "9.0.0") && enable_tile_array)
-	@:noCompletion private var __tileArray:TileArray;
-	#end
-	
 	#if !flash
-	@:noCompletion private var __buffer:GLBuffer;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
-	@:noCompletion private var __bufferData:Float32Array;
-	@:noCompletion private var __bufferDirty:Bool;
-	@:noCompletion private var __bufferLength:Int;
+	@:noCompletion private var __indexBuffer:IndexBuffer3D;
+	@:noCompletion private var __indexBufferCount:Int;
+	@:noCompletion private var __indexBufferData:Int16Array;
+	@:noCompletion private var __indexBufferDirty:Bool;
 	@:noCompletion private var __height:Int;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __vertexBufferCount:Int;
+	@:noCompletion private var __vertexBufferData:Float32Array;
+	@:noCompletion private var __vertexBufferDataPerVertex:Int;
+	@:noCompletion private var __vertexBufferDirty:Bool;
 	@:noCompletion private var __width:Int;
 	#end
 	
@@ -150,43 +147,11 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	#if ((openfl < "9.0.0") && enable_tile_array)
-	@:deprecated public function getTiles ():TileArray {
-		
-		if (__tileArray == null) {
-			
-			__tileArray = new TileArray ();
-			
-		}
-		
-		__tileArray.length = numTiles;
-		var tile;
-		
-		for (i in 0...numTiles) {
-			
-			__tileArray.position = i;
-			tile = __tiles[i];
-			
-			__tileArray.alpha = tile.__alpha;
-			__tileArray.colorTransform = tile.__colorTransform;
-			__tileArray.id = tile.__id;
-			__tileArray.matrix = tile.__matrix;
-			__tileArray.shader = tile.__shader;
-			__tileArray.tileset = tile.__tileset;
-			__tileArray.visible = tile.__visible;
-			
-		}
-		
-		return __tileArray;
-		
-	}
-	#else
 	public function getTiles ():TileContainer {
 		
 		return __group.clone ();
 		
 	}
-	#end
 	
 	
 	public function removeTile (tile:Tile):Tile {
@@ -217,56 +182,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	
 	
-	#if ((openfl < "9.0.0") && enable_tile_array)
-	@:deprecated public function setTiles (tileArray:TileArray):Void {
-		
-		if (tileArray != __tileArray) {
-			
-			__tileArray = tileArray;
-			
-		}
-		
-		var length = tileArray.length;
-		
-		for (i in numTiles...length) {
-			
-			addTile (new Tile ());
-			
-		}
-		
-		var tile, colorTransform;
-		
-		for (i in 0...length) {
-			
-			tileArray.position = i;
-			tile = __tiles[i];
-			
-			tile.__alpha = tileArray.alpha;
-			
-			colorTransform = tileArray.colorTransform;
-			
-			if (colorTransform != null) {
-				
-				#if flash
-				tile.__colorTransform = new ColorTransform (colorTransform.redMultiplier, colorTransform.greenMultiplier, colorTransform.blueMultiplier, colorTransform.alphaMultiplier, colorTransform.redOffset, colorTransform.greenOffset, colorTransform.blueOffset, colorTransform.alphaOffset);
-				#else
-				tile.__colorTransform = colorTransform.__clone ();
-				#end
-				
-			}
-			
-			tile.__id = tileArray.id;
-			tile.__matrix.copyFrom (tileArray.matrix);
-			tile.__shader = tileArray.shader;
-			tile.__tileset = tileArray.tileset;
-			tile.__visible = tileArray.visible;
-			
-		}
-		
-		__setRenderDirty ();
-		
-	}
-	#else
 	public function setTiles (group:TileContainer):Void {
 		
 		for (tile in group.__tiles) {
@@ -276,7 +191,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 	}
-	#end
 	
 	
 	public function swapTiles (tile1:Tile, tile2:Tile):Void {

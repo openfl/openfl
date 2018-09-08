@@ -3,21 +3,18 @@ package openfl.display; #if !flash
 
 import haxe.Timer;
 import lime.graphics.opengl.GL;
-import openfl._internal.stage3D.opengl.GLStage3D;
+import lime.graphics.RenderContext;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import openfl.geom.Matrix3D;
 import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
 
 #if (js && html5)
 import js.html.webgl.RenderingContext;
@@ -31,13 +28,12 @@ import js.Browser;
 @:noDebug
 #end
 
-#if (lime < "7.0.0")
-@:access(lime._backend.html5.HTML5GLRenderContext)
-@:access(lime._backend.native.NativeGLRenderContext)
-#end
-
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.Program3D)
+@:access(openfl.display.Bitmap)
+@:access(openfl.display.BitmapData)
+@:access(openfl.display.Stage)
 
 
 class Stage3D extends EventDispatcher {
@@ -51,13 +47,19 @@ class Stage3D extends EventDispatcher {
 	public var y (get, set):Float;
 	
 	@:noCompletion private var __contextRequested:Bool;
+	@:noCompletion private var __height:Int;
+	@:noCompletion private var __indexBuffer:IndexBuffer3D;
+	@:noCompletion private var __projectionTransform:Matrix3D;
+	@:noCompletion private var __renderTransform:Matrix3D;
 	@:noCompletion private var __stage:Stage;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __width:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
 	
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __renderContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __renderContext:RenderContext;
 	@:noCompletion private var __style:CSSStyleDeclaration;
 	@:noCompletion private var __webgl:RenderingContext;
 	#end
@@ -75,25 +77,38 @@ class Stage3D extends EventDispatcher {
 	#end
 	
 	
-	@:noCompletion private function new () {
+	@:noCompletion private function new (stage:Stage) {
 		
 		super ();
 		
+		__stage = stage;
+		
+		__height = 0;
+		__projectionTransform = new Matrix3D ();
+		__renderTransform = new Matrix3D ();
+		__width = 0;
 		__x = 0;
 		__y = 0;
 		
 		visible = true;
+		
+		if (stage.stageWidth > 0 && stage.stageHeight > 0) {
+			__resize (stage.stageWidth, stage.stageHeight);
+		}
 		
 	}
 	
 	
 	public function requestContext3D (context3DRenderMode:Context3DRenderMode = AUTO, profile:Context3DProfile = BASELINE):Void {
 		
-		__contextRequested = true;
-		
 		if (context3D != null) {
 			
 			Timer.delay (__dispatchCreate, 1);
+			
+		} else if (!__contextRequested) {
+			
+			__contextRequested = true;
+			Timer.delay (__createContext, 1);
 			
 		}
 		
@@ -107,13 +122,25 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function __createContext (stage:Stage, renderer:DisplayObjectRenderer):Void {
+	@:noCompletion private function __createContext ():Void {
 		
-		__stage = stage;
+		var stage = __stage;
+		var renderer = stage.__renderer;
+		
+		if (renderer.__type == CAIRO || renderer.__type == CANVAS) {
+			
+			__dispatchError ();
+			return;
+			
+		}
 		
 		if (renderer.__type == OPENGL) {
 			
-			context3D = new Context3D (this, renderer);
+			#if openfl_share_context
+			context3D = stage.context3D;
+			#else
+			context3D = new Context3D (stage, stage.context3D.__contextState, this);
+			#end
 			__dispatchCreate ();
 			
 		} else if (renderer.__type == DOM) {
@@ -124,12 +151,7 @@ class Stage3D extends EventDispatcher {
 			__canvas.height = stage.stageHeight;
 			
 			var window = stage.window;
-			
-			#if (lime >= "7.0.0")
 			var attributes = renderer.__context.attributes;
-			#else
-			var attributes = window.config;
-			#end
 			
 			var transparentBackground = Reflect.hasField (attributes, "background") && attributes.background == null;
 			var colorDepth = Reflect.hasField (attributes, "colorDepth") ? attributes.colorDepth : 32;
@@ -138,9 +160,9 @@ class Stage3D extends EventDispatcher {
 				
 				alpha: (transparentBackground || colorDepth > 16) ? true : false,
 				antialias: Reflect.hasField (attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
-				depth: #if (lime < "7.0.0") Reflect.hasField (attributes, "depthBuffer") ? attributes.depthBuffer : #end true,
+				depth: true,
 				premultipliedAlpha: true,
-				stencil: #if (lime < "7.0.0") Reflect.hasField (attributes, "stencilBuffer") ? attributes.stencilBuffer : #end false,
+				stencil: true,
 				preserveDrawingBuffer: false
 				
 			};
@@ -155,26 +177,25 @@ class Stage3D extends EventDispatcher {
 				
 				// TODO: Need to handle renderer/context better
 				
-				#if (lime >= "7.0.0")
 				// TODO
-				#else
-				__renderContext = new GLRenderContext (cast __webgl);
-				GL.context = __renderContext;
 				
-				context3D = new Context3D (this, renderer);
+				// __renderContext = new GLRenderContext (cast __webgl);
+				// GL.context = __renderContext;
 				
-				var renderer:DOMRenderer = cast renderer;
-				renderer.element.appendChild (__canvas);
+				// context3D = new Context3D (stage, this);
 				
-				__style = __canvas.style;
-				__style.setProperty ("position", "absolute", null);
-				__style.setProperty ("top", "0", null);
-				__style.setProperty ("left", "0", null);
-				__style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
-				__style.setProperty ("z-index", "-1", null);
+				// var renderer:DOMRenderer = cast renderer;
+				// renderer.element.appendChild (__canvas);
 				
-				__dispatchCreate ();
-				#end
+				// __style = __canvas.style;
+				// __style.setProperty ("position", "absolute", null);
+				// __style.setProperty ("top", "0", null);
+				// __style.setProperty ("left", "0", null);
+				// __style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
+				// __style.setProperty ("z-index", "-1", null);
+				
+				// __dispatchCreate ();
+				__dispatchError ();
 				
 			} else {
 				
@@ -209,100 +230,34 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function __renderCairo (stage:Stage, renderer:CairoRenderer):Void {
-		
-		if (!visible) return;
-		
-		if (__contextRequested) {
-			
-			__dispatchError ();
-			__contextRequested = false;
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __renderCanvas (stage:Stage, renderer:CanvasRenderer):Void {
-		
-		if (!visible) return;
-		
-		if (__contextRequested) {
-			
-			__dispatchError ();
-			__contextRequested = false;
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __renderDOM (stage:Stage, renderer:DOMRenderer):Void {
-		
-		if (!visible) return;
-		
-		if (__contextRequested && context3D == null) {
-			
-			__createContext (stage, renderer);
-			
-		}
-		
-		if (context3D != null) {
-			
-			#if (js && html5)
-			GL.context = __renderContext;
-			#end
-			
-			__resetContext3DStates ();
-			//DOMStage3D.render (this, renderer);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __renderGL (stage:Stage, renderer:OpenGLRenderer):Void {
-		
-		if (!visible) return;
-		
-		if (__contextRequested && context3D == null) {
-			
-			__createContext (stage, renderer);
-			
-		}
-		
-		if (context3D != null) {
-			
-			__resetContext3DStates ();
-			GLStage3D.render (this, renderer);
-			
-		}
-		
-	}
-	
-	
 	@:noCompletion private function __resize (width:Int, height:Int):Void {
 		
-		#if (js && html5)
-		if (__canvas != null) {
+		if (width != __width || height != __height) {
 			
-			__canvas.width = width;
-			__canvas.height = height;
+			#if (js && html5)
+			if (__canvas != null) {
+				
+				__canvas.width = width;
+				__canvas.height = height;
+				
+			}
+			#end
+			
+			__projectionTransform.copyRawDataFrom (Vector.ofArray ([
+				2.0 / (width > 0 ? width : 1), 0.0, 0.0, 0.0,
+				0.0, -2.0 / (height > 0 ? height : 1), 0.0, 0.0,
+				0.0, 0.0, -2.0 / 2000, 0.0,
+				-1.0, 1.0, 0.0, 1.0
+			]));
+			
+			__renderTransform.identity ();
+			__renderTransform.appendTranslation (__x, __y, 0);
+			__renderTransform.append (__projectionTransform);
+			
+			__width = width;
+			__height = height;
 			
 		}
-		#end
-		
-	}
-	
-	
-	@:noCompletion private function __resetContext3DStates ():Void {
-		
-		// TODO: Do more elegantly
-		context3D.__updateBlendFactors ();
-		context3D.__updateBackbufferViewport ();
-		context3D.__updateScissorRectangle ();
-		context3D.__updateDepthAndStencilState ();
-		context3D.__updateCulling ();
 		
 	}
 	
@@ -317,15 +272,10 @@ class Stage3D extends EventDispatcher {
 	@:noCompletion private function set_x (value:Float):Float {
 		
 		if (__x == value) return value;
-		
 		__x = value;
-		
-		if (context3D != null) {
-			
-			context3D.__updateBackbufferViewport ();
-			
-		}
-		
+		__renderTransform.identity ();
+		__renderTransform.appendTranslation (__x, __y, 0);
+		__renderTransform.append (__projectionTransform);
 		return value;
 		
 	}
@@ -341,15 +291,10 @@ class Stage3D extends EventDispatcher {
 	@:noCompletion private function set_y (value:Float):Float {
 		
 		if (__y == value) return value;
-		
 		__y = value;
-		
-		if (context3D != null) {
-			
-			context3D.__updateBackbufferViewport ();
-			
-		}
-		
+		__renderTransform.identity ();
+		__renderTransform.appendTranslation (__x, __y, 0);
+		__renderTransform.append (__projectionTransform);
 		return value;
 		
 	}

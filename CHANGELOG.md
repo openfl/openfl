@@ -1,3 +1,12 @@
+8.4.1 (08/13/2018)
+------------------
+
+* Fixed an issue where the Flash preloader could dispatch complete multiple times
+* Fixed a regression in processing SWF assets for Haxelib releases
+* Fixed an issue with stenciling on Stage3D projects that use display list masks
+* Fixed the value of `ExternalInterface.objectID` on single HTML5 embeds
+
+
 8.4.0 (08/08/2018)
 ------------------
 

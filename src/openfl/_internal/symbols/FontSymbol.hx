@@ -1,7 +1,7 @@
 package openfl._internal.symbols;
 
 
-import openfl._internal.swf.ShapeCommand;
+import openfl._internal.formats.swf.ShapeCommand;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

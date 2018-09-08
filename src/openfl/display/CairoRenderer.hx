@@ -185,19 +185,6 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
-		
-		if (cairo == null) return;
-		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderCairo (stage, this);
-			
-		}
-		
-	}
-	
-	
 	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
 		if (__blendMode == value) return;

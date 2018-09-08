@@ -4,7 +4,9 @@ package openfl.display; #if !flash
 import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.Image;
+import lime.graphics.RenderContext;
 import lime.utils.Float32Array;
+import lime.utils.Int16Array;
 import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -12,6 +14,8 @@ import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl.display.Shader;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsBitmapFill;
@@ -24,12 +28,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -73,21 +71,29 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
 	
 	@:noCompletion private var __bounds:Rectangle;
-	@:noCompletion private var __buffer:GLBuffer;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
-	@:noCompletion private var __bufferData:Float32Array;
-	@:noCompletion private var __bufferLength:Int;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty (default, set):Bool = true;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
+	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
+	@:noCompletion private var __quadIndexBufferCount:Int;
+	@:noCompletion private var __quadIndexBufferData:Int16Array;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
+	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
+	@:noCompletion private var __triangleIndexBufferCount:Int;
+	@:noCompletion private var __triangleIndexBufferData:Int16Array;
 	@:noCompletion private var __usedShaderBuffers:List<ShaderBuffer>;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __vertexBufferCount:Int;
+	@:noCompletion private var __vertexBufferCountUVT:Int;
+	@:noCompletion private var __vertexBufferData:Float32Array;
+	@:noCompletion private var __vertexBufferDataUVT:Float32Array;
+	@:noCompletion private var __vertexBufferUVT:VertexBuffer3D;
 	@:noCompletion private var __visible:Bool;
 	//private var __cachedTexture:RenderTexture;
 	@:noCompletion private var __owner:DisplayObject;
@@ -1489,12 +1495,14 @@ import js.html.CanvasRenderingContext2D;
 	
 	@:noCompletion private function __cleanup ():Void {
 		
-		if (__bounds != null) {
+		#if (js && html5)
+		if (__bounds != null && __canvas != null) {
 			
 			__dirty = true;
 			__transformDirty = true;
 			
 		}
+		#end
 		
 		__bitmap = null;
 		
@@ -1796,7 +1804,7 @@ import js.html.CanvasRenderingContext2D;
 		if (width < 1 || height < 1) {
 			
 			if (__width >= 1 || __height >= 1) __dirty = true;
-			__width  = 0;
+			__width = 0;
 			__height = 0;
 			return;
 			
@@ -1816,7 +1824,7 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__renderTransform.a = width  / __bounds.width;
+		__renderTransform.a = width / __bounds.width;
 		__renderTransform.d = height / __bounds.height;
 		var inverseA = (1 / __renderTransform.a);
 		var inverseD = (1 / __renderTransform.d);
@@ -1841,7 +1849,7 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.ty = __worldTransform.__transformInverseY (tx, ty);
 		
 		// Calculate the size to contain the graphics and the extra subpixel
-		var newWidth  = Math.ceil (width  + __renderTransform.tx);
+		var newWidth = Math.ceil (width + __renderTransform.tx);
 		var newHeight = Math.ceil (height + __renderTransform.ty);
 		
 		// Mark dirty if render size changed
@@ -1853,7 +1861,7 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__width  = newWidth;
+		__width = newWidth;
 		__height = newHeight;
 		
 	}

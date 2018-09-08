@@ -109,7 +109,7 @@ import openfl._internal.Lib;
 	 * Internet Explorer, or the `name` attribute of the
 	 * `embed` tag in Netscape.
 	 */
-	public static var objectID (default, null):String;
+	public static var objectID (get, null):String;
 	
 	
 	/**
@@ -169,19 +169,11 @@ import openfl._internal.Lib;
 	public static function addCallback (functionName:String, closure:Dynamic):Void {
 		
 		#if (js && html5)
-		#if (lime >= "7.0.0")
 		if (Lib.application.window.element != null) {
 			
 			untyped Lib.application.window.element[functionName] = closure;
 			
 		}
-		#else
-		if (Lib.application.window.backend.element != null) {
-			
-			untyped Lib.application.window.backend.element[functionName] = closure;
-			
-		}
-		#end
 		#end
 		
 	}
@@ -315,6 +307,21 @@ import openfl._internal.Lib;
 		#else
 		return null;
 		#end
+		
+	}
+	
+	
+	private static function get_objectID ():String {
+		
+		#if (js && html5)
+		if (Lib.application.window.element != null) {
+			
+			return Lib.application.window.element.id;
+			
+		}
+		#end
+		
+		return null;
 		
 	}
 	

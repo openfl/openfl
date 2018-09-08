@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
 import lime.utils.ObjectPool;
@@ -32,12 +33,6 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-#else
-import lime.graphics.utils.ImageCanvasUtil;
-#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -185,7 +180,9 @@ import js.html.Element;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl._internal.renderer.opengl.GLGraphics)
+@:access(openfl._internal.renderer.Context3DState)
 @:access(openfl.events.Event)
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectContainer)
@@ -2146,7 +2143,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					
 					if (renderType == OPENGL) {
 						
-						__cacheBitmapRenderer = new OpenGLRenderer (renderer.__context, __cacheBitmapData);
+						__cacheBitmapRenderer = new OpenGLRenderer (cast (renderer, OpenGLRenderer).__context3D, __cacheBitmapData);
 						
 					} else {
 						
@@ -2196,11 +2193,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var parentRenderer:OpenGLRenderer = cast renderer;
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
 					
+					var context = stage.context3D;
+					
+					var cacheRTT = context.__state.renderToTexture;
+					var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+					var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+					var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+					
+					// var cacheFramebuffer = context.__contextState.__currentGLFramebuffer;
+					
 					var cacheBlendMode = parentRenderer.__blendMode;
 					parentRenderer.__suspendClipAndMask ();
 					childRenderer.__copyShader (parentRenderer);
+					// childRenderer.__copyState (parentRenderer);
 					
-					__cacheBitmapData.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
+					__cacheBitmapData.__setUVRect (context, 0, 0, filterWidth, filterHeight);
 					childRenderer.__setRenderTarget (__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 					
@@ -2228,12 +2235,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							if (__cacheBitmapData2 == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height) {
 								__cacheBitmapData2 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
-								//__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
+								__cacheBitmapData2.fillRect (__cacheBitmapData2.rect, 0);
 								if (__cacheBitmapData2.image != null) {
 									__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
 								}
 							}
-							__cacheBitmapData2.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData2.__setUVRect (context, 0, 0, filterWidth, filterHeight);
 							bitmap2 = __cacheBitmapData2;
 						// } else {
 						// 	bitmap2 = bitmapData;
@@ -2243,12 +2250,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							if (__cacheBitmapData3 == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height) {
 								__cacheBitmapData3 = new BitmapData (bitmapWidth, bitmapHeight, true, 0);
 							} else {
-								//__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
+								__cacheBitmapData3.fillRect (__cacheBitmapData3.rect, 0);
 								if (__cacheBitmapData3.image != null) {
 									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
 								}
 							}
-							__cacheBitmapData3.__setUVRect (childRenderer.__context, 0, 0, filterWidth, filterHeight);
+							__cacheBitmapData3.__setUVRect (context, 0, 0, filterWidth, filterHeight);
 							bitmap3 = __cacheBitmapData3;
 						}
 						
@@ -2303,6 +2310,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					parentRenderer.__blendMode = NORMAL;
 					parentRenderer.__setBlendMode (cacheBlendMode);
 					parentRenderer.__copyShader (childRenderer);
+					
+					if (cacheRTT != null) {
+						
+						context.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+						
+					} else {
+						
+						context.setRenderToBackBuffer ();
+						
+					}
+					
+					// context.__bindGLFramebuffer (cacheFramebuffer);
+					
+					// parentRenderer.__restoreState (childRenderer);
 					parentRenderer.__resumeClipAndMask (childRenderer);
 					parentRenderer.setViewport ();
 					
@@ -2777,14 +2798,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:keep private function get_scaleX ():Float {
+	@:keep @:noCompletion private function get_scaleX ():Float {
 		
 		return __scaleX;
 		
 	}
 	
 	
-	@:keep private function set_scaleX (value:Float):Float {
+	@:keep @:noCompletion private function set_scaleX (value:Float):Float {
 		
 		if (value != __scaleX) {
 			
@@ -2818,14 +2839,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 	
 	
-	@:keep private function get_scaleY ():Float {
+	@:keep @:noCompletion private function get_scaleY ():Float {
 		
 		return __scaleY;
 		
 	}
 	
 	
-	@:keep private function set_scaleY (value:Float):Float {
+	@:keep @:noCompletion private function set_scaleY (value:Float):Float {
 		
 		if (value != __scaleY) {
 			

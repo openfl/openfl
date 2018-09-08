@@ -75,7 +75,7 @@ declare namespace openfl.text {
 		
 		
 		/**
-		 * Registers a font class in the global font list.
+		 * Registers a font in the global font list.
 		 * 
 		 */
 		public static registerFont (font:any):void;

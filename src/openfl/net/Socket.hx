@@ -28,7 +28,7 @@ import js.Browser;
 
 #if sys
 import sys.net.Host;
-import sys.net.Socket in SysSocket;
+import sys.net.Socket as SysSocket;
 #end
 
 #if !openfl_debug

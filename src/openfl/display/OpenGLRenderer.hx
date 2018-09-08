@@ -2,11 +2,18 @@ package openfl.display; #if !flash
 
 
 import lime.graphics.opengl.ext.KHR_debug;
+import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl.display3D.Context3DClearMask;
+import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectShader;
 import openfl.display.Graphics;
@@ -16,24 +23,14 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-#else
-import lime.graphics.GLRenderContext;
-#end
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
-#if (lime < "7.0.0")
-@:access(lime._backend.html5.HTML5GLRenderContext)
-#end
-
 @:access(lime.graphics.GLRenderContext)
 @:access(openfl._internal.renderer.ShaderBuffer)
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -45,10 +42,11 @@ import lime.graphics.GLRenderContext;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:allow(openfl._internal.renderer.opengl)
-@:allow(openfl._internal.stage3D.opengl)
+@:allow(openfl._internal.renderer.opengl)
 @:allow(openfl.display3D.textures)
 @:allow(openfl.display3D)
 @:allow(openfl.display)
+@:allow(openfl.text)
 
 
 class OpenGLRenderer extends DisplayObjectRenderer {
@@ -61,16 +59,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private static var __emptyColorValue = [ 0, 0, 0, 0. ];
 	@:noCompletion private static var __emptyAlphaValue = [ 1. ];
 	@:noCompletion private static var __hasColorTransformValue = [ false ];
+	@:noCompletion private static var __scissorRectangle = new Rectangle ();
 	@:noCompletion private static var __textureSizeValue = [ 0, 0. ];
 	
-	#if (lime >= "7.0.0")
 	public var gl:WebGLRenderContext;
-	#elseif openfljs
-	public var gl:js.html.webgl.RenderingContext;
-	#else
-	public var gl:GLRenderContext;
-	#end
 	
+	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
 	@:noCompletion private var __currentDisplayShader:Shader;
 	@:noCompletion private var __currentGraphicsShader:Shader;
@@ -84,7 +78,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __displayHeight:Int;
 	@:noCompletion private var __displayWidth:Int;
 	@:noCompletion private var __flipped:Bool;
-	@:noCompletion private var __gl:#if (lime >= "7.0.0") WebGLRenderContext #else GLRenderContext #end;
+	@:noCompletion private var __gl:WebGLRenderContext;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:GLMaskShader;
 	@:noCompletion private var __matrix:Matrix4;
@@ -103,19 +97,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __width:Int;
 	
 	
-	@:noCompletion private function new (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, ?defaultRenderTarget:BitmapData) {
+	@:noCompletion private function new (context:Context3D, ?defaultRenderTarget:BitmapData) {
 		
 		super ();
 		
-		#if (lime >= "7.0.0")
-		gl = context.webgl;
-		__gl = gl;
-		#else
-		gl = #if openfljs context.__context #else context #end;
-		__gl = context;
-		#end
+		__context3D = context;
+		__context = context.__context;
 		
-		__context = context;
+		gl = context.__context.webgl;
+		__gl = gl;
 		
 		this.__defaultRenderTarget = defaultRenderTarget;
 		this.__flipped = (__defaultRenderTarget == null);
@@ -133,8 +123,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var ext:KHR_debug = __gl.getExtension ("KHR_debug");
 		if (ext != null) {
 			
-			__gl.enable (ext.DEBUG_OUTPUT);
-			__gl.enable (ext.DEBUG_OUTPUT_SYNCHRONOUS);
+			gl.enable (ext.DEBUG_OUTPUT);
+			gl.enable (ext.DEBUG_OUTPUT_SYNCHRONOUS);
 			
 		}
 		#end
@@ -148,7 +138,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__type = OPENGL;
 		
 		__setBlendMode (NORMAL);
-		__gl.enable (__gl.BLEND);
+		__context3D.__setGLBlend (true);
 		
 		__clipRects = new Array ();
 		__maskObjects = new Array ();
@@ -352,6 +342,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentShader != null) {
 			
+			// TODO: Integrate cleanup with Context3D
 			__currentShader.__disable ();
 			
 		}
@@ -359,14 +350,17 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (shader == null) {
 			
 			__currentShader = null;
-			__gl.useProgram (null);
+			__context3D.setProgram (null);
+			__context3D.__flushGLProgram ();
 			return;
 			
 		} else {
 			
 			__currentShader = shader;
 			__initShader (shader);
-			__gl.useProgram (shader.glProgram);
+			__context3D.setProgram (shader.program);
+			__context3D.__flushGLProgram ();
+			__context3D.__flushGLTextures ();
 			__currentShader.__enable ();
 			
 		}
@@ -387,6 +381,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
 			if (__currentShader.__textureCoord != null) __currentShader.__textureCoord.__useArray = true;
+			__context3D.setProgram (__currentShader.program);
+			__context3D.__flushGLProgram ();
+			__context3D.__flushGLTextures ();
 			__currentShader.__update ();
 			
 		}
@@ -422,7 +419,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__stencilReference > 0) {
 			
 			__stencilReference = 0;
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -438,17 +437,20 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	@:noCompletion private override function __clear ():Void {
 		
+		// __context3D.setStencilActions ();
+		// __context3D.__setGLStencilTest (false);
+		
 		if (__stage == null || __stage.__transparent) {
 			
-			__gl.clearColor (0, 0, 0, 0);
+			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
 			
 		} else {
 			
-			__gl.clearColor (__stage.__colorSplit[0], __stage.__colorSplit[1], __stage.__colorSplit[2], 1);
+			__context3D.clear (__stage.__colorSplit[0], __stage.__colorSplit[1], __stage.__colorSplit[2], 1, 0, 0, Context3DClearMask.COLOR);
 			
 		}
 		
-		__gl.clear (__gl.COLOR_BUFFER_BIT);
+		__cleared = true;
 		
 	}
 	
@@ -485,6 +487,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__currentShaderBuffer = other.__currentShaderBuffer;
 		__currentDisplayShader = other.__currentDisplayShader;
 		__currentGraphicsShader = other.__currentGraphicsShader;
+		
+		// __gl.glProgram = other.__gl.glProgram;
 		
 	}
 	
@@ -532,7 +536,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (shader.__context == null) {
 				
-				shader.__context = __context;
+				shader.__context = __context3D;
 				shader.__init ();
 				
 			}
@@ -555,7 +559,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (shader.__context == null) {
 				
-				shader.__context = __context;
+				shader.__context = __context3D;
 				shader.__init ();
 				
 			}
@@ -578,7 +582,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (shader.__context == null) {
 				
-				shader.__context = __context;
+				shader.__context = __context3D;
 				shader.__init ();
 				
 			}
@@ -614,21 +618,31 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 1) {
 			
-			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
-			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			__gl.colorMask (false, false, false, false);
+			// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
+			// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			// __gl.colorMask (false, false, false, false);
+			
+			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, DECREMENT_SATURATE, KEEP, KEEP);
+			__context3D.setStencilReferenceValue (__stencilReference);
+			__context3D.setColorMask (false, false, false, false);
 			
 			mask.__renderGLMask (this);
 			__stencilReference--;
 			
-			__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
-			__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			__gl.colorMask (true, true, true, true);
+			// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
+			// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+			// __gl.colorMask (true, true, true, true);
+			
+			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+			__context3D.setStencilReferenceValue (__stencilReference);
+			__context3D.setColorMask (true, true, true, true);
 			
 		} else {
 			
 			__stencilReference = 0;
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -677,24 +691,32 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference == 0) {
 			
-			__gl.enable (__gl.STENCIL_TEST);
-			__gl.stencilMask (0xFF);
-			__gl.clear (__gl.STENCIL_BUFFER_BIT);
+			// __context3D.__setGLStencilTest (true);
+			// __gl.stencilMask (0xFF);
+			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
 			__updatedStencil = true;
 			
 		}
 		
-		__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.INCR);
-		__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-		__gl.colorMask (false, false, false, false);
+		// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.INCR);
+		// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+		// __gl.colorMask (false, false, false, false);
+		
+		__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, INCREMENT_SATURATE, KEEP, KEEP);
+		__context3D.setStencilReferenceValue (__stencilReference);
+		__context3D.setColorMask (false, false, false, false);
 		
 		mask.__renderGLMask (this);
 		__maskObjects.push (mask);
 		__stencilReference++;
 		
-		__gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
-		__gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-		__gl.colorMask (true, true, true, true);
+		// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
+		// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
+		// __gl.colorMask (true, true, true, true);
+		
+		__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+		__context3D.setStencilReferenceValue (__stencilReference);
+		__context3D.setColorMask (true, true, true, true);
 		
 	}
 	
@@ -762,11 +784,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	@:noCompletion private override function __render (object:IBitmapDrawable):Void {
 		
-		// TODO: Handle restoration of state after Stage3D render better?
-		__gl.disable (__gl.CULL_FACE);
-		__gl.disable (__gl.DEPTH_TEST);
-		__gl.disable (__gl.STENCIL_TEST);
-		__gl.disable (__gl.SCISSOR_TEST);
+		__context3D.setColorMask (true, true, true, true);
+		__context3D.setCulling (NONE);
+		__context3D.setDepthTest (false, ALWAYS);
+		__context3D.setStencilActions ();
+		__context3D.setStencilReferenceValue (0, 0, 0);
+		__context3D.setScissorRectangle (null);
+		
+		__blendMode = null;
+		__setBlendMode (NORMAL);
 		
 		if (__defaultRenderTarget == null) {
 			
@@ -776,32 +802,41 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			object.__renderGL (this);
 			
+			// TODO: Handle this in Context3D as a viewport?
+			
 			if (__offsetX > 0 || __offsetY > 0) {
 				
-				__gl.clearColor (0, 0, 0, 1);
-				__gl.enable (__gl.SCISSOR_TEST);
+				// __context3D.__setGLScissorTest (true);
 				
 				if (__offsetX > 0) {
 					
-					__gl.scissor (0, 0, __offsetX, __height);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __gl.scissor (0, 0, __offsetX, __height);
+					__scissorRectangle.setTo (0, 0, __offsetX, __height);
+					__context3D.setScissorRectangle (__scissorRectangle);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
-					__gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
+					__scissorRectangle.setTo (__offsetX + __displayWidth, 0, __width, __height);
+					__context3D.setScissorRectangle (__scissorRectangle);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
 				if (__offsetY > 0) {
 					
-					__gl.scissor (0, 0, __width, __offsetY);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __gl.scissor (0, 0, __width, __offsetY);
+					__scissorRectangle.setTo (0, 0, __width, __offsetY);
+					__context3D.setScissorRectangle (__scissorRectangle);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
-					__gl.scissor (0, __offsetY + __displayHeight, __width, __height);
-					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __gl.scissor (0, __offsetY + __displayHeight, __width, __height);
+					__scissorRectangle.setTo (0, __offsetY + __displayHeight, __width, __height);
+					__context3D.setScissorRectangle (__scissorRectangle);
+					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
-				__gl.disable (__gl.SCISSOR_TEST);
+				__context3D.setScissorRectangle (null);
 				
 			}
 			
@@ -825,6 +860,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		}
 		
+		__context3D.present ();
+		
 	}
 	
 	
@@ -833,12 +870,16 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 		
-		__gl.bindFramebuffer (__gl.FRAMEBUFFER, __defaultRenderTarget.__getFramebuffer (__context, false));
+		var cacheRTT = __context3D.__state.renderToTexture;
+		var cacheRTTDepthStencil = __context3D.__state.renderToTextureDepthStencil;
+		var cacheRTTAntiAlias = __context3D.__state.renderToTextureAntiAlias;
+		var cacheRTTSurfaceSelector = __context3D.__state.renderToTextureSurfaceSelector;
+		
+		__context3D.setRenderToTexture (__defaultRenderTarget.getTexture (__context3D), false);
 		
 		if (clear) {
 			
-			__gl.clearColor (0, 0, 0, 0);
-			__gl.clear (__gl.COLOR_BUFFER_BIT);
+			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
 			
 		}
 		
@@ -850,25 +891,23 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		applyMatrix (__getMatrix (source.__renderTransform));
 		updateShader ();
 		
-		__gl.bindBuffer (__gl.ARRAY_BUFFER, source.getBuffer (__context));
-		if (shader.__position != null) __gl.vertexAttribPointer (shader.__position.index, 3, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 0);
-		if (shader.__textureCoord != null) __gl.vertexAttribPointer (shader.__textureCoord.index, 2, __gl.FLOAT, false, 14 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		__gl.drawArrays (__gl.TRIANGLE_STRIP, 0, 4);
+		var vertexBuffer = source.getVertexBuffer (__context3D);
+		if (shader.__position != null) __context3D.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) __context3D.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = source.getIndexBuffer (__context3D);
+		__context3D.drawTriangles (indexBuffer);
 		
-		__gl.bindFramebuffer (__gl.FRAMEBUFFER, null);
-		
-		__clearShader ();
-		
-	}
-	
-	
-	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
-		
-		for (stage3D in stage.stage3Ds) {
+		if (cacheRTT != null) {
 			
-			stage3D.__renderGL (stage, this);
+			__context3D.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+			
+		} else {
+			
+			__context3D.setRenderToBackBuffer ();
 			
 		}
+		
+		__clearShader ();
 		
 	}
 	
@@ -886,13 +925,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__displayWidth = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (w, 0) - __offsetX) : w;
 		__displayHeight = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, h) - __offsetY) : h;
 		
-		#if (lime >= "7.0.0")
 		__projection.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
 		__projectionFlipped.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
-		#else
-		__projection = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
-		__projectionFlipped = Matrix4.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
-		#end
 		
 	}
 	
@@ -901,11 +935,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
-			__gl.enable (__gl.STENCIL_TEST);
+			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
+			__context3D.setStencilReferenceValue (__stencilReference);
+			// __context3D.__setGLStencilTest (true);
 			
 		} else {
 			
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -926,8 +964,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (clipRect != null) {
 			
-			__gl.enable (__gl.SCISSOR_TEST);
-			
 			var x = Math.floor (clipRect.x);
 			var y = Math.floor (clipRect.y);
 			var width = Math.ceil (clipRect.right) - x;
@@ -936,11 +972,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			__gl.scissor (x, __flipped ? __height - y - height : y, width, height);
+			// __scissorRectangle.setTo (x, __flipped ? __height - y - height : y, width, height);
+			__scissorRectangle.setTo (x, y, width, height);
+			__context3D.setScissorRectangle (__scissorRectangle);
 			
 		} else {
 			
-			__gl.disable (__gl.SCISSOR_TEST);
+			__context3D.setScissorRectangle (null);
 			
 		}
 		
@@ -957,40 +995,36 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			case ADD:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
 			
 			case MULTIPLY:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.DST_COLOR, __gl.ONE_MINUS_SRC_ALPHA);
+				__context3D.setBlendFactors (DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
 			
 			case SCREEN:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.ONE, __gl.ONE_MINUS_SRC_COLOR);
+				__context3D.setBlendFactors (ONE, ONE_MINUS_SOURCE_COLOR);
 			
 			case SUBTRACT:
 				
-				__gl.blendEquation (__gl.FUNC_REVERSE_SUBTRACT);
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
+				__context3D.__setGLBlendEquation (__gl.FUNC_REVERSE_SUBTRACT);
 			
 			#if desktop
 			case DARKEN:
 				
-				__gl.blendEquation (0x8007); // GL_MIN
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
+				__context3D.__setGLBlendEquation (0x8007); // GL_MIN
 				
 			case LIGHTEN:
 				
-				__gl.blendEquation (0x8008); // GL_MAX
-				__gl.blendFunc (__gl.ONE, __gl.ONE);
+				__context3D.setBlendFactors (ONE, ONE);
+				__context3D.__setGLBlendEquation (0x8008); // GL_MAX
 			#end
 			
 			default:
 				
-				__gl.blendEquation (__gl.FUNC_ADD);
-				__gl.blendFunc (__gl.ONE, __gl.ONE_MINUS_SRC_ALPHA);
+				__context3D.setBlendFactors (ONE, ONE_MINUS_SOURCE_ALPHA);
 			
 		}
 		
@@ -1023,7 +1057,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 0) {
 			
-			__gl.disable (__gl.STENCIL_TEST);
+			__context3D.setStencilActions ();
+			__context3D.setStencilReferenceValue (0, 0, 0);
+			// __context3D.setStencilActions ();
+			// __context3D.__setGLStencilTest (false);
 			
 		}
 		

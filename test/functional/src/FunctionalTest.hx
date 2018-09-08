@@ -1,7 +1,7 @@
 package;
 
 import haxe.rtti.CType;
-import lime.math.Rectangle in LimeRectangle;
+import lime.math.Rectangle as LimeRectangle;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.Application;

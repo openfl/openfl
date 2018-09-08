@@ -13,7 +13,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.ColorTransform)
 
 
-class Tile #if ((openfl < "9.0.0") && enable_tile_array) implements ITile #end {
+class Tile {
 	
 	
 	public var alpha (get, set):Float;

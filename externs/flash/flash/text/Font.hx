@@ -21,7 +21,16 @@ extern class Font extends LimeFont {
 	public function hasGlyphs (str:String):Bool;
 	#end
 	
-	public static function registerFont (font:Class<Dynamic>):Void;
+	@:native("registerFont") @:noCompletion private static function __registerFont (font:Class<Dynamic>):Void;
+	public static inline function registerFont (font:Dynamic):Void {
+		try {
+			if (Std.is (font, Class)) {
+				__registerFont (cast font);
+			} else {
+				__registerFont (Type.getClass (font));
+			}
+		} catch (e:Dynamic) {}
+	}
 	
 	
 }

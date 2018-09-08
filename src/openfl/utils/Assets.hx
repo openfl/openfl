@@ -3,9 +3,9 @@ package openfl.utils;
 
 import lime.app.Future;
 import lime.app.Promise;
-import lime.text.Font in LimeFont;
-import lime.utils.AssetLibrary in LimeAssetLibrary;
-import lime.utils.Assets in LimeAssets;
+import lime.text.Font as LimeFont;
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.Assets as LimeAssets;
 import lime.utils.Log;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -464,7 +464,6 @@ class Assets {
 	 * @usage	Assets.loadBitmapData ("image.png").onComplete (handleImage);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<BitmapData>
 	 */
 	public static function loadBitmapData (id:String, useCache:Null<Bool> = true):Future<BitmapData> {
@@ -525,8 +524,6 @@ class Assets {
 	 * Loads an included byte asset asynchronously
 	 * @usage	Assets.loadBytes ("file.zip").onComplete (handleBytes);
 	 * @param	id 		The ID or asset path for the asset
-	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<ByteArray>
 	 */
 	public static function loadBytes (id:String):Future<ByteArray> {
@@ -548,7 +545,6 @@ class Assets {
 	 * @usage	Assets.loadFont ("font.ttf").onComplete (handleFont);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Font>
 	 */
 	public static function loadFont (id:String, useCache:Null<Bool> = true):Future<Font> {
@@ -595,7 +591,6 @@ class Assets {
 	/**
 	 * Load an included AssetLibrary
 	 * @param	name		The name of the AssetLibrary to load
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<AssetLibrary>
 	 */
 	public static function loadLibrary (name:String):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
@@ -632,7 +627,6 @@ class Assets {
 	 * @usage	Assets.loadMusic ("music.ogg").onComplete (handleMusic);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Sound>
 	 */
 	public static function loadMusic (id:String, useCache:Null<Bool> = true):Future<Sound> {
@@ -685,7 +679,6 @@ class Assets {
 	 * @usage	Assets.loadMovieClip ("library:BouncingBall").onComplete (handleMovieClip);
 	 * @param	id 		The ID for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<MovieClip>
 	 */
 	public static function loadMovieClip (id:String):Future<MovieClip> {
@@ -733,7 +726,6 @@ class Assets {
 	 * @usage	Assets.loadSound ("sound.wav").onComplete (handleSound);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Sound>
 	 */
 	public static function loadSound (id:String, useCache:Null<Bool> = true):Future<Sound> {
@@ -777,7 +769,6 @@ class Assets {
 	 * @usage	Assets.loadText ("text.txt").onComplete (handleString);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<String>
 	 */
 	public static function loadText (id:String):Future<String> {
