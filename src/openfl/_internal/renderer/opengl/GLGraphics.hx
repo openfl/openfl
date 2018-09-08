@@ -846,7 +846,7 @@ class GLGraphics {
 			
 			if (isQuad) {
 				
-				var vertexIndex = 0;
+				var vertexIndex = Std.int (position * (4 / 6));
 				
 				while (position < length) {
 					
