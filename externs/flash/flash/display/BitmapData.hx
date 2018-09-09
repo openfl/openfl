@@ -85,7 +85,7 @@ extern class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromTexture (texture:TextureBase):BitmapData {
+	public static inline function fromTexture (texture:TextureBase):BitmapData {
 		
 		return null;
 		
