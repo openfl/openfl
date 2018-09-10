@@ -932,7 +932,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var renderer = new OpenGLRenderer (Lib.current.stage.context3D, this);
 			renderer.__allowSmoothing = smoothing;
-			renderer.__setBlendMode (blendMode);
+			renderer.__overrideBlendMode = blendMode;
 			
 			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
@@ -997,7 +997,7 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 			renderer.__allowSmoothing = smoothing;
-			renderer.__setBlendMode (blendMode);
+			renderer.__overrideBlendMode = blendMode;
 			
 			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;

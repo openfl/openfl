@@ -987,6 +987,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
+		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value) return;
 		
 		__blendMode = value;

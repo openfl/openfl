@@ -29,6 +29,7 @@ class DisplayObjectRenderer extends EventDispatcher {
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __cleared:Bool;
 	@:noCompletion private var __context:RenderContext;
+	@:noCompletion private var __overrideBlendMode:BlendMode;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __tempColorTransform:ColorTransform;
