@@ -217,7 +217,7 @@ class Shader {
 		
 		for (parameter in __param) {
 			
-			parameter.disable(gl);
+			parameter.disable (gl);
 			
 		}
 		
@@ -250,7 +250,7 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			input.enable(gl);
+			input.enable (gl);
 			
 		}
 		
@@ -311,13 +311,13 @@ class Shader {
 				
 				for (input in __inputBitmapData) {
 					
-					input.init(gl, glProgram);
+					input.init (gl, glProgram);
 					
 				}
 				
 				for (parameter in __param) {
 					
-					parameter.init(gl, glProgram);
+					parameter.init (gl, glProgram);
 					
 				}
 				
@@ -360,24 +360,24 @@ class Shader {
 				
 				var parameter:ShaderParameter;
 				if (!isUniform) {
-					parameter = new ShaderParameterAttrib(name);
+					parameter = new ShaderParameterAttrib (name);
 				} else {
 					parameter = switch (type) {
-						case "bool": new ShaderParameterBool(name);
-						case "double", "float": new ShaderParameterFloat(name);
-						case "int", "uint": new ShaderParameterInt(name);
-						case "bvec2": new ShaderParameterBool2(name);
-						case "bvec3": new ShaderParameterBool3(name);
-						case "bvec4": new ShaderParameterBool4(name);
-						case "ivec2", "uvec2": new ShaderParameterInt2(name);
-						case "ivec3", "uvec3": new ShaderParameterInt3(name);
-						case "ivec4", "uvec4": new ShaderParameterInt4(name);
-						case "vec2", "dvec2": new ShaderParameterFloat2(name);
-						case "vec3", "dvec3": new ShaderParameterFloat3(name);
-						case "vec4", "dvec4": new ShaderParameterFloat4(name);
-						case "mat2", "mat2x2": new ShaderParameterMatrix2(name);
-						case "mat3", "mat3x3": new ShaderParameterMatrix3(name);
-						case "mat4", "mat4x4": new ShaderParameterMatrix4(name);
+						case "bool": new ShaderParameterBool (name);
+						case "double", "float": new ShaderParameterFloat (name);
+						case "int", "uint": new ShaderParameterInt (name);
+						case "bvec2": new ShaderParameterBool2 (name);
+						case "bvec3": new ShaderParameterBool3 (name);
+						case "bvec4": new ShaderParameterBool4 (name);
+						case "ivec2", "uvec2": new ShaderParameterInt2 (name);
+						case "ivec3", "uvec3": new ShaderParameterInt3 (name);
+						case "ivec4", "uvec4": new ShaderParameterInt4 (name);
+						case "vec2", "dvec2": new ShaderParameterFloat2 (name);
+						case "vec3", "dvec3": new ShaderParameterFloat3 (name);
+						case "vec4", "dvec4": new ShaderParameterFloat4 (name);
+						case "mat2", "mat2x2": new ShaderParameterMatrix2 (name);
+						case "mat3", "mat3x3": new ShaderParameterMatrix3 (name);
+						case "mat4", "mat4x4": new ShaderParameterMatrix4 (name);
 						default: throw "unsupported shader parameter type: " + type;
 					}
 					
@@ -410,7 +410,7 @@ class Shader {
 		
 		for (input in __inputBitmapData) {
 			
-			input.update(gl, false);
+			input.update (gl, false);
 	
 		}
 		

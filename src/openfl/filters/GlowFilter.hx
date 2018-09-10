@@ -360,9 +360,9 @@ private class GlowShader extends Shader {
 	
 	private override function __update ():Void {
 		
-		var u:ShaderParameterFloat2 = cast data.uTextureSize;
-		u.value0 = data.uImage0.input.width;
-		u.value1 = data.uImage0.input.height;
+		var uTextureSize:ShaderParameterFloat2 = cast data.uTextureSize;
+		uTextureSize.value0 = data.uImage0.input.width;
+		uTextureSize.value1 = data.uImage0.input.height;
 		
 		super.__update ();
 		

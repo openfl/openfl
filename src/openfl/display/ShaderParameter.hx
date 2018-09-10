@@ -23,7 +23,7 @@ class ShaderParameter {
 }
 
 class ShaderParameterUniform extends ShaderParameter {
-	public var index(default,null):GLUniformLocation;
+	public var index (default,null):GLUniformLocation;
 
 	override function init (gl:GLRenderContext, program:GLProgram) {
 		index = gl.getUniformLocation (program, name);
@@ -31,7 +31,7 @@ class ShaderParameterUniform extends ShaderParameter {
 }
 
 class ShaderParameterAttrib extends ShaderParameter {
-	public var index(default,null):Int;
+	public var index (default,null):Int;
 
 	override function init (gl:GLRenderContext, program:GLProgram) {
 		index = gl.getAttribLocation (program, name);
@@ -39,12 +39,12 @@ class ShaderParameterAttrib extends ShaderParameter {
 
 	override function update (gl:GLRenderContext, skipEnableVertexAttribArray:Bool) {
 		if (!skipEnableVertexAttribArray) {
-			gl.enableVertexAttribArray(index);
+			gl.enableVertexAttribArray (index);
 		}
 	}
 
-	override function disable(gl:GLRenderContext) {
-		gl.disableVertexAttribArray(index);
+	override function disable (gl:GLRenderContext) {
+		gl.disableVertexAttribArray (index);
 	}
 }
 
@@ -53,16 +53,16 @@ class ShaderParameterSampler extends ShaderParameterUniform {
 	public var smoothing:Bool;
 	var textureIndex:Int;
 	
-	public function new(name, textureIndex) {
-		super(name);
+	public function new (name:String, textureIndex:Int) {
+		super (name);
 		this.textureIndex = textureIndex;
 	}
 	
-	public function enable(gl:GLRenderContext) {
-		gl.uniform1i(index, textureIndex);
+	public function enable (gl:GLRenderContext) {
+		gl.uniform1i (index, textureIndex);
 	}
 	
-	override function update(gl:GLRenderContext, _) {
+	override function update (gl:GLRenderContext, _) {
 		if (input == null)
 			return;
 			
