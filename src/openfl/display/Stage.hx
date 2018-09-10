@@ -1395,12 +1395,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			GLStats.resetDrawCalls();
 		#end
 		
-		if (context3D == null && __renderer != null) {
-			
-			__renderer.__clear ();
-			
-		}
-		
 		__broadcastEvent (new Event (Event.ENTER_FRAME));
 		__broadcastEvent (new Event (Event.FRAME_CONSTRUCTED));
 		__broadcastEvent (new Event (Event.EXIT_FRAME));
@@ -1425,13 +1419,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		for (stage3D in stage3Ds) {
+		if (context3D != null) {
 			
-			context3D.__renderStage3D (stage3D);
+			for (stage3D in stage3Ds) {
+				
+				context3D.__renderStage3D (stage3D);
+				
+			}
+			
+			#if !openfl_disable_display_render if (context3D.__present) shouldRender = true; #end
 			
 		}
-		
-		#if !openfl_disable_display_render if (context3D.__present) shouldRender = true; #end
 		
 		if (shouldRender) {
 			
@@ -1440,6 +1438,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 				#if lime_cairo
 				cast (__renderer, CairoRenderer).cairo = context.cairo;
 				#end
+				
+			}
+			
+			if (context3D == null && __renderer != null) {
+				
+				__renderer.__clear ();
 				
 			}
 			
