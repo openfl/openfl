@@ -2499,6 +2499,9 @@ class BitmapData implements IBitmapDrawable {
 			height = image.height;
 			rect = new Rectangle (0, 0, image.width, image.height);
 			
+			__textureWidth = width;
+			__textureHeight = height;
+			
 			#if sys
 			image.format = BGRA32;
 			image.premultiplied = true;
