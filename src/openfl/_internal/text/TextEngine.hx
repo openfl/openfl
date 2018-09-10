@@ -216,6 +216,10 @@ class TextEngine {
 			
 		}
 		
+		#if lime_switch
+		if (name != null && name.indexOf (":/") == -1) name = null;
+		#end
+		
 		var font = Font.fromFile (name);
 		
 		if (font != null) {
@@ -441,8 +445,8 @@ class TextEngine {
 					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
 					#elseif android
 					fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
-					#elseif blackberry
-					fontList = [ systemFontDirectory + "/arial.ttf" ];
+					#else
+					fontList = [ "Noto Sans Regular" ];
 					#end
 				
 				case "_serif":
@@ -483,8 +487,8 @@ class TextEngine {
 					fontList = [ new sys.io.Process('fc-match', ['mono', '-f%{file}']).stdout.readLine() ];
 					#elseif android
 					fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
-					#elseif blackberry
-					fontList = [ systemFontDirectory + "/cour.ttf" ];
+					#else
+					fontList = [ "Noto Mono" ];
 					#end
 				
 				default:
@@ -549,10 +553,8 @@ class TextEngine {
 		fontList = [ new sys.io.Process('fc-match', ['serif', '-f%{file}']).stdout.readLine() ];
 		#elseif android
 		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "/NotoSerif-Regular.ttf" ];
-		#elseif blackberry
-		fontList = [ systemFontDirectory + "/georgia.ttf" ];
 		#else
-		fontList = [];
+		fontList = [ "Noto Serif Regular" ];
 		#end
 		
 		for (font in fontList) {

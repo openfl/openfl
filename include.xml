@@ -113,6 +113,9 @@
 			
 		</section>
 		
+		<set name="openfl-has-default-fonts" if="windows || mac || linux || ios || android || flash || html5 || emscripten || tvos" />
+		<assets path="assets/fonts" unless="openfl-has-default-fonts || openfl-no-default-fonts" />
+		
 	</section>
 	
 	<library handler="openfl" type="swf" />
