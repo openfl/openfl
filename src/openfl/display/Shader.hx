@@ -362,53 +362,25 @@ class Shader {
 				if (!isUniform) {
 					parameter = new ShaderParameterAttrib(name);
 				} else {
-					var parameterType:ShaderParameterType = switch (type) {
-						
-						case "bool": BOOL;
-						case "double", "float": FLOAT;
-						case "int", "uint": INT;
-						case "bvec2": BOOL2;
-						case "bvec3": BOOL3;
-						case "bvec4": BOOL4;
-						case "ivec2", "uvec2": INT2;
-						case "ivec3", "uvec3": INT3;
-						case "ivec4", "uvec4": INT4;
-						case "vec2", "dvec2": FLOAT2;
-						case "vec3", "dvec3": FLOAT3;
-						case "vec4", "dvec4": FLOAT4;
-						case "mat2", "mat2x2": MATRIX2X2;
-						case "mat2x3": MATRIX2X3;
-						case "mat2x4": MATRIX2X4;
-						case "mat3x2": MATRIX3X2;
-						case "mat3", "mat3x3": MATRIX3X3;
-						case "mat3x4": MATRIX3X4;
-						case "mat4x2": MATRIX4X2;
-						case "mat4x3": MATRIX4X3;
-						case "mat4", "mat4x4": MATRIX4X4;
-						default: null;
-						
+					parameter = switch (type) {
+						case "bool": new ShaderParameterBool(name);
+						case "double", "float": new ShaderParameterFloat(name);
+						case "int", "uint": new ShaderParameterInt(name);
+						case "bvec2": new ShaderParameterBool2(name);
+						case "bvec3": new ShaderParameterBool3(name);
+						case "bvec4": new ShaderParameterBool4(name);
+						case "ivec2", "uvec2": new ShaderParameterInt2(name);
+						case "ivec3", "uvec3": new ShaderParameterInt3(name);
+						case "ivec4", "uvec4": new ShaderParameterInt4(name);
+						case "vec2", "dvec2": new ShaderParameterFloat2(name);
+						case "vec3", "dvec3": new ShaderParameterFloat3(name);
+						case "vec4", "dvec4": new ShaderParameterFloat4(name);
+						case "mat2", "mat2x2": new ShaderParameterMatrix2(name);
+						case "mat3", "mat3x3": new ShaderParameterMatrix3(name);
+						case "mat4", "mat4x4": new ShaderParameterMatrix4(name);
+						default: throw "unsupported shader parameter type: " + type;
 					}
 					
-					parameter = switch (parameterType) {
-						
-						case BOOL: new ShaderParameterBool(name);
-						case BOOL2: new ShaderParameterBool2(name);
-						case BOOL3: new ShaderParameterBool3(name);
-						case BOOL4: new ShaderParameterBool4(name);
-						case FLOAT: new ShaderParameterFloat(name);
-						case FLOAT2: new ShaderParameterFloat2(name);
-						case FLOAT3: new ShaderParameterFloat3(name);
-						case FLOAT4: new ShaderParameterFloat4(name);
-						case INT: new ShaderParameterInt(name);
-						case INT2: new ShaderParameterInt2(name);
-						case INT3: new ShaderParameterInt3(name);
-						case INT4: new ShaderParameterInt4(name);
-						case MATRIX2X2: new ShaderParameterMatrix2(name);
-						case MATRIX3X3: new ShaderParameterMatrix3(name);
-						case MATRIX4X4: new ShaderParameterMatrix4(name);
-						default: new ShaderParameterFloat(name);
-						
-					}
 				}
 				__param.push (parameter);
 				Reflect.setField (data, name, parameter);

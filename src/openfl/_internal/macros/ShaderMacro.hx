@@ -179,55 +179,26 @@ class ShaderMacro {
 				
 			} else {
 				
-				var parameterType:openfl.display.ShaderParameterType = switch (type) {
-					
-					case "bool": BOOL;
-					case "double", "float": FLOAT;
-					case "int", "uint": INT;
-					case "bvec2": BOOL2;
-					case "bvec3": BOOL3;
-					case "bvec4": BOOL4;
-					case "ivec2", "uvec2": INT2;
-					case "ivec3", "uvec3": INT3;
-					case "ivec4", "uvec4": INT4;
-					case "vec2", "dvec2": FLOAT2;
-					case "vec3", "dvec3": FLOAT3;
-					case "vec4", "dvec4": FLOAT4;
-					case "mat2", "mat2x2": MATRIX2X2;
-					case "mat2x3": MATRIX2X3;
-					case "mat2x4": MATRIX2X4;
-					case "mat3x2": MATRIX3X2;
-					case "mat3", "mat3x3": MATRIX3X3;
-					case "mat3x4": MATRIX3X4;
-					case "mat4x2": MATRIX4X2;
-					case "mat4x3": MATRIX4X3;
-					case "mat4", "mat4x4": MATRIX4X4;
-					default: null;
-					
-				}
-				
-
 				var type =
 					if (!isUniform)
 						macro : openfl.display.ShaderParameter.ShaderParameterAttrib
-					else switch (parameterType) {
-					
-						case BOOL: macro : openfl.display.ShaderParameter.ShaderParameterBool;
-						case BOOL2: macro : openfl.display.ShaderParameter.ShaderParameterBool2;
-						case BOOL3: macro : openfl.display.ShaderParameter.ShaderParameterBool3;
-						case BOOL4: macro : openfl.display.ShaderParameter.ShaderParameterBool4;
-						case FLOAT: macro : openfl.display.ShaderParameter.ShaderParameterFloat;
-						case FLOAT2: macro : openfl.display.ShaderParameter.ShaderParameterFloat2;
-						case FLOAT3: macro : openfl.display.ShaderParameter.ShaderParameterFloat3;
-						case FLOAT4: macro : openfl.display.ShaderParameter.ShaderParameterFloat4;
-						case INT: macro : openfl.display.ShaderParameter.ShaderParameterInt;
-						case INT2: macro : openfl.display.ShaderParameter.ShaderParameterInt2;
-						case INT3: macro : openfl.display.ShaderParameter.ShaderParameterInt3;
-						case INT4: macro : openfl.display.ShaderParameter.ShaderParameterInt4;
-						case MATRIX2X2: macro : openfl.display.ShaderParameter.ShaderParameterMatrix2;
-						case MATRIX3X3: macro : openfl.display.ShaderParameter.ShaderParameterMatrix3;
-						case MATRIX4X4: macro : openfl.display.ShaderParameter.ShaderParameterMatrix4;
-						default: macro : openfl.display.ShaderParameter.ShaderParameterFloat;
+					else switch (type) {
+						case "bool": macro : openfl.display.ShaderParameter.ShaderParameterBool;
+						case "double", "float": macro : openfl.display.ShaderParameter.ShaderParameterFloat;
+						case "int", "uint": macro : openfl.display.ShaderParameter.ShaderParameterInt;
+						case "bvec2": macro : openfl.display.ShaderParameter.ShaderParameterBool2;
+						case "bvec3": macro : openfl.display.ShaderParameter.ShaderParameterBool3;
+						case "bvec4": macro : openfl.display.ShaderParameter.ShaderParameterBool4;
+						case "ivec2", "uvec2": macro : openfl.display.ShaderParameter.ShaderParameterInt2;
+						case "ivec3", "uvec3": macro : openfl.display.ShaderParameter.ShaderParameterInt3;
+						case "ivec4", "uvec4": macro : openfl.display.ShaderParameter.ShaderParameterInt4;
+						case "vec2", "dvec2": macro : openfl.display.ShaderParameter.ShaderParameterFloat2;
+						case "vec3", "dvec3": macro : openfl.display.ShaderParameter.ShaderParameterFloat3;
+						case "vec4", "dvec4": macro : openfl.display.ShaderParameter.ShaderParameterFloat4;
+						case "mat2", "mat2x2": macro : openfl.display.ShaderParameter.ShaderParameterMatrix2;
+						case "mat3", "mat3x3": macro : openfl.display.ShaderParameter.ShaderParameterMatrix3;
+						case "mat4", "mat4x4": macro : openfl.display.ShaderParameter.ShaderParameterMatrix4;					
+						default: throw "unsupported shader parameter type: " + type;
 						
 					}
 								
