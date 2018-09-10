@@ -2485,7 +2485,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function __startDrag (sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void {
 		
-		__dragBounds = (bounds == null) ? null : bounds.clone ();
+		if (bounds == null) {
+			__dragBounds = null;
+		} else {
+			__dragBounds = new Rectangle ();
+			__dragBounds.x = bounds.right < bounds.x ? bounds.right : bounds.x;
+			__dragBounds.y = bounds.bottom < bounds.y ? bounds.bottom : bounds.y;
+			__dragBounds.width = Math.abs(bounds.width);
+			__dragBounds.height = Math.abs(bounds.height);
+		}
+		
 		__dragObject = sprite;
 		
 		if (__dragObject != null) {
