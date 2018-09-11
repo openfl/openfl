@@ -125,10 +125,10 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
-	var getMatrixHelperMatrix = new Matrix();
+	static var getMatrixHelperMatrix = new Matrix();
 	
 	public function getMatrix (transform:Matrix, snapToPixel: Bool = false):Matrix4 {
-		var _matrix = this.getMatrixHelperMatrix;
+		var _matrix = getMatrixHelperMatrix;
 		
 		_matrix.copyFrom (transform);
 		_matrix.concat (displayMatrix);
