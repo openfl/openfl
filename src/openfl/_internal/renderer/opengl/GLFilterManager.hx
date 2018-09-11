@@ -158,8 +158,7 @@ class GLFilterManager extends AbstractFilterManager {
 		shader.data.uMatrix.value = renderer.getMatrix (matrix);
 		
 		if (shader.data.uColorTransform != null) {
-			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-			shader.data.uColorTransform.value[0] = false;
+			shader.data.uColorTransform.value = false;
 		}
 		
 		renderSession.shaderManager.setShader (shader);

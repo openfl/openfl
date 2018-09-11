@@ -47,8 +47,7 @@ class GLVideo {
 			shader.data.uMatrix.value = renderer.getMatrix (video.__renderTransform);
 			
 			var useColorTransform = !video.__worldColorTransform.__isDefault ();
-			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-			shader.data.uColorTransform.value[0] = useColorTransform;
+			shader.data.uColorTransform.value = useColorTransform;
 			
 			renderSession.shaderManager.updateShader (shader);
 			

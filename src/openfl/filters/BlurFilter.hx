@@ -6,6 +6,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Shader;
+import openfl.display.ShaderParameter;
 import openfl.filters.BitmapFilter;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -245,16 +246,14 @@ private class BlurShader extends Shader {
 		
 		super ();
 		
-		#if !macro
-		data.uRadius.value = [ 0, 0 ];
-		#end
-		
 	}
 	
 	
 	private override function __update ():Void {
 		
-		data.uTextureSize.value = [ data.uImage0.input.width, data.uImage0.input.height ];
+		var uTextureSize:ShaderParameterFloat2 = cast data.uTextureSize;
+		uTextureSize.value0 = data.uImage0.input.width;
+		uTextureSize.value1 = data.uImage0.input.height;
 		
 		super.__update ();
 		

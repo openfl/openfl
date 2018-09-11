@@ -47,8 +47,7 @@ class GLBitmap {
 			shader.data.uMatrix.value = renderer.getMatrix (bitmap.__renderTransform, bitmap.__snapToPixel());
 			
 			var useColorTransform = !bitmap.__worldColorTransform.__isDefault ();
-			if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-			shader.data.uColorTransform.value[0] = useColorTransform;
+			shader.data.uColorTransform.value = useColorTransform;
 			
 			var vaoRendered = GLVAORenderHelper.renderDO (bitmap, renderSession, shader, bitmap.__bitmapData);
 			

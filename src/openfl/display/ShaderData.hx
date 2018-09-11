@@ -2,6 +2,7 @@ package openfl.display;
 
 
 import openfl.utils.ByteArray;
+import openfl.display.ShaderParameter;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -11,14 +12,20 @@ import openfl.utils.ByteArray;
 #if ((!cs && !java) || display) @:final #end
 
 
-class ShaderData implements Dynamic {
+class ShaderData implements Dynamic<ShaderParameter> {
 	
 	
-	public var aAlpha:ShaderParameter<Float>;
-	public var aPosition:ShaderParameter<Float>;
-	public var aTexCoord:ShaderParameter<Float>;
-	public var uImage0:ShaderInput<BitmapData>;
-	public var uMatrix:ShaderParameter<Float>;
+	public var aAlpha:ShaderParameterAttrib;
+	public var aPosition:ShaderParameterAttrib;
+	public var aTexCoord:ShaderParameterAttrib;
+	public var aColorMultipliers0:ShaderParameterAttrib;
+	public var aColorMultipliers1:ShaderParameterAttrib;
+	public var aColorMultipliers2:ShaderParameterAttrib;
+	public var aColorMultipliers3:ShaderParameterAttrib;
+	public var aColorOffsets:ShaderParameterAttrib;
+	public var uImage0:ShaderParameterSampler;
+	public var uMatrix:ShaderParameterMatrix4;
+	public var uColorTransform:ShaderParameterBool;
 	
 	
 	public function new (byteArray:ByteArray) {

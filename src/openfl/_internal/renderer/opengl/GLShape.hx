@@ -63,8 +63,7 @@ class GLShape {
 				shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
 				
 				var useColorTransform = !shape.__worldColorTransform.__isDefault ();
-				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-				shader.data.uColorTransform.value[0] = useColorTransform;
+				shader.data.uColorTransform.value = useColorTransform;
 				
 				var vaoRendered = GLVAORenderHelper.renderDO (shape, renderSession, shader, graphics.__bitmap);
 				

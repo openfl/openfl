@@ -145,7 +145,8 @@ class ShaderMacro {
 		
 		var lastMatch = 0, position, regex, name, type;
 		
-		if (storageType == "uniform") {
+		var isUniform = storageType == "uniform";
+		if (isUniform) {
 			
 			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
 			
@@ -174,52 +175,34 @@ class ShaderMacro {
 			
 			if (StringTools.startsWith (type, "sampler")) {
 				
-				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderInput<openfl.display.BitmapData>), pos: pos } );
+				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter.ShaderParameterSampler), pos: pos } );
 				
 			} else {
 				
-				var parameterType:openfl.display.ShaderParameterType = switch (type) {
-					
-					case "bool": BOOL;
-					case "double", "float": FLOAT;
-					case "int", "uint": INT;
-					case "bvec2": BOOL2;
-					case "bvec3": BOOL3;
-					case "bvec4": BOOL4;
-					case "ivec2", "uvec2": INT2;
-					case "ivec3", "uvec3": INT3;
-					case "ivec4", "uvec4": INT4;
-					case "vec2", "dvec2": FLOAT2;
-					case "vec3", "dvec3": FLOAT3;
-					case "vec4", "dvec4": FLOAT4;
-					case "mat2", "mat2x2": MATRIX2X2;
-					case "mat2x3": MATRIX2X3;
-					case "mat2x4": MATRIX2X4;
-					case "mat3x2": MATRIX3X2;
-					case "mat3", "mat3x3": MATRIX3X3;
-					case "mat3x4": MATRIX3X4;
-					case "mat4x2": MATRIX4X2;
-					case "mat4x3": MATRIX4X3;
-					case "mat4", "mat4x4": MATRIX4X4;
-					default: null;
-					
-				}
-				
-				switch (parameterType) {
-					
-					case BOOL, BOOL2, BOOL3, BOOL4:
+				var type =
+					if (!isUniform)
+						macro : openfl.display.ShaderParameter.ShaderParameterAttrib
+					else switch (type) {
+						case "bool": macro : openfl.display.ShaderParameter.ShaderParameterBool;
+						case "double", "float": macro : openfl.display.ShaderParameter.ShaderParameterFloat;
+						case "int", "uint": macro : openfl.display.ShaderParameter.ShaderParameterInt;
+						case "bvec2": macro : openfl.display.ShaderParameter.ShaderParameterBool2;
+						case "bvec3": macro : openfl.display.ShaderParameter.ShaderParameterBool3;
+						case "bvec4": macro : openfl.display.ShaderParameter.ShaderParameterBool4;
+						case "ivec2", "uvec2": macro : openfl.display.ShaderParameter.ShaderParameterInt2;
+						case "ivec3", "uvec3": macro : openfl.display.ShaderParameter.ShaderParameterInt3;
+						case "ivec4", "uvec4": macro : openfl.display.ShaderParameter.ShaderParameterInt4;
+						case "vec2", "dvec2": macro : openfl.display.ShaderParameter.ShaderParameterFloat2;
+						case "vec3", "dvec3": macro : openfl.display.ShaderParameter.ShaderParameterFloat3;
+						case "vec4", "dvec4": macro : openfl.display.ShaderParameter.ShaderParameterFloat4;
+						case "mat2", "mat2x2": macro : openfl.display.ShaderParameter.ShaderParameterMatrix2;
+						case "mat3", "mat3x3": macro : openfl.display.ShaderParameter.ShaderParameterMatrix3;
+						case "mat4", "mat4x4": macro : openfl.display.ShaderParameter.ShaderParameterMatrix4;					
+						default: throw "unsupported shader parameter type: " + type;
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Bool>), pos: pos } );
-					
-					case INT, INT2, INT3, INT4:
-						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Int>), pos: pos } );
-					
-					default:
-						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos } );
-					
-				}
+					}
+								
+				fields.push ( { name: name, access: [ APublic ], kind: FVar (type), pos: pos } );
 				
 			}
 			

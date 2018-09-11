@@ -145,8 +145,7 @@ class GLTilemap {
 				shader.data.uMatrix.value = uMatrix;
 				shader.data.uImage0.smoothing = smoothing;
 				
-				if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
-				shader.data.uColorTransform.value[0] = useColorTransform;
+				shader.data.uColorTransform.value = useColorTransform;
 				
 				// gl.bindBuffer (gl.ARRAY_BUFFER, tileArray.__buffer);
 				
