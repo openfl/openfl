@@ -8,23 +8,19 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 #if !flash
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.Float32Array;
-import lime.utils.Int16Array;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTilemap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTilemap;
+import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLTilemap;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
 #end
 
 #if !openfl_debug
@@ -54,16 +50,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	@:noCompletion private var __tileset:Tileset;
 	
 	#if !flash
-	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@:noCompletion private var __indexBufferCount:Int;
-	@:noCompletion private var __indexBufferData:Int16Array;
-	@:noCompletion private var __indexBufferDirty:Bool;
+	@:noCompletion private var __buffer:Context3DBuffer;
+	@:noCompletion private var __bufferDirty:Bool;
 	@:noCompletion private var __height:Int;
-	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@:noCompletion private var __vertexBufferCount:Int;
-	@:noCompletion private var __vertexBufferData:Float32Array;
-	@:noCompletion private var __vertexBufferDataPerVertex:Int;
-	@:noCompletion private var __vertexBufferDirty:Bool;
 	@:noCompletion private var __width:Int;
 	#end
 	

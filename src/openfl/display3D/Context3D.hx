@@ -13,7 +13,7 @@ import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.Context3DState;
+import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
@@ -37,7 +37,7 @@ import openfl.utils.ByteArray;
 @:noDebug
 #end
 
-@:access(openfl._internal.renderer.Context3DState)
+@:access(openfl._internal.renderer.context3D.Context3DState)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.TextureBase)

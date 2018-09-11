@@ -179,8 +179,8 @@ import js.html.Element;
 
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
+@:access(openfl._internal.renderer.context3D.Context3DState)
 @:access(openfl._internal.renderer.opengl.GLGraphics)
-@:access(openfl._internal.renderer.Context3DState)
 @:access(openfl.events.Event)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Bitmap)
