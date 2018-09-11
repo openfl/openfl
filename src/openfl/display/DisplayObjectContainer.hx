@@ -3,8 +3,8 @@ package openfl.display; #if !flash
 
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.opengl.GLGraphics;
-import openfl._internal.renderer.opengl.GLShape;
+import openfl._internal.renderer.context3D.Context3DGraphics;
+import openfl._internal.renderer.context3D.Context3DShape;
 import openfl.display.Stage;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
@@ -1175,8 +1175,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__graphics != null) {
 			
-			//GLGraphics.renderMask (__graphics, renderer);
-			GLShape.renderMask (this, renderer);
+			//Context3DGraphics.renderMask (__graphics, renderer);
+			Context3DShape.renderMask (this, renderer);
 			
 		}
 		

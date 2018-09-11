@@ -16,7 +16,7 @@ import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
-import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
@@ -2116,7 +2116,7 @@ class TextField extends InteractiveObject {
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			GLBitmap.render (__cacheBitmap, renderer);
+			Context3DBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			

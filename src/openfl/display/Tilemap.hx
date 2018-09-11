@@ -18,9 +18,9 @@ import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.dom.DOMTilemap;
-import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
-import openfl._internal.renderer.opengl.GLTilemap;
+import openfl._internal.renderer.context3D.Context3DTilemap;
 #end
 
 #if !openfl_debug
@@ -339,12 +339,12 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			GLBitmap.render (__cacheBitmap, renderer);
+			Context3DBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
 			GLDisplayObject.render (this, renderer);
-			GLTilemap.render (this, renderer);
+			Context3DTilemap.render (this, renderer);
 			
 		}
 		
@@ -359,12 +359,12 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		// if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-		// 	GLBitmap.renderMask (__cacheBitmap, renderer);
+		// 	Context3DBitmap.renderMask (__cacheBitmap, renderer);
 			
 		// } else {
 			
 			GLDisplayObject.renderMask (this, renderer);
-			GLTilemap.renderMask (this, renderer);
+			Context3DTilemap.renderMask (this, renderer);
 			
 		// }
 		

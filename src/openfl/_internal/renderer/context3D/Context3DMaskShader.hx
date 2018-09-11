@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl;
+package openfl._internal.renderer.context3D;
 
 
 import openfl.display.BitmapData;
@@ -10,7 +10,7 @@ import openfl.display.Shader;
 #end
 
 
-class GLMaskShader extends Shader {
+class Context3DMaskShader extends Shader {
 	
 	
 	public static var opaqueBitmapData = new BitmapData (1, 1, false, 0);

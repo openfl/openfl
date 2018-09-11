@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.stats; 
+package openfl._internal.renderer.context3D.stats;
 
 import haxe.ds.IntMap;
 
@@ -7,7 +7,7 @@ import haxe.ds.IntMap;
 @:noDebug
 #end
 
-class GLStats {
+class Context3DStats {
 	
 	private static var drawCallsCounters:IntMap<DrawCallCounter> = [ DrawCallContext.STAGE => new DrawCallCounter(), 
 																	 DrawCallContext.STAGE3D => new DrawCallCounter()];

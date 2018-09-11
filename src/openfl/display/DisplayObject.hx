@@ -13,10 +13,10 @@ import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
-import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.opengl.GLDisplayObject;
-import openfl._internal.renderer.opengl.GLGraphics;
-import openfl._internal.renderer.opengl.GLShape;
+import openfl._internal.renderer.context3D.Context3DGraphics;
+import openfl._internal.renderer.context3D.Context3DShape;
 import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -180,7 +180,7 @@ import js.html.Element;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl._internal.renderer.context3D.Context3DState)
-@:access(openfl._internal.renderer.opengl.GLGraphics)
+@:access(openfl._internal.renderer.context3D.Context3DGraphics)
 @:access(openfl.events.Event)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Bitmap)
@@ -1714,7 +1714,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			GLBitmap.render (__cacheBitmap, renderer);
+			Context3DBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
@@ -1731,8 +1731,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (__graphics != null) {
 			
-			//GLGraphics.renderMask (__graphics, renderer);
-			GLShape.renderMask (this, renderer);
+			//Context3DGraphics.renderMask (__graphics, renderer);
+			Context3DShape.renderMask (this, renderer);
 			
 		}
 		
@@ -1796,7 +1796,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (value == true || __filters != null) return true;
 		
-		if (value == false || (__graphics != null && !GLGraphics.isCompatible (__graphics))) {
+		if (value == false || (__graphics != null && !Context3DGraphics.isCompatible (__graphics))) {
 			
 			return false;
 			

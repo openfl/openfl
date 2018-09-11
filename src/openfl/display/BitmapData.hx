@@ -62,8 +62,8 @@ import openfl.display.CairoRenderer;
 #end
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.GLStats;
-import openfl._internal.renderer.opengl.stats.DrawCallContext;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 
@@ -2717,7 +2717,7 @@ class BitmapData implements IBitmapDrawable {
 		context.drawTriangles (indexBuffer);
 		
 		#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 		#end
 		
 		renderer.__clearShader ();
@@ -2743,7 +2743,7 @@ class BitmapData implements IBitmapDrawable {
 		context.drawTriangles (indexBuffer);
 		
 		#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 		#end
 		
 		renderer.__clearShader ();

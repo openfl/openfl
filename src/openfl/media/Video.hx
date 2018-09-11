@@ -7,7 +7,7 @@ import lime.graphics.RenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
-import openfl._internal.renderer.opengl.GLVideo;
+import openfl._internal.renderer.context3D.Context3DVideo;
 import openfl.display3D.Context3D;
 import openfl.display.CanvasRenderer;
 import openfl.display.CairoRenderer;
@@ -382,7 +382,7 @@ class Video extends DisplayObject {
 	
 	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		GLVideo.render (this, renderer);
+		Context3DVideo.render (this, renderer);
 		__renderEvent (renderer);
 		
 	}
@@ -390,7 +390,7 @@ class Video extends DisplayObject {
 	
 	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		GLVideo.renderMask (this, renderer);
+		Context3DVideo.renderMask (this, renderer);
 		
 	}
 	

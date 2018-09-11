@@ -10,7 +10,7 @@ import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
-import openfl._internal.renderer.opengl.GLMaskShader;
+import openfl._internal.renderer.context3D.Context3DMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
@@ -80,7 +80,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __flipped:Bool;
 	@:noCompletion private var __gl:WebGLRenderContext;
 	@:noCompletion private var __height:Int;
-	@:noCompletion private var __maskShader:GLMaskShader;
+	@:noCompletion private var __maskShader:Context3DMaskShader;
 	@:noCompletion private var __matrix:Matrix4;
 	@:noCompletion private var __maskObjects:Array<DisplayObject>;
 	@:noCompletion private var __numClipRects:Int;
@@ -154,7 +154,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		__initShader (__defaultShader);
 		
-		__maskShader = new GLMaskShader ();
+		__maskShader = new Context3DMaskShader ();
 		
 	}
 	

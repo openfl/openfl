@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl;
+package openfl._internal.renderer.context3D;
 
 
 import lime.utils.Float32Array;
@@ -7,8 +7,8 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.GLStats;
-import openfl._internal.renderer.opengl.stats.DrawCallContext;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 #if !openfl_debug
@@ -23,7 +23,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.net.NetStream)
 
 
-class GLVideo {
+class Context3DVideo {
 	
 	
 	private static var __textureSizeValue = [ 0, 0. ];
@@ -88,7 +88,7 @@ class GLVideo {
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
 			
 			renderer.__clearShader ();
@@ -114,7 +114,7 @@ class GLVideo {
 			
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
-			renderer.applyBitmapData (GLMaskShader.opaqueBitmapData, true);
+			renderer.applyBitmapData (Context3DMaskShader.opaqueBitmapData, true);
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.updateShader ();
 			
@@ -129,7 +129,7 @@ class GLVideo {
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
 			
 			renderer.__clearShader ();

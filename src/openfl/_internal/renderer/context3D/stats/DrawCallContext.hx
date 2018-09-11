@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.stats;
+package openfl._internal.renderer.context3D.stats;
 
 @:enum abstract DrawCallContext (Int) to Int {
 	

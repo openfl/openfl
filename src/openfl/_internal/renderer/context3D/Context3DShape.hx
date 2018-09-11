@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl;
+package openfl._internal.renderer.context3D;
 
 
 import lime.utils.Float32Array;
@@ -10,7 +10,7 @@ import openfl.display.OpenGLRenderer;
 import openfl.geom.Matrix;
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.Context3DStats;
 import openfl._internal.renderer.opengl.stats.DrawCallContext;
 #end
 
@@ -29,7 +29,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.geom.Matrix)
 
 
-class GLShape {
+class Context3DShape {
 	
 	
 	public static function render (shape:DisplayObject, renderer:OpenGLRenderer):Void {
@@ -44,7 +44,7 @@ class GLShape {
 			renderer.__pushMaskObject (shape);
 			// renderer.filterManager.pushObject (shape);
 			
-			GLGraphics.render (graphics, renderer);
+			Context3DGraphics.render (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			
@@ -67,7 +67,7 @@ class GLShape {
 				context.drawTriangles (indexBuffer);
 				
 				#if gl_stats
-				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
 				
 				renderer.__clearShader ();
@@ -90,7 +90,7 @@ class GLShape {
 			
 			// TODO: Support invisible shapes
 			
-			GLGraphics.renderMask (graphics, renderer);
+			Context3DGraphics.renderMask (graphics, renderer);
 			
 			var bounds = graphics.__bounds;
 			
@@ -111,7 +111,7 @@ class GLShape {
 				context.drawTriangles (indexBuffer);
 				
 				#if gl_stats
-				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 				#end
 				
 				renderer.__clearShader ();

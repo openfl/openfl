@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl;
+package openfl._internal.renderer.context3D;
 
 
 import lime.math.ARGB;
@@ -15,8 +15,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.GLStats;
-import openfl._internal.renderer.opengl.stats.DrawCallContext;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 #if !openfl_debug
@@ -33,7 +33,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.geom.Rectangle)
 
 
-class GLGraphics {
+class Context3DGraphics {
 	
 	
 	private static var blankBitmapData = new BitmapData (1, 1, false, 0);
@@ -316,7 +316,7 @@ class GLGraphics {
 			
 		}
 		
-		// TODO: Should we use static data specific to GLGraphics instead of each Graphics instance?
+		// TODO: Should we use static data specific to Context3DGraphics instead of each Graphics instance?
 		
 		if (quadIndexBufferCount > 0) {
 			
@@ -650,7 +650,7 @@ class GLGraphics {
 								vertexBufferPosition += (4 * length * 4);
 								
 								#if gl_stats
-									GLStats.incrementDrawCall (DrawCallContext.STAGE);
+									Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 								#end
 								
 								renderer.__clearShader ();
@@ -694,7 +694,7 @@ class GLGraphics {
 								context.drawTriangles (indexBuffer);
 								
 								#if gl_stats
-									GLStats.incrementDrawCall (DrawCallContext.STAGE);
+									Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 								#end
 								
 								renderer.__clearShader ();
@@ -777,7 +777,7 @@ class GLGraphics {
 							}
 							
 							#if gl_stats
-								GLStats.incrementDrawCall (DrawCallContext.STAGE);
+								Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 							#end
 							
 							renderer.__clearShader ();

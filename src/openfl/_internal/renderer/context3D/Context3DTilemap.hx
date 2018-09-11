@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl;
+package openfl._internal.renderer.context3D;
 
 
 import lime.utils.Float32Array;
@@ -19,8 +19,8 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.GLStats;
-import openfl._internal.renderer.opengl.stats.DrawCallContext;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 #if !openfl_debug
@@ -40,7 +40,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(openfl.geom.Rectangle)
 
 
-class GLTilemap {
+class Context3DTilemap {
 	
 	
 	private static var cacheColorTransform:ColorTransform;
@@ -362,7 +362,7 @@ class GLTilemap {
 			tilemap.__buffer.drawElements (start, length);
 			
 			#if gl_stats
-				GLStats.incrementDrawCall (DrawCallContext.STAGE);
+				Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 			#end
 			
 			renderer.__clearShader ();
@@ -547,7 +547,7 @@ class GLTilemap {
 		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
 		// 		#if gl_stats
-		// 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		// 			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 		// 		#end
 				
 		// 		flush = false;
@@ -564,7 +564,7 @@ class GLTilemap {
 		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 				
 		// 		#if gl_stats
-		// 			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+		// 			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 		// 		#end
 				
 		// 	}

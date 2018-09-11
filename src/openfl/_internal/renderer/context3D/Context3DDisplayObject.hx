@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl;
+package openfl._internal.renderer.context3D;
 
 
 import lime.math.ARGB;
@@ -18,7 +18,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.Rectangle)
 
 
-class GLDisplayObject {
+class Context3DDisplayObject {
 	
 	
 	public static inline function render (displayObject:DisplayObject, renderer:OpenGLRenderer):Void {
@@ -49,7 +49,7 @@ class GLDisplayObject {
 		
 		if (displayObject.__graphics != null) {
 			
-			GLShape.render (displayObject, renderer);
+			Context3DShape.render (displayObject, renderer);
 			
 		}
 		
@@ -83,7 +83,7 @@ class GLDisplayObject {
 		
 		if (displayObject.__graphics != null) {
 			
-			GLShape.renderMask (displayObject, renderer);
+			Context3DShape.renderMask (displayObject, renderer);
 			
 		}
 		

@@ -18,7 +18,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
 import lime.utils.Log;
-import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
@@ -49,7 +49,7 @@ import openfl.profiler.Telemetry;
 #end
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.Context3DStats;
 #end
 
 #if (js && html5)
@@ -1392,7 +1392,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		#if gl_stats
-			GLStats.resetDrawCalls();
+			Context3DStats.resetDrawCalls();
 		#end
 		
 		__broadcastEvent (new Event (Event.ENTER_FRAME));
