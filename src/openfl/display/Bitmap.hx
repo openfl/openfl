@@ -323,7 +323,7 @@ class Bitmap extends DisplayObject {
 			
 		} else {
 			
-			GLDisplayObject.render (this, renderer);
+			Context3DDisplayObject.render (this, renderer);
 			Context3DBitmap.render (this, renderer);
 			
 		}

@@ -43,7 +43,7 @@ class Context3DGraphics {
 	
 	private static function buildBuffer (graphics:Graphics, renderer:OpenGLRenderer):Void {
 		
-		var quadIndexBufferCount = 0;
+		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
 		var vertexBufferPositionUVT = 0;
@@ -130,10 +130,16 @@ class Context3DGraphics {
 						
 						var dataPerVertex = 4;
 						var stride = dataPerVertex * 4;
-						var vertexBufferLength = length * stride;
 						
-						resizeIndexBuffer (graphics, true, length * 6);
-						resizeVertexBuffer (graphics, false, vertexBufferPosition + vertexBufferLength);
+						if (graphics.__quadBuffer == null) {
+							
+							graphics.__quadBuffer = new Context3DBuffer (context, QUADS, length, dataPerVertex);
+							
+						} else {
+							
+							graphics.__quadBuffer.resize (quadBufferPosition + length, dataPerVertex);
+							
+						}
 						
 						var vertexOffset = vertexBufferPosition;
 						var alpha = 1.0, tileData, id;
@@ -142,7 +148,7 @@ class Context3DGraphics {
 						var x, y, x2, y2, x3, y3, x4, y4;
 						var ri, ti;
 						
-						var vertexBufferData = graphics.__vertexBufferData;
+						var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
 						
 						#if openfl_power_of_two
 						bitmapWidth = 1;
@@ -240,8 +246,7 @@ class Context3DGraphics {
 							
 						}
 						
-						if (length * 6 > quadIndexBufferCount) quadIndexBufferCount = length * 6;
-						vertexBufferPosition += length * dataPerVertex * 4;
+						quadBufferPosition += length;
 						
 					}
 				
@@ -318,18 +323,9 @@ class Context3DGraphics {
 		
 		// TODO: Should we use static data specific to Context3DGraphics instead of each Graphics instance?
 		
-		if (quadIndexBufferCount > 0) {
+		if (quadBufferPosition > 0) {
 			
-			var buffer = graphics.__quadIndexBuffer;
-			
-			if (buffer == null || quadIndexBufferCount > graphics.__quadIndexBufferCount) {
-				
-				buffer = context.createIndexBuffer (quadIndexBufferCount, STATIC_DRAW);
-				graphics.__quadIndexBuffer = buffer;
-				graphics.__quadIndexBufferCount = quadIndexBufferCount;
-				buffer.uploadFromTypedArray (graphics.__quadIndexBufferData);
-				
-			}
+			graphics.__quadBuffer.flushVertexBufferData ();
 			
 		}
 		
@@ -494,12 +490,11 @@ class Context3DGraphics {
 		
 		if ((graphics.__bitmap != null && !graphics.__dirty) || !isCompatible (graphics)) {
 			
-			if (graphics.__quadIndexBuffer != null || graphics.__triangleIndexBuffer != null) {
+			if (graphics.__quadBuffer != null || graphics.__triangleIndexBuffer != null) {
 				
 				// TODO: Should this be kept?
 				
-				graphics.__quadIndexBuffer = null;
-				graphics.__quadIndexBufferData = null;
+				// graphics.__quadBuffer = null;
 				graphics.__triangleIndexBuffer = null;
 				graphics.__triangleIndexBufferData = null;
 				graphics.__vertexBuffer = null;
@@ -532,7 +527,7 @@ class Context3DGraphics {
 			
 			if (bounds != null && width >= 1 && height >= 1) {
 				
-				if (graphics.__dirty || (graphics.__quadIndexBuffer == null && graphics.__triangleIndexBuffer == null)) {
+				if (graphics.__dirty || (graphics.__quadBuffer == null && graphics.__triangleIndexBuffer == null)) {
 					
 					buildBuffer (graphics, renderer);
 					
@@ -554,6 +549,7 @@ class Context3DGraphics {
 				var positionX = 0.0;
 				var positionY = 0.0;
 				
+				var quadBufferPosition = 0;
 				var triangleIndexBufferPosition = 0;
 				var vertexBufferPosition = 0;
 				var vertexBufferPositionUVT = 0;
@@ -642,12 +638,11 @@ class Context3DGraphics {
 									
 								}
 								
-								if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, graphics.__vertexBuffer, vertexBufferPosition, FLOAT_2);
-								if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, graphics.__vertexBuffer, vertexBufferPosition + 2, FLOAT_2);
+								if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, graphics.__quadBuffer.vertexBuffer, vertexBufferPosition, FLOAT_2);
+								if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, graphics.__quadBuffer.vertexBuffer, vertexBufferPosition + 2, FLOAT_2);
 								
-								context.drawTriangles (graphics.__quadIndexBuffer, 0, length * 2);
-								
-								vertexBufferPosition += (4 * length * 4);
+								graphics.__quadBuffer.drawElements (quadBufferPosition, length);
+								quadBufferPosition += length;
 								
 								#if gl_stats
 									Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -827,7 +822,9 @@ class Context3DGraphics {
 	
 	private static function resizeIndexBuffer (graphics:Graphics, isQuad:Bool, length:Int):Void {
 		
-		var buffer = (isQuad ? graphics.__quadIndexBufferData : graphics.__triangleIndexBufferData);
+		if (isQuad) return;
+		
+		var buffer = (isQuad ? null /*graphics.__quadIndexBufferData*/ : graphics.__triangleIndexBufferData);
 		var position = 0, newBuffer = null;
 		
 		if (buffer == null) {
@@ -846,22 +843,22 @@ class Context3DGraphics {
 			
 			if (isQuad) {
 				
-				var vertexIndex = Std.int (position * (4 / 6));
+				// var vertexIndex = Std.int (position * (4 / 6));
 				
-				while (position < length) {
+				// while (position < length) {
 					
-					newBuffer[position] = vertexIndex;
-					newBuffer[position + 1] = vertexIndex + 1;
-					newBuffer[position + 2] = vertexIndex + 2;
-					newBuffer[position + 3] = vertexIndex + 2;
-					newBuffer[position + 4] = vertexIndex + 1;
-					newBuffer[position + 5] = vertexIndex + 3;
-					position += 6;
-					vertexIndex += 4;
+				// 	newBuffer[position] = vertexIndex;
+				// 	newBuffer[position + 1] = vertexIndex + 1;
+				// 	newBuffer[position + 2] = vertexIndex + 2;
+				// 	newBuffer[position + 3] = vertexIndex + 2;
+				// 	newBuffer[position + 4] = vertexIndex + 1;
+				// 	newBuffer[position + 5] = vertexIndex + 3;
+				// 	position += 6;
+				// 	vertexIndex += 4;
 					
-				}
+				// }
 				
-				graphics.__quadIndexBufferData = newBuffer;
+				// graphics.__quadIndexBufferData = newBuffer;
 				
 			} else {
 				

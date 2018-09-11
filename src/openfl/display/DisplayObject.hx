@@ -14,7 +14,7 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.context3D.Context3DBitmap;
-import openfl._internal.renderer.opengl.GLDisplayObject;
+import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.context3D.Context3DGraphics;
 import openfl._internal.renderer.context3D.Context3DShape;
 import openfl._internal.Lib;
@@ -1718,7 +1718,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 		} else {
 			
-			GLDisplayObject.render (this, renderer);
+			Context3DDisplayObject.render (this, renderer);
 			
 		}
 		

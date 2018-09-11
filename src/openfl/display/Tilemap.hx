@@ -19,7 +19,7 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.context3D.Context3DBitmap;
-import openfl._internal.renderer.opengl.GLDisplayObject;
+import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.context3D.Context3DTilemap;
 #end
 
@@ -343,7 +343,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			
 		} else {
 			
-			GLDisplayObject.render (this, renderer);
+			Context3DDisplayObject.render (this, renderer);
 			Context3DTilemap.render (this, renderer);
 			
 		}
@@ -363,7 +363,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			
 		// } else {
 			
-			GLDisplayObject.renderMask (this, renderer);
+			Context3DDisplayObject.renderMask (this, renderer);
 			Context3DTilemap.renderMask (this, renderer);
 			
 		// }
