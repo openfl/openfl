@@ -124,9 +124,11 @@ class GLRenderer extends AbstractRenderer {
 		
 	}
 	
-
+	
+	var getMatrixHelperMatrix = new Matrix();
+	
 	public function getMatrix (transform:Matrix, snapToPixel: Bool = false):Matrix4 {
-		var _matrix = Matrix.__pool.get ();
+		var _matrix = this.getMatrixHelperMatrix;
 		
 		_matrix.copyFrom (transform);
 		_matrix.concat (displayMatrix);
@@ -146,8 +148,6 @@ class GLRenderer extends AbstractRenderer {
 		matrix[12] = _matrix.tx;
 		matrix[13] = _matrix.ty;
 		matrix.append (flipped ? projectionFlipped : projection);
-		
-		Matrix.__pool.release (_matrix);
 		
 		return matrix;
 		
