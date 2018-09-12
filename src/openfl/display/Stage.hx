@@ -2286,6 +2286,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var touchEvent = TouchEvent.__create (type, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
 		touchEvent.touchPointID = touchId;
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+		touchEvent.pressure = touch.pressure;
 		
 		__dispatchStack (touchEvent, stack);
 		
@@ -2294,6 +2295,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			touchEvent = TouchEvent.__create (touchType, null, touchX, touchY, target.__globalToLocal (targetPoint, localPoint), cast target);
 			touchEvent.touchPointID = touchId;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			touchEvent.pressure = touch.pressure;
 			
 			__dispatchStack (touchEvent, stack);
 			
@@ -2306,6 +2308,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			touchEvent = TouchEvent.__create (TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal (targetPoint, localPoint), cast touchOverTarget);
 			touchEvent.touchPointID = touchId;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			touchEvent.pressure = touch.pressure;
 			
 			__dispatchTarget (touchOverTarget, touchEvent);
 			
@@ -2323,6 +2326,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				touchEvent.touchPointID = touchId;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = false;
+				touchEvent.pressure = touch.pressure;
 				
 				__dispatchTarget (target, touchEvent);
 				
@@ -2340,6 +2344,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					touchEvent.touchPointID = touchId;
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 					touchEvent.bubbles = false;
+					touchEvent.pressure = touch.pressure;
 					
 					__dispatchTarget (target, touchEvent);
 					
@@ -2363,6 +2368,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				touchEvent.touchPointID = touchId;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = true;
+				touchEvent.pressure = touch.pressure;
 				
 				__dispatchTarget (target, touchEvent);
 				
