@@ -458,7 +458,7 @@ class AGALConverter {
 		
 		if (limitedProfile == null) {
 			
-			var version:String = GL.getParameter (GL.VERSION);
+			var version:String = GL.context.getParameter (GL.VERSION);
 			limitedProfile = (version.indexOf ("OpenGL ES") > -1 || version.indexOf ("WebGL") > -1);
 			
 		}

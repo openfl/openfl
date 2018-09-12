@@ -1,12 +1,10 @@
 package openfl._internal.stage3D.atf;
 
-
-import haxe.io.Bytes;
 import openfl.utils.ByteArray;
 import openfl.errors.IllegalOperationError;
 import openfl.display3D.Context3DTextureFormat;
 
-typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> lime.utils.DataPointer -> Void;
+typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> lime.utils.ArrayBufferView -> Void;
 
 
 /**
@@ -139,10 +137,10 @@ class ATFReader {
 					
 					if (blockLength > 0) {
 						
-						var bytes = Bytes.alloc (blockLength);
+						var bytes = new ByteArray (blockLength);
 						data.readBytes (bytes, 0, blockLength);
 						
-						uploadCallback (side, level, gpuFormat, width>>level, height>>level, blockLength, bytes);
+						uploadCallback (side, level, gpuFormat, width>>level, height>>level, blockLength, new lime.utils.UInt8Array (bytes.toArrayBuffer ()));
 						
 					}
 					
