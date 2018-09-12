@@ -20,7 +20,7 @@ class GLUtils {
     public static function CheckGLError ():Void {
         if (!debug) return;
 
-        var error = GL.getError ();
+        var error = GL.context.getError ();
 		
         if (error != GL.NO_ERROR) {
 			
