@@ -137,10 +137,11 @@ class ATFReader {
 					
 					if (blockLength > 0) {
 						
-						var bytes = new ByteArray (blockLength);
-						data.readBytes (bytes, 0, blockLength);
+						var bufferView = new lime.utils.UInt8Array (data.toArrayBuffer (), data.position, blockLength);
 						
-						uploadCallback (side, level, gpuFormat, width>>level, height>>level, blockLength, new lime.utils.UInt8Array (bytes.toArrayBuffer ()));
+						data.position += blockLength;
+						
+						uploadCallback (side, level, gpuFormat, width>>level, height>>level, blockLength, bufferView);
 						
 					}
 					
