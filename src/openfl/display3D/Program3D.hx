@@ -234,11 +234,11 @@ import openfl.Vector;
 		__glslUniformNames = new Array ();
 		
 		var gl = __context.gl;
-		var index;
+		var index:Int;
 		
 		for (name in samplerNames) {
 			
-			index = gl.getUniformLocation (__glProgram, name);
+			index = cast gl.getUniformLocation (__glProgram, name);
 			__glslSamplerNames[index] = name;
 			
 		}
@@ -253,7 +253,7 @@ import openfl.Vector;
 		
 		for (i in 0...uniformNames.length) {
 			
-			index = gl.getUniformLocation (__glProgram, uniformNames[i]);
+			index = cast gl.getUniformLocation (__glProgram, uniformNames[i]);
 			__glslAttribNames[index] = uniformNames[i];
 			__glslAttribTypes[index] = uniformTypes[i];
 			
