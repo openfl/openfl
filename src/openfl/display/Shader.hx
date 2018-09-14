@@ -242,6 +242,7 @@ class Shader {
 		var gl = __context.gl;
 		
 		var textureCount = 0;
+		
 		for (input in __inputBitmapData) {
 			
 			input.__disableGL (__context, textureCount);
@@ -355,12 +356,15 @@ class Shader {
 			var prefix = 
 				
 				"#ifdef GL_ES
-					#ifdef GL_FRAGMENT_PRECISION_HIGH
-					precision highp float;
-					#else
-					precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
-					#endif // GL_FRAGMENT_PRECISION_HIGH
-				#endif // GL_ES
+				" + (precisionHint == FULL ?
+				"#ifdef GL_FRAGMENT_PRECISION_HIGH
+				precision highp float;
+				#else
+				precision mediump float;
+				#endif" : 
+				"precision lowp float;") +
+				"
+				#endif
 				";
 			
 			var vertex = prefix + glVertexSource;
@@ -378,7 +382,7 @@ class Shader {
 				
 				// TODO
 				// program.uploadSources (vertex, fragment);
-				program.__programID = __createGLProgram (vertex, fragment);
+				program.__glProgram = __createGLProgram (vertex, fragment);
 				
 				__programs.set (id, program);
 				
@@ -386,7 +390,7 @@ class Shader {
 			
 			if (program != null) {
 				
-				glProgram = program.__programID;
+				glProgram = program.__glProgram;
 				
 				for (input in __inputBitmapData) {
 					

@@ -12,6 +12,7 @@ import lime.graphics.WebGLRenderContext;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
+import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.SamplerState;
@@ -90,6 +91,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
 	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
+	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
@@ -188,6 +190,20 @@ import openfl.utils.ByteArray;
 		}
 		
 		driverInfo = __driverInfo;
+		
+		var data = new Int16Array (0xFFFF);
+		var vertex = 0;
+		for (i in 0...0x2AAA) {
+			data[i] = vertex;
+			data[i + 1] = vertex + 1;
+			data[i + 2] = vertex + 2;
+			data[i + 3] = vertex + 2;
+			data[i + 4] = vertex + 1;
+			data[i + 5] = vertex + 3;
+			vertex += 4;
+		}
+		__quadIndexBuffer = createIndexBuffer (0xFFFF);
+		__quadIndexBuffer.uploadFromTypedArray (data);
 		
 	}
 	
@@ -423,7 +439,7 @@ import openfl.utils.ByteArray;
 		
 		#end
 		
-		if (__state.program != null && __state.program.__format == AGAL) {
+		if (__state.program != null) {
 			__state.program.__flush ();
 		}
 		
@@ -1056,14 +1072,12 @@ import openfl.utils.ByteArray;
 		
 		if (#if openfl_disable_context_cache true #else __contextState.program != program #end) {
 			
-			if (program != null && program.__format == AGAL) {
-				
-				program.__use ();
-				
-			} else {
-				
-				gl.useProgram (program.__programID);
-				
+			if (__contextState.program != null) {
+				__contextState.program.__disable ();
+			}
+			
+			if (program != null) {
+				program.__enable ();
 			}
 			
 			__contextState.program = program;
@@ -1246,7 +1260,7 @@ import openfl.utils.ByteArray;
 				
 			}
 			
-			if (__state.program != null && samplerState.textureAlpha) {
+			if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha) {
 				
 				gl.activeTexture (gl.TEXTURE0 + sampler + 4);
 				
@@ -1259,7 +1273,7 @@ import openfl.utils.ByteArray;
 					}
 					
 					texture.__alphaTexture.__setSamplerState (samplerState);
-					gl.uniform1i (__state.program.__alphaSamplerEnabled[sampler].location, 1);
+					gl.uniform1i (__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
 					
 					#if desktop
 					// TODO: Cache?
@@ -1269,7 +1283,7 @@ import openfl.utils.ByteArray;
 				} else {
 					
 					__bindGLTexture2D (null);
-					gl.uniform1i (__state.program.__alphaSamplerEnabled[sampler].location, 0);
+					gl.uniform1i (__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
 					
 				}
 				

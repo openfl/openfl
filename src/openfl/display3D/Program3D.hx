@@ -12,6 +12,10 @@ import lime.utils.Log;
 import lime.utils.LogLevel;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
+import openfl.display.BitmapData;
+import openfl.display.ShaderInput;
+import openfl.display.ShaderParameter;
+import openfl.display.ShaderParameterType;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -23,30 +27,36 @@ import openfl.Vector;
 #end
 
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.ShaderInput)
+@:access(openfl.display.ShaderParameter)
 @:access(openfl.display.Stage)
 
 
 @:final class Program3D {
 	
 	
-	@:noCompletion private var __alphaSamplerEnabled:Array<Uniform>;
-	@:noCompletion private var __alphaSamplerUniforms:List<Uniform>;
+	@:noCompletion private var __agalAlphaSamplerEnabled:Array<Uniform>;
+	@:noCompletion private var __agalAlphaSamplerUniforms:List<Uniform>;
+	@:noCompletion private var __agalFragmentUniformMap:UniformMap;
+	@:noCompletion private var __agalPositionScale:Uniform;
+	@:noCompletion private var __agalSamplerUniforms:List<Uniform>;
+	@:noCompletion private var __agalSamplerUsageMask:Int;
+	@:noCompletion private var __agalUniforms:List<Uniform>;
+	@:noCompletion private var __agalVertexUniformMap:UniformMap;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Context3DProgramFormat;
-	@:noCompletion private var __fragmentShaderID:GLShader;
-	@:noCompletion private var __fragmentSource:String;
-	@:noCompletion private var __fragmentUniformMap:UniformMap;
-	@:noCompletion private var __location:Map<String, Int>;
-	@:noCompletion private var __memUsage:Int;
-	@:noCompletion private var __positionScale:Uniform;
-	@:noCompletion private var __programID:GLProgram;
+	@:noCompletion private var __glFragmentShader:GLShader;
+	@:noCompletion private var __glFragmentSource:String;
+	@:noCompletion private var __glProgram:GLProgram;
+	@:noCompletion private var __glslAttribNames:Array<String>;
+	@:noCompletion private var __glslAttribTypes:Array<ShaderParameterType>;
+	@:noCompletion private var __glslSamplerNames:Array<String>;
+	@:noCompletion private var __glslUniformNames:Array<String>;
+	@:noCompletion private var __glslUniformTypes:Array<ShaderParameterType>;
+	@:noCompletion private var __glVertexShader:GLShader;
+	@:noCompletion private var __glVertexSource:String;
+	// @:noCompletion private var __memUsage:Int;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
-	@:noCompletion private var __samplerUniforms:List<Uniform>;
-	@:noCompletion private var __samplerUsageMask:Int;
-	@:noCompletion private var __uniforms:List<Uniform>;
-	@:noCompletion private var __vertexShaderID:GLShader;
-	@:noCompletion private var __vertexSource:String;
-	@:noCompletion private var __vertexUniformMap:UniformMap;
 	
 	
 	@:noCompletion private function new (context3D:Context3D, format:Context3DProgramFormat) {
@@ -54,14 +64,24 @@ import openfl.Vector;
 		__context = context3D;
 		__format = format;
 		
-		__memUsage = 0;
-		__samplerUsageMask = 0;
-		
-		__location = new Map ();
-		__uniforms = new List<Uniform> ();
-		__samplerUniforms = new List<Uniform> ();
-		__alphaSamplerUniforms = new List<Uniform> ();
-		__alphaSamplerEnabled = new Array<Uniform> ();
+		if (__format == AGAL) {
+			
+			// __memUsage = 0;
+			__agalSamplerUsageMask = 0;
+			__agalUniforms = new List<Uniform> ();
+			__agalSamplerUniforms = new List<Uniform> ();
+			__agalAlphaSamplerUniforms = new List<Uniform> ();
+			__agalAlphaSamplerEnabled = new Array<Uniform> ();
+			
+		} else {
+			
+			__glslAttribNames = new Array ();
+			__glslAttribTypes = new Array ();
+			__glslSamplerNames = new Array ();
+			__glslUniformNames = new Array ();
+			__glslUniformTypes = new Array ();
+			
+		}
 		
 		__samplerStates = new Array<SamplerState> ();
 		
@@ -93,24 +113,13 @@ import openfl.Vector;
 			
 		} else {
 			
-			if (!__location.exists (name)) {
+			for (i in 0...__glslAttribNames.length) {
 				
-				if (__programID != null) {
-					
-					__location[name] = cast __context.gl.getAttribLocation (__programID, name);
-					return __location[name];
-					
-				} else {
-					
-					return -1;
-					
-				}
-				
-			} else {
-				
-				return __location[name];
+				if (__glslAttribNames[i] == name) return i;
 				
 			}
+			
+			return -1;
 			
 		}
 		
@@ -139,24 +148,13 @@ import openfl.Vector;
 			
 		} else {
 			
-			if (!__location.exists (name)) {
+			for (i in 0...__glslUniformNames.length) {
 				
-				if (__programID != null) {
-					
-					__location[name] = cast __context.gl.getUniformLocation (__programID, name);
-					return __location[name];
-					
-				} else {
-					
-					return -1;
-					
-				}
-				
-			} else {
-				
-				return __location[name];
+				if (__glslUniformNames[i] == name) return i;
 				
 			}
+			
+			return -1;
 			
 		}
 		
@@ -180,7 +178,9 @@ import openfl.Vector;
 			
 		}
 		
+		__deleteShaders ();
 		__uploadFromGLSL (glslVertex, glslFragment);
+		__buildAGALUniformList ();
 		
 		for (i in 0...samplerStates.length) {
 			
@@ -195,33 +195,95 @@ import openfl.Vector;
 		
 		if (__format != GLSL) return;
 		
-		__uploadFromGLSL (vertexSource, fragmentSource);
+		// TODO: Precision hint?
+		
+		var prefix = 
+			
+			"#ifdef GL_ES
+			#ifdef GL_FRAGMENT_PRECISION_HIGH
+			precision highp float;
+			#else
+			precision mediump float;
+			#endif
+			#endif
+			";
+		
+		var vertex = prefix + vertexSource;
+		var fragment = prefix + fragmentSource;
+		
+		if (vertex == __glVertexSource && fragment == __glFragmentSource) return;
+		
+		__processGLSLData (vertexSource, "attribute");
+		__processGLSLData (vertexSource, "uniform");
+		__processGLSLData (fragmentSource, "uniform");
+		
+		__deleteShaders ();	
+		__uploadFromGLSL (vertex, fragment);
+		
+		// Sort by index
+		
+		var samplerNames = __glslSamplerNames;
+		var attribNames = __glslAttribNames;
+		var attribTypes = __glslAttribTypes;
+		var uniformNames = __glslUniformNames;
+		var uniformTypes = __glslUniformTypes;
+		
+		__glslSamplerNames = new Array ();
+		__glslAttribNames = new Array ();
+		__glslAttribTypes = new Array ();
+		__glslUniformNames = new Array ();
+		
+		var gl = __context.gl;
+		var index;
+		
+		for (name in samplerNames) {
+			
+			index = gl.getUniformLocation (__glProgram, name);
+			__glslSamplerNames[index] = name;
+			
+		}
+		
+		for (i in 0...attribNames.length) {
+			
+			index = gl.getAttribLocation (__glProgram, attribNames[i]);
+			__glslAttribNames[index] = attribNames[i];
+			__glslAttribTypes[index] = attribTypes[i];
+			
+		}
+		
+		for (i in 0...uniformNames.length) {
+			
+			index = gl.getUniformLocation (__glProgram, uniformNames[i]);
+			__glslAttribNames[index] = uniformNames[i];
+			__glslAttribTypes[index] = uniformTypes[i];
+			
+		}
 		
 	}
 	
 	
-	@:noCompletion private function __buildUniformList ():Void {
+	@:noCompletion private function __buildAGALUniformList ():Void {
 		
 		if (__format == GLSL) return;
 		
 		var gl = __context.gl;
 		
-		__uniforms.clear ();
-		__samplerUniforms.clear ();
-		__alphaSamplerUniforms.clear ();
-		__alphaSamplerEnabled = [];
+		__agalUniforms.clear ();
+		__agalSamplerUniforms.clear ();
+		__agalAlphaSamplerUniforms.clear ();
+		__agalAlphaSamplerEnabled = [];
 		
-		__samplerUsageMask = 0;
+		__agalSamplerUsageMask = 0;
 		
 		var numActive = 0;
-		numActive = gl.getProgramParameter (__programID, gl.ACTIVE_UNIFORMS);
+		numActive = gl.getProgramParameter (__glProgram, gl.ACTIVE_UNIFORMS);
 		
 		var vertexUniforms = new List<Uniform> ();
 		var fragmentUniforms = new List<Uniform> ();
 		
 		for (i in 0...numActive) {
 			
-			var info = gl.getActiveUniform (__programID, i);
+			var info = gl.getActiveUniform (__glProgram, i);
 			var name = info.name;
 			var size = info.size;
 			var uniformType = info.type;
@@ -231,7 +293,7 @@ import openfl.Vector;
 			uniform.size = size;
 			uniform.type = uniformType;
 			
-			uniform.location = gl.getUniformLocation (__programID, uniform.name);
+			uniform.location = gl.getUniformLocation (__glProgram, uniform.name);
 			
 			var indexBracket = uniform.name.indexOf ('[');
 			
@@ -252,11 +314,11 @@ import openfl.Vector;
 			
 			uniform.regCount *= uniform.size;
 			
-			__uniforms.add (uniform);
+			__agalUniforms.add (uniform);
 			
 			if (uniform.name == "vcPositionScale") {
 				
-				__positionScale = uniform;
+				__agalPositionScale = uniform;
 				
 			} else if (StringTools.startsWith (uniform.name, "vc")) {
 				
@@ -273,11 +335,11 @@ import openfl.Vector;
 			} else if (StringTools.startsWith (uniform.name, "sampler") && uniform.name.indexOf ("alpha") == -1) {
 				
 				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
-				__samplerUniforms.add (uniform);
+				__agalSamplerUniforms.add (uniform);
 				
 				for (reg in 0...uniform.regCount) {
 					
-					__samplerUsageMask |= (1 << (uniform.regIndex + reg));
+					__agalSamplerUsageMask |= (1 << (uniform.regIndex + reg));
 					
 				}
 				
@@ -285,12 +347,12 @@ import openfl.Vector;
 				
 				var len = uniform.name.indexOf ("_") - 7;
 				uniform.regIndex = Std.parseInt (uniform.name.substring (7, 7 + len)) + 4;
-				__alphaSamplerUniforms.add (uniform);
+				__agalAlphaSamplerUniforms.add (uniform);
 				
 			} else if (StringTools.startsWith (uniform.name, "sampler") && StringTools.endsWith (uniform.name, "_alphaEnabled")) {
 				
 				uniform.regIndex = Std.parseInt (uniform.name.substring (7));
-				__alphaSamplerEnabled[uniform.regIndex] = uniform;
+				__agalAlphaSamplerEnabled[uniform.regIndex] = uniform;
 				
 			}
 			
@@ -302,8 +364,8 @@ import openfl.Vector;
 			
 		}
 		
-		__vertexUniformMap = new UniformMap (Lambda.array (vertexUniforms));
-		__fragmentUniformMap = new UniformMap (Lambda.array (fragmentUniforms));
+		__agalVertexUniformMap = new UniformMap (Lambda.array (vertexUniforms));
+		__agalFragmentUniformMap = new UniformMap (Lambda.array (fragmentUniforms));
 		
 	}
 	
@@ -312,25 +374,130 @@ import openfl.Vector;
 		
 		var gl = __context.gl;
 		
-		if (__programID != null) {
+		if (__glProgram != null) {
 			
-			// this causes an exception EntryPoIntNotFound ..
-			// gl.DeleteProgram (1, ref __programID  );
-			__programID = null;
+			__glProgram = null;
 			
 		}
 		
-		if (__vertexShaderID != null) {
+		if (__glVertexShader != null) {
 			
-			gl.deleteShader (__vertexShaderID);
-			__vertexShaderID = null;
+			gl.deleteShader (__glVertexShader);
+			__glVertexShader = null;
 			
 		}
 		
-		if (__fragmentShaderID != null) {
+		if (__glFragmentShader != null) {
 			
-			gl.deleteShader (__fragmentShaderID);
-			__fragmentShaderID = null;
+			gl.deleteShader (__glFragmentShader);
+			__glFragmentShader = null;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __disable ():Void {
+		
+		if (__format == GLSL) {
+			
+			// var gl = __context.gl;
+			// var textureCount = 0;
+			
+			// for (input in __glslInputBitmapData) {
+				
+			// 	input.__disableGL (__context, textureCount);
+			// 	textureCount++;
+				
+			// }
+			
+			// for (parameter in __glslParamBool) {
+				
+			// 	parameter.__disableGL (__context);
+				
+			// }
+			
+			// for (parameter in __glslParamFloat) {
+				
+			// 	parameter.__disableGL (__context);
+				
+			// }
+			
+			// for (parameter in __glslParamInt) {
+				
+			// 	parameter.__disableGL (__context);
+				
+			// }
+			
+			// // __context.__bindGLArrayBuffer (null);
+			
+			// if (__context.__context.type == OPENGL) {
+				
+			// 	gl.disable (gl.TEXTURE_2D);
+				
+			// }
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __enable ():Void {
+		
+		var gl = __context.gl;
+		gl.useProgram (__glProgram);
+		
+		if (__format == AGAL) {
+				
+			__agalVertexUniformMap.markAllDirty ();
+			__agalFragmentUniformMap.markAllDirty ();
+			
+			for (sampler in __agalSamplerUniforms) {
+				
+				if (sampler.regCount == 1) {
+					
+					gl.uniform1i (sampler.location, sampler.regIndex);
+					
+				} else {
+					
+					throw new IllegalOperationError ("!!! TODO: uniform location on webgl");
+					
+				}
+				
+			}
+			
+			for (sampler in __agalAlphaSamplerUniforms) {
+				
+				if (sampler.regCount == 1) {
+					
+					gl.uniform1i (sampler.location, sampler.regIndex);
+					
+				} else {
+					
+					throw new IllegalOperationError ("!!! TODO: uniform location on webgl");
+					
+				}
+				
+			}
+			
+		} else {
+			
+			// var textureCount = 0;
+			
+			// var gl = __context.gl;
+			
+			// for (input in __glslInputBitmapData) {
+				
+			// 	gl.uniform1i (input.index, textureCount);
+			// 	textureCount++;
+				
+			// }
+			
+			// if (__context.__context.type == OPENGL && textureCount > 0) {
+				
+			// 	gl.enable (gl.TEXTURE_2D);
+				
+			// }
 			
 		}
 		
@@ -339,8 +506,44 @@ import openfl.Vector;
 	
 	@:noCompletion private function __flush ():Void {
 		
-		__vertexUniformMap.flush ();
-		__fragmentUniformMap.flush ();
+		if (__format == AGAL) {
+			
+			__agalVertexUniformMap.flush ();
+			__agalFragmentUniformMap.flush ();
+			
+		} else {
+			
+			// TODO
+			return;
+			
+			// var textureCount = 0;
+			
+			// for (input in __glslInputBitmapData) {
+				
+			// 	input.__updateGL (__context, textureCount);
+			// 	textureCount++;
+				
+			// }
+			
+			// for (parameter in __glslParamBool) {
+				
+			// 	parameter.__updateGL (__context);
+				
+			// }
+			
+			// for (parameter in __glslParamFloat) {
+				
+			// 	parameter.__updateGL (__context);
+				
+			// }
+			
+			// for (parameter in __glslParamInt) {
+				
+			// 	parameter.__updateGL (__context);
+				
+			// }
+			
+		}
 		
 	}
 	
@@ -354,13 +557,95 @@ import openfl.Vector;
 	
 	@:noCompletion private function __markDirty (isVertex:Bool, index:Int, count:Int):Void {
 		
+		if (__format == GLSL) return;
+		
 		if (isVertex) {
 			
-			__vertexUniformMap.markDirty (index, count);
+			__agalVertexUniformMap.markDirty (index, count);
 			
 		} else {
 			
-			__fragmentUniformMap.markDirty (index, count);
+			__agalFragmentUniformMap.markDirty (index, count);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __processGLSLData (source:String, storageType:String):Void {
+		
+		var lastMatch = 0, position, regex, name, type;
+		
+		if (storageType == "uniform") {
+			
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			
+		} else {
+			
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			
+		}
+		
+		while (regex.matchSub (source, lastMatch)) {
+			
+			type = regex.matched (1);
+			name = regex.matched (2);
+			
+			if (StringTools.startsWith (name, "gl_")) {
+				
+				continue;
+				
+			}
+			
+			if (StringTools.startsWith (type, "sampler")) {
+				
+				__glslSamplerNames.push (name);
+				
+			} else {
+				
+				var parameterType:ShaderParameterType = switch (type) {
+					
+					case "bool": BOOL;
+					case "double", "float": FLOAT;
+					case "int", "uint": INT;
+					case "bvec2": BOOL2;
+					case "bvec3": BOOL3;
+					case "bvec4": BOOL4;
+					case "ivec2", "uvec2": INT2;
+					case "ivec3", "uvec3": INT3;
+					case "ivec4", "uvec4": INT4;
+					case "vec2", "dvec2": FLOAT2;
+					case "vec3", "dvec3": FLOAT3;
+					case "vec4", "dvec4": FLOAT4;
+					case "mat2", "mat2x2": MATRIX2X2;
+					case "mat2x3": MATRIX2X3;
+					case "mat2x4": MATRIX2X4;
+					case "mat3x2": MATRIX3X2;
+					case "mat3", "mat3x3": MATRIX3X3;
+					case "mat3x4": MATRIX3X4;
+					case "mat4x2": MATRIX4X2;
+					case "mat4x3": MATRIX4X3;
+					case "mat4", "mat4x4": MATRIX4X4;
+					default: null;
+					
+				}
+				
+				if (storageType == "uniform") {
+					
+					__glslUniformNames.push (name);
+					__glslUniformTypes.push (parameterType);
+					
+				} else {
+					
+					__glslAttribNames.push (name);
+					__glslAttribTypes.push (parameterType);
+					
+				}
+				
+			}
+			
+			position = regex.matchedPos ();
+			lastMatch = position.pos + position.len;
 			
 		}
 		
@@ -369,10 +654,12 @@ import openfl.Vector;
 	
 	@:noCompletion private function __setPositionScale (positionScale:Float32Array):Void {
 		
-		if (__positionScale != null) {
+		if (__format == GLSL) return;
+		
+		if (__agalPositionScale != null) {
 			
 			var gl = __context.gl;
-			gl.uniform4fv (__positionScale.location, positionScale);
+			gl.uniform4fv (__agalPositionScale.location, positionScale);
 			
 		}
 		
@@ -390,122 +677,78 @@ import openfl.Vector;
 		
 		var gl = __context.gl;
 		
-		__deleteShaders ();
+		__glVertexSource = vertexShaderSource;
+		__glFragmentSource = fragmentShaderSource;
 		
-		__vertexSource = vertexShaderSource;
-		__fragmentSource = fragmentShaderSource;
+		__glVertexShader = gl.createShader (gl.VERTEX_SHADER);
+		gl.shaderSource (__glVertexShader, vertexShaderSource);
+		gl.compileShader (__glVertexShader);
 		
-		__vertexShaderID = gl.createShader (gl.VERTEX_SHADER);
-		gl.shaderSource (__vertexShaderID, vertexShaderSource);
-		
-		gl.compileShader (__vertexShaderID);
-		
-		var shaderCompiled = gl.getShaderParameter (__vertexShaderID, gl.COMPILE_STATUS);
-		
-		if (shaderCompiled == 0) {
+		if (gl.getShaderParameter (__glVertexShader, gl.COMPILE_STATUS) == 0) {
 			
-			var vertexInfoLog = gl.getShaderInfoLog (__vertexShaderID);
-			
-			if (vertexInfoLog != null && vertexInfoLog.length != 0) {
-				
-				trace ('vertex: ${vertexInfoLog}');
-				
-			}
-			
-			throw new Error ("Error compiling vertex shader: " + vertexInfoLog);
+			var message = "Error compiling vertex shader";
+			message += "\n" + gl.getShaderInfoLog (__glVertexShader);
+			message += "\n" + vertexShaderSource;
+			Log.error (message);
 			
 		}
 		
-		__fragmentShaderID = gl.createShader (gl.FRAGMENT_SHADER);
-		gl.shaderSource (__fragmentShaderID, fragmentShaderSource);
+		__glFragmentShader = gl.createShader (gl.FRAGMENT_SHADER);
+		gl.shaderSource (__glFragmentShader, fragmentShaderSource);
+		gl.compileShader (__glFragmentShader);
 		
-		gl.compileShader (__fragmentShaderID);
-		
-		var fragmentCompiled = gl.getShaderParameter (__fragmentShaderID, gl.COMPILE_STATUS);
-		
-		if (fragmentCompiled == 0) {
+		if (gl.getShaderParameter (__glFragmentShader, gl.COMPILE_STATUS) == 0) {
 			
-			var fragmentInfoLog = gl.getShaderInfoLog (__fragmentShaderID);
-			
-			if (fragmentInfoLog != null && fragmentInfoLog.length != 0) {
-				
-				trace ('fragment: ${fragmentInfoLog}');
-				
-			}
-			
-			throw new Error ("Error compiling fragment shader: " + fragmentInfoLog);
+			var message = "Error compiling fragment shader";
+			message += "\n" + gl.getShaderInfoLog (__glFragmentShader);
+			message += "\n" + fragmentShaderSource;
+			Log.error (message);
 			
 		}
 		
-		__programID = gl.createProgram ();
-		gl.attachShader (__programID, __vertexShaderID);
+		__glProgram = gl.createProgram ();
 		
-		gl.attachShader (__programID, __fragmentShaderID);
-		
-		// TODO: AGAL version specific number of attributes?
-		for (i in 0...16) {
-		// for (i in 0...Context3D.MAX_ATTRIBUTES) {
+		if (__format == AGAL) {
 			
-			var name = "va" + i;
-			
-			if (vertexShaderSource.indexOf (" " + name) != -1) {
+			// TODO: AGAL version specific number of attributes?
+			for (i in 0...16) {
+			// for (i in 0...Context3D.MAX_ATTRIBUTES) {
 				
-				gl.bindAttribLocation (__programID, i, name);
+				var name = "va" + i;
+				
+				if (vertexShaderSource.indexOf (" " + name) != -1) {
+					
+					gl.bindAttribLocation (__glProgram, i, name);
+					
+				}
+				
+			}
+			
+		} else {
+			
+			// Fix support for drivers that don't draw if attribute 0 is disabled
+			for (name in __glslAttribNames) {
+				
+				if (name.indexOf ("Position") > -1 && StringTools.startsWith (name, "openfl_")) {
+					
+					gl.bindAttribLocation (__glProgram, 0, name);
+					break;
+					
+				}
 				
 			}
 			
 		}
 		
-		gl.linkProgram (__programID);
+		gl.attachShader (__glProgram, __glVertexShader);
+		gl.attachShader (__glProgram, __glFragmentShader);
+		gl.linkProgram (__glProgram);
 		
-		var infoLog:String = gl.getProgramInfoLog (__programID);
-		
-		if (infoLog != null && infoLog.length != 0 && StringTools.trim (infoLog) != "") {
+		if (gl.getProgramParameter (__glProgram, gl.LINK_STATUS) == 0) {
 			
-			trace ('program: ${infoLog}');
-			
-		}
-		
-		__buildUniformList ();
-		
-	}
-	
-	
-	@:noCompletion private function __use ():Void {
-		
-		var context = __context;
-		var gl = context.gl;
-		
-		gl.useProgram (__programID);
-		
-		__vertexUniformMap.markAllDirty ();
-		__fragmentUniformMap.markAllDirty ();
-		
-		for (sampler in __samplerUniforms) {
-			
-			if (sampler.regCount == 1) {
-				
-				gl.uniform1i (sampler.location, sampler.regIndex);
-				
-			} else {
-				
-				throw new IllegalOperationError ("!!! TODO: uniform location on webgl");
-				
-			}
-			
-		}
-		
-		for (sampler in __alphaSamplerUniforms) {
-			
-			if (sampler.regCount == 1) {
-				
-				gl.uniform1i (sampler.location, sampler.regIndex);
-				
-			} else {
-				
-				throw new IllegalOperationError ("!!! TODO: uniform location on webgl");
-				
-			}
+			var message = "Unable to initialize the shader program";
+			message += "\n" + gl.getProgramInfoLog (__glProgram);
+			Log.error (message);
 			
 		}
 		
