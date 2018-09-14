@@ -93,6 +93,30 @@ class GLTextureBase {
 			
 		}
 		
+		if (textureBase.__depthStencilRenderbuffer != null) {
+			
+			gl.deleteRenderbuffer (textureBase.__depthStencilRenderbuffer);
+			
+		}
+		
+		if (textureBase.__depthRenderbuffer != null) {
+			
+			gl.deleteRenderbuffer (textureBase.__depthRenderbuffer);
+			
+		}
+		
+		if (textureBase.__stencilRenderbuffer != null) {
+			
+			gl.deleteRenderbuffer (textureBase.__stencilRenderbuffer);
+			
+		}
+		
+		if (textureBase.__framebuffer != null) {
+			
+			gl.deleteFramebuffer (textureBase.__framebuffer);
+			
+		}
+		
 		gl.deleteTexture (textureBase.__textureID);
 		
 		// if (__compressedMemoryUsage > 0) {

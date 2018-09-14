@@ -638,103 +638,82 @@ class GLContext3D {
 		
 		var gl = context.__renderSession.gl;
 		
-		var width = 0;
-		var height = 0;
+		var width = texture.__width;
+		var height = texture.__height;
+		var create = texture.__framebuffer == null;
 		
-		if (context.__framebuffer == null) {
+		if (create) {
 			
-			context.__framebuffer = gl.createFramebuffer ();
+			texture.__framebuffer = gl.createFramebuffer ();
 			GLUtils.CheckGLError ();
 			
 		}
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, context.__framebuffer);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, texture.__framebuffer);
 		GLUtils.CheckGLError ();
 		
-		if (Std.is (texture, Texture)) {
+		if (create) {
 			
-			var texture2D:Texture = cast texture;
-			width = texture2D.__width;
-			height = texture2D.__height;
-			
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
-			GLUtils.CheckGLError ();
-			
-		} else if (Std.is (texture, RectangleTexture)) {
-			
-			var rectTexture:RectangleTexture = cast texture;
-			width = rectTexture.__width;
-			height = rectTexture.__height;
-			
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
-			GLUtils.CheckGLError ();
-			
-		} else if (Std.is (texture, CubeTexture)) {
-			
-			var cubeTexture:CubeTexture = cast texture;
-			width = cubeTexture.__size;
-			height = cubeTexture.__size;
-			
-			for (i in 0...6) {
+			if (Std.is (texture, Texture)) {
 				
-				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureID, 0);
+				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
 				GLUtils.CheckGLError ();
 				
-			}
-			
-		} else {
-			
-			throw new Error ("Invalid texture");
-			
-		}
-		
-		if (enableDepthAndStencil) {
-			
-			if (context.__supportsPackedDepthStencil) {
+			} else if (Std.is (texture, RectangleTexture)) {
 				
-				if (context.__depthStencilRenderBuffer == null) {
+				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
+				GLUtils.CheckGLError ();
+				
+			} else if (Std.is (texture, CubeTexture)) {
+				
+				for (i in 0...6) {
 					
-					context.__depthStencilRenderBuffer = gl.createRenderbuffer ();
+					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureID, 0);
 					GLUtils.CheckGLError ();
 					
 				}
 				
-				gl.bindRenderbuffer (gl.RENDERBUFFER, context.__depthStencilRenderBuffer);
+			} else {
+				
+				throw new Error ("Invalid texture");
+				
+			}
+			
+		}
+		
+		if (create && enableDepthAndStencil) {
+			
+			if (context.__supportsPackedDepthStencil) {
+				
+				texture.__depthStencilRenderbuffer = gl.createRenderbuffer ();
+				GLUtils.CheckGLError ();
+				
+				gl.bindRenderbuffer (gl.RENDERBUFFER, texture.__depthStencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				gl.renderbufferStorage (gl.RENDERBUFFER, Context3D.DEPTH_STENCIL, width, height);
 				GLUtils.CheckGLError ();
 				
-				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, context.__depthStencilRenderBuffer);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, texture.__depthStencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				
 			} else {
 				
-				if (context.__depthRenderBuffer == null) {
-					
-					context.__depthRenderBuffer = gl.createRenderbuffer ();
-					GLUtils.CheckGLError ();
-					
-				}
+				texture.__depthRenderbuffer = gl.createRenderbuffer ();
+				texture.__stencilRenderbuffer = gl.createRenderbuffer ();
 				
-				if (context.__stencilRenderBuffer == null) {
-					
-					context.__stencilRenderBuffer = gl.createRenderbuffer ();
-					GLUtils.CheckGLError ();
-					
-				}
-				
-				gl.bindRenderbuffer (gl.RENDERBUFFER, context.__depthRenderBuffer);
+				gl.bindRenderbuffer (gl.RENDERBUFFER, texture.__stencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
 				GLUtils.CheckGLError ();
-				gl.bindRenderbuffer (gl.RENDERBUFFER, context.__stencilRenderBuffer);
+				
+				gl.bindRenderbuffer (gl.RENDERBUFFER, texture.__stencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, width, height);
 				GLUtils.CheckGLError ();
 				
-				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, context.__depthRenderBuffer);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, texture.__depthRenderbuffer);
 				GLUtils.CheckGLError ();
-				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, context.__stencilRenderBuffer);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, texture.__stencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				
 			}
@@ -744,9 +723,7 @@ class GLContext3D {
 			
 		}
 		
-		__setViewport (0, 0, width, height);
-		
-		if (context.__enableErrorChecking) {
+		if (create && context.__enableErrorChecking) {
 			
 			var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
 			
@@ -757,6 +734,8 @@ class GLContext3D {
 			}
 			
 		}
+		
+		__setViewport (0, 0, width, height);
 		
 		context.__positionScale[1] = -1.0;
 		
@@ -1115,8 +1094,6 @@ class GLContext3D {
 	
 	private static function __setViewport (originX:Int, originY:Int, width:Int, height:Int):Void {
 		
-		if (context.__renderToTexture != null) originY *= -1;
-		
 		if (Context3D.__stateCache.updateViewport (originX, originY, width, height)) {
 			
 			gl.viewport (originX, originY, width, height);
@@ -1312,18 +1289,8 @@ class GLContext3D {
 		var offsetY = 0;
 		
 		if (context.__renderToTexture != null) {
-		
-			if (Std.is (context.__renderToTexture, Texture)) {
 			
-				var texture2D:Texture = cast context.__renderToTexture;
-				height = texture2D.__height;
-			
-			} else if (Std.is (context.__renderToTexture, RectangleTexture)) {
-				
-				var rectTexture:RectangleTexture = cast context.__renderToTexture;
-				height = rectTexture.__height;
-				
-			}
+			height = context.__renderToTexture.__height;
 			
 		} else {
 			

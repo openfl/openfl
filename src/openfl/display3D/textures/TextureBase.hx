@@ -1,6 +1,8 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.graphics.opengl.GLTexture;
@@ -25,13 +27,17 @@ class TextureBase extends EventDispatcher {
 	private var __alphaTexture:Texture;
 	// private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
+	private var __depthRenderbuffer:GLRenderbuffer;
+	private var __depthStencilRenderbuffer:GLRenderbuffer;
 	private var __format:Int;
+	private var __framebuffer:GLFramebuffer;
 	private var __height:Int;
 	private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
 	private var __optimizeForRenderToTexture:Bool;
 	// private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
+	private var __stencilRenderbuffer:GLRenderbuffer;
 	private var __streamingLevels:Int;
 	private var __textureContext:GLRenderContext;
 	private var __textureID:GLTexture;

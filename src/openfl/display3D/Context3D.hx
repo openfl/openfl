@@ -1,8 +1,6 @@
 package openfl.display3D;
 
 
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.opengl.GLContext3D;
@@ -63,11 +61,8 @@ import openfl.Vector;
 	private var __backBufferAntiAlias:Int;
 	private var __backBufferEnableDepthAndStencil:Bool;
 	private var __backBufferWantsBestResolution:Bool;
-	private var __depthRenderBuffer:GLRenderbuffer;
-	private var __depthStencilRenderBuffer:GLRenderbuffer;
 	private var __enableErrorChecking:Bool;
 	private var __fragmentConstants:Float32Array;
-	private var __framebuffer:GLFramebuffer;
 	private var __frameCount:Int;
 	private var __maxAnisotropyCubeTexture:Int;
 	private var __maxAnisotropyTexture2D:Int;
@@ -86,7 +81,6 @@ import openfl.Vector;
 	private var __stencilCompareMode:Context3DCompareMode;
 	private var __stencilRef:Int;
 	private var __stencilReadMask:Int;
-	private var __stencilRenderBuffer:GLRenderbuffer;
 	private var __supportsAnisotropicFiltering:Bool;
 	private var __supportsPackedDepthStencil:Bool;
 	private var __vertexConstants:Float32Array;
