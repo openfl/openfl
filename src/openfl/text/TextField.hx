@@ -2028,14 +2028,11 @@ class TextField extends InteractiveObject {
 				
 				if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
 					
-					smoothingEnabled = untyped (renderer.context).imageSmoothingEnabled;
+					smoothingEnabled = renderer.context.imageSmoothingEnabled;
 					
 					if (smoothingEnabled) {
 						
-						untyped (renderer.context).mozImageSmoothingEnabled = false;
-						//untyped (renderer.context).webkitImageSmoothingEnabled = false;
-						untyped (renderer.context).msImageSmoothingEnabled = false;
-						untyped (renderer.context).imageSmoothingEnabled = false;
+						renderer.context.imageSmoothingEnabled = false;
 						
 					}
 					
@@ -2045,10 +2042,7 @@ class TextField extends InteractiveObject {
 				
 				if (smoothingEnabled) {
 					
-					untyped (renderer.context).mozImageSmoothingEnabled = true;
-					//untyped (renderer.context).webkitImageSmoothingEnabled = true;
-					untyped (renderer.context).msImageSmoothingEnabled = true;
-					untyped (renderer.context).imageSmoothingEnabled = true;
+					renderer.context.imageSmoothingEnabled = true;
 					
 				}
 				

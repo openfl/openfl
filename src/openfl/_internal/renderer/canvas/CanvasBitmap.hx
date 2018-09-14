@@ -33,10 +33,7 @@ class CanvasBitmap {
 			
 			if (!renderer.__allowSmoothing || !bitmap.smoothing) {
 				
-				untyped (context).mozImageSmoothingEnabled = false;
-				//untyped (context).webkitImageSmoothingEnabled = false;
-				untyped (context).msImageSmoothingEnabled = false;
-				untyped (context).imageSmoothingEnabled = false;
+				context.imageSmoothingEnabled = false;
 				
 			}
 			
@@ -52,10 +49,7 @@ class CanvasBitmap {
 			
 			if (!renderer.__allowSmoothing || !bitmap.smoothing) {
 				
-				untyped (context).mozImageSmoothingEnabled = true;
-				//untyped (context).webkitImageSmoothingEnabled = true;
-				untyped (context).msImageSmoothingEnabled = true;
-				untyped (context).imageSmoothingEnabled = true;
+				context.imageSmoothingEnabled = true;
 				
 			}
 			
