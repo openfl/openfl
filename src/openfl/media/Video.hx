@@ -285,7 +285,9 @@ class Video extends DisplayObject {
 		
 		if (__stream == null || __stream.__video == null) return null;
 		
-		var gl = context.gl;
+		var gl = context.__context.webgl;
+		var internalFormat = gl.RGBA;
+		var format = gl.RGBA;
 		
 		if (__texture == null) {
 			
@@ -295,14 +297,13 @@ class Video extends DisplayObject {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, 1, 1, 0, format, gl.UNSIGNED_BYTE, null);
+			
 			__textureTime = -1;
 			
 		}
 		
 		if (!__stream.__closed && __stream.__video.currentTime != __textureTime) {
-			
-			var internalFormat = gl.RGBA;
-			var format = gl.RGBA;
 			
 			context.__bindGLTexture2D (__texture);
 			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
