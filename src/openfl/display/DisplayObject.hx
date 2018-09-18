@@ -2193,7 +2193,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var parentRenderer:OpenGLRenderer = cast renderer;
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
 					
-					var context = stage.context3D;
+					var context = childRenderer.__context3D;
 					
 					var cacheRTT = context.__state.renderToTexture;
 					var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
