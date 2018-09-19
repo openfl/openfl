@@ -337,13 +337,6 @@ import openfl.Vector;
 	}
 	
 	
-	private function __updateBlendFactors ():Void {
-		
-		GLContext3D.__updateBlendFactorsTEMP (this);
-		
-	}
-	
-	
 	
 	
 	// Get & Set Methods

@@ -214,7 +214,6 @@ class GLContext3D {
 			
 			clearMask |= gl.DEPTH_BUFFER_BIT;
 			
-			gl.depthMask (true);
 			gl.clearDepthf (depth);
 			GLUtils.CheckGLError ();
 			
@@ -328,15 +327,14 @@ class GLContext3D {
 	
 	public static function setBlendFactors (context:Context3D, sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		var updateSrc = Context3D.__stateCache.updateBlendSrcFactor (sourceFactor);
-		var updateDest = Context3D.__stateCache.updateBlendDestFactor (destinationFactor);
+		var gl = context.__renderSession.gl;
 		
-		if (updateSrc || updateDest) {
-			
-			GLContext3D.context = context;
-			GLContext3D.gl = context.__renderSession.gl;
-			
-			__updateBlendFactors ();
+		if (Context3D.__stateCache.updateBlendFactors (sourceFactor, destinationFactor)) {
+		
+			gl.enable (gl.BLEND);
+			GLUtils.CheckGLError ();
+			gl.blendFunc (__getGLBlendFactor (sourceFactor), __getGLBlendFactor (destinationFactor));
+			GLUtils.CheckGLError ();
 			
 		}
 		
@@ -352,53 +350,24 @@ class GLContext3D {
 	}
 	
 	
-	public static function setCulling (context:Context3D, triangleFaceToCull:Context3DTriangleFace):Error {
+	public static function setCulling (context:Context3D, triangleFaceToCull:Context3DTriangleFace):Void {
 		
 		var gl = context.__renderSession.gl;
 		
 		if (Context3D.__stateCache.updateCullingMode (triangleFaceToCull)) {
 			
-			// if (triangleFaceToCull == NONE) {
+			if (triangleFaceToCull == NONE) {
 				
-			// 	gl.disable (gl.CULL_FACE);
+				gl.disable (gl.CULL_FACE);
 				
-			// } else {
+			} else {
 				
-			// 	gl.enable (gl.CULL_FACE);
-			// 	gl.cullFace (__getGLTriangleFace (triangleFaceToCull));
-				
-			// }
-			
-			switch (triangleFaceToCull) {
-				
-				case Context3DTriangleFace.NONE:
-					
-					gl.disable (gl.CULL_FACE);
-				
-				case Context3DTriangleFace.BACK:
-					
-					gl.enable (gl.CULL_FACE);
-					gl.cullFace (gl.FRONT);
-				
-				case Context3DTriangleFace.FRONT:
-					
-					gl.enable (gl.CULL_FACE);
-					gl.cullFace (gl.BACK);
-				
-				case Context3DTriangleFace.FRONT_AND_BACK:
-					
-					gl.enable (gl.CULL_FACE);
-					gl.cullFace (gl.FRONT_AND_BACK);
-				
-				default:
-					
-					return new IllegalOperationError ();
+				gl.enable (gl.CULL_FACE);
+				gl.cullFace (__getGLTriangleFace (triangleFaceToCull, true));
 				
 			}
 			
 		}
-		
-		return null;
 		
 	}
 	
@@ -430,21 +399,7 @@ class GLContext3D {
 		
 		if (Context3D.__stateCache.updateDepthCompareMode (passCompareMode)) {
 			
-			switch (passCompareMode) {
-				
-				case Context3DCompareMode.ALWAYS: gl.depthFunc (gl.ALWAYS);
-				case Context3DCompareMode.EQUAL: gl.depthFunc (gl.EQUAL);
-				case Context3DCompareMode.GREATER: gl.depthFunc (gl.GREATER);
-				case Context3DCompareMode.GREATER_EQUAL: gl.depthFunc (gl.GEQUAL);
-				case Context3DCompareMode.LESS: gl.depthFunc (gl.LESS);
-				case Context3DCompareMode.LESS_EQUAL: gl.depthFunc (gl.LEQUAL);
-				case Context3DCompareMode.NEVER: gl.depthFunc (gl.NEVER);
-				case Context3DCompareMode.NOT_EQUAL: gl.depthFunc (gl.NOTEQUAL);
-				default:
-					
-					throw new IllegalOperationError ();
-				
-			}
+			gl.depthFunc (__getGLCompareMode (passCompareMode));
 			
 		}
 		
@@ -896,6 +851,7 @@ class GLContext3D {
 		GLContext3D.gl = context.__renderSession.gl;
 		
 		context.__stencilCompareMode = compareMode;
+		
 		gl.stencilOpSeparate (__getGLTriangleFace (triangleFace), __getGLStencilAction (actionOnDepthPassStencilFail), __getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnBothPass));
 		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 		
@@ -910,8 +866,8 @@ class GLContext3D {
 		context.__stencilReadMask = readMask;
 		context.__stencilRef = referenceValue;
 		
-		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 		gl.stencilMask (writeMask);
+		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 		
 	}
 	
@@ -1032,6 +988,28 @@ class GLContext3D {
 	}
 	
 	
+	private static function __getGLBlendFactor (blendFactor:Context3DBlendFactor):Int {
+		
+		return switch (blendFactor) {
+			
+			case DESTINATION_ALPHA: gl.DST_ALPHA;
+			case DESTINATION_COLOR: gl.DST_COLOR;
+			case ONE: gl.ONE;
+			case ONE_MINUS_DESTINATION_ALPHA: gl.ONE_MINUS_DST_ALPHA;
+			case ONE_MINUS_DESTINATION_COLOR: gl.ONE_MINUS_DST_COLOR;
+			case ONE_MINUS_SOURCE_ALPHA: gl.ONE_MINUS_SRC_ALPHA;
+			case ONE_MINUS_SOURCE_COLOR: gl.ONE_MINUS_SRC_COLOR;
+			case SOURCE_ALPHA: gl.SRC_ALPHA;
+			case SOURCE_COLOR: gl.SRC_COLOR;
+			case ZERO: gl.ZERO;
+			default:
+				throw new IllegalOperationError ();
+				
+		}
+		
+	}
+	
+	
 	private static function __getGLCompareMode (compareMode:Context3DCompareMode):Int {
 		
 		return switch (compareMode) {
@@ -1041,26 +1019,28 @@ class GLContext3D {
 			case GREATER: gl.GREATER;
 			case GREATER_EQUAL: gl.GEQUAL;
 			case LESS: gl.LESS;
-			case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
+			case LESS_EQUAL: gl.LEQUAL;
 			case NEVER: gl.NEVER;
 			case NOT_EQUAL: gl.NOTEQUAL;
-			default: gl.EQUAL;
-			
+			default:
+				throw new IllegalOperationError ();
+				
 		}
 		
 	}
 	
 	
-	private static function __getGLTriangleFace (triangleFace:Context3DTriangleFace):Int {
+	private static function __getGLTriangleFace (triangleFace:Context3DTriangleFace, swap:Bool = false):Int {
 		
 		return switch (triangleFace) {
 			
-			case FRONT: gl.FRONT;
-			case BACK: gl.BACK;
+			case FRONT: swap ? gl.BACK : gl.FRONT;
+			case BACK: swap ? gl.FRONT : gl.BACK;
 			case FRONT_AND_BACK: gl.FRONT_AND_BACK;
 			case NONE: gl.NONE;
-			default: gl.FRONT_AND_BACK;
-			
+			default:
+				throw new IllegalOperationError ();
+				
 		}
 		
 	}
@@ -1078,8 +1058,9 @@ class GLContext3D {
 			case KEEP: gl.KEEP;
 			case SET: gl.REPLACE;
 			case ZERO: gl.ZERO;
-			default: gl.KEEP;
-			
+			default:
+				throw new IllegalOperationError ();
+				
 		}
 		
 	}
@@ -1209,64 +1190,6 @@ class GLContext3D {
 			GLUtils.CheckGLError ();
 			
 		}
-		
-	}
-	
-	
-	public static function __updateBlendFactorsTEMP (context:Context3D):Void {
-		
-		GLContext3D.context = context;
-		GLContext3D.gl = context.__renderSession.gl;
-		
-		__updateBlendFactors ();
-		
-	}
-	
-	
-	private static function __updateBlendFactors ():Void {
-		
-		if (Context3D.__stateCache._srcBlendFactor == null || Context3D.__stateCache._destBlendFactor == null) {
-			
-			return;
-			
-		}
-		
-		var src = gl.ONE;
-		var dest = gl.ZERO;
-		switch (Context3D.__stateCache._srcBlendFactor) {
-			
-			case Context3DBlendFactor.ONE: src = gl.ONE;
-			case Context3DBlendFactor.ZERO: src = gl.ZERO;
-			case Context3DBlendFactor.SOURCE_ALPHA: src = gl.SRC_ALPHA;
-			case Context3DBlendFactor.DESTINATION_ALPHA: src = gl.DST_ALPHA;
-			case Context3DBlendFactor.DESTINATION_COLOR: src = gl.DST_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = gl.ONE_MINUS_DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = gl.ONE_MINUS_DST_COLOR;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		switch (Context3D.__stateCache._destBlendFactor) {
-			
-			case Context3DBlendFactor.ONE: dest = gl.ONE;
-			case Context3DBlendFactor.ZERO: dest = gl.ZERO;
-			case Context3DBlendFactor.SOURCE_ALPHA: dest = gl.SRC_ALPHA;
-			case Context3DBlendFactor.SOURCE_COLOR: dest = gl.SRC_COLOR;
-			case Context3DBlendFactor.DESTINATION_ALPHA: dest = gl.DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = gl.ONE_MINUS_SRC_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = gl.ONE_MINUS_DST_ALPHA;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		gl.enable (gl.BLEND);
-		GLUtils.CheckGLError ();
-		gl.blendFunc (src, dest);
-		GLUtils.CheckGLError ();
 		
 	}
 	

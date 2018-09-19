@@ -27,7 +27,7 @@ class Context3DStateCache {
 	private var _depthTestCompareMode:Context3DCompareMode;
 	private var _depthTestEnabled:Bool;
 	private var _depthTestMask:Bool;
-	private var _destBlendFactor:Context3DBlendFactor;
+	private var _dstBlendFactor:Context3DBlendFactor;
 	private var _program:Program3D;
 	private var _registers = new Vector<Float> (MAX_NUM_REGISTERS * FLOATS_PER_REGISTER);
 	private var _srcBlendFactor:Context3DBlendFactor;
@@ -46,13 +46,13 @@ class Context3DStateCache {
 	
 	private function clearRegisters ():Void {
 		
-		var numFloats = MAX_NUM_REGISTERS * FLOATS_PER_REGISTER;
+		/*var numFloats = MAX_NUM_REGISTERS * FLOATS_PER_REGISTER;
 		
 		for (c in 0...numFloats) {
 			
 			_registers [c] = -999999999.0;
 			
-		}
+		}*/
 		
 	}
 	
@@ -60,7 +60,7 @@ class Context3DStateCache {
 	public function clearSettings ():Void {
 		
 		_srcBlendFactor = null;
-		_destBlendFactor = null;
+		_dstBlendFactor = null;
 		_depthTestEnabled = false;
 		_depthTestMask = false;
 		_depthTestCompareMode = null;
@@ -106,29 +106,16 @@ class Context3DStateCache {
 	}
 	
 	
-	public function updateBlendDestFactor (factor:Context3DBlendFactor):Bool {
+	public function updateBlendFactors (srcFactor:Context3DBlendFactor, dstFactor:Context3DBlendFactor):Bool {
 		
-		if (!disableCache && factor == _destBlendFactor) {
+		if (!disableCache && srcFactor == _srcBlendFactor && dstFactor == _dstBlendFactor) {
 			
 			return false;
 			
 		}
 		
-		_destBlendFactor = factor;
-		return true;
-		
-	}
-	
-	
-	public function updateBlendSrcFactor (factor:Context3DBlendFactor):Bool {
-		
-		if (!disableCache && factor == _srcBlendFactor) {
-			
-			return false;
-			
-		}
-		
-		_srcBlendFactor = factor;
+		_srcBlendFactor = srcFactor;
+		_dstBlendFactor = dstFactor;
 		return true;
 		
 	}
