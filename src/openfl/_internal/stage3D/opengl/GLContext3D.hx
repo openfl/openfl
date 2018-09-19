@@ -214,7 +214,6 @@ class GLContext3D {
 			
 			clearMask |= gl.DEPTH_BUFFER_BIT;
 			
-			gl.depthMask (true);
 			gl.clearDepthf (depth);
 			GLUtils.CheckGLError ();
 			
@@ -328,15 +327,14 @@ class GLContext3D {
 	
 	public static function setBlendFactors (context:Context3D, sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		var updateSrc = Context3D.__stateCache.updateBlendSrcFactor (sourceFactor);
-		var updateDest = Context3D.__stateCache.updateBlendDestFactor (destinationFactor);
+		var gl = context.__renderSession.gl;
 		
-		if (updateSrc || updateDest) {
-			
-			GLContext3D.context = context;
-			GLContext3D.gl = context.__renderSession.gl;
-			
-			__updateBlendFactors ();
+		if (Context3D.__stateCache.updateBlendFactors (sourceFactor, destinationFactor)) {
+		
+			gl.enable (gl.BLEND);
+			GLUtils.CheckGLError ();
+			gl.blendFunc (__getGLBlendFactor (sourceFactor), __getGLBlendFactor (destinationFactor));
+			GLUtils.CheckGLError ();
 			
 		}
 		
@@ -352,53 +350,24 @@ class GLContext3D {
 	}
 	
 	
-	public static function setCulling (context:Context3D, triangleFaceToCull:Context3DTriangleFace):Error {
+	public static function setCulling (context:Context3D, triangleFaceToCull:Context3DTriangleFace):Void {
 		
 		var gl = context.__renderSession.gl;
 		
 		if (Context3D.__stateCache.updateCullingMode (triangleFaceToCull)) {
 			
-			// if (triangleFaceToCull == NONE) {
+			if (triangleFaceToCull == NONE) {
 				
-			// 	gl.disable (gl.CULL_FACE);
+				gl.disable (gl.CULL_FACE);
 				
-			// } else {
+			} else {
 				
-			// 	gl.enable (gl.CULL_FACE);
-			// 	gl.cullFace (__getGLTriangleFace (triangleFaceToCull));
-				
-			// }
-			
-			switch (triangleFaceToCull) {
-				
-				case Context3DTriangleFace.NONE:
-					
-					gl.disable (gl.CULL_FACE);
-				
-				case Context3DTriangleFace.BACK:
-					
-					gl.enable (gl.CULL_FACE);
-					gl.cullFace (gl.FRONT);
-				
-				case Context3DTriangleFace.FRONT:
-					
-					gl.enable (gl.CULL_FACE);
-					gl.cullFace (gl.BACK);
-				
-				case Context3DTriangleFace.FRONT_AND_BACK:
-					
-					gl.enable (gl.CULL_FACE);
-					gl.cullFace (gl.FRONT_AND_BACK);
-				
-				default:
-					
-					return new IllegalOperationError ();
+				gl.enable (gl.CULL_FACE);
+				gl.cullFace (__getGLTriangleFace (triangleFaceToCull, true));
 				
 			}
 			
 		}
-		
-		return null;
 		
 	}
 	
@@ -430,21 +399,7 @@ class GLContext3D {
 		
 		if (Context3D.__stateCache.updateDepthCompareMode (passCompareMode)) {
 			
-			switch (passCompareMode) {
-				
-				case Context3DCompareMode.ALWAYS: gl.depthFunc (gl.ALWAYS);
-				case Context3DCompareMode.EQUAL: gl.depthFunc (gl.EQUAL);
-				case Context3DCompareMode.GREATER: gl.depthFunc (gl.GREATER);
-				case Context3DCompareMode.GREATER_EQUAL: gl.depthFunc (gl.GEQUAL);
-				case Context3DCompareMode.LESS: gl.depthFunc (gl.LESS);
-				case Context3DCompareMode.LESS_EQUAL: gl.depthFunc (gl.LEQUAL);
-				case Context3DCompareMode.NEVER: gl.depthFunc (gl.NEVER);
-				case Context3DCompareMode.NOT_EQUAL: gl.depthFunc (gl.NOTEQUAL);
-				default:
-					
-					throw new IllegalOperationError ();
-				
-			}
+			gl.depthFunc (__getGLCompareMode (passCompareMode));
 			
 		}
 		
@@ -638,103 +593,82 @@ class GLContext3D {
 		
 		var gl = context.__renderSession.gl;
 		
-		var width = 0;
-		var height = 0;
+		var width = texture.__width;
+		var height = texture.__height;
+		var create = texture.__framebuffer == null;
 		
-		if (context.__framebuffer == null) {
+		if (create) {
 			
-			context.__framebuffer = gl.createFramebuffer ();
+			texture.__framebuffer = gl.createFramebuffer ();
 			GLUtils.CheckGLError ();
 			
 		}
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, context.__framebuffer);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, texture.__framebuffer);
 		GLUtils.CheckGLError ();
 		
-		if (Std.is (texture, Texture)) {
+		if (create) {
 			
-			var texture2D:Texture = cast texture;
-			width = texture2D.__width;
-			height = texture2D.__height;
-			
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
-			GLUtils.CheckGLError ();
-			
-		} else if (Std.is (texture, RectangleTexture)) {
-			
-			var rectTexture:RectangleTexture = cast texture;
-			width = rectTexture.__width;
-			height = rectTexture.__height;
-			
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
-			GLUtils.CheckGLError ();
-			
-		} else if (Std.is (texture, CubeTexture)) {
-			
-			var cubeTexture:CubeTexture = cast texture;
-			width = cubeTexture.__size;
-			height = cubeTexture.__size;
-			
-			for (i in 0...6) {
+			if (Std.is (texture, Texture)) {
 				
-				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureID, 0);
+				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
 				GLUtils.CheckGLError ();
 				
-			}
-			
-		} else {
-			
-			throw new Error ("Invalid texture");
-			
-		}
-		
-		if (enableDepthAndStencil) {
-			
-			if (context.__supportsPackedDepthStencil) {
+			} else if (Std.is (texture, RectangleTexture)) {
 				
-				if (context.__depthStencilRenderBuffer == null) {
+				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
+				GLUtils.CheckGLError ();
+				
+			} else if (Std.is (texture, CubeTexture)) {
+				
+				for (i in 0...6) {
 					
-					context.__depthStencilRenderBuffer = gl.createRenderbuffer ();
+					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureID, 0);
 					GLUtils.CheckGLError ();
 					
 				}
 				
-				gl.bindRenderbuffer (gl.RENDERBUFFER, context.__depthStencilRenderBuffer);
+			} else {
+				
+				throw new Error ("Invalid texture");
+				
+			}
+			
+		}
+		
+		if (create && enableDepthAndStencil) {
+			
+			if (context.__supportsPackedDepthStencil) {
+				
+				texture.__depthStencilRenderbuffer = gl.createRenderbuffer ();
+				GLUtils.CheckGLError ();
+				
+				gl.bindRenderbuffer (gl.RENDERBUFFER, texture.__depthStencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				gl.renderbufferStorage (gl.RENDERBUFFER, Context3D.DEPTH_STENCIL, width, height);
 				GLUtils.CheckGLError ();
 				
-				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, context.__depthStencilRenderBuffer);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, texture.__depthStencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				
 			} else {
 				
-				if (context.__depthRenderBuffer == null) {
-					
-					context.__depthRenderBuffer = gl.createRenderbuffer ();
-					GLUtils.CheckGLError ();
-					
-				}
+				texture.__depthRenderbuffer = gl.createRenderbuffer ();
+				texture.__stencilRenderbuffer = gl.createRenderbuffer ();
 				
-				if (context.__stencilRenderBuffer == null) {
-					
-					context.__stencilRenderBuffer = gl.createRenderbuffer ();
-					GLUtils.CheckGLError ();
-					
-				}
-				
-				gl.bindRenderbuffer (gl.RENDERBUFFER, context.__depthRenderBuffer);
+				gl.bindRenderbuffer (gl.RENDERBUFFER, texture.__stencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
 				GLUtils.CheckGLError ();
-				gl.bindRenderbuffer (gl.RENDERBUFFER, context.__stencilRenderBuffer);
+				
+				gl.bindRenderbuffer (gl.RENDERBUFFER, texture.__stencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, width, height);
 				GLUtils.CheckGLError ();
 				
-				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, context.__depthRenderBuffer);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, texture.__depthRenderbuffer);
 				GLUtils.CheckGLError ();
-				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, context.__stencilRenderBuffer);
+				gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, texture.__stencilRenderbuffer);
 				GLUtils.CheckGLError ();
 				
 			}
@@ -744,9 +678,7 @@ class GLContext3D {
 			
 		}
 		
-		__setViewport (0, 0, width, height);
-		
-		if (context.__enableErrorChecking) {
+		if (create && context.__enableErrorChecking) {
 			
 			var code = gl.checkFramebufferStatus (gl.FRAMEBUFFER);
 			
@@ -757,6 +689,8 @@ class GLContext3D {
 			}
 			
 		}
+		
+		__setViewport (0, 0, width, height);
 		
 		context.__positionScale[1] = -1.0;
 		
@@ -917,6 +851,7 @@ class GLContext3D {
 		GLContext3D.gl = context.__renderSession.gl;
 		
 		context.__stencilCompareMode = compareMode;
+		
 		gl.stencilOpSeparate (__getGLTriangleFace (triangleFace), __getGLStencilAction (actionOnDepthPassStencilFail), __getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnBothPass));
 		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 		
@@ -931,8 +866,8 @@ class GLContext3D {
 		context.__stencilReadMask = readMask;
 		context.__stencilRef = referenceValue;
 		
-		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 		gl.stencilMask (writeMask);
+		gl.stencilFunc (__getGLCompareMode (context.__stencilCompareMode), context.__stencilRef, context.__stencilReadMask);
 		
 	}
 	
@@ -1053,6 +988,28 @@ class GLContext3D {
 	}
 	
 	
+	private static function __getGLBlendFactor (blendFactor:Context3DBlendFactor):Int {
+		
+		return switch (blendFactor) {
+			
+			case DESTINATION_ALPHA: gl.DST_ALPHA;
+			case DESTINATION_COLOR: gl.DST_COLOR;
+			case ONE: gl.ONE;
+			case ONE_MINUS_DESTINATION_ALPHA: gl.ONE_MINUS_DST_ALPHA;
+			case ONE_MINUS_DESTINATION_COLOR: gl.ONE_MINUS_DST_COLOR;
+			case ONE_MINUS_SOURCE_ALPHA: gl.ONE_MINUS_SRC_ALPHA;
+			case ONE_MINUS_SOURCE_COLOR: gl.ONE_MINUS_SRC_COLOR;
+			case SOURCE_ALPHA: gl.SRC_ALPHA;
+			case SOURCE_COLOR: gl.SRC_COLOR;
+			case ZERO: gl.ZERO;
+			default:
+				throw new IllegalOperationError ();
+				
+		}
+		
+	}
+	
+	
 	private static function __getGLCompareMode (compareMode:Context3DCompareMode):Int {
 		
 		return switch (compareMode) {
@@ -1062,26 +1019,28 @@ class GLContext3D {
 			case GREATER: gl.GREATER;
 			case GREATER_EQUAL: gl.GEQUAL;
 			case LESS: gl.LESS;
-			case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
+			case LESS_EQUAL: gl.LEQUAL;
 			case NEVER: gl.NEVER;
 			case NOT_EQUAL: gl.NOTEQUAL;
-			default: gl.EQUAL;
-			
+			default:
+				throw new IllegalOperationError ();
+				
 		}
 		
 	}
 	
 	
-	private static function __getGLTriangleFace (triangleFace:Context3DTriangleFace):Int {
+	private static function __getGLTriangleFace (triangleFace:Context3DTriangleFace, swap:Bool = false):Int {
 		
 		return switch (triangleFace) {
 			
-			case FRONT: gl.FRONT;
-			case BACK: gl.BACK;
+			case FRONT: swap ? gl.BACK : gl.FRONT;
+			case BACK: swap ? gl.FRONT : gl.BACK;
 			case FRONT_AND_BACK: gl.FRONT_AND_BACK;
 			case NONE: gl.NONE;
-			default: gl.FRONT_AND_BACK;
-			
+			default:
+				throw new IllegalOperationError ();
+				
 		}
 		
 	}
@@ -1099,8 +1058,9 @@ class GLContext3D {
 			case KEEP: gl.KEEP;
 			case SET: gl.REPLACE;
 			case ZERO: gl.ZERO;
-			default: gl.KEEP;
-			
+			default:
+				throw new IllegalOperationError ();
+				
 		}
 		
 	}
@@ -1114,8 +1074,6 @@ class GLContext3D {
 	
 	
 	private static function __setViewport (originX:Int, originY:Int, width:Int, height:Int):Void {
-		
-		if (context.__renderToTexture != null) originY *= -1;
 		
 		if (Context3D.__stateCache.updateViewport (originX, originY, width, height)) {
 			
@@ -1236,64 +1194,6 @@ class GLContext3D {
 	}
 	
 	
-	public static function __updateBlendFactorsTEMP (context:Context3D):Void {
-		
-		GLContext3D.context = context;
-		GLContext3D.gl = context.__renderSession.gl;
-		
-		__updateBlendFactors ();
-		
-	}
-	
-	
-	private static function __updateBlendFactors ():Void {
-		
-		if (Context3D.__stateCache._srcBlendFactor == null || Context3D.__stateCache._destBlendFactor == null) {
-			
-			return;
-			
-		}
-		
-		var src = gl.ONE;
-		var dest = gl.ZERO;
-		switch (Context3D.__stateCache._srcBlendFactor) {
-			
-			case Context3DBlendFactor.ONE: src = gl.ONE;
-			case Context3DBlendFactor.ZERO: src = gl.ZERO;
-			case Context3DBlendFactor.SOURCE_ALPHA: src = gl.SRC_ALPHA;
-			case Context3DBlendFactor.DESTINATION_ALPHA: src = gl.DST_ALPHA;
-			case Context3DBlendFactor.DESTINATION_COLOR: src = gl.DST_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = gl.ONE_MINUS_DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = gl.ONE_MINUS_DST_COLOR;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		switch (Context3D.__stateCache._destBlendFactor) {
-			
-			case Context3DBlendFactor.ONE: dest = gl.ONE;
-			case Context3DBlendFactor.ZERO: dest = gl.ZERO;
-			case Context3DBlendFactor.SOURCE_ALPHA: dest = gl.SRC_ALPHA;
-			case Context3DBlendFactor.SOURCE_COLOR: dest = gl.SRC_COLOR;
-			case Context3DBlendFactor.DESTINATION_ALPHA: dest = gl.DST_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = gl.ONE_MINUS_SRC_ALPHA;
-			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = gl.ONE_MINUS_SRC_COLOR;
-			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = gl.ONE_MINUS_DST_ALPHA;
-			default:
-				throw new IllegalOperationError ();
-			
-		}
-		
-		gl.enable (gl.BLEND);
-		GLUtils.CheckGLError ();
-		gl.blendFunc (src, dest);
-		GLUtils.CheckGLError ();
-		
-	}
-	
-	
 	private static function __updateScissorRectangle ():Void {
 		
 		if (context.__scissorRectangle == null) {
@@ -1312,18 +1212,8 @@ class GLContext3D {
 		var offsetY = 0;
 		
 		if (context.__renderToTexture != null) {
-		
-			if (Std.is (context.__renderToTexture, Texture)) {
 			
-				var texture2D:Texture = cast context.__renderToTexture;
-				height = texture2D.__height;
-			
-			} else if (Std.is (context.__renderToTexture, RectangleTexture)) {
-				
-				var rectTexture:RectangleTexture = cast context.__renderToTexture;
-				height = rectTexture.__height;
-				
-			}
+			height = context.__renderToTexture.__height;
 			
 		} else {
 			
