@@ -356,10 +356,21 @@ class Context3DTilemap {
 				
 			}
 			
-			var start = lastFlushedPosition;
 			var length = (bufferPosition - lastFlushedPosition);
 			
-			tilemap.__buffer.drawElements (start, length);
+			while (lastFlushedPosition < bufferPosition) {
+				
+				length = Std.int (Math.min (bufferPosition - lastFlushedPosition, context.__quadIndexBufferElements));
+				if (length <= 0) break;
+				
+				if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, tilemap.__buffer.vertexBuffer, lastFlushedPosition * 16, FLOAT_2);
+				if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, tilemap.__buffer.vertexBuffer, (lastFlushedPosition * 16) + 2, FLOAT_2);
+				
+				context.drawTriangles (context.__quadIndexBuffer, 0, length * 2);
+				
+				lastFlushedPosition += length;
+				
+			}
 			
 			#if gl_stats
 				Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -369,7 +380,6 @@ class Context3DTilemap {
 			
 		}
 		
-		lastFlushedPosition = bufferPosition;
 		lastUsedBitmapData = currentBitmapData;
 		lastUsedShader = currentShader;
 		

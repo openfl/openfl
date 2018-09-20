@@ -643,7 +643,6 @@ class Context3DGraphics {
 								while (quadBufferPosition < end) {
 									
 									length = Std.int (Math.min (end - quadBufferPosition, context.__quadIndexBufferElements));
-									if (length > 2) length = 2;
 									if (length <= 0) break;
 									
 									if (shaderBuffer != null && !maskRender) {
