@@ -39,6 +39,9 @@ class Context3DVideo {
 			var context = renderer.__context3D;
 			var gl = context.gl;
 			
+			var texture = video.__getTexture (context);
+			if (texture == null) return;
+			
 			renderer.__setBlendMode (video.__worldBlendMode);
 			renderer.__pushMaskObject (video);
 			// renderer.filterManager.pushObject (video);
@@ -48,8 +51,7 @@ class Context3DVideo {
 			
 			// TODO: Support ShaderInput<Video>
 			renderer.applyBitmapData (null, renderer.__allowSmoothing, false);
-			context.__bindGLTexture2D (video.__getTexture (context));
-			
+			// context.__bindGLTexture2D (video.__getTexture (context));
 			//shader.uImage0.input = bitmap.__bitmapData;
 			//shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
@@ -58,13 +60,17 @@ class Context3DVideo {
 			
 			if (shader.__textureSize != null) {
 				
-				__textureSizeValue[0] = (video.__stream != null) ? video.__stream.__video.width : 0;
-				__textureSizeValue[1] = (video.__stream != null) ? video.__stream.__video.height : 0;
+				__textureSizeValue[0] = (video.__stream != null) ? video.__stream.__video.videoWidth : 0;
+				__textureSizeValue[1] = (video.__stream != null) ? video.__stream.__video.videoHeight : 0;
 				shader.__textureSize.value = __textureSizeValue;
 				
 			}
 			
 			renderer.updateShader ();
+			
+			context.setTextureAt (0, video.__getTexture (context));
+			context.__flushGLTextures ();
+			gl.uniform1i (shader.__texture.index, 0);
 			
 			if (video.smoothing) {
 				
@@ -78,14 +84,11 @@ class Context3DVideo {
 				
 			}
 			
-			context.__bindGLArrayBuffer (video.__getBuffer (context));
-			if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-			if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			
-			// TODO: Use context.drawTriangles
-			context.__flushGL ();
-			
-			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			var vertexBuffer = video.__getVertexBuffer (context);
+			if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+			if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+			var indexBuffer = video.__getIndexBuffer (context);
+			context.drawTriangles (indexBuffer);
 			
 			#if gl_stats
 			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -118,15 +121,11 @@ class Context3DVideo {
 			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
 			renderer.updateShader ();
 			
-			context.__bindGLArrayBuffer (video.__getBuffer (context));
-			
-			gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-			
-			// TODO: Use context.drawTriangles
-			context.__flushGL ();
-			
-			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			var vertexBuffer = video.__getVertexBuffer (context);
+			if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+			if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+			var indexBuffer = video.__getIndexBuffer (context);
+			context.drawTriangles (indexBuffer);
 			
 			#if gl_stats
 			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
