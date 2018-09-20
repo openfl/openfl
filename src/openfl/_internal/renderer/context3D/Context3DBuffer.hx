@@ -118,12 +118,6 @@ class Context3DBuffer {
 			
 			case QUADS:
 				
-				while (indexCount < elementCount * 6) {
-					
-					__createQuadIndexBuffer ();
-					
-				}
-				
 				numVertices = elementCount * 4;
 			
 			case TRIANGLES:
@@ -151,35 +145,6 @@ class Context3DBuffer {
 			vertexBufferData.set (vertexBufferData);
 			
 		}
-		
-	}
-	
-	
-	private function __createQuadIndexBuffer ():Void {
-		
-		var indexData = new UInt16Array (MAX_QUAD_INDEX_BUFFER_LENGTH);
-		var vertexIndex = Std.int (indexCount * (4 / 6));
-		var indexPosition = 0;
-		
-		while (indexPosition < MAX_QUAD_INDEX_BUFFER_LENGTH) {
-			
-			indexData[indexPosition] = vertexIndex;
-			indexData[indexPosition + 1] = vertexIndex + 1;
-			indexData[indexPosition + 2] = vertexIndex + 2;
-			indexData[indexPosition + 3] = vertexIndex + 2;
-			indexData[indexPosition + 4] = vertexIndex + 1;
-			indexData[indexPosition + 5] = vertexIndex + 3;
-			indexPosition += 6;
-			vertexIndex += 4;
-			
-		}
-		
-		var indexBuffer = context3D.createIndexBuffer (MAX_QUAD_INDEX_BUFFER_LENGTH, STATIC_DRAW);
-		indexBuffer.uploadFromTypedArray (indexData);
-		
-		if (indexBuffers == null) indexBuffers = new Array ();
-		indexBuffers.push (indexBuffer);
-		indexCount += MAX_QUAD_INDEX_BUFFER_LENGTH;
 		
 	}
 	
