@@ -1073,11 +1073,11 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private function __updateShaderBuffer ():Void {
+	@:noCompletion private function __updateShaderBuffer (bufferOffset:Int):Void {
 		
 		if (__currentShader != null && __currentShaderBuffer != null) {
 			
-			__currentShader.__updateFromBuffer (__currentShaderBuffer);
+			__currentShader.__updateFromBuffer (__currentShaderBuffer, bufferOffset);
 			
 		}
 		

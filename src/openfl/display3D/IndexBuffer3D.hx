@@ -3,7 +3,7 @@ package openfl.display3D; #if !flash
 
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
-import lime.utils.Int16Array;
+import lime.utils.UInt16Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -24,7 +24,7 @@ import openfl.Vector;
 	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numIndices:Int;
-	@:noCompletion private var __tempInt16Array:Int16Array;
+	@:noCompletion private var __tempUInt16Array:UInt16Array;
 	@:noCompletion private var __usage:Int;
 	
 	
@@ -53,7 +53,7 @@ import openfl.Vector;
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
 		var offset = byteArrayOffset + startOffset * 2;
-		uploadFromTypedArray (new Int16Array (data.toArrayBuffer (), offset, count));
+		uploadFromTypedArray (new UInt16Array (data.toArrayBuffer (), offset, count));
 		
 	}
 	
@@ -76,15 +76,15 @@ import openfl.Vector;
 		var gl = __context.gl;
 		
 		var length = startOffset + count;
-		var existingInt16Array = __tempInt16Array;
+		var existingUInt16Array = __tempUInt16Array;
 		
-		if (__tempInt16Array == null || __tempInt16Array.length < count) {
+		if (__tempUInt16Array == null || __tempUInt16Array.length < count) {
 			
-			__tempInt16Array = new Int16Array (count);
+			__tempUInt16Array = new UInt16Array (count);
 			
-			if (existingInt16Array != null) {
+			if (existingUInt16Array != null) {
 				
-				__tempInt16Array.set (existingInt16Array);
+				__tempUInt16Array.set (existingUInt16Array);
 				
 			}
 			
@@ -92,11 +92,11 @@ import openfl.Vector;
 		
 		for (i in startOffset...length) {
 			
-			__tempInt16Array[i - startOffset] = data[i];
+			__tempUInt16Array[i - startOffset] = data[i];
 			
 		}
 		
-		uploadFromTypedArray (__tempInt16Array);
+		uploadFromTypedArray (__tempUInt16Array);
 		
 	}
 	

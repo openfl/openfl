@@ -639,11 +639,11 @@ class Shader {
 	}
 	
 	
-	@:noCompletion private function __updateFromBuffer (shaderBuffer:ShaderBuffer):Void {
+	@:noCompletion private function __updateFromBuffer (shaderBuffer:ShaderBuffer, bufferOffset:Int):Void {
 		
 		if (program != null) {
 			
-			__updateGLFromBuffer (shaderBuffer);
+			__updateGLFromBuffer (shaderBuffer, bufferOffset);
 			
 		}
 		
@@ -682,7 +682,7 @@ class Shader {
 	}
 	
 	
-	@:noCompletion private function __updateGLFromBuffer (shaderBuffer:ShaderBuffer):Void {
+	@:noCompletion private function __updateGLFromBuffer (shaderBuffer:ShaderBuffer, bufferOffset:Int):Void {
 		
 		var textureCount = 0;
 		var input, inputData, inputFilter, inputMipFilter, inputWrap;
@@ -764,7 +764,7 @@ class Shader {
 					
 				} else {
 					
-					boolRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
+					boolRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i], bufferOffset);
 					
 				}
 				
@@ -792,7 +792,7 @@ class Shader {
 					
 				} else {
 					
-					floatRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
+					floatRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i], bufferOffset);
 					
 				}
 				
@@ -820,7 +820,7 @@ class Shader {
 					
 				} else {
 					
-					intRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i]);
+					intRef.__updateGLFromBuffer (__context, paramData, shaderBuffer.paramPositions[i], shaderBuffer.paramLengths[i], bufferOffset);
 					
 				}
 				

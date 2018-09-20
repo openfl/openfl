@@ -26,8 +26,8 @@ import lime.math.ColorMatrix;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
-import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
+import lime.utils.UInt16Array;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.RectangleTexture;
@@ -216,7 +216,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __framebufferContext:RenderContext;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
 	@:noCompletion private var __indexBufferContext:RenderContext;
-	@:noCompletion private var __indexBufferData:Int16Array;
+	@:noCompletion private var __indexBufferData:UInt16Array;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __mask:DisplayObject;
@@ -1237,7 +1237,9 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__indexBuffer == null || __indexBufferContext != context.__context) {
 			
-			__indexBufferData = new Int16Array (6);
+			// TODO: Use shared buffer on context
+			
+			__indexBufferData = new UInt16Array (6);
 			__indexBufferData[0] = 0;
 			__indexBufferData[1] = 1;
 			__indexBufferData[2] = 2;

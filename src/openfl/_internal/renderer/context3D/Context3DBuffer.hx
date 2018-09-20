@@ -2,7 +2,7 @@ package openfl._internal.renderer.context3D;
 
 
 import lime.utils.Float32Array;
-import lime.utils.Int16Array;
+import lime.utils.UInt16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -18,7 +18,7 @@ class Context3DBuffer {
 	public var dataPerVertex:Int;
 	public var elementCount:Int;
 	public var elementType:Context3DElementType;
-	public var indexBufferData:Array<Int16Array>;
+	public var indexBufferData:Array<UInt16Array>;
 	public var indexBuffers:Array<IndexBuffer3D>;
 	public var indexCount:Int;
 	public var vertexBuffer:VertexBuffer3D;
@@ -157,7 +157,7 @@ class Context3DBuffer {
 	
 	private function __createQuadIndexBuffer ():Void {
 		
-		var indexData = new Int16Array (MAX_QUAD_INDEX_BUFFER_LENGTH);
+		var indexData = new UInt16Array (MAX_QUAD_INDEX_BUFFER_LENGTH);
 		var vertexIndex = Std.int (indexCount * (4 / 6));
 		var indexPosition = 0;
 		

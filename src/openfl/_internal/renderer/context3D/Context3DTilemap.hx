@@ -2,7 +2,7 @@ package openfl._internal.renderer.context3D;
 
 
 import lime.utils.Float32Array;
-import lime.utils.Int16Array;
+import lime.utils.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;

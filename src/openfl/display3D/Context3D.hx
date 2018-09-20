@@ -12,8 +12,8 @@ import lime.graphics.WebGLRenderContext;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
-import lime.utils.Int16Array;
 import lime.utils.UInt8Array;
+import lime.utils.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
@@ -92,6 +92,8 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
+	@:noCompletion private var __quadIndexBufferCount:Int;
+	@:noCompletion private var __quadIndexBufferElements:Int;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
@@ -191,18 +193,29 @@ import openfl.utils.ByteArray;
 		
 		driverInfo = __driverInfo;
 		
-		var data = new Int16Array (0xFFFF);
-		var vertex = 0;
-		for (i in 0...0x2AAA) {
-			data[i] = vertex;
-			data[i + 1] = vertex + 1;
-			data[i + 2] = vertex + 2;
-			data[i + 3] = vertex + 2;
-			data[i + 4] = vertex + 1;
-			data[i + 5] = vertex + 3;
+		__quadIndexBufferElements = Math.floor (0xFFFF / 4);
+		__quadIndexBufferCount = __quadIndexBufferElements * 6;
+		
+		var data = new UInt16Array (__quadIndexBufferCount);
+		
+		var index:UInt = 0;
+		var vertex:UInt = 0;
+		
+		for (i in 0...__quadIndexBufferElements) {
+			
+			data[index] = vertex;
+			data[index + 1] = vertex + 1;
+			data[index + 2] = vertex + 2;
+			data[index + 3] = vertex + 2;
+			data[index + 4] = vertex + 1;
+			data[index + 5] = vertex + 3;
+			
+			index += 6;
 			vertex += 4;
+			
 		}
-		__quadIndexBuffer = createIndexBuffer (0xFFFF);
+		
+		__quadIndexBuffer = createIndexBuffer (__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray (data);
 		
 	}

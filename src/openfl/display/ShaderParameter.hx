@@ -250,7 +250,7 @@ import lime.utils.Float32Array;
 	}
 	
 	
-	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:Float32Array, position:Int, length:Int):Void {
+	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void {
 		
 		var gl = context.gl;
 		
@@ -385,7 +385,7 @@ import lime.utils.Float32Array;
 					
 					for (i in 0...__arrayLength) {
 						
-						gl.vertexAttribPointer (index + i, __length, type, false, __length * Float32Array.BYTES_PER_ELEMENT, (position + (i * __arrayLength)) * Float32Array.BYTES_PER_ELEMENT);
+						gl.vertexAttribPointer (index + i, __length, type, false, __length * Float32Array.BYTES_PER_ELEMENT, (position + ((i + bufferOffset) * __arrayLength)) * Float32Array.BYTES_PER_ELEMENT);
 						
 					}
 					

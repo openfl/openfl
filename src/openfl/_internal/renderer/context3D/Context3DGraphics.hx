@@ -3,7 +3,7 @@ package openfl._internal.renderer.context3D;
 
 import lime.math.ARGB;
 import lime.utils.Float32Array;
-import lime.utils.Int16Array;
+import lime.utils.UInt16Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.BitmapData;
@@ -141,8 +141,7 @@ class Context3DGraphics {
 							
 						}
 						
-						var vertexOffset = vertexBufferPosition;
-						var alpha = 1.0, tileData, id;
+						var vertexOffset, alpha = 1.0, tileData, id;
 						var bitmapWidth, bitmapHeight, tileWidth:Float, tileHeight:Float;
 						var uvX, uvY, uvWidth, uvHeight;
 						var x, y, x2, y2, x3, y3, x4, y4;
@@ -172,7 +171,7 @@ class Context3DGraphics {
 						
 						for (i in 0...length) {
 							
-							vertexOffset = vertexBufferPosition + (i * stride);
+							vertexOffset = (quadBufferPosition + i) * stride;
 							
 							ri = (hasIndices ? (indices[i] * 4) : i * 4);
 							if (ri < 0) continue;
@@ -624,7 +623,7 @@ class Context3DGraphics {
 									renderer.applyBitmapData (bitmap, false, repeat);
 									renderer.applyAlpha (graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform (graphics.__owner.__worldColorTransform);
-									renderer.__updateShaderBuffer ();
+									// renderer.__updateShaderBuffer ();
 									
 								} else {
 									
@@ -638,11 +637,30 @@ class Context3DGraphics {
 									
 								}
 								
-								if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, graphics.__quadBuffer.vertexBuffer, vertexBufferPosition, FLOAT_2);
-								if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, graphics.__quadBuffer.vertexBuffer, vertexBufferPosition + 2, FLOAT_2);
+								var end = quadBufferPosition + length;
+								var bufferOffset = 0;
 								
-								graphics.__quadBuffer.drawElements (quadBufferPosition, length);
-								quadBufferPosition += length;
+								while (quadBufferPosition < end) {
+									
+									length = Std.int (Math.min (end - quadBufferPosition, context.__quadIndexBufferElements));
+									if (length > 2) length = 2;
+									if (length <= 0) break;
+									
+									if (shaderBuffer != null && !maskRender) {
+										
+										renderer.__updateShaderBuffer (bufferOffset);
+										
+									}
+									
+									if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, graphics.__quadBuffer.vertexBuffer, quadBufferPosition * 16, FLOAT_2);
+									if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, graphics.__quadBuffer.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
+									
+									context.drawTriangles (context.__quadIndexBuffer, 0, length * 2);
+									
+									bufferOffset += length * 4;
+									quadBufferPosition += length;
+									
+								}
 								
 								#if gl_stats
 									Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
@@ -729,7 +747,7 @@ class Context3DGraphics {
 								renderer.applyBitmapData (bitmap, false, repeat);
 								renderer.applyAlpha (1);
 								renderer.applyColorTransform (null);
-								renderer.__updateShaderBuffer ();
+								renderer.__updateShaderBuffer (0); // TODO
 								
 							} else {
 								
@@ -829,11 +847,11 @@ class Context3DGraphics {
 		
 		if (buffer == null) {
 			
-			newBuffer = new Int16Array (length);
+			newBuffer = new UInt16Array (length);
 			
 		} else if (length > buffer.length) {
 			
-			newBuffer = new Int16Array (length);
+			newBuffer = new UInt16Array (length);
 			newBuffer.set (buffer);
 			position = buffer.length;
 			
