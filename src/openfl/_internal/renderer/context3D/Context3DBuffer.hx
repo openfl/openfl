@@ -87,8 +87,8 @@ class Context3DBuffer {
 		
 		if (vertexBufferData.length > vertexCount) {
 			
-			vertexBuffer = context3D.createVertexBuffer (vertexCount, dataPerVertex, DYNAMIC_DRAW);
 			vertexCount = vertexBufferData.length;
+			vertexBuffer = context3D.createVertexBuffer (vertexCount, dataPerVertex, DYNAMIC_DRAW);
 			
 		}
 		
@@ -122,12 +122,12 @@ class Context3DBuffer {
 			
 			case TRIANGLES:
 				
-				numVertices = elementCount * 6;
+				numVertices = elementCount * 3;
 			
 			case TRIANGLE_INDICES:
 				
 				// TODO: Different index/triangle buffer lengths
-				numVertices = elementCount * 6;
+				numVertices = elementCount * 3;
 			
 			default:
 			
