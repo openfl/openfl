@@ -549,6 +549,7 @@ class Context3DGraphics {
 				var positionY = 0.0;
 				
 				var quadBufferPosition = 0;
+				var shaderBufferOffset = 0;
 				var triangleIndexBufferPosition = 0;
 				var vertexBufferPosition = 0;
 				var vertexBufferPositionUVT = 0;
@@ -580,6 +581,7 @@ class Context3DGraphics {
 							
 							var c = data.readBeginShaderFill ();
 							shaderBuffer = c.shaderBuffer;
+							shaderBufferOffset = 0;
 							
 							if (shaderBuffer == null || shaderBuffer.shader == null || shaderBuffer.shader.__bitmap == null) {
 								
@@ -638,7 +640,6 @@ class Context3DGraphics {
 								}
 								
 								var end = quadBufferPosition + length;
-								var bufferOffset = 0;
 								
 								while (quadBufferPosition < end) {
 									
@@ -647,7 +648,7 @@ class Context3DGraphics {
 									
 									if (shaderBuffer != null && !maskRender) {
 										
-										renderer.__updateShaderBuffer (bufferOffset);
+										renderer.__updateShaderBuffer (shaderBufferOffset);
 										
 									}
 									
@@ -656,7 +657,7 @@ class Context3DGraphics {
 									
 									context.drawTriangles (context.__quadIndexBuffer, 0, length * 2);
 									
-									bufferOffset += length * 4;
+									shaderBufferOffset += length * 4;
 									quadBufferPosition += length;
 									
 								}
@@ -705,6 +706,8 @@ class Context3DGraphics {
 								var indexBuffer = blankBitmapData.getIndexBuffer (context);
 								context.drawTriangles (indexBuffer);
 								
+								shaderBufferOffset += 4;
+								
 								#if gl_stats
 									Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 								#end
@@ -746,7 +749,7 @@ class Context3DGraphics {
 								renderer.applyBitmapData (bitmap, false, repeat);
 								renderer.applyAlpha (1);
 								renderer.applyColorTransform (null);
-								renderer.__updateShaderBuffer (0); // TODO
+								renderer.__updateShaderBuffer (shaderBufferOffset);
 								
 							} else {
 								
@@ -780,6 +783,8 @@ class Context3DGraphics {
 							context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, length);
 							
 							triangleIndexBufferPosition += length;
+							shaderBufferOffset += length;
+							
 							hasUVData ? vertexBufferPositionUVT += (dataPerVertex * length) : vertexBufferPosition += (dataPerVertex * length);
 							
 							if (culling != NONE) {
