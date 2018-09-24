@@ -91,6 +91,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
 	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
+	@:noCompletion private var __programs:Map<String, Program3D>;
 	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
 	@:noCompletion private var __quadIndexBufferCount:Int;
 	@:noCompletion private var __quadIndexBufferElements:Int;
@@ -117,6 +118,7 @@ import openfl.utils.ByteArray;
 		__vertexConstants = new Float32Array (4 * 128);
 		__fragmentConstants = new Float32Array (4 * 128);
 		__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
+		__programs = new Map<String, Program3D> ();
 		
 		if (GL_MAX_VIEWPORT_DIMS == -1) {
 			
