@@ -1300,9 +1300,15 @@ class CairoGraphics {
 			
 			renderer.applyMatrix (graphics.__renderTransform, cairo);
 			
+			#if (haxe_ver >= "4.0.0")
+			cairo.blendMode = CLEAR;
+			cairo.paint ();
+			cairo.blendMode = OVER;
+			#else
 			cairo.operator = CLEAR;
 			cairo.paint ();
 			cairo.operator = OVER;
+			#end
 			
 			fillCommands.clear ();
 			strokeCommands.clear ();

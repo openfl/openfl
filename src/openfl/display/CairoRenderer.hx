@@ -192,6 +192,74 @@ class CairoRenderer extends DisplayObjectRenderer {
 		
 		__blendMode = value;
 		
+		#if (haxe_ver >= "4.0.0")
+		
+		switch (value) {
+			
+			case ADD:
+				
+				cairo.blendMode = CairoOperator.ADD;
+			
+			//case ALPHA:
+				
+				//TODO;
+			
+			case DARKEN:
+				
+				cairo.blendMode = CairoOperator.DARKEN;
+			
+			case DIFFERENCE:
+				
+				cairo.blendMode = CairoOperator.DIFFERENCE;
+			
+			//case ERASE:
+				
+				//TODO;
+			
+			case HARDLIGHT:
+				
+				cairo.blendMode = CairoOperator.HARD_LIGHT;
+			
+			//case INVERT:
+				
+				//TODO
+			
+			case LAYER:
+				
+				cairo.blendMode = CairoOperator.OVER;
+			
+			case LIGHTEN:
+				
+				cairo.blendMode = CairoOperator.LIGHTEN;
+			
+			case MULTIPLY:
+				
+				cairo.blendMode = CairoOperator.MULTIPLY;
+			
+			case OVERLAY:
+				
+				cairo.blendMode = CairoOperator.OVERLAY;
+			
+			case SCREEN:
+				
+				cairo.blendMode = CairoOperator.SCREEN;
+			
+			//case SHADER:
+				
+				//TODO
+			
+			//case SUBTRACT:
+				
+				//TODO;
+			
+			default:
+				
+				cairo.blendMode = CairoOperator.OVER;
+			
+		}
+		
+		#else
+		
 		switch (value) {
 			
 			case ADD:
@@ -255,6 +323,8 @@ class CairoRenderer extends DisplayObjectRenderer {
 				cairo.operator = CairoOperator.OVER;
 			
 		}
+		
+		#end
 		
 	}
 	
