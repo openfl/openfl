@@ -269,7 +269,7 @@ class Context3DGraphics {
 					var dataPerVertex = vertLength + 2;
 					var vertexOffset = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 					
-					resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
+					if (hasIndices) resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
 					resizeVertexBuffer (graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
 					
 					var indexBufferData = graphics.__triangleIndexBufferData;
@@ -282,7 +282,7 @@ class Context3DGraphics {
 						vertOffset = hasIndices ? indices[i] * 2 : i * 2;
 						uvOffset = hasIndices ? indices[i] * uvStride : i * uvStride;
 						
-						indexBufferData[triangleIndexBufferPosition + i] = hasIndices ? indices[i] : i;
+						if (hasIndices) indexBufferData[triangleIndexBufferPosition + i] = indices[i];
 						
 						if (hasUVTData) {
 							
@@ -305,7 +305,7 @@ class Context3DGraphics {
 						
 					}
 					
-					triangleIndexBufferPosition += length;
+					if (hasIndices) triangleIndexBufferPosition += length;
 					hasUVTData ? vertexBufferPositionUVT += length * dataPerVertex : vertexBufferPosition += length * dataPerVertex;
 				
 				case END_FILL:
@@ -780,11 +780,18 @@ class Context3DGraphics {
 								
 							}
 							
-							context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, length);
+							if (hasIndices) {
+								
+								context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, length);
+								triangleIndexBufferPosition += length;
+								
+							} else {
+								
+								context.__drawTriangles (bufferPosition, length);
+								
+							}
 							
-							triangleIndexBufferPosition += length;
 							shaderBufferOffset += length;
-							
 							hasUVData ? vertexBufferPositionUVT += (dataPerVertex * length) : vertexBufferPosition += (dataPerVertex * length);
 							
 							if (culling != NONE) {

@@ -891,6 +891,29 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	public function __drawTriangles (firstIndex:Int = 0, count:Int):Void {
+		
+		#if !openfl_disable_display_render
+		if (__state.renderToTexture == null) {
+			
+			// TODO: Make sure state is correct for this?
+			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			
+		}
+		
+		__flushGL ();
+		
+		#end
+		
+		if (__state.program != null) {
+			__state.program.__flush ();
+		}
+		
+		gl.drawArrays (gl.TRIANGLES, firstIndex, count);
+		
+	}
+	
+	
 	@:noCompletion private function __flushGL ():Void {
 		
 		__flushGLProgram ();
