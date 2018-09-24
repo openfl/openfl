@@ -2,7 +2,7 @@ package openfl.display; #if !flash
 
 
 import lime.utils.Log;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl._internal.symbols.DynamicTextSymbol;
@@ -11,9 +11,9 @@ import openfl._internal.symbols.ShapeSymbol;
 import openfl._internal.symbols.SpriteSymbol;
 import openfl._internal.symbols.StaticTextSymbol;
 import openfl._internal.symbols.SWFSymbol;
-import openfl._internal.timeline.Frame;
-import openfl._internal.timeline.FrameObject;
-import openfl._internal.timeline.FrameObjectType;
+import openfl._internal.symbols.timeline.Frame;
+import openfl._internal.symbols.timeline.FrameObject;
+import openfl._internal.symbols.timeline.FrameObjectType;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
@@ -376,6 +376,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			if (__lastFrameScriptEval == nextFrame) {
 				
+				super.__enterFrame (deltaTime);
 				return;
 				
 			}
@@ -386,6 +387,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 					
 					if (!__evaluateFrameScripts (__totalFrames)) {
 						
+						super.__enterFrame (deltaTime);
 						return;
 						
 					}
@@ -396,6 +398,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 				
 				if (!__evaluateFrameScripts (nextFrame)) {
 					
+					super.__enterFrame (deltaTime);
 					return;
 					
 				}
@@ -882,6 +885,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			__timeElapsed = (__timeElapsed % __frameTime);
 			
 		} else {
+			
 			
 			nextFrame = __currentFrame + 1;
 			if (nextFrame > __totalFrames) nextFrame = 1;

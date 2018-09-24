@@ -1,6 +1,6 @@
 ﻿package format.swf.data.filters;
 
-import openfl._internal.swf.FilterType;
+import openfl._internal.formats.swf.FilterType;
 import format.swf.SWFData;
 
 import flash.filters.BitmapFilter;

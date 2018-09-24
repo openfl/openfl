@@ -2,7 +2,7 @@ package openfl.text; #if !flash
 
 
 import lime.app.Future;
-import lime.text.Font in LimeFont;
+import lime.text.Font as LimeFont;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 
@@ -160,12 +160,22 @@ class Font extends LimeFont {
 	
 	
 	/**
-	 * Registers a font class in the global font list.
+	 * Registers a font in the global font list.
 	 * 
 	 */
-	public static function registerFont (font:Class<Dynamic>) {
+	public static function registerFont (font:Dynamic) {
 		
-		var instance = cast (Type.createInstance (font, []), Font);
+		var instance:Font = null;
+		
+		if (Type.getClass (font) == null) {
+			
+			instance = cast (Type.createInstance (font, []), Font);
+			
+		} else {
+			
+			instance = cast (font, Font);
+			
+		}
 		
 		if (instance != null) {
 			
@@ -199,12 +209,12 @@ class Font extends LimeFont {
 				
 				__initialized = true;
 				
-			} #if (lime >= "5.9.0") else if (src == null && __fontID != null && Assets.isLocal (__fontID)) {
+			} else if (src == null && __fontID != null && Assets.isLocal (__fontID)) {
 				
 				__fromBytes (Assets.getBytes (__fontID));
 				__initialized = true;
 				
-			} #end
+			}
 			
 		}
 		#end

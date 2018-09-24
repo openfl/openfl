@@ -338,6 +338,7 @@ class NetStream extends EventDispatcher {
 	@:noCompletion private function video_onEnd (event:Dynamic):Void {
 		
 		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Stop" } ));
+		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Complete" } ));
 		__playStatus ("NetStream.Play.Complete");
 		
 	}

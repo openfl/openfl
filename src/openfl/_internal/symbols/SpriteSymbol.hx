@@ -1,8 +1,8 @@
 package openfl._internal.symbols;
 
 
-import openfl._internal.swf.SWFLite;
-import openfl._internal.timeline.Frame;
+import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.symbols.timeline.Frame;
 import openfl.display.MovieClip;
 
 #if !openfl_debug

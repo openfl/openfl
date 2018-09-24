@@ -1,6 +1,8 @@
 package openfl.display; #if !flash
 
 
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
@@ -8,13 +10,6 @@ import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-import lime.graphics.RenderContextType;
-#else
-import lime.graphics.RendererType;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -24,6 +19,7 @@ import lime.graphics.RendererType;
 @:access(openfl.geom.ColorTransform)
 @:allow(openfl._internal.renderer)
 @:allow(openfl.display)
+@:allow(openfl.text)
 
 
 class DisplayObjectRenderer extends EventDispatcher {
@@ -31,12 +27,14 @@ class DisplayObjectRenderer extends EventDispatcher {
 	
 	@:noCompletion private var __allowSmoothing:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
-	@:noCompletion private var __context:#if (lime >= "7.0.0") RenderContext #else Dynamic #end;
+	@:noCompletion private var __cleared:Bool;
+	@:noCompletion private var __context:RenderContext;
+	@:noCompletion private var __overrideBlendMode:BlendMode;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __tempColorTransform:ColorTransform;
 	@:noCompletion private var __transparent:Bool;
-	@:noCompletion private var __type:#if (lime >= "7.0.0") RenderContextType #else RendererType #end;
+	@:noCompletion private var __type:RenderContextType;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -127,13 +125,6 @@ class DisplayObjectRenderer extends EventDispatcher {
 	
 	
 	@:noCompletion private function __render (object:IBitmapDrawable):Void {
-		
-		
-		
-	}
-	
-	
-	@:noCompletion private function __renderStage3D (stage:Stage):Void {
 		
 		
 		

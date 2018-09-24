@@ -1,14 +1,9 @@
 package openfl._internal.renderer.cairo;
 
 
+import lime.math.ARGB;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
-
-#if (lime >= "7.0.0")
-import lime.math.ARGB;
-#else
-import lime.math.color.ARGB;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

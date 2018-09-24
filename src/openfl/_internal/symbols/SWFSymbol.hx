@@ -1,7 +1,7 @@
 package openfl._internal.symbols;
 
 
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLite;
 import openfl.display.DisplayObject;
 
 #if !openfl_debug

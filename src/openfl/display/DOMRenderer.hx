@@ -320,19 +320,9 @@ class DOMRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
-		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderDOM (stage, this);
-			
-		}
-		
-	}
-	
-	
 	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
+		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value) return;
 		
 		__blendMode = value;

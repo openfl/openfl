@@ -132,17 +132,11 @@ class CanvasTextField {
 					
 					if (!renderer.__allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)) {
 						
-						untyped (graphics.__context).mozImageSmoothingEnabled = false;
-						//untyped (graphics.__context).webkitImageSmoothingEnabled = false;
-						untyped (graphics.__context).msImageSmoothingEnabled = false;
-						untyped (graphics.__context).imageSmoothingEnabled = false;
+						graphics.__context.imageSmoothingEnabled = false;
 						
 					} else {
 						
-						untyped (graphics.__context).mozImageSmoothingEnabled = true;
-						//untyped (graphics.__context).webkitImageSmoothingEnabled = true;
-						untyped (graphics.__context).msImageSmoothingEnabled = true;
-						untyped (graphics.__context).imageSmoothingEnabled = true;
+						graphics.__context.imageSmoothingEnabled = true;
 						
 					}
 					

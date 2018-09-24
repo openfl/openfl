@@ -13,7 +13,6 @@ import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
 import format.swf.SWFTimelineContainer;
 import format.SWF;
-import haxe.io.Path;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Template;
@@ -25,44 +24,28 @@ import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.ShapeSymbol;
 import openfl._internal.symbols.SpriteSymbol;
 import openfl._internal.symbols.StaticTextSymbol;
-import openfl._internal.swf.SWFLibrary;
-import openfl._internal.swf.SWFLiteLibrary;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLibrary;
+import openfl._internal.formats.swf.SWFLiteLibrary;
+import openfl._internal.formats.swf.SWFLite;
 import openfl.display.PNGEncoderOptions;
 import openfl.utils.ByteArray;
 import sys.io.File;
 import sys.io.Process;
 import sys.FileSystem;
 
-#if (hxp <= "1.0.0")
-import hxp.helpers.AssetHelper;
-import hxp.helpers.LogHelper;
-import hxp.helpers.PathHelper;
-import hxp.helpers.PlatformHelper;
-import hxp.helpers.StringHelper;
-import hxp.project.Architecture;
-import hxp.project.Asset;
-import hxp.project.AssetEncoding;
-import hxp.project.AssetType;
-import hxp.project.Haxelib;
-import hxp.project.HXProject in Project;
-import hxp.project.Platform;
-#elseif hxp
-import hxp.Architecture;
-import hxp.Asset;
-import hxp.AssetEncoding;
-import hxp.AssetHelper;
-import hxp.AssetType;
-import hxp.Haxelib;
-import hxp.LogHelper;
-import hxp.PathHelper;
-import hxp.Platform;
-import hxp.PlatformHelper;
-import hxp.Project;
-import hxp.StringHelper;
+#if (lime >= "7.0.0")
+import hxp.*;
+import lime.tools.AssetHelper;
+import lime.tools.Architecture;
+import lime.tools.Asset;
+import lime.tools.AssetEncoding;
+import lime.tools.AssetType;
+import lime.tools.HXProject;
+import lime.tools.Platform;
 #else
+import haxe.io.Path;
 import lime.tools.helpers.AssetHelper;
-import lime.tools.helpers.LogHelper;
+import lime.tools.helpers.LogHelper in Log;
 import lime.tools.helpers.PathHelper;
 import lime.tools.helpers.PlatformHelper;
 import lime.tools.helpers.StringHelper;
@@ -71,7 +54,7 @@ import lime.project.Asset;
 import lime.project.AssetEncoding;
 import lime.project.AssetType;
 import lime.project.Haxelib;
-import lime.project.HXProject in Project;
+import lime.project.HXProject;
 import lime.project.Platform;
 #end
 
@@ -91,38 +74,30 @@ class Tools {
 		
 		var haxePath = Sys.getEnv ("HAXEPATH");
 		var command = (haxePath != null && haxePath != "") ? haxePath + "/haxelib" : "haxelib";
-		
-		var process = new Process (command, [ "path", "lime" ]);
 		var path = "";
+		
+		var process = new Process ("haxelib", [ "path", "lime" ]);
 		
 		try {
 			
-			var lines = new Array <String> ();
-			
 			while (true) {
 				
-				var length = lines.length;
 				var line = StringTools.trim (process.stdout.readLine ());
 				
-				if (length > 0 && (line == "-D lime" || StringTools.startsWith (line, "-D lime="))) {
+				if (StringTools.startsWith (line, "-L ")) {
 					
-					path = StringTools.trim (lines[length - 1]);
+					path = StringTools.trim (line.substr (2));
+					break;
 					
 				}
-				
-				lines.push (line);
-				
+			
 			}
 			
-		} catch (e:Dynamic) {
-			
-			process.close ();
-			
-		}
+		} catch (e:Dynamic) {}
 		
-		path += "/ndll/";
+		process.close ();
 		
-		switch (PlatformHelper.hostPlatform) {
+		switch (#if (lime >= "7.0.0") System.hostPlatform #else PlatformHelper.hostPlatform #end) {
 			
 			case WINDOWS:
 				
@@ -148,7 +123,7 @@ class Tools {
 					
 					untyped $loader.path = $array (path + "RPi/", $loader.path);
 					
-				} else if (PlatformHelper.hostArchitecture == Architecture.X64) {
+				} else if (#if (lime >= "7.0.0") System.hostArchitecture #else PlatformHelper.hostArchitecture #end == X64) {
 					
 					untyped $loader.path = $array (path + "Linux64/", $loader.path);
 					
@@ -202,10 +177,10 @@ class Tools {
 	}
 	
 	
-	private static function generateSWFClasses (project:Project, output:Project, swfAsset:Asset, prefix:String = ""):Array<String> {
+	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Array<String> {
 		
-		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		var movieClipTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
 		
 		var swf = new SWF (ByteArray.fromBytes (File.getBytes (swfAsset.sourcePath)));
 		
@@ -331,7 +306,7 @@ class Tools {
 					
 				// }
 				
-				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (className.split (".").join ("/"))) + "/" + prefix + name + ".hx", AssetType.TEMPLATE);
+				var templateFile = new Asset ("", #if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, Path.directory (className.split (".").join ("/"))) + "/" + prefix + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
 				output.assets.push (templateFile);
 				
@@ -349,11 +324,11 @@ class Tools {
 	private static function generateSWFLiteClasses (targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfID:String, prefix:String = ""):Array<String> {
 		
 		#if commonjs
-		var movieClipTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/MovieClip.mtt"));
-		var simpleButtonTemplate = File.getContent (PathHelper.combine (js.Node.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
+		var movieClipTemplate = File.getContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname, "../assets/templates/swf/MovieClip.mtt"));
+		var simpleButtonTemplate = File.getContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
 		#else
-		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		var movieClipTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
 		#end
 		
 		var generatedClasses = [];
@@ -457,7 +432,7 @@ class Tools {
 				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfID, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				
-				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (symbol.className.split (".").join ("/"))) + "/" + name + ".hx", AssetType.TEMPLATE);
+				var templateFile = new Asset ("", #if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, Path.directory (symbol.className.split (".").join ("/"))) + "/" + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
 				output.push (templateFile);
 				
@@ -554,7 +529,7 @@ class Tools {
 					if (argument == "-v" || argument == "-verbose") {
 						
 						argument = "-verbose";
-						LogHelper.verbose = true;
+						Log.verbose = true;
 						
 					}
 					
@@ -574,7 +549,7 @@ class Tools {
 			
 			if (words.length == 1) {
 				
-				LogHelper.error ("Incorrect number of arguments for command 'process'");
+				Log.error ("Incorrect number of arguments for command 'process'");
 				return;
 				
 			}
@@ -586,12 +561,12 @@ class Tools {
 				
 				if (words.length > 3) {
 					
-					LogHelper.error ("Incorrect number of arguments for command 'process'");
+					Log.error ("Incorrect number of arguments for command 'process'");
 					return;
 					
 				}
 				
-				LogHelper.info ("", LogHelper.accentColor + "Running command: PROCESS" + LogHelper.resetColor);
+				Log.info ("", Log.accentColor + "Running command: PROCESS" + Log.resetColor);
 				processFile (inputPath, outputPath, filePrefix);
 				
 			} else if (words.length > 2) {
@@ -602,7 +577,7 @@ class Tools {
 					
 					var unserializer = new Unserializer (projectData);
 					unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass });
-					var project:Project = unserializer.unserialize ();
+					var project:HXProject = unserializer.unserialize ();
 					
 					var output = processLibraries (project);
 					
@@ -614,7 +589,7 @@ class Tools {
 					
 				} catch (e:Dynamic) {
 					
-					LogHelper.error (e);
+					Log.error (e);
 					
 				}
 				
@@ -654,20 +629,20 @@ class Tools {
 		
 		try {
 			
-			PathHelper.removeDirectory (targetPath);
+			#if (lime >= "7.0.0") System.removeDirectory #else PathHelper.removeDirectory #end (targetPath);
 			
 		} catch (e:Dynamic) {}
 		
-		PathHelper.mkdir (targetPath);
+		#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (targetPath);
 		
-		var project = new Project ();
+		var project = new HXProject ();
 		var createdDirectory = false;
 		
 		for (id in exporter.bitmaps.keys ()) {
 			
 			if (!createdDirectory) {
 				
-				PathHelper.mkdir (PathHelper.combine (targetPath, "symbols"));
+				#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, "symbols"));
 				createdDirectory = true;
 				
 			}
@@ -681,7 +656,7 @@ class Tools {
 			var assetData = exporter.bitmaps.get (id);
 			project.assets.push (asset);
 			
-			File.saveBytes (PathHelper.combine (targetPath, symbol.path), assetData);
+			File.saveBytes (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, symbol.path), assetData);
 			
 			if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
 				
@@ -691,7 +666,7 @@ class Tools {
 				var assetData = exporter.bitmapAlpha.get (id);
 				project.assets.push (asset);
 				
-				File.saveBytes (PathHelper.combine (targetPath, symbol.alpha), assetData);
+				File.saveBytes (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, symbol.alpha), assetData);
 				
 			}
 			
@@ -702,7 +677,7 @@ class Tools {
 			
 			if (!createdDirectory) {
 				
-				PathHelper.mkdir (PathHelper.combine (targetPath, "sounds"));
+				#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, "sounds"));
 				createdDirectory = true;
 				
 			}
@@ -710,7 +685,7 @@ class Tools {
 			var symbolClassName = exporter.soundSymbolClassNames.get (id);
 			var typeId = exporter.soundTypes.get (id);
 			
-			LogHelper.info ("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
+			Log.info ("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
 			
 			var type;
 			switch (typeId) {
@@ -722,7 +697,7 @@ class Tools {
 			var path = "sounds/"+ symbolClassName + "." + type;
 			var assetData = exporter.sounds.get (id);
 			
-			File.saveBytes (PathHelper.combine (targetPath, path), assetData);
+			File.saveBytes (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, path), assetData);
 			
 			// NOTICE: everything must be .mp3 in its final form, even though we write out various formats to disk
 			var soundAsset = new Asset ("", "sounds/"+ symbolClassName + ".mp3", AssetType.SOUND);
@@ -733,32 +708,32 @@ class Tools {
 		var swfLiteAssetData = swfLite.serialize ();
 		project.assets.push (swfLiteAsset);
 		
-		File.saveContent (PathHelper.combine (targetPath, swfLiteAsset.targetPath), swfLiteAssetData);
+		File.saveContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, swfLiteAsset.targetPath), swfLiteAssetData);
 		
-		var srcPath = PathHelper.combine (targetPath, "src");
+		var srcPath = #if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, "src");
 		var exportedClasses = [];
 		
 		// TODO: Allow prefix, fix generated class SWFLite references
 		var prefix = "";
-		var uuid = StringHelper.generateUUID (20);
+		var uuid = #if (lime >= "7.0.0") StringTools.generateUUID #else StringHelper.generateUUID #end (20);
 		
 		#if !commonjs
 		generateSWFLiteClasses (srcPath, exportedClasses, swfLite, uuid, prefix);
 		
 		for (file in exportedClasses) {
 			
-			PathHelper.mkdir (Path.directory (file.targetPath));
+			#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (Path.directory (file.targetPath));
 			File.saveContent (file.targetPath, file.data);
 			
 		}
 		#end
 		
 		var data = AssetHelper.createManifest (project);
-		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+		data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
 		data.libraryArgs = [ "swflite" + SWFLITE_DATA_SUFFIX, uuid ];
 		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
 		
-		File.saveContent (PathHelper.combine (targetPath, "library.json"), data.serialize ());
+		File.saveContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, "library.json"), data.serialize ());
 		
 		var includeXML = 
 '<?xml version="1.0" encoding="utf-8"?>
@@ -768,24 +743,24 @@ class Tools {
 	
 </library>';
 		
-		File.saveContent (PathHelper.combine (targetPath, "include.xml"), includeXML);
+		File.saveContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, "include.xml"), includeXML);
 		
 		return true;
 		
 	}
 	
 	
-	private static function processLibraries (project:Project):Project {
+	private static function processLibraries (project:HXProject):HXProject {
 		
-		//Project._command = project.command;
-		Project._debug = project.debug;
-		Project._environment = project.environment;
-		Project._target = project.target;
-		Project._targetFlags = project.targetFlags;
-		Project._templatePaths = project.templatePaths;
-		Project._userDefines = project.defines;
+		//HXProject._command = project.command;
+		HXProject._debug = project.debug;
+		HXProject._environment = project.environment;
+		HXProject._target = project.target;
+		HXProject._targetFlags = project.targetFlags;
+		HXProject._templatePaths = project.templatePaths;
+		HXProject._userDefines = project.defines;
 		
-		var output = new Project ();
+		var output = new HXProject ();
 		var embeddedSWF = false;
 		var embeddedSWFLite = false;
 		//var filterClasses = [];
@@ -808,12 +783,12 @@ class Tools {
 					
 					if (!FileSystem.exists (library.sourcePath)) {
 						
-						LogHelper.warn ("Could not find library file: " + library.sourcePath);
+						Log.warn ("Could not find library file: " + library.sourcePath);
 						continue;
 						
 					}
 					
-					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
+					Log.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
 					swf.id = "lib/" + library.name + "/" + library.name + ".swf";
@@ -837,7 +812,7 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (output, library.name);
-					data.libraryType = "openfl._internal.swf.SWFLibrary";
+					data.libraryType = "openfl._internal.formats.swf.SWFLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
 					data.name = library.name;
 					
@@ -869,18 +844,18 @@ class Tools {
 					
 					if (!FileSystem.exists (library.sourcePath)) {
 						
-						LogHelper.warn ("Could not find library file: " + library.sourcePath);
+						Log.warn ("Could not find library file: " + library.sourcePath);
 						continue;
 						
 					}
 					
-					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
+					Log.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					//project.haxelibs.push (new Haxelib ("swf"));
 					
 					var cacheAvailable = false;
 					var cacheDirectory = null;
-					var merge = new Project ();
+					var merge = new HXProject ();
 					
 					if (targetDirectory != null) {
 						
@@ -890,7 +865,7 @@ class Tools {
 						if (FileSystem.exists (cacheFile)) {
 							
 							var cacheDate = FileSystem.stat (cacheFile).mtime;
-							var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl"), true) + "/scripts/tools.n").mtime;
+							var swfToolDate = FileSystem.stat (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/scripts/tools.n").mtime;
 							var sourceDate = FileSystem.stat (library.sourcePath).mtime;
 							
 							if (sourceDate.getTime () < cacheDate.getTime () && swfToolDate.getTime () < cacheDate.getTime ()) {
@@ -951,7 +926,7 @@ class Tools {
 						
 						if (cacheDirectory != null) {
 							
-							PathHelper.mkdir (cacheDirectory);
+							#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (cacheDirectory);
 							
 						}
 						
@@ -994,7 +969,7 @@ class Tools {
 								
 							} else {
 								
-								asset.data = StringHelper.base64Encode (cast assetData);
+								asset.data = #if (lime >= "7.0.0") StringTools.base64Encode #else StringHelper.base64Encode #end (cast assetData);
 								//asset.data = bitmapData.encode ("png");
 								asset.encoding = AssetEncoding.BASE64;
 								
@@ -1023,7 +998,7 @@ class Tools {
 									
 								} else {
 									
-									asset.data = StringHelper.base64Encode (cast assetData);
+									asset.data = #if (lime >= "7.0.0") StringTools.base64Encode #else StringHelper.base64Encode #end (cast assetData);
 									//asset.data = bitmapData.encode ("png");
 									asset.encoding = AssetEncoding.BASE64;
 									
@@ -1078,11 +1053,11 @@ class Tools {
 							
 							if (project.target == IOS) {
 								
-								targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
+								targetPath = #if (lime >= "7.0.0") Path.tryFullPath #else PathHelper.tryFullPath #end (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
 								
 							} else {
 								
-								targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe/_generated";
+								targetPath = #if (lime >= "7.0.0") Path.tryFullPath #else PathHelper.tryFullPath #end (targetDirectory) + "/haxe/_generated";
 								
 							}
 							
@@ -1107,7 +1082,7 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (merge);
-					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+					data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX ];
 					data.name = library.name;
 					
@@ -1150,8 +1125,8 @@ class Tools {
 			
 			output.haxedefs.set ("swf", "1");
 			
-			//output.haxeflags.push ("--macro include('openfl._internal.swf.SWFLiteLibrary')");
-			//output.haxeflags.push ("openfl._internal.swf.SWFLiteLibrary");
+			//output.haxeflags.push ("--macro include('openfl._internal.formats.swf.SWFLiteLibrary')");
+			//output.haxeflags.push ("openfl._internal.formats.swf.SWFLiteLibrary");
 			
 			//for (filterClass in filterClasses) {
 				
@@ -1167,11 +1142,11 @@ class Tools {
 			
 			if (project.target == IOS) {
 				
-				generatedPath = PathHelper.combine (targetDirectory, project.app.file + "/" + "/haxe/_generated");
+				generatedPath = #if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetDirectory, project.app.file + "/" + "/haxe/_generated");
 				
 			} else {
 				
-				generatedPath = PathHelper.combine (targetDirectory, "haxe/_generated");
+				generatedPath = #if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetDirectory, "haxe/_generated");
 				
 			}
 			
@@ -1201,7 +1176,7 @@ class Tools {
 		
 		if (result == null) {
 			
-			result = Project;
+			result = HXProject;
 			
 		}
 		

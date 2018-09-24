@@ -1,7 +1,7 @@
 package openfl.utils;
 
 
-import lime.utils.Assets in LimeAssets;
+import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;

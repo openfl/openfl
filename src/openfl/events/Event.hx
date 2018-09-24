@@ -37,11 +37,11 @@ import openfl.display.InteractiveObject;
  * 
  *  * A useful description about the timing of events, code execution, and
  * rendering at runtime in Ted Patrick's blog entry: <a
- * [Flash Player Mental Model - The Elastic](http://www.onflex.org/ted/2005/07/flash-player-mental-model-elastic.php).
+ * [Flash Player Mental Model - The Elastic Racetrack](http://tedpatrick.com/2005/07/19/flash-player-mental-model-the-elastic-racetrack/).
  *  * A blog entry by Johannes Tacskovics about the timing of frame events,
- * such as ENTER_FRAME, EXIT_FRAME: [The MovieClip Lifecycle](http://blog.johannest.com/2009/06/15/the-movieclip-life-cycle-revisited-from-event-added-to-event-removed_from_stage/).
+ * such as ENTER_FRAME, EXIT_FRAME: [The MovieClip Lifecycle](http://web.archive.org/web/20110623195412/http://blog.johannest.com:80/2009/06/15/the-movieclip-life-cycle-revisited-from-event-added-to-event-removed_from_stage/).
  *  * An article by Trevor McCauley about the order of ActionScript
- * operations: [Order of Operations in ActionScript](http://www.senocular.com/flash/tutorials/orderofoperations/).
+ * operations: [Order of Operations in ActionScript](http://web.archive.org/web/20171009141202/http://www.senocular.com:80/flash/tutorials/orderofoperations/).
  *  * A blog entry by Matt Przybylski on creating custom events:
  * [AS3: Custom Events](http://evolve.reintroducing.com/2007/10/23/as3/as3-custom-events/).
  */

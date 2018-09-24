@@ -1,15 +1,10 @@
 package openfl.display; #if !flash
 
 
+import lime.graphics.Canvas2DRenderContext;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-
-#if (lime >= "7.0.0")
-import lime.graphics.Canvas2DRenderContext;
-#else
-import lime.graphics.CanvasRenderContext;
-#end
 
 #if (js && html5)
 import js.Browser;
@@ -26,19 +21,20 @@ import js.Browser;
 @:access(openfl.display.Stage3D)
 @:allow(openfl._internal.renderer.canvas)
 @:allow(openfl.display)
+@:allow(openfl.text)
 
 
 class CanvasRenderer extends DisplayObjectRenderer {
 	
 	
-	public var context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end;
+	public var context:Canvas2DRenderContext;
 	public var pixelRatio (default, null):Float = 1;
 	
 	@:noCompletion private var __isDOM:Bool;
 	@:noCompletion private var __tempMatrix:Matrix;
 	
 	
-	@:noCompletion private function new (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end) {
+	@:noCompletion private function new (context:Canvas2DRenderContext) {
 		
 		super ();
 		
@@ -50,17 +46,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applySmoothing (context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end, value:Bool) {
+	public function applySmoothing (context:Canvas2DRenderContext, value:Bool) {
 		
-		untyped (context).mozImageSmoothingEnabled = value;
-		//untyped (context).webkitImageSmoothingEnabled = value;
-		untyped (context).msImageSmoothingEnabled = value;
-		untyped (context).imageSmoothingEnabled = value;
+		context.imageSmoothingEnabled = value;
 		
 	}
 	
 	
-	public function setTransform (transform:Matrix, context:#if (lime >= "7.0.0") Canvas2DRenderContext #else CanvasRenderContext #end = null):Void {
+	public function setTransform (transform:Matrix, context:Canvas2DRenderContext = null):Void {
 		
 		if (context == null) {
 			
@@ -199,19 +192,9 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private override function __renderStage3D (stage:Stage):Void {
-		
-		for (stage3D in stage.stage3Ds) {
-			
-			stage3D.__renderCanvas (stage, this);
-			
-		}
-		
-	}
-	
-	
 	@:noCompletion private override function __setBlendMode (value:BlendMode):Void {
 		
+		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value) return;
 		
 		__blendMode = value;

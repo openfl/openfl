@@ -3,10 +3,16 @@ package openfl.media; #if !flash
 
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
 import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
-import openfl._internal.renderer.opengl.GLVideo;
+import openfl._internal.renderer.context3D.Context3DVideo;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.display.CanvasRenderer;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
@@ -21,28 +27,23 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
-#if (lime >= "7.0.0")
-import lime.graphics.RenderContext;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.GLRenderContext;
-#end
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 
+@:access(openfl.display3D.textures.TextureBase)
+@:access(openfl.display3D.Context3D)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
-@:access(openfl.geom.Point)
 
 
 class Video extends DisplayObject {
 	
 	
-	@:noCompletion private static inline var __bufferStride = 5;
+	@:noCompletion private static inline var __vertexBufferStride = 5;
 	
 	public var deblocking:Int;
 	public var smoothing:Bool;
@@ -53,13 +54,20 @@ class Video extends DisplayObject {
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __bufferAlpha:Float;
 	@:noCompletion private var __bufferColorTransform:ColorTransform;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else WebGLContext #end;
+	@:noCompletion private var __bufferContext:RenderContext;
 	@:noCompletion private var __bufferData:Float32Array;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __height:Float;
+	@:noCompletion private var __indexBuffer:IndexBuffer3D;
+	@:noCompletion private var __indexBufferContext:RenderContext;
+	@:noCompletion private var __indexBufferData:UInt16Array;
 	@:noCompletion private var __stream:NetStream;
-	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __texture:RectangleTexture;
 	@:noCompletion private var __textureTime:Float;
+	@:noCompletion private var __uvRect:Rectangle;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __vertexBufferContext:RenderContext;
+	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __width:Float;
 	
 	
@@ -81,6 +89,8 @@ class Video extends DisplayObject {
 		
 		__width = width;
 		__height = height;
+		
+		__textureTime = -1;
 		
 		smoothing = false;
 		deblocking = 0;
@@ -138,15 +148,77 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private function __getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
+	@:noCompletion private function __getIndexBuffer (context:Context3D):IndexBuffer3D {
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
+		var gl = context.gl;
+		
+		if (__indexBuffer == null || __indexBufferContext != context.__context) {
+			
+			// TODO: Use shared buffer on context
+			
+			__indexBufferData = new UInt16Array (6);
+			__indexBufferData[0] = 0;
+			__indexBufferData[1] = 1;
+			__indexBufferData[2] = 2;
+			__indexBufferData[3] = 2;
+			__indexBufferData[4] = 1;
+			__indexBufferData[5] = 3;
+			
+			__indexBufferContext = context.__context;
+			__indexBuffer = context.createIndexBuffer (6);
+			__indexBuffer.uploadFromTypedArray (__indexBufferData);
+			
+		}
+		
+		return __indexBuffer;
+		
+	}
+	
+	
+	@:noCompletion private function __getTexture (context:Context3D):RectangleTexture {
+		
+		#if (js && html5)
+		
+		if (__stream == null || __stream.__video == null) return null;
+		
+		var gl = context.__context.webgl;
+		var internalFormat = gl.RGBA;
+		var format = gl.RGBA;
+		
+		if (!__stream.__closed && __stream.__video.currentTime != __textureTime) {
+			
+			if (__texture == null) {
+				trace ("CREATE VIDEO TEXTURE");
+				
+				__texture = context.createRectangleTexture (__stream.__video.videoWidth, __stream.__video.videoHeight, BGRA, false);
+				trace (__stream.__video.videoWidth, __stream.__video.videoHeight);
+			}
+			
+			context.__bindGLTexture2D (__texture.__textureID);
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			
+			__textureTime = __stream.__video.currentTime;
+			
+		}
+		
+		return __texture;
+		
 		#else
-		var gl:WebGLContext = context;
+		
+		return null;
+		
 		#end
 		
-		if (__buffer == null || __bufferContext != context) {
+	}
+	
+	
+	
+	
+	@:noCompletion private function __getVertexBuffer (context:Context3D):VertexBuffer3D {
+		
+		var gl = context.gl;
+		
+		if (__vertexBuffer == null || __vertexBufferContext != context.__context) {
 			
 			#if openfl_power_of_two
 			
@@ -175,161 +247,24 @@ class Video extends DisplayObject {
 			
 			#end
 			
-			//__bufferData = new Float32Array ([
-				//
-				//width, height, 0, uvWidth, uvHeight, alpha, (color transform, color offset...)
-				//0, height, 0, 0, uvHeight, alpha, (color transform, color offset...)
-				//width, 0, 0, uvWidth, 0, alpha, (color transform, color offset...)
-				//0, 0, 0, 0, 0, alpha, (color transform, color offset...)
-				//
-				//
-			//]);
+			__vertexBufferData = new Float32Array (__vertexBufferStride * 4);
 			
-			//[ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
-			//[ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
+			__vertexBufferData[0] = width;
+			__vertexBufferData[1] = height;
+			__vertexBufferData[3] = uvWidth;
+			__vertexBufferData[4] = uvHeight;
+			__vertexBufferData[__vertexBufferStride + 1] = height;
+			__vertexBufferData[__vertexBufferStride + 4] = uvHeight;
+			__vertexBufferData[__vertexBufferStride * 2] = width;
+			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvWidth;
 			
-			__bufferData = new Float32Array (__bufferStride * 4);
-			
-			__bufferData[0] = width;
-			__bufferData[1] = height;
-			__bufferData[3] = uvWidth;
-			__bufferData[4] = uvHeight;
-			__bufferData[__bufferStride + 1] = height;
-			__bufferData[__bufferStride + 4] = uvHeight;
-			__bufferData[__bufferStride * 2] = width;
-			__bufferData[__bufferStride * 2 + 3] = uvWidth;
-			
-			// for (i in 0...4) {
-				
-			// 	__bufferData[__bufferStride * i + 5] = alpha;
-				
-			// 	if (colorTransform != null) {
-					
-			// 		__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-			// 		__bufferData[__bufferStride * i + 7] = colorTransform.greenMultiplier;
-			// 		__bufferData[__bufferStride * i + 8] = colorTransform.blueMultiplier;
-			// 		__bufferData[__bufferStride * i + 9] = colorTransform.alphaMultiplier;
-			// 		__bufferData[__bufferStride * i + 10] = colorTransform.redOffset / 255;
-			// 		__bufferData[__bufferStride * i + 11] = colorTransform.greenOffset / 255;
-			// 		__bufferData[__bufferStride * i + 12] = colorTransform.blueOffset / 255;
-			// 		__bufferData[__bufferStride * i + 13] = colorTransform.alphaOffset / 255;
-					
-			// 	}
-				
-			// }
-			
-			// __bufferAlpha = alpha;
-			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = context;
-			__buffer = gl.createBuffer ();
-			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
-			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
-			
-		} else {
-			
-			// if (__bufferAlpha != alpha) {
-				
-			// 	for (i in 0...4) {
-					
-			// 		__bufferData[__bufferStride * i + 5] = alpha;
-					
-			// 	}
-				
-			// }
-			
-			// if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
-				
-			// 	if (colorTransform != null) {
-					
-			// 		__bufferColorTransform = colorTransform.__clone ();
-					
-			// 		for (i in 0...4) {
-						
-			// 			__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-			// 			__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-			// 			__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-			// 			__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-			// 			__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-			// 			__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-			// 			__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-			// 			__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
-						
-			// 		}
-					
-			// 	} else {
-					
-			// 		for (i in 0...4) {
-						
-			// 			__bufferData[__bufferStride * i + 6] = 1;
-			// 			__bufferData[__bufferStride * i + 11] = 1;
-			// 			__bufferData[__bufferStride * i + 16] = 1;
-			// 			__bufferData[__bufferStride * i + 21] = 1;
-			// 			__bufferData[__bufferStride * i + 22] = 0;
-			// 			__bufferData[__bufferStride * i + 23] = 0;
-			// 			__bufferData[__bufferStride * i + 24] = 0;
-			// 			__bufferData[__bufferStride * i + 25] = 0;
-						
-			// 		}
-					
-			// 	}
-				
-			// }
-			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			// gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			__vertexBufferContext = context.__context;
+			__vertexBuffer = context.createVertexBuffer (3, __vertexBufferStride);
+			__vertexBuffer.uploadFromTypedArray (__vertexBufferData);
 			
 		}
 		
-		return __buffer;
-		
-	}
-	
-	
-	@:noCompletion private function __getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
-		
-		#if (js && html5)
-		
-		if (__stream == null || __stream.__video == null) return null;
-		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl:WebGLContext = context;
-		#end
-		
-		if (__texture == null) {
-			
-			__texture = gl.createTexture ();
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-			__textureTime = -1;
-			
-		}
-		
-		if (!__stream.__closed && __stream.__video.currentTime != __textureTime) {
-			
-			var internalFormat = gl.RGBA;
-			var format = gl.RGBA;
-			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
-			
-			__textureTime = __stream.__video.currentTime;
-			
-		}
-		
-		return __texture;
-		
-		#else
-		
-		return null;
-		
-		#end
+		return __vertexBuffer;
 		
 	}
 	
@@ -394,7 +329,7 @@ class Video extends DisplayObject {
 	
 	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		GLVideo.render (this, renderer);
+		Context3DVideo.render (this, renderer);
 		__renderEvent (renderer);
 		
 	}
@@ -402,7 +337,7 @@ class Video extends DisplayObject {
 	
 	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		GLVideo.renderMask (this, renderer);
+		Context3DVideo.renderMask (this, renderer);
 		
 	}
 	

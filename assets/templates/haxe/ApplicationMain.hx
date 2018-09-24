@@ -115,6 +115,7 @@ import haxe.macro.Expr;
 		app.meta["file"] = "::APP_FILE::";
 		app.meta["name"] = "::meta.title::";
 		app.meta["packageName"] = "::meta.packageName::";
+		app.meta["version"] = "::meta.version::";
 		
 		#if !flash
 		::foreach windows::
@@ -188,7 +189,29 @@ import haxe.macro.Expr;
 		
 		#end
 		
-		var preloader = app.preloader;
+		var preloader = getPreloader ();
+		app.preloader.onProgress.add (function (loaded, total) {
+			@:privateAccess preloader.update (loaded, total);
+		});
+		app.preloader.onComplete.add (function () {
+			@:privateAccess preloader.start ();
+		});
+		
+		preloader.onComplete.add (start.bind (cast (app.window, openfl.display.Window).stage));
+		
+		for (library in ManifestResources.preloadLibraries) {
+			
+			app.preloader.addLibrary (library);
+			
+		}
+		
+		for (name in ManifestResources.preloadLibraryNames) {
+			
+			app.preloader.addLibraryName (name);
+			
+		}
+		
+		app.preloader.load ();
 		
 		#else
 		
@@ -199,8 +222,6 @@ import haxe.macro.Expr;
 		var preloader = getPreloader ();
 		app.setPreloader (preloader);
 		preloader.create (config);
-		
-		#end
 		
 		preloader.onComplete.add (start.bind (cast (app.window, openfl.display.Window).stage));
 		
@@ -217,6 +238,8 @@ import haxe.macro.Expr;
 		}
 		
 		preloader.load ();
+		
+		#end
 		
 		var result = app.exec ();
 		

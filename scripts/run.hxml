@@ -1,4 +1,4 @@
 -main RunScript
 -neko ../run.n
--lib lime
+-lib hxp
 -D disable_cffi

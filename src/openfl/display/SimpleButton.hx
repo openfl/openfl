@@ -2,7 +2,7 @@ package openfl.display; #if !flash
 
 
 import lime.ui.MouseCursor;
-import openfl._internal.swf.SWFLite;
+import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;

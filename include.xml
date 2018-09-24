@@ -30,7 +30,7 @@
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 6.4.* or 7.0.* is required)" if="${lime < 6.4.0} || ${lime >= 7.1.0}" unless="setup || disable-version-check" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 7.0.* is required)" if="${lime < 7.0.0} || ${lime >= 7.1.0}" unless="setup || disable-version-check" />
 		
 	</section>
 	
@@ -79,7 +79,7 @@
 			
 			<module name="openfl" if="html5 lime-modular">
 				
-				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
+				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.Context3DGraphics|*.SWFLibrary" />
 				
 				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
 				<class remove="lime.graphics.opengl.GLContextType" />
@@ -112,6 +112,9 @@
 			</module>
 			
 		</section>
+		
+		<set name="openfl-has-default-fonts" if="windows || mac || linux || ios || android || flash || html5 || emscripten || tvos" />
+		<assets path="assets/fonts" unless="openfl-has-default-fonts || openfl-no-default-fonts" />
 		
 	</section>
 	

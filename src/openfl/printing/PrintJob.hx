@@ -2,15 +2,10 @@ package openfl.printing; #if !flash
 
 
 import haxe.Timer;
+import lime._internal.graphics.ImageCanvasUtil; // TODO
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
-
-#if (lime >= "7.0.0")
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-#else
-import lime.graphics.utils.ImageCanvasUtil;
-#end
 
 #if (js && html5)
 import js.html.DivElement;

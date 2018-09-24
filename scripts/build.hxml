@@ -18,6 +18,7 @@ ImportAll
 -D html5
 -D lime-canvas
 -D lime-dom
+-D lime-howlerjs
 -D lime-webgl
 -D tools
 -D commonjs

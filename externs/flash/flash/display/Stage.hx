@@ -13,6 +13,7 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Touch;
 import lime.ui.Window;
+import openfl.display3D.Context3D;
 import openfl.display.Application;
 import openfl.geom.Rectangle;
 import openfl.Lib;
@@ -52,6 +53,11 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	@:require(flash11_4) public var contentsScaleFactor (default, never):Float;
+	
+	#if flash
+	@:require(flash11) public var context3D (get, never):Context3D;
+	@:noCompletion private inline function get_context3D ():Context3D { return null; }
+	#end
 	
 	#if flash
 	@:require(flash11) public var displayContextInfo (default, never):String;

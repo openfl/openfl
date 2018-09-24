@@ -75,10 +75,10 @@ package openfl.text {
 		
 		
 		/**
-		 * Registers a font class in the global font list.
+		 * Registers a font in the global font list.
 		 * 
 		 */
-		public static function registerFont (font:Class):void {}
+		public static function registerFont (font:*):void {}
 		
 		
 	}

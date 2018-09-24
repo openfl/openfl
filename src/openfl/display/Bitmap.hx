@@ -5,10 +5,10 @@ import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.canvas.CanvasDisplayObject;
+import openfl._internal.renderer.context3D.Context3DBitmap;
+import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
-import openfl._internal.renderer.opengl.GLBitmap;
-import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -319,12 +319,12 @@ class Bitmap extends DisplayObject {
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
-			GLBitmap.render (__cacheBitmap, renderer);
+			Context3DBitmap.render (__cacheBitmap, renderer);
 			
 		} else {
 			
-			GLDisplayObject.render (this, renderer);
-			GLBitmap.render (this, renderer);
+			Context3DDisplayObject.render (this, renderer);
+			Context3DBitmap.render (this, renderer);
 			
 		}
 		
@@ -335,7 +335,7 @@ class Bitmap extends DisplayObject {
 	
 	@:noCompletion private override function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		GLBitmap.renderMask (this, renderer);
+		Context3DBitmap.renderMask (this, renderer);
 		
 	}
 	

@@ -1,6 +1,9 @@
 package openfl.display; #if !flash
 
 
+import haxe.macro.Context;
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.app.Application;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.cairo.CairoExtend;
@@ -17,13 +20,21 @@ import lime.graphics.opengl.GL;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
+import lime.graphics.RenderContext;
+import lime.math.ARGB;
 import lime.math.ColorMatrix;
-import lime.math.Rectangle in LimeRectangle;
+import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import lime.utils.UInt16Array;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.Context3DClearMask;
+import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.errors.Error;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
@@ -34,18 +45,8 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
+import openfl.Lib;
 import openfl.Vector;
-
-#if (lime >= "7.0.0")
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.graphics.RenderContext;
-import lime.math.ARGB;
-#else
-import lime.graphics.opengl.WebGLContext;
-import lime.graphics.utils.ImageCanvasUtil;
-import lime.graphics.GLRenderContext;
-import lime.math.color.ARGB;
-#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -61,8 +62,8 @@ import openfl.display.CairoRenderer;
 #end
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.GLStats;
-import openfl._internal.renderer.opengl.stats.DrawCallContext;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 
@@ -129,6 +130,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
 @:access(openfl.display3D.textures.TextureBase)
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
@@ -150,7 +152,7 @@ import openfl._internal.renderer.opengl.stats.DrawCallContext;
 class BitmapData implements IBitmapDrawable {
 	
 	
-	@:noCompletion private static inline var __bufferStride = 14;
+	@:noCompletion private static inline var __vertexBufferStride = 14;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __tempVector:Vector2 = new Vector2 ();
 	@:noCompletion private static var __textureFormat:Int;
@@ -207,15 +209,14 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public var width (default, null):Int;
 	
-	
 	@:noCompletion private var __blendMode:BlendMode;
-	@:noCompletion private var __buffer:GLBuffer;
-	@:noCompletion private var __bufferColorTransform:ColorTransform;
-	@:noCompletion private var __bufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
-	@:noCompletion private var __bufferAlpha:Float;
-	@:noCompletion private var __bufferData:Float32Array;
+	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
+	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
-	@:noCompletion private var __framebufferContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __framebufferContext:RenderContext;
+	@:noCompletion private var __indexBuffer:IndexBuffer3D;
+	@:noCompletion private var __indexBufferContext:RenderContext;
+	@:noCompletion private var __indexBufferData:UInt16Array;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __mask:DisplayObject;
@@ -224,13 +225,16 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@:noCompletion private var __surface:CairoSurface;
-	@:noCompletion private var __texture:GLTexture;
-	@:noCompletion private var __textureContext:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end;
+	@:noCompletion private var __texture:RectangleTexture;
+	@:noCompletion private var __textureContext:RenderContext;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __uvRect:Rectangle;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __vertexBufferContext:RenderContext;
+	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -760,7 +764,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		__surface = null;
 		
-		__buffer = null;
+		__vertexBuffer = null;
 		__framebuffer = null;
 		__framebufferContext = null;
 		__texture = null;
@@ -916,11 +920,7 @@ class BitmapData implements IBitmapDrawable {
 			if (__textureContext == null) {
 				
 				// TODO: Some way to select current GL context for renderer?
-				#if (lime >= "7.0.0")
-				__textureContext = lime.app.Application.current.window.context;
-				#else
-				__textureContext = GL.context;
-				#end
+				__textureContext = Application.current.window.context;
 				
 			}
 			
@@ -930,9 +930,9 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			var renderer = new OpenGLRenderer (__textureContext, this);
+			var renderer = new OpenGLRenderer (Lib.current.stage.context3D, this);
 			renderer.__allowSmoothing = smoothing;
-			renderer.__setBlendMode (blendMode);
+			renderer.__overrideBlendMode = blendMode;
 			
 			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
@@ -997,7 +997,7 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 			renderer.__allowSmoothing = smoothing;
-			renderer.__setBlendMode (blendMode);
+			renderer.__overrideBlendMode = blendMode;
 			
 			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
@@ -1062,12 +1062,12 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (Std.is (compressor, PNGEncoderOptions)) {
 			
-			byteArray.writeBytes (ByteArray.fromBytes (image.encode (#if (lime >= "7.0.0") PNG #else "png" #end)));
+			byteArray.writeBytes (ByteArray.fromBytes (image.encode (PNG)));
 			return byteArray;
 			
 		} else if (Std.is (compressor, JPEGEncoderOptions)) {
 			
-			byteArray.writeBytes (ByteArray.fromBytes (image.encode (#if (lime >= "7.0.0") JPEG #else "jpg" #end, cast (compressor, JPEGEncoderOptions).quality)));
+			byteArray.writeBytes (ByteArray.fromBytes (image.encode (JPEG, cast (compressor, JPEGEncoderOptions).quality)));
 			return byteArray;
 			
 		}
@@ -1183,13 +1183,13 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromTexture (texture:TextureBase):BitmapData {
+	public static function fromTexture (texture:RectangleTexture):BitmapData {
 		
 		if (texture == null) return null;
 		
 		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
-		bitmapData.__texture = texture.__textureID;
+		bitmapData.__texture = texture;
 		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.image = null;
 		return bitmapData;
@@ -1231,16 +1231,38 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function getBuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLBuffer {
+	@:dox(hide) public function getIndexBuffer (context:Context3D):IndexBuffer3D {
 		
+		var gl = context.gl;
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl:WebGLContext = context;
-		#end
+		if (__indexBuffer == null || __indexBufferContext != context.__context) {
+			
+			// TODO: Use shared buffer on context
+			
+			__indexBufferData = new UInt16Array (6);
+			__indexBufferData[0] = 0;
+			__indexBufferData[1] = 1;
+			__indexBufferData[2] = 2;
+			__indexBufferData[3] = 2;
+			__indexBufferData[4] = 1;
+			__indexBufferData[5] = 3;
+			
+			__indexBufferContext = context.__context;
+			__indexBuffer = context.createIndexBuffer (6);
+			__indexBuffer.uploadFromTypedArray (__indexBufferData);
+			
+		}
 		
-		if (__buffer == null || __bufferContext != context) {
+		return __indexBuffer;
+		
+	}
+	
+	
+	@:dox(hide) public function getVertexBuffer (context:Context3D):VertexBuffer3D {
+		
+		var gl = context.gl;
+		
+		if (__vertexBuffer == null || __vertexBufferContext != context.__context) {
 			
 			#if openfl_power_of_two
 			
@@ -1276,7 +1298,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#end
 			
-			//__bufferData = new Float32Array ([
+			//__vertexBufferData = new Float32Array ([
 				//
 				//width, height, 0, uvWidth, uvHeight, alpha, (color transform, color offset...)
 				//0, height, 0, 0, uvHeight, alpha, (color transform, color offset...)
@@ -1289,85 +1311,83 @@ class BitmapData implements IBitmapDrawable {
 			//[ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
 			//[ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 			
-			__bufferData = new Float32Array (__bufferStride * 4);
+			__vertexBufferData = new Float32Array (__vertexBufferStride * 4);
 			
-			__bufferData[0] = width;
-			__bufferData[1] = height;
-			__bufferData[3] = uvWidth;
-			__bufferData[4] = uvHeight;
-			__bufferData[__bufferStride + 1] = height;
-			__bufferData[__bufferStride + 4] = uvHeight;
-			__bufferData[__bufferStride * 2] = width;
-			__bufferData[__bufferStride * 2 + 3] = uvWidth;
+			__vertexBufferData[0] = width;
+			__vertexBufferData[1] = height;
+			__vertexBufferData[3] = uvWidth;
+			__vertexBufferData[4] = uvHeight;
+			__vertexBufferData[__vertexBufferStride + 1] = height;
+			__vertexBufferData[__vertexBufferStride + 4] = uvHeight;
+			__vertexBufferData[__vertexBufferStride * 2] = width;
+			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvWidth;
 			
 			// for (i in 0...4) {
 				
-			// 	__bufferData[__bufferStride * i + 5] = alpha;
+			// 	__vertexBufferData[__vertexBufferStride * i + 5] = alpha;
 				
 			// 	if (colorTransform != null) {
 					
-			// 		__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-			// 		__bufferData[__bufferStride * i + 7] = colorTransform.greenMultiplier;
-			// 		__bufferData[__bufferStride * i + 8] = colorTransform.blueMultiplier;
-			// 		__bufferData[__bufferStride * i + 9] = colorTransform.alphaMultiplier;
-			// 		__bufferData[__bufferStride * i + 10] = colorTransform.redOffset / 255;
-			// 		__bufferData[__bufferStride * i + 11] = colorTransform.greenOffset / 255;
-			// 		__bufferData[__bufferStride * i + 12] = colorTransform.blueOffset / 255;
-			// 		__bufferData[__bufferStride * i + 13] = colorTransform.alphaOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 6] = colorTransform.redMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 7] = colorTransform.greenMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 8] = colorTransform.blueMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 9] = colorTransform.alphaMultiplier;
+			// 		__vertexBufferData[__vertexBufferStride * i + 10] = colorTransform.redOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 11] = colorTransform.greenOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 12] = colorTransform.blueOffset / 255;
+			// 		__vertexBufferData[__vertexBufferStride * i + 13] = colorTransform.alphaOffset / 255;
 					
 			// 	}
 				
 			// }
 			
-			// __bufferAlpha = alpha;
-			// __bufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
-			__bufferContext = context;
-			__buffer = gl.createBuffer ();
+			// __vertexBufferAlpha = alpha;
+			// __vertexBufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+			__vertexBufferContext = context.__context;
+			__vertexBuffer = context.createVertexBuffer (3, __vertexBufferStride);
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
-			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			__vertexBuffer.uploadFromTypedArray (__vertexBufferData);
 			
 		} else {
 			
 			// var dirty = false;
 			
-			// if (__bufferAlpha != alpha) {
+			// if (__vertexBufferAlpha != alpha) {
 				
 			// 	dirty = true;
 				
 			// 	for (i in 0...4) {
 					
-			// 		__bufferData[__bufferStride * i + 5] = alpha;
+			// 		__vertexBufferData[__vertexBufferStride * i + 5] = alpha;
 					
 			// 	}
 				
-			// 	__bufferAlpha = alpha;
+			// 	__vertexBufferAlpha = alpha;
 				
 			// }
 			
-			// if ((__bufferColorTransform == null && colorTransform != null) || (__bufferColorTransform != null && !__bufferColorTransform.__equals (colorTransform))) {
+			// if ((__vertexBufferColorTransform == null && colorTransform != null) || (__vertexBufferColorTransform != null && !__vertexBufferColorTransform.__equals (colorTransform))) {
 				
 			// 	dirty = true;
 				
 			// 	if (colorTransform != null) {
 					
-			// 		if (__bufferColorTransform == null) {
-			// 			__bufferColorTransform = colorTransform.__clone ();
+			// 		if (__vertexBufferColorTransform == null) {
+			// 			__vertexBufferColorTransform = colorTransform.__clone ();
 			// 		} else {
-			// 			__bufferColorTransform.__copyFrom (colorTransform);
+			// 			__vertexBufferColorTransform.__copyFrom (colorTransform);
 			// 		}
 					
 			// 		for (i in 0...4) {
 						
-			// 			__bufferData[__bufferStride * i + 6] = colorTransform.redMultiplier;
-			// 			__bufferData[__bufferStride * i + 11] = colorTransform.greenMultiplier;
-			// 			__bufferData[__bufferStride * i + 16] = colorTransform.blueMultiplier;
-			// 			__bufferData[__bufferStride * i + 21] = colorTransform.alphaMultiplier;
-			// 			__bufferData[__bufferStride * i + 22] = colorTransform.redOffset / 255;
-			// 			__bufferData[__bufferStride * i + 23] = colorTransform.greenOffset / 255;
-			// 			__bufferData[__bufferStride * i + 24] = colorTransform.blueOffset / 255;
-			// 			__bufferData[__bufferStride * i + 25] = colorTransform.alphaOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 6] = colorTransform.redMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 11] = colorTransform.greenMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 16] = colorTransform.blueMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 21] = colorTransform.alphaMultiplier;
+			// 			__vertexBufferData[__vertexBufferStride * i + 22] = colorTransform.redOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 23] = colorTransform.greenOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 24] = colorTransform.blueOffset / 255;
+			// 			__vertexBufferData[__vertexBufferStride * i + 25] = colorTransform.alphaOffset / 255;
 						
 			// 		}
 					
@@ -1375,14 +1395,14 @@ class BitmapData implements IBitmapDrawable {
 					
 			// 		for (i in 0...4) {
 						
-			// 			__bufferData[__bufferStride * i + 6] = 1;
-			// 			__bufferData[__bufferStride * i + 11] = 1;
-			// 			__bufferData[__bufferStride * i + 16] = 1;
-			// 			__bufferData[__bufferStride * i + 21] = 1;
-			// 			__bufferData[__bufferStride * i + 22] = 0;
-			// 			__bufferData[__bufferStride * i + 23] = 0;
-			// 			__bufferData[__bufferStride * i + 24] = 0;
-			// 			__bufferData[__bufferStride * i + 25] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 6] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 11] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 16] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 21] = 1;
+			// 			__vertexBufferData[__vertexBufferStride * i + 22] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 23] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 24] = 0;
+			// 			__vertexBufferData[__vertexBufferStride * i + 25] = 0;
 						
 			// 		}
 					
@@ -1390,17 +1410,17 @@ class BitmapData implements IBitmapDrawable {
 				
 			// }
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			// context.__bindGLArrayBuffer (__vertexBuffer);
 			
 			// if (dirty) {
 			
-			// 	gl.bufferData (gl.ARRAY_BUFFER, __bufferData.byteLength, __bufferData, gl.STATIC_DRAW);
+			// 	gl.bufferData (gl.ARRAY_BUFFER, __vertexBufferData.byteLength, __vertexBufferData, gl.STATIC_DRAW);
 			
 			// }
 			
 		}
 		
-		return __buffer;
+		return __vertexBuffer;
 		
 	}
 	
@@ -1553,26 +1573,20 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function getTexture (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end):GLTexture {
+	@:dox(hide) public function getTexture (context:Context3D):RectangleTexture {
 		
 		if (!__isValid) return null;
 		
-		#if (lime >= "7.0.0")
-		var gl = context.webgl;
-		#else
-		var gl:WebGLContext = context;
-		#end
-		
-		if (__texture == null || __textureContext != context) {
+		if (__texture == null || __textureContext != context.__context) {
 			
-			__textureContext = context;
-			__texture = gl.createTexture ();
+			__textureContext = context.__context;
+			__texture = context.createRectangleTexture (width, height, BGRA, false);
 			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			// context.__bindGLTexture2D (__texture);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 			__textureVersion = -1;
 			
 		}
@@ -1583,110 +1597,24 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (image != null && image.version > __textureVersion) {
 			
-			var internalFormat, format;
-			
 			if (__surface != null) {
 				
 				__surface.flush ();
 				
 			}
 			
-			if (image.buffer.bitsPerPixel == 1) {
-				
-				internalFormat = gl.ALPHA;
-				format = gl.ALPHA;
-				
-			} else {
-				
-				if (__supportsBGRA == null) {
-					
-					__textureInternalFormat = gl.RGBA;
-					
-					var bgraExtension = null;
-					#if (!js || !html5)
-					bgraExtension = gl.getExtension ("EXT_bgra");
-					if (bgraExtension == null)
-						bgraExtension = gl.getExtension ("EXT_texture_format_BGRA8888");
-					if (bgraExtension == null)
-						bgraExtension = gl.getExtension ("APPLE_texture_format_BGRA8888");
-					#end
-					
-					if (bgraExtension != null) {
-						
-						__supportsBGRA = true;
-						__textureFormat = bgraExtension.BGRA_EXT;
-						
-						#if (!ios && !tvos)
-						if (context.type == #if (lime >= "7.0.0") OPENGLES #else GLES #end) {
-							
-							__textureInternalFormat = bgraExtension.BGRA_EXT;
-							
-						}
-						#end
-						
-					} else {
-						
-						__supportsBGRA = false;
-						__textureFormat = gl.RGBA;
-						
-					}
-					
-				}
-				
-				internalFormat = __textureInternalFormat;
-				format = __textureFormat;
-				
-			}
-			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			
 			var textureImage = image;
 			
 			#if (js && html5)
 			
-			if (textureImage.type != DATA && !textureImage.premultiplied) {
-				
-				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
-				
-			} else if (!textureImage.premultiplied && textureImage.transparent) {
-				
-				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
-				//gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
-				//textureImage = textureImage.clone ();
-				//textureImage.premultiplied = true;
-				
-			}
-			
-			// TODO: Some way to support BGRA on WebGL?
-			
-			var cloned:Bool = false;
-			
-			if (!__supportsBGRA && textureImage.format != RGBA32) {
+			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32)) {
 				
 				textureImage = textureImage.clone ();
-				cloned = true;
 				textureImage.format = RGBA32;
 				//textureImage.buffer.premultiplied = true;
-				
-			}
-			
-			#if openfl_power_of_two
-			if (!cloned) {
-				
-				textureImage = textureImage.clone ();
-				
-			}
-			
-			textureImage.powerOfTwo = true;
-			#end
-			
-			if (textureImage.type == DATA) {
-				
-				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, textureImage.buffer.width, textureImage.buffer.height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
-				
-			} else {
-				
-				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, textureImage.src);
+				#if openfl_power_of_two
+				textureImage.powerOfTwo = true;
+				#end
 				
 			}
 			
@@ -1702,11 +1630,10 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, textureImage.buffer.width, textureImage.buffer.height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
-			
 			#end
 			
-			gl.bindTexture (gl.TEXTURE_2D, null);
+			__texture.__uploadFromImage (textureImage);
+			
 			__textureVersion = image.version;
 			
 			__textureWidth = textureImage.buffer.width;
@@ -2453,13 +2380,26 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private function __drawGL (source:IBitmapDrawable, renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
+		var context = renderer.__context3D;
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (renderer.__context, true));
+		var cacheRTT = context.__state.renderToTexture;
+		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+		
+		context.setRenderToTexture (getTexture (context), true);
 		
 		renderer.__render (source);
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		if (cacheRTT != null) {
+			
+			context.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+			
+		} else {
+			
+			context.setRenderToBackBuffer ();
+			
+		}
 		
 	}
 	
@@ -2474,31 +2414,43 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (allowFramebuffer && __framebuffer != null) {
+		if (allowFramebuffer && __texture != null && __texture.__glFramebuffer != null && Lib.current.stage.__renderer.__type == OPENGL) {
 			
-			var gl = GL.context;
+			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
+			var context = renderer.__context3D;
 			var color:ARGB = (color:ARGB);
 			var useScissor = !this.rect.equals (rect);
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			var cacheRTT = context.__state.renderToTexture;
+			var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+			var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+			var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+			
+			context.setRenderToTexture (__texture);
 			
 			if (useScissor) {
 				
-				gl.enable (gl.SCISSOR_TEST);
-				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
+				context.setScissorRectangle (rect);
 				
 			}
 			
-			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
-			gl.clear (gl.COLOR_BUFFER_BIT);
+			context.clear (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
 			
 			if (useScissor) {
 				
-				gl.disable (gl.SCISSOR_TEST);
+				context.setScissorRectangle (null);
 				
 			}
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			if (cacheRTT != null) {
+				
+				context.setRenderToTexture (cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+				
+			} else {
+				
+				context.setRenderToBackBuffer ();
+				
+			}
 			
 		} else if (readable) {
 			
@@ -2549,6 +2501,9 @@ class BitmapData implements IBitmapDrawable {
 			height = image.height;
 			rect = new Rectangle (0, 0, image.width, image.height);
 			
+			__textureWidth = width;
+			__textureHeight = height;
+			
 			#if sys
 			image.format = BGRA32;
 			image.premultiplied = true;
@@ -2572,60 +2527,52 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __getFramebuffer (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, requireStencil:Bool):GLFramebuffer {
+	// @:noCompletion private function __getFramebuffer (context:Context3D, requireStencil:Bool):GLFramebuffer {
 		
-		if (__framebuffer == null || __framebufferContext != context) {
+	// 	if (__framebuffer == null || __framebufferContext != context.__context) {
 			
-			#if (lime >= "7.0.0")
-			var gl = context.webgl;
-			#else
-			var gl = context;
-			#end
+	// 		var gl = context.gl;
+	// 		var texture = getTexture (context);
+	// 		context.__bindGLTexture2D (texture.__textureID);
 			
-			getTexture (context);
+	// 		__framebufferContext = context.__context;
+	// 		__framebuffer = gl.createFramebuffer ();
 			
-			__framebufferContext = context;
-			__framebuffer = gl.createFramebuffer ();
+	// 		context.__bindGLFramebuffer (__framebuffer);
+	// 		gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
-			
-			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
+	// 		if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
 				
-				trace (gl.getError ());
+	// 			trace (gl.getError ());
 				
-			}
+	// 		}
 			
-		}
+	// 	}
 		
-		if (requireStencil && __stencilBuffer == null) {
+	// 	if (requireStencil && __stencilBuffer == null) {
 			
-			#if (lime >= "7.0.0")
-			var gl = context.webgl;
-			#else
-			var gl = context;
-			#end
+	// 		var gl = context.gl;
 			
-			__stencilBuffer = gl.createRenderbuffer ();
-			gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
-			gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
+	// 		__stencilBuffer = gl.createRenderbuffer ();
+	// 		gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
+	// 		gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
 			
-			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-			gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
+	// 		context.__bindGLFramebuffer (__framebuffer);
+	// 		gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
 			
-			if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
+	// 		if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
 				
-				trace (gl.getError ());
+	// 			trace (gl.getError ());
 				
-			}
+	// 		}
 			
-			gl.bindRenderbuffer (gl.RENDERBUFFER, null);
+	// 		gl.bindRenderbuffer (gl.RENDERBUFFER, null);
 			
-		}
+	// 	}
 		
-		return __framebuffer;
+	// 	return __framebuffer;
 		
-	}
+	// }
 	
 	
 	@:noCompletion private inline function __loadFromBase64 (base64:String, type:String):Future<BitmapData> {
@@ -2750,7 +2697,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private function __renderGL (renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
+		var context = renderer.__context3D;
+		var gl = context.gl;
 		
 		renderer.__setBlendMode (NORMAL);
 		
@@ -2764,14 +2712,14 @@ class BitmapData implements IBitmapDrawable {
 		
 		// alpha == 1, __worldColorTransform
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (renderer.__context));
-		if (shader.__position != null) gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-		if (shader.__textureCoord != null) gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		
-		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		var vertexBuffer = getVertexBuffer (context);
+		if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer (context);
+		context.drawTriangles (indexBuffer);
 		
 		#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 		#end
 		
 		renderer.__clearShader ();
@@ -2781,7 +2729,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private function __renderGLMask (renderer:OpenGLRenderer):Void {
 		
-		var gl = renderer.__gl;
+		var context = renderer.__context3D;
+		var gl = context.gl;
 		
 		var shader = renderer.__maskShader;
 		renderer.setShader (shader);
@@ -2789,14 +2738,14 @@ class BitmapData implements IBitmapDrawable {
 		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
 		renderer.updateShader ();
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (renderer.__context));
-		gl.vertexAttribPointer (shader.__position.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.__textureCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		
-		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		var vertexBuffer = getVertexBuffer (context);
+		if (shader.__position != null) context.setVertexBufferAt (shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt (shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer (context);
+		context.drawTriangles (indexBuffer);
 		
 		#if gl_stats
-			GLStats.incrementDrawCall (DrawCallContext.STAGE);
+			Context3DStats.incrementDrawCall (DrawCallContext.STAGE);
 		#end
 		
 		renderer.__clearShader ();
@@ -2817,17 +2766,13 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __setUVRect (context:#if (lime >= "7.0.0") RenderContext #else GLRenderContext #end, x:Float, y:Float, width:Float, height:Float):Void {
+	@:noCompletion private function __setUVRect (context:Context3D, x:Float, y:Float, width:Float, height:Float):Void {
 		
-		var buffer = getBuffer (context);
+		var buffer = getVertexBuffer (context);
 		
 		if (buffer != null && (width != __uvRect.width || height != __uvRect.height || x != __uvRect.x || y != __uvRect.y)) {
 			
-			#if (lime >= "7.0.0")
-			var gl = context.webgl;
-			#else
-			var gl:WebGLContext = context;
-			#end
+			var gl = context.gl;
 			
 			if (__uvRect == null) __uvRect = new Rectangle ();
 			__uvRect.setTo (x, y, width, height);
@@ -2837,21 +2782,20 @@ class BitmapData implements IBitmapDrawable {
 			var uvWidth = __textureWidth > 0 ? width / __textureWidth : 0;
 			var uvHeight = __textureHeight > 0 ? height / __textureHeight : 0;
 			
-			__bufferData[0] = width;
-			__bufferData[1] = height;
-			__bufferData[3] = uvX + uvWidth;
-			__bufferData[4] = uvY + uvHeight;
-			__bufferData[__bufferStride + 1] = height;
-			__bufferData[__bufferStride + 3] = uvX;
-			__bufferData[__bufferStride + 4] = uvY + uvHeight;
-			__bufferData[__bufferStride * 2] = width;
-			__bufferData[__bufferStride * 2 + 3] = uvX + uvWidth;
-			__bufferData[__bufferStride * 2 + 4] = uvY;
-			__bufferData[__bufferStride * 3 + 3] = uvX;
-			__bufferData[__bufferStride * 3 + 4] = uvY;
+			__vertexBufferData[0] = width;
+			__vertexBufferData[1] = height;
+			__vertexBufferData[3] = uvX + uvWidth;
+			__vertexBufferData[4] = uvY + uvHeight;
+			__vertexBufferData[__vertexBufferStride + 1] = height;
+			__vertexBufferData[__vertexBufferStride + 3] = uvX;
+			__vertexBufferData[__vertexBufferStride + 4] = uvY + uvHeight;
+			__vertexBufferData[__vertexBufferStride * 2] = width;
+			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvX + uvWidth;
+			__vertexBufferData[__vertexBufferStride * 2 + 4] = uvY;
+			__vertexBufferData[__vertexBufferStride * 3 + 3] = uvX;
+			__vertexBufferData[__vertexBufferStride * 3 + 4] = uvY;
 			
-			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
-			
+			__vertexBuffer.uploadFromTypedArray (__vertexBufferData);
 			
 		}
 		

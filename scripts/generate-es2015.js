@@ -542,8 +542,8 @@ function createEsmModule(content, filePath) {
     result = importAndCallInit(result, 'openfl_display_DisplayObject', 'Bitmap');
   }
   
-  if (filePath.indexOf('GLMaskShader.') > -1) {
-    result = importAndCallInit(result, 'openfl_display_BitmapData', 'GLMaskShader');
+  if (filePath.indexOf('Context3DMaskShader.') > -1) {
+    result = importAndCallInit(result, 'openfl_display_BitmapData', 'Context3DMaskShader');
   }
   
   if (filePath.indexOf('openfl/display/DisplayObject.') > -1) {

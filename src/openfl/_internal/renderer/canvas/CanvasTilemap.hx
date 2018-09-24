@@ -1,6 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
+import lime._internal.graphics.ImageCanvasUtil; // TODO
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CanvasRenderer;
@@ -9,12 +10,6 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-
-#if (lime >= "7.0.0")
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-#else
-import lime.graphics.utils.ImageCanvasUtil;
-#end
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
@@ -44,10 +39,7 @@ class CanvasTilemap {
 		
 		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
-			untyped (context).mozImageSmoothingEnabled = false;
-			//untyped (context).webkitImageSmoothingEnabled = false;
-			untyped (context).msImageSmoothingEnabled = false;
-			untyped (context).imageSmoothingEnabled = false;
+			context.imageSmoothingEnabled = false;
 			
 		}
 		
@@ -55,10 +47,7 @@ class CanvasTilemap {
 		
 		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
-			untyped (context).mozImageSmoothingEnabled = true;
-			//untyped (context).webkitImageSmoothingEnabled = true;
-			untyped (context).msImageSmoothingEnabled = true;
-			untyped (context).imageSmoothingEnabled = true;
+			context.imageSmoothingEnabled = true;
 			
 		}
 		

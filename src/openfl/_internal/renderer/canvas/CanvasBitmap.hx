@@ -1,14 +1,9 @@
 package openfl._internal.renderer.canvas;
 
 
+import lime._internal.graphics.ImageCanvasUtil; // TODO
 import openfl.display.Bitmap;
 import openfl.display.CanvasRenderer;
-
-#if (lime >= "7.0.0")
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-#else
-import lime.graphics.utils.ImageCanvasUtil;
-#end
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
@@ -38,10 +33,7 @@ class CanvasBitmap {
 			
 			if (!renderer.__allowSmoothing || !bitmap.smoothing) {
 				
-				untyped (context).mozImageSmoothingEnabled = false;
-				//untyped (context).webkitImageSmoothingEnabled = false;
-				untyped (context).msImageSmoothingEnabled = false;
-				untyped (context).imageSmoothingEnabled = false;
+				context.imageSmoothingEnabled = false;
 				
 			}
 			
@@ -57,10 +49,7 @@ class CanvasBitmap {
 			
 			if (!renderer.__allowSmoothing || !bitmap.smoothing) {
 				
-				untyped (context).mozImageSmoothingEnabled = true;
-				//untyped (context).webkitImageSmoothingEnabled = true;
-				untyped (context).msImageSmoothingEnabled = true;
-				untyped (context).imageSmoothingEnabled = true;
+				context.imageSmoothingEnabled = true;
 				
 			}
 			

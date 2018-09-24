@@ -1,7 +1,7 @@
 package openfl.utils; #if !flash
 
 
-import haxe.Timer in HaxeTimer;
+import haxe.Timer as HaxeTimer;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.events.TimerEvent;

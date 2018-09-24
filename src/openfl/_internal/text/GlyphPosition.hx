@@ -1,4 +1,4 @@
-package openfl._internal.text; #if (lime >= "7.0.0")
+package openfl._internal.text;
 
 
 import lime.math.Vector2;
@@ -36,8 +36,3 @@ class GlyphPosition {
 	}
 	
 }
-
-
-#else
-typedef GlyphPosition = lime.text.GlyphPosition;
-#end

@@ -1,10 +1,7 @@
 package;
 
 
-import lime.tools.helpers.LogHelper;
-import lime.tools.helpers.PathHelper;
-import lime.tools.helpers.ProcessHelper;
-import lime.project.Haxelib;
+import hxp.*;
 import sys.FileSystem;
 
 
@@ -40,7 +37,7 @@ class RunScript {
 			
 		} catch (e:Dynamic) {
 			
-			LogHelper.error ("Cannot set current working directory to \"" + workingDirectory + "\"");
+			Log.error ("Cannot set current working directory to \"" + workingDirectory + "\"");
 			
 		}
 		
@@ -50,7 +47,7 @@ class RunScript {
 			
 		} else if (args.length > 0 && args[0] == "setup") {
 			
-			var limeDirectory = PathHelper.getHaxelib (new Haxelib ("lime"));
+			var limeDirectory = Haxelib.getPath (new Haxelib ("lime"));
 			
 			if (limeDirectory == null || limeDirectory == "" || limeDirectory.indexOf ("is not installed") > -1) {
 				
@@ -81,10 +78,10 @@ class RunScript {
 	
 	private static function rebuildTools (rebuildBinaries = true):Void {
 		
-		var openflDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"), true);
-		var scriptsDirectory = PathHelper.combine (openflDirectory, "scripts");
+		var openflDirectory = Haxelib.getPath (new Haxelib ("openfl"), true);
+		var scriptsDirectory = Path.combine (openflDirectory, "scripts");
 		
-		ProcessHelper.runCommand (scriptsDirectory, "haxe", [ "tools.hxml" ]);
+		System.runCommand (scriptsDirectory, "haxe", [ "tools.hxml" ]);
 		
 	}
 	
