@@ -192,13 +192,11 @@ class CairoRenderer extends DisplayObjectRenderer {
 		
 		__blendMode = value;
 		
-		#if (haxe_ver >= "4.0.0")
-		
 		switch (value) {
 			
 			case ADD:
 				
-				cairo.blendMode = CairoOperator.ADD;
+				cairo.setOperator (CairoOperator.ADD);
 			
 			//case ALPHA:
 				
@@ -206,11 +204,11 @@ class CairoRenderer extends DisplayObjectRenderer {
 			
 			case DARKEN:
 				
-				cairo.blendMode = CairoOperator.DARKEN;
+				cairo.setOperator (CairoOperator.DARKEN);
 			
 			case DIFFERENCE:
 				
-				cairo.blendMode = CairoOperator.DIFFERENCE;
+				cairo.setOperator (CairoOperator.DIFFERENCE);
 			
 			//case ERASE:
 				
@@ -218,7 +216,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 			
 			case HARDLIGHT:
 				
-				cairo.blendMode = CairoOperator.HARD_LIGHT;
+				cairo.setOperator (CairoOperator.HARD_LIGHT);
 			
 			//case INVERT:
 				
@@ -226,23 +224,23 @@ class CairoRenderer extends DisplayObjectRenderer {
 			
 			case LAYER:
 				
-				cairo.blendMode = CairoOperator.OVER;
+				cairo.setOperator (CairoOperator.OVER);
 			
 			case LIGHTEN:
 				
-				cairo.blendMode = CairoOperator.LIGHTEN;
+				cairo.setOperator (CairoOperator.LIGHTEN);
 			
 			case MULTIPLY:
 				
-				cairo.blendMode = CairoOperator.MULTIPLY;
+				cairo.setOperator (CairoOperator.MULTIPLY);
 			
 			case OVERLAY:
 				
-				cairo.blendMode = CairoOperator.OVERLAY;
+				cairo.setOperator (CairoOperator.OVERLAY);
 			
 			case SCREEN:
 				
-				cairo.blendMode = CairoOperator.SCREEN;
+				cairo.setOperator (CairoOperator.SCREEN);
 			
 			//case SHADER:
 				
@@ -254,77 +252,9 @@ class CairoRenderer extends DisplayObjectRenderer {
 			
 			default:
 				
-				cairo.blendMode = CairoOperator.OVER;
+				cairo.setOperator (CairoOperator.OVER);
 			
 		}
-		
-		#else
-		
-		switch (value) {
-			
-			case ADD:
-				
-				cairo.operator = CairoOperator.ADD;
-			
-			//case ALPHA:
-				
-				//TODO;
-			
-			case DARKEN:
-				
-				cairo.operator = CairoOperator.DARKEN;
-			
-			case DIFFERENCE:
-				
-				cairo.operator = CairoOperator.DIFFERENCE;
-			
-			//case ERASE:
-				
-				//TODO;
-			
-			case HARDLIGHT:
-				
-				cairo.operator = CairoOperator.HARD_LIGHT;
-			
-			//case INVERT:
-				
-				//TODO
-			
-			case LAYER:
-				
-				cairo.operator = CairoOperator.OVER;
-			
-			case LIGHTEN:
-				
-				cairo.operator = CairoOperator.LIGHTEN;
-			
-			case MULTIPLY:
-				
-				cairo.operator = CairoOperator.MULTIPLY;
-			
-			case OVERLAY:
-				
-				cairo.operator = CairoOperator.OVERLAY;
-			
-			case SCREEN:
-				
-				cairo.operator = CairoOperator.SCREEN;
-			
-			//case SHADER:
-				
-				//TODO
-			
-			//case SUBTRACT:
-				
-				//TODO;
-			
-			default:
-				
-				cairo.operator = CairoOperator.OVER;
-			
-		}
-		
-		#end
 		
 	}
 	
