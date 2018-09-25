@@ -526,11 +526,13 @@ import openfl.utils.ByteArray;
 		
 		__state.program = program;
 		
-		for (i in 0...program.__samplerStates.length) {
-			if (__state.samplerStates[i] == null) {
-				__state.samplerStates[i] = program.__samplerStates[i].clone ();
-			} else {
-				__state.samplerStates[i].copyFrom (program.__samplerStates[i]);
+		if (program != null) {
+			for (i in 0...program.__samplerStates.length) {
+				if (__state.samplerStates[i] == null) {
+					__state.samplerStates[i] = program.__samplerStates[i].clone ();
+				} else {
+					__state.samplerStates[i].copyFrom (program.__samplerStates[i]);
+				}
 			}
 		}
 		
