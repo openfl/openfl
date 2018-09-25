@@ -1241,6 +1241,11 @@ class TextField extends InteractiveObject {
 					
 					range.format = __textFormat.clone ();
 					range.format.__merge (format);
+					
+					__dirty = true;
+					__layoutDirty = true;
+					__setRenderDirty ();
+					
 					return;
 					
 				}
