@@ -903,11 +903,20 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		} else {
 			
+			var hitTest = false;
+			
 			while (--i >= 0) {
 				
-				__children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i]);
+				if (__children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i])) {
+					
+					hitTest = true;
+					if (stack == null) break;
+					
+				}
 				
 			}
+			
+			return hitTest;
 			
 		}
 		

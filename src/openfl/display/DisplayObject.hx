@@ -1096,7 +1096,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (stage != null) {
 			
-			return __hitTest (x, y, shapeFlag, null, true, this);
+			return __hitTest (x, y, shapeFlag, null, false, this);
 			
 		} else {
 			
