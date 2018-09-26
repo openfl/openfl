@@ -188,10 +188,9 @@ class Video extends DisplayObject {
 		if (!__stream.__closed && __stream.__video.currentTime != __textureTime) {
 			
 			if (__texture == null) {
-				trace ("CREATE VIDEO TEXTURE");
 				
 				__texture = context.createRectangleTexture (__stream.__video.videoWidth, __stream.__video.videoHeight, BGRA, false);
-				trace (__stream.__video.videoWidth, __stream.__video.videoHeight);
+				
 			}
 			
 			context.__bindGLTexture2D (__texture.__textureID);
