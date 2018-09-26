@@ -22,7 +22,9 @@
 * Fixed compilation issues in Haxe 4 development builds
 * Fixed an issue where hardware `cacheAsBitmap` could result in blank textures
 * Fixed dispatch of `MOUSE_MOVE` event before dispatching `MOUSE_LEAVE`
+* Fixed a regression in setting `displayObject.alpha` when changing its `colorTransform`
 * Fixed a regression in the visibility of the mouse cursor when using `Mouse.hide`
+* Fixed a regression in setting `event.target` on events dispatched from the display list
 
 
 8.4.1 (08/13/2018)
