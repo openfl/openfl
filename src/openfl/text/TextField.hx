@@ -35,6 +35,7 @@ import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
 import openfl.display.OpenGLRenderer;
 import openfl.display.Shader;
+import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.KeyboardEvent;
@@ -1060,7 +1061,9 @@ class TextField extends InteractiveObject {
 	public function getTextFormat (beginIndex:Int = -1, endIndex:Int = -1):TextFormat {
 		
 		var format = null;
-		if (beginIndex >= text.length) return new TextFormat ();
+		
+		if (beginIndex >= text.length || beginIndex < -1 || endIndex > text.length || endIndex < -1) throw new RangeError ("The supplied index is out of bounds");
+		if (beginIndex >= endIndex) return new TextFormat ();
 		
 		if (beginIndex == -1) beginIndex = 0;
 		if (endIndex == -1) endIndex = text.length;
@@ -1241,6 +1244,11 @@ class TextField extends InteractiveObject {
 					
 					range.format = __textFormat.clone ();
 					range.format.__merge (format);
+					
+					__dirty = true;
+					__layoutDirty = true;
+					__setRenderDirty ();
+					
 					return;
 					
 				}

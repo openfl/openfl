@@ -1659,8 +1659,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 				case OPENGL:
 					
+					if (!renderer.__cleared) renderer.__clear ();
+					
 					var renderer:OpenGLRenderer = cast renderer;
 					renderer.setShader (__worldShader);
+					renderer.__context3D.__flushGL ();
+					
 					__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
 				
 				case CAIRO:

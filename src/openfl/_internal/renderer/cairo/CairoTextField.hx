@@ -146,9 +146,9 @@ class CairoTextField {
 			cairo.identityMatrix ();
 			cairo.resetClip ();
 			
-			cairo.operator = CLEAR;
+			cairo.setOperator (CLEAR);
 			cairo.paint ();
-			cairo.operator = OVER;
+			cairo.setOperator (OVER);
 			
 		}
 		

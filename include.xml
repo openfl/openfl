@@ -3,7 +3,7 @@
 	
 	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
 	
-	<set name="lime-version" value="7.0.*" />
+	<set name="lime-version" value="7.1.*" />
 	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
@@ -30,7 +30,7 @@
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 7.0.* is required)" if="${lime < 7.0.0} || ${lime >= 7.1.0}" unless="setup || disable-version-check" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 7.1.* is required)" if="${lime < 7.1.0} || ${lime >= 7.2.0}" unless="setup || disable-version-check" />
 		
 	</section>
 	

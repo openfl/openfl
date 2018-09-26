@@ -283,7 +283,7 @@ class TextEngine {
 		if (x >= width) x = 2;
 		if (y >= height) y = 2;
 		
-		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), textWidth + 4, textHeight + 4);
+		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), Math.min (textWidth + 4, bounds.width + 4), Math.min (textHeight + 4, bounds.height + 4));
 		
 	}
 	

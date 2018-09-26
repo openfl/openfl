@@ -91,6 +91,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
 	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
+	@:noCompletion private var __programs:Map<String, Program3D>;
 	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
 	@:noCompletion private var __quadIndexBufferCount:Int;
 	@:noCompletion private var __quadIndexBufferElements:Int;
@@ -117,6 +118,7 @@ import openfl.utils.ByteArray;
 		__vertexConstants = new Float32Array (4 * 128);
 		__fragmentConstants = new Float32Array (4 * 128);
 		__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
+		__programs = new Map<String, Program3D> ();
 		
 		if (GL_MAX_VIEWPORT_DIMS == -1) {
 			
@@ -524,11 +526,13 @@ import openfl.utils.ByteArray;
 		
 		__state.program = program;
 		
-		for (i in 0...program.__samplerStates.length) {
-			if (__state.samplerStates[i] == null) {
-				__state.samplerStates[i] = program.__samplerStates[i].clone ();
-			} else {
-				__state.samplerStates[i].copyFrom (program.__samplerStates[i]);
+		if (program != null) {
+			for (i in 0...program.__samplerStates.length) {
+				if (__state.samplerStates[i] == null) {
+					__state.samplerStates[i] = program.__samplerStates[i].clone ();
+				} else {
+					__state.samplerStates[i].copyFrom (program.__samplerStates[i]);
+				}
 			}
 		}
 		
@@ -887,6 +891,29 @@ import openfl.utils.ByteArray;
 			__contextState.__currentGLTextureCubeMap = texture;
 			
 		// }
+		
+	}
+	
+	
+	public function __drawTriangles (firstIndex:Int = 0, count:Int):Void {
+		
+		#if !openfl_disable_display_render
+		if (__state.renderToTexture == null) {
+			
+			// TODO: Make sure state is correct for this?
+			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			
+		}
+		
+		__flushGL ();
+		
+		#end
+		
+		if (__state.program != null) {
+			__state.program.__flush ();
+		}
+		
+		gl.drawArrays (gl.TRIANGLES, firstIndex, count);
 		
 	}
 	

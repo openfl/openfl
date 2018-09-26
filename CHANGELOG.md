@@ -1,3 +1,30 @@
+8.5.0 (09/26/2018)
+------------------
+
+* Migrated OpenGL rendering internally to use `Stage3D` instead of calling GL directly
+* Added support for multiple `Stage3D` instances (initially 2 on mobile, 4 on desktop)
+* Added OpenGL state caching in `Context3D` (unless `-Dopenfl-disable-context-cache`)
+* Added `Context3DProgramFormat`, with initial support for GLSL shaders in `Context3D`
+* Added `stage.context3D`, present when hardware acceleration is enabled
+* Added pressure values to `TouchEvent`
+* Added `application.meta.version` to the default application template
+* Added `PerspectiveMatrix3D` to `openfl.utils`
+* Removed prefixes on `imageSmoothingEnabled` internally to remove HTML5 warnings
+* Removed types deprecated since OpenFL 8.0
+* Improved performance in `drawQuads` and `Tilemap` when using a hardware renderer
+* Improved shaders to use `highp` float values when available
+* Improved each `Stage3D` to use its own buffers (unless `-Dopenfl-share-context`)
+* Improved `Font.registerFont` to allow registering font instances in addition to classes
+* Improved HTML5 font rendering to use font ascender/descender values if present
+* Fixed a regression in `TextField` clipping when using `scrollX`
+* Fixed support for OpenGL-based video on HTML5
+* Fixed many issues related to `Stage3D` state conflicts with the display list renderer
+* Fixed compilation issues in Haxe 4 development builds
+* Fixed an issue where hardware `cacheAsBitmap` could result in blank textures
+* Fixed dispatch of `MOUSE_MOVE` event before dispatching `MOUSE_LEAVE`
+* Fixed a regression in the visibility of the mouse cursor when using `Mouse.hide`
+
+
 8.4.1 (08/13/2018)
 ------------------
 

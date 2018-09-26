@@ -29,8 +29,6 @@ import openfl.utils.ByteArray;
 class Shader {
 	
 	
-	@:noCompletion private static var __programs = new Map<String, Program3D> ();
-	
 	public var byteCode (null, default):ByteArray;
 	public var data (get, set):ShaderData;
 	public var glFragmentSource (get, set):String;
@@ -372,9 +370,9 @@ class Shader {
 			
 			var id = vertex + fragment;
 			
-			if (__programs.exists (id)) {
+			if (__context.__programs.exists (id)) {
 				
-				program = __programs.get (id);
+				program = __context.__programs.get (id);
 				
 			} else {
 				
@@ -384,7 +382,7 @@ class Shader {
 				// program.uploadSources (vertex, fragment);
 				program.__glProgram = __createGLProgram (vertex, fragment);
 				
-				__programs.set (id, program);
+				__context.__programs.set (id, program);
 				
 			}
 			

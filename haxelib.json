@@ -5,7 +5,7 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "8.5.0",
-	"releasenote": "",
+	"releasenote": "Migrated display list renderer to Context3D, improved Stage3D support",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
