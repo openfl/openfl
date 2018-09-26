@@ -239,28 +239,49 @@ import openfl.utils.ByteArray;
 			}
 			
 			clearMask |= gl.COLOR_BUFFER_BIT;
+			
+			if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != true || __contextState.colorMaskGreen != true || __contextState.colorMaskBlue != true || __contextState.colorMaskAlpha != true #end) {
+				
+				gl.colorMask (true, true, true, true);
+				__contextState.colorMaskRed = true;
+				__contextState.colorMaskGreen = true;
+				__contextState.colorMaskBlue = true;
+				__contextState.colorMaskAlpha = true;
+				
+			}
+			
 			gl.clearColor (red, green, blue, alpha);
-			gl.colorMask (true, true, true, true);
-			__contextState.colorMaskRed = true;
-			__contextState.colorMaskGreen = true;
-			__contextState.colorMaskBlue = true;
-			__contextState.colorMaskAlpha = true;
 			
 		}
 		
 		if (mask & Context3DClearMask.DEPTH != 0) {
 			
 			clearMask |= gl.DEPTH_BUFFER_BIT;
-			gl.depthMask (true);
+			
+			if (#if openfl_disable_context_cache true #else __contextState.depthMask != true #end) {
+				
+				gl.depthMask (true);
+				__contextState.depthMask = true;
+				
+			}
+			
 			gl.clearDepth (depth);
-			__contextState.depthMask = true;
 			
 		}
 		
 		if (mask & Context3DClearMask.STENCIL != 0) {
 			
 			clearMask |= gl.STENCIL_BUFFER_BIT;
+			
+			if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != 0xFF #end) {
+				
+				gl.stencilMask (0xFF);
+				__contextState.stencilWriteMask = 0xFF;
+				
+			}
+			
 			gl.clearStencil (stencil);
+			__contextState.stencilWriteMask = 0xFF;
 			
 		}
 		

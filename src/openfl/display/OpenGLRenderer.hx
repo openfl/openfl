@@ -420,7 +420,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__stencilReference = 0;
 			__context3D.setStencilActions ();
 			__context3D.setStencilReferenceValue (0, 0, 0);
-			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -435,9 +434,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	
 	@:noCompletion private override function __clear ():Void {
-		
-		// __context3D.setStencilActions ();
-		// __context3D.__setGLStencilTest (false);
 		
 		if (__stage == null || __stage.__transparent) {
 			
@@ -617,23 +613,15 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference > 1) {
 			
-			// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.DECR);
-			// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			// __gl.colorMask (false, false, false, false);
-			
-			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, DECREMENT_SATURATE, KEEP, KEEP);
-			__context3D.setStencilReferenceValue (__stencilReference);
+			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, DECREMENT_SATURATE, DECREMENT_SATURATE, KEEP);
+			__context3D.setStencilReferenceValue (__stencilReference, 0xFF, 0xFF);
 			__context3D.setColorMask (false, false, false, false);
 			
 			mask.__renderGLMask (this);
 			__stencilReference--;
 			
-			// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
-			// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-			// __gl.colorMask (true, true, true, true);
-			
 			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
-			__context3D.setStencilReferenceValue (__stencilReference);
+			__context3D.setStencilReferenceValue (__stencilReference, 0xFF, 0);
 			__context3D.setColorMask (true, true, true, true);
 			
 		} else {
@@ -641,7 +629,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			__stencilReference = 0;
 			__context3D.setStencilActions ();
 			__context3D.setStencilReferenceValue (0, 0, 0);
-			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -690,31 +677,21 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__stencilReference == 0) {
 			
-			// __context3D.__setGLStencilTest (true);
-			// __gl.stencilMask (0xFF);
 			__context3D.clear (0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
 			__updatedStencil = true;
 			
 		}
 		
-		// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.INCR);
-		// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-		// __gl.colorMask (false, false, false, false);
-		
 		__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, INCREMENT_SATURATE, KEEP, KEEP);
-		__context3D.setStencilReferenceValue (__stencilReference);
+		__context3D.setStencilReferenceValue (__stencilReference, 0xFF, 0xFF);
 		__context3D.setColorMask (false, false, false, false);
 		
 		mask.__renderGLMask (this);
 		__maskObjects.push (mask);
 		__stencilReference++;
 		
-		// __gl.stencilOp (__gl.KEEP, __gl.KEEP, __gl.KEEP);
-		// __gl.stencilFunc (__gl.EQUAL, __stencilReference, 0xFF);
-		// __gl.colorMask (true, true, true, true);
-		
 		__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
-		__context3D.setStencilReferenceValue (__stencilReference);
+		__context3D.setStencilReferenceValue (__stencilReference, 0xFF, 0);
 		__context3D.setColorMask (true, true, true, true);
 		
 	}
@@ -935,14 +912,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		if (__stencilReference > 0) {
 			
 			__context3D.setStencilActions (FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
-			__context3D.setStencilReferenceValue (__stencilReference);
-			// __context3D.__setGLStencilTest (true);
+			__context3D.setStencilReferenceValue (__stencilReference, 0xFF, 0);
 			
 		} else {
 			
 			__context3D.setStencilActions ();
 			__context3D.setStencilReferenceValue (0, 0, 0);
-			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
@@ -1059,8 +1034,6 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			__context3D.setStencilActions ();
 			__context3D.setStencilReferenceValue (0, 0, 0);
-			// __context3D.setStencilActions ();
-			// __context3D.__setGLStencilTest (false);
 			
 		}
 		
