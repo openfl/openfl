@@ -935,6 +935,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 		}
 		
+		event.target = this;
+		
 		return __dispatchWithCapture (event);
 		
 	}
