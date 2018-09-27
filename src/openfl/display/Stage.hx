@@ -49,7 +49,7 @@ import openfl.profiler.Telemetry;
 #end
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
 #end
 
 #if (js && html5)
