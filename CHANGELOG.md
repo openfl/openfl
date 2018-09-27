@@ -1,3 +1,11 @@
+8.5.1 (09/27/2018)
+-----------------
+
+* Improved handling of context loss if context is not restored by the next frame
+* Fixed a regression in indexed hardware `graphics.drawTriangles` rendering
+* Fixed minor compile errors when using some optional defines
+
+
 8.5.0 (09/26/2018)
 ------------------
 
