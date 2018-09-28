@@ -1407,11 +1407,13 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __renderStage3D (stage3D:Stage3D):Void {
 		
+		// Assume this is the primary Context3D
+		
 		var context = stage3D.context3D;
 		
 		if (context != null && context != this && context.__frontBufferTexture != null && stage3D.visible) {
 			
-			if (!__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			// if (!__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 			
 			if (__renderStage3DProgram == null) {
 				
@@ -1434,7 +1436,7 @@ import openfl.utils.ByteArray;
 			
 			setProgram (__renderStage3DProgram);
 			
-			// TODO: Should we respect alpha?
+			// TODO: Should multiple contexts blend together?
 			setBlendFactors (ONE, ZERO);
 			
 			setTextureAt (0, context.__frontBufferTexture);
