@@ -1407,14 +1407,11 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __renderStage3D (stage3D:Stage3D):Void {
 		
-		// Assume this is the primary Context3D
-		
 		var context = stage3D.context3D;
 		
 		if (context != null && context != this && context.__frontBufferTexture != null && stage3D.visible) {
 			
-			if (!__stage.__renderer.__cleared) clear (0, 0, 0, __stage.__transparent ? 0 : 1, 1, 0, Context3DClearMask.COLOR);
-			__stage.__renderer.__cleared = true;
+			if (!__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 			
 			if (__renderStage3DProgram == null) {
 				
@@ -1436,7 +1433,10 @@ import openfl.utils.ByteArray;
 			}
 			
 			setProgram (__renderStage3DProgram);
-			setBlendFactors (ONE, ONE_MINUS_SOURCE_ALPHA);
+			
+			// TODO: Should we respect alpha?
+			setBlendFactors (ONE, ZERO);
+			
 			setTextureAt (0, context.__frontBufferTexture);
 			setVertexBufferAt (0, stage3D.__vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
 			setVertexBufferAt (1, stage3D.__vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
