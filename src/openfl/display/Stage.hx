@@ -663,7 +663,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		this.name = null;
 		
-		color = 0xFFFFFFFF;
+		__color = 0xFFFFFFFF;
 		__colorSplit = [ 0xFF, 0xFF, 0xFF ];
 		__colorString = "#FFFFFF";
 		__contentsScaleFactor = 1;
