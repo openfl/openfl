@@ -84,7 +84,13 @@ import openfl._internal.Lib;
 	@:noCompletion private static inline function __initialize ():Void {
 		
 		#if ((cpp || neko) && hxtelemetry && !macro)
-		var config:hxtelemetry.Config = (Lib.application.config:Dynamic).telemetry;
+		var meta = Lib.application.meta;
+		
+		var config = new hxtelemetry.HxTelemetry.Config ();
+		config.allocations = (!meta.exists ("hxtelemetry-allocations") || meta.get ("hxtelemetry-allocations") == "true");
+		config.host = (!meta.exists ("hxtelemetry-host") ? "localhost" : meta.get ("hxtelemetry-host"));
+		config.app_name = meta.get ("name");
+		
 		config.activity_descriptors = [ { name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc }, { name: TelemetryCommandName.RENDER, description: "Rendering", color:0x66aa66 } ];
 		telemetry = new HxTelemetry (config);
 		#end
