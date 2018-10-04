@@ -1105,11 +1105,14 @@ class TextEngine {
 				
 				while (true) {
 					
-					var tempPositions = getPositions (text, tempIndex, tempRangeEnd);
-					
-					positions = positions.concat(tempPositions);
-					
-					widthValue += getPositionsWidth (positions);
+					if (tempIndex != tempRangeEnd) {
+						
+						var tempPositions = getPositions (text, tempIndex, tempRangeEnd);
+						positions = positions.concat(tempPositions);
+						
+						widthValue += getPositionsWidth (positions);
+						
+					}
 					
 					if (tempRangeEnd != endIndex) {
 						
@@ -1171,24 +1174,28 @@ class TextEngine {
 					
 					var tempRangeEnd = endIndex < formatRange.end ? endIndex : formatRange.end;
 					
-					positions = getPositions (text, textIndex, tempRangeEnd);
-					widthValue = getPositionsWidth (positions);
-					
-					nextLayoutGroup (textIndex, tempRangeEnd);
-					
-					layoutGroup.positions = positions;
-					layoutGroup.offsetX = offsetX;
-					layoutGroup.ascent = ascent;
-					layoutGroup.descent = descent;
-					layoutGroup.leading = leading;
-					layoutGroup.lineIndex = lineIndex;
-					layoutGroup.offsetY = offsetY;
-					layoutGroup.width = widthValue;
-					layoutGroup.height = heightValue;
-					
-					offsetX += widthValue;
-					
-					textIndex = tempRangeEnd;
+					if (textIndex != tempRangeEnd) {
+						
+						positions = getPositions (text, textIndex, tempRangeEnd);
+						widthValue = getPositionsWidth (positions);
+						
+						nextLayoutGroup (textIndex, tempRangeEnd);
+						
+						layoutGroup.positions = positions;
+						layoutGroup.offsetX = offsetX;
+						layoutGroup.ascent = ascent;
+						layoutGroup.descent = descent;
+						layoutGroup.leading = leading;
+						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.offsetY = offsetY;
+						layoutGroup.width = widthValue;
+						layoutGroup.height = heightValue;
+						
+						offsetX += widthValue;
+						
+						textIndex = tempRangeEnd;
+						
+					}
 					
 					if (tempRangeEnd == formatRange.end) layoutGroup = null;
 					
