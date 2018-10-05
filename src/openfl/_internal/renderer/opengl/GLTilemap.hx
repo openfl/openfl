@@ -44,6 +44,9 @@ class GLTilemap {
 		
 		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 		
+		// break the batch as we don't batch tilemaps for now
+		renderSession.batcher.flush ();
+		
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;
 		
@@ -187,6 +190,9 @@ class GLTilemap {
 		tilemap.__updateTileArray ();
 		
 		if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
+		
+		// break the batch as we don't batch tilemaps for now
+		renderSession.batcher.flush ();
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;

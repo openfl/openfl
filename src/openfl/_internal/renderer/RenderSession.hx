@@ -16,6 +16,7 @@ import lime.graphics.RendererType;
 //import openfl._internal.renderer.opengl.utils.ShaderManager;
 //import openfl._internal.renderer.opengl.utils.SpriteBatch;
 //import openfl._internal.renderer.opengl.utils.StencilManager;
+import openfl._internal.renderer.opengl.batcher.BatchRenderer;
 import openfl.display.BlendMode;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -38,6 +39,7 @@ class RenderSession {
 	public var gl(default, set):GLRenderContext;
 	// public var lockTransform:Bool;
 	public var renderer:AbstractRenderer;
+	public var batcher:BatchRenderer;
 	public var renderType:RendererType;
 	public var roundPixels:Bool;
 	public var transformProperty:String;

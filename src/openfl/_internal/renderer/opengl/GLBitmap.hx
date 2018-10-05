@@ -31,6 +31,11 @@ class GLBitmap {
 		
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid) {
 			
+			renderSession.maskManager.pushObject (bitmap);
+			renderSession.batcher.render (bitmap.__getBatchQuad (renderSession));
+			renderSession.maskManager.popObject (bitmap);
+			return;
+
 			var renderer:GLRenderer = cast renderSession.renderer;
 			var gl = renderSession.gl;
 			

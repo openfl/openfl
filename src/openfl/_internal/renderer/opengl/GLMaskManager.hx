@@ -51,6 +51,9 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	public override function pushMask (mask:DisplayObject):Void {
 		
+		// flush everything in the current batch, since we're rendering stuff differently now
+		renderSession.batcher.flush ();
+
 		if (stencilReference == 0) {
 			
 			gl.enable (gl.STENCIL_TEST);
@@ -64,6 +67,10 @@ class GLMaskManager extends AbstractMaskManager {
 		gl.colorMask (false, false, false, false);
 		
 		mask.__renderGLMask (renderSession);
+		
+		// flush batched mask renders, because we're changing state again
+		renderSession.batcher.flush ();
+		
 		maskObjects.push (mask);
 		stencilReference++;
 		
@@ -133,6 +140,9 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (stencilReference == 0) return;
 		
+		// flush whatever was rendered behind the mask, because we're changing state
+		renderSession.batcher.flush ();
+		
 		var mask = maskObjects.pop ();
 		if (stencilReference > 1) {
 			
@@ -141,6 +151,10 @@ class GLMaskManager extends AbstractMaskManager {
 			gl.colorMask (false, false, false, false);
 			
 			mask.__renderGLMask (renderSession);
+			
+			// flush batched mask renders, because we're changing state again
+			renderSession.batcher.flush ();
+
 			stencilReference--;
 			
 			gl.stencilOp (gl.KEEP, gl.KEEP, gl.KEEP);
@@ -196,6 +210,9 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	
 	private function scissorRect (rect:Rectangle = null):Void {
+		
+		// flush batched renders so they are drawn before the scissor call 
+		renderSession.batcher.flush ();
 		
 		if (rect != null) {
 			

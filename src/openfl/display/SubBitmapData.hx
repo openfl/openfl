@@ -6,6 +6,7 @@ import openfl.display.BitmapData;
 import js.Browser;
 import js.html.CanvasElement;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.renderer.opengl.batcher.Texture as BatcherTexture;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
 import openfl.geom.Matrix;
@@ -17,10 +18,10 @@ import lime.graphics.CanvasRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.WebGLContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.utils.Float32Array;
+import openfl._internal.renderer.opengl.batcher.TextureData;
 #if (js && html5)
 import js.html.CanvasRenderingContext2D;
 #end
@@ -73,8 +74,6 @@ class SubBitmapData extends BitmapData {
 		readable = false;
 		image = null;
 
-		var gl = GL.context;
-		var texture = atlasBitmap.getTexture (gl);
 		__parentBitmap = atlasBitmap;
 		__texX0 = x / atlasBitmap.width;
 		__texX1 = (x + width) / atlasBitmap.width;
@@ -84,8 +83,6 @@ class SubBitmapData extends BitmapData {
 		__texY = y;
 		__texWidth = width;
 		__texHeight = height;
-		__texture = texture;
-		__textureContext = gl;
 		__offsetX = offsetX;
 		__offsetY = offsetY;
 		__rotated = rotated;
@@ -193,8 +190,66 @@ class SubBitmapData extends BitmapData {
 		
 	}
 
-	override function getTexture (gl:GLRenderContext):GLTexture {
-		return __texture;
+	override function getTexture (gl:GLRenderContext):TextureData {
+		return __parentBitmap.getTexture (gl);
+	}
+	
+	
+	override function __fillBatchQuad (transform:Matrix, vertexData:Float32Array) {
+		
+		var x = __offsetX;
+		var y = __offsetY;
+		
+		var w, h;
+		if (__rotated) {
+			w = __texHeight;
+			h = __texWidth;
+		} else {
+			w = __texWidth;
+			h = __texHeight;
+		}
+		
+		__fillTransformedVertexCoords (transform, vertexData, x, y, w, h);
+		
+	}
+	
+	
+	override function __getBatcherTexture (gl:GLRenderContext):BatcherTexture {
+		
+		if (__batcherTexture == null) {
+			
+			var u0, v0, u1, v1, u2, v2, u3, v3;
+			if (__rotated) {
+				u0 = __texX1;
+				v0 = __texY0;
+				u1 = __texX1;
+				v1 = __texY1;
+				u2 = __texX0;
+				v2 = __texY1;
+				u3 = __texX0;
+				v3 = __texY0;
+			} else {
+				u0 = __texX0;
+				v0 = __texY0;
+				u1 = __texX1;
+				v1 = __texY0;
+				u2 = __texX1;
+				v2 = __texY1;
+				u3 = __texX0;
+				v3 = __texY1;
+			}
+			
+			__batcherTexture = BatcherTexture.createRegion(getTexture (gl),
+				u0, v0,
+				u1, v1,
+				u2, v2,
+				u3, v3
+			);
+			
+		}
+		
+		return __batcherTexture;
+		
 	}
 
 	override function getBuffer (gl:GLRenderContext, alpha:Float, colorTransform:ColorTransform):GLBuffer {

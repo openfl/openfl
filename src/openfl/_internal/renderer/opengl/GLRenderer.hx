@@ -2,6 +2,7 @@ package openfl._internal.renderer.opengl;
 
 
 import openfl._internal.renderer.canvas.CanvasRenderer;
+import openfl._internal.renderer.opengl.batcher.BatchRenderer;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.math.Matrix4;
@@ -73,10 +74,14 @@ class GLRenderer extends AbstractRenderer {
 		#if (js && html5)
 		renderSession.pixelRatio = stage.window.scale;
 		#end
-		renderSession.blendModeManager = new GLBlendModeManager (gl);
+		var blendModeManager = new GLBlendModeManager (gl);
+		renderSession.blendModeManager = blendModeManager;
 		renderSession.filterManager = new GLFilterManager (this, renderSession);
-		renderSession.shaderManager = new GLShaderManager (gl);
+		var shaderManager = new GLShaderManager (gl);
+		renderSession.shaderManager = shaderManager;
 		renderSession.maskManager = new GLMaskManager (renderSession);
+		
+		renderSession.batcher = new BatchRenderer (gl, blendModeManager, shaderManager, 4096);
 		
 		if (stage.window != null) {
 			
@@ -127,18 +132,26 @@ class GLRenderer extends AbstractRenderer {
 	
 	static var getMatrixHelperMatrix = new Matrix();
 	
-	public function getMatrix (transform:Matrix, snapToPixel: Bool = false):Matrix4 {
-		var _matrix = getMatrixHelperMatrix;
+	
+	public function getDisplayTransformTempMatrix (transform:Matrix, snapToPixel:Bool):Matrix {
 		
-		_matrix.copyFrom (transform);
-		_matrix.concat (displayMatrix);
+		var matrix = getMatrixHelperMatrix;
+		matrix.copyFrom (transform);
+		matrix.concat (displayMatrix);
 		
-		if (renderSession.roundPixels || snapToPixel) {
-			
-			_matrix.tx = Math.round (_matrix.tx);
-			_matrix.ty = Math.round (_matrix.ty);
-			
+		if (snapToPixel) {
+			matrix.tx = Math.round (matrix.tx);
+			matrix.ty = Math.round (matrix.ty);
 		}
+		
+		return matrix;
+		
+	}
+	
+	
+	public function getMatrix (transform:Matrix, snapToPixel: Bool = false):Matrix4 {
+		
+		var _matrix = getDisplayTransformTempMatrix (transform, renderSession.roundPixels || snapToPixel);
 		
 		matrix.identity ();
 		matrix[0] = _matrix.a;
@@ -162,7 +175,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl));
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl).glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				
@@ -172,7 +185,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl));
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl).glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				
@@ -215,7 +228,13 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.allowSmoothing = (stage.quality != LOW);
 		renderSession.forceSmoothing = #if always_smooth_on_upscale (displayMatrix.a != 1 || displayMatrix.d != 1); #else false; #end
 		
+		// setup projection matrix for the batcher as it's an uniform value for all the draw calls
+		renderSession.batcher.projectionMatrix = flipped ? projectionFlipped : projection;
+		
 		stage.__renderGL (renderSession);
+		
+		// flush whatever is left in the batch to render
+		renderSession.batcher.flush ();
 		
 		if (offsetX > 0 || offsetY > 0) {
 			
@@ -268,7 +287,7 @@ class GLRenderer extends AbstractRenderer {
 			
 		// 	cacheObject = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 			
-		// 	gl.bindTexture (gl.TEXTURE_2D, cacheObject.getTexture (gl));
+		// 	gl.bindTexture (gl.TEXTURE_2D, cacheObject.getTexture (gl).glTexture);
 		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			
@@ -280,7 +299,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl));
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl).glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				
@@ -290,7 +309,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl));
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl).glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				

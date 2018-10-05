@@ -47,6 +47,11 @@ class GLShape {
 			
 			if (graphics.__bitmap != null && graphics.__visible) {
 				
+				renderSession.maskManager.pushObject (shape);
+				renderSession.batcher.render(graphics.__getBatchQuad(renderSession, shape.__worldAlpha, shape.__worldColorTransform, shape.__worldBlendMode));
+				renderSession.maskManager.popObject (shape);
+				return;
+				
 				var renderer:GLRenderer = cast renderSession.renderer;
 				var gl = renderSession.gl;
 				
