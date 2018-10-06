@@ -161,7 +161,7 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 #end
 
 
-@:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements Map.IMap<K, V> {
+@:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements IMap<K, V> {
 	
 	
 	@:noCompletion private var types:Map<String, K>;
@@ -249,7 +249,7 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 #end
 
 
-@:dox(hide) private class FloatMap<K:Float, V> implements Map.IMap<K, V> {
+@:dox(hide) private class FloatMap<K:Float, V> implements IMap<K, V> {
 	
 	
 	@:noCompletion private var floatKeys:Array<K>;
@@ -454,7 +454,7 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 #end
 
 
-@:dox(hide) private class UtilsObjectMap<K:Object, V> implements Map.IMap<K, V> {
+@:dox(hide) private class UtilsObjectMap<K:Object, V> implements IMap<K, V> {
 	
 	
 	@:noCompletion private var map:ObjectMap<{}, V>;
