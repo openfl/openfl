@@ -56,8 +56,9 @@ class BatchRenderer {
 		// smallest one can render just one quad, biggest one can render maximum amount
 		vertexBufferDatas = [];
 		var i = 1, l = nextPow2(maxQuads);
+		var floatsPerQuad = MultiTextureShader.floatPerVertex * 4;
 		while (i <= l) {
-			vertexBufferDatas.push(new Float32Array(i * 4 * MultiTextureShader.floatPerVertex));
+			vertexBufferDatas.push(new Float32Array(i * floatsPerQuad));
 			i *= 2;
 		}
 
