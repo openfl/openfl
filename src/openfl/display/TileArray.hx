@@ -206,7 +206,7 @@ import openfl.Vector;
 				
 			}
 			
-			var textureRegion = new openfl.display.BitmapData.TextureRegionResult();
+			var textureRegion = openfl.display.BitmapData.TextureRegionResult.helperInstance;
 			
 			for (i in 0...__length) {
 				

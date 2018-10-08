@@ -5,6 +5,8 @@ import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLRenderer;
+import openfl._internal.renderer.opengl.batcher.Quad;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -40,6 +42,8 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	private var __bitmapData:BitmapData;
 	private var __imageVersion:Int;
 	
+	var __batchQuad:Quad;
+	var __batchQuadDirty:Bool = true;
 	
 	#if openfljs
 	private static function __init__ () {
@@ -234,6 +238,37 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
+	function __getBatchQuad (renderSession:RenderSession):Quad {
+		
+		if (__batchQuadDirty) {
+			if (__batchQuad == null) {
+				__batchQuad = new Quad ();
+			}
+			
+			var snapToPixel = renderSession.roundPixels || __snapToPixel ();
+			var transform = (cast renderSession.renderer : GLRenderer).getDisplayTransformTempMatrix (__renderTransform, snapToPixel);
+			bitmapData.__fillBatchQuad (transform, __batchQuad.vertexData);
+			__batchQuad.texture = __bitmapData.__getQuadTextureData (renderSession.gl);
+			__batchQuadDirty = false;
+		}
+		
+		__batchQuad.alpha = __worldAlpha;
+		__batchQuad.colorTransform = __worldColorTransform;
+		__batchQuad.blendMode = __worldBlendMode;
+		__batchQuad.smoothing = smoothing;
+		
+		return __batchQuad;
+		
+	}
+
+	override function __updateTransforms (overrideTransform:Matrix = null):Void {
+		super.__updateTransforms (overrideTransform);
+		
+		if (overrideTransform == null) {
+			__batchQuadDirty = true;
+		}
+		
+	}
 	private override function __renderDOMClear (renderSession: RenderSession):Void {
 		
 		DOMBitmap.clear (this, renderSession);
@@ -301,6 +336,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		smoothing = false;
 		
 		__setRenderDirty ();
+		__batchQuadDirty = true;
 		
 		if (__hasFilters ()) {
 			

@@ -1194,6 +1194,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__cacheBitmap.__renderTransform.identity ();
 				__cacheBitmap.__renderTransform.tx = rect.x;
 				__cacheBitmap.__renderTransform.ty = rect.y;
+				__cacheBitmap.__batchQuadDirty = true;
 
 			}
 			

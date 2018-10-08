@@ -11,7 +11,6 @@ import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.GLVertexArrayObject;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.WebGLContext;
@@ -47,6 +46,8 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
 import openfl.Vector;
+import openfl._internal.renderer.opengl.batcher.TextureData;
+import openfl._internal.renderer.opengl.batcher.QuadTextureData;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -120,7 +121,8 @@ class BitmapData implements IBitmapDrawable {
 	private var __renderable:Bool;
 	private var __pixelRatio:Float = 1.0;
 	private var __surface:CairoSurface;
-	private var __texture:GLTexture;
+	private var __textureData:TextureData;
+	private var __quadTextureData:QuadTextureData;
 	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
 	private var __ownsTexture:Bool;
@@ -237,7 +239,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			bitmapData.__framebuffer = __framebuffer;
 			bitmapData.__framebufferContext = __framebufferContext;
-			bitmapData.__texture = __texture;
+			bitmapData.__textureData = __textureData;
 			bitmapData.__textureContext = __textureContext;
 			bitmapData.__isValid = true;
 			
@@ -458,30 +460,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__ownsTexture) {
 			__ownsTexture = false;
-			__textureContext.deleteTexture (__texture);
-			__texture = null;
+			__textureContext.deleteTexture (__textureData.glTexture);
+			__textureData = null;
 			__textureContext = null;
 		}
-		
-		//if (__texture != null) {
-			//
-			//var renderer = @:privateAccess Lib.current.stage.__renderer;
-			//
-			//if(renderer != null) {
-				//
-				//var renderSession = @:privateAccess renderer.renderSession;
-				//var gl = renderSession.gl;
-				//
-				//if (gl != null) {
-					//
-					//gl.deleteTexture (__texture);
-					//__texture = null;
-					//
-				//}
-				//
-			//}
-			//
-		//}
 		
 	}
 	
@@ -850,7 +832,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
-		bitmapData.__texture = texture.__textureID;
+		bitmapData.__textureData = new TextureData(texture.__textureID);
 		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.image = null;
 		return bitmapData;
@@ -1123,20 +1105,21 @@ class BitmapData implements IBitmapDrawable {
 		
 		return __surface;
 		
+		
 	}
 	
 	
-	public function getTexture (gl:GLRenderContext):GLTexture {
+	public function getTexture (gl:GLRenderContext):TextureData {
 		
 		if (!__isValid) return null;
 		
-		if (__texture == null || __textureContext != gl) {
+		if (__textureData == null || __textureContext != gl) {
 			
 			__textureContext = gl;
-			__texture = gl.createTexture ();
+			__textureData = new TextureData(gl.createTexture ());
 			__ownsTexture = true;
 			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			gl.bindTexture (gl.TEXTURE_2D, __textureData.glTexture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -1202,7 +1185,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			gl.bindTexture (gl.TEXTURE_2D, __textureData.glTexture);
 			
 			var textureImage = image;
 			
@@ -1272,7 +1255,45 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		return __texture;
+		return __textureData;
+		
+	}
+	
+	
+	public function __getQuadTextureData (gl:GLRenderContext):QuadTextureData {
+		
+		if (__quadTextureData == null) {
+			__quadTextureData = QuadTextureData.createFullFrame (getTexture (gl));
+		}
+		
+		return __quadTextureData;
+		
+	}
+	
+	
+	function __fillBatchQuad (transform:Matrix, vertexData:Float32Array) {
+		
+		__fillTransformedVertexCoords (transform, vertexData, 0, 0, width / __pixelRatio, height / __pixelRatio);
+		
+	}
+	
+	
+	inline function __fillTransformedVertexCoords (transform:Matrix, vertexData:Float32Array, x:Float, y:Float, w:Float, h:Float) {
+		
+		var x1 = x + w;
+		var y1 = y + h;
+		
+		vertexData[0] = transform.__transformX (x, y);
+		vertexData[1] = transform.__transformY (x, y);
+		
+		vertexData[2] = transform.__transformX (x1, y);
+		vertexData[3] = transform.__transformY (x1, y);
+		
+		vertexData[4] = transform.__transformX (x1, y1);
+		vertexData[5] = transform.__transformY (x1, y1);
+		
+		vertexData[6] = transform.__transformX (x, y1);
+		vertexData[7] = transform.__transformY (x, y1);
 		
 	}
 	
@@ -1996,7 +2017,7 @@ class BitmapData implements IBitmapDrawable {
 			__framebuffer = gl.createFramebuffer ();
 			
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
+			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __textureData.glTexture, 0);
 			
 		}
 		
@@ -2269,6 +2290,9 @@ class BitmapData implements IBitmapDrawable {
 	Can only be used for reading after calling `__getTextureRegion`.
 **/
 @:publicFields class TextureRegionResult {
+	/** a single helper instance that can be used for returning results that are immediately processed */
+	public static var helperInstance(default,never) = new TextureRegionResult();
+	
 	var u0:Float;
 	var v0:Float;
 	var u1:Float;

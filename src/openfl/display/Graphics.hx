@@ -5,6 +5,8 @@ import lime.graphics.cairo.Cairo;
 import lime.graphics.Image;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.opengl.GLRenderer;
+import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 //import openfl._internal.renderer.opengl.utils.RenderTexture;
@@ -21,6 +23,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+
+import openfl._internal.renderer.opengl.batcher.Quad;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -67,7 +71,9 @@ import js.html.CanvasRenderingContext2D;
 	private var __cairo:Cairo;
 	#end
 	
-	private var __bitmap:BitmapData;
+	private var __bitmap(default,set):BitmapData;
+	private var __batchQuad:Quad;
+	private var __batchQuadDirty:Bool = true;
 	
 	
 	private function new (owner:DisplayObject) {
@@ -925,6 +931,41 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
+	@:access(openfl.display.BitmapData.__fillBatchQuad)
+	function __getBatchQuad (renderSession:RenderSession, alpha, colorTransform, blendMode):Quad {
+		
+		if (__batchQuadDirty) {
+			if (__batchQuad == null) {
+				__batchQuad = new Quad ();
+			}
+			
+			var transform = (cast renderSession.renderer : GLRenderer).getDisplayTransformTempMatrix (__worldTransform, false);
+			__bitmap.__fillBatchQuad (transform, __batchQuad.vertexData);
+			__batchQuad.texture = __bitmap.__getQuadTextureData (renderSession.gl);
+			__batchQuadDirty = false;
+		}
+		
+		__batchQuad.alpha = alpha;
+		__batchQuad.colorTransform = colorTransform;
+		__batchQuad.blendMode = blendMode;
+		
+		return __batchQuad;
+		
+	}
+	
+	
+	function set___bitmap(value:BitmapData) {
+		
+		if (__bitmap != value) {
+			__bitmap = value;
+			__batchQuadDirty = true;
+		}
+		
+		return value;
+		
+	}
+	
+	
 	private function __update ():Void {
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
@@ -1030,6 +1071,8 @@ import js.html.CanvasRenderingContext2D;
 		
 		__width  = newWidth;
 		__height = newHeight;
+		
+		__batchQuadDirty = true;
 		
 	}
 	
