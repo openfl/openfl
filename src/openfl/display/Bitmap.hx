@@ -248,7 +248,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			var snapToPixel = renderSession.roundPixels || __snapToPixel ();
 			var transform = (cast renderSession.renderer : GLRenderer).getDisplayTransformTempMatrix (__renderTransform, snapToPixel);
 			bitmapData.__fillBatchQuad (transform, __batchQuad.vertexData);
-			__batchQuad.texture = __bitmapData.__getQuadTextureData (renderSession.gl);
+			__batchQuad.texture = __bitmapData.getTexture (renderSession.gl);
 			__batchQuadDirty = false;
 		}
 		
