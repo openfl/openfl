@@ -38,6 +38,8 @@ class BatchRenderer {
 	var textureTick = 0;
 
 	public var projectionMatrix:Float32Array;
+	
+	static inline var floatsPerQuad = MultiTextureShader.floatPerVertex * 4;
 
 	public function new(gl:GLRenderContext, blendModeManager:GLBlendModeManager, shaderManager:GLShaderManager, maxQuads:Int) {
 		this.gl = gl;
@@ -56,7 +58,6 @@ class BatchRenderer {
 		// smallest one can render just one quad, biggest one can render maximum amount
 		vertexBufferDatas = [];
 		var i = 1, l = nextPow2(maxQuads);
-		var floatsPerQuad = MultiTextureShader.floatPerVertex * 4;
 		while (i <= l) {
 			vertexBufferDatas.push(new Float32Array(i * floatsPerQuad));
 			i *= 2;
@@ -259,7 +260,7 @@ class BatchRenderer {
 			setVertex(2);
 			setVertex(3);
 
-			vertexBufferIndex += MultiTextureShader.floatPerVertex * 4;
+			vertexBufferIndex += floatsPerQuad;
 			quadIndex++;
 		}
 
