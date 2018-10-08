@@ -39,7 +39,7 @@ class BatchRenderer {
 
 	public var projectionMatrix:Float32Array;
 	
-	static inline var floatsPerQuad = MultiTextureShader.floatPerVertex * 4;
+	static inline var floatsPerQuad = MultiTextureShader.floatsPerVertex * 4;
 
 	public function new(gl:GLRenderContext, blendModeManager:GLBlendModeManager, shaderManager:GLShaderManager, maxQuads:Int) {
 		this.gl = gl;
@@ -222,36 +222,36 @@ class BatchRenderer {
 			// trace('Group $groupCount uses texture $textureUnitId');
 
 			inline function setVertex(i) {
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 0] = vertexData[i * 2 + 0];
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 1] = vertexData[i * 2 + 1];
+				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 0] = vertexData[i * 2 + 0];
+				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 1] = vertexData[i * 2 + 1];
 
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 2] = uvs[i * 2 + 0];
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 3] = uvs[i * 2 + 1];
+				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 2] = uvs[i * 2 + 0];
+				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 3] = uvs[i * 2 + 1];
 
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 4] = textureUnitId;
+				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 4] = textureUnitId;
 
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 5] = alpha;
+				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 5] = alpha;
 
 				if (colorTransform != null) {
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 6] = colorTransform.redOffset / 255;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 7] = colorTransform.greenOffset / 255;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 8] = colorTransform.blueOffset / 255;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 9] = colorTransform.alphaOffset / 255;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 6] = colorTransform.redOffset / 255;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 7] = colorTransform.greenOffset / 255;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 8] = colorTransform.blueOffset / 255;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 9] = colorTransform.alphaOffset / 255;
 
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 10] = colorTransform.redMultiplier;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 11] = colorTransform.greenMultiplier;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 12] = colorTransform.blueMultiplier;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 13] = colorTransform.alphaMultiplier;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 10] = colorTransform.redMultiplier;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 11] = colorTransform.greenMultiplier;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 12] = colorTransform.blueMultiplier;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 13] = colorTransform.alphaMultiplier;
 				} else {
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 6] = 0;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 7] = 0;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 8] = 0;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 9] = 0;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 6] = 0;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 7] = 0;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 8] = 0;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 9] = 0;
 
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 10] = 1;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 11] = 1;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 12] = 1;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatPerVertex + 13] = 1;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 10] = 1;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 11] = 1;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 12] = 1;
+					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 13] = 1;
 				}
 			}
 
@@ -281,7 +281,7 @@ class BatchRenderer {
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, vertexBufferData.byteLength, vertexBufferData, gl.STREAM_DRAW);
 
-		var stride = MultiTextureShader.floatPerVertex * Float32Array.BYTES_PER_ELEMENT;
+		var stride = MultiTextureShader.floatsPerVertex * Float32Array.BYTES_PER_ELEMENT;
 		gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
 		gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer(shader.aTextureId, 1, gl.FLOAT, false, stride, 4 * Float32Array.BYTES_PER_ELEMENT);

@@ -21,7 +21,7 @@ class MultiTextureShader {
 	var uProjMatrix:GLUniformLocation;
 
 	// x, y, u, v, texId, alpha, colorMult, colorOfs
-	public static inline var floatPerVertex = 2 + 2 + 1 + 1 + 4 + 4;
+	public static inline var floatsPerVertex = 2 + 2 + 1 + 1 + 4 + 4;
 
 	public function new(gl:GLRenderContext, maxTextures:Int) {
 		this.gl = gl;
