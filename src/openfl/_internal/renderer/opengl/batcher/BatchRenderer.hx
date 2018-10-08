@@ -195,8 +195,9 @@ class BatchRenderer {
 								break;
 							}
 						}
-						if (nextTexture.textureUnitId == -1)
-							throw "WAT";
+						if (nextTexture.textureUnitId == -1) {
+							throw "Unable to find free texture unit for the batch render group! This should NOT happen!";
+						}
 					}
 
 					// mark the texture as enabled in this group
