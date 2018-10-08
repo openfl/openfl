@@ -9,7 +9,7 @@ class Quad {
 	public var vertexData(default,null):Float32Array;
 
 	/** Link to the texture information **/
-	public var texture:Texture;
+	public var texture:QuadTextureData;
 
 	public var alpha:Float;
 

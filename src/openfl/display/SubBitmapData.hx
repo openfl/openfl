@@ -6,7 +6,8 @@ import openfl.display.BitmapData;
 import js.Browser;
 import js.html.CanvasElement;
 import openfl._internal.renderer.RenderSession;
-import openfl._internal.renderer.opengl.batcher.Texture as BatcherTexture;
+import openfl._internal.renderer.opengl.batcher.TextureData;
+import openfl._internal.renderer.opengl.batcher.QuadTextureData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
 import openfl.geom.Matrix;
@@ -21,7 +22,6 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.WebGLContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.utils.Float32Array;
-import openfl._internal.renderer.opengl.batcher.TextureData;
 #if (js && html5)
 import js.html.CanvasRenderingContext2D;
 #end
@@ -214,9 +214,9 @@ class SubBitmapData extends BitmapData {
 	}
 	
 	
-	override function __getBatcherTexture (gl:GLRenderContext):BatcherTexture {
+	override function __getQuadTextureData (gl:GLRenderContext):QuadTextureData {
 		
-		if (__batcherTexture == null) {
+		if (__quadTextureData == null) {
 			
 			var u0, v0, u1, v1, u2, v2, u3, v3;
 			if (__rotated) {
@@ -239,7 +239,7 @@ class SubBitmapData extends BitmapData {
 				v3 = __texY1;
 			}
 			
-			__batcherTexture = BatcherTexture.createRegion(getTexture (gl),
+			__quadTextureData = QuadTextureData.createRegion(getTexture (gl),
 				u0, v0,
 				u1, v1,
 				u2, v2,
@@ -248,7 +248,7 @@ class SubBitmapData extends BitmapData {
 			
 		}
 		
-		return __batcherTexture;
+		return __quadTextureData;
 		
 	}
 

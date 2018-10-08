@@ -47,7 +47,7 @@ import openfl.utils.ByteArray;
 import openfl.utils.Object;
 import openfl.Vector;
 import openfl._internal.renderer.opengl.batcher.TextureData;
-import openfl._internal.renderer.opengl.batcher.Texture as BatcherTexture;
+import openfl._internal.renderer.opengl.batcher.QuadTextureData;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -122,7 +122,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __pixelRatio:Float = 1.0;
 	private var __surface:CairoSurface;
 	private var __textureData:TextureData;
-	private var __batcherTexture:BatcherTexture;
+	private var __quadTextureData:QuadTextureData;
 	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
 	private var __ownsTexture:Bool;
@@ -1260,13 +1260,13 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function __getBatcherTexture (gl:GLRenderContext):BatcherTexture {
+	public function __getQuadTextureData (gl:GLRenderContext):QuadTextureData {
 		
-		if (__batcherTexture == null) {
-			__batcherTexture = BatcherTexture.createFullFrame (getTexture (gl));
+		if (__quadTextureData == null) {
+			__quadTextureData = QuadTextureData.createFullFrame (getTexture (gl));
 		}
 		
-		return __batcherTexture;
+		return __quadTextureData;
 		
 	}
 	
