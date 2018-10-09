@@ -37,6 +37,7 @@ class Context3DState {
 	public var renderToTextureDepthStencil:Bool;
 	public var renderToTextureSurfaceSelector:Int;
 	public var samplerStates:Array<SamplerState>;
+	public var scissorEnabled:Bool;
 	public var scissorRectangle:Rectangle;
 	public var stencilCompareMode:Context3DCompareMode;
 	public var stencilDepthFail:Context3DStencilAction;

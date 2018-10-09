@@ -767,9 +767,10 @@ import openfl.utils.ByteArray;
 	public function setScissorRectangle (rectangle:Rectangle):Void {
 		
 		if (rectangle != null) {
+			__state.scissorEnabled = true;
 			__state.scissorRectangle.copyFrom (rectangle);
 		} else {
-			__state.scissorRectangle.setEmpty ();
+			__state.scissorEnabled = false;
 		}
 		
 	}
@@ -1174,13 +1175,19 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLScissor ():Void {
 		
-		if (__state.scissorRectangle.width <= 0 || __state.scissorRectangle.height <= 0) {
+		if (!__state.scissorEnabled) {
 			
-			__setGLScissorTest (false);
+			if (#if openfl_disable_context_cache true #else __contextState.scissorEnabled != __state.scissorEnabled #end) {
+				
+				__setGLScissorTest (false);
+				__contextState.scissorEnabled = false;
+				
+			}
 			
 		} else {
 			
 			__setGLScissorTest (true);
+			__contextState.scissorEnabled = true;
 			
 			var height = 0;
 			var offsetX = 0;
