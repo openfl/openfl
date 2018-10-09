@@ -210,6 +210,15 @@ class SubBitmapData extends BitmapData {
 	}
 	
 	
+	override function getTexture (gl:GLRenderContext):QuadTextureData {
+		var parentTexture = __parentBitmap.getTexture (gl);
+		if (__quadTextureData == null || __quadTextureData.data != parentTexture.data) {
+			__quadTextureData = __prepareQuadTextureData(parentTexture.data);
+		}
+		return __quadTextureData;
+	}
+	
+	
 	override function __prepareQuadTextureData (texture:TextureData):QuadTextureData {
 		
 		var u0, v0, u1, v1, u2, v2, u3, v3;
