@@ -1174,53 +1174,57 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLScissor ():Void {
 		
-		if (#if openfl_disable_context_cache true #else !__contextState.scissorRectangle.equals (__state.scissorRectangle) #end) {
+		if (__state.scissorRectangle.width <= 0 || __state.scissorRectangle.height <= 0) {
 			
-			if (__state.scissorRectangle.width <= 0 || __state.scissorRectangle.height <= 0) {
+			__setGLScissorTest (false);
+			
+		} else {
+			
+			__setGLScissorTest (true);
+			
+			var height = 0;
+			var offsetX = 0;
+			var offsetY = 0;
+			
+			if (__state.renderToTexture != null) {
 				
-				__setGLScissorTest (false);
+				// TODO: Avoid use of Std.is
+				if (Std.is (__state.renderToTexture, Texture)) {
 				
-			} else {
+					var texture2D:Texture = cast __state.renderToTexture;
+					height = texture2D.__height;
 				
-				__setGLScissorTest (true);
-				
-				var height = 0;
-				var offsetX = 0;
-				var offsetY = 0;
-				
-				if (__state.renderToTexture != null) {
-				
-					// TODO: Avoid use of Std.is
-					if (Std.is (__state.renderToTexture, Texture)) {
+				} else if (Std.is (__state.renderToTexture, RectangleTexture)) {
 					
-						var texture2D:Texture = cast __state.renderToTexture;
-						height = texture2D.__height;
-					
-					} else if (Std.is (__state.renderToTexture, RectangleTexture)) {
-						
-						var rectTexture:RectangleTexture = cast __state.renderToTexture;
-						height = rectTexture.__height;
-						
-					}
-					
-				} else {
-					
-					height = backBufferHeight;
-					
-					if (__stage.context3D == this) {
-						
-						offsetX = __stage3D != null ? Std.int (__stage3D.x) : 0;
-						offsetY = Std.int (__stage.window.height * __stage.window.scale) - height - (__stage3D != null ? Std.int (__stage3D.y) : 0);
-						
-					}
+					var rectTexture:RectangleTexture = cast __state.renderToTexture;
+					height = rectTexture.__height;
 					
 				}
 				
-				gl.scissor (Std.int (__state.scissorRectangle.x) + offsetX, height - Std.int (__state.scissorRectangle.y) - Std.int (__state.scissorRectangle.height) + offsetY, Std.int (__state.scissorRectangle.width), Std.int (__state.scissorRectangle.height));
+			} else {
+				
+				height = backBufferHeight;
+				
+				if (__stage.context3D == this) {
+					
+					offsetX = __stage3D != null ? Std.int (__stage3D.x) : 0;
+					offsetY = Std.int (__stage.window.height * __stage.window.scale) - height - (__stage3D != null ? Std.int (__stage3D.y) : 0);
+					
+				}
 				
 			}
 			
-			__contextState.scissorRectangle.copyFrom (__state.scissorRectangle);
+			var scissorX = Std.int (__state.scissorRectangle.x) + offsetX;
+			var scissorY = height - Std.int (__state.scissorRectangle.y) - Std.int (__state.scissorRectangle.height) + offsetY;
+			var scissorWidth = Std.int (__state.scissorRectangle.width);
+			var scissorHeight = Std.int (__state.scissorRectangle.height);
+			
+			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX || __contextState.scissorRectangle.y != scissorY || __contextState.scissorRectangle.width != scissorWidth || __contextState.scissorRectangle.height != scissorHeight #end) {
+				
+				gl.scissor (scissorX, scissorY, scissorWidth, scissorHeight);
+				__contextState.scissorRectangle.setTo (scissorX, scissorY, scissorWidth, scissorHeight);
+				
+			}
 			
 		}
 		
