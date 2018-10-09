@@ -1109,7 +1109,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getTexture (gl:GLRenderContext):TextureData {
+	public function getTexture (gl:GLRenderContext):QuadTextureData {
 		
 		if (!__isValid) return null;
 		
@@ -1117,6 +1117,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			__textureContext = gl;
 			__textureData = new TextureData(gl.createTexture ());
+			__quadTextureData = null;
 			__ownsTexture = true;
 			
 			gl.bindTexture (gl.TEXTURE_2D, __textureData.glTexture);
@@ -1254,19 +1255,19 @@ class BitmapData implements IBitmapDrawable {
 			image = null;
 			
 		}
+
+		if (__quadTextureData == null) {
+			__quadTextureData = __prepareQuadTextureData(__textureData);
+		}
 		
-		return __textureData;
+		return __quadTextureData;
 		
 	}
 	
 	
-	public function __getQuadTextureData (gl:GLRenderContext):QuadTextureData {
+	function __prepareQuadTextureData (texture:TextureData):QuadTextureData {
 		
-		if (__quadTextureData == null) {
-			__quadTextureData = QuadTextureData.createFullFrame (getTexture (gl));
-		}
-		
-		return __quadTextureData;
+		return QuadTextureData.createFullFrame (texture);
 		
 	}
 	

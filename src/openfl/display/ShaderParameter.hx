@@ -67,7 +67,7 @@ class ShaderParameterSampler extends ShaderParameterUniform {
 			return;
 			
 		gl.activeTexture (gl.TEXTURE0 + textureIndex);
-		gl.bindTexture (gl.TEXTURE_2D, input.getTexture (gl).glTexture);
+		gl.bindTexture (gl.TEXTURE_2D, input.getTexture (gl).data.glTexture);
 		
 		if (smoothing) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);

@@ -189,10 +189,6 @@ class SubBitmapData extends BitmapData {
 		}
 		
 	}
-
-	override function getTexture (gl:GLRenderContext):TextureData {
-		return __parentBitmap.getTexture (gl);
-	}
 	
 	
 	override function __fillBatchQuad (transform:Matrix, vertexData:Float32Array) {
@@ -214,41 +210,35 @@ class SubBitmapData extends BitmapData {
 	}
 	
 	
-	override function __getQuadTextureData (gl:GLRenderContext):QuadTextureData {
+	override function __prepareQuadTextureData (texture:TextureData):QuadTextureData {
 		
-		if (__quadTextureData == null) {
-			
-			var u0, v0, u1, v1, u2, v2, u3, v3;
-			if (__rotated) {
-				u0 = __texX1;
-				v0 = __texY0;
-				u1 = __texX1;
-				v1 = __texY1;
-				u2 = __texX0;
-				v2 = __texY1;
-				u3 = __texX0;
-				v3 = __texY0;
-			} else {
-				u0 = __texX0;
-				v0 = __texY0;
-				u1 = __texX1;
-				v1 = __texY0;
-				u2 = __texX1;
-				v2 = __texY1;
-				u3 = __texX0;
-				v3 = __texY1;
-			}
-			
-			__quadTextureData = QuadTextureData.createRegion(getTexture (gl),
-				u0, v0,
-				u1, v1,
-				u2, v2,
-				u3, v3
-			);
-			
+		var u0, v0, u1, v1, u2, v2, u3, v3;
+		if (__rotated) {
+			u0 = __texX1;
+			v0 = __texY0;
+			u1 = __texX1;
+			v1 = __texY1;
+			u2 = __texX0;
+			v2 = __texY1;
+			u3 = __texX0;
+			v3 = __texY0;
+		} else {
+			u0 = __texX0;
+			v0 = __texY0;
+			u1 = __texX1;
+			v1 = __texY0;
+			u2 = __texX1;
+			v2 = __texY1;
+			u3 = __texX0;
+			v3 = __texY1;
 		}
 		
-		return __quadTextureData;
+		return QuadTextureData.createRegion(texture,
+			u0, v0,
+			u1, v1,
+			u2, v2,
+			u3, v3
+		);
 		
 	}
 

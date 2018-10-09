@@ -175,7 +175,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl).glTexture);
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl).data.glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				
@@ -185,7 +185,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl).glTexture);
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl).data.glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				
@@ -287,7 +287,7 @@ class GLRenderer extends AbstractRenderer {
 			
 		// 	cacheObject = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 			
-		// 	gl.bindTexture (gl.TEXTURE_2D, cacheObject.getTexture (gl).glTexture);
+		// 	gl.bindTexture (gl.TEXTURE_2D, cacheObject.getTexture (gl).data.glTexture);
 		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			
@@ -299,7 +299,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl).glTexture);
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl).data.glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				
@@ -309,7 +309,7 @@ class GLRenderer extends AbstractRenderer {
 				
 				renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 				
-				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl).glTexture);
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl).data.glTexture);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 				
