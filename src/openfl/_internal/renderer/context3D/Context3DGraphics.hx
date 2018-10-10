@@ -619,7 +619,7 @@ class Context3DGraphics {
 								var hasIndices = (indices != null);
 								var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
 								
-								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
+								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform, AUTO);
 								var shader;
 								
 								if (shaderBuffer != null && !maskRender) {
@@ -700,7 +700,7 @@ class Context3DGraphics {
 								
 								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 								renderer.setShader (shader);
-								renderer.applyMatrix (renderer.__getMatrix (matrix));
+								renderer.applyMatrix (renderer.__getMatrix (matrix, AUTO));
 								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, repeat);
 								renderer.applyAlpha ((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform (tempColorTransform);
@@ -743,7 +743,7 @@ class Context3DGraphics {
 							var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
 							var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 							
-							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
+							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform, AUTO);
 							var shader;
 							
 							if (shaderBuffer != null && !maskRender) {

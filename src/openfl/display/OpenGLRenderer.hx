@@ -306,7 +306,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (gl != null) {
 			
-			var values = __getMatrix (transform);
+			var values = __getMatrix (transform, AUTO);
 			
 			for (i in 0...16) {
 				
@@ -489,13 +489,13 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private function __getMatrix (transform:Matrix):Array<Float> {
+	@:noCompletion private function __getMatrix (transform:Matrix, pixelSnapping:PixelSnapping):Array<Float> {
 		
 		var _matrix = Matrix.__pool.get ();
 		_matrix.copyFrom (transform);
 		_matrix.concat (__worldTransform);
 		
-		if (__roundPixels) {
+		if (pixelSnapping == ALWAYS || (pixelSnapping == AUTO && _matrix.b == 0 && _matrix.c == 0 && (_matrix.a < 1.001 && _matrix.a > 0.999) && (_matrix.d < 1.001 && _matrix.d > 0.999))) {
 			
 			_matrix.tx = Math.round (_matrix.tx);
 			_matrix.ty = Math.round (_matrix.ty);
@@ -865,7 +865,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		applyAlpha (1);
 		applyBitmapData (source, false);
 		applyColorTransform (null);
-		applyMatrix (__getMatrix (source.__renderTransform));
+		applyMatrix (__getMatrix (source.__renderTransform, AUTO));
 		updateShader ();
 		
 		var vertexBuffer = source.getVertexBuffer (__context3D);

@@ -2705,7 +2705,7 @@ class BitmapData implements IBitmapDrawable {
 		var shader = renderer.__defaultDisplayShader;
 		renderer.setShader (shader);
 		renderer.applyBitmapData (this, renderer.__allowSmoothing && (renderer.__upscaled));
-		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
+		renderer.applyMatrix (renderer.__getMatrix (__worldTransform, AUTO));
 		renderer.applyAlpha (__worldAlpha);
 		renderer.applyColorTransform (__worldColorTransform);
 		renderer.updateShader ();
@@ -2735,7 +2735,7 @@ class BitmapData implements IBitmapDrawable {
 		var shader = renderer.__maskShader;
 		renderer.setShader (shader);
 		renderer.applyBitmapData (this, renderer.__allowSmoothing && (renderer.__upscaled));
-		renderer.applyMatrix (renderer.__getMatrix (__worldTransform));
+		renderer.applyMatrix (renderer.__getMatrix (__worldTransform, AUTO));
 		renderer.updateShader ();
 		
 		var vertexBuffer = getVertexBuffer (context);
