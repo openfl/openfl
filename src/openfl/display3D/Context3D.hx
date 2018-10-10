@@ -1189,24 +1189,42 @@ import openfl.utils.ByteArray;
 			__setGLScissorTest (true);
 			__contextState.scissorEnabled = true;
 			
-			var scissorX = Std.int (__state.scissorRectangle.x);
-			var scissorY = Std.int (__state.scissorRectangle.y);
-			var scissorWidth = Std.int (__state.scissorRectangle.width);
-			var scissorHeight = Std.int (__state.scissorRectangle.height);
+			var height = 0;
+			var offsetX = 0;
+			var offsetY = 0;
 			
-			if (__state.renderToTexture == null) {
+			if (__state.renderToTexture != null) {
 				
-				var contextHeight = Std.int (__stage.window.height * __stage.window.scale);
-				scissorY = contextHeight - Std.int (__state.scissorRectangle.height) - scissorY;
+				// TODO: Avoid use of Std.is
+				if (Std.is (__state.renderToTexture, Texture)) {
 				
-				if (__stage3D != null) {
+					var texture2D:Texture = cast __state.renderToTexture;
+					height = texture2D.__height;
+				
+				} else if (Std.is (__state.renderToTexture, RectangleTexture)) {
 					
-					scissorX += Std.int (__stage3D.x);
-					scissorY -= Std.int (__stage3D.y);
+					var rectTexture:RectangleTexture = cast __state.renderToTexture;
+					height = rectTexture.__height;
+					
+				}
+				
+			} else {
+				
+				height = backBufferHeight;
+				
+				if (__stage.context3D == this) {
+					
+					offsetX = __stage3D != null ? Std.int (__stage3D.x) : 0;
+					offsetY = Std.int (__stage.window.height * __stage.window.scale) - height - (__stage3D != null ? Std.int (__stage3D.y) : 0);
 					
 				}
 				
 			}
+			
+			var scissorX = Std.int (__state.scissorRectangle.x) + offsetX;
+			var scissorY = height - Std.int (__state.scissorRectangle.y) - Std.int (__state.scissorRectangle.height) + offsetY;
+			var scissorWidth = Std.int (__state.scissorRectangle.width);
+			var scissorHeight = Std.int (__state.scissorRectangle.height);
 			
 			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX || __contextState.scissorRectangle.y != scissorY || __contextState.scissorRectangle.width != scissorWidth || __contextState.scissorRectangle.height != scissorHeight #end) {
 				

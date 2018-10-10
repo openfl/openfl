@@ -947,8 +947,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
 			
-			// __scissorRectangle.setTo (x, __flipped ? __height - y - height : y, width, height);
-			__scissorRectangle.setTo (x, y, width, height);
+			__scissorRectangle.setTo (x, !__flipped ? __height - y - height : y, width, height);
+			// __scissorRectangle.setTo (x, y, width, height);
 			__context3D.setScissorRectangle (__scissorRectangle);
 			
 		} else {
