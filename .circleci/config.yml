@@ -1,53 +1,20 @@
-version: 2
-jobs:
+version: 2.1
 
-  Setup (Haxe 3.2.1):
+executors:
+  haxe-3.4:
+    working_directory: /workspace/openfl/
     docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl
-    steps:
-     - checkout
-     - run:
-         name: Setup OpenFL Development Directory
-         command: haxelib dev openfl .
-     - run:
-         name: Clone Lime (Master)
-         command: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
-     - run:
-         name: Clone Lime (Develop)
-         command: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
-     - run:
-         name: Clone HXP
-         command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
-     - run:
-         name: Set HXP Development Directory
-         command: haxelib dev hxp ../hxp
-     - run:
-         name: Set Lime Development Directory
-         command: haxelib dev lime ../lime
-     - run:
-         name: Clone HXP
-         command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
-     - run:
-         name: Set HXP Development Directory
-         command: haxelib dev hxp ../hxp
-     - run:
-         name: Rebuild Lime Tools
-         command: haxelib run lime rebuild tools -nocffi
-     - run:
-         name: Generate MUnit Test Runner
-         working_directory: test/unit
-         command: haxelib run munit gen
-     - persist_to_workspace:
-         root: /
-         paths:
-          - usr/local/lib/haxe/lib/*/.dev
-          - workspace
-  
-  Setup (Haxe 3.4.x):
+      - image: openfl/openfl-tests-unit-3.4:0.0.5
+  npm:
+    working_directory: /workspace/openfl/
     docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl
+      - image: openfl/ci-openfl-js:0.0.3
+
+
+commands:
+
+  setup:
+    description: "Setup build dependencies"
     steps:
      - checkout
      - run:
@@ -73,179 +40,74 @@ jobs:
          command: haxelib run lime rebuild tools -nocffi
      - run:
          name: Generate MUnit Test Runner
-         working_directory: test/unit
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run munit gen
-     - persist_to_workspace:
-         root: /
-         paths:
-          - usr/local/lib/haxe/lib/*/.dev
-          - workspace
-  
-  
-  HTML5 (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/test/unit
+
+  test-html5:
+    description: "Test HTML5"
     steps:
-     - attach_workspace:
-         at: /
      - run:
          name: Build Tests
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime build html5 -nocffi
      #- run:
          #name: Run Tests
          #command: haxelib run munit test -js -nocffi
-  
-  HTML5 (Haxe 3.4.x):
-    docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl/test/unit
+
+  test-neko:
+    description: "Test Neko"
     steps:
-     - attach_workspace:
-         at: /
-     - run:
-         name: Build Tests
-         command: haxelib run lime build html5 -nocffi
-     #- run:
-         #name: Run Tests
-         #command: haxelib run munit test -js -nocffi
-  
-  
-  Neko (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/test/unit
-    steps:
-     - attach_workspace:
-         at: /
      - run:
          name: Rebuild HXCPP static libraries
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
      - run:
-         name: Rebuild HXCPP standard libraries
-         command: haxelib run lime rebuild hxcpp linux -release -64 -nocffi
-     - run:
          name: Rebuild Lime Desktop Binary
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime rebuild linux -release -64 -nocffi
      - run:
          name: Run Tests (CFFI-enabled)
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime build neko -nocffi
      - run:
          name: Run Tests (CFFI-disabled)
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime build neko -Ddisable-cffi -nocffi
-  
-  Neko (Haxe 3.4.x):
-    docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl/test/unit
+
+  test-cpp:
+    description: "Test C++"
     steps:
-     - attach_workspace:
-         at: /
      - run:
          name: Rebuild HXCPP static libraries
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
      - run:
          name: Rebuild Lime Desktop Binary
-         command: haxelib run lime rebuild linux -release -64 -nocffi
-     - run:
-         name: Run Tests (CFFI-enabled)
-         command: haxelib run lime build neko -nocffi
-     - run:
-         name: Run Tests (CFFI-disabled)
-         command: haxelib run lime build neko -Ddisable-cffi -nocffi
-  
-  
-  C++ (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/test/unit
-    steps:
-     - attach_workspace:
-         at: /
-     - run:
-         name: Rebuild HXCPP static libraries
-         command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
-     - run:
-         name: Rebuild HXCPP standard libraries
-         command: haxelib run lime rebuild hxcpp linux -release -64 -nocffi
-     - run:
-         name: Rebuild Lime Desktop Binary
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime rebuild linux -release -64 -nocffi
      - run:
          name: Run Tests
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime test linux --window-hardware=false
-  
-  C++ (Haxe 3.4.x):
-    docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl/test/unit
+
+  test-flash:
+    description: "Test Flash"
     steps:
-     - attach_workspace:
-         at: /
-     - run:
-         name: Rebuild HXCPP static libraries
-         command: haxelib run lime rebuild hxcpp linux -static -release -64 -nocffi
-     - run:
-         name: Rebuild Lime Desktop Binary
-         command: haxelib run lime rebuild linux -release -64 -nocffi
-     - run:
-         name: Run Tests
-         command: haxelib run lime test linux --window-hardware=false
-  
-  
-  Flash (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/test/unit
-    steps:
-     - attach_workspace:
-         at: /
      - run:
          name: Build Tests
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run lime build flash -nocffi
      - run:
          name: Run Tests
+         working_directory: /workspace/openfl/test/unit
          command: haxelib run munit test -as3 -norun -nocffi
-  
-  Flash (Haxe 3.4.x):
-    docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl/test/unit
+
+  test-documentation:
+    parameters:
+      deploy:
+        type: boolean
+        default: false
     steps:
-     - attach_workspace:
-         at: /
-     - run:
-         name: Build Tests
-         command: haxelib run lime build flash -nocffi
-     - run:
-         name: Run Tests
-         command: haxelib run munit test -as3 -norun -nocffi
-  
-  
-  Documentation (Haxe 3.2.1):
-    docker:
-     - image: openfl/openfl-tests-unit-3.2:0.0.3
-    working_directory: /workspace/openfl/scripts
-    steps:
-     - attach_workspace:
-         at: /
-     - run:
-         name: Clone Dox
-         command: git clone https://github.com/openfl/dox ~/dox --depth 1
-     - run:
-         name: Set Dox Development Directory
-         command: haxelib dev dox ~/dox
-     - run:
-         name: Generate Documentation
-         command: haxe docs.hxml
-  
-  Documentation (Haxe 3.4.x):
-    docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl
-    steps:
-     - attach_workspace:
-         at: /
      - run:
          name: Clone Dox
          command: git clone https://github.com/openfl/dox ~/dox --depth 1
@@ -263,14 +125,9 @@ jobs:
             else
               echo "Not on master (skipping step)"
             fi
-  
-  
-  NPM:
-    docker:
-     - image: openfl/ci-openfl-js:0.0.3
-    working_directory: /workspace/openfl
+
+  test-npm:
     steps:
-     - checkout
      - run:
          name: Install Dependencies
          command: npm install
@@ -280,133 +137,79 @@ jobs:
      - run:
          name: Run Tests
          command: npm run test
-  
-  
+
+
+jobs:
+
+  HTML5 (Haxe 3.4.x):
+    executor:
+      name: haxe-3.4
+    steps:
+     - setup
+     - test-html5
+
+  Neko (Haxe 3.4.x):
+    executor:
+      name: haxe-3.4
+    steps:
+     - setup
+     - test-neko
+
+  C++ (Haxe 3.4.x):
+    executor:
+      name: haxe-3.4
+    steps:
+     - setup
+     - test-cpp
+
+  Flash (Haxe 3.4.x):
+    executor:
+      name: haxe-3.4
+    steps:
+     - setup
+     - test-flash
+
+  Documentation (Haxe 3.4.x):
+    executor:
+      name: haxe-3.4
+    steps:
+     - setup
+     - test-documentation true
+
+  NPM:
+    executor:
+      name: npm
+    steps:
+     - checkout
+     - test-npm
+
+
   # This is used for local tests, it assumes you already have a working environment
   build:
-    docker:
-     - image: openfl/openfl-tests-unit-3.4:0.0.5
-    working_directory: /workspace/openfl
+    executor:
+      name: haxe-3.4
     steps:
-     # Setup
-     - checkout
-     - run:
-         name: Setup OpenFL Development Directory
-         command: haxelib dev openfl .
-     - run:
-         name: Clone Lime (Master)
-         command: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
-     - run:
-         name: Clone Lime (Develop)
-         command: if [[ $CIRCLE_BRANCH != 'master' ]]; then git clone -b develop --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
-     - run:
-         name: Clone HXP
-         command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
-     - run:
-         name: Set HXP Development Directory
-         command: haxelib dev hxp ../hxp
-     - run:
-         name: Set Lime Development Directory
-         command: haxelib dev lime ../lime
-     - run:
-         name: Rebuild Lime Tools
-         command: haxelib run lime rebuild tools -nocffi
-     - run:
-         name: Generate MUnit Test Runner
-         working_directory: test/unit
-         command: haxelib run munit gen
-     # HTML5
-     - run:
-         name: Build Tests
-         working_directory: test/unit
-         command: haxelib run lime build html5 -nocffi
-     - run:
-         name: Run Tests
-         working_directory: test/unit
-         command: haxelib run munit test -browser phantomjs -nocffi
-     # Neko
-     - run:
-         name: Rebuild Lime Desktop Binary
-         command: haxelib run lime rebuild linux -release -64 -nocffi
-     - run:
-         name: Run Tests (CFFI-enabled)
-         working_directory: test/unit
-         command: haxelib run lime build neko -nocffi
-     - run:
-         name: Run Tests (CFFI-disabled)
-         working_directory: test/unit
-         command: haxelib run lime build neko -Ddisable-cffi -nocffi
-     # Linux
-     - run:
-         name: Rebuild Lime Desktop Binary
-         command: haxelib run lime rebuild linux -release -64 -nocffi
-     - run:
-         name: Run Tests
-         working_directory: test/unit
-         command: haxelib run lime test linux --window-hardware=false
-     # Flash
-     - run:
-         name: Build Tests
-         working_directory: test/unit
-         command: haxelib run lime build flash -nocffi
-     - run:
-         name: Run Tests
-         working_directory: test/unit
-         command: haxelib run munit test -as3 -norun -nocffi
-     # Documentation
-     - run:
-         name: Clone Dox
-         command: git clone https://github.com/openfl/dox ~/dox --depth 1
-     - run:
-         name: Set Dox Development Directory
-         command: haxelib dev dox ~/dox
-     - run:
-         name: Generate Documentation
-         working_directory: docs
-         command: haxe build.hxml
+     - setup
+     - test-html5
+     - test-neko
+     - test-cpp
+     - test-flash
+     - test-npm
+     - test-documentation
 
 
 workflows:
+
   version: 2
-  
+
   NPM Tests:
     jobs:
      - NPM
-  
-#   Tests (Haxe 3.2.1):
-#     jobs:
-#      - Setup (Haxe 3.2.1)
-#      - HTML5 (Haxe 3.2.1):
-#          requires:
-#           - Setup (Haxe 3.2.1)
-#      - Neko (Haxe 3.2.1):
-#          requires:
-#           - Setup (Haxe 3.2.1)
-#      - C++ (Haxe 3.2.1):
-#          requires:
-#           - Setup (Haxe 3.2.1)
-#      - Flash (Haxe 3.2.1):
-#          requires:
-#           - Setup (Haxe 3.2.1)
-#      - Documentation (Haxe 3.2.1):
-#          requires:
-#           - Setup (Haxe 3.2.1)
-  
+
   Tests (Haxe 3.4.x):
     jobs:
-     - Setup (Haxe 3.4.x)
-     - HTML5 (Haxe 3.4.x):
-         requires:
-          - Setup (Haxe 3.4.x)
-     - Neko (Haxe 3.4.x):
-         requires:
-          - Setup (Haxe 3.4.x)
-     - C++ (Haxe 3.4.x):
-         requires:
-          - Setup (Haxe 3.4.x)
-     - Flash (Haxe 3.4.x):
-         requires:
-          - Setup (Haxe 3.4.x)
-     - Documentation (Haxe 3.4.x):
-         requires:
-          - Setup (Haxe 3.4.x)
+     - HTML5 (Haxe 3.4.x)
+     - Neko (Haxe 3.4.x)
+     - C++ (Haxe 3.4.x)
+     - Flash (Haxe 3.4.x)
+     - Documentation (Haxe 3.4.x)
