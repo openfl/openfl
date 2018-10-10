@@ -77,6 +77,13 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			
 		}
 		
+		if (__batchQuad != null) {
+			
+			Quad.pool.release (__batchQuad);
+			__batchQuad = null;
+			
+		}
+		
 	}
 	
 	private override function __enterFrame (deltaTime:Int):Void {
@@ -242,7 +249,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		if (__batchQuadDirty) {
 			if (__batchQuad == null) {
-				__batchQuad = new Quad ();
+				__batchQuad = Quad.pool.get ();
 			}
 			
 			var snapToPixel = renderSession.roundPixels || __snapToPixel ();
