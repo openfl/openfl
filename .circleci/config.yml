@@ -1,7 +1,7 @@
 version: 2.1
 
 executors:
-  haxe-3.4:
+  haxe-34:
     working_directory: /workspace/openfl/
     docker:
       - image: openfl/openfl-tests-unit-3.4:0.0.5
@@ -141,53 +141,53 @@ commands:
 
 jobs:
 
-  HTML5 (Haxe 3.4.x):
+  html5:
     executor:
-      name: haxe-3.4
+      name: haxe-34
     steps:
      - setup
      - test-html5
 
-  Neko (Haxe 3.4.x):
+  neko:
     executor:
-      name: haxe-3.4
+      name: haxe-34
     steps:
      - setup
      - test-neko
 
-  C++ (Haxe 3.4.x):
+  cpp:
     executor:
-      name: haxe-3.4
+      name: haxe-34
     steps:
      - setup
      - test-cpp
 
-  Flash (Haxe 3.4.x):
+  flash:
     executor:
-      name: haxe-3.4
+      name: haxe-34
     steps:
      - setup
      - test-flash
 
-  Documentation (Haxe 3.4.x):
+  documentation:
     executor:
-      name: haxe-3.4
+      name: haxe-34
     steps:
      - setup
-     - test-documentation true
+     - test-documentation:
+         deploy: true
 
-  NPM:
+  npm:
     executor:
       name: npm
     steps:
      - checkout
      - test-npm
 
-
   # This is used for local tests, it assumes you already have a working environment
   build:
     executor:
-      name: haxe-3.4
+      name: haxe-34
     steps:
      - setup
      - test-html5
@@ -204,12 +204,12 @@ workflows:
 
   NPM Tests:
     jobs:
-     - NPM
+     - npm
 
   Tests (Haxe 3.4.x):
     jobs:
-     - HTML5 (Haxe 3.4.x)
-     - Neko (Haxe 3.4.x)
-     - C++ (Haxe 3.4.x)
-     - Flash (Haxe 3.4.x)
-     - Documentation (Haxe 3.4.x)
+     - html5
+     - neko
+     - cpp
+     - flash
+     - documentation
