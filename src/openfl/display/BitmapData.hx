@@ -1164,7 +1164,7 @@ class BitmapData implements IBitmapDrawable {
 		#else
 		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromFile (path);
-		return bitmapData;
+		return bitmapData.image != null ? bitmapData : null;
 		#end
 		
 	}
@@ -1178,7 +1178,7 @@ class BitmapData implements IBitmapDrawable {
 		var bitmapData = new BitmapData (0, 0, transparent, 0);
 		bitmapData.__fromImage (image);
 		bitmapData.image.transparent = transparent;
-		return bitmapData;
+		return bitmapData.image != null ? bitmapData : null;
 		
 	}
 	
