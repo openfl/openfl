@@ -706,6 +706,13 @@ import js.html.CanvasRenderingContext2D;
 		
 		__bitmap = null;
 		
+		if (__batchQuad != null) {
+			
+			Quad.pool.release (__batchQuad);
+			__batchQuad = null;
+			
+		}
+		
 		#if (js && html5)
 		__canvas = null;
 		__context = null;
@@ -936,7 +943,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (__batchQuadDirty) {
 			if (__batchQuad == null) {
-				__batchQuad = new Quad ();
+				__batchQuad = Quad.pool.get ();
 			}
 			
 			var transform = (cast renderSession.renderer : GLRenderer).getDisplayTransformTempMatrix (__worldTransform, false);
