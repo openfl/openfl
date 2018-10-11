@@ -3,6 +3,8 @@ package;
 
 import format.swf.exporters.SWFLiteExporter;
 import format.swf.tags.TagDefineBits;
+import format.swf.tags.TagDefineBitsJPEG2;
+import format.swf.tags.TagDefineBitsJPEG3;
 import format.swf.tags.TagDefineBitsLossless;
 import format.swf.tags.TagDefineButton2;
 import format.swf.tags.TagDefineEditText;
@@ -179,6 +181,7 @@ class Tools {
 	
 	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Array<String> {
 		
+		var bitmapDataTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/BitmapData.mtt");
 		var movieClipTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
 		
@@ -221,7 +224,11 @@ class Tools {
 			var templateData = null;
 			var symbol = swf.data.getCharacter (symbolID);
 			
-			if (Std.is (symbol, TagDefineButton2)) {
+			if (Std.is (symbol, TagDefineBits) || Std.is (symbol, TagDefineBitsJPEG2) || Std.is (symbol, TagDefineBitsLossless)) {
+				
+				templateData = bitmapDataTemplate;
+				
+			} else if (Std.is (symbol, TagDefineButton2)) {
 				
 				templateData = simpleButtonTemplate;
 				
@@ -257,9 +264,9 @@ class Tools {
 										
 										className = "openfl.display.MovieClip";
 										
-									} else if (Std.is (childSymbol, TagDefineBitsLossless) || Std.is (childSymbol, TagDefineBits)) {
+									} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
 										
-										className = "openfl.display.Bitmap";
+										className = "openfl.display.BitmapData";
 										
 									} else if (Std.is (childSymbol, TagDefineShape) || Std.is (childSymbol, TagDefineMorphShape)) {
 										
@@ -324,9 +331,11 @@ class Tools {
 	private static function generateSWFLiteClasses (targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfID:String, prefix:String = ""):Array<String> {
 		
 		#if commonjs
+		var bitmapDataTemplate = File.getContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname, "../assets/templates/swf/BitmapData.mtt"));
 		var movieClipTemplate = File.getContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname, "../assets/templates/swf/MovieClip.mtt"));
 		var simpleButtonTemplate = File.getContent (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
 		#else
+		var bitmapDataTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/BitmapData.mtt");
 		var movieClipTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib ("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
 		#end
@@ -338,7 +347,11 @@ class Tools {
 			var symbol = swfLite.symbols.get (symbolID);
 			var templateData = null;
 			
-			if (Std.is (symbol, SpriteSymbol)) {
+			if (Std.is (symbol, BitmapSymbol)) {
+				
+				templateData = bitmapDataTemplate;
+				
+			} else if (Std.is (symbol, SpriteSymbol)) {
 				
 				templateData = movieClipTemplate;
 				
@@ -392,6 +405,10 @@ class Tools {
 										if (Std.is (childSymbol, SpriteSymbol)) {
 											
 											className = "openfl.display.MovieClip";
+											
+										} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
+											
+											className = "openfl.display.BitmapData";
 											
 										} else if (Std.is (childSymbol, ShapeSymbol)) {
 											

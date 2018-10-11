@@ -28,6 +28,8 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import lime.utils.UInt16Array;
+import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.PerlinNoise;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.RectangleTexture;
@@ -225,6 +227,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@:noCompletion private var __surface:CairoSurface;
+	@:noCompletion private var __symbol:BitmapSymbol;
 	@:noCompletion private var __texture:RectangleTexture;
 	@:noCompletion private var __textureContext:RenderContext;
 	@:noCompletion private var __textureHeight:Int;
@@ -2513,6 +2516,72 @@ class BitmapData implements IBitmapDrawable {
 			__isValid = true;
 			
 		}
+		
+	}
+	
+	
+		
+	@:noCompletion private function __fromSymbol (swf:SWFLite, symbol:BitmapSymbol):Void {
+		
+		__symbol = symbol;
+		
+		// TODO: Cache alpha image?
+		
+		#if (js && html5)
+		
+		Image.loadFromFile (symbol.path).onComplete (function (image) {
+			
+			if (symbol.alpha != null) {
+				
+				Image.loadFromFile (symbol.alpha).onComplete (function (alpha) {
+					
+					if (image != null && alpha != null) {
+						
+						image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+						image.buffer.premultiplied = true;
+						
+						#if !sys
+						image.premultiplied = false;
+						#end
+						
+					}
+					
+					__fromImage (image);
+					
+				});
+				
+			} else {
+				
+				__fromImage (image);
+				
+			}
+			
+		});
+		
+		#else
+		
+		var image = Image.fromFile (symbol.path);
+		
+		if (symbol.alpha != null) {
+			
+			var alpha = Image.fromFile (symbol.alpha);
+			
+			if (image != null && alpha != null) {
+				
+				image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+				image.buffer.premultiplied = true;
+				
+				#if !sys
+				image.premultiplied = false;
+				#end
+				
+			}
+			
+		}
+		
+		__fromImage (image);
+		
+		#end
 		
 	}
 	
