@@ -941,8 +941,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			var x = Math.floor (clipRect.x);
 			var y = Math.floor (clipRect.y);
-			var width = Math.ceil (clipRect.right) - x;
-			var height = Math.ceil (clipRect.bottom) - y;
+			var width = (clipRect.width > 0 ? Math.ceil (clipRect.right) - x : 0);
+			var height = (clipRect.height > 0 ? Math.ceil (clipRect.bottom) - y : 0);
 			
 			if (width < 0) width = 0;
 			if (height < 0) height = 0;
