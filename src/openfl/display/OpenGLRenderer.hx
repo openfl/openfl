@@ -842,7 +842,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private function __renderFilterPass (source:BitmapData, shader:Shader, clear:Bool = true):Void {
+	@:noCompletion private function __renderFilterPass (source:BitmapData, shader:Shader, smooth:Bool, clear:Bool = true):Void {
 		
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
@@ -863,7 +863,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var shader = __initShader (shader);
 		setShader (shader);
 		applyAlpha (1);
-		applyBitmapData (source, false);
+		applyBitmapData (source, smooth);
 		applyColorTransform (null);
 		applyMatrix (__getMatrix (source.__renderTransform, AUTO));
 		updateShader ();
