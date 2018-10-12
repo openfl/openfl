@@ -919,7 +919,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	public function __drawTriangles (firstIndex:Int = 0, count:Int):Void {
+	@:noCompletion private function __drawTriangles (firstIndex:Int = 0, count:Int):Void {
 		
 		#if !openfl_disable_display_render
 		if (__state.renderToTexture == null) {

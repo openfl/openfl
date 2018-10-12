@@ -32,6 +32,7 @@ import openfl.geom.Rectangle;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 
 

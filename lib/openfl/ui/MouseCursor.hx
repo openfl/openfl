@@ -12,15 +12,15 @@ package openfl.ui; #if (display || !flash)
 	public var HAND = "hand";
 	public var IBEAM = "ibeam";
 	
-	private var __CROSSHAIR = "crosshair";
-	private var __CUSTOM = "custom";
-	private var __MOVE = "move";
-	private var __RESIZE_NESW = "resize_nesw";
-	private var __RESIZE_NS = "resize_ns";
-	private var __RESIZE_NWSE = "resize_nwse";
-	private var __RESIZE_WE = "resize_we";
-	private var __WAIT = "wait";
-	private var __WAIT_ARROW = "waitarrow";
+	@:noCompletion private var __CROSSHAIR = "crosshair";
+	@:noCompletion private var __CUSTOM = "custom";
+	@:noCompletion private var __MOVE = "move";
+	@:noCompletion private var __RESIZE_NESW = "resize_nesw";
+	@:noCompletion private var __RESIZE_NS = "resize_ns";
+	@:noCompletion private var __RESIZE_NWSE = "resize_nwse";
+	@:noCompletion private var __RESIZE_WE = "resize_we";
+	@:noCompletion private var __WAIT = "wait";
+	@:noCompletion private var __WAIT_ARROW = "waitarrow";
 	
 	// @:from private static function fromLimeCursor (cursor:LimeMouseCursor):MouseCursor {
 		

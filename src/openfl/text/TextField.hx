@@ -139,6 +139,7 @@ import js.html.DivElement;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextFormat)
