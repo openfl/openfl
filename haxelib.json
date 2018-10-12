@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.5.1",
-	"releasenote": "Fixed a regression in indexed hardware graphics.drawTriangles rendering",
+	"version": "8.6.0",
+	"releasenote": "Added initial support for PixelSnapping, DisplacementMapFilter, scrollRect fixes and more",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
