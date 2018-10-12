@@ -10,6 +10,7 @@ import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
 import openfl._internal.renderer.context3D.Context3DMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl.display3D.Context3DClearMask;
@@ -87,6 +88,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __offsetY:Int;
 	@:noCompletion private var __projection:Matrix4;
 	@:noCompletion private var __projectionFlipped:Matrix4;
+	@:noCompletion private var __scrollRectMasks:ObjectPool<Shape>;
 	@:noCompletion private var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private var __stencilReference:Int;
 	@:noCompletion private var __tempRect:Rectangle;
@@ -153,6 +155,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		__initShader (__defaultShader);
 		
+		__scrollRectMasks = new ObjectPool<Shape> (function () { return new Shape (); });
 		__maskShader = new Context3DMaskShader ();
 		
 	}
@@ -646,7 +649,16 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
-			__popMaskRect ();
+			if (object.__renderTransform.b != 0 || object.__renderTransform.c != 0) {
+				
+				__scrollRectMasks.release (cast __maskObjects[__maskObjects.length - 1]);
+				__popMask ();
+				
+			} else {
+				
+				__pushMaskRect (object.__scrollRect, object.__renderTransform);
+				
+			}
 			
 		}
 		
@@ -702,7 +714,20 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (handleScrollRect && object.__scrollRect != null) {
 			
-			__pushMaskRect (object.__scrollRect, object.__renderTransform);
+			if (object.__renderTransform.b != 0 || object.__renderTransform.c != 0) {
+				
+				var shape = __scrollRectMasks.get ();
+				shape.graphics.clear ();
+				shape.graphics.beginFill (0x00FF00);
+				shape.graphics.drawRect (object.__scrollRect.x, object.__scrollRect.y, object.__scrollRect.width, object.__scrollRect.height);
+				shape.__renderTransform.copyFrom (object.__renderTransform);
+				__pushMask (shape);
+				
+			} else {
+				
+				__pushMaskRect (object.__scrollRect, object.__renderTransform);
+				
+			}
 			
 		}
 		
