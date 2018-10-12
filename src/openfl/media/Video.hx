@@ -35,6 +35,7 @@ import openfl.net.NetStream;
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
