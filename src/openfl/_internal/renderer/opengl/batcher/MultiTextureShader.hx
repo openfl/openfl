@@ -30,7 +30,7 @@ class MultiTextureShader {
 		this.gl = gl;
 
 		var maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-		while (maxTextures > 1) {
+		while (maxTextures >= 1) {
 			var fsSource = generateMultiTextureFragmentShaderSource(maxTextures);
 			program = createProgram(gl, vsSource, fsSource);
 			if (program == null) {
@@ -93,7 +93,7 @@ class MultiTextureShader {
 
 		var fragmentShader = compileShader(gl, fragmentSource, gl.FRAGMENT_SHADER);
 		if (fragmentShader == null) {
-			if (vertexShader != null) gl.deleteShader(vertexShader);
+			gl.deleteShader(vertexShader);
 			return null;
 		}
 		
