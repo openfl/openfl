@@ -1,3 +1,22 @@
+8.6.0 (10/12/2018)
+------------------
+
+* Added initial support for `PixelSnapping` in hardware rendering
+* Added initial support for `DisplacementMapFilter` (hardware only)
+* Added `generate="true"` support for SWF `BitmapData` symbols
+* Improved `BitmapData.fromFile` (and similar methods) when an image fails to load
+* Improved texture smoothing behavior for hardware shader filters
+* Improved synchronization between display list shaders and `Stage3D` shader programs
+* Fixed a regression where `TextField` could fail to render on hardware
+* Fixed a regression in the behavior of `textField.getTextFormat` with default parameters
+* Fixed the clip rectangle for `sprite.scrollRect` on hardware rendering
+* Fixed `stage.color` to return a 32-bit value
+* Fixed `Context3D` scissoring with a width or height of 0
+* Fixed an issue where `scrollRect` could show a pixel improperly
+* Fixed issues when compiling using `-Dtelemetry`
+* Fixed a Haxe 4 compiler deprecation warning
+
+
 8.5.1 (09/27/2018)
 -----------------
 
