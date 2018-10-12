@@ -48,8 +48,8 @@ class BatchRenderer {
 		this.maxQuads = maxQuads;
 
 		// determine amount of textures we can draw at once and generate a shader for that
-		maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-		shader = new MultiTextureShader(gl, maxTextures);
+		shader = new MultiTextureShader(gl);
+		maxTextures = shader.maxTextures;
 
 		// a singleton vector we use to track texture binding when rendering
 		boundTextures = new Vector(maxTextures);

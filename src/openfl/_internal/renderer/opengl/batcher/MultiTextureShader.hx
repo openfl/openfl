@@ -2,14 +2,17 @@ package openfl._internal.renderer.opengl.batcher;
 
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.utils.Float32Array;
 import lime.utils.Int32Array;
-import lime.utils.GLUtils;
+import lime.utils.Log;
 
 class MultiTextureShader {
 	var program:GLProgram;
 	var gl:GLRenderContext;
+
+	public var maxTextures(default,null):Int;
 
 	public var aVertexPosition(default,null):Int;
 	public var aTextureCoord(default,null):Int;
@@ -23,11 +26,24 @@ class MultiTextureShader {
 	// x, y, u, v, texId, alpha, colorMult, colorOfs
 	public static inline var floatsPerVertex = 2 + 2 + 1 + 1 + 4 + 4;
 
-	public function new(gl:GLRenderContext, maxTextures:Int) {
+	public function new(gl:GLRenderContext) {
 		this.gl = gl;
 
-		var fsSource = generateMultiTextureFragmentShaderSource(maxTextures);
-		program = GLUtils.createProgram(vsSource, fsSource);
+		var maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+		while (maxTextures >= 1) {
+			var fsSource = generateMultiTextureFragmentShaderSource(maxTextures);
+			program = createProgram(gl, vsSource, fsSource);
+			if (program == null) {
+				Log.warn("Coudln't compile multi-texture program for " + maxTextures + " samplers, trying twice as less...");
+				maxTextures = Std.int(maxTextures / 2);
+			} else {
+				break;
+			}
+		}
+		if (program == null) {
+			throw "Could not compile a multi-texture shader for any number of textures, something must be horribly broken!";
+		}
+		this.maxTextures = maxTextures;
 
 		aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 		aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
@@ -54,6 +70,50 @@ class MultiTextureShader {
 		gl.uniformMatrix4fv(uProjMatrix, 0, false, projectionMatrix);
 	}
 
+	static function compileShader(gl:GLRenderContext, source:String, type:Int):Null<GLShader> {
+		var shader = gl.createShader(type);
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+		
+		if (gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0) {
+			var message = gl.getShaderInfoLog(shader);
+			gl.deleteShader(shader);
+			Log.warn(message);
+			return null;			
+		}
+		
+		return shader;
+	}
+	
+	static function createProgram(gl:GLRenderContext, vertexSource:String, fragmentSource:String):Null<GLProgram> {
+		var vertexShader = compileShader(gl, vertexSource, gl.VERTEX_SHADER);
+		if (vertexShader == null) {
+			return null;
+		}
+
+		var fragmentShader = compileShader(gl, fragmentSource, gl.FRAGMENT_SHADER);
+		if (fragmentShader == null) {
+			gl.deleteShader(vertexShader);
+			return null;
+		}
+		
+		var program = gl.createProgram();
+		gl.attachShader(program, vertexShader);
+		gl.attachShader(program, fragmentShader);
+		gl.linkProgram(program);
+		
+		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0) {
+			var message = gl.getProgramInfoLog(program);
+			Log.warn(message);
+			gl.deleteProgram(program);
+			gl.deleteShader(vertexShader);
+			gl.deleteShader(fragmentShader);
+			return null;
+		}
+		
+		return program;
+	}
+	
 	static function generateMultiTextureFragmentShaderSource(numTextures:Int):String {
 		var select = [];
 		for (i in 0...numTextures) {
