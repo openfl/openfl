@@ -11,7 +11,8 @@ import openfl.geom.Rectangle;
 #end
 
 @:access(openfl.geom.ColorTransform)
-
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 class Tile {
 	
@@ -156,9 +157,110 @@ class Tile {
 		#end
 		
 	}
+
+	/**
+	 * Evaluates the bounding box of the tile to see if it overlaps or
+	 * intersects with the bounding box of the `obj` tile.
+	 * Both tiles must be under the same Tilemap for this to work.
+	 * 
+	 * @param obj The tile to test against.
+	 * @return `true` if the bounding boxes of the tiles
+	 *         intersect; `false` if not.
+	 */
+	public function hitTestTile (obj:Tile):Bool {
+		
+		if (obj != null && obj.parent != null && parent != null) {
+			
+			var currentBounds = getBounds (this);
+			var targetBounds = obj.getBounds (this);
+			return currentBounds.intersects (targetBounds);
+			
+		}
+		
+		return false;
+		
+	}
+
+	/**
+	 * Gets you the bounding box of the Tile.
+	 * It will find a tileset to know the original rect
+	 * Then it will apply all the transformations from his parent.
+	 * 
+	 * @param targetCoordinateSpace The tile that works as a coordinate system.
+	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	 */
+	public function getBounds(targetCoordinateSpace:Tile):Rectangle
+	{
+		//Get a rectangle of at least my original size.
+		var retval:Rectangle;
+		if (tileset == null)
+		{
+			var tset = parent._findTileset();
+			if (tset == null) return new Rectangle(); //We couldn't find any info about who we are.
+			retval = tset.getRect(id);
+			if (retval == null) return new Rectangle(); //Our ID wasn't on the tileset :|
+		}
+		else
+		{
+			retval = tileset.getRect(id);
+		}
+
+		//Copied from DisplayObject
+		var matrix = Matrix.__pool.get ();
+		
+		if (targetCoordinateSpace != null && targetCoordinateSpace != this) {
+			
+			matrix.copyFrom (__getWorldTransform ());
+			
+			var targetMatrix = Matrix.__pool.get ();
+			
+			targetMatrix.copyFrom (targetCoordinateSpace.__getWorldTransform ());
+			targetMatrix.invert ();
+			
+			matrix.concat (targetMatrix);
+
+			Matrix.__pool.release (targetMatrix);
+			
+		} else {
+			
+			matrix.identity ();
+			
+		}
+		
+		var bounds = Rectangle.__pool.get ();
+		retval.__transform (bounds, matrix);
+		retval.setTo (bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release (bounds);
+		Matrix.__pool.release (matrix);
+		
+		return retval;
+	}
+
+	/**
+	 * Climbs up to the first object that has a tileset to return.
+	 * @return Tileset The tileset corresponding to this tile (or null, if no tileset found).
+	 */
+	private function _findTileset():Tileset
+	{
+		if (tileset != null) return tileset; //Do I have a tileset?
+		if (Std.is(parent, Tilemap)) return parent.tileset; //am I a firstborn of the tilemap?
+		if (parent == null) return null; //am I an orphan? (and I didn't have a tileset of my own)
+		return parent._findTileset(); //Just ask my parent.
+	}
 	
-	
-	
+	/**
+	 * Climbs all the way up to get a transformation matrix
+	 * adds his own matrix and then returns it.
+	 * @return Matrix The final transformation matrix from stage to this point.
+	 */
+	private function __getWorldTransform():Matrix
+	{
+		if (parent == null) return matrix.clone(); //I am not in the world... what do I do!?
+		var retval = new Matrix();
+		retval = parent.__getWorldTransform();
+		retval.concat(matrix);
+		return retval;
+	}
 	
 	// Get & Set Methods
 	
