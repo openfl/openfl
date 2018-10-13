@@ -1,11 +1,15 @@
 package openfl.display;
 
+import openfl.geom.Rectangle;
+import openfl.geom.Matrix;
+
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 class TileContainer extends Tile implements ITileContainer {
 	
@@ -213,6 +217,29 @@ class TileContainer extends Tile implements ITileContainer {
 		
 		__setRenderDirty ();
 		
+	}
+
+
+	/**
+	 * Override from tile. A single tile, just has his rectangle.
+	 * A container must get a rectangle that contains all other rectangles.
+	 * 
+	 * @param targetCoordinateSpace The tile that works as a coordinate system.
+	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	 */
+	public override function getBounds(targetCoordinateSpace:Tile):Rectangle
+	{
+		//Get a rectangle of at least my original size.
+		var arrRects = new Array<Rectangle>();
+		var retval = new Rectangle();
+		var tmpRect = Rectangle.__pool.get();
+		for (tile in __tiles) 
+		{
+			tmpRect = tile.getBounds(targetCoordinateSpace);
+			retval.__expand(tmpRect.x,tmpRect.y,tmpRect.width,tmpRect.height);
+		}
+		Rectangle.__pool.release(tmpRect);
+		return retval;
 	}
 	
 	
