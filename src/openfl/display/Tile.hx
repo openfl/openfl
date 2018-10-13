@@ -255,10 +255,14 @@ class Tile {
 	 */
 	private function __getWorldTransform():Matrix
 	{
-		if (parent == null) return matrix.clone(); //I am not in the world... what do I do!?
-		var retval = new Matrix();
-		retval = parent.__getWorldTransform();
-		retval.concat(matrix);
+		var retval = matrix.clone();
+		if (parent != null)
+		{
+			var parentMatrix = Matrix.__pool.get();
+			parentMatrix = parent.__getWorldTransform();
+			retval.concat(parentMatrix);
+			Matrix.__pool.release(parentMatrix);
+		}
 		return retval;
 	}
 	
