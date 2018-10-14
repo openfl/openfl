@@ -247,7 +247,7 @@ import openfl.geom.Rectangle;
 		
 		__updateSize ();
 		
-		__needSecondBitmapData = true;
+		__needSecondBitmapData = false;
 		__preserveObject = !__hideObject;
 		__renderDirty = true;
 		
@@ -274,6 +274,9 @@ import openfl.geom.Rectangle;
 		destPoint.y += __offsetY;
 		
 		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality, __strength);
+		
+		destPoint.x = __offsetX;
+		destPoint.y = __offsetY;
 		
 		if (finalImage == bitmapData.image) return bitmapData;
 		return sourceBitmapData;
