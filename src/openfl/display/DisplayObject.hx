@@ -935,6 +935,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 		}
 		
+		event.target = this;
+		
 		return __dispatchWithCapture (event);
 		
 	}
@@ -1094,7 +1096,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (stage != null) {
 			
-			return __hitTest (x, y, shapeFlag, null, true, this);
+			return __hitTest (x, y, shapeFlag, null, false, this);
 			
 		} else {
 			
@@ -2278,7 +2280,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							if (filter.__preserveObject) {
 								
 								childRenderer.__setRenderTarget (bitmap3);
-								childRenderer.__renderFilterPass (bitmap, childRenderer.__defaultDisplayShader);
+								childRenderer.__renderFilterPass (bitmap, childRenderer.__defaultDisplayShader, filter.__smooth);
 								
 							}
 							
@@ -2287,7 +2289,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 								shader = filter.__initShader (childRenderer, i);
 								childRenderer.__setBlendMode (filter.__shaderBlendMode);
 								childRenderer.__setRenderTarget (bitmap2);
-								childRenderer.__renderFilterPass (bitmap, shader);
+								childRenderer.__renderFilterPass (bitmap, shader, filter.__smooth);
 								
 								cacheBitmap = bitmap;
 								bitmap = bitmap2;
@@ -2299,7 +2301,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 								
 								childRenderer.__setBlendMode (NORMAL);
 								childRenderer.__setRenderTarget (bitmap);
-								childRenderer.__renderFilterPass (bitmap3, childRenderer.__defaultDisplayShader, false);
+								childRenderer.__renderFilterPass (bitmap3, childRenderer.__defaultDisplayShader, filter.__smooth, false);
 								
 							}
 							

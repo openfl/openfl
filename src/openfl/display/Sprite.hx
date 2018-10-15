@@ -32,6 +32,7 @@ import openfl.geom.Rectangle;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 
 
@@ -222,7 +223,7 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 			
-			return interactiveOnly;
+			return (stack == null || interactiveOnly);
 			
 		} else if (hitArea == null && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 			

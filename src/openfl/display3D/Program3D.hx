@@ -448,7 +448,7 @@ import openfl.Vector;
 		gl.useProgram (__glProgram);
 		
 		if (__format == AGAL) {
-				
+			
 			__agalVertexUniformMap.markAllDirty ();
 			__agalFragmentUniformMap.markAllDirty ();
 			

@@ -272,9 +272,10 @@ bitmap.alpha = 0.5;
 There are more sample projects with additional features (such as sound, animation and video) in each of the OpenFL samples repositories:
 
  - https://github.com/openfl/openfl-samples-ts
- - https://github.com/openfl/openfl-samples
+ - https://github.com/openfl/openfl-samples-haxe
  - https://github.com/openfl/openfl-samples-es6
  - https://github.com/openfl/openfl-samples-es5
+ - https://github.com/openfl/openfl-samples-as3
 
 Each of the samples can be tested using `npm install` then `npm start`
 

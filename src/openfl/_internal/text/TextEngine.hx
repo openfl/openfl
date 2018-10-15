@@ -283,6 +283,10 @@ class TextEngine {
 		if (x >= width) x = 2;
 		if (y >= height) y = 2;
 		
+		#if (js && html5)
+		var textHeight = textHeight * 1.185; // measurement isn't always accurate, add padding
+		#end
+		
 		textBounds.setTo (Math.max (x - 2, 0), Math.max (y - 2, 0), Math.min (textWidth + 4, bounds.width + 4), Math.min (textHeight + 4, bounds.height + 4));
 		
 	}

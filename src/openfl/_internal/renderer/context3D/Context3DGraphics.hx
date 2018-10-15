@@ -269,10 +269,12 @@ class Context3DGraphics {
 					var dataPerVertex = vertLength + 2;
 					var vertexOffset = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 					
-					if (hasIndices) resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
+					// TODO: Use index buffer for indexed render
+					
+					// if (hasIndices) resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
 					resizeVertexBuffer (graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
 					
-					var indexBufferData = graphics.__triangleIndexBufferData;
+					// var indexBufferData = graphics.__triangleIndexBufferData;
 					var vertexBufferData = hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData;
 					var offset, vertOffset, uvOffset, t;
 					
@@ -282,7 +284,7 @@ class Context3DGraphics {
 						vertOffset = hasIndices ? indices[i] * 2 : i * 2;
 						uvOffset = hasIndices ? indices[i] * uvStride : i * uvStride;
 						
-						if (hasIndices) indexBufferData[triangleIndexBufferPosition + i] = indices[i];
+						// if (hasIndices) indexBufferData[triangleIndexBufferPosition + i] = indices[i];
 						
 						if (hasUVTData) {
 							
@@ -305,8 +307,12 @@ class Context3DGraphics {
 						
 					}
 					
-					if (hasIndices) triangleIndexBufferPosition += length;
-					hasUVTData ? vertexBufferPositionUVT += length * dataPerVertex : vertexBufferPosition += length * dataPerVertex;
+					// if (hasIndices) triangleIndexBufferPosition += length;
+					if (hasUVTData) {
+						vertexBufferPositionUVT += length * dataPerVertex;
+					} else {
+						vertexBufferPosition += length * dataPerVertex;
+					}
 				
 				case END_FILL:
 					
@@ -489,19 +495,19 @@ class Context3DGraphics {
 		
 		if ((graphics.__bitmap != null && !graphics.__dirty) || !isCompatible (graphics)) {
 			
-			if (graphics.__quadBuffer != null || graphics.__triangleIndexBuffer != null) {
+			// if (graphics.__quadBuffer != null || graphics.__triangleIndexBuffer != null) {
 				
 				// TODO: Should this be kept?
 				
 				// graphics.__quadBuffer = null;
-				graphics.__triangleIndexBuffer = null;
-				graphics.__triangleIndexBufferData = null;
-				graphics.__vertexBuffer = null;
-				graphics.__vertexBufferData = null;
-				graphics.__vertexBufferDataUVT = null;
-				graphics.__vertexBufferUVT = null;
+				// graphics.__triangleIndexBuffer = null;
+				// graphics.__triangleIndexBufferData = null;
+				// graphics.__vertexBuffer = null;
+				// graphics.__vertexBufferData = null;
+				// graphics.__vertexBufferDataUVT = null;
+				// graphics.__vertexBufferUVT = null;
 				
-			}
+			// }
 			
 			var cacheTransform = renderer.__softwareRenderer.__worldTransform;
 			renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
@@ -526,7 +532,7 @@ class Context3DGraphics {
 			
 			if (bounds != null && width >= 1 && height >= 1) {
 				
-				if (graphics.__dirty || (graphics.__quadBuffer == null && graphics.__triangleIndexBuffer == null)) {
+				if (graphics.__dirty || (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null)) {
 					
 					buildBuffer (graphics, renderer);
 					
@@ -613,7 +619,7 @@ class Context3DGraphics {
 								var hasIndices = (indices != null);
 								var length = hasIndices ? indices.length : Math.floor (rects.length / 4);
 								
-								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
+								var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform, AUTO);
 								var shader;
 								
 								if (shaderBuffer != null && !maskRender) {
@@ -694,7 +700,7 @@ class Context3DGraphics {
 								
 								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader (null);
 								renderer.setShader (shader);
-								renderer.applyMatrix (renderer.__getMatrix (matrix));
+								renderer.applyMatrix (renderer.__getMatrix (matrix, AUTO));
 								renderer.applyBitmapData (blankBitmapData, renderer.__allowSmoothing, repeat);
 								renderer.applyAlpha ((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform (tempColorTransform);
@@ -737,7 +743,7 @@ class Context3DGraphics {
 							var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
 							var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 							
-							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform);
+							var uMatrix = renderer.__getMatrix (graphics.__owner.__renderTransform, AUTO);
 							var shader;
 							
 							if (shaderBuffer != null && !maskRender) {
@@ -780,19 +786,23 @@ class Context3DGraphics {
 								
 							}
 							
-							if (hasIndices) {
+							// if (hasIndices) {
 								
-								context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, length);
-								triangleIndexBufferPosition += length;
+							// 	context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
+							// 	triangleIndexBufferPosition += length;
 								
-							} else {
+							// } else {
 								
 								context.__drawTriangles (bufferPosition, length);
 								
-							}
+							// }
 							
 							shaderBufferOffset += length;
-							hasUVData ? vertexBufferPositionUVT += (dataPerVertex * length) : vertexBufferPosition += (dataPerVertex * length);
+							if (hasUVData) {
+								vertexBufferPositionUVT += (dataPerVertex * length);
+							} else {
+								vertexBufferPosition += (dataPerVertex * length);
+							}
 							
 							if (culling != NONE) {
 								

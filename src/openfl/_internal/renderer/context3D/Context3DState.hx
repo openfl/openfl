@@ -12,6 +12,7 @@ import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DStencilAction;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
+import openfl.display.Shader;
 import openfl.geom.Rectangle;
 
 
@@ -36,6 +37,7 @@ class Context3DState {
 	public var renderToTextureDepthStencil:Bool;
 	public var renderToTextureSurfaceSelector:Int;
 	public var samplerStates:Array<SamplerState>;
+	public var scissorEnabled:Bool;
 	public var scissorRectangle:Rectangle;
 	public var stencilCompareMode:Context3DCompareMode;
 	public var stencilDepthFail:Context3DStencilAction;
@@ -47,6 +49,8 @@ class Context3DState {
 	public var stencilWriteMask:UInt;
 	public var textures:Array<TextureBase>;
 	// vertex buffer at?
+	
+	public var shader:Shader; // TODO: Merge shader/program3d
 	
 	private var __currentGLArrayBuffer:GLBuffer;
 	private var __currentGLElementArrayBuffer:GLBuffer;

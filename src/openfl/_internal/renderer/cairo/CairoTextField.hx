@@ -89,7 +89,7 @@ class CairoTextField {
 			
 		}
 		
-		if (width <= 0 || height <= 0 || (!textField.__dirty && !graphics.__dirty) || !renderable) {
+		if (width <= 0 || height <= 0 || (!textField.__dirty && !graphics.__dirty && (!graphics.__visible || graphics.__bitmap != null)) || !renderable) {
 			
 			textField.__dirty = false;
 			return;

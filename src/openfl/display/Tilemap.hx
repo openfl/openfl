@@ -30,6 +30,7 @@ import openfl._internal.renderer.context3D.Context3DTilemap;
 
 @:access(openfl.display.Tile)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 

@@ -92,7 +92,7 @@ class GraphicsShader extends Shader {
 			colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
 			colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
 			colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
-			colorMultiplier[3][3] = openfl_ColorMultiplierv.w;
+			colorMultiplier[3][3] = 1.0; // openfl_ColorMultiplierv.w;
 			
 			color = clamp (openfl_ColorOffsetv + (color * colorMultiplier), 0.0, 1.0);
 			

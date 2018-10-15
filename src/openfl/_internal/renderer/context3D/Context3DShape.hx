@@ -10,8 +10,8 @@ import openfl.display.OpenGLRenderer;
 import openfl.geom.Matrix;
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.Context3DStats;
-import openfl._internal.renderer.opengl.stats.DrawCallContext;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 #if !openfl_debug
@@ -55,7 +55,7 @@ class Context3DShape {
 				var shader = renderer.__initDisplayShader (cast shape.__worldShader);
 				renderer.setShader (shader);
 				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
-				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
+				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform, AUTO));
 				renderer.applyAlpha (shape.__worldAlpha);
 				renderer.applyColorTransform (shape.__worldColorTransform);
 				renderer.updateShader ();
@@ -101,7 +101,7 @@ class Context3DShape {
 				var shader = renderer.__maskShader;
 				renderer.setShader (shader);
 				renderer.applyBitmapData (graphics.__bitmap, renderer.__allowSmoothing);
-				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform));
+				renderer.applyMatrix (renderer.__getMatrix (graphics.__worldTransform, AUTO));
 				renderer.updateShader ();
 				
 				var vertexBuffer = graphics.__bitmap.getVertexBuffer (context);

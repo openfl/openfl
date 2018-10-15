@@ -1,3 +1,46 @@
+8.6.2 (10/15/2018)
+------------------
+
+* Fixed an issue when using custom WebGL rendering in NPM version
+* Fixed an issue in NPM samples that do not size the stage immediately
+
+
+8.6.1 (10/15/2018)
+------------------
+
+* Fixed use of `VideoTexture` with cube geometry
+* Fixed a regression in the behavior of `scrollRect`
+* Fixed an issue where the bottom of some HTML5 text could be cut off
+* Fixed issues when applying `DropShadowFilter` to `TextField` in software
+
+
+8.6.0 (10/12/2018)
+------------------
+
+* Added initial support for `PixelSnapping` in hardware rendering
+* Added initial support for `DisplacementMapFilter` (hardware only)
+* Added `generate="true"` support for SWF `BitmapData` symbols
+* Improved `BitmapData.fromFile` (and similar methods) when an image fails to load
+* Improved texture smoothing behavior for hardware shader filters
+* Improved synchronization between display list shaders and `Stage3D` shader programs
+* Fixed a regression where `TextField` could fail to render on hardware
+* Fixed a regression in the behavior of `textField.getTextFormat` with default parameters
+* Fixed the clip rectangle for `sprite.scrollRect` on hardware rendering
+* Fixed `stage.color` to return a 32-bit value
+* Fixed `Context3D` scissoring with a width or height of 0
+* Fixed an issue where `scrollRect` could show a pixel improperly
+* Fixed issues when compiling using `-Dtelemetry`
+* Fixed a Haxe 4 compiler deprecation warning
+
+
+8.5.1 (09/27/2018)
+-----------------
+
+* Improved handling of context loss if context is not restored by the next frame
+* Fixed a regression in indexed hardware `graphics.drawTriangles` rendering
+* Fixed minor compile errors when using some optional defines
+
+
 8.5.0 (09/26/2018)
 ------------------
 
@@ -22,7 +65,9 @@
 * Fixed compilation issues in Haxe 4 development builds
 * Fixed an issue where hardware `cacheAsBitmap` could result in blank textures
 * Fixed dispatch of `MOUSE_MOVE` event before dispatching `MOUSE_LEAVE`
+* Fixed a regression in setting `displayObject.alpha` when changing its `colorTransform`
 * Fixed a regression in the visibility of the mouse cursor when using `Mouse.hide`
+* Fixed a regression in setting `event.target` on events dispatched from the display list
 
 
 8.4.1 (08/13/2018)

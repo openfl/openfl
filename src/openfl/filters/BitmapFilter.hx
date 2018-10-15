@@ -38,6 +38,7 @@ class BitmapFilter {
 	@:noCompletion private var __renderDirty:Bool;
 	@:noCompletion private var __rightExtension:Int;
 	@:noCompletion private var __shaderBlendMode:BlendMode;
+	@:noCompletion private var __smooth:Bool;
 	@:noCompletion private var __topExtension:Int;
 	
 	
@@ -51,6 +52,7 @@ class BitmapFilter {
 		__rightExtension = 0;
 		__shaderBlendMode = NORMAL;
 		__topExtension = 0;
+		__smooth = true;
 		
 	}
 	

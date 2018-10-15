@@ -54,7 +54,7 @@ class Context3DVideo {
 			// context.__bindGLTexture2D (video.__getTexture (context));
 			//shader.uImage0.input = bitmap.__bitmapData;
 			//shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
-			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
+			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform, AUTO));
 			renderer.applyAlpha (video.__worldAlpha);
 			renderer.applyColorTransform (video.__worldColorTransform);
 			
@@ -118,7 +118,7 @@ class Context3DVideo {
 			var shader = renderer.__maskShader;
 			renderer.setShader (shader);
 			renderer.applyBitmapData (Context3DMaskShader.opaqueBitmapData, true);
-			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform));
+			renderer.applyMatrix (renderer.__getMatrix (video.__renderTransform, AUTO));
 			renderer.updateShader ();
 			
 			var vertexBuffer = video.__getVertexBuffer (context);

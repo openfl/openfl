@@ -58,6 +58,7 @@ import js.html.ImageElement;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 

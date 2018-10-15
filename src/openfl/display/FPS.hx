@@ -7,8 +7,8 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.Context3DStats;
-import openfl._internal.renderer.opengl.stats.DrawCallContext;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 #if !openfl_debug

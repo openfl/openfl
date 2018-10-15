@@ -49,7 +49,7 @@ import openfl.profiler.Telemetry;
 #end
 
 #if gl_stats
-import openfl._internal.renderer.opengl.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.Context3DStats;
 #end
 
 #if (js && html5)
@@ -190,6 +190,7 @@ typedef Element = Dynamic;
 @:access(openfl.display.Sprite)
 @:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
@@ -662,8 +663,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		super ();
 		
 		this.name = null;
-	
-		__color = 0xFFFFFF;
+		
+		__color = 0xFFFFFFFF;
 		__colorSplit = [ 0xFF, 0xFF, 0xFF ];
 		__colorString = "#FFFFFF";
 		__contentsScaleFactor = 1;
@@ -857,75 +858,75 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			GameInput.__onGamepadAxisMove (gamepad, axis, value);
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			
-		}
+		} #end
 		
 	}
 	
 	
 	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			GameInput.__onGamepadButtonDown (gamepad, button);
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			
-		}
+		} #end
 		
 	}
 	
 	
 	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			GameInput.__onGamepadButtonUp (gamepad, button);
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			
-		}
+		} #end
 		
 	}
 	
 	
 	public function onGamepadConnect (gamepad:Gamepad):Void {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			GameInput.__onGamepadConnect (gamepad);
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			
-		}
+		} #end
 		
 	}
 	
 	
 	public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			GameInput.__onGamepadDisconnect (gamepad);
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			
-		}
+		} #end
 		
 	}
 	
@@ -1419,61 +1420,65 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__deltaTime = 0;
 		__update (false, true);
 		
-		if (context3D != null) {
+		if (__renderer != null) {
 			
-			for (stage3D in stage3Ds) {
+			if (context3D != null) {
 				
-				context3D.__renderStage3D (stage3D);
+				for (stage3D in stage3Ds) {
+					
+					context3D.__renderStage3D (stage3D);
+					
+				}
 				
-			}
-			
-			#if !openfl_disable_display_render if (context3D.__present) shouldRender = true; #end
-			
-		}
-		
-		if (shouldRender) {
-			
-			if (__renderer.__type == CAIRO) {
-				
-				#if lime_cairo
-				cast (__renderer, CairoRenderer).cairo = context.cairo;
-				#end
+				#if !openfl_disable_display_render if (context3D.__present) shouldRender = true; #end
 				
 			}
 			
-			if (context3D == null && __renderer != null) {
+			if (shouldRender) {
 				
-				__renderer.__clear ();
+				if (__renderer.__type == CAIRO) {
+					
+					#if lime_cairo
+					cast (__renderer, CairoRenderer).cairo = context.cairo;
+					#end
+					
+				}
 				
-			}
-			
-			__renderer.__render (this);
-			
-		} else if (context3D == null) {
-			
-			window.onRender.cancel ();
-			
-		}
-		
-		if (context3D != null) {
-			
-			if (!context3D.__present) {
+				if (context3D == null) {
+					
+					__renderer.__clear ();
+					
+				}
+				
+				__renderer.__render (this);
+					
+			} else if (context3D == null) {
 				
 				window.onRender.cancel ();
 				
-			} else {
+			}
+			
+			if (context3D != null) {
 				
-				if (!__renderer.__cleared) {
-					__renderer.__clear ();
+				if (!context3D.__present) {
+					
+					window.onRender.cancel ();
+					
+				} else {
+					
+					if (!__renderer.__cleared) {
+						__renderer.__clear ();
+					}
+					
+					context3D.__present = false;
+					
 				}
-				
-				context3D.__present = false;
 				
 			}
 			
+			__renderer.__cleared = false;
+			
 		}
-		
-		if (__renderer != null) __renderer.__cleared = false;
 		
 		#if hxtelemetry
 		Telemetry.__endTiming (TelemetryCommandName.RENDER);
@@ -1543,15 +1548,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				if (dispatcher.stage == this || dispatcher.stage == null) {
 					
-					try {
+					#if !openfl_disable_handle_error try { #end
 						
 						dispatcher.__dispatch (event);
 						
-					} catch (e:Dynamic) {
+					#if !openfl_disable_handle_error } catch (e:Dynamic) {
 						
 						__handleError (e);
 						
-					}
+					} #end
 					
 				}
 				
@@ -1625,16 +1630,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private override function __dispatchEvent (event:Event):Bool {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			return super.__dispatchEvent (event);
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			return false;
 			
-		}
+		} #end
 		
 	}
 	
@@ -1653,7 +1658,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function __dispatchStack (event:Event, stack:Array<DisplayObject>):Void {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			var target:DisplayObject;
 			var length = stack.length;
@@ -1714,11 +1719,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			
-		}
+		} #end
 		
 		
 	}
@@ -1726,16 +1731,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function __dispatchTarget (target:EventDispatcher, event:Event):Bool {
 		
-		try {
+		#if !openfl_disable_handle_error try { #end
 			
 			return target.__dispatchEvent (event);
 			
-		} catch (e:Dynamic) {
+		#if !openfl_disable_handle_error } catch (e:Dynamic) {
 			
 			__handleError (e);
 			return false;
 			
-		}
+		} #end
 		
 	}
 	
@@ -2658,7 +2663,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__colorSplit[2] = b / 0xFF;
 			__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
 			__renderDirty = true;
-			__color = value;
+			__color = (0xFF << 24) | (value & 0xFFFFFF);
 			
 		}
 		
