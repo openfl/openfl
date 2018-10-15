@@ -86,7 +86,7 @@ class NetStream extends EventDispatcher {
 	@:noCompletion private var __timer:Timer;
 	
 	#if (js && html5)
-	@:noCompletion @:isVar private var __seeking(get, default):Bool;
+	@:noCompletion @:isVar private var __seeking(get, set):Bool;
 	@:noCompletion private var __seekTimer:Timer;
 	@:noCompletion private var __video (default, null):VideoElement;
 	#end
@@ -455,6 +455,11 @@ class NetStream extends EventDispatcher {
 	@:noCompletion private function get___seeking():Bool
 	{
 		return __seeking || __video.seeking;
+	}
+	
+	@:noCompletion private function set___seeking(value:Bool):Bool
+	{
+		return __seeking = value;
 	}
 	
 	@:noCompletion private function get_speed ():Float {
