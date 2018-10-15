@@ -1105,7 +1105,7 @@ import openfl.utils.ByteArray;
 			
 		} else {
 			
-			if (backBufferWidth == 0 && backBufferHeight == 0) {
+			if (__stage == null && backBufferWidth == 0 && backBufferHeight == 0) {
 				
 				throw new Error ("Context3D backbuffer has not been configured");
 				
@@ -1441,7 +1441,7 @@ import openfl.utils.ByteArray;
 		
 		var context = stage3D.context3D;
 		
-		if (context != null && context != this && context.__frontBufferTexture != null && stage3D.visible) {
+		if (context != null && context != this && context.__frontBufferTexture != null && stage3D.visible && backBufferHeight > 0 && backBufferWidth > 0) {
 			
 			// if (!__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 			
