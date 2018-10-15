@@ -656,7 +656,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				
 			} else {
 				
-				__pushMaskRect (object.__scrollRect, object.__renderTransform);
+				__popMaskRect ();
 				
 			}
 			
