@@ -1329,9 +1329,9 @@ import openfl.utils.ByteArray;
 					
 					// TODO: Cleaner approach?
 					if (texture.__textureTarget == gl.TEXTURE_2D) {
-						__bindGLTexture2D (texture.__textureID);
+						__bindGLTexture2D (texture.__getTexture ());
 					} else {
-						__bindGLTextureCubeMap (texture.__textureID);
+						__bindGLTextureCubeMap (texture.__getTexture ());
 					}
 					
 					#if desktop
