@@ -325,6 +325,15 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 	}
 	
 	
+	override function __forceRenderDirty() {
+		
+		super.__forceRenderDirty ();
+		
+		__batchQuadDirty = true;
+		
+	}
+	
+	
 	// Get & Set Methods
 	
 	
