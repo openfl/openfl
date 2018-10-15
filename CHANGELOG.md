@@ -1,3 +1,10 @@
+8.6.2 (10/15/2018)
+------------------
+
+* Fixed an issue when using custom WebGL rendering in NPM version
+* Fixed an issue in NPM samples that do not size the stage immediately
+
+
 8.6.1 (10/15/2018)
 ------------------
 
