@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.6.0",
-	"releasenote": "Added initial support for PixelSnapping, DisplacementMapFilter, scrollRect fixes and more",
+	"version": "8.6.1",
+	"releasenote": "Minor improvements and fixes",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
