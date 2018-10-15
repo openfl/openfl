@@ -1,3 +1,12 @@
+8.6.1 (10/15/2018)
+------------------
+
+* Fixed use of `VideoTexture` with cube geometry
+* Fixed a regression in the behavior of `scrollRect`
+* Fixed an issue where the bottom of some HTML5 text could be cut off
+* Fixed issues when applying `DropShadowFilter` to `TextField` in software
+
+
 8.6.0 (10/12/2018)
 ------------------
 
