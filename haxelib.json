@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.6.1",
-	"releasenote": "Minor improvements and fixes",
+	"version": "8.6.2",
+	"releasenote": "Minor NPM-related fixes",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
