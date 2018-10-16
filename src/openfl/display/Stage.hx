@@ -1451,7 +1451,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 				
 				__renderer.__render (this);
-					
+				
 			} else if (context3D == null) {
 				
 				window.onRender.cancel ();

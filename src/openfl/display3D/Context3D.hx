@@ -1194,17 +1194,10 @@ import openfl.utils.ByteArray;
 			var scissorWidth = Std.int (__state.scissorRectangle.width);
 			var scissorHeight = Std.int (__state.scissorRectangle.height);
 			
-			if (__state.renderToTexture == null) {
+			if (__state.renderToTexture == null && __stage3D == null) {
 				
 				var contextHeight = Std.int (__stage.window.height * __stage.window.scale);
 				scissorY = contextHeight - Std.int (__state.scissorRectangle.height) - scissorY;
-				
-				if (__stage3D != null) {
-					
-					scissorX += Std.int (__stage3D.x);
-					scissorY -= Std.int (__stage3D.y);
-					
-				}
 				
 			}
 			
@@ -1371,6 +1364,8 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLViewport ():Void {
 		
+		// TODO: Cache
+		
 		if (__state.renderToTexture == null) {
 			
 			if (__stage.context3D == this) {
@@ -1448,8 +1443,13 @@ import openfl.utils.ByteArray;
 			
 			setProgram (__renderStage3DProgram);
 			
-			// TODO: Should multiple contexts blend together?
 			setBlendFactors (ONE, ZERO);
+			setColorMask (true, true, true, true);
+			setCulling (NONE);
+			setDepthTest (false, ALWAYS);
+			setStencilActions ();
+			setStencilReferenceValue (0, 0, 0);
+			setScissorRectangle (null);
 			
 			setTextureAt (0, context.__frontBufferTexture);
 			setVertexBufferAt (0, stage3D.__vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
