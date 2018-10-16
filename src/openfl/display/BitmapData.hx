@@ -523,7 +523,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if (js && html5)
 			
-			if (colorTransform != null) {
+			if (colorTransform != null && !colorTransform.__isDefault ()) {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
@@ -601,7 +601,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			if (colorTransform != null) {
+			if (colorTransform != null && !colorTransform.__isDefault ()) {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
@@ -1768,7 +1768,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if (js && html5)
 			
-			if (colorTransform != null) {
+			if (colorTransform != null && !colorTransform.__isDefault ()) {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
@@ -1859,7 +1859,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			if (colorTransform != null) {
+			if (colorTransform != null && !colorTransform.__isDefault ()) {
 				
 				var bounds = Rectangle.__pool.get ();
 				var boundsMatrix = Matrix.__pool.get ();
