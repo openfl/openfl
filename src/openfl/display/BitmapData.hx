@@ -918,7 +918,7 @@ class BitmapData implements IBitmapDrawable {
 		_colorTransform.__copyFrom (source.__worldColorTransform);
 		_colorTransform.__invert ();
 		
-		if (!readable) {
+		if (!readable && Lib.current.stage.context3D != null) {
 			
 			if (__textureContext == null) {
 				

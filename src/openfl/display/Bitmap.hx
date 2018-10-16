@@ -212,14 +212,14 @@ class Bitmap extends DisplayObject {
 	
 	@:noCompletion private override function __renderCairo (renderer:CairoRenderer):Void {
 		
+		#if lime_cairo
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		
 		if (__bitmapData != null && __bitmapData.image != null) {
 			
 			__imageVersion = __bitmapData.image.version;
 			
 		}
-		
-		#if lime_cairo
-		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -247,13 +247,13 @@ class Bitmap extends DisplayObject {
 	
 	@:noCompletion private override function __renderCanvas (renderer:CanvasRenderer):Void {
 		
+		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		
 		if (__bitmapData != null && __bitmapData.image != null) {
 			
 			__imageVersion = __bitmapData.image.version;
 			
 		}
-		
-		__updateCacheBitmap (renderer, /*!__worldColorTransform.__isDefault ()*/ false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -310,13 +310,13 @@ class Bitmap extends DisplayObject {
 	
 	@:noCompletion private override function __renderGL (renderer:OpenGLRenderer):Void {
 		
+		__updateCacheBitmap (renderer, false);
+		
 		if (__bitmapData != null && __bitmapData.image != null) {
 			
 			__imageVersion = __bitmapData.image.version;
 			
 		}
-		
-		__updateCacheBitmap (renderer, false);
 		
 		if (__cacheBitmap != null && !__isCacheBitmapRender) {
 			
@@ -345,8 +345,8 @@ class Bitmap extends DisplayObject {
 		
 		// TODO: Handle filters without an intermediate draw
 		
-		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null) return false;
-		return super.__updateCacheBitmap (renderer, force);
+		if (__bitmapData == null || (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null)) return false;
+		return super.__updateCacheBitmap (renderer, __bitmapData.image != null && __bitmapData.image.version != __imageVersion);
 		
 	}
 	
