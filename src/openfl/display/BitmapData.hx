@@ -534,6 +534,7 @@ class BitmapData implements IBitmapDrawable {
 				var height:Int = Math.ceil (bounds.height);
 				
 				var copy = new BitmapData (width, height, true, 0);
+				copy.__pixelRatio = __pixelRatio;
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
@@ -611,6 +612,7 @@ class BitmapData implements IBitmapDrawable {
 				var height:Int = Math.ceil (bounds.height);
 				
 				var copy = new BitmapData (width, height, true, 0);
+				copy.__pixelRatio = __pixelRatio;
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
@@ -1777,6 +1779,7 @@ class BitmapData implements IBitmapDrawable {
 				var height:Int = Math.ceil (bounds.height);
 				
 				var copy = new BitmapData (width, height, true, 0);
+				copy.__pixelRatio = __pixelRatio;
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
@@ -1867,6 +1870,7 @@ class BitmapData implements IBitmapDrawable {
 				var height:Int = Math.ceil (bounds.height);
 				
 				var copy = new BitmapData (width, height, true, 0);
+				copy.__pixelRatio = __pixelRatio;
 				copy.draw (source);
 				copy.colorTransform (copy.rect, colorTransform);
 				source = copy;
