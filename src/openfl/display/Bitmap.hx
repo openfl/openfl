@@ -384,7 +384,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		if (__bitmapData != null) {
 			
-			if (value != __bitmapData.height) {
+			if (value != __bitmapData.height * __scaleY) {
 				
 				__setRenderDirty ();
 				scaleY = value / __bitmapData.height;
@@ -417,7 +417,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		if (__bitmapData != null) {
 			
-			if (value != __bitmapData.width) {
+			if (value != __bitmapData.width * __scaleX) {
 				
 				__setRenderDirty ();
 				scaleX = value / __bitmapData.width;
