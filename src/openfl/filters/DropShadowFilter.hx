@@ -269,18 +269,14 @@ import openfl.geom.Rectangle;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
 		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0));
-		
-		destPoint.x += __offsetX;
-		destPoint.y += __offsetY;
-		
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality, __strength);
-		
-		destPoint.x = __offsetX;
-		destPoint.y = __offsetY;
-		
-		if (finalImage == bitmapData.image) return bitmapData;
+
+		var point:Point = new Point(__offsetX, __offsetY);
+
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), point.__toLimeVector2 (), __blurX, __blurY, __quality, __strength);
+
+		if(finalImage == bitmapData.image) return bitmapData;
 		return sourceBitmapData;
-		
+
 	}
 	
 	
