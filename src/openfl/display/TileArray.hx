@@ -50,6 +50,7 @@ import openfl.Vector;
 	private var __bufferSkipped:Vector<Bool>;
 	private var __cacheAlpha:Float;
 	private var __cacheDefaultTileset:Tileset;
+	private var __cacheDefaultColorTransform:ColorTransform;
 	private var __colorTransform:ColorTransform;
 	private var __data:Vector<Float>;
 	private var __dirty:Vector<Bool>;
@@ -89,6 +90,7 @@ import openfl.Vector;
 		__tilesets = new Vector<Tileset> (length);
 		__visible = new Vector<Bool> (length);
 		__length = length;
+		__cacheDefaultColorTransform = new ColorTransform();
 		
 	}
 	
@@ -177,7 +179,7 @@ import openfl.Vector;
 		
 		// TODO: Handle __dirty flags, copy only changed values
 		
-		if (__bufferDirty || (__cacheAlpha != worldAlpha) || (__cacheDefaultTileset != defaultTileset)) {
+		if (__bufferDirty || (__cacheAlpha != worldAlpha) || (__cacheDefaultTileset != defaultTileset) || !__cacheDefaultColorTransform.__equals(defaultColorTransform)) {
 			
 			var tileMatrix, tileColorTransform, tileRect = null;
 			
@@ -410,6 +412,7 @@ import openfl.Vector;
 			
 			__cacheAlpha = worldAlpha;
 			__cacheDefaultTileset = defaultTileset;
+			__cacheDefaultColorTransform.__copyFrom(defaultColorTransform);
 			__bufferDirty = false;
 			
 		}
