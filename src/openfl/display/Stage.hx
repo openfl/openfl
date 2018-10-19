@@ -856,7 +856,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
+	@:noCompletion @:dox(hide) public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
 		#if !openfl_disable_handle_error try { #end
 			
@@ -871,7 +871,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
+	@:noCompletion @:dox(hide) public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
 		#if !openfl_disable_handle_error try { #end
 			
@@ -886,7 +886,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
+	@:noCompletion @:dox(hide) public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
 		#if !openfl_disable_handle_error try { #end
 			
@@ -901,7 +901,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onGamepadConnect (gamepad:Gamepad):Void {
+	@:noCompletion @:dox(hide) public function onGamepadConnect (gamepad:Gamepad):Void {
 		
 		#if !openfl_disable_handle_error try { #end
 			
@@ -916,7 +916,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onGamepadDisconnect (gamepad:Gamepad):Void {
+	@:noCompletion @:dox(hide) public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
 		#if !openfl_disable_handle_error try { #end
 			
@@ -931,56 +931,56 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onJoystickAxisMove (joystick:Joystick, axis:Int, value:Float):Void {
+	@:noCompletion @:dox(hide) public function onJoystickAxisMove (joystick:Joystick, axis:Int, value:Float):Void {
 		
 		
 		
 	}
 	
 	
-	public function onJoystickButtonDown (joystick:Joystick, button:Int):Void {
+	@:noCompletion @:dox(hide) public function onJoystickButtonDown (joystick:Joystick, button:Int):Void {
 		
 		
 		
 	}
 	
 	
-	public function onJoystickButtonUp (joystick:Joystick, button:Int):Void {
+	@:noCompletion @:dox(hide) public function onJoystickButtonUp (joystick:Joystick, button:Int):Void {
 		
 		
 		
 	}
 	
 	
-	public function onJoystickConnect (joystick:Joystick):Void {
+	@:noCompletion @:dox(hide) public function onJoystickConnect (joystick:Joystick):Void {
 		
 		
 		
 	}
 	
 	
-	public function onJoystickDisconnect (joystick:Joystick):Void {
+	@:noCompletion @:dox(hide) public function onJoystickDisconnect (joystick:Joystick):Void {
 		
 		
 		
 	}
 	
 	
-	public function onJoystickHatMove (joystick:Joystick, hat:Int, position:JoystickHatPosition):Void {
+	@:noCompletion @:dox(hide) public function onJoystickHatMove (joystick:Joystick, hat:Int, position:JoystickHatPosition):Void {
 		
 		
 		
 	}
 	
 	
-	public function onJoystickTrackballMove (joystick:Joystick, trackball:Int, value:Float):Void {
+	@:noCompletion @:dox(hide) public function onJoystickTrackballMove (joystick:Joystick, trackball:Int, value:Float):Void {
 		
 		
 		
 	}
 	
 	
-	public function onKeyDown (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
+	@:noCompletion @:dox(hide) public function onKeyDown (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -989,7 +989,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onKeyUp (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
+	@:noCompletion @:dox(hide) public function onKeyUp (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -998,7 +998,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onModuleExit (code:Int):Void {
+	@:noCompletion @:dox(hide) public function onModuleExit (code:Int):Void {
 		
 		if (window != null) {
 			
@@ -1009,7 +1009,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseDown (window:Window, x:Float, y:Float, button:Int):Void {
+	@:noCompletion @:dox(hide) public function onMouseDown (window:Window, x:Float, y:Float, button:Int):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1028,7 +1028,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseMove (window:Window, x:Float, y:Float):Void {
+	@:noCompletion @:dox(hide) public function onMouseMove (window:Window, x:Float, y:Float):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1043,14 +1043,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseMoveRelative (window:Window, x:Float, y:Float):Void {
+	@:noCompletion @:dox(hide) public function onMouseMoveRelative (window:Window, x:Float, y:Float):Void {
 		
 		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
-	public function onMouseUp (window:Window, x:Float, y:Float, button:Int):Void {
+	@:noCompletion @:dox(hide) public function onMouseUp (window:Window, x:Float, y:Float, button:Int):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1075,7 +1075,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
+	@:noCompletion @:dox(hide) public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1094,42 +1094,42 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onPreloadComplete ():Void {
+	@:noCompletion @:dox(hide) public function onPreloadComplete ():Void {
 		
 		
 		
 	}
 	
 	
-	public function onPreloadProgress (loaded:Int, total:Int):Void {
+	@:noCompletion @:dox(hide) public function onPreloadProgress (loaded:Int, total:Int):Void {
 		
 		
 		
 	}
 	
 	
-	public function onRenderContextLost ():Void {
+	@:noCompletion @:dox(hide) public function onRenderContextLost ():Void {
 		
 		__renderer = null;
 		
 	}
 	
 	
-	public function onRenderContextRestored (context:RenderContext):Void {
+	@:noCompletion @:dox(hide) public function onRenderContextRestored (context:RenderContext):Void {
 		
 		__createRenderer ();
 		
 	}
 	
 	
-	public function onTextEdit (window:Window, text:String, start:Int, length:Int):Void {
+	@:noCompletion @:dox(hide) public function onTextEdit (window:Window, text:String, start:Int, length:Int):Void {
 		
 		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
-	public function onTextInput (window:Window, text:String):Void {
+	@:noCompletion @:dox(hide) public function onTextInput (window:Window, text:String):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1166,14 +1166,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onTouchMove (touch:Touch):Void {
+	@:noCompletion @:dox(hide) public function onTouchCancel (touch:Touch):Void {
 		
-		__onTouch (TouchEvent.TOUCH_MOVE, touch);
-		
-	}
-	
-	
-	public function onTouchEnd (touch:Touch):Void {
+		// TODO: Should we handle this differently?
 		
 		if (__primaryTouch == touch) {
 			
@@ -1186,7 +1181,27 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onTouchStart (touch:Touch):Void {
+	@:noCompletion @:dox(hide) public function onTouchMove (touch:Touch):Void {
+		
+		__onTouch (TouchEvent.TOUCH_MOVE, touch);
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onTouchEnd (touch:Touch):Void {
+		
+		if (__primaryTouch == touch) {
+			
+			__primaryTouch = null;
+			
+		}
+		
+		__onTouch (TouchEvent.TOUCH_END, touch);
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onTouchStart (touch:Touch):Void {
 		
 		if (__primaryTouch == null) {
 			
@@ -1199,7 +1214,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowActivate (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowActivate (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1208,7 +1223,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowClose (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowClose (window:Window):Void {
 		
 		if (this.window == window) {
 			
@@ -1222,7 +1237,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowCreate (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowCreate (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1235,7 +1250,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowDeactivate (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowDeactivate (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1245,21 +1260,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowDropFile (window:Window, file:String):Void {
+	@:noCompletion @:dox(hide) public function onWindowDropFile (window:Window, file:String):Void {
 		
 		
 		
 	}
 	
 	
-	public function onWindowEnter (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowEnter (window:Window):Void {
 		
 		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
-	public function onWindowExpose (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowExpose (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1268,7 +1283,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowFocusIn (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowFocusIn (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1286,7 +1301,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowFocusOut (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowFocusOut (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1300,7 +1315,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowFullscreen (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowFullscreen (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1317,7 +1332,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowLeave (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowLeave (window:Window):Void {
 		
 		if (this.window == null || this.window != window || MouseEvent.__buttonDown) return;
 		
@@ -1327,7 +1342,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowMinimize (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowMinimize (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1337,14 +1352,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowMove (window:Window, x:Float, y:Float):Void {
+	@:noCompletion @:dox(hide) public function onWindowMove (window:Window, x:Float, y:Float):Void {
 		
 		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
-	public function onWindowResize (window:Window, width:Int, height:Int):Void {
+	@:noCompletion @:dox(hide) public function onWindowResize (window:Window, width:Int, height:Int):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1368,7 +1383,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowRestore (window:Window):Void {
+	@:noCompletion @:dox(hide) public function onWindowRestore (window:Window):Void {
 		
 		if (this.window == null || this.window != window) return;
 		
@@ -1383,7 +1398,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function render (context:RenderContext):Void {
+	@:noCompletion @:dox(hide) public function render (context:RenderContext):Void {
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -1490,7 +1505,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function update (deltaTime:Int):Void {
+	@:noCompletion @:dox(hide) public function update (deltaTime:Int):Void {
 		
 		__deltaTime = deltaTime;
 		
@@ -2413,6 +2428,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Touch.onStart.add (onTouchStart);
 		Touch.onMove.add (onTouchMove);
 		Touch.onEnd.add (onTouchEnd);
+		Touch.onCancel.add (onTouchCancel);
 		
 	}
 	
@@ -2563,6 +2579,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Touch.onStart.remove (onTouchStart);
 		Touch.onMove.remove (onTouchMove);
 		Touch.onEnd.remove (onTouchEnd);
+		Touch.onCancel.remove (onTouchCancel);
 		
 	}
 	
