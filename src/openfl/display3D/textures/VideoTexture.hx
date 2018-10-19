@@ -66,24 +66,25 @@ import openfl.net.NetStream;
 	}
 	
 	
-	@:noCompletion private override function __getTexture ():GLTexture {
+@:noCompletion private override function __getTexture ():GLTexture {
+	
+	#if (js && html5)
+	
+	if (!__netStream.__video.paused || __netStream.__seeking) {
 		
-		#if (js && html5)
+		__netStream.__seeking = false;
+		var gl = __context.gl;
 		
-		if (!__netStream.__video.paused || __netStream.__seeking) {
-			
-			var gl = __context.gl;
-			
-			__context.__bindGLTexture2D (__textureID);
-			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __netStream.__video);
-			
-		}
-		
-		#end
-		
-		return __textureID;
+		__context.__bindGLTexture2D (__textureID);
+		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __netStream.__video);
 		
 	}
+	
+	#end
+	
+	return __textureID;
+	
+}
 	
 	
 	@:noCompletion private function __textureReady ():Void {
