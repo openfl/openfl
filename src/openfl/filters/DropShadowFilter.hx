@@ -247,7 +247,7 @@ import openfl.geom.Rectangle;
 		
 		__updateSize ();
 		
-		__needSecondBitmapData = false;
+		__needSecondBitmapData = true;
 		__preserveObject = !__hideObject;
 		__renderDirty = true;
 		
