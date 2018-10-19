@@ -1,3 +1,9 @@
+8.6.4 (10/19/2018)
+------------------
+
+* Improved ES module imports at top-level by making all types available
+
+
 8.6.3 (10/19/2018)
 ------------------
 
