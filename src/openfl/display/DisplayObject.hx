@@ -2089,10 +2089,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			} else {
 				
 				// Should we retain these longer?
+				// Retaining __cacheBitmapData2 fixes filters from disappearing...
+				// ..when focusing out/in/out the browser window, html5
 				
 				__cacheBitmapData = __cacheBitmap.bitmapData;
-				__cacheBitmapData2 = null;
-				__cacheBitmapData3 = null;
+				//__cacheBitmapData2 = null;
+				//__cacheBitmapData3 = null;
 				
 			}
 			
@@ -2414,12 +2416,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 						if (__cacheBitmapData != bitmap) {
 							
 							// TODO: Fix issue with swapping __cacheBitmap.__bitmapData
-							__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
+							//__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
 							
-							// cacheBitmap = __cacheBitmapData;
-							// __cacheBitmapData = bitmap;
-							// __cacheBitmapData2 = cacheBitmap;
-							// __cacheBitmap.__bitmapData = __cacheBitmapData;
+							// Adding __cacheBitmapRenderer = null; makes this work
+							cacheBitmap = __cacheBitmapData;
+							__cacheBitmapData = bitmap;
+							__cacheBitmapData2 = cacheBitmap;
+							__cacheBitmap.__bitmapData = __cacheBitmapData;
+							__cacheBitmapRenderer = null;
 							
 						}
 						
