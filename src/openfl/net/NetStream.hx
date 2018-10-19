@@ -87,7 +87,6 @@ class NetStream extends EventDispatcher {
 	
 	#if (js && html5)
 	@:noCompletion @:isVar private var __seeking(get, set):Bool;
-	@:noCompletion private var __seekTimer:Timer;
 	@:noCompletion private var __video (default, null):VideoElement;
 	#end
 	
@@ -406,17 +405,7 @@ class NetStream extends EventDispatcher {
 		
 		__playStatus ("NetStream.Play.seeking");
 		
-		if (__seekTimer != null) {
-			__seekTimer.stop();
-			__seekTimer = null;
-		}
-		__seekTimer = Timer.delay(() -> {
-			if (__seeking == true) {
-				__seeking = false;
-				__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Seek.Complete" } ));
-			}
-		}, 50);
-		
+		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Seek.Complete" } ));
 	}
 	
 	
