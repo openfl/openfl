@@ -1,7 +1,13 @@
 package openfl.filters; #if !flash
 
+#if (js && html5)
+import lime._internal.graphics.ImageCanvasUtil;
+#end
 
-// import lime._internal.graphics.ImageDataUtil;
+import lime._internal.graphics.ImageDataUtil;
+import lime.math.Vector2;
+import lime.math.Vector4;
+
 import openfl.display.BitmapDataChannel;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
@@ -61,7 +67,7 @@ import openfl.display.Shader;
 		__color = color;
 		__alpha = alpha;
 		
-		__needSecondBitmapData = false;
+		__needSecondBitmapData = true;
 		__preserveObject = false;
 		__renderDirty = true;
 		
@@ -78,11 +84,28 @@ import openfl.display.Shader;
 	
 	
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
-		
-		// TODO
-		// ImageDataUtil.displace(bitmapData.image, sourceBitmapData.image, __mapBitmap.image, __componentX, __componentY, __scaleX, __scaleY);
+
+		__updateMapMatrix();
+
+		#if (js && html5)
+		ImageCanvasUtil.convertToData (bitmapData.image);
+		ImageCanvasUtil.convertToData (sourceBitmapData.image);
+		ImageCanvasUtil.convertToData (__mapBitmap.image);
+		#end
+
+		ImageDataUtil.displaceMap(
+			bitmapData.image,
+			sourceBitmapData.image,
+
+			__mapBitmap.image,
+			new Vector2(__mapPoint.x / __mapBitmap.width, __mapPoint.y / __mapBitmap.height),
+
+			new Vector4(__matrixData[0], __matrixData[4], __matrixData[8], __matrixData[12]),
+			new Vector4(__matrixData[1], __matrixData[5], __matrixData[9], __matrixData[13]),
+			__smooth
+		);
+
 		return bitmapData;
-		
 	}
 	
 	
