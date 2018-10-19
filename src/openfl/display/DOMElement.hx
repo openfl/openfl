@@ -9,7 +9,7 @@ import js.html.Element;
 #end
 
 
-class DOMElement extends DisplayObject {
+class DOMElement extends #if flash Sprite #else DisplayObject #end {
 	
 	
 	@:noCompletion private var __active:Bool;
