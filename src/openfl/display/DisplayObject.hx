@@ -202,7 +202,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount = 0;
 	@:noCompletion private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
-	@:noCompletion private static var __tempColorTransform = new ColorTransform ();
 	@:noCompletion private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
 	
 	
@@ -1949,9 +1948,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (__isCacheBitmapRender) return false;
 		
-		var colorTransform = __tempColorTransform;
+		var colorTransform = ColorTransform.__pool.get ();
 		colorTransform.__copyFrom (__worldColorTransform);
 		if (renderer.__worldColorTransform != null) colorTransform.__combine (renderer.__worldColorTransform);
+		var updated = false;
 		
 		if (cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault ())) {
 			
@@ -2077,11 +2077,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					
 				} else {
 					
+					ColorTransform.__pool.release (colorTransform);
+					
 					__cacheBitmap = null;
 					__cacheBitmapData = null;
 					__cacheBitmapData2 = null;
 					__cacheBitmapData3 = null;
 					__cacheBitmapRenderer = null;
+					
 					return true;
 					
 				}
@@ -2452,7 +2455,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 			}
 			
-			return updateTransform;
+			updated = updateTransform;
 			
 		} else if (__cacheBitmap != null) {
 			
@@ -2469,11 +2472,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmapColorTransform = null;
 			__cacheBitmapRenderer = null;
 			
-			return true;
+			updated = true;
 			
 		}
 		
-		return false;
+		ColorTransform.__pool.release (colorTransform);
+		
+		return updated;
 		
 	}
 	
