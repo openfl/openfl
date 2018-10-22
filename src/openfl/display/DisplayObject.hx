@@ -1958,7 +1958,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			var rect = null;
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform)));
-			var updateTransform = (needRender || (renderer.__type == OPENGL && !__cacheBitmap.__worldTransform.equals (__worldTransform)));
+			var updateTransform = (needRender || ((renderer.__type == OPENGL #if js || renderer.__type == CANVAS #end) && !__cacheBitmap.__worldTransform.equals (__worldTransform)));
 			var hasFilters = __filters != null;
 			
 			if (hasFilters && !needRender) {
