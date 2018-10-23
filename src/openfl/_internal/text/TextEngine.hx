@@ -644,7 +644,28 @@ class TextEngine {
 		bottomScrollV = 0;
 		maxScrollH = 0;
 		
+		var offsetX = 2.0;
+		var offsetY = 2.0;
+		var offsetWidth = 2.0;
+		var margins = 4.0;
+		
+		var groupFormat;
+		
 		for (group in layoutGroups) {
+			groupFormat = group.format;
+			
+			offsetX = 2.0;
+            		offsetWidth = 2.0;
+
+            		if(groupFormat.leftMargin != null) {
+                		offsetX = groupFormat.leftMargin;
+            		}
+
+            		if (groupFormat.rightMargin != null) {
+                		offsetWidth = groupFormat.rightMargin;
+            		}
+
+            		margins = offsetX + offsetWidth;
 			
 			while (group.lineIndex > numLines - 1) {
 				
@@ -684,7 +705,7 @@ class TextEngine {
 			}
 			
 			currentLineHeight = Math.max (currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - 2 + group.width;
+			currentLineWidth = group.offsetX - offsetX + group.width;
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -793,7 +814,7 @@ class TextEngine {
 					
 					if (!wordWrap /*&& (width < textWidth + 4)*/) {
 						
-						width = textWidth + 4;
+						width = textWidth + margins;
 						
 					}
 					
@@ -807,9 +828,9 @@ class TextEngine {
 			
 		}
 		
-		if (textWidth > width - 4) {
+		if (textWidth > width - margins) {
 			
-			maxScrollH = Std.int (textWidth - width + 4);
+			maxScrollH = Std.int (textWidth - width + margins);
 			
 		} else {
 			
@@ -850,10 +871,28 @@ class TextEngine {
 		
 		var offsetX = 2.0;
 		var offsetY = 2.0;
+		var offsetWidth = 2.0;
+		var margins = 4.0;
+		
 		var textIndex = 0;
 		var lineIndex = 0;
 		var lineFormat = null;
 		
+		#if !js inline #end function setMargins () {
+			offsetX = 2.0;
+			offsetWidth = 2.0;
+
+			if(lineFormat.leftMargin != null) {
+				offsetX = lineFormat.leftMargin;
+			}
+
+			if (lineFormat.rightMargin != null) {
+				offsetWidth = lineFormat.rightMargin;
+			}
+
+			margins = offsetX + offsetWidth;
+		}
+	
 		#if !js inline #end function getPositions (text:UTF8String, startIndex:Int, endIndex:Int) {
 			
 			// TODO: optimize
@@ -1119,6 +1158,8 @@ class TextEngine {
 			
 			++lineIndex;
 			offsetX = 2;
+
+			setMargins();
 			
 		}
 		
@@ -1126,7 +1167,7 @@ class TextEngine {
 			
 			var tempWidth = getTextWidth (text.substring (textIndex, endIndex));
 			
-			while (offsetX + tempWidth > width - 2) {
+			while (offsetX + tempWidth > width - offsetWidth) {
 				
 				var i = 1;
 				
@@ -1134,7 +1175,7 @@ class TextEngine {
 					
 					tempWidth = getTextWidth (text.substr (textIndex, i));
 					
-					if (offsetX + tempWidth > width - 2) {
+					if (offsetX + tempWidth > width - offsetWidth) {
 						
 						i--;
 						break;
@@ -1145,7 +1186,7 @@ class TextEngine {
 					
 				}
 				
-				if (i == 0 && tempWidth > width - 4) {
+				if (i == 0 && tempWidth > width - margins) {
 					// if the textfield is smaller than a single character
 					
 					i = text.length;
@@ -1155,7 +1196,8 @@ class TextEngine {
 				if (i == 0) {
 					// if a single character in a new format made the line too long
 					
-					offsetX = 2;
+					setMargins();
+					
 					offsetY += layoutGroup.height;
 					++lineIndex;
 					
@@ -1206,7 +1248,7 @@ class TextEngine {
 				
 				if (textIndex <= breakIndex) {
 					
-					if (wordWrap && previousSpaceIndex <= textIndex && width >= 4) {
+					if (wordWrap && previousSpaceIndex <= textIndex && width >= margins) {
 						
 						breakLongWords (breakIndex);
 						
@@ -1269,6 +1311,8 @@ class TextEngine {
 				
 				wrap = false;
 				
+				setMargins();
+				
 				while (true) {
 					
 					if (textIndex == formatRange.end) break;
@@ -1329,7 +1373,7 @@ class TextEngine {
 					
 					if (wordWrap) {
 						
-						if (offsetX + widthValue > width - 2) {
+						if (offsetX + widthValue > width - offsetWidth) {
 							
 							wrap = true;
 							
@@ -1341,7 +1385,7 @@ class TextEngine {
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 								
-								if (offsetX + widthValue - spaceWidth <= width - 2) {
+								if (offsetX + widthValue - spaceWidth <= width - offsetWidth) {
 									
 									wrap = false;
 									
@@ -1395,7 +1439,7 @@ class TextEngine {
 							
 						}
 						
-						offsetX = 2;
+						setMagins();
 						
 						if (offsetCount > 0) {
 							
@@ -1413,7 +1457,7 @@ class TextEngine {
 							
 						}
 						
-						if (width >= 4) breakLongWords (endIndex);
+						if (width >= margins) breakLongWords (endIndex);
 						
 						nextLayoutGroup (textIndex, endIndex);
 						
@@ -1526,7 +1570,7 @@ class TextEngine {
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
 					
-					if (wordWrap && width >= 4) {
+					if (wordWrap && width >= margins) {
 						
 						breakLongWords(formatRange.end);
 						
@@ -1605,25 +1649,35 @@ class TextEngine {
 		
 		var lineIndex = -1;
 		var offsetX = 0.0;
-		var totalWidth = this.width - 4;
-		var group, lineLength;
+		var width = this.width;
+		var group, groupFormat, lineLength;
 		var lineMeasurementsDirty = false;
 		
 		for (i in 0...layoutGroups.length) {
-			
+			var totalWidth = width;
+
 			group = layoutGroups[i];
+			groupFormat = group.format;
+
+			if(groupFormat.leftMargin != null) {
+				totalWidth -= groupFormat.leftMargin;
+			}
+
+			if (groupFormat.rightMargin != null) {
+				totalWidth -= groupFormat.rightMargin;
+			}
 			
 			if (group.lineIndex != lineIndex) {
 				
 				lineIndex = group.lineIndex;
 				
-				switch (group.format.align) {
+				switch (groupFormat.align) {
 					
 					case CENTER:
 						
 						if (lineWidths[lineIndex] < totalWidth) {
 							
-							offsetX = Math.round ((totalWidth - lineWidths[lineIndex]) / 2);
+							offsetX = Math.round ((totalWidth - lineWidths[lineIndex]) / * 0.5);
 							
 						} else {
 							
