@@ -290,7 +290,7 @@ import openfl.utils.ByteArray;
 		
 		__setGLScissorTest (false);
 		gl.clear (clearMask);
-		
+		__cleared = true;
 	}
 	
 	
@@ -491,6 +491,7 @@ import openfl.utils.ByteArray;
 	
 	public function present ():Void {
 		
+		if (!__cleared) return;
 		setRenderToBackBuffer ();
 		
 		if (__stage3D != null) {
@@ -504,7 +505,7 @@ import openfl.utils.ByteArray;
 		}
 		
 		__present = true;
-		
+		__cleared = false;
 	}
 	
 	
