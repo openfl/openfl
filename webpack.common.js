@@ -12,9 +12,9 @@ module.exports = {
 	},
 	externals: {
 		howler: {
-			commonjs: 'Howler',
-			commonjs2: 'Howler',
-			amd: 'Howler',
+			commonjs: 'howler',
+			commonjs2: 'howler',
+			amd: 'howler',
 			root: 'window'
 		},
 		pako: {

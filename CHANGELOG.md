@@ -1,3 +1,19 @@
+8.6.4 (10/19/2018)
+------------------
+
+* Improved ES module imports at top-level by making all types available
+
+
+8.6.3 (10/19/2018)
+------------------
+
+* Set Lime to use a hard-coded version (unless -Ddisable-version-check)
+* Improved updating of `Stage3D` `VideoTexture` when video is seeking
+* Fixed cache invalidation in `Bitmap` when using `filters`
+* Fixed how `Context3D` scissoring was handled in non-shared `Stage3D` context
+* Fixed some issues with software `GlowFilter` and `DropShadowFilter`
+
+
 8.6.2 (10/15/2018)
 ------------------
 

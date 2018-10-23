@@ -1190,42 +1190,17 @@ import openfl.utils.ByteArray;
 			__setGLScissorTest (true);
 			__contextState.scissorEnabled = true;
 			
-			var height = 0;
-			var offsetX = 0;
-			var offsetY = 0;
-			
-			if (__state.renderToTexture != null) {
-				
-				// TODO: Avoid use of Std.is
-				if (Std.is (__state.renderToTexture, Texture)) {
-				
-					var texture2D:Texture = cast __state.renderToTexture;
-					height = texture2D.__height;
-				
-				} else if (Std.is (__state.renderToTexture, RectangleTexture)) {
-					
-					var rectTexture:RectangleTexture = cast __state.renderToTexture;
-					height = rectTexture.__height;
-					
-				}
-				
-			} else {
-				
-				height = backBufferHeight;
-				
-				if (__stage.context3D == this) {
-					
-					offsetX = __stage3D != null ? Std.int (__stage3D.x) : 0;
-					offsetY = Std.int (__stage.window.height * __stage.window.scale) - height - (__stage3D != null ? Std.int (__stage3D.y) : 0);
-					
-				}
-				
-			}
-			
-			var scissorX = Std.int (__state.scissorRectangle.x) + offsetX;
-			var scissorY = height - Std.int (__state.scissorRectangle.y) - Std.int (__state.scissorRectangle.height) + offsetY;
+			var scissorX = Std.int (__state.scissorRectangle.x);
+			var scissorY = Std.int (__state.scissorRectangle.y);
 			var scissorWidth = Std.int (__state.scissorRectangle.width);
 			var scissorHeight = Std.int (__state.scissorRectangle.height);
+			
+			if (__state.renderToTexture == null && __stage3D == null) {
+				
+				var contextHeight = Std.int (__stage.window.height * __stage.window.scale);
+				scissorY = contextHeight - Std.int (__state.scissorRectangle.height) - scissorY;
+				
+			}
 			
 			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX || __contextState.scissorRectangle.y != scissorY || __contextState.scissorRectangle.width != scissorWidth || __contextState.scissorRectangle.height != scissorHeight #end) {
 				
@@ -1390,6 +1365,8 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLViewport ():Void {
 		
+		// TODO: Cache
+		
 		if (__state.renderToTexture == null) {
 			
 			if (__stage.context3D == this) {
@@ -1467,8 +1444,13 @@ import openfl.utils.ByteArray;
 			
 			setProgram (__renderStage3DProgram);
 			
-			// TODO: Should multiple contexts blend together?
 			setBlendFactors (ONE, ZERO);
+			setColorMask (true, true, true, true);
+			setCulling (NONE);
+			setDepthTest (false, ALWAYS);
+			setStencilActions ();
+			setStencilReferenceValue (0, 0, 0);
+			setScissorRectangle (null);
 			
 			setTextureAt (0, context.__frontBufferTexture);
 			setVertexBufferAt (0, stage3D.__vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);

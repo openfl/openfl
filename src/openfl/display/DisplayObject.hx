@@ -202,7 +202,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount = 0;
 	@:noCompletion private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
-	@:noCompletion private static var __tempColorTransform = new ColorTransform ();
 	@:noCompletion private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
 	
 	
@@ -1949,16 +1948,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (__isCacheBitmapRender) return false;
 		
-		var colorTransform = __tempColorTransform;
+		var colorTransform = ColorTransform.__pool.get ();
 		colorTransform.__copyFrom (__worldColorTransform);
 		if (renderer.__worldColorTransform != null) colorTransform.__combine (renderer.__worldColorTransform);
+		var updated = false;
 		
 		if (cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault ())) {
 			
 			var rect = null;
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform)));
-			var updateTransform = (needRender || (renderer.__type == OPENGL && !__cacheBitmap.__worldTransform.equals (__worldTransform)));
+			var updateTransform = (needRender || !__cacheBitmap.__worldTransform.equals (__worldTransform));
 			var hasFilters = __filters != null;
 			
 			if (hasFilters && !needRender) {
@@ -2077,11 +2077,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					
 				} else {
 					
+					ColorTransform.__pool.release (colorTransform);
+					
 					__cacheBitmap = null;
 					__cacheBitmapData = null;
 					__cacheBitmapData2 = null;
 					__cacheBitmapData3 = null;
 					__cacheBitmapRenderer = null;
+					
 					return true;
 					
 				}
@@ -2089,10 +2092,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			} else {
 				
 				// Should we retain these longer?
+				// Retaining __cacheBitmapData2 fixes filters from disappearing...
+				// ..when focusing out/in/out the browser window, html5
 				
 				__cacheBitmapData = __cacheBitmap.bitmapData;
-				__cacheBitmapData2 = null;
-				__cacheBitmapData3 = null;
+				//__cacheBitmapData2 = null;
+				//__cacheBitmapData3 = null;
 				
 			}
 			
@@ -2414,12 +2419,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 						if (__cacheBitmapData != bitmap) {
 							
 							// TODO: Fix issue with swapping __cacheBitmap.__bitmapData
-							__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
+							//__cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
 							
-							// cacheBitmap = __cacheBitmapData;
-							// __cacheBitmapData = bitmap;
-							// __cacheBitmapData2 = cacheBitmap;
-							// __cacheBitmap.__bitmapData = __cacheBitmapData;
+							// Adding __cacheBitmapRenderer = null; makes this work
+							cacheBitmap = __cacheBitmapData;
+							__cacheBitmapData = bitmap;
+							__cacheBitmapData2 = cacheBitmap;
+							__cacheBitmap.__bitmapData = __cacheBitmapData;
+							__cacheBitmapRenderer = null;
 							
 						}
 						
@@ -2448,7 +2455,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 			}
 			
-			return updateTransform;
+			updated = updateTransform;
 			
 		} else if (__cacheBitmap != null) {
 			
@@ -2465,11 +2472,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmapColorTransform = null;
 			__cacheBitmapRenderer = null;
 			
-			return true;
+			updated = true;
 			
 		}
 		
-		return false;
+		ColorTransform.__pool.release (colorTransform);
+		
+		return updated;
 		
 	}
 	
