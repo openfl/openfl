@@ -27,6 +27,7 @@ import js.html.ImageData;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
+@:access(openfl.text.TextFormat)
 
 
 class CanvasTextField {
@@ -206,7 +207,7 @@ class CanvasTextField {
 							
 							// TODO: Change to a different baseline for better consistency?
 							
-							var font = textEngine.getFontInstance (group.format);
+							var font = TextEngine.getFontInstance (group.format);
 							
 							if (group.format.__ascent == null && font == null || font.unitsPerEM == 0) {
 								
