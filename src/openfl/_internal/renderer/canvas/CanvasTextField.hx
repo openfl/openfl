@@ -204,7 +204,16 @@ class CanvasTextField {
 						
 						if (applyHack) {
 							
-							offsetY = group.format.size * 0.185;
+							// TODO: Change to a different baseline for better consistency?
+							
+							var font = textEngine.getFontInstance (group.format);
+							
+							if (group.format.__ascent == null && font == null || font.unitsPerEM == 0) {
+								
+								// Try and fix baseline for specific browsers, IF we don't have true font ascent/descent encoded
+								offsetY = group.format.size * 0.185;
+								
+							}
 							
 						}
 						
