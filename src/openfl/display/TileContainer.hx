@@ -111,6 +111,36 @@ class TileContainer extends Tile implements ITileContainer {
 	}
 	
 	
+	/**
+	 * Override from tile. A single tile, just has his rectangle.
+	 * A container must get a rectangle that contains all other rectangles.
+	 * 
+	 * @param targetCoordinateSpace The tile that works as a coordinate system.
+	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	 */
+	public override function getBounds (targetCoordinateSpace:Tile):Rectangle {
+		
+		var result = new Rectangle ();
+		var rect = null;
+		
+		for (tile in __tiles) {
+			
+			// TODO: Generate less Rectangle objects?
+			rect = tile.getBounds (targetCoordinateSpace);
+			
+			#if flash
+			result = result.union (rect);
+			#else
+			result.__expand (rect.x, rect.y, rect.width, rect.height);
+			#end
+			
+		}
+		
+		return result;
+		
+	}
+	
+	
 	public function getTileAt (index:Int):Tile {
 		
 		if (index >= 0 && index < numTiles) {
@@ -217,29 +247,6 @@ class TileContainer extends Tile implements ITileContainer {
 		
 		__setRenderDirty ();
 		
-	}
-
-
-	/**
-	 * Override from tile. A single tile, just has his rectangle.
-	 * A container must get a rectangle that contains all other rectangles.
-	 * 
-	 * @param targetCoordinateSpace The tile that works as a coordinate system.
-	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
-	 */
-	public override function getBounds(targetCoordinateSpace:Tile):Rectangle
-	{
-		//Get a rectangle of at least my original size.
-		var arrRects = new Array<Rectangle>();
-		var retval = new Rectangle();
-		var tmpRect = Rectangle.__pool.get();
-		for (tile in __tiles) 
-		{
-			tmpRect = tile.getBounds(targetCoordinateSpace);
-			retval.__expand(tmpRect.x,tmpRect.y,tmpRect.width,tmpRect.height);
-		}
-		Rectangle.__pool.release(tmpRect);
-		return retval;
 	}
 	
 	
