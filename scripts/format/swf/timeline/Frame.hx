@@ -14,7 +14,7 @@ class Frame
 	public var objects(default, null):Map<Int, FrameObject>;
 	private var _objectsSortedByDepth:Array<FrameObject>;
 	public var characters(default, null):Array<Int>;
-	public var tagCount (get_tagCount, null):Int;
+	public var tagCount (get, null):Int;
 	
 	public function new(frameNumber:Int = 0, tagIndexStart:Int = 0)
 	{

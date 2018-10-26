@@ -10,8 +10,8 @@ class SWFShapeRecord
 	public static inline var TYPE_STRAIGHTEDGE:Int = 3;
 	public static inline var TYPE_CURVEDEDGE:Int = 4;
 	
-	public var type(get_type, null):Int;
-	public var isEdgeRecord(get_isEdgeRecord, null):Bool;
+	public var type(get, null):Int;
+	public var isEdgeRecord(get, null):Bool;
 	
 	public function new(data:SWFData = null, level:Int = 1) {
 		if (data != null) {

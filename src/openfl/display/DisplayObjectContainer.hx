@@ -96,12 +96,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	 *                               throws an exception. The Stage object does
 	 *                               not implement this property.
 	 */
-	public var tabChildren:Bool;
+	public var tabChildren(get, set):Bool;
 	
 	// @:noCompletion @:dox(hide) public var textSnapshot (default, never):flash.text.TextSnapshot;
 	
 	
 	@:noCompletion private var __removedChildren:Vector<DisplayObject>;
+	@:noCompletion private var __tabChildren:Bool;
 	
 	
 	#if openfljs
@@ -128,6 +129,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		super ();
 		
 		mouseChildren = true;
+		__tabChildren = true;
 		
 		__children = new Array<DisplayObject> ();
 		__removedChildren = new Vector<DisplayObject> ();
@@ -1269,6 +1271,30 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private override function __tabTest (stack:Array<InteractiveObject>):Void {
+		
+		super.__tabTest (stack);
+		
+		if (!tabChildren) return;
+		
+		var interactive = false;
+		var interactiveObject:InteractiveObject = null;
+		
+		for (child in __children) {
+			
+			interactive = child.__getInteractive (null);
+			
+			if (interactive) {
+				
+				interactiveObject = cast child;
+				interactiveObject.__tabTest (stack);
+				
+			}
+		}
+		
+	}
+	
+	
 	@:noCompletion private override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		super.__update (transformOnly, updateChildren);
@@ -1296,6 +1322,27 @@ class DisplayObjectContainer extends InteractiveObject {
 	@:noCompletion private function get_numChildren ():Int {
 		
 		return __children.length;
+		
+	}
+	
+	
+	@:noCompletion private function get_tabChildren ():Bool {
+		
+		return __tabChildren;
+		
+	}
+	
+	
+	@:noCompletion private function set_tabChildren (value:Bool):Bool {
+		
+		if (__tabChildren != value) {
+			
+			__tabChildren = value;
+			
+			dispatchEvent (new Event (Event.TAB_CHILDREN_CHANGE, true, false));
+		}
+		
+		return __tabChildren;
 		
 	}
 	

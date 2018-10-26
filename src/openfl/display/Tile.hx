@@ -11,7 +11,8 @@ import openfl.geom.Rectangle;
 #end
 
 @:access(openfl.geom.ColorTransform)
-
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 class Tile {
 	
@@ -53,6 +54,11 @@ class Tile {
 	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __tileset:Tileset;
 	@:noCompletion private var __visible:Bool;
+	
+	#if flash
+	@:noCompletion private var __tempMatrix = new Matrix ();
+	@:noCompletion private var __tempRectangle = new Rectangle ();
+	#end
 	
 	
 	#if openfljs
@@ -132,9 +138,140 @@ class Tile {
 	}
 	
 	
+	/**
+	 * Gets you the bounding box of the Tile.
+	 * It will find a tileset to know the original rect
+	 * Then it will apply all the transformations from his parent.
+	 * 
+	 * @param targetCoordinateSpace The tile that works as a coordinate system.
+	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	 */
+	public function getBounds (targetCoordinateSpace:Tile):Rectangle {
+		
+		var result:Rectangle;
+		
+		if (tileset == null) {
+			
+			var parentTileset = parent.__findTileset ();
+			if (parentTileset == null) return new Rectangle ();
+			result = parentTileset.getRect (id);
+			if (result == null) return new Rectangle ();
+			
+		} else {
+			
+			result = tileset.getRect (id);
+			
+		}
+
+		//Copied from DisplayObject
+		var matrix = #if flash __tempMatrix #else Matrix.__pool.get () #end;
+		
+		if (targetCoordinateSpace != null && targetCoordinateSpace != this) {
+			
+			matrix.copyFrom (__getWorldTransform ());
+			
+			var targetMatrix = #if flash new Matrix () #else Matrix.__pool.get () #end;
+			
+			targetMatrix.copyFrom (targetCoordinateSpace.__getWorldTransform ());
+			targetMatrix.invert ();
+			
+			matrix.concat (targetMatrix);
+
+			#if !flash
+			Matrix.__pool.release (targetMatrix);
+			#end
+			
+		} else {
+			
+			matrix.identity ();
+			
+		}
+		
+		#if flash
+		function __transform (rect:Rectangle, m:Matrix):Void {
+			
+			var tx0 = m.a * rect.x + m.c * rect.y;
+			var tx1 = tx0;
+			var ty0 = m.b * rect.x + m.d * rect.y;
+			var ty1 = ty0;
+			
+			var tx = m.a * (rect.x + rect.width) + m.c * rect.y;
+			var ty = m.b * (rect.x + rect.width) + m.d * rect.y;
+			
+			if (tx < tx0) tx0 = tx;
+			if (ty < ty0) ty0 = ty;
+			if (tx > tx1) tx1 = tx;
+			if (ty > ty1) ty1 = ty;
+			
+			tx = m.a * (rect.x + rect.width) + m.c * (rect.y + rect.height);
+			ty = m.b * (rect.x + rect.width) + m.d * (rect.y + rect.height);
+			
+			if (tx < tx0) tx0 = tx;
+			if (ty < ty0) ty0 = ty;
+			if (tx > tx1) tx1 = tx;
+			if (ty > ty1) ty1 = ty;
+			
+			tx = m.a * rect.x + m.c * (rect.y + rect.height);
+			ty = m.b * rect.x + m.d * (rect.y + rect.height);
+			
+			if (tx < tx0) tx0 = tx;
+			if (ty < ty0) ty0 = ty;
+			if (tx > tx1) tx1 = tx;
+			if (ty > ty1) ty1 = ty;
+			
+			rect.setTo (tx0 + m.tx, ty0 + m.ty, tx1 - tx0, ty1 - ty0);
+			
+		}
+		__transform (result, matrix);
+		#else
+		result.__transform (result, matrix);
+		Matrix.__pool.release (matrix);
+		#end
+		
+		return result;
+		
+	}
+	
+	
+	/**
+	 * Evaluates the bounding box of the tile to see if it overlaps or
+	 * intersects with the bounding box of the `obj` tile.
+	 * Both tiles must be under the same Tilemap for this to work.
+	 * 
+	 * @param obj The tile to test against.
+	 * @return `true` if the bounding boxes of the tiles
+	 *         intersect; `false` if not.
+	 */
+	public function hitTestTile (obj:Tile):Bool {
+		
+		if (obj != null && obj.parent != null && parent != null) {
+			
+			var currentBounds = getBounds (this);
+			var targetBounds = obj.getBounds (this);
+			return currentBounds.intersects (targetBounds);
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
 	public function invalidate ():Void {
 		
 		__setRenderDirty ();
+		
+	}
+	
+	
+	@:noCompletion private function __findTileset ():Tileset {
+		
+		// TODO: Avoid Std.is
+		
+		if (tileset != null) return tileset;
+		if (Std.is (parent, Tilemap)) return parent.tileset;
+		if (parent == null) return null;
+		return parent.__findTileset ();
 		
 	}
 	
@@ -158,7 +295,25 @@ class Tile {
 	}
 	
 	
-	
+	/**
+	 * Climbs all the way up to get a transformation matrix
+	 * adds his own matrix and then returns it.
+	 * @return Matrix The final transformation matrix from stage to this point.
+	 */
+	private function __getWorldTransform():Matrix
+	{
+		var retval = matrix.clone();
+		if (parent != null)
+		{
+			var parentMatrix = #if flash __tempMatrix; #else new Matrix (); #end
+			parentMatrix = parent.__getWorldTransform();
+			retval.concat(parentMatrix);
+			#if !flash
+			Matrix.__pool.release(parentMatrix);
+			#end
+		}
+		return retval;
+	}
 	
 	// Get & Set Methods
 	

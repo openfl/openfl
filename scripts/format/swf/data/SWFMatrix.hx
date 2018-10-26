@@ -7,7 +7,7 @@ import flash.geom.Point;
 
 class SWFMatrix
 {
-	public var matrix(get_matrix, null):Matrix;
+	public var matrix(get, null):Matrix;
 	public var scaleX:Float = 1.0;
 	public var scaleY:Float = 1.0;
 	public var rotateSkew0:Float = 0.0;

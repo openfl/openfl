@@ -1,6 +1,8 @@
 package openfl.display; #if !flash
 
 
+import openfl.errors.RangeError;
+import openfl.events.Event;
 import openfl.geom.Rectangle;
 
 
@@ -1221,6 +1223,17 @@ class InteractiveObject extends DisplayObject {
 	}
 	
 	
+	@:noCompletion private function __tabTest (stack:Array<InteractiveObject>):Void {
+		
+		if (tabEnabled) {
+			
+			stack.push(this);
+			
+		}
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods
@@ -1237,7 +1250,14 @@ class InteractiveObject extends DisplayObject {
 	
 	@:noCompletion private function set_tabEnabled (value:Bool):Bool {
 		
-		return __tabEnabled = value;
+		if (__tabEnabled != value) {
+			
+			__tabEnabled = value;
+			
+			dispatchEvent (new Event (Event.TAB_ENABLED_CHANGE, true, false));
+		}
+		
+		return __tabEnabled;
 		
 	}
 	
@@ -1251,7 +1271,16 @@ class InteractiveObject extends DisplayObject {
 	
 	@:noCompletion private function set_tabIndex (value:Int):Int {
 		
-		return __tabIndex = value;
+		if (__tabIndex != value) {
+			
+			if (value < -1) throw new RangeError ("Parameter tabIndex must be a non-negative number; got " + value);
+			
+			__tabIndex = value;
+			
+			dispatchEvent (new Event (Event.TAB_INDEX_CHANGE, true, false));
+		}
+		
+		return __tabIndex;
 		
 	}
 	

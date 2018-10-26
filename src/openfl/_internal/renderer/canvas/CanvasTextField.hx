@@ -27,6 +27,7 @@ import js.html.ImageData;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
+@:access(openfl.text.TextFormat)
 
 
 class CanvasTextField {
@@ -204,7 +205,16 @@ class CanvasTextField {
 						
 						if (applyHack) {
 							
-							offsetY = group.format.size * 0.185;
+							// TODO: Change to a different baseline for better consistency?
+							
+							var font = TextEngine.getFontInstance (group.format);
+							
+							if (group.format.__ascent == null && font == null || font.unitsPerEM == 0) {
+								
+								// Try and fix baseline for specific browsers, IF we don't have true font ascent/descent encoded
+								offsetY = group.format.size * 0.185;
+								
+							}
 							
 						}
 						

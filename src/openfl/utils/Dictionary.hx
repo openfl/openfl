@@ -32,6 +32,15 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	#if (haxe_ver >= "4.0.0")
+	@:runtime public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		
+		return new haxe.iterators.MapKeyValueIterator (this);
+		
+	}
+	#end
+	
+	
 	public inline function remove (key:K):Bool {
 		
 		return this.remove (key);
@@ -201,6 +210,15 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	#if (haxe_ver >= "4.0.0")
+	@:runtime public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		
+		return new haxe.iterators.MapKeyValueIterator (this);
+		
+	}
+	#end
+	
+	
 	public function keys ():Iterator<K> {
 		
 		return types.iterator ();
@@ -288,6 +306,15 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		return ind > -1 ? values[ind] : null;
 		
 	}
+	
+	
+	#if (haxe_ver >= "4.0.0")
+	@:runtime public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		
+		return new haxe.iterators.MapKeyValueIterator (this);
+		
+	}
+	#end
 	
 	
 	public function keys ():Iterator<K> {
@@ -492,6 +519,15 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	#if (haxe_ver >= "4.0.0")
+	@:runtime public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		
+		return new haxe.iterators.MapKeyValueIterator (this);
+		
+	}
+	#end
+	
+	
 	public function keys ():Iterator<K> {
 		
 		return cast map.keys ();
@@ -558,6 +594,15 @@ abstract Dictionary<K, V> (Dynamic) {
 		return Reflect.field (this, cast key);
 		
 	}
+	
+	
+	#if (haxe_ver >= "4.0.0")
+	@:runtime public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		
+		return new haxe.iterators.MapKeyValueIterator (this);
+		
+	}
+	#end
 	
 	
 	public inline function remove (key:K):Bool {
@@ -639,6 +684,15 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 		return untyped this[key];
 		
 	}
+	
+	
+	#if (haxe_ver >= "4.0.0")
+	@:runtime public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		
+		return new haxe.iterators.MapKeyValueIterator (untyped this);
+		
+	}
+	#end
 	
 	
 	public inline function remove (key:K):Bool {

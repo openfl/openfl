@@ -5,7 +5,7 @@ import format.swf.SWFData;
 
 class SWFColorTransform
 {
-	public var colorTransform(get_colorTransform, null):ColorTransform;
+	public var colorTransform(get, null):ColorTransform;
 	public var rMult:Int = 0xFF;
 	public var gMult:Int = 0xFF;
 	public var bMult:Int = 0xFF;
