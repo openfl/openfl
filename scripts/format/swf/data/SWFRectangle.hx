@@ -12,7 +12,7 @@ class SWFRectangle
 	public var ymin:Int;
 	public var ymax:Int;
 	
-	public var rect (get_rect, null):Rectangle;
+	public var rect (get, null):Rectangle;
 	private var _rectangle:Rectangle;
 	
 	public function new(data:SWFData = null) {
