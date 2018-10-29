@@ -6,7 +6,7 @@ class SWFRecordHeader
 	public var contentLength:Int;
 	public var headerLength:Int;
 	
-	public var tagLength (get_tagLength, null):Int;
+	public var tagLength (get, null):Int;
 	
 	public function new(type:Int, contentLength:Int, headerLength:Int)
 	{
