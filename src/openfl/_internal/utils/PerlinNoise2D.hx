@@ -1,15 +1,12 @@
 package openfl._internal.utils;
 
 /**
-Title:      Perlin noise
-Version:    1.3
-Author:      Ron Valstar
-Author URI:    http://www.sjeiti.com/
-Original code port from http://mrl.nyu.edu/~perlin/noise/
-and some help from http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
-AS3 optimizations by Mario Klingemann http://www.quasimondo.com
-Haxe port and optimization by Nicolas Cannasse http://haxe.org
+
+Inspired by Stefan Gustavson, Linköping University, Sweden
+http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
+
 */
+
 import openfl.display.BitmapDataChannel;
 import openfl.display.BitmapData;
 
@@ -18,7 +15,13 @@ import openfl.display.BitmapData;
 @:noDebug
 #end
 
-class PerlinNoise extends AbstractNoise {
+class PerlinNoise2D extends AbstractNoise {
+    private static var grad3 = [
+        [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+        [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+        [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+    ];
+
     private static var P = [
         151, 160, 137, 91, 90, 15, 131, 13, 201, 95,
         96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69,
@@ -77,12 +80,6 @@ class PerlinNoise extends AbstractNoise {
 
     private var p_perm(null, null):Array<Int>;
 
-    private var x_offset(null, null):Float;
-    private var y_offset(null, null):Float;
-    private var z_offset(null, null):Float;
-
-    private var base_factor(null, null):Float;
-
     public function new(seed:Int, octaves:Int, channels:Int, grayScale:Bool, falloff:Float, stitch:Bool = false, stitch_threshold:Float = 0.05) {
         super(seed, octaves, channels, grayScale, falloff, stitch, stitch_threshold);
 
@@ -91,10 +88,6 @@ class PerlinNoise extends AbstractNoise {
         for (i in 0...512) {
             p_perm[i] = P[i & 255];
         }
-
-        this.base_factor = 1 / 32;
-
-        this.setSeed(seed);
     }
 
     override public function fill(bitmap:BitmapData, _scale_x:Float, _scale_y:Float, _scale_z:Float):Void {
@@ -128,35 +121,31 @@ class PerlinNoise extends AbstractNoise {
         var stitch_w:Int = Std.int(this.stitch_threshold * width);
         var stitch_h:Int = Std.int(this.stitch_threshold * height);
 
-        var base_x:Float = _scale_x * this.base_factor + this.x_offset;
-
-        _scale_y = _scale_y * this.base_factor + this.y_offset;
-        _scale_z = _scale_z * this.base_factor + this.z_offset;
-
-        var g_offset:Float = 1.0;
-        var b_offset:Float = 2.0;
-
         for (py in 0...height) {
-            _scale_x = base_x;
+            var py_delta_g:Float = py - 10.0;
+            var py_delta_b:Float = py + 10.0;
 
             for (px in 0...width) {
                 var color1 = 0.0;
                 var color2 = 0.0;
                 var color3 = 0.0;
 
-                for (i in 0...octaves) {
-                    var frequency:Float = octaves_frequencies[i];
-                    var persistence:Float = octaves_persistences[i];
+                var px_delta_g:Float = px - 10.0;
+                var px_delta_b:Float = px + 10.0;
 
-                    color1 += this.noise(_scale_x * frequency, _scale_y * frequency, _scale_z * frequency) * persistence;
+                for (i in 0...octaves) {
+                    var frequency = octaves_frequencies[i];
+                    var persistence = octaves_persistences[i];
+
+                    color1 += this.noise(px * (1.0 / _scale_x) * frequency, py * (1.0 / _scale_y) * frequency, 0.0) * persistence;
 
                     if (!grayscale) {
                         if (1 < channels) {
-                            color2 += this.noise((_scale_x + g_offset) * frequency, (_scale_y + g_offset) * frequency, _scale_z * frequency) * persistence;
+                            color2 += this.noise((px + px_delta_g) * (1.0 / _scale_x) * frequency, (py + py_delta_g) * (1.0 / _scale_y) * frequency, 0.0) * persistence;
                         }
 
                         if (2 < channels) {
-                            color3 += this.noise((_scale_x + b_offset) * frequency, (_scale_y + b_offset) * frequency, _scale_z * frequency) * persistence;
+                            color3 += this.noise((px + px_delta_b) * (1.0 / _scale_x) * frequency, (py + py_delta_b) * (1.0 / _scale_y) * frequency, 0.0) * persistence;
                         }
                     }
                 }
@@ -186,80 +175,59 @@ class PerlinNoise extends AbstractNoise {
                 }
 
                 bitmap.setPixel32(px, py, color);
-
-                _scale_x += this.base_factor;
             }
-
-            _scale_y += this.base_factor;
         }
     }
 
-    private function noise(x:Float, y:Float, z:Float):Float {
-        var xf = x - (x % 1);
-        var yf = y - (y % 1);
-        var zf = z - (z % 1);
-
-        x -= xf;
-        y -= yf;
-        z -= zf;
-
-        var X:Int = Std.int(xf) & 255;
-        var Y:Int = Std.int(yf) & 255;
-        var Z:Int = Std.int(zf) & 255;
-
-        var u = this.fade(x);
-        var v = this.fade(y);
-        var w = this.fade(z);
-
-        var A = (p_perm[X]) + Y;
-        var AA = (p_perm[A]) + Z;
-        var AB = (p_perm[A + 1]) + Z;
-        var B = (p_perm[X + 1]) + Y;
-        var BA = (p_perm[B]) + Z;
-        var BB = (p_perm[B + 1]) + Z;
-
-        var x1 = x - 1;
-        var y1 = y - 1;
-        var z1 = z - 1;
-
-        var hash = (p_perm[BB + 1]) & 15;
-        var g1 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1)) + ((hash & 2) == 0 ? hash < 4 ? y1 : ( hash == 12 ? x1 : z1 ) : hash < 4 ? -y1 : ( hash == 14 ? -x1 : -z1 ));
-
-        hash = (p_perm[AB + 1]) & 15;
-        var g2 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1)) + ((hash & 2) == 0 ? hash < 4 ? y1 : ( hash == 12 ? x : z1 ) : hash < 4 ? -y1 : ( hash == 14 ? -x : -z1 ));
-
-        hash = (p_perm[BA + 1]) & 15;
-        var g3 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y ) : (hash < 8 ? -x1 : -y )) + ((hash & 2) == 0 ? hash < 4 ? y : ( hash == 12 ? x1 : z1 ) : hash < 4 ? -y : ( hash == 14 ? -x1 : -z1 ));
-
-        hash = (p_perm[AA + 1]) & 15;
-        var g4 = ((hash & 1) == 0 ? (hash < 8 ? x : y ) : (hash < 8 ? -x : -y )) + ((hash & 2) == 0 ? hash < 4 ? y : ( hash == 12 ? x : z1 ) : hash < 4 ? -y : ( hash == 14 ? -x : -z1 ));
-
-        hash = (p_perm[BB]) & 15;
-        var g5 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1)) + ((hash & 2) == 0 ? hash < 4 ? y1 : ( hash == 12 ? x1 : z ) : hash < 4 ? -y1 : ( hash == 14 ? -x1 : -z ));
-
-        hash = (p_perm[AB]) & 15;
-        var g6 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1)) + ((hash & 2) == 0 ? hash < 4 ? y1 : ( hash == 12 ? x : z ) : hash < 4 ? -y1 : ( hash == 14 ? -x : -z ));
-
-        hash = (p_perm[BA]) & 15;
-        var g7 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y ) : (hash < 8 ? -x1 : -y )) + ((hash & 2) == 0 ? hash < 4 ? y : ( hash == 12 ? x1 : z ) : hash < 4 ? -y : ( hash == 14 ? -x1 : -z ));
-
-        hash = (p_perm[AA]) & 15;
-        var g8 = ((hash & 1) == 0 ? (hash < 8 ? x : y ) : (hash < 8 ? -x : -y )) + ((hash & 2) == 0 ? hash < 4 ? y : ( hash == 12 ? x : z ) : hash < 4 ? -y : ( hash == 14 ? -x : -z ));
-
-        g2 += u * (g1 - g2);
-        g4 += u * (g3 - g4);
-        g6 += u * (g5 - g6);
-        g8 += u * (g7 - g8);
-
-        g4 += v * (g2 - g4);
-        g8 += v * (g6 - g8);
-
-        return (g8 + w * (g4 - g8));
+    override private function noiseToColor(noise:Float):Int {
+        return Std.int(((noise * this.persistence_max + 1.0) * 0.5) * 255);
     }
 
-    private function setSeed(seed:Int):Void {
-        this.x_offset = seed = Std.int((seed * 16807.0) % 2147483647);
-        this.y_offset = seed = Std.int((seed * 16807.0) % 2147483647);
-        this.z_offset = seed = Std.int((seed * 16807.0) % 2147483647);
+    private function noise(xin:Float, yin:Float, zin:Float):Float {
+        var X:Int = fastfloor(xin);
+        var Y:Int = fastfloor(yin);
+        var Z:Int = fastfloor(zin);
+
+        var x = xin - X;
+        var y = yin - Y;
+        var z = zin - Z;
+
+        var X = X & 255;
+        var Y = Y & 255;
+        var Z = Z & 255;
+
+        var gi000:Int = p_perm[X + p_perm[Y + p_perm[Z]]] % 12;
+        var gi001:Int = p_perm[X + p_perm[Y + p_perm[Z + 1]]] % 12;
+        var gi010:Int = p_perm[X + p_perm[Y + 1 + p_perm[Z]]] % 12;
+        var gi011:Int = p_perm[X + p_perm[Y + 1 + p_perm[Z + 1]]] % 12;
+        var gi100:Int = p_perm[X + 1 + p_perm[Y + p_perm[Z]]] % 12;
+        var gi101:Int = p_perm[X + 1 + p_perm[Y + p_perm[Z + 1]]] % 12;
+        var gi110:Int = p_perm[X + 1 + p_perm[Y + 1 + p_perm[Z]]] % 12;
+        var gi111:Int = p_perm[X + 1 + p_perm[Y + 1 + p_perm[Z + 1]]] % 12;
+
+        var n000:Float = this.dot(grad3[gi000], x, y, z);
+        var n100:Float = this.dot(grad3[gi100], x - 1, y, z);
+        var n010:Float = this.dot(grad3[gi010], x, y - 1, z);
+        var n110:Float = this.dot(grad3[gi110], x - 1, y - 1, z);
+        var n001:Float = this.dot(grad3[gi001], x, y, z - 1);
+        var n101:Float = this.dot(grad3[gi101], x - 1, y, z - 1);
+        var n011:Float = this.dot(grad3[gi011], x, y - 1, z - 1);
+        var n111:Float = this.dot(grad3[gi111], x - 1, y - 1, z - 1);
+
+        var u:Float = this.fade(x);
+        var v:Float = this.fade(y);
+        var w:Float = this.fade(z);
+
+        var nx00:Float = this.mix(n000, n100, u);
+        var nx01:Float = this.mix(n001, n101, u);
+        var nx10:Float = this.mix(n010, n110, u);
+        var nx11:Float = this.mix(n011, n111, u);
+
+        var nxy0:Float = this.mix(nx00, nx10, v);
+        var nxy1:Float = this.mix(nx01, nx11, v);
+
+        var nxyz:Float = this.mix(nxy0, nxy1, w);
+
+        return nxyz;
     }
 }
