@@ -194,6 +194,11 @@ class Tools {
 		}
 		
 		var generatedClasses = [];
+
+		var classLookupMap = new Map<Int,String>();
+		for (className in swf.symbols.keys()) {
+			classLookupMap.set(swf.symbols[className], className);
+		}
 		
 		for (className in swf.symbols.keys ()) {
 			
@@ -254,34 +259,40 @@ class Tools {
 							var placeObject:TagPlaceObject = cast timelineContainer.tags[frameObject.placedAtIndex];
 							
 							if (placeObject != null && placeObject.instanceName != null) {
-								
-								var childSymbol = timelineContainer.getCharacter (frameObject.characterId);
+
+								var id = frameObject.characterId;
+								var childSymbol = timelineContainer.getCharacter (id);
 								var className = null;
-								
+
+								if (classLookupMap.exists(id)) {
+									className = classLookupMap.get(id);
+								}
 								if (childSymbol != null) {
-									
-									if (Std.is (childSymbol, TagDefineSprite)) {
-										
-										className = "openfl.display.MovieClip";
-										
-									} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
-										
-										className = "openfl.display.BitmapData";
-										
-									} else if (Std.is (childSymbol, TagDefineShape) || Std.is (childSymbol, TagDefineMorphShape)) {
-										
-										className = "openfl.display.Shape";
-										
-									} else if (Std.is (childSymbol, TagDefineText) || Std.is (childSymbol, TagDefineEditText)) {
-										
-										className = "openfl.text.TextField";
-										
-									} else if (Std.is (childSymbol, TagDefineButton2)) {
-										
-										className = "openfl.display.SimpleButton";
-										
+
+									if (className == null) {
+
+										if (Std.is (childSymbol, TagDefineSprite)) {
+
+											className = "openfl.display.MovieClip";
+
+										} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
+
+											className = "openfl.display.BitmapData";
+
+										} else if (Std.is (childSymbol, TagDefineShape) || Std.is (childSymbol, TagDefineMorphShape)) {
+
+											className = "openfl.display.Shape";
+
+										} else if (Std.is (childSymbol, TagDefineText) || Std.is (childSymbol, TagDefineEditText)) {
+
+											className = "openfl.text.TextField";
+
+										} else if (Std.is (childSymbol, TagDefineButton2)) {
+
+											className = "openfl.display.SimpleButton";
+
+										}
 									}
-									
 									if (className != null && !objectReferences.exists (placeObject.instanceName)) {
 										
 										objectReferences[placeObject.instanceName] = true;
