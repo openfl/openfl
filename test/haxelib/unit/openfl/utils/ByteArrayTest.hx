@@ -335,11 +335,21 @@ class ByteArrayTest {
 		data.writeUTF("\xE9");
 		
 		data.position = 0;
-		#if (flash || js || haxe_ver >= "4.0.0")
+		
+		#if (haxe_ver >= "4.0.0")
+		#if js
+		Assert.areEqual(4, data.readUnsignedShort() );
+		#else
+		Assert.areEqual(2, data.readUnsignedShort() );
+		#end
+		#else
+		#if (flash || js)
 		Assert.areEqual(2, data.readUnsignedShort() );
 		#else
 		Assert.areEqual(1, data.readUnsignedShort() );
 		#end
+		#end
+		
 		data.position = 0;
 		
 		Assert.areEqual( "\xE9", data.readUTF() );
@@ -355,11 +365,20 @@ class ByteArrayTest {
 		
 		// Flash is adding a byte for a null terminator
 		
-		#if (flash || js || haxe_ver >= "4.0.0")
+		#if (haxe_ver >= "4.0.0")
+		#if js
+		Assert.areEqual(16, data.length);
+		#else
+		Assert.areEqual(14, data.length);
+		#end
+		#else
+		#if (flash || js)
 		Assert.areEqual(14, data.length);
 		#else
 		Assert.areEqual(13, data.length);
 		#end
+		#end
+		
 		data.position = 0;
 		
 		Assert.areEqual( str, data.readUTFBytes(data.length) );

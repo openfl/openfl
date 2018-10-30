@@ -33,6 +33,9 @@ commands:
          name: Set HXP Development Directory
          command: haxelib dev hxp ../hxp
      - run:
+         name: Install HXP Command-Alias
+         command: haxelib run hxp --install-hxp-alias
+     - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
      - run:
