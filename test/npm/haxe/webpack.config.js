@@ -14,7 +14,7 @@ module.exports = {
 	},
 	resolve: {
 		alias: {
-			"openfl": path.resolve (__dirname, '../../lib/openfl/')
+			"openfl": path.resolve (__dirname, '../../../lib/openfl/')
 		}
 	}
 };

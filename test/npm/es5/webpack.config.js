@@ -14,12 +14,9 @@ module.exports = {
 	output: {
 		path: __dirname
 	},
-	externals: [{
-		mocha: true
-	}],
 	resolve: {
 		alias: {
-			"openfl": path.resolve (__dirname, '../../lib/openfl/')
+			"openfl": path.resolve (__dirname, '../../../lib/openfl/')
 		}
 	}
 };

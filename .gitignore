@@ -29,7 +29,7 @@ dump
 */dump/*
 lib/_gen
 lib-esm/_gen
-test/*/bundle.js
+test/**/bundle.js
 npm-debug.log
 *.map
 *.tgz

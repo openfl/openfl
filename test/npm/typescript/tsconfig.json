@@ -3,8 +3,8 @@
 		"target": "es5",
 		"baseUrl": ".",
 		"paths": {
-			"openfl": ["../../lib/openfl/index.js"],
-			"openfl/*": ["../../lib/openfl/*"]
+			"openfl": ["../../../lib/openfl/index.js"],
+			"openfl/*": ["../../../lib/openfl/*"]
 		},
 		"lib": [ "dom", "es2017" ],
 		"sourceMap": true

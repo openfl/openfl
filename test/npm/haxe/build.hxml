@@ -1,5 +1,5 @@
 -main Main
 -js entry.js
--cp ../../lib
+-cp ../../../lib
 -cp src
 -D source-map
