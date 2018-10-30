@@ -335,7 +335,7 @@ class ByteArrayTest {
 		data.writeUTF("\xE9");
 		
 		data.position = 0;
-		#if (flash || js)
+		#if (flash || js || haxe_ver >= "4.0.0")
 		Assert.areEqual(2, data.readUnsignedShort() );
 		#else
 		Assert.areEqual(1, data.readUnsignedShort() );
@@ -355,7 +355,7 @@ class ByteArrayTest {
 		
 		// Flash is adding a byte for a null terminator
 		
-		#if (flash || js)
+		#if (flash || js || haxe_ver >= "4.0.0")
 		Assert.areEqual(14, data.length);
 		#else
 		Assert.areEqual(13, data.length);
