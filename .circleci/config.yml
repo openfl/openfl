@@ -21,6 +21,9 @@ commands:
          name: Setup OpenFL Development Directory
          command: haxelib dev openfl .
      - run:
+         name: Install OpenFL Command-Alias
+         command: cp /workspace/openfl/assets/templates/bin/openfl.sh /usr/local/bin/openfl && chmod 755 /usr/local/bin/openfl
+     - run:
          name: Clone Lime (Master)
          command: if [[ $CIRCLE_BRANCH == 'master' ]]; then git clone -b master --single-branch --recursive https://github.com/openfl/lime ../lime --depth 1 ; fi
      - run:
@@ -34,10 +37,13 @@ commands:
          command: haxelib dev hxp ../hxp
      - run:
          name: Install HXP Command-Alias
-         command: haxelib run hxp --install-hxp-alias
+         command: cp /workspace/hxp/bin/hxp.sh /usr/local/bin/hxp && chmod 755 /usr/local/bin/hxp
      - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
+     - run:
+         name: Install OpenFL Command-Alias
+         command: cp /workspace/lime/templates/bin/lime.sh /usr/local/bin/lime && chmod 755 /usr/local/bin/lime
      - run:
          name: Rebuild Lime Tools
          command: haxelib run lime rebuild tools -nocffi
