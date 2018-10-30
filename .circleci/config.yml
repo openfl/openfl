@@ -37,7 +37,7 @@ commands:
          command: haxelib dev hxp ../hxp
      - run:
          name: Install HXP Command-Alias
-         command: cp /workspace/hxp/bin/hxp.sh /usr/local/bin/hxp && chmod 755 /usr/local/bin/hxp
+         command: haxelib run hxp --install-hxp-alias
      - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
@@ -47,6 +47,10 @@ commands:
      - run:
          name: Rebuild Lime Tools
          command: haxelib run lime rebuild tools -nocffi
+     - run:
+         name: Generate MUnit Test Runner
+         working_directory: /workspace/openfl/test/haxelib
+         command: haxelib run munit gen
 
   test-html5:
     description: "Test HTML5"
@@ -54,7 +58,7 @@ commands:
      - run:
          name: Build Tests
          working_directory: /workspace/openfl/
-         command: hxp test html5haxelib run lime build html5 -nocffi
+         command: haxelib run lime build html5 -nocffi
      #- run:
          #name: Run Tests
          #command: haxelib run munit test -js -nocffi
