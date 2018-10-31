@@ -37,7 +37,7 @@ commands:
          command: haxelib dev hxp ../hxp
      - run:
          name: Install HXP Command-Alias
-         command: haxelib run hxp --install-hxp-alias
+         command: cp /workspace/hxp/bin/hxp.sh /usr/local/bin/hxp && chmod 755 /usr/local/bin/hxp
      - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
