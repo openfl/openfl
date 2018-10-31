@@ -56,11 +56,8 @@ commands:
     description: "Test HTML5"
     steps:
      - run:
-         name: Rebuild Lime Desktop Binary
-         command: haxelib run lime rebuild linux -release -64 -nocffi
-     - run:
          name: Build Tests
-         working_directory: /workspace/openfl/
+         working_directory: /workspace/openfl/test/haxelib
          command: haxelib run lime build html5 -nocffi
      #- run:
          #name: Run Tests
