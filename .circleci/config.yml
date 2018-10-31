@@ -45,8 +45,8 @@ commands:
          name: Install OpenFL Command-Alias
          command: cp /workspace/lime/templates/bin/lime.sh /usr/local/bin/lime && chmod 755 /usr/local/bin/lime
      - run:
-         name: Rebuild Lime Tools
-         command: haxelib run lime rebuild tools -nocffi
+         name: Rebuild OpenFL Tools
+         command: haxelib run openfl rebuild tools -nocffi
      - run:
          name: Generate MUnit Test Runner
          working_directory: /workspace/openfl/test/haxelib
