@@ -163,7 +163,7 @@ class Tools {
 			
 		}
 		
-		packageName = packageName.toLowerCase ();
+		packageName = packageName.charAt (0).toLowerCase () + packageName.substr (1);
 		name = name.substr (0, 1).toUpperCase () + name.substr (1);
 		
 		if (packageName != "") {
@@ -219,7 +219,7 @@ class Tools {
 				
 			}
 			
-			packageName = packageName.toLowerCase ();
+			packageName = packageName.charAt (0).toLowerCase () + packageName.substr (1);
 			name = name.substr (0, 1).toUpperCase () + name.substr (1);
 			
 			var packageNameDot = packageName;
