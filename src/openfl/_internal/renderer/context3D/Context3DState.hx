@@ -20,8 +20,10 @@ class Context3DState {
 	
 	
 	public var backBufferEnableDepthAndStencil:Bool;
-	public var blendDestinationFactor:Context3DBlendFactor;
-	public var blendSourceFactor:Context3DBlendFactor;
+	public var blendDestinationAlphaFactor:Context3DBlendFactor;
+	public var blendSourceAlphaFactor:Context3DBlendFactor;
+	public var blendDestinationRGBFactor:Context3DBlendFactor;
+	public var blendSourceRGBFactor:Context3DBlendFactor;
 	public var colorMaskRed:Bool;
 	public var colorMaskGreen:Bool;
 	public var colorMaskBlue:Bool;
@@ -74,8 +76,10 @@ class Context3DState {
 	public function new () {
 		
 		backBufferEnableDepthAndStencil = false;
-		blendDestinationFactor = ZERO;
-		blendSourceFactor = ONE;
+		blendDestinationAlphaFactor = ZERO;
+		blendSourceAlphaFactor = ONE;
+		blendDestinationRGBFactor = ZERO;
+		blendSourceRGBFactor = ONE;
 		colorMaskRed = true;
 		colorMaskGreen = true;
 		colorMaskBlue = true;
