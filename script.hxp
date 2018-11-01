@@ -37,6 +37,7 @@ class Script extends hxp.Script {
 			"windows",
 			"mac",
 			"linux",
+			"air",
 			"web"
 		];
 		
@@ -89,6 +90,8 @@ class Script extends hxp.Script {
 		if (target == "web" || target == "html5" || target == null) System.runCommand (dir, "openfl", [ "build", "html5" ]);
 		
 		if (target == "web" || target == "html5" || target == "flash" || target == null) System.runCommand (dir, "haxelib", [ "run", "munit", "test" ]);
+		
+		if (target == "air" || target == null) System.runCommand (dir, "openfl", [ "test", "air" ]);
 		
 	}
 	
