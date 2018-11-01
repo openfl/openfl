@@ -314,12 +314,64 @@ class DisplayObjectTest {
 	
 	@Test public function getBounds () {
 		
-		// TODO: Confirm functionality
-		
 		var sprite = new Sprite ();
-		var exists = sprite.getBounds;
+		var bounds = sprite.getBounds (sprite);
 		
-		Assert.isNotNull (exists);
+		Assert.isTrue (bounds.isEmpty ());
+		
+		sprite.graphics.beginFill (0xFF0000);
+		sprite.graphics.drawRect (0, 0, 100, 100);
+		
+		bounds = sprite.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		sprite.x = 100;
+		
+		bounds = sprite.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		var sprite2 = new Sprite ();
+		sprite2.addChild (sprite);
+		
+		bounds = sprite.getBounds (sprite2);
+		Assert.areEqual (100, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		sprite.rotation = 90;
+		
+		bounds = sprite.getBounds (sprite2);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		bounds = sprite2.getBounds (sprite2);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		sprite.x = 200;
+		
+		bounds = sprite.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		bounds = sprite2.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
 		
 	}
 	
