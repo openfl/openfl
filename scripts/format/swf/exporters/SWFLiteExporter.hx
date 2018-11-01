@@ -1132,8 +1132,18 @@ class SWFLiteExporter {
 								}
 								Log.info ("", "javascript:\n"+js);
 								
-								// store on SWFLite object for serialized .dat export
-								spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
+								if (js != null && js.indexOf ("null.") > -1) {
+									
+									Log.info ("", "Script appears to have been parsed improperly, discarding");
+									js = null;
+									
+								} else {
+									
+									// store on SWFLite object for serialized .dat export
+									spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
+									
+								}
+								
 							}
 						case _:
 					}
