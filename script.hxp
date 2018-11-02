@@ -21,6 +21,14 @@ class Script extends hxp.Script {
 	}
 	
 	
+	private function runOpenFLCommand (directory:String, args:Array<String>):Void {
+		
+		if (Log.verbose) args.push ("-verbose");
+		System.runCommand (directory, "openfl", args);
+		
+	}
+	
+	
 	private function test ():Void {
 		
 		var targets = [
@@ -81,17 +89,25 @@ class Script extends hxp.Script {
 		
 		var dir = Path.combine (Sys.getCwd (), "test/haxelib");
 		
-		System.runCommand (dir, "haxelib", [ "run", "munit", "gen" ]);
+		if (options.exists ("filter")) {
+			
+			System.runCommand (dir, "haxelib", [ "run", "munit", "gen", "-filter", options.get ("filter")[0] ]);
+			
+		} else {
+			
+			System.runCommand (dir, "haxelib", [ "run", "munit", "gen" ]);
+			
+		}
 		
-		if (target == "neko" || target == null) System.runCommand (dir, "openfl", [ "test", "neko" ]);
-		if (target == "cpp" || target == null || target == System.hostPlatform) System.runCommand (dir, "openfl", [ "test", "cpp" ]);
+		if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
+		if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand (dir, [ "test", "cpp" ]);
 		
-		if (target == "web" || target == "flash" || target == null) System.runCommand (dir, "openfl", [ "build", "flash" ]);
-		if (target == "web" || target == "html5" || target == null) System.runCommand (dir, "openfl", [ "build", "html5" ]);
+		if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash" ]);
+		if (target == "web" || target == "html5" || target == null) runOpenFLCommand (dir, [ "build", "html5" ]);
 		
 		if (target == "web" || target == "html5" || target == "flash" || target == null) System.runCommand (dir, "haxelib", [ "run", "munit", "test" ]);
 		
-		if (target == "air" || target == null) System.runCommand (dir, "openfl", [ "test", "air" ]);
+		if (target == "air" || target == null) runOpenFLCommand (dir, [ "test", "air" ]);
 		
 	}
 	
