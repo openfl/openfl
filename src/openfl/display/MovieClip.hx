@@ -181,6 +181,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __symbol:SpriteSymbol;
 	@:noCompletion private var __timeElapsed:Int;
 	@:noCompletion private var __totalFrames:Int;
+	@:noCompletion private var __fields:Array<String>;
 	
 	
 	#if openfljs
@@ -217,6 +218,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		__currentFrame = 1;
 		__currentLabels = [];
 		__totalFrames = 0;
+		__fields = [];
 		enabled = true;
 		
 		if (__initSymbol != null) {
@@ -369,7 +371,16 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	
 	
 	public override function __enterFrame (deltaTime:Int):Void {
+
+		__updateFrameScript(deltaTime);
+		__updateSymbol(__currentFrame);
+
+		super.__enterFrame (deltaTime);
 		
+	}
+
+	@:noCompletion private function __updateFrameScript(deltaTime:Int) {
+
 		if (__symbol != null && __playing) {
 			
 			var nextFrame = __getNextFrame (deltaTime);
@@ -410,7 +421,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			}
 			
 		}
-		
+	}
+
+
+	@:noCompletion private function __updateSymbol(targetFrame:Int) {
+
 		if (__symbol != null && __currentFrame != __lastFrameUpdate) {
 			
 			__updateFrameLabel ();
@@ -423,7 +438,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			// TODO: Handle updates only from previous frame?
 			
-			for (i in 0...__currentFrame) {
+			for (i in 0...targetFrame) {
 				
 				frame = i + 1;
 				frameData = __symbol.frames[i];
@@ -569,11 +584,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			}
 			
 			__lastFrameUpdate = __currentFrame;
-			
+			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+			__updateFields();
+			#end
+
 		}
-		
-		super.__enterFrame (deltaTime);
-		
 	}
 	
 	
@@ -587,7 +602,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			__currentFrame = frame;
 			
 			if (__frameScripts.exists (frame)) {
-				
+				__updateSymbol(frame);// ensures that children have been added before script executes
 				var script = __frameScripts.get (frame);
 				script ();
 				
@@ -601,7 +616,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			if (!__playing) {
 				
-				break;
+				return false;
 				
 			}
 			
@@ -853,21 +868,28 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		__enterFrame (0);
 		
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-		// TODO: Speed this up
-		for (field in Type.getInstanceFields (Type.getClass (this))) {
+		__fields = Type.getInstanceFields(Type.getClass(this));
+		__updateFields();
+		#end
+		
+	}
+
+	@:noCompletion private function __updateFields():Void {
+
+		for (field in __fields) {
 			
 			for (child in __children) {
 				
 				if (child.name == field) {
 					
-					Reflect.setField (this, field, child);
-					
+					Reflect.setField(this, field, child);
+					break;
+
 				}
 				
 			}
 			
 		}
-		#end
 		
 	}
 	
