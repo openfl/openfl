@@ -6,28 +6,77 @@ import openfl.display.BitmapData;
 
 
 class TextFieldTest {
-	
-	
-	@Test public function autoSize () {
-		
-		var textField = new TextField ();
-		textField.text = "Hello";
-		
-		Assert.areNotEqual (textField.textWidth + 4, textField.width);
-		
-		textField.autoSize = TextFieldAutoSize.LEFT;
-		
-		Assert.areEqual (textField.textWidth + 4, textField.width);
-		
-		textField.text = "H";
-		
-		Assert.areEqual (textField.textWidth + 4, textField.width);
-		
-		textField.text = "Hello World";
-		
-		Assert.areEqual (textField.textWidth + 4, textField.width);
-		
-	}
+    @Test public function autoSizeLeft() {
+        var textField = new TextField ();
+        textField.text = "Hello";
+
+        Assert.areNotEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(0.0, textField.x);
+        Assert.areEqual(100.0, textField.width);
+
+        textField.autoSize = TextFieldAutoSize.LEFT;
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(0.0, textField.x);
+
+        textField.text = "H";
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(0.0, textField.x);
+
+        textField.text = "Hello World";
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(0.0, textField.x);
+    }
+
+    @Test public function autoSizeRight() {
+        var textField = new TextField();
+        textField.text = "Hello";
+
+        Assert.areNotEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(0.0, textField.x);
+        Assert.areEqual(100.0, textField.width);
+
+        textField.autoSize = TextFieldAutoSize.RIGHT;
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
+
+        textField.text = "H";
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
+
+        textField.text = "Hello World";
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
+    }
+
+    @Test public function autoSizeCenter() {
+        var textField = new TextField();
+        textField.text = "Hello";
+
+        Assert.areNotEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual(0.0, textField.x);
+        Assert.areEqual(100.0, textField.width);
+
+        textField.autoSize = TextFieldAutoSize.CENTER;
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
+
+        textField.text = "H";
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
+
+        textField.text = "Hello World";
+
+        Assert.areEqual(textField.textWidth + 4, textField.width);
+        Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
+    }
 	
 	
 	@Test public function background () {
