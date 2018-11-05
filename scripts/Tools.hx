@@ -396,6 +396,7 @@ class Tools {
 				if (packageNameDot.length > 0) packageNameDot += ".";
 				
 				var classProperties = [];
+				var objectReferences = new Map<String, Bool> ();
 				
 				if (Std.is (symbol, SpriteSymbol)) {
 					
