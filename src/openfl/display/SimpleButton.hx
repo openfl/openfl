@@ -271,7 +271,7 @@ class SimpleButton extends InteractiveObject {
 	
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
-		return (useHandCursor && !__ignoreEvent) ? POINTER : null;
+		return (useHandCursor && !__ignoreEvent && enabled) ? POINTER : null;
 		
 	}
 	
@@ -298,7 +298,7 @@ class SimpleButton extends InteractiveObject {
 					
 				}
 				
-				hitTest = true;
+				hitTest = (!interactiveOnly || mouseEnabled);
 				
 			}
 			
@@ -722,7 +722,11 @@ class SimpleButton extends InteractiveObject {
 	
 	@:noCompletion private function __this_onMouseDown (event:MouseEvent):Void {
 		
-		__currentState = downState;
+		if (enabled) {
+			
+			__currentState = downState;
+			
+		}
 		
 	}
 	
@@ -731,7 +735,7 @@ class SimpleButton extends InteractiveObject {
 		
 		__ignoreEvent = false;
 		
-		if (upState != __currentState) {
+		if (enabled && upState != __currentState) {
 			
 			__currentState = upState;
 			
@@ -748,7 +752,7 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		if (overState != __currentState && overState != null && !__ignoreEvent) {
+		if (overState != __currentState && overState != null && !__ignoreEvent && enabled) {
 			
 			__currentState = overState;
 			
@@ -761,13 +765,17 @@ class SimpleButton extends InteractiveObject {
 		
 		__ignoreEvent = false;
 		
-		if (overState != null) {
+		if (enabled) {
 			
-			__currentState = overState;
-			
-		} else {
-			
-			__currentState = upState;
+			if (overState != null) {
+				
+				__currentState = overState;
+				
+			} else {
+				
+				__currentState = upState;
+				
+			}
 			
 		}
 		
