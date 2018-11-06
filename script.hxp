@@ -102,7 +102,7 @@ class Script extends hxp.Script {
 		if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
 		if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand (dir, [ "test", "cpp" ]);
 		
-		if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash" ]);
+		if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash", "-debug" ]);
 		if (target == "web" || target == "html5" || target == null) runOpenFLCommand (dir, [ "build", "html5" ]);
 		
 		if (target == "web" || target == "html5" || target == "flash" || target == null) System.runCommand (dir, "haxelib", [ "run", "munit", "test" ]);
