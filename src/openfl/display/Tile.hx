@@ -168,10 +168,9 @@ class Tile {
 
 		//Copied from DisplayObject
 		var matrix = #if flash __tempMatrix #else Matrix.__pool.get () #end;
+		matrix.copyFrom (__getWorldTransform ());
 		
 		if (targetCoordinateSpace != null && targetCoordinateSpace != this) {
-			
-			matrix.copyFrom (__getWorldTransform ());
 			
 			var targetMatrix = #if flash new Matrix () #else Matrix.__pool.get () #end;
 			
@@ -183,10 +182,6 @@ class Tile {
 			#if !flash
 			Matrix.__pool.release (targetMatrix);
 			#end
-			
-		} else {
-			
-			matrix.copyFrom (__getWorldTransform ());
 			
 		}
 		
