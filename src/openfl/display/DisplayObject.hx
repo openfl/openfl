@@ -2548,6 +2548,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:keep @:noCompletion private function set_alpha (value:Float):Float {
 		
 		if (value > 1.0) value = 1.0;
+		if (value < 0.0) value = 0.0;
+
 		if (value != __alpha) __setRenderDirty ();
 		return __alpha = value;
 		
@@ -2564,6 +2566,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function set_blendMode (value:BlendMode):BlendMode {
 		
 		if (value == null) value = NORMAL;
+
 		if (value != __blendMode) __setRenderDirty ();
 		return __blendMode = value;
 		
