@@ -3,6 +3,7 @@ node_modules
 *.userprefs
 *.swp
 *.hash
+*.iml
 .idea
 .svn
 .vscode
