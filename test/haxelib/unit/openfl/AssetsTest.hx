@@ -100,5 +100,5 @@ class AssetsTest {
 }
 
 #if html5
-@:bitmap("openfl/1x1.png") class MacroPreloadTest extends BitmapData { }
+@:bitmap("../assets/1x1.png") class MacroPreloadTest extends BitmapData { }
 #end
