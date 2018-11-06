@@ -163,6 +163,9 @@ class Tile {
 			
 		}
 
+		result.x = 0;
+		result.y = 0;
+
 		//Copied from DisplayObject
 		var matrix = #if flash __tempMatrix #else Matrix.__pool.get () #end;
 		
@@ -183,7 +186,7 @@ class Tile {
 			
 		} else {
 			
-			matrix.identity ();
+			matrix.copyFrom (__getWorldTransform ());
 			
 		}
 		
@@ -305,12 +308,7 @@ class Tile {
 		var retval = matrix.clone();
 		if (parent != null)
 		{
-			var parentMatrix = #if flash __tempMatrix; #else new Matrix (); #end
-			parentMatrix = parent.__getWorldTransform();
-			retval.concat(parentMatrix);
-			#if !flash
-			Matrix.__pool.release(parentMatrix);
-			#end
+			retval.concat(parent.__getWorldTransform());
 		}
 		return retval;
 	}
