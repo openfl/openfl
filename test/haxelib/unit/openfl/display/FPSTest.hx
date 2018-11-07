@@ -1,21 +1,13 @@
 package openfl.display;
 
+import openfl.events.Event;
 
 import massive.munit.Assert;
 
-
 class FPSTest {
-	
-	
-	@Test public function new_ () {
-		
-		// TODO: Confirm functionality
-		
+	@Test public function new_() {
 		var fps = new FPS ();
-		
-		Assert.isNotNull (fps);
-		
+
+		Assert.isTrue(fps.hasEventListener(Event.ENTER_FRAME));
 	}
-	
-	
 }
