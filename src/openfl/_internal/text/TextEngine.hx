@@ -920,6 +920,13 @@ class TextEngine {
 				
 			}
 			
+			// TODO: is this correct? how do browsers deal with RTL?
+			if (__textLayout.direction == RIGHT_TO_LEFT) {
+				
+				positions.reverse();
+				
+			}
+			
 			return positions;
 			
 			#else
@@ -1108,7 +1115,18 @@ class TextEngine {
 					if (tempIndex != tempRangeEnd) {
 						
 						var tempPositions = getPositions (text, tempIndex, tempRangeEnd);
-						positions = positions.concat(tempPositions);
+						
+						if (__textLayout.direction == LEFT_TO_RIGHT) {
+							
+							positions = positions.concat (tempPositions);
+							
+						}
+						
+						else {
+							
+							positions = tempPositions.concat (positions);
+							
+						}
 						
 						widthValue += getPositionsWidth (positions);
 						
@@ -1257,7 +1275,18 @@ class TextEngine {
 				
 				while (offsetX + positionWidth < width - 2) {
 					
-					currentPosition = remainingPositions[i];
+					if (__textLayout.direction == LEFT_TO_RIGHT) {
+						
+						currentPosition = remainingPositions[i];
+						
+					}
+					
+					else {
+						
+						// RTL text positions go right to left (end to beginning)
+						currentPosition = remainingPositions[remainingPositions.length - i - 1];
+						
+					}
 					
 					if (#if (js && html5) currentPosition #else currentPosition.advance.x #end == 0.0) {
 						
@@ -1315,7 +1344,17 @@ class TextEngine {
 				placeFormattedText (textIndex + i);
 				alignBaseline();
 				
-				setFormattedPositions (i, remainingPositions.length);
+				if (__textLayout.direction == LEFT_TO_RIGHT) {
+					
+					setFormattedPositions (i, remainingPositions.length);
+					
+				}
+				
+				else {
+					
+					setFormattedPositions (0, i);
+					
+				}
 				
 				remainingPositions = positions;
 				tempWidth = widthValue;
@@ -1469,7 +1508,7 @@ class TextEngine {
 								// if last letter is a space, avoid word wrap if possible
 								// TODO: Handle multiple spaces
 								
-								var lastPosition = positions[positions.length - 1];
+								var lastPosition = if (__textLayout.direction == LEFT_TO_RIGHT) positions[positions.length - 1] else positions[0];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 								
 								if (offsetX + widthValue - spaceWidth <= width - 2) {
@@ -1494,7 +1533,20 @@ class TextEngine {
 							}
 							
 							// For correct selection rectangles and alignment, trim the trailing space of the previous line:
-							previous.width -= previous.getAdvance (previous.positions.length - 1);
+							if (__textLayout.direction == LEFT_TO_RIGHT) {
+								
+								previous.width -= previous.getAdvance (previous.positions.length - 1);
+								
+							}
+							
+							else {
+								
+								// the trailing space is the leading position in RTL
+								previous.width -= previous.getAdvance (0);
+								
+							}
+							
+							
 							previous.endIndex--;
 							
 						}
@@ -1556,7 +1608,7 @@ class TextEngine {
 							if (lineFormat.align != JUSTIFY) {
 								
 								layoutGroup.endIndex = spaceIndex;
-								layoutGroup.positions = layoutGroup.positions.concat (positions);
+								layoutGroup.positions = if (__textLayout.direction == LEFT_TO_RIGHT) layoutGroup.positions.concat (positions) else positions.concat (layoutGroup.positions);
 								layoutGroup.width += widthValue;
 								
 							}
@@ -1572,7 +1624,8 @@ class TextEngine {
 						} else {
 							
 							layoutGroup.endIndex = endIndex;
-							layoutGroup.positions = layoutGroup.positions.concat (positions);
+							// the concatenation order determines if words are strung together LTR or RTL
+							layoutGroup.positions = if (__textLayout.direction == LEFT_TO_RIGHT) layoutGroup.positions.concat (positions) else positions.concat (layoutGroup.positions);
 							layoutGroup.width += widthValue;
 							
 							if (endIndex == formatRange.end) {
@@ -1695,7 +1748,7 @@ class TextEngine {
 		var lineIndex = -1;
 		var offsetX = 0.0;
 		var totalWidth = this.width - 4;
-		var group, lineLength;
+		var group, lineLength, groupsInLine;
 		var lineMeasurementsDirty = false;
 		
 		for (i in 0...layoutGroups.length) {
@@ -1758,7 +1811,16 @@ class TextEngine {
 							
 							if (lineLength > 1) {
 								
-								group = layoutGroups[i + lineLength - 1];
+								// get the final layout group in the current line and check if it needs to be justified
+								groupsInLine = i + lineIndex;
+								
+								while (groupsInLine < layoutGroups.length && group.lineIndex == layoutGroups[groupsInLine].lineIndex) {
+									
+									groupsInLine++;
+									
+								}
+								
+								group = layoutGroups[groupsInLine - 1];
 								
 								var endChar = text.charCodeAt (group.endIndex);
 								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code) {
@@ -1766,19 +1828,41 @@ class TextEngine {
 									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
 									lineMeasurementsDirty = true;
 									
-									var j = 1;
+									// keep track of groups in the line as well as words in the line
+									var j = 1, k = 0;
 									do {
 										
-										// if (text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+										// if the format changes before the next space, use the previous word's offsetX
+										if (k > 0 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
 											
-										// 	layoutGroups[i + j].offsetX += (offsetX * (j-1));
-										// 	j++;
+											if (__textLayout.direction == LEFT_TO_RIGHT) {
+												
+												layoutGroups[j].offsetX += (offsetX * (k - 1));
+												
+											} else {
+												
+												layoutGroups[j].offsetX += (offsetX * (k - 1));
+												
+											}
+										}
+										
+										else {
 											
-										// }
+											if (__textLayout.direction == LEFT_TO_RIGHT) {
+												
+												layoutGroups[j].offsetX += (offsetX * k);
+												
+											} else {
+												
+												layoutGroups[j].offsetX += (offsetX * k);
+												
+											}
+											
+											k++;
+											
+										}
 										
-										layoutGroups[i + j].offsetX += (offsetX * j);
-										
-									} while (++j < lineLength);
+									} while (++j < groupsInLine);
 									
 								}
 								
