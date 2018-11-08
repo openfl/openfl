@@ -1,0 +1,122 @@
+# Generate platform-specific XML for documentation output
+
+# -xml xml/Flash.xml
+# -swf obj/docs
+# -swf-version 17.0
+# -D display
+# -D doc_gen
+# ImportAll
+# -lib lime
+# -lib openfl
+# --no-output
+
+-xml xml/Flash.xml
+-cpp obj/docs
+-D display
+-D flash_doc_gen
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-xml xml/Windows.xml
+-cpp obj/docs
+-D display
+-D native
+-D windows
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-xml xml/macOS.xml
+-cpp obj/docs
+-D display
+-D native
+-D mac
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-xml xml/Linux.xml
+-cpp obj/docs
+-D display
+-D native
+-D linux
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-xml xml/Neko.xml
+-neko obj/docs
+-D display
+-D native
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-xml xml/iOS.xml
+-cpp obj/docs
+-D display
+-D native
+-D ios
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-xml xml/Android.xml
+-cpp obj/docs
+-D display
+-D native
+-D android
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-xml xml/HTML5.xml
+-js obj/docs
+-D display
+-D html5
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
+-cmd haxelib run dox -o ../docs-api -i xml -in openfl --title "API Reference" -D website "http://www.openfl.org" -D source-path "https://github.com/openfl/openfl/tree/develop/src/" -D logo "/images/logo.png" -D textColor 0x777777 -theme ../assets/docs-theme --toplevel-package openfl

@@ -1,6 +1,0 @@
--main ApplicationMain ::HAXE_FLAGS::
--swf-version ::SWF_VERSION::
--swf ::OUTPUT_DIR::/bin/::APP_FILE::.swf
--swf-header ::if (WIN_WIDTH == "0")::800::else::::WIN_WIDTH::::end:::::if (WIN_HEIGHT == "0")::500::else::::WIN_HEIGHT::::end:::::WIN_FPS:::::WIN_FLASHBACKGROUND::
--cp ::OUTPUT_DIR::/haxe
--D final

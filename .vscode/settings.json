@@ -1,5 +1,9 @@
 {
+    "haxe.displayConfigurations": [
+        [ "scripts/completion.hxml" ]
+    ],
     "editor.trimAutoWhitespace": false,
+    "files.trimTrailingWhitespace": false,
     "editor.insertSpaces": false,
     "codedox": {
         "commentprefix": "    ",
@@ -9,5 +13,6 @@
         "paramFormat": "",
         "returnFormat": "",
         "neverAskTemplate": true
-    }
+    },
+    "editor.codeLens": false,
 }

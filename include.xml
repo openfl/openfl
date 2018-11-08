@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
-	<set name="lime-version" value="5.2.*" />
+	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
+	
+	<set name="lime-version" value="7.1.1" unless="setup || disable-version-check" />
 	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<window stencil-buffer="true" />
+	<window stencil-buffer="true" depth-buffer="true" color-depth="32" />
 	
 	<unset name="custom-backend" />
 	
@@ -19,24 +21,26 @@
 	
 	<section unless="lime || custom-backend">
 		
-		<!--<haxelib name="lime" version="${lime-version}" unless="create" />-->
-		<!--<haxelib name="lime" version="${lime-version}" if="display || rebuild" />-->
-		<haxelib name="lime" unless="create" />
-		<haxelib name="lime" if="display || rebuild" />
+		<section if="lime-version">
+			<haxelib name="lime" version="${lime-version}" unless="create" />
+			<haxelib name="lime" version="${lime-version}" if="display || rebuild" />
+		</section>
+		<section unless="lime-version">
+			<haxelib name="lime" unless="create" />
+			<haxelib name="lime" if="display || rebuild" />
+		</section>
 		
 	</section>
 	
-	<section if="lime">
+	<!-- <section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 5.2.* is required)" if="${lime < 5.2.0} || ${lime >= 5.3.0}" unless="setup || disable-version-check" />
+		<log warn="Lime version ${lime} ${lime-version} may not be compatible with OpenFL ${openfl} (expected version ${lime-version})" if="${lime < ${lime-version}}" unless="setup || disable-version-check" />
 		
-	</section>
+	</section> -->
 	
-	<template path="templates" />
+	<template path="assets/templates" />
 	
-	<source path="externs/core/flash" if="flash" />
-	<source path="externs/core/openfl" if="display || flash" />
-	<source path="externs/extras" if="display" />
+	<source path="externs/flash" if="flash" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
@@ -52,8 +56,9 @@
 			
 			<section if="telemetry || advanced-telemetry || openfl-telemetry">
 				
-				<haxelib name="hxtelemetry" />
-				<config:hxtelemetry allocations="true" host="localhost" />
+				<haxelib name="hxtelemetry" unless="flash" />
+				<config:hxtelemetry allocations="true" host="localhost" unless="flash" />
+				<haxedef name="advanced-telemetry" if="flash" />
 				
 			</section>
 			
@@ -76,9 +81,9 @@
 			<haxedef name="openfl-html5" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<module name="openfl" if="modular">
+			<module name="openfl" if="html5 lime-modular">
 				
-				<source path="" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
+				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.Context3DGraphics|*.SWFLibrary" />
 				
 				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
 				<class remove="lime.graphics.opengl.GLContextType" />
@@ -112,6 +117,9 @@
 			
 		</section>
 		
+		<set name="openfl-has-default-fonts" if="windows || mac || linux || ios || android || flash || html5 || emscripten || tvos" />
+		<assets path="assets/fonts" unless="openfl-has-default-fonts || openfl-no-default-fonts" />
+		
 	</section>
 	
 	<library handler="openfl" type="swf" />
@@ -120,7 +128,8 @@
 	
 	<section if="setup">
 		
-		<haxelib name="lime" />
+		<haxelib name="lime" version="${lime-version}" if="lime-version" />
+		<haxelib name="lime" unless="lime-version" />
 		<haxelib name="openfl-samples" />
 		
 	</section>

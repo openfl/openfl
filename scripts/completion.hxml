@@ -1,0 +1,9 @@
+
+-main CompletionMain
+-neko completion.n
+-cp scripts
+-cp src
+-lib lime
+-D openfl
+# --remap flash:openfl
+--no-output

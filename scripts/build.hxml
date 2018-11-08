@@ -1,0 +1,26 @@
+-js ../lib/_gen/_.js
+ImportAll
+#-lib lime
+-cp ../node_modules/lime/src
+-D lime=7.0.0
+# -lib openfl
+-cp ../src
+#-lib hxgenjs
+-cp ../node_modules/hxgenjs/src
+-cp ../node_modules/tink_macro/src
+-cp ../node_modules/tink_core/src
+--macro genjs.Generator.use()
+# -D hxextern
+# -D tsextern
+-D openfl-dynamic
+-D openfljs
+-D lime-bytes-length-getter
+-D html5
+-D lime-canvas
+-D lime-dom
+-D lime-howlerjs
+-D lime-webgl
+-D tools
+-D commonjs
+-D howlerjs
+--no-inline
