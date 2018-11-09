@@ -378,9 +378,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var fullScreenHeight (get, never):UInt;
 	
-	// @:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
-	
 	public var fullScreenWidth (get, never):UInt;
+	
+	public var fullScreenSourceRect (get, set):Rectangle;
 	
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
 	
@@ -602,6 +602,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __deltaTime:Int;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayMatrix:Matrix;
+	@:noCompletion private var __screenRegion:Rectangle;
+	@:noCompletion private var __fullScreenSourceRect:Rectangle;
 	@:noCompletion private var __displayState:StageDisplayState;
 	@:noCompletion private var __dragBounds:Rectangle;
 	@:noCompletion private var __dragObject:Sprite;
@@ -680,6 +682,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalWidth = 0;
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
+		__screenRegion = new Rectangle();
 		__renderDirty = true;
 		
 		stage3Ds = new Vector ();
@@ -1637,7 +1640,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (__renderer != null) {
 			
 			__renderer.__allowSmoothing = (quality != LOW);
-			__renderer.__worldTransform = __displayMatrix;
+			__renderer.__worldTransform = __worldTransform;
 			__renderer.__stage = this;
 			
 			__renderer.__resize (Std.int (window.width * window.scale), Std.int (window.height * window.scale));
@@ -2138,7 +2141,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					MouseEvent.__buttonDown = false;
 					
-					if (__mouseX < 0 || __mouseY < 0 || __mouseX > stageWidth || __mouseY > stageHeight) {
+					if (__mouseX < __screenRegion.left || __mouseY < __screenRegion.top || __mouseX > __screenRegion.right || __mouseY > __screenRegion.bottom) {
 						
 						__dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
 						
@@ -2584,32 +2587,55 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__displayMatrix.identity ();
+		__worldTransform.identity ();
 		
-		if (__logicalWidth == 0 && __logicalHeight == 0) {
+		if(__shouldUseSourceRect()) {
 			
-			stageWidth = windowWidth;
-			stageHeight = windowHeight;
+			stageWidth = Std.int(fullScreenSourceRect.width);
+			stageHeight = Std.int(fullScreenSourceRect.height);
+
+			var displayScaleX = windowWidth / stageWidth;
+			var displayScaleY = windowHeight / stageHeight;
+			
+			__displayMatrix.translate (-fullScreenSourceRect.x, -fullScreenSourceRect.y);
+			__displayMatrix.scale (displayScaleX, displayScaleY);
+
+			__worldTransform.translate(fullScreenSourceRect.x,fullScreenSourceRect.y);
+
+			__updateScreenRegion(fullScreenSourceRect.left,
+								fullScreenSourceRect.right,
+								fullScreenSourceRect.top,
+								fullScreenSourceRect.bottom);
 			
 		} else {
 			
-			stageWidth = __logicalWidth;
-			stageHeight = __logicalHeight;
-			
-			var scaleX = windowWidth / stageWidth;
-			var scaleY = windowHeight / stageHeight;
-			var targetScale = Math.min (scaleX, scaleY);
-			
-			var offsetX = Math.round ((windowWidth - (stageWidth * targetScale)) / 2);
-			var offsetY = Math.round ((windowHeight - (stageHeight * targetScale)) / 2);
-			
-			__displayMatrix.scale (targetScale, targetScale);
-			__displayMatrix.translate (offsetX, offsetY);
-			
+			if (__logicalWidth == 0 && __logicalHeight == 0) {
+				
+				stageWidth = windowWidth;
+				stageHeight = windowHeight;
+				
+			} else {
+				
+				stageWidth = __logicalWidth;
+				stageHeight = __logicalHeight;
+				
+				var scaleX = windowWidth / stageWidth;
+				var scaleY = windowHeight / stageHeight;
+				var targetScale = Math.min (scaleX, scaleY);
+				
+				var offsetX = Math.round ((windowWidth - (stageWidth * targetScale)) / 2);
+				var offsetY = Math.round ((windowHeight - (stageHeight * targetScale)) / 2);
+				
+				__displayMatrix.scale (targetScale, targetScale);
+				__displayMatrix.translate (offsetX, offsetY);
+				
+			}
+			__screenRegion.setTo(0,0,stageWidth, stageHeight);
 		}
 		
 		if (context3D != null) {
 			
-			context3D.configureBackBuffer (stageWidth, stageHeight, 0, true, true, true);
+			context3D.configureBackBuffer (windowWidth, windowHeight, 0, true, true, true);
 			
 		}
 		
@@ -2778,6 +2804,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 	}
 	
+	
+	@:noCompletion private function __updateScreenRegion(left:Float, right:Float, top:Float, bottom:Float) {
+		__screenRegion.left = left;
+		__screenRegion.right = right;
+		__screenRegion.bottom = bottom;
+		__screenRegion.top = top;
+	}
+	@:noCompletion private function __shouldUseSourceRect():Bool {
+		return fullScreenSourceRect!= null && window.fullscreen;
+	}
 	
 	
 	
@@ -2952,6 +2988,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		return Math.ceil (window.display.currentMode.width * window.scale);
 		
+	}
+	
+	
+	@:noCompletion private function get_fullScreenSourceRect():Rectangle  {
+		return __fullScreenSourceRect;
+	}
+	
+	
+	@:noCompletion private function set_fullScreenSourceRect(value:Rectangle):Rectangle  {
+		if (!value.equals(__fullScreenSourceRect)) {
+			__fullScreenSourceRect = value;
+			__resize();
+		}
+		return __fullScreenSourceRect;
 	}
 	
 	
