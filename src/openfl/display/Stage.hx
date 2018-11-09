@@ -2992,16 +2992,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	@:noCompletion private function get_fullScreenSourceRect():Rectangle  {
-		return __fullScreenSourceRect;
+		return __fullScreenSourceRect == null ? null : __fullScreenSourceRect.clone();
 	}
 	
 	
 	@:noCompletion private function set_fullScreenSourceRect(value:Rectangle):Rectangle  {
-		if (!value.equals(__fullScreenSourceRect)) {
-			__fullScreenSourceRect = value;
+		if (value == null) {
+			if (__fullScreenSourceRect != null) {
+				__fullScreenSourceRect = null;
+				__resize();
+			}
+		} else if (!value.equals(__fullScreenSourceRect)) {
+			__fullScreenSourceRect = value.clone();
 			__resize();
 		}
-		return __fullScreenSourceRect;
+		return value;
 	}
 	
 	
