@@ -815,12 +815,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 					// __gl.scissor (0, 0, __offsetX, __height);
 					__scissorRectangle.setTo (0, 0, __offsetX, __height);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					//__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 					// __gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
 					__scissorRectangle.setTo (__offsetX + __displayWidth, 0, __width, __height);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					//__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
@@ -829,12 +829,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 					// __gl.scissor (0, 0, __width, __offsetY);
 					__scissorRectangle.setTo (0, 0, __width, __offsetY);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					//__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 					// __gl.scissor (0, __offsetY + __displayHeight, __width, __height);
 					__scissorRectangle.setTo (0, __offsetY + __displayHeight, __width, __height);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					//__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
