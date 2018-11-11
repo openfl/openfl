@@ -2092,12 +2092,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			} else {
 				
 				// Should we retain these longer?
-				// Retaining __cacheBitmapData2 fixes filters from disappearing...
-				// ..when focusing out/in/out the browser window, html5
 				
 				__cacheBitmapData = __cacheBitmap.bitmapData;
-				//__cacheBitmapData2 = null;
-				//__cacheBitmapData3 = null;
+				__cacheBitmapData2 = null;
+				__cacheBitmapData3 = null;
 				
 			}
 			
