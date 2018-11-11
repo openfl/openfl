@@ -2384,8 +2384,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							bitmap3 = __cacheBitmapData3;
 						}
 						
-						var sourceRect = Rectangle.__pool.get ();
-						sourceRect.setTo (0, 0, filterWidth, filterHeight);
 						
 						if (__tempPoint == null) __tempPoint = new Point ();
 						var destPoint = __tempPoint;
@@ -2397,7 +2395,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 								bitmap3.copyPixels (bitmap, bitmap.rect, destPoint);
 							}
 							
-							lastBitmap = filter.__applyFilter (bitmap2, bitmap, sourceRect, destPoint);
+							lastBitmap = filter.__applyFilter (bitmap2, bitmap, bitmap.rect, destPoint);
 							
 							if (filter.__preserveObject) {
 								lastBitmap.draw (bitmap3, null, __objectTransform != null ? __objectTransform.colorTransform : null);
@@ -2428,7 +2426,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							
 						}
 						
-						Rectangle.__pool.release (sourceRect);
 						__cacheBitmap.__imageVersion = __cacheBitmapData.__textureVersion;
 						
 					}
