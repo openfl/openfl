@@ -70,7 +70,7 @@ import openfl.net.NetStream;
 	
 	#if (js && html5)
 	
-	if (!__netStream.__video.paused || __netStream.__seeking) {
+	if ((!__netStream.__video.paused || __netStream.__seeking) && __netStream.__video.readyState > 0) {
 		
 		__netStream.__seeking = false;
 		var gl = __context.gl;
