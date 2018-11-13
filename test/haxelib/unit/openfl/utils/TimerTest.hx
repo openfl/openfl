@@ -1,7 +1,9 @@
 package openfl.utils;
 
 import openfl.errors.Error;
+
 import massive.munit.Assert;
+import massive.munit.Async;
 
 class TimerTest {
 	@Test public function new_() {
@@ -26,16 +28,30 @@ class TimerTest {
 		});
 	}
 
-	@Test public function currentCount() {
+	@Test public function timerFinished() {
+		// TODO: Lower MS values make this test fails completely
+		var timer = new Timer (50, 5);
+		timer.start();
 
-		// TODO: Confirm functionality
-		// TODO: Actual timer ticks tests
+		var handler:Dynamic = Async.handler(this, function():Void {
+			Assert.areEqual(5, timer.currentCount);
+			Assert.isFalse(timer.running);
+		}, 800);
+		// setting timout 2x desired delay and timer 1.5x desired delayed
 
-		var timer = new Timer (0);
-		var exists = timer.currentCount;
+		var m_timer = massive.munit.util.Timer.delay(handler, 375);
+	}
 
-		Assert.isNotNull(exists);
+	@Test public function timerRunning() {
+		var timer = new Timer (100, 5);
+		timer.start();
 
+		var handler:Dynamic = Async.handler(this, function():Void {
+			Assert.areEqual(2, timer.currentCount);
+			Assert.isTrue(timer.running);
+		}, 500);
+
+		var m_timer = massive.munit.util.Timer.delay(handler, 250);
 	}
 
 	@Test public function delay() {
@@ -65,6 +81,21 @@ class TimerTest {
 		Assert.areEqual(10, timer.repeatCount);
 
 		// TODO: Actual timer ticks tests
+	}
+
+	@Test public function repeatCountDuringTimer() {
+		var timer = new Timer (100, 5);
+		timer.start();
+
+		var handler:Dynamic = Async.handler(this, function():Void {
+			timer.repeatCount = 1;
+
+			Assert.areEqual(1, timer.repeatCount);
+			Assert.areEqual(2, timer.currentCount);
+			Assert.isFalse(timer.running);
+		}, 500);
+
+		var m_timer = massive.munit.util.Timer.delay(handler, 250);
 	}
 
 	@Test public function running() {
