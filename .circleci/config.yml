@@ -33,11 +33,17 @@ commands:
          name: Clone HXP
          command: git clone --single-branch --recursive https://github.com/openfl/hxp ../hxp --depth 1
      - run:
+         name: Clone Munit
+         command: git clone --single-branch --recursive https://github.com/openfl/munit ../munit --depth 1
+     - run:
          name: Set HXP Development Directory
          command: haxelib dev hxp ../hxp
      - run:
          name: Install HXP Command-Alias
          command: cp /workspace/hxp/bin/hxp.sh /usr/local/bin/hxp && chmod 755 /usr/local/bin/hxp
+     - run:
+         name: Set Munit Development Directory
+         command: haxelib dev munit ../munit/src
      - run:
          name: Set Lime Development Directory
          command: haxelib dev lime ../lime
