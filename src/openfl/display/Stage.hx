@@ -1611,7 +1611,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				context3D.configureBackBuffer (stageWidth, stageHeight, 0, true, true, true);
 				context3D.present ();
 				__renderer = new OpenGLRenderer (context3D);
-				__renderer.__worldTransform = __worldTransform;
 				#end
 			
 			case CANVAS:
@@ -1619,7 +1618,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				#if (js && html5)
 				__renderer = new CanvasRenderer (window.context.canvas2D);
 				cast (__renderer, CanvasRenderer).pixelRatio = pixelRatio;
-				__renderer.__worldTransform = __displayMatrix;
 				#end
 			
 			case DOM:
@@ -1627,14 +1625,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 				#if (js && html5)
 				__renderer = new DOMRenderer (window.context.dom);
 				cast (__renderer, DOMRenderer).pixelRatio = pixelRatio;
-				__renderer.__worldTransform = __worldTransform;
 				#end
 			
 			case CAIRO:
 				
 				#if lime_cairo
 				__renderer = new CairoRenderer (window.context.cairo);
-				__renderer.__worldTransform = __displayMatrix;
 				#end
 			
 			default:
@@ -1644,6 +1640,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (__renderer != null) {
 			
 			__renderer.__allowSmoothing = (quality != LOW);
+			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__stage = this;
 			
 			__renderer.__resize (Std.int (window.width * window.scale), Std.int (window.height * window.scale));
@@ -2590,7 +2587,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__displayMatrix.identity ();
-		__worldTransform.identity ();
 		
 		if(__shouldUseSourceRect()) {
 			
@@ -2603,7 +2599,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__displayMatrix.translate (-fullScreenSourceRect.x, -fullScreenSourceRect.y);
 			__displayMatrix.scale (displayScaleX, displayScaleY);
 
-			__worldTransform.translate(fullScreenSourceRect.x,fullScreenSourceRect.y);
 
 			__updateScreenRegion(fullScreenSourceRect.left,
 								fullScreenSourceRect.right,
