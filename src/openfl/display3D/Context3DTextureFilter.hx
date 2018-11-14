@@ -6,8 +6,9 @@ import openfl._internal.utils.NullUtils;
 #end
 
 
-@:enum abstract Context3DTextureFilter(Null<Int>) {
+@:enum abstract Context3DTextureFilter(Int) {
 	
+	public var UNKNOWN = -1;
 	public var ANISOTROPIC16X = 0;
 	public var ANISOTROPIC2X = 1;
 	public var ANISOTROPIC4X = 2;
@@ -25,7 +26,7 @@ import openfl._internal.utils.NullUtils;
 			case "anisotropic8x": ANISOTROPIC8X;
 			case "linear": LINEAR;
 			case "nearest": NEAREST;
-			default: null;
+			default: UNKNOWN;
 			
 		}
 		

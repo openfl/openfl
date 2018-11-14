@@ -6,8 +6,9 @@ import openfl._internal.utils.NullUtils;
 #end
 
 
-@:enum abstract Context3DWrapMode(Null<Int>) {
+@:enum abstract Context3DWrapMode(Int) {
 	
+	public var UNKNOWN = -1;
 	public var CLAMP = 0;
 	public var CLAMP_U_REPEAT_V = 1;
 	public var REPEAT = 2;
@@ -21,7 +22,7 @@ import openfl._internal.utils.NullUtils;
 			case "clamp_u_repeat_v": CLAMP_U_REPEAT_V;
 			case "repeat": REPEAT;
 			case "repeat_u_clamp_v": REPEAT_U_CLAMP_V;
-			default: null;
+			default: UNKNOWN;
 			
 		}
 		

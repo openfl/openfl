@@ -6,8 +6,9 @@ import openfl._internal.utils.NullUtils;
 #end
 
 
-@:enum abstract Context3DMipFilter(Null<Int>) {
+@:enum abstract Context3DMipFilter(Int) {
 	
+	public var UNKNOWN = -1;
 	public var MIPLINEAR = 0;
 	public var MIPNEAREST = 1;
 	public var MIPNONE = 2;
@@ -19,7 +20,7 @@ import openfl._internal.utils.NullUtils;
 			case "miplinear": MIPLINEAR;
 			case "mipnearest": MIPNEAREST;
 			case "mipnone": MIPNONE;
-			default: null;
+			default: UNKNOWN;
 			
 		}
 		
