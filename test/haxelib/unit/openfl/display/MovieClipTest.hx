@@ -85,9 +85,15 @@ class MovieClipTest {
 	@Test public function new_() {
 		var clip = new MovieClip();
 
+		#if flash
+		Assert.areEqual(0, clip.currentFrame);
+		Assert.areEqual(1, clip.totalFrames);
+		#else
 		Assert.areEqual(1, clip.currentFrame);
-		Assert.areEqual(0, clip.currentLabels.length);
 		Assert.areEqual(0, clip.totalFrames);
+		#end
+
+		Assert.areEqual(0, clip.currentLabels.length);
 
 		Assert.areEqual(true, clip.enabled);
 	}

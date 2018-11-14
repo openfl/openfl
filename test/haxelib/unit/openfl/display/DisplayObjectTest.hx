@@ -21,15 +21,23 @@ class DisplayObjectTest {
 
 		object.alpha = 0.732;
 
-		Assert.areEqual(0.732, object.alpha);
+		Assert.areEqual(0.73046875, object.alpha);
 
 		object.alpha = 1.321;
 
+		#if flash
+		Assert.areEqual(1.3203125, object.alpha);
+		#else
 		Assert.areEqual(1.0, object.alpha);
+		#end
 
 		object.alpha = -1.432;
 
+		#if flash
+		Assert.areEqual(-1.4296875, object.alpha);
+		#else
 		Assert.areEqual(0.0, object.alpha);
+		#end
 	}
 
 	@Test public function blendMode() {
@@ -37,13 +45,15 @@ class DisplayObjectTest {
 
 		Assert.areEqual(BlendMode.NORMAL, object.blendMode);
 
-		object.blendMode = BlendMode.DIFFERENCE;
+		object.blendMode = BlendMode.ADD;
 
-		Assert.areEqual(BlendMode.DIFFERENCE, object.blendMode);
+		Assert.areEqual(BlendMode.ADD, object.blendMode);
 
+		#if !flash
 		object.blendMode = null;
 
 		Assert.areEqual(BlendMode.NORMAL, object.blendMode);
+		#end
 	}
 
 	@Test public function cacheAsBitmap() {
@@ -71,32 +81,37 @@ class DisplayObjectTest {
 	}
 
 	@Test public function filters() {
-		var object = new Sprite ();
+		var sprite = new Sprite ();
 
-		var filter = new GlowFilter();
-		var filter2 = new DropShadowFilter();
+		var glow_filter = new GlowFilter();
+		var drop_shadow_filter = new DropShadowFilter();
 
-		var objectFilters = null;
+		var filters = new Array<BitmapFilter>();
 
-		Assert.areEqual(0, object.filters.length);
+		Assert.areEqual(0, sprite.filters.length);
 
-		objectFilters = (object.filters = [filter]);
+		filters.push(glow_filter);
 
-		Assert.areEqual(1, objectFilters.length);
-		Assert.areEqual(filter, objectFilters[0]);
+		sprite.filters = filters;
 
-		var clonedFilters:Array<BitmapFilter> = object.filters;
+		Assert.areEqual(1, filters.length);
+		Assert.areEqual(glow_filter, filters[0]);
+
+		var clonedFilters:Array<BitmapFilter> = sprite.filters;
 		clonedFilters.pop();
 
-		objectFilters = object.filters;
+		filters = sprite.filters;
 
-		Assert.areEqual(1, objectFilters.length);
-		Assert.areEqual(filter, objectFilters[0]);
+		Assert.areEqual(1, filters.length);
+		Assert.isType(filters[0], GlowFilter);
 
-		objectFilters = (object.filters = [filter2]);
+		filters = new Array<BitmapFilter>();
+		filters.push(drop_shadow_filter);
 
-		Assert.areEqual(1, objectFilters.length);
-		Assert.areEqual(filter2, objectFilters[0]);
+		sprite.filters = filters;
+
+		Assert.areEqual(1, filters.length);
+		Assert.isType(filters[0], DropShadowFilter);
 	}
 
 	@Test public function height() {
