@@ -18,7 +18,7 @@ import lime.utils.Float32Array;
 	
 	
 	public var index (default, null):Dynamic;
-	@:noCompletion public var name:String;
+	@:noCompletion public var name (default, set):String;
 	public var type (default, null):ShaderParameterType;
 	public var value:Array<T>;
 	
@@ -30,7 +30,14 @@ import lime.utils.Float32Array;
 	@:noCompletion private var __length:Int;
 	@:noCompletion private var __uniformMatrix:Float32Array;
 	@:noCompletion private var __useArray:Bool;
+	@:noCompletion private var __nameStartsWithOpenfl:Bool;
 	
+	@:noCompletion private function set_name(str:String):String
+	{
+		name = str;
+		__nameStartsWithOpenfl = StringTools.startsWith(name, "openfl_");
+		return name;
+	}
 	
 	public function new () {
 		
@@ -303,7 +310,7 @@ import lime.utils.Float32Array;
 			
 		} else {
 			
-			if (!StringTools.startsWith (name, "openfl_") && (length == 0 || length == __length)) {
+			if (!__nameStartsWithOpenfl && (length == 0 || length == __length)) {
 				
 				for (i in 0...__arrayLength) {
 					

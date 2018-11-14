@@ -146,14 +146,12 @@ class PointTest {
 	
 	
 	@Test public function setTo () {
-		
-		// TODO: Confirm functionality
-		
-		var point = new Point ();
-		var exists = point.setTo;
-		
-		Assert.isNotNull (exists);
-		
+
+		var point = new Point (1.0, 2.0);
+		point.setTo(5.0, 6.0);
+
+		Assert.areEqual(5.0, point.x);
+		Assert.areEqual(6.0, point.y);
 	}
 	
 	
@@ -174,14 +172,7 @@ class PointTest {
 		
 	}
 	
-	
-	/*public function toString () {
-		
-		
-		
-	}*/
-	
-	
+
 	@Test public function distance () {
 		
 		Assert.areEqual (100, Point.distance (new Point (), new Point (100, 0)));

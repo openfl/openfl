@@ -1,178 +1,167 @@
 package openfl.display;
 
-
 import massive.munit.Assert;
 import openfl.display.MovieClip;
 
-
 class MovieClipTest {
-	
-	
-	@Test public function currentFrame () {
-		
+
+	@Test public function currentFrame() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.currentFrame;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function currentFrameLabel () {
-		
+
+	@Test public function currentFrameLabel() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.currentFrameLabel;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
+
 	}
-	
-	
-	@Test public function currentLabel () {
-		
+
+	@Test public function currentLabel() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.currentLabel;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
+
 	}
-	
-	
-	@Test public function currentLabels () {
-		
+
+	@Test public function currentLabels() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.currentLabels;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function enabled () {
-		
+
+	@Test public function enabled() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.enabled;
-		
-		Assert.isTrue (exists);
-		
+
+		Assert.isTrue(exists);
+
 	}
-	
-	
-	@Test public function framesLoaded () {
-		
+
+	@Test public function framesLoaded() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.framesLoaded;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function totalFrames () {
-		
+
+	@Test public function totalFrames() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.totalFrames;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function new_ () {
-		
-		// TODO: Confirm functionality
-		
-		var movieClip = new MovieClip ();
-		
-		Assert.isNotNull (movieClip);
-		
+
+	@Test public function new_() {
+		var clip = new MovieClip();
+
+		#if flash
+		Assert.areEqual(0, clip.currentFrame);
+		Assert.areEqual(1, clip.totalFrames);
+		#else
+		Assert.areEqual(1, clip.currentFrame);
+		Assert.areEqual(0, clip.totalFrames);
+		#end
+
+		Assert.areEqual(0, clip.currentLabels.length);
+
+		Assert.areEqual(true, clip.enabled);
 	}
-	
-	
-	@Test public function gotoAndPlay () {
-		
+
+	@Test public function gotoAndPlay() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.gotoAndPlay;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function gotoAndStop () {
-		
+
+	@Test public function gotoAndStop() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.gotoAndStop;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function nextFrame () {
-		
+
+	@Test public function nextFrame() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.nextFrame;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function play () {
-		
+
+	@Test public function play() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.play;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function prevFrame () {
-		
+
+	@Test public function prevFrame() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.prevFrame;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
-	@Test public function stop () {
-		
+
+	@Test public function stop() {
+
 		// TODO: Confirm functionality
-		
+
 		var movieClip = new MovieClip ();
 		var exists = movieClip.stop;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
+
 }

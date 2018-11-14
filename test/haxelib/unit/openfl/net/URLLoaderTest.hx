@@ -56,14 +56,14 @@ class URLLoaderTest {
 	
 	
 	@Test public function new_ () {
-		
-		// TODO: Confirm functionality
-		
-		var urlLoader = new URLLoader ();
-		Assert.isNotNull (urlLoader);
-		
+		var loader = new URLLoader();
+
+		Assert.areEqual(0, loader.bytesLoaded);
+		Assert.areEqual(0, loader.bytesTotal);
+
+		Assert.areEqual(URLLoaderDataFormat.TEXT, loader.dataFormat);
 	}
-	
+
 	
 	@Test public function close () {
 		

@@ -138,16 +138,17 @@ class PerspectiveProjection {
 		return __fieldOfView;
 		
 	}
-	
-	
-	@:noCompletion private function set_fieldOfView (fieldOfView:Float):Float {
-		
-		var p_nFovY = fieldOfView * TO_RADIAN;
-		__fieldOfView = p_nFovY;
-		var cotan = 1 / Math.tan (p_nFovY / 2);
-		this.focalLength = 500 / 2 * cotan;
+
+	@:noCompletion private function set_fieldOfView(fieldOfView:Float):Float {
+		// FOV = 2 * arctan (sensor * 0.5 / focalLength)
+		// (FOV * 0.5) = (1 / tan(sensor * 0.5 / focallength))
+
+		__fieldOfView = fieldOfView * TO_RADIAN;
+
+		this.focalLength = 250.0 * (1.0 / Math.tan(__fieldOfView * 0.5));
+
 		return __fieldOfView;
-		
+
 	}
 	
 	
