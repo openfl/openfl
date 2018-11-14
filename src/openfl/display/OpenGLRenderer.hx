@@ -922,10 +922,12 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		var w = (__defaultRenderTarget == null) ? __stage.stageWidth : __defaultRenderTarget.width;
 		var h = (__defaultRenderTarget == null) ? __stage.stageHeight : __defaultRenderTarget.height;
 		
-		__offsetX = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (0, 0)) : 0;
-		__offsetY = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, 0)) : 0;
-		__displayWidth = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (w, 0) - __offsetX) : w;
-		__displayHeight = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, h) - __offsetY) : h;
+		__offsetX = 0;
+		__offsetY = 0;
+		
+		__displayWidth = __defaultRenderTarget == null ? __width : w;
+		__displayHeight = __defaultRenderTarget == null ? __height : h;
+		
 		
 		__projection.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
 		__projectionFlipped.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
