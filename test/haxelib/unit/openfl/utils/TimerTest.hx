@@ -30,16 +30,16 @@ class TimerTest {
 
 	@Test public function timerFinished() {
 		// TODO: Lower MS values make this test fails completely
-		var timer = new Timer (50, 5);
+		var timer = new Timer (50, 2);
 		timer.start();
 
 		var handler:Dynamic = Async.handler(this, function():Void {
-			Assert.areEqual(5, timer.currentCount);
 			Assert.isFalse(timer.running);
+			Assert.areEqual(2, timer.currentCount);
 		}, 800);
 		// setting timout 2x desired delay and timer 1.5x desired delayed
 
-		var m_timer = massive.munit.util.Timer.delay(handler, 375);
+		var m_timer = massive.munit.util.Timer.delay(handler, 150);
 	}
 
 	@Test public function timerRunning() {
@@ -47,8 +47,8 @@ class TimerTest {
 		timer.start();
 
 		var handler:Dynamic = Async.handler(this, function():Void {
-			Assert.areEqual(2, timer.currentCount);
 			Assert.isTrue(timer.running);
+			Assert.areEqual(2, timer.currentCount);
 		}, 500);
 
 		var m_timer = massive.munit.util.Timer.delay(handler, 250);
@@ -86,13 +86,15 @@ class TimerTest {
 	@Test public function repeatCountDuringTimer() {
 		var timer = new Timer (100, 5);
 		timer.start();
+		
+		Assert.areEqual(0, timer.currentCount);
 
 		var handler:Dynamic = Async.handler(this, function():Void {
 			timer.repeatCount = 1;
 
-			Assert.areEqual(1, timer.repeatCount);
-			Assert.areEqual(2, timer.currentCount);
 			Assert.isFalse(timer.running);
+			Assert.areEqual(1, timer.repeatCount);
+			Assert.isTrue(timer.currentCount == 1 || timer.currentCount == 2); // timer resolution?
 		}, 500);
 
 		var m_timer = massive.munit.util.Timer.delay(handler, 250);
