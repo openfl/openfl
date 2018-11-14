@@ -1203,49 +1203,52 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	@:noCompletion private function __getGLCompareMode (mode:Context3DCompareMode):Int {
+		return switch (mode) {
+			case ALWAYS: gl.ALWAYS;
+			case EQUAL: gl.EQUAL;
+			case GREATER: gl.GREATER;
+			case GREATER_EQUAL: gl.GEQUAL;
+			case LESS: gl.LESS;
+			case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
+			case NEVER: gl.NEVER;
+			case NOT_EQUAL: gl.NOTEQUAL;
+			default: gl.EQUAL;
+		}
+	}
+	
+	
+	@:noCompletion private function __getGLTriangleFace (face:Context3DTriangleFace):Int {
+		return switch (face) {
+			case FRONT: gl.FRONT;
+			case BACK: gl.BACK;
+			case FRONT_AND_BACK: gl.FRONT_AND_BACK;
+			case NONE: gl.NONE;
+			default: gl.FRONT_AND_BACK;
+		}
+	}
+	
+	
+	@:noCompletion private function __getGLStencilAction (action:Context3DStencilAction):Int {
+		return switch (action) {
+			case DECREMENT_SATURATE: gl.DECR;
+			case DECREMENT_WRAP: gl.DECR_WRAP;
+			case INCREMENT_SATURATE: gl.INCR;
+			case INCREMENT_WRAP: gl.INCR_WRAP;
+			case INVERT: gl.INVERT;
+			case KEEP: gl.KEEP;
+			case SET: gl.REPLACE;
+			case ZERO: gl.ZERO;
+			default: gl.KEEP;
+		}
+	}
+	
+	
 	@:noCompletion private function __flushGLStencil ():Void {
-		
-		function getGLCompareMode (mode:Context3DCompareMode):Int {
-			return switch (mode) {
-				case ALWAYS: gl.ALWAYS;
-				case EQUAL: gl.EQUAL;
-				case GREATER: gl.GREATER;
-				case GREATER_EQUAL: gl.GEQUAL;
-				case LESS: gl.LESS;
-				case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
-				case NEVER: gl.NEVER;
-				case NOT_EQUAL: gl.NOTEQUAL;
-				default: gl.EQUAL;
-			}
-		}
-		
-		function getGLTriangleFace (face:Context3DTriangleFace):Int {
-			return switch (face) {
-				case FRONT: gl.FRONT;
-				case BACK: gl.BACK;
-				case FRONT_AND_BACK: gl.FRONT_AND_BACK;
-				case NONE: gl.NONE;
-				default: gl.FRONT_AND_BACK;
-			}
-		}
-		
-		function getGLStencilAction (action:Context3DStencilAction):Int {
-			return switch (action) {
-				case DECREMENT_SATURATE: gl.DECR;
-				case DECREMENT_WRAP: gl.DECR_WRAP;
-				case INCREMENT_SATURATE: gl.INCR;
-				case INCREMENT_WRAP: gl.INCR_WRAP;
-				case INVERT: gl.INVERT;
-				case KEEP: gl.KEEP;
-				case SET: gl.REPLACE;
-				case ZERO: gl.ZERO;
-				default: gl.KEEP;
-			}
-		}
 		
 		if (#if openfl_disable_context_cache true #else __contextState.stencilTriangleFace != __state.stencilTriangleFace || __contextState.stencilPass != __state.stencilPass || __contextState.stencilDepthFail != __state.stencilDepthFail || __contextState.stencilFail != __state.stencilFail #end) {
 			
-			gl.stencilOpSeparate (getGLTriangleFace (__state.stencilTriangleFace), getGLStencilAction (__state.stencilFail), getGLStencilAction (__state.stencilDepthFail), getGLStencilAction (__state.stencilPass));
+			gl.stencilOpSeparate (__getGLTriangleFace (__state.stencilTriangleFace), __getGLStencilAction (__state.stencilFail), __getGLStencilAction (__state.stencilDepthFail), __getGLStencilAction (__state.stencilPass));
 			__contextState.stencilTriangleFace = __state.stencilTriangleFace;
 			__contextState.stencilPass = __state.stencilPass;
 			__contextState.stencilDepthFail = __state.stencilDepthFail;
@@ -1262,7 +1265,7 @@ import openfl.utils.ByteArray;
 		
 		if (#if openfl_disable_context_cache true #else __contextState.stencilCompareMode != __state.stencilCompareMode || __contextState.stencilReferenceValue != __state.stencilReferenceValue || __contextState.stencilReadMask != __state.stencilReadMask #end) {
 			
-			gl.stencilFunc (getGLCompareMode (__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
+			gl.stencilFunc (__getGLCompareMode (__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
 			__contextState.stencilCompareMode = __state.stencilCompareMode;
 			__contextState.stencilReferenceValue = __state.stencilReferenceValue;
 			__contextState.stencilReadMask = __state.stencilReadMask;
