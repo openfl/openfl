@@ -223,7 +223,7 @@ class Clipboard {
 	
 	@:noCompletion private function get_formats ():Array<ClipboardFormats> {
 		
-		var formats = [ ClipboardFormats.TEXT_FORMAT ];
+		var formats:Array<ClipboardFormats> = [];
 		if (hasFormat (HTML_FORMAT)) formats.push (HTML_FORMAT);
 		if (hasFormat (RICH_TEXT_FORMAT)) formats.push (RICH_TEXT_FORMAT);
 		if (hasFormat (TEXT_FORMAT)) formats.push (TEXT_FORMAT);

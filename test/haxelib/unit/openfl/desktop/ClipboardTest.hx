@@ -7,22 +7,17 @@ import openfl.utils.ByteArray;
 @:file("../assets/hello.rtf") class HelloRTF extends ByteArrayData {}
 
 class ClipboardTest {
-
-	@Test public function formats() {
+	
+	// Security sandbox rules for Flash Player require `Clipboard.getData` to occur
+	// only within a "paste" event from the user
+	
+	#if (flash && !air) @Ignore #end @Test public function formats() {
 		var clipboard = Clipboard.generalClipboard;
 		clipboard.clear();
 		
-		#if flash
-		// outside security sandbox
 		Assert.areEqual(0, clipboard.formats.length);
-		#else
-		Assert.areEqual(1, clipboard.formats.length);
-		Assert.areEqual(1, clipboard.formats.filter(function(format:ClipboardFormats):Bool {
-			return ClipboardFormats.TEXT_FORMAT == format;
-		}).length);
-		#end
 
-		clipboard.setData(ClipboardFormats.HTML_FORMAT, 'Test Cliboard Data');
+		clipboard.setData(ClipboardFormats.HTML_FORMAT, 'Test Clipboard Data');
 
 		#if flash
 		Assert.areEqual(1, clipboard.formats.length);
@@ -30,8 +25,8 @@ class ClipboardTest {
 			return ClipboardFormats.HTML_FORMAT == format;
 		}).length);
 		#else
-		Assert.areEqual(4, clipboard.formats.length);
-		Assert.areEqual(2, clipboard.formats.filter(function(format:ClipboardFormats):Bool {
+		Assert.areEqual(3, clipboard.formats.length);
+		Assert.areEqual(1, clipboard.formats.filter(function(format:ClipboardFormats):Bool {
 			return ClipboardFormats.TEXT_FORMAT == format;
 		}).length);
 		Assert.areEqual(1, clipboard.formats.filter(function(format:ClipboardFormats):Bool {
@@ -44,13 +39,13 @@ class ClipboardTest {
 
 	}
 
-	@Test public function generalClipboard() {
+	#if (flash && !air) @Ignore #end @Test public function generalClipboard() {
 		var clipboard = Clipboard.generalClipboard;
 
 		Assert.isNotNull(clipboard);
 	}
 
-	@Test public function clear() {
+	#if (flash && !air) @Ignore #end @Test public function clear() {
 		var clipboard = Clipboard.generalClipboard;
 		clipboard.setData(ClipboardFormats.TEXT_FORMAT, 'Test Data');
 
@@ -61,10 +56,10 @@ class ClipboardTest {
 		Assert.isNull(clipboard.getData(ClipboardFormats.TEXT_FORMAT));
 	}
 
-	@Test public function clearData() {
+	#if (flash && !air) @Ignore #end @Test public function clearData() {
 		var clipboard = Clipboard.generalClipboard;
 		clipboard.setData(ClipboardFormats.TEXT_FORMAT, 'Test Data');
-
+		
 		Assert.areEqual('Test Data', clipboard.getData(ClipboardFormats.TEXT_FORMAT));
 
 		// clearing data for any format clears the only one set in Lime Clipboard
@@ -80,7 +75,7 @@ class ClipboardTest {
 		#end
 	}
 
-	@Test public function getData() {
+	#if (flash && !air) @Ignore #end @Test public function getData() {
 		var textFormatData:String = 'Text Format Data';
 		var richTextFormatData = new HelloRTF ();
 
@@ -101,7 +96,7 @@ class ClipboardTest {
 		// Assert.areEqual(richTextFormatData, clipboard.getData(ClipboardFormats.RICH_TEXT_FORMAT));
 	}
 
-	@Test public function hasFormat() {
+	#if (flash && !air) @Ignore #end @Test public function hasFormat() {
 		var clipboard = Clipboard.generalClipboard;
 		clipboard.clear();
 
@@ -119,7 +114,7 @@ class ClipboardTest {
 		#end
 	}
 
-	@Test public function setData() {
+	#if (flash && !air) @Ignore #end @Test public function setData() {
 		var clipboard = Clipboard.generalClipboard;
 		clipboard.clear();
 
@@ -133,7 +128,7 @@ class ClipboardTest {
 		Assert.areEqual('Sample Text', clipboard.getData(ClipboardFormats.TEXT_FORMAT));
 	}
 
-	@Test public function setDataHandler() {
+	#if (flash && !air) @Ignore #end @Test public function setDataHandler() {
 
 		// TODO: Confirm functionality
 

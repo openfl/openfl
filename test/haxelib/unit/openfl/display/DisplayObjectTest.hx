@@ -129,7 +129,7 @@ class DisplayObjectTest {
 
 	}
 
-	@Ignore @Test public function loaderInfo() {
+	@Test public function loaderInfo() {
 
 		// TODO: Confirm functionality
 
@@ -137,6 +137,12 @@ class DisplayObjectTest {
 		var exists = sprite.loaderInfo;
 
 		Assert.isNull(exists);
+		
+		openfl.Lib.current.addChild (sprite);
+		
+		Assert.isNotNull(sprite.loaderInfo);
+		
+		openfl.Lib.current.removeChild (sprite);
 
 	}
 
