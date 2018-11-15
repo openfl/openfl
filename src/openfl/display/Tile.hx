@@ -162,10 +162,10 @@ class Tile {
 			result = tileset.getRect (id);
 			
 		}
-
+		
 		result.x = 0;
 		result.y = 0;
-
+		
 		//Copied from DisplayObject
 		var matrix = #if flash __tempMatrix #else Matrix.__pool.get () #end;
 		matrix.copyFrom (__getWorldTransform ());
@@ -274,6 +274,26 @@ class Tile {
 	}
 	
 	
+	/**
+	 * Climbs all the way up to get a transformation matrix
+	 * adds his own matrix and then returns it.
+	 * @return Matrix The final transformation matrix from stage to this point.
+	 */
+	@:noCompletion private function __getWorldTransform ():Matrix {
+		
+		var retval = matrix.clone ();
+		
+		if (parent != null) {
+			
+			retval.concat (parent.__getWorldTransform ());
+			
+		}
+		
+		return retval;
+		
+	}
+	
+	
 	@:noCompletion private function __setRenderDirty ():Void {
 		
 		#if !flash
@@ -293,20 +313,7 @@ class Tile {
 	}
 	
 	
-	/**
-	 * Climbs all the way up to get a transformation matrix
-	 * adds his own matrix and then returns it.
-	 * @return Matrix The final transformation matrix from stage to this point.
-	 */
-	private function __getWorldTransform():Matrix
-	{
-		var retval = matrix.clone();
-		if (parent != null)
-		{
-			retval.concat(parent.__getWorldTransform());
-		}
-		return retval;
-	}
+	
 	
 	// Get & Set Methods
 	

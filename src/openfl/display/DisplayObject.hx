@@ -2578,9 +2578,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	
 	
 	@:noCompletion private function set_cacheAsBitmap (value:Bool):Bool {
-		if (value != __cacheAsBitmap){ 
-		__setRenderDirty ();
+		
+		if (value != __cacheAsBitmap) {
+			
+			__setRenderDirty ();
+			
 		}
+		
 		return __cacheAsBitmap = value;
 		
 	}
@@ -2620,6 +2624,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (value != null && value.length > 0) {
 			
+			// TODO: Copy incoming array values
+			
 			__filters = value;
 			//__updateFilters = true;
 			__setRenderDirty ();
@@ -2631,7 +2637,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setRenderDirty ();
 			
 		}
-		
 		
 		return value;
 		

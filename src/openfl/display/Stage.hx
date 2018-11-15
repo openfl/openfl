@@ -602,8 +602,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __deltaTime:Int;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayMatrix:Matrix;
-	@:noCompletion private var __screenRegion:Rectangle;
-	@:noCompletion private var __fullScreenSourceRect:Rectangle;
+	@:noCompletion private var __displayRect:Rectangle;
 	@:noCompletion private var __displayState:StageDisplayState;
 	@:noCompletion private var __dragBounds:Rectangle;
 	@:noCompletion private var __dragObject:Sprite;
@@ -612,6 +611,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __focus:InteractiveObject;
 	@:noCompletion private var __forceRender:Bool;
 	@:noCompletion private var __fullscreen:Bool;
+	@:noCompletion private var __fullScreenSourceRect:Rectangle;
 	@:noCompletion private var __invalidated:Bool;
 	@:noCompletion private var __lastClickTime:Int;
 	@:noCompletion private var __logicalWidth:Int;
@@ -682,7 +682,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalWidth = 0;
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
-		__screenRegion = new Rectangle();
+		__displayRect = new Rectangle ();
 		__renderDirty = true;
 		
 		stage3Ds = new Vector ();
@@ -2141,7 +2141,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					MouseEvent.__buttonDown = false;
 					
-					if (__mouseX < __screenRegion.left || __mouseY < __screenRegion.top || __mouseX > __screenRegion.right || __mouseY > __screenRegion.bottom) {
+					if (__mouseX < __displayRect.left || __mouseY < __displayRect.top || __mouseX > __displayRect.right || __mouseY > __displayRect.bottom) {
 						
 						__dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
 						
@@ -2588,22 +2588,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__displayMatrix.identity ();
 		
-		if(__shouldUseSourceRect()) {
+		if (fullScreenSourceRect != null && window.fullscreen) {
 			
-			stageWidth = Std.int(fullScreenSourceRect.width);
-			stageHeight = Std.int(fullScreenSourceRect.height);
-
+			stageWidth = Std.int (fullScreenSourceRect.width);
+			stageHeight = Std.int (fullScreenSourceRect.height);
+			
 			var displayScaleX = windowWidth / stageWidth;
 			var displayScaleY = windowHeight / stageHeight;
 			
 			__displayMatrix.translate (-fullScreenSourceRect.x, -fullScreenSourceRect.y);
 			__displayMatrix.scale (displayScaleX, displayScaleY);
-
-
-			__updateScreenRegion(fullScreenSourceRect.left,
-								fullScreenSourceRect.right,
-								fullScreenSourceRect.top,
-								fullScreenSourceRect.bottom);
+			
+			__displayRect.setTo (fullScreenSourceRect.left, fullScreenSourceRect.right, fullScreenSourceRect.top, fullScreenSourceRect.bottom);
 			
 		} else {
 			
@@ -2628,7 +2624,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__displayMatrix.translate (offsetX, offsetY);
 				
 			}
-			__screenRegion.setTo(0,0,stageWidth, stageHeight);
+			
+			__displayRect.setTo (0, 0, stageWidth, stageHeight);
+			
 		}
 		
 		if (context3D != null) {
@@ -2803,16 +2801,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private function __updateScreenRegion(left:Float, right:Float, top:Float, bottom:Float) {
-		__screenRegion.left = left;
-		__screenRegion.right = right;
-		__screenRegion.bottom = bottom;
-		__screenRegion.top = top;
-	}
-	@:noCompletion private function __shouldUseSourceRect():Bool {
-		return fullScreenSourceRect!= null && window.fullscreen;
-	}
-	
 	
 	
 	// Get & Set Methods
@@ -2982,29 +2970,40 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	@:noCompletion private function get_fullScreenSourceRect ():Rectangle {
+		
+		return __fullScreenSourceRect == null ? null : __fullScreenSourceRect.clone ();
+		
+	}
+	
+	
+	@:noCompletion private function set_fullScreenSourceRect (value:Rectangle):Rectangle {
+		
+		if (value == null) {
+			
+			if (__fullScreenSourceRect != null) {
+				
+				__fullScreenSourceRect = null;
+				__resize ();
+				
+			}
+			
+		} else if (!value.equals (__fullScreenSourceRect)) {
+			
+			__fullScreenSourceRect = value.clone ();
+			__resize ();
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	@:noCompletion private function get_fullScreenWidth ():UInt {
 		
 		return Math.ceil (window.display.currentMode.width * window.scale);
 		
-	}
-	
-	
-	@:noCompletion private function get_fullScreenSourceRect():Rectangle  {
-		return __fullScreenSourceRect == null ? null : __fullScreenSourceRect.clone();
-	}
-	
-	
-	@:noCompletion private function set_fullScreenSourceRect(value:Rectangle):Rectangle  {
-		if (value == null) {
-			if (__fullScreenSourceRect != null) {
-				__fullScreenSourceRect = null;
-				__resize();
-			}
-		} else if (!value.equals(__fullScreenSourceRect)) {
-			__fullScreenSourceRect = value.clone();
-			__resize();
-		}
-		return value;
 	}
 	
 	

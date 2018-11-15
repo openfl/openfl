@@ -173,6 +173,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __hasDown:Bool;
 	@:noCompletion private var __hasOver:Bool;
 	@:noCompletion private var __hasUp:Bool;
+	@:noCompletion private var __instanceFields:Array<String>;
 	@:noCompletion private var __lastFrameScriptEval:Int;
 	@:noCompletion private var __lastFrameUpdate:Int;
 	@:noCompletion private var __mouseIsDown:Bool;
@@ -181,7 +182,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __symbol:SpriteSymbol;
 	@:noCompletion private var __timeElapsed:Int;
 	@:noCompletion private var __totalFrames:Int;
-	@:noCompletion private var __fields:Array<String>;
 	
 	
 	#if openfljs
@@ -217,8 +217,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		
 		__currentFrame = 1;
 		__currentLabels = [];
+		__instanceFields = [];
 		__totalFrames = 0;
-		__fields = [];
 		enabled = true;
 		
 		if (__initSymbol != null) {
@@ -584,11 +584,13 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			}
 			
 			__lastFrameUpdate = __currentFrame;
+			
 			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-			__updateFields();
+			__updateInstanceFields();
 			#end
-
+			
 		}
+		
 	}
 	
 	
@@ -602,7 +604,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			__currentFrame = frame;
 			
 			if (__frameScripts.exists (frame)) {
-				__updateSymbol(frame);// ensures that children have been added before script executes
+				
+				__updateSymbol (frame);
 				var script = __frameScripts.get (frame);
 				script ();
 				
@@ -868,28 +871,9 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		__enterFrame (0);
 		
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-		__fields = Type.getInstanceFields(Type.getClass(this));
-		__updateFields();
+		__instanceFields = Type.getInstanceFields (Type.getClass (this));
+		__updateInstanceFields ();
 		#end
-		
-	}
-
-	@:noCompletion private function __updateFields():Void {
-
-		for (field in __fields) {
-			
-			for (child in __children) {
-				
-				if (child.name == field) {
-					
-					Reflect.setField(this, field, child);
-					break;
-
-				}
-				
-			}
-			
-		}
 		
 	}
 	
@@ -1085,6 +1069,26 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 					
 				} else {
 					
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __updateInstanceFields ():Void {
+		
+		for (field in __instanceFields) {
+			
+			for (child in __children) {
+				
+				if (child.name == field) {
+					
+					Reflect.setField (this, field, child);
 					break;
 					
 				}
