@@ -23,6 +23,7 @@ import lime.utils.Float32Array;
 	public var value:Array<T>;
 	
 	@:noCompletion private var __arrayLength:Int;
+	@:noCompletion private var __internal:Bool;
 	@:noCompletion private var __isBool:Bool;
 	@:noCompletion private var __isFloat:Bool;
 	@:noCompletion private var __isInt:Bool;
@@ -30,14 +31,7 @@ import lime.utils.Float32Array;
 	@:noCompletion private var __length:Int;
 	@:noCompletion private var __uniformMatrix:Float32Array;
 	@:noCompletion private var __useArray:Bool;
-	@:noCompletion private var __nameStartsWithOpenfl:Bool;
 	
-	@:noCompletion private function set_name(str:String):String
-	{
-		name = str;
-		__nameStartsWithOpenfl = StringTools.startsWith(name, "openfl_");
-		return name;
-	}
 	
 	public function new () {
 		
@@ -310,7 +304,7 @@ import lime.utils.Float32Array;
 			
 		} else {
 			
-			if (!__nameStartsWithOpenfl && (length == 0 || length == __length)) {
+			if (!__internal && (length == 0 || length == __length)) {
 				
 				for (i in 0...__arrayLength) {
 					
@@ -401,6 +395,21 @@ import lime.utils.Float32Array;
 			}
 			
 		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	@:noCompletion private function set_name (value:String):String {
+		
+		__internal = StringTools.startsWith (value, "openfl_");
+		return this.name = value;
 		
 	}
 	
