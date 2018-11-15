@@ -20,13 +20,17 @@ class DisplayObjectTest {
 		Assert.areEqual(1.0, object.alpha);
 
 		object.alpha = 0.732;
-
-		Assert.areEqual(0.73046875, object.alpha);
+		
+		#if flash
+		Assert.areEqual(Std.int(0.732 * 256) / 256, object.alpha);
+		#else
+		Assert.areEqual(0.732, object.alpha);
+		#end
 
 		object.alpha = 1.321;
 
 		#if flash
-		Assert.areEqual(1.3203125, object.alpha);
+		Assert.areEqual(Std.int(1.321 * 256) / 256, object.alpha);
 		#else
 		Assert.areEqual(1.0, object.alpha);
 		#end
@@ -34,7 +38,7 @@ class DisplayObjectTest {
 		object.alpha = -1.432;
 
 		#if flash
-		Assert.areEqual(-1.4296875, object.alpha);
+		Assert.areEqual(Std.int(-1.432 * 256) / 256, object.alpha);
 		#else
 		Assert.areEqual(0.0, object.alpha);
 		#end

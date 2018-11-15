@@ -2544,9 +2544,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		
 		if (value > 1.0) value = 1.0;
 		if (value < 0.0) value = 0.0;
-
-		value = Std.int(value * 256) / 256;
-
+		
 		if (value != __alpha) __setRenderDirty ();
 		return __alpha = value;
 		
