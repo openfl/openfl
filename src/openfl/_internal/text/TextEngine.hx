@@ -1245,14 +1245,14 @@ class TextEngine {
 			// breaks up words that are too long to fit in a single line
 			
 			var remainingPositions = positions;
-			var i, positionWidth;
+			var i, j, placeIndex, positionWidth;
 			var currentPosition, tempPositions;
 			
 			var tempWidth = getPositionsWidth (remainingPositions);
 			
 			while (offsetX + tempWidth > width - 2) {
 				
-				i = 0;
+				i = j = 0;
 				positionWidth = 0.0;
 				
 				while (offsetX + positionWidth < width - 2) {
@@ -1263,6 +1263,7 @@ class TextEngine {
 						
 						// skip Unicode character buffer positions
 						i++;
+						j++;
 						
 					}
 					
@@ -1279,7 +1280,7 @@ class TextEngine {
 					// if the textfield is smaller than the first character in a line, automatically wrap the next character
 					
 					// unless it's the last line of the long word
-					if (textIndex + i == endIndex) {
+					if (textIndex + i - j == endIndex) {
 						
 						break;
 						
@@ -1291,13 +1292,14 @@ class TextEngine {
 					
 					// remove characters until the text fits one line
 					// because of combining letters potentially being broken up now, we have to redo the formatted positions each time
+					// TODO: this may not work exactly with Unicode buffer characters...
 					while (offsetX + positionWidth > width - 2) {
 					
 						i--;
 						
-						if (i > 0) {
+						if (i - j > 0) {
 							
-							setFormattedPositions (textIndex, textIndex + i);
+							setFormattedPositions (textIndex, textIndex + i - j);
 							positionWidth = widthValue;
 							
 						}
@@ -1305,6 +1307,7 @@ class TextEngine {
 						else {
 							
 							i = 1;
+							j = 0;
 							
 						}
 						
@@ -1312,10 +1315,11 @@ class TextEngine {
 					
 				}
 				
-				placeFormattedText (textIndex + i);
+				placeIndex = textIndex + i - j;
+				placeFormattedText (placeIndex);
 				alignBaseline();
 				
-				setFormattedPositions (i, remainingPositions.length);
+				setFormattedPositions (placeIndex, endIndex);
 				
 				remainingPositions = positions;
 				tempWidth = widthValue;
