@@ -1,34 +1,31 @@
 package openfl.display;
 
-
 import massive.munit.Assert;
 import openfl.display.Shape;
 
-
 class ShapeTest {
-	
-	
-	@Test public function graphics () {
-		
-		// TODO: Confirm functionality
-		
+	@Test public function new_() {
 		var shape = new Shape ();
-		var exists = shape.graphics;
-		
-		Assert.isNotNull (exists);
-		
+
+		var g1 = shape.graphics;
+		var g2 = shape.graphics;
+
+		Assert.isNotNull(g1);
+		Assert.isNotNull(g2);
+
+		Assert.areSame(g1, g2);
 	}
-	
-	
-	@Test public function new_ () {
-		
-		// TODO: Confirm functionality
-		
+
+	@Test public function graphics() {
 		var shape = new Shape ();
-		
-		Assert.isNotNull (shape);
-		
+
+		var g1 = shape.graphics;
+		var g2 = shape.graphics;
+
+		Assert.isNotNull(g1);
+		Assert.isNotNull(g2);
+
+		Assert.areSame(g1, g2);
 	}
-	
-	
+
 }
