@@ -186,11 +186,13 @@ class CanvasTextField {
 						
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
-						
+
+						var color_hex:String = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
+
 						if (group.format.underline) {
 							
 							context.beginPath ();
-							context.strokeStyle = "#000000";
+							context.strokeStyle = color_hex;
 							context.lineWidth = .5;
 							var x = group.offsetX + scrollX - bounds.x;
 							var y = group.offsetY + offsetY + scrollY + group.ascent - bounds.y;
@@ -201,7 +203,7 @@ class CanvasTextField {
 						}
 						
 						context.font = TextEngine.getFont (group.format);
-						context.fillStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
+						context.fillStyle = color_hex;
 						
 						if (applyHack) {
 							
