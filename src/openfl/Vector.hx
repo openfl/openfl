@@ -166,6 +166,13 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 	
 	
+	public inline static function isVector (obj:Any):Bool {
+		
+		return Std.is (obj, AbstractVector);
+		
+	}
+	
+	
 	public inline static function convert<T,U> (v:AbstractVector<T>):AbstractVector<U> {
 		
 		return cast v;
