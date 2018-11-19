@@ -55,7 +55,6 @@ class TextEngine {
 	private static var __defaultFonts = new Map<String, Font> ();
 	
 	#if (js && html5)
-	private static var __canvas:CanvasElement;
 	private static var __context:CanvasRenderingContext2D;
 	#end
 	
@@ -154,8 +153,9 @@ class TextEngine {
 		textFormatRanges = new Vector ();
 		
 		#if (js && html5)
-		__canvas = cast Browser.document.createElement ("canvas");
-		__context = __canvas.getContext ("2d");
+		if (__context == null) {
+			__context = (cast Browser.document.createElement ("canvas") : CanvasElement).getContext ("2d");
+		}
 		#end
 		
 	}
