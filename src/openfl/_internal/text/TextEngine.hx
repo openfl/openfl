@@ -39,7 +39,6 @@ class TextEngine
 	private static inline var UTF8_HYPHEN:Int = 0x2D;
 	private static var __defaultFonts:Map<String, Font> = new Map();
 	#if (js && html5)
-	private static var __canvas:CanvasElement;
 	private static var __context:CanvasRenderingContext2D;
 	#end
 
@@ -139,8 +138,10 @@ class TextEngine
 		textFormatRanges = new Vector();
 
 		#if (js && html5)
-		__canvas = cast Browser.document.createElement("canvas");
-		__context = __canvas.getContext("2d");
+		if (__context == null)
+		{
+			__context = (cast Browser.document.createElement("canvas") : CanvasElement).getContext("2d");
+		}
 		#end
 	}
 
