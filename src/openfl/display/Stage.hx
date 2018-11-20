@@ -1602,13 +1602,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		#end
 		
+		var windowWidth = Std.int (window.width * window.scale);
+		var windowHeight = Std.int (window.height * window.scale);
+		
 		switch (window.context.type) {
 			
 			case OPENGL, OPENGLES, WEBGL:
 				
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D (this);
-				context3D.configureBackBuffer (stageWidth, stageHeight, 0, true, true, true);
+				context3D.configureBackBuffer (windowWidth, windowHeight, 0, true, true, true);
 				context3D.present ();
 				__renderer = new OpenGLRenderer (context3D);
 				#end
@@ -1643,7 +1646,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__stage = this;
 			
-			__renderer.__resize (Std.int (window.width * window.scale), Std.int (window.height * window.scale));
+			__renderer.__resize (windowWidth, windowHeight);
 			
 		}
 		
@@ -2637,7 +2640,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		for (stage3D in stage3Ds) {
 			
-			stage3D.__resize (stageWidth, stageHeight);
+			stage3D.__resize (windowWidth, windowHeight);
 			
 		}
 		
