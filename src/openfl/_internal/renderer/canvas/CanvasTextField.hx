@@ -186,24 +186,11 @@ class CanvasTextField {
 						
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
-
-						var color_hex:String = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
-
-						if (group.format.underline) {
-							
-							context.beginPath ();
-							context.strokeStyle = color_hex;
-							context.lineWidth = .5;
-							var x = group.offsetX + scrollX - bounds.x;
-							var y = group.offsetY + offsetY + scrollY + group.ascent - bounds.y;
-							context.moveTo (x, y);
-							context.lineTo (x + group.width, y);
-							context.stroke ();
-							
-						}
+						
+						var color = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
 						
 						context.font = TextEngine.getFont (group.format);
-						context.fillStyle = color_hex;
+						context.fillStyle = color;
 						
 						if (applyHack) {
 							
@@ -302,6 +289,20 @@ class CanvasTextField {
 								}
 								
 							}
+							
+						}
+						
+						if (group.format.underline) {
+							
+							context.beginPath ();
+							context.strokeStyle = color;
+							context.lineWidth = 1;
+							var x = group.offsetX + scrollX - bounds.x;
+							var y = Math.floor (group.offsetY + offsetY + scrollY + group.ascent - bounds.y) + 0.5;
+							context.moveTo (x, y);
+							context.lineTo (x + group.width, y);
+							context.stroke ();
+							context.closePath ();
 							
 						}
 						
