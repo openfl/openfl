@@ -270,7 +270,7 @@ import openfl.geom.Rectangle;
 		__glowShader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
 		__glowShader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
 		__glowShader.uColor.value[2] = (color & 0xFF) / 255;
-		__glowShader.uColor.value[3] = alpha;
+		__glowShader.uColor.value[3] = alpha * (__strength / __numShaderPasses );
 		#end
 		
 		return __glowShader;
