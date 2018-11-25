@@ -6,6 +6,44 @@ import massive.munit.Assert;
 @:access(openfl.text.TextField)
 
 class TextEngineTest {
+	#if (flash && !air) @Ignore #end @Test public function restrictText() {
+		#if !flash
+		var field = new TextField();
+		var engine = field.__textEngine;
+
+		Assert.isNull(engine.restrictText(null));
+
+		Assert.areEqual('Another Sample Text', engine.restrictText('Another Sample Text'));
+
+		field.restrict = 'AaSsTt';
+
+		Assert.areEqual('AtSaTt', engine.restrictText('Another Sample Text'));
+
+		field.restrict = null;
+
+		Assert.areEqual('Another Sample Text', engine.restrictText('Another Sample Text'));
+
+		#end
+	}
+
+	#if (flash && !air) @Ignore #end @Test public function trimText() {
+		#if !flash
+		var field = new TextField();
+		var engine = field.__textEngine;
+
+		Assert.areEqual('Another Sample Text', engine.trimText('Another Sample Text'));
+
+		field.maxChars = 5;
+
+		Assert.areEqual('Anoth', engine.trimText('Another Sample Text'));
+
+		field.maxChars = 0;
+
+		Assert.areEqual('Another Sample Text', engine.trimText('Another Sample Text'));
+
+		#end
+	}
+
 	#if (flash && !air) @Ignore #end @Test public function getLine() {
 		#if !flash
 		var field = new TextField();
