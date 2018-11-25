@@ -1,93 +1,79 @@
 package openfl.display;
 
-
 import massive.munit.Assert;
 
-
 class SpriteTest {
-	
-	
-	@Test public function buttonMode () {
-		
-		// TODO: Confirm functionality
-		
+	@Test public function new_() {
 		var sprite = new Sprite ();
-		var exists = sprite.buttonMode;
-		
-		Assert.isFalse (exists);
-		
+
+		Assert.isFalse(sprite.buttonMode);
+		Assert.isTrue(sprite.useHandCursor);
+
 	}
-	
-	
-	@Test public function graphics () {
-		
-		// TODO: Confirm functionality
-		
+
+	@Test public function buttonMode() {
 		var sprite = new Sprite ();
-		var exists = sprite.graphics;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isFalse(sprite.buttonMode);
+
+		sprite.buttonMode = true;
+
+		Assert.isTrue(sprite.buttonMode);
 	}
-	
-	
-	@Test public function hitArea () {
-		
+
+	@Test public function graphics() {
+		var sprite = new Sprite ();
+
+		var g1 = sprite.graphics;
+		var g2 = sprite.graphics;
+
+		Assert.isNotNull(g1);
+		Assert.isNotNull(g2);
+
+		Assert.areSame(g1, g2);
+	}
+
+	@Test public function hitArea() {
+
 		// TODO: Confirm functionality
-		
+
 		var sprite = new Sprite ();
 		var exists = sprite.hitArea;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
+
 	}
-	
-	
-	@Test public function useHandCursor () {
-		
+
+	@Test public function useHandCursor() {
+
 		// TODO: Confirm functionality
-		
+
 		var sprite = new Sprite ();
 		var exists = sprite.useHandCursor;
-		
-		Assert.isTrue (exists);
-		
+
+		Assert.isTrue(exists);
+
 	}
-	
-	
-	@Test public function new_ () {
-		
-		// TODO: Confirm functionality
-		
-		var sprite = new Sprite ();
-		
-		Assert.isNotNull (sprite);
-		
-	}
-	
-	
-	@Test public function startDrag () {
-		
+
+	@Test public function startDrag() {
+
 		// TODO: Confirm functionality
 		
 		var sprite = new Sprite ();
 		var exists = sprite.startDrag;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function stopDrag () {
-		
+
+	@Test public function stopDrag() {
+
 		// TODO: Confirm functionality
-		
+
 		var sprite = new Sprite ();
 		var exists = sprite.stopDrag;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
+
 	}
-	
-	
+
 }
