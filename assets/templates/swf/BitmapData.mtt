@@ -25,7 +25,7 @@ class ::CLASS_NAME:: extends BitmapData {
 
 
 #else
-@:bind @:native("::PACKAGE_NAME_DOT::::CLASS_NAME::") class ::PREFIX::::CLASS_NAME:: extends flash.display.BitmapData {
+@:bind @:native("::NATIVE_CLASS_NAME::") class ::CLASS_NAME:: extends flash.display.BitmapData {
 	
 	
 	public function new (width:Int = 0, height:Int = 0, transparent:Bool = false, background:Int = 0) {

@@ -36,7 +36,7 @@ class ::CLASS_NAME:: extends MovieClip {
 
 
 #else
-@:bind @:native("::PACKAGE_NAME_DOT::::CLASS_NAME::") class ::PREFIX::::CLASS_NAME:: extends flash.display.MovieClip {
+@:bind @:native("::NATIVE_CLASS_NAME::") class ::CLASS_NAME:: extends flash.display.MovieClip {
 	
 	
 	::foreach CLASS_PROPERTIES::@:keep public var ::name:: (default, null):::type::;

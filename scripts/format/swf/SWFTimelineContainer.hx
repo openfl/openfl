@@ -32,6 +32,7 @@ import format.swf.tags.TagJPEGTables;
 import format.swf.tags.TagPlaceObject;
 import format.swf.tags.TagPlaceObject2;
 import format.swf.tags.TagPlaceObject3;
+import format.swf.tags.TagPlaceObject4;
 import format.swf.tags.TagRemoveObject;
 import format.swf.tags.TagRemoveObject2;
 import format.swf.tags.TagSetBackgroundColor;
@@ -386,7 +387,22 @@ class SWFTimelineContainer extends SWFEventDispatcher
 				currentFrame = currentFrame.clone();
 				currentFrame.frameNumber = frames.length;
 				currentFrame.tagIndexStart = currentTagIndex + 1;
-			case TagPlaceObject.TYPE, TagPlaceObject2.TYPE, TagPlaceObject3.TYPE:
+			case TagPlaceObject.TYPE, TagPlaceObject2.TYPE, TagPlaceObject3.TYPE, TagPlaceObject4.TYPE:
+				// TODO: Resolve in exporter or runtime?
+				var tagPlaceObject:TagPlaceObject = cast tag;
+				if (tagPlaceObject.hasMove && tagPlaceObject.hasCharacter && !tagPlaceObject.hasMatrix) {
+					var prevFrameObject = currentFrame.objects.get (tagPlaceObject.depth);
+					if (prevFrameObject != null) {
+						var prevTag = tags[(prevFrameObject.lastModifiedAtIndex == 0 ? prevFrameObject.placedAtIndex : prevFrameObject.lastModifiedAtIndex)];
+						if (prevTag != null) {
+							switch(cast (prevTag.type, Int)) {
+								case TagPlaceObject.TYPE, TagPlaceObject2.TYPE, TagPlaceObject3.TYPE, TagPlaceObject4.TYPE:
+									var prevTagPlaceObject:TagPlaceObject = cast prevTag;
+									tagPlaceObject.matrix = prevTagPlaceObject.matrix;
+							}
+						}
+					}
+				}
 				currentFrame.placeObject(currentTagIndex, cast tag);
 			case TagRemoveObject.TYPE, TagRemoveObject2.TYPE:
 				currentFrame.removeObject(cast tag);
