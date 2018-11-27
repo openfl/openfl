@@ -2134,6 +2134,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 				var renderType = renderer.__type;
 				
+				#if !openfl_force_gl_cacheasbitmap
 				if (renderType == OPENGL) {
 					
 					if (#if !openfl_disable_gl_cacheasbitmap __shouldCacheHardware (null) == false #else true #end) {
@@ -2147,6 +2148,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					}
 					
 				}
+				#end
 				
 				if (__cacheBitmapRenderer == null || renderType != __cacheBitmapRenderer.__type) {
 					
