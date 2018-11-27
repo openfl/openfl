@@ -242,7 +242,7 @@ import openfl.geom.Rectangle;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
 		
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX > 0 ? __blurX + 1 : 0, __blurY > 0 ? __blurY + 1 : 0, __quality, __strength);
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform (finalImage.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix ());
 		
 		if (finalImage == bitmapData.image) return bitmapData;
