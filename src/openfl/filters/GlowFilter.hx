@@ -62,6 +62,7 @@ import openfl.geom.Rectangle;
 @:noDebug
 #end
 
+@:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 
@@ -240,9 +241,9 @@ import openfl.geom.Rectangle;
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
-		sourceBitmapData.colorTransform (sourceBitmapData.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0));
 		
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality, __strength);
+		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX > 0 ? __blurX + 1 : 0, __blurY > 0 ? __blurY + 1 : 0, __quality, __strength);
+		finalImage.colorTransform (finalImage.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix ());
 		
 		if (finalImage == bitmapData.image) return bitmapData;
 		return sourceBitmapData;
