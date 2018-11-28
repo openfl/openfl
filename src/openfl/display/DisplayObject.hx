@@ -1947,6 +1947,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
 		if (__isCacheBitmapRender) return false;
+		#if openfl_disable_cacheasbitmap return false; #end
 		
 		var colorTransform = ColorTransform.__pool.get ();
 		colorTransform.__copyFrom (__worldColorTransform);
@@ -1959,7 +1960,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform)));
 			var updateTransform = (needRender || !__cacheBitmap.__worldTransform.equals (__worldTransform));
-			var hasFilters = __filters != null;
+			var hasFilters = #if !openfl_disable_filters __filters != null #else false #end;
 			
 			if (hasFilters && !needRender) {
 				
