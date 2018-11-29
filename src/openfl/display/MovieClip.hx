@@ -981,8 +981,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			displayObject.transform.colorTransform = frameObject.colorTransform;
 			
-		}
-		else if (reset && !displayObject.transform.colorTransform.__isDefault()) {
+		} else if (reset && !displayObject.transform.colorTransform.__isDefault (true)) {
 			
 			displayObject.transform.colorTransform = new ColorTransform();
 			

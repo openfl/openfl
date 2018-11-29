@@ -189,7 +189,7 @@ class Transform {
 	
 	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
 		
-		if (!__colorTransform.__equals (value)) {
+		if (!__colorTransform.__equals (value, false)) {
 			
 			__colorTransform.__copyFrom (value);
 			

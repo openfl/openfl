@@ -1954,11 +1954,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (renderer.__worldColorTransform != null) colorTransform.__combine (renderer.__worldColorTransform);
 		var updated = false;
 		
-		if (cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault ())) {
+		if (cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault (true))) {
 			
 			var rect = null;
 			
-			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform)));
+			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform, true)));
 			var updateTransform = (needRender || !__cacheBitmap.__worldTransform.equals (__worldTransform));
 			var hasFilters = #if !openfl_disable_filters __filters != null #else false #end;
 			
@@ -2435,8 +2435,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					
 					__cacheBitmapColorTransform.__copyFrom (colorTransform);
 					
-					if (!__cacheBitmapColorTransform.__isDefault ()) {
+					if (!__cacheBitmapColorTransform.__isDefault (true)) {
 						
+						__cacheBitmapColorTransform.alphaMultiplier = 1;
 						__cacheBitmapData.colorTransform (__cacheBitmapData.rect, __cacheBitmapColorTransform);
 						
 					}
@@ -2981,7 +2982,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__setTransformDirty ();
 		__objectTransform.matrix = value.matrix;
 		
-		if (!__objectTransform.colorTransform.__equals (value.colorTransform)) {
+		if (!__objectTransform.colorTransform.__equals (value.colorTransform, true)) {
 			
 			__objectTransform.colorTransform.__copyFrom (value.colorTransform);
 			__setRenderDirty ();

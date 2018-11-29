@@ -235,7 +235,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function applyColorTransform (colorTransform:ColorTransform):Void {
 		
-		var enabled = (colorTransform != null && !colorTransform.__isDefault ());
+		var enabled = (colorTransform != null && !colorTransform.__isDefault (true));
 		applyHasColorTransform (enabled);
 		
 		if (enabled) {
