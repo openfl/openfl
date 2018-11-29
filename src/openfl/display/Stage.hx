@@ -2144,13 +2144,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					MouseEvent.__buttonDown = false;
 					
-					if (__mouseX < __displayRect.left || __mouseY < __displayRect.top || __mouseX > __displayRect.right || __mouseY > __displayRect.bottom) {
-						
-						__dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
-						
-					} else if (__mouseDownLeft == target) {
+					if (__mouseDownLeft == target) {
 						
 						clickType = MouseEvent.CLICK;
+						
+					} else {
+						
+						__mouseDownLeft.dispatchEvent (MouseEvent.__create (MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point (__mouseX, __mouseY), this));
 						
 					}
 					
