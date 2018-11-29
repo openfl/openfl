@@ -1116,7 +1116,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 		
 		__mouseIsDown = true;
-		stage.addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+		stage.addEventListener (MouseEvent.MOUSE_UP, __onMouseUp, true);
 		
 	}
 	
@@ -1131,7 +1131,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 		}
 		
-		if (event.currentTarget == this && __hasOver) {
+		if (event.target == this && __hasOver) {
 			
 			gotoAndStop ("_over");
 			
