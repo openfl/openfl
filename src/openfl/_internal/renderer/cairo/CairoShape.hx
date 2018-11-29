@@ -23,7 +23,6 @@ class CairoShape {
 		if (!shape.__renderable) return;
 		
 		var alpha = renderer.__getAlpha (shape.__worldAlpha);
-		
 		if (alpha <= 0) return;
 		
 		var graphics = shape.__graphics;

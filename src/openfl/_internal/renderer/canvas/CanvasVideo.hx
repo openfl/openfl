@@ -15,7 +15,10 @@ class CanvasVideo {
 	public static function render (video:Video, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
-		if (!video.__renderable || video.__worldAlpha <= 0 || video.__stream == null) return;
+		if (!video.__renderable || video.__stream == null) return;
+		
+		var alpha = renderer.__getAlpha (video.__worldAlpha);
+		if (alpha <= 0) return;
 		
 		var context = renderer.context;
 		
@@ -24,7 +27,7 @@ class CanvasVideo {
 			renderer.__setBlendMode (video.__worldBlendMode);
 			renderer.__pushMaskObject (video);
 			
-			context.globalAlpha = video.__worldAlpha;
+			context.globalAlpha = alpha;
 			var scrollRect = video.__scrollRect;
 			var smoothing = video.smoothing;
 			

@@ -21,11 +21,9 @@ class CairoDisplayObject {
 		
 		#if lime_cairo
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		
 		if (!displayObject.__renderable) return;
 		
 		var alpha = renderer.__getAlpha (displayObject.__worldAlpha);
-		
 		if (alpha <= 0) return;
 		
 		if (displayObject.opaqueBackground != null && !displayObject.__isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0) {
