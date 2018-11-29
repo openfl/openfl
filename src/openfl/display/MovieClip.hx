@@ -1204,16 +1204,14 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 					
 					addEventListener (MouseEvent.ROLL_OVER, __onRollOver);
 					addEventListener (MouseEvent.ROLL_OUT, __onRollOut);
-					addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
 					addEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
-						
+					
 				}
 				
 			} else {
 				
 				removeEventListener (MouseEvent.ROLL_OVER, __onRollOver);
 				removeEventListener (MouseEvent.ROLL_OUT, __onRollOut);
-				removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
 				removeEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
 				
 			}
