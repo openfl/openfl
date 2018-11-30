@@ -164,6 +164,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	
 	@:noCompletion private var __activeInstances:Array<FrameSymbolInstance>;
 	@:noCompletion private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
+	@:noCompletion private var __currentChildrenByFrameObjectID:Map<Int, FrameSymbolInstance>;
+	@:noCompletion private var __currentInstancesByDepth:Array<FrameSymbolInstance>;
 	@:noCompletion private var __currentFrame:Int;
 	@:noCompletion private var __currentFrameLabel:String;
 	@:noCompletion private var __currentLabel:String;
@@ -429,21 +431,37 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		if (__symbol != null && __currentFrame != __lastFrameUpdate) {
 			
 			__updateFrameLabel ();
-			
-			var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance> ();
-			
+				
 			var frame:Int;
+			var startFrame:Int;
 			var frameData:Frame;
 			var instance:FrameSymbolInstance;
+			var instancesToRemove:Map<FrameSymbolInstance, FrameSymbolInstance> = null;
 			
-			// TODO: Handle updates only from previous frame?
-			
-			for (i in 0...targetFrame) {
+			if (__currentFrame > __lastFrameUpdate) {
+				// As long as we're going forward, just handle the updates between frames.
+				startFrame =  __lastFrameUpdate < 0 ? 0 : __lastFrameUpdate;
+			} else {
+				// If we jump backwards, run through all frames.
 				
+				instancesToRemove = new Map();
+				for (instance in __currentChildrenByFrameObjectID) {
+					instancesToRemove.set(instance, instance);
+				}
+				
+				__currentChildrenByFrameObjectID = new Map();
+				__currentInstancesByDepth = new Array();
+				
+				startFrame = 0;
+			}
+			
+			for (i in startFrame...__currentFrame) {
 				frame = i + 1;
 				frameData = __symbol.frames[i];
 				
-				if (frameData.objects == null) continue;
+				if (frameData.objects == null) {
+					continue;
+				}
 				
 				for (frameObject in frameData.objects) {
 					
@@ -454,25 +472,31 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
 							
 							if (instance != null) {
-								
-								currentInstancesByFrameObjectID.set (frameObject.id, instance);
+								__currentInstancesByDepth[instance.depth] = instance;
+								__currentChildrenByFrameObjectID.set(frameObject.id, instance);
 								__updateDisplayObject (instance.displayObject, frameObject, true);
 								
 							}
 						
 						case UPDATE:
-							
-							instance = currentInstancesByFrameObjectID.get (frameObject.id);
+							instance = __currentChildrenByFrameObjectID.get (frameObject.id);
 							
 							if (instance != null && instance.displayObject != null) {
-								
 								__updateDisplayObject (instance.displayObject, frameObject);
 								
 							}
 						
 						case DESTROY:
+							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+							if (instance != null) {
+								__removeDisplayObjectByInstance(instance);
+								
+								if (__currentInstancesByDepth[instance.depth] == instance) {
+									__currentInstancesByDepth[instance.depth] = null;
+								}
+							}
 							
-							currentInstancesByFrameObjectID.remove (frameObject.id);
+							__currentChildrenByFrameObjectID.remove(frameObject.id);
 						
 					}
 					
@@ -482,104 +506,78 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			// TODO: Less garbage?
 			
-			var currentInstances = new Array<FrameSymbolInstance> ();
 			var currentMasks = new Array<FrameSymbolInstance> ();
 			
-			for (instance in currentInstancesByFrameObjectID) {
+			for (instance in __currentChildrenByFrameObjectID) {
 				
-				if (currentInstances.indexOf (instance) == -1) {
+				if (instance.clipDepth > 0) {
 					
-					currentInstances.push (instance);
-					
-					if (instance.clipDepth > 0) {
-						
-						currentMasks.push (instance);
-						
-					}
+					currentMasks.push (instance);
 					
 				}
 				
 			}
-			
-			currentInstances.sort (__sortDepths);
 			
 			var existingChild:DisplayObject;
 			var targetDepth:Int;
 			var targetChild:DisplayObject;
 			var child:DisplayObject;
 			var maskApplied:Bool;
+			var actualDepth:Int = -1;
 			
-			for (i in 0...currentInstances.length) {
+			for (i in 0...__currentInstancesByDepth.length) {
 				
-				existingChild = __children[i];
-				instance = currentInstances[i];
+				instance = __currentInstancesByDepth[i];
 				
-				targetDepth = instance.depth;
-				targetChild = instance.displayObject;
-				
-				if (existingChild != targetChild) {
+				if (instance != null) {
+					actualDepth++;
 					
-					child = targetChild;
-					addChildAt (targetChild, i);
+					existingChild = __children[actualDepth];
 					
-				} else {
+					targetDepth = instance.depth;
+					targetChild = instance.displayObject;
 					
-					child = __children[i];
-					
-				}
-				
-				maskApplied = false;
-				
-				for (mask in currentMasks) {
-					
-					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
+					if (existingChild == targetChild) {
+						child = existingChild;
+					} else {
+						child = targetChild;
+						addChildAt (targetChild, actualDepth);
 						
-						child.mask = mask.displayObject;
-						maskApplied = true;
-						break;
+					} 
+					
+					maskApplied = false;
+					
+					for (mask in currentMasks) {
 						
-					}
-					
-				}
-				
-				if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
-					
-					child.mask = null;
-					
-				}
-				
-			}
-			
-			var child;
-			var i = currentInstances.length;
-			var length = __children.length;
-			
-			while (i < length) {
-				
-				child = __children[i];
-				
-				// TODO: Faster method of determining if this was automatically added?
-				
-				for (instance in __activeInstances) {
-					
-					if (instance.displayObject == child) {
-						
-						//set MovieClips back to initial state (autoplay)
-						if (Std.is(child, MovieClip))
-						{
-							var movie : MovieClip = cast child;
-							movie.gotoAndPlay(1);
+						if (targetDepth > mask.depth && targetDepth <= mask.clipDepth) {
+							
+							child.mask = mask.displayObject;
+							maskApplied = true;
+							break;
+							
 						}
 						
-						removeChild (child);
-						i--;
-						length--;
-						
 					}
 					
+					if (currentMasks.length > 0 && !maskApplied && child.mask != null) {
+						
+						child.mask = null;
+						
+					}
+				}
+			}
+			
+			// If we jumped backwards, remove all children that haven't been readded.
+			if (instancesToRemove != null) {
+				// Children that were re-added should be kept.
+				for (instance in __currentChildrenByFrameObjectID) {
+					instancesToRemove.remove(instance);
 				}
 				
-				i++;
+				// Remove everything else.
+				for (instance in instancesToRemove) {
+					__removeDisplayObjectByInstance(instance);
+				}
 				
 			}
 			
@@ -639,6 +637,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map ();
+		__currentChildrenByFrameObjectID = new Map ();
+		__currentInstancesByDepth = new Array ();
 		__currentFrame = 1;
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
@@ -960,6 +960,18 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		
 	}
 	
+	@:noCompletion private function __removeDisplayObjectByInstance(instance:FrameSymbolInstance):Void {
+		if (instance.displayObject != null) {
+			//set MovieClips back to initial state (autoplay)
+			if (Std.is(instance.displayObject, MovieClip))
+			{
+				var movie : MovieClip = cast instance.displayObject;
+				movie.gotoAndPlay(1);
+			}
+			
+			removeChild (instance.displayObject);
+		}
+	}
 	
 	@:noCompletion private function __updateDisplayObject (displayObject:DisplayObject, frameObject:FrameObject, reset : Bool = false):Void {
 		
