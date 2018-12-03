@@ -38,7 +38,7 @@
 	<section if="${lime != 7.1.2}" unless="setup || disable-version-check">
 		
 		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
-        <log info='Use &lt;lime version="${expect-lime-version}" /&gt; before &lt;haxelib name="openfl" /&gt; to force the expected version' />
+		<log info='Use &lt;lime version="${expect-lime-version}" /&gt; before &lt;haxelib name="openfl" /&gt; to force the expected version' />
 		
 	</section>
 	
