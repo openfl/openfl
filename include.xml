@@ -3,7 +3,10 @@
 	
 	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
 	
-	<set name="lime-version" value="7.1.1" unless="setup || disable-version-check" />
+	<set name="expect-lime-version" value="7.1.1" />
+	
+	<set name="expect-lime-version" value="${lime-version}" if="lime-version" />
+	<!-- <set name="lime-version" value="${expect-lime-version}" if="setup" unless="lime-version" /> -->
 	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
@@ -32,11 +35,12 @@
 		
 	</section>
 	
-	<!-- <section if="lime">
+	<section if="${lime != 7.1.2}" unless="setup || disable-version-check">
 		
-		<log warn="Lime version ${lime} ${lime-version} may not be compatible with OpenFL ${openfl} (expected version ${lime-version})" if="${lime < ${lime-version}}" unless="setup || disable-version-check" />
+		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
+        <log info='Use &lt;lime version="${expect-lime-version}" /&gt; before &lt;haxelib name="openfl" /&gt; to force the expected version' />
 		
-	</section> -->
+	</section>
 	
 	<template path="assets/templates" />
 	
