@@ -1575,22 +1575,40 @@ class TextEngine {
 							
 						} else {
 							
-							layoutGroup.endIndex = endIndex;
+							var tempRangeEnd = endIndex < formatRange.end ? endIndex : formatRange.end;
+							
+							if (tempRangeEnd < endIndex) {
+								
+								positions = getPositions (text, textIndex, tempRangeEnd);
+								widthValue = getPositionsWidth (positions);
+								
+							}
+							
+							layoutGroup.endIndex = tempRangeEnd;
 							layoutGroup.positions = layoutGroup.positions.concat (positions);
 							layoutGroup.width += widthValue;
 							
-							if (endIndex == formatRange.end) {
+							offsetX += widthValue;
+							
+							if (tempRangeEnd == formatRange.end) {
 								
 								layoutGroup = null;
 								nextFormatRange ();
 								setLineMetrics ();
 								
+								textIndex = tempRangeEnd;
+								
+								if (tempRangeEnd != endIndex) {
+									
+									placeFormattedText (endIndex);
+									
+								}
+								
 							}
 							
 							// If next char is newline, process it immediately and prevent useless extra layout groups
+							// TODO: is this needed?
 							if (breakIndex == endIndex) endIndex++;
-							
-							offsetX += widthValue;
 							
 							textIndex = endIndex;
 							
@@ -1600,38 +1618,26 @@ class TextEngine {
 					
 					var nextSpaceIndex = text.indexOf (" ", textIndex);
 					
-					if (formatRange.end <= previousSpaceIndex) {
+					// Check if we can continue wrapping this line until the next line-break or end-of-String.
+					// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
+					
+					if (breakIndex == previousSpaceIndex) {
 						
-						layoutGroup = null;
-						textIndex = formatRange.end;
+						layoutGroup.endIndex = breakIndex;
 						
-						nextFormatRange ();
-						setLineMetrics ();
+						if (breakIndex - layoutGroup.startIndex - layoutGroup.positions.length < 0) {
 							
-					} else {
-						
-						// Check if we can continue wrapping this line until the next line-break or end-of-String.
-						// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
-						
-						if (breakIndex == previousSpaceIndex) {
-							
-							layoutGroup.endIndex = breakIndex;
-							
-							if (breakIndex - layoutGroup.startIndex - layoutGroup.positions.length < 0) {
-								
-								// Newline has no size
-								layoutGroup.positions.push (#if (js && html5) 0.0 #else null #end);
-								
-							}
-							
-							textIndex = breakIndex + 1;
+							// Newline has no size
+							layoutGroup.positions.push (#if (js && html5) 0.0 #else null #end);
 							
 						}
 						
-						previousSpaceIndex = spaceIndex;
-						spaceIndex = nextSpaceIndex;
+						textIndex = breakIndex + 1;
 						
 					}
+					
+					previousSpaceIndex = spaceIndex;
+					spaceIndex = nextSpaceIndex;
 					
 					if ((breakIndex > -1 && breakIndex <= textIndex && (spaceIndex > breakIndex || spaceIndex == -1)) || textIndex > text.length) {
 						
