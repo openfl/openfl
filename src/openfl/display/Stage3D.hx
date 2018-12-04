@@ -103,6 +103,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (context3D != null) {
 			
+			__contextRequested = true;
 			Timer.delay (__dispatchCreate, 1);
 			
 		} else if (!__contextRequested) {
