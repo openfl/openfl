@@ -74,7 +74,6 @@ import openfl.Vector;
 	private var __samplerDirty:Int;
 	private var __samplerTextures:Vector<TextureBase>;
 	private var __samplerStates:Array<SamplerState>;
-	private var __scissorRectangle:Rectangle;
 	private var __stage3D:Stage3D;
 	private var __stats:Vector<Int>;
 	private var __statsCache:Vector<Int>;
