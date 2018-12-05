@@ -57,10 +57,6 @@ class DrawCommandReader {
 				oPos += 2; //bitmap, matrix
 				bPos += 2; //repeat, smooth
 			
-			case BEGIN_BLEND:
-				
-				oPos += 1; //blend
-			
 			case BEGIN_FILL:
 				
 				iPos += 1; //color
@@ -141,6 +137,10 @@ class DrawCommandReader {
 				
 				fPos += 2; //x, y
 			
+			case OVERRIDE_BLEND_MODE:
+				
+				oPos += 1; //blendMode
+			
 			case OVERRIDE_MATRIX:
 				
 				oPos += 1; //matrix
@@ -208,7 +208,6 @@ class DrawCommandReader {
 	
 	
 	public inline function readBeginBitmapFill ():BeginBitmapFillView { advance (); prev = BEGIN_BITMAP_FILL; return new BeginBitmapFillView (this); }
-	public inline function readBeginBlend ():BeginBlend { advance (); prev = BEGIN_BLEND; return new BeginBlend (this); }
 	public inline function readBeginFill ():BeginFillView { advance (); prev = BEGIN_FILL; return new BeginFillView (this); }
 	public inline function readBeginGradientFill ():BeginGradientFillView { advance (); prev = BEGIN_GRADIENT_FILL; return new BeginGradientFillView (this); }
 	public inline function readBeginShaderFill ():BeginShaderFillView { advance (); prev = BEGIN_SHADER_FILL; return new BeginShaderFillView (this); }
@@ -226,6 +225,7 @@ class DrawCommandReader {
 	public inline function readLineStyle ():LineStyleView { advance (); prev = LINE_STYLE; return new LineStyleView (this); }
 	public inline function readLineTo ():LineToView { advance (); prev = LINE_TO; return new LineToView (this); }
 	public inline function readMoveTo ():MoveToView { advance (); prev = MOVE_TO; return new MoveToView (this); }
+	public inline function readOverrideBlendMode ():OverrideBlendModeView { advance (); prev = OVERRIDE_BLEND_MODE; return new OverrideBlendModeView (this); }
 	public inline function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
 	public inline function readWindingEvenOdd ():WindingEvenOddView { advance (); prev = WINDING_EVEN_ODD; return new WindingEvenOddView (this); }
 	public inline function readWindingNonZero ():WindingNonZeroView { advance (); prev = WINDING_NON_ZERO; return new WindingNonZeroView (this); }
@@ -259,12 +259,6 @@ abstract BeginBitmapFillView (DrawCommandReader) {
 	
 }
 
-abstract BeginBlend (DrawCommandReader) {
-
-	public inline function new (d:DrawCommandReader) { this = d; }
-	public var blend (get, never):BlendMode; private inline function get_blend ():BlendMode { return cast this.obj (0); }
-	
-}
 
 abstract BeginFillView (DrawCommandReader) {
 
@@ -450,6 +444,14 @@ abstract MoveToView (DrawCommandReader) {
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
 	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	
+}
+
+
+abstract OverrideBlendModeView (DrawCommandReader) {
+
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var blendMode (get, never):BlendMode; private inline function get_blendMode ():BlendMode { return cast this.obj (0); }
 	
 }
 

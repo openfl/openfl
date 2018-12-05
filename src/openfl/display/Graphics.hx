@@ -14,10 +14,8 @@ import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.ShaderBuffer;
-import openfl.display.Shader;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-import openfl.errors.ArgumentError;
 import openfl.display.BlendMode;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsBitmapFill;
@@ -26,6 +24,8 @@ import openfl.display.GraphicsGradientFill;
 import openfl.display.GraphicsPath;
 import openfl.display.GraphicsSolidFill;
 import openfl.display.GraphicsStroke;
+import openfl.display.Shader;
+import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -177,16 +177,6 @@ import js.html.CanvasRenderingContext2D;
 		
 	}
 	
-	/**
-	 * Specifies the blend mode to be used for subsequent draws
-	 * 
-	 * @param blend The blend mode to use
-	 */
-	public function beginBlend (blend:BlendMode):Void {
-		
-		__commands.beginBlend (blend);
-	
-	}
 	
 	/**
 	 * Specifies a simple one-color fill that subsequent calls to other Graphics
@@ -1475,6 +1465,14 @@ import js.html.CanvasRenderingContext2D;
 		
 		__commands.moveTo (x, y);
 		
+	}
+	
+	
+	@:dox(hide) @:noCompletion public function overrideBlendMode (blendMode:BlendMode):Void {
+		
+		if (blendMode == null) blendMode = NORMAL;
+		__commands.overrideBlendMode (blendMode);
+	
 	}
 	
 	

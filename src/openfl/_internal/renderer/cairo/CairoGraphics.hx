@@ -1532,6 +1532,11 @@ class CairoGraphics {
 						var c = data.readDrawTriangles ();
 						fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 					
+					case OVERRIDE_BLEND_MODE:
+						
+						var c = data.readOverrideBlendMode ();
+						renderer.__setBlendMode (c.blendMode);
+					
 					case WINDING_EVEN_ODD:
 						
 						data.readWindingEvenOdd ();
