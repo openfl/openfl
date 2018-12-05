@@ -2,6 +2,7 @@ package openfl._internal.renderer;
 
 
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
 import openfl.display.GraphicsPathWinding;
@@ -55,6 +56,10 @@ class DrawCommandReader {
 				
 				oPos += 2; //bitmap, matrix
 				bPos += 2; //repeat, smooth
+			
+			case BEGIN_BLEND:
+				
+				oPos += 1; //blend
 			
 			case BEGIN_FILL:
 				
@@ -203,6 +208,7 @@ class DrawCommandReader {
 	
 	
 	public inline function readBeginBitmapFill ():BeginBitmapFillView { advance (); prev = BEGIN_BITMAP_FILL; return new BeginBitmapFillView (this); }
+	public inline function readBeginBlend ():BeginBlend { advance (); prev = BEGIN_BLEND; return new BeginBlend (this); }
 	public inline function readBeginFill ():BeginFillView { advance (); prev = BEGIN_FILL; return new BeginFillView (this); }
 	public inline function readBeginGradientFill ():BeginGradientFillView { advance (); prev = BEGIN_GRADIENT_FILL; return new BeginGradientFillView (this); }
 	public inline function readBeginShaderFill ():BeginShaderFillView { advance (); prev = BEGIN_SHADER_FILL; return new BeginShaderFillView (this); }
@@ -253,6 +259,12 @@ abstract BeginBitmapFillView (DrawCommandReader) {
 	
 }
 
+abstract BeginBlend (DrawCommandReader) {
+
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var blend (get, never):BlendMode; private inline function get_blend ():BlendMode { return cast this.obj (0); }
+	
+}
 
 abstract BeginFillView (DrawCommandReader) {
 
