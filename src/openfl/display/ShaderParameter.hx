@@ -18,11 +18,12 @@ import lime.utils.Float32Array;
 	
 	
 	public var index (default, null):Dynamic;
-	@:noCompletion public var name:String;
+	@:noCompletion public var name (default, set):String;
 	public var type (default, null):ShaderParameterType;
 	public var value:Array<T>;
 	
 	@:noCompletion private var __arrayLength:Int;
+	@:noCompletion private var __internal:Bool;
 	@:noCompletion private var __isBool:Bool;
 	@:noCompletion private var __isFloat:Bool;
 	@:noCompletion private var __isInt:Bool;
@@ -303,7 +304,7 @@ import lime.utils.Float32Array;
 			
 		} else {
 			
-			if (!StringTools.startsWith (name, "openfl_") && (length == 0 || length == __length)) {
+			if (!__internal && (length == 0 || length == __length)) {
 				
 				for (i in 0...__arrayLength) {
 					
@@ -394,6 +395,21 @@ import lime.utils.Float32Array;
 			}
 			
 		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	@:noCompletion private function set_name (value:String):String {
+		
+		__internal = StringTools.startsWith (value, "openfl_");
+		return this.name = value;
 		
 	}
 	

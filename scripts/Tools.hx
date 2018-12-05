@@ -163,7 +163,7 @@ class Tools {
 			
 		}
 		
-		packageName = packageName.toLowerCase ();
+		packageName = packageName.charAt (0).toLowerCase () + packageName.substr (1);
 		name = name.substr (0, 1).toUpperCase () + name.substr (1);
 		
 		if (packageName != "") {
@@ -194,6 +194,11 @@ class Tools {
 		}
 		
 		var generatedClasses = [];
+
+		var classLookupMap = new Map<Int,String>();
+		for (className in swf.symbols.keys()) {
+			classLookupMap.set(swf.symbols[className], className);
+		}
 		
 		for (className in swf.symbols.keys ()) {
 			
@@ -214,11 +219,8 @@ class Tools {
 				
 			}
 			
-			packageName = packageName.toLowerCase ();
-			name = name.substr (0, 1).toUpperCase () + name.substr (1);
-			
-			var packageNameDot = packageName;
-			if (packageNameDot.length > 0) packageNameDot += ".";
+			packageName = packageName.charAt (0).toLowerCase () + packageName.substr (1);
+			name = formatClassName (name, prefix);
 			
 			var symbolID = swf.symbols.get (className);
 			var templateData = null;
@@ -249,48 +251,57 @@ class Tools {
 					
 					if (timelineContainer.frames.length > 0) {
 						
-						for (frameObject in timelineContainer.frames[0].objects) {
-							
-							var placeObject:TagPlaceObject = cast timelineContainer.tags[frameObject.placedAtIndex];
-							
-							if (placeObject != null && placeObject.instanceName != null) {
+						for (frame in timelineContainer.frames) {
+
+							for (frameObject in frame.objects) {
 								
-								var childSymbol = timelineContainer.getCharacter (frameObject.characterId);
-								var className = null;
+								var placeObject:TagPlaceObject = cast timelineContainer.tags[frameObject.placedAtIndex];
 								
-								if (childSymbol != null) {
-									
-									if (Std.is (childSymbol, TagDefineSprite)) {
-										
-										className = "openfl.display.MovieClip";
-										
-									} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
-										
-										className = "openfl.display.BitmapData";
-										
-									} else if (Std.is (childSymbol, TagDefineShape) || Std.is (childSymbol, TagDefineMorphShape)) {
-										
-										className = "openfl.display.Shape";
-										
-									} else if (Std.is (childSymbol, TagDefineText) || Std.is (childSymbol, TagDefineEditText)) {
-										
-										className = "openfl.text.TextField";
-										
-									} else if (Std.is (childSymbol, TagDefineButton2)) {
-										
-										className = "openfl.display.SimpleButton";
-										
+								if (placeObject != null && placeObject.instanceName != null && !objectReferences.exists(placeObject.instanceName)) {
+
+									var id = frameObject.characterId;
+									var childSymbol = timelineContainer.getCharacter (id);
+									var className = null;
+
+									if (classLookupMap.exists(id)) {
+										className = classLookupMap.get(id);
 									}
-									
-									if (className != null && !objectReferences.exists (placeObject.instanceName)) {
-										
-										objectReferences[placeObject.instanceName] = true;
-										classProperties.push ( { name: placeObject.instanceName, type: className } );
-										
+									if (childSymbol != null) {
+
+										if (className == null) {
+
+											if (Std.is (childSymbol, TagDefineSprite)) {
+
+												className = "openfl.display.MovieClip";
+
+											} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
+
+												className = "openfl.display.BitmapData";
+
+											} else if (Std.is (childSymbol, TagDefineShape) || Std.is (childSymbol, TagDefineMorphShape)) {
+
+												className = "openfl.display.Shape";
+
+											} else if (Std.is (childSymbol, TagDefineText) || Std.is (childSymbol, TagDefineEditText)) {
+
+												className = "openfl.text.TextField";
+
+											} else if (Std.is (childSymbol, TagDefineButton2)) {
+
+												className = "openfl.display.SimpleButton";
+
+											}
+										}
+										if (className != null && !objectReferences.exists (placeObject.instanceName)) {
+
+											objectReferences[placeObject.instanceName] = true;
+											classProperties.push ( { name: placeObject.instanceName, type: className } );
+
+										}
+
 									}
-									
+
 								}
-								
 							}
 							
 						}
@@ -299,7 +310,7 @@ class Tools {
 					
 				}
 				
-				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfAsset.id, SYMBOL_ID: symbolID, PREFIX: prefix, CLASS_PROPERTIES: classProperties };
+				var context = { PACKAGE_NAME: packageName, NATIVE_CLASS_NAME: className, CLASS_NAME: name, SWF_ID: swfAsset.id, SYMBOL_ID: symbolID, PREFIX: prefix, CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				var targetPath;
 				
@@ -317,7 +328,7 @@ class Tools {
 				templateFile.data = template.execute (context);
 				output.assets.push (templateFile);
 				
-				generatedClasses.push (packageNameDot + prefix + name);
+				generatedClasses.push ((packageName.length > 0 ? packageName + "." : "") + name);
 				
 			}
 			
@@ -363,7 +374,6 @@ class Tools {
 			
 			if (templateData != null && symbol.className != null) {
 				
-				//var className = formatClassName (symbol.className, prefix);
 				var className = symbol.className;
 				
 				var name = className;
@@ -378,10 +388,10 @@ class Tools {
 					
 				}
 				
-				var packageNameDot = packageName;
-				if (packageNameDot.length > 0) packageNameDot += ".";
+				name = formatClassName (name, prefix);
 				
 				var classProperties = [];
+				var objectReferences = new Map<String, Bool> ();
 				
 				if (Std.is (symbol, SpriteSymbol)) {
 					
@@ -389,55 +399,59 @@ class Tools {
 					
 					if (spriteSymbol.frames.length > 0 && Reflect.hasField(spriteSymbol.frames[0], "objects")) {
 
-						for (object in spriteSymbol.frames[0].objects) {
-							
-							if (object.name != null) {
-								
-								if (swfLite.symbols.exists (object.symbol)) {
+						for (frame in spriteSymbol.frames) {
+
+							if (frame.objects != null) {
+
+								for (object in frame.objects) {
 									
-									var childSymbol = swfLite.symbols.get (object.symbol);
-									//var className = formatClassName (childSymbol.className, prefix);
-									var className = childSymbol.className;
-									//var className = null;
-									
-									if (className == null) {
+									if (object.name != null && !objectReferences.exists(object.name)) {
 										
-										if (Std.is (childSymbol, SpriteSymbol)) {
+										if (swfLite.symbols.exists (object.symbol)) {
 											
-											className = "openfl.display.MovieClip";
+											var childSymbol = swfLite.symbols.get (object.symbol);
+											var className = childSymbol.className;
 											
-										} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
+											if (className == null) {
+												
+												if (Std.is (childSymbol, SpriteSymbol)) {
+													
+													className = "openfl.display.MovieClip";
+													
+												} else if (Std.is (childSymbol, TagDefineBits) || Std.is (childSymbol, TagDefineBitsJPEG2) || Std.is (childSymbol, TagDefineBitsLossless)) {
+													
+													className = "openfl.display.BitmapData";
+													
+												} else if (Std.is (childSymbol, ShapeSymbol)) {
+													
+													className = "openfl.display.Shape";
+													
+												} else if (Std.is (childSymbol, BitmapSymbol)) {
+													
+													className = "openfl.display.Bitmap";
+													
+												} else if (Std.is (childSymbol, DynamicTextSymbol) || Std.is (childSymbol, StaticTextSymbol)) {
+													
+													className = "openfl.text.TextField";
+													
+												} else if (Std.is (childSymbol, ButtonSymbol)) {
+													
+													className = "openfl.display.SimpleButton";
+													
+												}
+												
+											}
 											
-											className = "openfl.display.BitmapData";
-											
-										} else if (Std.is (childSymbol, ShapeSymbol)) {
-											
-											className = "openfl.display.Shape";
-											
-										} else if (Std.is (childSymbol, BitmapSymbol)) {
-											
-											className = "openfl.display.Bitmap";
-											
-										} else if (Std.is (childSymbol, DynamicTextSymbol) || Std.is (childSymbol, StaticTextSymbol)) {
-											
-											className = "openfl.text.TextField";
-											
-										} else if (Std.is (childSymbol, ButtonSymbol)) {
-											
-											className = "openfl.display.SimpleButton";
+											if (className != null) {
+												objectReferences[object.name] = true;
+												classProperties.push ( { name: object.name, type: className } );
+												
+											}
 											
 										}
 										
 									}
-									
-									if (className != null) {
-										
-										classProperties.push ( { name: object.name, type: className } );
-										
-									}
-									
 								}
-								
 							}
 							
 						}
@@ -446,14 +460,14 @@ class Tools {
 					
 				}
 				
-				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfID, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
+				var context = { PACKAGE_NAME: packageName, NATIVE_CLASS_NAME: className, CLASS_NAME: name, SWF_ID: swfID, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				
 				var templateFile = new Asset ("", #if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, Path.directory (symbol.className.split (".").join ("/"))) + "/" + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
 				output.push (templateFile);
 				
-				generatedClasses.push (className);
+				generatedClasses.push ((packageName.length > 0 ? packageName + "." : "") + name);
 				
 			}
 			

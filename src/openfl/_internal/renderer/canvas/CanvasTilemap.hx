@@ -26,7 +26,10 @@ class CanvasTilemap {
 	public static inline function render (tilemap:Tilemap, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
-		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0) return;
+		
+		var alpha = renderer.__getAlpha (tilemap.__worldAlpha);
+		if (alpha <= 0) return;
 		
 		var context = renderer.context;
 		
@@ -43,7 +46,7 @@ class CanvasTilemap {
 			
 		}
 		
-		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, rect);
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, rect);
 		
 		if (!renderer.__allowSmoothing || !tilemap.smoothing) {
 			
@@ -114,7 +117,7 @@ class CanvasTilemap {
 				
 				if (id == -1) {
 					
-					tileRect = tile.rect;
+					tileRect = tile.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 					
 				} else {

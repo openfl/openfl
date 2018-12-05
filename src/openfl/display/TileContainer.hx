@@ -1,11 +1,15 @@
 package openfl.display;
 
+import openfl.geom.Rectangle;
+import openfl.geom.Matrix;
+
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 class TileContainer extends Tile implements ITileContainer {
 	
@@ -103,6 +107,36 @@ class TileContainer extends Tile implements ITileContainer {
 	public function contains (tile:Tile):Bool {
 		
 		return (__tiles.indexOf (tile) > -1);
+		
+	}
+	
+	
+	/**
+	 * Override from tile. A single tile, just has his rectangle.
+	 * A container must get a rectangle that contains all other rectangles.
+	 * 
+	 * @param targetCoordinateSpace The tile that works as a coordinate system.
+	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	 */
+	public override function getBounds (targetCoordinateSpace:Tile):Rectangle {
+		
+		var result = new Rectangle ();
+		var rect = null;
+		
+		for (tile in __tiles) {
+			
+			// TODO: Generate less Rectangle objects?
+			rect = tile.getBounds (targetCoordinateSpace);
+			
+			#if flash
+			result = result.union (rect);
+			#else
+			result.__expand (rect.x, rect.y, rect.width, rect.height);
+			#end
+			
+		}
+		
+		return result;
 		
 	}
 	

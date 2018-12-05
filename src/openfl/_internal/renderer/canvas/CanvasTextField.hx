@@ -27,6 +27,7 @@ import js.html.ImageData;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
+@:access(openfl.text.TextFormat)
 
 
 class CanvasTextField {
@@ -186,25 +187,23 @@ class CanvasTextField {
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
 						
-						if (group.format.underline) {
-							
-							context.beginPath ();
-							context.strokeStyle = "#000000";
-							context.lineWidth = .5;
-							var x = group.offsetX + scrollX - bounds.x;
-							var y = group.offsetY + offsetY + scrollY + group.ascent - bounds.y;
-							context.moveTo (x, y);
-							context.lineTo (x + group.width, y);
-							context.stroke ();
-							
-						}
+						var color = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
 						
 						context.font = TextEngine.getFont (group.format);
-						context.fillStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
+						context.fillStyle = color;
 						
 						if (applyHack) {
 							
-							offsetY = group.format.size * 0.185;
+							// TODO: Change to a different baseline for better consistency?
+							
+							var font = TextEngine.getFontInstance (group.format);
+							
+							if (group.format.__ascent == null && font == null || font.unitsPerEM == 0) {
+								
+								// Try and fix baseline for specific browsers, IF we don't have true font ascent/descent encoded
+								offsetY = group.format.size * 0.185;
+								
+							}
 							
 						}
 						
@@ -290,6 +289,20 @@ class CanvasTextField {
 								}
 								
 							}
+							
+						}
+						
+						if (group.format.underline) {
+							
+							context.beginPath ();
+							context.strokeStyle = color;
+							context.lineWidth = 1;
+							var x = group.offsetX + scrollX - bounds.x;
+							var y = Math.floor (group.offsetY + offsetY + scrollY + group.ascent - bounds.y) + 0.5;
+							context.moveTo (x, y);
+							context.lineTo (x + group.width, y);
+							context.stroke ();
+							context.closePath ();
 							
 						}
 						

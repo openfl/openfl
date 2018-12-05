@@ -1,0 +1,6 @@
+version=
+src=unit
+bin=build
+report=report
+hxml=test.hxml
+classPaths=unit

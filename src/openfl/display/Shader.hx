@@ -744,11 +744,11 @@ class Shader {
 				
 				boolRef = shaderBuffer.paramRefs_Bool[boolIndex];
 				
-				for (j in 0...shaderBuffer.overrideCount) {
+				for (j in 0...shaderBuffer.overrideBoolCount) {
 					
-					if (boolRef.name == shaderBuffer.overrideNames[j]) {
+					if (boolRef.name == shaderBuffer.overrideBoolNames[j]) {
 						
-						overrideBoolValue = cast shaderBuffer.overrideValues[j];
+						overrideBoolValue = shaderBuffer.overrideBoolValues[j];
 						hasOverride = true;
 						break;
 						
@@ -772,11 +772,11 @@ class Shader {
 				
 				floatRef = shaderBuffer.paramRefs_Float[floatIndex];
 				
-				for (j in 0...shaderBuffer.overrideCount) {
+				for (j in 0...shaderBuffer.overrideFloatCount) {
 					
-					if (floatRef.name == shaderBuffer.overrideNames[j]) {
+					if (floatRef.name == shaderBuffer.overrideFloatNames[j]) {
 						
-						overrideFloatValue = cast shaderBuffer.overrideValues[j];
+						overrideFloatValue = shaderBuffer.overrideFloatValues[j];
 						hasOverride = true;
 						break;
 						
@@ -800,11 +800,11 @@ class Shader {
 				
 				intRef = shaderBuffer.paramRefs_Int[intIndex];
 				
-				for (j in 0...shaderBuffer.overrideCount) {
+				for (j in 0...shaderBuffer.overrideIntCount) {
 					
-					if (intRef.name == shaderBuffer.overrideNames[j]) {
+					if (intRef.name == shaderBuffer.overrideIntNames[j]) {
 						
-						overrideIntValue = cast shaderBuffer.overrideValues[j];
+						overrideIntValue = cast shaderBuffer.overrideIntValues[j];
 						hasOverride = true;
 						break;
 						

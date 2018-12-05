@@ -207,6 +207,8 @@ class Font extends LimeFont {
 			
 			if (src != null) {
 				
+				 // TODO: How does src get defined without being initialized in Lime?
+				if (unitsPerEM == 0) __initializeSource ();
 				__initialized = true;
 				
 			} else if (src == null && __fontID != null && Assets.isLocal (__fontID)) {

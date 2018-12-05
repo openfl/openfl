@@ -510,8 +510,17 @@ import openfl.utils.ByteArray;
 	
 	public function setBlendFactors (sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		__state.blendSourceFactor = sourceFactor;
-		__state.blendDestinationFactor = destinationFactor;
+		setBlendFactorsSeparate (sourceFactor, destinationFactor, sourceFactor, destinationFactor);
+		
+	}
+	
+	
+	@:dox(hide) @:noCompletion private function setBlendFactorsSeparate (sourceRGBFactor:Context3DBlendFactor, destinationRGBFactor:Context3DBlendFactor, sourceAlphaFactor:Context3DBlendFactor, destinationAlphaFactor:Context3DBlendFactor):Void {
+		
+		__state.blendSourceRGBFactor = sourceRGBFactor;
+		__state.blendDestinationRGBFactor = destinationRGBFactor;
+		__state.blendSourceAlphaFactor = sourceAlphaFactor;
+		__state.blendDestinationAlphaFactor = destinationAlphaFactor;
 		
 		// TODO: Better way to handle this?
 		__setGLBlendEquation (gl.FUNC_ADD);
@@ -961,43 +970,24 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLBlend ():Void {
 		
-		if (#if openfl_disable_context_cache true #else __contextState.blendDestinationFactor != __state.blendDestinationFactor || __contextState.blendSourceFactor != __state.blendSourceFactor #end) {
-			
-			var src = gl.ONE;
-			var dest = gl.ZERO;
-			
-			switch (__state.blendSourceFactor) {
-				case DESTINATION_ALPHA: src = gl.DST_ALPHA;
-				case DESTINATION_COLOR: src = gl.DST_COLOR;
-				case ONE: src = gl.ONE;
-				case ONE_MINUS_DESTINATION_ALPHA: src = gl.ONE_MINUS_DST_ALPHA;
-				case ONE_MINUS_DESTINATION_COLOR: src = gl.ONE_MINUS_DST_COLOR;
-				case ONE_MINUS_SOURCE_ALPHA: src = gl.ONE_MINUS_SRC_ALPHA;
-				case ONE_MINUS_SOURCE_COLOR: src = gl.ONE_MINUS_SRC_COLOR;
-				case SOURCE_ALPHA: src = gl.SRC_ALPHA;
-				case SOURCE_COLOR: src = gl.SRC_COLOR;
-				case ZERO: src = gl.ZERO;
-				default: throw new IllegalOperationError ();
-			}
-			
-			switch (__state.blendDestinationFactor) {
-				case DESTINATION_ALPHA: dest = gl.DST_ALPHA;
-				case DESTINATION_COLOR: dest = gl.DST_COLOR;
-				case ONE: dest = gl.ONE;
-				case ONE_MINUS_DESTINATION_ALPHA: dest = gl.ONE_MINUS_DST_ALPHA;
-				case ONE_MINUS_DESTINATION_COLOR: dest = gl.ONE_MINUS_DST_COLOR;
-				case ONE_MINUS_SOURCE_ALPHA: dest = gl.ONE_MINUS_SRC_ALPHA;
-				case ONE_MINUS_SOURCE_COLOR: dest = gl.ONE_MINUS_SRC_COLOR;
-				case SOURCE_ALPHA: dest = gl.SRC_ALPHA;
-				case SOURCE_COLOR: dest = gl.SRC_COLOR;
-				case ZERO: dest = gl.ZERO;
-				default: throw new IllegalOperationError ();
-			}
+		if (#if openfl_disable_context_cache true #else __contextState.blendDestinationRGBFactor != __state.blendDestinationRGBFactor || __contextState.blendSourceRGBFactor != __state.blendSourceRGBFactor || __contextState.blendDestinationAlphaFactor != __state.blendDestinationAlphaFactor || __contextState.blendSourceAlphaFactor != __state.blendSourceAlphaFactor #end) {
 			
 			__setGLBlend (true);
-			gl.blendFunc (src, dest);
-			__contextState.blendDestinationFactor = __state.blendDestinationFactor;
-			__contextState.blendSourceFactor = __state.blendSourceFactor;
+			
+			if (__state.blendDestinationRGBFactor == __state.blendDestinationAlphaFactor && __state.blendSourceRGBFactor == __state.blendSourceAlphaFactor) {
+				
+				gl.blendFunc (__getGLBlend (__state.blendSourceRGBFactor), __getGLBlend (__state.blendDestinationRGBFactor));
+				
+			} else {
+				
+				gl.blendFuncSeparate (__getGLBlend (__state.blendSourceRGBFactor), __getGLBlend (__state.blendDestinationRGBFactor), __getGLBlend (__state.blendSourceAlphaFactor), __getGLBlend (__state.blendDestinationAlphaFactor));
+				
+			}
+			
+			__contextState.blendDestinationRGBFactor = __state.blendDestinationRGBFactor;
+			__contextState.blendSourceRGBFactor = __state.blendSourceRGBFactor;
+			__contextState.blendDestinationAlphaFactor = __state.blendDestinationAlphaFactor;
+			__contextState.blendSourceAlphaFactor = __state.blendSourceAlphaFactor;
 			
 		}
 		
@@ -1215,47 +1205,9 @@ import openfl.utils.ByteArray;
 	
 	@:noCompletion private function __flushGLStencil ():Void {
 		
-		function getGLCompareMode (mode:Context3DCompareMode):Int {
-			return switch (mode) {
-				case ALWAYS: gl.ALWAYS;
-				case EQUAL: gl.EQUAL;
-				case GREATER: gl.GREATER;
-				case GREATER_EQUAL: gl.GEQUAL;
-				case LESS: gl.LESS;
-				case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
-				case NEVER: gl.NEVER;
-				case NOT_EQUAL: gl.NOTEQUAL;
-				default: gl.EQUAL;
-			}
-		}
-		
-		function getGLTriangleFace (face:Context3DTriangleFace):Int {
-			return switch (face) {
-				case FRONT: gl.FRONT;
-				case BACK: gl.BACK;
-				case FRONT_AND_BACK: gl.FRONT_AND_BACK;
-				case NONE: gl.NONE;
-				default: gl.FRONT_AND_BACK;
-			}
-		}
-		
-		function getGLStencilAction (action:Context3DStencilAction):Int {
-			return switch (action) {
-				case DECREMENT_SATURATE: gl.DECR;
-				case DECREMENT_WRAP: gl.DECR_WRAP;
-				case INCREMENT_SATURATE: gl.INCR;
-				case INCREMENT_WRAP: gl.INCR_WRAP;
-				case INVERT: gl.INVERT;
-				case KEEP: gl.KEEP;
-				case SET: gl.REPLACE;
-				case ZERO: gl.ZERO;
-				default: gl.KEEP;
-			}
-		}
-		
 		if (#if openfl_disable_context_cache true #else __contextState.stencilTriangleFace != __state.stencilTriangleFace || __contextState.stencilPass != __state.stencilPass || __contextState.stencilDepthFail != __state.stencilDepthFail || __contextState.stencilFail != __state.stencilFail #end) {
 			
-			gl.stencilOpSeparate (getGLTriangleFace (__state.stencilTriangleFace), getGLStencilAction (__state.stencilFail), getGLStencilAction (__state.stencilDepthFail), getGLStencilAction (__state.stencilPass));
+			gl.stencilOpSeparate (__getGLTriangleFace (__state.stencilTriangleFace), __getGLStencilAction (__state.stencilFail), __getGLStencilAction (__state.stencilDepthFail), __getGLStencilAction (__state.stencilPass));
 			__contextState.stencilTriangleFace = __state.stencilTriangleFace;
 			__contextState.stencilPass = __state.stencilPass;
 			__contextState.stencilDepthFail = __state.stencilDepthFail;
@@ -1272,7 +1224,7 @@ import openfl.utils.ByteArray;
 		
 		if (#if openfl_disable_context_cache true #else __contextState.stencilCompareMode != __state.stencilCompareMode || __contextState.stencilReferenceValue != __state.stencilReferenceValue || __contextState.stencilReadMask != __state.stencilReadMask #end) {
 			
-			gl.stencilFunc (getGLCompareMode (__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
+			gl.stencilFunc (__getGLCompareMode (__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
 			__contextState.stencilCompareMode = __state.stencilCompareMode;
 			__contextState.stencilReferenceValue = __state.stencilReferenceValue;
 			__contextState.stencilReadMask = __state.stencilReadMask;
@@ -1406,6 +1358,82 @@ import openfl.utils.ByteArray;
 			}
 			
 			gl.viewport (0, 0, width, height);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __getGLBlend (blendFactor:Context3DBlendFactor):Int {
+		
+		switch (blendFactor) {
+			
+			case DESTINATION_ALPHA: return gl.DST_ALPHA;
+			case DESTINATION_COLOR: return gl.DST_COLOR;
+			case ONE: return gl.ONE;
+			case ONE_MINUS_DESTINATION_ALPHA: return gl.ONE_MINUS_DST_ALPHA;
+			case ONE_MINUS_DESTINATION_COLOR: return gl.ONE_MINUS_DST_COLOR;
+			case ONE_MINUS_SOURCE_ALPHA: return gl.ONE_MINUS_SRC_ALPHA;
+			case ONE_MINUS_SOURCE_COLOR: return gl.ONE_MINUS_SRC_COLOR;
+			case SOURCE_ALPHA: return gl.SRC_ALPHA;
+			case SOURCE_COLOR: return gl.SRC_COLOR;
+			case ZERO: return gl.ZERO;
+			default: throw new IllegalOperationError ();
+			
+		}
+		
+		return 0;
+		
+	}
+	
+	
+	@:noCompletion private function __getGLCompareMode (mode:Context3DCompareMode):Int {
+		
+		return switch (mode) {
+			
+			case ALWAYS: gl.ALWAYS;
+			case EQUAL: gl.EQUAL;
+			case GREATER: gl.GREATER;
+			case GREATER_EQUAL: gl.GEQUAL;
+			case LESS: gl.LESS;
+			case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
+			case NEVER: gl.NEVER;
+			case NOT_EQUAL: gl.NOTEQUAL;
+			default: gl.EQUAL;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __getGLStencilAction (action:Context3DStencilAction):Int {
+		
+		return switch (action) {
+			
+			case DECREMENT_SATURATE: gl.DECR;
+			case DECREMENT_WRAP: gl.DECR_WRAP;
+			case INCREMENT_SATURATE: gl.INCR;
+			case INCREMENT_WRAP: gl.INCR_WRAP;
+			case INVERT: gl.INVERT;
+			case KEEP: gl.KEEP;
+			case SET: gl.REPLACE;
+			case ZERO: gl.ZERO;
+			default: gl.KEEP;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __getGLTriangleFace (face:Context3DTriangleFace):Int {
+		
+		return switch (face) {
+			
+			case FRONT: gl.FRONT;
+			case BACK: gl.BACK;
+			case FRONT_AND_BACK: gl.FRONT_AND_BACK;
+			case NONE: gl.NONE;
+			default: gl.FRONT_AND_BACK;
 			
 		}
 		

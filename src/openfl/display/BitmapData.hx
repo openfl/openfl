@@ -2092,7 +2092,7 @@ class BitmapData implements IBitmapDrawable {
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
 		
 		if (!readable) return;
-		var noise = new PerlinNoise (randomSeed, numOctaves, 0.01);
+		var noise = new PerlinNoise (randomSeed, numOctaves, channelOptions, grayScale, 0.5, stitch, 0.15);
 		noise.fill (this, baseX, baseY, 0);
 		
 	}

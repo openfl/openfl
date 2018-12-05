@@ -29,9 +29,18 @@ class ShaderBuffer {
 	public var inputMipFilter:Array<Context3DMipFilter>;
 	public var inputs:Array<BitmapData>;
 	public var inputWrap:Array<Context3DWrapMode>;
-	public var overrideCount:Int;
-	public var overrideNames:Array<String>;
-	public var overrideValues:Array<Array<Dynamic>>;
+	public var overrideBoolCount:Int;
+	public var overrideBoolNames:Array<String>;
+	public var overrideBoolValues:Array<Array<Bool>>;
+	// public var overrideCount:Int;
+	public var overrideFloatCount:Int;
+	public var overrideFloatNames:Array<String>;
+	public var overrideFloatValues:Array<Array<Float>>;
+	public var overrideIntCount:Int;
+	public var overrideIntNames:Array<String>;
+	public var overrideIntValues:Array<Array<Dynamic>>;
+	// public var overrideNames:Array<String>;
+	// public var overrideValues:Array<Array<Dynamic>>;
 	public var paramBoolCount:Int;
 	public var paramCount:Int;
 	public var paramData:Float32Array;
@@ -55,8 +64,14 @@ class ShaderBuffer {
 		inputMipFilter = [];
 		inputs = [];
 		inputWrap = [];
-		overrideNames = [];
-		overrideValues = [];
+		// overrideNames = [];
+		// overrideValues = [];
+		overrideIntNames = [];
+		overrideIntValues = [];
+		overrideFloatNames = [];
+		overrideFloatValues = [];
+		overrideBoolNames = [];
+		overrideBoolValues = [];
 		paramLengths = [];
 		paramPositions = [];
 		paramRefs_Bool = [];
@@ -67,18 +82,39 @@ class ShaderBuffer {
 	}
 	
 	
-	public function addOverride (name:String, values:Array<Dynamic>):Void {
+	public function addBoolOverride (name:String, values:Array<Bool>):Void {
 		
-		overrideNames[overrideCount] = name;
-		overrideValues[overrideCount] = values;
-		overrideCount++;
+		overrideBoolNames[overrideBoolCount] = name;
+		overrideBoolValues[overrideBoolCount] = values;
+		overrideBoolCount++;
+		
+	}
+	
+	
+	public function addFloatOverride (name:String, values:Array<Float>):Void {
+		
+		overrideFloatNames[overrideFloatCount] = name;
+		overrideFloatValues[overrideFloatCount] = values;
+		overrideFloatCount++;
+		
+	}
+	
+	
+	public function addIntOverride (name:String, values:Array<Int>):Void {
+		
+		overrideIntNames[overrideIntCount] = name;
+		overrideIntValues[overrideIntCount] = values;
+		overrideIntCount++;
 		
 	}
 	
 	
 	public function clearOverride ():Void {
 		
-		overrideCount = 0;
+		// overrideCount = 0;
+		overrideIntCount = 0;
+		overrideFloatCount = 0;
+		overrideBoolCount = 0;
 		
 	}
 	
@@ -86,7 +122,10 @@ class ShaderBuffer {
 	public function update (shader:GraphicsShader):Void {
 		
 		inputCount = 0;
-		overrideCount = 0;
+		// overrideCount = 0;
+		overrideIntCount = 0;
+		overrideFloatCount = 0;
+		overrideBoolCount = 0;
 		paramBoolCount = 0;
 		paramCount = 0;
 		paramDataLength = 0;

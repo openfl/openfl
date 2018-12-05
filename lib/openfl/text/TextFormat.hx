@@ -233,7 +233,7 @@ extern class TextFormat {
 	public function new (font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null, underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null, rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null);
 	
 	
-	public function clone ():TextFormat;
+	@:dox(hide) @:noCompletion public function clone ():TextFormat;
 	
 	
 }

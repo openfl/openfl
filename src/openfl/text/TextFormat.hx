@@ -256,7 +256,7 @@ class TextFormat {
 	}
 	
 	
-	public function clone ():TextFormat {
+	@:dox(hide) @:noCompletion public function clone ():TextFormat {
 		
 		var newFormat = new TextFormat (font, size, color, bold, italic, underline, url, target);
 		

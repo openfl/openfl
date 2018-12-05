@@ -35,10 +35,9 @@ class CairoTilemap {
 	
 	public static function render (tilemap:Tilemap, renderer:CairoRenderer):Void {
 		
-		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0) return;
 		
 		var alpha = renderer.__getAlpha (tilemap.__worldAlpha);
-		
 		if (alpha <= 0) return;
 		
 		renderer.__setBlendMode (tilemap.__worldBlendMode);
@@ -102,7 +101,7 @@ class CairoTilemap {
 				
 				if (id == -1) {
 					
-					tileRect = tile.rect;
+					tileRect = tile.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 					
 				} else {

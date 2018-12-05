@@ -167,7 +167,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentShaderBuffer != null) {
 			
-			__currentShaderBuffer.addOverride ("openfl_Alpha", __alphaValue);
+			__currentShaderBuffer.addFloatOverride ("openfl_Alpha", __alphaValue);
 			
 		} else if (__currentShader != null) {
 			
@@ -187,7 +187,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 				__textureSizeValue[0] = bitmapData.__textureWidth;
 				__textureSizeValue[1] = bitmapData.__textureHeight;
 				
-				__currentShaderBuffer.addOverride ("openfl_TextureSize", __textureSizeValue);
+				__currentShaderBuffer.addFloatOverride ("openfl_TextureSize", __textureSizeValue);
 				
 			}
 			
@@ -196,7 +196,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (__currentShader.__bitmap != null) {
 				
 				__currentShader.__bitmap.input = bitmapData;
-				__currentShader.__bitmap.filter = smooth ? LINEAR : NEAREST;
+				__currentShader.__bitmap.filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
 				__currentShader.__bitmap.mipFilter = MIPNONE;
 				__currentShader.__bitmap.wrap = repeat ? REPEAT : CLAMP;
 				
@@ -205,7 +205,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			if (__currentShader.__texture != null) {
 				
 				__currentShader.__texture.input = bitmapData;
-				__currentShader.__texture.filter = smooth ? LINEAR : NEAREST;
+				__currentShader.__texture.filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
 				__currentShader.__texture.mipFilter = MIPNONE;
 				__currentShader.__texture.wrap = repeat ? REPEAT : CLAMP;
 				
@@ -235,7 +235,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	
 	public function applyColorTransform (colorTransform:ColorTransform):Void {
 		
-		var enabled = (colorTransform != null && !colorTransform.__isDefault ());
+		var enabled = (colorTransform != null && !colorTransform.__isDefault (true));
 		applyHasColorTransform (enabled);
 		
 		if (enabled) {
@@ -244,8 +244,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__currentShaderBuffer != null) {
 				
-				__currentShaderBuffer.addOverride ("openfl_ColorMultiplier", __colorMultipliersValue);
-				__currentShaderBuffer.addOverride ("openfl_ColorOffset", __colorOffsetsValue);
+				__currentShaderBuffer.addFloatOverride ("openfl_ColorMultiplier", __colorMultipliersValue);
+				__currentShaderBuffer.addFloatOverride ("openfl_ColorOffset", __colorOffsetsValue);
 				
 			} else if (__currentShader != null) {
 				
@@ -258,8 +258,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 			if (__currentShaderBuffer != null) {
 				
-				__currentShaderBuffer.addOverride ("openfl_ColorMultiplier", __emptyColorValue);
-				__currentShaderBuffer.addOverride ("openfl_ColorOffset", __emptyColorValue);
+				__currentShaderBuffer.addFloatOverride ("openfl_ColorMultiplier", __emptyColorValue);
+				__currentShaderBuffer.addFloatOverride ("openfl_ColorOffset", __emptyColorValue);
 				
 			} else if (__currentShader != null) {
 				
@@ -279,7 +279,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentShaderBuffer != null) {
 			
-			__currentShaderBuffer.addOverride ("openfl_HasColorTransform", __hasColorTransformValue);
+			__currentShaderBuffer.addBoolOverride ("openfl_HasColorTransform", __hasColorTransformValue);
 			
 		} else if (__currentShader != null) {
 			
@@ -294,7 +294,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__currentShaderBuffer != null) {
 			
-			__currentShaderBuffer.addOverride ("openfl_Matrix", matrix);
+			__currentShaderBuffer.addFloatOverride ("openfl_Matrix", matrix);
 			
 		} else if (__currentShader != null) {
 			
@@ -798,7 +798,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		if (__defaultRenderTarget == null) {
 			
-			__gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			__scissorRectangle.setTo (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			__context3D.setScissorRectangle (__scissorRectangle);
 			
 			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 			
@@ -815,12 +816,20 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 					// __gl.scissor (0, 0, __offsetX, __height);
 					__scissorRectangle.setTo (0, 0, __offsetX, __height);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					
+					__context3D.__flushGL ();
+					__gl.clearColor (0, 0, 0, 1);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 					// __gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
 					__scissorRectangle.setTo (__offsetX + __displayWidth, 0, __width, __height);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					
+					__context3D.__flushGL ();
+					__gl.clearColor (0, 0, 0, 1);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
@@ -829,12 +838,20 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 					// __gl.scissor (0, 0, __width, __offsetY);
 					__scissorRectangle.setTo (0, 0, __width, __offsetY);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					
+					__context3D.__flushGL ();
+					__gl.clearColor (0, 0, 0, 1);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 					// __gl.scissor (0, __offsetY + __displayHeight, __width, __height);
 					__scissorRectangle.setTo (0, __offsetY + __displayHeight, __width, __height);
 					__context3D.setScissorRectangle (__scissorRectangle);
-					__context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
+					
+					__context3D.__flushGL ();
+					__gl.clearColor (0, 0, 0, 1);
+					__gl.clear (__gl.COLOR_BUFFER_BIT);
+					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 					
 				}
 				
@@ -844,7 +861,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		} else {
 			
-			__gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			__scissorRectangle.setTo (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			__context3D.setScissorRectangle (__scissorRectangle);
+			// __gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
 			
 			// __upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 			
@@ -927,8 +946,8 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__displayWidth = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformX (w, 0) - __offsetX) : w;
 		__displayHeight = __defaultRenderTarget == null ? Math.round (__worldTransform.__transformY (0, h) - __offsetY) : h;
 		
-		__projection.createOrtho (__offsetX, __displayWidth + __offsetX, __offsetY, __displayHeight + __offsetY, -1000, 1000);
-		__projectionFlipped.createOrtho (__offsetX, __displayWidth + __offsetX, __displayHeight + __offsetY, __offsetY, -1000, 1000);
+		__projection.createOrtho (0, __displayWidth + __offsetX * 2, 0, __displayHeight + __offsetY * 2, -1000, 1000);
+		__projectionFlipped.createOrtho (0, __displayWidth + __offsetX * 2, __displayHeight + __offsetY * 2, 0, -1000, 1000);
 		
 	}
 	

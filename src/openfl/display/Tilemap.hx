@@ -82,7 +82,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		tileColorTransformEnabled = true;
 		
 		__group = new TileContainer ();
-		
+		__group.tileset = tileset;
 		#if !flash
 		__width = width;
 		__height = height;
@@ -445,6 +445,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (value != __tileset) {
 			
 			__tileset = value;
+			__group.tileset =  value;
 			__group.__dirty = true;
 			
 			#if !flash

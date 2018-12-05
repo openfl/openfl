@@ -173,6 +173,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __hasDown:Bool;
 	@:noCompletion private var __hasOver:Bool;
 	@:noCompletion private var __hasUp:Bool;
+	@:noCompletion private var __instanceFields:Array<String>;
 	@:noCompletion private var __lastFrameScriptEval:Int;
 	@:noCompletion private var __lastFrameUpdate:Int;
 	@:noCompletion private var __mouseIsDown:Bool;
@@ -216,6 +217,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		
 		__currentFrame = 1;
 		__currentLabels = [];
+		__instanceFields = [];
 		__totalFrames = 0;
 		enabled = true;
 		
@@ -369,7 +371,16 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	
 	
 	public override function __enterFrame (deltaTime:Int):Void {
+
+		__updateFrameScript(deltaTime);
+		__updateSymbol(__currentFrame);
+
+		super.__enterFrame (deltaTime);
 		
+	}
+
+	@:noCompletion private function __updateFrameScript(deltaTime:Int) {
+
 		if (__symbol != null && __playing) {
 			
 			var nextFrame = __getNextFrame (deltaTime);
@@ -410,7 +421,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			}
 			
 		}
-		
+	}
+
+
+	@:noCompletion private function __updateSymbol(targetFrame:Int) {
+
 		if (__symbol != null && __currentFrame != __lastFrameUpdate) {
 			
 			__updateFrameLabel ();
@@ -423,7 +438,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			// TODO: Handle updates only from previous frame?
 			
-			for (i in 0...__currentFrame) {
+			for (i in 0...targetFrame) {
 				
 				frame = i + 1;
 				frameData = __symbol.frames[i];
@@ -570,9 +585,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			__lastFrameUpdate = __currentFrame;
 			
+			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+			__updateInstanceFields();
+			#end
+			
 		}
-		
-		super.__enterFrame (deltaTime);
 		
 	}
 	
@@ -588,6 +605,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			if (__frameScripts.exists (frame)) {
 				
+				__updateSymbol (frame);
 				var script = __frameScripts.get (frame);
 				script ();
 				
@@ -601,7 +619,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			if (!__playing) {
 				
-				break;
+				return false;
 				
 			}
 			
@@ -853,20 +871,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		__enterFrame (0);
 		
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-		// TODO: Speed this up
-		for (field in Type.getInstanceFields (Type.getClass (this))) {
-			
-			for (child in __children) {
-				
-				if (child.name == field) {
-					
-					Reflect.setField (this, field, child);
-					
-				}
-				
-			}
-			
-		}
+		__instanceFields = Type.getInstanceFields (Type.getClass (this));
+		__updateInstanceFields ();
 		#end
 		
 	}
@@ -975,8 +981,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 			displayObject.transform.colorTransform = frameObject.colorTransform;
 			
-		}
-		else if (reset && !displayObject.transform.colorTransform.__isDefault()) {
+		} else if (reset && !displayObject.transform.colorTransform.__isDefault (true)) {
 			
 			displayObject.transform.colorTransform = new ColorTransform();
 			
@@ -1074,6 +1079,26 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
+	@:noCompletion private function __updateInstanceFields ():Void {
+		
+		for (field in __instanceFields) {
+			
+			for (child in __children) {
+				
+				if (child.name == field) {
+					
+					Reflect.setField (this, field, child);
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	
 	
 	// Event Handlers
@@ -1090,7 +1115,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 		
 		__mouseIsDown = true;
-		stage.addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
+		stage.addEventListener (MouseEvent.MOUSE_UP, __onMouseUp, true);
 		
 	}
 	
@@ -1105,7 +1130,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			
 		}
 		
-		if (event.currentTarget == this && __hasOver) {
+		if (event.target == this && __hasOver) {
 			
 			gotoAndStop ("_over");
 			
@@ -1178,16 +1203,14 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 					
 					addEventListener (MouseEvent.ROLL_OVER, __onRollOver);
 					addEventListener (MouseEvent.ROLL_OUT, __onRollOut);
-					addEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
 					addEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
-						
+					
 				}
 				
 			} else {
 				
 				removeEventListener (MouseEvent.ROLL_OVER, __onRollOver);
 				removeEventListener (MouseEvent.ROLL_OUT, __onRollOut);
-				removeEventListener (MouseEvent.MOUSE_UP, __onMouseUp);
 				removeEventListener (MouseEvent.MOUSE_DOWN, __onMouseDown);
 				
 			}

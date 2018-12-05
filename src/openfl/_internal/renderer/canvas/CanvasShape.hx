@@ -20,7 +20,10 @@ class CanvasShape {
 	public static inline function render (shape:DisplayObject, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
-		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
+		if (!shape.__renderable) return;
+		
+		var alpha = renderer.__getAlpha (shape.__worldAlpha);
+		if (alpha <= 0) return;
 		
 		var graphics = shape.__graphics;
 		
@@ -42,7 +45,7 @@ class CanvasShape {
 					renderer.__setBlendMode (shape.__worldBlendMode);
 					renderer.__pushMaskObject (shape);
 					
-					context.globalAlpha = shape.__worldAlpha;
+					context.globalAlpha = alpha;
 					renderer.setTransform (graphics.__worldTransform, context);
 					
 					if (renderer.__isDOM) {

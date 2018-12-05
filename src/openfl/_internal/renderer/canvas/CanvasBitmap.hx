@@ -15,18 +15,20 @@ class CanvasBitmap {
 	public static inline function render (bitmap:Bitmap, renderer:CanvasRenderer):Void {
 		
 		#if (js && html5)
-		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
+		if (!bitmap.__renderable) return;
 		
-		var context = renderer.context;
+		var alpha = renderer.__getAlpha (bitmap.__worldAlpha);
 		
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable) {
+		if (alpha > 0 && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable) {
+			
+			var context = renderer.context;
 			
 			renderer.__setBlendMode (bitmap.__worldBlendMode);
 			renderer.__pushMaskObject (bitmap, false);
 			
 			ImageCanvasUtil.convertToCanvas (bitmap.__bitmapData.image);
 			
-			context.globalAlpha = bitmap.__worldAlpha;
+			context.globalAlpha = alpha;
 			var scrollRect = bitmap.__scrollRect;
 			
 			renderer.setTransform (bitmap.__renderTransform, context);

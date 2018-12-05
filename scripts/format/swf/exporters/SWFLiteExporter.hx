@@ -1087,12 +1087,12 @@ class SWFLiteExporter {
 										case ONull:
 											stack.push(null);
 										case OOp(op):
-											var operator = null;
+											var _operator = null;
 											switch (op) {
 												case OpMul:
-													operator = "*";
+													_operator = "*";
 												case OpAdd:
-													operator = "+";
+													_operator = "+";
 												case _:
 													Log.info ("", "OOp");
 											}
@@ -1102,10 +1102,10 @@ class SWFLiteExporter {
 												Log.info ("", "cast to " + stack.pop() + " is discarded");
 											}
 
-											if (operator != null)
+											if (_operator != null)
 											{
 												var temp = stack.pop();
-												stack.push(Std.string(stack.pop()) + " " + operator + " " + Std.string(temp));
+												stack.push(Std.string(stack.pop()) + " " + _operator + " " + Std.string(temp));
 											}
 										case OJump(j, delta):
 											switch (j) {
@@ -1132,8 +1132,18 @@ class SWFLiteExporter {
 								}
 								Log.info ("", "javascript:\n"+js);
 								
-								// store on SWFLite object for serialized .dat export
-								spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
+								if (js != null && js.indexOf ("null.") > -1) {
+									
+									Log.info ("", "Script appears to have been parsed improperly, discarding");
+									js = null;
+									
+								} else {
+									
+									// store on SWFLite object for serialized .dat export
+									spriteSymbol.frames[frameNumOneIndexed-1].scriptSource = js;
+									
+								}
+								
 							}
 						case _:
 					}

@@ -174,7 +174,7 @@ class Context3DTilemap {
 				
 				if (id == -1) {
 					
-					tileRect = tile.rect;
+					tileRect = tile.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 					
 					uvX = tileRect.x / bitmapData.width;
@@ -470,7 +470,7 @@ class Context3DTilemap {
 				
 				if (id == -1) {
 					
-					tileRect = tile.rect;
+					tileRect = tile.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 					
 				} else {
