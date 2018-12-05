@@ -18,6 +18,7 @@ import openfl.display.Shader;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
+import openfl.display.BlendMode;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsBitmapFill;
 import openfl.display.GraphicsEndFill;
@@ -176,6 +177,16 @@ import js.html.CanvasRenderingContext2D;
 		
 	}
 	
+	/**
+	 * Specifies the blend mode to be used for subsequent draws
+	 * 
+	 * @param blend The blend mode to use
+	 */
+	public function beginBlend (blend:BlendMode):Void {
+		
+		__commands.beginBlend (blend);
+	
+	}
 	
 	/**
 	 * Specifies a simple one-color fill that subsequent calls to other Graphics

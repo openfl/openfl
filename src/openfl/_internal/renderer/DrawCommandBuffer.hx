@@ -13,6 +13,7 @@ import openfl.display.SpreadMethod;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
+import openfl.display.BlendMode;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -128,6 +129,15 @@ class DrawCommandBuffer {
 		o.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
+		
+	}
+	
+	public function beginBlend (blend:BlendMode):Void {
+		
+		prepareWrite ();
+		
+		types.push (BEGIN_BLEND);
+		o.push (blend);
 		
 	}
 	

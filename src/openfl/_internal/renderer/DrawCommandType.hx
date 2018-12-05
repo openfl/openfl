@@ -4,6 +4,7 @@ package openfl._internal.renderer;
 enum DrawCommandType {
 	
 	BEGIN_BITMAP_FILL;
+	BEGIN_BLEND;
 	BEGIN_FILL;
 	BEGIN_GRADIENT_FILL;
 	BEGIN_SHADER_FILL;

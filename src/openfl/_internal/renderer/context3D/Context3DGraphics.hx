@@ -410,6 +410,13 @@ class Context3DGraphics {
 					hasShaderFill = false;
 					data.skip (type);
 				
+				case BEGIN_BLEND:
+				
+					hasBitmapFill = false;
+					hasColorFill = false;
+					hasShaderFill = false;
+					data.skip (type);
+				
 				case BEGIN_FILL:
 					
 					hasBitmapFill = false;
@@ -572,6 +579,11 @@ class Context3DGraphics {
 							smooth = c.smooth;
 							shaderBuffer = null;
 							fill = null;
+							
+						case BEGIN_BLEND:
+						
+							var c = data.readBeginBlend ();
+							renderer.__setBlendMode(c.blend);
 						
 						case BEGIN_FILL:
 							
