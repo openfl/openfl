@@ -1285,6 +1285,8 @@ class CanvasGraphics {
 				var scaledWidth = Std.int (width * scale);
 				var scaledHeight = Std.int (height * scale);
 				
+				renderer.__setBlendModeContext (context, NORMAL);
+				
 				if (renderer.__isDOM) {
 					
 					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
@@ -1554,7 +1556,7 @@ class CanvasGraphics {
 						case OVERRIDE_BLEND_MODE:
 							
 							var c = data.readOverrideBlendMode ();
-							renderer.__setBlendMode (c.blendMode);
+							renderer.__setBlendModeContext (context, c.blendMode);
 						
 						case WINDING_EVEN_ODD:
 							

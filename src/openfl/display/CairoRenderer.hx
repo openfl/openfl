@@ -191,6 +191,12 @@ class CairoRenderer extends DisplayObjectRenderer {
 		if (__blendMode == value) return;
 		
 		__blendMode = value;
+		__setBlendModeCairo (cairo, value);
+		
+	}
+	
+	
+	@:noCompletion private function __setBlendModeCairo (cairo:Cairo, value:BlendMode):Void {
 		
 		switch (value) {
 			

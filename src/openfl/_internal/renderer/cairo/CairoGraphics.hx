@@ -1298,6 +1298,7 @@ class CairoGraphics {
 			
 			cairo = graphics.__cairo;
 			
+			renderer.__setBlendModeCairo (cairo, NORMAL);
 			renderer.applyMatrix (graphics.__renderTransform, cairo);
 			
 			cairo.setOperator (CLEAR);
@@ -1535,7 +1536,7 @@ class CairoGraphics {
 					case OVERRIDE_BLEND_MODE:
 						
 						var c = data.readOverrideBlendMode ();
-						renderer.__setBlendMode (c.blendMode);
+						renderer.__setBlendModeCairo (cairo, c.blendMode);
 					
 					case WINDING_EVEN_ODD:
 						

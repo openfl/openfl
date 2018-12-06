@@ -198,6 +198,12 @@ class CanvasRenderer extends DisplayObjectRenderer {
 		if (__blendMode == value) return;
 		
 		__blendMode = value;
+		__setBlendModeContext (context, value);
+		
+	}
+	
+	
+	@:noCompletion private function __setBlendModeContext (context:Canvas2DRenderContext, value:BlendMode):Void {
 		
 		switch (value) {
 			
