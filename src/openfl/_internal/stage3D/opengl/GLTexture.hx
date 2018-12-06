@@ -34,7 +34,7 @@ class GLTexture {
 		
 		texture.__textureTarget = gl.TEXTURE_2D;
 		
-		gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		gl.bindTexture (texture.__textureTarget, texture.__textureData.glTexture);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (texture.__textureTarget, 0, texture.__internalFormat, texture.__width, texture.__height, 0, texture.__format, gl.UNSIGNED_BYTE, null);
@@ -54,7 +54,7 @@ class GLTexture {
 		
 		var gl = renderSession.gl;
 		
-		gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		gl.bindTexture (texture.__textureTarget, texture.__textureData.glTexture);
 		GLUtils.CheckGLError ();
 		
 		var hasTexture = false;
@@ -155,7 +155,7 @@ class GLTexture {
 		if (width == 0) width = 1;
 		if (height == 0) height = 1;
 		
-		gl.bindTexture (texture.__textureTarget, texture.__textureID);
+		gl.bindTexture (texture.__textureTarget, texture.__textureData.glTexture);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (texture.__textureTarget, miplevel, texture.__internalFormat, width, height, 0, texture.__format, gl.UNSIGNED_BYTE, data);

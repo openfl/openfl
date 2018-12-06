@@ -6,7 +6,7 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLBuffer;
-import openfl.display.BlendMode;
+import lime.graphics.opengl.GLTexture;
 import openfl._internal.renderer.opengl.GLBlendModeManager;
 import openfl._internal.renderer.opengl.GLShaderManager;
 import openfl._internal.renderer.opengl.batcher.BitHacks.*;
@@ -28,16 +28,23 @@ class BatchRenderer {
 	var shader:MultiTextureShader;
 	var indexBuffer:GLBuffer;
 	var vertexBuffer:GLBuffer;
-	var vertexBufferDatas:Array<Float32Array>;
+	var vertexBufferData:Float32Array;
 
-	var renderedQuadCount:Int;
-	var renderedQuads:Array<Quad>;
 	var groups:Vector<RenderGroup>;
 	var boundTextures:Vector<TextureData>;
+
+	var currentBlendMode = BlendMode.NORMAL;
+	var currentTexture:TextureData;
+	var currentQuadIndex = 0;
+	var currentGroup:RenderGroup;
+	var currentGroupCount = 0;
+
 	var tick = 0;
 	var textureTick = 0;
 
 	public var projectionMatrix:Float32Array;
+	
+	var emptyTexture:GLTexture;
 	
 	static inline var floatsPerQuad = MultiTextureShader.floatsPerVertex * 4;
 
@@ -50,21 +57,22 @@ class BatchRenderer {
 		// determine amount of textures we can draw at once and generate a shader for that
 		shader = new MultiTextureShader(gl);
 		maxTextures = shader.maxTextures;
+		
+		emptyTexture = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, emptyTexture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
 		// a singleton vector we use to track texture binding when rendering
 		boundTextures = new Vector(maxTextures);
 
-		// preallocate blocks of memory for vertex buffers of different sizes
-		// smallest one can render just one quad, biggest one can render maximum amount
-		vertexBufferDatas = [];
-		var i = 1, l = nextPow2(maxQuads);
-		while (i <= l) {
-			vertexBufferDatas.push(new Float32Array(i * floatsPerQuad));
-			i *= 2;
-		}
+		// preallocate block of memory for the vertex buffer
+		vertexBufferData = new Float32Array(maxQuads * floatsPerQuad);
 
 		// create the vertex buffer for further uploading
 		vertexBuffer = gl.createBuffer();
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, vertexBufferData.byteLength, vertexBufferData, gl.STREAM_DRAW);
 
 		// preallocate a static index buffer for rendering any number of quads
 		var indices = createIndicesForQuads(maxQuads);
@@ -77,201 +85,178 @@ class BatchRenderer {
 		for (i in 0...maxQuads) {
 			groups[i] = new RenderGroup();
 		}
+		
+		startNextGroup();
+	}
 
-		// the quads array is allocated once, grows when we add new quads, but never shrinks, so we store length in a separate var
-		renderedQuads = [];
-		renderedQuadCount = 0;
+	inline function finishCurrentGroup() {
+		currentGroup.size = currentQuadIndex - currentGroup.start;
+	}
+
+	inline function startNextGroup() {
+		currentGroup = groups[currentGroupCount];
+		currentGroup.textureCount = 0;
+		currentGroup.start = currentQuadIndex;
+		currentGroup.blendMode = currentBlendMode;
+		// we always increase the tick when staring a new render group, so all textures become "disabled" and need to be processed
+		tick++;
+		currentGroupCount++;
+	}
+
+	public function flipVertical() {
+		shader.positionScale[1] = -1;
+	}
+
+	public function unflipVertical() {
+		shader.positionScale[1] = 1;
 	}
 
 	/** schedule quad for rendering **/
 	public function render(quad:Quad) {
-		if (renderedQuadCount >= maxQuads) {
+		if (currentQuadIndex >= maxQuads) {
 			flush();
 		}
-		renderedQuads[renderedQuadCount++] = quad;
+
+		var nextTexture = quad.texture.data;
+
+		if (currentBlendMode != quad.blendMode) {
+			currentBlendMode = quad.blendMode;
+			currentTexture = null;
+
+			finishCurrentGroup();
+			startNextGroup();
+		}
+
+		// if the texture has changed - we need to either pack it into the current render group or create the next one
+		// and since on the first iteration the `currentTexture` is null, it's always "changed"
+		if (currentTexture != nextTexture) {
+			currentTexture = nextTexture;
+
+			// if the texture's tick and current tick are equal, that means
+			// that the texture was already enabled in the current group
+			// and we don't need to do anything, otherwise...
+			if (currentTexture.enabledTick != tick) {
+
+				// if the current group is already full of textures, finish it and start a new one
+				if (currentGroup.textureCount == maxTextures) {
+					finishCurrentGroup();
+					startNextGroup();
+				}
+
+				// if the texture hasn't yet been bound to a texture unit this render, we need to choose one
+				if (nextTexture.textureUnitId == -1) {
+					// iterate over possible texture "slots"
+					for (i in 0...maxTextures) {
+						// we use "texture tick" for calculating texture unit,
+						// so we always start checking with the next texture unit,
+						// relative to previous binding
+						var textureUnit = (i + textureTick) % maxTextures;
+
+						// if there's no bound texture in this slot, or that texture
+						// wasn't used in this group (ticks are different), we can use this slot!
+						var boundTexture = boundTextures[textureUnit];
+						if (boundTexture == null || boundTexture.enabledTick != tick) {
+							// if there was a texture in this slot - unbind it, since we're replacing it
+							if (boundTexture != null) {
+								boundTexture.textureUnitId = -1;
+							}
+
+							// assign this texture to the texture unit
+							nextTexture.textureUnitId = textureUnit;
+							boundTextures[textureUnit] = nextTexture;
+
+							// increase the tick so next time we'll start looking directly from the next texture unit
+							textureTick++;
+
+							// and we're done here
+							break;
+						}
+					}
+					if (nextTexture.textureUnitId == -1) {
+						throw "Unable to find free texture unit for the batch render group! This should NOT happen!";
+					}
+				}
+
+				// mark the texture as enabled in this group
+				nextTexture.enabledTick = tick;
+				// add the texture to the group textures array
+				currentGroup.textures[currentGroup.textureCount] = nextTexture;
+				// save the texture unit number separately as it can change when processing next group
+				currentGroup.textureUnits[currentGroup.textureCount] = nextTexture.textureUnitId;
+				currentGroup.textureSmoothing[currentGroup.textureCount] = quad.smoothing;
+				currentGroup.textureCount++;
+			}
+		}
+
+		// fill the vertex buffer with vertex and texture coordinates, as well as the texture id
+		var vertexData = quad.vertexData;
+		var uvs = quad.texture.uvs;
+		var textureUnitId = nextTexture.textureUnitId;
+		var alpha = quad.alpha;
+		var colorTransform = quad.colorTransform;
+		var currentVertexBufferIndex = currentQuadIndex * floatsPerQuad;
+
+		// trace('Group $currentGroupCount uses texture $textureUnitId');
+
+		inline function setVertex(i) {
+			var offset = currentVertexBufferIndex + i * MultiTextureShader.floatsPerVertex;
+			vertexBufferData[offset + 0] = vertexData[i * 2 + 0];
+			vertexBufferData[offset + 1] = vertexData[i * 2 + 1];
+
+			vertexBufferData[offset + 2] = uvs[i * 2 + 0];
+			vertexBufferData[offset + 3] = uvs[i * 2 + 1];
+
+			vertexBufferData[offset + 4] = textureUnitId;
+
+			vertexBufferData[offset + 5] = alpha;
+
+			if (colorTransform != null) {
+				vertexBufferData[offset + 6] = colorTransform.redOffset / 255;
+				vertexBufferData[offset + 7] = colorTransform.greenOffset / 255;
+				vertexBufferData[offset + 8] = colorTransform.blueOffset / 255;
+				vertexBufferData[offset + 9] = colorTransform.alphaOffset / 255;
+
+				vertexBufferData[offset + 10] = colorTransform.redMultiplier;
+				vertexBufferData[offset + 11] = colorTransform.greenMultiplier;
+				vertexBufferData[offset + 12] = colorTransform.blueMultiplier;
+				vertexBufferData[offset + 13] = colorTransform.alphaMultiplier;
+			} else {
+				vertexBufferData[offset + 6] = 0;
+				vertexBufferData[offset + 7] = 0;
+				vertexBufferData[offset + 8] = 0;
+				vertexBufferData[offset + 9] = 0;
+
+				vertexBufferData[offset + 10] = 1;
+				vertexBufferData[offset + 11] = 1;
+				vertexBufferData[offset + 12] = 1;
+				vertexBufferData[offset + 13] = 1;
+			}
+		}
+
+		setVertex(0);
+		setVertex(1);
+		setVertex(2);
+		setVertex(3);
+
+		currentQuadIndex++;
 	}
 
 	/** render all the quads we collected **/
 	public function flush() {
-		if (renderedQuadCount == 0) {
+		if (currentQuadIndex == 0) {
 			return;
-		}
-
-		// use local vars to save some field access
-		var gl = this.gl;
-		var renderedQuads = this.renderedQuads;
-		var boundTextures = this.boundTextures;
-		var groups = this.groups;
-
-		// choose vertex buffer based on the amount of quads
-		var bufferIndex = log2(nextPow2(renderedQuadCount));
-		var vertexBufferData = vertexBufferDatas[bufferIndex];
-
-		var vertexBufferIndex = 0;
-		var currentTexture = null;
-		var blendMode = renderedQuads[0].blendMode;
-
-		var currentGroup;
-		var groupCount = 0;
-		var quadIndex = 0;
-
-		inline function startNextGroup() {
-			currentGroup = groups[groupCount];
-			currentGroup.textureCount = 0;
-			currentGroup.start = quadIndex;
-			currentGroup.blendMode = blendMode;
-			// we always increase the tick when staring a new render group, so all textures become "disabled" and need to be processed
-			tick++;
-			groupCount++;
-		}
-
-		inline function finishCurrentGroup() {
-			currentGroup.size = quadIndex - currentGroup.start;
-		}
-
-		for (i in 0...maxTextures) {
-			boundTextures[i] = null;
-		}
-
-		// initialize first group
-		startNextGroup();
-
-		// iterate over quads, fill the vertex buffer and create render groups
-		while (quadIndex < renderedQuadCount) {
-			var quad = renderedQuads[quadIndex];
-			renderedQuads[quadIndex] = null;
-
-			var nextTexture = quad.texture.data;
-
-			if (blendMode != quad.blendMode) {
-				blendMode = quad.blendMode;
-				currentTexture = null;
-
-				finishCurrentGroup();
-				startNextGroup();
-			}
-
-			// if the texture has changed - we need to either pack it into the current render group or create the next one
-			// and since on the first iteration the `currentTexture` is null, it's always "changed"
-			if (currentTexture != nextTexture) {
-				currentTexture = nextTexture;
-
-				// if the texture's tick and current tick are equal, that means
-				// that the texture was already enabled in the current group
-				// and we don't need to do anything, otherwise...
-				if (currentTexture.enabledTick != tick) {
-
-					// if the current group is already full of textures, finish it and start a new one
-					if (currentGroup.textureCount == maxTextures) {
-						finishCurrentGroup();
-						startNextGroup();
-					}
-
-					// if the texture hasn't yet been bound to a texture unit this render, we need to choose one
-					if (nextTexture.textureUnitId == -1) {
-						// iterate over possible texture "slots"
-						for (i in 0...maxTextures) {
-							// we use "texture tick" for calculating texture unit,
-							// so we always start checking with the next texture unit,
-							// relative to previous binding
-							var textureUnit = (i + textureTick) % maxTextures;
-
-							// if there's no bound texture in this slot, or that texture
-							// wasn't used in this group (ticks are different), we can use this slot!
-							var boundTexture = boundTextures[textureUnit];
-							if (boundTexture == null || boundTexture.enabledTick != tick) {
-								// if there was a texture in this slot - unbind it, since we're replacing it
-								if (boundTexture != null) {
-									boundTexture.textureUnitId = -1;
-								}
-
-								// assign this texture to the texture unit
-								nextTexture.textureUnitId = textureUnit;
-								boundTextures[textureUnit] = nextTexture;
-
-								// increase the tick so next time we'll start looking directly from the next texture unit
-								textureTick++;
-
-								// and we're done here
-								break;
-							}
-						}
-						if (nextTexture.textureUnitId == -1) {
-							throw "Unable to find free texture unit for the batch render group! This should NOT happen!";
-						}
-					}
-
-					// mark the texture as enabled in this group
-					nextTexture.enabledTick = tick;
-					// add the texture to the group textures array
-					currentGroup.textures[currentGroup.textureCount] = nextTexture;
-					// save the texture unit number separately as it can change when processing next group
-					currentGroup.textureUnits[currentGroup.textureCount] = nextTexture.textureUnitId;
-					currentGroup.textureSmoothing[currentGroup.textureCount] = quad.smoothing;
-					currentGroup.textureCount++;
-				}
-			}
-
-			// fill the vertex buffer with vertex and texture coordinates, as well as the texture id
-			var vertexData = quad.vertexData;
-			var uvs = quad.texture.uvs;
-			var textureUnitId = nextTexture.textureUnitId;
-			var alpha = quad.alpha;
-			var colorTransform = quad.colorTransform;
-
-			// trace('Group $groupCount uses texture $textureUnitId');
-
-			inline function setVertex(i) {
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 0] = vertexData[i * 2 + 0];
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 1] = vertexData[i * 2 + 1];
-
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 2] = uvs[i * 2 + 0];
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 3] = uvs[i * 2 + 1];
-
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 4] = textureUnitId;
-
-				vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 5] = alpha;
-
-				if (colorTransform != null) {
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 6] = colorTransform.redOffset / 255;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 7] = colorTransform.greenOffset / 255;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 8] = colorTransform.blueOffset / 255;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 9] = colorTransform.alphaOffset / 255;
-
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 10] = colorTransform.redMultiplier;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 11] = colorTransform.greenMultiplier;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 12] = colorTransform.blueMultiplier;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 13] = colorTransform.alphaMultiplier;
-				} else {
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 6] = 0;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 7] = 0;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 8] = 0;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 9] = 0;
-
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 10] = 1;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 11] = 1;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 12] = 1;
-					vertexBufferData[vertexBufferIndex + i * MultiTextureShader.floatsPerVertex + 13] = 1;
-				}
-			}
-
-			setVertex(0);
-			setVertex(1);
-			setVertex(2);
-			setVertex(3);
-
-			vertexBufferIndex += floatsPerQuad;
-			quadIndex++;
 		}
 
 		// finish the current group
 		finishCurrentGroup();
 
-		// disable the current OpenFL shader so it'll be re-enabled properly on next non-batched openfl render
-		// this is needed because we don't use ShaderManager to set our shader. Ideally we should do that, but
-		// this will requires some rework for the whole OpenFL shader system, which we'll do when we'll fork away for good 
-		shaderManager.setShader(null);
-		
+		// use local vars to save some field access
+		var gl = this.gl;
+		var blendModeManager = this.blendModeManager;
+		var vertexBufferData = this.vertexBufferData;
+		var boundTextures = this.boundTextures;
+		var groups = this.groups;
+
 		shader.enable(projectionMatrix);
 
 		// bind the index buffer
@@ -279,7 +264,8 @@ class BatchRenderer {
 
 		// upload vertex data and setup attribute pointers
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, vertexBufferData.byteLength, vertexBufferData, gl.STREAM_DRAW);
+		var subArray = vertexBufferData.subarray(0, currentQuadIndex * floatsPerQuad);
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, subArray.byteLength, subArray);
 
 		var stride = MultiTextureShader.floatsPerVertex * Float32Array.BYTES_PER_ELEMENT;
 		gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
@@ -289,14 +275,25 @@ class BatchRenderer {
 		gl.vertexAttribPointer(shader.aColorOffset, 4, gl.FLOAT, false, stride, 6 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer(shader.aColorMultiplier, 4, gl.FLOAT, false, stride, 10 * Float32Array.BYTES_PER_ELEMENT);
 
+		for (i in 0...maxTextures) {
+			gl.activeTexture(gl.TEXTURE0 + i);
+			gl.bindTexture(gl.TEXTURE_2D, emptyTexture);
+		}
+
+		var lastBlendMode = null;
+
 		// iterate over groups and render them
-		for (i in 0...groupCount) {
+		for (i in 0...currentGroupCount) {
 			var group = groups[i];
+			if (group.size == 0) {
+				// TODO: don't even create empty groups (can happen when staring drawing with a non-NORMAL blendmode)
+				continue;
+			}
 			// trace('Rendering group ${i + 1} (${group.size})');
 
 			// bind this group's textures
 			for (i in 0...group.textureCount) {
-				currentTexture = group.textures[i];
+				var currentTexture = group.textures[i];
 				// trace('Activating texture at ${group.textureUnits[i]}: ${currentTexture.glTexture}');
 				gl.activeTexture(gl.TEXTURE0 + group.textureUnits[i]);
 				gl.bindTexture(gl.TEXTURE_2D, currentTexture.glTexture);
@@ -309,10 +306,18 @@ class BatchRenderer {
 					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 				}
 
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
 				currentTexture.textureUnitId = -1; // clear the binding for subsequent flush calls
 			}
 
-			blendModeManager.setBlendMode(group.blendMode);
+			// apply the blend mode if changed
+			if (group.blendMode != lastBlendMode) {
+				lastBlendMode = group.blendMode;
+				lastBlendMode.apply(gl);
+			}
+			
 
 			// draw this group's slice of vertices
 			gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * UInt16Array.BYTES_PER_ELEMENT);
@@ -322,8 +327,20 @@ class BatchRenderer {
 			#end
 		}
 
-		// we've rendered everything \o/ reset the quad count
-		renderedQuadCount = 0;
+		// disable the current OpenFL shader so it'll be re-enabled properly on next non-batched openfl render
+		// this is needed because we don't use ShaderManager to set our shader. Ideally we should do that, but
+		// this will requires some rework for the whole OpenFL shader system, which we'll do when we'll fork away for good 
+		shaderManager.setShader(null);
+		blendModeManager.setBlendMode(NORMAL);
+
+		for (i in 0...maxTextures) {
+			boundTextures[i] = null;
+		}
+		currentTexture = null;
+		currentQuadIndex = 0;
+		currentBlendMode = BlendMode.NORMAL;
+		currentGroupCount = 0;
+		startNextGroup();
 	}
 
 	/** creates an pre-filled index buffer data for rendering triangles **/

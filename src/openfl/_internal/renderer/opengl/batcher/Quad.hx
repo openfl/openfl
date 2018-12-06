@@ -2,7 +2,6 @@ package openfl._internal.renderer.opengl.batcher;
 
 import lime.utils.Float32Array;
 import lime.utils.ObjectPool;
-import openfl.display.BlendMode;
 import openfl.geom.ColorTransform;
 
 class Quad {

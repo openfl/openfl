@@ -3,6 +3,7 @@ package openfl.display3D.textures;
 
 import haxe.Timer;
 import lime.graphics.opengl.GLTexture;
+import openfl._internal.renderer.opengl.batcher.TextureData;
 import openfl._internal.stage3D.opengl.GLVideoTexture;
 import openfl._internal.stage3D.GLUtils;
 import openfl.events.Event;
@@ -67,7 +68,7 @@ import openfl.net.NetStream;
 	}
 	
 	
-	private override function __getTexture ():GLTexture {
+	private override function __getTexture ():TextureData {
 		
 		return GLVideoTexture.getTexture (this, __context.__renderSession);
 		

@@ -25,6 +25,7 @@ import openfl.geom.Rectangle;
 import openfl.Vector;
 
 import openfl._internal.renderer.opengl.batcher.Quad;
+import openfl._internal.renderer.opengl.batcher.BlendMode as BatcherBlendMode;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -954,7 +955,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		__batchQuad.alpha = alpha;
 		__batchQuad.colorTransform = colorTransform;
-		__batchQuad.blendMode = blendMode;
+		__batchQuad.blendMode = BatcherBlendMode.fromOpenFLBlendMode(blendMode);
 		
 		return __batchQuad;
 		

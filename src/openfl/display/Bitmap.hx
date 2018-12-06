@@ -7,6 +7,7 @@ import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.batcher.Quad;
+import openfl._internal.renderer.opengl.batcher.BlendMode as BatcherBlendMode;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -261,7 +262,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 		
 		__batchQuad.alpha = __worldAlpha;
 		__batchQuad.colorTransform = __worldColorTransform;
-		__batchQuad.blendMode = __worldBlendMode;
+		__batchQuad.blendMode = BatcherBlendMode.fromOpenFLBlendMode(__worldBlendMode);
 		__batchQuad.smoothing = smoothing;
 		
 		return __batchQuad;

@@ -3,6 +3,7 @@ package openfl._internal.stage3D.opengl;
 
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.graphics.Image;
+import openfl._internal.renderer.opengl.batcher.TextureData;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.GLCompressedTextureFormats;
@@ -34,7 +35,7 @@ class GLTextureBase {
 		
 		var gl = renderSession.gl;
 		
-		textureBase.__textureID = gl.createTexture ();
+		textureBase.__textureData = new TextureData (gl.createTexture ());
 		textureBase.__textureContext = gl;
 		
 		if (__supportsBGRA == null) {
@@ -117,7 +118,7 @@ class GLTextureBase {
 			
 		}
 		
-		gl.deleteTexture (textureBase.__textureID);
+		gl.deleteTexture (textureBase.__textureData.glTexture);
 		
 		// if (__compressedMemoryUsage > 0) {
 			
@@ -223,7 +224,7 @@ class GLTextureBase {
 			
 			var gl = renderSession.gl;
 			
-			gl.bindTexture (textureBase.__textureTarget, textureBase.__textureID);
+			gl.bindTexture (textureBase.__textureTarget, textureBase.__textureData.glTexture);
 			GLUtils.CheckGLError ();
 			gl.texParameteri (textureBase.__textureTarget, gl.TEXTURE_MIN_FILTER, state.minFilter);
 			GLUtils.CheckGLError ();

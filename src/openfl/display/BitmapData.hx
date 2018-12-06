@@ -840,7 +840,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
-		bitmapData.__textureData = new TextureData(texture.__textureID);
+		bitmapData.__textureData = texture.__textureData;
 		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.image = null;
 		return bitmapData;

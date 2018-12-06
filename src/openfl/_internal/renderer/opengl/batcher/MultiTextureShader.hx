@@ -13,6 +13,7 @@ class MultiTextureShader {
 	var gl:GLRenderContext;
 
 	public var maxTextures(default,null):Int;
+	public var positionScale(default,null): Float32Array;
 
 	public var aVertexPosition(default,null):Int;
 	public var aTextureCoord(default,null):Int;
@@ -22,6 +23,7 @@ class MultiTextureShader {
 	public var aColorMultiplier(default,null):Int;
 
 	var uProjMatrix:GLUniformLocation;
+	var uPositionScale:GLUniformLocation;
 
 	// x, y, u, v, texId, alpha, colorMult, colorOfs
 	public static inline var floatsPerVertex = 2 + 2 + 1 + 1 + 4 + 4;
@@ -44,7 +46,8 @@ class MultiTextureShader {
 			throw "Could not compile a multi-texture shader for any number of textures, something must be horribly broken!";
 		}
 		this.maxTextures = maxTextures;
-
+		this.positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
+		
 		aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 		aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
 		aTextureId = gl.getAttribLocation(program, 'aTextureId');
@@ -52,6 +55,7 @@ class MultiTextureShader {
 		aColorOffset = gl.getAttribLocation(program, 'aColorOffset');
 		aColorMultiplier = gl.getAttribLocation(program, 'aColorMultiplier');
 		uProjMatrix = gl.getUniformLocation(program, "uProjMatrix");
+		uPositionScale = gl.getUniformLocation(program, "uPostionScale");
 
 		gl.useProgram(program);
 		gl.uniform1iv(gl.getUniformLocation(program, 'uSamplers'), maxTextures, new Int32Array([for (i in 0...maxTextures) i]));
@@ -68,6 +72,7 @@ class MultiTextureShader {
 		gl.enableVertexAttribArray(aColorMultiplier);
 
 		gl.uniformMatrix4fv(uProjMatrix, 0, false, projectionMatrix);
+		gl.uniform4fv (uPositionScale, 1, positionScale);
 	}
 
 	static function compileShader(gl:GLRenderContext, source:String, type:Int):Null<GLShader> {
@@ -175,6 +180,7 @@ ${select.join("\n")}
 		attribute vec4 aColorOffset;
 
 		uniform mat4 uProjMatrix;
+		uniform vec4 uPostionScale;
 
 		varying vec2 vTextureCoord;
 		varying float vTextureId;
@@ -183,7 +189,7 @@ ${select.join("\n")}
 		varying vec4 vColorOffset;
 
 		void main(void) {
-			gl_Position = uProjMatrix * vec4(aVertexPosition, 0, 1);
+			gl_Position = uProjMatrix * vec4(aVertexPosition, 0, 1) * uPostionScale;
 			vTextureCoord = aTextureCoord;
 			vTextureId = aTextureId;
 			vAlpha = aAlpha;

@@ -610,19 +610,19 @@ class GLContext3D {
 			
 			if (Std.is (texture, Texture)) {
 				
-				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
+				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureData.glTexture, 0);
 				GLUtils.CheckGLError ();
 				
 			} else if (Std.is (texture, RectangleTexture)) {
 				
-				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
+				gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureData.glTexture, 0);
 				GLUtils.CheckGLError ();
 				
 			} else if (Std.is (texture, CubeTexture)) {
 				
 				for (i in 0...6) {
 					
-					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureID, 0);
+					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureData.glTexture, 0);
 					GLUtils.CheckGLError ();
 					
 				}
@@ -980,7 +980,7 @@ class GLContext3D {
 					
 					var target = texture.__textureTarget;
 					
-					gl.bindTexture (target, texture.__getTexture ());
+					gl.bindTexture (target, texture.__getTexture ().glTexture);
 					GLUtils.CheckGLError ();
 					
 					texture.__setSamplerState (context.__samplerStates[sampler]);

@@ -73,7 +73,7 @@ class GLRectangleTexture {
 		
 		var gl = renderSession.gl;
 		
-		gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureID);
+		gl.bindTexture (rectangleTexture.__textureTarget, rectangleTexture.__textureData.glTexture);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (rectangleTexture.__textureTarget, 0, rectangleTexture.__internalFormat, rectangleTexture.__width, rectangleTexture.__height, 0, rectangleTexture.__format, gl.UNSIGNED_BYTE, data);

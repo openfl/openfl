@@ -45,7 +45,7 @@ class GLCubeTexture {
 		
 		var gl = renderSession.gl;
 		
-		gl.bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureID);
+		gl.bindTexture (cubeTexture.__textureTarget, cubeTexture.__textureData.glTexture);
 		GLUtils.CheckGLError ();
 		
 		var hasTexture = false;
@@ -131,7 +131,7 @@ class GLCubeTexture {
 		
 		var target = __sideToTarget (gl, side);
 		
-		gl.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureID);
+		gl.bindTexture (gl.TEXTURE_CUBE_MAP, cubeTexture.__textureData.glTexture);
 		GLUtils.CheckGLError ();
 		
 		gl.texImage2D (target, miplevel, cubeTexture.__internalFormat, size, size, 0, cubeTexture.__format, gl.UNSIGNED_BYTE, data);

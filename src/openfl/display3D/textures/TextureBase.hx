@@ -6,6 +6,7 @@ import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.graphics.opengl.GLTexture;
+import openfl._internal.renderer.opengl.batcher.TextureData;
 import openfl._internal.stage3D.opengl.GLTextureBase;
 import openfl._internal.stage3D.SamplerState;
 import openfl.display.BitmapData;
@@ -40,7 +41,7 @@ class TextureBase extends EventDispatcher {
 	private var __stencilRenderbuffer:GLRenderbuffer;
 	private var __streamingLevels:Int;
 	private var __textureContext:GLRenderContext;
-	private var __textureID:GLTexture;
+	private var __textureData:TextureData;
 	private var __textureTarget:Int;
 	private var __width:Int;
 	
@@ -74,9 +75,9 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
-	private function __getTexture ():GLTexture {
+	private function __getTexture ():TextureData {
 		
-		return __textureID;
+		return __textureData;
 		
 	}
 	
