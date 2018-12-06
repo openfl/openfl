@@ -10,15 +10,15 @@ extern class KeyboardEvent extends Event {
 	public static var KEY_UP (default, never):String;
 	
 	public var altKey:Bool;
-	public var charCode:Int;
+	public var charCode:UInt;
 	public var ctrlKey:Bool;
 	public var commandKey:Bool;
 	public var controlKey:Bool;
-	public var keyCode:Int;
+	public var keyCode:UInt;
 	public var keyLocation:KeyLocation;
 	public var shiftKey:Bool;
 	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, charCodeValue:Int = 0, keyCodeValue:Int = 0, keyLocationValue:KeyLocation = null, ctrlKeyValue:Bool = false, altKeyValue:Bool = false, shiftKeyValue:Bool = false, controlKeyValue:Bool = false, commandKeyValue:Bool = false);
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, charCodeValue:UInt = 0, keyCodeValue:UInt = 0, keyLocationValue:KeyLocation = null, ctrlKeyValue:Bool = false, altKeyValue:Bool = false, shiftKeyValue:Bool = false, controlKeyValue:Bool = false, commandKeyValue:Bool = false);
 	
 	
 }
