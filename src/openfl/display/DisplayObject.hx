@@ -1884,7 +1884,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				if (__blendMode == null || __blendMode == NORMAL) {
 					
 					// TODO: Handle multiple blend modes better
-					__worldBlendMode = renderParent.__blendMode;
+					__worldBlendMode = renderParent.__worldBlendMode;
 					
 				} else {
 					
