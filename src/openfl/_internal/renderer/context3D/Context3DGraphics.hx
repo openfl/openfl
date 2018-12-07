@@ -473,6 +473,10 @@ class Context3DGraphics {
 				case MOVE_TO:
 					
 					data.skip (type);
+					
+				case OVERRIDE_BLEND_MODE:
+				
+					data.skip (type);
 				
 				default:
 					
