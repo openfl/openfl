@@ -1032,6 +1032,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
 		
+		if (!showDefaultContextMenu && button == 2) {
+			
+			window.onMouseDown.cancel ();
+			
+		}
 	}
 	
 	
