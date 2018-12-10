@@ -193,6 +193,7 @@ class BatchRenderer {
 		var uvs = quad.texture.uvs;
 		var textureUnitId = nextTexture.textureUnitId;
 		var alpha = quad.alpha;
+		var pma = quad.texture.premultipliedAlpha;
 		var colorTransform = quad.colorTransform;
 		var currentVertexBufferIndex = currentQuadIndex * floatsPerQuad;
 
@@ -208,29 +209,29 @@ class BatchRenderer {
 
 			vertexBufferData[offset + 4] = textureUnitId;
 
-			vertexBufferData[offset + 5] = alpha;
-
 			if (colorTransform != null) {
-				vertexBufferData[offset + 6] = colorTransform.redOffset / 255;
-				vertexBufferData[offset + 7] = colorTransform.greenOffset / 255;
-				vertexBufferData[offset + 8] = colorTransform.blueOffset / 255;
-				vertexBufferData[offset + 9] = colorTransform.alphaOffset / 255;
+				vertexBufferData[offset + 5] = colorTransform.redOffset / 255;
+				vertexBufferData[offset + 6] = colorTransform.greenOffset / 255;
+				vertexBufferData[offset + 7] = colorTransform.blueOffset / 255;
+				vertexBufferData[offset + 8] = (colorTransform.alphaOffset / 255) * alpha;
 
-				vertexBufferData[offset + 10] = colorTransform.redMultiplier;
-				vertexBufferData[offset + 11] = colorTransform.greenMultiplier;
-				vertexBufferData[offset + 12] = colorTransform.blueMultiplier;
-				vertexBufferData[offset + 13] = colorTransform.alphaMultiplier;
+				vertexBufferData[offset + 9] = colorTransform.redMultiplier;
+				vertexBufferData[offset + 10] = colorTransform.greenMultiplier;
+				vertexBufferData[offset + 11] = colorTransform.blueMultiplier;
+				vertexBufferData[offset + 12] = colorTransform.alphaMultiplier * alpha;
 			} else {
+				vertexBufferData[offset + 5] = 0;
 				vertexBufferData[offset + 6] = 0;
 				vertexBufferData[offset + 7] = 0;
 				vertexBufferData[offset + 8] = 0;
-				vertexBufferData[offset + 9] = 0;
 
+				vertexBufferData[offset + 9] = 1;
 				vertexBufferData[offset + 10] = 1;
 				vertexBufferData[offset + 11] = 1;
-				vertexBufferData[offset + 12] = 1;
-				vertexBufferData[offset + 13] = 1;
+				vertexBufferData[offset + 12] = alpha;
 			}
+
+			vertexBufferData[offset + 13] = pma ? 1 : 0;
 		}
 
 		setVertex(0);
@@ -271,9 +272,9 @@ class BatchRenderer {
 		gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
 		gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer(shader.aTextureId, 1, gl.FLOAT, false, stride, 4 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer(shader.aAlpha, 1, gl.FLOAT, false, stride, 5 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer(shader.aColorOffset, 4, gl.FLOAT, false, stride, 6 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer(shader.aColorMultiplier, 4, gl.FLOAT, false, stride, 10 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer(shader.aColorOffset, 4, gl.FLOAT, false, stride, 5 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer(shader.aColorMultiplier, 4, gl.FLOAT, false, stride, 9 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer(shader.aPremultipliedAlpha, 1, gl.FLOAT, false, stride, 13 * Float32Array.BYTES_PER_ELEMENT);
 
 		for (i in 0...maxTextures) {
 			gl.activeTexture(gl.TEXTURE0 + i);

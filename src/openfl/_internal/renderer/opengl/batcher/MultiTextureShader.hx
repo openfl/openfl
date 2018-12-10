@@ -18,15 +18,15 @@ class MultiTextureShader {
 	public var aVertexPosition(default,null):Int;
 	public var aTextureCoord(default,null):Int;
 	public var aTextureId(default,null):Int;
-	public var aAlpha(default,null):Int;
 	public var aColorOffset(default,null):Int;
 	public var aColorMultiplier(default,null):Int;
+	public var aPremultipliedAlpha(default,null):Int;
 
 	var uProjMatrix:GLUniformLocation;
 	var uPositionScale:GLUniformLocation;
 
 	// x, y, u, v, texId, alpha, colorMult, colorOfs
-	public static inline var floatsPerVertex = 2 + 2 + 1 + 1 + 4 + 4;
+	public static inline var floatsPerVertex = 2 + 2 + 1 + 4 + 4 + 1;
 
 	public function new(gl:GLRenderContext) {
 		this.gl = gl;
@@ -51,9 +51,9 @@ class MultiTextureShader {
 		aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 		aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
 		aTextureId = gl.getAttribLocation(program, 'aTextureId');
-		aAlpha = gl.getAttribLocation(program, 'aAlpha');
 		aColorOffset = gl.getAttribLocation(program, 'aColorOffset');
 		aColorMultiplier = gl.getAttribLocation(program, 'aColorMultiplier');
+		aPremultipliedAlpha = gl.getAttribLocation(program, 'aPremultipliedAlpha');
 		uProjMatrix = gl.getUniformLocation(program, "uProjMatrix");
 		uPositionScale = gl.getUniformLocation(program, "uPostionScale");
 
@@ -67,9 +67,9 @@ class MultiTextureShader {
 		gl.enableVertexAttribArray(aVertexPosition);
 		gl.enableVertexAttribArray(aTextureCoord);
 		gl.enableVertexAttribArray(aTextureId);
-		gl.enableVertexAttribArray(aAlpha);
 		gl.enableVertexAttribArray(aColorOffset);
 		gl.enableVertexAttribArray(aColorMultiplier);
+		gl.enableVertexAttribArray(aPremultipliedAlpha);
 
 		gl.uniformMatrix4fv(uProjMatrix, 0, false, projectionMatrix);
 		gl.uniform4fv (uPositionScale, 1, positionScale);
@@ -84,7 +84,7 @@ class MultiTextureShader {
 			var message = gl.getShaderInfoLog(shader);
 			gl.deleteShader(shader);
 			Log.warn(message);
-			return null;			
+			return null;
 		}
 		
 		return shader;
@@ -131,9 +131,9 @@ class MultiTextureShader {
 
 			varying vec2 vTextureCoord;
 			varying float vTextureId;
-			varying float vAlpha;
 			varying vec4 vColorMultiplier;
 			varying vec4 vColorOffset;
+			varying float vPremultipliedAlpha;
 
 			uniform sampler2D uSamplers[$numTextures];
 
@@ -147,26 +147,23 @@ ${select.join("\n")}
 					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 
 				} else {
-					color = vec4 (color.rgb / color.a, color.a);
 
-					mat4 colorMultiplier;
-					colorMultiplier[0] = vec4(vColorMultiplier.r, 0, 0, 0);
-					colorMultiplier[1] = vec4(0, vColorMultiplier.g, 0, 0);
-					colorMultiplier[2] = vec4(0, 0, vColorMultiplier.b, 0);
-					colorMultiplier[3] = vec4(0, 0, 0, vColorMultiplier.a);
+					if (vPremultipliedAlpha > 0.0) {
 
-					color = vColorOffset + (color * colorMultiplier);
+						color = vec4 (color.rgb / color.a, color.a);
 
-					if (color.a > 0.0) {
+						color = vColorOffset + (color * vColorMultiplier);
 
-						gl_FragColor = vec4 (color.rgb * color.a * vAlpha, color.a * vAlpha);
+						gl_FragColor = vec4 (color.rgb * color.a, color.a);
 
 					} else {
 
-						gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+						gl_FragColor = vColorOffset + (color * vColorMultiplier);
 
 					}
+
 				}
+
 			}
 		';
 	}
@@ -175,26 +172,26 @@ ${select.join("\n")}
 		attribute vec2 aVertexPosition;
 		attribute vec2 aTextureCoord;
 		attribute float aTextureId;
-		attribute float aAlpha;
 		attribute vec4 aColorMultiplier;
 		attribute vec4 aColorOffset;
+		attribute float aPremultipliedAlpha;
 
 		uniform mat4 uProjMatrix;
 		uniform vec4 uPostionScale;
 
 		varying vec2 vTextureCoord;
 		varying float vTextureId;
-		varying float vAlpha;
 		varying vec4 vColorMultiplier;
 		varying vec4 vColorOffset;
+		varying float vPremultipliedAlpha;
 
 		void main(void) {
 			gl_Position = uProjMatrix * vec4(aVertexPosition, 0, 1) * uPostionScale;
 			vTextureCoord = aTextureCoord;
 			vTextureId = aTextureId;
-			vAlpha = aAlpha;
 			vColorMultiplier = aColorMultiplier;
 			vColorOffset = aColorOffset;
+			vPremultipliedAlpha = aPremultipliedAlpha;
 		}
 	';
 }
