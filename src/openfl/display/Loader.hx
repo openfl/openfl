@@ -699,6 +699,13 @@ class Loader extends DisplayObjectContainer {
 		
 		// TODO: Dispatch HTTPStatusEvent
 		
+		if (bitmapData == null) {
+			
+			__dispatchError ("Unknown error");
+			return;
+			
+		}
+		
 		content = new Bitmap (bitmapData);
 		contentLoaderInfo.content = content;
 		contentLoaderInfo.width = Std.int(content.width);
