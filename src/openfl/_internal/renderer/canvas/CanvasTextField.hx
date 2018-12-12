@@ -155,8 +155,7 @@ class CanvasTextField {
 						
 					}
 					
-					context.textBaseline = "top";
-					//context.textBaseline = "alphabetic";
+					context.textBaseline = "bottom"; // we're using bottom, because unlike "top" it's consistent across browser bugs
 					context.textAlign = "start";
 					
 					var scrollX = -textField.scrollH;
@@ -170,11 +169,6 @@ class CanvasTextField {
 					
 					var advance;
 					
-					// Hack, baseline "top" is not consistent across browsers
-					
-					var offsetY = 0.0;
-					var applyHack = ~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent);
-					
 					for (group in textEngine.layoutGroups) {
 						
 						if (group.lineIndex < textField.scrollV - 1) continue;
@@ -186,7 +180,7 @@ class CanvasTextField {
 							context.strokeStyle = "#000000";
 							context.lineWidth = .5;
 							var x = group.offsetX + scrollX;
-							var y = group.offsetY + offsetY + scrollY + group.ascent;
+							var y = group.offsetY + scrollY + group.ascent;
 							context.moveTo (x, y);
 							context.lineTo (x + group.width, y);
 							context.stroke ();
@@ -196,11 +190,11 @@ class CanvasTextField {
 						context.font = TextEngine.getFont (group.format);
 						context.fillStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
 						
-						if (applyHack) {
-							
-							offsetY = group.format.size * 0.185;
-							
-						}
+						// since we're using bottom as the baseline, we need to move the label down
+						// by the size of the font, to make it behave as if it was using top baseline,
+						// but we also add 0.185 of the size to comply with the behaviour of Chrome's/Firefox's
+						// embedded Flash players, which is also wrong, but there's nothing we can do about it :)
+						var offsetY = group.format.size * 1.185;
 						
 						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
 						
