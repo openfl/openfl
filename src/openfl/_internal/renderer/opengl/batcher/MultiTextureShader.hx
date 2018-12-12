@@ -147,20 +147,20 @@ ${select.join("\n")}
 					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 
 				} else {
+						/** mix is a linear interpolation function that interpolates between first and second 
+						*   parameter, controlled by the third one. The function looks like this:
+						*
+						*   mix (x, y, a) = x * (1.0 - a) + y * a
+						*
+						*  As vPremultipliedAlpha is 0.0 or 1.0 we basically switch on/off first or the second paramter 
+						*  respectively
+						*/ 
 
-					if (vPremultipliedAlpha > 0.0) {
-
-						color = vec4 (color.rgb / color.a, color.a);
+						color = vec4 (color.rgb / mix (1.0, color.a, vPremultipliedAlpha), color.a);
 
 						color = vColorOffset + (color * vColorMultiplier);
 
-						gl_FragColor = vec4 (color.rgb * color.a, color.a);
-
-					} else {
-
-						gl_FragColor = vColorOffset + (color * vColorMultiplier);
-
-					}
+						gl_FragColor = vec4 (color.rgb * mix (1.0, color.a, vPremultipliedAlpha), color.a);
 
 				}
 
