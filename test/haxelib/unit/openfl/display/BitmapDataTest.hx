@@ -431,11 +431,34 @@ class BitmapDataTest {
 	@Test public function draw () {
 		
 		var bitmapData = new BitmapData (100, 100);
-		var bitmapData2 = new Bitmap (new BitmapData (100, 100, true, 0xFF0000FF));
+		var bitmapData2 = new BitmapData (100, 100, true, 0xFF0000FF);
 		
 		bitmapData.draw (bitmapData2);
 		
-		//Assert.areEqual (hex (0xFF0000FF), hex (bitmapData.getPixel32 (0, 0)));
+		Assert.areEqual (hex (0xFF0000FF), hex (bitmapData.getPixel32 (0, 0)));
+		
+		var bitmapData = new BitmapData (100, 100);
+		var bitmap = new Bitmap (new BitmapData (100, 100, true, 0xFF0000FF));
+		
+		bitmapData.draw (bitmap);
+		
+		Assert.areEqual (hex (0xFF0000FF), hex (bitmapData.getPixel32 (0, 0)));
+		
+		var bitmapData = new BitmapData (100, 100, true, 0);
+		var bitmap = new Bitmap (new BitmapData (100, 100, true, 0xFF0000FF));
+		bitmap.alpha = 0.5;
+		
+		bitmapData.draw (bitmap);
+		
+		Assert.areEqual (hex (0xFF0000FF), hex (bitmapData.getPixel32 (0, 0)));
+		
+		var bitmapData = new BitmapData (100, 100, true, 0);
+		var bitmap = new Bitmap (new BitmapData (100, 100, true, 0xFF0000FF));
+		var colorTransform = new ColorTransform (1, 1, 1, 0.5);
+		
+		bitmapData.draw (bitmap, null, colorTransform);
+		
+		Assert.areEqual (hex (0x7F0000FF), hex (bitmapData.getPixel32 (0, 0)));
 		
 		var sprite = new Sprite ();
 		sprite.graphics.beginFill (0xFFFF0000);
@@ -443,7 +466,7 @@ class BitmapDataTest {
 		
 		bitmapData.draw (sprite);
 		
-		//Assert.areEqual (hex (0xFFFF0000), hex (bitmapData.getPixel32 (0, 0)));
+		Assert.areEqual (hex (0xFFFF0000), hex (bitmapData.getPixel32 (0, 0)));
 		
 		var sprite2 = new Sprite ();
 		sprite2.graphics.beginFill (0x00FF00);
