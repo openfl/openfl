@@ -1,7 +1,8 @@
 package openfl.display;
 
-import haxe.PosInfos;
+
 import massive.munit.Assert;
+import massive.munit.Async;
 import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
@@ -10,34 +11,35 @@ import openfl.utils.ByteArray;
 
 @:access(openfl.display.BitmapData)
 
-@:file("../assets/openfl-base64.txt") class Logo extends ByteArrayData {}
-
 
 class BitmapDataTest {
 	
 	
-	#if (flash || html5) @Ignore #end @Test public function fromBase64 () {
+	#if flash @Ignore #end @AsyncTest public function fromBase64 () {
 		
-		// TODO: Make an asynchronous test for HTML5 `loadFromBase64`
+		var handler = Async.handler (this, function (logoBytes) {
+			
+			var logo = logoBytes.readUTFBytes (logoBytes.length);
+			var type = 'image';
+			
+			// three different colors from OpenFL logo
+			var color145x160 = 0x24afc4;
+			var color200x45 = 0x8ed5e0;
+			var color100x35 = 0xffffff;
+			
+			var bitmapData = BitmapData.fromBase64(logo, type);
+			
+			#if (js && html5)
+			Assert.isNull (bitmapData);
+			#else
+			Assert.areEqual(color145x160, bitmapData.getPixel(145, 160));
+			Assert.areEqual(color200x45, bitmapData.getPixel(200, 45));
+			Assert.areEqual(color100x35, bitmapData.getPixel(100, 35));
+			#end
+			
+		});
 		
-		var logoBytes = new Logo ();
-		var logo = logoBytes.readUTFBytes (logoBytes.length);
-		var type = 'image';
-		
-		// three different colors from OpenFL logo
-		var color145x160 = 0x24afc4;
-		var color200x45 = 0x8ed5e0;
-		var color100x35 = 0xffffff;
-		
-		var bitmapData = BitmapData.fromBase64(logo, type);
-		
-		#if (js && html5)
-		Assert.isNull (bitmapData);
-		#else
-		Assert.areEqual(color145x160, bitmapData.getPixel(145, 160));
-		Assert.areEqual(color200x45, bitmapData.getPixel(200, 45));
-		Assert.areEqual(color100x35, bitmapData.getPixel(100, 35));
-		#end
+		ByteArray.loadFromFile ("openfl-base64.txt").onComplete (handler);
 		
 	}
 	

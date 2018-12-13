@@ -1,10 +1,7 @@
 package openfl.desktop;
 
-import massive.munit.Assert;
 import openfl.desktop.Clipboard;
 import openfl.utils.ByteArray;
-
-@:file("../assets/hello.rtf") class HelloRTF extends ByteArrayData {}
 
 class ClipboardTest {
 	
@@ -75,25 +72,33 @@ class ClipboardTest {
 		#end
 	}
 
-	#if (flash && !air) @Ignore #end @Test public function getData() {
-		var textFormatData:String = 'Text Format Data';
-		var richTextFormatData = new HelloRTF ();
-
-		var clipboard = Clipboard.generalClipboard;
-
-		clipboard.setData(ClipboardFormats.TEXT_FORMAT, textFormatData);
-
-		Assert.areEqual(textFormatData, clipboard.getData(ClipboardFormats.TEXT_FORMAT));
-
-		clipboard.setData(ClipboardFormats.RICH_TEXT_FORMAT, richTextFormatData);
-
-		#if !flash
-		Assert.areNotEqual(textFormatData, clipboard.getData(ClipboardFormats.TEXT_FORMAT));
-		// Assert.areEqual(richTextFormatData, clipboard.getData(ClipboardFormats.TEXT_FORMAT));
-		#end
+	#if (flash && !air) @Ignore #end @AsyncTest public function getData() {
 		
-		// TODO
-		// Assert.areEqual(richTextFormatData, clipboard.getData(ClipboardFormats.RICH_TEXT_FORMAT));
+		var handler = Async.handler (this, function (richTextFormatData) {
+			
+			var textFormatData:String = 'Text Format Data';
+			var richTextFormatData = ByteArray.fromFile ("hello.rtf");
+
+			var clipboard = Clipboard.generalClipboard;
+
+			clipboard.setData(ClipboardFormats.TEXT_FORMAT, textFormatData);
+
+			Assert.areEqual(textFormatData, clipboard.getData(ClipboardFormats.TEXT_FORMAT));
+
+			clipboard.setData(ClipboardFormats.RICH_TEXT_FORMAT, richTextFormatData);
+
+			#if !flash
+			Assert.areNotEqual(textFormatData, clipboard.getData(ClipboardFormats.TEXT_FORMAT));
+			// Assert.areEqual(richTextFormatData, clipboard.getData(ClipboardFormats.TEXT_FORMAT));
+			#end
+			
+			// TODO
+			// Assert.areEqual(richTextFormatData, clipboard.getData(ClipboardFormats.RICH_TEXT_FORMAT));
+			
+		});
+		
+		ByteArray.loadFromFile ("hello.rtf").onComplete (handler);
+		
 	}
 
 	#if (flash && !air) @Ignore #end @Test public function hasFormat() {

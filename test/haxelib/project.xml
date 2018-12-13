@@ -11,4 +11,6 @@
 	<haxelib name="mlib" />
 	<haxelib name="format" />
 	
+	<assets path="assets" rename="" embed="false" />
+	
 </project>
