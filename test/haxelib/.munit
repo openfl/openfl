@@ -4,3 +4,4 @@ bin=build
 report=report
 hxml=test.hxml
 classPaths=unit
+resources=assets

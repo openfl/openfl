@@ -77,7 +77,6 @@ class ClipboardTest {
 		var handler = Async.handler (this, function (richTextFormatData) {
 			
 			var textFormatData:String = 'Text Format Data';
-			var richTextFormatData = ByteArray.fromFile ("hello.rtf");
 
 			var clipboard = Clipboard.generalClipboard;
 
