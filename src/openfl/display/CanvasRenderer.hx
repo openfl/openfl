@@ -211,9 +211,9 @@ class CanvasRenderer extends DisplayObjectRenderer {
 				
 				context.globalCompositeOperation = "lighter";
 			
-			case ALPHA:
+			// case ALPHA:
 				
-				context.globalCompositeOperation = "destination-in";
+			// 	context.globalCompositeOperation = "";
 			
 			case DARKEN:
 				
@@ -223,9 +223,9 @@ class CanvasRenderer extends DisplayObjectRenderer {
 				
 				context.globalCompositeOperation = "difference";
 			
-			case ERASE:
+			// case ERASE:
 				
-				context.globalCompositeOperation = "destination-out";
+				// context.globalCompositeOperation = "";
 			
 			case HARDLIGHT:
 				
@@ -235,9 +235,9 @@ class CanvasRenderer extends DisplayObjectRenderer {
 				
 				//context.globalCompositeOperation = "";
 			
-			case LAYER:
+			// case LAYER:
 				
-				context.globalCompositeOperation = "source-over";
+			// 	context.globalCompositeOperation = "source-over";
 			
 			case LIGHTEN:
 				
