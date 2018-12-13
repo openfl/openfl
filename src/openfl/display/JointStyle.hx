@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfljs
+package openfl.display; #if !flash
 
 
 /**
@@ -9,72 +9,31 @@ package openfl.display; #if !flash #if !openfljs
  * three types of joints: miter, round, and bevel, as the following example
  * shows:
  */
-@:enum abstract JointStyle(Null<Int>) {
+@:enum abstract JointStyle(String) from String to String {
 	
 	
 	/**
 	 * Specifies beveled joints in the `joints` parameter of the
 	 * `openfl.display.Graphics.lineStyle()` method.
 	 */
-	public var BEVEL = 0;
+	public var BEVEL = "bevel";
 	
 	/**
 	 * Specifies mitered joints in the `joints` parameter of the
 	 * `openfl.display.Graphics.lineStyle()` method.
 	 */
-	public var MITER = 1;
+	public var MITER = "miter";
 	
 	/**
 	 * Specifies round joints in the `joints` parameter of the
 	 * `openfl.display.Graphics.lineStyle()` method.
 	 */
-	public var ROUND = 2;
-	
-	
-	@:from private static function fromString (value:String):JointStyle {
-		
-		return switch (value) {
-			
-			case "bevel": BEVEL;
-			case "miter": MITER;
-			case "round": ROUND;
-			default: null;
-			
-		}
-		
-	}
-	
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case JointStyle.BEVEL: "bevel";
-			case JointStyle.MITER: "miter";
-			case JointStyle.ROUND: "round";
-			default: null;
-			
-		}
-		
-	}
-	
-	
-}
-
-
-#else
-
-
-@:enum abstract JointStyle(String) from String to String {
-	
-	public var BEVEL = "bevel";
-	public var MITER = "miter";
 	public var ROUND = "round";
 	
+	
 }
 
 
-#end
 #else
 typedef JointStyle = flash.display.JointStyle;
 #end

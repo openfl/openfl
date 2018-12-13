@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfljs
+package openfl.display; #if !flash
 
 
 /**
@@ -9,69 +9,28 @@ package openfl.display; #if !flash #if !openfljs
  * The following example shows the same gradient fill using various spread
  * methods:
  */
-@:enum abstract SpreadMethod(Null<Int>) {
+@:enum abstract SpreadMethod(String) from String to String {
 	
 	
 	/**
 	 * Specifies that the gradient use the _pad_ spread method.
 	 */
-	public var PAD = 0;
+	public var PAD = "pad";
 	
 	/**
 	 * Specifies that the gradient use the _reflect_ spread method.
 	 */
-	public var REFLECT = 1;
+	public var REFLECT = "reflect";
 	
 	/**
 	 * Specifies that the gradient use the _repeat_ spread method.
 	 */
-	public var REPEAT = 2;
-	
-	
-	@:from private static function fromString (value:String):SpreadMethod {
-		
-		return switch (value) {
-			
-			case "pad": PAD;
-			case "reflect": REFLECT;
-			case "repeat": REPEAT;
-			default: null;
-			
-		}
-		
-	}
-	
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case SpreadMethod.PAD: "pad";
-			case SpreadMethod.REFLECT: "reflect";
-			case SpreadMethod.REPEAT: "repeat";
-			default: null;
-			
-		}
-		
-	}
-	
-	
-}
-
-
-#else
-
-
-@:enum abstract SpreadMethod(String) from String to String {
-	
-	public var PAD = "pad";
-	public var REFLECT = "reflect";
 	public var REPEAT = "repeat";
 	
+	
 }
 
 
-#end
 #else
 typedef SpreadMethod = flash.display.SpreadMethod;
 #end
