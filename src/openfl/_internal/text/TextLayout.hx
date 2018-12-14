@@ -95,8 +95,8 @@ class TextLayout {
 		if (language.length != 4) return;
 		
 		__hbBuffer = new HBBuffer ();
-		__hbBuffer.direction = direction;
-		__hbBuffer.script = script;
+		__hbBuffer.direction = direction.toHBDirection ();
+		__hbBuffer.script = script.toHBScript ();
 		__hbBuffer.language = new HBLanguage (language);
 		
 	}
@@ -145,8 +145,8 @@ class TextLayout {
 				
 			}
 			
-			__hbBuffer.direction = direction;
-			__hbBuffer.script = script;
+			__hbBuffer.direction = direction.toHBDirection ();
+			__hbBuffer.script = script.toHBScript ();
 			__hbBuffer.language = new HBLanguage (language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
 			__hbBuffer.addUTF8 (text, 0, -1);
@@ -313,7 +313,7 @@ class TextLayout {
 }
 
 
-@:enum abstract TextDirection(Int) to (Int) {
+@:enum abstract TextDirection(Int) to Int {
 	
 	
 	var INVALID = 0;
@@ -351,7 +351,7 @@ class TextLayout {
 	}
 	
 	
-	@:to private inline function toHBDirection ():HBDirection {
+	@:to public inline function toHBDirection ():HBDirection {
 		
 		return switch (this) {
 			
@@ -544,7 +544,7 @@ class TextLayout {
 	public var rightToLeft (get, never):Bool;
 	
 	
-	@:to private inline function toHBScript ():HBScript {
+	@:to public inline function toHBScript ():HBScript {
 		
 		return switch (this) {
 			
