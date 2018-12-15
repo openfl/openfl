@@ -1,7 +1,7 @@
 version=
-src=unit
+src=src
 bin=build
 report=report
 hxml=test.hxml
-classPaths=unit
-resources=assets
+classPaths=src
+resources=

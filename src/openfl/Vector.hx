@@ -2,7 +2,9 @@ package openfl; #if (!flash || display) #if (!openfljs || !js)
 
 
 import haxe.Constraints.Function;
+#if !openfl_unit_testing
 import openfl.utils.ByteArray;
+#end
 
 @:multiType(T)
 

@@ -1,10 +1,12 @@
 package openfl.geom; #if !flash
 
 
+#if !openfl_unit_testing
 import lime.math.Matrix3;
 import lime.utils.Float32Array;
 import lime.utils.ObjectPool;
 import openfl.geom.Point;
+#end
 
 
 /**
@@ -73,8 +75,10 @@ class Matrix {
 	
 	
 	@:noCompletion private static var __identity = new Matrix ();
+	#if !openfl_unit_testing
 	@:noCompletion private static var __matrix3 = new Matrix3 ();
 	@:noCompletion private static var __pool = new ObjectPool<Matrix> (function () return new Matrix (), function (m) m.identity ());
+	#end
 	
 	
 	/**
@@ -112,7 +116,9 @@ class Matrix {
 	public var ty:Float;
 	
 	
+	#if !openfl_unit_testing
 	@:noCompletion private var __array:Float32Array;
+	#end
 	
 	
 	/**
@@ -429,6 +435,7 @@ class Matrix {
 	}
 	
 	
+	#if !openfl_unit_testing
 	/**
 	 * Given a point in the pretransform coordinate space, returns the
 	 * coordinates of that point after the transformation occurs. Unlike the
@@ -446,6 +453,7 @@ class Matrix {
 		return new Point (point.x * a + point.y * c, point.x * b + point.y * d);
 		
 	}
+	#end
 	
 	
 	public function equals (matrix:Matrix):Bool {
@@ -660,6 +668,7 @@ class Matrix {
 	}
 	
 	
+	#if !openfl_unit_testing
 	/**
 	 * Returns the result of applying the geometric transformation represented by
 	 * the Matrix object to the specified point.
@@ -673,6 +682,7 @@ class Matrix {
 		return new Point (__transformX (pos.x, pos.y), __transformY (pos.x, pos.y));
 		
 	}
+	#end
 	
 	
 	/**
@@ -691,6 +701,7 @@ class Matrix {
 	}
 	
 	
+	#if !openfl_unit_testing
 	@:noCompletion private function toArray (transpose:Bool = false):Float32Array {
 		
 		if (__array == null) {
@@ -728,6 +739,7 @@ class Matrix {
 		return __array;
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function __cleanValues ():Void {
@@ -742,14 +754,17 @@ class Matrix {
 	}
 	
 	
+	#if !openfl_unit_testing
 	@:noCompletion private function __toMatrix3 ():Matrix3 {
 		
 		__matrix3.setTo (a, b, c, d, tx, ty);
 		return __matrix3;
 		
 	}
+	#end
 	
 	
+	#if !openfl_unit_testing
 	@:noCompletion private inline function __transformInversePoint (point:Point):Void {
 		
 		var norm = a * d - b * c;
@@ -768,6 +783,7 @@ class Matrix {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function __transformInverseX (px:Float, py:Float):Float {
@@ -804,6 +820,7 @@ class Matrix {
 	}
 	
 	
+	#if !openfl_unit_testing
 	@:noCompletion private inline function __transformPoint (point:Point):Void {
 		
 		var px = point.x;
@@ -813,6 +830,7 @@ class Matrix {
 		point.y = __transformY (px, py);
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function __transformX (px:Float, py:Float):Float {

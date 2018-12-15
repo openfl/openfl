@@ -10,12 +10,14 @@ import openfl.errors.ArgumentError;
 #end
 
 
-class AVM1Movie extends DisplayObject {
+class AVM1Movie #if !openfl_unit_testing extends DisplayObject #end {
 	
 	
 	@:noCompletion private function new () {
 		
+		#if !openfl_unit_testing
 		super ();
+		#end
 		
 		throw new ArgumentError ("Error #2012: AVM1Movie$ class cannot be instantiated.");
 		

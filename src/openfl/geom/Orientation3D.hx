@@ -1,6 +1,7 @@
 package openfl.geom; #if !flash #if !openfljs
 
- /**
+
+/**
  * The Orientation3D class is an enumeration of constant
  * values for representing the orientation style of a Matrix3D object. 
  * The three types of orientation are Euler angles, axis angle, and quaternion. 

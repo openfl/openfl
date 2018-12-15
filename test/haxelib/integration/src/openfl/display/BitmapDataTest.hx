@@ -1,8 +1,6 @@
 package openfl.display;
 
 
-import massive.munit.Assert;
-import massive.munit.Async;
 import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
@@ -15,7 +13,8 @@ import openfl.utils.ByteArray;
 class BitmapDataTest {
 	
 	
-	#if flash @Ignore #end @AsyncTest public function fromBase64 () {
+	#if flash @Ignore #end
+	@AsyncTest public function fromBase64 () {
 		
 		var handler = Async.handler (this, function (logoBytes) {
 			
@@ -49,19 +48,18 @@ class BitmapDataTest {
 		// TODO: Confirm functionality
 		
 		var exists = BitmapData.fromBytes;
-		
 		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	#if (!js || !html5) @Ignore #end @Test public function fromCanvas () {
+	#if (!js || !html5) @Ignore #end
+	@Test public function fromCanvas () {
 		
 		// TODO: Confirm functionality
 		
 		#if (js && html5)
 		var exists = BitmapData.fromCanvas;
-		
 		Assert.isNotNull (exists);
 		#end
 		
@@ -73,7 +71,6 @@ class BitmapDataTest {
 		// TODO: Confirm functionality
 		
 		var exists = BitmapData.fromFile;
-		
 		Assert.isNotNull (exists);
 		
 	}
@@ -84,105 +81,7 @@ class BitmapDataTest {
 		// TODO: Confirm functionality
 		
 		var exists = BitmapData.fromImage;
-		
 		Assert.isNotNull (exists);
-		
-	}
-	
-	
-	@Test public function height () {
-		
-		var bitmapData = new BitmapData (1, 1);
-		
-		Assert.areEqual (1, bitmapData.height);
-		
-		bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
-		
-		Assert.areEqual (100.0, bitmapData.height);
-		
-	}
-	
-	
-	@Test public function image () {
-		
-		// TODO: Confirm functionality
-		
-		var bitmapData = new BitmapData (1, 1);
-		var exists = bitmapData.image;
-		
-		#if flash
-		Assert.isNull (exists);
-		#else
-		Assert.isNotNull (exists);
-		#end
-		
-	}
-	
-	
-	@Test public function rect () {
-		
-		var bitmapData = new BitmapData (1, 1);
-		
-		Assert.areEqual (0, bitmapData.rect.x);
-		Assert.areEqual (0, bitmapData.rect.y);
-		Assert.areEqual (1, bitmapData.rect.width);
-		Assert.areEqual (1, bitmapData.rect.height);
-		
-		bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
-		
-		Assert.areEqual (0, bitmapData.rect.x);
-		Assert.areEqual (0, bitmapData.rect.y);
-		Assert.areEqual (100.0, bitmapData.rect.width);
-		Assert.areEqual (100.0, bitmapData.rect.height);
-		
-	}
-	
-	
-	@Test public function transparent () {
-		
-		var bitmapData = new BitmapData (100, 100);
-		
-		Assert.isTrue (bitmapData.transparent);
-		Assert.areEqual (hex (0xFFFFFF), hex (bitmapData.getPixel (0, 0)));
-		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
-		
-		bitmapData.setPixel32 (0, 0, 0x00FFFFFF);
-		
-		Assert.areEqual (0, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
-		
-		bitmapData = new BitmapData (100, 100, false);
-		
-		Assert.isFalse (bitmapData.transparent);
-		Assert.areEqual (hex (0xFFFFFF), hex (bitmapData.getPixel (0, 0)));
-		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
-		
-		bitmapData.setPixel32 (0, 0, 0x00FFFFFF);
-		
-		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
-		
-		bitmapData = new BitmapData (100, 100, true);
-		bitmapData.setPixel32 (0, 0, 0x00FFFFFF);
-		
-		var pixels = bitmapData.getPixels (bitmapData.rect);
-		pixels.position = 0;
-		
-		bitmapData = new BitmapData (100, 100, false);
-		bitmapData.setPixels (bitmapData.rect, pixels);
-		
-		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
-		
-	}
-	
-	
-	@Test public function width () {
-		
-		var bitmapData = new BitmapData (1, 1);
-		
-		Assert.areEqual (1, bitmapData.width);
-		
-		bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
-		
-		Assert.areEqual (100.0, bitmapData.width);
 		
 	}
 	
@@ -200,7 +99,8 @@ class BitmapDataTest {
 	}
 	
 	
-	#if !flash @Ignore #end @Test public function applyFilter () {
+	#if !flash @Ignore #end
+	@Test public function applyFilter () {
 		
 		#if !html5
 		
@@ -1078,6 +978,102 @@ class BitmapDataTest {
 		Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (pixel, 8));
 		
 	}*/
+	
+	
+	// Properties
+	
+	
+	@Test public function height () {
+		
+		var bitmapData = new BitmapData (1, 1);
+		
+		Assert.areEqual (1, bitmapData.height);
+		
+		bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
+		
+		Assert.areEqual (100.0, bitmapData.height);
+		
+	}
+	
+	
+	@Test public function image () {
+		
+		var bitmapData = new BitmapData (1, 1);
+		#if flash
+		Assert.isNull (bitmapData.image);
+		#else
+		Assert.isNotNull (bitmapData.image);
+		#end
+		
+	}
+	
+	
+	@Test public function rect () {
+		
+		var bitmapData = new BitmapData (1, 1);
+		
+		Assert.areEqual (0, bitmapData.rect.x);
+		Assert.areEqual (0, bitmapData.rect.y);
+		Assert.areEqual (1, bitmapData.rect.width);
+		Assert.areEqual (1, bitmapData.rect.height);
+		
+		bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
+		
+		Assert.areEqual (0, bitmapData.rect.x);
+		Assert.areEqual (0, bitmapData.rect.y);
+		Assert.areEqual (100.0, bitmapData.rect.width);
+		Assert.areEqual (100.0, bitmapData.rect.height);
+		
+	}
+	
+	
+	@Test public function transparent () {
+		
+		var bitmapData = new BitmapData (100, 100);
+		
+		Assert.isTrue (bitmapData.transparent);
+		Assert.areEqual (hex (0xFFFFFF), hex (bitmapData.getPixel (0, 0)));
+		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
+		
+		bitmapData.setPixel32 (0, 0, 0x00FFFFFF);
+		
+		Assert.areEqual (0, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
+		
+		bitmapData = new BitmapData (100, 100, false);
+		
+		Assert.isFalse (bitmapData.transparent);
+		Assert.areEqual (hex (0xFFFFFF), hex (bitmapData.getPixel (0, 0)));
+		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
+		
+		bitmapData.setPixel32 (0, 0, 0x00FFFFFF);
+		
+		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
+		
+		bitmapData = new BitmapData (100, 100, true);
+		bitmapData.setPixel32 (0, 0, 0x00FFFFFF);
+		
+		var pixels = bitmapData.getPixels (bitmapData.rect);
+		pixels.position = 0;
+		
+		bitmapData = new BitmapData (100, 100, false);
+		bitmapData.setPixels (bitmapData.rect, pixels);
+		
+		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
+		
+	}
+	
+	
+	@Test public function width () {
+		
+		var bitmapData = new BitmapData (1, 1);
+		
+		Assert.areEqual (1, bitmapData.width);
+		
+		bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
+		
+		Assert.areEqual (100.0, bitmapData.width);
+		
+	}
 	
 	
 }

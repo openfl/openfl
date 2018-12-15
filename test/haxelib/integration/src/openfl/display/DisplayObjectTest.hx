@@ -1,19 +1,222 @@
 package openfl.display;
 
-import openfl.geom.Matrix;
-import openfl.geom.Transform;
-import openfl.filters.DropShadowFilter;
-import openfl.filters.BitmapFilter;
-import openfl.filters.GlowFilter;
-import massive.munit.Assert;
+
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
+import openfl.filters.BitmapFilter;
+import openfl.filters.DropShadowFilter;
+import openfl.filters.GlowFilter;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom.Transform;
 import openfl.Lib;
 
+
 class DisplayObjectTest {
+	
+	
+	@Test public function getBounds () {
+		
+		var sprite = new Sprite ();
+		var bounds = sprite.getBounds (sprite);
+		
+		Assert.isTrue (bounds.isEmpty ());
+		
+		sprite.graphics.beginFill (0xFF0000);
+		sprite.graphics.drawRect (0, 0, 100, 100);
+		
+		bounds = sprite.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		sprite.x = 100;
+		
+		bounds = sprite.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		var sprite2 = new Sprite ();
+		sprite2.addChild (sprite);
+		
+		bounds = sprite.getBounds (sprite2);
+		Assert.areEqual (100, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		sprite.rotation = 90;
+		
+		bounds = sprite.getBounds (sprite2);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		bounds = sprite2.getBounds (sprite2);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		sprite.x = 200;
+		
+		bounds = sprite.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+		bounds = sprite2.getBounds (sprite);
+		Assert.areEqual (0, bounds.x);
+		Assert.areEqual (0, bounds.y);
+		Assert.areEqual (100, bounds.width);
+		Assert.areEqual (100, bounds.height);
+		
+	}
+	
+	
+	@Test public function getRect () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.getRect;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function globalToLocal () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.globalToLocal;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function hitTestObject() {
+
+		// TODO: Confirm functionality
+
+		var sprite = new Sprite ();
+		var exists = sprite.hitTestObject;
+
+		Assert.isNotNull(exists);
+
+	}
+
+	@Test public function hitTestPoint() {
+
+		// TODO: Confirm functionality
+
+		var sprite = new Sprite ();
+		var exists = sprite.hitTestPoint;
+
+		Assert.isNotNull(exists);
+
+	}
+
+	@Test public function localToGlobal() {
+
+		// TODO: Confirm functionality
+
+		var sprite = new Sprite ();
+		var exists = sprite.localToGlobal;
+
+		Assert.isNotNull(exists);
+
+	}
+
+	/*@Test public function testRect () {
+		
+		var sprite = new Sprite ();
+		sprite.x = 100;
+		sprite.y = 100;
+		sprite.scaleX = 0.5;
+		sprite.scaleY = 0.5;
+		
+		var bitmap = new Bitmap (new BitmapData (100, 100));
+		sprite.addChild (bitmap);
+		
+		var rect = sprite.getRect (sprite);
+		
+		Assert.areEqual (0.0, rect.x);
+		Assert.areEqual (0.0, rect.y);
+		Assert.areEqual (100.0, rect.width);
+		Assert.areEqual (100.0, rect.height);
+		
+		rect = sprite.getRect (Lib.current.stage);
+		
+		Assert.areEqual (100.0, rect.x);
+		Assert.areEqual (100.0, rect.y);
+		Assert.areEqual (50.0, rect.width);
+		Assert.areEqual (50.0, rect.height);
+		
+		sprite.removeChild (bitmap);
+		sprite.graphics.beginFill (0xFFFFFF);
+		sprite.graphics.lineStyle (10);
+		sprite.graphics.drawRect (0, 0, 100, 100);
+		
+		var bounds = sprite.getRect (sprite);
+		
+		Assert.isTrue (bounds.x <= 0);
+		Assert.isTrue (bounds.y <= 0);
+		Assert.isTrue (bounds.width >= 100);
+		Assert.isTrue (bounds.height >= 100);
+		
+		bounds = sprite.getRect (Lib.current.stage);
+		
+		Assert.isTrue (bounds.x <= 100);
+		Assert.isTrue (bounds.y <= 100);
+		Assert.isTrue (bounds.width >= 50);
+		Assert.isTrue (bounds.height >= 50);
+		
+	}
+	
+	
+	@Test public function testCoordinates () {
+		
+		var sprite = new Sprite ();
+		sprite.x = 100;
+		sprite.y = 100;
+		sprite.scaleX = 0.5;
+		sprite.scaleY = 0.5;
+		
+		var globalPoint = sprite.localToGlobal (new Point ());
+		
+		Assert.areEqual (100.0, globalPoint.x);
+		Assert.areEqual (100.0, globalPoint.y);
+		
+		var localPoint = sprite.globalToLocal (new Point ());
+		
+		// It should be -200, not -100, because the scale of the Sprite is reduced
+		
+		Assert.areEqual (-200.0, localPoint.x);
+		Assert.areEqual (-200.0, localPoint.y);
+		
+		var bitmap = new Bitmap (new BitmapData (100, 100));
+		sprite.addChild (bitmap);
+		
+		Assert.isTrue (sprite.hitTestPoint (100, 100));
+		Assert.isFalse (sprite.hitTestPoint (151, 151));
+		
+	}*/
+	
+	
+	// Properties
+	
+	
 	@Test public function alpha() {
 		var object = new Sprite ();
 
@@ -389,200 +592,8 @@ class DisplayObjectTest {
 	}
 
 	@Test public function z() {
-
-	}
-
-	@Test public function getBounds() {
-
-		var sprite = new Sprite ();
-		var bounds = sprite.getBounds(sprite);
-
-		Assert.isTrue(bounds.isEmpty());
-
-		sprite.graphics.beginFill(0xFF0000);
-		sprite.graphics.drawRect(0, 0, 100, 100);
-
-		bounds = sprite.getBounds(sprite);
-		Assert.areEqual(0, bounds.x);
-		Assert.areEqual(0, bounds.y);
-		Assert.areEqual(100, bounds.width);
-		Assert.areEqual(100, bounds.height);
-
-		sprite.x = 100;
-
-		bounds = sprite.getBounds(sprite);
-		Assert.areEqual(0, bounds.x);
-		Assert.areEqual(0, bounds.y);
-		Assert.areEqual(100, bounds.width);
-		Assert.areEqual(100, bounds.height);
-
-		var sprite2 = new Sprite ();
-		sprite2.addChild(sprite);
-
-		bounds = sprite.getBounds(sprite2);
-		Assert.areEqual(100, bounds.x);
-		Assert.areEqual(0, bounds.y);
-		Assert.areEqual(100, bounds.width);
-		Assert.areEqual(100, bounds.height);
-
-		sprite.rotation = 90;
-
-		bounds = sprite.getBounds(sprite2);
-		Assert.areEqual(0, bounds.x);
-		Assert.areEqual(0, bounds.y);
-		Assert.areEqual(100, bounds.width);
-		Assert.areEqual(100, bounds.height);
-
-		bounds = sprite2.getBounds(sprite2);
-		Assert.areEqual(0, bounds.x);
-		Assert.areEqual(0, bounds.y);
-		Assert.areEqual(100, bounds.width);
-		Assert.areEqual(100, bounds.height);
-
-		sprite.x = 200;
-
-		bounds = sprite.getBounds(sprite);
-		Assert.areEqual(0, bounds.x);
-		Assert.areEqual(0, bounds.y);
-		Assert.areEqual(100, bounds.width);
-		Assert.areEqual(100, bounds.height);
-
-		bounds = sprite2.getBounds(sprite);
-		Assert.areEqual(0, bounds.x);
-		Assert.areEqual(0, bounds.y);
-		Assert.areEqual(100, bounds.width);
-		Assert.areEqual(100, bounds.height);
-
-	}
-
-	@Test public function getRect() {
-
-		// TODO: Confirm functionality
-
-		var sprite = new Sprite ();
-		var exists = sprite.getRect;
-
-		Assert.isNotNull(exists);
-
-	}
-
-	@Test public function globalToLocal() {
-
-		// TODO: Confirm functionality
-
-		var sprite = new Sprite ();
-		var exists = sprite.globalToLocal;
-
-		Assert.isNotNull(exists);
-
-	}
-
-	@Test public function hitTestObject() {
-
-		// TODO: Confirm functionality
-
-		var sprite = new Sprite ();
-		var exists = sprite.hitTestObject;
-
-		Assert.isNotNull(exists);
-
-	}
-
-	@Test public function hitTestPoint() {
-
-		// TODO: Confirm functionality
-
-		var sprite = new Sprite ();
-		var exists = sprite.hitTestPoint;
-
-		Assert.isNotNull(exists);
-
-	}
-
-	@Test public function localToGlobal() {
-
-		// TODO: Confirm functionality
-
-		var sprite = new Sprite ();
-		var exists = sprite.localToGlobal;
-
-		Assert.isNotNull(exists);
-
-	}
-
-	/*@Test public function testRect () {
-		
-		var sprite = new Sprite ();
-		sprite.x = 100;
-		sprite.y = 100;
-		sprite.scaleX = 0.5;
-		sprite.scaleY = 0.5;
-		
-		var bitmap = new Bitmap (new BitmapData (100, 100));
-		sprite.addChild (bitmap);
-		
-		var rect = sprite.getRect (sprite);
-		
-		Assert.areEqual (0.0, rect.x);
-		Assert.areEqual (0.0, rect.y);
-		Assert.areEqual (100.0, rect.width);
-		Assert.areEqual (100.0, rect.height);
-		
-		rect = sprite.getRect (Lib.current.stage);
-		
-		Assert.areEqual (100.0, rect.x);
-		Assert.areEqual (100.0, rect.y);
-		Assert.areEqual (50.0, rect.width);
-		Assert.areEqual (50.0, rect.height);
-		
-		sprite.removeChild (bitmap);
-		sprite.graphics.beginFill (0xFFFFFF);
-		sprite.graphics.lineStyle (10);
-		sprite.graphics.drawRect (0, 0, 100, 100);
-		
-		var bounds = sprite.getRect (sprite);
-		
-		Assert.isTrue (bounds.x <= 0);
-		Assert.isTrue (bounds.y <= 0);
-		Assert.isTrue (bounds.width >= 100);
-		Assert.isTrue (bounds.height >= 100);
-		
-		bounds = sprite.getRect (Lib.current.stage);
-		
-		Assert.isTrue (bounds.x <= 100);
-		Assert.isTrue (bounds.y <= 100);
-		Assert.isTrue (bounds.width >= 50);
-		Assert.isTrue (bounds.height >= 50);
 		
 	}
 	
 	
-	@Test public function testCoordinates () {
-		
-		var sprite = new Sprite ();
-		sprite.x = 100;
-		sprite.y = 100;
-		sprite.scaleX = 0.5;
-		sprite.scaleY = 0.5;
-		
-		var globalPoint = sprite.localToGlobal (new Point ());
-		
-		Assert.areEqual (100.0, globalPoint.x);
-		Assert.areEqual (100.0, globalPoint.y);
-		
-		var localPoint = sprite.globalToLocal (new Point ());
-		
-		// It should be -200, not -100, because the scale of the Sprite is reduced
-		
-		Assert.areEqual (-200.0, localPoint.x);
-		Assert.areEqual (-200.0, localPoint.y);
-		
-		var bitmap = new Bitmap (new BitmapData (100, 100));
-		sprite.addChild (bitmap);
-		
-		Assert.isTrue (sprite.hitTestPoint (100, 100));
-		Assert.isFalse (sprite.hitTestPoint (151, 151));
-		
-	}*/
-
 }

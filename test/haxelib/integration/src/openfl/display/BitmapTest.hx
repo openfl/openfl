@@ -1,10 +1,10 @@
 package openfl.display;
 
 
-import massive.munit.Assert;
-
-
 class BitmapTest {
+	
+	
+	// Properties
 	
 	
 	@Test public function bitmapData () {
