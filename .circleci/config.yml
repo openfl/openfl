@@ -53,6 +53,14 @@ commands:
      - run:
          name: Rebuild OpenFL Tools
          command: openfl rebuild tools -nocffi
+     - run:
+         name: Generate MUnit Test Runner (unit)
+         working_directory: /workspace/openfl/test/haxelib/unit
+         command: haxelib run munit gen
+     - run:
+         name: Generate MUnit Test Runner (integration)
+         working_directory: /workspace/openfl/test/haxelib/integration
+         command: haxelib run munit gen
 
   test-html5:
     description: "Test HTML5"
