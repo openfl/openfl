@@ -1498,6 +1498,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					}
 					
 					context3D.__present = false;
+					context3D.__cleared = false;
 					
 				}
 				

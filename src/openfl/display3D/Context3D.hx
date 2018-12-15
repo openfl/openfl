@@ -84,6 +84,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
+	@:noCompletion private var __cleared:Bool;
 	@:noCompletion private var __context:RenderContext;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __renderStage3DProgram:Program3D;
@@ -236,6 +237,7 @@ import openfl.utils.ByteArray;
 			if (__state.renderToTexture == null) {
 				
 				if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
+				__cleared = true;
 				
 			}
 			
@@ -468,7 +470,16 @@ import openfl.utils.ByteArray;
 		if (__state.renderToTexture == null) {
 			
 			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			if (__stage.context3D == this && !__stage.__renderer.__cleared) {
+				
+				__stage.__renderer.__clear ();
+				
+			} else if (!__cleared) {
+				
+				// TODO: Throw error if error reporting is enabled?
+				clear (0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
+				
+			}
 			
 		}
 		
@@ -495,11 +506,20 @@ import openfl.utils.ByteArray;
 		
 		if (__stage3D != null) {
 			
+			if (!__cleared) {
+				
+				// Make sure texture is initialized
+				// TODO: Throw error if error reporting is enabled?
+				clear (0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
+				
+			}
+			
 			var cacheBuffer = __backBufferTexture;
 			__backBufferTexture = __frontBufferTexture;
 			__frontBufferTexture = cacheBuffer;
 			
 			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer (__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
+			__cleared = false;
 			
 		}
 		
@@ -934,7 +954,16 @@ import openfl.utils.ByteArray;
 		if (__state.renderToTexture == null) {
 			
 			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			if (__stage.context3D == this && !__stage.__renderer.__cleared) {
+				
+				__stage.__renderer.__clear ();
+				
+			} else if (!__cleared) {
+				
+				// TODO: Throw error if error reporting is enabled?
+				clear (0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
+				
+			}
 			
 		}
 		
