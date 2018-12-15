@@ -28,6 +28,13 @@ package openfl.display; #if !flash #if !openfljs
 	public var REPEAT = 2;
 	
 	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):SpreadMethod {
+		
+		return cast value;
+		
+	}
+	
+	
 	@:from private static function fromString (value:String):SpreadMethod {
 		
 		return switch (value) {
@@ -38,6 +45,13 @@ package openfl.display; #if !flash #if !openfljs
 			default: null;
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private inline function toInt ():Null<Int> {
+		
+		return this;
 		
 	}
 	
@@ -67,6 +81,19 @@ package openfl.display; #if !flash #if !openfljs
 	public var PAD = "pad";
 	public var REFLECT = "reflect";
 	public var REPEAT = "repeat";
+	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):SpreadMethod {
+		
+		return switch (value) {
+			
+			case 0: PAD;
+			case 1: REFLECT;
+			case 2: REPEAT;
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
