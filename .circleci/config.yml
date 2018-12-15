@@ -66,11 +66,11 @@ commands:
     description: "Test HTML5"
     steps:
      - run:
-         name: Build Tests
-         working_directory: /workspace/openfl/test/haxelib
+         name: Build Integration Tests
+         working_directory: /workspace/openfl/test/haxelib/integration
          command: haxelib run lime build html5 -nocffi
      #- run:
-         #name: Run Tests
+         #name: Run Integration Tests
          #command: haxelib run munit test -js -nocffi
 
   test-neko:
@@ -83,12 +83,16 @@ commands:
          name: Rebuild Lime Desktop Binary
          command: lime rebuild linux -release -64 -nocffi
      - run:
-         name: Run Tests (CFFI-enabled)
-         working_directory: /workspace/openfl/test/haxelib
+         name: Run Unit Tests
+         working_directory: /workspace/openfl/test/haxelib/unit
+         command: haxelib run munit test -nogen -result-exit-code
+     - run:
+         name: Run Integration Tests (CFFI-enabled)
+         working_directory: /workspace/openfl/test/haxelib/integration
          command: lime build neko -nocffi
      - run:
-         name: Run Tests (CFFI-disabled)
-         working_directory: /workspace/openfl/test/haxelib
+         name: Run Integration Tests (CFFI-disabled)
+         working_directory: /workspace/openfl/test/haxelib/integration
          command: lime build neko -Ddisable-cffi -nocffi
 
   test-cpp:
@@ -101,20 +105,20 @@ commands:
          name: Rebuild Lime Desktop Binary
          command: lime rebuild linux -release -64 -nocffi
      - run:
-         name: Run Tests
-         working_directory: /workspace/openfl/test/haxelib
+         name: Run Integration Tests
+         working_directory: /workspace/openfl/test/haxelib/integration
          command: lime test linux --window-hardware=false
 
   test-flash:
     description: "Test Flash"
     steps:
      - run:
-         name: Build Tests
-         working_directory: /workspace/openfl/test/haxelib
+         name: Build Integration Tests
+         working_directory: /workspace/openfl/test/haxelib/integration
          command: lime build flash -nocffi
      - run:
-         name: Run Tests
-         working_directory: /workspace/openfl/test/haxelib
+         name: Run Integration Tests
+         working_directory: /workspace/openfl/test/haxelib/integration
          command: haxelib run munit test -as3 -norun -nocffi
 
   test-documentation:
