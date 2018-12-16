@@ -1,13 +1,16 @@
 package openfl.filters; #if !flash
 
 
-import lime._internal.graphics.ImageDataUtil; // TODO
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime._internal.graphics.ImageDataUtil; // TODO
+#end
 
 
 /**

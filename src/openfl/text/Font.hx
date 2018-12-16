@@ -1,10 +1,13 @@
 package openfl.text; #if !flash
 
 
-import lime.app.Future;
-import lime.text.Font as LimeFont;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
+import openfl.utils.Future;
+
+#if lime
+import lime.text.Font as LimeFont;
+#end
 
 
 /**
@@ -22,7 +25,7 @@ import openfl.utils.ByteArray;
 #end
 
 
-class Font extends LimeFont {
+class Font #if lime extends LimeFont #end {
 	
 	
 	/**

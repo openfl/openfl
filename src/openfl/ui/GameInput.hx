@@ -1,12 +1,15 @@
 package openfl.ui; #if !flash
 
 
-import lime.ui.Gamepad;
-import lime.ui.GamepadAxis;
-import lime.ui.GamepadButton;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.GameInputEvent;
+
+#if lime
+import lime.ui.Gamepad;
+import lime.ui.GamepadAxis;
+import lime.ui.GamepadButton;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

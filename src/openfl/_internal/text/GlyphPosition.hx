@@ -1,8 +1,10 @@
 package openfl._internal.text;
 
 
+#if lime
 import lime.math.Vector2;
 import lime.text.Glyph;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -3,14 +3,17 @@ package openfl.net; #if !flash
 
 import haxe.io.Path;
 import haxe.Timer;
-import lime.system.System;
-import lime.ui.FileDialog;
-import lime.utils.Bytes;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.system.System;
+import lime.ui.FileDialog;
+import lime.utils.Bytes;
+#end
 
 #if sys
 import sys.io.File;

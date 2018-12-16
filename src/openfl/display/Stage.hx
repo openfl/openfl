@@ -3,22 +3,6 @@ package openfl.display; #if !flash
 
 import haxe.CallStack;
 import haxe.ds.ArraySort;
-import lime.app.Application;
-import lime.app.IModule;
-import lime.graphics.RenderContext;
-import lime.graphics.RenderContextType;
-import lime.ui.Touch;
-import lime.ui.Gamepad;
-import lime.ui.GamepadAxis;
-import lime.ui.GamepadButton;
-import lime.ui.Joystick;
-import lime.ui.JoystickHatPosition;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseCursor as LimeMouseCursor;
-import lime.ui.MouseWheelMode;
-import lime.ui.Window;
-import lime.utils.Log;
 import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3DClearMask;
@@ -45,6 +29,25 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+
+#if lime
+import lime.app.Application;
+import lime.app.IModule;
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
+import lime.ui.Touch;
+import lime.ui.Gamepad;
+import lime.ui.GamepadAxis;
+import lime.ui.GamepadButton;
+import lime.ui.Joystick;
+import lime.ui.JoystickHatPosition;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
+import lime.ui.MouseCursor as LimeMouseCursor;
+import lime.ui.MouseWheelMode;
+import lime.ui.Window;
+import lime.utils.Log;
+#end
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;

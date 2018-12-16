@@ -1,11 +1,6 @@
 package openfl._internal.renderer.context3D;
 
 
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.opengl.GL;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DCompareMode;
@@ -14,6 +9,14 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.GL;
+#end
 
 
 class Context3DState {

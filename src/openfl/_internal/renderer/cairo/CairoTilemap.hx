@@ -1,11 +1,6 @@
 package openfl._internal.renderer.cairo;
 
 
-import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoFormat;
-import lime.graphics.cairo.CairoPattern;
-import lime.graphics.cairo.CairoSurface;
-import lime.math.Matrix3;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CairoRenderer;
@@ -14,6 +9,14 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoFormat;
+import lime.graphics.cairo.CairoPattern;
+import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

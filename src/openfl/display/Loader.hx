@@ -2,8 +2,6 @@ package openfl.display; #if !flash
 
 
 import haxe.io.Path;
-import lime.utils.AssetLibrary as LimeAssetLibrary;
-import lime.utils.AssetManifest;
 import openfl._internal.formats.swf.SWFLiteLibrary;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -17,6 +15,11 @@ import openfl.system.LoaderContext;
 import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.AssetManifest;
+#end
 
 #if (js && html5)
 import js.html.ScriptElement;

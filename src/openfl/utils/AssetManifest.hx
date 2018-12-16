@@ -1,7 +1,9 @@
 package openfl.utils;
 
 
+#if lime
 import lime.utils.AssetManifest as LimeAssetManifest;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -9,7 +11,12 @@ import lime.utils.AssetManifest as LimeAssetManifest;
 #end
 
 
-class AssetManifest extends LimeAssetManifest {
+class AssetManifest #if lime extends LimeAssetManifest #end {
+	
+	
+	#if !lime
+	private var assets:Array<Dynamic>;
+	#end
 	
 	
 	public function new () {

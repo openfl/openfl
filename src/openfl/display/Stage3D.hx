@@ -2,8 +2,6 @@ package openfl.display; #if !flash
 
 
 import haxe.Timer;
-import lime.graphics.opengl.GL;
-import lime.graphics.RenderContext;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
@@ -15,6 +13,11 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
+
+#if lime
+import lime.graphics.opengl.GL;
+import lime.graphics.RenderContext;
+#end
 
 #if (js && html5)
 import js.html.webgl.RenderingContext;

@@ -1,7 +1,9 @@
 package openfl.ui; #if !flash
 
 
+#if lime
 import lime.ui.MouseCursor as LimeMouseCursor;
+#end
 
 
 @:enum abstract MouseCursor(String) from String to String {
@@ -22,6 +24,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	@:noCompletion private var __WAIT = "wait";
 	@:noCompletion private var __WAIT_ARROW = "waitarrow";
 	
+	#if lime
 	@:from private static function fromLimeCursor (cursor:LimeMouseCursor):MouseCursor {
 		
 		return switch (cursor) {
@@ -44,6 +47,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		}
 		
 	}
+	#end
 	
 }
 

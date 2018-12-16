@@ -1,13 +1,16 @@
 package openfl.filters; #if !flash
 
 
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.math.RGBA;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.math.RGBA;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

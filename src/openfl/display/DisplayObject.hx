@@ -1,10 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.graphics.cairo.Cairo;
-import lime.ui.MouseCursor;
-import lime.utils.ObjectPool;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -33,6 +29,15 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Vector;
+
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.graphics.cairo.Cairo;
+import lime.ui.MouseCursor;
+import lime.utils.ObjectPool;
+#else
+import openfl.ui.MouseCursor;
+#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -759,7 +764,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheBitmapData3:BitmapData;
 	@:noCompletion private var __cacheBitmapMatrix:Matrix;
 	@:noCompletion private var __cacheBitmapRenderer:DisplayObjectRenderer;
-	@:noCompletion private var __cairo:Cairo;
+	@:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __customRenderClear:Bool;
 	@:noCompletion private var __customRenderEvent:RenderEvent;
@@ -2151,6 +2156,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				}
 				#end
 				
+				#if lime
 				if (__cacheBitmapRenderer == null || renderType != __cacheBitmapRenderer.__type) {
 					
 					if (renderType == OPENGL) {
@@ -2180,6 +2186,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					__cacheBitmapRenderer.__worldColorTransform = new ColorTransform ();
 					
 				}
+				#else
+				return false;
+				#end
 				
 				if (__cacheBitmapColorTransform == null) __cacheBitmapColorTransform = new ColorTransform ();
 				

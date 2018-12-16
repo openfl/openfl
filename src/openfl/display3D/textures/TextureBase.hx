@@ -1,12 +1,6 @@
 package openfl.display3D.textures; #if !flash
 
 
-import lime._internal.graphics.ImageCanvasUtil;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.Image;
-import lime.graphics.RenderContext;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
@@ -14,6 +8,15 @@ import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.Image;
+import lime.graphics.RenderContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

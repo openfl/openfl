@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 
-import lime._internal.graphics.ImageCanvasUtil; // TODO
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.CanvasRenderer;
@@ -19,6 +18,10 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+#end
 
 #if (js && html5)
 import js.html.CanvasElement;

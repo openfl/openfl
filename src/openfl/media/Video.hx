@@ -1,11 +1,6 @@
 package openfl.media; #if !flash
 
 
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.RenderContext;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.context3D.Context3DVideo;
@@ -26,6 +21,14 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
+
+#if lime
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

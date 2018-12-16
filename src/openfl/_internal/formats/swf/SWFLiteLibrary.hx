@@ -2,14 +2,6 @@ package openfl._internal.formats.swf;
 
 
 import haxe.Unserializer;
-import lime.app.Future;
-import lime.app.Promise;
-import lime.graphics.Image;
-import lime.graphics.ImageChannel;
-import lime.math.Vector2;
-import lime.utils.AssetLibrary;
-import lime.utils.AssetManifest;
-import lime.utils.Assets as LimeAssets;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl.display.BitmapData;
@@ -25,6 +17,20 @@ import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetType;
 import openfl.utils.ByteArray;
+import openfl.utils.Future;
+
+#if lime
+import lime.app.Promise;
+import lime.graphics.Image;
+import lime.graphics.ImageChannel;
+import lime.math.Vector2;
+// import lime.utils.AssetLibrary;
+import lime.utils.AssetManifest;
+import lime.utils.Assets as LimeAssets;
+#else
+import openfl.utils.AssetLibrary;
+import openfl.utils.AssetManifest;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -91,6 +97,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	#if lime
 	public override function getImage (id:String):Image {
 		
 		if (imageClassNames.exists (id)) {
@@ -133,6 +140,7 @@ import openfl.utils.ByteArray;
 		return super.getImage (id);
 		
 	}
+	#end
 	
 	
 	public override function getMovieClip (id:String):MovieClip {
@@ -149,6 +157,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	#if lime
 	public override function load ():Future<lime.utils.AssetLibrary> {
 		
 		if (id != null) {
@@ -238,8 +247,10 @@ import openfl.utils.ByteArray;
 		return promise.future;
 		
 	}
+	#end
 	
 	
+	#if lime
 	public override function loadImage (id:String):Future<Image> {
 		
 		if (imageClassNames.exists (id)) {
@@ -291,6 +302,7 @@ import openfl.utils.ByteArray;
 		return super.loadImage (id);
 		
 	}
+	#end
 	
 	
 	public override function unload ():Void {
@@ -319,6 +331,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	#if lime
 	private function __copyChannel (image:Image, alpha:Image):Void {
 		
 		if (alpha != null) {
@@ -334,6 +347,7 @@ import openfl.utils.ByteArray;
 		#end
 		
 	}
+	#end
 	
 	
 	private override function __fromManifest (manifest:AssetManifest):Void {
@@ -352,18 +366,22 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	#if lime
 	private function __load ():Future<lime.utils.AssetLibrary> {
 		
 		return super.load ();
 		
 	}
+	#end
 	
 	
+	#if lime
 	private function __loadImage (id:String):Future<Image> {
 		
 		return super.loadImage (id);
 		
 	}
+	#end
 	
 	
 }

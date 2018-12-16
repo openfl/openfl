@@ -1,8 +1,6 @@
 package openfl._internal.renderer;
 
 
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.Float32Array;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -11,6 +9,11 @@ import openfl.display.GraphicsShader;
 import openfl.display.Shader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
+
+#if lime
+import lime.graphics.opengl.GLBuffer;
+import lime.utils.Float32Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

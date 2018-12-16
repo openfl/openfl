@@ -1,9 +1,6 @@
 package openfl.display;
 
 
-import openfl.display.Application;
-
-
 class ApplicationTest {
 	
 	

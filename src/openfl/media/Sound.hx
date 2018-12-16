@@ -2,15 +2,18 @@ package openfl.media; #if !flash
 
 
 import haxe.io.Path;
-import lime.app.Future;
-import lime.media.AudioBuffer;
-import lime.media.AudioSource;
-import lime.utils.UInt8Array;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
+import openfl.utils.Future;
+
+#if lime
+import lime.media.AudioBuffer;
+import lime.media.AudioSource;
+import lime.utils.UInt8Array;
+#end
 
 
 /**

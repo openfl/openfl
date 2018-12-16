@@ -1,10 +1,13 @@
 package openfl.utils;
 
 
-import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
+
+#if lime
+import lime.utils.Assets as LimeAssets;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

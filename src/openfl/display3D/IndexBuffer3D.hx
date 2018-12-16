@@ -1,11 +1,14 @@
 package openfl.display3D; #if !flash
 
 
+import openfl.utils.ByteArray;
+import openfl.Vector;
+
+#if lime
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt16Array;
-import openfl.utils.ByteArray;
-import openfl.Vector;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

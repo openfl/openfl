@@ -2,18 +2,6 @@ package openfl.display3D; #if !flash
 
 
 import haxe.io.Bytes;
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-import lime.math.Rectangle as LimeRectangle;
-import lime.math.Vector2;
-import lime.utils.Float32Array;
-import lime.utils.UInt8Array;
-import lime.utils.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
@@ -32,6 +20,21 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
+import lime.math.Rectangle as LimeRectangle;
+import lime.math.Vector2;
+import lime.utils.Float32Array;
+import lime.utils.UInt8Array;
+import lime.utils.UInt16Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

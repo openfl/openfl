@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 
-import lime._internal.graphics.ImageCanvasUtil; // TODO
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CanvasRenderer;
@@ -10,6 +9,10 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+#end
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)

@@ -1,7 +1,7 @@
 package openfl.geom; #if !flash
 
 
-#if !openfl_unit_testing
+#if lime
 import lime.math.Rectangle as LimeRectangle;
 import lime.utils.ObjectPool;
 #end
@@ -61,7 +61,7 @@ import lime.utils.ObjectPool;
 class Rectangle {
 	
 	
-	#if !openfl_unit_testing
+	#if lime
 	@:noCompletion private static var __limeRectangle:LimeRectangle;
 	@:noCompletion private static var __pool = new ObjectPool<Rectangle> (function () return new Rectangle (), function (r) r.setTo (0, 0, 0, 0));
 	#end
@@ -581,7 +581,7 @@ class Rectangle {
 	}
 	
 	
-	#if !openfl_unit_testing
+	#if lime
 	@:noCompletion private function __toLimeRectangle ():LimeRectangle {
 		
 		if (__limeRectangle == null) {

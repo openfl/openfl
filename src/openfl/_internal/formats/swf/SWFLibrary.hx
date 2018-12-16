@@ -3,9 +3,6 @@ package openfl._internal.formats.swf;
 
 import haxe.Resource;
 import haxe.Unserializer;
-import lime.graphics.Image;
-import lime.app.Future;
-import lime.app.Promise;
 import openfl.display.BitmapData;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
@@ -21,6 +18,12 @@ import openfl.utils.AssetLibrary;
 import openfl.utils.Assets;
 import openfl.utils.AssetType;
 import openfl.utils.ByteArray;
+import openfl.utils.Future;
+
+#if lime
+import lime.graphics.Image;
+import lime.app.Promise;
+#end
 
 #if flash
 import flash.display.AVM1Movie;

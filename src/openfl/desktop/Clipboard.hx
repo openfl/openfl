@@ -1,11 +1,10 @@
 package openfl.desktop; #if !flash
 
 
-#if !openfl_unit_testing
-import lime.system.Clipboard as LimeClipboard;
 import openfl.utils.Object;
-#else
-typedef Object = Dynamic;
+
+#if lime
+import lime.system.Clipboard as LimeClipboard;
 #end
 
 #if !openfl_debug
@@ -49,7 +48,7 @@ class Clipboard {
 	
 	public function clear ():Void {
 		
-		#if !openfl_unit_testing
+		#if lime
 		if (__systemClipboard) {
 			
 			LimeClipboard.text = null;
@@ -67,7 +66,7 @@ class Clipboard {
 	
 	public function clearData (format:ClipboardFormats):Void {
 		
-		#if !openfl_unit_testing
+		#if lime
 		if (__systemClipboard) {
 			
 			switch (format) {
@@ -114,7 +113,7 @@ class Clipboard {
 			
 		}
 		
-		#if !openfl_unit_testing
+		#if lime
 		if (__systemClipboard) {
 			
 			return switch (format) {
@@ -141,7 +140,7 @@ class Clipboard {
 	
 	public function hasFormat (format:ClipboardFormats):Bool {
 		
-		#if !openfl_unit_testing
+		#if lime
 		if (__systemClipboard) {
 			
 			return switch (format) {
@@ -168,7 +167,7 @@ class Clipboard {
 	
 	public function setData (format:ClipboardFormats, data:Object, serializable:Bool = true):Bool {
 		
-		#if !openfl_unit_testing
+		#if lime
 		if (__systemClipboard) {
 			
 			switch (format) {
@@ -215,9 +214,7 @@ class Clipboard {
 	
 	public function setDataHandler (format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool {
 		
-		#if !openfl_unit_testing
 		openfl._internal.Lib.notImplemented ();
-		#end
 		return false;
 		
 	}

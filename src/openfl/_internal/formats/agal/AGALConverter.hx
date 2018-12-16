@@ -2,7 +2,6 @@ package openfl._internal.formats.agal;
 
 
 import haxe.Int64;
-import lime.graphics.opengl.GL;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
@@ -10,6 +9,10 @@ import openfl.display3D.Context3DWrapMode;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
+
+#if lime
+import lime.graphics.opengl.GL;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

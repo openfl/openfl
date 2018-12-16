@@ -1,12 +1,5 @@
 package openfl.filters; #if !flash
 
-#if (js && html5)
-import lime._internal.graphics.ImageCanvasUtil;
-#end
-
-import lime._internal.graphics.ImageDataUtil;
-import lime.math.Vector2;
-import lime.math.Vector4;
 
 import openfl.display.BitmapDataChannel;
 import openfl.geom.Rectangle;
@@ -14,6 +7,12 @@ import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
+
+#if lime
+import lime._internal.graphics.ImageDataUtil;
+import lime.math.Vector2;
+import lime.math.Vector4;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

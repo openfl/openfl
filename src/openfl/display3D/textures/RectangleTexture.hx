@@ -1,12 +1,15 @@
 package openfl.display3D.textures; #if !flash
 
 
-import lime.graphics.Image;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.graphics.Image;
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

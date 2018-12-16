@@ -1,10 +1,6 @@
 package openfl.display;
 
 
-import massive.munit.Assert;
-import openfl.display.JPEGEncoderOptions;
-
-
 class JPEGEncoderOptionsTest {
 	
 	

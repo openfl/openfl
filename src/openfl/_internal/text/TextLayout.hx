@@ -2,6 +2,8 @@ package openfl._internal.text;
 
 
 import haxe.io.Bytes;
+
+#if lime
 import lime.math.Vector2;
 import lime.system.System;
 import lime.text.harfbuzz.HBBuffer;
@@ -13,6 +15,7 @@ import lime.text.harfbuzz.HBScript;
 import lime.text.harfbuzz.HB;
 import lime.text.Font;
 import lime.text.Glyph;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

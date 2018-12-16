@@ -1183,7 +1183,6 @@ class InteractiveObject extends DisplayObject {
 	public function requestSoftKeyboard ():Bool {
 		
 		openfl._internal.Lib.notImplemented ();
-		
 		return false;
 		
 	}

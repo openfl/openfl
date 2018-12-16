@@ -3,13 +3,16 @@ package openfl.display3D.textures; #if !flash
 
 import haxe.io.Bytes;
 import haxe.Timer;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

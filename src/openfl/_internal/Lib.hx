@@ -2,9 +2,15 @@ package openfl._internal;
 
 
 import haxe.PosInfos;
-import lime.utils.Log;
+
+#if !openfl_unit_testing
 import openfl.display.Application;
 import openfl.display.MovieClip;
+#end
+
+#if lime
+import lime.utils.Log;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -15,8 +21,10 @@ import openfl.display.MovieClip;
 class Lib {
 	
 	
+	#if !openfl_unit_testing
 	public static var application:Application;
-	public static var current:MovieClip #if flash = flash.Lib.current #end;
+	public static var current: MovieClip #if flash = flash.Lib.current #end;
+	#end
 	
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
 	
@@ -29,7 +37,11 @@ class Lib {
 			
 			__sentWarnings.set (api, true);
 			
+			#if lime
 			Log.warn (posInfo.methodName + " is not implemented", posInfo);
+			#else
+			trace (posInfo.methodName, posInfo);
+			#end
 			
 		}
 		

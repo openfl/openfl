@@ -2,7 +2,10 @@ package openfl.display; #if !flash
 
 
 import openfl.display3D.Context3D;
+
+#if lime
 import lime.utils.Float32Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

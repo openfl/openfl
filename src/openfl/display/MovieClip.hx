@@ -1,7 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime.utils.Log;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
@@ -20,6 +19,10 @@ import openfl.events.MouseEvent;
 import openfl.filters.*;
 import openfl.geom.ColorTransform;
 import openfl.text.TextField;
+
+#if lime
+import lime.utils.Log;
+#end
 
 #if hscript
 import hscript.Interp;

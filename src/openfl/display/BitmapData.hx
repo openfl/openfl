@@ -2,9 +2,32 @@ package openfl.display; #if !flash
 
 
 import haxe.macro.Context;
+import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.symbols.BitmapSymbol;
+import openfl._internal.utils.PerlinNoise;
+import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.Context3DClearMask;
+import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.errors.Error;
+import openfl.errors.IOError;
+import openfl.errors.TypeError;
+import openfl.filters.BitmapFilter;
+import openfl.geom.ColorTransform;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
+import openfl.utils.Future;
+import openfl.utils.Object;
+import openfl.Lib;
+import openfl.Vector;
+
+#if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.app.Application;
-import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoFilter;
@@ -28,27 +51,7 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import lime.utils.UInt16Array;
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.BitmapSymbol;
-import openfl._internal.utils.PerlinNoise;
-import openfl.display3D.textures.TextureBase;
-import openfl.display3D.textures.RectangleTexture;
-import openfl.display3D.Context3DClearMask;
-import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.errors.Error;
-import openfl.errors.IOError;
-import openfl.errors.TypeError;
-import openfl.filters.BitmapFilter;
-import openfl.geom.ColorTransform;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.utils.ByteArray;
-import openfl.utils.Object;
-import openfl.Lib;
-import openfl.Vector;
+#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -156,9 +159,12 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private static inline var __vertexBufferStride = 14;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
-	@:noCompletion private static var __tempVector:Vector2 = new Vector2 ();
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
+	
+	#if lime
+	@:noCompletion private static var __tempVector:Vector2 = new Vector2 ();
+	#end
 	
 	
 	/**
@@ -171,7 +177,7 @@ class BitmapData implements IBitmapDrawable {
 	 * 
 	 * In Flash Player, this property is always `null`.
 	 */
-	public var image (default, null):Image;
+	public var image (default, null):#if lime Image #else Dynamic #end;
 	
 	// #if !flash_doc_gen
 	/**
@@ -214,30 +220,30 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __blendMode:BlendMode;
 	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
 	// @:noCompletion private var __vertexBufferAlpha:Float;
-	@:noCompletion private var __framebuffer:GLFramebuffer;
-	@:noCompletion private var __framebufferContext:RenderContext;
+	@:noCompletion private var __framebuffer:#if lime GLFramebuffer #else Dynamic #end;
+	@:noCompletion private var __framebufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@:noCompletion private var __indexBufferContext:RenderContext;
-	@:noCompletion private var __indexBufferData:UInt16Array;
+	@:noCompletion private var __indexBufferContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __indexBufferData:#if lime UInt16Array #else Dynamic #end;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __scrollRect:Rectangle;
-	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
-	@:noCompletion private var __surface:CairoSurface;
+	@:noCompletion private var __stencilBuffer:#if lime GLRenderbuffer #else Dynamic #end;
+	@:noCompletion private var __surface:#if lime CairoSurface #else Dynamic #end;
 	@:noCompletion private var __symbol:BitmapSymbol;
 	@:noCompletion private var __texture:RectangleTexture;
-	@:noCompletion private var __textureContext:RenderContext;
+	@:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@:noCompletion private var __vertexBufferContext:RenderContext;
-	@:noCompletion private var __vertexBufferData:Float32Array;
+	@:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __vertexBufferData:#if lime Float32Array #else Dynamic #end;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -1174,6 +1180,7 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
+	#if lime
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
 		
 		if (image == null || image.buffer == null) return null;
@@ -1184,6 +1191,7 @@ class BitmapData implements IBitmapDrawable {
 		return bitmapData.image != null ? bitmapData : null;
 		
 	}
+	#end
 	
 	
 	public static function fromTexture (texture:RectangleTexture):BitmapData {

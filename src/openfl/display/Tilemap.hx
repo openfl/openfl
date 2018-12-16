@@ -1,11 +1,14 @@
 package openfl.display;
 
 
-import lime.graphics.RenderContext;
 import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.flash.FlashTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.RenderContext;
+#end
 
 #if !flash
 import openfl._internal.renderer.cairo.CairoBitmap;

@@ -1,13 +1,18 @@
 package openfl.display; #if !flash
 
 
-import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.ui.MouseCursor;
+#else
+import openfl.ui.MouseCursor;
+#end
 
 
 /**

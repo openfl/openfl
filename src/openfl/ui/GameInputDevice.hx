@@ -1,8 +1,11 @@
 package openfl.ui; #if !flash
 
 
-import lime.ui.Gamepad;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.ui.Gamepad;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

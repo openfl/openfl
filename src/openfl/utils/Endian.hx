@@ -1,7 +1,9 @@
 package openfl.utils; #if !flash #if !openfljs
 
 
+#if lime
 import lime.system.Endian as LimeEndian;
+#end
 
 
 /**
@@ -25,6 +27,7 @@ import lime.system.Endian as LimeEndian;
 	public var LITTLE_ENDIAN = 1;
 	
 	
+	#if lime
 	@:from private static function fromLimeEndian (value:LimeEndian):Endian {
 		
 		return switch (value) {
@@ -36,6 +39,7 @@ import lime.system.Endian as LimeEndian;
 		}
 		
 	}
+	#end
 	
 	
 	@:from private static function fromString (value:String):Endian {
@@ -51,6 +55,7 @@ import lime.system.Endian as LimeEndian;
 	}
 	
 	
+	#if lime
 	@:to private static function toLimeEndian (value:Int):LimeEndian {
 		
 		return switch (value) {
@@ -62,6 +67,7 @@ import lime.system.Endian as LimeEndian;
 		}
 		
 	}
+	#end
 	
 	
 	@:to private static function toString (value:Int):String {
@@ -83,7 +89,9 @@ import lime.system.Endian as LimeEndian;
 #else
 
 
+#if lime
 import lime.system.Endian as LimeEndian;
+#end
 
 
 @:enum abstract Endian(String) from String to String {
@@ -93,6 +101,7 @@ import lime.system.Endian as LimeEndian;
 	public var LITTLE_ENDIAN = "littleEndian";
 	
 	
+	#if lime
 	@:from private static function fromLimeEndian (value:LimeEndian):Endian {
 		
 		return switch (value) {
@@ -117,6 +126,7 @@ import lime.system.Endian as LimeEndian;
 		}
 		
 	}
+	#end
 	
 	
 }

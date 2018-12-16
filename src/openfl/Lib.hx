@@ -4,8 +4,6 @@ package openfl;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
-import lime.system.System;
-import lime.utils.Log;
 import openfl._internal.Lib as InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
@@ -13,6 +11,11 @@ import openfl.display.Stage;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.net.URLVariables;
+
+#if lime
+import lime.system.System;
+import lime.utils.Log;
+#end
 
 #if swf
 #if flash

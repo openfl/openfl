@@ -1,8 +1,6 @@
 package openfl.display;
 
 
-import massive.munit.Assert;
-import openfl.display.GraphicsPath;
 import openfl.Vector;
 
 

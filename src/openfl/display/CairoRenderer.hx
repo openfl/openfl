@@ -1,12 +1,15 @@
 package openfl.display; #if !flash
 
 
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+
+#if lime
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoOperator;
 import lime.graphics.CairoRenderContext;
 import lime.math.Matrix3;
-import openfl.geom.Matrix;
-import openfl.geom.Rectangle;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

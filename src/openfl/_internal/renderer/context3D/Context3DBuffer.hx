@@ -1,11 +1,14 @@
 package openfl._internal.renderer.context3D;
 
 
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+
+#if lime
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+#end
 
 
 class Context3DBuffer {

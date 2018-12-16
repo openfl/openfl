@@ -370,6 +370,21 @@ class MatrixTest {
 
 	}
 
+	@Test public function deltaTransformPoint() {
+		var matrix = new Matrix();
+		matrix.a = 1.0;
+		matrix.b = 2.0;
+		matrix.c = 3.0;
+		matrix.d = 4.0;
+
+		var point = new Point(5.0, 6.0);
+
+		var result = matrix.deltaTransformPoint(point);
+
+		Assert.areEqual(23.0, result.x);
+		Assert.areEqual(34.0, result.y);
+	}
+
 	@Test public function identity() {
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		matrix.identity();
@@ -433,6 +448,15 @@ class MatrixTest {
 
 		Assert.areEqual(11.0, matrix.tx);
 		Assert.areEqual(12.0, matrix.ty);
+	}
+
+	@Test public function transformPoint() {
+		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+
+		var result = matrix.transformPoint(new Point(10.0, 50.0));
+
+		Assert.areEqual(165.0, result.x);
+		Assert.areEqual(226.0, result.y);
 	}
 
 	@Test public function translate() {

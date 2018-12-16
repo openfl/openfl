@@ -1,12 +1,6 @@
 package openfl.utils;
 
 
-import lime.app.Future;
-import lime.app.Promise;
-import lime.text.Font as LimeFont;
-import lime.utils.AssetLibrary as LimeAssetLibrary;
-import lime.utils.Assets as LimeAssets;
-import lime.utils.Log;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
@@ -15,6 +9,15 @@ import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.text.Font;
+import openfl.utils.Future;
+
+#if lime
+import lime.app.Promise;
+import lime.text.Font as LimeFont;
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.Assets as LimeAssets;
+import lime.utils.Log;
+#end
 
 
 /**

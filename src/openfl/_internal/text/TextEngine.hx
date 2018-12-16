@@ -3,10 +3,6 @@ package openfl._internal.text;
 
 import haxe.Timer;
 import haxe.Utf8;
-import lime.graphics.cairo.CairoFontFace;
-import lime.graphics.opengl.GLTexture;
-import lime.system.System;
-import lime.text.UTF8String;
 import openfl.Vector;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -21,6 +17,13 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
+
+#if lime
+import lime.graphics.cairo.CairoFontFace;
+import lime.graphics.opengl.GLTexture;
+import lime.system.System;
+import lime.text.UTF8String;
+#end
 
 #if (js && html5)
 import js.html.CanvasElement;

@@ -1,8 +1,10 @@
 package openfl.ui; #if !flash
 
 
+#if lime
 import lime.app.Application;
 import lime.ui.MouseCursor as LimeMouseCursor;
+#end
 
 
 /**
@@ -53,11 +55,13 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		
 		__hidden = true;
 		
+		#if lime
 		for (window in Application.current.windows) {
 			
 			window.cursor = null;
 			
 		}
+		#end
 		
 	}
 	
@@ -104,6 +108,8 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	@:noCompletion private static function set_cursor (value:MouseCursor):MouseCursor {
 		
 		if (value == null) value = AUTO;
+		
+		#if lime
 		var setCursor:LimeMouseCursor = null;
 		
 		switch (value) {
@@ -133,6 +139,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 			}
 			
 		}
+		#end
 		
 		return __cursor = value;
 		

@@ -9,14 +9,17 @@ import haxe.io.FPHelper;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
-import lime.app.Future;
+import openfl.errors.EOFError;
+import openfl.net.ObjectEncoding;
+import openfl.utils.Future;
+
+#if lime
 import lime.system.System;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
-import openfl.errors.EOFError;
-import openfl.net.ObjectEncoding;
+#end
 
 #if format
 import format.amf.Reader as AMFReader;

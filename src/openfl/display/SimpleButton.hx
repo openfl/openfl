@@ -1,7 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime.ui.MouseCursor;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl.display.DisplayObject;
@@ -11,6 +10,10 @@ import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 import openfl.Vector;
+
+#if lime
+import lime.ui.MouseCursor;
+#end
 
 
 /**

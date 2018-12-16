@@ -1,8 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.RenderContext;
-import lime.graphics.RenderContextType;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
@@ -10,6 +8,11 @@ import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

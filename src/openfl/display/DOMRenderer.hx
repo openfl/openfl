@@ -1,10 +1,13 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.DOMRenderContext;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.DOMRenderContext;
+#end
 
 #if (js && html5)
 import js.html.Element;

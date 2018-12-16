@@ -1,10 +1,13 @@
 package openfl._internal.renderer.context3D;
 
 
-import lime.utils.Float32Array;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.OpenGLRenderer;
+
+#if lime
+import lime.utils.Float32Array;
+#end
 
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;

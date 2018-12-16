@@ -2,12 +2,6 @@ package openfl.text; #if !flash
 
 
 import haxe.Timer;
-import lime.system.Clipboard;
-import lime.text.UTF8String;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseCursor;
-import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTextField;
@@ -46,6 +40,15 @@ import openfl.geom.Rectangle;
 import openfl.net.URLRequest;
 import openfl.ui.Keyboard;
 import openfl.Lib;
+
+#if lime
+import lime.system.Clipboard;
+import lime.text.UTF8String;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
+import lime.ui.MouseCursor;
+import lime.utils.Log;
+#end
 
 #if (js && html5)
 import js.html.DivElement;

@@ -1,13 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.cairo.Cairo;
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.Image;
-import lime.graphics.RenderContext;
-import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
-import lime.utils.UInt16Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.context3D.Context3DBuffer;
@@ -30,6 +23,16 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+
+#if lime
+import lime.graphics.cairo.Cairo;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.Image;
+import lime.graphics.RenderContext;
+import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
+import lime.utils.UInt16Array;
+#end
 
 #if (js && html5)
 import js.html.CanvasElement;

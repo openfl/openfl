@@ -1,12 +1,15 @@
 package openfl.display;
 
 
-import lime.utils.AssetType;
-import lime.utils.Preloader as LimePreloader;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
+
+#if lime
+import lime.utils.AssetType;
+import lime.utils.Preloader as LimePreloader;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

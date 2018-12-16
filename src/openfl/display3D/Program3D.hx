@@ -1,15 +1,6 @@
 package openfl.display3D; #if !flash
 
 
-import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
-import lime.graphics.opengl.GLUniformLocation;
-import lime.graphics.RenderContext;
-import lime.utils.BytePointer;
-import lime.utils.Float32Array;
-import lime.utils.Log;
-import lime.utils.LogLevel;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
@@ -20,6 +11,18 @@ import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+
+#if lime
+import lime.graphics.opengl.GL;
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLShader;
+import lime.graphics.opengl.GLUniformLocation;
+import lime.graphics.RenderContext;
+import lime.utils.BytePointer;
+import lime.utils.Float32Array;
+import lime.utils.Log;
+import lime.utils.LogLevel;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

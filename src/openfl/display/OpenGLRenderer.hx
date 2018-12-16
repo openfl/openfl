@@ -1,16 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.opengl.ext.KHR_debug;
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-import lime.math.Matrix4;
-import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
 import openfl._internal.renderer.context3D.Context3DMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl.display3D.Context3DClearMask;
@@ -23,6 +13,19 @@ import openfl.display.Stage;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.opengl.ext.KHR_debug;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
+import lime.math.Matrix4;
+import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

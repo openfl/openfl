@@ -1,11 +1,12 @@
 package openfl.display;
 
 
-#if !openfl_unit_testing
-import lime.app.Application as LimeApplication;
-import lime.ui.WindowAttributes;
 import openfl._internal.Lib;
 import openfl.display.MovieClip;
+
+#if lime
+import lime.app.Application as LimeApplication;
+import lime.ui.WindowAttributes;
 #end
 
 #if !openfl_debug
@@ -18,13 +19,14 @@ import openfl.display.MovieClip;
 @:access(openfl.display.Window)
 
 
-class Application #if !openfl_unit_testing extends LimeApplication #end {
+class Application #if lime extends LimeApplication #end {
 	
 	
 	public function new () {
 		
-		#if !openfl_unit_testing
+		#if lime
 		super ();
+		#end
 		
 		if (Lib.application == null) {
 			
@@ -37,12 +39,11 @@ class Application #if !openfl_unit_testing extends LimeApplication #end {
 		Lib.current.__loaderInfo = LoaderInfo.create (null);
 		Lib.current.__loaderInfo.content = Lib.current;
 		#end
-		#end
 		
 	}
 	
 	
-	#if !openfl_unit_testing
+	#if lime
 	public override function createWindow (attributes:WindowAttributes):Window {
 		
 		var window = new Window (this, attributes);
