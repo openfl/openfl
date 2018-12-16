@@ -1113,8 +1113,6 @@ class TextEngine {
 						var tempPositions = getPositions (text, tempIndex, tempRangeEnd);
 						positions = positions.concat(tempPositions);
 						
-						widthValue += getPositionsWidth (positions);
-						
 					}
 					
 					if (tempRangeEnd != endIndex) {
@@ -1128,7 +1126,12 @@ class TextEngine {
 						
 					}
 					
-					else break;
+					else {
+						
+						widthValue = getPositionsWidth (positions);
+						break;
+						
+					}
 					
 				}
 				
