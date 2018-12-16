@@ -1513,6 +1513,13 @@ import js.html.CanvasRenderingContext2D;
 			__transformDirty = true;
 			
 		}
+		#else
+		if (__bounds != null) {
+
+			__dirty = true;
+			__transformDirty = true;
+
+		}
 		#end
 		
 		__bitmap = null;
