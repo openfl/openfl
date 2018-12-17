@@ -4,8 +4,10 @@ import haxe.ds.IntMap;
 
 class GLStats {
 	
-	private static var drawCallsCounters:IntMap<DrawCallCounter> = [ DrawCallContext.STAGE => new DrawCallCounter(), 
-																	 DrawCallContext.STAGE3D => new DrawCallCounter()];
+	private static var drawCallsCounters:IntMap<Counter> = [ DrawCallContext.STAGE => new Counter(), 
+																	 DrawCallContext.STAGE3D => new Counter()];
+
+	public static var quadCounter = new Counter ();
 	
 	
 	public static function incrementDrawCall (context: DrawCallContext):Void {
@@ -29,7 +31,7 @@ class GLStats {
 		var total = 0;
 		for (dcCounter in drawCallsCounters) {
 			
-			total += dcCounter.currentDrawCallsNum;
+			total += dcCounter.currentCount;
 			
 		}
 				
@@ -40,7 +42,7 @@ class GLStats {
 	
 	public static function contextDrawCalls (context: DrawCallContext):Int { 
 		
-		return drawCallsCounters.get(context).currentDrawCallsNum;
+		return drawCallsCounters.get(context).currentCount;
 		
 	}
 	

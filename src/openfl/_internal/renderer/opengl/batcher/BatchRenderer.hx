@@ -240,6 +240,9 @@ class BatchRenderer {
 		setVertex(3);
 
 		currentQuadIndex++;
+		#if gl_stats
+			GLStats.quadCounter.increment();
+		#end
 	}
 
 	/** render all the quads we collected **/
