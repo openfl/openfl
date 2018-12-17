@@ -46,8 +46,8 @@ class ShaderBuffer {
 	// public var overrideValues:Array<Array<Dynamic>>;
 	public var paramBoolCount:Int;
 	public var paramCount:Int;
-	public var paramData:Float32Array;
-	public var paramDataBuffer:GLBuffer;
+	public var paramData:#if lime Float32Array #else Dynamic #end;
+	public var paramDataBuffer:#if lime GLBuffer #else Dynamic #end;
 	public var paramDataLength:Int;
 	public var paramFloatCount:Int;
 	public var paramIntCount:Int;

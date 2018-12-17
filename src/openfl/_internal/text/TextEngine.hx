@@ -22,7 +22,6 @@ import openfl.text.TextFormatAlign;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
-import lime.text.UTF8String;
 #end
 
 #if (js && html5)
@@ -110,13 +109,13 @@ class TextEngine {
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
-	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __texture:#if lime GLTexture #else Dynamic #end;
 	//@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	//@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	//@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	private var __useIntAdvances:Null<Bool>;
 	
-	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
+	@:noCompletion @:dox(hide) public var __cairoFont:#if lime CairoFontFace #else Dynamic #end;
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
 	

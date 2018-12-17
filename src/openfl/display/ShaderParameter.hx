@@ -32,7 +32,7 @@ import lime.utils.Float32Array;
 	@:noCompletion private var __isInt:Bool;
 	@:noCompletion private var __isUniform:Bool;
 	@:noCompletion private var __length:Int;
-	@:noCompletion private var __uniformMatrix:Float32Array;
+	@:noCompletion private var __uniformMatrix:#if lime Float32Array #else Dynamic #end;
 	@:noCompletion private var __useArray:Bool;
 	
 	
@@ -254,6 +254,7 @@ import lime.utils.Float32Array;
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void {
 		
 		var gl = context.gl;
@@ -400,6 +401,7 @@ import lime.utils.Float32Array;
 		}
 		
 	}
+	#end
 	
 	
 	

@@ -24,10 +24,10 @@ import lime.utils.UInt16Array;
 	
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __elementType:Int;
-	@:noCompletion private var __id:GLBuffer;
+	@:noCompletion private var __id:#if lime GLBuffer #else Dynamic #end;
 	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numIndices:Int;
-	@:noCompletion private var __tempUInt16Array:UInt16Array;
+	@:noCompletion private var __tempUInt16Array:#if lime UInt16Array #else Dynamic #end;
 	@:noCompletion private var __usage:Int;
 	
 	
@@ -61,7 +61,7 @@ import lime.utils.UInt16Array;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, byteLength:Int = -1):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end, byteLength:Int = -1):Void {
 		
 		if (data == null) return;
 		var gl = __context.gl;

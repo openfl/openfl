@@ -42,9 +42,9 @@ class TextureBase extends EventDispatcher {
 	// private var __compressedMemoryUsage:Int;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Int;
-	@:noCompletion private var __glDepthRenderbuffer:GLRenderbuffer;
-	@:noCompletion private var __glFramebuffer:GLFramebuffer;
-	@:noCompletion private var __glStencilRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __glDepthRenderbuffer:#if lime GLRenderbuffer #else Dynamic #end;
+	@:noCompletion private var __glFramebuffer:#if lime GLFramebuffer #else Dynamic #end;
+	@:noCompletion private var __glStencilRenderbuffer:#if lime GLRenderbuffer #else Dynamic #end;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
@@ -52,8 +52,8 @@ class TextureBase extends EventDispatcher {
 	// private var __outputTextureMemoryUsage:Bool = false;
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
-	@:noCompletion private var __textureContext:RenderContext;
-	@:noCompletion private var __textureID:GLTexture;
+	@:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __textureID:#if lime GLTexture #else Dynamic #end;
 	@:noCompletion private var __textureTarget:Int;
 	@:noCompletion private var __width:Int;
 	
@@ -160,7 +160,7 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer {
+	@:noCompletion private function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):#if lime GLFramebuffer #else Dynamic #end {
 		
 		var gl = __context.gl;
 		
@@ -233,6 +233,7 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __getImage (bitmapData:BitmapData):Image {
 		
 		var image = bitmapData.image;
@@ -292,9 +293,10 @@ class TextureBase extends EventDispatcher {
 		return image;
 		
 	}
+	#end
 	
 	
-	@:noCompletion private function __getTexture ():GLTexture {
+	@:noCompletion private function __getTexture ():#if lime GLTexture #else Dynamic #end {
 		
 		return __textureID;
 		

@@ -30,14 +30,14 @@ import js.Browser;
 class CanvasRenderer extends DisplayObjectRenderer {
 	
 	
-	public var context:Canvas2DRenderContext;
+	public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
 	public var pixelRatio (default, null):Float = 1;
 	
 	@:noCompletion private var __isDOM:Bool;
 	@:noCompletion private var __tempMatrix:Matrix;
 	
 	
-	@:noCompletion private function new (context:Canvas2DRenderContext) {
+	@:noCompletion private function new (context:#if lime Canvas2DRenderContext #else Dynamic #end) {
 		
 		super ();
 		
@@ -49,14 +49,14 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applySmoothing (context:Canvas2DRenderContext, value:Bool) {
+	public function applySmoothing (context:#if lime Canvas2DRenderContext #else Dynamic #end, value:Bool) {
 		
 		context.imageSmoothingEnabled = value;
 		
 	}
 	
 	
-	public function setTransform (transform:Matrix, context:Canvas2DRenderContext = null):Void {
+	public function setTransform (transform:Matrix, context:#if lime Canvas2DRenderContext #else Dynamic #end = null):Void {
 		
 		if (context == null) {
 			
@@ -206,7 +206,7 @@ class CanvasRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private function __setBlendModeContext (context:Canvas2DRenderContext, value:BlendMode):Void {
+	@:noCompletion private function __setBlendModeContext (context:#if lime Canvas2DRenderContext #else Dynamic #end, value:BlendMode):Void {
 		
 		switch (value) {
 			

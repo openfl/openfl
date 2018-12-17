@@ -190,7 +190,9 @@ class Sound extends EventDispatcher {
 	public var url (default, null):String;
 	
 	
+	#if lime
 	@:noCompletion private var __buffer:AudioBuffer;
+	#end
 	
 	
 	#if openfljs
@@ -247,12 +249,14 @@ class Sound extends EventDispatcher {
 	
 	public function close ():Void {
 		
+		#if lime
 		if (__buffer != null) {
 			
 			__buffer.dispose ();
 			__buffer = null;
 			
 		}
+		#end
 		
 	}
 	
@@ -260,6 +264,7 @@ class Sound extends EventDispatcher {
 	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	
 	
+	#if lime
 	public static function fromAudioBuffer (buffer:AudioBuffer):Sound {
 		
 		var sound = new Sound ();
@@ -267,11 +272,16 @@ class Sound extends EventDispatcher {
 		return sound;
 		
 	}
+	#end
 	
 	
 	public static function fromFile (path:String):Sound {
 		
+		#if lime
 		return fromAudioBuffer (AudioBuffer.fromFile (path));
+		#else
+		return null;
+		#end
 		
 	}
 	
@@ -356,6 +366,7 @@ class Sound extends EventDispatcher {
 		
 		url = stream.url;
 		
+		#if lime
 		#if (js && html5)
 		
 		var defaultLibrary = lime.utils.Assets.getLibrary ("default"); // TODO: Improve this
@@ -374,6 +385,7 @@ class Sound extends EventDispatcher {
 		
 		AudioBuffer.loadFromFile (url).onComplete (AudioBuffer_onURLLoad).onError (function (_) AudioBuffer_onURLLoad (null));
 		
+		#end
 		#end
 		
 	}
@@ -396,6 +408,7 @@ class Sound extends EventDispatcher {
 			
 		}
 		
+		#if lime
 		__buffer = AudioBuffer.fromBytes (bytes);
 		
 		if (__buffer == null) {
@@ -407,28 +420,39 @@ class Sound extends EventDispatcher {
 			dispatchEvent (new Event (Event.COMPLETE));
 			
 		}
+		#else
+		dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
+		#end
 		
 	}
 	
 	
 	public static function loadFromFile (path:String):Future<Sound> {
 		
+		#if lime
 		return AudioBuffer.loadFromFile (path).then (function (audioBuffer) {
 			
 			return Future.withValue (fromAudioBuffer (audioBuffer));
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load audio file");
+		#end
 		
 	}
 	
 	
 	public static function loadFromFiles (paths:Array<String>):Future<Sound> {
 		
+		#if lime
 		return AudioBuffer.loadFromFiles (paths).then (function (audioBuffer) {
 			
 			return Future.withValue (fromAudioBuffer (audioBuffer));
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load audio files");
+		#end
 		
 	}
 	
@@ -442,6 +466,7 @@ class Sound extends EventDispatcher {
 			
 		}
 		
+		#if lime
 		var audioBuffer = new AudioBuffer ();
 		audioBuffer.bitsPerSample = format == "float" ? 32 : 16; // "short"
 		audioBuffer.channels = stereo ? 2 : 1;
@@ -451,6 +476,9 @@ class Sound extends EventDispatcher {
 		__buffer = audioBuffer;
 		
 		dispatchEvent (new Event (Event.COMPLETE));
+		#else
+		dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
+		#end
 		
 	}
 	
@@ -498,6 +526,7 @@ class Sound extends EventDispatcher {
 		
 		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
 		
+		#if lime
 		var source = new AudioSource (__buffer);
 		source.offset = Std.int (startTime);
 		if (loops > 1) source.loops = loops - 1;
@@ -510,6 +539,9 @@ class Sound extends EventDispatcher {
 		source.position = position;
 		
 		return new SoundChannel (source, sndTransform);
+		#else
+		return null;
+		#end
 		
 	}
 	
@@ -530,6 +562,7 @@ class Sound extends EventDispatcher {
 	
 	@:noCompletion private function get_length ():Int {
 		
+		#if lime
 		if (__buffer != null) {
 			
 			#if (js && html5 && howlerjs)
@@ -544,6 +577,7 @@ class Sound extends EventDispatcher {
 			#end
 			
 		}
+		#end
 		
 		return 0;
 		
@@ -557,6 +591,7 @@ class Sound extends EventDispatcher {
 	
 	
 	
+	#if lime
 	@:noCompletion private function AudioBuffer_onURLLoad (buffer:AudioBuffer):Void {
 		
 		if (buffer == null) {
@@ -571,6 +606,7 @@ class Sound extends EventDispatcher {
 		}
 		
 	}
+	#end
 	
 	
 }

@@ -301,6 +301,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			fillColor = (fillColor << 8) | ((fillColor >> 24) & 0xFF);
 			
+			#if lime
 			#if sys
 			var buffer = new ImageBuffer (new UInt8Array (width * height * 4), width, height);
 			buffer.format = BGRA32;
@@ -332,6 +333,7 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 			image.transparent = transparent;
+			#end
 			
 			__isValid = true;
 			readable = true;
@@ -1569,8 +1571,9 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function getSurface ():CairoImageSurface {
+	@:dox(hide) public function getSurface ():#if lime CairoImageSurface #else Dynamic #end {
 		
+		#if lime
 		if (!readable) return null;
 		
 		if (__surface == null) {
@@ -1580,6 +1583,9 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		return __surface;
+		#else
+		return null;
+		#end
 		
 	}
 	
@@ -2502,8 +2508,9 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __fromImage (image:Image):Void {
+	@:noCompletion private function __fromImage (image:#if lime Image #else Dynamic #end):Void {
 		
+		#if lime
 		if (image != null && image.buffer != null) {
 			
 			this.image = image;
@@ -2524,6 +2531,7 @@ class BitmapData implements IBitmapDrawable {
 			__isValid = true;
 			
 		}
+		#end
 		
 	}
 	

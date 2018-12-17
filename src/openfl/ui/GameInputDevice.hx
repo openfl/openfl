@@ -50,7 +50,10 @@ import lime.ui.Gamepad;
 	@:noCompletion private var __axis = new Map<Int, GameInputControl> ();
 	@:noCompletion private var __button = new Map<Int, GameInputControl> ();
 	@:noCompletion private var __controls = new Array<GameInputControl> ();
+	
+	#if lime
 	@:noCompletion private var __gamepad:Gamepad;
+	#end
 	
 	
 	#if openfljs

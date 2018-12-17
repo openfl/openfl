@@ -69,7 +69,7 @@ import lime.graphics.opengl.GLTexture;
 	}
 	
 	
-@:noCompletion private override function __getTexture ():GLTexture {
+@:noCompletion private override function __getTexture ():#if lime GLTexture #else Dynamic #end {
 	
 	#if (js && html5)
 	

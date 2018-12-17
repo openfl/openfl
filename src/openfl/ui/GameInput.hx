@@ -27,8 +27,11 @@ import lime.ui.GamepadButton;
 	public static var numDevices (default, null) = 0;
 	
 	@:noCompletion private static var __deviceList = new Array<GameInputDevice> ();
-	@:noCompletion private static var __devices = new Map<Gamepad, GameInputDevice> ();
 	@:noCompletion private static var __instances = [];
+	
+	#if lime
+	@:noCompletion private static var __devices = new Map<Gamepad, GameInputDevice> ();
+	#end
 	
 	
 	public function new () {
@@ -70,6 +73,7 @@ import lime.ui.GamepadButton;
 	}
 	
 	
+	#if lime
 	@:noCompletion private static function __getDevice (gamepad:Gamepad):GameInputDevice {
 		
 		if (gamepad == null) return null;
@@ -86,8 +90,10 @@ import lime.ui.GamepadButton;
 		return __devices.get (gamepad);
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private static function __onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
 		var device = __getDevice (gamepad);
@@ -110,8 +116,10 @@ import lime.ui.GamepadButton;
 		}
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private static function __onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
 		var device = __getDevice (gamepad);
@@ -134,8 +142,10 @@ import lime.ui.GamepadButton;
 		}
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private static function __onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
 		var device = __getDevice (gamepad);
@@ -158,8 +168,10 @@ import lime.ui.GamepadButton;
 		}
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private static function __onGamepadConnect (gamepad:Gamepad):Void {
 		
 		var device = __getDevice (gamepad);
@@ -172,8 +184,10 @@ import lime.ui.GamepadButton;
 		}
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private static function __onGamepadDisconnect (gamepad:Gamepad):Void {
 		
 		var device = __devices.get (gamepad);
@@ -198,6 +212,7 @@ import lime.ui.GamepadButton;
 		}
 		
 	}
+	#end
 	
 	
 }

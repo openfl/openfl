@@ -34,6 +34,10 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import lime.utils.UInt16Array;
+#else
+private typedef GLBuffer = Dynamic;
+private typedef GLFramebuffer = Dynamic;
+private typedef GLTexture = Dynamic;
 #end
 
 #if !openfl_debug
@@ -81,20 +85,20 @@ import lime.utils.UInt16Array;
 	public var profile (default, null):Context3DProfile = STANDARD;
 	public var totalGPUMemory (default, null):Int = 0;
 	
-	@:noCompletion private var gl:WebGLRenderContext;
+	@:noCompletion private var gl:#if lime WebGLRenderContext #else Dynamic #end;
 	
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
 	@:noCompletion private var __cleared:Bool;
-	@:noCompletion private var __context:RenderContext;
+	@:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
-	@:noCompletion private var __fragmentConstants:Float32Array;
+	@:noCompletion private var __fragmentConstants:#if lime Float32Array #else Dynamic #end;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
-	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
+	@:noCompletion private var __positionScale:#if lime Float32Array #else Dynamic #end; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __programs:Map<String, Program3D>;
 	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
@@ -103,7 +107,7 @@ import lime.utils.UInt16Array;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
-	@:noCompletion private var __vertexConstants:Float32Array;
+	@:noCompletion private var __vertexConstants:#if lime Float32Array #else Dynamic #end;
 	
 	
 	@:noCompletion private function new (stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null) {
@@ -424,6 +428,7 @@ import lime.utils.UInt16Array;
 	
 	public function drawToBitmapData (destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void {
 		
+		#if lime
 		if (destination == null) return;
 		
 		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle () : new LimeRectangle (0, 0, backBufferWidth, backBufferHeight);
@@ -463,6 +468,7 @@ import lime.utils.UInt16Array;
 			}
 			
 		}
+		#end
 		
 	}
 	

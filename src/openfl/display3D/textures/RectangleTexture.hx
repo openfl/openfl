@@ -81,7 +81,7 @@ import lime.utils.UInt8Array;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end):Void {
 		
 		var gl = __context.gl;
 		
@@ -125,6 +125,7 @@ import lime.utils.UInt8Array;
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __uploadFromImage (image:Image):Void {
 		
 		var gl = __context.gl;
@@ -178,6 +179,7 @@ import lime.utils.UInt8Array;
 		__context.__bindGLTexture2D (null);
 		
 	}
+	#end
 	
 	
 }

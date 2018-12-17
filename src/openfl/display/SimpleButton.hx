@@ -13,6 +13,8 @@ import openfl.Vector;
 
 #if lime
 import lime.ui.MouseCursor;
+#else
+import openfl.ui.MouseCursor;
 #end
 
 

@@ -15,12 +15,12 @@ import lime.text.Glyph;
 class GlyphPosition {
 	
 	
-	public var advance:Vector2;
-	public var glyph:Glyph;
-	public var offset:Vector2;
+	public var advance:#if lime Vector2 #else Dynamic #end;
+	public var glyph:#if lime Glyph #else Dynamic #end;
+	public var offset:#if lime Vector2 #else Dynamic #end;
 	
 	
-	public function new (glyph:Glyph, advance:Vector2, offset:Vector2 = null) {
+	public function new (glyph:#if lime Glyph #else Dynamic #end, advance:#if lime Vector2 #else Dynamic #end, offset:#if lime Vector2 #else Dynamic #end = null) {
 		
 		this.glyph = glyph;
 		this.advance = advance;
@@ -31,7 +31,7 @@ class GlyphPosition {
 			
 		} else {
 			
-			this.offset = new Vector2 ();
+			this.offset = #if lime new Vector2 () #else {} #end;
 			
 		}
 		

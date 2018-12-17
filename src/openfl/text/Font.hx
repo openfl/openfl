@@ -122,6 +122,7 @@ class Font #if lime extends LimeFont #end {
 	
 	public static function loadFromBytes (bytes:ByteArray):Future<Font> {
 		
+		#if lime
 		return LimeFont.loadFromBytes (bytes).then (function (limeFont) {
 			
 			var font = new Font ();
@@ -130,12 +131,16 @@ class Font #if lime extends LimeFont #end {
 			return Future.withValue (font);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load font from bytes");
+		#end
 		
 	}
 	
 	
 	public static function loadFromFile (path:String):Future<Font> {
 		
+		#if lime
 		return LimeFont.loadFromFile (path).then (function (limeFont) {
 			
 			var font = new Font ();
@@ -144,12 +149,16 @@ class Font #if lime extends LimeFont #end {
 			return Future.withValue (font);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load font from file");
+		#end
 		
 	}
 	
 	
 	public static function loadFromName (path:String):Future<Font> {
 		
+		#if lime
 		return LimeFont.loadFromName (path).then (function (limeFont) {
 			
 			var font = new Font ();
@@ -158,6 +167,9 @@ class Font #if lime extends LimeFont #end {
 			return Future.withValue (font);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load font from name");
+		#end
 		
 	}
 	
@@ -196,11 +208,13 @@ class Font #if lime extends LimeFont #end {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __fromLimeFont (font:LimeFont):Void {
 		
 		__copyFrom (font);
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function __initialize ():Bool {

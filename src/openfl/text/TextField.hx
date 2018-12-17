@@ -19,6 +19,7 @@ import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
+import openfl._internal.text.UTF8String;
 import openfl.display.CanvasRenderer;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
@@ -43,11 +44,12 @@ import openfl.Lib;
 
 #if lime
 import lime.system.Clipboard;
-import lime.text.UTF8String;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
 import lime.utils.Log;
+#else
+import openfl.ui.MouseCursor;
 #end
 
 #if (js && html5)
@@ -3464,6 +3466,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
 		
 		switch (key) {
@@ -3730,6 +3733,7 @@ class TextField extends InteractiveObject {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function window_onTextInput (value:String):Void {

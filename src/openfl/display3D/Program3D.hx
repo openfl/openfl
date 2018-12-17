@@ -48,15 +48,15 @@ import lime.utils.LogLevel;
 	@:noCompletion private var __agalVertexUniformMap:UniformMap;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Context3DProgramFormat;
-	@:noCompletion private var __glFragmentShader:GLShader;
+	@:noCompletion private var __glFragmentShader:#if lime GLShader #else Dynamic #end;
 	@:noCompletion private var __glFragmentSource:String;
-	@:noCompletion private var __glProgram:GLProgram;
+	@:noCompletion private var __glProgram:#if lime GLProgram #else Dynamic #end;
 	@:noCompletion private var __glslAttribNames:Array<String>;
 	@:noCompletion private var __glslAttribTypes:Array<ShaderParameterType>;
 	@:noCompletion private var __glslSamplerNames:Array<String>;
 	@:noCompletion private var __glslUniformNames:Array<String>;
 	@:noCompletion private var __glslUniformTypes:Array<ShaderParameterType>;
-	@:noCompletion private var __glVertexShader:GLShader;
+	@:noCompletion private var __glVertexShader:#if lime GLShader #else Dynamic #end;
 	@:noCompletion private var __glVertexSource:String;
 	// @:noCompletion private var __memUsage:Int;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
@@ -655,7 +655,7 @@ import lime.utils.LogLevel;
 	}
 	
 	
-	@:noCompletion private function __setPositionScale (positionScale:Float32Array):Void {
+	@:noCompletion private function __setPositionScale (positionScale:#if lime Float32Array #else Dynamic #end):Void {
 		
 		if (__format == GLSL) return;
 		
@@ -773,16 +773,19 @@ import lime.utils.LogLevel;
 	
 	
 	public var name:String;
-	public var location:GLUniformLocation;
+	public var location:#if lime GLUniformLocation #else Dynamic #end;
 	public var type:Int;
 	public var size:Int;
-	public var regData:Float32Array;
+	public var regData:#if lime Float32Array #else Dynamic #end;
 	public var regIndex:Int;
 	public var regCount:Int;
 	public var isDirty:Bool;
 	
 	public var context:Context3D;
+	
+	#if lime
 	public var regDataPointer:BytePointer;
+	#end
 	
 	
 	public function new (context:Context3D) {
@@ -790,7 +793,10 @@ import lime.utils.LogLevel;
 		this.context = context;
 		
 		isDirty = true;
+		
+		#if lime
 		regDataPointer = new BytePointer ();
+		#end
 		
 	}
 	
@@ -835,11 +841,17 @@ import lime.utils.LogLevel;
 		return regData.subarray (index, index + size);
 		
 	}
-	#else
+	#elseif lime
 	@:noCompletion private inline function __getUniformRegisters (index:Int, size:Int):BytePointer {
 		
 		regDataPointer.set (regData, index * 4);
 		return regDataPointer;
+		
+	}
+	#else
+	@:noCompletion private inline function __getUniformRegisters (index:Int, size:Int):Dynamic {
+		
+		return regData.subarray (index, index + size);
 		
 	}
 	#end

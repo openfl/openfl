@@ -196,9 +196,13 @@ class Assets {
 	}
 	
 	
-	public static function getLibrary (name:String):LimeAssetLibrary {
+	public static function getLibrary (name:String):#if lime LimeAssetLibrary #else AssetLibrary #end {
 		
+		#if lime
 		return LimeAssets.getLibrary (name);
+		#else
+		return null;
+		#end
 		
 	}
 	

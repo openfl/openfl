@@ -21,11 +21,11 @@ class Context3DBuffer {
 	public var dataPerVertex:Int;
 	public var elementCount:Int;
 	public var elementType:Context3DElementType;
-	public var indexBufferData:Array<UInt16Array>;
+	public var indexBufferData:Array<#if lime UInt16Array #else Dynamic #end>;
 	public var indexBuffers:Array<IndexBuffer3D>;
 	public var indexCount:Int;
 	public var vertexBuffer:VertexBuffer3D;
-	public var vertexBufferData:Float32Array;
+	public var vertexBufferData:#if lime Float32Array #else Dynamic #end;
 	public var vertexCount:Int;
 	
 	private var context3D:Context3D;

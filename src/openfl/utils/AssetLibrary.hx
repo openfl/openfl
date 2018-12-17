@@ -65,8 +65,9 @@ import lime.utils.Bytes;
 	}
 	
 	
-	public static function fromManifest (manifest:AssetManifest):#if java LimeAssetLibrary #else AssetLibrary #end {
+	public static function fromManifest (manifest:AssetManifest):#if (java && lime) LimeAssetLibrary #else AssetLibrary #end {
 		
+		#if lime
 		var library = LimeAssetLibrary.fromManifest (manifest);
 		
 		if (library != null) {
@@ -88,6 +89,9 @@ import lime.utils.Bytes;
 			return null;
 			
 		}
+		#else
+		return null;
+		#end
 		
 	}
 	
@@ -337,7 +341,7 @@ import lime.utils.Bytes;
 	#end
 	
 	
-	public static function loadFromBytes (bytes:ByteArray, rootPath:String = null):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
+	public static function loadFromBytes (bytes:ByteArray, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
 		return AssetManifest.loadFromBytes (bytes, rootPath).then (function (manifest) {
 			
@@ -348,7 +352,7 @@ import lime.utils.Bytes;
 	}
 	
 	
-	public static function loadFromFile (path:String, rootPath:String = null):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
+	public static function loadFromFile (path:String, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
 		return AssetManifest.loadFromFile (path, rootPath).then (function (manifest) {
 			
@@ -359,7 +363,7 @@ import lime.utils.Bytes;
 	}
 	
 	
-	public static function loadFromManifest (manifest:AssetManifest):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
+	public static function loadFromManifest (manifest:AssetManifest):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
 		var library:AssetLibrary = cast fromManifest (manifest);
 		

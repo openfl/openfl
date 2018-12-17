@@ -150,7 +150,7 @@ import lime.utils.UInt8Array;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
 		

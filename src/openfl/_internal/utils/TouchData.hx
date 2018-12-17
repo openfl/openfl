@@ -18,10 +18,12 @@ import lime.utils.ObjectPool;
 class TouchData {
 	
 	
+	#if lime
 	public static var __pool = new ObjectPool<TouchData> (function () return new TouchData (), function (data) data.reset ());
+	#end
 	
 	public var rollOutStack:Array<DisplayObject>;
-	public var touch:Touch;
+	public var touch:#if lime Touch #else Dynamic #end;
 	public var touchDownTarget:InteractiveObject;
 	public var touchOverTarget:InteractiveObject;
 	

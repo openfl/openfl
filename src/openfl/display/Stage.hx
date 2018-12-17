@@ -202,7 +202,7 @@ typedef Element = Dynamic;
 @:access(openfl.ui.Mouse)
 
 
-class Stage extends DisplayObjectContainer implements IModule {
+class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 	
 	
 	/**
@@ -630,7 +630,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __pendingMouseEvent:Bool;
 	@:noCompletion private var __pendingMouseX:Int;
 	@:noCompletion private var __pendingMouseY:Int;
-	@:noCompletion private var __primaryTouch:Touch;
 	@:noCompletion private var __quality:StageQuality;
 	@:noCompletion private var __renderer:DisplayObjectRenderer;
 	@:noCompletion private var __rendering:Bool;
@@ -641,6 +640,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
 	@:noCompletion private var __wasFullscreen:Bool;
+	
+	#if lime
+	@:noCompletion private var __primaryTouch:Touch;
+	#end
 	
 	
 	#if openfljs
@@ -866,6 +869,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	#if lime
 	@:noCompletion @:dox(hide) public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
 		#if !openfl_disable_handle_error try { #end
@@ -1411,9 +1415,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 	}
+	#end
 	
 	
-	@:noCompletion @:dox(hide) public function render (context:RenderContext):Void {
+	@:noCompletion @:dox(hide) public function render (context:#if lime RenderContext #else Dynamic #end):Void {
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -1894,7 +1899,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	
+	#if lime
 	@:noCompletion private function __onKey (type:String, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		__dispatchPendingMouseEvent ();
@@ -2061,8 +2066,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private function __onGamepadConnect (gamepad:Gamepad):Void {
 		
 		onGamepadConnect (gamepad);
@@ -2073,6 +2080,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		gamepad.onDisconnect.add (onGamepadDisconnect.bind (gamepad));
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function __onMouse (type:String, x:Float, y:Float, button:Int):Void {
@@ -2354,6 +2362,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		
 		var x = __mouseX;
@@ -2384,8 +2393,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Point.__pool.release (targetPoint);
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private function __onTouch (type:String, touch:Touch):Void {
 		
 		var targetPoint = Point.__pool.get ();
@@ -2562,8 +2573,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private function __registerLimeModule (application:Application):Void {
 		
 		application.onCreateWindow.add (__addWindow);
@@ -2583,6 +2596,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Touch.onCancel.add (onTouchCancel);
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function __resize ():Void {

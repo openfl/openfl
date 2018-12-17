@@ -597,7 +597,9 @@ class Shader {
 						parameter.name = name;
 						parameter.type = parameterType;
 						parameter.__arrayLength = arrayLength;
+						#if lime
 						if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array (arrayLength * arrayLength);
+						#end
 						parameter.__isFloat = true;
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;

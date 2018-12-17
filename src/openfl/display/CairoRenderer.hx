@@ -28,13 +28,13 @@ import lime.math.Matrix3;
 class CairoRenderer extends DisplayObjectRenderer {
 	
 	
-	public var cairo:CairoRenderContext;
+	public var cairo:#if lime CairoRenderContext #else Dynamic #end;
 	
 	@:noCompletion private var __matrix:Matrix;
-	@:noCompletion private var __matrix3:Matrix3;
+	@:noCompletion private var __matrix3:#if lime Matrix3 #else Dynamic #end;
 	
 	
-	@:noCompletion private function new (cairo:Cairo) {
+	@:noCompletion private function new (cairo:#if lime Cairo #else Dynamic #end) {
 		
 		super ();
 		
@@ -50,7 +50,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applyMatrix (transform:Matrix, cairo:Cairo = null):Void {
+	public function applyMatrix (transform:Matrix, cairo:#if lime Cairo #else Dynamic #end = null):Void {
 		
 		if (cairo == null) cairo = this.cairo;
 		
@@ -199,8 +199,9 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	@:noCompletion private function __setBlendModeCairo (cairo:Cairo, value:BlendMode):Void {
+	@:noCompletion private function __setBlendModeCairo (cairo:#if lime Cairo #else Dynamic #end, value:BlendMode):Void {
 		
+		#if lime
 		switch (value) {
 			
 			case ADD:
@@ -264,6 +265,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 				cairo.setOperator (CairoOperator.OVER);
 			
 		}
+		#end
 		
 	}
 	

@@ -15,6 +15,8 @@ import lime.text.harfbuzz.HBScript;
 import lime.text.harfbuzz.HB;
 import lime.text.Font;
 import lime.text.Glyph;
+#else
+import openfl.text.Font;
 #end
 
 #if !openfl_debug
@@ -56,7 +58,7 @@ class TextLayout {
 	public var autoHint:Bool;
 	public var direction (get, set):TextDirection;
 	public var font (default, set):Font;
-	public var glyphs (get, null):Array<Glyph>;
+	public var glyphs (get, null):Array<#if lime Glyph #else Dynamic #end>;
 	public var language (get, set):String;
 	public var letterSpacing:Float = 0;
 	@:isVar public var positions (get, null):Array<GlyphPosition>;
@@ -72,8 +74,8 @@ class TextLayout {
 	private var __script:TextScript;
 	
 	private var __font:Font;
-	private var __hbBuffer:HBBuffer;
-	private var __hbFont:HBFTFont;
+	private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
+	private var __hbFont:#if lime HBFTFont #else Dynamic #end;
 	
 	
 	public function new (text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON, language:String = "en") {
@@ -238,7 +240,7 @@ class TextLayout {
 	}
 	
 	
-	@:noCompletion private function get_glyphs ():Array<Glyph> {
+	@:noCompletion private function get_glyphs ():Array<#if lime Glyph #else Dynamic #end> {
 		
 		var glyphs = [];
 		
@@ -354,6 +356,7 @@ class TextLayout {
 	}
 	
 	
+	#if lime
 	@:to public inline function toHBDirection ():HBDirection {
 		
 		return switch (this) {
@@ -367,6 +370,7 @@ class TextLayout {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function get_backward ():Bool {
@@ -547,6 +551,7 @@ class TextLayout {
 	public var rightToLeft (get, never):Bool;
 	
 	
+	#if lime
 	@:to public inline function toHBScript ():HBScript {
 		
 		return switch (this) {
@@ -556,6 +561,7 @@ class TextLayout {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function get_rightToLeft ():Bool {

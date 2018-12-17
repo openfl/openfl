@@ -155,7 +155,7 @@ class URLLoader extends EventDispatcher {
 	public var dataFormat:URLLoaderDataFormat;
 	
 	
-	@:noCompletion private var __httpRequest:#if (display || macro) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
+	@:noCompletion private var __httpRequest:#if (!lime || display || macro) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 	
 	
 	/**
@@ -369,7 +369,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function __prepareRequest (httpRequest:#if (display || macro) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void {
+	@:noCompletion private function __prepareRequest (httpRequest:#if (!lime || display || macro) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void {
 		
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;

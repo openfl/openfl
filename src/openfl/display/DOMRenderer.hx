@@ -30,7 +30,7 @@ import js.html.Element;
 class DOMRenderer extends DisplayObjectRenderer {
 	
 	
-	public var element:DOMRenderContext;
+	public var element:#if lime DOMRenderContext #else Dynamic #end;
 	public var pixelRatio (default, null):Float = 1;
 	
 	@:noCompletion private var __canvasRenderer:CanvasRenderer;
@@ -43,7 +43,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __z:Int;
 	
 	
-	@:noCompletion private function new (element:DOMRenderContext) {
+	@:noCompletion private function new (element:#if lime DOMRenderContext #else Dynamic #end) {
 		
 		super ();
 		

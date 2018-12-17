@@ -16,7 +16,7 @@ class Future<T> {
 	public function onProgress (listener:Int->Int->Void):Future<T> { return this; }
 	public function ready (waitTime:Int = -1):Future<T> { return this; }
 	public function result (waitTime:Int = -1):Null<T> { return value; }
-	public function then<U> (next:T->Future<U>):Future<U> { return new Future<T> (); }
+	public function then<U> (next:T->Future<U>):Future<U> { return new Future<U> (); }
 	
 	public static function withError (error:Dynamic):Future<Dynamic> {
 		

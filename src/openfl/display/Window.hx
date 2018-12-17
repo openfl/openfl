@@ -21,7 +21,7 @@ import lime.ui.WindowAttributes;
 class Window #if lime extends LimeWindow #end {
 	
 	
-	@:noCompletion private function new (application:Application, attributes:WindowAttributes) {
+	@:noCompletion private function new (application:Application, attributes:#if lime WindowAttributes #else Dynamic #end) {
 		
 		#if lime
 		super (application, attributes);

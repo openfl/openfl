@@ -121,7 +121,7 @@ import lime.utils.UInt8Array;
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end, side:UInt, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
 		
@@ -141,7 +141,7 @@ import lime.utils.UInt8Array;
 	}
 	
 	
-	@:noCompletion private override function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer {
+	@:noCompletion private override function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):#if lime GLFramebuffer #else Dynamic #end {
 		
 		var gl = __context.gl;
 		
