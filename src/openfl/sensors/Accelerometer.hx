@@ -143,6 +143,7 @@ class Accelerometer extends EventDispatcher {
 		
 		if (!initialized) {
 			
+			#if lime
 			var sensors = Sensor.getSensors (SensorType.ACCELEROMETER);
 			
 			if (sensors.length > 0) {
@@ -151,6 +152,7 @@ class Accelerometer extends EventDispatcher {
 				supported = true;
 				
 			}
+			#end
 			
 			initialized = true;
 			

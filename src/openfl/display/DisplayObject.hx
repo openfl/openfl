@@ -207,7 +207,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount = 0;
 	@:noCompletion private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
+	
+	#if lime
 	@:noCompletion private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
+	#end
 	
 	
 	// @:noCompletion @:dox(hide) public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
@@ -1308,6 +1311,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 			} else {
 				
+				#if lime
 				var stack = __tempStack.get ();
 				var parent = parent;
 				var i = 0;
@@ -1327,6 +1331,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				}
 				
 				__tempStack.release (stack);
+				#end
 				
 			}
 			

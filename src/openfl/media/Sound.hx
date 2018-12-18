@@ -503,6 +503,7 @@ class Sound extends EventDispatcher {
 	 */
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
+		#if lime
 		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS) {
 			
 			return null;
@@ -526,7 +527,6 @@ class Sound extends EventDispatcher {
 		
 		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
 		
-		#if lime
 		var source = new AudioSource (__buffer);
 		source.offset = Std.int (startTime);
 		if (loops > 1) source.loops = loops - 1;

@@ -140,7 +140,9 @@ import lime.utils.Assets as LimeAssets;
 	
 	public function removeBitmapData (id:String):Bool {
 		
+		#if lime
 		LimeAssets.cache.image.remove (id);
+		#end
 		return bitmapData.remove (id);
 		
 	}
@@ -148,7 +150,9 @@ import lime.utils.Assets as LimeAssets;
 	
 	public function removeFont (id:String):Bool {
 		
+		#if lime
 		LimeAssets.cache.font.remove (id);
+		#end
 		return font.remove (id);
 		
 	}
@@ -156,7 +160,9 @@ import lime.utils.Assets as LimeAssets;
 	
 	public function removeSound (id:String):Bool {
 		
+		#if lime
 		LimeAssets.cache.audio.remove (id);
+		#end
 		return sound.remove (id);
 		
 	}

@@ -64,7 +64,9 @@ class Font #if lime extends LimeFont #end {
 	
 	public function new (name:String = null) {
 		
+		#if lime
 		super (name);
+		#end
 		
 	}
 	
@@ -92,7 +94,9 @@ class Font #if lime extends LimeFont #end {
 	public static function fromBytes (bytes:ByteArray):Font {
 		
 		var font = new Font ();
+		#if lime
 		font.__fromBytes (bytes);
+		#end
 		
 		#if lime_cffi
 		return (font.src != null) ? font : null;
@@ -106,7 +110,9 @@ class Font #if lime extends LimeFont #end {
 	public static function fromFile (path:String):Font {
 		
 		var font = new Font ();
+		#if lime
 		font.__fromFile (path);
+		#end
 		
 		#if lime_cffi
 		return (font.src != null) ? font : null;
@@ -201,7 +207,7 @@ class Font #if lime extends LimeFont #end {
 			}*/
 			
 			__registeredFonts.push (instance);
-			__fontByName[instance.name] = instance;
+			__fontByName[instance.fontName] = instance;
 			
 		}
 		
@@ -252,14 +258,22 @@ class Font #if lime extends LimeFont #end {
 	
 	@:noCompletion private inline function get_fontName ():String {
 		
+		#if lime
 		return name;
+		#else
+		return "";
+		#end
 		
 	}
 	
 	
 	@:noCompletion private inline function set_fontName (value:String):String {
 		
+		#if lime
 		return name = value;
+		#else
+		return value;
+		#end
 		
 	}
 	
