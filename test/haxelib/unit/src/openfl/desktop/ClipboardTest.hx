@@ -1,6 +1,11 @@
 package openfl.desktop;
 
 
+#if integration
+import openfl.utils.ByteArray;
+#end
+
+
 class ClipboardTest {
 	
 	

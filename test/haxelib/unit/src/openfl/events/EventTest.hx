@@ -1,8 +1,9 @@
 package openfl.events;
 
 
-import massive.munit.Assert;
+#if integration
 import openfl.display.Sprite;
+#end
 
 
 class EventTest {
@@ -16,6 +17,8 @@ class EventTest {
 		var exists = event.bubbles;
 		
 		Assert.isFalse (exists);
+		
+		var dispatcher:EventDispatcher = null;
 		
 	}
 	
@@ -82,6 +85,7 @@ class EventTest {
 	
 	@Test public function new_ () {
 		
+		#if integration
 		// ADDED
 		
 		var sprite = new Sprite ();
@@ -147,6 +151,7 @@ class EventTest {
 		
 		Assert.isTrue (called);
 		Assert.isTrue (called2);
+		#end
 		
 	}
 	
