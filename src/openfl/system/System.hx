@@ -137,7 +137,9 @@ import cpp.vm.Gc;
 	 */
 	public static function exit (code:Int):Void {
 		
+		#if lime
 		LimeSystem.exit (code);
+		#end
 		
 	}
 	
@@ -210,7 +212,9 @@ import cpp.vm.Gc;
 	 */
 	public static function setClipboard (string:String):Void {
 		
+		#if lime
 		Clipboard.text = string;
+		#end
 		
 	}
 	

@@ -427,6 +427,7 @@ import sys.io.Process;
 	
 	@:noCompletion private static function get_language ():String {
 		
+		#if lime
 		var language = Locale.currentLocale.language;
 		
 		if (language != null) {
@@ -466,6 +467,7 @@ import sys.io.Process;
 			}
 			
 		}
+		#end
 		
 		return "en";
 	
@@ -478,9 +480,11 @@ import sys.io.Process;
 		return "OpenFL Macintosh";
 		#elseif linux
 		return "OpenFL Linux";
-		#else
+		#elseif lime
 		var name = System.platformName;
 		return "OpenFL" + (name != null ? " " + name : "");
+		#else
+		return null;
 		#end
 		
 	}
@@ -488,6 +492,7 @@ import sys.io.Process;
 	
 	@:noCompletion private static inline function get_os ():String {
 		
+		#if lime
 		#if (ios || tvos)
 		return System.deviceModel;
 		#elseif mac
@@ -505,6 +510,9 @@ import sys.io.Process;
 		var label = System.platformLabel;
 		return label != null ? label : "";
 		#end
+		#else
+		return null;
+		#end
 		
 	}
 	
@@ -518,6 +526,7 @@ import sys.io.Process;
 	
 	@:noCompletion private static function get_screenDPI ():Float {
 		
+		#if lime
 		var window = Lib.application != null ? Lib.application.window : null;
 		var screenDPI:Float;
 		
@@ -569,12 +578,16 @@ import sys.io.Process;
 		#end
 		
 		return screenDPI;
+		#else
+		return 72;
+		#end
 		
 	}
 	
 	
 	@:noCompletion private static function get_screenResolutionX ():Float { 
 		
+		#if lime
 		var stage = Lib.current.stage;
 		var resolutionX = 0;
 		
@@ -599,12 +612,16 @@ import sys.io.Process;
 		}
 		
 		return stage.stageWidth;
+		#else
+		return 0;
+		#end
 		
 	}
 	
 	
 	@:noCompletion private static function get_screenResolutionY ():Float {
 		
+		#if lime
 		var stage = Lib.current.stage;
 		var resolutionY = 0;
 		
@@ -629,6 +646,9 @@ import sys.io.Process;
 		}
 		
 		return stage.stageHeight;
+		#else
+		return 0;
+		#end
 		
 	}
 	
