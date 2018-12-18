@@ -51,6 +51,8 @@
 	
 	<section unless="custom-backend">
 		
+		<define name="openfl-disable-handle-error" unless="openfl-enable-handle-error" if="debug" />
+		
 		<section if="native">
 			
 			<set name="openfl-native" />
