@@ -1,7 +1,9 @@
 {
     "haxe.displayConfigurations": [
-        [ "scripts/completion.hxml" ]
+        [ "scripts/completion.hxml" ],
+        [ "-main", "TestMain", "-cp", "src", "-cp", "test/haxelib/unit/src", "-lib", "munit", "-D", "openfl-unit-testing" ]
     ],
+    
     "editor.trimAutoWhitespace": false,
     "files.trimTrailingWhitespace": false,
     "editor.insertSpaces": false,

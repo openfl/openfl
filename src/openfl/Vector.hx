@@ -151,7 +151,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	@:generic public inline static function ofArray<T> (a:Array<T>):Vector<T> {
 		
-		var vector = new Vector<T> ();
+		var vector:Vector<T> = new Vector<T> ();
 		
 		for (i in 0...a.length) {
 			
