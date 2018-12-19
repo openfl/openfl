@@ -2,6 +2,7 @@ package openfl.media; #if !flash
 
 
 import haxe.io.Path;
+import haxe.Int64;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
@@ -82,6 +83,7 @@ import lime.utils.UInt8Array;
 @:noDebug
 #end
 
+@:access(lime.media.AudioBuffer)
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
 @:access(openfl.media.SoundChannel.new)
@@ -571,8 +573,21 @@ class Sound extends EventDispatcher {
 			
 			#else
 			
-			var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
-			return Std.int (samples / __buffer.sampleRate * 1000);
+			if (__buffer.data != null) {
+				
+				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
+				return Std.int (samples / __buffer.sampleRate * 1000);
+				
+			} else if (__buffer.__srcVorbisFile != null) {
+				
+				var samples = Int64.toInt (__buffer.__srcVorbisFile.pcmTotal ());
+				return Std.int (samples / __buffer.sampleRate * 1000);
+				
+			} else {
+				
+				return 0;
+				
+			}
 			
 			#end
 			
