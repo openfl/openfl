@@ -99,10 +99,12 @@ class TextLayout {
 		
 		if (language.length != 4) return;
 		
+		#if lime
 		__hbBuffer = new HBBuffer ();
 		__hbBuffer.direction = direction.toHBDirection ();
 		__hbBuffer.script = script.toHBScript ();
 		__hbBuffer.language = new HBLanguage (language);
+		#end
 		
 	}
 	
@@ -111,7 +113,7 @@ class TextLayout {
 		
 		positions = [];
 		
-		#if (lime_cffi && !macro)
+		#if (lime && lime_cffi && !macro)
 		if (text != null && text != "" && font != null && font.src != null) {
 			
 			if (__buffer == null) {

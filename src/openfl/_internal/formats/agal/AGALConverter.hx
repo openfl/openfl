@@ -490,12 +490,14 @@ class AGALConverter {
 			
 		}
 		
+		#if lime
 		if (limitedProfile == null) {
 			
 			var version:String = GL.getParameter (GL.VERSION);
 			limitedProfile = (version.indexOf ("OpenGL ES") > -1 || version.indexOf ("WebGL") > -1);
 			
 		}
+		#end
 		
 		// combine parts into final progam
 		var glsl = new StringBuf ();

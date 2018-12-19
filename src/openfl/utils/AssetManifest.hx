@@ -21,7 +21,9 @@ class AssetManifest #if lime extends LimeAssetManifest #end {
 	
 	public function new () {
 		
+		#if lime
 		super ();
+		#end
 		
 	}
 	

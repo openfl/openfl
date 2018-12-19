@@ -22,6 +22,13 @@ import lime.ui.WindowAttributes;
 class Application #if lime extends LimeApplication #end {
 	
 	
+	#if !lime
+	public static var current:Application;
+	
+	public var window:Window;
+	#end
+	
+	
 	public function new () {
 		
 		#if lime

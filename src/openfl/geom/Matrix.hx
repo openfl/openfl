@@ -1,10 +1,11 @@
 package openfl.geom; #if !flash
 
 
+import openfl._internal.utils.ObjectPool;
+
 #if lime
 import lime.math.Matrix3;
 import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
 #end
 
 
@@ -74,9 +75,10 @@ class Matrix {
 	
 	
 	@:noCompletion private static var __identity = new Matrix ();
+	@:noCompletion private static var __pool = new ObjectPool<Matrix> (function () return new Matrix (), function (m) m.identity ());
+	
 	#if lime
 	@:noCompletion private static var __matrix3 = new Matrix3 ();
-	@:noCompletion private static var __pool = new ObjectPool<Matrix> (function () return new Matrix (), function (m) m.identity ());
 	#end
 	
 	

@@ -1,9 +1,10 @@
 package openfl.geom; #if !flash
 
 
+import openfl._internal.utils.ObjectPool;
+
 #if lime
 import lime.math.Vector2;
-import lime.utils.ObjectPool;
 #end
 
 
@@ -39,9 +40,10 @@ import lime.utils.ObjectPool;
 class Point {
 	
 	
+	@:noCompletion private static var __pool = new ObjectPool<Point> (function () return new Point (), function (p) p.setTo (0, 0));
+	
 	#if lime
 	@:noCompletion private static var __limeVector2:Vector2;
-	@:noCompletion private static var __pool = new ObjectPool<Point> (function () return new Point (), function (p) p.setTo (0, 0));
 	#end
 	
 	

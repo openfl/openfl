@@ -55,8 +55,10 @@ import lime.utils.UInt16Array;
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
+		#if lime
 		var offset = byteArrayOffset + startOffset * 2;
 		uploadFromTypedArray (new UInt16Array (data.toArrayBuffer (), offset, count));
+		#end
 		
 	}
 	
@@ -73,6 +75,7 @@ import lime.utils.UInt16Array;
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
+		#if lime
 		// TODO: Optimize more
 		
 		if (data == null) return;
@@ -100,6 +103,7 @@ import lime.utils.UInt16Array;
 		}
 		
 		uploadFromTypedArray (__tempUInt16Array);
+		#end
 		
 	}
 	

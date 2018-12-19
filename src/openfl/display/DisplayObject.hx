@@ -13,6 +13,7 @@ import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.context3D.Context3DGraphics;
 import openfl._internal.renderer.context3D.Context3DShape;
+import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -28,15 +29,12 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
+import openfl.ui.MouseCursor;
 import openfl.Vector;
 
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.graphics.cairo.Cairo;
-import lime.ui.MouseCursor;
-import lime.utils.ObjectPool;
-#else
-import openfl.ui.MouseCursor;
 #end
 
 #if (js && html5)
@@ -207,10 +205,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount = 0;
 	@:noCompletion private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
-	
-	#if lime
 	@:noCompletion private static var __tempStack = new ObjectPool<Vector<DisplayObject>> (function () { return new Vector<DisplayObject> (); }, function (stack) { stack.length = 0; });
-	#end
 	
 	
 	// @:noCompletion @:dox(hide) public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
@@ -1311,7 +1306,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				
 			} else {
 				
-				#if lime
 				var stack = __tempStack.get ();
 				var parent = parent;
 				var i = 0;
@@ -1331,7 +1325,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				}
 				
 				__tempStack.release (stack);
-				#end
 				
 			}
 			
@@ -1659,6 +1652,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	
 	@:noCompletion private function __renderEvent (renderer:DisplayObjectRenderer):Void {
 		
+		#if lime
 		if (__customRenderEvent != null && __renderable) {
 			
 			__customRenderEvent.allowSmoothing = renderer.__allowSmoothing;
@@ -1719,6 +1713,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -1956,6 +1951,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	
 	@:noCompletion private function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
+		#if lime
 		if (__isCacheBitmapRender) return false;
 		#if openfl_disable_cacheasbitmap return false; #end
 		
@@ -2492,6 +2488,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		ColorTransform.__pool.release (colorTransform);
 		
 		return updated;
+		#else
+		return false;
+		#end
 		
 	}
 	

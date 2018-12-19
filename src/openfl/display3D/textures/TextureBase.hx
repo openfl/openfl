@@ -87,7 +87,7 @@ class TextureBase extends EventDispatcher {
 				__supportsBGRA = true;
 				__textureFormat = bgraExtension.BGRA_EXT;
 				
-				#if (!ios && !tvos)
+				#if (lime && !ios && !tvos)
 				if (context.__context.type == OPENGLES) {
 					__textureInternalFormat = bgraExtension.BGRA_EXT;
 				}

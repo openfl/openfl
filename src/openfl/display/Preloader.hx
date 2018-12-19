@@ -22,7 +22,7 @@ import lime.utils.Preloader as LimePreloader;
 class Preloader {
 	
 	
-	public var onComplete = new lime.app.Event<Void->Void> ();
+	public var onComplete = #if lime new lime.app.Event<Void->Void> () #else Dynamic #end;
 	
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
@@ -64,10 +64,12 @@ class Preloader {
 			
 		} else {
 			
+			#if lime
 			if (!complete) {
 				complete = true;
 				onComplete.dispatch ();
 			}
+			#end
 			
 		}
 		
@@ -115,10 +117,12 @@ class Preloader {
 		
 		if (ready) {
 			
+			#if lime
 			if (!complete) {
 				complete = true;
 				onComplete.dispatch ();
 			}
+			#end
 			
 		}
 		

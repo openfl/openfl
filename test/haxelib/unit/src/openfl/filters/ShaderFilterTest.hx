@@ -1,11 +1,14 @@
 package openfl.filters;
 
 
-import format.pbj.Data;
-import format.pbj.Writer;
 import haxe.io.BytesOutput;
 import massive.munit.Assert;
 import openfl.display.Shader;
+
+#if format
+import format.pbj.Data;
+import format.pbj.Writer;
+#end
 
 
 class ShaderFilterTest {

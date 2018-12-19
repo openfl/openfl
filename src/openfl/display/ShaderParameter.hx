@@ -62,6 +62,7 @@ import lime.utils.Float32Array;
 	
 	@:noCompletion private function __updateGL (context:Context3D, overrideValue:Array<T> = null):Void {
 		
+		#if lime
 		var gl = context.gl;
 		
 		var value = overrideValue != null ? overrideValue : this.value;
@@ -250,13 +251,14 @@ import lime.utils.Float32Array;
 			}
 			
 		}
+		#end
 		
 	}
 	
 	
-	#if lime
-	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void {
+	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:#if lime Float32Array #else Dynamic #end, position:Int, length:Int, bufferOffset:Int):Void {
 		
+		#if lime
 		var gl = context.gl;
 		
 		if (__isUniform) {
@@ -399,9 +401,9 @@ import lime.utils.Float32Array;
 			}
 			
 		}
+		#end
 		
 	}
-	#end
 	
 	
 	

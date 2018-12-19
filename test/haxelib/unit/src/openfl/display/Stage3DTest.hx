@@ -13,11 +13,13 @@ class Stage3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D.context3D;
 		
 		#if flash
 		Assert.isNull (exists);
+		#end
 		#end
 		
 	}
@@ -27,10 +29,12 @@ class Stage3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D.visible;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -39,10 +43,12 @@ class Stage3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D.x;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -51,10 +57,12 @@ class Stage3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D.y;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -63,10 +71,12 @@ class Stage3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -75,10 +85,12 @@ class Stage3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D.requestContext3D;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -87,10 +99,12 @@ class Stage3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D.requestContext3DMatchingProfiles;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -99,6 +113,7 @@ class Stage3DTest {
 		
 		// TODO: Create the context in advance?
 		
+		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		
 		// This is not currently stable
@@ -122,6 +137,7 @@ class Stage3DTest {
 			return stage3D.context3D;
 			
 		}
+		#end
 		
 		return null;
 		

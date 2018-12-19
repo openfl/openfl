@@ -2,6 +2,7 @@ package openfl.display; #if !flash
 
 
 import openfl._internal.renderer.ShaderBuffer;
+import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;
@@ -10,7 +11,6 @@ import openfl.utils.ByteArray;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.utils.Float32Array;
-import lime.utils.Log;
 #end
 
 #if !openfl_debug
@@ -275,11 +275,13 @@ class Shader {
 		
 		__context.__bindGLArrayBuffer (null);
 		
+		#if lime
 		if (__context.__context.type == OPENGL) {
 			
 			gl.disable (gl.TEXTURE_2D);
 			
 		}
+		#end
 		
 	}
 	
@@ -310,11 +312,13 @@ class Shader {
 			
 		}
 		
+		#if lime
 		if (__context.__context.type == OPENGL && textureCount > 0) {
 			
 			gl.enable (gl.TEXTURE_2D);
 			
 		}
+		#end
 		
 	}
 	

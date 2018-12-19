@@ -57,7 +57,7 @@ class Context3DTilemap {
 	private static var lastUsedBitmapData:BitmapData;
 	private static var lastUsedShader:Shader;
 	private static var numTiles:Int;
-	private static var vertexBufferData:Float32Array;
+	private static var vertexBufferData:#if lime Float32Array #else Dynamic #end;
 	private static var vertexDataPosition:Int;
 	
 	

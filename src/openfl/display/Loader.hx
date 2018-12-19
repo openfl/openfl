@@ -736,6 +736,7 @@ class Loader extends DisplayObjectContainer {
 		
 		var loader:URLLoader = cast event.target;
 		
+		#if lime
 		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf ("/json") > -1) {
 			
 			var manifest = AssetManifest.parse (loader.data, Path.directory (__path));
@@ -783,7 +784,7 @@ class Loader extends DisplayObjectContainer {
 				
 			}
 			
-		} else if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1)) {
+		} else #end if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1)) {
 			
 			content = new Sprite ();
 			contentLoaderInfo.content = content;

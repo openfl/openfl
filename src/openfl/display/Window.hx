@@ -21,6 +21,21 @@ import lime.ui.WindowAttributes;
 class Window #if lime extends LimeWindow #end {
 	
 	
+	#if !lime
+	public var application:Application;
+	public var context:Dynamic;
+	public var cursor:Dynamic;
+	public var display:Dynamic;
+	public var frameRate:Float;
+	public var fullscreen:Bool;
+	public var height:Int;
+	public var scale:Float;
+	public var stage:Stage;
+	public var textInputEnabled:Bool;
+	public var width:Int;
+	#end
+	
+	
 	@:noCompletion private function new (application:Application, attributes:#if lime WindowAttributes #else Dynamic #end) {
 		
 		#if lime
@@ -56,7 +71,9 @@ class Window #if lime extends LimeWindow #end {
 			
 		}
 		
+		#if lime
 		application.addModule (stage);
+		#end
 		
 		#else
 		

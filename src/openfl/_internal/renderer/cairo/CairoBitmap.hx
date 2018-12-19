@@ -27,6 +27,7 @@ class CairoBitmap {
 	
 	public static inline function render (bitmap:Bitmap, renderer:CairoRenderer):Void {
 		
+		#if lime
 		if (!bitmap.__renderable) return;
 		
 		var alpha = renderer.__getAlpha (bitmap.__worldAlpha);
@@ -66,6 +67,7 @@ class CairoBitmap {
 			renderer.__popMaskObject (bitmap);
 			
 		}
+		#end
 		
 	}
 	

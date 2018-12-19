@@ -9,13 +9,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
-import openfl.Vector;
-
-#if lime
-import lime.ui.MouseCursor;
-#else
 import openfl.ui.MouseCursor;
-#end
+import openfl.Vector;
 
 
 /**
@@ -276,7 +271,7 @@ class SimpleButton extends InteractiveObject {
 	
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
-		return (useHandCursor && !__ignoreEvent && enabled) ? POINTER : null;
+		return (useHandCursor && !__ignoreEvent && enabled) ? BUTTON : null;
 		
 	}
 	

@@ -3,6 +3,7 @@ package openfl.display3D; #if !flash
 
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.Log;
 import openfl.display.BitmapData;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
@@ -20,8 +21,6 @@ import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.RenderContext;
 import lime.utils.BytePointer;
 import lime.utils.Float32Array;
-import lime.utils.Log;
-import lime.utils.LogLevel;
 #end
 
 #if !openfl_debug
@@ -269,6 +268,7 @@ import lime.utils.LogLevel;
 		
 		if (__format == GLSL) return;
 		
+		#if lime
 		var gl = __context.gl;
 		
 		__agalUniforms.clear ();
@@ -369,6 +369,7 @@ import lime.utils.LogLevel;
 		
 		__agalVertexUniformMap = new UniformMap (Lambda.array (vertexUniforms));
 		__agalFragmentUniformMap = new UniformMap (Lambda.array (fragmentUniforms));
+		#end
 		
 	}
 	
@@ -803,6 +804,7 @@ import lime.utils.LogLevel;
 	
 	public function flush ():Void {
 		
+		#if lime
 		#if (js && html5)
 		var gl = context.gl;
 		#else
@@ -831,6 +833,7 @@ import lime.utils.LogLevel;
 			#end
 			
 		}
+		#end
 		
 	}
 	

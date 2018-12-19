@@ -60,10 +60,12 @@ class VertexBuffer3D {
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void {
 		
+		#if lime
 		var offset = byteArrayOffset + startVertex * __stride;
 		var length = numVertices * __vertexSize;
 		
 		uploadFromTypedArray (new Float32Array (data, offset, length));
+		#end
 		
 	}
 	
@@ -81,6 +83,7 @@ class VertexBuffer3D {
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
+		#if lime
 		if (data == null) return;
 		var gl = __context.gl;
 		
@@ -111,6 +114,7 @@ class VertexBuffer3D {
 		}
 		
 		uploadFromTypedArray (__tempFloat32Array);
+		#end
 		
 	}
 	

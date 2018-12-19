@@ -4,6 +4,7 @@ package openfl;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
+import openfl._internal.utils.Log;
 import openfl._internal.Lib as InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
@@ -14,7 +15,6 @@ import openfl.net.URLVariables;
 
 #if lime
 import lime.system.System;
-import lime.utils.Log;
 #end
 
 #if swf
@@ -148,10 +148,14 @@ import js.Browser;
 	
 	public static function getTimer ():Int {
 		
+		#if lime
 		#if flash
 		return flash.Lib.getTimer ();
 		#else
 		return System.getTimer ();
+		#end
+		#else
+		return 0;
 		#end
 		
 	}
@@ -174,7 +178,7 @@ import js.Browser;
 		
 		#if flash
 		return flash.Lib.getURL (request, window);
-		#else
+		#elseif lime
 		var uri = request.url;
 		
 		if (Type.typeof(request.data) == Type.ValueType.TObject) {

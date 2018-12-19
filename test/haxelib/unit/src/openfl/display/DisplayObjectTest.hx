@@ -341,11 +341,13 @@ class DisplayObjectTest {
 
 		Assert.isNull(exists);
 		
+		#if integration
 		openfl.Lib.current.addChild (sprite);
 		
 		Assert.isNotNull(sprite.loaderInfo);
 		
 		openfl.Lib.current.removeChild (sprite);
+		#end
 
 	}
 
@@ -364,10 +366,12 @@ class DisplayObjectTest {
 
 		// TODO: Confirm functionality
 
+		#if integration
 		var sprite = new Sprite ();
 		var exists = sprite.mouseX;
 
 		Assert.isNotNull(exists);
+		#end
 
 	}
 
@@ -375,10 +379,12 @@ class DisplayObjectTest {
 
 		// TODO: Confirm functionality
 
+		#if integration
 		var sprite = new Sprite ();
 		var exists = sprite.mouseY;
 
 		Assert.isNotNull(exists);
+		#end
 
 	}
 

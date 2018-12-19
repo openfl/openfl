@@ -7,6 +7,7 @@ import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl._internal.utils.ObjectPool;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display.BlendMode;
@@ -30,7 +31,6 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.Image;
 import lime.graphics.RenderContext;
 import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
 import lime.utils.UInt16Array;
 #end
 
@@ -84,14 +84,18 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
 	@:noCompletion private var __renderTransform:Matrix;
+	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
 	@:noCompletion private var __triangleIndexBufferCount:Int;
+	@:noCompletion private var __triangleIndexBufferData:#if lime UInt16Array #else Dynamic #end;
 	@:noCompletion private var __usedShaderBuffers:List<ShaderBuffer>;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@:noCompletion private var __vertexBufferCount:Int;
 	@:noCompletion private var __vertexBufferCountUVT:Int;
+	@:noCompletion private var __vertexBufferData:#if lime Float32Array #else Dynamic #end;
+	@:noCompletion private var __vertexBufferDataUVT:#if lime Float32Array #else Dynamic #end;
 	@:noCompletion private var __vertexBufferUVT:VertexBuffer3D;
 	@:noCompletion private var __visible:Bool;
 	//private var __cachedTexture:RenderTexture;
@@ -99,18 +103,11 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __worldTransform:Matrix;
 	
-	#if lime
-	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
-	@:noCompletion private var __triangleIndexBufferData:UInt16Array;
-	@:noCompletion private var __vertexBufferData:Float32Array;
-	@:noCompletion private var __vertexBufferDataUVT:Float32Array;
-	
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __context:CanvasRenderingContext2D;
+	@:noCompletion private var __context:#if lime CanvasRenderingContext2D #else Dynamic #end;
 	#else
-	@:noCompletion private var __cairo:Cairo;
-	#end
+	@:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	#end
 	
 	@:noCompletion private var __bitmap:BitmapData;
@@ -130,9 +127,7 @@ import js.html.CanvasRenderingContext2D;
 		__width = 0;
 		__height = 0;
 		
-		#if lime
 		__shaderBufferPool = new ObjectPool<ShaderBuffer> (function () return new ShaderBuffer ());
-		#end
 		
 		#if (js && html5)
 		moveTo (0, 0);

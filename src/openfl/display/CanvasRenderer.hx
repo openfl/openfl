@@ -44,7 +44,10 @@ class CanvasRenderer extends DisplayObjectRenderer {
 		this.context = context;
 		
 		__tempMatrix = new Matrix ();
+		
+		#if lime
 		__type = CANVAS;
+		#end
 		
 	}
 	

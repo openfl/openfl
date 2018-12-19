@@ -3,6 +3,7 @@ package openfl.display; #if !flash
 
 import openfl._internal.renderer.context3D.Context3DMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl._internal.utils.ObjectPool;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
@@ -24,7 +25,6 @@ import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
 #end
 
 #if !openfl_debug
@@ -91,7 +91,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __offsetY:Int;
 	@:noCompletion private var __projection:#if lime Matrix4 #else Dynamic #end;
 	@:noCompletion private var __projectionFlipped:#if lime Matrix4 #else Dynamic #end;
-	@:noCompletion private var __scrollRectMasks:#if lime ObjectPool<Shape> #else Dynamic #end;
+	@:noCompletion private var __scrollRectMasks:ObjectPool<Shape>;
 	@:noCompletion private var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private var __stencilReference:Int;
 	@:noCompletion private var __tempRect:Rectangle;
@@ -120,7 +120,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		}
 		
+		#if lime
 		__matrix = new Matrix4 ();
+		#end
+		
 		__values = new Array ();
 		
 		#if gl_debug
@@ -139,7 +142,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__softwareRenderer = new CairoRenderer (null);
 		#end
 		
+		#if lime
 		__type = OPENGL;
+		#end
 		
 		__setBlendMode (NORMAL);
 		__context3D.__setGLBlend (true);
@@ -160,9 +165,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		
 		__initShader (__defaultShader);
 		
-		#if lime
 		__scrollRectMasks = new ObjectPool<Shape> (function () { return new Shape (); });
-		#end
 		__maskShader = new Context3DMaskShader ();
 		
 	}

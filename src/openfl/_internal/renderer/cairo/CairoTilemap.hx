@@ -50,7 +50,7 @@ class CairoTilemap {
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect (rect, tilemap.__renderTransform);
 		
-		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, null, rect, new Matrix3 ());
+		renderTileContainer (tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, null, rect, #if lime new Matrix3 () #else null #end);
 		
 		renderer.__popMaskRect ();
 		renderer.__popMaskObject (tilemap);
@@ -60,8 +60,9 @@ class CairoTilemap {
 	}
 	
 	
-	private static function renderTileContainer (group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void {
+	private static function renderTileContainer (group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, surface:#if lime CairoSurface #else Dynamic #end, pattern:#if lime CairoPattern #else Dynamic #end, rect:Rectangle, matrix:#if lime Matrix3 #else Dynamic #end):Void {
 		
+		#if lime
 		var cairo = renderer.cairo;
 		var roundPixels = renderer.__roundPixels;
 		
@@ -167,6 +168,7 @@ class CairoTilemap {
 		}
 		
 		Matrix.__pool.release (tileTransform);
+		#end
 		
 	}
 	

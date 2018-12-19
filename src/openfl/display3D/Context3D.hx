@@ -124,9 +124,11 @@ private typedef GLTexture = Dynamic;
 		if (__contextState == null) __contextState = new Context3DState ();
 		__state = new Context3DState ();
 		
+		#if lime
 		__vertexConstants = new Float32Array (4 * 128);
 		__fragmentConstants = new Float32Array (4 * 128);
 		__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
+		#end
 		__programs = new Map<String, Program3D> ();
 		
 		if (GL_MAX_VIEWPORT_DIMS == -1) {
@@ -167,6 +169,7 @@ private typedef GLTexture = Dynamic;
 			
 		}
 		
+		#if lime
 		if (GL_DEPTH_STENCIL == -1) {
 			
 			#if (js && html5)
@@ -190,6 +193,7 @@ private typedef GLTexture = Dynamic;
 			#end
 			
 		}
+		#end
 		
 		if (__driverInfo == null) {
 			
@@ -207,6 +211,7 @@ private typedef GLTexture = Dynamic;
 		__quadIndexBufferElements = Math.floor (0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
 		
+		#if lime
 		var data = new UInt16Array (__quadIndexBufferCount);
 		
 		var index:UInt = 0;
@@ -228,6 +233,7 @@ private typedef GLTexture = Dynamic;
 		
 		__quadIndexBuffer = createIndexBuffer (__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray (data);
+		#end
 		
 	}
 	
@@ -602,6 +608,7 @@ private typedef GLTexture = Dynamic;
 	
 	public function setProgramConstantsFromByteArray (programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:UInt):Void {
 		
+		#if lime
 		if (numRegisters == 0 || __state.program == null) return;
 		
 		if (__state.program != null && __state.program.__format == GLSL) {
@@ -638,14 +645,14 @@ private typedef GLTexture = Dynamic;
 			}
 			
 		}
-		
-		
+		#end
 		
 	}
 	
 	
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
+		#if lime
 		if (__state.program != null && __state.program.__format == GLSL) {
 			
 			__flushGLProgram ();
@@ -718,6 +725,7 @@ private typedef GLTexture = Dynamic;
 			}
 			
 		}
+		#end
 		
 	}
 	

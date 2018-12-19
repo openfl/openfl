@@ -13,6 +13,7 @@ class IndexBuffer3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -23,6 +24,7 @@ class IndexBuffer3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -31,6 +33,7 @@ class IndexBuffer3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -41,6 +44,7 @@ class IndexBuffer3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -49,6 +53,7 @@ class IndexBuffer3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -57,6 +62,7 @@ class IndexBuffer3DTest {
 			indexBuffer.uploadFromTypedArray (null);
 			
 		}
+		#end
 		
 	}
 	
@@ -65,6 +71,7 @@ class IndexBuffer3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -75,6 +82,7 @@ class IndexBuffer3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	

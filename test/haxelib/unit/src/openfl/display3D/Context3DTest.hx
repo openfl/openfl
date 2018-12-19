@@ -13,6 +13,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -22,6 +23,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -30,6 +32,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -39,6 +42,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -47,6 +51,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -58,6 +63,7 @@ class Context3DTest {
 			#end
 			
 		}
+		#end
 		
 	}
 	
@@ -66,6 +72,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -77,6 +84,7 @@ class Context3DTest {
 			#end
 			
 		}
+		#end
 		
 	}
 	
@@ -85,6 +93,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -94,6 +103,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -102,6 +112,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -111,6 +122,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -119,6 +131,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -130,6 +143,7 @@ class Context3DTest {
 			#end
 			
 		}
+		#end
 		
 	}
 	
@@ -138,6 +152,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -147,6 +162,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -155,6 +171,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -164,6 +181,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -172,6 +190,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -181,6 +200,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -189,6 +209,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -198,6 +219,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -206,6 +228,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -215,6 +238,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -223,6 +247,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -232,6 +257,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -240,6 +266,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -249,6 +276,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -257,6 +285,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -266,6 +295,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -274,6 +304,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -283,6 +314,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -291,6 +323,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -300,6 +333,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -308,6 +342,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -317,6 +352,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -324,6 +360,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -333,6 +370,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -341,6 +379,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -350,6 +389,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -357,6 +397,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -366,6 +407,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -374,6 +416,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -383,6 +426,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -391,6 +435,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -400,6 +445,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -408,6 +454,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -417,6 +464,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -425,6 +473,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -434,6 +483,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -442,6 +492,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -451,6 +502,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -459,6 +511,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -468,6 +521,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -476,6 +530,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -485,6 +540,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -493,6 +549,7 @@ class Context3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -502,6 +559,7 @@ class Context3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	

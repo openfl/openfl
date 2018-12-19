@@ -62,6 +62,7 @@ class ShapeSymbol extends SWFSymbol {
 				
 				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
 					
+					#if lime
 					var bitmapSymbol:BitmapSymbol = cast swf.symbols.get (bitmapID);
 					var bitmap = swf.library.getImage (bitmapSymbol.path);
 					
@@ -70,6 +71,7 @@ class ShapeSymbol extends SWFSymbol {
 						graphics.beginBitmapFill (BitmapData.fromImage (bitmap), matrix, repeat, smooth);
 						
 					}
+					#end
 				
 				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					

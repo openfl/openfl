@@ -13,6 +13,7 @@ class Program3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -23,6 +24,7 @@ class Program3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	
@@ -31,6 +33,7 @@ class Program3DTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
 		
 		if (context3D != null) {
@@ -41,6 +44,7 @@ class Program3DTest {
 			Assert.isNotNull (exists);
 			
 		}
+		#end
 		
 	}
 	

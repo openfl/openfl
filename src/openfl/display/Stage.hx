@@ -4,6 +4,7 @@ package openfl.display; #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
 import openfl._internal.renderer.context3D.Context3DBitmap;
+import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
@@ -46,7 +47,6 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
-import lime.utils.Log;
 #end
 
 #if hxtelemetry
@@ -1455,6 +1455,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 		
 		__update (false, true);
 		
+		#if lime
 		if (__renderer != null) {
 			
 			if (context3D != null) {
@@ -1515,6 +1516,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 			__renderer.__cleared = false;
 			
 		}
+		#end
 		
 		#if hxtelemetry
 		Telemetry.__endTiming (TelemetryCommandName.RENDER);
@@ -1537,6 +1539,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 	
 	@:noCompletion private function __addWindow (window:Window):Void {
 		
+		#if lime
 		if (this.window != window) return;
 		
 		window.onActivate.add (onWindowActivate.bind (window));
@@ -1567,6 +1570,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 		window.onTextInput.add (onTextInput.bind (window));
 		
 		onWindowCreate (window);
+		#end
 		
 	}
 	
@@ -1605,6 +1609,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 	
 	@:noCompletion private function __createRenderer ():Void {
 		
+		#if lime
 		#if (js && html5)
 		var pixelRatio = 1;
 		
@@ -1663,6 +1668,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 			__renderer.__resize (windowWidth, windowHeight);
 			
 		}
+		#end
 		
 	}
 	
@@ -2756,6 +2762,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 	
 	@:noCompletion private function __unregisterLimeModule (application:Application):Void {
 		
+		#if lime
 		application.onCreateWindow.remove (__addWindow);
 		application.onUpdate.remove (update);
 		application.onExit.remove (onModuleExit);
@@ -2765,6 +2772,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 		Touch.onMove.remove (onTouchMove);
 		Touch.onEnd.remove (onTouchEnd);
 		Touch.onCancel.remove (onTouchCancel);
+		#end
 		
 	}
 	

@@ -1,12 +1,12 @@
 package openfl._internal.utils;
 
 
+import openfl._internal.utils.ObjectPool;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
 
 #if lime
 import lime.ui.Touch;
-import lime.utils.ObjectPool;
 #end
 
 #if !openfl_debug
@@ -18,9 +18,7 @@ import lime.utils.ObjectPool;
 class TouchData {
 	
 	
-	#if lime
 	public static var __pool = new ObjectPool<TouchData> (function () return new TouchData (), function (data) data.reset ());
-	#end
 	
 	public var rollOutStack:Array<DisplayObject>;
 	public var touch:#if lime Touch #else Dynamic #end;

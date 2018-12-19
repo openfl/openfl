@@ -261,7 +261,7 @@ class Font #if lime extends LimeFont #end {
 		#if lime
 		return name;
 		#else
-		return "";
+		return null;
 		#end
 		
 	}

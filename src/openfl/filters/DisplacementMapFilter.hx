@@ -83,30 +83,33 @@ import lime.math.Vector4;
 	
 	
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
-
+		
+		#if lime
 		#if (lime >= "7.2.0")
 		__updateMapMatrix();
-
+		
 		#if (js && html5)
 		ImageCanvasUtil.convertToData (bitmapData.image);
 		ImageCanvasUtil.convertToData (sourceBitmapData.image);
 		ImageCanvasUtil.convertToData (__mapBitmap.image);
 		#end
-
+		
 		ImageDataUtil.displaceMap(
 			bitmapData.image,
 			sourceBitmapData.image,
-
+			
 			__mapBitmap.image,
 			new Vector2(__mapPoint.x / __mapBitmap.width, __mapPoint.y / __mapBitmap.height),
-
+			
 			new Vector4(__matrixData[0], __matrixData[4], __matrixData[8], __matrixData[12]),
 			new Vector4(__matrixData[1], __matrixData[5], __matrixData[9], __matrixData[13]),
 			__smooth
 		);
 		#end
-
+		#end
+		
 		return bitmapData;
+		
 	}
 	
 	

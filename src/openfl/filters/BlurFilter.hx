@@ -191,8 +191,10 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	
 	@:noCompletion private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
+		#if lime
 		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality);
 		if (finalImage == bitmapData.image) return bitmapData;
+		#end
 		return sourceBitmapData;
 		
 	}

@@ -138,6 +138,7 @@ class Context3DBuffer {
 		
 		var vertexLength = numVertices * dataPerVertex;
 		
+		#if lime
 		if (vertexBufferData == null) {
 			
 			vertexBufferData = new Float32Array (vertexLength);
@@ -149,6 +150,7 @@ class Context3DBuffer {
 			vertexBufferData.set (cacheBufferData);
 			
 		}
+		#end
 		
 	}
 	

@@ -27,12 +27,14 @@ class PerspectiveProjectionTest {
 		Assert.areEqual(0.0, projection.focalLength);
 		#end
 
+		#if integration
 		#if flash
 		Assert.areEqual(500 / 2, projection.projectionCenter.x);
 		Assert.areEqual(500 / 2, projection.projectionCenter.y);
 		#else
 		Assert.areEqual(Lib.current.stage.stageWidth / 2, projection.projectionCenter.x);
 		Assert.areEqual(Lib.current.stage.stageHeight / 2, projection.projectionCenter.y);
+		#end
 		#end
 	}
 
@@ -96,12 +98,14 @@ class PerspectiveProjectionTest {
 	@Test public function projectionCenter() {
 		var projection = new PerspectiveProjection();
 		
+		#if integration
 		#if flash
 		Assert.areEqual(500 / 2, projection.projectionCenter.x);
 		Assert.areEqual(500 / 2, projection.projectionCenter.y);
 		#else
 		Assert.areEqual(Lib.current.stage.stageWidth / 2, projection.projectionCenter.x);
 		Assert.areEqual(Lib.current.stage.stageHeight / 2, projection.projectionCenter.y);
+		#end
 		#end
 	}
 

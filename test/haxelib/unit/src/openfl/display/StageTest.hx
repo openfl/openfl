@@ -12,9 +12,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.align;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -23,9 +25,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.allowsFullScreen;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -34,9 +38,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.allowsFullScreenInteractive;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -45,9 +51,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.application;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -56,9 +64,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.color;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -67,9 +77,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.displayState;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -78,9 +90,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.focus;
 		
 		Assert.isNull (exists);
+		#end
 		
 	}
 	
@@ -89,9 +103,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.frameRate;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -100,9 +116,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.quality;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -111,9 +129,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.scaleMode;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -122,9 +142,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.stage3Ds;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -133,9 +155,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.stageFocusRect;
 		
 		Assert.isTrue (exists);
+		#end
 		
 	}
 	
@@ -144,9 +168,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.stageHeight;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -155,9 +181,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.stageWidth;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -166,9 +194,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.window;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -177,9 +207,11 @@ class StageTest {
 		
 		// TODO: Confirm functionality
 		
+		#if integration
 		var exists = Lib.current.stage.invalidate;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	

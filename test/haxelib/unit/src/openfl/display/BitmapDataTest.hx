@@ -13,7 +13,7 @@ import openfl.utils.ByteArray;
 class BitmapDataTest {
 	
 	
-	#if flash @Ignore #end
+	#if (!integration || flash) @Ignore #end
 	@AsyncTest public function fromBase64 () {
 		
 		var handler = Async.handler (this, function (logoBytes) {
@@ -56,11 +56,13 @@ class BitmapDataTest {
 	#if (!js || !html5) @Ignore #end
 	@Test public function fromCanvas () {
 		
+		#if integration
 		// TODO: Confirm functionality
 		
 		#if (js && html5)
 		var exists = BitmapData.fromCanvas;
 		Assert.isNotNull (exists);
+		#end
 		#end
 		
 	}
@@ -76,6 +78,7 @@ class BitmapDataTest {
 	}
 	
 	
+	#if integration
 	@Test public function fromImage () {
 		
 		// TODO: Confirm functionality
@@ -84,10 +87,12 @@ class BitmapDataTest {
 		Assert.isNotNull (exists);
 		
 	}
+	#end
 	
 	
 	@Test public function new_ () {
 		
+		#if integration
 		var bitmapData = new BitmapData (100, 100, true, 0xFFFF0000);
 		
 		Assert.areEqual (hex (0xFFFF0000), hex (bitmapData.getPixel32 (0, 0)));
@@ -95,6 +100,7 @@ class BitmapDataTest {
 		bitmapData = new BitmapData (100, 100);
 		
 		Assert.areEqual (hex (0xFFFFFFFF), hex (bitmapData.getPixel32 (0, 0)));
+		#end
 		
 	}
 	
@@ -102,6 +108,7 @@ class BitmapDataTest {
 	#if !flash @Ignore #end
 	@Test public function applyFilter () {
 		
+		#if integration
 		#if !html5
 		
 		//TODO: Test more filters
@@ -120,12 +127,14 @@ class BitmapDataTest {
 		Assert.isTrue (filterRect.height > 100 && filterRect.height <= 115);
 		
 		#end
+		#end
 		
 	}
 	
 	
 	@Test public function clone () {
 		
+		#if integration
 		var bitmapData = new BitmapData (100, 100);
 		var bitmapData2 = bitmapData.clone();
 		
@@ -143,12 +152,14 @@ class BitmapDataTest {
 		Assert.areEqual (bitmapData.height, bitmapData2.height);
 		Assert.areEqual (bitmapData.transparent, bitmapData2.transparent);
 		Assert.areEqual (bitmapData.getPixel32 (0, 0), bitmapData2.getPixel32 (0, 0));
+		#end
 		
 	}
 	
 	
 	@Test public function colorTransform () {
 		
+		#if integration
 		var colorTransform = new ColorTransform (0, 0, 0, 1, 0xFF, 0, 0, 0);
 		
 		var bitmapData = new BitmapData (100, 100);
@@ -191,12 +202,14 @@ class BitmapDataTest {
 		Assert.areEqual (hex (0xFF880000), hex (bitmapData.getPixel32 (0, 0)));
 		Assert.areEqual (hex (0xFFFFFFFF), hex (bitmapData.getPixel32 (50, 50)));
 		#end
+		#end
 		
 	}
 	
 	
 	@Test public function compare () {
 		
+		#if integration
 		var bitmapData = new BitmapData (50, 50, true, 0xFFFF8800);
 		var bitmapData2 = new BitmapData (50, 50, true, 0xFFCC6600);
 		//var bitmapData2 = new BitmapData (50, 50, true, 0xCCCC6600);
@@ -235,12 +248,14 @@ class BitmapDataTest {
 		bitmapData2 = new BitmapData (50, 60);
 		
 		Assert.areEqual (-4, bitmapData.compare (bitmapData2));
+		#end
 		
 	}
 	
 	
 	@Test public function copyChannel () {
 		
+		#if integration
 		var bitmapData = new BitmapData (100, 100, true, 0xFF000000);
 		var bitmapData2 = new BitmapData (100, 100, true, 0xFFFF0000);
 		
@@ -282,12 +297,14 @@ class BitmapDataTest {
 		
 		Assert.areEqual (hex (0xFFFF00FF), hex (bitmapData.getPixel32 (10, 10)));
 		Assert.areEqual (hex (0xFFFF0000), hex (bitmapData.getPixel32 (30, 30)));
+		#end
 		
 	}
 	
 	
 	@Test public function copyPixels () {
 		
+		#if integration
 		var bitmapData = new BitmapData (100, 100);
 		var bitmapData2 = new BitmapData (100, 100, true, 0xFFFF0000);
 		
@@ -303,6 +320,7 @@ class BitmapDataTest {
 		Assert.areEqual (hex (0xFF00CC44), hex (bitmapData2.getPixel32 (0, 0)));
 		Assert.areEqual (hex (0xFF0000FF), hex (bitmapData2.getPixel32 (10, 10)));
 		Assert.areEqual (hex (0xFF00CC44), hex (bitmapData2.getPixel32 (30, 30)));
+		#end
 		
 	}
 	
@@ -332,6 +350,7 @@ class BitmapDataTest {
 	
 	@Test public function draw () {
 		
+		#if integration
 		var bitmapData = new BitmapData (100, 100);
 		var bitmapData2 = new BitmapData (100, 100, true, 0xFF0000FF);
 		
@@ -382,6 +401,7 @@ class BitmapDataTest {
 		
 		//TODO: Look into software renderer to find why alpha is off by one
 		Assert.isTrue (hex (bitmapData.getPixel32 (50, 50)) == hex (0xFFFF0000) || hex (bitmapData.getPixel32 (50, 50)) == hex (0xFEFF0000));
+		#end
 		
 	}
 	
@@ -418,6 +438,7 @@ class BitmapDataTest {
 	
 	@Test public function fillRect () {
 		
+		#if integration
 		var bitmapData = new BitmapData (100, 100);
 		bitmapData.fillRect (bitmapData.rect, 0xFFCC8833);
 		
@@ -435,6 +456,7 @@ class BitmapDataTest {
 		
 		var pixel = bitmapData.getPixel32 (0, 0);
 		Assert.areEqual (StringTools.hex (0xFFCC8833), StringTools.hex (pixel));
+		#end
 		
 	}
 	
@@ -568,6 +590,7 @@ class BitmapDataTest {
 	
 	@Test public function merge () {
 		
+		#if integration
 		var color = 0xFF000000;
 		var color2 = 0xFFFF0000;
 		
@@ -578,6 +601,7 @@ class BitmapDataTest {
 		
 		var pixel = bitmapData.getPixel32 (1, 1);
 		Assert.areEqual (StringTools.hex (0xFFFF0000), StringTools.hex (pixel));
+		#end
 		
 	}
 	
@@ -708,6 +732,7 @@ class BitmapDataTest {
 	}
 	
 	
+	#if integration
 	private static inline var TEST_WIDTH : Int = 100;
 	private static inline var TEST_HEIGHT : Int = 100;
 	
@@ -824,6 +849,7 @@ class BitmapDataTest {
 	@Test public function testGetAndSetPixelsRGBToRGB() {
 		testGetSetPixels(0x112233, false, false);
 	}
+	#end
 
 	/*
 	@Test public function testDispose () {
@@ -998,11 +1024,13 @@ class BitmapDataTest {
 	
 	@Test public function image () {
 		
+		#if integration
 		var bitmapData = new BitmapData (1, 1);
 		#if flash
 		Assert.isNull (bitmapData.image);
 		#else
 		Assert.isNotNull (bitmapData.image);
+		#end
 		#end
 		
 	}
@@ -1029,6 +1057,7 @@ class BitmapDataTest {
 	
 	@Test public function transparent () {
 		
+		#if integration
 		var bitmapData = new BitmapData (100, 100);
 		
 		Assert.isTrue (bitmapData.transparent);
@@ -1059,6 +1088,7 @@ class BitmapDataTest {
 		bitmapData.setPixels (bitmapData.rect, pixels);
 		
 		Assert.areEqual (0xFF, bitmapData.getPixel32 (0, 0) >> 24 & 0xFF);
+		#end
 		
 	}
 	

@@ -28,7 +28,8 @@ class TimerTest {
 		});
 	}
 
-	@Test public function timerFinished() {
+	#if integration
+	@AsyncTest public function timerFinished() {
 		// TODO: Lower MS values make this test fails completely
 		var timer = new Timer (50, 2);
 		timer.start();
@@ -41,8 +42,10 @@ class TimerTest {
 
 		var m_timer = massive.munit.util.Timer.delay(handler, 150);
 	}
+	#end
 
-	@Test public function timerRunning() {
+	#if integration
+	@AsyncTest public function timerRunning() {
 		var timer = new Timer (100, 5);
 		timer.start();
 
@@ -53,6 +56,7 @@ class TimerTest {
 
 		var m_timer = massive.munit.util.Timer.delay(handler, 250);
 	}
+	#end
 
 	@Test public function delay() {
 		var timer = new Timer(123);
@@ -83,7 +87,8 @@ class TimerTest {
 		// TODO: Actual timer ticks tests
 	}
 
-	@Test public function repeatCountDuringTimer() {
+	#if integration
+	@AsyncTest public function repeatCountDuringTimer() {
 		var timer = new Timer (100, 5);
 		timer.start();
 		
@@ -104,6 +109,7 @@ class TimerTest {
 
 		var m_timer = massive.munit.util.Timer.delay(handler, 250);
 	}
+	#end
 
 	@Test public function running() {
 		var timer = new Timer(123);

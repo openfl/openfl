@@ -42,6 +42,7 @@ import lime.utils.UInt8Array;
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
+		#if lime
 		if (source == null) return;
 		
 		var image = __getImage (source);
@@ -61,12 +62,14 @@ import lime.utils.UInt8Array;
 		#end
 		
 		uploadFromTypedArray (image.data);
+		#end
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
+		#if lime
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
@@ -77,6 +80,7 @@ import lime.utils.UInt8Array;
 		#end
 		
 		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		#end
 		
 	}
 	

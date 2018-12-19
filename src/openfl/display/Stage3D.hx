@@ -128,6 +128,7 @@ class Stage3D extends EventDispatcher {
 	
 	@:noCompletion private function __createContext ():Void {
 		
+		#if lime
 		var stage = __stage;
 		var renderer = stage.__renderer;
 		
@@ -210,6 +211,7 @@ class Stage3D extends EventDispatcher {
 			#end
 			
 		}
+		#end
 		
 	}
 	

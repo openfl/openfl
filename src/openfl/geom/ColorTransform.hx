@@ -1,10 +1,11 @@
 package openfl.geom; #if !flash
 
 
+import openfl._internal.utils.ObjectPool;
+
 #if lime
 import lime.math.ColorMatrix;
 import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
 #end
 
 
@@ -58,9 +59,10 @@ import lime.utils.ObjectPool;
 class ColorTransform {
 	
 	
+	@:noCompletion private static var __pool = new ObjectPool<ColorTransform> (function () return new ColorTransform (), function (ct) ct.__identity ());
+	
 	#if lime
 	@:noCompletion private static var __limeColorMatrix:Float32Array;
-	@:noCompletion private static var __pool = new ObjectPool<ColorTransform> (function () return new ColorTransform (), function (ct) ct.__identity ());
 	#end
 	
 	

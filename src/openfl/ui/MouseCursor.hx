@@ -47,6 +47,29 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		}
 		
 	}
+	
+	@:to private static function toLimeCursor (cursor:MouseCursor):LimeMouseCursor {
+		
+		return switch (cursor) {
+			
+			case MouseCursor.ARROW: LimeMouseCursor.ARROW;
+			case MouseCursor.AUTO: LimeMouseCursor.DEFAULT;
+			case MouseCursor.BUTTON: LimeMouseCursor.POINTER;
+			case MouseCursor.HAND: LimeMouseCursor.MOVE;
+			case MouseCursor.IBEAM: LimeMouseCursor.TEXT;
+			case MouseCursor.__CROSSHAIR: LimeMouseCursor.CROSSHAIR;
+			case MouseCursor.__RESIZE_NESW: LimeMouseCursor.RESIZE_NESW;
+			case MouseCursor.__RESIZE_NS: LimeMouseCursor.RESIZE_NS;
+			case MouseCursor.__RESIZE_NWSE: LimeMouseCursor.RESIZE_NWSE;
+			case MouseCursor.__RESIZE_WE: LimeMouseCursor.RESIZE_WE;
+			case MouseCursor.__WAIT: LimeMouseCursor.WAIT;
+			case MouseCursor.__WAIT_ARROW: LimeMouseCursor.WAIT_ARROW;
+			case MouseCursor.__CUSTOM: LimeMouseCursor.CUSTOM;
+			default: LimeMouseCursor.DEFAULT;
+			
+		}
+		
+	}
 	#end
 	
 }

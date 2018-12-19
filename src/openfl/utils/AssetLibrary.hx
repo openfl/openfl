@@ -29,7 +29,9 @@ import lime.utils.Bytes;
 	
 	public function new () {
 		
+		#if lime
 		super ();
+		#end
 		
 	}
 	
@@ -53,14 +55,22 @@ import lime.utils.Bytes;
 	
 	public static function fromBytes (bytes:ByteArray, rootPath:String = null):AssetLibrary {
 		
+		#if lime
 		return cast fromManifest (AssetManifest.fromBytes (bytes, rootPath));
+		#else
+		return null;
+		#end
 		
 	}
 	
 	
 	public static function fromFile (path:String, rootPath:String = null):AssetLibrary {
 		
+		#if lime
 		return cast fromManifest (AssetManifest.fromFile (path, rootPath));
+		#else
+		return null;
+		#end
 		
 	}
 	
@@ -343,28 +353,37 @@ import lime.utils.Bytes;
 	
 	public static function loadFromBytes (bytes:ByteArray, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
+		#if lime
 		return AssetManifest.loadFromBytes (bytes, rootPath).then (function (manifest) {
 			
 			return loadFromManifest (manifest);
 			
 		});
+		#else
+		return cast Future.withValue (null);
+		#end
 		
 	}
 	
 	
 	public static function loadFromFile (path:String, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
+		#if lime
 		return AssetManifest.loadFromFile (path, rootPath).then (function (manifest) {
 			
 			return loadFromManifest (manifest);
 			
 		});
+		#else
+		return cast Future.withValue (null);
+		#end
 		
 	}
 	
 	
 	public static function loadFromManifest (manifest:AssetManifest):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end {
 		
+		#if lime
 		var library:AssetLibrary = cast fromManifest (manifest);
 		
 		if (library != null) {
@@ -380,6 +399,9 @@ import lime.utils.Bytes;
 			return cast Future.withError ("Could not load asset manifest");
 			
 		}
+		#else
+		return cast Future.withValue (null);
+		#end
 		
 	}
 	
@@ -403,7 +425,7 @@ import lime.utils.Bytes;
 	
 	public function loadMovieClip (id:String):Future<MovieClip> {
 		
-		return new Future<MovieClip> (function () return getMovieClip (id));
+		return Future.withValue (getMovieClip (id));
 		
 	}
 	

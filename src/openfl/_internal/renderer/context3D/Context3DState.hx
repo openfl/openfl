@@ -102,7 +102,10 @@ class Context3DState {
 		stencilWriteMask = 0xFF;
 		textures = new Array ();
 		__frontFaceGLCCW = true;
+		
+		#if lime
 		__glBlendEquation = GL.FUNC_ADD;
+		#end
 		
 	}
 	

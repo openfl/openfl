@@ -598,11 +598,13 @@ class SharedObject extends EventDispatcher {
 			
 			__sharedObjects = new Map ();
 			// Lib.application.onExit.add (application_onExit);
+			#if lime
 			if (Application.current != null) {
 				
 				Application.current.onExit.add (application_onExit);
 				
 			}
+			#end
 			
 		}
 		
@@ -700,6 +702,7 @@ class SharedObject extends EventDispatcher {
 	
 	@:noCompletion private static function __getPath (localPath:String, name:String):String {
 		
+		#if lime
 		var path = System.applicationStorageDirectory + "/" + localPath + "/";
 		
 		name = StringTools.replace (name, "//", "/");
@@ -733,6 +736,9 @@ class SharedObject extends EventDispatcher {
 		}
 		
 		return path + name + ".sol";
+		#else
+		return name + ".sol";
+		#end
 		
 	}
 	

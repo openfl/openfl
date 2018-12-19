@@ -74,6 +74,7 @@ import lime.utils.UInt8Array;
 	
 	public function uploadFromBitmapData (source:BitmapData, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
+		#if lime
 		/* TODO
 			if (LowMemoryMode) {
 				// shrink bitmap data
@@ -130,12 +131,14 @@ import lime.utils.UInt8Array;
 		#end
 		
 		uploadFromTypedArray (image.data, miplevel);
+		#end
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
+		#if lime
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
@@ -146,6 +149,7 @@ import lime.utils.UInt8Array;
 		#end
 		
 		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
+		#end
 		
 	}
 	
@@ -223,6 +227,7 @@ import lime.utils.UInt8Array;
 		
 		var hasTexture = false;
 		
+		#if lime
 		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes:Bytes) {
 			
 			var format = alpha ? TextureBase.__compressedFormatsAlpha[gpuFormat] : TextureBase.__compressedFormats[gpuFormat];
@@ -261,6 +266,7 @@ import lime.utils.UInt8Array;
 			gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
 			
 		}
+		#end
 		
 		__context.__bindGLTexture2D (null);
 		

@@ -41,6 +41,7 @@ class FocusEventTest {
 	
 	@Test public function new_ () {
 		
+		#if integration
 		var sprite = new Sprite ();
 		sprite.name = "Sprite";
 		var sprite2 = new Sprite ();
@@ -218,6 +219,7 @@ class FocusEventTest {
 		Assert.areEqual(0, expect.length);
 		
 		Lib.current.stage.removeChild (root);
+		#end
 		
 	}
 	

@@ -11,7 +11,7 @@ import massive.munit.TestRunner;
  */
 class IntegrationTestMain
 {
-	static function main(){	new TestMain(); }
+	static function main(){	new IntegrationTestMain(); }
 
 	public function new()
 	{

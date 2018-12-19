@@ -7,12 +7,7 @@ import openfl._internal.renderer.dom.DOMShape;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
-#if lime
-import lime.ui.MouseCursor;
-#else
 import openfl.ui.MouseCursor;
-#end
 
 
 /**
@@ -198,7 +193,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
-		return (__buttonMode && useHandCursor) ? POINTER : null;
+		return (__buttonMode && useHandCursor) ? BUTTON : null;
 		
 	}
 	

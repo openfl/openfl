@@ -76,6 +76,7 @@ import openfl.utils.AssetManifest;
 	}
 	
 	
+	#if lime
 	public override function exists (id:String, type:String):Bool {
 		
 		if (swf == null) return false;
@@ -95,6 +96,7 @@ import openfl.utils.AssetManifest;
 		return false;
 		
 	}
+	#end
 	
 	
 	#if lime
@@ -143,18 +145,22 @@ import openfl.utils.AssetManifest;
 	#end
 	
 	
+	#if lime
 	public override function getMovieClip (id:String):MovieClip {
 		
 		return (swf != null) ? swf.createMovieClip (id) : null;
 		
 	}
+	#end
 	
 	
+	#if lime
 	public override function isLocal (id:String, type:String):Bool {
 		
 		return true;
 		
 	}
+	#end
 	
 	
 	#if lime
@@ -305,6 +311,7 @@ import openfl.utils.AssetManifest;
 	#end
 	
 	
+	#if lime
 	public override function unload ():Void {
 		
 		if (swf == null) return;
@@ -329,6 +336,7 @@ import openfl.utils.AssetManifest;
 		}
 		
 	}
+	#end
 	
 	
 	#if lime
@@ -350,6 +358,7 @@ import openfl.utils.AssetManifest;
 	#end
 	
 	
+	#if lime
 	private override function __fromManifest (manifest:AssetManifest):Void {
 		
 		rootPath = manifest.rootPath;
@@ -364,6 +373,7 @@ import openfl.utils.AssetManifest;
 		}
 		
 	}
+	#end
 	
 	
 	#if lime
