@@ -1,6 +1,10 @@
 package system;
 
 
+import openfl.display.BitmapData;
+import openfl.utils.ByteArray;
+
+
 class FileIOTest {
 	
 	

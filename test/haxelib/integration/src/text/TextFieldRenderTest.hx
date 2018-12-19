@@ -1,8 +1,8 @@
 package text;
 
 
-import massive.munit.Assert;
 import openfl.display.BitmapData;
+import openfl.text.TextField;
 
 
 class TextFieldRenderTest {
@@ -50,7 +50,6 @@ class TextFieldRenderTest {
 		bitmapData.draw (textField);
 		
 		Assert.areEqual (StringTools.hex (0xFF000000, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		#end
 		
 	}
 	

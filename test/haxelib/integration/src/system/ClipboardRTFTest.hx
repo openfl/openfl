@@ -1,7 +1,8 @@
-package openfl.desktop;
+package system;
 
 
 import openfl.desktop.Clipboard;
+import openfl.desktop.ClipboardFormats;
 import openfl.utils.ByteArray;
 
 

@@ -1,6 +1,9 @@
 package display;
 
 
+import openfl.Lib;
+
+
 class Stage3DRenderTest {
 	
 	
@@ -20,7 +23,6 @@ class Stage3DRenderTest {
 			stage3D.requestContext3D ();
 			
 		}
-		#end
 		
 	}
 	

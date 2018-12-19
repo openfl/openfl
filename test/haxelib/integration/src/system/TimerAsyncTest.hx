@@ -1,9 +1,9 @@
 package system;
 
-import openfl.errors.Error;
 
-import massive.munit.Assert;
-import massive.munit.Async;
+import openfl.errors.Error;
+import openfl.utils.Timer;
+
 
 class TimerAsyncTest {
 	
