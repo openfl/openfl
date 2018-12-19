@@ -3,8 +3,11 @@ package openfl._internal;
 
 import haxe.PosInfos;
 import openfl._internal.utils.Log;
+
+#if !openfl_unit_testing
 import openfl.display.Application;
 import openfl.display.MovieClip;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -15,8 +18,8 @@ import openfl.display.MovieClip;
 class Lib {
 	
 	
-	public static var application:Application;
-	public static var current: MovieClip #if flash = flash.Lib.current #end;
+	public static var application:#if !openfl_unit_testing Application #else Dynamic #end;
+	public static var current:#if !openfl_unit_testing MovieClip #else Dynamic #end #if flash = flash.Lib.current #end;
 	
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
 	

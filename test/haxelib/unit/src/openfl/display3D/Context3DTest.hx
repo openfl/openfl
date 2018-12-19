@@ -12,6 +12,7 @@ class Context3DTest {
 	@Test public function driverInfo () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -31,6 +32,7 @@ class Context3DTest {
 	@Test public function enableErrorChecking () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -50,6 +52,7 @@ class Context3DTest {
 	@Test public function clear () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -71,6 +74,7 @@ class Context3DTest {
 	@Test public function configureBackBuffer () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -92,6 +96,7 @@ class Context3DTest {
 	@Test public function createCubeTexture () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -111,6 +116,7 @@ class Context3DTest {
 	@Test public function createIndexBuffer () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -130,6 +136,7 @@ class Context3DTest {
 	@Test public function createProgram () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -151,6 +158,7 @@ class Context3DTest {
 	@Test public function createRectangleTexture () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -170,6 +178,7 @@ class Context3DTest {
 	@Test public function createTexture () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -189,6 +198,7 @@ class Context3DTest {
 	@Test public function createVertexBuffer () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -208,6 +218,7 @@ class Context3DTest {
 	@Test public function dispose () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -227,6 +238,7 @@ class Context3DTest {
 	@Test public function drawToBitmapData () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -246,6 +258,7 @@ class Context3DTest {
 	@Test public function drawTriangles () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -265,6 +278,7 @@ class Context3DTest {
 	@Test public function present () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -284,6 +298,7 @@ class Context3DTest {
 	@Test public function setBlendFactors () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -303,6 +318,7 @@ class Context3DTest {
 	@Test public function setColorMask () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -322,6 +338,7 @@ class Context3DTest {
 	@Test public function setCulling () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -341,6 +358,7 @@ class Context3DTest {
 	@Test public function setDepthTest () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -359,6 +377,7 @@ class Context3DTest {
 	@Test public function setProgram () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -378,6 +397,7 @@ class Context3DTest {
 	@Test public function setProgramConstantsFromByteArray () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -396,6 +416,7 @@ class Context3DTest {
 	@Test public function setProgramConstantsFromMatrix () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -415,6 +436,7 @@ class Context3DTest {
 	@Test public function setProgramConstantsFromVector () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -434,6 +456,7 @@ class Context3DTest {
 	@Test public function setRenderToBackBuffer () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -453,6 +476,7 @@ class Context3DTest {
 	@Test public function setRenderToTexture () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -472,6 +496,7 @@ class Context3DTest {
 	@Test public function setSamplerStateAt () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -491,6 +516,7 @@ class Context3DTest {
 	@Test public function setScissorRectangle () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -510,6 +536,7 @@ class Context3DTest {
 	@Test public function setStencilReferenceValue () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -529,6 +556,7 @@ class Context3DTest {
 	@Test public function setTextureAt () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -548,6 +576,7 @@ class Context3DTest {
 	@Test public function setVertexBufferAt () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();

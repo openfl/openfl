@@ -41,6 +41,8 @@ class FocusEventTest {
 	
 	@Test public function new_ () {
 		
+		// TODO: Isolate so integration is not needed
+		
 		#if integration
 		var sprite = new Sprite ();
 		sprite.name = "Sprite";

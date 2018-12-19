@@ -4,3 +4,4 @@
 -cp src
 -lib munit
 -D openfl-unit-testing
+--times

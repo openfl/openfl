@@ -1,10 +1,6 @@
 package openfl.text;
 
 
-import massive.munit.Assert;
-import openfl.display.BitmapData;
-
-
 class TextFieldTest {
     @Test public function autoSizeLeft() {
         var textField = new TextField ();
@@ -89,13 +85,6 @@ class TextFieldTest {
 		
 		Assert.isTrue (textField.background);
 		
-		#if integration
-		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
-		bitmapData.draw (textField);
-		
-		Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		#end
-		
 	}
 	
 	
@@ -108,20 +97,6 @@ class TextFieldTest {
 		textField.backgroundColor = 0x00FF00;
 		
 		Assert.areEqual (StringTools.hex (0x00FF00, 6), StringTools.hex (textField.backgroundColor, 6));
-		
-		#if integration
-		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
-		bitmapData.draw (textField);
-		
-		Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		
-		textField.background = true;
-		
-		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
-		bitmapData.draw (textField);
-		
-		Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		#end
 		
 	}
 	
@@ -136,13 +111,6 @@ class TextFieldTest {
 		
 		Assert.isTrue (textField.border);
 		
-		#if integration
-		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
-		bitmapData.draw (textField);
-		
-		Assert.areEqual (StringTools.hex (0xFF000000, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		#end
-		
 	}
 	
 	
@@ -155,20 +123,6 @@ class TextFieldTest {
 		textField.borderColor = 0x00FF00;
 		
 		Assert.areEqual (StringTools.hex (0x00FF00, 6), StringTools.hex (textField.borderColor, 6));
-		
-		#if integration
-		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
-		bitmapData.draw (textField);
-		
-		Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		
-		textField.border = true;
-		
-		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
-		bitmapData.draw (textField);
-		
-		Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-		#end
 		
 	}
 	
@@ -219,19 +173,6 @@ class TextFieldTest {
 		// TODO -- textWidth is still unchanged?
 		Assert.areEqual (textField.textWidth, textField2.textWidth);
 		Assert.areNotEqual (textField3.textWidth, textField2.textWidth);
-		#end
-		
-		#if integration
-		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
-		var bitmapData2 = bitmapData.clone ();
-		var bitmapData3 = bitmapData.clone ();
-		
-		bitmapData.draw (textField);
-		bitmapData2.draw (textField2);
-		bitmapData3.draw (textField3);
-		
-		Assert.isTrue (Std.is (bitmapData2.compare (bitmapData), BitmapData));
-		Assert.areEqual (0, bitmapData2.compare (bitmapData3));
 		#end
 		
 	}
@@ -409,25 +350,6 @@ class TextFieldTest {
 		textField2.text = "World";
 		
 		textField.scrollV = 2;
-		
-		#if integration
-		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
-		var bitmapData2 = bitmapData.clone ();
-		
-		bitmapData.draw (textField);
-		bitmapData2.draw (textField2);
-		
-		Assert.areEqual (0, bitmapData.compare (bitmapData2));
-		
-		textField.scrollV = 1000;
-		
-		Assert.areEqual (textField.maxScrollV, textField.scrollV);
-		
-		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
-		bitmapData.draw (textField);
-		
-		Assert.areEqual (0, bitmapData.compare (bitmapData2));
-		#end
 		
 	}
 	

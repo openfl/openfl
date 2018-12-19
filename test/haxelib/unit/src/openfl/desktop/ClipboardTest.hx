@@ -1,11 +1,6 @@
 package openfl.desktop;
 
 
-#if integration
-import openfl.utils.ByteArray;
-#end
-
-
 class ClipboardTest {
 	
 	
@@ -55,30 +50,14 @@ class ClipboardTest {
 	#if (flash && !air) @Ignore #end
 	@AsyncTest public function getData () {
 		
-		#if integration
-		var handler = Async.handler (this, function (richTextFormatData) {
-			
-			var textFormatData = 'Text Format Data';
-			var clipboard = Clipboard.generalClipboard;
-			
-			clipboard.setData (ClipboardFormats.TEXT_FORMAT, textFormatData);
-			
-			Assert.areEqual (textFormatData, clipboard.getData (ClipboardFormats.TEXT_FORMAT));
-			
-			clipboard.setData (ClipboardFormats.RICH_TEXT_FORMAT, richTextFormatData);
-			
-			#if !flash
-			Assert.areNotEqual (textFormatData, clipboard.getData (ClipboardFormats.TEXT_FORMAT));
-			// Assert.areEqual (richTextFormatData, clipboard.getData (ClipboardFormats.TEXT_FORMAT));
-			#end
-			
-			// TODO
-			// Assert.areEqual (richTextFormatData, clipboard.getData (ClipboardFormats.RICH_TEXT_FORMAT));
-			
-		});
+		var textFormatData = 'Text Format Data';
+		var clipboard = Clipboard.generalClipboard;
 		
-		ByteArray.loadFromFile ("hello.rtf").onComplete (handler);
-		#end
+		clipboard.setData (ClipboardFormats.TEXT_FORMAT, textFormatData);
+		
+		Assert.areEqual (textFormatData, clipboard.getData (ClipboardFormats.TEXT_FORMAT));
+		
+		// RTF data is tested in integration, requires external asset
 		
 	}
 	

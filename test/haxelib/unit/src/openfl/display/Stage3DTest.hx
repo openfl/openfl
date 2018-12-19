@@ -12,6 +12,7 @@ class Stage3DTest {
 	@Test public function context3D () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
@@ -28,6 +29,7 @@ class Stage3DTest {
 	@Test public function visible () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
@@ -42,6 +44,7 @@ class Stage3DTest {
 	@Test public function x () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
@@ -56,6 +59,7 @@ class Stage3DTest {
 	@Test public function y () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
@@ -70,6 +74,7 @@ class Stage3DTest {
 	@Test public function new_ () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
@@ -84,6 +89,7 @@ class Stage3DTest {
 	@Test public function requestContext3D () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
@@ -98,6 +104,7 @@ class Stage3DTest {
 	@Test public function requestContext3DMatchingProfiles  () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var stage3D = Lib.current.stage.stage3Ds[0];
@@ -109,6 +116,7 @@ class Stage3DTest {
 	}
 	
 	
+	#if integration
 	public static function __getContext3D ():Context3D {
 		
 		// TODO: Create the context in advance?
@@ -142,6 +150,7 @@ class Stage3DTest {
 		return null;
 		
 	}
+	#end
 	
 	
 }

@@ -12,6 +12,7 @@ class Program3DTest {
 	@Test public function dispose () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -32,6 +33,7 @@ class Program3DTest {
 	@Test public function upload () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();

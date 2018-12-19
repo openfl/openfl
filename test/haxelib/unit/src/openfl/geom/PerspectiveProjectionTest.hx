@@ -27,6 +27,8 @@ class PerspectiveProjectionTest {
 		Assert.areEqual(0.0, projection.focalLength);
 		#end
 
+		// TODO: Isolate so integration is not needed
+
 		#if integration
 		#if flash
 		Assert.areEqual(500 / 2, projection.projectionCenter.x);
@@ -97,6 +99,8 @@ class PerspectiveProjectionTest {
 
 	@Test public function projectionCenter() {
 		var projection = new PerspectiveProjection();
+		
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		#if flash

@@ -85,6 +85,8 @@ class EventTest {
 	
 	@Test public function new_ () {
 		
+		// TODO: Isolate so integration is not needed
+		
 		#if integration
 		// ADDED
 		

@@ -341,6 +341,8 @@ class DisplayObjectTest {
 
 		Assert.isNull(exists);
 		
+		// TODO: Isolate so integration is not needed
+		
 		#if integration
 		openfl.Lib.current.addChild (sprite);
 		
@@ -365,6 +367,7 @@ class DisplayObjectTest {
 	@Test public function mouseX() {
 
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 
 		#if integration
 		var sprite = new Sprite ();
@@ -378,6 +381,7 @@ class DisplayObjectTest {
 	@Test public function mouseY() {
 
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 
 		#if integration
 		var sprite = new Sprite ();

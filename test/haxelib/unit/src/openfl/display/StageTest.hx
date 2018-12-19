@@ -11,6 +11,7 @@ class StageTest {
 	@Test public function align () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.align;
@@ -24,6 +25,7 @@ class StageTest {
 	@Test public function allowsFullScreen () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.allowsFullScreen;
@@ -37,6 +39,7 @@ class StageTest {
 	@Test public function allowsFullScreenInteractive () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.allowsFullScreenInteractive;
@@ -50,6 +53,7 @@ class StageTest {
 	@Test public function application () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.application;
@@ -63,6 +67,7 @@ class StageTest {
 	@Test public function color () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.color;
@@ -76,6 +81,7 @@ class StageTest {
 	@Test public function displayState () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.displayState;
@@ -89,6 +95,7 @@ class StageTest {
 	@Test public function focus () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.focus;
@@ -102,6 +109,7 @@ class StageTest {
 	@Test public function frameRate () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.frameRate;
@@ -115,6 +123,7 @@ class StageTest {
 	@Test public function quality () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.quality;
@@ -128,6 +137,7 @@ class StageTest {
 	@Test public function scaleMode () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.scaleMode;
@@ -141,6 +151,7 @@ class StageTest {
 	@Test public function stage3Ds () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.stage3Ds;
@@ -154,6 +165,7 @@ class StageTest {
 	@Test public function stageFocusRect () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.stageFocusRect;
@@ -167,6 +179,7 @@ class StageTest {
 	@Test public function stageHeight () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.stageHeight;
@@ -180,6 +193,7 @@ class StageTest {
 	@Test public function stageWidth () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.stageWidth;
@@ -193,6 +207,7 @@ class StageTest {
 	@Test public function window () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.window;
@@ -206,6 +221,7 @@ class StageTest {
 	@Test public function invalidate () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var exists = Lib.current.stage.invalidate;

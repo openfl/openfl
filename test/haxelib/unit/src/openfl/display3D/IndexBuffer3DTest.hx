@@ -12,6 +12,7 @@ class IndexBuffer3DTest {
 	@Test public function dispose () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -32,6 +33,7 @@ class IndexBuffer3DTest {
 	@Test public function uploadFromByteArray () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -52,6 +54,7 @@ class IndexBuffer3DTest {
 	@Test public function uploadFromTypedArray () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
@@ -70,6 +73,7 @@ class IndexBuffer3DTest {
 	@Test public function uploadFromVector () {
 		
 		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
 		
 		#if integration
 		var context3D = Stage3DTest.__getContext3D ();
