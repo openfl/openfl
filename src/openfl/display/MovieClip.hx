@@ -132,7 +132,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	 * disabled. If `enabled` is set to `false`, the object
 	 * is not included in automatic tab ordering.
 	 */
-	public var enabled:Bool;
+	public var enabled(get, set):Bool;
 	
 	/**
 	 * The number of frames that are loaded from a streaming SWF file. You can
@@ -185,6 +185,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __symbol:SpriteSymbol;
 	@:noCompletion private var __timeElapsed:Int;
 	@:noCompletion private var __totalFrames:Int;
+	@:noCompletion private var __enabled:Bool;
 	
 	
 	#if openfljs
@@ -1234,6 +1235,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private function get_framesLoaded ():Int { return __totalFrames; }
 	@:noCompletion private function get_isPlaying ():Bool { return __playing; }
 	@:noCompletion private function get_totalFrames ():Int { return __totalFrames; }
+	@:noCompletion private function get_enabled ():Bool { return __enabled; }
+	@:noCompletion private function set_enabled (value:Bool):Bool { return __enabled = value; }
 	
 	
 }
