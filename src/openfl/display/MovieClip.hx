@@ -197,6 +197,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			"currentFrameLabel": { get: untyped __js__ ("function () { return this.get_currentFrameLabel (); }") },
 			"currentLabel": { get: untyped __js__ ("function () { return this.get_currentLabel (); }") },
 			"currentLabels": { get: untyped __js__ ("function () { return this.get_currentLabels (); }") },
+			"enabled": { get: untyped __js__ ("function () { return this.get_enabled (); }"), set: untyped __js__ ("function (v) { return this.set_enabled (v); }") },
 			"framesLoaded": { get: untyped __js__ ("function () { return this.get_framesLoaded (); }") },
 			"isPlaying": { get: untyped __js__ ("function () { return this.get_isPlaying (); }") },
 			"totalFrames": { get: untyped __js__ ("function () { return this.get_totalFrames (); }") },
