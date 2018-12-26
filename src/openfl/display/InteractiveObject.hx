@@ -1226,7 +1226,7 @@ class InteractiveObject extends DisplayObject {
 		
 		if (tabEnabled) {
 			
-			stack.push(this);
+			stack.push (this);
 			
 		}
 		
