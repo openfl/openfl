@@ -961,7 +961,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	}
 	
 	
-	@:noCompletion private function __tabTest (stack:Array<InteractiveObject>):Void {
+	@:noCompletion private override function __tabTest (stack:Array<InteractiveObject>):Void {
 		
 		if (!__enabled) return;
 		super.__tabTest (stack);
