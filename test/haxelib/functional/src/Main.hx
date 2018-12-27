@@ -85,6 +85,8 @@ class Main extends Sprite {
 	
 	private function stage_onKeyDown (event:KeyboardEvent):Void {
 		
+		if (event.altKey || event.ctrlKey || event.commandKey || event.controlKey || event.shiftKey) return;
+		
 		switch (event.keyCode) {
 			
 			case Keyboard.LEFT, Keyboard.MINUS, Keyboard.NUMPAD_SUBTRACT:

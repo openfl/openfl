@@ -161,7 +161,7 @@ class ScrollRectTest1 extends FunctionalTest {
 			outerAngle -= 2 * Math.PI;
 		}
 		outerRect.x = RADIUS + RADIUS * Math.cos (outerAngle);
-		outerRect.y = RADIUS + RADIUS * Math.sin (outerAngle);
+		outerRect.y = RADIUS + RADIUS * Math.sin (outerAngle) + ((720 - contentHeight) / 2);
 		outerSprite.scrollRect = outerRect;
 		
 	}
