@@ -2925,26 +2925,36 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 		}
 		
-		return __scrollRect.clone();
+		return __scrollRect.clone ();
 		
 	}
 	
 	
 	@:noCompletion private function set_scrollRect (value:Rectangle):Rectangle {
 		
-		if (value != __scrollRect) {
+		if (value == null && __scrollRect == null) return value;
+		if (value != null && __scrollRect != null && __scrollRect.equals (value)) return value;
+		
+		if (value != null) {
 			
-			__setTransformDirty ();
+			if (__scrollRect == null) __scrollRect = new Rectangle ();
+			__scrollRect.copyFrom (value);
 			
-			if (__supportDOM) {
-				
-				__setRenderDirty ();
-				
-			}
+		} else {
+			
+			__scrollRect = null;
 			
 		}
 		
-		return __scrollRect = value;
+		__setTransformDirty ();
+		
+		if (__supportDOM) {
+			
+			__setRenderDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
