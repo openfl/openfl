@@ -147,6 +147,15 @@ class Script extends hxp.Script {
 			
 		}
 		
+		if (command == "test" || command == "test-functional") {
+			
+			var dir = Path.combine (Sys.getCwd (), "test/haxelib/functional");
+			
+			if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
+			else runOpenFLCommand (dir, [ "test", target ]);
+			
+		}
+		
 	}
 	
 	
