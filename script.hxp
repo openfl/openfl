@@ -13,6 +13,10 @@ class Script extends hxp.Script {
 		
 		if (command == "default") command = "test";
 		
+		if (command == "unit-test") command = "test-unit";
+		if (command == "integration-test") command = "test-integration";
+		if (command == "functional-test") command = "test-functional";
+		
 		switch (command) {
 			case "test", "test-unit", "test-integration", "test-functional": test ();
 			default: Log.error ("Unknown command: \"" + command + "\"");
@@ -78,7 +82,7 @@ class Script extends hxp.Script {
 		} else {
 			
 			testHaxelib ();
-			testNPM ();
+			if (command == "test" || command == "test-unit") testNPM ();
 			
 		}
 		
@@ -151,8 +155,21 @@ class Script extends hxp.Script {
 			
 			var dir = Path.combine (Sys.getCwd (), "test/haxelib/functional");
 			
-			if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
-			else runOpenFLCommand (dir, [ "test", target ]);
+			var args = [ "test", target == null ? "neko" : target ];
+			
+			for (flag in flags.keys ()) {
+				args.push ("-" + flag);
+			}
+			
+			for (define in defines.keys ()) {
+				if (defines.get (define) != "") {
+					args.push ("-D" + define + "=" + defines.get (define));
+				} else {
+					args.push ("-D" + define);
+				}
+			}
+			
+			runOpenFLCommand (dir, args);
 			
 		}
 		

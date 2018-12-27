@@ -50,6 +50,16 @@ class FunctionalTestSuite {
 	}
 	
 	
+	public function hasTestWithName (name:String):Bool {
+		
+		for (test in tests) {
+			if (test.name == name) return true;
+		}
+		return false;
+		
+	}
+	
+	
 	public function nextTest ():Void {
 		
 		if (tests.length <= 1) return;
@@ -107,7 +117,7 @@ class FunctionalTestSuite {
 	
 	public function startTest (id:Int):Void {
 		
-		if (id < 0 || id > tests.length) return;
+		if (id < 0 || id >= tests.length) return;
 		
 		if (currentTest != null) {
 			
@@ -134,6 +144,22 @@ class FunctionalTestSuite {
 		}
 		
 		label.text = currentTest.name;
+		
+	}
+	
+	
+	public function startTestWithName (name:String):Void {
+		
+		for (i in 0...tests.length) {
+			
+			if (tests[i].name == name) {
+				
+				startTest (i);
+				break;
+				
+			}
+			
+		}
 		
 	}
 	
