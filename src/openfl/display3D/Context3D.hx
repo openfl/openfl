@@ -519,7 +519,7 @@ private typedef GLTexture = Dynamic;
 		
 		setRenderToBackBuffer ();
 		
-		if (__stage3D != null) {
+		if (__stage3D != null && __backBufferTexture != null) {
 			
 			if (!__cleared) {
 				
@@ -961,6 +961,14 @@ private typedef GLTexture = Dynamic;
 			__contextState.__currentGLTextureCubeMap = texture;
 			
 		// }
+		
+	}
+	
+	
+	@:noCompletion private function __dispose ():Void {
+		
+		driverInfo += " (Disposed)";
+		// gl = null;
 		
 	}
 	

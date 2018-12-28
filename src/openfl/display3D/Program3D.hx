@@ -53,6 +53,7 @@ import lime.utils.Float32Array;
 	@:noCompletion private var __glslAttribNames:Array<String>;
 	@:noCompletion private var __glslAttribTypes:Array<ShaderParameterType>;
 	@:noCompletion private var __glslSamplerNames:Array<String>;
+	@:noCompletion private var __glslUniformLocations:Array<#if lime GLUniformLocation #else Dynamic #end>;
 	@:noCompletion private var __glslUniformNames:Array<String>;
 	@:noCompletion private var __glslUniformTypes:Array<ShaderParameterType>;
 	@:noCompletion private var __glVertexShader:#if lime GLShader #else Dynamic #end;
@@ -80,6 +81,7 @@ import lime.utils.Float32Array;
 			__glslAttribNames = new Array ();
 			__glslAttribTypes = new Array ();
 			__glslSamplerNames = new Array ();
+			__glslUniformLocations = new Array ();
 			__glslUniformNames = new Array ();
 			__glslUniformTypes = new Array ();
 			
@@ -152,7 +154,7 @@ import lime.utils.Float32Array;
 			
 			for (i in 0...__glslUniformNames.length) {
 				
-				if (__glslUniformNames[i] == name) return i;
+				if (__glslUniformNames[i] == name) return cast __glslUniformLocations[i];
 				
 			}
 			
@@ -219,7 +221,7 @@ import lime.utils.Float32Array;
 		__processGLSLData (vertexSource, "uniform");
 		__processGLSLData (fragmentSource, "uniform");
 		
-		__deleteShaders ();	
+		__deleteShaders ();
 		__uploadFromGLSL (vertex, fragment);
 		
 		// Sort by index
@@ -233,10 +235,10 @@ import lime.utils.Float32Array;
 		__glslSamplerNames = new Array ();
 		__glslAttribNames = new Array ();
 		__glslAttribTypes = new Array ();
-		__glslUniformNames = new Array ();
+		__glslUniformLocations = new Array ();
 		
 		var gl = __context.gl;
-		var index:Int;
+		var index:Int, location;
 		
 		for (name in samplerNames) {
 			
@@ -255,9 +257,8 @@ import lime.utils.Float32Array;
 		
 		for (i in 0...uniformNames.length) {
 			
-			index = cast gl.getUniformLocation (__glProgram, uniformNames[i]);
-			__glslAttribNames[index] = uniformNames[i];
-			__glslAttribTypes[index] = uniformTypes[i];
+			location = gl.getUniformLocation (__glProgram, uniformNames[i]);
+			__glslUniformLocations[i] = location;
 			
 		}
 		

@@ -1134,7 +1134,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 		
 		for (stage3D in stage3Ds) {
 			
-			stage3D.context3D = null;
+			stage3D.__lostContext ();
 			
 		}
 		
@@ -1144,6 +1144,12 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 	@:noCompletion @:dox(hide) public function onRenderContextRestored (context:RenderContext):Void {
 		
 		__createRenderer ();
+		
+		for (stage3D in stage3Ds) {
+			
+			stage3D.__restoreContext ();
+			
+		}
 		
 	}
 	
