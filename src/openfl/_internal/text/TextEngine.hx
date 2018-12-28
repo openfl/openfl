@@ -1225,14 +1225,14 @@ class TextEngine {
 			// breaks up words that are too long to fit in a single line
 			
 			var remainingPositions = positions;
-			var i, j, placeIndex, positionWidth;
+			var i, bufferCount, placeIndex, positionWidth;
 			var currentPosition, tempPositions;
 			
 			var tempWidth = getPositionsWidth (remainingPositions);
 			
 			while (offsetX + tempWidth > width - 2) {
 				
-				i = j = 0;
+				i = bufferCount = 0;
 				positionWidth = 0.0;
 				
 				while (offsetX + positionWidth < width - 2) {
@@ -1243,7 +1243,7 @@ class TextEngine {
 						
 						// skip Unicode character buffer positions
 						i++;
-						j++;
+						bufferCount++;
 						
 					}
 					
@@ -1256,11 +1256,11 @@ class TextEngine {
 					
 				}
 				
-				if (i < 2 && positionWidth > width - 4) {
-					// if the textfield is smaller than the first character in a line, automatically wrap the next character
+				if (i < 2 && positionWidth + offsetX > width - 2) {
+					// if there's no room to put even a single character, automatically wrap the next character
 					
 					// unless it's the last line of the long word
-					if (textIndex + i - j == endIndex) {
+					if (textIndex + i - bufferCount == endIndex) {
 						
 						break;
 						
@@ -1273,21 +1273,27 @@ class TextEngine {
 					// remove characters until the text fits one line
 					// because of combining letters potentially being broken up now, we have to redo the formatted positions each time
 					// TODO: this may not work exactly with Unicode buffer characters...
+					// TODO: maybe assume no combining letters, then compare result to i+1 and i-1 results?
 					while (offsetX + positionWidth > width - 2) {
 					
 						i--;
 						
-						if (i - j > 0) {
+						if (i - bufferCount > 0) {
 							
-							setFormattedPositions (textIndex, textIndex + i - j);
+							setFormattedPositions (textIndex, textIndex + i - bufferCount);
 							positionWidth = widthValue;
 							
 						}
 						
 						else {
 							
+							// TODO: does this run anymore?
+							
 							i = 1;
-							j = 0;
+							bufferCount = 0;
+							
+							setFormattedPositions (textIndex, textIndex + 1);
+							positionWidth = 0; // breaks out of the loops
 							
 						}
 						
@@ -1295,7 +1301,7 @@ class TextEngine {
 					
 				}
 				
-				placeIndex = textIndex + i - j;
+				placeIndex = textIndex + i - bufferCount;
 				placeFormattedText (placeIndex);
 				alignBaseline();
 				
