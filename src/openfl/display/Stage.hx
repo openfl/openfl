@@ -1130,6 +1130,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end {
 	@:noCompletion @:dox(hide) public function onRenderContextLost ():Void {
 		
 		__renderer = null;
+		context3D = null;
+		
+		for (stage3D in stage3Ds) {
+			
+			stage3D.context3D = null;
+			
+		}
 		
 	}
 	
