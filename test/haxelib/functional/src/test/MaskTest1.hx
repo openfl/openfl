@@ -7,7 +7,6 @@ import openfl.display.Graphics;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
-import openfl.net.URLRequest;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;

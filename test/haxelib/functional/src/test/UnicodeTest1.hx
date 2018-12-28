@@ -8,7 +8,6 @@ import openfl.text.AntiAliasType;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.ui.Keyboard;
-import openfl.Lib;
 
 
 class UnicodeTest1 extends FunctionalTest {
@@ -80,14 +79,14 @@ class UnicodeTest1 extends FunctionalTest {
 		
 		updateAllText ();
 		
-		Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, onKey);
+		stage.addEventListener (KeyboardEvent.KEY_DOWN, onKey);
 		
 	}
 	
 	
 	public override function stop ():Void {
 		
-		Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, onKey);
+		stage.removeEventListener (KeyboardEvent.KEY_DOWN, onKey);
 		content = null;
 		
 	}

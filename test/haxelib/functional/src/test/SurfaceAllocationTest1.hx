@@ -5,7 +5,6 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Sprite;
-import openfl.display.Stage;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.geom.Rectangle;
@@ -15,7 +14,6 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.ui.Keyboard;
-import openfl.Lib;
 
 
 /**
@@ -106,7 +104,7 @@ class SurfaceAllocationTest1 extends FunctionalTest {
 		
 		text.text = "0x100, 0x500, 0x1000";
 		
-		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
 		
 	}
 	
@@ -117,7 +115,7 @@ class SurfaceAllocationTest1 extends FunctionalTest {
 		children500 = null;
 		children1000 = null;
 		
-		Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, onKey);
+		stage.removeEventListener (KeyboardEvent.KEY_DOWN, onKey);
 		content = null;
 		
 	}

@@ -2,6 +2,7 @@ package;
 
 
 import openfl.display.Sprite;
+import openfl.display.Stage;
 
 
 class FunctionalTest {
@@ -9,6 +10,7 @@ class FunctionalTest {
 	
 	public var content:Sprite;
 	public var name:String;
+	public var stage:Stage;
 	
 	private var contentHeight:Float;
 	private var contentWidth:Float;

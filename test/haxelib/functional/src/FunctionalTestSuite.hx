@@ -128,12 +128,14 @@ class FunctionalTestSuite {
 			}
 			
 			currentTest.stop ();
+			currentTest.stage = null;
 			
 		}
 		
 		currentTestID = id;
 		currentTest = tests[id];
 		
+		currentTest.stage = content.stage;
 		currentTest.resize (contentWidth, contentHeight);
 		currentTest.start ();
 		
