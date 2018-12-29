@@ -250,11 +250,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (context3D != null) {
 			
-			__indexBuffer = null;
-			__vertexBuffer = null;
 			context3D.__dispose ();
-			context3D = null;
-			
 			__contextRequested = true;
 			
 		}

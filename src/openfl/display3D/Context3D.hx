@@ -427,7 +427,10 @@ private typedef GLTexture = Dynamic;
 	
 	public function dispose (recreate:Bool = true):Void {
 		
-		// GLContext3D.dispose (this, recreate);
+		// TODO: Dispose all related buffers
+		
+		gl = null;
+		__dispose ();
 		
 	}
 	
@@ -968,7 +971,26 @@ private typedef GLTexture = Dynamic;
 	@:noCompletion private function __dispose ():Void {
 		
 		driverInfo += " (Disposed)";
-		// gl = null;
+		
+		if (__stage3D != null) {
+			
+			__stage3D.__indexBuffer = null;
+			__stage3D.__vertexBuffer = null;
+			__stage3D.context3D = null;
+			__stage3D = null;
+			
+		}
+		
+		__backBufferTexture = null;
+		__context = null;
+		__renderStage3DProgram = null;
+		__fragmentConstants = null;
+		__frontBufferTexture = null;
+		__positionScale = null;
+		__present = false;
+		__quadIndexBuffer = null;
+		__stage = null;
+		__vertexConstants = null;
 		
 	}
 	

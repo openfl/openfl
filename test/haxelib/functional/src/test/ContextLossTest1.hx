@@ -79,6 +79,10 @@ class ContextLossTest1 extends FunctionalTest {
 	
 	public override function start ():Void {
 		
+		contextID = 0;
+		direction = 1;
+		frame = 0;
+		
 		var bitmapData = Assets.getBitmapData ("assets/openfl.png");
 		bitmap = new Bitmap (bitmapData);
 		bitmap.x = margin;
@@ -127,6 +131,12 @@ class ContextLossTest1 extends FunctionalTest {
 		if (stage.stage3Ds.length > 0) {
 			
 			stage.stage3Ds[0].removeEventListener (Event.CONTEXT3D_CREATE, stage3D_onContext3DCreate);
+			
+			if (stage.stage3Ds[0].context3D != null) {
+				
+				stage.stage3Ds[0].context3D.dispose ();
+				
+			}
 			
 		}
 		
