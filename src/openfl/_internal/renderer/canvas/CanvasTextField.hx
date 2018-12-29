@@ -63,7 +63,7 @@ class CanvasTextField {
 		
 		graphics.__update (renderer.__worldTransform);
 		
-		if (textField.__dirty || graphics.__dirty) {
+		if (textField.__dirty || graphics.__softwareDirty) {
 			
 			var width = graphics.__width;
 			var height = graphics.__height;
@@ -73,7 +73,7 @@ class CanvasTextField {
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
 				textField.__graphics.__bitmap = null;
-				textField.__graphics.__dirty = false;
+				textField.__graphics.__softwareDirty = false;
 				textField.__dirty = false;
 				
 			} else {
@@ -345,6 +345,7 @@ class CanvasTextField {
 				graphics.__bitmap = BitmapData.fromCanvas (textField.__graphics.__canvas);
 				graphics.__visible = true;
 				textField.__dirty = false;
+				graphics.__softwareDirty = false;
 				graphics.__dirty = false;
 				
 			}

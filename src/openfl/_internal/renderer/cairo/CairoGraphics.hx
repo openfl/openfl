@@ -1258,7 +1258,7 @@ class CairoGraphics {
 		
 		graphics.__update (renderer.__worldTransform);
 		
-		if (!graphics.__dirty || graphics.__managed) return;
+		if (!graphics.__softwareDirty || graphics.__managed) return;
 		
 		bounds = graphics.__bounds;
 		
@@ -1578,6 +1578,7 @@ class CairoGraphics {
 			
 		}
 		
+		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
 		
 		#end

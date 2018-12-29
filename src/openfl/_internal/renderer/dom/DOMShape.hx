@@ -44,7 +44,7 @@ class DOMShape {
 			
 			CanvasGraphics.render (graphics, renderer.__canvasRenderer);
 			
-			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas != graphics.__canvas)) {
+			if (graphics.__softwareDirty || shape.__worldAlphaChanged || (shape.__canvas != graphics.__canvas)) {
 				
 				if (graphics.__canvas != null) {
 					

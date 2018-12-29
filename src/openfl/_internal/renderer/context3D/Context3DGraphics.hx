@@ -41,7 +41,7 @@ class Context3DGraphics {
 	
 	private static var blankBitmapData = new BitmapData (1, 1, false, 0);
 	private static var maskRender:Bool;
-	private static var tempColorTransform = new ColorTransform (0, 0, 0, 1, 0, 0, 0, 0);
+	private static var tempColorTransform = new ColorTransform (1, 1, 1, 1, 0, 0, 0, 0);
 	
 	
 	private static function buildBuffer (graphics:Graphics, renderer:OpenGLRenderer):Void {
@@ -500,7 +500,7 @@ class Context3DGraphics {
 		
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 		
-		if ((graphics.__bitmap != null && !graphics.__dirty) || !isCompatible (graphics)) {
+		if ((graphics.__bitmap != null && !graphics.__hardwareDirty) || !isCompatible (graphics)) {
 			
 			// if (graphics.__quadBuffer != null || graphics.__triangleIndexBuffer != null) {
 				
@@ -539,7 +539,7 @@ class Context3DGraphics {
 			
 			if (bounds != null && width >= 1 && height >= 1) {
 				
-				if (graphics.__dirty || (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null)) {
+				if (graphics.__hardwareDirty || (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null)) {
 					
 					buildBuffer (graphics, renderer);
 					
@@ -857,6 +857,7 @@ class Context3DGraphics {
 				
 			}
 			
+			graphics.__hardwareDirty = false;
 			graphics.__dirty = false;
 			
 		}

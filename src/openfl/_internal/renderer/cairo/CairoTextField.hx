@@ -75,7 +75,7 @@ class CairoTextField {
 			//var surface:CairoImageSurface = cast cairo.target;
 			var surface = graphics.__bitmap.getSurface ();
 			
-			if (graphics.__dirty && (width > surface.width || height > surface.height)) {
+			if (graphics.__softwareDirty && (width > surface.width || height > surface.height)) {
 				
 				needsUpscaling = true;
 				
@@ -92,7 +92,7 @@ class CairoTextField {
 			
 		}
 		
-		if (width <= 0 || height <= 0 || (!textField.__dirty && !graphics.__dirty && (!graphics.__visible || graphics.__bitmap != null)) || !renderable) {
+		if (width <= 0 || height <= 0 || (!textField.__dirty && !graphics.__softwareDirty && (!graphics.__visible || graphics.__bitmap != null)) || !renderable) {
 			
 			textField.__dirty = false;
 			return;
@@ -406,6 +406,7 @@ class CairoTextField {
 		graphics.__bitmap.image.dirty = true;
 		graphics.__bitmap.image.version++;
 		textField.__dirty = false;
+		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
 		
 		#end

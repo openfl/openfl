@@ -1964,7 +1964,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 			var rect = null;
 			
-			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0) || (__graphics != null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || (renderer.__type != OPENGL && !__cacheBitmapColorTransform.__equals (colorTransform, true)));
+			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children.length > 0))) || opaqueBackground != __cacheBitmapBackground);
+			var softwareDirty = needRender || (__graphics != null && __graphics.__softwareDirty) || !__cacheBitmapColorTransform.__equals (colorTransform, true);
+			var hardwareDirty = needRender || (__graphics != null && __graphics.__hardwareDirty);
+			
+			var renderType = renderer.__type;
+			
+			if (softwareDirty || hardwareDirty) {
+				
+				#if !openfl_force_gl_cacheasbitmap
+				if (renderType == OPENGL) {
+					
+					if (#if !openfl_disable_gl_cacheasbitmap __shouldCacheHardware (null) == false #else true #end) {
+						
+						#if (js && html5)
+						renderType = CANVAS;
+						#else
+						renderType = CAIRO;
+						#end
+						
+					}
+					
+				}
+				#end
+				
+				if (softwareDirty && (renderType == CANVAS || renderType == CAIRO)) needRender = true;
+				if (hardwareDirty && renderType == OPENGL) needRender = true;
+				
+			}
+			
 			var updateTransform = (needRender || !__cacheBitmap.__worldTransform.equals (__worldTransform));
 			var hasFilters = #if !openfl_disable_filters __filters != null #else false #end;
 			
@@ -2138,24 +2166,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmap.mask = __mask;
 			
 			if (needRender) {
-				
-				var renderType = renderer.__type;
-				
-				#if !openfl_force_gl_cacheasbitmap
-				if (renderType == OPENGL) {
-					
-					if (#if !openfl_disable_gl_cacheasbitmap __shouldCacheHardware (null) == false #else true #end) {
-						
-						#if (js && html5)
-						renderType = CANVAS;
-						#else
-						renderType = CAIRO;
-						#end
-						
-					}
-					
-				}
-				#end
 				
 				#if lime
 				if (__cacheBitmapRenderer == null || renderType != __cacheBitmapRenderer.__type) {
@@ -2562,7 +2572,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value > 1.0) value = 1.0;
 		if (value < 0.0) value = 0.0;
 		
-		if (value != __alpha) __setRenderDirty ();
+		if (value != __alpha && !cacheAsBitmap) __setRenderDirty ();
 		return __alpha = value;
 		
 	}
@@ -3005,7 +3015,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__setTransformDirty ();
 		__objectTransform.matrix = value.matrix;
 		
-		if (!__objectTransform.colorTransform.__equals (value.colorTransform, true)) {
+		if (!__objectTransform.colorTransform.__equals (value.colorTransform, true) || (!cacheAsBitmap && __objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier)) {
 			
 			__objectTransform.colorTransform.__copyFrom (value.colorTransform);
 			__setRenderDirty ();

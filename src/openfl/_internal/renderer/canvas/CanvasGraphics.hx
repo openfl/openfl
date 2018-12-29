@@ -1253,7 +1253,7 @@ class CanvasGraphics {
 		
 		graphics.__update (renderer.__worldTransform);
 		
-		if (graphics.__dirty) {
+		if (graphics.__softwareDirty) {
 			
 			hitTesting = false;
 			
@@ -1598,6 +1598,7 @@ class CanvasGraphics {
 				
 			}
 			
+			graphics.__softwareDirty = false;
 			graphics.__dirty = false;
 			
 		}
