@@ -1,11 +1,14 @@
 package openfl._internal.renderer.context3D;
 
 
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+
+#if lime
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+#end
 
 
 class Context3DBuffer {
@@ -18,11 +21,11 @@ class Context3DBuffer {
 	public var dataPerVertex:Int;
 	public var elementCount:Int;
 	public var elementType:Context3DElementType;
-	public var indexBufferData:Array<UInt16Array>;
+	public var indexBufferData:Array<#if lime UInt16Array #else Dynamic #end>;
 	public var indexBuffers:Array<IndexBuffer3D>;
 	public var indexCount:Int;
 	public var vertexBuffer:VertexBuffer3D;
-	public var vertexBufferData:Float32Array;
+	public var vertexBufferData:#if lime Float32Array #else Dynamic #end;
 	public var vertexCount:Int;
 	
 	private var context3D:Context3D;
@@ -135,6 +138,7 @@ class Context3DBuffer {
 		
 		var vertexLength = numVertices * dataPerVertex;
 		
+		#if lime
 		if (vertexBufferData == null) {
 			
 			vertexBufferData = new Float32Array (vertexLength);
@@ -146,6 +150,7 @@ class Context3DBuffer {
 			vertexBufferData.set (cacheBufferData);
 			
 		}
+		#end
 		
 	}
 	

@@ -1,8 +1,11 @@
 package openfl.ui; #if !flash
 
 
-import lime.ui.Gamepad;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.ui.Gamepad;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -47,7 +50,10 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __axis = new Map<Int, GameInputControl> ();
 	@:noCompletion private var __button = new Map<Int, GameInputControl> ();
 	@:noCompletion private var __controls = new Array<GameInputControl> ();
+	
+	#if lime
 	@:noCompletion private var __gamepad:Gamepad;
+	#end
 	
 	
 	#if openfljs

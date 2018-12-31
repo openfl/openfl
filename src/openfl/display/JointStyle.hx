@@ -31,6 +31,13 @@ package openfl.display; #if !flash #if !openfljs
 	public var ROUND = 2;
 	
 	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):JointStyle {
+		
+		return cast value;
+		
+	}
+	
+	
 	@:from private static function fromString (value:String):JointStyle {
 		
 		return switch (value) {
@@ -41,6 +48,13 @@ package openfl.display; #if !flash #if !openfljs
 			default: null;
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private inline function toInt ():Null<Int> {
+		
+		return this;
 		
 	}
 	
@@ -70,6 +84,19 @@ package openfl.display; #if !flash #if !openfljs
 	public var BEVEL = "bevel";
 	public var MITER = "miter";
 	public var ROUND = "round";
+	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):JointStyle {
+		
+		return switch (value) {
+			
+			case 0: BEVEL;
+			case 1: MITER;
+			case 2: ROUND;
+			default: null;
+			
+		}
+		
+	}
 	
 }
 

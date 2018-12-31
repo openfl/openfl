@@ -1,12 +1,15 @@
 package openfl.display; #if !flash
 
 
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+
+#if lime
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoOperator;
 import lime.graphics.CairoRenderContext;
 import lime.math.Matrix3;
-import openfl.geom.Matrix;
-import openfl.geom.Rectangle;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -25,13 +28,13 @@ import openfl.geom.Rectangle;
 class CairoRenderer extends DisplayObjectRenderer {
 	
 	
-	public var cairo:CairoRenderContext;
+	public var cairo:#if lime CairoRenderContext #else Dynamic #end;
 	
 	@:noCompletion private var __matrix:Matrix;
-	@:noCompletion private var __matrix3:Matrix3;
+	@:noCompletion private var __matrix3:#if lime Matrix3 #else Dynamic #end;
 	
 	
-	@:noCompletion private function new (cairo:Cairo) {
+	@:noCompletion private function new (cairo:#if lime Cairo #else Dynamic #end) {
 		
 		super ();
 		
@@ -47,7 +50,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function applyMatrix (transform:Matrix, cairo:Cairo = null):Void {
+	public function applyMatrix (transform:Matrix, cairo:#if lime Cairo #else Dynamic #end = null):Void {
 		
 		if (cairo == null) cairo = this.cairo;
 		
@@ -191,7 +194,14 @@ class CairoRenderer extends DisplayObjectRenderer {
 		if (__blendMode == value) return;
 		
 		__blendMode = value;
+		__setBlendModeCairo (cairo, value);
 		
+	}
+	
+	
+	@:noCompletion private function __setBlendModeCairo (cairo:#if lime Cairo #else Dynamic #end, value:BlendMode):Void {
+		
+		#if lime
 		switch (value) {
 			
 			case ADD:
@@ -255,6 +265,7 @@ class CairoRenderer extends DisplayObjectRenderer {
 				cairo.setOperator (CairoOperator.OVER);
 			
 		}
+		#end
 		
 	}
 	

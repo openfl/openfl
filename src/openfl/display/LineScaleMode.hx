@@ -44,6 +44,13 @@ package openfl.display; #if !flash #if !openfljs
 	public var VERTICAL = 3;
 	
 	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):LineScaleMode {
+		
+		return cast value;
+		
+	}
+	
+	
 	@:from private static function fromString (value:String):LineScaleMode {
 		
 		return switch (value) {
@@ -55,6 +62,13 @@ package openfl.display; #if !flash #if !openfljs
 			default: null;
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private inline function toInt ():Null<Int> {
+		
+		return this;
 		
 	}
 	
@@ -86,6 +100,20 @@ package openfl.display; #if !flash #if !openfljs
 	public var NONE = "none";
 	public var NORMAL = "normal";
 	public var VERTICAL = "vertical";
+	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):LineScaleMode {
+		
+		return switch (value) {
+			
+			case 0: HORIZONTAL;
+			case 1: NONE;
+			case 2: NORMAL;
+			case 3: VERTICAL;
+			default: null;
+			
+		}
+		
+	}
 	
 }
 

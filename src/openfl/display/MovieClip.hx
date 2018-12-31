@@ -1,7 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime.utils.Log;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
@@ -14,12 +13,12 @@ import openfl._internal.symbols.SWFSymbol;
 import openfl._internal.symbols.timeline.Frame;
 import openfl._internal.symbols.timeline.FrameObject;
 import openfl._internal.symbols.timeline.FrameObjectType;
+import openfl._internal.utils.Log;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.filters.*;
 import openfl.geom.ColorTransform;
-import openfl.text.TextField;
 
 #if hscript
 import hscript.Interp;

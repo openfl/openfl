@@ -2,18 +2,6 @@ package openfl.display3D; #if !flash
 
 
 import haxe.io.Bytes;
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-import lime.math.Rectangle as LimeRectangle;
-import lime.math.Vector2;
-import lime.utils.Float32Array;
-import lime.utils.UInt8Array;
-import lime.utils.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
@@ -32,6 +20,25 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
+import lime.math.Rectangle as LimeRectangle;
+import lime.math.Vector2;
+import lime.utils.Float32Array;
+import lime.utils.UInt8Array;
+import lime.utils.UInt16Array;
+#else
+private typedef GLBuffer = Dynamic;
+private typedef GLFramebuffer = Dynamic;
+private typedef GLTexture = Dynamic;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -78,19 +85,20 @@ import openfl.utils.ByteArray;
 	public var profile (default, null):Context3DProfile = STANDARD;
 	public var totalGPUMemory (default, null):Int = 0;
 	
-	@:noCompletion private var gl:WebGLRenderContext;
+	@:noCompletion private var gl:#if lime WebGLRenderContext #else Dynamic #end;
 	
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
-	@:noCompletion private var __context:RenderContext;
+	@:noCompletion private var __cleared:Bool;
+	@:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
-	@:noCompletion private var __fragmentConstants:Float32Array;
+	@:noCompletion private var __fragmentConstants:#if lime Float32Array #else Dynamic #end;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
-	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
+	@:noCompletion private var __positionScale:#if lime Float32Array #else Dynamic #end; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __programs:Map<String, Program3D>;
 	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
@@ -99,7 +107,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
-	@:noCompletion private var __vertexConstants:Float32Array;
+	@:noCompletion private var __vertexConstants:#if lime Float32Array #else Dynamic #end;
 	
 	
 	@:noCompletion private function new (stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null) {
@@ -116,9 +124,11 @@ import openfl.utils.ByteArray;
 		if (__contextState == null) __contextState = new Context3DState ();
 		__state = new Context3DState ();
 		
+		#if lime
 		__vertexConstants = new Float32Array (4 * 128);
 		__fragmentConstants = new Float32Array (4 * 128);
 		__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
+		#end
 		__programs = new Map<String, Program3D> ();
 		
 		if (GL_MAX_VIEWPORT_DIMS == -1) {
@@ -159,6 +169,7 @@ import openfl.utils.ByteArray;
 			
 		}
 		
+		#if lime
 		if (GL_DEPTH_STENCIL == -1) {
 			
 			#if (js && html5)
@@ -182,6 +193,7 @@ import openfl.utils.ByteArray;
 			#end
 			
 		}
+		#end
 		
 		if (__driverInfo == null) {
 			
@@ -199,6 +211,7 @@ import openfl.utils.ByteArray;
 		__quadIndexBufferElements = Math.floor (0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
 		
+		#if lime
 		var data = new UInt16Array (__quadIndexBufferCount);
 		
 		var index:UInt = 0;
@@ -220,6 +233,7 @@ import openfl.utils.ByteArray;
 		
 		__quadIndexBuffer = createIndexBuffer (__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray (data);
+		#end
 		
 	}
 	
@@ -236,6 +250,7 @@ import openfl.utils.ByteArray;
 			if (__state.renderToTexture == null) {
 				
 				if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
+				__cleared = true;
 				
 			}
 			
@@ -419,6 +434,7 @@ import openfl.utils.ByteArray;
 	
 	public function drawToBitmapData (destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void {
 		
+		#if lime
 		if (destination == null) return;
 		
 		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle () : new LimeRectangle (0, 0, backBufferWidth, backBufferHeight);
@@ -458,6 +474,7 @@ import openfl.utils.ByteArray;
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -468,7 +485,16 @@ import openfl.utils.ByteArray;
 		if (__state.renderToTexture == null) {
 			
 			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			if (__stage.context3D == this && !__stage.__renderer.__cleared) {
+				
+				__stage.__renderer.__clear ();
+				
+			} else if (!__cleared) {
+				
+				// TODO: Throw error if error reporting is enabled?
+				clear (0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
+				
+			}
 			
 		}
 		
@@ -495,11 +521,20 @@ import openfl.utils.ByteArray;
 		
 		if (__stage3D != null) {
 			
+			if (!__cleared) {
+				
+				// Make sure texture is initialized
+				// TODO: Throw error if error reporting is enabled?
+				clear (0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
+				
+			}
+			
 			var cacheBuffer = __backBufferTexture;
 			__backBufferTexture = __frontBufferTexture;
 			__frontBufferTexture = cacheBuffer;
 			
 			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer (__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
+			__cleared = false;
 			
 		}
 		
@@ -573,6 +608,7 @@ import openfl.utils.ByteArray;
 	
 	public function setProgramConstantsFromByteArray (programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:UInt):Void {
 		
+		#if lime
 		if (numRegisters == 0 || __state.program == null) return;
 		
 		if (__state.program != null && __state.program.__format == GLSL) {
@@ -609,14 +645,14 @@ import openfl.utils.ByteArray;
 			}
 			
 		}
-		
-		
+		#end
 		
 	}
 	
 	
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
+		#if lime
 		if (__state.program != null && __state.program.__format == GLSL) {
 			
 			__flushGLProgram ();
@@ -689,6 +725,7 @@ import openfl.utils.ByteArray;
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -934,7 +971,16 @@ import openfl.utils.ByteArray;
 		if (__state.renderToTexture == null) {
 			
 			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			if (__stage.context3D == this && !__stage.__renderer.__cleared) {
+				
+				__stage.__renderer.__clear ();
+				
+			} else if (!__cleared) {
+				
+				// TODO: Throw error if error reporting is enabled?
+				clear (0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
+				
+			}
 			
 		}
 		

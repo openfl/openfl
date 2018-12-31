@@ -1,12 +1,15 @@
 package openfl._internal.renderer.cairo;
 
 
+import openfl.display.Bitmap;
+import openfl.display.CairoRenderer;
+
+#if lime
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
-import openfl.display.Bitmap;
-import openfl.display.CairoRenderer;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -24,6 +27,7 @@ class CairoBitmap {
 	
 	public static inline function render (bitmap:Bitmap, renderer:CairoRenderer):Void {
 		
+		#if lime
 		if (!bitmap.__renderable) return;
 		
 		var alpha = renderer.__getAlpha (bitmap.__worldAlpha);
@@ -63,6 +67,7 @@ class CairoBitmap {
 			renderer.__popMaskObject (bitmap);
 			
 		}
+		#end
 		
 	}
 	

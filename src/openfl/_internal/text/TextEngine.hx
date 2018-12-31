@@ -3,10 +3,6 @@ package openfl._internal.text;
 
 import haxe.Timer;
 import haxe.Utf8;
-import lime.graphics.cairo.CairoFontFace;
-import lime.graphics.opengl.GLTexture;
-import lime.system.System;
-import lime.text.UTF8String;
 import openfl.Vector;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -21,6 +17,12 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
+
+#if lime
+import lime.graphics.cairo.CairoFontFace;
+import lime.graphics.opengl.GLTexture;
+import lime.system.System;
+#end
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -107,13 +109,13 @@ class TextEngine {
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
-	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __texture:#if lime GLTexture #else Dynamic #end;
 	//@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	//@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	//@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	private var __useIntAdvances:Null<Bool>;
 	
-	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
+	@:noCompletion @:dox(hide) public var __cairoFont:#if lime CairoFontFace #else Dynamic #end;
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
 	
@@ -306,12 +308,14 @@ class TextEngine {
 			
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-			
+		
+		#if lime
 		} else if (font != null && font.unitsPerEM != 0) {
 			
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
 			
+		#end
 		} else {
 			
 			ascent = format.size;
@@ -700,28 +704,6 @@ class TextEngine {
 			var currentFormat = textField.__textFormat;
 			var ascent, descent, leading, heightValue;
 			
-			#if js
-			
-			// __context.font = getFont (currentFormat);
-			
-			if (currentFormat.__ascent != null) {
-				
-				ascent = currentFormat.size * currentFormat.__ascent;
-				descent = currentFormat.size * currentFormat.__descent;
-				
-			} else {
-				
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
-				
-			}
-			
-			leading = currentFormat.leading;
-			
-			heightValue = ascent + descent + leading;
-			
-			#elseif (lime_cffi)
-			
 			var font = getFontInstance (currentFormat);
 			
 			if (currentFormat.__ascent != null) {
@@ -729,11 +711,13 @@ class TextEngine {
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
 				
+			#if lime
 			} else if (font != null && font.unitsPerEM != 0) {
 				
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
 				
+			#end
 			} else {
 				
 				ascent = currentFormat.size;
@@ -744,8 +728,6 @@ class TextEngine {
 			leading = currentFormat.leading;
 			
 			heightValue = ascent + descent + leading;
-			
-			#end
 			
 			currentLineAscent = ascent;
 			currentLineDescent = descent;
@@ -1031,11 +1013,13 @@ class TextEngine {
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
 				
+			#if lime
 			} else if (font != null && font.unitsPerEM != 0) {
 				
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
 				
+			#end
 			} else {
 				
 				ascent = currentFormat.size;
@@ -1103,8 +1087,6 @@ class TextEngine {
 						var tempPositions = getPositions (text, tempIndex, tempRangeEnd);
 						positions = positions.concat(tempPositions);
 						
-						widthValue += getPositionsWidth (positions);
-						
 					}
 					
 					if (tempRangeEnd != endIndex) {
@@ -1118,7 +1100,12 @@ class TextEngine {
 						
 					}
 					
-					else break;
+					else {
+						
+						widthValue = getPositionsWidth (positions);
+						break;
+						
+					}
 					
 				}
 				

@@ -2,10 +2,6 @@ package openfl.net; #if !flash
 
 
 import haxe.io.Bytes;
-import lime.app.Event;
-import lime.app.Future;
-import lime.net.HTTPRequest;
-import lime.net.HTTPRequestHeader;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.HTTPStatusEvent;
@@ -14,6 +10,12 @@ import openfl.events.ProgressEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.net.URLRequestMethod;
 import openfl.utils.ByteArray;
+import openfl.utils.Future;
+
+#if lime
+import lime.net.HTTPRequest;
+import lime.net.HTTPRequestHeader;
+#end
 
 
 /**
@@ -153,7 +155,7 @@ class URLLoader extends EventDispatcher {
 	public var dataFormat:URLLoaderDataFormat;
 	
 	
-	@:noCompletion private var __httpRequest:#if (display || macro) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
+	@:noCompletion private var __httpRequest:#if (!lime || display || macro) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 	
 	
 	/**
@@ -299,7 +301,7 @@ class URLLoader extends EventDispatcher {
 	 */
 	public function load (request:URLRequest):Void {
 		
-		#if !macro
+		#if (lime && !macro)
 		if (dataFormat == BINARY) {
 			
 			var httpRequest = new HTTPRequest<ByteArray> ();
@@ -349,7 +351,7 @@ class URLLoader extends EventDispatcher {
 		
 		var headers = new Array<URLRequestHeader> ();
 		
-		#if (!display && !macro)
+		#if (lime && !display && !macro)
 		if (__httpRequest.enableResponseHeaders && __httpRequest.responseHeaders != null) {
 			
 			for (header in __httpRequest.responseHeaders) {
@@ -367,8 +369,9 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function __prepareRequest (httpRequest:#if (display || macro) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void {
+	@:noCompletion private function __prepareRequest (httpRequest:#if (!lime || display || macro) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void {
 		
+		#if lime
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;
 		
@@ -429,6 +432,7 @@ class URLLoader extends EventDispatcher {
 		
 		__httpRequest.userAgent = request.userAgent;
 		__httpRequest.enableResponseHeaders = true;
+		#end
 		
 	}
 	

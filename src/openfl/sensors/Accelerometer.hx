@@ -2,11 +2,14 @@ package openfl.sensors; #if !flash
 
 
 import haxe.Timer;
-import lime.system.Sensor;
-import lime.system.SensorType;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
 import openfl.events.EventDispatcher;
+
+#if lime
+import lime.system.Sensor;
+import lime.system.SensorType;
+#end
 
 #if (js && html5)
 import js.Browser;
@@ -140,6 +143,7 @@ class Accelerometer extends EventDispatcher {
 		
 		if (!initialized) {
 			
+			#if lime
 			var sensors = Sensor.getSensors (SensorType.ACCELEROMETER);
 			
 			if (sensors.length > 0) {
@@ -148,6 +152,7 @@ class Accelerometer extends EventDispatcher {
 				supported = true;
 				
 			}
+			#end
 			
 			initialized = true;
 			

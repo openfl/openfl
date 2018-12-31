@@ -35,7 +35,7 @@
 		
 	</section>
 	
-	<section if="${lime < 7.2.0} || ${lime >= 7.3.0}" unless="setup || disable-version-check">
+	<section if="${lime < 7.2.0} || ${lime >= 7.3.0}" unless="setup || create || disable-version-check">
 		
 		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
 		<log info='Use &lt;lime version="" /&gt; before &lt;haxelib name="openfl" /&gt; to include a specific version' />
@@ -50,6 +50,8 @@
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
 	
 	<section unless="custom-backend">
+		
+		<define name="openfl-disable-handle-error" unless="openfl-enable-handle-error" if="debug" />
 		
 		<section if="native">
 			

@@ -1,10 +1,12 @@
 package openfl.geom; #if !flash
 
 
+import openfl._internal.utils.ObjectPool;
+
+#if lime
 import lime.math.Matrix3;
 import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
-import openfl.geom.Point;
+#end
 
 
 /**
@@ -73,8 +75,11 @@ class Matrix {
 	
 	
 	@:noCompletion private static var __identity = new Matrix ();
-	@:noCompletion private static var __matrix3 = new Matrix3 ();
 	@:noCompletion private static var __pool = new ObjectPool<Matrix> (function () return new Matrix (), function (m) m.identity ());
+	
+	#if lime
+	@:noCompletion private static var __matrix3 = new Matrix3 ();
+	#end
 	
 	
 	/**
@@ -112,7 +117,9 @@ class Matrix {
 	public var ty:Float;
 	
 	
+	#if lime
 	@:noCompletion private var __array:Float32Array;
+	#end
 	
 	
 	/**
@@ -691,6 +698,7 @@ class Matrix {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function toArray (transpose:Bool = false):Float32Array {
 		
 		if (__array == null) {
@@ -728,6 +736,7 @@ class Matrix {
 		return __array;
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function __cleanValues ():Void {
@@ -742,12 +751,14 @@ class Matrix {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __toMatrix3 ():Matrix3 {
 		
 		__matrix3.setTo (a, b, c, d, tx, ty);
 		return __matrix3;
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function __transformInversePoint (point:Point):Void {

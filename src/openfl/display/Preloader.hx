@@ -1,12 +1,15 @@
 package openfl.display;
 
 
-import lime.utils.AssetType;
-import lime.utils.Preloader as LimePreloader;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
+
+#if lime
+import lime.utils.AssetType;
+import lime.utils.Preloader as LimePreloader;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -19,7 +22,7 @@ import openfl.Lib;
 class Preloader {
 	
 	
-	public var onComplete = new lime.app.Event<Void->Void> ();
+	public var onComplete = #if lime new lime.app.Event<Void->Void> () #else Dynamic #end;
 	
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
@@ -61,10 +64,12 @@ class Preloader {
 			
 		} else {
 			
+			#if lime
 			if (!complete) {
 				complete = true;
 				onComplete.dispatch ();
 			}
+			#end
 			
 		}
 		
@@ -112,10 +117,12 @@ class Preloader {
 		
 		if (ready) {
 			
+			#if lime
 			if (!complete) {
 				complete = true;
 				onComplete.dispatch ();
 			}
+			#end
 			
 		}
 		

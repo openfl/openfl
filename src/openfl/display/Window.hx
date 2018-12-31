@@ -1,10 +1,13 @@
 package openfl.display;
 
 
+import openfl._internal.Lib;
+
+#if lime
 import lime.app.Application;
 import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
-import openfl._internal.Lib;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -15,12 +18,29 @@ import openfl._internal.Lib;
 @:access(openfl.display.Stage)
 
 
-class Window extends LimeWindow {
+class Window #if lime extends LimeWindow #end {
 	
 	
-	@:noCompletion private function new (application:Application, attributes:WindowAttributes) {
+	#if !lime
+	public var application:Application;
+	public var context:Dynamic;
+	public var cursor:Dynamic;
+	public var display:Dynamic;
+	public var frameRate:Float;
+	public var fullscreen:Bool;
+	public var height:Int;
+	public var scale:Float;
+	public var stage:Stage;
+	public var textInputEnabled:Bool;
+	public var width:Int;
+	#end
+	
+	
+	@:noCompletion private function new (application:Application, attributes:#if lime WindowAttributes #else Dynamic #end) {
 		
+		#if lime
 		super (application, attributes);
+		#end
 		
 		#if (!flash && !macro)
 		
@@ -51,7 +71,9 @@ class Window extends LimeWindow {
 			
 		}
 		
+		#if lime
 		application.addModule (stage);
+		#end
 		
 		#else
 		

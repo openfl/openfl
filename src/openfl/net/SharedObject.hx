@@ -5,13 +5,16 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
-import lime.app.Application;
-import lime.system.System;
 import openfl._internal.Lib;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.net.SharedObjectFlushStatus;
 import openfl.utils.Object;
+
+#if lime
+import lime.app.Application;
+import lime.system.System;
+#end
 
 #if (js && html5)
 import js.html.Storage;
@@ -595,11 +598,13 @@ class SharedObject extends EventDispatcher {
 			
 			__sharedObjects = new Map ();
 			// Lib.application.onExit.add (application_onExit);
+			#if lime
 			if (Application.current != null) {
 				
 				Application.current.onExit.add (application_onExit);
 				
 			}
+			#end
 			
 		}
 		
@@ -697,6 +702,7 @@ class SharedObject extends EventDispatcher {
 	
 	@:noCompletion private static function __getPath (localPath:String, name:String):String {
 		
+		#if lime
 		var path = System.applicationStorageDirectory + "/" + localPath + "/";
 		
 		name = StringTools.replace (name, "//", "/");
@@ -730,6 +736,9 @@ class SharedObject extends EventDispatcher {
 		}
 		
 		return path + name + ".sol";
+		#else
+		return name + ".sol";
+		#end
 		
 	}
 	

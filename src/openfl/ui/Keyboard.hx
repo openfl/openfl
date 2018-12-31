@@ -1,7 +1,9 @@
 package openfl.ui; #if !flash
 
 
+#if lime
 import lime.ui.KeyCode;
+#end
 
 
 /**
@@ -570,6 +572,7 @@ import lime.ui.KeyCode;
 	}
 	
 	
+	#if lime
 	@:noCompletion private static inline function __convertKeyCode (key:KeyCode):Int {
 		
 		return switch (key) {
@@ -814,6 +817,7 @@ import lime.ui.KeyCode;
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private static function __getCharCode (key:Int, shift:Bool = false):Int {
@@ -913,6 +917,7 @@ import lime.ui.KeyCode;
 	}
 	
 	
+	#if lime
 	@:noCompletion private static inline function __getKeyLocation (key:KeyCode):KeyLocation {
 		
 		return switch (key) {
@@ -928,6 +933,7 @@ import lime.ui.KeyCode;
 		}
 		
 	}
+	#end
 	
 	
 }

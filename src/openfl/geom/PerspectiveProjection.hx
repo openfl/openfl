@@ -96,7 +96,7 @@ class PerspectiveProjection {
 		this.focalLength = 0;
 		
 		matrix3D = new Matrix3D ();
-		projectionCenter = new Point (Lib.current.stage.stageWidth / 2, Lib.current.stage.stageHeight / 2);
+		projectionCenter = new Point (#if !openfl_unit_testing Lib.current.stage.stageWidth / 2, Lib.current.stage.stageHeight / 2 #end);
 		
 	}
 	

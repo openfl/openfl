@@ -2,8 +2,6 @@ package openfl.display; #if !flash
 
 
 import haxe.Timer;
-import lime.graphics.opengl.GL;
-import lime.graphics.RenderContext;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
@@ -15,6 +13,11 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
+
+#if lime
+import lime.graphics.opengl.GL;
+import lime.graphics.RenderContext;
+#end
 
 #if (js && html5)
 import js.html.webgl.RenderingContext;
@@ -125,6 +128,7 @@ class Stage3D extends EventDispatcher {
 	
 	@:noCompletion private function __createContext ():Void {
 		
+		#if lime
 		var stage = __stage;
 		var renderer = stage.__renderer;
 		
@@ -207,6 +211,7 @@ class Stage3D extends EventDispatcher {
 			#end
 			
 		}
+		#end
 		
 	}
 	
@@ -244,7 +249,7 @@ class Stage3D extends EventDispatcher {
 			}
 			#end
 			
-			__projectionTransform.copyRawDataFrom (Vector.ofArray ([
+			__projectionTransform.copyRawDataFrom (new Vector<Float> ([
 				2.0 / (width > 0 ? width : 1), 0.0, 0.0, 0.0,
 				0.0, -2.0 / (height > 0 ? height : 1), 0.0, 0.0,
 				0.0, 0.0, -2.0 / 2000, 0.0,

@@ -1,15 +1,6 @@
 package openfl._internal.renderer.cairo;
 
 
-import lime.graphics.cairo.Cairo;
-import lime.graphics.cairo.CairoExtend;
-import lime.graphics.cairo.CairoFillRule;
-import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoImageSurface;
-import lime.graphics.cairo.CairoPattern;
-import lime.graphics.cairo.CairoSurface;
-import lime.math.Matrix3;
-import lime.math.Vector2;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.DrawCommandType;
@@ -25,6 +16,18 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+
+#if lime
+import lime.graphics.cairo.Cairo;
+import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoFillRule;
+import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoImageSurface;
+import lime.graphics.cairo.CairoPattern;
+import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
+import lime.math.Vector2;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -1298,6 +1301,7 @@ class CairoGraphics {
 			
 			cairo = graphics.__cairo;
 			
+			renderer.__setBlendModeCairo (cairo, NORMAL);
 			renderer.applyMatrix (graphics.__renderTransform, cairo);
 			
 			cairo.setOperator (CLEAR);
@@ -1531,6 +1535,11 @@ class CairoGraphics {
 						
 						var c = data.readDrawTriangles ();
 						fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
+					
+					case OVERRIDE_BLEND_MODE:
+						
+						var c = data.readOverrideBlendMode ();
+						renderer.__setBlendModeCairo (cairo, c.blendMode);
 					
 					case WINDING_EVEN_ODD:
 						

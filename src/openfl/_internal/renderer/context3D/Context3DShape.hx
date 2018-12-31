@@ -1,13 +1,16 @@
 package openfl._internal.renderer.context3D;
 
 
-import lime.utils.Float32Array;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectShader;
 import openfl.display.OpenGLRenderer;
 import openfl.geom.Matrix;
+
+#if lime
+import lime.utils.Float32Array;
+#end
 
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;

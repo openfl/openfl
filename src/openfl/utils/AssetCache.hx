@@ -1,10 +1,13 @@
 package openfl.utils;
 
 
-import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
+
+#if lime
+import lime.utils.Assets as LimeAssets;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -137,7 +140,9 @@ import openfl.text.Font;
 	
 	public function removeBitmapData (id:String):Bool {
 		
+		#if lime
 		LimeAssets.cache.image.remove (id);
+		#end
 		return bitmapData.remove (id);
 		
 	}
@@ -145,7 +150,9 @@ import openfl.text.Font;
 	
 	public function removeFont (id:String):Bool {
 		
+		#if lime
 		LimeAssets.cache.font.remove (id);
+		#end
 		return font.remove (id);
 		
 	}
@@ -153,7 +160,9 @@ import openfl.text.Font;
 	
 	public function removeSound (id:String):Bool {
 		
+		#if lime
 		LimeAssets.cache.audio.remove (id);
+		#end
 		return sound.remove (id);
 		
 	}

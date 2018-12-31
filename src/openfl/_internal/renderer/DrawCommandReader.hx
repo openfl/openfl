@@ -2,6 +2,7 @@ package openfl._internal.renderer;
 
 
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
 import openfl.display.GraphicsPathWinding;
@@ -136,6 +137,10 @@ class DrawCommandReader {
 				
 				fPos += 2; //x, y
 			
+			case OVERRIDE_BLEND_MODE:
+				
+				oPos += 1; //blendMode
+			
 			case OVERRIDE_MATRIX:
 				
 				oPos += 1; //matrix
@@ -220,6 +225,7 @@ class DrawCommandReader {
 	public inline function readLineStyle ():LineStyleView { advance (); prev = LINE_STYLE; return new LineStyleView (this); }
 	public inline function readLineTo ():LineToView { advance (); prev = LINE_TO; return new LineToView (this); }
 	public inline function readMoveTo ():MoveToView { advance (); prev = MOVE_TO; return new MoveToView (this); }
+	public inline function readOverrideBlendMode ():OverrideBlendModeView { advance (); prev = OVERRIDE_BLEND_MODE; return new OverrideBlendModeView (this); }
 	public inline function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
 	public inline function readWindingEvenOdd ():WindingEvenOddView { advance (); prev = WINDING_EVEN_ODD; return new WindingEvenOddView (this); }
 	public inline function readWindingNonZero ():WindingNonZeroView { advance (); prev = WINDING_NON_ZERO; return new WindingNonZeroView (this); }
@@ -438,6 +444,14 @@ abstract MoveToView (DrawCommandReader) {
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var x (get, never):Float; private inline function get_x ():Float { return this.float (0); }
 	public var y (get, never):Float; private inline function get_y ():Float { return this.float (1); }
+	
+}
+
+
+abstract OverrideBlendModeView (DrawCommandReader) {
+
+	public inline function new (d:DrawCommandReader) { this = d; }
+	public var blendMode (get, never):BlendMode; private inline function get_blendMode ():BlendMode { return cast this.obj (0); }
 	
 }
 

@@ -3,13 +3,16 @@ package openfl.display3D.textures; #if !flash
 
 import haxe.io.Bytes;
 import haxe.Timer;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -71,6 +74,7 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromBitmapData (source:BitmapData, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
+		#if lime
 		/* TODO
 			if (LowMemoryMode) {
 				// shrink bitmap data
@@ -127,12 +131,14 @@ import openfl.utils.ByteArray;
 		#end
 		
 		uploadFromTypedArray (image.data, miplevel);
+		#end
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
+		#if lime
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
@@ -143,11 +149,12 @@ import openfl.utils.ByteArray;
 		#end
 		
 		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
+		#end
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
 		
@@ -220,6 +227,7 @@ import openfl.utils.ByteArray;
 		
 		var hasTexture = false;
 		
+		#if lime
 		reader.readTextures (function (target, level, gpuFormat, width, height, blockLength, bytes:Bytes) {
 			
 			var format = alpha ? TextureBase.__compressedFormatsAlpha[gpuFormat] : TextureBase.__compressedFormats[gpuFormat];
@@ -258,6 +266,7 @@ import openfl.utils.ByteArray;
 			gl.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
 			
 		}
+		#end
 		
 		__context.__bindGLTexture2D (null);
 		

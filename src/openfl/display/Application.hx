@@ -1,10 +1,13 @@
 package openfl.display;
 
 
-import lime.app.Application as LimeApplication;
-import lime.ui.WindowAttributes;
 import openfl._internal.Lib;
 import openfl.display.MovieClip;
+
+#if lime
+import lime.app.Application as LimeApplication;
+import lime.ui.WindowAttributes;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -16,12 +19,21 @@ import openfl.display.MovieClip;
 @:access(openfl.display.Window)
 
 
-class Application extends LimeApplication {
+class Application #if lime extends LimeApplication #end {
+	
+	
+	#if !lime
+	public static var current:Application;
+	
+	public var window:Window;
+	#end
 	
 	
 	public function new () {
 		
+		#if lime
 		super ();
+		#end
 		
 		if (Lib.application == null) {
 			
@@ -38,6 +50,7 @@ class Application extends LimeApplication {
 	}
 	
 	
+	#if lime
 	public override function createWindow (attributes:WindowAttributes):Window {
 		
 		var window = new Window (this, attributes);
@@ -86,6 +99,7 @@ class Application extends LimeApplication {
 		return window;
 		
 	}
+	#end
 	
 	
 }

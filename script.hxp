@@ -14,7 +14,7 @@ class Script extends hxp.Script {
 		if (command == "default") command = "test";
 		
 		switch (command) {
-			case "test": test ();
+			case "test", "test-unit", "test-integration", "test-functional": test ();
 			default: Log.error ("Unknown command: \"" + command + "\"");
 		}
 		
@@ -87,27 +87,65 @@ class Script extends hxp.Script {
 	
 	private function testHaxelib (target:String = null):Void {
 		
-		var dir = Path.combine (Sys.getCwd (), "test/haxelib");
-		
-		if (options.exists ("filter")) {
+		if (command == "test" || command == "test-unit") {
 			
-			System.runCommand (dir, "haxelib", [ "run", "munit", "gen", "-filter", options.get ("filter")[0] ]);
+			var dir = Path.combine (Sys.getCwd (), "test/haxelib/unit");
 			
-		} else {
+			if (options.exists ("filter")) {
+				
+				System.runCommand (dir, "haxelib", [ "run", "munit", "gen", "-filter", options.get ("filter")[0] ]);
+				
+			} else {
+				
+				System.runCommand (dir, "haxelib", [ "run", "munit", "gen" ]);
+				
+			}
 			
-			System.runCommand (dir, "haxelib", [ "run", "munit", "gen" ]);
+			// if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
+			// if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand (dir, [ "test", "cpp" ]);
+			
+			// if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash", "-debug" ]);
+			// if (target == "web" || target == "html5" || target == null) runOpenFLCommand (dir, [ "build", "html5" ]);
+			
+			// if (target == "web" || target == "html5" || target == "flash" || target == null) {
+				
+				System.runCommand (dir, "haxelib", [ "run", "munit", "test", "-nogen", "-result-exit-code" ]);
+				
+			// }
+			
+			// if (target == "air" || target == null) runOpenFLCommand (dir, [ "test", "air" ]);
 			
 		}
 		
-		if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
-		if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand (dir, [ "test", "cpp" ]);
-		
-		if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash", "-debug" ]);
-		if (target == "web" || target == "html5" || target == null) runOpenFLCommand (dir, [ "build", "html5" ]);
-		
-		if (target == "web" || target == "html5" || target == "flash" || target == null) System.runCommand (dir, "haxelib", [ "run", "munit", "test" ]);
-		
-		if (target == "air" || target == null) runOpenFLCommand (dir, [ "test", "air" ]);
+		if (command == "test" || command == "test-integration") {
+			
+			var dir = Path.combine (Sys.getCwd (), "test/haxelib/integration");
+			
+			if (options.exists ("filter")) {
+				
+				System.runCommand (dir, "haxelib", [ "run", "munit", "gen", "-filter", options.get ("filter")[0] ]);
+				
+			} else {
+				
+				System.runCommand (dir, "haxelib", [ "run", "munit", "gen" ]);
+				
+			}
+			
+			if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
+			if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand (dir, [ "test", "cpp" ]);
+			
+			if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash", "-debug" ]);
+			if (target == "web" || target == "html5" || target == null) runOpenFLCommand (dir, [ "build", "html5" ]);
+			
+			if (target == "web" || target == "html5" || target == "flash" || target == null) {
+				
+				System.runCommand (dir, "haxelib", [ "run", "munit", "test", "-nogen", "-result-exit-code" ]);
+				
+			}
+			
+			if (target == "air" || target == null) runOpenFLCommand (dir, [ "test", "air" ]);
+			
+		}
 		
 	}
 	

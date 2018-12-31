@@ -1,10 +1,13 @@
 package openfl.text; #if !flash
 
 
-import lime.app.Future;
-import lime.text.Font as LimeFont;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
+import openfl.utils.Future;
+
+#if lime
+import lime.text.Font as LimeFont;
+#end
 
 
 /**
@@ -22,7 +25,7 @@ import openfl.utils.ByteArray;
 #end
 
 
-class Font extends LimeFont {
+class Font #if lime extends LimeFont #end {
 	
 	
 	/**
@@ -61,7 +64,9 @@ class Font extends LimeFont {
 	
 	public function new (name:String = null) {
 		
+		#if lime
 		super (name);
+		#end
 		
 	}
 	
@@ -89,7 +94,9 @@ class Font extends LimeFont {
 	public static function fromBytes (bytes:ByteArray):Font {
 		
 		var font = new Font ();
+		#if lime
 		font.__fromBytes (bytes);
+		#end
 		
 		#if lime_cffi
 		return (font.src != null) ? font : null;
@@ -103,7 +110,9 @@ class Font extends LimeFont {
 	public static function fromFile (path:String):Font {
 		
 		var font = new Font ();
+		#if lime
 		font.__fromFile (path);
+		#end
 		
 		#if lime_cffi
 		return (font.src != null) ? font : null;
@@ -119,6 +128,7 @@ class Font extends LimeFont {
 	
 	public static function loadFromBytes (bytes:ByteArray):Future<Font> {
 		
+		#if lime
 		return LimeFont.loadFromBytes (bytes).then (function (limeFont) {
 			
 			var font = new Font ();
@@ -127,12 +137,16 @@ class Font extends LimeFont {
 			return Future.withValue (font);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load font from bytes");
+		#end
 		
 	}
 	
 	
 	public static function loadFromFile (path:String):Future<Font> {
 		
+		#if lime
 		return LimeFont.loadFromFile (path).then (function (limeFont) {
 			
 			var font = new Font ();
@@ -141,12 +155,16 @@ class Font extends LimeFont {
 			return Future.withValue (font);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load font from file");
+		#end
 		
 	}
 	
 	
 	public static function loadFromName (path:String):Future<Font> {
 		
+		#if lime
 		return LimeFont.loadFromName (path).then (function (limeFont) {
 			
 			var font = new Font ();
@@ -155,6 +173,9 @@ class Font extends LimeFont {
 			return Future.withValue (font);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load font from name");
+		#end
 		
 	}
 	
@@ -186,18 +207,20 @@ class Font extends LimeFont {
 			}*/
 			
 			__registeredFonts.push (instance);
-			__fontByName[instance.name] = instance;
+			__fontByName[instance.fontName] = instance;
 			
 		}
 		
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __fromLimeFont (font:LimeFont):Void {
 		
 		__copyFrom (font);
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function __initialize ():Bool {
@@ -235,14 +258,22 @@ class Font extends LimeFont {
 	
 	@:noCompletion private inline function get_fontName ():String {
 		
+		#if lime
 		return name;
+		#else
+		return null;
+		#end
 		
 	}
 	
 	
 	@:noCompletion private inline function set_fontName (value:String):String {
 		
+		#if lime
 		return name = value;
+		#else
+		return value;
+		#end
 		
 	}
 	

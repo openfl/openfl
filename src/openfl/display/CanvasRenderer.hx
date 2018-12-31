@@ -1,10 +1,13 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.Canvas2DRenderContext;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.Canvas2DRenderContext;
+#end
 
 #if (js && html5)
 import js.Browser;
@@ -27,33 +30,36 @@ import js.Browser;
 class CanvasRenderer extends DisplayObjectRenderer {
 	
 	
-	public var context:Canvas2DRenderContext;
+	public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
 	public var pixelRatio (default, null):Float = 1;
 	
 	@:noCompletion private var __isDOM:Bool;
 	@:noCompletion private var __tempMatrix:Matrix;
 	
 	
-	@:noCompletion private function new (context:Canvas2DRenderContext) {
+	@:noCompletion private function new (context:#if lime Canvas2DRenderContext #else Dynamic #end) {
 		
 		super ();
 		
 		this.context = context;
 		
 		__tempMatrix = new Matrix ();
+		
+		#if lime
 		__type = CANVAS;
+		#end
 		
 	}
 	
 	
-	public function applySmoothing (context:Canvas2DRenderContext, value:Bool) {
+	public function applySmoothing (context:#if lime Canvas2DRenderContext #else Dynamic #end, value:Bool) {
 		
 		context.imageSmoothingEnabled = value;
 		
 	}
 	
 	
-	public function setTransform (transform:Matrix, context:Canvas2DRenderContext = null):Void {
+	public function setTransform (transform:Matrix, context:#if lime Canvas2DRenderContext #else Dynamic #end = null):Void {
 		
 		if (context == null) {
 			
@@ -198,6 +204,12 @@ class CanvasRenderer extends DisplayObjectRenderer {
 		if (__blendMode == value) return;
 		
 		__blendMode = value;
+		__setBlendModeContext (context, value);
+		
+	}
+	
+	
+	@:noCompletion private function __setBlendModeContext (context:#if lime Canvas2DRenderContext #else Dynamic #end, value:BlendMode):Void {
 		
 		switch (value) {
 			
@@ -205,9 +217,9 @@ class CanvasRenderer extends DisplayObjectRenderer {
 				
 				context.globalCompositeOperation = "lighter";
 			
-			case ALPHA:
+			// case ALPHA:
 				
-				context.globalCompositeOperation = "destination-in";
+			// 	context.globalCompositeOperation = "";
 			
 			case DARKEN:
 				
@@ -217,9 +229,9 @@ class CanvasRenderer extends DisplayObjectRenderer {
 				
 				context.globalCompositeOperation = "difference";
 			
-			case ERASE:
+			// case ERASE:
 				
-				context.globalCompositeOperation = "destination-out";
+				// context.globalCompositeOperation = "";
 			
 			case HARDLIGHT:
 				
@@ -229,9 +241,9 @@ class CanvasRenderer extends DisplayObjectRenderer {
 				
 				//context.globalCompositeOperation = "";
 			
-			case LAYER:
+			// case LAYER:
 				
-				context.globalCompositeOperation = "source-over";
+			// 	context.globalCompositeOperation = "source-over";
 			
 			case LIGHTEN:
 				

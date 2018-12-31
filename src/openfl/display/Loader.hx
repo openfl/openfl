@@ -2,8 +2,6 @@ package openfl.display; #if !flash
 
 
 import haxe.io.Path;
-import lime.utils.AssetLibrary as LimeAssetLibrary;
-import lime.utils.AssetManifest;
 import openfl._internal.formats.swf.SWFLiteLibrary;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -17,6 +15,11 @@ import openfl.system.LoaderContext;
 import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.AssetManifest;
+#end
 
 #if (js && html5)
 import js.html.ScriptElement;
@@ -699,6 +702,13 @@ class Loader extends DisplayObjectContainer {
 		
 		// TODO: Dispatch HTTPStatusEvent
 		
+		if (bitmapData == null) {
+			
+			__dispatchError ("Unknown error");
+			return;
+			
+		}
+		
 		content = new Bitmap (bitmapData);
 		contentLoaderInfo.content = content;
 		contentLoaderInfo.width = Std.int(content.width);
@@ -726,6 +736,7 @@ class Loader extends DisplayObjectContainer {
 		
 		var loader:URLLoader = cast event.target;
 		
+		#if lime
 		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf ("/json") > -1) {
 			
 			var manifest = AssetManifest.parse (loader.data, Path.directory (__path));
@@ -773,7 +784,7 @@ class Loader extends DisplayObjectContainer {
 				
 			}
 			
-		} else if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1)) {
+		} else #end if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1)) {
 			
 			content = new Sprite ();
 			contentLoaderInfo.content = content;

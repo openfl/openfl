@@ -2,12 +2,6 @@ package openfl.text; #if !flash
 
 
 import haxe.Timer;
-import lime.system.Clipboard;
-import lime.text.UTF8String;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseCursor;
-import lime.utils.Log;
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoTextField;
@@ -25,6 +19,8 @@ import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
+import openfl._internal.text.UTF8String;
+import openfl._internal.utils.Log;
 import openfl.display.CanvasRenderer;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
@@ -45,7 +41,14 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.net.URLRequest;
 import openfl.ui.Keyboard;
+import openfl.ui.MouseCursor;
 import openfl.Lib;
+
+#if lime
+import lime.system.Clipboard;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
+#end
 
 #if (js && html5)
 import js.html.DivElement;
@@ -1498,9 +1501,11 @@ class TextField extends InteractiveObject {
 		
 		if (__inputEnabled && stage != null) {
 			
+			#if lime
 			stage.window.textInputEnabled = false;
 			stage.window.onTextInput.remove (window_onTextInput);
 			stage.window.onKeyDown.remove (window_onKeyDown);
+			#end
 			
 			__inputEnabled = false;
 			__stopCursorTimer ();
@@ -1546,6 +1551,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __enableInput ():Void {
 		
+		#if lime
 		if (stage != null) {
 			
 			stage.window.textInputEnabled = true;
@@ -1567,6 +1573,7 @@ class TextField extends InteractiveObject {
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -1826,11 +1833,11 @@ class TextField extends InteractiveObject {
 		
 		if (group != null && group.format.url != "") {
 			
-			return POINTER;
+			return BUTTON;
 			
 		} else if (__textEngine.selectable) {
 			
-			return TEXT;
+			return IBEAM;
 			
 		}
 		
@@ -2346,6 +2353,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
+		#if lime
 		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null && !__domRender) return false;
 		
 		if (super.__updateCacheBitmap (renderer, force || __dirty)) {
@@ -2356,10 +2364,11 @@ class TextField extends InteractiveObject {
 				__cacheBitmap.__renderTransform.ty -= __offsetY;
 				
 			}
-
+			
 			return true;
 			
 		}
+		#end
 		
 		return false;
 		
@@ -3454,8 +3463,10 @@ class TextField extends InteractiveObject {
 			
 			if (stage != null) {
 				
+				#if lime
 				stage.window.onTextInput.remove (window_onTextInput);
 				stage.window.onKeyDown.remove (window_onKeyDown);
+				#end
 				
 			}
 			
@@ -3476,6 +3487,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function this_onKeyDown (event:KeyboardEvent):Void {
 		
+		#if lime
 		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey)) {
 			
 			if (__caretIndex != __selectionIndex) {
@@ -3485,6 +3497,7 @@ class TextField extends InteractiveObject {
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -3518,6 +3531,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
 		
 		switch (key) {
@@ -3723,6 +3737,7 @@ class TextField extends InteractiveObject {
 			
 			case C:
 				
+				#if lime
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
 					if (__caretIndex != __selectionIndex) {
@@ -3732,9 +3747,11 @@ class TextField extends InteractiveObject {
 					}
 					
 				}
+				#end
 			
 			case X:
 				
+				#if lime
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
 					if (__caretIndex != __selectionIndex) {
@@ -3747,10 +3764,12 @@ class TextField extends InteractiveObject {
 					}
 					
 				}
+				#end
 			
 			#if !js
 			case V:
 				
+				#if lime
 				if (#if mac modifier.metaKey #else modifier.ctrlKey #end) {
 					
 					if (Clipboard.text != null) {
@@ -3775,6 +3794,7 @@ class TextField extends InteractiveObject {
 					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 					
 				}
+				#end
 			#end
 			
 			case A if (selectable):
@@ -3791,6 +3811,7 @@ class TextField extends InteractiveObject {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function window_onTextInput (value:String):Void {

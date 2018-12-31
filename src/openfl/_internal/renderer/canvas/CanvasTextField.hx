@@ -162,8 +162,7 @@ class CanvasTextField {
 						
 					}
 					
-					context.textBaseline = "top";
-					//context.textBaseline = "alphabetic";
+					context.textBaseline = "alphabetic";
 					context.textAlign = "start";
 					
 					var scrollX = -textField.scrollH;
@@ -177,11 +176,6 @@ class CanvasTextField {
 					
 					var advance;
 					
-					// Hack, baseline "top" is not consistent across browsers
-					
-					var offsetY = 0.0;
-					var applyHack = ~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent);
-					
 					for (group in textEngine.layoutGroups) {
 						
 						if (group.lineIndex < textField.scrollV - 1) continue;
@@ -192,22 +186,7 @@ class CanvasTextField {
 						context.font = TextEngine.getFont (group.format);
 						context.fillStyle = color;
 						
-						if (applyHack) {
-							
-							// TODO: Change to a different baseline for better consistency?
-							
-							var font = TextEngine.getFontInstance (group.format);
-							
-							if (group.format.__ascent == null && font == null || font.unitsPerEM == 0) {
-								
-								// Try and fix baseline for specific browsers, IF we don't have true font ascent/descent encoded
-								offsetY = group.format.size * 0.185;
-								
-							}
-							
-						}
-						
-						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX - bounds.x, group.offsetY + offsetY + scrollY - bounds.y);
+						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX - bounds.x, group.offsetY + group.ascent + scrollY - bounds.y);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
 							
@@ -284,7 +263,7 @@ class CanvasTextField {
 									
 									// TODO: fill only once
 									
-									context.fillText (text.substring (selectionStart, selectionEnd), scrollX + start.x, group.offsetY + offsetY + scrollY);
+									context.fillText (text.substring (selectionStart, selectionEnd), scrollX + start.x, group.offsetY + group.ascent + scrollY);
 									
 								}
 								
@@ -298,7 +277,7 @@ class CanvasTextField {
 							context.strokeStyle = color;
 							context.lineWidth = 1;
 							var x = group.offsetX + scrollX - bounds.x;
-							var y = Math.floor (group.offsetY + offsetY + scrollY + group.ascent - bounds.y) + 0.5;
+							var y = Math.floor (group.offsetY + scrollY + group.ascent - bounds.y) + 0.5;
 							context.moveTo (x, y);
 							context.lineTo (x + group.width, y);
 							context.stroke ();

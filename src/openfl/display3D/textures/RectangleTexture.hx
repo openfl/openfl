@@ -1,12 +1,15 @@
 package openfl.display3D.textures; #if !flash
 
 
-import lime.graphics.Image;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.graphics.Image;
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -39,6 +42,7 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
+		#if lime
 		if (source == null) return;
 		
 		var image = __getImage (source);
@@ -58,12 +62,14 @@ import openfl.utils.ByteArray;
 		#end
 		
 		uploadFromTypedArray (image.data);
+		#end
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
+		#if lime
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
@@ -74,11 +80,12 @@ import openfl.utils.ByteArray;
 		#end
 		
 		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		#end
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end):Void {
 		
 		var gl = __context.gl;
 		
@@ -122,6 +129,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __uploadFromImage (image:Image):Void {
 		
 		var gl = __context.gl;
@@ -175,6 +183,7 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTexture2D (null);
 		
 	}
+	#end
 	
 	
 }

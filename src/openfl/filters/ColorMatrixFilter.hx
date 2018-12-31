@@ -1,13 +1,16 @@
 package openfl.filters; #if !flash
 
 
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.math.RGBA;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.math.RGBA;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -57,6 +60,7 @@ import openfl.geom.Rectangle;
 	
 	@:noCompletion private override function __applyFilter (destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
+		#if lime
 		var sourceImage = sourceBitmapData.image; 
 		var image = destBitmapData.image;
 		
@@ -110,6 +114,7 @@ import openfl.geom.Rectangle;
 		}
 		
 		destBitmapData.image.dirty = true;
+		#end
 		return destBitmapData;
 		
 	}

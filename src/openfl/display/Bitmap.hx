@@ -345,8 +345,12 @@ class Bitmap extends DisplayObject {
 		
 		// TODO: Handle filters without an intermediate draw
 		
+		#if lime
 		if (__bitmapData == null || (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null)) return false;
 		return super.__updateCacheBitmap (renderer, __bitmapData.image != null && __bitmapData.image.version != __imageVersion);
+		#else
+		return false;
+		#end
 		
 	}
 	

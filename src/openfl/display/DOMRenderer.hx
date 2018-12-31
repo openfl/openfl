@@ -1,10 +1,13 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.DOMRenderContext;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.DOMRenderContext;
+#end
 
 #if (js && html5)
 import js.html.Element;
@@ -27,7 +30,7 @@ import js.html.Element;
 class DOMRenderer extends DisplayObjectRenderer {
 	
 	
-	public var element:DOMRenderContext;
+	public var element:#if lime DOMRenderContext #else Dynamic #end;
 	public var pixelRatio (default, null):Float = 1;
 	
 	@:noCompletion private var __canvasRenderer:CanvasRenderer;
@@ -40,7 +43,7 @@ class DOMRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __z:Int;
 	
 	
-	@:noCompletion private function new (element:DOMRenderContext) {
+	@:noCompletion private function new (element:#if lime DOMRenderContext #else Dynamic #end) {
 		
 		super ();
 		
@@ -74,7 +77,9 @@ class DOMRenderer extends DisplayObjectRenderer {
 		__numClipRects = 0;
 		__z = 0;
 		
+		#if lime
 		__type = DOM;
+		#end
 		
 		__canvasRenderer = new CanvasRenderer (null);
 		__canvasRenderer.__isDOM = true;

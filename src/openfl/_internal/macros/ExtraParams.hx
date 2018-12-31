@@ -25,6 +25,14 @@ class ExtraParams {
 				
 			}
 			
+			#if debug
+			if (!Context.defined ("openfl-enable-handle-error")) {
+				
+				Compiler.define ("openfl-disable-handle-error");
+				
+			}
+			#end
+			
 			if (Context.defined ("js") && !Context.defined ("nodejs") && !Context.defined ("lime")) {
 				
 				var childPath = Context.resolvePath ("openfl/external");

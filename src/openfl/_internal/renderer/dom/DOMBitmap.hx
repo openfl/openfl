@@ -1,10 +1,13 @@
 package openfl._internal.renderer.dom;
 
 
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.graphics.ImageBuffer;
 import openfl.display.Bitmap;
 import openfl.display.DOMRenderer;
+
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.graphics.ImageBuffer;
+#end
 
 #if (js && html5)
 import js.Browser;

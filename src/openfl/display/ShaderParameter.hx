@@ -2,7 +2,10 @@ package openfl.display; #if !flash
 
 
 import openfl.display3D.Context3D;
+
+#if lime
 import lime.utils.Float32Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -29,7 +32,7 @@ import lime.utils.Float32Array;
 	@:noCompletion private var __isInt:Bool;
 	@:noCompletion private var __isUniform:Bool;
 	@:noCompletion private var __length:Int;
-	@:noCompletion private var __uniformMatrix:Float32Array;
+	@:noCompletion private var __uniformMatrix:#if lime Float32Array #else Dynamic #end;
 	@:noCompletion private var __useArray:Bool;
 	
 	
@@ -59,6 +62,7 @@ import lime.utils.Float32Array;
 	
 	@:noCompletion private function __updateGL (context:Context3D, overrideValue:Array<T> = null):Void {
 		
+		#if lime
 		var gl = context.gl;
 		
 		var value = overrideValue != null ? overrideValue : this.value;
@@ -247,12 +251,14 @@ import lime.utils.Float32Array;
 			}
 			
 		}
+		#end
 		
 	}
 	
 	
-	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void {
+	@:noCompletion private function __updateGLFromBuffer (context:Context3D, buffer:#if lime Float32Array #else Dynamic #end, position:Int, length:Int, bufferOffset:Int):Void {
 		
+		#if lime
 		var gl = context.gl;
 		
 		if (__isUniform) {
@@ -395,6 +401,7 @@ import lime.utils.Float32Array;
 			}
 			
 		}
+		#end
 		
 	}
 	

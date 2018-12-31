@@ -1,7 +1,6 @@
 package openfl.filters; #if !flash
 
 
-import lime._internal.graphics.ImageDataUtil; // TODO
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectRenderer;
@@ -9,6 +8,10 @@ import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime._internal.graphics.ImageDataUtil; // TODO
+#end
 
 
 /**
@@ -188,8 +191,10 @@ import openfl.geom.Rectangle;
 	
 	@:noCompletion private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
 		
+		#if lime
 		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality);
 		if (finalImage == bitmapData.image) return bitmapData;
+		#end
 		return sourceBitmapData;
 		
 	}

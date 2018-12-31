@@ -1,9 +1,6 @@
 package openfl.events; #if !flash
 
 
-import openfl.display.InteractiveObject;
-
-
 /**
  * The Event class is used as the base class for the creation of Event
  * objects, which are passed as parameters to event listeners when an event

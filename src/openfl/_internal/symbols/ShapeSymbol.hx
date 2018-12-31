@@ -4,7 +4,13 @@ package openfl._internal.symbols;
 import openfl._internal.formats.swf.ShapeCommand;
 import openfl._internal.formats.swf.SWFLite;
 import openfl.display.BitmapData;
+import openfl.display.CapsStyle;
+import openfl.display.GradientType;
+import openfl.display.InterpolationMethod;
+import openfl.display.JointStyle;
+import openfl.display.LineScaleMode;
 import openfl.display.Shape;
+import openfl.display.SpreadMethod;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -12,6 +18,12 @@ import openfl.display.Shape;
 #end
 
 @:access(openfl._internal.symbols.BitmapSymbol)
+@:access(openfl.display.CapsStyle)
+@:access(openfl.display.GradientType)
+@:access(openfl.display.InterpolationMethod)
+@:access(openfl.display.JointStyle)
+@:access(openfl.display.LineScaleMode)
+@:access(openfl.display.SpreadMethod)
 
 
 class ShapeSymbol extends SWFSymbol {
@@ -50,6 +62,7 @@ class ShapeSymbol extends SWFSymbol {
 				
 				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
 					
+					#if lime
 					var bitmapSymbol:BitmapSymbol = cast swf.symbols.get (bitmapID);
 					var bitmap = swf.library.getImage (bitmapSymbol.path);
 					
@@ -58,10 +71,11 @@ class ShapeSymbol extends SWFSymbol {
 						graphics.beginBitmapFill (BitmapData.fromImage (bitmap), matrix, repeat, smooth);
 						
 					}
+					#end
 				
 				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					
-					graphics.beginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+					graphics.beginGradientFill (GradientType.fromInt (fillType), colors, alphas, ratios, matrix, SpreadMethod.fromInt (spreadMethod), InterpolationMethod.fromInt (interpolationMethod), focalPointRatio);
 				
 				case CurveTo (controlX, controlY, anchorX, anchorY):
 					
@@ -75,7 +89,7 @@ class ShapeSymbol extends SWFSymbol {
 					
 					if (thickness != null) {
 						
-						graphics.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
+						graphics.lineStyle (thickness, color, alpha, pixelHinting, LineScaleMode.fromInt (scaleMode), CapsStyle.fromInt (caps), JointStyle.fromInt (joints), miterLimit);
 						
 					} else {
 						

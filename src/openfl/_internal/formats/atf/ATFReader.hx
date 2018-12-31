@@ -2,10 +2,11 @@ package openfl._internal.formats.atf;
 
 
 import haxe.io.Bytes;
-import lime.utils.Log;
-import openfl.utils.ByteArray;
-import openfl.errors.IllegalOperationError;
+import openfl._internal.utils.Log;
 import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.IllegalOperationError;
+import openfl.utils.ByteArray;
+
 
 typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> Bytes -> Void;
 

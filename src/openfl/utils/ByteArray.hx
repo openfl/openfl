@@ -9,14 +9,17 @@ import haxe.io.FPHelper;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
-import lime.app.Future;
+import openfl.errors.EOFError;
+import openfl.net.ObjectEncoding;
+import openfl.utils.Future;
+
+#if lime
 import lime.system.System;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
-import openfl.errors.EOFError;
-import openfl.net.ObjectEncoding;
+#end
 
 #if format
 import format.amf.Reader as AMFReader;
@@ -37,7 +40,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 	
+	#if lime
 	@:noCompletion private static var __bytePointer = new BytePointer ();
+	#end
 	
 	public var length (get, set):Int;
 	
@@ -81,6 +86,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
+	#if lime
 	@:from public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
 		if (buffer == null) return null;
@@ -96,6 +102,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 	}
+	#end
 	
 	
 	@:from public static function fromBytes (bytes:Bytes):ByteArray {
@@ -144,42 +151,57 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public static function fromFile (path:String):ByteArray {
 		
+		#if lime
 		return LimeBytes.fromFile (path);
+		#else
+		return null;
+		#end
 		
 	}
 	
 	
 	public static function loadFromBytes (bytes:Bytes):Future<ByteArray> {
 		
+		#if lime
 		return LimeBytes.loadFromBytes (bytes).then (function (limeBytes:LimeBytes) {
 			
 			var byteArray:ByteArray = limeBytes;
 			return Future.withValue (byteArray);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load ByteArray from bytes");
+		#end
 		
 	}
 	
 	
 	public static function loadFromFile (path:String):Future<ByteArray> {
 		
+		#if lime
 		return LimeBytes.loadFromFile (path).then (function (limeBytes:LimeBytes) {
 			
 			var byteArray:ByteArray = limeBytes;
 			return Future.withValue (byteArray);
 			
 		});
+		#else
+		return cast Future.withError ("Cannot load ByteArray from file");
+		#end
 		
 	}
 	
 	
+	#if lime
 	@:from @:noCompletion public static function fromLimeBytes (bytes:LimeBytes):ByteArray {
 		
 		return fromBytes (bytes);
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:to @:noCompletion public static function toArrayBuffer (byteArray:ByteArray):ArrayBuffer {
 		
 		#if display
@@ -193,8 +215,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:to @:noCompletion private static function toBytePointer (byteArray:ByteArray):BytePointer {
 		
 		#if !display
@@ -203,8 +227,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		return __bytePointer;
 		
 	}
+	#end
 	
 	
+	#if lime
 	#if (sys || display)
 	@:to @:noCompletion private static function toDataPointer (byteArray:ByteArray):DataPointer {
 		
@@ -214,6 +240,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		return __bytePointer;
 		
 	}
+	#end
 	#end
 	
 	
@@ -245,11 +272,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	#end
 	
 	
+	#if lime
 	@:to @:noCompletion private static function toLimeBytes (byteArray:ByteArray):LimeBytes {
 		
 		return fromBytes (byteArray);
 		
 	}
+	#end
 	
 	
 	
@@ -360,6 +389,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (__defaultEndian == null) {
 			
+			#if lime
 			if (System.endianness == LITTLE_ENDIAN) {
 				
 				__defaultEndian = LITTLE_ENDIAN;
@@ -369,6 +399,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 				__defaultEndian = BIG_ENDIAN;
 				
 			}
+			#else
+			__defaultEndian = LITTLE_ENDIAN;
+			#end
 			
 		}
 		
@@ -393,6 +426,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
+		#if lime
 		#if js
 		if (__length > #if lime_bytes_length_getter l #else length #end) {
 			
@@ -432,6 +466,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			position = #if lime_bytes_length_getter l #else length #end;
 			
 		}
+		#end
 		
 	}
 	
@@ -741,6 +776,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
+		#if lime
 		#if js
 		if (__length > #if lime_bytes_length_getter l #else length #end) {
 			
@@ -779,6 +815,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			#if lime_bytes_length_getter l #else length #end = __length;
 			
 		}
+		#end
 		
 		position = 0;
 		

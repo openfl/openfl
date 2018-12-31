@@ -1,13 +1,13 @@
 package openfl.display; #if !flash
 
 
-import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.ui.MouseCursor;
 
 
 /**
@@ -193,7 +193,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
-		return (__buttonMode && useHandCursor) ? POINTER : null;
+		return (__buttonMode && useHandCursor) ? BUTTON : null;
 		
 	}
 	

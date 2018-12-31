@@ -2,6 +2,7 @@ package openfl._internal.renderer;
 
 
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
 import openfl.display.GraphicsPathWinding;
@@ -130,6 +131,7 @@ class DrawCommandBuffer {
 		b.push (smooth);
 		
 	}
+	
 	
 	public function beginFill (color:Int, alpha:Float):Void {
 		
@@ -407,6 +409,16 @@ class DrawCommandBuffer {
 			copyOnWrite = false;
 			
 		}
+		
+	}
+	
+	
+	public function overrideBlendMode (blendMode:BlendMode):Void {
+		
+		prepareWrite ();
+		
+		types.push (OVERRIDE_BLEND_MODE);
+		o.push (blendMode);
 		
 	}
 	

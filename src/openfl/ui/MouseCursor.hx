@@ -1,7 +1,9 @@
 package openfl.ui; #if !flash
 
 
+#if lime
 import lime.ui.MouseCursor as LimeMouseCursor;
+#end
 
 
 @:enum abstract MouseCursor(String) from String to String {
@@ -22,6 +24,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	@:noCompletion private var __WAIT = "wait";
 	@:noCompletion private var __WAIT_ARROW = "waitarrow";
 	
+	#if lime
 	@:from private static function fromLimeCursor (cursor:LimeMouseCursor):MouseCursor {
 		
 		return switch (cursor) {
@@ -44,6 +47,30 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		}
 		
 	}
+	
+	@:to private static function toLimeCursor (cursor:MouseCursor):LimeMouseCursor {
+		
+		return switch (cursor) {
+			
+			case MouseCursor.ARROW: LimeMouseCursor.ARROW;
+			case MouseCursor.AUTO: LimeMouseCursor.DEFAULT;
+			case MouseCursor.BUTTON: LimeMouseCursor.POINTER;
+			case MouseCursor.HAND: LimeMouseCursor.MOVE;
+			case MouseCursor.IBEAM: LimeMouseCursor.TEXT;
+			case MouseCursor.__CROSSHAIR: LimeMouseCursor.CROSSHAIR;
+			case MouseCursor.__RESIZE_NESW: LimeMouseCursor.RESIZE_NESW;
+			case MouseCursor.__RESIZE_NS: LimeMouseCursor.RESIZE_NS;
+			case MouseCursor.__RESIZE_NWSE: LimeMouseCursor.RESIZE_NWSE;
+			case MouseCursor.__RESIZE_WE: LimeMouseCursor.RESIZE_WE;
+			case MouseCursor.__WAIT: LimeMouseCursor.WAIT;
+			case MouseCursor.__WAIT_ARROW: LimeMouseCursor.WAIT_ARROW;
+			case MouseCursor.__CUSTOM: LimeMouseCursor.CUSTOM;
+			default: LimeMouseCursor.DEFAULT;
+			
+		}
+		
+	}
+	#end
 	
 }
 

@@ -1,8 +1,6 @@
 package openfl._internal.renderer.context3D;
 
 
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -17,6 +15,11 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+#end
 
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -54,7 +57,7 @@ class Context3DTilemap {
 	private static var lastUsedBitmapData:BitmapData;
 	private static var lastUsedShader:Shader;
 	private static var numTiles:Int;
-	private static var vertexBufferData:Float32Array;
+	private static var vertexBufferData:#if lime Float32Array #else Dynamic #end;
 	private static var vertexDataPosition:Int;
 	
 	

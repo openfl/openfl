@@ -1,18 +1,25 @@
 ﻿package format.swf.exporters;
 
 
-import flash.display.CapsStyle;
-import flash.display.GradientType;
-import flash.display.InterpolationMethod;
-import flash.display.JointStyle;
-import flash.display.LineScaleMode;
-import flash.display.SpreadMethod;
 import flash.geom.Matrix;
 import format.swf.SWFTimelineContainer;
 import format.swf.exporters.core.DefaultShapeExporter;
-import openfl._internal.formats.swf.ShapeCommand;
 import format.swf.utils.NumberUtils;
 import format.swf.utils.StringUtils;
+import openfl._internal.formats.swf.ShapeCommand;
+import openfl.display.CapsStyle;
+import openfl.display.GradientType;
+import openfl.display.InterpolationMethod;
+import openfl.display.JointStyle;
+import openfl.display.LineScaleMode;
+import openfl.display.SpreadMethod;
+
+@:access(openfl.display.CapsStyle)
+@:access(openfl.display.GradientType)
+@:access(openfl.display.InterpolationMethod)
+@:access(openfl.display.JointStyle)
+@:access(openfl.display.LineScaleMode)
+@:access(openfl.display.SpreadMethod)
 
 
 class ShapeCommandExporter extends DefaultShapeExporter {
@@ -59,7 +66,7 @@ class ShapeCommandExporter extends DefaultShapeExporter {
 	
 	override public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0):Void {
 		
-		commands.push (BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));
+		commands.push (BeginGradientFill (type.toInt (), colors, alphas, ratios, matrix, spreadMethod.toInt (), interpolationMethod.toInt (), focalPointRatio));
 		
 	}
 
@@ -77,7 +84,7 @@ class ShapeCommandExporter extends DefaultShapeExporter {
 	
 	override public function lineStyle (thickness:Float = 0, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, startCaps:CapsStyle = null, endCaps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void {
 		
-		commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, startCaps, /*endCaps,*/ joints, miterLimit));
+		commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode.toInt (), startCaps.toInt (), /*endCaps,*/ joints.toInt (), miterLimit));
 		
 	}
 	

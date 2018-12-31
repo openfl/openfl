@@ -1,8 +1,6 @@
 package openfl._internal.renderer;
 
 
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.Float32Array;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -11,6 +9,11 @@ import openfl.display.GraphicsShader;
 import openfl.display.Shader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
+
+#if lime
+import lime.graphics.opengl.GLBuffer;
+import lime.utils.Float32Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -43,8 +46,8 @@ class ShaderBuffer {
 	// public var overrideValues:Array<Array<Dynamic>>;
 	public var paramBoolCount:Int;
 	public var paramCount:Int;
-	public var paramData:Float32Array;
-	public var paramDataBuffer:GLBuffer;
+	public var paramData:#if lime Float32Array #else Dynamic #end;
+	public var paramDataBuffer:#if lime GLBuffer #else Dynamic #end;
 	public var paramDataLength:Int;
 	public var paramFloatCount:Int;
 	public var paramIntCount:Int;
@@ -121,6 +124,7 @@ class ShaderBuffer {
 	
 	public function update (shader:GraphicsShader):Void {
 		
+		#if lime
 		inputCount = 0;
 		// overrideCount = 0;
 		overrideIntCount = 0;
@@ -280,6 +284,7 @@ class ShaderBuffer {
 		}
 		
 		this.shader = shader;
+		#end
 		
 	}
 	

@@ -1,13 +1,16 @@
 package openfl.filters; #if !flash
 
 
-import lime._internal.graphics.ImageDataUtil; // TODO
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime._internal.graphics.ImageDataUtil; // TODO
+#end
 
 
 /**
@@ -266,6 +269,7 @@ import openfl.geom.Rectangle;
 		
 		// TODO: Support knockout, inner
 		
+		#if lime
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
@@ -276,6 +280,7 @@ import openfl.geom.Rectangle;
 		finalImage.colorTransform (finalImage.rect, new ColorTransform (0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix ());
 		
 		if (finalImage == bitmapData.image) return bitmapData;
+		#end
 		return sourceBitmapData;
 
 	}

@@ -1,11 +1,14 @@
 package openfl.display3D; #if !flash
 
 
+import openfl.utils.ByteArray;
+import openfl.Vector;
+
+#if lime
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt16Array;
-import openfl.utils.ByteArray;
-import openfl.Vector;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -21,10 +24,10 @@ import openfl.Vector;
 	
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __elementType:Int;
-	@:noCompletion private var __id:GLBuffer;
+	@:noCompletion private var __id:#if lime GLBuffer #else Dynamic #end;
 	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numIndices:Int;
-	@:noCompletion private var __tempUInt16Array:UInt16Array;
+	@:noCompletion private var __tempUInt16Array:#if lime UInt16Array #else Dynamic #end;
 	@:noCompletion private var __usage:Int;
 	
 	
@@ -52,13 +55,15 @@ import openfl.Vector;
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
+		#if lime
 		var offset = byteArrayOffset + startOffset * 2;
 		uploadFromTypedArray (new UInt16Array (data.toArrayBuffer (), offset, count));
+		#end
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, byteLength:Int = -1):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end, byteLength:Int = -1):Void {
 		
 		if (data == null) return;
 		var gl = __context.gl;
@@ -70,6 +75,7 @@ import openfl.Vector;
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
+		#if lime
 		// TODO: Optimize more
 		
 		if (data == null) return;
@@ -97,6 +103,7 @@ import openfl.Vector;
 		}
 		
 		uploadFromTypedArray (__tempUInt16Array);
+		#end
 		
 	}
 	

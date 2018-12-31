@@ -1,8 +1,11 @@
 package openfl.geom; #if !flash
 
 
+import openfl._internal.utils.ObjectPool;
+
+#if lime
 import lime.math.Rectangle as LimeRectangle;
-import lime.utils.ObjectPool;
+#end
 
 
 /**
@@ -59,8 +62,11 @@ import lime.utils.ObjectPool;
 class Rectangle {
 	
 	
-	@:noCompletion private static var __limeRectangle:LimeRectangle;
 	@:noCompletion private static var __pool = new ObjectPool<Rectangle> (function () return new Rectangle (), function (r) r.setTo (0, 0, 0, 0));
+	
+	#if lime
+	@:noCompletion private static var __limeRectangle:LimeRectangle;
+	#end
 	
 	
 	/**
@@ -577,6 +583,7 @@ class Rectangle {
 	}
 	
 	
+	#if lime
 	@:noCompletion private function __toLimeRectangle ():LimeRectangle {
 		
 		if (__limeRectangle == null) {
@@ -589,6 +596,7 @@ class Rectangle {
 		return __limeRectangle;
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function __transform (rect:Rectangle, m:Matrix):Void {

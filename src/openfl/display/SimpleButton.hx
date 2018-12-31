@@ -1,7 +1,6 @@
 package openfl.display; #if !flash
 
 
-import lime.ui.MouseCursor;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.ButtonSymbol;
 import openfl.display.DisplayObject;
@@ -10,6 +9,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
+import openfl.ui.MouseCursor;
 import openfl.Vector;
 
 
@@ -271,7 +271,7 @@ class SimpleButton extends InteractiveObject {
 	
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
-		return (useHandCursor && !__ignoreEvent && enabled) ? POINTER : null;
+		return (useHandCursor && !__ignoreEvent && enabled) ? BUTTON : null;
 		
 	}
 	

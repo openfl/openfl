@@ -30,6 +30,13 @@ package openfl.display; #if !flash #if !openfljs
 	public var SQUARE = 2;
 	
 	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):CapsStyle {
+		
+		return cast value;
+		
+	}
+	
+	
 	@:from private static function fromString (value:String):CapsStyle {
 		
 		return switch (value) {
@@ -40,6 +47,13 @@ package openfl.display; #if !flash #if !openfljs
 			default: null;
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private inline function toInt ():Null<Int> {
+		
+		return this;
 		
 	}
 	
@@ -69,6 +83,19 @@ package openfl.display; #if !flash #if !openfljs
 	public var NONE = "none";
 	public var ROUND = "round";
 	public var SQUARE = "square";
+	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):CapsStyle {
+		
+		return switch (value) {
+			
+			case 0: NONE;
+			case 1: ROUND;
+			case 2: SQUARE;
+			default: null;
+			
+		}
+		
+	}
 	
 }
 

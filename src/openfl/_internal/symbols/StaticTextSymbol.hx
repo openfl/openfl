@@ -2,6 +2,9 @@ package openfl._internal.symbols;
 
 
 import openfl._internal.formats.swf.SWFLite;
+import openfl.display.CapsStyle;
+import openfl.display.JointStyle;
+import openfl.display.LineScaleMode;
 import openfl.geom.Matrix;
 import openfl.text.StaticText;
 
@@ -10,6 +13,9 @@ import openfl.text.StaticText;
 @:noDebug
 #end
 
+@:access(openfl.display.CapsStyle)
+@:access(openfl.display.JointStyle)
+@:access(openfl.display.LineScaleMode)
 @:access(openfl.text.StaticText)
 
 
@@ -88,7 +94,7 @@ class StaticTextSymbol extends SWFSymbol {
 									
 									if (thickness != null) {
 										
-										graphics.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
+										graphics.lineStyle (thickness, color, alpha, pixelHinting, LineScaleMode.fromInt (scaleMode), CapsStyle.fromInt (caps), JointStyle.fromInt (joints), miterLimit);
 										
 									} else {
 										

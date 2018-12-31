@@ -1,11 +1,14 @@
 package openfl.display;
 
 
-import lime.graphics.RenderContext;
 import openfl._internal.renderer.flash.FlashRenderer;
 import openfl._internal.renderer.flash.FlashTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.RenderContext;
+#end
 
 #if !flash
 import openfl._internal.renderer.cairo.CairoBitmap;
@@ -381,8 +384,12 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	@:noCompletion private override function __updateCacheBitmap (renderer:DisplayObjectRenderer, force:Bool):Bool {
 		
+		#if lime
 		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null) return false;
 		return super.__updateCacheBitmap (renderer, force);
+		#else
+		return false;
+		#end
 		
 	}
 	#end

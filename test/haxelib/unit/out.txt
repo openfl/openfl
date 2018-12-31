@@ -1,0 +1,2 @@
+../../../src/openfl/net/SharedObject.hx:601: characters 8-19 : Type not found : Application
+../../../src/openfl/net/SharedObject.hx:703: characters 14-20 : Type not found : System

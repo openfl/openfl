@@ -1,14 +1,17 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
-import lime.utils.Float32Array;
-import lime.utils.Log;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLShader;
+import lime.utils.Float32Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -32,7 +35,7 @@ class Shader {
 	public var byteCode (null, default):ByteArray;
 	public var data (get, set):ShaderData;
 	public var glFragmentSource (get, set):String;
-	public var glProgram (default, null):GLProgram;
+	public var glProgram (default, null):#if lime GLProgram #else Dynamic #end;
 	public var glVertexSource (get, set):String;
 	public var precisionHint:ShaderPrecision;
 	public var program:Program3D;
@@ -164,6 +167,7 @@ class Shader {
 	// }
 	
 	
+	#if lime
 	@:noCompletion private function __createGLShader (source:String, type:Int):GLShader {
 		
 		var gl = __context.gl;
@@ -184,8 +188,10 @@ class Shader {
 		return shader;
 		
 	}
+	#end
 	
 	
+	#if lime
 	@:noCompletion private function __createGLProgram (vertexSource:String, fragmentSource:String):GLProgram {
 		
 		var gl = __context.gl;
@@ -222,6 +228,7 @@ class Shader {
 		return program;
 		
 	}
+	#end
 	
 	
 	@:noCompletion private function __disable ():Void {
@@ -268,11 +275,13 @@ class Shader {
 		
 		__context.__bindGLArrayBuffer (null);
 		
+		#if lime
 		if (__context.__context.type == OPENGL) {
 			
 			gl.disable (gl.TEXTURE_2D);
 			
 		}
+		#end
 		
 	}
 	
@@ -303,11 +312,13 @@ class Shader {
 			
 		}
 		
+		#if lime
 		if (__context.__context.type == OPENGL && textureCount > 0) {
 			
 			gl.enable (gl.TEXTURE_2D);
 			
 		}
+		#end
 		
 	}
 	
@@ -380,7 +391,9 @@ class Shader {
 				
 				// TODO
 				// program.uploadSources (vertex, fragment);
+				#if lime
 				program.__glProgram = __createGLProgram (vertex, fragment);
+				#end
 				
 				__context.__programs.set (id, program);
 				
@@ -588,7 +601,9 @@ class Shader {
 						parameter.name = name;
 						parameter.type = parameterType;
 						parameter.__arrayLength = arrayLength;
+						#if lime
 						if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array (arrayLength * arrayLength);
+						#end
 						parameter.__isFloat = true;
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;

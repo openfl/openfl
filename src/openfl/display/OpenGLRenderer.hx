@@ -1,18 +1,9 @@
 package openfl.display; #if !flash
 
 
-import lime.graphics.opengl.ext.KHR_debug;
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-import lime.math.Matrix4;
-import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
 import openfl._internal.renderer.context3D.Context3DMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl._internal.utils.ObjectPool;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
@@ -23,6 +14,18 @@ import openfl.display.Stage;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if lime
+import lime.graphics.opengl.ext.KHR_debug;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGLRenderContext;
+import lime.math.Matrix4;
+import lime.utils.Float32Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -62,7 +65,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private static var __scissorRectangle = new Rectangle ();
 	@:noCompletion private static var __textureSizeValue = [ 0, 0. ];
 	
-	public var gl:WebGLRenderContext;
+	public var gl:#if lime WebGLRenderContext #else Dynamic #end;
 	
 	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
@@ -78,16 +81,16 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	@:noCompletion private var __displayHeight:Int;
 	@:noCompletion private var __displayWidth:Int;
 	@:noCompletion private var __flipped:Bool;
-	@:noCompletion private var __gl:WebGLRenderContext;
+	@:noCompletion private var __gl:#if lime WebGLRenderContext #else Dynamic #end;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:Context3DMaskShader;
-	@:noCompletion private var __matrix:Matrix4;
+	@:noCompletion private var __matrix:#if lime Matrix4 #else Dynamic #end;
 	@:noCompletion private var __maskObjects:Array<DisplayObject>;
 	@:noCompletion private var __numClipRects:Int;
 	@:noCompletion private var __offsetX:Int;
 	@:noCompletion private var __offsetY:Int;
-	@:noCompletion private var __projection:Matrix4;
-	@:noCompletion private var __projectionFlipped:Matrix4;
+	@:noCompletion private var __projection:#if lime Matrix4 #else Dynamic #end;
+	@:noCompletion private var __projectionFlipped:#if lime Matrix4 #else Dynamic #end;
 	@:noCompletion private var __scrollRectMasks:ObjectPool<Shape>;
 	@:noCompletion private var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private var __stencilReference:Int;
@@ -117,7 +120,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 			
 		}
 		
+		#if lime
 		__matrix = new Matrix4 ();
+		#end
+		
 		__values = new Array ();
 		
 		#if gl_debug
@@ -136,7 +142,9 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__softwareRenderer = new CairoRenderer (null);
 		#end
 		
+		#if lime
 		__type = OPENGL;
+		#end
 		
 		__setBlendMode (NORMAL);
 		__context3D.__setGLBlend (true);
@@ -144,8 +152,10 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 		__clipRects = new Array ();
 		__maskObjects = new Array ();
 		__numClipRects = 0;
+		#if lime
 		__projection = new Matrix4 ();
 		__projectionFlipped = new Matrix4 ();
+		#end
 		__stencilReference = 0;
 		__tempRect = new Rectangle ();
 		
@@ -305,7 +315,7 @@ class OpenGLRenderer extends DisplayObjectRenderer {
 	}
 	
 	
-	public function getMatrix (transform:Matrix):Matrix4 {
+	public function getMatrix (transform:Matrix):#if lime Matrix4 #else Dynamic #end {
 		
 		if (gl != null) {
 			

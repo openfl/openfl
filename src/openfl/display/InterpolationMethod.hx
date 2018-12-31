@@ -40,6 +40,13 @@ package openfl.display; #if !flash #if !openfljs
 	public var RGB = 1;
 	
 	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):InterpolationMethod {
+		
+		return cast value;
+		
+	}
+	
+	
 	@:from private static function fromString (value:String):InterpolationMethod {
 		
 		return switch (value) {
@@ -49,6 +56,13 @@ package openfl.display; #if !flash #if !openfljs
 			default: null;
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private inline function toInt ():Null<Int> {
+		
+		return this;
 		
 	}
 	
@@ -76,6 +90,18 @@ package openfl.display; #if !flash #if !openfljs
 	
 	public var LINEAR_RGB = "linearRGB";
 	public var RGB = "rgb";
+	
+	@:noCompletion private inline static function fromInt (value:Null<Int>):InterpolationMethod {
+		
+		return switch (value) {
+			
+			case 0: LINEAR_RGB;
+			case 1: RGB;
+			default: null;
+			
+		}
+		
+	}
 	
 }
 

@@ -2,6 +2,8 @@ package openfl._internal.text;
 
 
 import haxe.io.Bytes;
+
+#if lime
 import lime.math.Vector2;
 import lime.system.System;
 import lime.text.harfbuzz.HBBuffer;
@@ -13,6 +15,9 @@ import lime.text.harfbuzz.HBScript;
 import lime.text.harfbuzz.HB;
 import lime.text.Font;
 import lime.text.Glyph;
+#else
+import openfl.text.Font;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -53,7 +58,7 @@ class TextLayout {
 	public var autoHint:Bool;
 	public var direction (get, set):TextDirection;
 	public var font (default, set):Font;
-	public var glyphs (get, null):Array<Glyph>;
+	public var glyphs (get, null):Array<#if lime Glyph #else Dynamic #end>;
 	public var language (get, set):String;
 	public var letterSpacing:Float = 0;
 	@:isVar public var positions (get, null):Array<GlyphPosition>;
@@ -69,8 +74,8 @@ class TextLayout {
 	private var __script:TextScript;
 	
 	private var __font:Font;
-	private var __hbBuffer:HBBuffer;
-	private var __hbFont:HBFTFont;
+	private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
+	private var __hbFont:#if lime HBFTFont #else Dynamic #end;
 	
 	
 	public function new (text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON, language:String = "en") {
@@ -94,10 +99,12 @@ class TextLayout {
 		
 		if (language.length != 4) return;
 		
+		#if lime
 		__hbBuffer = new HBBuffer ();
-		__hbBuffer.direction = direction;
-		__hbBuffer.script = script;
+		__hbBuffer.direction = direction.toHBDirection ();
+		__hbBuffer.script = script.toHBScript ();
 		__hbBuffer.language = new HBLanguage (language);
+		#end
 		
 	}
 	
@@ -106,7 +113,7 @@ class TextLayout {
 		
 		positions = [];
 		
-		#if (lime_cffi && !macro)
+		#if (lime && lime_cffi && !macro)
 		if (text != null && text != "" && font != null && font.src != null) {
 			
 			if (__buffer == null) {
@@ -145,8 +152,8 @@ class TextLayout {
 				
 			}
 			
-			__hbBuffer.direction = direction;
-			__hbBuffer.script = script;
+			__hbBuffer.direction = direction.toHBDirection ();
+			__hbBuffer.script = script.toHBScript ();
 			__hbBuffer.language = new HBLanguage (language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
 			__hbBuffer.addUTF8 (text, 0, -1);
@@ -235,7 +242,7 @@ class TextLayout {
 	}
 	
 	
-	@:noCompletion private function get_glyphs ():Array<Glyph> {
+	@:noCompletion private function get_glyphs ():Array<#if lime Glyph #else Dynamic #end> {
 		
 		var glyphs = [];
 		
@@ -313,7 +320,7 @@ class TextLayout {
 }
 
 
-@:enum abstract TextDirection(Int) to (Int) {
+@:enum abstract TextDirection(Int) to Int {
 	
 	
 	var INVALID = 0;
@@ -351,7 +358,8 @@ class TextLayout {
 	}
 	
 	
-	@:to private inline function toHBDirection ():HBDirection {
+	#if lime
+	@:to public inline function toHBDirection ():HBDirection {
 		
 		return switch (this) {
 			
@@ -364,6 +372,7 @@ class TextLayout {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function get_backward ():Bool {
@@ -544,7 +553,8 @@ class TextLayout {
 	public var rightToLeft (get, never):Bool;
 	
 	
-	@:to private inline function toHBScript ():HBScript {
+	#if lime
+	@:to public inline function toHBScript ():HBScript {
 		
 		return switch (this) {
 			
@@ -553,6 +563,7 @@ class TextLayout {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion private inline function get_rightToLeft ():Bool {

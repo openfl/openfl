@@ -2,15 +2,18 @@ package openfl.display3D.textures; #if !flash
 
 
 import haxe.Timer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
+
+#if lime
+import lime.graphics.opengl.GLFramebuffer;
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -69,6 +72,7 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromBitmapData (source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
+		#if lime
 		if (source == null) return;
 		var size = __size >> miplevel;
 		if (size == 0) return;
@@ -98,12 +102,14 @@ import openfl.utils.ByteArray;
 		#end
 		
 		uploadFromTypedArray (image.data, side, miplevel);
+		#end
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void {
 		
+		#if lime
 		#if (js && !display)
 		if (byteArrayOffset == 0) {
 			
@@ -114,11 +120,12 @@ import openfl.utils.ByteArray;
 		#end
 		
 		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), side, miplevel);
+		#end
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void {
+	public function uploadFromTypedArray (data:#if lime ArrayBufferView #else Dynamic #end, side:UInt, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
 		
@@ -138,7 +145,7 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	@:noCompletion private override function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer {
+	@:noCompletion private override function __getGLFramebuffer (enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):#if lime GLFramebuffer #else Dynamic #end {
 		
 		var gl = __context.gl;
 		
@@ -245,6 +252,7 @@ import openfl.utils.ByteArray;
 		
 		var hasTexture = false;
 		
+		#if lime
 		reader.readTextures (function (side, level, gpuFormat, width, height, blockLength, bytes) {
 			
 			var format = alpha ? TextureBase.__compressedFormatsAlpha[gpuFormat] : TextureBase.__compressedFormats[gpuFormat];
@@ -289,6 +297,7 @@ import openfl.utils.ByteArray;
 			}
 			
 		}
+		#end
 		
 		__context.__bindGLTextureCubeMap (null);
 		
