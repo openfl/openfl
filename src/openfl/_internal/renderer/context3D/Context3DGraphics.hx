@@ -500,7 +500,7 @@ class Context3DGraphics {
 		
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 		
-		if ((graphics.__bitmap != null && !graphics.__hardwareDirty) || !isCompatible (graphics)) {
+		if ((graphics.__bitmap != null && !graphics.__dirty) || !isCompatible (graphics)) {
 			
 			// if (graphics.__quadBuffer != null || graphics.__triangleIndexBuffer != null) {
 				
