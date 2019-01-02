@@ -18,14 +18,21 @@ class Stage3DRenderTest {
 			if (Sys.getEnv ("CI") != null) return;
 			#end
 			
-			var handler = Async.handler (this, function (event) {
+			stage3D.addEventListener ("context3DCreate", function (_) {
 				
-				Assert.isNotNull (stage3D.context3D);
+				Async.handler (this, function () {
+					
+					Assert.isNotNull (stage3D.context3D);
+					
+				}) ();
 				
 			});
 			
-			stage3D.addEventListener ("context3DCreate", handler);
 			stage3D.requestContext3D ();
+			
+		} else {
+			
+			Async.handler (this, function () {}) ();
 			
 		}
 		
