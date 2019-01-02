@@ -1087,6 +1087,16 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	@:noCompletion private override function __renderDOM (renderer:DOMRenderer):Void {
 		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__renderDOM (renderer);
+				
+			}
+			
+		}
+		
 		__cleanupRemovedChildren ();
 		
 		super.__renderDOM (renderer);
@@ -1122,6 +1132,16 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	@:noCompletion private override function __renderDOMClear (renderer:DOMRenderer):Void {
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__renderDOMClear (renderer);
+				
+			}
+			
+		}
 		
 		__cleanupRemovedChildren ();
 		
