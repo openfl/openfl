@@ -393,9 +393,9 @@ class Context3DGraphics {
 	
 	private static function isCompatible (graphics:Graphics):Bool {
 		
-		#if force_sw_graphics
+		#if (openfl_force_sw_graphics || force_sw_graphics)
 		return false;
-		#elseif force_hw_graphics
+		#elseif (openfl_force_hw_graphics || force_hw_graphics)
 		return true;
 		#end
 		
