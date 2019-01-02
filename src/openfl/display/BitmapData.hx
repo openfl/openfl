@@ -128,6 +128,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __textureVersion:Int;
 	private var __ownsTexture:Bool;
 	private var __transform:Matrix;
+	private var __worldAlpha:Float;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
 	
@@ -572,6 +573,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var matrixCache = Matrix.__pool.get ();
 			matrixCache.copyFrom (source.__worldTransform);
+			var cacheWorldAlpha = source.__worldAlpha;
 			var cacheAlpha = source.__alpha;
 			source.__alpha = 1;
 			source.__updateTransforms (matrix);
@@ -581,7 +583,7 @@ class BitmapData implements IBitmapDrawable {
 			source.__updateTransforms (matrixCache);
 			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
-			
+ 			source.__worldAlpha = cacheWorldAlpha;
 			buffer.__srcContext.restore();
 			
 			if (clipRect != null) {
@@ -654,6 +656,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var matrixCache = Matrix.__pool.get ();
 			matrixCache.copyFrom (source.__worldTransform);
+			var cacheWorldAlpha = source.__worldAlpha;
 			var cacheAlpha = source.__alpha;
 			source.__alpha = 1;
 			source.__updateTransforms (matrix);
@@ -663,7 +666,7 @@ class BitmapData implements IBitmapDrawable {
 			source.__updateTransforms (matrixCache);
 			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
-			
+ 			source.__worldAlpha = cacheWorldAlpha;
 			if (clipRect != null) {
 				
 				renderSession.maskManager.popRect ();
@@ -1822,6 +1825,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var matrixCache = Matrix.__pool.get ();
 			matrixCache.copyFrom (source.__worldTransform);
+			var cacheWorldAlpha = source.__worldAlpha;
 			var cacheAlpha = source.__alpha;
  			source.__alpha = 1;
  			source.__updateTransforms (matrix);
@@ -1841,7 +1845,7 @@ class BitmapData implements IBitmapDrawable {
 			source.__updateTransforms (matrixCache);
 			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
-			
+ 			source.__worldAlpha = cacheWorldAlpha;
 			buffer.__srcContext.restore();
 			
 			if (clipRect != null) {
@@ -1913,6 +1917,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var matrixCache = Matrix.__pool.get ();
 			matrixCache.copyFrom (source.__worldTransform);
+			var cacheWorldAlpha = source.__worldAlpha;
 			var cacheAlpha = source.__alpha;
  			source.__alpha = 1;
 			source.__updateTransforms (matrix);
@@ -1934,7 +1939,7 @@ class BitmapData implements IBitmapDrawable {
 			source.__updateTransforms (matrixCache);
 			Matrix.__pool.release (matrixCache);
 			source.__updateChildren (true);
-			
+			source.__worldAlpha = cacheWorldAlpha;			
 			if (clipRect != null) {
 				
 				renderSession.maskManager.popRect ();
