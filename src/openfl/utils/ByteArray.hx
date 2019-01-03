@@ -39,14 +39,19 @@ import format.amf3.Writer as AMF3Writer;
  * _Note:_ The ByteArray class is for advanced developers who need to
  * access data on the byte level.
  *
- * In-memory data is a packed array(the most compact representation for
+ * In-memory data is a packed array (the most compact representation for
  * the data type) of bytes, but an instance of the ByteArray class can be
  * manipulated with the standard `[]`(array access) operators. It
  * also can be read and written to as an in-memory file, using methods similar
  * to those in the URLStream and Socket classes.
+ * 
+ * On the Flash and AIR targets, the ByteArray type is a real class, but on
+ * other platforms, ByteArray is a Haxe abstract over a hidden `ByteArrayData`
+ * type. To check if an object is a ByteArray at runtime, import the ByteArray
+ * type, then compare with ByteArrayData, such as `Std.is (ba, ByteArrayData)`.
  *
- * In addition, zlib compression and decompression are supported, as well
- * as Action Message Format(AMF) object serialization.
+ * In addition, all platforms support zlib compression and decompression, as
+ * well as additional formats for object serialization.
  *
  * Possible uses of the ByteArray class include the following:
  * 
@@ -54,10 +59,8 @@ import format.amf3.Writer as AMF3Writer;
  *  * Writing your own URLEncoder/URLDecoder.
  *  * Writing your own AMF/Remoting packet.
  *  * Optimizing the size of your data by using data types.
- *  * Working with binary data loaded from a file in Adobe<sup>®</sup>
- * AIR<sup>®</sup>.
- * 
- * 
+ *  * Working with binary data loaded from a local file.
+ *  * Supporting new binary file formats.
  */
 
 @:access(haxe.io.Bytes)
@@ -73,16 +76,33 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	/**
+	 * Denotes the default endianness for the ByteArray class to use for a
+	 * new ByteArray instance. When you create a new ByteArray instance, the
+	 * endian value on that instance starts with the value of
+	 * `defaultEndian`. The `defaultEndian`
+	 * property is initialized to the default system endianness. This will
+	 * most likely be `Endian.LITTLE_ENDIAN` on the majority platforms
+	 * except for the Flash runtime.
+	 *
+	 * On Flash and AIR targets, this property cannot be changed and will
+	 * always be set to `Endian.BIG_ENDIAN`.
+	 */
+	public static var defaultEndian (get, set):Endian;
+	
+	
+	/**
 	 * Denotes the default object encoding for the ByteArray class to use for a
 	 * new ByteArray instance. When you create a new ByteArray instance, the
 	 * encoding on that instance starts with the value of
 	 * `defaultObjectEncoding`. The `defaultObjectEncoding`
-	 * property is initialized to `ObjectEncoding.AMF3`.
+	 * property is initialized to `ObjectEncoding.DEFAULT`. This value varies
+	 * between platforms.
 	 *
 	 * When an object is written to or read from binary data, the
 	 * `objectEncoding` value is used to determine whether the
-	 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
-	 * used. The value is a constant from the ObjectEncoding class.
+	 * Haxe, JavaScript, ActionScript 3.0, ActionScript 2.0 or ActionScript 1.0
+	 * format should be used. The value is a constant from the ObjectEncoding
+	 * class.
 	 */
 	#if !openfl_doc_gen
 	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
@@ -93,6 +113,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	#if lime
 	@:noCompletion private static var __bytePointer = new BytePointer ();
 	#end
+	@:noCompletion private static var __defaultEndian:Endian = null;
 	
 	
 	/**
@@ -128,6 +149,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 * Used to determine whether the ActionScript 3.0, ActionScript 2.0, or
 	 * ActionScript 1.0 format should be used when writing to, or reading from, a
 	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
+	 
+	  * On the Flash and AIR targets, support for Action Message Format (AMF) object
+ * serialization is included in the Flash runtime. For other targets, AMF
+ * serialization is supported if your project using built using the optional
+ * "format" library, such as `<haxelib name="format" />` in a project.xml file.
+ *
+ * Additional OpenFL targets support reading and writing of objects using
+ * Haxe Serialization Format (HXSF) and JavaScript Object Notation (JSON). These
+ * targets use HXSF by default.
+ *
+ * Since these additional object serialization formats are not internal to the 
+ * Flash runtime, they are not supported by the `readObject` or `writeObject`
+ * functions on the Flash or AIR targets, but through `haxe.Serializer`, 
+ * `haxe.Unserializer` or `haxe.JSON` if needed.
 	 */
 	#if openfl_doc_gen
 	public var objectEncoding (get, set):ObjectEncoding;
@@ -990,6 +1025,40 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
+	@:noCompletion private inline static function get_defaultEndian ():Endian {
+		
+		if (__defaultEndian == null) {
+			
+			#if openfl_big_endian
+			__defaultEndian = BIG_ENDIAN;
+			#elseif lime
+			if (System.endianness == LITTLE_ENDIAN) {
+				
+				__defaultEndian = LITTLE_ENDIAN;
+				
+			} else {
+				
+				__defaultEndian = BIG_ENDIAN;
+				
+			}
+			#else
+			__defaultEndian = LITTLE_ENDIAN;
+			#end
+			
+		}
+		
+		return __defaultEndian;
+		
+	}
+	
+	
+	@:noCompletion private inline static function set_defaultEndian (value:Endian):Endian {
+		
+		return __defaultEndian = value;
+		
+	}
+	
+	
 	#if openfl_doc_gen
 	@:noCompletion private inline static function get_defaultObjectEncoding ():ObjectEncoding {
 		
@@ -1101,8 +1170,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
 	
-	@:noCompletion private static var __defaultEndian:Endian = null;
-	
 	public var bytesAvailable (get, never):UInt;
 	public var endian (get, set):Endian;
 	public var objectEncoding:ObjectEncoding;
@@ -1147,30 +1214,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		__length = length;
 		
-		if (__defaultEndian == null) {
-			
-			#if lime
-			if (System.endianness == LITTLE_ENDIAN) {
-				
-				__defaultEndian = LITTLE_ENDIAN;
-				
-			} else {
-				
-				__defaultEndian = BIG_ENDIAN;
-				
-			}
-			#else
-			__defaultEndian = LITTLE_ENDIAN;
-			#end
-			
-		}
-		
-		#if openfl_big_endian
-		endian = BIG_ENDIAN;
-		#else
-		endian = __defaultEndian;
-		#end
-		
+		endian = ByteArray.defaultEndian;
 		objectEncoding = ByteArray.defaultObjectEncoding;
 		position = 0;
 		
@@ -1884,6 +1928,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 @:noCompletion @:dox(hide) extern class ByteArrayData implements IDataOutput implements IDataInput implements ArrayAccess<Int> {
 	
+	
+	#if flash
+	public static var defaultEndian (get, set):Endian;
+	private static inline function get_defaultEndian ():Endian { return BIG_ENDIAN; }
+	private static inline function set_defaultEndian (value:Endian):Endian { return value; }
+	#end
 	
 	public static var defaultObjectEncoding:ObjectEncoding;
 	
