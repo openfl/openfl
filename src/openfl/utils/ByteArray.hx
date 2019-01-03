@@ -11,6 +11,7 @@ import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
+import openfl.utils.Endian;
 import openfl.utils.Future;
 
 #if lime
@@ -30,23 +31,121 @@ import format.amf3.Tools as AMF3Tools;
 import format.amf3.Writer as AMF3Writer;
 #end
 
+
+/**
+ * The ByteArray class provides methods and properties to optimize reading,
+ * writing, and working with binary data.
+ *
+ * _Note:_ The ByteArray class is for advanced developers who need to
+ * access data on the byte level.
+ *
+ * In-memory data is a packed array(the most compact representation for
+ * the data type) of bytes, but an instance of the ByteArray class can be
+ * manipulated with the standard `[]`(array access) operators. It
+ * also can be read and written to as an in-memory file, using methods similar
+ * to those in the URLStream and Socket classes.
+ *
+ * In addition, zlib compression and decompression are supported, as well
+ * as Action Message Format(AMF) object serialization.
+ *
+ * Possible uses of the ByteArray class include the following:
+ * 
+ *  * Creating a custom protocol to connect to a server.
+ *  * Writing your own URLEncoder/URLDecoder.
+ *  * Writing your own AMF/Remoting packet.
+ *  * Optimizing the size of your data by using data types.
+ *  * Working with binary data loaded from a file in Adobe<sup>®</sup>
+ * AIR<sup>®</sup>.
+ * 
+ * 
+ */
+
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
-@:forward(bytesAvailable, endian, objectEncoding, position, clear, compress, deflate, inflate, readBoolean, readByte, readBytes, readDouble, readFloat, readInt, readMultiByte, readObject, readShort, readUnsignedByte, readUnsignedInt, readUnsignedShort, readUTF, readUTFBytes, toString, uncompress, writeBoolean, writeByte, writeBytes, writeDouble, writeFloat, writeInt, writeMultiByte, writeObject, writeShort, writeUnsignedInt, writeUTF, writeUTFBytes)
+
+// TODO: Remove if bug that breaks `byteArray.endian = BIG_ENDIAN` is fixed
+#if !openfl_doc_gen
+@:forward(endian, objectEncoding)
+#end
 
 
 abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
+	/**
+	 * Denotes the default object encoding for the ByteArray class to use for a
+	 * new ByteArray instance. When you create a new ByteArray instance, the
+	 * encoding on that instance starts with the value of
+	 * `defaultObjectEncoding`. The `defaultObjectEncoding`
+	 * property is initialized to `ObjectEncoding.AMF3`.
+	 *
+	 * When an object is written to or read from binary data, the
+	 * `objectEncoding` value is used to determine whether the
+	 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
+	 * used. The value is a constant from the ObjectEncoding class.
+	 */
+	#if !openfl_doc_gen
 	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
+	#else
+	public static var defaultObjectEncoding (get, set):ObjectEncoding;
+	#end
 	
 	#if lime
 	@:noCompletion private static var __bytePointer = new BytePointer ();
 	#end
 	
-	public var length (get, set):Int;
+	
+	/**
+	 * The number of bytes of data available for reading from the current
+	 * position in the byte array to the end of the array.
+	 *
+	 * Use the `bytesAvailable` property in conjunction with the
+	 * read methods each time you access a ByteArray object to ensure that you
+	 * are reading valid data.
+	 */
+	public var bytesAvailable (get, never):UInt;
+	
+	/**
+	 * Changes or reads the byte order for the data; either
+	 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
+	 */
+	#if openfl_doc_gen
+	public var endian (get, set):Endian;
+	#end
+	
+	/**
+	 * The length of the ByteArray object, in bytes.
+	 *
+	 * If the length is set to a value that is larger than the current length,
+	 * the right side of the byte array is filled with zeros.
+	 *
+	 * If the length is set to a value that is smaller than the current
+	 * length, the byte array is truncated.
+	 */
+	public var length (get, set):UInt;
+	
+	/**
+	 * Used to determine whether the ActionScript 3.0, ActionScript 2.0, or
+	 * ActionScript 1.0 format should be used when writing to, or reading from, a
+	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
+	 */
+	#if openfl_doc_gen
+	public var objectEncoding (get, set):ObjectEncoding;
+	#end
+	
+	/**
+	 * Moves, or returns the current position, in bytes, of the file pointer into
+	 * the ByteArray object. This is the point at which the next call to a read
+	 * method starts reading or a write method starts writing.
+	 */
+	public var position (get, set):UInt;
 	
 	
+	/**
+	 * Creates a ByteArray instance representing a packed array of bytes, so that
+	 * you can use the methods and properties in this class to optimize your data
+	 * storage and stream.
+	 */
 	public inline function new (length:Int = 0):Void {
 		
 		#if (display || flash)
@@ -59,29 +158,105 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:arrayAccess @:noCompletion private inline function get (index:Int):Int {
+	/**
+	 * Clears the contents of the byte array and resets the `length`
+	 * and `position` properties to 0. Calling this method explicitly
+	 * frees up the memory used by the ByteArray instance.
+	 * 
+	 */
+	public inline function clear ():Void {
 		
-		#if display
-		return 0;
-		#elseif flash
-		return this[index];
-		#else
-		return this.get (index);
-		#end
+		this.clear ();
 		
 	}
 	
 	
-	@:arrayAccess @:noCompletion private inline function set (index:Int, value:Int):Int {
+	/**
+	 * Compresses the byte array. The entire byte array is compressed. For
+	 * content running in Adobe AIR, you can specify a compression algorithm by
+	 * passing a value(defined in the CompressionAlgorithm class) as the
+	 * `algorithm` parameter. Flash Player supports only the default
+	 * algorithm, zlib.
+	 *
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to the
+	 * end of the byte array.
+	 *
+	 * The zlib compressed data format is described at 
+	 * [http://www.ietf.org/rfc/rfc1950.txt](http://www.ietf.org/rfc/rfc1950.txt).
+	 *
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
+	 *
+	 * The deflate compression algorithm is used in several compression
+	 * formats, such as zlib, gzip, some zip implementations, and others. When
+	 * data is compressed using one of those compression formats, in addition to
+	 * storing the compressed version of the original data, the compression
+	 * format data(for example, the .zip file) includes metadata information.
+	 * Some examples of the types of metadata included in various file formats
+	 * are file name, file modification date/time, original file size, optional
+	 * comments, checksum data, and more.
+	 *
+	 * For example, when a ByteArray is compressed using the zlib algorithm,
+	 * the resulting ByteArray is structured in a specific format. Certain bytes
+	 * contain metadata about the compressed data, while other bytes contain the
+	 * actual compressed version of the original ByteArray data. As defined by
+	 * the zlib compressed data format specification, those bytes(that is, the
+	 * portion containing the compressed version of the original data) are
+	 * compressed using the deflate algorithm. Consequently those bytes are
+	 * identical to the result of calling `compress(<ph
+	 * outputclass="javascript">air.CompressionAlgorithm.DEFLATE)` on the
+	 * original ByteArray. However, the result from `compress(<ph
+	 * outputclass="javascript">air.CompressionAlgorithm.ZLIB)` includes
+	 * the extra metadata, while the
+	 * `compress(CompressionAlgorithm.DEFLATE)` result includes only
+	 * the compressed version of the original ByteArray data and nothing
+	 * else.
+	 *
+	 * In order to use the deflate format to compress a ByteArray instance's
+	 * data in a specific format such as gzip or zip, you cannot simply call
+	 * `compress(CompressionAlgorithm.DEFLATE)`. You must create a
+	 * ByteArray structured according to the compression format's specification,
+	 * including the appropriate metadata as well as the compressed data obtained
+	 * using the deflate format. Likewise, in order to decode data compressed in
+	 * a format such as gzip or zip, you can't simply call
+	 * `uncompress(CompressionAlgorithm.DEFLATE)` on that data. First,
+	 * you must separate the metadata from the compressed data, and you can then
+	 * use the deflate format to decompress the compressed data.
+	 * 
+	 */
+	public inline function compress (algorithm:CompressionAlgorithm = null):Void {
 		
-		#if display
-		#elseif flash
-		this[index] = value;
-		#else
-		this.__resize (index + 1);
-		this.set (index, value);
-		#end
-		return value;
+		this.compress (algorithm);
+		
+	}
+	
+	
+	/**
+	 * Compresses the byte array using the deflate compression algorithm. The
+	 * entire byte array is compressed.
+	 *
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to the
+	 * end of the byte array.
+	 *
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
+	 *
+	 * In order to use the deflate format to compress a ByteArray instance's
+	 * data in a specific format such as gzip or zip, you cannot simply call
+	 * `deflate()`. You must create a ByteArray structured according
+	 * to the compression format's specification, including the appropriate
+	 * metadata as well as the compressed data obtained using the deflate format.
+	 * Likewise, in order to decode data compressed in a format such as gzip or
+	 * zip, you can't simply call `inflate()` on that data. First, you
+	 * must separate the metadata from the compressed data, and you can then use
+	 * the deflate format to decompress the compressed data.
+	 * 
+	 */
+	public inline function deflate ():Void {
+		
+		this.deflate ();
 		
 	}
 	
@@ -160,6 +335,57 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
+	#if lime
+	@:from @:noCompletion public static function fromLimeBytes (bytes:LimeBytes):ByteArray {
+		
+		return fromBytes (bytes);
+		
+	}
+	#end
+	
+	
+	@:arrayAccess @:noCompletion private inline function get (index:Int):Int {
+		
+		#if display
+		return 0;
+		#elseif flash
+		return this[index];
+		#else
+		return this.get (index);
+		#end
+		
+	}
+	
+	
+	/**
+	 * Decompresses the byte array using the deflate compression algorithm. The
+	 * byte array must have been compressed using the same algorithm.
+	 *
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to 0.
+	 *
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
+	 *
+	 * In order to decode data compressed in a format that uses the deflate
+	 * compression algorithm, such as data in gzip or zip format, it will not
+	 * work to simply call `inflate()` on a ByteArray containing the
+	 * compression formation data. First, you must separate the metadata that is
+	 * included as part of the compressed data format from the actual compressed
+	 * data. For more information, see the `compress()` method
+	 * description.
+	 * 
+	 * @throws IOError The data is not valid compressed data; it was not
+	 *                 compressed with the same compression algorithm used to
+	 *                 compress.
+	 */
+	public inline function inflate ():Void {
+		
+		this.inflate ();
+		
+	}
+	
+	
 	public static function loadFromBytes (bytes:Bytes):Future<ByteArray> {
 		
 		#if lime
@@ -192,13 +418,249 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	#if lime
-	@:from @:noCompletion public static function fromLimeBytes (bytes:LimeBytes):ByteArray {
+	/**
+	 * Reads a Boolean value from the byte stream. A single byte is read, and
+	 * `true` is returned if the byte is nonzero, `false`
+	 * otherwise.
+	 * 
+	 * @return Returns `true` if the byte is nonzero,
+	 *         `false` otherwise.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readBoolean ():Bool {
 		
-		return fromBytes (bytes);
+		return this.readBoolean ();
 		
 	}
-	#end
+	
+	
+	/**
+	 * Reads a signed byte from the byte stream.
+	 *
+	 * The returned value is in the range -128 to 127.
+	 * 
+	 * @return An integer between -128 and 127.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readByte ():Int {
+		
+		return this.readByte ();
+		
+	}
+	
+	
+	/**
+	 * Reads the number of data bytes, specified by the `length`
+	 * parameter, from the byte stream. The bytes are read into the ByteArray
+	 * object specified by the `bytes` parameter, and the bytes are
+	 * written into the destination ByteArray starting at the position specified
+	 * by `offset`.
+	 * 
+	 * @param bytes  The ByteArray object to read data into.
+	 * @param offset The offset(position) in `bytes` at which the
+	 *               read data should be written.
+	 * @param length The number of bytes to read. The default value of 0 causes
+	 *               all available data to be read.
+	 * @throws EOFError   There is not sufficient data available to read.
+	 * @throws RangeError The value of the supplied offset and length, combined,
+	 *                    is greater than the maximum for a uint.
+	 */
+	public inline function readBytes (bytes:ByteArray, offset:UInt = 0, length:UInt = 0):Void {
+		
+		this.readBytes (bytes, offset, length);
+		
+	}
+	
+	
+	/**
+	 * Reads an IEEE 754 double-precision(64-bit) floating-point number from the
+	 * byte stream.
+	 * 
+	 * @return A double-precision(64-bit) floating-point number.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readDouble ():Float {
+		
+		return this.readDouble ();
+		
+	}
+	
+	
+	/**
+	 * Reads an IEEE 754 single-precision(32-bit) floating-point number from the
+	 * byte stream.
+	 * 
+	 * @return A single-precision(32-bit) floating-point number.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readFloat ():Float {
+		
+		return this.readFloat ();
+		
+	}
+	
+	
+	/**
+	 * Reads a signed 32-bit integer from the byte stream.
+	 *
+	 * The returned value is in the range -2147483648 to 2147483647.
+	 * 
+	 * @return A 32-bit signed integer between -2147483648 and 2147483647.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readInt ():Int {
+		
+		return this.readInt ();
+		
+	}
+	
+	
+	/**
+	 * Reads a multibyte string of specified length from the byte stream using
+	 * the specified character set.
+	 * 
+	 * @param length  The number of bytes from the byte stream to read.
+	 * @param charSet The string denoting the character set to use to interpret
+	 *                the bytes. Possible character set strings include
+	 *                `"shift-jis"`, `"cn-gb"`,
+	 *                `"iso-8859-1"`, and others. For a complete list,
+	 *                see <a href="../../charset-codes.html">Supported Character
+	 *                Sets</a>.
+	 *
+	 *                **Note:** If the value for the `charSet`
+	 *                parameter is not recognized by the current system, the
+	 *                application uses the system's default code page as the
+	 *                character set. For example, a value for the
+	 *                `charSet` parameter, as in
+	 *                `myTest.readMultiByte(22, "iso-8859-01")` that
+	 *                uses `01` instead of `1` might work
+	 *                on your development system, but not on another system. On
+	 *                the other system, the application will use the system's
+	 *                default code page.
+	 * @return UTF-8 encoded string.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readMultiByte (length:UInt, charSet:String):String {
+		
+		return this.readMultiByte (length, charSet);
+		
+	}
+	
+	
+	/**
+	 * Reads an object from the byte array, encoded in AMF serialized format.
+	 * 
+	 * @return The deserialized object.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readObject ():Dynamic {
+		
+		return this.readObject ();
+		
+	}
+	
+	
+	/**
+	 * Reads a signed 16-bit integer from the byte stream.
+	 *
+	 * The returned value is in the range -32768 to 32767.
+	 * 
+	 * @return A 16-bit signed integer between -32768 and 32767.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readShort ():Int {
+		
+		return this.readShort ();
+		
+	}
+	
+	
+	/**
+	 * Reads a UTF-8 string from the byte stream. The string is assumed to be
+	 * prefixed with an unsigned short indicating the length in bytes.
+	 * 
+	 * @return UTF-8 encoded string.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readUTF ():String {
+		
+		return this.readUTF ();
+		
+	}
+	
+	
+	/**
+	 * Reads a sequence of UTF-8 bytes specified by the `length`
+	 * parameter from the byte stream and returns a string.
+	 * 
+	 * @param length An unsigned short indicating the length of the UTF-8 bytes.
+	 * @return A string composed of the UTF-8 bytes of the specified length.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readUTFBytes (length:UInt):String {
+		
+		return this.readUTFBytes (length);
+		
+	}
+	
+	
+	/**
+	 * Reads an unsigned byte from the byte stream.
+	 *
+	 * The returned value is in the range 0 to 255. 
+	 * 
+	 * @return A 32-bit unsigned integer between 0 and 255.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readUnsignedByte ():UInt {
+		
+		return this.readUnsignedByte ();
+		
+	}
+	
+	
+	/**
+	 * Reads an unsigned 32-bit integer from the byte stream.
+	 *
+	 * The returned value is in the range 0 to 4294967295. 
+	 * 
+	 * @return A 32-bit unsigned integer between 0 and 4294967295.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readUnsignedInt ():UInt {
+		
+		return this.readUnsignedInt ();
+		
+	}
+	
+	
+	/**
+	 * Reads an unsigned 16-bit integer from the byte stream.
+	 *
+	 * The returned value is in the range 0 to 65535. 
+	 * 
+	 * @return A 16-bit unsigned integer between 0 and 65535.
+	 * @throws EOFError There is not sufficient data available to read.
+	 */
+	public inline function readUnsignedShort ():UInt {
+		
+		return this.readUnsignedShort ();
+		
+	}
+	
+	
+	@:arrayAccess @:noCompletion private inline function set (index:Int, value:Int):Int {
+		
+		#if display
+		#elseif flash
+		this[index] = value;
+		#else
+		this.__resize (index + 1);
+		this.set (index, value);
+		#end
+		return value;
+		
+	}
 	
 	
 	#if lime
@@ -281,6 +743,239 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	#end
 	
 	
+	/**
+	 * Converts the byte array to a string. If the data in the array begins with
+	 * a Unicode byte order mark, the application will honor that mark when
+	 * converting to a string. If `System.useCodePage` is set to
+	 * `true`, the application will treat the data in the array as
+	 * being in the current system code page when converting.
+	 * 
+	 * @return The string representation of the byte array.
+	 */
+	public inline function toString ():String {
+		
+		return this.toString ();
+		
+	}
+	
+	
+	/**
+	 * Decompresses the byte array. For content running in Adobe AIR, you can
+	 * specify a compression algorithm by passing a value(defined in the
+	 * CompressionAlgorithm class) as the `algorithm` parameter. The
+	 * byte array must have been compressed using the same algorithm. Flash
+	 * Player supports only the default algorithm, zlib.
+	 *
+	 * After the call, the `length` property of the ByteArray is
+	 * set to the new length. The `position` property is set to 0.
+	 *
+	 * The zlib compressed data format is described at 
+	 * [http://www.ietf.org/rfc/rfc1950.txt](http://www.ietf.org/rfc/rfc1950.txt).
+	 *
+	 * The deflate compression algorithm is described at 
+	 * [http://www.ietf.org/rfc/rfc1951.txt](http://www.ietf.org/rfc/rfc1951.txt).
+	 *
+	 * In order to decode data compressed in a format that uses the deflate
+	 * compression algorithm, such as data in gzip or zip format, it will not
+	 * work to call `uncompress(CompressionAlgorithm.DEFLATE)` on a
+	 * ByteArray containing the compression formation data. First, you must
+	 * separate the metadata that is included as part of the compressed data
+	 * format from the actual compressed data. For more information, see the
+	 * `compress()` method description.
+	 * 
+	 * @throws IOError The data is not valid compressed data; it was not
+	 *                 compressed with the same compression algorithm used to
+	 *                 compress.
+	 */
+	public inline function uncompress (algorithm:CompressionAlgorithm = null):Void {
+		
+		return this.uncompress (algorithm);
+		
+	}
+	
+	
+	/**
+	 * Writes a Boolean value. A single byte is written according to the
+	 * `value` parameter, either 1 if `true` or 0 if
+	 * `false`.
+	 * 
+	 * @param value A Boolean value determining which byte is written. If the
+	 *              parameter is `true`, the method writes a 1; if
+	 *              `false`, the method writes a 0.
+	 */
+	public inline function writeBoolean (value:Bool):Void {
+		
+		this.writeBoolean (value);
+		
+	}
+	
+	
+	/**
+	 * Writes a byte to the byte stream.
+	 *
+	 * The low 8 bits of the parameter are used. The high 24 bits are ignored.
+	 * 
+	 * 
+	 * @param value A 32-bit integer. The low 8 bits are written to the byte
+	 *              stream.
+	 */
+	public inline function writeByte (value:Int):Void {
+		
+		this.writeByte (value);
+		
+	}
+	
+	
+	/**
+	 * Writes a sequence of `length` bytes from the specified byte
+	 * array, `bytes`, starting `offset`(zero-based index)
+	 * bytes into the byte stream.
+	 *
+	 * If the `length` parameter is omitted, the default length of
+	 * 0 is used; the method writes the entire buffer starting at
+	 * `offset`. If the `offset` parameter is also omitted,
+	 * the entire buffer is written. 
+	 *
+	 * If `offset` or `length` is out of range, they are
+	 * clamped to the beginning and end of the `bytes` array.
+	 * 
+	 * @param bytes  The ByteArray object.
+	 * @param offset A zero-based index indicating the position into the array to
+	 *               begin writing.
+	 * @param length An unsigned integer indicating how far into the buffer to
+	 *               write.
+	 */
+	public inline function writeBytes (bytes:ByteArray, offset:UInt = 0, length:UInt = 0):Void {
+		
+		this.writeBytes (bytes, offset, length);
+		
+	}
+	
+	
+	/**
+	 * Writes an IEEE 754 double-precision(64-bit) floating-point number to the
+	 * byte stream.
+	 * 
+	 * @param value A double-precision(64-bit) floating-point number.
+	 */
+	public inline function writeDouble (value:Float):Void {
+		
+		this.writeDouble (value);
+		
+	}
+	
+	
+	/**
+	 * Writes an IEEE 754 single-precision(32-bit) floating-point number to the
+	 * byte stream.
+	 * 
+	 * @param value A single-precision(32-bit) floating-point number.
+	 */
+	public inline function writeFloat (value:Float):Void {
+		
+		this.writeFloat (value);
+		
+	}
+	
+	
+	/**
+	 * Writes a 32-bit signed integer to the byte stream.
+	 * 
+	 * @param value An integer to write to the byte stream.
+	 */
+	public inline function writeInt (value:Int):Void {
+		
+		this.writeInt (value);
+		
+	}
+	
+	
+	/**
+	 * Writes a multibyte string to the byte stream using the specified character
+	 * set.
+	 * 
+	 * @param value   The string value to be written.
+	 * @param charSet The string denoting the character set to use. Possible
+	 *                character set strings include `"shift-jis"`,
+	 *                `"cn-gb"`, `"iso-8859-1"`, and
+	 *                others. For a complete list, see <a
+	 *                href="../../charset-codes.html">Supported Character
+	 *                Sets</a>.
+	 */
+	public inline function writeMultiByte (value:String, charSet:String):Void {
+		
+		this.writeMultiByte (value, charSet);
+		
+	}
+	
+	
+	/**
+	 * Writes an object into the byte array in AMF serialized format.
+	 * 
+	 * @param object The object to serialize.
+	 */
+	public inline function writeObject (object:Dynamic):Void {
+		
+		this.writeObject (object);
+		
+	}
+	
+	
+	/**
+	 * Writes a 16-bit integer to the byte stream. The low 16 bits of the
+	 * parameter are used. The high 16 bits are ignored.
+	 * 
+	 * @param value 32-bit integer, whose low 16 bits are written to the byte
+	 *              stream.
+	 */
+	public inline function writeShort (value:Int):Void {
+		
+		this.writeShort (value);
+		
+	}
+	
+	
+	/**
+	 * Writes a UTF-8 string to the byte stream. The length of the UTF-8 string
+	 * in bytes is written first, as a 16-bit integer, followed by the bytes
+	 * representing the characters of the string.
+	 * 
+	 * @param value The string value to be written.
+	 * @throws RangeError If the length is larger than 65535.
+	 */
+	public inline function writeUTF (value:String):Void {
+		
+		this.writeUTF (value);
+		
+	}
+	
+	
+	/**
+	 * Writes a UTF-8 string to the byte stream. Similar to the
+	 * `writeUTF()` method, but `writeUTFBytes()` does not
+	 * prefix the string with a 16-bit length word.
+	 * 
+	 * @param value The string value to be written.
+	 */
+	public inline function writeUTFBytes (value:String):Void {
+		
+		this.writeUTFBytes (value);
+		
+	}
+	
+	
+	/**
+	 * Writes a 32-bit unsigned integer to the byte stream.
+	 * 
+	 * @param value An unsigned integer to write to the byte stream.
+	 */
+	public inline function writeUnsignedInt (value:UInt):Void {
+		
+		this.writeUnsignedInt (value);
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods
@@ -288,7 +983,44 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	
-	@:noCompletion private function get_length ():Int {
+	@:noCompletion private inline function get_bytesAvailable ():UInt {
+		
+		return this.bytesAvailable;
+		
+	}
+	
+	
+	#if openfl_doc_gen
+	@:noCompletion private inline static function get_defaultObjectEncoding ():ObjectEncoding {
+		
+		return ObjectEncoding.DEFAULT;
+		
+	}
+	
+	
+	@:noCompletion private inline static function set_defaultObjectEncoding (value:ObjectEncoding):ObjectEncoding {
+		
+		return value;
+		
+	}
+	#end
+	
+	
+	@:noCompletion private inline function get_endian ():Endian {
+		
+		return this.endian;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_endian (value:Endian):Endian {
+		
+		return this.endian = value;
+		
+	}
+	
+	
+	@:noCompletion private function get_length ():UInt {
 		
 		#if display
 		return 0;
@@ -301,7 +1033,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	@:noCompletion private function set_length (value:Int):Int {
+	@:noCompletion private function set_length (value:Int):UInt {
 		
 		#if display
 		#elseif flash
@@ -320,6 +1052,34 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 		return value;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_objectEncoding ():ObjectEncoding {
+		
+		return this.objectEncoding;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_objectEncoding (value:ObjectEncoding):ObjectEncoding {
+		
+		return this.objectEncoding = value;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_position ():UInt {
+		
+		return this.position;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_position (value:UInt):UInt {
+		
+		return this.position = value;
 		
 	}
 	
@@ -411,6 +1171,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		endian = __defaultEndian;
 		#end
 		
+		objectEncoding = ByteArray.defaultObjectEncoding;
 		position = 0;
 		
 	}
@@ -1117,75 +1878,21 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #else
 
 
-/**
- * The ByteArray class provides methods and properties to optimize reading,
- * writing, and working with binary data.
- *
- * _Note:_ The ByteArray class is for advanced developers who need to
- * access data on the byte level.
- *
- * In-memory data is a packed array(the most compact representation for
- * the data type) of bytes, but an instance of the ByteArray class can be
- * manipulated with the standard `[]`(array access) operators. It
- * also can be read and written to as an in-memory file, using methods similar
- * to those in the URLStream and Socket classes.
- *
- * In addition, zlib compression and decompression are supported, as well
- * as Action Message Format(AMF) object serialization.
- *
- * Possible uses of the ByteArray class include the following:
- * 
- *  * Creating a custom protocol to connect to a server.
- *  * Writing your own URLEncoder/URLDecoder.
- *  * Writing your own AMF/Remoting packet.
- *  * Optimizing the size of your data by using data types.
- *  * Working with binary data loaded from a file in Adobe<sup>®</sup>
- * AIR<sup>®</sup>.
- * 
- * 
- */
-
 #if flash
 @:native("flash.utils.ByteArray")
 #end
 
-extern class ByteArrayData implements IDataOutput implements IDataInput implements ArrayAccess<Int> {
+@:noCompletion @:dox(hide) extern class ByteArrayData implements IDataOutput implements IDataInput implements ArrayAccess<Int> {
 	
 	
-	/**
-	 * Denotes the default object encoding for the ByteArray class to use for a
-	 * new ByteArray instance. When you create a new ByteArray instance, the
-	 * encoding on that instance starts with the value of
-	 * `defaultObjectEncoding`. The `defaultObjectEncoding`
-	 * property is initialized to `ObjectEncoding.AMF3`.
-	 *
-	 * When an object is written to or read from binary data, the
-	 * `objectEncoding` value is used to determine whether the
-	 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
-	 * used. The value is a constant from the ObjectEncoding class.
-	 */
 	public static var defaultObjectEncoding:ObjectEncoding;
 	
-	/**
-	 * The number of bytes of data available for reading from the current
-	 * position in the byte array to the end of the array.
-	 *
-	 * Use the `bytesAvailable` property in conjunction with the
-	 * read methods each time you access a ByteArray object to ensure that you
-	 * are reading valid data.
-	 */
-	// #if (flash && !display)
 	#if flash
 	public var bytesAvailable (default, never):UInt;
 	#else
 	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
 	#end
 	
-	/**
-	 * Changes or reads the byte order for the data; either
-	 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
-	 */
-	// #if (flash && !display)
 	#if flash
 	public var endian:Endian;
 	#else
@@ -1195,29 +1902,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	@:noCompletion private function set_endian (value:Endian):Endian;
 	#end
 	
-	/**
-	 * The length of the ByteArray object, in bytes.
-	 *
-	 * If the length is set to a value that is larger than the current length,
-	 * the right side of the byte array is filled with zeros.
-	 *
-	 * If the length is set to a value that is smaller than the current
-	 * length, the byte array is truncated.
-	 */
 	public var length:UInt;
-	
-	/**
-	 * Used to determine whether the ActionScript 3.0, ActionScript 2.0, or
-	 * ActionScript 1.0 format should be used when writing to, or reading from, a
-	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
-	 */
 	public var objectEncoding:ObjectEncoding;
-	
-	/**
-	 * Moves, or returns the current position, in bytes, of the file pointer into
-	 * the ByteArray object. This is the point at which the next call to a read
-	 * method starts reading or a write method starts writing.
-	 */
 	public var position:UInt;
 	
 	#if flash
@@ -1225,11 +1911,6 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	#end
 	
 	
-	/**
-	 * Creates a ByteArray instance representing a packed array of bytes, so that
-	 * you can use the methods and properties in this class to optimize your data
-	 * storage and stream.
-	 */
 	public function new ();
 	
 	

@@ -104,7 +104,7 @@ class CacheBitmapTest3 extends FunctionalTest {
 		menuObject = new Sprite ();
 		
 		// Blue rectangle background
-		menuObject.graphics.beginFill (0x0000FF);
+		menuObject.graphics.beginFill (0xFF22FF);
 		menuObject.graphics.drawRect (pos (109),pos (186),pos (1171),pos (572));
 		
 		var text = new TextField ();
@@ -118,6 +118,7 @@ class CacheBitmapTest3 extends FunctionalTest {
 		text.textColor = 0xe8c343;
 		text.text = "My Collection";
 		menuObject.addChild (text);
+		menuObject.cacheAsBitmap = true;
 		
 		var normalTextFormat = new TextFormat ("_sans", Std.int (pos (28)), 0, false);
 		normalTextFormat.align = TextFormatAlign.LEFT;

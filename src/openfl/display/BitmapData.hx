@@ -20,6 +20,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
+import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Lib;
@@ -1600,7 +1601,7 @@ class BitmapData implements IBitmapDrawable {
 		if (rect == null) rect = this.rect;
 		var byteArray = ByteArray.fromBytes (image.getPixels (rect.__toLimeRectangle (), ARGB32));
 		// TODO: System endian order
-		byteArray.endian = BIG_ENDIAN;
+		byteArray.endian = Endian.BIG_ENDIAN;
 		return byteArray;
 		#else
 		return null;
