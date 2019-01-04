@@ -2,6 +2,7 @@ package openfl.utils;
 
 
 import haxe.Int64;
+import openfl.net.ObjectEncoding;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.CompressionAlgorithm;
@@ -12,7 +13,37 @@ import lime.system.System;
 
 
 class ByteArrayTest {
-
+	
+	
+	@Test public function defaultEndian ():Void {
+		
+		#if lime
+		if (System.endianness == BIG_ENDIAN) {
+			Assert.areEqual (Endian.BIG_ENDIAN, ByteArray.defaultEndian);
+		} else {
+			Assert.areEqual (Endian.LITTLE_ENDIAN, ByteArray.defaultEndian);
+		}
+		#end
+		
+		ByteArray.defaultEndian = BIG_ENDIAN;
+		Assert.areEqual (Endian.BIG_ENDIAN, ByteArray.defaultEndian);
+		ByteArray.defaultEndian = LITTLE_ENDIAN;
+		Assert.areEqual (Endian.LITTLE_ENDIAN, ByteArray.defaultEndian);
+		
+	}
+	
+	@Test public function defaultObjectEncoding ():Void {
+		
+		Assert.areEqual (ObjectEncoding.DEFAULT, ByteArray.defaultObjectEncoding);
+		var byteArray = new ByteArray ();
+		Assert.areEqual (ObjectEncoding.DEFAULT, byteArray.objectEncoding);
+		
+		ByteArray.defaultObjectEncoding = AMF0;
+		Assert.areEqual (ObjectEncoding.AMF0, ByteArray.defaultObjectEncoding);
+		var byteArray = new ByteArray ();
+		Assert.areEqual (ObjectEncoding.AMF0, byteArray.objectEncoding);
+		
+	}
 	
 	@Test public function testWritePos () {
 		

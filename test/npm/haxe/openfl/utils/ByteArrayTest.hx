@@ -4,12 +4,44 @@ package openfl.utils;
 import haxe.Int64;
 
 // import lime.system.System;
+import openfl.net.ObjectEncoding;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.CompressionAlgorithm;
 
 
 class ByteArrayTest { public static function __init__ () { Mocha.describe ("Haxe | ByteArray", function () {
+	
+	
+	Mocha.it ("defaultEndian", function () {
+		
+		// #if lime
+		// if (System.endianness == BIG_ENDIAN) {
+		// 	Assert.areEqual (Endian.BIG_ENDIAN, ByteArray.defaultEndian);
+		// } else {
+		// 	Assert.areEqual (Endian.LITTLE_ENDIAN, ByteArray.defaultEndian);
+		// }
+		// #end
+		
+		ByteArray.defaultEndian = BIG_ENDIAN;
+		Assert.equal (ByteArray.defaultEndian, Endian.BIG_ENDIAN);
+		ByteArray.defaultEndian = LITTLE_ENDIAN;
+		Assert.equal (ByteArray.defaultEndian, Endian.LITTLE_ENDIAN);
+		
+	});
+	
+	Mocha.it ("defaultObjectEncoding", function () {
+		
+		Assert.equal (ByteArray.defaultObjectEncoding, ObjectEncoding.DEFAULT);
+		var byteArray = new ByteArray ();
+		Assert.equal (byteArray.objectEncoding, ObjectEncoding.DEFAULT);
+		
+		ByteArray.defaultObjectEncoding = AMF0;
+		Assert.equal (ByteArray.defaultObjectEncoding, ObjectEncoding.AMF0);
+		var byteArray = new ByteArray ();
+		Assert.equal (byteArray.objectEncoding, ObjectEncoding.AMF0);
+		
+	});
 	
 	
 	var flipBytes = function (read:ByteArray, write:ByteArray, readOffset:Int, writeLength:Int):Void {

@@ -89,7 +89,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 */
 	public static var defaultEndian (get, set):Endian;
 	
-	
 	/**
 	 * Denotes the default object encoding for the ByteArray class to use for a
 	 * new ByteArray instance. When you create a new ByteArray instance, the
@@ -104,16 +103,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 * format should be used. The value is a constant from the ObjectEncoding
 	 * class.
 	 */
-	#if !openfl_doc_gen
-	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
-	#else
 	public static var defaultObjectEncoding (get, set):ObjectEncoding;
-	#end
 	
 	#if lime
 	@:noCompletion private static var __bytePointer = new BytePointer ();
 	#end
-	@:noCompletion private static var __defaultEndian:Endian = null;
 	
 	
 	/**
@@ -150,19 +144,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 * ActionScript 1.0 format should be used when writing to, or reading from, a
 	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 	 
-	  * On the Flash and AIR targets, support for Action Message Format (AMF) object
- * serialization is included in the Flash runtime. For other targets, AMF
- * serialization is supported if your project using built using the optional
- * "format" library, such as `<haxelib name="format" />` in a project.xml file.
- *
- * Additional OpenFL targets support reading and writing of objects using
- * Haxe Serialization Format (HXSF) and JavaScript Object Notation (JSON). These
- * targets use HXSF by default.
- *
- * Since these additional object serialization formats are not internal to the 
- * Flash runtime, they are not supported by the `readObject` or `writeObject`
- * functions on the Flash or AIR targets, but through `haxe.Serializer`, 
- * `haxe.Unserializer` or `haxe.JSON` if needed.
+	 * On the Flash and AIR targets, support for Action Message Format (AMF) object
+	 * serialization is included in the Flash runtime. For other targets, AMF
+	 * serialization is supported if your project using built using the optional
+	 * "format" library, such as `<haxelib name="format" />` in a project.xml file.
+	 *
+	 * Additional OpenFL targets support reading and writing of objects using
+	 * Haxe Serialization Format (HXSF) and JavaScript Object Notation (JSON). These
+	 * targets use HXSF by default.
+	 *
+	 * Since these additional object serialization formats are not internal to the 
+	 * Flash runtime, they are not supported by the `readObject` or `writeObject`
+	 * functions on the Flash or AIR targets, but through `haxe.Serializer`, 
+	 * `haxe.Unserializer` or `haxe.JSON` if needed.
 	 */
 	#if openfl_doc_gen
 	public var objectEncoding (get, set):ObjectEncoding;
@@ -1027,52 +1021,30 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:noCompletion private inline static function get_defaultEndian ():Endian {
 		
-		if (__defaultEndian == null) {
-			
-			#if openfl_big_endian
-			__defaultEndian = BIG_ENDIAN;
-			#elseif lime
-			if (System.endianness == LITTLE_ENDIAN) {
-				
-				__defaultEndian = LITTLE_ENDIAN;
-				
-			} else {
-				
-				__defaultEndian = BIG_ENDIAN;
-				
-			}
-			#else
-			__defaultEndian = LITTLE_ENDIAN;
-			#end
-			
-		}
-		
-		return __defaultEndian;
+		return ByteArrayData.defaultEndian;
 		
 	}
 	
 	
 	@:noCompletion private inline static function set_defaultEndian (value:Endian):Endian {
 		
-		return __defaultEndian = value;
+		return ByteArrayData.defaultEndian = value;
 		
 	}
 	
 	
-	#if openfl_doc_gen
 	@:noCompletion private inline static function get_defaultObjectEncoding ():ObjectEncoding {
 		
-		return ObjectEncoding.DEFAULT;
+		return ByteArrayData.defaultObjectEncoding;
 		
 	}
 	
 	
 	@:noCompletion private inline static function set_defaultObjectEncoding (value:ObjectEncoding):ObjectEncoding {
 		
-		return value;
+		return ByteArrayData.defaultObjectEncoding = value;
 		
 	}
-	#end
 	
 	
 	@:noCompletion private inline function get_endian ():Endian {
@@ -1170,6 +1142,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
 	
+	public static var defaultEndian (get, set):Endian;
+	public static var defaultObjectEncoding = ObjectEncoding.DEFAULT;
+	
+	@:noCompletion private static var __defaultEndian:Endian = null;
+	
+	
 	public var bytesAvailable (get, never):UInt;
 	public var endian (get, set):Endian;
 	public var objectEncoding:ObjectEncoding;
@@ -1182,6 +1160,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	#if lime_bytes_length_getter
 	@:noCompletion private static function __init__ () {
 		
+		untyped global.Object.defineProperty (ByteArrayData, "defaultEndian", { get: function () { return ByteArrayData.get_defaultEndian (); }, set: function (v) { return ByteArrayData.set_defaultEndian (v); } });
 		untyped global.Object.defineProperties (ByteArrayData.prototype, {
 			"bytesAvailable": { get: untyped __js__ ("function () { return this.get_bytesAvailable (); }") },
 			"endian": { get: untyped __js__ ("function () { return this.get_endian (); }"), set: untyped __js__ ("function (v) { return this.set_endian (v); }") },
@@ -1214,8 +1193,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		__length = length;
 		
-		endian = ByteArray.defaultEndian;
-		objectEncoding = ByteArray.defaultObjectEncoding;
+		endian = __defaultEndian;
+		objectEncoding = defaultObjectEncoding;
 		position = 0;
 		
 	}
@@ -1881,6 +1860,40 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
+	@:noCompletion private inline static function get_defaultEndian ():Endian {
+		
+		if (__defaultEndian == null) {
+			
+			#if openfl_big_endian
+			__defaultEndian = BIG_ENDIAN;
+			#elseif lime
+			if (System.endianness == LITTLE_ENDIAN) {
+				
+				__defaultEndian = LITTLE_ENDIAN;
+				
+			} else {
+				
+				__defaultEndian = BIG_ENDIAN;
+				
+			}
+			#else
+			__defaultEndian = LITTLE_ENDIAN;
+			#end
+			
+		}
+		
+		return __defaultEndian;
+		
+	}
+	
+	
+	@:noCompletion private inline static function set_defaultEndian (value:Endian):Endian {
+		
+		return __defaultEndian = value;
+		
+	}
+	
+	
 	@:noCompletion private inline function get_endian ():Endian {
 		
 		return __endian;
@@ -1930,9 +1943,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	#if flash
-	public static var defaultEndian (get, set):Endian;
+	public static inline var defaultEndian (get, set):Endian;
 	private static inline function get_defaultEndian ():Endian { return BIG_ENDIAN; }
 	private static inline function set_defaultEndian (value:Endian):Endian { return value; }
+	#else
+	public static var defaultEndian:Endian;
 	#end
 	
 	public static var defaultObjectEncoding:ObjectEncoding;
