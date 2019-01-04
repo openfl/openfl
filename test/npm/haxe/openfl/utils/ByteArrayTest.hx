@@ -25,8 +25,10 @@ class ByteArrayTest { public static function __init__ () { Mocha.describe ("Haxe
 		
 		ByteArray.defaultEndian = BIG_ENDIAN;
 		Assert.equal (ByteArray.defaultEndian, Endian.BIG_ENDIAN);
+		#if !flash
 		ByteArray.defaultEndian = LITTLE_ENDIAN;
 		Assert.equal (ByteArray.defaultEndian, Endian.LITTLE_ENDIAN);
+		#end
 		
 	});
 	

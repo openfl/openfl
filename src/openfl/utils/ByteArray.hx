@@ -1193,7 +1193,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		__length = length;
 		
-		endian = __defaultEndian;
+		endian = defaultEndian;
 		objectEncoding = defaultObjectEncoding;
 		position = 0;
 		
@@ -1943,7 +1943,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	#if flash
-	public static inline var defaultEndian (get, set):Endian;
+	public static var defaultEndian (get, set):Endian;
 	private static inline function get_defaultEndian ():Endian { return BIG_ENDIAN; }
 	private static inline function set_defaultEndian (value:Endian):Endian { return value; }
 	#else

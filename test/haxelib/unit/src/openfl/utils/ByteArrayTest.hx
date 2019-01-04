@@ -27,8 +27,10 @@ class ByteArrayTest {
 		
 		ByteArray.defaultEndian = BIG_ENDIAN;
 		Assert.areEqual (Endian.BIG_ENDIAN, ByteArray.defaultEndian);
+		#if !flash
 		ByteArray.defaultEndian = LITTLE_ENDIAN;
 		Assert.areEqual (Endian.LITTLE_ENDIAN, ByteArray.defaultEndian);
+		#end
 		
 	}
 	
