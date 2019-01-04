@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import openfl.geom.Point;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -20,6 +21,7 @@ class Tile implements ITile {
 	
 	
 	private static var __tempMatrix = new Matrix ();
+	private static var __tempPoint = new Point ();
 	
 	public var alpha (get, set):Float;
 	@:beta public var colorTransform (get, set):ColorTransform;
@@ -118,6 +120,59 @@ class Tile implements ITile {
 		tile.tileset = __tileset;
 		return tile;
 		
+	}
+	
+	
+	public function getBounds (result: Rectangle = null):Rectangle {
+		
+		if (result == null) {
+			
+			result = new Rectangle ();
+			
+		}
+
+		if (__tileset == null) {
+			
+			return result;
+			
+		}
+
+		var tileDataRect = __tileset.getRect (__id);
+		__tempPoint.setTo (tileDataRect.width, tileDataRect.height);
+		__tempMatrix.setTo (__matrix.a, __matrix.b, __matrix.c, __matrix.d, 0, 0);
+		__tempMatrix.__transformPoint (__tempPoint);
+		
+		var left = __matrix.tx;
+		var top = __matrix.ty;
+		var right = left + __tempPoint.x;
+		var bottom = top + __tempPoint.y;
+
+		if (left < right)  {
+			
+			result.left = left;
+			result.right = right;
+			
+		} else {
+			
+			result.left = right;
+			result.right = left;
+			
+		}
+
+		if (top < bottom) {
+			
+			result.top = top;
+			result.bottom = bottom;
+			
+		} else {
+			
+			result.top = bottom;
+			result.bottom = top;
+			
+		}
+
+		return result;
+
 	}
 	
 	
