@@ -584,16 +584,6 @@ class SharedObject extends EventDispatcher {
 			
 		}
 		
-		if (localPath == null) {
-			
-			#if (js && html5)
-			localPath = Browser.window.location.href;
-			#else
-			localPath = "";
-			#end
-			
-		}
-		
 		if (__sharedObjects == null) {
 			
 			__sharedObjects = new Map ();
@@ -612,11 +602,6 @@ class SharedObject extends EventDispatcher {
 		
 		if (!__sharedObjects.exists (id)) {
 			
-			var sharedObject = new SharedObject ();
-			sharedObject.data = {};
-			sharedObject.__localPath = localPath;
-			sharedObject.__name = name;
-			
 			var encodedData = null;
 			
 			try {
@@ -625,13 +610,27 @@ class SharedObject extends EventDispatcher {
 				
 				var storage = Browser.getLocalStorage ();
 				
-				if (storage != null) {
+				if (localPath == null) {
+					
+					// Check old default path, first
+					if (storage != null) {
+						encodedData = storage.getItem (Browser.window.location.href + ":" + name);
+						storage.removeItem (Browser.window.location.href + ":" + name);
+					}
+					
+					localPath = Browser.window.location.pathname;
+					
+				}
+				
+				if (storage != null && encodedData == null) {
 					
 					encodedData = storage.getItem (localPath + ":" + name);
 					
 				}
 				
 				#else
+				
+				if (localPath == null) localPath = "";
 				
 				var path = __getPath (localPath, name);
 				
@@ -644,6 +643,11 @@ class SharedObject extends EventDispatcher {
 				#end
 				
 			} catch (e:Dynamic) { }
+			
+			var sharedObject = new SharedObject ();
+			sharedObject.data = {};
+			sharedObject.__localPath = localPath;
+			sharedObject.__name = name;
 			
 			if (encodedData != null && encodedData != "") {
 				
