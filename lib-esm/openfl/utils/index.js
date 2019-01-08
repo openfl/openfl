@@ -21,3 +21,4 @@ export { default as getQualifiedClassName } from "./getQualifiedClassName";
 export { default as getQualifiedSuperclassName } from "./getQualifiedSuperclassName";
 export { default as getTimer } from "./getTimer";
 export { default as setTimeout } from "./setTimeout";
+export { default as clearTimeout } from "./clearTimeout";
