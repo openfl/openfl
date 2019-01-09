@@ -2052,7 +2052,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 * use the deflate format to decompress the compressed data.
 	 * 
 	 */
-	public function compress (algorithm:CompressionAlgorithm = null):Void;
+	public function compress (?algorithm:CompressionAlgorithm):Void;
 	
 	
 	/**
@@ -2320,7 +2320,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 *                 compressed with the same compression algorithm used to
 	 *                 compress.
 	 */
-	public function uncompress (algorithm:CompressionAlgorithm = null):Void;
+	public function uncompress (?algorithm:CompressionAlgorithm):Void;
 	
 	
 	/**
