@@ -157,6 +157,24 @@ class TextureBase extends EventDispatcher {
 		
 		gl.deleteTexture (__textureID);
 		
+		if (__glFramebuffer != null) {
+			
+			gl.deleteFramebuffer (__glFramebuffer);
+			
+		}
+		
+		if (__glDepthRenderbuffer != null) {
+			
+			gl.deleteRenderbuffer (__glDepthRenderbuffer);
+			
+		}
+		
+		if (__glStencilRenderbuffer != null) {
+			
+			gl.deleteRenderbuffer (__glStencilRenderbuffer);
+			
+		}
+		
 	}
 	
 	
