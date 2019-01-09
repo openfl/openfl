@@ -880,7 +880,7 @@ import js.html.CanvasRenderingContext2D;
 			
 			ri = (hasIndices ? (indices[i] * 4) : i * 4);
 			if (ri < 0) continue;
-			tileRect.setTo (rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+			tileRect.setTo (0, 0, rects[ri + 2], rects[ri + 3]);
 			
 			if (tileRect.width <= 0 || tileRect.height <= 0) {
 				
