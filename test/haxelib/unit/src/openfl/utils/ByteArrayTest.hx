@@ -15,6 +15,42 @@ import lime.system.System;
 class ByteArrayTest {
 	
 	
+	private static var uncompressedValues = [ 100, 100, 100, 100 ];
+	private static var compressedValues = [ 120, 156, 75, 73, 73, 73, 1, 0, 3, 236, 1, 145 ];
+	
+	
+	@Test public function compress ():Void {
+		
+		var byteArray = new ByteArray ();
+		byteArray.endian = LITTLE_ENDIAN;
+		
+		for (value in uncompressedValues) {
+			
+			byteArray.writeByte (value);
+			
+		}
+		
+		byteArray.compress ();
+		
+		// byteArray.position = 0;
+		// for (i in 0...byteArray.length) {
+		// 	trace (byteArray.readUnsignedByte ());
+		// }
+		
+		Assert.areEqual (compressedValues.length, byteArray.length);
+		Assert.areEqual (byteArray.length, byteArray.position);
+		
+		byteArray.position = 0;
+		
+		for (value in compressedValues) {
+			
+			Assert.areEqual (value, byteArray.readUnsignedByte ());
+			
+		}
+		
+	}
+	
+	
 	@Test public function defaultEndian ():Void {
 		
 		#if lime
@@ -44,6 +80,30 @@ class ByteArrayTest {
 		Assert.areEqual (ObjectEncoding.AMF0, ByteArray.defaultObjectEncoding);
 		var byteArray = new ByteArray ();
 		Assert.areEqual (ObjectEncoding.AMF0, byteArray.objectEncoding);
+		
+	}
+	
+	@Test public function uncompress ():Void {
+		
+		var byteArray = new ByteArray ();
+		byteArray.endian = LITTLE_ENDIAN;
+		
+		for (value in compressedValues) {
+			
+			byteArray.writeByte (value);
+			
+		}
+		
+		byteArray.uncompress ();
+		
+		Assert.areEqual (uncompressedValues.length, byteArray.length);
+		Assert.areEqual (0, byteArray.position);
+		
+		for (value in uncompressedValues) {
+			
+			Assert.areEqual (value, byteArray.readUnsignedByte ());
+			
+		}
 		
 	}
 	

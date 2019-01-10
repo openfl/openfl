@@ -256,7 +256,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 */
 	public inline function compress (algorithm:CompressionAlgorithm = null):Void {
 		
-		this.compress (algorithm);
+		#if flash
+		return (algorithm == null) ? this.compress () : this.compress (algorithm);
+		#else
+		return this.compress (algorithm);
+		#end
 		
 	}
 	
@@ -818,7 +822,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	 */
 	public inline function uncompress (algorithm:CompressionAlgorithm = null):Void {
 		
+		#if flash
+		return (algorithm == null) ? this.uncompress () : this.uncompress (algorithm);
+		#else
 		return this.uncompress (algorithm);
+		#end
 		
 	}
 	
