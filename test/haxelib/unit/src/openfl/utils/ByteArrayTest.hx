@@ -32,6 +32,7 @@ class ByteArrayTest {
 		
 		byteArray.compress ();
 		
+		#if integration
 		// byteArray.position = 0;
 		// for (i in 0...byteArray.length) {
 		// 	trace (byteArray.readUnsignedByte ());
@@ -47,6 +48,7 @@ class ByteArrayTest {
 			Assert.areEqual (value, byteArray.readUnsignedByte ());
 			
 		}
+		#end
 		
 	}
 	
@@ -96,6 +98,7 @@ class ByteArrayTest {
 		
 		byteArray.uncompress ();
 		
+		#if integration
 		Assert.areEqual (uncompressedValues.length, byteArray.length);
 		Assert.areEqual (0, byteArray.position);
 		
@@ -104,6 +107,7 @@ class ByteArrayTest {
 			Assert.areEqual (value, byteArray.readUnsignedByte ());
 			
 		}
+		#end
 		
 	}
 	
