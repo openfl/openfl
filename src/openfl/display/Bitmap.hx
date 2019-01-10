@@ -260,10 +260,7 @@ class Bitmap extends DisplayObject implements IShaderDrawable {
 			__batchQuadDirty = false;
 		}
 		
-		__batchQuad.alpha = __worldAlpha;
-		__batchQuad.colorTransform = __worldColorTransform;
-		__batchQuad.blendMode = BatcherBlendMode.fromOpenFLBlendMode(__worldBlendMode);
-		__batchQuad.smoothing = smoothing;
+		__batchQuad.setup(__worldAlpha, __worldColorTransform, BatcherBlendMode.fromOpenFLBlendMode(__worldBlendMode), smoothing);
 		
 		return __batchQuad;
 		

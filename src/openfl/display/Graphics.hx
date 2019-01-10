@@ -953,9 +953,7 @@ import js.html.CanvasRenderingContext2D;
 			__batchQuadDirty = false;
 		}
 		
-		__batchQuad.alpha = alpha;
-		__batchQuad.colorTransform = colorTransform;
-		__batchQuad.blendMode = BatcherBlendMode.fromOpenFLBlendMode(blendMode);
+		__batchQuad.setup(alpha, colorTransform, BatcherBlendMode.fromOpenFLBlendMode(blendMode), false);
 		
 		return __batchQuad;
 		
