@@ -13,18 +13,25 @@ class Quad {
 	/** Link to the texture information **/
 	public var texture:QuadTextureData;
 
-	public var alpha:Float;
+	public var alpha(default,null):Float;
 
-	public var colorTransform:ColorTransform;
+	public var colorTransform(default,null):ColorTransform;
 
-	public var blendMode:BlendMode;
+	public var blendMode(default,null):BlendMode;
 
-	public var smoothing:Bool;
+	public var smoothing(default,null):Bool;
 
 	public function new() {
 		vertexData = new Float32Array(4 * 2);
 		alpha = 1;
 		smoothing = false;
+	}
+	
+	public inline function setup(alpha, colorTransform, blendMode, smoothing) {
+		this.alpha = alpha;
+		this.colorTransform = colorTransform;
+		this.blendMode = blendMode;
+		this.smoothing = smoothing;
 	}
 	
 	function cleanup() {
