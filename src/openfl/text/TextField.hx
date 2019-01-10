@@ -3430,7 +3430,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function this_onKeyDown (event:KeyboardEvent):Void {
 		
-		#if lime
+		#if (lime && !openfl_doc_gen)
 		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey)) {
 			
 			if (__caretIndex != __selectionIndex) {

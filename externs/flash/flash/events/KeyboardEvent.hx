@@ -3,6 +3,7 @@ package flash.events; #if flash
 
 import openfl.ui.KeyLocation;
 
+
 extern class KeyboardEvent extends Event {
 	
 	
@@ -11,9 +12,24 @@ extern class KeyboardEvent extends Event {
 	
 	public var altKey:Bool;
 	public var charCode:UInt;
-	public var ctrlKey:Bool;
+	
+	#if air
 	public var commandKey:Bool;
+	#elseif !openfl_doc_gen
+	public var commandKey (get, set):Bool;
+	private inline function get_commandKey ():Bool { return false; }
+	private inline function set_commandKey (value:Bool):Bool { return value; }
+	#end
+	
+	#if air
 	public var controlKey:Bool;
+	#elseif !openfl_doc_gen
+	public var controlKey (get, set):Bool;
+	private inline function get_controlKey ():Bool { return false; }
+	private inline function set_controlKey (value:Bool):Bool { return value; }
+	#end
+	
+	public var ctrlKey:Bool;
 	public var keyCode:UInt;
 	public var keyLocation:KeyLocation;
 	public var shiftKey:Bool;

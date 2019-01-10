@@ -61,15 +61,28 @@ class KeyboardEvent extends Event {
 	 */
 	public var charCode:Int;
 	
+	#if (!openfl_doc_gen || !flash_doc_gen || air_doc_gen)
+	/**
+	 * Indicates whether the Command key is active (`true`) or inactive
+	 * (`false`). Supported for Mac OS only. On Mac OS, the `commandKey`
+	 * property has the same value as the `ctrlKey` property.
+	 */
+	public var commandKey:Bool;
+	
+	/**
+	 * Indicates whether the Control key is active (`true`) or inactive
+	 * (`false`). On Windows and Linux, this is also true when the Ctrl key
+	 * is active.
+	 */
+	public var controlKey:Bool;
+	#end
+	
 	/**
 	 * On Windows and Linux, indicates whether the Ctrl key is active
 	 * (`true`) or inactive(`false`); On Mac OS, indicates
 	 * whether either the Ctrl key or the Command key is active.
 	 */
 	public var ctrlKey:Bool;
-	
-	public var commandKey:Bool;
-	public var controlKey:Bool;
 	
 	/**
 	 * The key code value of the key pressed or released.
@@ -137,15 +150,18 @@ class KeyboardEvent extends Event {
 		ctrlKey = ctrlKeyValue;
 		altKey = altKeyValue;
 		shiftKey = shiftKeyValue;
+		
+		#if !openfl_doc_gen
 		controlKey = controlKeyValue;
 		commandKey = commandKeyValue;
+		#end
 		
 	}
 	
 	
 	public override function clone ():Event {
 		
-		var event = new KeyboardEvent (type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey, controlKey, commandKey);
+		var event = new KeyboardEvent (type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey #if !openfl_doc_gen, controlKey, commandKey #end);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
@@ -156,7 +172,7 @@ class KeyboardEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return __formatToString ("KeyboardEvent",  [ "type", "bubbles", "cancelable", "charCode", "keyCode", "keyLocation", "ctrlKey", "altKey", "shiftKey" ]);
+		return __formatToString ("KeyboardEvent", [ "type", "bubbles", "cancelable", "charCode", "keyCode", "keyLocation", "ctrlKey", "altKey", "shiftKey" ]);
 		
 	}
 	
