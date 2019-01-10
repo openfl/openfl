@@ -123,6 +123,8 @@ class SurfaceAllocationTest1 extends FunctionalTest {
 	
 	private function onKey (event:KeyboardEvent):Void {
 		
+		if (children100 == null) return;
+		
 		var extra:String = "";
 		
 		switch (event.keyCode) {

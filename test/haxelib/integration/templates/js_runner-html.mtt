@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=EDGE">
+		<title>Massive Unit Test Runner</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		
+		<script type="text/JavaScript" language="JavaScript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.7/pako.min.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="css/printclient.css" />
+		<script type="text/JavaScript" language="JavaScript" src="js/printclient.js"></script>
+		<style type="text/css">
+			html, body, div { margin:0; padding:0; font-family: monaco, Andale Mono, Courier New, monospace; font-size:12px;}
+			.output
+			{
+				padding:20px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="haxe:trace" ></div>
+		<div id="munit" class="munit" >
+		</div>
+		<script language='JavaScript' type='text/JavaScript' src="::runnerName::"></script>
+	</body>
+</html>
