@@ -27,13 +27,6 @@ class Quad {
 		smoothing = false;
 	}
 	
-	public inline function createColorTransform():ColorTransform {
-		if (colorTransform == null) {
-			colorTransform = new ColorTransform();
-		}
-		return colorTransform;
-	}
-	
 	public inline function setup(alpha, colorTransform, blendMode, smoothing) {
 		this.alpha = alpha;
 		this.colorTransform = colorTransform;
