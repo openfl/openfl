@@ -32,7 +32,7 @@ class ByteArrayTest {
 		
 		byteArray.compress ();
 		
-		#if integration
+		#if (!flash && integration)
 		// byteArray.position = 0;
 		// for (i in 0...byteArray.length) {
 		// 	trace (byteArray.readUnsignedByte ());

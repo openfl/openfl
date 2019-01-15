@@ -127,6 +127,13 @@ import js.Browser;
 	public static function getDefinitionByName (name:String):Class<Dynamic> {
 		
 		if (name == null) return null;
+		#if flash
+		if (StringTools.startsWith (name, "openfl.")) {
+			var value = Type.resolveClass (name);
+			if (value == null) value = Type.resolveClass (StringTools.replace (name, "openfl.", "flash."));
+			return value;
+		}
+		#end
 		return Type.resolveClass (name);
 		
 	}
@@ -135,8 +142,14 @@ import js.Browser;
 	public static function getQualifiedClassName (value:Dynamic):String {
 		
 		if (value == null) return null;
-		var ref:Class<Dynamic> = Std.is (value, Class) ? value : Type.getClass (value);
-		if (ref == null) return null;
+		var ref = Std.is (value, Class) ? value : Type.getClass (value);
+		if (ref == null) {
+			if (Std.is (value, Bool) || value == Bool) return "Bool";
+			else if (Std.is (value, Int) || value == Int) return "Int";
+			else if (Std.is (value, Float) || value == Float) return "Float";
+			// TODO: Array? Map?
+			else return null;
+		}
 		return Type.getClassName (ref);
 		
 	}
@@ -145,7 +158,7 @@ import js.Browser;
 	public static function getQualifiedSuperclassName (value:Dynamic):String {
 		
 		if (value == null) return null;
-		var ref:Class<Dynamic> = Std.is (value, Class) ? value : Type.getClass (value);
+		var ref = Std.is (value, Class) ? value : Type.getClass (value);
 		if (ref == null) return null;
 		var parentRef = Type.getSuperClass (ref);
 		if (parentRef == null) return null;
