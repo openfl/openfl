@@ -126,6 +126,7 @@ import js.Browser;
 	
 	public static function getDefinitionByName (name:String):Class<Dynamic> {
 		
+		if (name == null) return null;
 		return Type.resolveClass (name);
 		
 	}
@@ -133,15 +134,22 @@ import js.Browser;
 	
 	public static function getQualifiedClassName (value:Dynamic):String {
 		
-		return Type.getClassName (Type.getClass (value));
+		if (value == null) return null;
+		var ref:Class<Dynamic> = Std.is (value, Class) ? value : Type.getClass (value);
+		if (ref == null) return null;
+		return Type.getClassName (ref);
 		
 	}
 	
 	
 	public static function getQualifiedSuperclassName (value:Dynamic):String {
 		
-		var ref = Type.getSuperClass (Type.getClass (value));
-		return (ref != null ? Type.getClassName (ref) : null);
+		if (value == null) return null;
+		var ref:Class<Dynamic> = Std.is (value, Class) ? value : Type.getClass (value);
+		if (ref == null) return null;
+		var parentRef = Type.getSuperClass (ref);
+		if (parentRef == null) return null;
+		return Type.getClassName (parentRef);
 		
 	}
 	
