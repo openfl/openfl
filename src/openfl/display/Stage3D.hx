@@ -284,6 +284,18 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
+	private function __loseContext ():Void {
+		
+		if (context3D != null) {
+			
+			__contextRequested = true; // because we want to dispatch `context3DCreate` on restore
+			
+		}
+		context3D = null;
+		
+	}
+	
+	
 	private function get_x ():Float {
 		
 		return __x;

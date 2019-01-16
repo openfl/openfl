@@ -677,11 +677,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onRenderContextLost (renderer:Renderer):Void {
 		
 		__renderer = null;
-		var stage3D = stage3Ds[0];
-		if (stage3D.context3D != null) {
-			stage3D.__contextRequested = true; // because we want to dispatch `context3DCreate`
+		for (stage3D in stage3Ds) {
+			
+			stage3D.__loseContext ();
+			
 		}
-		stage3D.context3D = null;
 		
 	}
 	
