@@ -2243,7 +2243,7 @@ class BitmapData implements IBitmapDrawable {
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;
 		
-		var shader = GLMaskManager.maskShader;
+		var shader = (cast renderSession.maskManager:GLMaskManager).maskShader;
 		
 		shader.data.uImage0.input = this;
 		shader.data.uImage0.smoothing = renderSession.allowSmoothing && renderSession.forceSmoothing;

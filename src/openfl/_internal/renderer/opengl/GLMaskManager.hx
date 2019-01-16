@@ -24,7 +24,7 @@ import openfl.utils.ByteArray;
 class GLMaskManager extends AbstractMaskManager {
 	
 	
-	@:allow(openfl._internal.renderer.opengl) private static var maskShader = new GLMaskShader ();
+	public var maskShader(default,null) = new GLMaskShader ();
 	
 	private var clipRects:Array<Rectangle>;
 	private var gl:GLRenderContext;
