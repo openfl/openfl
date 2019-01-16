@@ -688,6 +688,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
 		
 		__createRenderer ();
+		__forceRenderDirty ();
 		
 	}
 	
