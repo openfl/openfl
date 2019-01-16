@@ -36,6 +36,7 @@ import openfl._internal.renderer.console.ConsoleRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.stage3D.opengl.GLTextureBase;
 import openfl._internal.TouchData;
 import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
@@ -687,6 +688,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
 		
+		GLTextureBase.reset();
 		__createRenderer ();
 		__forceRenderDirty ();
 		

@@ -31,6 +31,14 @@ class GLTextureBase {
 	public static var __compressedTextureFormats:Null<GLCompressedTextureFormats> = null;
 	
 	
+	public static function reset() {
+		
+		__supportsBGRA = null;
+		__compressedTextureFormats = null;
+		
+	}
+	
+	
 	public static function create (textureBase:TextureBase, renderSession:RenderSession):Void {
 		
 		var gl = renderSession.gl;
