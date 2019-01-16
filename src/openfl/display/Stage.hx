@@ -374,12 +374,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		window.onTextEdit.add (onTextEdit.bind (window));
 		window.onTextInput.add (onTextInput.bind (window));
 		
-		if (window.id > -1) {
-			
-			onWindowCreate (window);
-			
-		}
-		
 	}
 	
 	
