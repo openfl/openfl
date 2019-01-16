@@ -451,7 +451,9 @@ class BitmapData implements IBitmapDrawable {
 		__surface = null;
 		
 		if (__buffer != null) {
-			__bufferContext.deleteBuffer (__buffer);
+			if (__bufferContext.isBuffer (__buffer)) { // prevent the warning when the id becomes invalid after context loss+restore
+				__bufferContext.deleteBuffer (__buffer);
+			}
 			__buffer = null;
 			__bufferContext = null;
 		}
@@ -461,7 +463,9 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__ownsTexture) {
 			__ownsTexture = false;
-			__textureContext.deleteTexture (__textureData.glTexture);
+			if (__textureContext.isTexture (__textureData.glTexture)) { // prevent the warning when the id becomes invalid after context loss+restore
+				__textureContext.deleteTexture (__textureData.glTexture);
+			}
 			__textureData = null;
 			__textureContext = null;
 		}
