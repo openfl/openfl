@@ -36,6 +36,7 @@ import openfl._internal.renderer.console.ConsoleRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.stage3D.opengl.GLTextureBase;
 import openfl._internal.TouchData;
 import openfl.display.Application in OpenFLApplication;
 import openfl.display.DisplayObjectContainer;
@@ -374,12 +375,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		window.onTextEdit.add (onTextEdit.bind (window));
 		window.onTextInput.add (onTextInput.bind (window));
 		
-		if (window.id > -1) {
-			
-			onWindowCreate (window);
-			
-		}
-		
 	}
 	
 	
@@ -683,12 +678,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__renderer = null;
 		
+		for (stage3D in stage3Ds) {
+			
+			stage3D.__loseContext ();
+			
+		}
+		
 	}
 	
 	
 	public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
 		
+		GLTextureBase.reset();
 		__createRenderer ();
+		__forceRenderDirty ();
 		
 	}
 	

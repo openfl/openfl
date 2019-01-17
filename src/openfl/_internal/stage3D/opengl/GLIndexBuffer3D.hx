@@ -43,7 +43,11 @@ class GLIndexBuffer3D {
 		
 		var gl = renderSession.gl;
 		
-		gl.deleteBuffer (indexBuffer.__id);
+		if (gl.isBuffer (indexBuffer.__id)) { // prevent the warning when the id becomes invalid after context loss+restore
+			
+			gl.deleteBuffer (indexBuffer.__id);
+			
+		}
 		
 		// __context.__statsDecrement(Context3D.Context3DTelemetry.COUNT_INDEX_BUFFER);
 		// __context.__statsSubtract(Context3D.Context3DTelemetry.MEM_INDEX_BUFFER, __memoryUsage);

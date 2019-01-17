@@ -44,7 +44,11 @@ class GLVertexBuffer3D {
 		
 		var gl = renderSession.gl;
 		
-		gl.deleteBuffer (vertexBuffer.__id);
+		if (gl.isBuffer (vertexBuffer.__id)) { // prevent the warning when the id becomes invalid after context loss+restore
+			
+			gl.deleteBuffer (vertexBuffer.__id);
+			
+		}
 		
 		// __context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_VERTEX_BUFFER);
 		// __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, __memoryUsage);

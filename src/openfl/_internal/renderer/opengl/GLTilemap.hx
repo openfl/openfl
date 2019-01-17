@@ -197,7 +197,7 @@ class GLTilemap {
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;
 		
-		var shader = GLMaskManager.maskShader;
+		var shader = (cast renderSession.maskManager:GLMaskManager).maskShader;
 		
 		var uMatrix = renderer.getMatrix (tilemap.__renderTransform);
 		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);

@@ -543,6 +543,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		}
 		
+		if (__cacheBitmap != null) {
+			
+			__cacheBitmap.__forceRenderDirty ();
+			
+		}
+		
 	}
 	
 	
