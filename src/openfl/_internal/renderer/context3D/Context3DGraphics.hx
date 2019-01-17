@@ -804,12 +804,12 @@ class Context3DGraphics {
 								
 							// } else {
 								
-								context.__drawTriangles (bufferPosition, length);
+								context.__drawTriangles (0, length);
 								
 							// }
 							
 							shaderBufferOffset += length;
-							if (hasUVData) {
+							if (hasUVTData) {
 								vertexBufferPositionUVT += (dataPerVertex * length);
 							} else {
 								vertexBufferPosition += (dataPerVertex * length);
