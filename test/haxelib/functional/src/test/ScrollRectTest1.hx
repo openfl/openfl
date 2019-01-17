@@ -12,6 +12,7 @@ import openfl.text.GridFitType;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
+import openfl.text.TextFieldAutoSize;
 import openfl.utils.Assets;
 
 
@@ -33,16 +34,17 @@ class ScrollRectTest1 extends FunctionalTest {
 	private static var FRAMES_PER_ROTATION:Int = 200;
 	private static var RADIUS:Int = 120;
 	
-	private static var inc:Int;
-	private static var outerAngle:Float;
-	private static var outerInc:Float;
-	private static var outerRect:Rectangle;
-	private static var outerSprite:Sprite;
-	private static var owlRect:Rectangle;
-	private static var owlSprite:Sprite;
-	private static var textField:TextField;
-	private static var textRect:Rectangle;
-	private static var textSprite:Sprite;
+	private var inc:Int;
+	private var outerAngle:Float;
+	private var outerInc:Float;
+	private var outerRect:Rectangle;
+	private var outerSprite:Sprite;
+	private var owlRect:Rectangle;
+	private var owlSprite:Sprite;
+	private var status:TextField;
+	private var textField:TextField;
+	private var textRect:Rectangle;
+	private var textSprite:Sprite;
 	
 	
 	public function new () {
@@ -120,6 +122,20 @@ class ScrollRectTest1 extends FunctionalTest {
 		outerRect = new Rectangle (0, 0, contentWidth, contentHeight);
 		outerSprite.scrollRect = outerRect;
 		
+		status = new TextField ();
+		status.antiAliasType = AntiAliasType.ADVANCED;
+		status.gridFitType = GridFitType.SUBPIXEL;
+		status.selectable = false;
+		status.defaultTextFormat = normalTextFormat;
+		status.x = 0;
+		status.y = 0;
+		status.autoSize = TextFieldAutoSize.LEFT;
+		status.textColor = 0xe8c343;
+		
+		textSprite.cacheAsBitmap = true;
+		status.text = "CacheAsBitmap: TRUE";
+		content.addChild (status);
+		
 		content.addEventListener (Event.ENTER_FRAME, update);
 		
 	}
@@ -140,10 +156,14 @@ class ScrollRectTest1 extends FunctionalTest {
 		if (textRect.y >= 550) {
 			
 			inc = -5;
+			textSprite.cacheAsBitmap = false;
+			status.text = "CacheAsBitmap: FALSE";
 			
 		} else if (textRect.y <= 0) {
 			
 			inc = 5;
+			textSprite.cacheAsBitmap = true;
+			status.text = "CacheAsBitmap: TRUE";
 			
 		}
 		
