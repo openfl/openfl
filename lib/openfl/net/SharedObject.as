@@ -146,7 +146,7 @@ package openfl.net {
 	public class SharedObject extends EventDispatcher {
 		
 		
-		public static var defaultObjectEncoding:String;
+		public static var defaultObjectEncoding:uint;
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
@@ -170,7 +170,7 @@ package openfl.net {
 		public function get data ():Object { return null; }
 		
 		public function set fps (value:Number):void {}
-		public var objectEncoding:String;
+		public var objectEncoding:uint;
 		
 		/**
 		 * The current size of the shared object, in bytes.

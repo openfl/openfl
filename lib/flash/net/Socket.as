@@ -33,9 +33,9 @@ package flash.net {
 		protected function get_endian ():String { return null; }
 		protected function set_endian (value:String):String { return null; }
 		
-		public function get objectEncoding ():String { return null; }
-		public function set objectEncoding (value:String):void {}
-		// public var objectEncoding:String;
+		public function get objectEncoding ():uint { return null; }
+		public function set objectEncoding (value:uint):void {}
+		// public var objectEncoding:uint;
 		public var timeout:uint;
 		
 		public function Socket (host:String = null, port:int = 0) {}
