@@ -770,6 +770,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	@:noCompletion private override function __getFilterBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		super.__getFilterBounds (rect, matrix);
+		if (__scrollRect != null) return;
 		
 		if (__children.length == 0) return;
 		

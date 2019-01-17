@@ -1364,9 +1364,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	
 	@:noCompletion private function __getFilterBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		// TODO: Should this be __getRenderBounds, to account for scrollRect?
-		
-		__getBounds (rect, matrix);
+		__getRenderBounds (rect, matrix);
 		
 		if (__filters != null) {
 			
@@ -1420,10 +1418,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			
 		} else {
 			
+			// TODO: Should we have smaller bounds if scrollRect is larger than content?
+			
 			var r = Rectangle.__pool.get ();
 			r.copyFrom (__scrollRect);
 			r.__transform (r, matrix);
-			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
+			rect.__expand (r.x, r.y, r.width, r.height);
 			Rectangle.__pool.release (r);
 			
 		}
@@ -2161,7 +2161,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmap.__worldAlpha = __worldAlpha;
 			__cacheBitmap.__worldBlendMode = __worldBlendMode;
 			__cacheBitmap.__worldShader = __worldShader;
-			__cacheBitmap.__scrollRect = __scrollRect;
+			// __cacheBitmap.__scrollRect = __scrollRect;
 			//__cacheBitmap.filters = filters;
 			__cacheBitmap.mask = __mask;
 			
