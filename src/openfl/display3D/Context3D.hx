@@ -305,7 +305,7 @@ private typedef GLTexture = Dynamic;
 		
 		__setGLScissorTest (false);
 		gl.clear (clearMask);
-		
+		__cleared = true;
 	}
 	
 	
@@ -520,6 +520,7 @@ private typedef GLTexture = Dynamic;
 	
 	public function present ():Void {
 		
+		if (!__cleared) return;
 		setRenderToBackBuffer ();
 		
 		if (__stage3D != null && __backBufferTexture != null) {
@@ -542,7 +543,7 @@ private typedef GLTexture = Dynamic;
 		}
 		
 		__present = true;
-		
+		__cleared = false;
 	}
 	
 	
