@@ -1,6 +1,8 @@
 package openfl.utils;
 
 
+import haxe.Constraints.IMap;
+import haxe.ds.ObjectMap;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.BytesInput;
@@ -26,8 +28,10 @@ import lime.utils.DataPointer;
 import format.amf.Reader as AMFReader;
 import format.amf.Tools as AMFTools;
 import format.amf.Writer as AMFWriter;
+import format.amf.Value as AMFValue;
 import format.amf3.Reader as AMF3Reader;
 import format.amf3.Tools as AMF3Tools;
+import format.amf3.Value as AMF3Value;
 import format.amf3.Writer as AMF3Writer;
 #end
 
@@ -1426,7 +1430,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 				
 				var input = new BytesInput (this, position);
 				var reader = new AMFReader (input);
-				var data = reader.read ();
+				var data = unwrapAMFValue (reader.read ());
 				position = input.position;
 				return data;
 			
@@ -1434,7 +1438,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 				
 				var input = new BytesInput (this, position);
 				var reader = new AMF3Reader (input);
-				var data = reader.read ();
+				var data = unwrapAMF3Value (reader.read ());
 				position = input.position;
 				return data;
 				
@@ -1457,6 +1461,83 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		
 	}
+	
+	
+	#if format
+	private static function unwrapAMFValue(val:AMFValue):Dynamic {
+
+		switch(val) {
+
+			case ANumber(f):    return f;
+			case ABool(b):      return b;
+			case AString(s):    return s;
+			case ADate(d):      return d;
+			case AUndefined:    return null;
+			case ANull:         return null;
+			case AArray(vals):  return vals.map (unwrapAMFValue);
+
+			case AObject(vmap):
+				// AMF0 has no distinction between Object/Map. Most likely we want an anonymous object here.
+				var obj = {};
+				for(name in vmap.keys ()) {
+					Reflect.setField (obj, name, unwrapAMFValue (vmap.get(name)));
+				}
+				return obj;
+
+		};
+
+	}
+
+
+	private static function unwrapAMF3Value(val:AMF3Value):Dynamic {
+
+		return switch(val) {
+
+			case ANumber(f):	return f;
+			case AInt(n):		return n;
+			case ABool(b):		return b;
+			case AString(s):	return s;
+			case ADate(d):		return d;
+			case AXml(xml):		return xml;
+			case AUndefined:	return null;
+			case ANull:			return null;
+			case AArray(vals):	return vals.map (unwrapAMF3Value);
+			case AVector(vals):	return vals.map (unwrapAMF3Value);
+			case ABytes(b):		return ByteArray.fromBytes(b);
+
+			case AObject(vmap):
+
+				var obj = {};
+				for (name in vmap.keys ()) {
+					Reflect.setField (obj, name, unwrapAMF3Value (vmap[name]));
+				}
+				return obj;
+
+			case AMap(vmap):
+
+				var map:IMap<Dynamic,Dynamic> = null;
+				for (key in vmap.keys ()) {
+					// Get the map type from the type of the first key.
+					if (map == null) {
+						map = switch(key) {
+							case AString(_):	new Map<String,Dynamic>();
+							case AInt(_):		new Map<Int,Dynamic>();
+							default:			new ObjectMap<Dynamic,Dynamic>();
+						}
+					}
+					map.set (unwrapAMF3Value (key), unwrapAMF3Value (vmap[key]));
+				}
+
+				// Default to StringMap if the map is empty.
+				if (map == null) {
+					map = new Map<String,Dynamic>();
+				}
+				return map;
+
+		}
+
+	}
+	#end
 	
 	
 	public function readShort ():Int {
