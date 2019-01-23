@@ -417,6 +417,11 @@ class Matrix3DTest {
 		var b = new Matrix3D (v);
 		var c = b.deltaTransformVector (a);
 
+		Assert.areEqual (1, a.x);
+		Assert.areEqual (2, a.y);
+		Assert.areEqual (3, a.z);
+		Assert.areEqual (4, a.w);
+
 		Assert.areEqual (38, c.x);
 		Assert.areEqual (44, c.y);
 		Assert.areEqual (50, c.z);
@@ -622,6 +627,24 @@ class Matrix3DTest {
 
 		// Test transformed values match transformed values from Flash
 		assertVector3DnearEquals(new Vector3D(585.2195, 91.6569, 1481.0330), transformed);
+
+		var v = new Vector<Float> ();
+		for (i in 0...16)
+			v.push (i+1);
+
+		var a = new Vector3D (1, 2, 3, 4);
+		var b = new Matrix3D (v);
+		var c = b.deltaTransformVector (a);
+
+		Assert.areEqual (1, a.x);
+		Assert.areEqual (2, a.y);
+		Assert.areEqual (3, a.z);
+		Assert.areEqual (4, a.w);
+
+		Assert.areEqual (38, c.x);
+		Assert.areEqual (44, c.y);
+		Assert.areEqual (50, c.z);
+		Assert.areEqual (56, c.w);
 
 	}
 
