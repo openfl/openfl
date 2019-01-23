@@ -408,6 +408,19 @@ class Matrix3DTest {
 		var actual = matrix3D.deltaTransformVector(new Vector3D(10, 20, 30));
 
 		assertVector3DnearEquals(expected, actual);
+		
+		var v = new Vector<Float> ();
+		for (i in 0...16)
+			v.push (i+1);
+
+		var a = new Vector3D (1, 2, 3, 4);
+		var b = new Matrix3D (v);
+		var c = b.deltaTransformVector (a);
+
+		Assert.areEqual (38, c.x);
+		Assert.areEqual (44, c.y);
+		Assert.areEqual (50, c.z);
+		Assert.areEqual (56, c.w);
 
 	}
 
