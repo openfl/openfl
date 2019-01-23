@@ -163,24 +163,30 @@ class TextLayout {
 			var _info = __hbBuffer.getGlyphInfo ();
 			var _positions = __hbBuffer.getGlyphPositions ();
 			
-			var info, position;
-			var lastCluster = -1;
-			
-			for (i in 0..._info.length) {
+			if (_info != null && _positions != null) {
 				
-				info = _info[i];
-				position = _positions[i];
+				var info, position;
+				var lastCluster = -1;
 				
-				for (j in lastCluster + 1...info.cluster) {
+				var length = Std.int (Math.min (_info.length, _positions.length));
+				
+				for (i in 0...length) {
 					
-					// TODO: Handle differently?
+					info = _info[i];
+					position = _positions[i];
 					
-					positions.push (new GlyphPosition (0, new Vector2 (0, 0), new Vector2 (0, 0)));
+					for (j in lastCluster + 1...info.cluster) {
+						
+						// TODO: Handle differently?
+						
+						positions.push (new GlyphPosition (0, new Vector2 (0, 0), new Vector2 (0, 0)));
+						
+					}
+					
+					positions.push (new GlyphPosition (info.codepoint, new Vector2 (position.xAdvance / 64 + letterSpacing, position.yAdvance / 64), new Vector2 (position.xOffset / 64, position.yOffset / 64)));
+					lastCluster = info.cluster;
 					
 				}
-				
-				positions.push (new GlyphPosition (info.codepoint, new Vector2 (position.xAdvance / 64 + letterSpacing, position.yAdvance / 64), new Vector2 (position.xOffset / 64, position.yOffset / 64)));
-				lastCluster = info.cluster;
 				
 			}
 			
