@@ -1,6 +1,6 @@
-package openfl.events; #if !flash
+package openfl.events;
 
-
+#if !flash
 import openfl.ui.KeyLocation;
 
 /**
@@ -14,18 +14,14 @@ import openfl.ui.KeyLocation;
  *
  * To listen globally for key events, listen on the Stage for the capture
  * and target or bubble phase.
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class KeyboardEvent extends Event {
-	
-	
+class KeyboardEvent extends Event
+{
 	/**
 	 * The `KeyboardEvent.KEY_DOWN` constant defines the value of the
 	 * `type` property of a `keyDown` event object.
@@ -33,7 +29,7 @@ class KeyboardEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var KEY_DOWN = "keyDown";
-	
+
 	/**
 	 * The `KeyboardEvent.KEY_UP` constant defines the value of the
 	 * `type` property of a `keyUp` event object.
@@ -41,15 +37,14 @@ class KeyboardEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var KEY_UP = "keyUp";
-	
-	
+
 	/**
 	 * Indicates whether the Alt key is active(`true`) or inactive
 	 * (`false`) on Windows; indicates whether the Option key is
 	 * active on Mac OS.
 	 */
 	public var altKey:Bool;
-	
+
 	/**
 	 * Contains the character code value of the key pressed or released. The
 	 * character code values are English keyboard values. For example, if you
@@ -60,7 +55,7 @@ class KeyboardEvent extends Event {
 	 * `charCode` does not report accurate character codes.
 	 */
 	public var charCode:Int;
-	
+
 	#if (!openfl_doc_gen || !flash_doc_gen || air_doc_gen)
 	/**
 	 * Indicates whether the Command key is active (`true`) or inactive
@@ -68,7 +63,7 @@ class KeyboardEvent extends Event {
 	 * property has the same value as the `ctrlKey` property.
 	 */
 	public var commandKey:Bool;
-	
+
 	/**
 	 * Indicates whether the Control key is active (`true`) or inactive
 	 * (`false`). On Windows and Linux, this is also true when the Ctrl key
@@ -76,14 +71,14 @@ class KeyboardEvent extends Event {
 	 */
 	public var controlKey:Bool;
 	#end
-	
+
 	/**
 	 * On Windows and Linux, indicates whether the Ctrl key is active
 	 * (`true`) or inactive(`false`); On Mac OS, indicates
 	 * whether either the Ctrl key or the Command key is active.
 	 */
 	public var ctrlKey:Bool;
-	
+
 	/**
 	 * The key code value of the key pressed or released.
 	 *
@@ -91,7 +86,7 @@ class KeyboardEvent extends Event {
 	 * `keyCode` does not report accurate key codes.
 	 */
 	public var keyCode:Int;
-	
+
 	/**
 	 * Indicates the location of the key on the keyboard. This is useful for
 	 * differentiating keys that appear more than once on a keyboard. For
@@ -103,18 +98,17 @@ class KeyboardEvent extends Event {
 	 * (`KeyLocation.NUM_PAD`).
 	 */
 	public var keyLocation:KeyLocation;
-	
+
 	/**
 	 * Indicates whether the Shift key modifier is active(`true`) or
 	 * inactive(`false`).
 	 */
 	public var shiftKey:Bool;
-	
-	
+
 	/**
 	 * Creates an Event object that contains specific information about keyboard
 	 * events. Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type             The type of the event. Possible values are:
 	 *                         `KeyboardEvent.KEY_DOWN` and
 	 *                         `KeyboardEvent.KEY_UP`
@@ -140,46 +134,51 @@ class KeyboardEvent extends Event {
 	 * @param commandKeyValue  Indicates whether the Command key modifier is
 	 *                         activated.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, charCodeValue:Int = 0, keyCodeValue:Int = 0, keyLocationValue:KeyLocation = null, ctrlKeyValue:Bool = false, altKeyValue:Bool = false, shiftKeyValue:Bool = false, controlKeyValue:Bool = false, commandKeyValue:Bool = false) {
-		
-		super (type, bubbles, cancelable);
-		
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, charCodeValue:Int = 0, keyCodeValue:Int = 0,
+			keyLocationValue:KeyLocation = null, ctrlKeyValue:Bool = false, altKeyValue:Bool = false, shiftKeyValue:Bool = false,
+			controlKeyValue:Bool = false, commandKeyValue:Bool = false)
+	{
+		super(type, bubbles, cancelable);
+
 		charCode = charCodeValue;
 		keyCode = keyCodeValue;
 		keyLocation = keyLocationValue != null ? keyLocationValue : KeyLocation.STANDARD;
 		ctrlKey = ctrlKeyValue;
 		altKey = altKeyValue;
 		shiftKey = shiftKeyValue;
-		
+
 		#if !openfl_doc_gen
 		controlKey = controlKeyValue;
 		commandKey = commandKeyValue;
 		#end
-		
 	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new KeyboardEvent (type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey #if !openfl_doc_gen, controlKey, commandKey #end);
+
+	public override function clone():Event
+	{
+		var event = new KeyboardEvent(type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey
+			#if !openfl_doc_gen, controlKey, commandKey #end);
+
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
 	}
-	
-	
-	public override function toString ():String {
-		
-		return __formatToString ("KeyboardEvent", [ "type", "bubbles", "cancelable", "charCode", "keyCode", "keyLocation", "ctrlKey", "altKey", "shiftKey" ]);
-		
+
+	public override function toString():String
+	{
+		return __formatToString("KeyboardEvent", [
+			"type",
+			"bubbles",
+			"cancelable",
+			"charCode",
+			"keyCode",
+			"keyLocation",
+			"ctrlKey",
+			"altKey",
+			"shiftKey"
+		]);
 	}
-	
-	
 }
-
-
 #else
 typedef KeyboardEvent = flash.events.KeyboardEvent;
 #end

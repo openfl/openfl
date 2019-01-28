@@ -1,6 +1,6 @@
-package openfl.filters; #if !flash
+package openfl.filters;
 
-
+#if !flash
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectRenderer;
@@ -12,41 +12,37 @@ import openfl.geom.Rectangle;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+class ConvolutionFilter extends BitmapFilter
+{
+	@:noCompletion private static var __convolutionShader = new ConvolutionShader();
 
-
-class ConvolutionFilter extends BitmapFilter {
-	
-	
-	@:noCompletion private static var __convolutionShader = new ConvolutionShader ();
-	
 	public var alpha:Float;
 	public var bias:Float;
 	public var clamp:Bool;
 	public var color:Int;
 	public var divisor:Float;
-	public var matrix (get, set):Array<Float>;
+	public var matrix(get, set):Array<Float>;
 	public var matrixX:Int;
 	public var matrixY:Int;
 	public var preserveAlpha:Bool;
-	
+
 	@:noCompletion private var __matrix:Array<Float>;
-	
-	
+
 	#if openfljs
-	@:noCompletion private static function __init__ () {
-		
-		untyped Object.defineProperties (ConvolutionFilter.prototype, {
-			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
-		});
-		
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperties(ConvolutionFilter.prototype,
+			{
+				"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+			});
 	}
 	#end
-	
-	
-	public function new (matrixX:Int = 0, matrixY:Int = 0, matrix:Array<Float> = null, divisor:Float = 1.0, bias:Float = 0.0, preserveAlpha:Bool = true, clamp:Bool = true, color:Int = 0, alpha:Float = 0.0) {
-		
-		super ();
-		
+
+	public function new(matrixX:Int = 0, matrixY:Int = 0, matrix:Array<Float> = null, divisor:Float = 1.0, bias:Float = 0.0, preserveAlpha:Bool = true,
+			clamp:Bool = true, color:Int = 0, alpha:Float = 0.0)
+	{
+		super();
+
 		this.matrixX = matrixX;
 		this.matrixY = matrixY;
 		__matrix = matrix;
@@ -56,79 +52,54 @@ class ConvolutionFilter extends BitmapFilter {
 		this.clamp = clamp;
 		this.color = color;
 		this.alpha = alpha;
-		
+
 		__numShaderPasses = 1;
-		
 	}
-	
-	
-	public override function clone ():BitmapFilter {
-		
-		return new ConvolutionFilter (matrixX, matrixY, __matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
-		
+
+	public override function clone():BitmapFilter
+	{
+		return new ConvolutionFilter(matrixX, matrixY, __matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
 	}
-	
-	
-	@:noCompletion private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
-		
+
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	{
 		__convolutionShader.uConvoMatrix.value = matrix;
 		__convolutionShader.uDivisor.value[0] = divisor;
 		__convolutionShader.uBias.value[0] = bias;
 		__convolutionShader.uPreserveAlpha.value[0] = preserveAlpha;
-		
-		return __convolutionShader;
-		
-	}
-	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
-	@:noCompletion private function get_matrix ():Array<Float> {
-		
-		return __matrix;
-		
-	}
-	
-	
-	@:noCompletion private function set_matrix (v:Array<Float>):Array<Float> {
-		
-		if (v == null) {
-			
-			v = [ 0, 0, 0, 0, 1, 0, 0, 0, 0 ];
-			
-		}
-		
-		if (v.length != 9) {
-			
-			throw "Only a 3x3 matrix is supported";
-			
-		}
-		
-		return __matrix = v;
-		
-	}
-	
-	
-}
 
+		return __convolutionShader;
+	}
+
+	// Get & Set Methods
+	@:noCompletion private function get_matrix():Array<Float>
+	{
+		return __matrix;
+	}
+
+	@:noCompletion private function set_matrix(v:Array<Float>):Array<Float>
+	{
+		if (v == null)
+		{
+			v = [0, 0, 0, 0, 1, 0, 0, 0, 0];
+		}
+
+		if (v.length != 9)
+		{
+			throw "Only a 3x3 matrix is supported";
+		}
+
+		return __matrix = v;
+	}
+}
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-private class ConvolutionShader extends BitmapFilterShader {
-	
-	
-	@:glFragmentSource( 
-		
-		"varying vec2 vBlurCoords[9];
+private class ConvolutionShader extends BitmapFilterShader
+{
+	@:glFragmentSource("varying vec2 vBlurCoords[9];
 		
 		uniform sampler2D openfl_Texture;
 		
@@ -170,13 +141,8 @@ private class ConvolutionShader extends BitmapFilterShader {
 			
 			gl_FragColor = c;
 			
-		}"
-		
-	)
-	
-	@:glVertexSource( 
-		
-		"attribute vec4 openfl_Position;
+		}")
+	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 		
 		varying vec2 vBlurCoords[9];
@@ -203,25 +169,16 @@ private class ConvolutionShader extends BitmapFilterShader {
 			
 			gl_Position = openfl_Matrix * openfl_Position;
 			
-		}"
-		
-	)
-	
-	
-	public function new () {
-		
-		super ();
-		
-		uDivisor.value = [ 1 ];
-		uBias.value = [ 0 ];
-		uPreserveAlpha.value = [ true ];
-		
+		}")
+	public function new()
+	{
+		super();
+
+		uDivisor.value = [1];
+		uBias.value = [0];
+		uPreserveAlpha.value = [true];
 	}
-	
-	
 }
-
-
 #else
 typedef ConvolutionFilter = flash.filters.ConvolutionFilter;
 #end

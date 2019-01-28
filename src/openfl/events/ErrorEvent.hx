@@ -1,6 +1,6 @@
-package openfl.events; #if !flash
+package openfl.events;
 
-
+#if !flash
 /**
  * An object dispatches an ErrorEvent object when an error causes an
  * asynchronous operation to fail.
@@ -18,18 +18,14 @@ package openfl.events; #if !flash
  * An uncaught error also causes an error dialog box displaying the error
  * event to appear when content is running in the debugger version of Flash
  * Player or the AIR Debug Launcher(ADL) application.
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class ErrorEvent extends TextEvent {
-	
-	
+class ErrorEvent extends TextEvent
+{
 	/**
 	 * Defines the value of the `type` property of an
 	 * `error` event object.
@@ -37,20 +33,18 @@ class ErrorEvent extends TextEvent {
 	 * This event has the following properties:
 	 */
 	public static inline var ERROR = "error";
-	
-	
+
 	/**
 	 * Contains the reference number associated with the specific error. For a
 	 * custom ErrorEvent object, this number is the value from the
 	 * `id` parameter supplied in the constructor.
 	 */
-	public var errorID (default, null):Int;
-	
-	
+	public var errorID(default, null):Int;
+
 	/**
 	 * Creates an Event object that contains information about error events.
 	 * Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event. Event listeners can access this
 	 *                   information through the inherited `type`
 	 *                   property. There is only one type of error event:
@@ -67,35 +61,26 @@ class ErrorEvent extends TextEvent {
 	 * @param id         A reference number to associate with the specific error
 	 *                  (supported in Adobe AIR only).
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void {
-		
-		super (type, bubbles, cancelable, text);
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void
+	{
+		super(type, bubbles, cancelable, text);
 		errorID = id;
-		
 	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new ErrorEvent (type, bubbles, cancelable, text, errorID);
+
+	public override function clone():Event
+	{
+		var event = new ErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
 	}
-	
-	
-	public override function toString ():String {
-		
-		return __formatToString ("ErrorEvent",  [ "type", "bubbles", "cancelable", "text", "errorID" ]);
-		
+
+	public override function toString():String
+	{
+		return __formatToString("ErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
 	}
-	
-	
 }
-
-
 #else
 typedef ErrorEvent = flash.events.ErrorEvent;
 #end

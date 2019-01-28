@@ -1,15 +1,13 @@
-package openfl.display; #if !flash
+package openfl.display;
 
-
-interface IGraphicsData {
-	
-	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
-	
+#if !flash
+interface IGraphicsData
+{
+	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
 }
 
-
-@:dox(hide) @:fakeEnum(Int) enum GraphicsDataType {
-	
+@:dox(hide) @:fakeEnum(Int) enum GraphicsDataType
+{
 	STROKE;
 	SOLID;
 	GRADIENT;
@@ -19,10 +17,7 @@ interface IGraphicsData {
 	QUAD_PATH;
 	TRIANGLE_PATH;
 	SHADER;
-	
 }
-
-
 #else
 typedef IGraphicsData = flash.display.IGraphicsData;
 #end

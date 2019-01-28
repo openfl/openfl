@@ -1,13 +1,13 @@
-package openfl.display3D; #if !flash #if !openfljs
+package openfl.display3D;
 
-
+#if !flash
+#if !openfljs
 #if cs
 import openfl._internal.utils.NullUtils;
 #end
 
-
-@:enum abstract Context3DBlendFactor(Null<Int>) {
-	
+@:enum abstract Context3DBlendFactor(Null<Int>)
+{
 	public var DESTINATION_ALPHA = 0;
 	public var DESTINATION_COLOR = 1;
 	public var ONE = 2;
@@ -18,11 +18,11 @@ import openfl._internal.utils.NullUtils;
 	public var SOURCE_ALPHA = 7;
 	public var SOURCE_COLOR = 8;
 	public var ZERO = 9;
-	
-	@:from private static function fromString (value:String):Context3DBlendFactor {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):Context3DBlendFactor
+	{
+		return switch (value)
+		{
 			case "destinationAlpha": DESTINATION_ALPHA;
 			case "destinationColor": DESTINATION_COLOR;
 			case "one": ONE;
@@ -34,15 +34,13 @@ import openfl._internal.utils.NullUtils;
 			case "sourceColor": SOURCE_COLOR;
 			case "zero": ZERO;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case Context3DBlendFactor.DESTINATION_ALPHA: "destinationAlpha";
 			case Context3DBlendFactor.DESTINATION_COLOR: "destinationColor";
 			case Context3DBlendFactor.ONE: "one";
@@ -54,35 +52,26 @@ import openfl._internal.utils.NullUtils;
 			case Context3DBlendFactor.SOURCE_COLOR: "sourceColor";
 			case Context3DBlendFactor.ZERO: "zero";
 			default: null;
-			
 		}
-		
 	}
-	
+
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals (a:Context3DBlendFactor, b:Context3DBlendFactor):Bool {
-		
-		return NullUtils.valueEquals (a, b, Int);
-		
+	@:noCompletion @:op(A == B) private static function equals(a:Context3DBlendFactor, b:Context3DBlendFactor):Bool
+	{
+		return NullUtils.valueEquals(a, b, Int);
 	}
 	#end
-	
+
 	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals (a:Context3DBlendFactor, b:Context3DBlendFactor):Bool {
-		
-		return !equals (a, b);
-		
+	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DBlendFactor, b:Context3DBlendFactor):Bool
+	{
+		return !equals(a, b);
 	}
 	#end
-	
 }
-
-
 #else
-
-
-@:enum abstract Context3DBlendFactor(String) from String to String {
-	
+@:enum abstract Context3DBlendFactor(String) from String to String
+{
 	public var DESTINATION_ALPHA = "destinationAlpha";
 	public var DESTINATION_COLOR = "destinationColor";
 	public var ONE = "one";
@@ -93,10 +82,7 @@ import openfl._internal.utils.NullUtils;
 	public var SOURCE_ALPHA = "sourceAlpha";
 	public var SOURCE_COLOR = "sourceColor";
 	public var ZERO = "zero";
-	
 }
-
-
 #end
 #else
 typedef Context3DBlendFactor = flash.display3D.Context3DBlendFactor;

@@ -1,6 +1,5 @@
 package openfl._internal.renderer.context3D;
 
-
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 
@@ -8,17 +7,11 @@ import openfl.display.Shader;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+class Context3DMaskShader extends Shader
+{
+	public static var opaqueBitmapData = new BitmapData(1, 1, false, 0);
 
-
-class Context3DMaskShader extends Shader {
-	
-	
-	public static var opaqueBitmapData = new BitmapData (1, 1, false, 0);
-	
-	
-	@:glFragmentSource(
-		
-		"varying vec2 openfl_TextureCoordv;
+	@:glFragmentSource("varying vec2 openfl_TextureCoordv;
 		
 		uniform sampler2D openfl_Texture;
 		
@@ -36,14 +29,8 @@ class Context3DMaskShader extends Shader {
 				
 			}
 			
-		}"
-		
-	)
-	
-	
-	@:glVertexSource(
-		
-		"attribute vec4 openfl_Position;
+		}")
+	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 		varying vec2 openfl_TextureCoordv;
 		
@@ -55,16 +42,9 @@ class Context3DMaskShader extends Shader {
 			
 			gl_Position = openfl_Matrix * openfl_Position;
 			
-		}"
-		
-	)
-	
-	
-	public function new () {
-		
-		super ();
-		
+		}")
+	public function new()
+	{
+		super();
 	}
-	
-	
 }

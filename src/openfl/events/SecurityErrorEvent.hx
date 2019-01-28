@@ -1,6 +1,6 @@
-package openfl.events; #if !flash
+package openfl.events;
 
-
+#if !flash
 /**
  * An object dispatches a SecurityErrorEvent object to report the occurrence
  * of a security error. Security errors reported through this class are
@@ -17,18 +17,14 @@ package openfl.events; #if !flash
  * object. This means that any other events, including generic error events,
  * are not dispatched for a target object that experiences a security
  * error.
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class SecurityErrorEvent extends ErrorEvent {
-	
-	
+class SecurityErrorEvent extends ErrorEvent
+{
 	/**
 	 * The `SecurityErrorEvent.SECURITY_ERROR` constant defines the
 	 * value of the `type` property of a `securityError`
@@ -37,12 +33,11 @@ class SecurityErrorEvent extends ErrorEvent {
 	 * This event has the following properties:
 	 */
 	public static inline var SECURITY_ERROR = "securityError";
-	
-	
+
 	/**
 	 * Creates an Event object that contains information about security error
 	 * events. Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event. Event listeners can access this
 	 *                   information through the inherited `type`
 	 *                   property. There is only one type of error event:
@@ -59,34 +54,25 @@ class SecurityErrorEvent extends ErrorEvent {
 	 *                   `text` property.
 	 * @param id         A reference number to associate with the specific error.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0) {
-		
-		super (type, bubbles, cancelable, text, id);
-		
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0)
+	{
+		super(type, bubbles, cancelable, text, id);
 	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new SecurityErrorEvent (type, bubbles, cancelable, text, errorID);
+
+	public override function clone():Event
+	{
+		var event = new SecurityErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
 	}
-	
-	
-	public override function toString ():String {
-		
-		return __formatToString ("SecurityErrorEvent",  [ "type", "bubbles", "cancelable", "text", "errorID" ]);
-		
+
+	public override function toString():String
+	{
+		return __formatToString("SecurityErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
 	}
-	
-	
 }
-
-
 #else
 typedef SecurityErrorEvent = flash.events.SecurityErrorEvent;
 #end

@@ -1,14 +1,15 @@
-package openfl.text; #if !flash #if !openfljs
+package openfl.text;
 
+#if !flash
 
+#if !openfljs
 /**
  * The FontType class contains the enumerated constants
  * `"embedded"` and `"device"` for the
  * `fontType` property of the Font class.
  */
-@:enum abstract FontType(Null<Int>) {
-	
-	
+@:enum abstract FontType(Null<Int>)
+{
 	/**
 	 * Indicates that this is a device font. The SWF file renders fonts with
 	 * those installed on the system.
@@ -25,7 +26,7 @@ package openfl.text; #if !flash #if !openfljs
 	 * anti-aliased and may appear jagged at large point sizes.
 	 */
 	public var DEVICE = 0;
-	
+
 	/**
 	 * Indicates that this is an embedded font. Font outlines are embedded in the
 	 * published SWF file.
@@ -44,53 +45,37 @@ package openfl.text; #if !flash #if !openfljs
 	 * back to device fonts.
 	 */
 	public var EMBEDDED = 1;
-	
 	public var EMBEDDED_CFF = 2;
-	
-	
-	@:from private static function fromString (value:String):FontType {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):FontType
+	{
+		return switch (value)
+		{
 			case "device": DEVICE;
 			case "embedded": EMBEDDED;
 			case "embeddedCFF": EMBEDDED_CFF;
 			default: null;
-			
 		}
-		
 	}
-	
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case FontType.DEVICE: "device";
 			case FontType.EMBEDDED: "embedded";
 			case FontType.EMBEDDED_CFF: "embeddedCFF";
 			default: null;
-			
 		}
-		
 	}
-	
-	
 }
-
-
 #else
-
-
-@:enum abstract FontType(String) from String to String {
-	
+@:enum abstract FontType(String) from String to String
+{
 	public var DEVICE = "device";
 	public var EMBEDDED = "embedded";
 	public var EMBEDDED_CFF = "embeddedCFF";
-	
 }
-
-
 #end
 #else
 typedef FontType = flash.text.FontType;

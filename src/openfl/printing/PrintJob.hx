@@ -1,15 +1,13 @@
-package openfl.printing; #if !flash
+package openfl.printing;
 
-
+#if !flash
 import haxe.Timer;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
-
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 #end
-
 #if (js && html5)
 import js.html.DivElement;
 import js.html.Image;
@@ -21,133 +19,103 @@ import js.Browser;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
 @:access(lime.graphics.ImageBuffer)
+class PrintJob
+{
+	public static var isSupported(default, null) = #if (js && html5) true #else false #end;
 
-
-class PrintJob {
-	
-	
-	public static var isSupported (default, null) = #if (js && html5) true #else false #end;
-	
 	public var orientation:PrintJobOrientation;
-	public var pageHeight (default, null):Int;
-	public var pageWidth (default, null):Int;
-	public var paperHeight (default, null):Int;
-	public var paperWidth (default, null):Int;
-	
+	public var pageHeight(default, null):Int;
+	public var pageWidth(default, null):Int;
+	public var paperHeight(default, null):Int;
+	public var paperWidth(default, null):Int;
+
 	@:noCompletion private var __bitmapData:Array<BitmapData>;
 	@:noCompletion private var __started:Bool;
-	
-	
-	public function new () {
-		
-		
-		
-	}
-	
-	
-	public function addPage (sprite:Sprite, printArea:Rectangle = null, options:PrintJobOptions = null, frameNum:Int = 0):Void {
-		
+
+	public function new() {}
+
+	public function addPage(sprite:Sprite, printArea:Rectangle = null, options:PrintJobOptions = null, frameNum:Int = 0):Void
+	{
 		if (!__started) return;
-		
-		if (printArea == null) {
-			
-			printArea = sprite.getBounds (sprite);
-			
+
+		if (printArea == null)
+		{
+			printArea = sprite.getBounds(sprite);
 		}
-		
-		var bitmapData = new BitmapData (Math.ceil (printArea.width), Math.ceil (printArea.height), true, 0);
-		bitmapData.draw (sprite);
-		
-		__bitmapData.push (bitmapData);
-		
+
+		var bitmapData = new BitmapData(Math.ceil(printArea.width), Math.ceil(printArea.height), true, 0);
+		bitmapData.draw(sprite);
+
+		__bitmapData.push(bitmapData);
 	}
-	
-	
-	public function send ():Void {
-		
+
+	public function send():Void
+	{
 		if (!__started) return;
-		
+
 		#if (js && html5)
-		
-		var window = Browser.window.open ("", "", "width=500,height=500");
-		
-		if (window != null) {
-			
-			var style:StyleElement = cast window.document.createElement ("style");
-			style.innerText = 
-				
-				"@media all {
+		var window = Browser.window.open("", "", "width=500,height=500");
+
+		if (window != null)
+		{
+			var style:StyleElement = cast window.document.createElement("style");
+			style.innerText = "@media all {
 					.page-break	{ display: none; }
 				}
 				
 				@media print {
 					.page-break	{ display: block; page-break-before: always; }
 				}";
-			
-			window.document.head.appendChild (style);
-			
+
+			window.document.head.appendChild(style);
+
 			var div:DivElement;
 			var image:Image;
 			var bitmapData;
-			
-			for (i in 0...__bitmapData.length) {
-				
+
+			for (i in 0...__bitmapData.length)
+			{
 				bitmapData = __bitmapData[i];
-				ImageCanvasUtil.sync (bitmapData.image, false);
-				
-				if (bitmapData.image.buffer.__srcCanvas != null) {
-					
-					if (i > 0) {
-						
-						div = cast window.document.createElement ("div");
+				ImageCanvasUtil.sync(bitmapData.image, false);
+
+				if (bitmapData.image.buffer.__srcCanvas != null)
+				{
+					if (i > 0)
+					{
+						div = cast window.document.createElement("div");
 						div.className = "page-break";
-						window.document.body.appendChild (div);
-						
+						window.document.body.appendChild(div);
 					}
-					
-					image = new Image ();
-					image.src = bitmapData.image.buffer.__srcCanvas.toDataURL ("image/png");
-					window.document.body.appendChild (image);
-					
+
+					image = new Image();
+					image.src = bitmapData.image.buffer.__srcCanvas.toDataURL("image/png");
+					window.document.body.appendChild(image);
 				}
-				
 			}
-			
-			Timer.delay (function () {
-				
-				window.focus ();
-				window.print ();
-				
+
+			Timer.delay(function()
+			{
+				window.focus();
+				window.print();
 			}, 500);
-			
 		}
-		
 		#end
-		
 	}
-	
-	
-	public function start ():Bool {
-		
-		if (isSupported) {
-			
+
+	public function start():Bool
+	{
+		if (isSupported)
+		{
 			__started = true;
-			__bitmapData = new Array ();
-			
+			__bitmapData = new Array();
+
 			return true;
-			
 		}
-		
+
 		return false;
-		
 	}
-	
-	
 }
-
-
 #else
 typedef PrintJob = flash.printing.PrintJob;
 #end

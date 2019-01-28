@@ -1,6 +1,6 @@
-package openfl.events; #if !flash
+package openfl.events;
 
-
+#if !flash
 /**
  * An IOErrorEvent object is dispatched when an error causes input or output
  * operations to fail.
@@ -9,20 +9,16 @@ package openfl.events; #if !flash
  * the debugger version of Flash Player or the AIR Debug Launcher(ADL). The
  * string defined by the `text` parameter of the IOErrorEvent
  * constructor is displayed.
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class IOErrorEvent extends ErrorEvent {
-	
-	
+class IOErrorEvent extends ErrorEvent
+{
 	// @:noCompletion @:dox(hide) public static var DISK_ERROR:String;
-	
+
 	/**
 	 * Defines the value of the `type` property of an
 	 * `ioError` event object.
@@ -30,16 +26,15 @@ class IOErrorEvent extends ErrorEvent {
 	 * This event has the following properties:
 	 */
 	public static inline var IO_ERROR = "ioError";
-	
+
 	// @:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	// @:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
-	
-	
+
 	/**
 	 * Creates an Event object that contains specific information about
 	 * `ioError` events. Event objects are passed as parameters to
 	 * Event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event. Event listeners can access this
 	 *                   information through the inherited `type`
 	 *                   property. There is only one type of input/output error
@@ -57,34 +52,25 @@ class IOErrorEvent extends ErrorEvent {
 	 * @param id         A reference number to associate with the specific error
 	 *                  (supported in Adobe AIR only).
 	 */
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0) {
-		
-		super (type, bubbles, cancelable, text, id);
-		
+	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0)
+	{
+		super(type, bubbles, cancelable, text, id);
 	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new IOErrorEvent (type, bubbles, cancelable, text, errorID);
+
+	public override function clone():Event
+	{
+		var event = new IOErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
 	}
-	
-	
-	public override function toString ():String {
-		
-		return __formatToString ("IOErrorEvent",  [ "type", "bubbles", "cancelable", "text", "errorID" ]);
-		
+
+	public override function toString():String
+	{
+		return __formatToString("IOErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
 	}
-	
-	
 }
-
-
 #else
 typedef IOErrorEvent = flash.events.IOErrorEvent;
 #end

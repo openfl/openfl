@@ -1,19 +1,20 @@
-package openfl.display; #if !flash #if !openfljs
+package openfl.display;
 
+#if !flash
 
+#if !openfljs
 /**
  * A class that provides constant values for visual blend mode effects. These
  * constants are used in the following:
- * 
+ *
  *  *  The `blendMode` property of the
  * openfl.display.DisplayObject class.
  *  *  The `blendMode` parameter of the `draw()`
  * method of the openfl.display.BitmapData class
- * 
+ *
  */
-@:enum abstract BlendMode(Null<Int>) {
-	
-	
+@:enum abstract BlendMode(Null<Int>)
+{
 	/**
 	 * Adds the values of the constituent colors of the display object to the
 	 * colors of its background, applying a ceiling of 0xFF. This setting is
@@ -25,7 +26,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * 0xDD > 0xFF, 0xA6 + 0x22 = 0xC8, and 0x33 + 0x00 = 0x33).
 	 */
 	public var ADD = 0;
-	
+
 	/**
 	 * Applies the alpha value of each pixel of the display object to the
 	 * background. This requires the `blendMode` property of the
@@ -35,7 +36,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * Not supported under GPU rendering.
 	 */
 	public var ALPHA = 1;
-	
+
 	/**
 	 * Selects the darker of the constituent colors of the display object and the
 	 * colors of the background(the colors with the smaller values). This
@@ -49,7 +50,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * Not supported under GPU rendering.
 	 */
 	public var DARKEN = 2;
-	
+
 	/**
 	 * Compares the constituent colors of the display object with the colors of
 	 * its background, and subtracts the darker of the values of the two
@@ -62,7 +63,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * 0xDD = 0x22, 0xF8 - 0xCC = 0x2C, and 0x33 - 0x00 = 0x33).
 	 */
 	public var DIFFERENCE = 3;
-	
+
 	/**
 	 * Erases the background based on the alpha value of the display object. This
 	 * process requires that the `blendMode` property of the parent
@@ -71,7 +72,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * Not supported under GPU rendering.
 	 */
 	public var ERASE = 4;
-	
+
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the display
 	 * object. If the display object is lighter than 50% gray, the display object
@@ -83,12 +84,12 @@ package openfl.display; #if !flash #if !openfljs
 	 * Not supported under GPU rendering.
 	 */
 	public var HARDLIGHT = 5;
-	
+
 	/**
 	 * Inverts the background.
 	 */
 	public var INVERT = 6;
-	
+
 	/**
 	 * Forces the creation of a transparency group for the display object. This
 	 * means that the display object is precomposed in a temporary buffer before
@@ -100,7 +101,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * Not supported under GPU rendering.
 	 */
 	public var LAYER = 7;
-	
+
 	/**
 	 * Selects the lighter of the constituent colors of the display object and
 	 * the colors of the background(the colors with the larger values). This
@@ -114,7 +115,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * Not supported under GPU rendering.
 	 */
 	public var LIGHTEN = 8;
-	
+
 	/**
 	 * Multiplies the values of the display object constituent colors by the
 	 * constituent colors of the background color, and normalizes by dividing by
@@ -129,14 +130,14 @@ package openfl.display; #if !flash #if !openfljs
 	 * background.
 	 */
 	public var MULTIPLY = 9;
-	
+
 	/**
 	 * The display object appears in front of the background. Pixel values of the
 	 * display object override the pixel values of the background. Where the
 	 * display object is transparent, the background is visible.
 	 */
 	public var NORMAL = 10;
-	
+
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the background.
 	 * If the background is lighter than 50% gray, the display object and
@@ -148,7 +149,7 @@ package openfl.display; #if !flash #if !openfljs
 	 * Not supported under GPU rendering.
 	 */
 	public var OVERLAY = 11;
-	
+
 	/**
 	 * Multiplies the complement(inverse) of the display object color by the
 	 * complement of the background color, resulting in a bleaching effect. This
@@ -156,9 +157,8 @@ package openfl.display; #if !flash #if !openfljs
 	 * display object.
 	 */
 	public var SCREEN = 12;
-	
 	public var SHADER = 13;
-	
+
 	/**
 	 * Subtracts the values of the constituent colors in the display object from
 	 * the values of the background color, applying a floor of 0. This setting is
@@ -170,12 +170,11 @@ package openfl.display; #if !flash #if !openfljs
 	 * 0xAA = 0x33, 0xA6 - 0x22 = 0x84, and 0x00 - 0x33 < 0x00).
 	 */
 	public var SUBTRACT = 14;
-	
-	
-	@:from private static function fromString (value:String):BlendMode {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):BlendMode
+	{
+		return switch (value)
+		{
 			case "add": ADD;
 			case "alpha": ALPHA;
 			case "darken": DARKEN;
@@ -192,16 +191,13 @@ package openfl.display; #if !flash #if !openfljs
 			case "shader": SHADER;
 			case "subtract": SUBTRACT;
 			default: null;
-			
 		}
-		
 	}
-	
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case BlendMode.ADD: "add";
 			case BlendMode.ALPHA: "alpha";
 			case BlendMode.DARKEN: "darken";
@@ -218,20 +214,12 @@ package openfl.display; #if !flash #if !openfljs
 			case BlendMode.SHADER: "shader";
 			case BlendMode.SUBTRACT: "subtract";
 			default: null;
-			
 		}
-		
 	}
-	
-	
 }
-
-
 #else
-
-
-@:enum abstract BlendMode(String) from String to String {
-	
+@:enum abstract BlendMode(String) from String to String
+{
 	public var ADD = "add";
 	public var ALPHA = "alpha";
 	public var DARKEN = "darken";
@@ -247,10 +235,7 @@ package openfl.display; #if !flash #if !openfljs
 	public var SCREEN = "screen";
 	public var SHADER = "shader";
 	public var SUBTRACT = "subtract";
-	
 }
-
-
 #end
 #else
 typedef BlendMode = flash.display.BlendMode;

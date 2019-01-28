@@ -1,6 +1,8 @@
-package openfl.display; #if !flash #if !openfljs
+package openfl.display;
 
+#if !flash
 
+#if !openfljs
 /**
  * The InterpolationMethod class provides values for the
  * `interpolationMethod` parameter in the
@@ -8,9 +10,8 @@ package openfl.display; #if !flash #if !openfljs
  * `Graphics.lineGradientStyle()` methods. This parameter
  * determines the RGB space to use when rendering the gradient.
  */
-@:enum abstract InterpolationMethod(Null<Int>) {
-	
-	
+@:enum abstract InterpolationMethod(Null<Int>)
+{
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means
 	 * that the gradient is rendered with exponential sRGB(standard RGB) space.
@@ -21,10 +22,10 @@ package openfl.display; #if !flash #if !openfljs
 	 * For example, consider a simple linear gradient between two colors(with
 	 * the `spreadMethod` parameter set to
 	 * `SpreadMethod.REFLECT`). The different interpolation methods
-	 * affect the appearance as follows: 
+	 * affect the appearance as follows:
 	 */
 	public var LINEAR_RGB = 0;
-	
+
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means
 	 * that the gradient is rendered with exponential sRGB(standard RGB) space.
@@ -35,77 +36,56 @@ package openfl.display; #if !flash #if !openfljs
 	 * For example, consider a simple linear gradient between two colors(with
 	 * the `spreadMethod` parameter set to
 	 * `SpreadMethod.REFLECT`). The different interpolation methods
-	 * affect the appearance as follows: 
+	 * affect the appearance as follows:
 	 */
 	public var RGB = 1;
-	
-	
-	@:noCompletion private inline static function fromInt (value:Null<Int>):InterpolationMethod {
-		
+
+	@:noCompletion private inline static function fromInt(value:Null<Int>):InterpolationMethod
+	{
 		return cast value;
-		
 	}
-	
-	
-	@:from private static function fromString (value:String):InterpolationMethod {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):InterpolationMethod
+	{
+		return switch (value)
+		{
 			case "linearRGB": LINEAR_RGB;
 			case "rgb": RGB;
 			default: null;
-			
 		}
-		
 	}
-	
-	
-	@:noCompletion private inline function toInt ():Null<Int> {
-		
+
+	@:noCompletion private inline function toInt():Null<Int>
+	{
 		return this;
-		
 	}
-	
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case InterpolationMethod.LINEAR_RGB: "linearRGB";
 			case InterpolationMethod.RGB: "rgb";
 			default: null;
-			
 		}
-		
 	}
-	
-	
 }
-
-
 #else
-
-
-@:enum abstract InterpolationMethod(String) from String to String {
-	
+@:enum abstract InterpolationMethod(String) from String to String
+{
 	public var LINEAR_RGB = "linearRGB";
 	public var RGB = "rgb";
-	
-	@:noCompletion private inline static function fromInt (value:Null<Int>):InterpolationMethod {
-		
-		return switch (value) {
-			
+
+	@:noCompletion private inline static function fromInt(value:Null<Int>):InterpolationMethod
+	{
+		return switch (value)
+		{
 			case 0: LINEAR_RGB;
 			case 1: RGB;
 			default: null;
-			
 		}
-		
 	}
-	
 }
-
-
 #end
 #else
 typedef InterpolationMethod = flash.display.InterpolationMethod;

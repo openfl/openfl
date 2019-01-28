@@ -1,10 +1,9 @@
-package openfl.events; #if !flash
+package openfl.events;
 
-
+#if !flash
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 import openfl.utils.ByteArray;
-
 
 /**
  * The TouchEvent class lets you handle events on devices that detect user
@@ -31,18 +30,14 @@ import openfl.utils.ByteArray;
  * notification of a touch event, use
  * `EventDispatcher.addEventListener()` on the ancestor node with
  * the type parameter set to the specific touch event you want to detect.
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class TouchEvent extends Event {
-	
-	
+class TouchEvent extends Event
+{
 	// @:noCompletion @:dox(hide) public static var PROXIMITY_BEGIN:String;
 	// @:noCompletion @:dox(hide) public static var PROXIMITY_END:String;
 	// @:noCompletion @:dox(hide) public static var PROXIMITY_MOVE:String;
@@ -50,7 +45,7 @@ class TouchEvent extends Event {
 	// @:noCompletion @:dox(hide) public static var PROXIMITY_OVER:String;
 	// @:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OUT:String;
 	// @:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OVER:String;
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_BEGIN` touch event object.
@@ -58,7 +53,7 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_BEGIN = "touchBegin";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_END` touch event object.
@@ -66,7 +61,7 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_END = "touchEnd";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_MOVE` touch event object.
@@ -74,7 +69,7 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_MOVE = "touchMove";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_OUT` touch event object.
@@ -82,7 +77,7 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_OUT = "touchOut";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_OVER` touch event object.
@@ -90,7 +85,7 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_OVER = "touchOver";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_ROLL_OUT` touch event object.
@@ -98,7 +93,7 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_ROLL_OUT = "touchRollOut";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_ROLL_OVER` touch event object.
@@ -106,7 +101,7 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_ROLL_OVER = "touchRollOver";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `TOUCH_TAP` touch event object.
@@ -114,53 +109,49 @@ class TouchEvent extends Event {
 	 * The dispatched TouchEvent object has the following properties:
 	 */
 	public static inline var TOUCH_TAP = "touchTap";
-	
-	
+
 	/**
 	 * Indicates whether the Alt key is active(`true`) or inactive
 	 * (`false`). Supported for Windows and Linux operating systems
 	 * only.
 	 */
 	public var altKey:Bool;
-	
 	public var commandKey:Bool;
 	public var controlKey:Bool;
-	
+
 	/**
 	 * On Windows or Linux, indicates whether the Ctrl key is active
 	 * (`true`) or inactive(`false`). On Macintosh,
 	 * indicates whether either the Control key or the Command key is activated.
 	 */
 	public var ctrlKey:Bool;
-	
 	public var delta:Int;
-	
+
 	/**
 	 * Indicates whether the first point of contact is mapped to mouse events.
 	 */
 	public var isPrimaryTouchPoint:Bool;
-	
 	// @:noCompletion @:dox(hide) public var isRelatedObjectInaccessible:Bool;
-	
+
 	/**
 	 * The horizontal coordinate at which the event occurred relative to the
 	 * containing sprite.
 	 */
 	public var localX:Float;
-	
+
 	/**
 	 * The vertical coordinate at which the event occurred relative to the
 	 * containing sprite.
 	 */
 	public var localY:Float;
-	
+
 	/**
 	 * A value between `0.0` and `1.0` indicating force of
 	 * the contact with the device. If the device does not support detecting the
 	 * pressure, the value is `1.0`.
 	 */
 	public var pressure:Float;
-	
+
 	/**
 	 * A reference to a display list object that is related to the event. For
 	 * example, when a `touchOut` event occurs,
@@ -176,49 +167,48 @@ class TouchEvent extends Event {
 	 * which of these reasons applies.
 	 */
 	public var relatedObject:InteractiveObject;
-	
+
 	/**
 	 * Indicates whether the Shift key is active(`true`) or inactive
 	 * (`false`).
 	 */
 	public var shiftKey:Bool;
-	
+
 	/**
 	 * Width of the contact area.
 	 * Only supported on Android(C++ target), in the range of 0-1.
 	 */
 	public var sizeX:Float;
-	
+
 	/**
 	 * Height of the contact area.
 	 * Only supported on Android(C++ target), in the range of 0-1.
 	 */
 	public var sizeY:Float;
-	
+
 	/**
 	 * The horizontal coordinate at which the event occurred in global Stage
 	 * coordinates. This property is calculated when the `localX`
 	 * property is set.
 	 */
 	public var stageX:Float;
-	
+
 	/**
 	 * The vertical coordinate at which the event occurred in global Stage
 	 * coordinates. This property is calculated when the `localY`
 	 * property is set.
 	 */
 	public var stageY:Float;
-	
+
 	/**
 	 * A unique identification number(as an int) assigned to the touch point.
 	 */
 	public var touchPointID:Int;
-	
-	
+
 	/**
 	 * Creates an Event object that contains information about touch events.
 	 * Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type                The type of the event. Possible values are:
 	 *                            `TouchEvent.TOUCH_BEGIN`,
 	 *                            `TouchEvent.TOUCH_END`,
@@ -251,10 +241,13 @@ class TouchEvent extends Event {
 	 *                           (Windows or Linux only).
 	 * @param shiftKey            Indicates whether the Shift key is activated.
 	 */
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null, samples:ByteArray = null, isTouchPointCanceled:Bool = false) {
-		
-		super (type, bubbles, cancelable);
-		
+	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0,
+			localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false,
+			altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null,
+			samples:ByteArray = null, isTouchPointCanceled:Bool = false)
+	{
+		super(type, bubbles, cancelable);
+
 		this.touchPointID = touchPointID;
 		this.isPrimaryTouchPoint = isPrimaryTouchPoint;
 		this.localX = localX;
@@ -268,58 +261,47 @@ class TouchEvent extends Event {
 		this.shiftKey = shiftKey;
 		this.commandKey = commandKey;
 		this.controlKey = controlKey;
-		
+
 		stageX = Math.NaN;
 		stageY = Math.NaN;
-		
 	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new TouchEvent (type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject, ctrlKey, altKey, shiftKey, commandKey, controlKey);
+
+	public override function clone():Event
+	{
+		var event = new TouchEvent(type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject,
+			ctrlKey, altKey, shiftKey, commandKey, controlKey);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
 	}
-	
-	
-	public override function toString ():String {
-		
-		return __formatToString ("TouchEvent",  [ "type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject", "ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey" ]);
-		
+
+	public override function toString():String
+	{
+		return __formatToString("TouchEvent", [
+			"type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject",
+			"ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey"
+		]);
 	}
-	
-	
+
 	/**
 	 * Instructs Flash Player or Adobe AIR to render after processing of this
 	 * event completes, if the display list has been modified.
-	 * 
+	 *
 	 */
-	public function updateAfterEvent ():Void {
-		
-		
-		
-	}
-	
-	
-	@:noCompletion private static function __create (type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float, local:Point, target:InteractiveObject):TouchEvent {
-		
-		var evt = new TouchEvent (type, true, false, 0, true, local.x, local.y, 1, 1, 1);
+	public function updateAfterEvent():Void {}
+
+	@:noCompletion private static function __create(type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float,
+			local:Point, target:InteractiveObject):TouchEvent
+	{
+		var evt = new TouchEvent(type, true, false, 0, true, local.x, local.y, 1, 1, 1);
 		evt.stageX = stageX;
 		evt.stageY = stageY;
 		evt.target = target;
-		
+
 		return evt;
-		
 	}
-	
-	
 }
-
-
 #else
 typedef TouchEvent = flash.events.TouchEvent;
 #end

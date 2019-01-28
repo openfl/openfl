@@ -1,9 +1,8 @@
-package openfl.events; #if !flash
+package openfl.events;
 
-
+#if !flash
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
-
 
 /**
  * A MouseEvent object is dispatched into the event flow whenever mouse events
@@ -16,18 +15,14 @@ import openfl.geom.Point;
  * of a mouse event, use `EventDispatcher.addEventListener()` on
  * the ancestor node with the `type` parameter set to the specific
  * mouse event you want to detect.
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class MouseEvent extends Event {
-	
-	
+class MouseEvent extends Event
+{
 	/**
 	 * Defines the value of the `type` property of a
 	 * `click` event object.
@@ -35,9 +30,8 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var CLICK = "click";
-	
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `doubleClick` event object. The `doubleClickEnabled`
@@ -47,7 +41,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var DOUBLE_CLICK = "doubleClick";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `middleClick` event object.
@@ -55,7 +49,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MIDDLE_CLICK = "middleClick";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `middleMouseDown` event object.
@@ -63,7 +57,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MIDDLE_MOUSE_DOWN = "middleMouseDown";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `middleMouseUp` event object.
@@ -71,7 +65,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MIDDLE_MOUSE_UP = "middleMouseUp";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `mouseDown` event object.
@@ -79,7 +73,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_DOWN = "mouseDown";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `mouseMove` event object.
@@ -87,7 +81,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_MOVE = "mouseMove";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `mouseOut` event object.
@@ -95,7 +89,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_OUT = "mouseOut";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `mouseOver` event object.
@@ -103,7 +97,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_OVER = "mouseOver";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `mouseUp` event object.
@@ -111,7 +105,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_UP = "mouseUp";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `mouseWheel` event object.
@@ -119,7 +113,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_WHEEL = "mouseWheel";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `releaseOutside` event object.
@@ -127,7 +121,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var RELEASE_OUTSIDE = "releaseOutside";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `rightClick` event object.
@@ -135,7 +129,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var RIGHT_CLICK = "rightClick";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `rightMouseDown` event object.
@@ -143,7 +137,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var RIGHT_MOUSE_DOWN = "rightMouseDown";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `rightMouseUp` event object.
@@ -151,7 +145,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var RIGHT_MOUSE_UP = "rightMouseUp";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `rollOut` event object.
@@ -159,7 +153,7 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var ROLL_OUT = "rollOut";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `rollOver` event object.
@@ -167,38 +161,34 @@ class MouseEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var ROLL_OVER = "rollOver";
-	
-	
 	@:noCompletion private static var __altKey:Bool;
 	@:noCompletion private static var __buttonDown:Bool;
 	@:noCompletion private static var __commandKey:Bool;
 	@:noCompletion private static var __ctrlKey:Bool;
 	@:noCompletion private static var __shiftKey:Bool;
-	
-	
+
 	/**
 	 * Indicates whether the Alt key is active(`true`) or inactive
 	 * (`false`). Supported for Windows only. On other operating
 	 * systems, this property is always set to `false`.
 	 */
 	public var altKey:Bool;
-	
+
 	/**
 	 * Indicates whether the primary mouse button is pressed(`true`)
 	 * or not(`false`).
 	 */
 	public var buttonDown:Bool;
-	
 	public var commandKey:Bool;
 	public var clickCount:Int;
-	
+
 	/**
 	 * On Windows or Linux, indicates whether the Ctrl key is active
 	 * (`true`) or inactive(`false`). On Macintosh,
 	 * indicates whether either the Control key or the Command key is activated.
 	 */
 	public var ctrlKey:Bool;
-	
+
 	/**
 	 * Indicates how many lines should be scrolled for each unit the user rotates
 	 * the mouse wheel. A positive delta value indicates an upward scroll; a
@@ -208,24 +198,22 @@ class MouseEvent extends Event {
 	 * property applies only to the `MouseEvent.mouseWheel` event.
 	 */
 	public var delta:Int;
-	
 	public var isRelatedObjectInaccessible:Bool;
-	
+
 	/**
 	 * The horizontal coordinate at which the event occurred relative to the
 	 * containing sprite.
 	 */
 	public var localX:Float;
-	
+
 	/**
 	 * The vertical coordinate at which the event occurred relative to the
 	 * containing sprite.
 	 */
 	public var localY:Float;
-	
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
-	
+
 	/**
 	 * A reference to a display list object that is related to the event. For
 	 * example, when a `mouseOut` event occurs,
@@ -241,32 +229,31 @@ class MouseEvent extends Event {
 	 * these reasons applies.
 	 */
 	public var relatedObject:InteractiveObject;
-	
+
 	/**
 	 * Indicates whether the Shift key is active(`true`) or inactive
 	 * (`false`).
 	 */
 	public var shiftKey:Bool;
-	
+
 	/**
 	 * The horizontal coordinate at which the event occurred in global Stage
 	 * coordinates. This property is calculated when the `localX`
 	 * property is set.
 	 */
 	public var stageX:Float;
-	
+
 	/**
 	 * The vertical coordinate at which the event occurred in global Stage
 	 * coordinates. This property is calculated when the `localY`
 	 * property is set.
 	 */
 	public var stageY:Float;
-	
-	
+
 	/**
 	 * Creates an Event object that contains information about mouse events.
 	 * Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type          The type of the event. Possible values are:
 	 *                      `MouseEvent.CLICK`,
 	 *                      `MouseEvent.DOUBLE_CLICK`,
@@ -312,10 +299,12 @@ class MouseEvent extends Event {
 	 *                      values. This parameter is used only for the
 	 *                      `MouseEvent.mouseWheel` event.
 	 */
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
-		
-		super (type, bubbles, cancelable);
-		
+	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null,
+			ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false,
+			clickCount:Int = 0)
+	{
+		super(type, bubbles, cancelable);
+
 		this.shiftKey = shiftKey;
 		this.altKey = altKey;
 		this.ctrlKey = ctrlKey;
@@ -327,59 +316,46 @@ class MouseEvent extends Event {
 		this.buttonDown = buttonDown;
 		this.commandKey = commandKey;
 		this.clickCount = clickCount;
-		
+
 		isRelatedObjectInaccessible = false;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
-		
 	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new MouseEvent (type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey, clickCount);
+
+	public override function clone():Event
+	{
+		var event = new MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
+			clickCount);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
 	}
-	
-	
-	public override function toString ():String {
-		
-		return __formatToString ("MouseEvent",  [ "type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta" ]);
-		
+
+	public override function toString():String
+	{
+		return __formatToString("MouseEvent", [
+			"type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta"
+		]);
 	}
-	
-	
+
 	/**
 	 * Instructs Flash Player or Adobe AIR to render after processing of this
 	 * event completes, if the display list has been modified.
-	 * 
+	 *
 	 */
-	public function updateAfterEvent ():Void {
-		
-		
-		
-	}
-	
-	
-	@:noCompletion private static function __create (type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
-		
-		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
+	public function updateAfterEvent():Void {}
+
+	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent
+	{
+		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
 		event.stageX = stageX;
 		event.stageY = stageY;
 		event.target = target;
-		
+
 		return event;
-		
 	}
-	
-	
 }
-
-
 #else
 typedef MouseEvent = flash.events.MouseEvent;
 #end

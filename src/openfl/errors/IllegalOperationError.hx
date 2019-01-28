@@ -1,13 +1,13 @@
-package openfl.errors; #if !flash
+package openfl.errors;
 
-
+#if !flash
 /**
  * The IllegalOperationError exception is thrown when a method is not
  * implemented or the implementation doesn't cover the current usage.
  *
  * Examples of illegal operation error exceptions include:
  *
- * 
+ *
  *  * A base class, such as DisplayObjectContainer, provides more
  * functionality than a Stage can support(such as masks)
  *  * Certain accessibility methods are called when the player is compiled
@@ -21,35 +21,26 @@ package openfl.errors; #if !flash
  * player
  * <li product="flash">An attempt is made to set the name of a Timeline-placed
  * object
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class IllegalOperationError extends Error {
-	
-	
+class IllegalOperationError extends Error
+{
 	/**
 	 * Creates a new IllegalOperationError object.
-	 * 
+	 *
 	 * @param message A string associated with the error object.
 	 */
-	public function new (message:String = "") {
-		
-		super (message, 0);
-		
+	public function new(message:String = "")
+	{
+		super(message, 0);
+
 		name = "IllegalOperationError";
-		
 	}
-	
-	
 }
-
-
 #else
 typedef IllegalOperationError = flash.errors.IllegalOperationError;
 #end

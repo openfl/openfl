@@ -1,17 +1,15 @@
-package openfl.display; #if !flash
+package openfl.display;
 
-
+#if !flash
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.events.UncaughtErrorEvents;
 import openfl.system.ApplicationDomain;
 import openfl.utils.ByteArray;
-
 #if (js && html5)
 import js.Browser;
 #end
-
 
 /**
  * The LoaderInfo class provides information about a loaded SWF file or a
@@ -20,22 +18,22 @@ import js.Browser;
  * URLs of the loader and loaded content, the number of bytes total for the
  * media, and the nominal height and width of the media.
  *
- * You can access LoaderInfo objects in two ways: 
+ * You can access LoaderInfo objects in two ways:
  *
- * 
+ *
  *  * The `contentLoaderInfo` property of a flash.display.Loader
  * object -  The `contentLoaderInfo` property is always available
  * for any Loader object. For a Loader object that has not called the
  * `load()` or `loadBytes()` method, or that has not
  * sufficiently loaded, attempting to access many of the properties of the
  * `contentLoaderInfo` property throws an error.
- *  * The `loaderInfo` property of a display object. 
- * 
+ *  * The `loaderInfo` property of a display object.
+ *
  *
  * The `contentLoaderInfo` property of a Loader object provides
  * information about the content that the Loader object is loading, whereas
  * the `loaderInfo` property of a DisplayObject provides
- * information about the root SWF file for that display object. 
+ * information about the root SWF file for that display object.
  *
  * When you use a Loader object to load a display object(such as a SWF
  * file or a bitmap), the `loaderInfo` property of the display
@@ -65,7 +63,7 @@ import js.Browser;
  * The `EventDispatcher.dispatchEvent()` method is not
  * applicable to LoaderInfo objects. If you call `dispatchEvent()`
  * on a LoaderInfo object, an IllegalOperationError exception is thrown.
- * 
+ *
  * @event complete   Dispatched when data has loaded successfully. In other
  *                   words, it is dispatched when all the content has been
  *                   downloaded and the loading has finished. The
@@ -80,7 +78,7 @@ import js.Browser;
  *                   however, can still be downloading. A LoaderInfo object
  *                   dispatches the `init` event when the following
  *                   conditions exist:
- *                   
+ *
  *                    * All properties and methods associated with the
  *                   loaded object and those associated with the LoaderInfo
  *                   object are accessible.
@@ -88,7 +86,7 @@ import js.Browser;
  *                   completed.
  *                    * All ActionScript code in the first frame of the
  *                   loaded SWF's main timeline has been executed.
- *                   
+ *
  *
  *                   For example, an `Event.INIT` is dispatched
  *                   when the first frame of a movie or animation is loaded.
@@ -110,20 +108,16 @@ import js.Browser;
  *                   performed by the same Loader object and the original
  *                   content is removed prior to the load beginning.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+class LoaderInfo extends EventDispatcher
+{
+	@:noCompletion private static var __rootURL = #if (js && html5)(Browser.supported ? Browser.document.URL : "") #else "" #end;
 
-
-class LoaderInfo extends EventDispatcher {
-	
-	
-	@:noCompletion private static var __rootURL = #if (js && html5) (Browser.supported ? Browser.document.URL : "") #else "" #end;
-	
 	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):flash.display.ActionScriptVersion;
-	
+
 	/**
 	 * When an external SWF file is loaded, all ActionScript 3.0 definitions
 	 * contained in the loaded class are stored in the
@@ -142,15 +136,15 @@ class LoaderInfo extends EventDispatcher {
 	 *
 	 * For usage examples of application domains, see the "Client System
 	 * Environment" chapter in the _ActionScript 3.0 Developer's Guide_.
-	 * 
+	 *
 	 * @throws SecurityError This security sandbox of the caller is not allowed
 	 *                       to access this ApplicationDomain.
 	 */
-	public var applicationDomain (default, null):ApplicationDomain;
-	
+	public var applicationDomain(default, null):ApplicationDomain;
+
 	/**
 	 * The bytes associated with a LoaderInfo object.
-	 * 
+	 *
 	 * @throws SecurityError If the object accessing this API is prevented from
 	 *                       accessing the loaded object due to security
 	 *                       restrictions. This situation can occur, for
@@ -163,14 +157,14 @@ class LoaderInfo extends EventDispatcher {
 	 *                       Flash Player Developer Center Topic:
 	 *                       [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
-	public var bytes (default, null):ByteArray;
-	
+	public var bytes(default, null):ByteArray;
+
 	/**
 	 * The number of bytes that are loaded for the media. When this number equals
 	 * the value of `bytesTotal`, all of the bytes are loaded.
 	 */
-	public var bytesLoaded (default, null):Int;
-	
+	public var bytesLoaded(default, null):Int;
+
 	/**
 	 * The number of compressed bytes in the entire media file.
 	 *
@@ -180,8 +174,8 @@ class LoaderInfo extends EventDispatcher {
 	 * `bytesTotal` reflects the actual number of bytes to be
 	 * downloaded.
 	 */
-	public var bytesTotal (default, null):Int;
-	
+	public var bytesTotal(default, null):Int;
+
 	/**
 	 * Expresses the trust relationship from content(child) to the Loader
 	 * (parent). If the child has allowed the parent access, `true`;
@@ -193,17 +187,16 @@ class LoaderInfo extends EventDispatcher {
 	 *
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @throws Error Thrown if the file is not downloaded sufficiently to
 	 *               retrieve the requested information.
 	 */
-	public var childAllowsParent (default, null):Bool;
-	
+	public var childAllowsParent(default, null):Bool;
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var childSandboxBridge:Dynamic;
-	
+
 	/**
 	 * The loaded object associated with this LoaderInfo object.
-	 * 
+	 *
 	 * @throws SecurityError If the object accessing this API is prevented from
 	 *                       accessing the loaded object due to security
 	 *                       restrictions. This situation can occur, for
@@ -216,21 +209,21 @@ class LoaderInfo extends EventDispatcher {
 	 *                       Flash Player Developer Center Topic:
 	 *                       [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
-	public var content (default, null):DisplayObject;
-	
+	public var content(default, null):DisplayObject;
+
 	/**
 	 * The MIME type of the loaded file. The value is `null` if not
 	 * enough of the file has loaded in order to determine the type. The
 	 * following list gives the possible values:
-	 * 
+	 *
 	 *  * `"application/x-shockwave-flash"`
 	 *  * `"image/jpeg"`
 	 *  * `"image/gif"`
 	 *  * `"image/png"`
-	 * 
+	 *
 	 */
-	public var contentType (default, null):String;
-	
+	public var contentType(default, null):String;
+
 	/**
 	 * The nominal frame rate, in frames per second, of the loaded SWF file. This
 	 * number is often an integer, but need not be.
@@ -241,30 +234,29 @@ class LoaderInfo extends EventDispatcher {
 	 * the main SWF file. Also, the main frame rate may not be able to be
 	 * achieved, depending on hardware, sound synchronization, and other
 	 * factors.
-	 * 
+	 *
 	 * @throws Error If the file is not downloaded sufficiently to retrieve the
 	 *               requested information.
 	 * @throws Error If the file is not a SWF file.
 	 */
-	public var frameRate (default, null):Float;
-	
+	public var frameRate(default, null):Float;
+
 	/**
 	 * The nominal height of the loaded file. This value might differ from the
 	 * actual height at which the content is displayed, since the loaded content
 	 * or its parent display objects might be scaled.
-	 * 
+	 *
 	 * @throws Error If the file is not downloaded sufficiently to retrieve the
 	 *               requested information.
 	 */
-	public var height (default, null):Int;
-	
+	public var height(default, null):Int;
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
-	
+
 	/**
 	 * The Loader object associated with this LoaderInfo object. If this
 	 * LoaderInfo object is the `loaderInfo` property of the instance
 	 * of the main class of the SWF file, no Loader object is associated.
-	 * 
+	 *
 	 * @throws SecurityError If the object accessing this API is prevented from
 	 *                       accessing the Loader object because of security
 	 *                       restrictions. This can occur, for instance, when a
@@ -277,15 +269,15 @@ class LoaderInfo extends EventDispatcher {
 	 *                       Flash Player Developer Center Topic:
 	 *                       [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
-	public var loader (default, null):Loader;
-	
+	public var loader(default, null):Loader;
+
 	/**
 	 * The URL of the SWF file that initiated the loading of the media described
 	 * by this LoaderInfo object. For the instance of the main class of the SWF
 	 * file, this URL is the same as the SWF file's own URL.
 	 */
-	public var loaderURL (default, null):String;
-	
+	public var loaderURL(default, null):String;
+
 	/**
 	 * An object that contains name-value pairs that represent the parameters
 	 * provided to the loaded SWF file.
@@ -306,8 +298,8 @@ class LoaderInfo extends EventDispatcher {
 	 * only non-null for Loader objects that contain SWF files that use
 	 * ActionScript 3.0.
 	 */
-	public var parameters (default, null):Dynamic<String>;
-	
+	public var parameters(default, null):Dynamic<String>;
+
 	/**
 	 * Expresses the trust relationship from Loader(parent) to the content
 	 * (child). If the parent has allowed the child access, `true`;
@@ -319,24 +311,23 @@ class LoaderInfo extends EventDispatcher {
 	 *
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @throws Error Thrown if the file is not downloaded sufficiently to
 	 *               retrieve the requested information.
 	 */
-	public var parentAllowsChild (default, null):Bool;
-	
+	public var parentAllowsChild(default, null):Bool;
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var parentSandboxBridge:Dynamic;
-	
+
 	/**
 	 * Expresses the domain relationship between the loader and the content:
 	 * `true` if they have the same origin domain; `false`
 	 * otherwise.
-	 * 
+	 *
 	 * @throws Error Thrown if the file is not downloaded sufficiently to
 	 *               retrieve the requested information.
 	 */
-	public var sameDomain (default, null):Bool;
-	
+	public var sameDomain(default, null):Bool;
+
 	/**
 	 * An EventDispatcher instance that can be used to exchange events across
 	 * security boundaries. Even when the Loader object and the loaded content
@@ -344,10 +335,9 @@ class LoaderInfo extends EventDispatcher {
 	 * access `sharedEvents` and send and receive events via this
 	 * object.
 	 */
-	public var sharedEvents (default, null):EventDispatcher;
-	
+	public var sharedEvents(default, null):EventDispatcher;
 	// @:noCompletion @:dox(hide) public var swfVersion (default, null):UInt;
-	
+
 	/**
 	 * An object that dispatches an `uncaughtError` event when an
 	 * unhandled error occurs in code in this LoaderInfo object's SWF file. An
@@ -363,8 +353,8 @@ class LoaderInfo extends EventDispatcher {
 	 * `uncaughtErrorEvents` property is available after the
 	 * `applicationComplete` event is dispatched.
 	 */
-	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
-	
+	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
+
 	/**
 	 * The URL of the media being loaded.
 	 *
@@ -379,91 +369,73 @@ class LoaderInfo extends EventDispatcher {
 	 * In some cases, the value of the `url` property is truncated;
 	 * see the `isURLInaccessible` property for details.
 	 */
-	public var url (default, null):String;
-	
+	public var url(default, null):String;
+
 	/**
 	 * The nominal width of the loaded content. This value might differ from the
 	 * actual width at which the content is displayed, since the loaded content
 	 * or its parent display objects might be scaled.
-	 * 
+	 *
 	 * @throws Error If the file is not downloaded sufficiently to retrieve the
 	 *               requested information.
 	 */
-	public var width (default, null):Int;
-	
-	
+	public var width(default, null):Int;
+
 	@:noCompletion private var __completed:Bool;
-	
-	
-	@:noCompletion private function new () {
-		
-		super ();
-		
+
+	@:noCompletion private function new()
+	{
+		super();
+
 		applicationDomain = ApplicationDomain.currentDomain;
 		bytesLoaded = 0;
 		bytesTotal = 0;
 		childAllowsParent = true;
 		parameters = {};
-		
 	}
-	
-	
-	public static function create (loader:Loader):LoaderInfo {
-		
-		var loaderInfo = new LoaderInfo ();
-		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents ();
-		
-		if (loader != null) {
-			
+
+	public static function create(loader:Loader):LoaderInfo
+	{
+		var loaderInfo = new LoaderInfo();
+		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents();
+
+		if (loader != null)
+		{
 			loaderInfo.loader = loader;
-			
-		} else {
-			
+		}
+		else
+		{
 			loaderInfo.url = __rootURL;
-			
 		}
-		
+
 		return loaderInfo;
-		
 	}
-	
-	
+
 	// @:noCompletion @:dox(hide) public static function getLoaderInfoByDefinition (object:Dynamic):LoaderInfo;
-	
-	
-	@:noCompletion private function __complete ():Void {
-		
-		if (!__completed) {
-			
-			if (bytesLoaded < bytesTotal) {
-				
+	@:noCompletion private function __complete():Void
+	{
+		if (!__completed)
+		{
+			if (bytesLoaded < bytesTotal)
+			{
 				bytesLoaded = bytesTotal;
-				
 			}
-			
-			__update (bytesLoaded, bytesTotal);
+
+			__update(bytesLoaded, bytesTotal);
 			__completed = true;
-			
-			dispatchEvent (new Event (Event.COMPLETE));
-			
+
+			dispatchEvent(new Event(Event.COMPLETE));
 		}
-		
 	}
-	
-	
-	@:noCompletion private function __update (bytesLoaded:Int, bytesTotal:Int):Void {
-		
+
+	@:noCompletion private function __update(bytesLoaded:Int, bytesTotal:Int):Void
+	{
 		this.bytesLoaded = bytesLoaded;
 		this.bytesTotal = bytesTotal;
-		
-		dispatchEvent (new ProgressEvent (ProgressEvent.PROGRESS, false, false, bytesLoaded, bytesTotal));
-		
+
+		dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, bytesTotal));
 	}
-	
-	
 }
-
-
 #else
 typedef LoaderInfo = flash.display.LoaderInfo;
 #end

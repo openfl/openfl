@@ -1,23 +1,19 @@
-package openfl.events; #if !flash
+package openfl.events;
 
-
+#if !flash
 /**
  * An object dispatches a TextEvent object when a user enters text in a text
  * field or clicks a hyperlink in an HTML-enabled text field. There are two
  * types of text events: `TextEvent.LINK` and
  * `TextEvent.TEXT_INPUT`.
- * 
+ *
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class TextEvent extends Event {
-	
-	
+class TextEvent extends Event
+{
 	/**
 	 * Defines the value of the `type` property of a `link`
 	 * event object.
@@ -25,7 +21,7 @@ class TextEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var LINK = "link";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `textInput` event object.
@@ -36,8 +32,7 @@ class TextEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var TEXT_INPUT = "textInput";
-	
-	
+
 	/**
 	 * For a `textInput` event, the character or sequence of
 	 * characters entered by the user. For a `link` event, the text of
@@ -45,12 +40,11 @@ class TextEvent extends Event {
 	 * `<a>` tag.
 	 */
 	public var text:String;
-	
-	
+
 	/**
 	 * Creates an Event object that contains information about text events. Event
 	 * objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event. Event listeners can access this
 	 *                   information through the inherited `type`
 	 *                   property. Possible values are:
@@ -67,36 +61,27 @@ class TextEvent extends Event {
 	 *                   Event listeners can access this information through the
 	 *                   `text` property.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "") {
-		
-		super (type, bubbles, cancelable);
-		
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "")
+	{
+		super(type, bubbles, cancelable);
+
 		this.text = text;
-		
 	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new TextEvent (type, bubbles, cancelable, text);
+
+	public override function clone():Event
+	{
+		var event = new TextEvent(type, bubbles, cancelable, text);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
 	}
-	
-	
-	public override function toString ():String {
-		
-		return __formatToString ("TextEvent",  [ "type", "bubbles", "cancelable", "text" ]);
-		
+
+	public override function toString():String
+	{
+		return __formatToString("TextEvent", ["type", "bubbles", "cancelable", "text"]);
 	}
-	
-	
 }
-
-
 #else
 typedef TextEvent = flash.events.TextEvent;
 #end

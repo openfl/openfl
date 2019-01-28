@@ -1,6 +1,6 @@
-package openfl.net; #if !flash
+package openfl.net;
 
-
+#if !flash
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
@@ -10,22 +10,18 @@ import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.net.SharedObjectFlushStatus;
 import openfl.utils.Object;
-
 #if lime
 import lime.app.Application;
 import lime.system.System;
 #end
-
 #if (js && html5)
 import js.html.Storage;
 import js.Browser;
 #end
-
 #if sys
 import sys.io.File;
 import sys.FileSystem;
 #end
-
 
 /**
  * The SharedObject class is used to read and store limited amounts of data on
@@ -38,7 +34,7 @@ import sys.FileSystem;
  *
  * Use shared objects to do the following:
  *
- * 
+ *
  *  * **Maintain local persistence**. This is the simplest way to use a
  * shared object, and does not require Flash Media Server. For example, you
  * can call `SharedObject.getLocal()` to create a shared object in
@@ -69,7 +65,7 @@ import sys.FileSystem;
  * to all clients connected to the object. When a user enters or leaves the
  * chat room, the object is updated and all clients that are connected to the
  * object see the revised list of chat room users.
- * 
+ *
  *
  *  To create a local shared object, call
  * `SharedObject.getLocal()`. To create a remote shared object,
@@ -92,14 +88,14 @@ import sys.FileSystem;
  *
  * **Note**: SWF files that are stored and run on a local computer, not
  * from a remote server, can always write third-party shared objects to disk.
- * For more information about third-party shared objects, see the 
+ * For more information about third-party shared objects, see the
  * [Global Storage Settings panel](http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager03.html)
  * in Flash Player Help.
  *
  * It's a good idea to check for failures related to the amount of disk
  * space and to user privacy controls. Perform these checks when you call
  * `getLocal()` and `flush()`:
- * 
+ *
  *  * `SharedObject.getLocal()`  -  Flash Player throws an
  * exception when a call to this method fails, such as when the user has
  * disabled third-party shared objects and the domain of your SWF file does
@@ -112,8 +108,8 @@ import sys.FileSystem;
  * space for locally saved information. Thereafter, the `netStatus`
  * event is dispatched with an information object indicating whether the flush
  * failed or succeeded.
- * 
- * 
+ *
+ *
  *
  * If your SWF file attempts to create or modify local shared objects, make
  * sure that your SWF file is at least 215 pixels wide and at least 138 pixels
@@ -129,13 +125,13 @@ import sys.FileSystem;
  * connected to your application. When one client changes a property of a
  * remote shared object, the property is changed for all connected clients.
  * You can use remote shared objects to synchronize clients, for example,
- * users in a multi-player game. 
+ * users in a multi-player game.
  *
  *  Each remote shared object has a `data` property which is an
  * Object with properties that store data. Call `setProperty()` to
  * change an property of the data object. The server updates the properties,
  * dispatches a `sync` event, and sends the properties back to the
- * connected clients. 
+ * connected clients.
  *
  *  You can choose to make remote shared objects persistent on the client,
  * the server, or both. By default, Flash Player saves locally persistent
@@ -143,16 +139,16 @@ import sys.FileSystem;
  * object, Flash Player displays the Local Storage dialog box, which lets the
  * user allow or deny local storage for the shared object. Make sure your
  * Stage size is at least 215 by 138 pixels; this is the minimum size Flash
- * requires to display the dialog box. 
+ * requires to display the dialog box.
  *
  *  If the user selects Allow, the server saves the shared object and
  * dispatches a `netStatus` event with a `code` property
  * of `SharedObject.Flush.Success`. If the user select Deny, the
  * server does not save the shared object and dispatches a
  * `netStatus` event with a `code` property of
- * `SharedObject.Flush.Failed`. 
- * 
- * @event asyncError Dispatched when an exception is thrown asynchronously  - 
+ * `SharedObject.Flush.Failed`.
+ *
+ * @event asyncError Dispatched when an exception is thrown asynchronously  -
  *                   that is, from native asynchronous code.
  * @event netStatus  Dispatched when a SharedObject instance is reporting its
  *                   status or error condition. The `netStatus`
@@ -164,25 +160,18 @@ import sys.FileSystem;
  * @event sync       Dispatched when a remote shared object has been updated
  *                   by the server.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class SharedObject extends EventDispatcher {
-	
-	
+class SharedObject extends EventDispatcher
+{
 	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
-	
 	// @:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
-	
 	@:noCompletion private static var __sharedObjects:Map<String, SharedObject>;
-	
-	
+
 	public var client:Dynamic;
-	
+
 	/**
 	 * The collection of attributes assigned to the `data` property of
 	 * the object; these attributes can be shared and stored. Each attribute can
@@ -194,13 +183,12 @@ class SharedObject extends EventDispatcher {
 	 * `data` property are available to all clients connected to the
 	 * shared object, and all attributes are saved if the object is persistent.
 	 * If one client changes the value of an attribute, all clients now see the
-	 * new value. 
+	 * new value.
 	 */
-	public var data (default, null):Dynamic;
-	
-	public var fps (null, default):Float;
+	public var data(default, null):Dynamic;
+	public var fps(null, default):Float;
 	public var objectEncoding:ObjectEncoding;
-	
+
 	/**
 	 * The current size of the shared object, in bytes.
 	 *
@@ -210,32 +198,29 @@ class SharedObject extends EventDispatcher {
 	 * processing time, so you may want to avoid using this method unless you
 	 * have a specific need for it.
 	 */
-	public var size (get, never):Int;
-	
-	
+	public var size(get, never):Int;
+
 	@:noCompletion private var __localPath:String;
 	@:noCompletion private var __name:String;
-	
-	
+
 	#if openfljs
-	@:noCompletion private static function __init__ () {
-		
-		untyped global.Object.defineProperty (SharedObject.prototype, "size", { get: untyped __js__ ("function () { return this.get_size (); }") });
-		
+	@:noCompletion private static function __init__()
+	{
+		untyped global.Object.defineProperty(SharedObject.prototype, "size",
+			{
+				get: untyped __js__("function () { return this.get_size (); }")
+			});
 	}
 	#end
-	
-	
-	@:noCompletion private function new () {
-		
-		super ();
-		
+
+	@:noCompletion private function new()
+	{
+		super();
+
 		client = this;
 		objectEncoding = defaultObjectEncoding;
-		
 	}
-	
-	
+
 	/**
 	 * For local shared objects, purges all of the data and deletes the shared
 	 * object from the disk. The reference to the shared object is still active,
@@ -245,59 +230,42 @@ class SharedObject extends EventDispatcher {
 	 * `clear()` disconnects the object and purges all of the data. If
 	 * the shared object is locally persistent, this method also deletes the
 	 * shared object from the disk. The reference to the shared object is still
-	 * active, but its data properties are deleted. 
-	 * 
+	 * active, but its data properties are deleted.
+	 *
 	 */
-	public function clear ():Void {
-		
+	public function clear():Void
+	{
 		data = {};
-		
-		try {
-			
+
+		try
+		{
 			#if (js && html5)
-			
-			var storage = Browser.getLocalStorage ();
-			
-			if (storage != null) {
-				
-				storage.removeItem (__localPath + ":" + __name);
-				
+			var storage = Browser.getLocalStorage();
+
+			if (storage != null)
+			{
+				storage.removeItem(__localPath + ":" + __name);
 			}
-			
 			#else
-			
-			var path = __getPath (__localPath, __name);
-			
-			if (FileSystem.exists (path)) {
-				
-				FileSystem.deleteFile (path);
-				
+			var path = __getPath(__localPath, __name);
+
+			if (FileSystem.exists(path))
+			{
+				FileSystem.deleteFile(path);
 			}
-			
 			#end
-			
 		} catch (e:Dynamic) {}
-		
 	}
-	
-	
-	public function close ():Void {
-		
-		
-		
+
+	public function close():Void {}
+
+	public function connect(myConnection:NetConnection, params:String = null):Void
+	{
+		openfl._internal.Lib.notImplemented();
 	}
-	
-	
-	public function connect (myConnection:NetConnection, params:String = null):Void {
-		
-		openfl._internal.Lib.notImplemented ();
-		
-	}
-	
-	
+
 	// @:noCompletion @:dox(hide) public static function deleteAll (url:String):Int;
-	
-	
+
 	/**
 	 * Immediately writes a locally persistent shared object to a local file. If
 	 * you don't use this method, Flash Player writes the shared object to a file
@@ -314,7 +282,7 @@ class SharedObject extends EventDispatcher {
 	 * `minDiskSpace`. When Flash Player tries to write the file, it
 	 * looks for the number of bytes passed to `minDiskSpace`, instead
 	 * of looking for enough space to save the shared object at its current size.
-	 * 
+	 *
 	 *
 	 * For example, if you expect a shared object to grow to a maximum size of
 	 * 500 bytes, even though it might start out much smaller, pass 500 for
@@ -322,28 +290,28 @@ class SharedObject extends EventDispatcher {
 	 * the shared object, it asks for 500 bytes. After the user allots the
 	 * requested amount of space, Flash won't have to ask for more space on
 	 * future attempts to flush the object(as long as its size doesn't exceed
-	 * 500 bytes). 
+	 * 500 bytes).
 	 *
 	 * After the user responds to the dialog box, this method is called again.
 	 * A `netStatus` event is dispatched with a `code`
 	 * property of `SharedObject.Flush.Success` or
-	 * `SharedObject.Flush.Failed`. 
-	 * 
+	 * `SharedObject.Flush.Failed`.
+	 *
 	 * @param minDiskSpace The minimum disk space, in bytes, that must be
 	 *                     allotted for this object.
 	 * @return Either of the following values:
-	 *         
+	 *
 	 *          * `SharedObjectFlushStatus.PENDING`: The user has
 	 *         permitted local information storage for objects from this domain,
 	 *         but the amount of space allotted is not sufficient to store the
 	 *         object. Flash Player prompts the user to allow more space. To
 	 *         allow space for the shared object to grow when it is saved, thus
 	 *         avoiding a `SharedObjectFlushStatus.PENDING` return
-	 *         value, pass a value for `minDiskSpace`. 
+	 *         value, pass a value for `minDiskSpace`.
 	 *          * `SharedObjectFlushStatus.FLUSHED`: The shared
 	 *         object has been successfully written to a file on the local
 	 *         disk.
-	 *         
+	 *
 	 * @throws Error Flash Player cannot write the shared object to disk. This
 	 *               error might occur if the user has permanently disallowed
 	 *               local information storage for objects from this domain.
@@ -354,60 +322,48 @@ class SharedObject extends EventDispatcher {
 	 *               writing of third-party shared objects to disk is
 	 *               disallowed.
 	 */
-	public function flush (minDiskSpace:Int = 0):SharedObjectFlushStatus {
-		
-		if (Reflect.fields (data).length == 0) {
-			
+	public function flush(minDiskSpace:Int = 0):SharedObjectFlushStatus
+	{
+		if (Reflect.fields(data).length == 0)
+		{
 			return SharedObjectFlushStatus.FLUSHED;
-			
 		}
-		
-		var encodedData = Serializer.run (data);
-		
-		try {
-			
+
+		var encodedData = Serializer.run(data);
+
+		try
+		{
 			#if (js && html5)
-			
-			var storage = Browser.getLocalStorage ();
-			
-			if (storage != null) {
-				
-				storage.removeItem (__localPath + ":" + __name);
-				storage.setItem (__localPath + ":" + __name, encodedData);
-				
+			var storage = Browser.getLocalStorage();
+
+			if (storage != null)
+			{
+				storage.removeItem(__localPath + ":" + __name);
+				storage.setItem(__localPath + ":" + __name, encodedData);
 			}
-			
 			#else
-			
-			var path = __getPath (__localPath, __name);
-			var directory = Path.directory (path);
-			
-			if (!FileSystem.exists (directory)) {
-				
-				__mkdir (directory);
-				
+			var path = __getPath(__localPath, __name);
+			var directory = Path.directory(path);
+
+			if (!FileSystem.exists(directory))
+			{
+				__mkdir(directory);
 			}
-			
-			var output = File.write (path, false);
-			output.writeString (encodedData);
-			output.close ();
-			
+
+			var output = File.write(path, false);
+			output.writeString(encodedData);
+			output.close();
 			#end
-			
-		} catch (e:Dynamic) {
-			
+		} catch (e:Dynamic)
+		{
 			return SharedObjectFlushStatus.PENDING;
-			
 		}
-		
+
 		return SharedObjectFlushStatus.FLUSHED;
-		
 	}
-	
-	
+
 	// @:noCompletion @:dox(hide) public static function getDiskUsage (url:String):Int;
-	
-	
+
 	/**
 	 * Returns a reference to a locally persistent shared object that is only
 	 * available to the current client. If the shared object does not already
@@ -427,7 +383,7 @@ class SharedObject extends EventDispatcher {
 	 * content. Local content can always write shared objects from third-party
 	 * domains(domains other than the domain in the current browser address bar)
 	 * to disk, even if writing of third-party shared objects to disk is
-	 * disallowed. 
+	 * disallowed.
 	 *
 	 * To avoid name conflicts, Flash looks at the location of the SWF file
 	 * creating the shared object. For example, if a SWF file at
@@ -435,7 +391,7 @@ class SharedObject extends EventDispatcher {
 	 * `portfolio`, that shared object does not conflict with another
 	 * object named `portfolio` that was created by a SWF file at
 	 * www.yourCompany.com/photoshoot.swf because the SWF files originate from
-	 * different directories. 
+	 * different directories.
 	 *
 	 * Although the `localPath` parameter is optional, you should
 	 * give some thought to its use, especially if other SWF files need to access
@@ -464,15 +420,15 @@ class SharedObject extends EventDispatcher {
 	 * provides optimal flexibility for your application.
 	 *
 	 * When using this method, consider the following security model:
-	 * 
+	 *
 	 *  * You cannot access shared objects across sandbox boundaries.
 	 *  * Users can restrict shared object access by using the Flash Player
 	 * Settings dialog box or the Settings Manager. By default, an application
 	 * can create shared objects of up 100 KB of data per domain. Administrators
 	 * and users can also place restrictions on the ability to write to the file
 	 * system.
-	 * 
-	 * 
+	 *
+	 *
 	 *
 	 * Suppose you publish SWF file content to be played back as local files
 	 * (either locally installed SWF files or EXE files), and you need to access
@@ -498,7 +454,7 @@ class SharedObject extends EventDispatcher {
 	 *
 	 * For more information, see the Flash Player Developer Center Topic:
 	 * [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param name      The name of the object. The name can include forward
 	 *                  slashes(`/`); for example,
 	 *                  `work/addresses` is a legal name. Spaces are
@@ -513,7 +469,7 @@ class SharedObject extends EventDispatcher {
 	 *                  restricted to SWF files that are delivered over an HTTPS
 	 *                  connection. If your SWF file is delivered over HTTPS,
 	 *                  this parameter's value has the following effects:
-	 *                  
+	 *
 	 *                   * If this parameter is set to `true`,
 	 *                  Flash Player creates a new secure shared object or gets a
 	 *                  reference to an existing secure shared object. This
@@ -527,7 +483,7 @@ class SharedObject extends EventDispatcher {
 	 *                  reference to an existing shared object that can be read
 	 *                  from or written to by SWF files delivered over non-HTTPS
 	 *                  connections.
-	 *                  
+	 *
 	 *
 	 *                  If your SWF file is delivered over a non-HTTPS
 	 *                  connection and you try to set this parameter to
@@ -553,346 +509,269 @@ class SharedObject extends EventDispatcher {
 	 *               Storage Settings panel of the Settings Manager, located at
 	 *               [http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html](http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html).
 	 */
-	public static function getLocal (name:String, localPath:String = null, secure:Bool = false /* note: unsupported */):SharedObject {
-		
-		var illegalValues = [ " ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#" ];
+	public static function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported */):SharedObject
+	{
+		var illegalValues = [" ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#"];
 		var allowed = true;
-		
-		if (name == null || name == "") {
-			
+
+		if (name == null || name == "")
+		{
 			allowed = false;
-			
-		} else {
-			
-			for (value in illegalValues) {
-				
-				if (name.indexOf (value) > -1) {
-					
+		}
+		else
+		{
+			for (value in illegalValues)
+			{
+				if (name.indexOf(value) > -1)
+				{
 					allowed = false;
 					break;
-					
 				}
-				
 			}
-			
 		}
-		
-		if (!allowed) {
-			
-			throw new Error ("Error #2134: Cannot create SharedObject.");
+
+		if (!allowed)
+		{
+			throw new Error("Error #2134: Cannot create SharedObject.");
 			return null;
-			
 		}
-		
-		if (__sharedObjects == null) {
-			
-			__sharedObjects = new Map ();
+
+		if (__sharedObjects == null)
+		{
+			__sharedObjects = new Map();
 			// Lib.application.onExit.add (application_onExit);
 			#if lime
-			if (Application.current != null) {
-				
-				Application.current.onExit.add (application_onExit);
-				
+			if (Application.current != null)
+			{
+				Application.current.onExit.add(application_onExit);
 			}
 			#end
-			
 		}
-		
+
 		var id = localPath + "/" + name;
-		
-		if (!__sharedObjects.exists (id)) {
-			
+
+		if (!__sharedObjects.exists(id))
+		{
 			var encodedData = null;
-			
-			try {
-				
+
+			try
+			{
 				#if (js && html5)
-				
-				var storage = Browser.getLocalStorage ();
-				
-				if (localPath == null) {
-					
+				var storage = Browser.getLocalStorage();
+
+				if (localPath == null)
+				{
 					// Check old default path, first
-					if (storage != null) {
-						encodedData = storage.getItem (Browser.window.location.href + ":" + name);
-						storage.removeItem (Browser.window.location.href + ":" + name);
+					if (storage != null)
+					{
+						encodedData = storage.getItem(Browser.window.location.href + ":" + name);
+						storage.removeItem(Browser.window.location.href + ":" + name);
 					}
-					
+
 					localPath = Browser.window.location.pathname;
-					
 				}
-				
-				if (storage != null && encodedData == null) {
-					
-					encodedData = storage.getItem (localPath + ":" + name);
-					
+
+				if (storage != null && encodedData == null)
+				{
+					encodedData = storage.getItem(localPath + ":" + name);
 				}
-				
 				#else
-				
 				if (localPath == null) localPath = "";
-				
-				var path = __getPath (localPath, name);
-				
-				if (FileSystem.exists (path)) {
-					
-					encodedData = File.getContent (path);
-					
+
+				var path = __getPath(localPath, name);
+
+				if (FileSystem.exists(path))
+				{
+					encodedData = File.getContent(path);
 				}
-				
 				#end
-				
-			} catch (e:Dynamic) { }
-			
-			var sharedObject = new SharedObject ();
+			} catch (e:Dynamic) {}
+
+			var sharedObject = new SharedObject();
 			sharedObject.data = {};
 			sharedObject.__localPath = localPath;
 			sharedObject.__name = name;
-			
-			if (encodedData != null && encodedData != "") {
-				
-				try {
-					
-					var unserializer = new Unserializer (encodedData);
-					unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: __resolveClass } );
-					sharedObject.data = unserializer.unserialize ();
-					
+
+			if (encodedData != null && encodedData != "")
+			{
+				try
+				{
+					var unserializer = new Unserializer(encodedData);
+					unserializer.setResolver(cast {resolveEnum: Type.resolveEnum, resolveClass: __resolveClass});
+					sharedObject.data = unserializer.unserialize();
 				} catch (e:Dynamic) {}
-				
 			}
-			
-			__sharedObjects.set (id, sharedObject);
-			
+
+			__sharedObjects.set(id, sharedObject);
 		}
-		
-		return __sharedObjects.get (id);
-		
+
+		return __sharedObjects.get(id);
 	}
-	
-	
-	public static function getRemote (name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject {
-		
-		openfl._internal.Lib.notImplemented ();
-		
+
+	public static function getRemote(name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject
+	{
+		openfl._internal.Lib.notImplemented();
+
 		return null;
-		
 	}
-	
-	
-	public function send (args:Array<Dynamic>):Void {
-		
-		openfl._internal.Lib.notImplemented ();
-		
+
+	public function send(args:Array<Dynamic>):Void
+	{
+		openfl._internal.Lib.notImplemented();
 	}
-	
-	
-	public function setDirty (propertyName:String):Void {
-		
-		
-		
-	}
-	
-	
-	public function setProperty (propertyName:String, value:Object = null):Void {
-		
-		if (data != null) {
-			
-			Reflect.setField (data, propertyName, value);
-			
+
+	public function setDirty(propertyName:String):Void {}
+
+	public function setProperty(propertyName:String, value:Object = null):Void
+	{
+		if (data != null)
+		{
+			Reflect.setField(data, propertyName, value);
 		}
-		
 	}
-	
-	
-	@:noCompletion private static function __getPath (localPath:String, name:String):String {
-		
+
+	@:noCompletion private static function __getPath(localPath:String, name:String):String
+	{
 		#if lime
 		var path = System.applicationStorageDirectory + "/" + localPath + "/";
-		
-		name = StringTools.replace (name, "//", "/");
-		name = StringTools.replace (name, "//", "/");
-		
-		if (StringTools.startsWith (name, "/")) {
-			
-			name = name.substr (1);
-			
+
+		name = StringTools.replace(name, "//", "/");
+		name = StringTools.replace(name, "//", "/");
+
+		if (StringTools.startsWith(name, "/"))
+		{
+			name = name.substr(1);
 		}
-		
-		if (StringTools.endsWith (name, "/")) {
-			
-			name = name.substring (0, name.length - 1);
-			
+
+		if (StringTools.endsWith(name, "/"))
+		{
+			name = name.substring(0, name.length - 1);
 		}
-		
-		if (name.indexOf ("/") > -1) {
-			
-			var split = name.split ("/");
+
+		if (name.indexOf("/") > -1)
+		{
+			var split = name.split("/");
 			name = "";
-			
-			for (i in 0...(split.length - 1)) {
-				
+
+			for (i in 0...(split.length - 1))
+			{
 				name += "#" + split[i] + "/";
-				
 			}
-			
+
 			name += split[split.length - 1];
-			
 		}
-		
+
 		return path + name + ".sol";
 		#else
 		return name + ".sol";
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function __mkdir (directory:String):Void {
-		
+
+	@:noCompletion private static function __mkdir(directory:String):Void
+	{
 		// TODO: Move this to Lime somewhere?
-		
+
 		#if sys
-		
-		directory = StringTools.replace (directory, "\\", "/");
+		directory = StringTools.replace(directory, "\\", "/");
 		var total = "";
-		
-		if (directory.substr (0, 1) == "/") {
-			
+
+		if (directory.substr(0, 1) == "/")
+		{
 			total = "/";
-			
 		}
-		
+
 		var parts = directory.split("/");
 		var oldPath = "";
-		
-		if (parts.length > 0 && parts[0].indexOf (":") > -1) {
-			
-			oldPath = Sys.getCwd ();
-			Sys.setCwd (parts[0] + "\\");
-			parts.shift ();
-			
+
+		if (parts.length > 0 && parts[0].indexOf(":") > -1)
+		{
+			oldPath = Sys.getCwd();
+			Sys.setCwd(parts[0] + "\\");
+			parts.shift();
 		}
-		
-		for (part in parts) {
-			
-			if (part != "." && part != "") {
-				
-				if (total != "" && total != "/") {
-					
+
+		for (part in parts)
+		{
+			if (part != "." && part != "")
+			{
+				if (total != "" && total != "/")
+				{
 					total += "/";
-					
 				}
-				
+
 				total += part;
-				
-				if (!FileSystem.exists (total)) {
-					
-					FileSystem.createDirectory (total);
-					
+
+				if (!FileSystem.exists(total))
+				{
+					FileSystem.createDirectory(total);
 				}
-				
 			}
-			
 		}
-		
-		if (oldPath != "") {
-			
-			Sys.setCwd (oldPath);
-			
+
+		if (oldPath != "")
+		{
+			Sys.setCwd(oldPath);
 		}
-		
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function __resolveClass (name:String):Class<Dynamic> {
-		
-		if (name != null) {
-			
-			if (StringTools.startsWith (name, "neash.")) {
-				
-				name = StringTools.replace (name, "neash.", "openfl.");
-				
+
+	@:noCompletion private static function __resolveClass(name:String):Class<Dynamic>
+	{
+		if (name != null)
+		{
+			if (StringTools.startsWith(name, "neash."))
+			{
+				name = StringTools.replace(name, "neash.", "openfl.");
 			}
-			
-			if (StringTools.startsWith (name, "native.")) {
-				
-				name = StringTools.replace (name, "native.", "openfl.");
-				
+
+			if (StringTools.startsWith(name, "native."))
+			{
+				name = StringTools.replace(name, "native.", "openfl.");
 			}
-			
-			if (StringTools.startsWith (name, "flash.")) {
-				
-				name = StringTools.replace (name, "flash.", "openfl.");
-				
+
+			if (StringTools.startsWith(name, "flash."))
+			{
+				name = StringTools.replace(name, "flash.", "openfl.");
 			}
-			
-			if (StringTools.startsWith (name, "openfl._v2.")) {
-				
-				name = StringTools.replace (name, "openfl._v2.", "openfl.");
-				
+
+			if (StringTools.startsWith(name, "openfl._v2."))
+			{
+				name = StringTools.replace(name, "openfl._v2.", "openfl.");
 			}
-			
-			if (StringTools.startsWith (name, "openfl._legacy.")) {
-				
-				name = StringTools.replace (name, "openfl._legacy.", "openfl.");
-				
+
+			if (StringTools.startsWith(name, "openfl._legacy."))
+			{
+				name = StringTools.replace(name, "openfl._legacy.", "openfl.");
 			}
-			
-			return Type.resolveClass (name);
-			
+
+			return Type.resolveClass(name);
 		}
-		
+
 		return null;
-		
 	}
-	
-	
-	
-	
+
 	// Event Handlers
-	
-	
-	
-	
-	@:noCompletion private static function application_onExit (_):Void {
-		
-		for (sharedObject in __sharedObjects) {
-			
-			sharedObject.flush ();
-			
+	@:noCompletion private static function application_onExit(_):Void
+	{
+		for (sharedObject in __sharedObjects)
+		{
+			sharedObject.flush();
 		}
-		
 	}
-	
-	
-	
-	
+
 	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private function get_size ():Int {
-		
-		try {
-			
-			var d = Serializer.run (data);
-			return Bytes.ofString (d).length;
-			
-		} catch (e:Dynamic) {
-			
+	@:noCompletion private function get_size():Int
+	{
+		try
+		{
+			var d = Serializer.run(data);
+			return Bytes.ofString(d).length;
+		} catch (e:Dynamic)
+		{
 			return 0;
-			
 		}
-		
 	}
-	
-	
 }
-
-
 #else
 typedef SharedObject = flash.net.SharedObject;
 #end

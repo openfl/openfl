@@ -1,8 +1,7 @@
-package openfl.display; #if !flash
+package openfl.display;
 
-
+#if !flash
 import openfl.display.IGraphicsData;
-
 
 /**
  * Defines a line style or stroke.
@@ -13,18 +12,14 @@ import openfl.display.IGraphicsData;
  * class that sets the line style, such as the
  * `Graphics.lineStyle()` method, the
  * `Graphics.lineBitmapStyle()` method, or the
- * `Graphics.lineGradientStyle()` method. 
+ * `Graphics.lineGradientStyle()` method.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-@:final class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
-	
-	
+@:final class GraphicsStroke implements IGraphicsData implements IGraphicsStroke
+{
 	/**
 	 * Specifies the type of caps at the end of lines. Valid values are:
 	 * `CapsStyle.NONE`, `CapsStyle.ROUND`, and
@@ -35,16 +30,16 @@ import openfl.display.IGraphicsData;
 	 * `capsStyle` settings. For each setting, the illustration shows
 	 * a blue line with a thickness of 30(for which the `capsStyle`
 	 * applies), and a superimposed black line with a thickness of 1(for which
-	 * no `capsStyle` applies): 
+	 * no `capsStyle` applies):
 	 */
 	public var caps:CapsStyle;
-	
+
 	/**
 	 * Specifies the instance containing data for filling a stroke. An
 	 * IGraphicsFill instance can represent a series of fill commands.
 	 */
 	public var fill:IGraphicsFill;
-	
+
 	/**
 	 * Specifies the type of joint appearance used at angles. Valid values are:
 	 * `JointStyle.BEVEL`, `JointStyle.MITER`, and
@@ -55,14 +50,14 @@ import openfl.display.IGraphicsData;
 	 * `joints` settings. For each setting, the illustration shows an
 	 * angled blue line with a thickness of 30(for which the
 	 * `jointStyle` applies), and a superimposed angled black line
-	 * with a thickness of 1(for which no `jointStyle` applies): 
+	 * with a thickness of 1(for which no `jointStyle` applies):
 	 *
 	 * **Note:** For `joints` set to
 	 * `JointStyle.MITER`, you can use the `miterLimit`
 	 * parameter to limit the length of the miter.
 	 */
 	public var joints:JointStyle;
-	
+
 	/**
 	 * Indicates the limit at which a miter is cut off. Valid values range from 1
 	 * to 255(and values outside that range are rounded to 1 or 255). This value
@@ -84,7 +79,7 @@ import openfl.display.IGraphicsData;
 	 * some examples:
 	 */
 	public var miterLimit:Float;
-	
+
 	/**
 	 * Specifies whether to hint strokes to full pixels. This affects both the
 	 * position of anchors of a curve and the line stroke size itself. With
@@ -98,32 +93,32 @@ import openfl.display.IGraphicsData;
 	 * difference):
 	 */
 	public var pixelHinting:Bool;
-	
+
 	/**
 	 * Specifies the stroke thickness scaling. Valid values are:
-	 * 
+	 *
 	 *  *  `LineScaleMode.NORMAL` - Always scale the line thickness
-	 * when the object is scaled(the default). 
+	 * when the object is scaled(the default).
 	 *  *  `LineScaleMode.NONE` - Never scale the line thickness.
-	 * 
+	 *
 	 *  *  `LineScaleMode.VERTICAL` - Do not scale the line
 	 * thickness if the object is scaled vertically _only_. For example,
 	 * consider the following circles, drawn with a one-pixel line, and each with
 	 * the `scaleMode` parameter set to
 	 * `LineScaleMode.VERTICAL`. The circle on the left is scaled
 	 * vertically only, and the circle on the right is scaled both vertically and
-	 * horizontally:   
+	 * horizontally:
 	 *  *  `LineScaleMode.HORIZONTAL` - Do not scale the line
 	 * thickness if the object is scaled horizontally _only_. For example,
 	 * consider the following circles, drawn with a one-pixel line, and each with
 	 * the `scaleMode` parameter set to
 	 * `LineScaleMode.HORIZONTAL`. The circle on the left is scaled
 	 * horizontally only, and the circle on the right is scaled both vertically
-	 * and horizontally:   
-	 * 
+	 * and horizontally:
+	 *
 	 */
 	public var scaleMode:LineScaleMode;
-	
+
 	/**
 	 * Indicates the thickness of the line in points; valid values are 0-255. If
 	 * a number is not specified, or if the parameter is undefined, a line is not
@@ -132,14 +127,12 @@ import openfl.display.IGraphicsData;
 	 * greater than 255 is passed, the default is 255.
 	 */
 	public var thickness:Float;
-	
-	
-	@:noCompletion private var __graphicsDataType (default, null):GraphicsDataType;
-	
-	
+
+	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
+
 	/**
 	 * Creates a new GraphicsStroke object.
-	 * 
+	 *
 	 * @param pixelHinting A Boolean value that specifies whether to hint strokes
 	 *                     to full pixels. This affects both the position of
 	 *                     anchors of a curve and the line stroke size itself.
@@ -159,12 +152,12 @@ import openfl.display.IGraphicsData;
 	 *                     pixel hinting.
 	 * @param scaleMode    A value from the LineScaleMode class that specifies
 	 *                     which scale mode to use:
-	 *                     
+	 *
 	 *                      *  `LineScaleMode.NORMAL` - Always
 	 *                     scale the line thickness when the object is scaled
-	 *                    (the default). 
+	 *                    (the default).
 	 *                      *  `LineScaleMode.NONE` - Never scale
-	 *                     the line thickness. 
+	 *                     the line thickness.
 	 *                      *  `LineScaleMode.VERTICAL` - Do not
 	 *                     scale the line thickness if the object is scaled
 	 *                     vertically _only_. For example, consider the
@@ -173,7 +166,7 @@ import openfl.display.IGraphicsData;
 	 *                     `LineScaleMode.VERTICAL`. The circle on the
 	 *                     left is scaled vertically only, and the circle on the
 	 *                     right is scaled both vertically and horizontally:
-	 *                     
+	 *
 	 *                      *  `LineScaleMode.HORIZONTAL` - Do not
 	 *                     scale the line thickness if the object is scaled
 	 *                     horizontally _only_. For example, consider the
@@ -182,8 +175,8 @@ import openfl.display.IGraphicsData;
 	 *                     `LineScaleMode.HORIZONTAL`. The circle on
 	 *                     the left is scaled horizontally only, and the circle
 	 *                     on the right is scaled both vertically and
-	 *                     horizontally:   
-	 *                     
+	 *                     horizontally:
+	 *
 	 * @param caps         A value from the CapsStyle class that specifies the
 	 *                     type of caps at the end of lines. Valid values are:
 	 *                     `CapsStyle.NONE`,
@@ -197,7 +190,7 @@ import openfl.display.IGraphicsData;
 	 *                     thickness of 30(for which the `capsStyle`
 	 *                     applies), and a superimposed black line with a
 	 *                     thickness of 1(for which no `capsStyle`
-	 *                     applies): 
+	 *                     applies):
 	 * @param joints       A value from the JointStyle class that specifies the
 	 *                     type of joint appearance used at angles. Valid values
 	 *                     are: `JointStyle.BEVEL`,
@@ -211,17 +204,18 @@ import openfl.display.IGraphicsData;
 	 *                     with a thickness of 30(for which the
 	 *                     `jointStyle` applies), and a superimposed
 	 *                     angled black line with a thickness of 1(for which no
-	 *                     `jointStyle` applies): 
+	 *                     `jointStyle` applies):
 	 *
 	 *                     **Note:** For `joints` set to
 	 *                     `JointStyle.MITER`, you can use the
 	 *                     `miterLimit` parameter to limit the length
 	 *                     of the miter.
 	 */
-	public function new (thickness:Null<Float> = null, pixelHinting:Bool = false, scaleMode:LineScaleMode = LineScaleMode.NORMAL, caps:CapsStyle = CapsStyle.NONE, joints:JointStyle = JointStyle.ROUND, miterLimit:Float = 3, fill:IGraphicsFill = null) {
-		
+	public function new(thickness:Null<Float> = null, pixelHinting:Bool = false, scaleMode:LineScaleMode = LineScaleMode.NORMAL,
+			caps:CapsStyle = CapsStyle.NONE, joints:JointStyle = JointStyle.ROUND, miterLimit:Float = 3, fill:IGraphicsFill = null)
+	{
 		if (thickness == null) thickness = Math.NaN;
-		
+
 		this.caps = caps;
 		this.fill = fill;
 		this.joints = joints;
@@ -230,13 +224,8 @@ import openfl.display.IGraphicsData;
 		this.scaleMode = scaleMode;
 		this.thickness = thickness;
 		this.__graphicsDataType = STROKE;
-		
 	}
-	
-	
 }
-
-
 #else
 typedef GraphicsStroke = flash.display.GraphicsStroke;
 #end

@@ -1,6 +1,6 @@
-package openfl.filters; #if !flash
+package openfl.filters;
 
-
+#if !flash
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectRenderer;
@@ -8,11 +8,10 @@ import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
 #if lime
 import lime._internal.graphics.ImageDataUtil; // TODO
-#end
 
+#end
 
 /**
  * The BlurFilter class lets you apply a blur visual effect to display
@@ -30,18 +29,18 @@ import lime._internal.graphics.ImageDataUtil; // TODO
  * BlurFilter()`. The use of filters depends on the object to which you
  * apply the filter:
  *
- * 
+ *
  *  * To apply filters to movie clips, text fields, buttons, and video, use
  * the `filters` property(inherited from DisplayObject). Setting
  * the `filters` property of an object does not modify the object,
  * and you can remove the filter by clearing the `filters`
- * property. 
+ * property.
  *  * To apply filters to BitmapData objects, use the
  * `BitmapData.applyFilter()` method. Calling
  * `applyFilter()` on a BitmapData object takes the source
  * BitmapData object and the filter object and generates a filtered image as a
  * result.
- * 
+ *
  *
  * If you apply a filter to a display object, the
  * `cacheAsBitmap` property of the display object is set to
@@ -64,36 +63,30 @@ import lime._internal.graphics.ImageDataUtil; // TODO
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
+@:final class BlurFilter extends BitmapFilter
+{
+	@:noCompletion private static var __blurShader = new BlurShader();
 
-
-@:final class BlurFilter extends BitmapFilter {
-	
-	
-	@:noCompletion private static var __blurShader = new BlurShader ();
-	
-	
 	/**
 	 * The amount of horizontal blur. Valid values are from 0 to 255(floating
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
-	public var blurX (get, set):Float;
-	
+	public var blurX(get, set):Float;
+
 	/**
 	 * The amount of vertical blur. Valid values are from 0 to 255(floating
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
-	public var blurY (get, set):Float;
-	
+	public var blurY(get, set):Float;
+
 	/**
 	 * The number of times to perform the blur. The default value is
 	 * `BitmapFilterQuality.LOW`, which is equivalent to applying the
@@ -113,53 +106,50 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	 * You can use the following BitmapFilterQuality constants to specify
 	 * values of the `quality` property:
 	 *
-	 * 
+	 *
 	 *  * `BitmapFilterQuality.LOW`
 	 *  * `BitmapFilterQuality.MEDIUM`
 	 *  * `BitmapFilterQuality.HIGH`
-	 * 
+	 *
 	 */
-	public var quality (get, set):Int;
-	
-	
+	public var quality(get, set):Int;
+
 	@:noCompletion private var __blurX:Float;
 	@:noCompletion private var __blurY:Float;
 	@:noCompletion private var __horizontalPasses:Int;
 	@:noCompletion private var __quality:Int;
 	@:noCompletion private var __verticalPasses:Int;
-	
-	
+
 	#if openfljs
-	@:noCompletion private static function __init__ () {
-		
-		untyped Object.defineProperties (BlurFilter.prototype, {
-			"blurX": { get: untyped __js__ ("function () { return this.get_blurX (); }"), set: untyped __js__ ("function (v) { return this.set_blurX (v); }") },
-			"blurY": { get: untyped __js__ ("function () { return this.get_blurY (); }"), set: untyped __js__ ("function (v) { return this.set_blurY (v); }") },
-			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
-		});
-		
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperties(BlurFilter.prototype,
+			{
+				"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
+				"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
+				"quality": {get: untyped __js__("function () { return this.get_quality (); }"), set: untyped __js__("function (v) { return this.set_quality (v); }")},
+			});
 	}
 	#end
-	
-	
+
 	/**
 	 * Initializes the filter with the specified parameters. The default values
 	 * create a soft, unfocused image.
-	 * 
+	 *
 	 * @param blurX   The amount to blur horizontally. Valid values are from 0 to
 	 *                255.0(floating-point value).
 	 * @param blurY   The amount to blur vertically. Valid values are from 0 to
 	 *                255.0(floating-point value).
 	 * @param quality The number of times to apply the filter. You can specify
 	 *                the quality using the BitmapFilterQuality constants:
-	 *                
+	 *
 	 *
 	 *               * `flash.filters.BitmapFilterQuality.LOW`
 	 *
 	 *               * `flash.filters.BitmapFilterQuality.MEDIUM`
 	 *
 	 *               * `flash.filters.BitmapFilterQuality.HIGH`
-	 *                
+	 *
 	 *
 	 *                High quality approximates a Gaussian blur. For most
 	 *                applications, these three values are sufficient. Although
@@ -167,146 +157,115 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	 *                different effects, be aware that higher values are rendered
 	 *                more slowly.
 	 */
-	public function new (blurX:Float = 4, blurY:Float = 4, quality:Int = 1) {
-		
-		super ();
-		
+	public function new(blurX:Float = 4, blurY:Float = 4, quality:Int = 1)
+	{
+		super();
+
 		this.blurX = blurX;
 		this.blurY = blurY;
 		this.quality = quality;
-		
+
 		__needSecondBitmapData = true;
 		__preserveObject = false;
 		__renderDirty = true;
-		
 	}
-	
-	
-	public override function clone ():BitmapFilter {
-		
-		return new BlurFilter (__blurX, __blurY, __quality);
-		
+
+	public override function clone():BitmapFilter
+	{
+		return new BlurFilter(__blurX, __blurY, __quality);
 	}
-	
-	
-	@:noCompletion private override function __applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData {
-		
+
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
+	{
 		#if lime
-		var finalImage = ImageDataUtil.gaussianBlur (bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), __blurX, __blurY, __quality);
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
+			__blurX, __blurY, __quality);
 		if (finalImage == bitmapData.image) return bitmapData;
 		#end
 		return sourceBitmapData;
-		
 	}
-	
-	
-	@:noCompletion private override function __initShader (renderer:DisplayObjectRenderer, pass:Int):Shader {
-		
+
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	{
 		#if !macro
-		if (pass <= __horizontalPasses) {
-			
-			var scale = Math.pow (0.5, pass >> 1);
+		if (pass <= __horizontalPasses)
+		{
+			var scale = Math.pow(0.5, pass >> 1);
 			__blurShader.uRadius.value[0] = blurX * scale;
 			__blurShader.uRadius.value[1] = 0;
-			
-		} else {
-			
-			var scale = Math.pow (0.5, (pass - __horizontalPasses) >> 1);
+		}
+		else
+		{
+			var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
 			__blurShader.uRadius.value[0] = 0;
 			__blurShader.uRadius.value[1] = blurY * scale;
-			
 		}
 		#end
-		
+
 		return __blurShader;
-		
 	}
-	
-	
-	
-	
+
 	// Get & Set Methods
-	
-	
-	
-	
-	@:noCompletion private function get_blurX ():Float {
-		
+	@:noCompletion private function get_blurX():Float
+	{
 		return __blurX;
-		
 	}
-	
-	
-	@:noCompletion private function set_blurX (value:Float):Float {
-		
-		if (value != __blurX) {
+
+	@:noCompletion private function set_blurX(value:Float):Float
+	{
+		if (value != __blurX)
+		{
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil (value) : 0);
+			__leftExtension = (value > 0 ? Math.ceil(value) : 0);
 			__rightExtension = __leftExtension;
 		}
 		return value;
-		
 	}
-	
-	
-	@:noCompletion private function get_blurY ():Float {
-		
+
+	@:noCompletion private function get_blurY():Float
+	{
 		return __blurY;
-		
 	}
-	
-	
-	@:noCompletion private function set_blurY (value:Float):Float {
-		
-		if (value != __blurY) {
+
+	@:noCompletion private function set_blurY(value:Float):Float
+	{
+		if (value != __blurY)
+		{
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil (value) : 0);
+			__topExtension = (value > 0 ? Math.ceil(value) : 0);
 			__bottomExtension = __topExtension;
 		}
 		return value;
-		
 	}
-	
-	
-	@:noCompletion private function get_quality ():Int {
-		
+
+	@:noCompletion private function get_quality():Int
+	{
 		return __quality;
-		
 	}
-	
-	
-	@:noCompletion private function set_quality (value:Int):Int {
-		
+
+	@:noCompletion private function set_quality(value:Int):Int
+	{
 		// TODO: Quality effect with fewer passes?
-		
-		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round (__blurX * (value / 4)) + 1;
-		__verticalPasses = (__blurY <= 0) ? 0 : Math.round (__blurY * (value / 4)) + 1;
-		
+
+		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (value / 4)) + 1;
+		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (value / 4)) + 1;
+
 		__numShaderPasses = __horizontalPasses + __verticalPasses;
-		
+
 		if (value != __quality) __renderDirty = true;
 		return __quality = value;
-		
 	}
-	
-	
 }
-
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-private class BlurShader extends BitmapFilterShader {
-	
-	
-	@:glFragmentSource( 
-		
-		"uniform sampler2D openfl_Texture;
+private class BlurShader extends BitmapFilterShader
+{
+	@:glFragmentSource("uniform sampler2D openfl_Texture;
 		
 		varying vec2 vBlurCoords[7];
 		
@@ -323,14 +282,8 @@ private class BlurShader extends BitmapFilterShader {
 			
 			gl_FragColor = sum;
 			
-		}"
-		
-	)
-	
-	
-	@:glVertexSource(
-		
-		"attribute vec4 openfl_Position;
+		}")
+	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 		
 		uniform mat4 openfl_Matrix;
@@ -352,36 +305,25 @@ private class BlurShader extends BitmapFilterShader {
 			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
 			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
 			
-		}"
-		
-	)
-	
-	
-	public function new () {
-		
-		super ();
-		
+		}")
+	public function new()
+	{
+		super();
+
 		#if !macro
-		uRadius.value = [ 0, 0 ];
+		uRadius.value = [0, 0];
 		#end
-		
 	}
-	
-	
-	@:noCompletion private override function __update ():Void {
-		
+
+	@:noCompletion private override function __update():Void
+	{
 		#if !macro
-		uTextureSize.value = [ __texture.input.width, __texture.input.height ];
+		uTextureSize.value = [__texture.input.width, __texture.input.height];
 		#end
-		
-		super.__update ();
-		
+
+		super.__update();
 	}
-	
-	
 }
-
-
 #else
 typedef BlurFilter = flash.filters.BlurFilter;
 #end

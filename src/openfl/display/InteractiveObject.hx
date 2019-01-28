@@ -1,10 +1,9 @@
-package openfl.display; #if !flash
+package openfl.display;
 
-
+#if !flash
 import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
-
 
 /**
  * The InteractiveObject class is the abstract base class for all display
@@ -20,7 +19,7 @@ import openfl.geom.Rectangle;
  * InteractiveObject class, extend one of the subclasses that do have APIs for
  * rendering content onscreen, such as the Sprite, SimpleButton, TextField, or
  * MovieClip classes.
- * 
+ *
  * @event clear                  Dispatched when the user selects 'Clear'(or
  *                               'Delete') from the text context menu. This
  *                               event is dispatched to the object that
@@ -93,7 +92,7 @@ import openfl.geom.Rectangle;
  *                               `click` events.
  *
  *                               The `doubleClickEnabled`
- *                               property defaults to `false`. 
+ *                               property defaults to `false`.
  *
  *                               The double-click text selection behavior
  *                               of a TextField object is not related to the
@@ -743,7 +742,7 @@ import openfl.geom.Rectangle;
  *                               area of any child object of the display
  *                               object container, even if the mouse was
  *                               already over another child object of the
- *                               display object container. 
+ *                               display object container.
  * @event selectAll              Dispatched when the user activates the
  *                               platform-specific accelerator key combination
  *                               for a select all operation or selects 'Select
@@ -1045,19 +1044,15 @@ import openfl.geom.Rectangle;
  *                               **Note:** See the Multitouch class for
  *                               environment compatibility information.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class InteractiveObject extends DisplayObject {
-	
-	
+class InteractiveObject extends DisplayObject
+{
 	// @:noCompletion @:dox(hide) public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
 	// @:noCompletion @:dox(hide) public var contextMenu:flash.ui.ContextMenu;
-	
+
 	/**
 	 * Specifies whether the object receives `doubleClick` events. The
 	 * default value is `false`, which means that by default an
@@ -1073,9 +1068,8 @@ class InteractiveObject extends DisplayObject {
 	 * `doubleClick` event.
 	 */
 	public var doubleClickEnabled:Bool;
-	
 	public var focusRect:Null<Bool>;
-	
+
 	/**
 	 * Specifies whether this object receives mouse, or other user input,
 	 * messages. The default value is `true`, which means that by
@@ -1093,7 +1087,7 @@ class InteractiveObject extends DisplayObject {
 	 * functionality.
 	 */
 	public var mouseEnabled:Bool;
-	
+
 	/**
 	 * Specifies whether a virtual keyboard(an on-screen, software keyboard)
 	 * should display when this InteractiveObject instance receives focus.
@@ -1117,53 +1111,47 @@ class InteractiveObject extends DisplayObject {
 	 * iOS.
 	 */
 	public var needsSoftKeyboard:Bool;
-	
 	public var softKeyboardInputAreaOfInterest:Rectangle;
-	public var tabEnabled (get, set):Bool;
-	public var tabIndex (get, set):Int;
-	
-	
+	public var tabEnabled(get, set):Bool;
+	public var tabIndex(get, set):Int;
+
 	@:noCompletion private var __tabEnabled:Null<Bool>;
 	@:noCompletion private var __tabIndex:Int;
-	
-	
+
 	#if openfljs
-	@:noCompletion private static function __init__ () {
-		
-		untyped Object.defineProperties (InteractiveObject.prototype, {
-			"tabEnabled": { get: untyped __js__ ("function () { return this.get_tabEnabled (); }"), set: untyped __js__ ("function (v) { return this.set_tabEnabled (v); }") },
-			"tabIndex": { get: untyped __js__ ("function () { return this.get_tabIndex (); }"), set: untyped __js__ ("function (v) { return this.set_tabIndex (v); }") },
-		});
-		
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperties(InteractiveObject.prototype,
+			{
+				"tabEnabled": {get: untyped __js__("function () { return this.get_tabEnabled (); }"), set: untyped __js__("function (v) { return this.set_tabEnabled (v); }")},
+				"tabIndex": {get: untyped __js__("function () { return this.get_tabIndex (); }"), set: untyped __js__("function (v) { return this.set_tabIndex (v); }")},
+			});
 	}
 	#end
-	
-	
+
 	/**
 	 * Calling the `new InteractiveObject()` constructor throws an
 	 * `ArgumentError` exception. You can, however, call constructors
 	 * for the following subclasses of InteractiveObject:
-	 * 
+	 *
 	 *  * `new SimpleButton()`
 	 *  * `new TextField()`
 	 *  * `new Loader()`
 	 *  * `new Sprite()`
 	 *  * `new MovieClip()`
-	 * 
+	 *
 	 */
-	public function new () {
-		
-		super ();
-		
+	public function new()
+	{
+		super();
+
 		doubleClickEnabled = false;
 		mouseEnabled = true;
 		needsSoftKeyboard = false;
 		__tabEnabled = null;
 		__tabIndex = -1;
-		
 	}
-	
-	
+
 	/**
 	 * Raises a virtual keyboard.
 	 *
@@ -1175,118 +1163,89 @@ class InteractiveObject extends DisplayObject {
 	 *
 	 * **Note:** This method is not supported in AIR applications on
 	 * iOS.
-	 * 
+	 *
 	 * @return A value of `true` means that the soft keyboard request
 	 *         was granted; `false` means that the soft keyboard was
 	 *         not raised.
 	 */
-	public function requestSoftKeyboard ():Bool {
-		
-		openfl._internal.Lib.notImplemented ();
+	public function requestSoftKeyboard():Bool
+	{
+		openfl._internal.Lib.notImplemented();
 		return false;
-		
 	}
-	
-	
-	@:noCompletion private function __allowMouseFocus ():Bool {
-		
+
+	@:noCompletion private function __allowMouseFocus():Bool
+	{
 		return tabEnabled;
-		
 	}
-	
-	
-	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Bool {
-		
-		if (stack != null) {
-			
-			stack.push (this);
-			
-			if (parent != null) {
-				
-				parent.__getInteractive (stack);
-				
+
+	@:noCompletion private override function __getInteractive(stack:Array<DisplayObject>):Bool
+	{
+		if (stack != null)
+		{
+			stack.push(this);
+
+			if (parent != null)
+			{
+				parent.__getInteractive(stack);
 			}
-			
 		}
-		
+
 		return true;
-		
 	}
-	
-	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
-		
+
+	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
+			hitObject:DisplayObject):Bool
+	{
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject);
-		
+		return super.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject);
 	}
-	
-	
-	@:noCompletion private function __tabTest (stack:Array<InteractiveObject>):Void {
-		
-		if (tabEnabled) {
-			
-			stack.push (this);
-			
+
+	@:noCompletion private function __tabTest(stack:Array<InteractiveObject>):Void
+	{
+		if (tabEnabled)
+		{
+			stack.push(this);
 		}
-		
 	}
-	
-	
-	
-	
+
 	// Get & Set Methods
-	
-	
-	
-	
-	@:noCompletion private function get_tabEnabled ():Bool {
-		
+	@:noCompletion private function get_tabEnabled():Bool
+	{
 		return __tabEnabled == true ? true : false;
-		
 	}
-	
-	
-	@:noCompletion private function set_tabEnabled (value:Bool):Bool {
-		
-		if (__tabEnabled != value) {
-			
+
+	@:noCompletion private function set_tabEnabled(value:Bool):Bool
+	{
+		if (__tabEnabled != value)
+		{
 			__tabEnabled = value;
-			
-			dispatchEvent (new Event (Event.TAB_ENABLED_CHANGE, true, false));
+
+			dispatchEvent(new Event(Event.TAB_ENABLED_CHANGE, true, false));
 		}
-		
+
 		return __tabEnabled;
-		
 	}
-	
-	
-	@:noCompletion private function get_tabIndex ():Int {
-		
+
+	@:noCompletion private function get_tabIndex():Int
+	{
 		return __tabIndex;
-		
 	}
-	
-	
-	@:noCompletion private function set_tabIndex (value:Int):Int {
-		
-		if (__tabIndex != value) {
-			
-			if (value < -1) throw new RangeError ("Parameter tabIndex must be a non-negative number; got " + value);
-			
+
+	@:noCompletion private function set_tabIndex(value:Int):Int
+	{
+		if (__tabIndex != value)
+		{
+			if (value < -1) throw new RangeError("Parameter tabIndex must be a non-negative number; got " + value);
+
 			__tabIndex = value;
-			
-			dispatchEvent (new Event (Event.TAB_INDEX_CHANGE, true, false));
+
+			dispatchEvent(new Event(Event.TAB_INDEX_CHANGE, true, false));
 		}
-		
+
 		return __tabIndex;
-		
 	}
-	
-	
 }
-
-
 #else
 typedef InteractiveObject = flash.display.InteractiveObject;
 #end

@@ -1,8 +1,7 @@
-package openfl.external; #if !flash
+package openfl.external;
 
-
+#if !flash
 import openfl._internal.Lib;
-
 
 /**
  * The ExternalInterface class is an application programming interface that
@@ -24,7 +23,7 @@ import openfl._internal.Lib;
  * either ActiveX<sup>®</sup> or the NPRuntime API that is exposed by some
  * browsers for plug-in scripting. Even if a browser and operating system
  * combination are not listed above, they should support the ExternalInterface
- * class if they support the NPRuntime API. See 
+ * class if they support the NPRuntime API. See
  * [http://www.mozilla.org/projects/plugins/npruntime.html](http://www.mozilla.org/projects/plugins/npruntime.html)..
  *
  * **Note:** When embedding SWF files within an HTML page, make sure
@@ -47,21 +46,21 @@ import openfl._internal.Lib;
  * or key-press event.)
  *
  * From ActionScript, you can do the following on the HTML page:
- * 
+ *
  *  * Call any JavaScript function.
  *  * Pass any number of arguments, with any names.
  *  * Pass various data types(Boolean, Number, String, and so on).
  *  * Receive a return value from the JavaScript function.
- * 
- * 
+ *
+ *
  *
  * From JavaScript on the HTML page, you can:
- * 
+ *
  *  * Call an ActionScript function.
  *  * Pass arguments using standard function call notation.
  *  * Return a value to the JavaScript function.
- * 
- * 
+ *
+ *
  *
  * **Note for Flash Player applications:** Flash Player does not
  * currently support SWF files embedded within HTML forms.
@@ -71,19 +70,14 @@ import openfl._internal.Lib;
  * in the HTMLLoader control and ActionScript in SWF content embedded in that
  * HTML page.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
 @:access(openfl.display.Stage)
 @:access(lime.ui.Window)
-
-
-@:final class ExternalInterface {
-	
-	
+@:final class ExternalInterface
+{
 	/**
 	 * Indicates whether this player is in a container that offers an external
 	 * interface. If the external interface is available, this property is
@@ -93,8 +87,8 @@ import openfl._internal.Lib;
 	 * the HTML has finished loading before you attempt to call any JavaScript
 	 * methods.
 	 */
-	public static var available (default, null) = #if (js && html5) true #else false #end;
-	
+	public static var available(default, null) = #if (js && html5) true #else false #end;
+
 	/**
 	 * Indicates whether the external interface should attempt to pass
 	 * ActionScript exceptions to the current browser and JavaScript exceptions
@@ -103,15 +97,14 @@ import openfl._internal.Lib;
 	 * exceptions in JavaScript.
 	 */
 	public static var marshallExceptions = false;
-	
+
 	/**
 	 * Returns the `id` attribute of the `object` tag in
 	 * Internet Explorer, or the `name` attribute of the
 	 * `embed` tag in Netscape.
 	 */
-	public static var objectID (get, null):String;
-	
-	
+	public static var objectID(get, null):String;
+
 	/**
 	 * Registers an ActionScript method as callable from the container. After a
 	 * successful invocation of `addCallBack()`, the registered
@@ -123,7 +116,7 @@ import openfl._internal.Lib;
 	 * SWF file and the containing web page are in the local-trusted security
 	 * sandbox. For more information, see the Flash Player Developer Center
 	 * Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param functionName The name by which the container can invoke the
 	 *                     function.
 	 * @param closure      The function closure to invoke. This could be a
@@ -152,33 +145,30 @@ import openfl._internal.Lib;
 	 * @throws SecurityError The containing environment belongs to a security
 	 *                       sandbox to which the calling code does not have
 	 *                       access. To fix this problem, follow these steps:
-	 *                       
+	 *
 	 *                        1. In the `object` tag for the SWF
 	 *                       file in the containing HTML page, set the following
 	 *                       parameter:
 	 *
 	 *                       `<param name="allowScriptAccess"
 	 *                       value="always" />`
-	 *                       
+	 *
 	 *                        2. In the SWF file, add the following
 	 *                       ActionScript:
 	 *
 	 *
 	 *                       `flash.system.Security.allowDomain(_sourceDomain_)`
 	 */
-	public static function addCallback (functionName:String, closure:Dynamic):Void {
-		
+	public static function addCallback(functionName:String, closure:Dynamic):Void
+	{
 		#if (js && html5)
-		if (Lib.application.window.element != null) {
-			
+		if (Lib.application.window.element != null)
+		{
 			untyped Lib.application.window.element[functionName] = closure;
-			
 		}
 		#end
-		
 	}
-	
-	
+
 	/**
 	 * Calls a function exposed by the SWF container, passing zero or more
 	 * arguments. If the function is not available, the call returns
@@ -214,7 +204,7 @@ import openfl._internal.Lib;
 	 * blocker is enabled. In this scenario, you can only call this method
 	 * successfully in response to a user event(for example, in an event handler
 	 * for a mouse click or keypress event).
-	 * 
+	 *
 	 * @param functionName The alphanumeric name of the function to call in the
 	 *                     container. Using a non-alphanumeric function name
 	 *                     causes a runtime error(error 2155). You can use a
@@ -232,103 +222,93 @@ import openfl._internal.Lib;
 	 * @throws SecurityError The containing environment belongs to a security
 	 *                       sandbox to which the calling code does not have
 	 *                       access. To fix this problem, follow these steps:
-	 *                       
+	 *
 	 *                        1. In the `object` tag for the SWF
 	 *                       file in the containing HTML page, set the following
 	 *                       parameter:
 	 *
 	 *                       `<param name="allowScriptAccess"
 	 *                       value="always" />`
-	 *                       
+	 *
 	 *                        2. In the SWF file, add the following
 	 *                       ActionScript:
 	 *
 	 *
 	 *                       `flash.system.Security.allowDomain(_sourceDomain_)`
 	 */
-	public static function call (functionName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic {
-		
+	public static function call(functionName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic
+	{
 		#if (js && html5)
 		var callResponse:Dynamic = null;
-		
-		if (!~/^\(.+\)$/.match(functionName)) {
+
+		if (!~/^\(.+\)$/.match(functionName))
+		{
 			var thisArg = functionName.split('.').slice(0, -1).join('.');
-			if (thisArg.length > 0) {
+			if (thisArg.length > 0)
+			{
 				functionName += '.bind(${thisArg})';
 			}
 		}
-		
+
 		// Flash does not throw an error or attempt to execute
 		// if the function does not exist.
 		var fn:Dynamic;
-		try {
-			
-			fn = js.Lib.eval (functionName);
-			
-		} catch (e:Dynamic) {
-			
+		try
+		{
+			fn = js.Lib.eval(functionName);
+		} catch (e:Dynamic)
+		{
 			return null;
-			
 		}
-		
-		if (Type.typeof (fn) != Type.ValueType.TFunction) {
-			
+
+		if (Type.typeof(fn) != Type.ValueType.TFunction)
+		{
 			return null;
-			
 		}
-		
-		if (p1 == null) {
-			
-			callResponse = fn ();
-			
-		} else if (p2 == null) {
-			
-			callResponse = fn (p1);
-			
-		} else if (p3 == null) {
-			
-			callResponse = fn (p1, p2);
-			
-		} else if (p4 == null) {
-			
-			callResponse = fn (p1, p2, p3);
-			
-		} else if (p5 == null) {
-			
-			callResponse = fn (p1, p2, p3, p4);
-			
-		} else {
-			
-			callResponse = fn (p1, p2, p3, p4, p5);
-			
+
+		if (p1 == null)
+		{
+			callResponse = fn();
 		}
-		
+		else if (p2 == null)
+		{
+			callResponse = fn(p1);
+		}
+		else if (p3 == null)
+		{
+			callResponse = fn(p1, p2);
+		}
+		else if (p4 == null)
+		{
+			callResponse = fn(p1, p2, p3);
+		}
+		else if (p5 == null)
+		{
+			callResponse = fn(p1, p2, p3, p4);
+		}
+		else
+		{
+			callResponse = fn(p1, p2, p3, p4, p5);
+		}
+
 		return callResponse;
 		#else
 		return null;
 		#end
-		
 	}
-	
-	
-	private static function get_objectID ():String {
-		
+
+	private static function get_objectID():String
+	{
 		#if (js && html5)
-		if (Lib.application.window.element != null) {
-			
+		if (Lib.application.window.element != null)
+		{
 			return Lib.application.window.element.id;
-			
 		}
 		#end
-		
+
 		return null;
-		
 	}
-	
-	
 }
-
-
 #else
 typedef ExternalInterface = flash.external.ExternalInterface;
 #end

@@ -1,6 +1,5 @@
 package openfl._internal.symbols;
 
-
 import openfl._internal.formats.swf.SWFLite;
 import openfl.text.TextField;
 
@@ -8,14 +7,10 @@ import openfl.text.TextField;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
 @:access(openfl.text.TextField)
-
-
-class DynamicTextSymbol extends SWFSymbol {
-	
-	
-	public var align:/*TextFormatAlign*/String;
+class DynamicTextSymbol extends SWFSymbol
+{
+	public var align: /*TextFormatAlign*/ String;
 	public var border:Bool;
 	public var color:Null<Int>;
 	public var fontHeight:Int;
@@ -36,22 +31,16 @@ class DynamicTextSymbol extends SWFSymbol {
 	public var wordWrap:Bool;
 	public var x:Float;
 	public var y:Float;
-	
-	
-	public function new () {
-		
-		super ();
-		
+
+	public function new()
+	{
+		super();
 	}
-	
-	
-	private override function __createObject (swf:SWFLite):TextField {
-		
-		var textField = new TextField ();
-		textField.__fromSymbol (swf, this);
+
+	private override function __createObject(swf:SWFLite):TextField
+	{
+		var textField = new TextField();
+		textField.__fromSymbol(swf, this);
 		return textField;
-		
 	}
-	
-	
 }

@@ -1,17 +1,15 @@
-package openfl.system; #if !flash
+package openfl.system;
 
-
+#if !flash
 #if lime
 import lime.system.Clipboard;
 import lime.system.System as LimeSystem;
 #end
-
 #if neko
 import neko.vm.Gc;
 #elseif cpp
 import cpp.vm.Gc;
 #end
-
 
 /**
  * The System class contains properties related to local settings and
@@ -25,21 +23,17 @@ import cpp.vm.Gc;
  * This class contains only static methods and properties. You cannot
  * create new instances of the System class.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-@:final class System {
-	
-	
+@:final class System
+{
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory (default, null):Float;
 	// @:noCompletion @:dox(hide) public static var ime (default, null):flash.system.IME;
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var privateMemory (default, null):Float;
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage (default, null):Float;
-	
+
 	/**
 	 * The amount of memory(in bytes) currently in use that has been directly
 	 * allocated by Flash Player or AIR.
@@ -55,10 +49,9 @@ import cpp.vm.Gc;
 	 * property is set to 0. The `System.totalMemoryNumber` property
 	 * allows larger values.
 	 */
-	public static var totalMemory (get, never):Int;
-	
+	public static var totalMemory(get, never):Int;
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
-	
+
 	/**
 	 * A Boolean value that determines which code page to use to interpret
 	 * external text files. When the property is set to `false`,
@@ -105,25 +98,33 @@ import cpp.vm.Gc;
 	 * Unicode.
 	 */
 	public static var useCodePage:Bool = false;
-	
-	public static var vmVersion (get, never):String;
-	
-	
+	public static var vmVersion(get, never):String;
+
 	#if openfljs
-	@:noCompletion private static function __init__ () {
-		
-		untyped Object.defineProperties (System, {
-			"totalMemory": { get: function () { return System.get_totalMemory (); } },
-			"vmVersion": { get: function () { return System.get_vmVersion (); } },
-		});
-		
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperties(System,
+			{
+				"totalMemory":
+					{
+						get: function()
+						{
+							return System.get_totalMemory();
+						}
+					},
+				"vmVersion":
+					{
+						get: function()
+						{
+							return System.get_vmVersion();
+						}
+					},
+			});
 	}
 	#end
-	
-	
+
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
-	
-	
+
 	/**
 	 * Closes Flash Player.
 	 *
@@ -131,19 +132,17 @@ import cpp.vm.Gc;
 	 *
 	 * AIR applications should call the `NativeApplication.exit()`
 	 * method to exit the application.
-	 * 
+	 *
 	 * @param code A value to pass to the operating system. Typically, if the
 	 *             process exits normally, the value is 0.
 	 */
-	public static function exit (code:Int):Void {
-		
+	public static function exit(code:Int):Void
+	{
 		#if lime
-		LimeSystem.exit (code);
+		LimeSystem.exit(code);
 		#end
-		
 	}
-	
-	
+
 	/**
 	 * Forces the garbage collection process.
 	 *
@@ -151,17 +150,15 @@ import cpp.vm.Gc;
 	 * In an AIR application, the `System.gc()` method is only enabled
 	 * in content running in the AIR Debug Launcher(ADL) or, in an installed
 	 * applcation, in content in the application security sandbox.
-	 * 
+	 *
 	 */
-	public static function gc ():Void {
-		
+	public static function gc():Void
+	{
 		#if (cpp || neko)
-		return Gc.run (true);
+		return Gc.run(true);
 		#end
-		
 	}
-	
-	
+
 	/**
 	 * Pauses Flash Player or the AIR Debug Launcher(ADL). After calling this
 	 * method, nothing in the application continues except the delivery of Socket
@@ -169,32 +166,27 @@ import cpp.vm.Gc;
 	 *
 	 * _For the Flash Player debugger version or the AIR Debug Launcher
 	 * (ADL) only._
-	 * 
+	 *
 	 */
-	public static function pause ():Void {
-		
-		openfl._internal.Lib.notImplemented ();
-		
+	public static function pause():Void
+	{
+		openfl._internal.Lib.notImplemented();
 	}
-	
-	
+
 	// @:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
-	
-	
+
 	/**
 	 * Resumes the application after calling `System.pause()`.
 	 *
 	 * _For the Flash Player debugger version or the AIR Debug Launcher
 	 * (ADL) only._
-	 * 
+	 *
 	 */
-	public static function resume ():Void {
-		
-		openfl._internal.Lib.notImplemented ();
-		
+	public static function resume():Void
+	{
+		openfl._internal.Lib.notImplemented();
 	}
-	
-	
+
 	/**
 	 * Replaces the contents of the Clipboard with a specified text string. This
 	 * method works from any security context when called as a result of a user
@@ -206,51 +198,36 @@ import cpp.vm.Gc;
 	 * Flash Player 10 content and content in the application security sandbox
 	 * in an AIR application can call the `Clipboard.setData()`
 	 * method.
-	 * 
+	 *
 	 * @param string A plain-text string of characters to put on the system
 	 *               Clipboard, replacing its current contents(if any).
 	 */
-	public static function setClipboard (string:String):Void {
-		
+	public static function setClipboard(string:String):Void
+	{
 		#if lime
 		Clipboard.text = string;
 		#end
-		
 	}
-	
-	
-	
-	
+
 	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private static function get_totalMemory ():Int {
-		
+	@:noCompletion private static function get_totalMemory():Int
+	{
 		#if neko
-		return Gc.stats ().heap;
+		return Gc.stats().heap;
 		#elseif cpp
-		return untyped __global__.__hxcpp_gc_used_bytes ();
+		return untyped __global__.__hxcpp_gc_used_bytes();
 		#elseif (js && html5)
-		return untyped __js__ ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
+		return untyped __js__("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
 		#else
 		return 0;
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function get_vmVersion ():String {
-		
+
+	@:noCompletion private static function get_vmVersion():String
+	{
 		return "1.0.0";
-		
 	}
-	
-	
 }
-
-
 #else
 typedef System = flash.system.System;
 #end

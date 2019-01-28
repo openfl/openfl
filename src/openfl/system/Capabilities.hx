@@ -1,18 +1,15 @@
-package openfl.system; #if !flash
+package openfl.system;
 
-
+#if !flash
 import haxe.macro.Compiler;
 import openfl._internal.Lib;
-
 #if lime
 import lime.system.Locale;
 import lime.system.System;
 #end
-
 #if linux
 import sys.io.Process;
 #end
-
 
 /**
  * The Capabilities class provides properties that describe the system and
@@ -26,7 +23,7 @@ import sys.io.Process;
  *
  * However, some capabilities of Adobe AIR are not listed as properties in
  * the Capabilities class. They are properties of other classes:
- * 
+ *
  *
  * There is also a `WD` server string that specifies whether
  * windowless mode is disabled. Windowless mode can be disabled in Flash
@@ -35,16 +32,12 @@ import sys.io.Process;
  *
  * All properties of the Capabilities class are read-only.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-@:final class Capabilities {
-	
-	
+@:final class Capabilities
+{
 	/**
 	 * Specifies whether access to the user's camera and microphone has been
 	 * administratively prohibited(`true`) or allowed
@@ -55,108 +48,108 @@ import sys.io.Process;
 	 * the application security sandbox can always access the user's camera and
 	 * microphone.
 	 */
-	public static var avHardwareDisable (default, null) = true;
-	
+	public static var avHardwareDisable(default, null) = true;
+
 	/**
 	 * Specifies the current CPU architecture. The `cpuArchitecture`
 	 * property can return the following strings: "`PowerPC`",
 	 * "`x86`", "`SPARC`", and "`ARM`". The
 	 * server string is `ARCH`.
 	 */
-	public static var cpuArchitecture (get, never):String;
-	
+	public static var cpuArchitecture(get, never):String;
+
 	/**
 	 * Specifies whether the system supports(`true`) or does not
 	 * support(`false`) communication with accessibility aids. The
 	 * server string is `ACC`.
 	 */
-	public static var hasAccessibility (default, null) = false;
-	
+	public static var hasAccessibility(default, null) = false;
+
 	/**
 	 * Specifies whether the system has audio capabilities. This property is
 	 * always `true`. The server string is `A`.
 	 */
-	public static var hasAudio (default, null) = true;
-	
+	public static var hasAudio(default, null) = true;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) encode an audio stream, such as that coming from a
 	 * microphone. The server string is `AE`.
 	 */
-	public static var hasAudioEncoder (default, null) = false;
-	
+	public static var hasAudioEncoder(default, null) = false;
+
 	/**
 	 * Specifies whether the system supports(`true`) or does not
 	 * support(`false`) embedded video. The server string is
 	 * `EV`.
 	 */
-	public static var hasEmbeddedVideo (default, null) = false;
-	
+	public static var hasEmbeddedVideo(default, null) = false;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) have an input method editor(IME) installed. The
 	 * server string is `IME`.
 	 */
-	public static var hasIME (default, null) = false;
-	
+	public static var hasIME(default, null) = false;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) have an MP3 decoder. The server string is
 	 * `MP3`.
 	 */
-	public static var hasMP3 (default, null) = false;
-	
+	public static var hasMP3(default, null) = false;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) support printing. The server string is
 	 * `PR`.
 	 */
-	public static var hasPrinting (default, null) = #if html5 true #else false #end;
-	
+	public static var hasPrinting(default, null) = #if html5 true #else false #end;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) support the development of screen broadcast
 	 * applications to be run through Flash Media Server. The server string is
 	 * `SB`.
 	 */
-	public static var hasScreenBroadcast (default, null) = false;
-	
+	public static var hasScreenBroadcast(default, null) = false;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) support the playback of screen broadcast applications
 	 * that are being run through Flash Media Server. The server string is
 	 * `SP`.
 	 */
-	public static var hasScreenPlayback (default, null) = false;
-	
+	public static var hasScreenPlayback(default, null) = false;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) play streaming audio. The server string is
 	 * `SA`.
 	 */
-	public static var hasStreamingAudio (default, null) = false;
-	
+	public static var hasStreamingAudio(default, null) = false;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) play streaming video. The server string is
 	 * `SV`.
 	 */
-	public static var hasStreamingVideo (default, null) = false;
-	
+	public static var hasStreamingVideo(default, null) = false;
+
 	/**
 	 * Specifies whether the system supports native SSL sockets through
 	 * NetConnection(`true`) or does not(`false`). The
 	 * server string is `TLS`.
 	 */
-	public static var hasTLS (default, null) = true;
-	
+	public static var hasTLS(default, null) = true;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) encode a video stream, such as that coming from a web
 	 * camera. The server string is `VE`.
 	 */
-	public static var hasVideoEncoder (default, null) = #if html5 true #else false #end;
-	
+	public static var hasVideoEncoder(default, null) = #if html5 true #else false #end;
+
 	/**
 	 * Specifies whether the system is a special debugging version
 	 * (`true`) or an officially released version
@@ -164,14 +157,14 @@ import sys.io.Process;
 	 * is set to `true` when running in the debug version of Flash
 	 * Player or the AIR Debug Launcher(ADL).
 	 */
-	public static var isDebugger (default, null) = #if debug true #else false #end;
-	
+	public static var isDebugger(default, null) = #if debug true #else false #end;
+
 	/**
 	 * Specifies whether the Flash runtime is embedded in a PDF file that is open
 	 * in Acrobat 9.0 or higher(`true`) or not(`false`).
 	 */
-	public static var isEmbeddedInAcrobat (default, null) = false;
-	
+	public static var isEmbeddedInAcrobat(default, null) = false;
+
 	/**
 	 * Specifies the language code of the system on which the content is running.
 	 * The language is specified as a lowercase two-letter language code from ISO
@@ -184,18 +177,18 @@ import sys.io.Process;
 	 * (`en`), not the country code. On Microsoft Windows systems,
 	 * this property returns the user interface(UI) language, which refers to
 	 * the language used for all menus, dialog boxes, error messages, and help
-	 * files. The following table lists the possible values: 
+	 * files. The following table lists the possible values:
 	 *
 	 * _Note:_ The value of `Capabilities.language` property
 	 * is limited to the possible values on this list. Because of this
 	 * limitation, Adobe AIR applications should use the first element in the
 	 * `Capabilities.languages` array to determine the primary user
-	 * interface language for the system. 
+	 * interface language for the system.
 	 *
 	 * The server string is `L`.
 	 */
-	public static var language (get, never):String;
-	
+	public static var language(get, never):String;
+
 	/**
 	 * Specifies whether read access to the user's hard disk has been
 	 * administratively prohibited(`true`) or allowed
@@ -216,8 +209,8 @@ import sys.io.Process;
 	 *
 	 * The server string is `LFD`.
 	 */
-	public static var localFileReadDisable (default, null) = #if web true #else false #end;
-	
+	public static var localFileReadDisable(default, null) = #if web true #else false #end;
+
 	/**
 	 * Specifies the manufacturer of the running version of Flash Player or the
 	 * AIR runtime, in the format `"Adobe`
@@ -234,8 +227,8 @@ import sys.io.Process;
 	 * corresponding to the capability for which you are testing. For more
 	 * information, see the Capabilities class description.
 	 */
-	public static var manufacturer (get, never):String;
-	
+	public static var manufacturer(get, never):String;
+
 	/**
 	 * Retrieves the highest H.264 Level IDC that the client hardware supports.
 	 * Media run at this level are guaranteed to run; however, media run at the
@@ -246,8 +239,8 @@ import sys.io.Process;
 	 *
 	 * The server string is `ML`.
 	 */
-	public static var maxLevelIDC (default, null) = 0;
-	
+	public static var maxLevelIDC(default, null) = 0;
+
 	/**
 	 * Specifies the current operating system. The `os` property can
 	 * return the following strings:
@@ -262,18 +255,18 @@ import sys.io.Process;
 	 * corresponding to the capability for which you are testing. For more
 	 * information, see the Capabilities class description.
 	 */
-	public static var os (get, never):String;
-	
+	public static var os(get, never):String;
+
 	/**
 	 * Specifies the pixel aspect ratio of the screen. The server string is
 	 * `AR`.
 	 */
-	public static var pixelAspectRatio (get, never):Float;
-	
+	public static var pixelAspectRatio(get, never):Float;
+
 	/**
 	 * Specifies the type of runtime environment. This property can have one of
 	 * the following values:
-	 * 
+	 *
 	 *  * `"ActiveX"` for the Flash Player ActiveX control used by
 	 * Microsoft Internet Explorer
 	 *  * `"Desktop"` for the Adobe AIR runtime(except for SWF
@@ -284,26 +277,26 @@ import sys.io.Process;
 	 *  * `"PlugIn"` for the Flash Player browser plug-in(and for
 	 * SWF content loaded by an HTML page in an AIR application)
 	 *  * `"StandAlone"` for the stand-alone Flash Player
-	 * 
+	 *
 	 *
 	 * The server string is `PT`.
 	 */
-	public static var playerType (default, null) = #if web "PlugIn" #else "StandAlone" #end;
-	
+	public static var playerType(default, null) = #if web "PlugIn" #else "StandAlone" #end;
+
 	/**
 	 * Specifies the screen color. This property can have the value
 	 * `"color"`, `"gray"`(for grayscale), or
 	 * `"bw"`(for black and white). The server string is
 	 * `COL`.
 	 */
-	public static var screenColor (default, null) = "color";
-	
+	public static var screenColor(default, null) = "color";
+
 	/**
 	 * Specifies the dots-per-inch(dpi) resolution of the screen, in pixels. The
 	 * server string is `DP`.
 	 */
-	public static var screenDPI (get, never):Float;
-	
+	public static var screenDPI(get, never):Float;
+
 	/**
 	 * Specifies the maximum horizontal resolution of the screen. The server
 	 * string is `R`(which returns both the width and height of the
@@ -312,8 +305,8 @@ import sys.io.Process;
 	 * AIR application started. Also, the value only specifies the primary
 	 * screen.
 	 */
-	public static var screenResolutionX (get, never):Float;
-	
+	public static var screenResolutionX(get, never):Float;
+
 	/**
 	 * Specifies the maximum vertical resolution of the screen. The server string
 	 * is `R`(which returns both the width and height of the screen).
@@ -321,8 +314,8 @@ import sys.io.Process;
 	 * only indicates the resolution at the time Flash Player or an Adobe AIR
 	 * application started. Also, the value only specifies the primary screen.
 	 */
-	public static var screenResolutionY (get, never):Float;
-	
+	public static var screenResolutionY(get, never):Float;
+
 	/**
 	 * A URL-encoded string that specifies values for each Capabilities property.
 	 *
@@ -333,26 +326,26 @@ import sys.io.Process;
 	 * R=1600x1200&DP=72&COL=color&AR=1.0&OS=Windows%20XP&
 	 * L=en&PT=External&AVD=f&LFD=f&WD=f`
 	 */
-	public static var serverString (default, null) = ""; // TODO
-	
+	public static var serverString(default, null) = ""; // TODO
+
 	/**
 	 * Specifies whether the system supports running 32-bit processes. The server
 	 * string is `PR32`.
 	 */
-	public static var supports32BitProcesses (default, null) = #if sys true #else false #end;
-	
+	public static var supports32BitProcesses(default, null) = #if sys true #else false #end;
+
 	/**
 	 * Specifies whether the system supports running 64-bit processes. The server
 	 * string is `PR64`.
 	 */
-	public static var supports64BitProcesses (default, null) = #if desktop true #else false #end; // TODO
-	
+	public static var supports64BitProcesses(default, null) = #if desktop true #else false #end; // TODO
+
 	/**
 	 * Specifies the type of touchscreen supported, if any. Values are defined in
 	 * the flash.system.TouchscreenType class.
 	 */
-	public static var touchscreenType (default, null) = TouchscreenType.FINGER; // TODO
-	
+	public static var touchscreenType(default, null) = TouchscreenType.FINGER; // TODO
+
 	/**
 	 * Specifies the Flash Player or Adobe<sup>®</sup> AIR<sup>®</sup> platform
 	 * and version information. The format of the version number is: _platform
@@ -374,108 +367,138 @@ import sys.io.Process;
 	 *
 	 * The server string is `V`.
 	 */
-	public static var version (get, never):String;
-	
-	
-	@:noCompletion private static var __standardDensities = [ 120, 160, 240, 320, 480, 640, 800, 960 ];
-	
-	
+	public static var version(get, never):String;
+	@:noCompletion private static var __standardDensities = [120, 160, 240, 320, 480, 640, 800, 960];
+
 	#if openfljs
-	@:noCompletion private static function __init__ () {
-		
-		untyped Object.defineProperties (Capabilities, {
-			"cpuArchitecture": { get: function () { return Capabilities.get_cpuArchitecture (); } },
-			"language": { get: function () { return Capabilities.get_language (); } },
-			"manufacturer": { get: function () { return Capabilities.get_manufacturer (); } },
-			"os": { get: function () { return Capabilities.get_os (); } },
-			"pixelAspectRatio": { get: function () { return Capabilities.get_pixelAspectRatio (); } },
-			"screenDPI": { get: function () { return Capabilities.get_screenDPI (); } },
-			"screenResolutionX": { get: function () { return Capabilities.get_screenResolutionX (); } },
-			"screenResolutionY": { get: function () { return Capabilities.get_screenResolutionY (); } },
-			"version": { get: function () { return Capabilities.get_version (); } }
-		});
-		
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperties(Capabilities,
+			{
+				"cpuArchitecture":
+					{
+						get: function()
+						{
+							return Capabilities.get_cpuArchitecture();
+						}
+					},
+				"language":
+					{
+						get: function()
+						{
+							return Capabilities.get_language();
+						}
+					},
+				"manufacturer":
+					{
+						get: function()
+						{
+							return Capabilities.get_manufacturer();
+						}
+					},
+				"os":
+					{
+						get: function()
+						{
+							return Capabilities.get_os();
+						}
+					},
+				"pixelAspectRatio":
+					{
+						get: function()
+						{
+							return Capabilities.get_pixelAspectRatio();
+						}
+					},
+				"screenDPI":
+					{
+						get: function()
+						{
+							return Capabilities.get_screenDPI();
+						}
+					},
+				"screenResolutionX":
+					{
+						get: function()
+						{
+							return Capabilities.get_screenResolutionX();
+						}
+					},
+				"screenResolutionY":
+					{
+						get: function()
+						{
+							return Capabilities.get_screenResolutionY();
+						}
+					},
+				"version":
+					{
+						get: function()
+						{
+							return Capabilities.get_version();
+						}
+					}
+			});
 	}
 	#end
-	
-	
-	public static function hasMultiChannelAudio (type:String):Bool {
-		
+
+	public static function hasMultiChannelAudio(type:String):Bool
+	{
 		return false;
-		
 	}
-	
-	
-	
-	
+
 	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private static inline function get_cpuArchitecture ():String {
-		
+	@:noCompletion private static inline function get_cpuArchitecture():String
+	{
 		// TODO: Check architecture
 		#if (mobile && !simulator && !emulator)
 		return "ARM";
 		#else
 		return "x86";
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function get_language ():String {
-		
+
+	@:noCompletion private static function get_language():String
+	{
 		#if lime
 		var language = Locale.currentLocale.language;
-		
-		if (language != null) {
-			
-			language = language.toLowerCase ();
-			
-			switch (language) {
-				
+
+		if (language != null)
+		{
+			language = language.toLowerCase();
+
+			switch (language)
+			{
 				case "cs", "da", "nl", "en", "fi", "fr", "de", "hu", "it", "ja", "ko", "nb", "pl", "pt", "ru", "es", "sv", "tr":
-					
 					return language;
-				
+
 				case "zh":
-					
 					var region = Locale.currentLocale.region;
-					
-					if (region != null) {
-						
-						switch (region.toUpperCase ()) {
-							
+
+					if (region != null)
+					{
+						switch (region.toUpperCase())
+						{
 							case "TW", "HANT":
-								
 								return "zh-TW";
-							
+
 							default:
-							
 						}
-						
 					}
-					
+
 					return "zh-CN";
-				
+
 				default:
-					
 					return "xu";
-				
 			}
-			
 		}
 		#end
-		
+
 		return "en";
-	
 	}
-	
-	
-	@:noCompletion private static inline function get_manufacturer ():String {
-		
+
+	@:noCompletion private static inline function get_manufacturer():String
+	{
 		#if mac
 		return "OpenFL Macintosh";
 		#elseif linux
@@ -486,12 +509,10 @@ import sys.io.Process;
 		#else
 		return null;
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static inline function get_os ():String {
-		
+
+	@:noCompletion private static inline function get_os():String
+	{
 		#if lime
 		#if (ios || tvos)
 		return System.deviceModel;
@@ -499,13 +520,15 @@ import sys.io.Process;
 		return "Mac OS " + System.platformVersion;
 		#elseif linux
 		var kernelVersion = "";
-		try {
-			var process = new Process ("uname", [ "-r" ]);
-			kernelVersion = StringTools.trim (process.stdout.readLine ().toString ());
-			process.close ();
+		try
+		{
+			var process = new Process("uname", ["-r"]);
+			kernelVersion = StringTools.trim(process.stdout.readLine().toString());
+			process.close();
 		} catch (e:Dynamic) {}
 		if (kernelVersion != "") return "Linux " + kernelVersion;
-		else return "Linux";
+		else
+			return "Linux";
 		#else
 		var label = System.platformLabel;
 		return label != null ? label : "";
@@ -513,148 +536,123 @@ import sys.io.Process;
 		#else
 		return null;
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function get_pixelAspectRatio ():Float {
-		
+
+	@:noCompletion private static function get_pixelAspectRatio():Float
+	{
 		return 1;
-		
 	}
-	
-	
-	@:noCompletion private static function get_screenDPI ():Float {
-		
+
+	@:noCompletion private static function get_screenDPI():Float
+	{
 		#if lime
 		var window = Lib.application != null ? Lib.application.window : null;
 		var screenDPI:Float;
-		
+
 		#if (desktop || web)
-		
 		screenDPI = 72;
-		
-		if (window != null) {
-			
+
+		if (window != null)
+		{
 			screenDPI *= window.scale;
-			
 		}
-		
 		#else
-		
 		screenDPI = __standardDensities[0];
-		
-		if (window != null) {
-			
+
+		if (window != null)
+		{
 			var display = window.display;
-			
-			if (display != null) {
-				
+
+			if (display != null)
+			{
 				var actual = display.dpi;
-				
+
 				var closestValue = screenDPI;
-				var closestDifference = Math.abs (actual - screenDPI);
+				var closestDifference = Math.abs(actual - screenDPI);
 				var difference:Float;
-				
-				for (density in __standardDensities) {
-					
-					difference = Math.abs (actual - density);
-					
-					if (difference < closestDifference) {
-						
+
+				for (density in __standardDensities)
+				{
+					difference = Math.abs(actual - density);
+
+					if (difference < closestDifference)
+					{
 						closestDifference = difference;
 						closestValue = density;
-						
 					}
-					
 				}
-				
+
 				screenDPI = closestValue;
-				
 			}
-			
 		}
-		
 		#end
-		
+
 		return screenDPI;
 		#else
 		return 72;
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function get_screenResolutionX ():Float { 
-		
+
+	@:noCompletion private static function get_screenResolutionX():Float
+	{
 		#if lime
 		var stage = Lib.current.stage;
 		var resolutionX = 0;
-		
+
 		if (stage == null) return 0;
-		
-		if (stage.window != null) {
-			
+
+		if (stage.window != null)
+		{
 			var display = stage.window.display;
-			
-			if (display != null) {
-				
-				resolutionX = Math.ceil (display.currentMode.width * stage.window.scale);
-				
+
+			if (display != null)
+			{
+				resolutionX = Math.ceil(display.currentMode.width * stage.window.scale);
 			}
-			
 		}
-		
-		if (resolutionX > 0) {
-			
+
+		if (resolutionX > 0)
+		{
 			return resolutionX;
-			
 		}
-		
+
 		return stage.stageWidth;
 		#else
 		return 0;
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function get_screenResolutionY ():Float {
-		
+
+	@:noCompletion private static function get_screenResolutionY():Float
+	{
 		#if lime
 		var stage = Lib.current.stage;
 		var resolutionY = 0;
-		
+
 		if (stage == null) return 0;
-		
-		if (stage.window != null) {
-			
+
+		if (stage.window != null)
+		{
 			var display = stage.window.display;
-			
-			if (display != null) {
-				
-				resolutionY = Math.ceil (display.currentMode.height * stage.window.scale);
-				
+
+			if (display != null)
+			{
+				resolutionY = Math.ceil(display.currentMode.height * stage.window.scale);
 			}
-			
 		}
-		
-		if (resolutionY > 0) {
-			
+
+		if (resolutionY > 0)
+		{
 			return resolutionY;
-			
 		}
-		
+
 		return stage.stageHeight;
 		#else
 		return 0;
 		#end
-		
 	}
-	
-	
-	@:noCompletion private static function get_version () {
-		
+
+	@:noCompletion private static function get_version()
+	{
 		#if windows
 		var value = "WIN";
 		#elseif mac
@@ -676,21 +674,15 @@ import sys.io.Process;
 		#else
 		var value = "OFL";
 		#end
-		
-		if (Compiler.getDefine ("openfl") != null) {
-			
-			value += " " + StringTools.replace (Compiler.getDefine ("openfl"), ".", ",") + ",0";
-			
+
+		if (Compiler.getDefine("openfl") != null)
+		{
+			value += " " + StringTools.replace(Compiler.getDefine("openfl"), ".", ",") + ",0";
 		}
-		
+
 		return value;
-		
 	}
-	
-	
 }
-
-
 #else
 typedef Capabilities = flash.system.Capabilities;
 #end

@@ -1,6 +1,5 @@
 package openfl._internal.renderer.context3D;
 
-
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DCompareMode;
@@ -9,7 +8,6 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
-
 #if lime
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
@@ -18,10 +16,8 @@ import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.GL;
 #end
 
-
-class Context3DState {
-	
-	
+class Context3DState
+{
 	public var backBufferEnableDepthAndStencil:Bool;
 	public var blendDestinationAlphaFactor:Context3DBlendFactor;
 	public var blendSourceAlphaFactor:Context3DBlendFactor;
@@ -54,9 +50,8 @@ class Context3DState {
 	public var stencilWriteMask:UInt;
 	public var textures:Array<TextureBase>;
 	// vertex buffer at?
-	
 	public var shader:Shader; // TODO: Merge shader/program3d
-	
+
 	private var __currentGLArrayBuffer:#if lime GLBuffer #else Dynamic #end;
 	private var __currentGLElementArrayBuffer:#if lime GLBuffer #else Dynamic #end;
 	private var __currentGLFramebuffer:#if lime GLFramebuffer #else Dynamic #end;
@@ -74,10 +69,9 @@ class Context3DState {
 	private var __rttGLFramebuffer:#if lime GLFramebuffer #else Dynamic #end;
 	private var __rttGLRenderbuffer:#if lime GLRenderbuffer #else Dynamic #end;
 	private var __rttStencilGLRenderbuffer:#if lime GLRenderbuffer #else Dynamic #end;
-	
-	
-	public function new () {
-		
+
+	public function new()
+	{
 		backBufferEnableDepthAndStencil = false;
 		blendDestinationAlphaFactor = ZERO;
 		blendSourceAlphaFactor = ONE;
@@ -90,8 +84,8 @@ class Context3DState {
 		culling = NONE;
 		depthCompareMode = LESS;
 		depthMask = true;
-		samplerStates = new Array ();
-		scissorRectangle = new Rectangle ();
+		samplerStates = new Array();
+		scissorRectangle = new Rectangle();
 		stencilCompareMode = ALWAYS;
 		stencilDepthFail = KEEP;
 		stencilFail = KEEP;
@@ -100,14 +94,11 @@ class Context3DState {
 		stencilReferenceValue = 0;
 		stencilTriangleFace = FRONT_AND_BACK;
 		stencilWriteMask = 0xFF;
-		textures = new Array ();
+		textures = new Array();
 		__frontFaceGLCCW = true;
-		
+
 		#if lime
 		__glBlendEquation = GL.FUNC_ADD;
 		#end
-		
 	}
-	
-	
 }

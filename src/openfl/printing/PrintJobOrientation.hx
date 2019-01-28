@@ -1,49 +1,38 @@
-package openfl.printing; #if !flash #if !openfljs
+package openfl.printing;
 
-
-@:enum abstract PrintJobOrientation(Null<Int>) {
-	
+#if !flash
+#if !openfljs
+@:enum abstract PrintJobOrientation(Null<Int>)
+{
 	public var LANDSCAPE = 0;
 	public var PORTRAIT = 1;
-	
-	@:from private static function fromString (value:String):PrintJobOrientation {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):PrintJobOrientation
+	{
+		return switch (value)
+		{
 			case "landscape": LANDSCAPE;
 			case "portrait": PORTRAIT;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case PrintJobOrientation.LANDSCAPE: "landscape";
 			case PrintJobOrientation.PORTRAIT: "portrait";
 			default: null;
-			
 		}
-		
 	}
-	
 }
-
-
 #else
-
-
-@:enum abstract PrintJobOrientation(String) from String to String {
-	
+@:enum abstract PrintJobOrientation(String) from String to String
+{
 	public var LANDSCAPE = "landscape";
 	public var PORTRAIT = "portrait";
-	
 }
-
-
 #end
 #else
 typedef PrintJobOrientation = flash.printing.PrintJobOrientation;

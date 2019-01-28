@@ -1,8 +1,9 @@
-package openfl.display; #if !flash #if !openfljs
+package openfl.display;
 
-
-@:enum abstract ShaderParameterType(Null<Int>) {
-	
+#if !flash
+#if !openfljs
+@:enum abstract ShaderParameterType(Null<Int>)
+{
 	public var BOOL = 0;
 	public var BOOL2 = 1;
 	public var BOOL3 = 2;
@@ -24,11 +25,11 @@ package openfl.display; #if !flash #if !openfljs
 	public var MATRIX4X2 = 18;
 	public var MATRIX4X3 = 19;
 	public var MATRIX4X4 = 20;
-	
-	@:from private static function fromString (value:String):ShaderParameterType {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):ShaderParameterType
+	{
+		return switch (value)
+		{
 			case "bool": BOOL;
 			case "bool2": BOOL2;
 			case "bool3": BOOL2;
@@ -51,15 +52,13 @@ package openfl.display; #if !flash #if !openfljs
 			case "matrix4x3": MATRIX4X3;
 			case "matrix4x4": MATRIX4X4;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case ShaderParameterType.BOOL: "bool";
 			case ShaderParameterType.BOOL2: "bool2";
 			case ShaderParameterType.BOOL3: "bool3";
@@ -82,19 +81,12 @@ package openfl.display; #if !flash #if !openfljs
 			case ShaderParameterType.MATRIX4X3: "matrix4x3";
 			case ShaderParameterType.MATRIX4X4: "matrix4x4";
 			default: null;
-			
 		}
-		
 	}
-	
 }
-
-
 #else
-
-
-@:enum abstract ShaderParameterType(String) from String to String {
-	
+@:enum abstract ShaderParameterType(String) from String to String
+{
 	public var BOOL = "bool";
 	public var BOOL2 = "bool2";
 	public var BOOL3 = "bool3";
@@ -116,10 +108,7 @@ package openfl.display; #if !flash #if !openfljs
 	public var MATRIX4X2 = "matrix4x2";
 	public var MATRIX4X3 = "matrix4x3";
 	public var MATRIX4X4 = "matrix4x4";
-	
 }
-
-
 #end
 #else
 typedef ShaderParameterType = flash.display.ShaderParameterType;

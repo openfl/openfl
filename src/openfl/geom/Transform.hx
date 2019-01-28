@@ -1,8 +1,7 @@
-package openfl.geom; #if !flash
+package openfl.geom;
 
-
+#if !flash
 import openfl.display.DisplayObject;
-
 
 /**
  * The Transform class provides access to color adjustment properties and two-
@@ -58,27 +57,22 @@ import openfl.display.DisplayObject;
  * projection center changes. For more control over the perspective
  * transformation, create a perspective projection Matrix3D object.
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.ColorTransform)
-
-
-class Transform {
-	
-	
+class Transform
+{
 	/**
 	 * A ColorTransform object containing values that universally adjust the
 	 * colors in the display object.
-	 * 
+	 *
 	 * @throws TypeError The colorTransform is null when being set
 	 */
-	public var colorTransform (get, set):ColorTransform;
-	
+	public var colorTransform(get, set):ColorTransform;
+
 	/**
 	 * A ColorTransform object representing the combined color transformations
 	 * applied to the display object and all of its parent objects, back to the
@@ -86,8 +80,8 @@ class Transform {
 	 * different levels, all of those transformations are concatenated into one
 	 * ColorTransform object for this property.
 	 */
-	public var concatenatedColorTransform (default, null):ColorTransform;
-	
+	public var concatenatedColorTransform(default, null):ColorTransform;
+
 	/**
 	 * A Matrix object representing the combined transformation matrixes of the
 	 * display object and all of its parent objects, back to the root level. If
@@ -99,8 +93,8 @@ class Transform {
 	 * window coordinates, which may not be the same coordinate space as that of
 	 * the Stage.
 	 */
-	public var concatenatedMatrix (get, never):Matrix;
-	
+	public var concatenatedMatrix(get, never):Matrix;
+
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
 	 * translation of the display object.
@@ -110,11 +104,11 @@ class Transform {
 	 * `null`. And if the `matrix3D` property is set to a
 	 * value(not `null`), the `matrix` property is
 	 * `null`.
-	 * 
+	 *
 	 * @throws TypeError The matrix is null when being set
 	 */
-	public var matrix (get, set):Matrix;
-	
+	public var matrix(get, set):Matrix;
+
 	/**
 	 * Provides access to the Matrix3D object of a three-dimensional display
 	 * object. The Matrix3D object represents a transformation matrix that
@@ -127,227 +121,184 @@ class Transform {
 	 * value(not `null`), the `matrix` property is
 	 * `null`.
 	 */
-	public var matrix3D (get, set):Matrix3D;
-	
+	public var matrix3D(get, set):Matrix3D;
 	// @:noCompletion @:dox(hide) @:require(flash10) public var perspectiveProjection:PerspectiveProjection;
-	
+
 	/**
 	 * A Rectangle object that defines the bounding rectangle of the display
 	 * object on the stage.
 	 */
-	public var pixelBounds (default, null):Rectangle;
-	
-	
+	public var pixelBounds(default, null):Rectangle;
+
 	@:noCompletion private var __colorTransform:ColorTransform;
 	@:noCompletion private var __displayObject:DisplayObject;
 	@:noCompletion private var __hasMatrix:Bool;
 	@:noCompletion private var __hasMatrix3D:Bool;
-	
-	
+
 	#if openfljs
-	@:noCompletion private static function __init__ () {
-		
-		untyped Object.defineProperties (Transform.prototype, {
-			"colorTransform": { get: untyped __js__ ("function () { return this.get_colorTransform (); }"), set: untyped __js__ ("function (v) { return this.set_colorTransform (v); }") },
-			"concatenatedMatrix": { get: untyped __js__ ("function () { return this.get_concatenatedMatrix (); }"), set: untyped __js__ ("function (v) { return this.set_concatenatedMatrix (v); }") },
-			"matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
-			"matrix3D": { get: untyped __js__ ("function () { return this.get_matrix3D (); }"), set: untyped __js__ ("function (v) { return this.set_matrix3D (v); }") },
-		});
-		
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperties(Transform.prototype,
+			{
+				"colorTransform": {get: untyped __js__("function () { return this.get_colorTransform (); }"), set: untyped __js__("function (v) { return this.set_colorTransform (v); }")},
+				"concatenatedMatrix": {get: untyped __js__("function () { return this.get_concatenatedMatrix (); }"), set: untyped __js__("function (v) { return this.set_concatenatedMatrix (v); }")},
+				"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+				"matrix3D": {get: untyped __js__("function () { return this.get_matrix3D (); }"), set: untyped __js__("function (v) { return this.set_matrix3D (v); }")},
+			});
 	}
 	#end
-	
-	
-	public function new (displayObject:DisplayObject) {
-		
-		__colorTransform = new ColorTransform ();
-		concatenatedColorTransform = new ColorTransform ();
-		pixelBounds = new Rectangle ();
-		
+
+	public function new(displayObject:DisplayObject)
+	{
+		__colorTransform = new ColorTransform();
+		concatenatedColorTransform = new ColorTransform();
+		pixelBounds = new Rectangle();
+
 		__displayObject = displayObject;
 		__hasMatrix = true;
-		
 	}
-	
-	
+
 	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
-	
-	
-	
-	
 	// Get & Set Methods
-	
-	
-	
-	
-	@:noCompletion private function get_colorTransform ():ColorTransform {
-		
+	@:noCompletion private function get_colorTransform():ColorTransform
+	{
 		return __colorTransform;
-		
 	}
-	
-	
-	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
-		
-		if (!__colorTransform.__equals (value, false)) {
-			
-			__colorTransform.__copyFrom (value);
-			
-			if (value != null) {
-				
+
+	@:noCompletion private function set_colorTransform(value:ColorTransform):ColorTransform
+	{
+		if (!__colorTransform.__equals(value, false))
+		{
+			__colorTransform.__copyFrom(value);
+
+			if (value != null)
+			{
 				__displayObject.alpha = value.alphaMultiplier;
-				
 			}
-			
-			__displayObject.__setRenderDirty ();
-			
+
+			__displayObject.__setRenderDirty();
 		}
-		
+
 		return __colorTransform;
-		
 	}
-	
-	
-	@:noCompletion private function get_concatenatedMatrix ():Matrix {
-		
-		if (__hasMatrix) {
-			
-			return __displayObject.__getWorldTransform ().clone ();
-			
+
+	@:noCompletion private function get_concatenatedMatrix():Matrix
+	{
+		if (__hasMatrix)
+		{
+			return __displayObject.__getWorldTransform().clone();
 		}
-		
+
 		return null;
-		
 	}
-	
-	
-	@:noCompletion private function get_matrix ():Matrix {
-		
-		if (__hasMatrix) {
-			
-			return __displayObject.__transform.clone ();
-			
+
+	@:noCompletion private function get_matrix():Matrix
+	{
+		if (__hasMatrix)
+		{
+			return __displayObject.__transform.clone();
 		}
-		
+
 		return null;
-		
 	}
-	
-	
-	@:noCompletion private function set_matrix (value:Matrix):Matrix {
-		
-		if (value == null) {
-			
+
+	@:noCompletion private function set_matrix(value:Matrix):Matrix
+	{
+		if (value == null)
+		{
 			__hasMatrix = false;
 			return null;
-			
 		}
-		
+
 		__hasMatrix = true;
 		__hasMatrix3D = false;
-		
-		if (__displayObject != null) {
-			
-			__setTransform (value.a, value.b, value.c, value.d, value.tx, value.ty);
-			
+
+		if (__displayObject != null)
+		{
+			__setTransform(value.a, value.b, value.c, value.d, value.tx, value.ty);
 		}
-		
+
 		return value;
-		
 	}
-	
-	
-	@:noCompletion private function get_matrix3D ():Matrix3D {
-		
-		if (__hasMatrix3D) {
-			
+
+	@:noCompletion private function get_matrix3D():Matrix3D
+	{
+		if (__hasMatrix3D)
+		{
 			var matrix = __displayObject.__transform;
-			return new Matrix3D (new Vector<Float> ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]));
-			
+			return new Matrix3D(new Vector<Float>([
+				matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0
+			]));
 		}
-		
+
 		return null;
-		
 	}
-	
-	
-	@:noCompletion private function set_matrix3D (value:Matrix3D):Matrix3D {
-		
-		if (value == null) {
-			
+
+	@:noCompletion private function set_matrix3D(value:Matrix3D):Matrix3D
+	{
+		if (value == null)
+		{
 			__hasMatrix3D = false;
 			return null;
-			
 		}
-		
+
 		__hasMatrix = false;
 		__hasMatrix3D = true;
-		
-		__setTransform (value.rawData[0], value.rawData[1], value.rawData[5], value.rawData[6], value.rawData[12], value.rawData[13]);
-		
+
+		__setTransform(value.rawData[0], value.rawData[1], value.rawData[5], value.rawData[6], value.rawData[12], value.rawData[13]);
+
 		return value;
-		
 	}
-	
-	
-	@:noCompletion private function __setTransform (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void {
-		
-		if (__displayObject != null) {
-			
+
+	@:noCompletion private function __setTransform(a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void
+	{
+		if (__displayObject != null)
+		{
 			var scaleX = 0.0;
 			var scaleY = 0.0;
-			
-			if (b == 0) {
-				
+
+			if (b == 0)
+			{
 				scaleX = a;
-				
-			} else {
-				
-				scaleX = Math.sqrt (a * a + b * b);
-				
 			}
-			
-			if (c == 0) {
-				
+			else
+			{
+				scaleX = Math.sqrt(a * a + b * b);
+			}
+
+			if (c == 0)
+			{
 				scaleY = a;
-				
-			} else {
-				
-				scaleY = Math.sqrt (c * c + d * d);
-				
 			}
-			
+			else
+			{
+				scaleY = Math.sqrt(c * c + d * d);
+			}
+
 			__displayObject.__scaleX = scaleX;
 			__displayObject.__scaleY = scaleY;
-			
-			var rotation = (180 / Math.PI) * Math.atan2 (d, c) - 90;
-			
-			if (rotation != __displayObject.__rotation) {
-				
+
+			var rotation = (180 / Math.PI) * Math.atan2(d, c) - 90;
+
+			if (rotation != __displayObject.__rotation)
+			{
 				__displayObject.__rotation = rotation;
 				var radians = rotation * (Math.PI / 180);
-				__displayObject.__rotationSine = Math.sin (radians);
-				__displayObject.__rotationCosine = Math.cos (radians);
-				
+				__displayObject.__rotationSine = Math.sin(radians);
+				__displayObject.__rotationCosine = Math.cos(radians);
 			}
-			
+
 			__displayObject.__transform.a = a;
 			__displayObject.__transform.b = b;
 			__displayObject.__transform.c = c;
 			__displayObject.__transform.d = d;
 			__displayObject.__transform.tx = tx;
 			__displayObject.__transform.ty = ty;
-			
-			__displayObject.__setTransformDirty ();
-			
+
+			__displayObject.__setTransformDirty();
 		}
-		
 	}
-	
-	
 }
-
-
 #else
 typedef Transform = flash.geom.Transform;
 #end

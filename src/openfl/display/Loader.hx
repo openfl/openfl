@@ -1,6 +1,6 @@
-package openfl.display; #if !flash
+package openfl.display;
 
-
+#if !flash
 import haxe.io.Path;
 import openfl._internal.formats.swf.SWFLiteLibrary;
 import openfl.events.Event;
@@ -15,17 +15,14 @@ import openfl.system.LoaderContext;
 import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
-
 #if lime
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetManifest;
 #end
-
 #if (js && html5)
 import js.html.ScriptElement;
 import js.Browser;
 #end
-
 
 /**
  * The Loader class is used to load SWF files or image (JPG, PNG, or GIF)
@@ -41,18 +38,18 @@ import js.Browser;
  * `removeChild()`, `removeChildAt()`, and
  * `setChildIndex()`. To remove a loaded display object, you must
  * remove the _Loader_ object from its parent DisplayObjectContainer
- * child array. 
+ * child array.
  *
  * **Note:** The ActionScript 2.0 MovieClipLoader and LoadVars classes
  * are not used in ActionScript 3.0. The Loader and URLLoader classes replace
  * them.
  *
  * When you use the Loader class, consider the Flash Player and Adobe AIR
- * security model: 
- * 
- *  * You can load content from any accessible source. 
+ * security model:
+ *
+ *  * You can load content from any accessible source.
  *  * Loading is not allowed if the calling SWF file is in a network
- * sandbox and the file to be loaded is local. 
+ * sandbox and the file to be loaded is local.
  *  * If the loaded content is a SWF file written with ActionScript 3.0, it
  * cannot be cross-scripted by a SWF file in another security sandbox unless
  * that cross-scripting arrangement was approved through a call to the
@@ -69,11 +66,11 @@ import js.Browser;
  * image.
  *  * Movie clips in the local-with-file-system sandbox cannot script movie
  * clips in the local-with-networking sandbox, and the reverse is also
- * prevented. 
+ * prevented.
  *  * You cannot connect to commonly reserved ports. For a complete list of
  * blocked ports, see "Restricting Networking APIs" in the _ActionScript 3.0
- * Developer's Guide_. 
- * 
+ * Developer's Guide_.
+ *
  * However, in AIR, content in the `application` security
  * sandbox(content installed with the AIR application) are not restricted by
  * these security limitations.
@@ -87,24 +84,19 @@ import js.Browser;
  * of the Loader object) from drawing to portions of the Stage outside of that
  * mask, as shown in the following code:
  */
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.events.Event)
-
-
-class Loader extends DisplayObjectContainer {
-	
-	
+class Loader extends DisplayObjectContainer
+{
 	/**
 	 * Contains the root display object of the SWF file or image(JPG, PNG, or
 	 * GIF) file that was loaded by using the `load()` or
 	 * `loadBytes()` methods.
-	 * 
+	 *
 	 * @throws SecurityError The loaded SWF file or image file belongs to a
 	 *                       security sandbox to which you do not have access.
 	 *                       For a loaded SWF file, you can avoid this situation
@@ -117,8 +109,8 @@ class Loader extends DisplayObjectContainer {
 	 *                       call the `load()` or
 	 *                       `loadBytes()` method.
 	 */
-	public var content (default, null):DisplayObject;
-	
+	public var content(default, null):DisplayObject;
+
 	/**
 	 * Returns a LoaderInfo object corresponding to the object being loaded.
 	 * LoaderInfo objects are shared between the Loader object and the loaded
@@ -135,16 +127,13 @@ class Loader extends DisplayObjectContainer {
 	 * `Loader.uncaughtErrorEvents` property, not the
 	 * `Loader.contentLoaderInfo.uncaughtErrorEvents` property.
 	 */
-	public var contentLoaderInfo (default, null):LoaderInfo;
-	
-	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
-	
-	
+	public var contentLoaderInfo(default, null):LoaderInfo;
+	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
+
 	@:noCompletion private var __library:AssetLibrary;
 	@:noCompletion private var __path:String;
 	@:noCompletion private var __unloaded:Bool;
-	
-	
+
 	/**
 	 * Creates a Loader object that you can use to load files, such as SWF, JPEG,
 	 * GIF, or PNG files. Call the `load()` method to load the asset
@@ -156,7 +145,7 @@ class Loader extends DisplayObjectContainer {
 	 * You can also use a Loader instance "offlist," that is without adding it
 	 * to a display object container on the display list. In this mode, the
 	 * Loader instance might be used to load a SWF file that contains additional
-	 * modules of an application. 
+	 * modules of an application.
 	 *
 	 * To detect when the SWF file is finished loading, you can use the events
 	 * of the LoaderInfo object associated with the
@@ -174,16 +163,16 @@ class Loader extends DisplayObjectContainer {
 	 * events that the LoaderInfo object associated with the
 	 * `contentLoaderInfo` property of the Loader object:
 	 *
-	 * 
+	 *
 	 *  * The `open` event is dispatched when loading begins.
 	 *  * The `ioError` or `securityError` event is
 	 * dispatched if the file cannot be loaded or if an error occured during the
-	 * load process. 
+	 * load process.
 	 *  * The `progress` event fires continuously while the file is
 	 * being loaded.
 	 *  * The `complete` event is dispatched when a file completes
 	 * downloading, but before the loaded movie clip's methods and properties are
-	 * available. 
+	 * available.
 	 *  * The `init` event is dispatched after the properties and
 	 * methods of the loaded SWF file are accessible, so you can begin
 	 * manipulating the loaded SWF file. This event is dispatched before the
@@ -191,30 +180,26 @@ class Loader extends DisplayObjectContainer {
 	 * `init` event can occur significantly earlier than the
 	 * `complete` event. For most purposes, use the `init`
 	 * handler.
-	 * 
+	 *
 	 */
-	public function new () {
-		
-		super ();
-		
-		contentLoaderInfo = LoaderInfo.create (this);
+	public function new()
+	{
+		super();
+
+		contentLoaderInfo = LoaderInfo.create(this);
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
-		
 	}
-	
-	
+
 	/**
 	 * Cancels a `load()` method operation that is currently in
 	 * progress for the Loader instance.
-	 * 
+	 *
 	 */
-	public function close ():Void {
-		
-		openfl._internal.Lib.notImplemented ();
-		
+	public function close():Void
+	{
+		openfl._internal.Lib.notImplemented();
 	}
-	
-	
+
 	/**
 	 * Loads a SWF, JPEG, progressive JPEG, unanimated GIF, or PNG file into an
 	 * object that is a child of this Loader object. If you load an animated GIF
@@ -232,7 +217,7 @@ class Loader extends DisplayObjectContainer {
 	 *
 	 * A SWF file or image loaded into a Loader object inherits the position,
 	 * rotation, and scale properties of the parent display objects of the Loader
-	 * object. 
+	 * object.
 	 *
 	 * Use the `unload()` method to remove movies or images loaded
 	 * with this method, or to cancel a load operation that is in progress.
@@ -243,7 +228,7 @@ class Loader extends DisplayObjectContainer {
 	 * content.
 	 *
 	 * When you use this method, consider the Flash Player security model,
-	 * which is described in the Loader class description. 
+	 * which is described in the Loader class description.
 	 *
 	 *  In Flash Player 10 and later, if you use a multipart Content-Type(for
 	 * example "multipart/form-data") that contains an upload(indicated by a
@@ -251,14 +236,14 @@ class Loader extends DisplayObjectContainer {
 	 * body), the POST operation is subject to the security rules applied to
 	 * uploads:
 	 *
-	 * 
+	 *
 	 *  * The POST operation must be performed in response to a user-initiated
 	 * action, such as a mouse click or key press.
 	 *  * If the POST operation is cross-domain(the POST target is not on the
 	 * same server as the SWF file that is sending the POST request), the target
 	 * server must provide a URL policy file that permits cross-domain
 	 * access.
-	 * 
+	 *
 	 *
 	 * Also, for any multipart Content-Type, the syntax must be valid
 	 * (according to the RFC2046 standard). If the syntax appears to be invalid,
@@ -267,7 +252,7 @@ class Loader extends DisplayObjectContainer {
 	 *
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param request The absolute or relative URL of the SWF, JPEG, GIF, or PNG
 	 *                file to be loaded. A relative path must be relative to the
 	 *                main SWF file. Absolute URLs must include the protocol
@@ -275,14 +260,14 @@ class Loader extends DisplayObjectContainer {
 	 *                include disk drive specifications.
 	 * @param context A LoaderContext object, which has properties that define
 	 *                the following:
-	 *                
+	 *
 	 *                 * Whether or not to check for the existence of a policy
 	 *                file upon loading the object
 	 *                 * The ApplicationDomain for the loaded object
 	 *                 * The SecurityDomain for the loaded object
 	 *                 * The ImageDecodingPolicy for the loaded image
 	 *                object
-	 *                
+	 *
 	 *                If the `context` parameter is not specified
 	 *                or refers to a null object, the loaded content remains in
 	 *                its own security domain.
@@ -372,97 +357,93 @@ class Loader extends DisplayObjectContainer {
 	 * @event unload        Dispatched by the `contentLoaderInfo`
 	 *                      object when a loaded object is removed.
 	 */
-	public function load (request:URLRequest, context:LoaderContext = null):Void {
-		
+	public function load(request:URLRequest, context:LoaderContext = null):Void
+	{
 		contentLoaderInfo.loaderURL = Lib.current.loaderInfo.url;
 		contentLoaderInfo.url = request.url;
 		__unloaded = false;
-		
-		if (request.contentType == null || request.contentType == "") {
-			
+
+		if (request.contentType == null || request.contentType == "")
+		{
 			var extension = "";
 			__path = request.url;
-			
-			var queryIndex = __path.indexOf ('?');
-			if (queryIndex > -1) {
-				
-				__path = __path.substring (0, queryIndex);
-				
+
+			var queryIndex = __path.indexOf('?');
+			if (queryIndex > -1)
+			{
+				__path = __path.substring(0, queryIndex);
 			}
-			
-			while (StringTools.endsWith (__path, "/")) {
-				
-				__path = __path.substring (0, __path.length - 1);
-				
+
+			while (StringTools.endsWith(__path, "/"))
+			{
+				__path = __path.substring(0, __path.length - 1);
 			}
-			
-			if (StringTools.endsWith (__path, ".bundle")) {
-				
+
+			if (StringTools.endsWith(__path, ".bundle"))
+			{
 				__path += "/library.json";
-				
-				if (queryIndex > -1) {
-					
-					request.url = __path + request.url.substring (queryIndex);
-					
-				} else {
-					
-					request.url = __path;
-					
+
+				if (queryIndex > -1)
+				{
+					request.url = __path + request.url.substring(queryIndex);
 				}
-				
+				else
+				{
+					request.url = __path;
+				}
 			}
-			
-			var extIndex = __path.lastIndexOf ('.');
-			if (extIndex > -1) {
-				
-				extension = __path.substring (extIndex + 1);
-				
+
+			var extIndex = __path.lastIndexOf('.');
+			if (extIndex > -1)
+			{
+				extension = __path.substring(extIndex + 1);
 			}
-			
-			contentLoaderInfo.contentType = switch (extension) {
-				
+
+			contentLoaderInfo.contentType = switch (extension)
+			{
 				case "json": "application/json";
 				case "swf": "application/x-shockwave-flash";
 				case "jpg", "jpeg": "image/jpeg";
 				case "png": "image/png";
 				case "gif": "image/gif";
 				case "js": "application/javascript";
-				default: "application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
-				
+				default:
+					"application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
 			}
-			
-		} else {
-			
-			contentLoaderInfo.contentType = request.contentType;
-			
 		}
-		
+		else
+		{
+			contentLoaderInfo.contentType = request.contentType;
+		}
+
 		#if (js && html5)
-		if (contentLoaderInfo.contentType.indexOf ("image/") > -1 && request.method == URLRequestMethod.GET && (request.requestHeaders == null || request.requestHeaders.length == 0) && request.userAgent == null) {
-			
-			BitmapData.loadFromFile (request.url).onComplete (BitmapData_onLoad).onError (BitmapData_onError).onProgress (BitmapData_onProgress);
+		if (contentLoaderInfo.contentType.indexOf("image/") > -1 &&
+			request.method == URLRequestMethod.GET &&
+			(request.requestHeaders == null || request.requestHeaders.length == 0) &&
+			request.userAgent == null)
+		{
+			BitmapData.loadFromFile(request.url)
+				.onComplete(BitmapData_onLoad)
+				.onError(BitmapData_onError)
+				.onProgress(BitmapData_onProgress);
 			return;
-			
 		}
 		#end
-		
-		var loader = new URLLoader ();
+
+		var loader = new URLLoader();
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
-		
-		if (contentLoaderInfo.contentType.indexOf ("/json") > -1 || contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
-			
+
+		if (contentLoaderInfo.contentType.indexOf("/json") > -1 || contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType.indexOf("/ecmascript") > -1)
+		{
 			loader.dataFormat = TEXT;
-			
 		}
-		
-		loader.addEventListener (Event.COMPLETE, loader_onComplete);
-		loader.addEventListener (IOErrorEvent.IO_ERROR, loader_onError);
-		loader.addEventListener (ProgressEvent.PROGRESS, loader_onProgress);
-		loader.load (request);
-		
+
+		loader.addEventListener(Event.COMPLETE, loader_onComplete);
+		loader.addEventListener(IOErrorEvent.IO_ERROR, loader_onError);
+		loader.addEventListener(ProgressEvent.PROGRESS, loader_onProgress);
+		loader.load(request);
 	}
-	
-	
+
 	/**
 	 * Loads from binary data stored in a ByteArray object.
 	 *
@@ -470,8 +451,8 @@ class Loader extends DisplayObjectContainer {
 	 * the "init" event before accessing the properties of a loaded object.
 	 *
 	 * When you use this method, consider the Flash Player security model,
-	 * which is described in the Loader class description. 
-	 * 
+	 * which is described in the Loader class description.
+	 *
 	 * @param bytes   A ByteArray object. The contents of the ByteArray can be
 	 *                any of the file formats supported by the Loader class: SWF,
 	 *                GIF, JPEG, or PNG.
@@ -547,13 +528,11 @@ class Loader extends DisplayObjectContainer {
 	 * @event unload        Dispatched by the `contentLoaderInfo`
 	 *                      object when a loaded object is removed.
 	 */
-	public function loadBytes (buffer:ByteArray, context:LoaderContext = null):Void {
-		
-		BitmapData.loadFromBytes (buffer).onComplete (BitmapData_onLoad).onError (BitmapData_onError);
-		
+	public function loadBytes(buffer:ByteArray, context:LoaderContext = null):Void
+	{
+		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
-	
-	
+
 	/**
 	 * Removes a child of this Loader object that was loaded by using the
 	 * `load()` method. The `property` of the associated
@@ -582,23 +561,21 @@ class Loader extends DisplayObjectContainer {
 	 * closeAllStreams);
 	 * ```
 	 */
-	public function unload ():Void {
-		
-		if (!__unloaded) {
-			
-			while (numChildren > 0) {
-				
-				removeChildAt (0);
-				
+	public function unload():Void
+	{
+		if (!__unloaded)
+		{
+			while (numChildren > 0)
+			{
+				removeChildAt(0);
 			}
-			
-			if (__library != null) {
-				
-				Assets.unloadLibrary (contentLoaderInfo.url);
+
+			if (__library != null)
+			{
+				Assets.unloadLibrary(contentLoaderInfo.url);
 				__library = null;
-				
 			}
-			
+
 			content = null;
 			contentLoaderInfo.url = null;
 			contentLoaderInfo.contentType = null;
@@ -608,14 +585,11 @@ class Loader extends DisplayObjectContainer {
 			contentLoaderInfo.width = 0;
 			contentLoaderInfo.height = 0;
 			__unloaded = true;
-			
-			contentLoaderInfo.dispatchEvent (new Event (Event.UNLOAD));
-			
+
+			contentLoaderInfo.dispatchEvent(new Event(Event.UNLOAD));
 		}
-		
 	}
-	
-	
+
 	/**
 	 * Attempts to unload child SWF file contents and stops the execution of
 	 * commands from loaded SWF files. This method attempts to unload SWF files
@@ -624,7 +598,7 @@ class Loader extends DisplayObjectContainer {
 	 * NetConnection, Timer, Sound, or Video objects of the child SWF file. As a
 	 * result, the following occurs for the child SWF file and the child SWF
 	 * file's display list:
-	 * 
+	 *
 	 *  * Sounds are stopped.
 	 *  * Stage event listeners are removed.
 	 *  * Event listeners for `enterFrame`,
@@ -633,8 +607,8 @@ class Loader extends DisplayObjectContainer {
 	 *  * Timers are stopped.
 	 *  * Camera and Microphone instances are detached
 	 *  * Movie clips are stopped.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param gc Provides a hint to the garbage collector to run on the child SWF
 	 *           objects(`true`) or not(`false`). If you
 	 *           are unloading many objects asynchronously, setting the
@@ -644,193 +618,160 @@ class Loader extends DisplayObjectContainer {
 	 *           file might persist in memory after running the
 	 *           `unloadAndStop()` command.
 	 */
-	public function unloadAndStop (gc:Bool = true):Void {
-		
-		if (content != null) {
-			
-			content.__stopAllMovieClips ();
-			
+	public function unloadAndStop(gc:Bool = true):Void
+	{
+		if (content != null)
+		{
+			content.__stopAllMovieClips();
 		}
-		
-		for (i in 0...numChildren) {
-			
-			getChildAt (i).__stopAllMovieClips ();
-			
+
+		for (i in 0...numChildren)
+		{
+			getChildAt(i).__stopAllMovieClips();
 		}
-		
-		unload ();
-		
-		if (gc) {
-			
+
+		unload();
+
+		if (gc)
+		{
 			#if cpp
-			cpp.vm.Gc.run (false);
+			cpp.vm.Gc.run(false);
 			#elseif neko
-			neko.vm.Gc.run (false);
+			neko.vm.Gc.run(false);
 			#end
-			
 		}
-		
 	}
-	
-	
-	@:noCompletion private function __dispatchError (text:String):Void {
-		
-		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
+
+	@:noCompletion private function __dispatchError(text:String):Void
+	{
+		var event = new IOErrorEvent(IOErrorEvent.IO_ERROR);
 		event.text = text;
-		contentLoaderInfo.dispatchEvent (event);
-		
+		contentLoaderInfo.dispatchEvent(event);
 	}
-	
-	
-	
-	
+
 	// Event Handlers
-	
-	
-	
-	
-	@:noCompletion private function BitmapData_onError (error:Dynamic):Void {
-		
+	@:noCompletion private function BitmapData_onError(error:Dynamic):Void
+	{
 		// TODO: Dispatch HTTPStatusEvent
-		
-		__dispatchError (Std.string (error));
-		
+
+		__dispatchError(Std.string(error));
 	}
-	
-	
-	@:noCompletion private function BitmapData_onLoad (bitmapData:BitmapData):Void {
-		
+
+	@:noCompletion private function BitmapData_onLoad(bitmapData:BitmapData):Void
+	{
 		// TODO: Dispatch HTTPStatusEvent
-		
-		if (bitmapData == null) {
-			
-			__dispatchError ("Unknown error");
+
+		if (bitmapData == null)
+		{
+			__dispatchError("Unknown error");
 			return;
-			
 		}
-		
-		content = new Bitmap (bitmapData);
+
+		content = new Bitmap(bitmapData);
 		contentLoaderInfo.content = content;
 		contentLoaderInfo.width = Std.int(content.width);
 		contentLoaderInfo.height = Std.int(content.height);
-		addChild (content);
-		
-		contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
-		
+		addChild(content);
+
+		contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 	}
-	
-	
-	@:noCompletion private function BitmapData_onProgress (bytesLoaded:Int, bytesTotal:Int):Void {
-		
-		var event = new ProgressEvent (ProgressEvent.PROGRESS);
+
+	@:noCompletion private function BitmapData_onProgress(bytesLoaded:Int, bytesTotal:Int):Void
+	{
+		var event = new ProgressEvent(ProgressEvent.PROGRESS);
 		event.bytesLoaded = bytesLoaded;
 		event.bytesTotal = bytesTotal;
-		contentLoaderInfo.dispatchEvent (event);
-		
+		contentLoaderInfo.dispatchEvent(event);
 	}
-	
-	
-	@:noCompletion private function loader_onComplete (event:Event):Void {
-		
+
+	@:noCompletion private function loader_onComplete(event:Event):Void
+	{
 		// TODO: Dispatch HTTPStatusEvent
-		
+
 		var loader:URLLoader = cast event.target;
-		
+
 		#if lime
-		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf ("/json") > -1) {
-			
-			var manifest = AssetManifest.parse (loader.data, Path.directory (__path));
-			
-			if (manifest == null) {
-				
-				__dispatchError ("Cannot parse asset manifest");
+		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf("/json") > -1)
+		{
+			var manifest = AssetManifest.parse(loader.data, Path.directory(__path));
+
+			if (manifest == null)
+			{
+				__dispatchError("Cannot parse asset manifest");
 				return;
-				
 			}
-			
-			var library = LimeAssetLibrary.fromManifest (manifest);
-			
-			if (library == null) {
-				
-				__dispatchError ("Cannot open library");
+
+			var library = LimeAssetLibrary.fromManifest(manifest);
+
+			if (library == null)
+			{
+				__dispatchError("Cannot open library");
 				return;
-				
 			}
-			
-			if (Std.is (library, AssetLibrary)) {
-				
-				library.load ().onComplete (function (_) {
-					
+
+			if (Std.is(library, AssetLibrary))
+			{
+				library.load().onComplete(function(_)
+				{
 					__library = cast library;
-					Assets.registerLibrary (contentLoaderInfo.url, __library);
-					
-					if (manifest.name != null && !Assets.hasLibrary (manifest.name)) {
-						
-						Assets.registerLibrary (manifest.name, __library);
-						
+					Assets.registerLibrary(contentLoaderInfo.url, __library);
+
+					if (manifest.name != null && !Assets.hasLibrary(manifest.name))
+					{
+						Assets.registerLibrary(manifest.name, __library);
 					}
-					
-					content = __library.getMovieClip ("");
+
+					content = __library.getMovieClip("");
 					contentLoaderInfo.content = content;
-					addChild (content);
-					
-					contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
-					
-				}).onError (function (e) {
-					
-					__dispatchError (e);
-					
+					addChild(content);
+
+					contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
+				}).onError(function(e)
+				{
+					__dispatchError(e);
 				});
-				
 			}
-			
-		} else #end if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1)) {
-			
-			content = new Sprite ();
-			contentLoaderInfo.content = content;
-			addChild (content);
-			
-			#if (js && html5)
-			//var script:ScriptElement = cast Browser.document.createElement ("script");
-			//script.innerHTML = loader.data;
-			//Browser.document.head.appendChild (script);
-			
-			untyped __js__ ("eval") ('(function () {' + loader.data + '})()');
-			#end
-			
-			contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
-			
-		} else {
-			
-			contentLoaderInfo.bytes = loader.data;
-			BitmapData.loadFromBytes (loader.data).onComplete (BitmapData_onLoad).onError (BitmapData_onError);
-			
 		}
-		
+		else
+		#end
+		if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType
+				.indexOf("/ecmascript") > -1))
+		{
+			content = new Sprite();
+			contentLoaderInfo.content = content;
+			addChild(content);
+
+			#if (js && html5)
+			// var script:ScriptElement = cast Browser.document.createElement ("script");
+			// script.innerHTML = loader.data;
+			// Browser.document.head.appendChild (script);
+
+			untyped __js__("eval")('(function () {' + loader.data + '})()');
+			#end
+
+			contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
+		}
+		else
+		{
+			contentLoaderInfo.bytes = loader.data;
+			BitmapData.loadFromBytes(loader.data).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
+		}
 	}
-	
-	
-	@:noCompletion private function loader_onError (event:IOErrorEvent):Void {
-		
+
+	@:noCompletion private function loader_onError(event:IOErrorEvent):Void
+	{
 		// TODO: Dispatch HTTPStatusEvent
-		
+
 		event.target = contentLoaderInfo;
-		contentLoaderInfo.dispatchEvent (event);
-		
+		contentLoaderInfo.dispatchEvent(event);
 	}
-	
-	
-	@:noCompletion private function loader_onProgress (event:ProgressEvent):Void {
-		
+
+	@:noCompletion private function loader_onProgress(event:ProgressEvent):Void
+	{
 		event.target = contentLoaderInfo;
-		contentLoaderInfo.dispatchEvent (event);
-		
+		contentLoaderInfo.dispatchEvent(event);
 	}
-	
-	
 }
-
-
 #else
 typedef Loader = flash.display.Loader;
 #end
