@@ -35,8 +35,6 @@ class Context3DShape
 
 			Context3DGraphics.render(graphics, renderer);
 
-			var bounds = graphics.__bounds;
-
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
 				var context = renderer.__context3D;
@@ -76,8 +74,6 @@ class Context3DShape
 			// TODO: Support invisible shapes
 
 			Context3DGraphics.renderMask(graphics, renderer);
-
-			var bounds = graphics.__bounds;
 
 			if (graphics.__bitmap != null)
 			{

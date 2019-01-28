@@ -381,7 +381,6 @@ class EventDispatcher implements IEventDispatcher
 		event.currentTarget = this;
 
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
-		var index = 0;
 
 		var iterators = __iterators.get(type);
 		var iterator = iterators[0];

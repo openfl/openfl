@@ -1122,7 +1122,7 @@ class TextEngine
 
 			var remainingPositions = positions;
 			var i, bufferCount, placeIndex, positionWidth;
-			var currentPosition, tempPositions;
+			var currentPosition;
 
 			var tempWidth = getPositionsWidth(remainingPositions);
 

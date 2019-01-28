@@ -198,7 +198,6 @@ import lime.utils.Float32Array;
 		var attribNames = __glslAttribNames;
 		var attribTypes = __glslAttribTypes;
 		var uniformNames = __glslUniformNames;
-		var uniformTypes = __glslUniformTypes;
 
 		__glslSamplerNames = new Array();
 		__glslAttribNames = new Array();

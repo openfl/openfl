@@ -22,7 +22,6 @@ class CanvasShape
 		{
 			CanvasGraphics.render(graphics, renderer);
 
-			var bounds = graphics.__bounds;
 			var width = graphics.__width;
 			var height = graphics.__height;
 

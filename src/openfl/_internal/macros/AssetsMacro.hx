@@ -260,7 +260,6 @@ class AssetsMacro
 		var fields = Context.getBuildFields();
 
 		var path = "";
-		var glyphs = "32-255";
 
 		for (meta in metaData)
 		{

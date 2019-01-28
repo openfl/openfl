@@ -1846,7 +1846,6 @@ class BitmapData implements IBitmapDrawable
 
 		// Range of values to value to.
 		var range:Int = high - low;
-		var data:ByteArray = new ByteArray();
 
 		var redChannel:Bool = ((channelOptions & (1 << 0)) >> 0) == 1;
 		var greenChannel:Bool = ((channelOptions & (1 << 1)) >> 1) == 1;

@@ -47,7 +47,7 @@ class StaticTextSymbol extends SWFSymbol
 			var offsetX = matrix.tx;
 			var offsetY = matrix.ty;
 
-			var scale, index, code;
+			var scale, index;
 
 			for (record in records)
 			{

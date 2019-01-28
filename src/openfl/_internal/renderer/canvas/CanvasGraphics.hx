@@ -765,8 +765,6 @@ class CanvasGraphics
 					var tileRect = Rectangle.__pool.get();
 					var tileTransform = Matrix.__pool.get();
 
-					var sourceRect = (bitmapFill != null) ? bitmapFill.rect : null;
-
 					var transform = graphics.__renderTransform;
 					// var roundPixels = renderer.__roundPixels;
 					var alpha = CanvasGraphics.worldAlpha;

@@ -144,7 +144,6 @@ class ShaderBuffer
 		paramFloatCount = floatCount;
 		paramIntCount = intCount;
 
-		var paramLength = 0;
 		var length = 0, p = 0;
 		var param;
 

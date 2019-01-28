@@ -236,7 +236,6 @@ class CairoTextField
 					var glyphs = [];
 					var x:Float = group.offsetX + scrollX - bounds.x;
 					var y:Float = group.offsetY + group.ascent + scrollY - bounds.y;
-					var j = 0;
 
 					for (position in group.positions)
 					{

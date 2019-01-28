@@ -2136,7 +2136,6 @@ class TextField extends InteractiveObject
 		if (__layoutDirty)
 		{
 			var cacheWidth = __textEngine.width;
-			var cacheHeight = __textEngine.height;
 
 			__textEngine.update();
 
@@ -2905,9 +2904,6 @@ class TextField extends InteractiveObject
 		{
 			__getWorldTransform();
 			__updateLayout();
-
-			var px = __worldTransform.__transformInverseX(x, y);
-			var py = __worldTransform.__transformInverseY(x, y);
 
 			var upPos:Int = __getPosition(mouseX + scrollH, mouseY);
 			var leftPos:Int;

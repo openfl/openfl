@@ -204,7 +204,6 @@ class AGALMiniAssembler
 		initregmap(version, ignoreLimits);
 
 		var lines = StringTools.replace(source, "\r", "\n").split("\n");
-		var nest = 0;
 		var nops = 0;
 		var lng = lines.length;
 

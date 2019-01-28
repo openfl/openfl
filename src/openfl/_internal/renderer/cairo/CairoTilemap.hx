@@ -60,12 +60,10 @@ class CairoTilemap
 	{
 		#if lime
 		var cairo = renderer.cairo;
-		var roundPixels = renderer.__roundPixels;
 
 		var tileTransform = Matrix.__pool.get();
 
 		var tiles = group.__tiles;
-		var length = group.__length;
 
 		var tile, tileset, alpha, visible, blendMode = null, id, tileData, tileRect, bitmapData;
 

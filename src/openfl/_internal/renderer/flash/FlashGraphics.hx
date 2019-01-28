@@ -184,7 +184,7 @@ class FlashGraphics
 		var offset6 = 0;
 		var offset8 = 0;
 
-		var x, y, tw, th, t0, t1, t2, t3, ox, oy, ox_;
+		var x, y, tw, th, t0, t1, t2, t3;
 		var uvX = 0.0, uvY = 0.0, uvWidth = 1.0, uvHeight = 1.0;
 
 		for (i in 0...length)

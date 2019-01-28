@@ -402,10 +402,8 @@ class Context3DTilemap
 			worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
 	{
 		var tiles = group.__tiles;
-		var length = group.__length;
 
 		var tile, tileset, alpha, visible, blendMode = null, id, tileData, tileRect, shader:Shader, bitmapData;
-		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, offset;
 
 		for (tile in tiles)
 		{
