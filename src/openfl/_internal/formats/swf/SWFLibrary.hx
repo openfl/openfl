@@ -1,20 +1,15 @@
 package openfl._internal.formats.swf;
 
 import haxe.Resource;
-import haxe.Unserializer;
-import openfl.display.BitmapData;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
-import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.system.ApplicationDomain;
 import openfl.system.LoaderContext;
-import openfl.text.Font;
 import openfl.utils.AssetLibrary;
-import openfl.utils.Assets;
 import openfl.utils.AssetType;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;

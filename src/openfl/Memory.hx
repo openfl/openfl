@@ -1,7 +1,6 @@
 package openfl;
 
 #if !flash
-import haxe.io.BytesData;
 import openfl.utils.ByteArray;
 
 #if !openfl_debug

@@ -9,13 +9,11 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 #if lime
-import lime.system.System;
 import lime.ui.FileDialog;
 import lime.utils.Bytes;
 #end
 #if sys
 import sys.io.File;
-import sys.FileStat;
 import sys.FileSystem;
 #end
 

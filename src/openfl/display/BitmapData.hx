@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-import haxe.macro.Context;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.PerlinNoise;
@@ -12,8 +11,6 @@ import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.Error;
-import openfl.errors.IOError;
-import openfl.errors.TypeError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -28,25 +25,18 @@ import openfl.Vector;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.app.Application;
-import lime.app.Promise;
-import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
-import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.opengl.GL;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.ARGB;
-import lime.math.ColorMatrix;
-import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
@@ -54,14 +44,6 @@ import lime.utils.UInt16Array;
 #end
 #if (js && html5)
 import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.html.ImageData;
-import js.html.ImageElement;
-import js.html.Uint8ClampedArray;
-import js.Browser;
-#end
-#if lime_cairo
-import openfl.display.CairoRenderer;
 #end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -1617,7 +1599,7 @@ class BitmapData implements IBitmapDrawable
 		return result;
 	}
 
-	public function histogram(hRect:Rectangle = null):Array<Int>
+	public function histogram(hRect:Rectangle = null):Array<Array<Int>>
 	{
 		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
 		var pixels = getPixels(rect);

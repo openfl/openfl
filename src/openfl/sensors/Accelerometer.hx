@@ -9,9 +9,6 @@ import openfl.events.EventDispatcher;
 import lime.system.Sensor;
 import lime.system.SensorType;
 #end
-#if (js && html5)
-import js.Browser;
-#end
 
 /**
  * The Accelerometer class dispatches events based on activity detected by the

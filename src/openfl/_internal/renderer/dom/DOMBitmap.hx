@@ -4,7 +4,6 @@ import openfl.display.Bitmap;
 import openfl.display.DOMRenderer;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.graphics.ImageBuffer;
 #end
 #if (js && html5)
 import js.Browser;

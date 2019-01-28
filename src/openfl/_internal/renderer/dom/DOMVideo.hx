@@ -2,7 +2,6 @@ package openfl._internal.renderer.dom;
 
 import openfl.display.DOMRenderer;
 import openfl.media.Video;
-import openfl.net.NetStream;
 
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)

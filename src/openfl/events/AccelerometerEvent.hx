@@ -1,8 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl.events.Event;
-
 /**
  * The Accelerometer class dispatches AccelerometerEvent objects when
  * acceleration updates are obtained from the Accelerometer sensor installed

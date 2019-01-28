@@ -5,17 +5,14 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
-import openfl._internal.Lib;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
-import openfl.net.SharedObjectFlushStatus;
 import openfl.utils.Object;
 #if lime
 import lime.app.Application;
 import lime.system.System;
 #end
 #if (js && html5)
-import js.html.Storage;
 import js.Browser;
 #end
 #if sys

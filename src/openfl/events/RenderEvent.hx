@@ -1,7 +1,6 @@
 package openfl.events;
 
 import openfl.display.DisplayObjectRenderer;
-import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 

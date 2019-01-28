@@ -10,25 +10,12 @@ import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-import openfl.display.BlendMode;
-import openfl.display.GraphicsPathCommand;
-import openfl.display.GraphicsBitmapFill;
-import openfl.display.GraphicsEndFill;
-import openfl.display.GraphicsGradientFill;
-import openfl.display.GraphicsPath;
-import openfl.display.GraphicsSolidFill;
-import openfl.display.GraphicsStroke;
-import openfl.display.Shader;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 #if lime
 import lime.graphics.cairo.Cairo;
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.Image;
-import lime.graphics.RenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 #end

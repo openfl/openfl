@@ -2,10 +2,6 @@ package openfl._internal.renderer.context3D;
 
 import openfl.display.OpenGLRenderer;
 import openfl.media.Video;
-import openfl.net.NetStream;
-#if lime
-import lime.utils.Float32Array;
-#end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;

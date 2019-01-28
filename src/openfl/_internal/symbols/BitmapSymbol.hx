@@ -4,12 +4,6 @@ import openfl._internal.formats.swf.SWFLite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.PixelSnapping;
-import openfl.Assets;
-#if lime
-import lime.graphics.ImageChannel;
-import lime.math.Vector2;
-import lime.utils.Assets as LimeAssets;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

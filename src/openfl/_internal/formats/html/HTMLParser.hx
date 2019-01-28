@@ -14,7 +14,7 @@ class HTMLParser
 	private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
 	private static var __regexBlockIndent:EReg = ~/blockindent=("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor:EReg = ~/color=("#([^"]+)"|'#([^']+)')/i;
-	private static var __regexEntities:EReg = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
+	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
 	private static var __regexFace:EReg = ~/face=("([^"]+)"|'([^']+)')/i;
 	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
 	private static var __regexHref:EReg = ~/href=("([^"]+)"|'([^']+)')/i;

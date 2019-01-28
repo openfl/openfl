@@ -1,8 +1,6 @@
 package openfl.system;
 
 #if !flash
-import openfl.utils.Object;
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug

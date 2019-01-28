@@ -7,10 +7,8 @@ import openfl._internal.utils.Log;
 import openfl._internal.Lib as InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
-import openfl.display.Stage;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-import openfl.net.URLVariables;
 #if lime
 import lime.system.System;
 #end

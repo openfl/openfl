@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime

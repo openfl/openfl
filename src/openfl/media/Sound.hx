@@ -1,7 +1,6 @@
 package openfl.media;
 
 #if !flash
-import haxe.io.Path;
 import haxe.Int64;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;

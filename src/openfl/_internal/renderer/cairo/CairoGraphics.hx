@@ -2,11 +2,8 @@ package openfl._internal.renderer.cairo;
 
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
-import openfl._internal.renderer.DrawCommandType;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
-import openfl.display.CapsStyle;
-import openfl.display.DisplayObject;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -18,11 +15,9 @@ import openfl.Vector;
 #if lime
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
-import lime.graphics.cairo.CairoFillRule;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
-import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
 import lime.math.Vector2;
 #end
@@ -40,8 +35,8 @@ import lime.math.Vector2;
 class CairoGraphics
 {
 	#if lime_cairo
-	private static var SIN45 = 0.70710678118654752440084436210485;
-	private static var TAN22 = 0.4142135623730950488016887242097;
+	private static var SIN45:Float = 0.70710678118654752440084436210485;
+	private static var TAN22:Float = 0.4142135623730950488016887242097;
 	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapRepeat:Bool;

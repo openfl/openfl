@@ -3,7 +3,6 @@ package openfl._internal.renderer.flash;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import openfl.display.Sprite;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;

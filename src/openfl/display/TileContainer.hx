@@ -1,7 +1,6 @@
 package openfl.display;
 
 import openfl.geom.Rectangle;
-import openfl.geom.Matrix;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

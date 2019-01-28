@@ -69,7 +69,7 @@ import lime.utils.Float32Array;
 class Matrix
 {
 	@:noCompletion private static var __identity:Matrix = new Matrix();
-	@:noCompletion private static var __pool:ObjectPool<Matrix> = new ObjectPool(function() return new Matrix(), function(m) m.identity());
+	@:noCompletion private static var __pool:ObjectPool<Matrix> = new ObjectPool<Matrix>(function() return new Matrix(), function(m) m.identity());
 	#if lime
 	@:noCompletion private static var __matrix3:Matrix3 = new Matrix3();
 	#end

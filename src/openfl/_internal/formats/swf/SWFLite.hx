@@ -6,8 +6,6 @@ import openfl.display.SimpleButton;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.SpriteSymbol;
 import openfl._internal.symbols.SWFSymbol;
-import haxe.io.Bytes;
-import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.Assets;

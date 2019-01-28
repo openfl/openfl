@@ -3,7 +3,6 @@ package openfl._internal.renderer.dom;
 import openfl._internal.renderer.canvas.CanvasTilemap;
 import openfl.display.DOMRenderer;
 import openfl.display.Tilemap;
-import openfl.geom.Matrix;
 #if (js && html5)
 import js.Browser;
 #end

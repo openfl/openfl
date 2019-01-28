@@ -1,21 +1,14 @@
 package openfl._internal.formats.swf;
 
-import haxe.Unserializer;
-import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
-import openfl.display.BitmapData;
-import openfl.display.Loader;
 import openfl.display.MovieClip;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.media.Sound;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-import openfl.text.Font;
 import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetType;
-import openfl.utils.ByteArray;
 import openfl.utils.Future;
 #if lime
 import lime.app.Promise;
@@ -24,9 +17,7 @@ import lime.graphics.ImageChannel;
 import lime.math.Vector2;
 // import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
-import lime.utils.Assets as LimeAssets;
 #else
-import openfl.utils.AssetLibrary;
 import openfl.utils.AssetManifest;
 #end
 #if !openfl_debug

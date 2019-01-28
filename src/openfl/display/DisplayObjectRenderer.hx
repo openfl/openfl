@@ -1,9 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl.display.BlendMode;
-import openfl.display.DisplayObject;
-import openfl.display.Stage;
 import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;

@@ -1,8 +1,6 @@
 package openfl._internal.renderer.flash;
 
-import openfl.display.Stage;
 import openfl.events.Event;
-import openfl.display.DisplayObject;
 import openfl.utils.Dictionary;
 import openfl.Lib;
 

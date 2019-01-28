@@ -2,7 +2,6 @@ package openfl._internal.formats.atf;
 
 import haxe.io.Bytes;
 import openfl._internal.utils.Log;
-import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 

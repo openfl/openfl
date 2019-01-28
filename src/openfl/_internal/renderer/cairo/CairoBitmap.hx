@@ -4,9 +4,7 @@ import openfl.display.Bitmap;
 import openfl.display.CairoRenderer;
 #if lime
 import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
-import lime.graphics.cairo.CairoSurface;
 #end
 
 #if !openfl_debug

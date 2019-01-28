@@ -5,11 +5,9 @@ import haxe.io.Path;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 #if lime
-import lime.system.BackgroundWorker;
 import lime.ui.FileDialog;
 #end
 #if sys
-import sys.FileStat;
 import sys.FileSystem;
 #end
 

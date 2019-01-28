@@ -15,7 +15,6 @@ import openfl._internal.renderer.context3D.Context3DGraphics;
 import openfl._internal.renderer.context3D.Context3DShape;
 import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
-import openfl.display.Stage;
 import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.EventPhase;
@@ -39,7 +38,6 @@ import lime.graphics.cairo.Cairo;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
-import js.html.Element;
 #end
 
 /**
@@ -193,14 +191,14 @@ import js.html.Element;
 @:access(openfl.geom.Rectangle)
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
-	@:noCompletion private static var __broadcastEvents = new Map<String, Array<DisplayObject>>();
+	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
 	@:noCompletion private static var __initStage:Stage;
-	@:noCompletion private static var __instanceCount = 0;
+	@:noCompletion private static var __instanceCount:Int = 0;
 
 	@:noCompletion
 	private static #if !js inline #end var __supportDOM:Bool #if !js = false #end;
 
-	@:noCompletion private static var __tempStack = new ObjectPool<Vector<DisplayObject>>(function()
+	@:noCompletion private static var __tempStack:ObjectPool<Vector<DisplayObject>> = new ObjectPool<Vector<DisplayObject>>(function()
 	{
 		return new Vector<DisplayObject>();
 	}, function(stack)

@@ -1,12 +1,7 @@
 package openfl._internal.text;
 
 import haxe.Timer;
-import haxe.Utf8;
 import openfl.Vector;
-import openfl.events.Event;
-import openfl.events.FocusEvent;
-import openfl.events.MouseEvent;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.AntiAliasType;
 import openfl.text.Font;
@@ -15,7 +10,6 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
-import openfl.text.TextFormatAlign;
 #if lime
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
@@ -764,7 +758,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<Float>
+		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<#if (js && html5) Float #else GlyphPosition #end>
 		{
 			// TODO: optimize
 

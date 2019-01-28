@@ -3,14 +3,10 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
-import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
-import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display.Application as OpenFLApplication;
-import openfl.display.DisplayObjectContainer;
-import openfl.display.Window in OpenFLWindow;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -54,8 +50,6 @@ import openfl.profiler.Telemetry;
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 #end
 #if (js && html5)
-import js.html.CanvasElement;
-import js.html.DivElement;
 import js.html.Element;
 import js.Browser;
 #elseif js

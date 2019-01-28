@@ -1,6 +1,5 @@
 package openfl._internal.renderer.context3D;
 
-import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.OpenGLRenderer;
@@ -8,15 +7,12 @@ import openfl.display.Shader;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
-import openfl.display.Tile;
 import openfl.display3D.Context3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 #if lime
 import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 #end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;

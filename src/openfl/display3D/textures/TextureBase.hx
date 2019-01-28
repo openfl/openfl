@@ -6,8 +6,6 @@ import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
-import openfl.errors.IllegalOperationError;
-import openfl.utils.ByteArray;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.opengl.GLFramebuffer;

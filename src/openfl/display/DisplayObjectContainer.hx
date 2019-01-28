@@ -3,14 +3,11 @@ package openfl.display;
 #if !flash
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.context3D.Context3DGraphics;
 import openfl._internal.renderer.context3D.Context3DShape;
-import openfl.display.Stage;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
 import openfl.events.Event;
-import openfl.events.EventPhase;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;

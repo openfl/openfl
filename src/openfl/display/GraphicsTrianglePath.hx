@@ -1,7 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl.display.IGraphicsData;
+import openfl._internal.renderer.GraphicsDataType;
 import openfl.Vector;
 
 #if !openfl_debug

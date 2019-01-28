@@ -3,7 +3,6 @@ package openfl._internal.text;
 import haxe.io.Bytes;
 #if lime
 import lime.math.Vector2;
-import lime.system.System;
 import lime.text.harfbuzz.HBBuffer;
 import lime.text.harfbuzz.HBBufferClusterLevel;
 import lime.text.harfbuzz.HBDirection;

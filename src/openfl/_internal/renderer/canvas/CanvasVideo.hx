@@ -2,7 +2,6 @@ package openfl._internal.renderer.canvas;
 
 import openfl.display.CanvasRenderer;
 import openfl.media.Video;
-import openfl.net.NetStream;
 
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)

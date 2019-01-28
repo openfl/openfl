@@ -1,8 +1,8 @@
 package openfl.display;
 
 #if !flash
-import openfl.display.IGraphicsData;
-import openfl.display.IGraphicsFill;
+import openfl._internal.renderer.GraphicsDataType;
+import openfl._internal.renderer.GraphicsFillType;
 
 /**
  * Indicates the end of a graphics fill. Use a GraphicsEndFill object with the

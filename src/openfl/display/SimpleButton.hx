@@ -3,8 +3,6 @@ package openfl.display;
 #if !flash
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.ButtonSymbol;
-import openfl.display.DisplayObject;
-import openfl.display.InteractiveObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;

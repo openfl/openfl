@@ -6,7 +6,6 @@ import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.EventDispatcher;
 import openfl.events.ProgressEvent;
-import openfl.net.Socket;
 import openfl.utils.ByteArray;
 
 #if !openfl_debug

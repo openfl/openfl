@@ -1,8 +1,8 @@
 package openfl.display;
 
 #if !flash
-import openfl.display.IGraphicsData;
-import openfl.display.IGraphicsFill;
+import openfl._internal.renderer.GraphicsDataType;
+import openfl._internal.renderer.GraphicsFillType;
 import openfl.geom.Matrix;
 
 #if !openfl_debug

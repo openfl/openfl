@@ -1,13 +1,10 @@
 package openfl._internal.renderer.canvas;
 
 import openfl.display.BitmapData;
-import openfl.display.BitmapDataChannel;
 import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
-import openfl.display.DisplayObject;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
-import openfl._internal.renderer.DrawCommandType;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -15,19 +12,16 @@ import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.utils.ByteArray;
 import openfl.Vector;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 #end
 #if (js && html5)
 import js.html.CanvasElement;
-import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasWindingRule;
 import js.Browser;
-import js.html.ImageData;
 #end
 
 @:access(openfl.display.DisplayObject)
@@ -93,7 +87,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):CanvasPattern
+	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
 	{
 		#if (js && html5)
 		ImageCanvasUtil.convertToCanvas(bitmap.image);
@@ -105,7 +99,7 @@ class CanvasGraphics
 	}
 
 	private static function createGradientPattern(type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix,
-			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CanvasPattern
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasPattern #else Void #end
 	{
 		#if (js && html5)
 		var gradientFill = null, point = null, point2 = null, releaseMatrix = false;
@@ -162,7 +156,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):CanvasPattern
+	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):#if (js && html5) CanvasElement #else Void #end
 	{
 		// TODO: Don't create extra canvas elements like this
 

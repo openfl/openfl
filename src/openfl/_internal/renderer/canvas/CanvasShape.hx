@@ -2,10 +2,6 @@ package openfl._internal.renderer.canvas;
 
 import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
-import openfl.geom.Matrix;
-#if (js && html5)
-import js.Browser;
-#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)

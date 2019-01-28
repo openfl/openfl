@@ -10,7 +10,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
 import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;

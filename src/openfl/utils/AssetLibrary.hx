@@ -1,7 +1,6 @@
 package openfl.utils;
 
 import openfl.display.MovieClip;
-import openfl.utils.Future;
 #if lime
 import lime.graphics.Image;
 import lime.media.AudioBuffer;

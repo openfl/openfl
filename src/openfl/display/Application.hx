@@ -1,7 +1,6 @@
 package openfl.display;
 
 import openfl._internal.Lib;
-import openfl.display.MovieClip;
 #if lime
 import lime.app.Application as LimeApplication;
 import lime.ui.WindowAttributes;

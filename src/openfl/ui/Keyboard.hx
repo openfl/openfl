@@ -807,7 +807,7 @@ import lime.ui.KeyCode;
 	}
 	#end
 
-	@:noCompletion private static function __getCharCode(key:Int, shift:Bool:Int = false):Int
+	@:noCompletion private static function __getCharCode(key:Int, shift:Bool = false):Int
 	{
 		if (!shift)
 		{
@@ -956,6 +956,5 @@ import lime.ui.KeyCode;
 	#end
 }
 #else
-typedef Keyboard:
-Int = flash.ui.Keyboard;
+typedef Keyboard = flash.ui.Keyboard;
 #end

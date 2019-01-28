@@ -3,11 +3,6 @@ package openfl._internal.renderer.dom;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
 import openfl.display.DOMRenderer;
-import openfl.geom.Matrix;
-import openfl.geom.Rectangle;
-#if (js && html5)
-import js.Browser;
-#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)

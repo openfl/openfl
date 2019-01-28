@@ -1,13 +1,8 @@
 package openfl.display;
 
-import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
-#if lime
-import lime.utils.AssetType;
-import lime.utils.Preloader as LimePreloader;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -16,7 +11,7 @@ import lime.utils.Preloader as LimePreloader;
 @:access(openfl.display.LoaderInfo)
 class Preloader
 {
-	public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event() #else Dynamic #end;
+	public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event<Void->Void>() #else Dynamic #end;
 
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;

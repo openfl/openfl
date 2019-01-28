@@ -1,24 +1,15 @@
 package openfl._internal.renderer.canvas;
 
-import haxe.Utf8;
-import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
-import openfl.display.BitmapDataChannel;
 import openfl.display.CanvasRenderer;
-import openfl.display.Graphics;
-import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
-import openfl.text.TextFormat;
-import openfl.text.TextFormatAlign;
-import openfl.utils.ByteArray;
 #if (js && html5)
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
-import js.html.ImageData;
 #end
 
 @:access(openfl._internal.text.TextEngine)

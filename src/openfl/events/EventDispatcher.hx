@@ -1,9 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl.events.EventPhase;
-import openfl.events.IEventDispatcher;
-
 /**
  * The EventDispatcher class is the base class for all classes that dispatch
  * events. The EventDispatcher class implements the IEventDispatcher interface

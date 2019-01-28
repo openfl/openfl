@@ -3,8 +3,6 @@ package openfl._internal.renderer.dom;
 import openfl._internal.text.TextEngine;
 import openfl.display.DOMRenderer;
 import openfl.text.TextField;
-import openfl.text.TextFieldAutoSize;
-import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 #if (js && html5)
 import js.html.Element;

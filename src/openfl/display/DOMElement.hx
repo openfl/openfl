@@ -1,8 +1,6 @@
 package openfl.display;
 
 #if (!openfl_doc_gen || (js && html5))
-import openfl.display.Sprite;
-import openfl.display.Stage;
 #if (js && html5)
 import js.html.Element;
 #end

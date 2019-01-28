@@ -5,7 +5,6 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.OpenGLRenderer;
-import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;

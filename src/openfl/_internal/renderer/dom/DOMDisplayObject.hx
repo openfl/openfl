@@ -2,9 +2,6 @@ package openfl._internal.renderer.dom;
 
 import openfl.display.DisplayObject;
 import openfl.display.DOMRenderer;
-#if lime
-import lime.math.ARGB;
-#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)

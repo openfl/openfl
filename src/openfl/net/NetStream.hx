@@ -2,7 +2,6 @@ package openfl.net;
 
 #if !flash
 import haxe.Timer;
-import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
 import openfl.media.SoundTransform;

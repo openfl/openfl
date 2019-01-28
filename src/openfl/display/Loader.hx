@@ -19,10 +19,6 @@ import openfl.utils.ByteArray;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetManifest;
 #end
-#if (js && html5)
-import js.html.ScriptElement;
-import js.Browser;
-#end
 
 /**
  * The Loader class is used to load SWF files or image (JPG, PNG, or GIF)

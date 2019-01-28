@@ -3,7 +3,6 @@ package openfl._internal.macros;
 #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import haxe.macro.Type;
 
 using haxe.macro.ExprTools;
 using haxe.macro.Tools;

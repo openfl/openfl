@@ -56,7 +56,8 @@ import lime.math.Rectangle as LimeRectangle;
 #end
 class Rectangle
 {
-	@:noCompletion private static var __pool:ObjectPool<Rectangle> = new ObjectPool(function() return new Rectangle(), function(r) r.setTo(0, 0, 0, 0));
+	@:noCompletion private static var __pool:ObjectPool<Rectangle> = new ObjectPool<Rectangle>(function() return new Rectangle(), function(r) r
+		.setTo(0, 0, 0, 0));
 	#if lime
 	@:noCompletion private static var __limeRectangle:LimeRectangle;
 	#end

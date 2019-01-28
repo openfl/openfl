@@ -5,8 +5,6 @@ import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import haxe.macro.Type;
-import haxe.Serializer;
 import sys.io.File;
 
 class AssetsMacro
