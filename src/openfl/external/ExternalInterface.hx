@@ -256,7 +256,8 @@ import openfl._internal.Lib;
 		try
 		{
 			fn = js.Lib.eval(functionName);
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			return null;
 		}

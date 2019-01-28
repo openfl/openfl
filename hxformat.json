@@ -6,6 +6,8 @@
 	"sameLine": {
 		"ifBody": "same",
 		"ifElse": "next",
-		"doWhile": "next"
+		"doWhile": "next",
+		"tryBody": "next",
+		"tryCatch": "next"
 	}
 }

@@ -52,7 +52,8 @@ class Window #if lime extends LimeWindow #end
 			try
 			{
 				stage.loaderInfo.parameters = attributes.parameters;
-			} catch (e:Dynamic) {}
+			}
+			catch (e:Dynamic) {}
 		}
 
 		if (Reflect.hasField(attributes, "resizable") && !attributes.resizable)

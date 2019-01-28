@@ -333,14 +333,13 @@
 					"TYPEDEF_DEF",
 					"INTERFACE_DEF",
 					"OBJECT_DECL",
-					"FUNCTION",
 					"FOR",
 					"WHILE",
 					"SWITCH",
 					"TRY",
 					"CATCH"
 				],
-				"option": "same"
+				"option": "aloneorsingle"
 			},
 			"type": "RightCurly"
 		},

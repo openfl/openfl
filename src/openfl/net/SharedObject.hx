@@ -254,7 +254,8 @@ class SharedObject extends EventDispatcher
 				FileSystem.deleteFile(path);
 			}
 			#end
-		} catch (e:Dynamic) {}
+		}
+		catch (e:Dynamic) {}
 	}
 
 	public function close():Void {}
@@ -354,7 +355,8 @@ class SharedObject extends EventDispatcher
 			output.writeString(encodedData);
 			output.close();
 			#end
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			return SharedObjectFlushStatus.PENDING;
 		}
@@ -585,7 +587,8 @@ class SharedObject extends EventDispatcher
 					encodedData = File.getContent(path);
 				}
 				#end
-			} catch (e:Dynamic) {}
+			}
+			catch (e:Dynamic) {}
 
 			var sharedObject = new SharedObject();
 			sharedObject.data = {};
@@ -599,7 +602,8 @@ class SharedObject extends EventDispatcher
 					var unserializer = new Unserializer(encodedData);
 					unserializer.setResolver(cast {resolveEnum: Type.resolveEnum, resolveClass: __resolveClass});
 					sharedObject.data = unserializer.unserialize();
-				} catch (e:Dynamic) {}
+				}
+				catch (e:Dynamic) {}
 			}
 
 			__sharedObjects.set(id, sharedObject);
@@ -766,7 +770,8 @@ class SharedObject extends EventDispatcher
 		{
 			var d = Serializer.run(data);
 			return Bytes.ofString(d).length;
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			return 0;
 		}

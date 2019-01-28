@@ -956,5 +956,6 @@ import lime.ui.KeyCode;
 	#end
 }
 #else
-typedef Keyboard:Int = flash.ui.Keyboard;
+typedef Keyboard:
+Int = flash.ui.Keyboard;
 #end

@@ -101,7 +101,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		try
 		{
 			h = new Host(host);
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Invalid host"));
 			return;
@@ -145,7 +146,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			__socket.setBlocking(false);
 			__socket.connect(h, port);
 			__socket.setFastSend(true);
-		} catch (e:Dynamic) {}
+		}
+		catch (e:Dynamic) {}
 		#end
 
 		Lib.current.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
@@ -183,7 +185,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 				#end
 				__output = new ByteArray();
 				__output.endian = __endian;
-			} catch (e:Dynamic)
+			}
+			catch (e:Dynamic)
 			{
 				throw new IOError("Operation attempted on invalid socket.");
 			}
@@ -459,7 +462,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		try
 		{
 			__socket.close();
-		} catch (e:Dynamic) {}
+		}
+		catch (e:Dynamic) {}
 
 		__socket = null;
 		__connected = false;
@@ -556,16 +560,19 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 					}
 				}
 				while (l == __buffer.length);
-			} catch (e:Eof)
+			}
+			catch (e:Eof)
 			{
 				// ignore
-			} catch (e:Error)
+			}
+			catch (e:Error)
 			{
 				if (e != Error.Blocked)
 				{
 					doClose = true;
 				}
-			} catch (e:Dynamic)
+			}
+			catch (e:Dynamic)
 			{
 				doClose = true;
 			}
@@ -610,7 +617,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			try
 			{
 				flush();
-			} catch (e:IOError)
+			}
+			catch (e:IOError)
 			{
 				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, e.message));
 			}

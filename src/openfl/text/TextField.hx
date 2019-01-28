@@ -1617,7 +1617,8 @@ class TextField extends InteractiveObject
 
 					rect.setTo(x, group.offsetY, lastPosition, group.ascent + group.descent);
 					return true;
-				} catch (e:Dynamic) {}
+				}
+				catch (e:Dynamic) {}
 			}
 		}
 

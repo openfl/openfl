@@ -247,7 +247,8 @@ class NetStream extends EventDispatcher
 						speed: __video.playbackRate,
 						start: untyped __video.startTime
 					});
-			} catch (e:Dynamic) {}
+			}
+			catch (e:Dynamic) {}
 		}
 		#end
 	}
@@ -300,7 +301,8 @@ class NetStream extends EventDispatcher
 						height: __video.videoHeight,
 						duration: __video.duration
 					});
-			} catch (e:Dynamic) {}
+			}
+			catch (e:Dynamic) {}
 		}
 		#end
 	}

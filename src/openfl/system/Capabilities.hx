@@ -525,7 +525,8 @@ import sys.io.Process;
 			var process = new Process("uname", ["-r"]);
 			kernelVersion = StringTools.trim(process.stdout.readLine().toString());
 			process.close();
-		} catch (e:Dynamic) {}
+		}
+		catch (e:Dynamic) {}
 		if (kernelVersion != "") return "Linux " + kernelVersion;
 		else
 			return "Linux";

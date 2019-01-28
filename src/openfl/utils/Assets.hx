@@ -367,7 +367,8 @@ class Assets
 		{
 			bitmapData.width;
 			return true;
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			return false;
 		}

@@ -834,80 +834,80 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion @:dox(hide) public function onGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void
 	{
 		#if !openfl_disable_handle_error
-		try {
-		#end
-
-		GameInput.__onGamepadAxisMove(gamepad, axis, value);
-
-		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		try
+		{
+			GameInput.__onGamepadAxisMove(gamepad, axis, value);
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 		}
+		#else
+		GameInput.__onGamepadAxisMove(gamepad, axis, value);
 		#end
 	}
 
 	@:noCompletion @:dox(hide) public function onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		#if !openfl_disable_handle_error
-		try {
-		#end
-
-		GameInput.__onGamepadButtonDown(gamepad, button);
-
-		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		try
+		{
+			GameInput.__onGamepadButtonDown(gamepad, button);
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 		}
+		#else
+		GameInput.__onGamepadButtonDown(gamepad, button);
 		#end
 	}
 
 	@:noCompletion @:dox(hide) public function onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		#if !openfl_disable_handle_error
-		try {
-		#end
-
-		GameInput.__onGamepadButtonUp(gamepad, button);
-
-		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		try
+		{
+			GameInput.__onGamepadButtonUp(gamepad, button);
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 		}
+		#else
+		GameInput.__onGamepadButtonUp(gamepad, button);
 		#end
 	}
 
 	@:noCompletion @:dox(hide) public function onGamepadConnect(gamepad:Gamepad):Void
 	{
 		#if !openfl_disable_handle_error
-		try {
-		#end
-
-		GameInput.__onGamepadConnect(gamepad);
-
-		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		try
+		{
+			GameInput.__onGamepadConnect(gamepad);
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 		}
+		#else
+		GameInput.__onGamepadConnect(gamepad);
 		#end
 	}
 
 	@:noCompletion @:dox(hide) public function onGamepadDisconnect(gamepad:Gamepad):Void
 	{
 		#if !openfl_disable_handle_error
-		try {
-		#end
-
-		GameInput.__onGamepadDisconnect(gamepad);
-
-		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		try
+		{
+			GameInput.__onGamepadDisconnect(gamepad);
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 		}
+		#else
+		GameInput.__onGamepadDisconnect(gamepad);
 		#end
 	}
 
@@ -1436,7 +1436,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					dispatcher.__dispatch(event);
 
 					#if !openfl_disable_handle_error
-					} catch (e:Dynamic)
+					}
+					catch (e:Dynamic)
 					{
 						__handleError(e);
 					}
@@ -1512,7 +1513,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		return super.__dispatchEvent(event);
 
 		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 			return false;
@@ -1588,7 +1590,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 		}
@@ -1604,7 +1607,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		return target.__dispatchEvent(event);
 
 		#if !openfl_disable_handle_error
-		} catch (e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			__handleError(e);
 			return false;
@@ -1675,7 +1679,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		try
 		{
 			Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
-		} catch (e:Dynamic) {}
+		}
+		catch (e:Dynamic) {}
 
 		if (!event.__preventDefault)
 		{
@@ -1702,7 +1707,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					var msg = CallStack.toString(CallStack.callStack());
 					untyped __js__("console.log")(msg);
 				}
-			} catch (e2:Dynamic) {}
+			}
+			catch (e2:Dynamic) {}
 			untyped __js__("throw e");
 			#elseif cs
 			throw e;
@@ -2529,7 +2535,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 					// __dirty = false;
 				}
-			} /*#if dom*/
+			}
+				/*
+					#if dom
+				 */
 			else if (!__renderDirty && __wasDirty)
 			{
 				// If we were dirty last time, we need at least one more
@@ -2541,7 +2550,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				{
 					__wasDirty = false;
 				}
-			} /*#end*/
+			}
+			/*
+				#end
+			 */
 		}
 	}
 

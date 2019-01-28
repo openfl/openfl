@@ -631,7 +631,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 						try
 						{
 							script.call(this);
-						} catch (e:Dynamic)
+						}
+						catch (e:Dynamic)
 						{
 							trace("Error evaluating frame script\n " + e + "\n" + haxe.CallStack.exceptionStack().map(function(a)
 								{
@@ -642,7 +643,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 					__frameScripts.set(frame, wrapper);
 					#end
-				} catch (e:Dynamic)
+				}
+				catch (e:Dynamic)
 				{
 					if (__symbol.className != null)
 					{
@@ -729,24 +731,25 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 							__updateDisplayObject(instance.displayObject, frameObject);
 						}
 					}
-				} /* else if (frameObject.type == FrameObjectType.UPDATE) {
-
+				}
+				/*
+					else if (frameObject.type == FrameObjectType.UPDATE)
+					{
 						instance = null;
 
-						if (__activeInstancesByFrameObjectID.exists (frameObject.id)) {
-
+						if (__activeInstancesByFrameObjectID.exists (frameObject.id))
+						{
 							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-
 						}
 
-						if (instance != null && instance.displayObject != null) {
-
+						if (instance != null && instance.displayObject != null)
+						{
 							__updateDisplayObject (instance.displayObject, frameObject);
-
 						}
 
-					} else if (frameObject.type == FrameObjectType.DESTROY) {
-
+					}
+					else if (frameObject.type == FrameObjectType.DESTROY)
+					{
 						// TODO: the following never evalutates because SWFLiteExporter
 						//   always orders DESTROY after CREATE, losing the original order
 						//   they were saved as in the .swf, and because SWFLiteExporter
@@ -757,12 +760,12 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 						//	throw "Tried to remove a DisplayObject child that hasn't been CREATED yet.";
 						//
 						//}
-
-					} else {
-
+					}
+					else
+					{
 						throw "Unrecognized FrameObject.type "+ frameObject.type;
-
-				}*/
+					}
+				 */
 			}
 		}
 
