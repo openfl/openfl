@@ -1617,7 +1617,8 @@ class TextEngine
 										// }
 
 										layoutGroups[i + j].offsetX += (offsetX * j);
-									} while (++j < lineLength);
+									}
+									while (++j < lineLength);
 								}
 							}
 						}

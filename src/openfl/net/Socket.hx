@@ -554,7 +554,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 						b.addBytes(__buffer, 0, l);
 						bLength += l;
 					}
-				} while (l == __buffer.length);
+				}
+				while (l == __buffer.length);
 			} catch (e:Eof)
 			{
 				// ignore

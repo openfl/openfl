@@ -16,8 +16,8 @@ import lime.utils.Preloader as LimePreloader;
 @:access(openfl.display.LoaderInfo)
 class Preloader
 {
-	public var onComplete:#if lime lime.app.Event<Void->Void> = new lime.app.Event() #else Dynamic #;
-	
+	public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event() #else Dynamic #end;
+
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
 	@:noCompletion private var ready:Bool;
