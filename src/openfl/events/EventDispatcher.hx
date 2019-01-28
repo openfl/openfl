@@ -550,7 +550,7 @@ private class Listener
 		this.priority = priority;
 	}
 
-	public function match(callback:Dynamic->Void, useCapture:Bool)
+	public function match(callback:Dynamic->Void, useCapture:Bool):Bool
 	{
 		return (Reflect.compareMethods(this.callback, callback) && this.useCapture == useCapture);
 	}

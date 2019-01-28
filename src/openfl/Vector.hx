@@ -390,7 +390,7 @@ abstract Vector<T>(IVector<T>)
 		return new BoolVector(__array.splice(pos, len));
 	}
 
-	@:noCompletion @:keep private function toJSON()
+	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
 	}
@@ -632,7 +632,7 @@ abstract Vector<T>(IVector<T>)
 		return new FloatVector(__array.splice(pos, len));
 	}
 
-	@:noCompletion @:keep private function toJSON()
+	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
 	}
@@ -880,7 +880,7 @@ abstract Vector<T>(IVector<T>)
 		return new FunctionVector(__array.splice(pos, len));
 	}
 
-	@:noCompletion @:keep private function toJSON()
+	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
 	}
@@ -1114,7 +1114,7 @@ abstract Vector<T>(IVector<T>)
 		return new IntVector(__array.splice(pos, len));
 	}
 
-	@:noCompletion @:keep private function toJSON()
+	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
 	}
@@ -1356,7 +1356,7 @@ abstract Vector<T>(IVector<T>)
 		return new ObjectVector(__array.splice(pos, len));
 	}
 
-	@:noCompletion @:keep private function toJSON()
+	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
 	}

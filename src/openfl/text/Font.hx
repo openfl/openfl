@@ -39,8 +39,8 @@ class Font #if lime extends LimeFont #end
 	 */
 	public var fontType:FontType;
 
-	@:noCompletion private static var __fontByName = new Map<String, Font>();
-	@:noCompletion private static var __registeredFonts = new Array<Font>();
+	@:noCompletion private static var __fontByName:Map<String, Font> = new Map();
+	@:noCompletion private static var __registeredFonts:Array<Font> = new Array();
 
 	@:noCompletion private var __initialized:Bool;
 
@@ -158,7 +158,7 @@ class Font #if lime extends LimeFont #end
 	 * Registers a font in the global font list.
 	 *
 	 */
-	public static function registerFont(font:Dynamic)
+	public static function registerFont(font:Dynamic):Void
 	{
 		var instance:Font = null;
 

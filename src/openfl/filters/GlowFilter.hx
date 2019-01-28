@@ -67,7 +67,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:access(openfl.geom.Rectangle)
 @:final class GlowFilter extends BitmapFilter
 {
-	@:noCompletion private static var __glowShader = new GlowShader();
+	@:noCompletion private static var __glowShader:GlowShader = new GlowShader();
 
 	/**
 	 * The alpha transparency value for the color. Valid values are 0 to 1. For

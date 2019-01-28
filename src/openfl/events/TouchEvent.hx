@@ -52,7 +52,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_BEGIN = "touchBegin";
+	public static inline var TOUCH_BEGIN:String = "touchBegin";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -60,7 +60,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_END = "touchEnd";
+	public static inline var TOUCH_END:String = "touchEnd";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -68,7 +68,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_MOVE = "touchMove";
+	public static inline var TOUCH_MOVE:String = "touchMove";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -76,7 +76,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_OUT = "touchOut";
+	public static inline var TOUCH_OUT:String = "touchOut";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -84,7 +84,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_OVER = "touchOver";
+	public static inline var TOUCH_OVER:String = "touchOver";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -92,7 +92,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_ROLL_OUT = "touchRollOut";
+	public static inline var TOUCH_ROLL_OUT:String = "touchRollOut";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -100,7 +100,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_ROLL_OVER = "touchRollOver";
+	public static inline var TOUCH_ROLL_OVER:String = "touchRollOver";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -108,7 +108,7 @@ class TouchEvent extends Event
 	 *
 	 * The dispatched TouchEvent object has the following properties:
 	 */
-	public static inline var TOUCH_TAP = "touchTap";
+	public static inline var TOUCH_TAP:String = "touchTap";
 
 	/**
 	 * Indicates whether the Alt key is active(`true`) or inactive

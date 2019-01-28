@@ -8,10 +8,10 @@ package openfl.system;
 class Security
 {
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var APPLICATION:String;
-	public static inline var LOCAL_TRUSTED = "localTrusted";
-	public static inline var LOCAL_WITH_FILE = "localWithFile";
-	public static inline var LOCAL_WITH_NETWORK = "localWithNetwork";
-	public static inline var REMOTE = "remote";
+	public static inline var LOCAL_TRUSTED:String = "localTrusted";
+	public static inline var LOCAL_WITH_FILE:String = "localWithFile";
+	public static inline var LOCAL_WITH_NETWORK:String = "localWithNetwork";
+	public static inline var REMOTE:String = "remote";
 	public static var disableAVM1Loading:Bool;
 	public static var exactSettings:Bool;
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var pageDomain (default, null):String;

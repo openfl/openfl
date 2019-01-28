@@ -107,7 +107,7 @@ import openfl.Vector;
 	 */
 	public static var supportsTouchEvents(get, never):Bool;
 
-	public static function __init__()
+	private static function __init__():Void
 	{
 		maxTouchPoints = 2;
 		supportedGestures = null;

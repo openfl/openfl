@@ -39,11 +39,11 @@ import haxe.io.Path;
 @:access(openfl.text.TextFormat)
 class TextEngine
 {
-	private static inline var UTF8_TAB = 9;
-	private static inline var UTF8_ENDLINE = 10;
-	private static inline var UTF8_SPACE = 32;
-	private static inline var UTF8_HYPHEN = 0x2D;
-	private static var __defaultFonts = new Map<String, Font>();
+	private static inline var UTF8_TAB:Int = 9;
+	private static inline var UTF8_ENDLINE:Int = 10;
+	private static inline var UTF8_SPACE:Int = 32;
+	private static inline var UTF8_HYPHEN:Int = 0x2D;
+	private static var __defaultFonts:Map<String, Font> = new Map();
 	#if (js && html5)
 	private static var __canvas:CanvasElement;
 	private static var __context:CanvasRenderingContext2D;
@@ -764,7 +764,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int)
+		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<Float>
 		{
 			// TODO: optimize
 

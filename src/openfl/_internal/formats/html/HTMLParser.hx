@@ -10,22 +10,22 @@ import openfl.Vector;
 #end
 class HTMLParser
 {
-	private static var __regexAlign = ~/align=("([^"]+)"|'([^']+)')/i;
-	private static var __regexBreakTag = ~/<br\s*\/?>/gi;
-	private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
-	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
-	private static var __regexEntities = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
-	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
-	private static var __regexHTMLTag = ~/<.*?>/g;
-	private static var __regexHref = ~/href=("([^"]+)"|'([^']+)')/i;
-	private static var __regexIndent = ~/ indent=("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeading = ~/leading=("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeftMargin = ~/leftmargin=("([^"]+)"|'([^']+)')/i;
-	private static var __regexRightMargin = ~/rightmargin=("([^"]+)"|'([^']+)')/i;
-	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
-	private static var __regexTabStops = ~/tabstops=("([^"]+)"|'([^']+)')/i;
+	private static var __regexAlign:EReg = ~/align=("([^"]+)"|'([^']+)')/i;
+	private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
+	private static var __regexBlockIndent:EReg = ~/blockindent=("([^"]+)"|'([^']+)')/i;
+	private static var __regexColor:EReg = ~/color=("#([^"]+)"|'#([^']+)')/i;
+	private static var __regexEntities:EReg = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
+	private static var __regexFace:EReg = ~/face=("([^"]+)"|'([^']+)')/i;
+	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
+	private static var __regexHref:EReg = ~/href=("([^"]+)"|'([^']+)')/i;
+	private static var __regexIndent:EReg = ~/ indent=("([^"]+)"|'([^']+)')/i;
+	private static var __regexLeading:EReg = ~/leading=("([^"]+)"|'([^']+)')/i;
+	private static var __regexLeftMargin:EReg = ~/leftmargin=("([^"]+)"|'([^']+)')/i;
+	private static var __regexRightMargin:EReg = ~/rightmargin=("([^"]+)"|'([^']+)')/i;
+	private static var __regexSize:EReg = ~/size=("([^"]+)"|'([^']+)')/i;
+	private static var __regexTabStops:EReg = ~/tabstops=("([^"]+)"|'([^']+)')/i;
 
-	public static function parse(value:String, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>)
+	public static function parse(value:String, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
 	{
 		value = __regexBreakTag.replace(value, "\n");
 		value = __regexEntities[0].replace(value, "\"");

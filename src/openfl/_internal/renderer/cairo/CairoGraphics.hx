@@ -1408,7 +1408,7 @@ class CairoGraphics
 		#end
 	}
 
-	public static function renderMask(graphics:Graphics, renderer:CairoRenderer)
+	public static function renderMask(graphics:Graphics, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
 		if (graphics.__commands.length != 0)

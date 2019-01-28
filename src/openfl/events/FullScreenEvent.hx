@@ -7,8 +7,8 @@ package openfl.events;
 #end
 class FullScreenEvent extends ActivityEvent
 {
-	public static inline var FULL_SCREEN = "fullScreen";
-	public static inline var FULL_SCREEN_INTERACTIVE_ACCEPTED = "fullScreenInteractiveAccepted";
+	public static inline var FULL_SCREEN:String = "fullScreen";
+	public static inline var FULL_SCREEN_INTERACTIVE_ACCEPTED:String = "fullScreenInteractiveAccepted";
 
 	public var fullScreen:Bool;
 	public var interactive:Bool;

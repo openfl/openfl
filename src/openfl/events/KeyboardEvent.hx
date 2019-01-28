@@ -28,7 +28,7 @@ class KeyboardEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var KEY_DOWN = "keyDown";
+	public static inline var KEY_DOWN:String = "keyDown";
 
 	/**
 	 * The `KeyboardEvent.KEY_UP` constant defines the value of the
@@ -36,7 +36,7 @@ class KeyboardEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var KEY_UP = "keyUp";
+	public static inline var KEY_UP:String = "keyUp";
 
 	/**
 	 * Indicates whether the Alt key is active(`true`) or inactive

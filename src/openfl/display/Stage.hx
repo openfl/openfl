@@ -1520,7 +1520,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 	}
 
-	@:noCompletion private function __dispatchPendingMouseEvent()
+	@:noCompletion private function __dispatchPendingMouseEvent():Void
 	{
 		if (__pendingMouseEvent)
 		{

@@ -20,7 +20,7 @@ class TextEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var LINK = "link";
+	public static inline var LINK:String = "link";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -31,7 +31,7 @@ class TextEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var TEXT_INPUT = "textInput";
+	public static inline var TEXT_INPUT:String = "textInput";
 
 	/**
 	 * For a `textInput` event, the character or sequence of

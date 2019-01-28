@@ -17,7 +17,7 @@ import lime.math.RGBA;
 #end
 @:final class ColorMatrixFilter extends BitmapFilter
 {
-	@:noCompletion private static var __colorMatrixShader = new ColorMatrixShader();
+	@:noCompletion private static var __colorMatrixShader:ColorMatrixShader = new ColorMatrixShader();
 
 	public var matrix(get, set):Array<Float>;
 

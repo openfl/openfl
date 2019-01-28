@@ -10,7 +10,7 @@ import openfl.utils.Endian;
 #end
 class SampleDataEvent extends Event
 {
-	public static inline var SAMPLE_DATA = "sampleData";
+	public static inline var SAMPLE_DATA:String = "sampleData";
 
 	public var data:ByteArray;
 	public var position:Float;

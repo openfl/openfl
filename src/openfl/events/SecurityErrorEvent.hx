@@ -32,7 +32,7 @@ class SecurityErrorEvent extends ErrorEvent
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var SECURITY_ERROR = "securityError";
+	public static inline var SECURITY_ERROR:String = "securityError";
 
 	/**
 	 * Creates an Event object that contains information about security error

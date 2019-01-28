@@ -33,7 +33,7 @@ class ATFReader
 	private var data:ByteArray;
 	private var height:Int;
 	private var mipCount:Int;
-	private var version = 0;
+	private var version:Int = 0;
 	private var width:Int;
 
 	public function new(data:ByteArray, byteArrayOffset:UInt)

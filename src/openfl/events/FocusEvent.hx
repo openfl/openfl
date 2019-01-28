@@ -27,7 +27,7 @@ class FocusEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var FOCUS_IN = "focusIn";
+	public static inline var FOCUS_IN:String = "focusIn";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -35,7 +35,7 @@ class FocusEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var FOCUS_OUT = "focusOut";
+	public static inline var FOCUS_OUT:String = "focusOut";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -43,7 +43,7 @@ class FocusEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var KEY_FOCUS_CHANGE = "keyFocusChange";
+	public static inline var KEY_FOCUS_CHANGE:String = "keyFocusChange";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -51,7 +51,7 @@ class FocusEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_FOCUS_CHANGE = "mouseFocusChange";
+	public static inline var MOUSE_FOCUS_CHANGE:String = "mouseFocusChange";
 
 	// @:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
 

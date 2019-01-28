@@ -50,15 +50,15 @@ import lime.utils.Float32Array;
 @:allow(openfl.text)
 class OpenGLRenderer extends DisplayObjectRenderer
 {
-	@:noCompletion private static var __alphaValue = [1.];
-	@:noCompletion private static var __colorMultipliersValue = [0, 0, 0, 0.];
-	@:noCompletion private static var __colorOffsetsValue = [0, 0, 0, 0.];
-	@:noCompletion private static var __defaultColorMultipliersValue = [1, 1, 1, 1.];
-	@:noCompletion private static var __emptyColorValue = [0, 0, 0, 0.];
-	@:noCompletion private static var __emptyAlphaValue = [1.];
-	@:noCompletion private static var __hasColorTransformValue = [false];
-	@:noCompletion private static var __scissorRectangle = new Rectangle();
-	@:noCompletion private static var __textureSizeValue = [0, 0.];
+	@:noCompletion private static var __alphaValue:Array<Float> = [1];
+	@:noCompletion private static var __colorMultipliersValue:Array<Float> = [0, 0, 0, 0];
+	@:noCompletion private static var __colorOffsetsValue:Array<Float> = [0, 0, 0, 0];
+	@:noCompletion private static var __defaultColorMultipliersValue:Array<Float> = [1, 1, 1, 1];
+	@:noCompletion private static var __emptyColorValue:Array<Float> = [0, 0, 0, 0];
+	@:noCompletion private static var __emptyAlphaValue:Array<Float> = [1];
+	@:noCompletion private static var __hasColorTransformValue:Array<Bool> = [false];
+	@:noCompletion private static var __scissorRectangle:Rectangle = new Rectangle();
+	@:noCompletion private static var __textureSizeValue:Array<Float> = [0, 0];
 
 	public var gl:#if lime WebGLRenderContext #else Dynamic #end;
 

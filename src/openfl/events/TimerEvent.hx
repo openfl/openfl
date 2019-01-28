@@ -18,7 +18,7 @@ class TimerEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var TIMER = "timer";
+	public static inline var TIMER:String = "timer";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -26,7 +26,7 @@ class TimerEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var TIMER_COMPLETE = "timerComplete";
+	public static inline var TIMER_COMPLETE:String = "timerComplete";
 
 	/**
 	 * Creates an Event object with specific information relevant to

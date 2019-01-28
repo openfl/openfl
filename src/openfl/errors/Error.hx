@@ -9,7 +9,7 @@ import haxe.CallStack;
 #end
 class Error #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end
 {
-	@:noCompletion private static inline var DEFAULT_TO_STRING = "Error";
+	@:noCompletion private static inline var DEFAULT_TO_STRING:String = "Error";
 
 	// @:noCompletion @:dox(hide) public static var length:Int;
 	public var errorID(default, null):Int;

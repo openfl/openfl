@@ -144,7 +144,7 @@ import js.html.DivElement;
 class TextField extends InteractiveObject
 {
 	@:noCompletion private static var __defaultTextFormat:TextFormat;
-	@:noCompletion private static var __missingFontWarning = new Map<String, Bool>();
+	@:noCompletion private static var __missingFontWarning:Map<String, Bool> = new Map();
 
 	/**
 	 * The type of anti-aliasing used for this text field. Use
@@ -1076,7 +1076,7 @@ class TextField extends InteractiveObject
 	 * @param endIndex   The zero-based index value of the last character in the
 	 *                   selection.
 	 */
-	public function setSelection(beginIndex:Int, endIndex:Int)
+	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
 		__selectionIndex = beginIndex;
 		__caretIndex = endIndex;
@@ -2863,7 +2863,7 @@ class TextField extends InteractiveObject
 	}
 
 	// Event Handlers
-	@:noCompletion private function stage_onMouseMove(event:MouseEvent)
+	@:noCompletion private function stage_onMouseMove(event:MouseEvent):Void
 	{
 		if (stage == null) return;
 

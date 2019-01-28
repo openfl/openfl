@@ -194,7 +194,7 @@ import lime.utils.UInt8Array;
 		return false;
 	}
 
-	@:noCompletion private function __sideToTarget(side:UInt)
+	@:noCompletion private function __sideToTarget(side:UInt):Int
 	{
 		var gl = __context.gl;
 

@@ -147,7 +147,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedBitmap())
 class BitmapData implements IBitmapDrawable
 {
-	@:noCompletion private static inline var __vertexBufferStride = 14;
+	@:noCompletion private static inline var __vertexBufferStride:Int = 14;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
@@ -1603,7 +1603,7 @@ class BitmapData implements IBitmapDrawable
 	 * @return A Vector representing the given Rectangle.
 	 * @throws TypeError The rect is null.
 	 */
-	public function getVector(rect:Rectangle)
+	public function getVector(rect:Rectangle):Vector<UInt>
 	{
 		var pixels = getPixels(rect);
 		var length = Std.int(pixels.length / 4);
@@ -1617,7 +1617,7 @@ class BitmapData implements IBitmapDrawable
 		return result;
 	}
 
-	public function histogram(hRect:Rectangle = null)
+	public function histogram(hRect:Rectangle = null):Array<Int>
 	{
 		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
 		var pixels = getPixels(rect);
@@ -2129,7 +2129,7 @@ class BitmapData implements IBitmapDrawable
 	 * @throws RangeError The vector array is not large enough to read all the
 	 *                    pixel data.
 	 */
-	public function setVector(rect:Rectangle, inputVector:Vector<UInt>)
+	public function setVector(rect:Rectangle, inputVector:Vector<UInt>):Void
 	{
 		var byteArray = new ByteArray();
 		byteArray.length = inputVector.length * 4;
@@ -2653,7 +2653,7 @@ class BitmapData implements IBitmapDrawable
 		renderer.__clearShader();
 	}
 
-	function __resize(width:Int, height:Int)
+	@:noCompletion private function __resize(width:Int, height:Int):Void
 	{
 		this.width = width;
 		this.height = height;

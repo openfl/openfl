@@ -26,9 +26,6 @@ import openfl.Vector;
 #end
 @:final class GraphicsPath implements IGraphicsData implements IGraphicsPath
 {
-	@:noCompletion private static var SIN45 = 0.70710678118654752440084436210485;
-	@:noCompletion private static var TAN22 = 0.4142135623730950488016887242097;
-
 	/**
 	 * The Vector of drawing commands as integers representing the path. Each
 	 * command can be one of the values defined by the GraphicsPathCommand class.

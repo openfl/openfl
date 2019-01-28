@@ -7,7 +7,7 @@ package openfl.events;
 #end
 class ActivityEvent extends Event
 {
-	public static inline var ACTIVITY = "activity";
+	public static inline var ACTIVITY:String = "activity";
 
 	public var activating:Bool;
 

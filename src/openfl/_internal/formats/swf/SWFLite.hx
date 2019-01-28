@@ -19,7 +19,7 @@ import openfl.Assets;
 @:access(openfl._internal.symbols.SWFSymbol)
 @:keep class SWFLite
 {
-	public static var instances = new Map<String, SWFLite>();
+	public static var instances:Map<String, SWFLite> = new Map();
 
 	public var frameRate:Float;
 	public var library:SWFLiteLibrary;

@@ -22,7 +22,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(openfl.net.NetStream)
 class Context3DVideo
 {
-	private static var __textureSizeValue = [0, 0.];
+	private static var __textureSizeValue:Array<Float> = [0, 0.];
 
 	public static function render(video:Video, renderer:OpenGLRenderer):Void
 	{

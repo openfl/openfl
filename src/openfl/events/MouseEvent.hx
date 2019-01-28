@@ -29,7 +29,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var CLICK = "click";
+	public static inline var CLICK:String = "click";
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
 
 	/**
@@ -40,7 +40,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var DOUBLE_CLICK = "doubleClick";
+	public static inline var DOUBLE_CLICK:String = "doubleClick";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -48,7 +48,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MIDDLE_CLICK = "middleClick";
+	public static inline var MIDDLE_CLICK:String = "middleClick";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -56,7 +56,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MIDDLE_MOUSE_DOWN = "middleMouseDown";
+	public static inline var MIDDLE_MOUSE_DOWN:String = "middleMouseDown";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -64,7 +64,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MIDDLE_MOUSE_UP = "middleMouseUp";
+	public static inline var MIDDLE_MOUSE_UP:String = "middleMouseUp";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -72,7 +72,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_DOWN = "mouseDown";
+	public static inline var MOUSE_DOWN:String = "mouseDown";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -80,7 +80,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_MOVE = "mouseMove";
+	public static inline var MOUSE_MOVE:String = "mouseMove";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -88,7 +88,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_OUT = "mouseOut";
+	public static inline var MOUSE_OUT:String = "mouseOut";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -96,7 +96,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_OVER = "mouseOver";
+	public static inline var MOUSE_OVER:String = "mouseOver";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -104,7 +104,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_UP = "mouseUp";
+	public static inline var MOUSE_UP:String = "mouseUp";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -112,7 +112,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_WHEEL = "mouseWheel";
+	public static inline var MOUSE_WHEEL:String = "mouseWheel";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -120,7 +120,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var RELEASE_OUTSIDE = "releaseOutside";
+	public static inline var RELEASE_OUTSIDE:String = "releaseOutside";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -128,7 +128,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var RIGHT_CLICK = "rightClick";
+	public static inline var RIGHT_CLICK:String = "rightClick";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -136,7 +136,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var RIGHT_MOUSE_DOWN = "rightMouseDown";
+	public static inline var RIGHT_MOUSE_DOWN:String = "rightMouseDown";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -144,7 +144,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var RIGHT_MOUSE_UP = "rightMouseUp";
+	public static inline var RIGHT_MOUSE_UP:String = "rightMouseUp";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -152,7 +152,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ROLL_OUT = "rollOut";
+	public static inline var ROLL_OUT:String = "rollOut";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -160,7 +160,7 @@ class MouseEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ROLL_OVER = "rollOver";
+	public static inline var ROLL_OVER:String = "rollOver";
 	@:noCompletion private static var __altKey:Bool;
 	@:noCompletion private static var __buttonDown:Bool;
 	@:noCompletion private static var __commandKey:Bool;

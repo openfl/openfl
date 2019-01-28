@@ -42,7 +42,7 @@ import lime.utils.UInt16Array;
 @:access(openfl.net.NetStream)
 class Video extends DisplayObject
 {
-	@:noCompletion private static inline var __vertexBufferStride = 5;
+	@:noCompletion private static inline var __vertexBufferStride:Int = 5;
 
 	public var deblocking:Int;
 	public var smoothing:Bool;

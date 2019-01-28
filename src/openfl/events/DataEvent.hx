@@ -7,8 +7,8 @@ package openfl.events;
 #end
 class DataEvent extends TextEvent
 {
-	public static inline var DATA = "data";
-	public static inline var UPLOAD_COMPLETE_DATA = "uploadCompleteData";
+	public static inline var DATA:String = "data";
+	public static inline var UPLOAD_COMPLETE_DATA:String = "uploadCompleteData";
 
 	public var data:String;
 

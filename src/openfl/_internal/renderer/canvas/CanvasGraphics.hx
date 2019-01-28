@@ -38,8 +38,8 @@ import js.html.ImageData;
 @:access(openfl.geom.Rectangle)
 class CanvasGraphics
 {
-	private static var SIN45 = 0.70710678118654752440084436210485;
-	private static var TAN22 = 0.4142135623730950488016887242097;
+	private static var SIN45:Float = 0.70710678118654752440084436210485;
+	private static var TAN22:Float = 0.4142135623730950488016887242097;
 	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapStroke:BitmapData;
@@ -93,7 +93,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool)
+	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):CanvasPattern
 	{
 		#if (js && html5)
 		ImageCanvasUtil.convertToCanvas(bitmap.image);
@@ -105,7 +105,7 @@ class CanvasGraphics
 	}
 
 	private static function createGradientPattern(type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix,
-			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float)
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CanvasPattern
 	{
 		#if (js && html5)
 		var gradientFill = null, point = null, point2 = null, releaseMatrix = false;
@@ -162,7 +162,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int)
+	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):CanvasPattern
 	{
 		// TODO: Don't create extra canvas elements like this
 
@@ -454,7 +454,7 @@ class CanvasGraphics
 		return false;
 	}
 
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float)
+	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
 	{
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
@@ -1427,7 +1427,7 @@ class CanvasGraphics
 		#end
 	}
 
-	public static function renderMask(graphics:Graphics, renderer:CanvasRenderer)
+	public static function renderMask(graphics:Graphics, renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
 		// TODO: Move to normal render method, browsers appear to support more than

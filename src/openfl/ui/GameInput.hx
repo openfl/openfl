@@ -20,10 +20,10 @@ import lime.ui.GamepadButton;
 {
 	public static var isSupported(default, null) = true;
 	public static var numDevices(default, null) = 0;
-	@:noCompletion private static var __deviceList = new Array<GameInputDevice>();
-	@:noCompletion private static var __instances = [];
+	@:noCompletion private static var __deviceList:Array<GameInputDevice> = new Array();
+	@:noCompletion private static var __instances:Array<GameInput> = [];
 	#if lime
-	@:noCompletion private static var __devices = new Map<Gamepad, GameInputDevice>();
+	@:noCompletion private static var __devices:Map<Gamepad, GameInputDevice> = new Map();
 	#end
 
 	public function new()

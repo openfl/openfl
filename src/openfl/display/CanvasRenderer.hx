@@ -43,7 +43,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 		#end
 	}
 
-	public function applySmoothing(context:#if lime Canvas2DRenderContext #else Dynamic #end, value:Bool)
+	public function applySmoothing(context:#if lime Canvas2DRenderContext #else Dynamic #end, value:Bool):Void
 	{
 		context.imageSmoothingEnabled = value;
 	}

@@ -114,7 +114,7 @@ import js.Browser;
 #end
 class LoaderInfo extends EventDispatcher
 {
-	@:noCompletion private static var __rootURL = #if (js && html5)(Browser.supported ? Browser.document.URL : "") #else "" #end;
+	@:noCompletion private static var __rootURL:String = #if (js && html5)(Browser.supported ? Browser.document.URL : "") #else "" #end;
 
 	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):flash.display.ActionScriptVersion;
 

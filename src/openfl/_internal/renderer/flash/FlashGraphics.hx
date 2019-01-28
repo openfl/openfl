@@ -20,9 +20,9 @@ import openfl.Vector;
 @:access(flash.display.Graphics)
 class FlashGraphics
 {
-	public static var bitmapFill = new Dictionary<Graphics, BitmapData>(true);
-	private static var tileRect = new Rectangle();
-	private static var tileTransform = new Matrix();
+	public static var bitmapFill:Dictionary<Graphics, BitmapData> = new Dictionary(true);
+	private static var tileRect:Rectangle = new Rectangle();
+	private static var tileTransform:Matrix = new Matrix();
 
 	public static function drawGraphicsData(graphics:Graphics, graphicsData:Vector<IGraphicsData>):Void
 	{

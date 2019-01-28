@@ -32,7 +32,7 @@ class ErrorEvent extends TextEvent
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ERROR = "error";
+	public static inline var ERROR:String = "error";
 
 	/**
 	 * Contains the reference number associated with the specific error. For a

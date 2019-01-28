@@ -32,10 +32,10 @@ import openfl.Vector;
 
 class PerspectiveMatrix3D extends Matrix3D
 {
-	private var _x = new Vector3D();
-	private var _y = new Vector3D();
-	private var _z = new Vector3D();
-	private var _w = new Vector3D();
+	private var _x:Vector3D = new Vector3D();
+	private var _y:Vector3D = new Vector3D();
+	private var _z:Vector3D = new Vector3D();
+	private var _w:Vector3D = new Vector3D();
 
 	public function new(v:Vector<Float> = null)
 	{

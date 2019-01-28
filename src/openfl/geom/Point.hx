@@ -34,7 +34,7 @@ import lime.math.Vector2;
 #end
 class Point
 {
-	@:noCompletion private static var __pool = new ObjectPool<Point>(function() return new Point(), function(p) p.setTo(0, 0));
+	@:noCompletion private static var __pool:ObjectPool<Point> = new ObjectPool(function() return new Point(), function(p) p.setTo(0, 0));
 	#if lime
 	@:noCompletion private static var __limeVector2:Vector2;
 	#end

@@ -43,7 +43,7 @@ class HTTPStatusEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var HTTP_RESPONSE_STATUS = "httpResponseStatus";
+	public static inline var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 
 	/**
 	 * The `HTTPStatusEvent.HTTP_STATUS` constant defines the value of
@@ -51,7 +51,7 @@ class HTTPStatusEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var HTTP_STATUS = "httpStatus";
+	public static inline var HTTP_STATUS:String = "httpStatus";
 
 	public var redirected:Bool;
 

@@ -13,7 +13,7 @@ import lime.ui.Touch;
 #end
 class TouchData
 {
-	public static var __pool = new ObjectPool<TouchData>(function() return new TouchData(), function(data) data.reset());
+	public static var __pool:ObjectPool<TouchData> = new ObjectPool(function() return new TouchData(), function(data) data.reset());
 
 	public var rollOutStack:Array<DisplayObject>;
 	public var touch:#if lime Touch #else Dynamic #end;

@@ -30,7 +30,7 @@ import lime.graphics.cairo.CairoImageSurface;
 @:access(openfl.text.TextField)
 class CairoTextField
 {
-	public static function render(textField:TextField, renderer:CairoRenderer, transform:Matrix)
+	public static function render(textField:TextField, renderer:CairoRenderer, transform:Matrix):Void
 	{
 		#if lime_cairo
 		var textEngine = textField.__textEngine;

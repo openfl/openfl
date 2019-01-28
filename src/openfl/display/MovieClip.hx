@@ -342,7 +342,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		super.__enterFrame(deltaTime);
 	}
 
-	@:noCompletion private function __updateFrameScript(deltaTime:Int)
+	@:noCompletion private function __updateFrameScript(deltaTime:Int):Void
 	{
 		if (__symbol != null && __playing)
 		{
@@ -380,7 +380,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	@:noCompletion private function __updateSymbol(targetFrame:Int)
+	@:noCompletion private function __updateSymbol(targetFrame:Int):Void
 	{
 		if (__symbol != null && __currentFrame != __lastFrameUpdate)
 		{
@@ -800,7 +800,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		return nextFrame;
 	}
 
-	@:noCompletion private function __goto(frame:Int)
+	@:noCompletion private function __goto(frame:Int):Void
 	{
 		if (__symbol == null) return;
 

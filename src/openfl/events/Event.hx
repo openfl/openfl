@@ -61,7 +61,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ACTIVATE = "activate";
+	public static inline var ACTIVATE:String = "activate";
 
 	/**
 	 * The `Event.ADDED` constant defines the value of the
@@ -69,7 +69,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ADDED = "added";
+	public static inline var ADDED:String = "added";
 
 	/**
 	 * The `Event.ADDED_TO_STAGE` constant defines the value of the
@@ -77,7 +77,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ADDED_TO_STAGE = "addedToStage";
+	public static inline var ADDED_TO_STAGE:String = "addedToStage";
 	// @:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
 
 	/**
@@ -86,7 +86,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var CANCEL = "cancel";
+	public static inline var CANCEL:String = "cancel";
 
 	/**
 	 * The `Event.CHANGE` constant defines the value of the
@@ -94,10 +94,10 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var CHANGE = "change";
+	public static inline var CHANGE:String = "change";
 	// @:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE:String;
 	// @:noCompletion @:dox(hide) public static var CHANNEL_STATE:String;
-	public static inline var CLEAR = "clear";
+	public static inline var CLEAR:String = "clear";
 
 	/**
 	 * The `Event.CLOSE` constant defines the value of the
@@ -105,7 +105,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var CLOSE = "close";
+	public static inline var CLOSE:String = "close";
 
 	/**
 	 * The `Event.COMPLETE` constant defines the value of the
@@ -113,7 +113,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var COMPLETE = "complete";
+	public static inline var COMPLETE:String = "complete";
 
 	/**
 	 * The `Event.CONNECT` constant defines the value of the
@@ -121,10 +121,10 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var CONNECT = "connect";
-	public static inline var CONTEXT3D_CREATE = "context3DCreate";
-	public static inline var COPY = "copy";
-	public static inline var CUT = "cut";
+	public static inline var CONNECT:String = "connect";
+	public static inline var CONTEXT3D_CREATE:String = "context3DCreate";
+	public static inline var COPY:String = "copy";
+	public static inline var CUT:String = "cut";
 
 	/**
 	 * The `Event.DEACTIVATE` constant defines the value of the
@@ -139,7 +139,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var DEACTIVATE = "deactivate";
+	public static inline var DEACTIVATE:String = "deactivate";
 
 	/**
 	 * The `Event.ENTER_FRAME` constant defines the value of the
@@ -151,11 +151,11 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ENTER_FRAME = "enterFrame";
-	public static inline var EXIT_FRAME = "exitFrame";
-	public static inline var FRAME_CONSTRUCTED = "frameConstructed";
-	public static inline var FRAME_LABEL = "frameLabel";
-	public static inline var FULLSCREEN = "fullScreen";
+	public static inline var ENTER_FRAME:String = "enterFrame";
+	public static inline var EXIT_FRAME:String = "exitFrame";
+	public static inline var FRAME_CONSTRUCTED:String = "frameConstructed";
+	public static inline var FRAME_LABEL:String = "frameLabel";
+	public static inline var FULLSCREEN:String = "fullScreen";
 
 	/**
 	 * The `Event.ID3` constant defines the value of the
@@ -163,7 +163,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var ID3 = "id3";
+	public static inline var ID3:String = "id3";
 
 	/**
 	 * The `Event.INIT` constant defines the value of the
@@ -171,7 +171,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var INIT = "init";
+	public static inline var INIT:String = "init";
 
 	/**
 	 * The `Event.MOUSE_LEAVE` constant defines the value of the
@@ -179,7 +179,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var MOUSE_LEAVE = "mouseLeave";
+	public static inline var MOUSE_LEAVE:String = "mouseLeave";
 
 	/**
 	 * The `Event.OPEN` constant defines the value of the
@@ -187,8 +187,8 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var OPEN = "open";
-	public static inline var PASTE = "paste";
+	public static inline var OPEN:String = "open";
+	public static inline var PASTE:String = "paste";
 
 	/**
 	 * The `Event.REMOVED` constant defines the value of the
@@ -196,7 +196,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var REMOVED = "removed";
+	public static inline var REMOVED:String = "removed";
 
 	/**
 	 * The `Event.REMOVED_FROM_STAGE` constant defines the value of
@@ -205,7 +205,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var REMOVED_FROM_STAGE = "removedFromStage";
+	public static inline var REMOVED_FROM_STAGE:String = "removedFromStage";
 
 	/**
 	 * The `Event.RENDER` constant defines the value of the
@@ -217,7 +217,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var RENDER = "render";
+	public static inline var RENDER:String = "render";
 
 	/**
 	 * The `Event.RESIZE` constant defines the value of the
@@ -225,7 +225,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var RESIZE = "resize";
+	public static inline var RESIZE:String = "resize";
 
 	/**
 	 * The `Event.SCROLL` constant defines the value of the
@@ -233,7 +233,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var SCROLL = "scroll";
+	public static inline var SCROLL:String = "scroll";
 
 	/**
 	 * The `Event.SELECT` constant defines the value of the
@@ -241,8 +241,8 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var SELECT = "select";
-	public static inline var SELECT_ALL = "selectAll";
+	public static inline var SELECT:String = "select";
+	public static inline var SELECT_ALL:String = "selectAll";
 
 	/**
 	 * The `Event.SOUND_COMPLETE` constant defines the value of the
@@ -250,7 +250,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var SOUND_COMPLETE = "soundComplete";
+	public static inline var SOUND_COMPLETE:String = "soundComplete";
 
 	/**
 	 * The `Event.TAB_CHILDREN_CHANGE` constant defines the value of
@@ -259,7 +259,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var TAB_CHILDREN_CHANGE = "tabChildrenChange";
+	public static inline var TAB_CHILDREN_CHANGE:String = "tabChildrenChange";
 
 	/**
 	 * The `Event.TAB_ENABLED_CHANGE` constant defines the value of
@@ -268,7 +268,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var TAB_ENABLED_CHANGE = "tabEnabledChange";
+	public static inline var TAB_ENABLED_CHANGE:String = "tabEnabledChange";
 
 	/**
 	 * The `Event.TAB_INDEX_CHANGE` constant defines the value of the
@@ -276,8 +276,8 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var TAB_INDEX_CHANGE = "tabIndexChange";
-	public static inline var TEXTURE_READY = "textureReady";
+	public static inline var TAB_INDEX_CHANGE:String = "tabIndexChange";
+	public static inline var TEXTURE_READY:String = "textureReady";
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
 
 	/**
@@ -286,7 +286,7 @@ class Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var UNLOAD = "unload";
+	public static inline var UNLOAD:String = "unload";
 
 	// @:noCompletion @:dox(hide) public static var VIDEO_FRAME:String;
 	// @:noCompletion @:dox(hide) public static var WORKER_STATE:String;

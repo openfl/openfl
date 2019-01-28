@@ -18,10 +18,10 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.Tileset)
 class FlashTilemap
 {
-	private static var alphaColorTransform = new ColorTransform();
-	private static var bitmap = new Bitmap();
-	private static var destPoint = new Point();
-	private static var sourceRect = new Rectangle();
+	private static var alphaColorTransform:ColorTransform = new ColorTransform();
+	private static var bitmap:Bitmap = new Bitmap();
+	private static var destPoint:Point = new Point();
+	private static var sourceRect:Rectangle = new Rectangle();
 
 	public static inline function render(tilemap:Tilemap):Void
 	{

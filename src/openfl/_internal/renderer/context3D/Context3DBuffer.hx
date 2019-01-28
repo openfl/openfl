@@ -10,9 +10,9 @@ import lime.utils.UInt16Array;
 
 class Context3DBuffer
 {
-	private static inline var MAX_INDEX_BUFFER_LENGTH = 0xFFFF;
-	private static inline var MAX_QUADS_PER_INDEX_BUFFER = 0x2AAA;
-	private static inline var MAX_QUAD_INDEX_BUFFER_LENGTH = 0xFFFC;
+	private static inline var MAX_INDEX_BUFFER_LENGTH:Int = 0xFFFF;
+	private static inline var MAX_QUADS_PER_INDEX_BUFFER:Int = 0x2AAA;
+	private static inline var MAX_QUAD_INDEX_BUFFER_LENGTH:Int = 0xFFFC;
 
 	public var dataPerVertex:Int;
 	public var elementCount:Int;

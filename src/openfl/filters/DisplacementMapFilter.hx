@@ -21,7 +21,7 @@ import lime.math.Vector4;
 @:access(openfl.geom.Rectangle)
 @:final class DisplacementMapFilter extends BitmapFilter
 {
-	@:noCompletion private static var __displacementMapShader = new DisplacementMapShader();
+	@:noCompletion private static var __displacementMapShader:DisplacementMapShader = new DisplacementMapShader();
 	private static var __matrixData:Array<Float> = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 	private static var __offset:Array<Float> = [0.5, 0.5, 0.0, 0.0];
 

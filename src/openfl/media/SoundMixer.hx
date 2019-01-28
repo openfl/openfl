@@ -8,11 +8,11 @@ package openfl.media;
 @:access(openfl.media.SoundChannel)
 @:final class SoundMixer
 {
-	@:noCompletion private static inline var MAX_ACTIVE_CHANNELS = 32;
+	@:noCompletion private static inline var MAX_ACTIVE_CHANNELS:Int = 32;
 	public static var bufferTime:Int;
 	public static var soundTransform(get, set):SoundTransform;
-	@:noCompletion private static var __soundChannels = new Array<SoundChannel>();
-	@:noCompletion private static var __soundTransform = #if (mute || mute_sound) new SoundTransform(0) #else new SoundTransform() #end;
+	@:noCompletion private static var __soundChannels:Array<SoundChannel> = new Array();
+	@:noCompletion private static var __soundTransform:SoundTransform = #if (mute || mute_sound) new SoundTransform(0) #else new SoundTransform() #end;
 
 	#if openfljs
 	@:noCompletion private static function __init__()

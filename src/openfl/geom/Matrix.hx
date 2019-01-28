@@ -68,10 +68,10 @@ import lime.utils.Float32Array;
 #end
 class Matrix
 {
-	@:noCompletion private static var __identity = new Matrix();
-	@:noCompletion private static var __pool = new ObjectPool<Matrix>(function() return new Matrix(), function(m) m.identity());
+	@:noCompletion private static var __identity:Matrix = new Matrix();
+	@:noCompletion private static var __pool:ObjectPool<Matrix> = new ObjectPool(function() return new Matrix(), function(m) m.identity());
 	#if lime
-	@:noCompletion private static var __matrix3 = new Matrix3();
+	@:noCompletion private static var __matrix3:Matrix3 = new Matrix3();
 	#end
 
 	/**
@@ -596,7 +596,7 @@ class Matrix
 		}
 	}
 
-	@:dox(hide) @:noCompletion public inline function toMozString()
+	@:dox(hide) @:noCompletion public inline function toMozString():String
 	{
 		return 'matrix($a, $b, $c, $d, ${tx}px, ${ty}px)';
 	}

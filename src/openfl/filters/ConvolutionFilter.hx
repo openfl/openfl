@@ -14,7 +14,7 @@ import openfl.geom.Rectangle;
 #end
 class ConvolutionFilter extends BitmapFilter
 {
-	@:noCompletion private static var __convolutionShader = new ConvolutionShader();
+	@:noCompletion private static var __convolutionShader:ConvolutionShader = new ConvolutionShader();
 
 	public var alpha:Float;
 	public var bias:Float;

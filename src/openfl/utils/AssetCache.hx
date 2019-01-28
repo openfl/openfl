@@ -21,7 +21,7 @@ import lime.utils.Assets as LimeAssets;
 	/* deprecated */
 	@:dox(hide) public var sound:Map<String, Sound>;
 
-	@:noCompletion private var __enabled = true;
+	@:noCompletion private var __enabled:Bool = true;
 
 	#if openfljs
 	@:noCompletion private static function __init__()

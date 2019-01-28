@@ -96,7 +96,7 @@ import openfl._internal.Lib;
 	 * to catch JavaScript exceptions in ActionScript and to catch ActionScript
 	 * exceptions in JavaScript.
 	 */
-	public static var marshallExceptions = false;
+	public static var marshallExceptions:Bool = false;
 
 	/**
 	 * Returns the `id` attribute of the `object` tag in

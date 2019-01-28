@@ -9,8 +9,8 @@ import openfl.display.InteractiveObject;
 #end
 class ContextMenuEvent extends Event
 {
-	public static inline var MENU_ITEM_SELECT = "menuItemSelect";
-	public static inline var MENU_SELECT = "menuSelect";
+	public static inline var MENU_ITEM_SELECT:String = "menuItemSelect";
+	public static inline var MENU_SELECT:String = "menuSelect";
 
 	public var contextMenuOwner:InteractiveObject;
 	// @:noCompletion @:dox(hide) @:require(flash10) public var isMouseTargetInaccessible:Bool;

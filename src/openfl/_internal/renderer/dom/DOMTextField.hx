@@ -15,11 +15,11 @@ import js.Browser;
 @:access(openfl.text.TextField)
 class DOMTextField
 {
-	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
-	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
-	private static var __regexFont = ~/<font ([^>]+)>/gi;
-	private static var __regexCloseFont = new EReg("</font>", "gi");
-	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
+	private static var __regexColor:EReg = ~/color=("#([^"]+)"|'#([^']+)')/i;
+	private static var __regexFace:EReg = ~/face=("([^"]+)"|'([^']+)')/i;
+	private static var __regexFont:EReg = ~/<font ([^>]+)>/gi;
+	private static var __regexCloseFont:EReg = new EReg("</font>", "gi");
+	private static var __regexSize:EReg = ~/size=("([^"]+)"|'([^']+)')/i;
 
 	public static function clear(textField:TextField, renderer:DOMRenderer):Void
 	{

@@ -21,7 +21,7 @@ class AccelerometerEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var UPDATE = "update";
+	public static inline var UPDATE:String = "update";
 
 	/**
 	 * Acceleration along the x-axis, measured in Gs.(1 G is roughly 9.8

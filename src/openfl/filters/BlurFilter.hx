@@ -71,7 +71,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:access(openfl.geom.Rectangle)
 @:final class BlurFilter extends BitmapFilter
 {
-	@:noCompletion private static var __blurShader = new BlurShader();
+	@:noCompletion private static var __blurShader:BlurShader = new BlurShader();
 
 	/**
 	 * The amount of horizontal blur. Valid values are from 0 to 255(floating

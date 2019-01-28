@@ -23,7 +23,7 @@ class ProgressEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var PROGRESS = "progress";
+	public static inline var PROGRESS:String = "progress";
 
 	/**
 	 * Defines the value of the `type` property of a
@@ -31,7 +31,7 @@ class ProgressEvent extends Event
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var SOCKET_DATA = "socketData";
+	public static inline var SOCKET_DATA:String = "socketData";
 
 	/**
 	 * The number of items or bytes loaded when the listener processes the event.

@@ -162,7 +162,7 @@ import js.html.CanvasRenderingContext2D;
 	 *               using a bilinear algorithm. Rendering by using the nearest
 	 *               neighbor algorithm is faster.
 	 */
-	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false)
+	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void
 	{
 		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone() : null, repeat, smooth);
 

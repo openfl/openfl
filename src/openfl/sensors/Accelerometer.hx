@@ -74,12 +74,12 @@ class Accelerometer extends EventDispatcher
 	 * `false`.
 	 */
 	public static var isSupported(get, never):Bool;
-	@:noCompletion private static var currentX = 0.0;
-	@:noCompletion private static var currentY = 1.0;
-	@:noCompletion private static var currentZ = 0.0;
-	@:noCompletion private static var defaultInterval = 34;
-	@:noCompletion private static var initialized = false;
-	@:noCompletion private static var supported = false;
+	@:noCompletion private static var currentX:Float = 0.0;
+	@:noCompletion private static var currentY:Float = 1.0;
+	@:noCompletion private static var currentZ:Float = 0.0;
+	@:noCompletion private static var defaultInterval:Int = 34;
+	@:noCompletion private static var initialized:Bool = false;
+	@:noCompletion private static var supported:Bool = false;
 
 	/**
 	 * Specifies whether the user has denied access to the accelerometer

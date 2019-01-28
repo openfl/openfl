@@ -12,11 +12,11 @@ import openfl.geom.Matrix;
 @:access(openfl.geom.ColorTransform)
 @:beta class RenderEvent extends Event
 {
-	public static inline var CLEAR_DOM = "clearDOM";
-	public static inline var RENDER_CAIRO = "renderCairo";
-	public static inline var RENDER_CANVAS = "renderCanvas";
-	public static inline var RENDER_DOM = "renderDOM";
-	public static inline var RENDER_OPENGL = "renderOpenGL";
+	public static inline var CLEAR_DOM:String = "clearDOM";
+	public static inline var RENDER_CAIRO:String = "renderCairo";
+	public static inline var RENDER_CANVAS:String = "renderCanvas";
+	public static inline var RENDER_DOM:String = "renderDOM";
+	public static inline var RENDER_OPENGL:String = "renderOpenGL";
 
 	public var allowSmoothing:Bool;
 	public var objectColorTransform:ColorTransform;

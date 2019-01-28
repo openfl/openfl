@@ -25,7 +25,7 @@ class IOErrorEvent extends ErrorEvent
 	 *
 	 * This event has the following properties:
 	 */
-	public static inline var IO_ERROR = "ioError";
+	public static inline var IO_ERROR:String = "ioError";
 
 	// @:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	// @:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;

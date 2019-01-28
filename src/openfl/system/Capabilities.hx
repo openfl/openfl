@@ -368,7 +368,7 @@ import sys.io.Process;
 	 * The server string is `V`.
 	 */
 	public static var version(get, never):String;
-	@:noCompletion private static var __standardDensities = [120, 160, 240, 320, 480, 640, 800, 960];
+	@:noCompletion private static var __standardDensities:Array<Int> = [120, 160, 240, 320, 480, 640, 800, 960];
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -651,7 +651,7 @@ import sys.io.Process;
 		#end
 	}
 
-	@:noCompletion private static function get_version()
+	@:noCompletion private static function get_version():String
 	{
 		#if windows
 		var value = "WIN";

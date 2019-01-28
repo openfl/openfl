@@ -13,7 +13,7 @@ import lime.ui.Gamepad;
 @:access(openfl.ui.GameInputControl)
 @:final class GameInputDevice
 {
-	public static var MAX_BUFFER_SIZE = 32000;
+	public static var MAX_BUFFER_SIZE:Int = 32000;
 
 	/**
 	 * Enables or disables this device.
@@ -40,9 +40,9 @@ import lime.ui.Gamepad;
 	 */
 	public var sampleInterval:Int;
 
-	@:noCompletion private var __axis = new Map<Int, GameInputControl>();
-	@:noCompletion private var __button = new Map<Int, GameInputControl>();
-	@:noCompletion private var __controls = new Array<GameInputControl>();
+	@:noCompletion private var __axis:Map<Int, GameInputControl> = new Map();
+	@:noCompletion private var __button:Map<Int, GameInputControl> = new Map();
+	@:noCompletion private var __controls:Array<GameInputControl> = new Array();
 	#if lime
 	@:noCompletion private var __gamepad:Gamepad;
 	#end
