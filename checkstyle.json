@@ -50,7 +50,7 @@
 					},
 					{
 						"complexity": 31,
-						"severity": "ERROR"
+						"severity": "WARNING"
 					}
 				]
 			},

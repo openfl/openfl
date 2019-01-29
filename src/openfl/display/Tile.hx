@@ -129,13 +129,13 @@ class Tile
 	}
 
 	/**
-	 * Gets you the bounding box of the Tile.
-	 * It will find a tileset to know the original rect
-	 * Then it will apply all the transformations from his parent.
-	 *
-	 * @param targetCoordinateSpace The tile that works as a coordinate system.
-	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
-	 */
+		Gets you the bounding box of the Tile.
+		It will find a tileset to know the original rect
+		Then it will apply all the transformations from his parent.
+
+		@param targetCoordinateSpace The tile that works as a coordinate system.
+		@return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	**/
 	public function getBounds(targetCoordinateSpace:Tile):Rectangle
 	{
 		var result:Rectangle;
@@ -217,14 +217,14 @@ class Tile
 	}
 
 	/**
-	 * Evaluates the bounding box of the tile to see if it overlaps or
-	 * intersects with the bounding box of the `obj` tile.
-	 * Both tiles must be under the same Tilemap for this to work.
-	 *
-	 * @param obj The tile to test against.
-	 * @return `true` if the bounding boxes of the tiles
-	 *         intersect; `false` if not.
-	 */
+		Evaluates the bounding box of the tile to see if it overlaps or
+		intersects with the bounding box of the `obj` tile.
+		Both tiles must be under the same Tilemap for this to work.
+
+		@param obj The tile to test against.
+		@return `true` if the bounding boxes of the tiles
+				intersect; `false` if not.
+	**/
 	public function hitTestTile(obj:Tile):Bool
 	{
 		if (obj != null && obj.parent != null && parent != null)
@@ -253,10 +253,10 @@ class Tile
 	}
 
 	/**
-	 * Climbs all the way up to get a transformation matrix
-	 * adds his own matrix and then returns it.
-	 * @return Matrix The final transformation matrix from stage to this point.
-	 */
+		Climbs all the way up to get a transformation matrix
+		adds his own matrix and then returns it.
+		@return Matrix The final transformation matrix from stage to this point.
+	**/
 	@:noCompletion private function __getWorldTransform():Matrix
 	{
 		var retval = matrix.clone();

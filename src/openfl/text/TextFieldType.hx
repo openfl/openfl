@@ -4,19 +4,19 @@ package openfl.text;
 
 #if !openfljs
 /**
- * The TextFieldType class is an enumeration of constant values used in
- * setting the `type` property of the TextField class.
- */
+	The TextFieldType class is an enumeration of constant values used in
+	setting the `type` property of the TextField class.
+**/
 @:enum abstract TextFieldType(Null<Int>)
 {
 	/**
-	 * Used to specify a `dynamic` TextField.
-	 */
+		Used to specify a `dynamic` TextField.
+	**/
 	public var DYNAMIC = 0;
 
 	/**
-	 * Used to specify an `input` TextField.
-	 */
+		Used to specify an `input` TextField.
+	**/
 	public var INPUT = 1;
 
 	@:from private static function fromString(value:String):TextFieldType

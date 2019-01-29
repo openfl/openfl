@@ -96,12 +96,12 @@ class TileContainer extends Tile implements ITileContainer
 	}
 
 	/**
-	 * Override from tile. A single tile, just has his rectangle.
-	 * A container must get a rectangle that contains all other rectangles.
-	 *
-	 * @param targetCoordinateSpace The tile that works as a coordinate system.
-	 * @return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
-	 */
+		Override from tile. A single tile, just has his rectangle.
+		A container must get a rectangle that contains all other rectangles.
+
+		@param targetCoordinateSpace The tile that works as a coordinate system.
+		@return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	**/
 	public override function getBounds(targetCoordinateSpace:Tile):Rectangle
 	{
 		var result = new Rectangle();

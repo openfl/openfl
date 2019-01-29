@@ -4,28 +4,28 @@ package openfl.display;
 
 #if !openfljs
 /**
- * The SpreadMethod class provides values for the `spreadMethod`
- * parameter in the `beginGradientFill()` and
- * `lineGradientStyle()` methods of the Graphics class.
- *
- * The following example shows the same gradient fill using various spread
- * methods:
- */
+	The SpreadMethod class provides values for the `spreadMethod`
+	parameter in the `beginGradientFill()` and
+	`lineGradientStyle()` methods of the Graphics class.
+
+	The following example shows the same gradient fill using various spread
+	methods:
+**/
 @:enum abstract SpreadMethod(Null<Int>)
 {
 	/**
-	 * Specifies that the gradient use the _pad_ spread method.
-	 */
+		Specifies that the gradient use the _pad_ spread method.
+	**/
 	public var PAD = 0;
 
 	/**
-	 * Specifies that the gradient use the _reflect_ spread method.
-	 */
+		Specifies that the gradient use the _reflect_ spread method.
+	**/
 	public var REFLECT = 1;
 
 	/**
-	 * Specifies that the gradient use the _repeat_ spread method.
-	 */
+		Specifies that the gradient use the _repeat_ spread method.
+	**/
 	public var REPEAT = 2;
 
 	@:noCompletion private inline static function fromInt(value:Null<Int>):SpreadMethod

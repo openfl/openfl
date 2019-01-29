@@ -9,7 +9,7 @@ package openfl._internal.utils;
 	and some help from http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
 	AS3 optimizations by Mario Klingemann http://www.quasimondo.com
 	Haxe port and optimization by Nicolas Cannasse http://haxe.org
- */
+**/
 import openfl.display.BitmapData;
 
 #if !openfl_debug

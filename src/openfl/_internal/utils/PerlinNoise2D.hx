@@ -5,7 +5,7 @@ package openfl._internal.utils;
 	Inspired by Stefan Gustavson, Linköping University, Sweden
 	http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
 
- */
+**/
 import openfl.display.BitmapDataChannel;
 import openfl.display.BitmapData;
 

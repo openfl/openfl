@@ -4,36 +4,36 @@ package openfl.text;
 
 #if !openfljs
 /**
- * The FontStyle class provides values for the TextRenderer class.
- */
+	The FontStyle class provides values for the TextRenderer class.
+**/
 @:enum abstract FontStyle(Null<Int>)
 {
 	/**
-	 * Defines the bold style of a font for the `fontStyle` parameter
-	 * in the `setAdvancedAntiAliasingTable()` method. Use the syntax
-	 * `FontStyle.BOLD`.
-	 */
+		Defines the bold style of a font for the `fontStyle` parameter
+		in the `setAdvancedAntiAliasingTable()` method. Use the syntax
+		`FontStyle.BOLD`.
+	**/
 	public var BOLD = 0;
 
 	/**
-	 * Defines the italic style of a font for the `fontStyle`
-	 * parameter in the `setAdvancedAntiAliasingTable()` method. Use
-	 * the syntax `FontStyle.ITALIC`.
-	 */
+		Defines the italic style of a font for the `fontStyle`
+		parameter in the `setAdvancedAntiAliasingTable()` method. Use
+		the syntax `FontStyle.ITALIC`.
+	**/
 	public var BOLD_ITALIC = 1;
 
 	/**
-	 * Defines the italic style of a font for the `fontStyle`
-	 * parameter in the `setAdvancedAntiAliasingTable()` method. Use
-	 * the syntax `FontStyle.ITALIC`.
-	 */
+		Defines the italic style of a font for the `fontStyle`
+		parameter in the `setAdvancedAntiAliasingTable()` method. Use
+		the syntax `FontStyle.ITALIC`.
+	**/
 	public var ITALIC = 2;
 
 	/**
-	 * Defines the plain style of a font for the `fontStyle` parameter
-	 * in the `setAdvancedAntiAliasingTable()` method. Use the syntax
-	 * `FontStyle.REGULAR`.
-	 */
+		Defines the plain style of a font for the `fontStyle` parameter
+		in the `setAdvancedAntiAliasingTable()` method. Use the syntax
+		`FontStyle.REGULAR`.
+	**/
 	public var REGULAR = 3;
 
 	@:from private static function fromString(value:String):FontStyle

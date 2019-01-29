@@ -4,34 +4,34 @@ package openfl.text;
 
 #if !openfljs
 /**
- * The TextFormatAlign class provides values for text alignment in the
- * TextFormat class.
- */
+	The TextFormatAlign class provides values for text alignment in the
+	TextFormat class.
+**/
 @:enum abstract TextFormatAlign(Null<Int>)
 {
 	/**
-	 * Constant; centers the text in the text field. Use the syntax
-	 * `TextFormatAlign.CENTER`.
-	 */
+		Constant; centers the text in the text field. Use the syntax
+		`TextFormatAlign.CENTER`.
+	**/
 	public var CENTER = 0;
 	public var END = 1;
 
 	/**
-	 * Constant; justifies text within the text field. Use the syntax
-	 * `TextFormatAlign.JUSTIFY`.
-	 */
+		Constant; justifies text within the text field. Use the syntax
+		`TextFormatAlign.JUSTIFY`.
+	**/
 	public var JUSTIFY = 2;
 
 	/**
-	 * Constant; aligns text to the left within the text field. Use the syntax
-	 * `TextFormatAlign.LEFT`.
-	 */
+		Constant; aligns text to the left within the text field. Use the syntax
+		`TextFormatAlign.LEFT`.
+	**/
 	public var LEFT = 3;
 
 	/**
-	 * Constant; aligns text to the right within the text field. Use the syntax
-	 * `TextFormatAlign.RIGHT`.
-	 */
+		Constant; aligns text to the right within the text field. Use the syntax
+		`TextFormatAlign.RIGHT`.
+	**/
 	public var RIGHT = 4;
 	public var START = 5;
 

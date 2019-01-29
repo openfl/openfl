@@ -19,8 +19,8 @@ import sys.FileSystem;
 class FileReferenceList extends EventDispatcher
 {
 	/**
-	 * An array of FileReference objects.
-	 */
+		An array of FileReference objects.
+	**/
 	public var fileList(default, null):Array<FileReference>;
 
 	public function new()

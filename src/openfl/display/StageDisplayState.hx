@@ -4,24 +4,24 @@ package openfl.display;
 
 #if !openfljs
 /**
- * The StageDisplayState class provides values for the
- * `Stage.displayState` property.
- */
+	The StageDisplayState class provides values for the
+	`Stage.displayState` property.
+**/
 @:enum abstract StageDisplayState(Null<Int>)
 {
 	/**
-	 * Specifies that the Stage is in full-screen mode.
-	 */
+		Specifies that the Stage is in full-screen mode.
+	**/
 	public var FULL_SCREEN = 0;
 
 	/**
-	 * Specifies that the Stage is in full-screen mode with keyboard interactivity enabled.
-	 */
+		Specifies that the Stage is in full-screen mode with keyboard interactivity enabled.
+	**/
 	public var FULL_SCREEN_INTERACTIVE = 1;
 
 	/**
-	 * Specifies that the Stage is in normal mode.
-	 */
+		Specifies that the Stage is in normal mode.
+	**/
 	public var NORMAL = 2;
 
 	@:from private static function fromString(value:String):StageDisplayState

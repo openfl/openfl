@@ -72,7 +72,7 @@ import lime.utils.UInt8Array;
 				width = source.width;
 				height = source.height;
 			}
-		 */
+		**/
 
 		if (source == null) return;
 

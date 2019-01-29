@@ -262,9 +262,9 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 
 	/**
-	 * Binary search through floatKeys array, which is sorted, to find an index of a given key. If the array
-	 * doesn't contain such key -1 is returned.
-	 */
+		Binary search through floatKeys array, which is sorted, to find an index of a given key. If the array
+		doesn't contain such key -1 is returned.
+	**/
 	@:noCompletion private function indexOf(key:K):Int
 	{
 		var len:Int = floatKeys.length;
@@ -307,9 +307,9 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 
 	/**
-	 *	Insert the key at a proper index in the array and return the index. The array must will remain sorted.
-	 *   The keys are unique so if the key already existis in the array it isn't added but it's index is returned.
-	 */
+		Insert the key at a proper index in the array and return the index. The array must will remain sorted.
+				  The keys are unique so if the key already existis in the array it isn't added but it's index is returned.
+	**/
 	@:noCompletion private function insertSorted(key:K, value:V):Void
 	{
 		var len:Int = floatKeys.length;

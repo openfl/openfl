@@ -4,34 +4,34 @@ package openfl.display;
 
 #if !openfljs
 /**
- * The StageQuality class provides values for the `Stage.quality`
- * property.
- */
+	The StageQuality class provides values for the `Stage.quality`
+	property.
+**/
 @:enum abstract StageQuality(Null<Int>)
 {
 	/**
-	 * Specifies very high rendering quality: graphics are anti-aliased using a 4
-	 * x 4 pixel grid and bitmaps are always smoothed.
-	 */
+		Specifies very high rendering quality: graphics are anti-aliased using a 4
+		x 4 pixel grid and bitmaps are always smoothed.
+	**/
 	public var BEST = 0;
 
 	/**
-	 * Specifies high rendering quality: graphics are anti-aliased using a 4 x 4
-	 * pixel grid, and bitmaps are smoothed if the movie is static.
-	 */
+		Specifies high rendering quality: graphics are anti-aliased using a 4 x 4
+		pixel grid, and bitmaps are smoothed if the movie is static.
+	**/
 	public var HIGH = 1;
 
 	/**
-	 * Specifies low rendering quality: graphics are not anti-aliased, and
-	 * bitmaps are not smoothed.
-	 */
+		Specifies low rendering quality: graphics are not anti-aliased, and
+		bitmaps are not smoothed.
+	**/
 	public var LOW = 2;
 
 	/**
-	 * Specifies medium rendering quality: graphics are anti-aliased using a 2 x
-	 * 2 pixel grid, but bitmaps are not smoothed. This setting is suitable for
-	 * movies that do not contain text.
-	 */
+		Specifies medium rendering quality: graphics are anti-aliased using a 2 x
+		2 pixel grid, but bitmaps are not smoothed. This setting is suitable for
+		movies that do not contain text.
+	**/
 	public var MEDIUM = 3;
 
 	@:from private static function fromString(value:String):StageQuality

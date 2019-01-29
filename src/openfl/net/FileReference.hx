@@ -24,38 +24,38 @@ import sys.FileSystem;
 class FileReference extends EventDispatcher
 {
 	/**
-	 * The creation date of the file on the local disk.
-	 */
+		The creation date of the file on the local disk.
+	**/
 	public var creationDate(default, null):Date;
 
 	/**
-	 * The Macintosh creator type of the file, which is only used in Mac OS versions prior to Mac OS X.
-	 */
+		The Macintosh creator type of the file, which is only used in Mac OS versions prior to Mac OS X.
+	**/
 	public var creator(default, null):String;
 
 	/**
-	 * The ByteArray object representing the data from the loaded file after a successful call to the load() method.
-	 */
+		The ByteArray object representing the data from the loaded file after a successful call to the load() method.
+	**/
 	public var data(default, null):ByteArray;
 
 	/**
-	 * The date that the file on the local disk was last modified.
-	 */
+		The date that the file on the local disk was last modified.
+	**/
 	public var modificationDate(default, null):Date;
 
 	/**
-	 * The name of the file on the local disk.
-	 */
+		The name of the file on the local disk.
+	**/
 	public var name(default, null):String;
 
 	/**
-	 * The size of the file on the local disk in bytes.
-	 */
+		The size of the file on the local disk in bytes.
+	**/
 	public var size(default, null):Int;
 
 	/**
-	 * The file type.
-	 */
+		The file type.
+	**/
 	public var type(default, null):String;
 
 	@:noCompletion private var __data:ByteArray;
