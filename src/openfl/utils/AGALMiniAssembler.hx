@@ -26,7 +26,7 @@
 **/
 package openfl.utils;
 
-import lime.utils.Log;
+import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.Lib;
