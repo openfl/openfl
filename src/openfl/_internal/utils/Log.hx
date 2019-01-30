@@ -142,12 +142,12 @@ class Log
 
 @:enum abstract LogLevel(Int) from Int to Int from UInt to UInt
 {
-	var NONE = 0;
-	var ERROR = 1;
-	var WARN = 2;
-	var INFO = 3;
-	var DEBUG = 4;
-	var VERBOSE = 5;
+	public var NONE = 0;
+	public var ERROR = 1;
+	public var WARN = 2;
+	public var INFO = 3;
+	public var DEBUG = 4;
+	public var VERBOSE = 5;
 
 	@:op(A > B) private static inline function gt(a:LogLevel, b:LogLevel):Bool
 	{

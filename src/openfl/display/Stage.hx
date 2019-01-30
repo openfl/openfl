@@ -616,15 +616,48 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		untyped Object.defineProperties(Stage.prototype,
 			{
-				"color": {get: untyped __js__("function () { return this.get_color (); }"), set: untyped __js__("function (v) { return this.set_color (v); }")},
-				"contentsScaleFactor": {get: untyped __js__("function () { return this.get_contentsScaleFactor (); }")},
-				"displayState": {get: untyped __js__("function () { return this.get_displayState (); }"), set: untyped __js__("function (v) { return this.set_displayState (v); }")},
-				"focus": {get: untyped __js__("function () { return this.get_focus (); }"), set: untyped __js__("function (v) { return this.set_focus (v); }")},
-				"frameRate": {get: untyped __js__("function () { return this.get_frameRate (); }"), set: untyped __js__("function (v) { return this.set_frameRate (v); }")},
-				"fullScreenHeight": {get: untyped __js__("function () { return this.get_fullScreenHeight (); }")},
-				"fullScreenWidth": {get: untyped __js__("function () { return this.get_fullScreenWidth (); }")},
-				"quality": {get: untyped __js__("function () { return this.get_quality (); }"), set: untyped __js__("function (v) { return this.set_quality (v); }")},
-				"scaleMode": {get: untyped __js__("function () { return this.get_scaleMode (); }"), set: untyped __js__("function (v) { return this.set_scaleMode (v); }")},
+				"color":
+					{
+						get: untyped __js__("function () { return this.get_color (); }"),
+						set: untyped __js__("function (v) { return this.set_color (v); }")
+					},
+				"contentsScaleFactor":
+					{
+						get: untyped __js__("function () { return this.get_contentsScaleFactor (); }")
+					},
+				"displayState":
+					{
+						get: untyped __js__("function () { return this.get_displayState (); }"),
+						set: untyped __js__("function (v) { return this.set_displayState (v); }")
+					},
+				"focus":
+					{
+						get: untyped __js__("function () { return this.get_focus (); }"),
+						set: untyped __js__("function (v) { return this.set_focus (v); }")
+					},
+				"frameRate":
+					{
+						get: untyped __js__("function () { return this.get_frameRate (); }"),
+						set: untyped __js__("function (v) { return this.set_frameRate (v); }")
+					},
+				"fullScreenHeight":
+					{
+						get: untyped __js__("function () { return this.get_fullScreenHeight (); }")
+					},
+				"fullScreenWidth":
+					{
+						get: untyped __js__("function () { return this.get_fullScreenWidth (); }")
+					},
+				"quality":
+					{
+						get: untyped __js__("function () { return this.get_quality (); }"),
+						set: untyped __js__("function (v) { return this.set_quality (v); }")
+					},
+				"scaleMode":
+					{
+						get: untyped __js__("function () { return this.get_scaleMode (); }"),
+						set: untyped __js__("function (v) { return this.set_scaleMode (v); }")
+					},
 			});
 	}
 	#end

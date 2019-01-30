@@ -51,67 +51,67 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return this.iterator();
 	}
 
-	@:to static function toStringMap<K:String, V>(t:IMap<K, V>, weakKeys:Bool):StringMap<V>
+	@:to private static function toStringMap<K:String, V>(t:IMap<K, V>, weakKeys:Bool):StringMap<V>
 	{
 		return new StringMap<V>();
 	}
 
-	@:to static function toIntMap<K:Int, V>(t:IMap<K, V>, weakKeys:Bool):IntMap<V>
+	@:to private static function toIntMap<K:Int, V>(t:IMap<K, V>, weakKeys:Bool):IntMap<V>
 	{
 		return new IntMap<V>();
 	}
 
-	@:to static function toFloatMap<K:Float, V>(t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V>
+	@:to private static function toFloatMap<K:Float, V>(t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V>
 	{
 		return new FloatMap<K, V>();
 	}
 
-	@:to static function toEnumValueMapMap<K:EnumValue, V>(t:IMap<K, V>, weakKeys:Bool):EnumValueMap<K, V>
+	@:to private static function toEnumValueMapMap<K:EnumValue, V>(t:IMap<K, V>, weakKeys:Bool):EnumValueMap<K, V>
 	{
 		return new EnumValueMap<K, V>();
 	}
 
-	@:to static function toObjectMap<K:{}, V>(t:IMap<K, V>, weakKeys:Bool):ObjectMap<K, V>
+	@:to private static function toObjectMap<K:{}, V>(t:IMap<K, V>, weakKeys:Bool):ObjectMap<K, V>
 	{
 		return new ObjectMap<K, V>();
 	}
 
-	@:to static function toUtilsObjectMap<K:Object, V>(t:IMap<K, V>, weakKeys:Bool):UtilsObjectMap<K, V>
+	@:to private static function toUtilsObjectMap<K:Object, V>(t:IMap<K, V>, weakKeys:Bool):UtilsObjectMap<K, V>
 	{
 		return new UtilsObjectMap<K, V>();
 	}
 
-	@:to static function toClassMap<K:Class<Dynamic>, V>(t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V>
+	@:to private static function toClassMap<K:Class<Dynamic>, V>(t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V>
 	{
 		return new ClassMap<K, V>();
 	}
 
-	@:from static inline function fromStringMap<V>(map:StringMap<V>):Dictionary<String, V>
+	@:from private static inline function fromStringMap<V>(map:StringMap<V>):Dictionary<String, V>
 	{
 		return cast map;
 	}
 
-	@:from static inline function fromIntMap<V>(map:IntMap<V>):Dictionary<Int, V>
+	@:from private static inline function fromIntMap<V>(map:IntMap<V>):Dictionary<Int, V>
 	{
 		return cast map;
 	}
 
-	@:from static inline function fromFloatMap<K:Float, V>(map:FloatMap<K, V>):Dictionary<K, V>
+	@:from private static inline function fromFloatMap<K:Float, V>(map:FloatMap<K, V>):Dictionary<K, V>
 	{
 		return cast map;
 	}
 
-	@:from static inline function fromObjectMap<K:{}, V>(map:ObjectMap<K, V>):Dictionary<K, V>
+	@:from private static inline function fromObjectMap<K:{}, V>(map:ObjectMap<K, V>):Dictionary<K, V>
 	{
 		return cast map;
 	}
 
-	@:from static inline function fromUtilsObjectMap<K:Object, V>(map:UtilsObjectMap<K, V>):Dictionary<K, V>
+	@:from private static inline function fromUtilsObjectMap<K:Object, V>(map:UtilsObjectMap<K, V>):Dictionary<K, V>
 	{
 		return cast map;
 	}
 
-	@:from static inline function fromClassMap<K:Class<Dynamic>, V>(map:ClassMap<K, V>):Dictionary<K, V>
+	@:from private static inline function fromClassMap<K:Class<Dynamic>, V>(map:ClassMap<K, V>):Dictionary<K, V>
 	{
 		return cast map;
 	}

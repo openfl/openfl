@@ -272,11 +272,11 @@ class TextLayout
 
 @:enum abstract TextDirection(Int) to Int
 {
-	var INVALID = 0;
-	var LEFT_TO_RIGHT = 4;
-	var RIGHT_TO_LEFT = 5;
-	var TOP_TO_BOTTOM = 6;
-	var BOTTOM_TO_TOP = 7;
+	public var INVALID = 0;
+	public var LEFT_TO_RIGHT = 4;
+	public var RIGHT_TO_LEFT = 5;
+	public var TOP_TO_BOTTOM = 6;
+	public var BOTTOM_TO_TOP = 7;
 	public var backward(get, never):Bool;
 	public var forward(get, never):Bool;
 	public var horizontal(get, never):Bool;

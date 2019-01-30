@@ -114,8 +114,8 @@ import openfl._internal.Lib;
 
 @:noCompletion @:dox(hide) @:enum abstract TelemetryCommandName(String) from String to String
 {
-	var EVENT = ".event";
-	var RENDER = ".render";
+	public var EVENT = ".event";
+	public var RENDER = ".render";
 }
 #else
 typedef Telemetry = flash.profiler.Telemetry;

@@ -124,61 +124,63 @@ abstract Vector<T>(IVector<T>)
 		return cast v;
 	}
 
-	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):BoolVector
+	@:to private static #if (!js && !flash) inline #end function toBoolVector<T:Bool>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):BoolVector
 	{
 		return new BoolVector(length, fixed, cast array);
 	}
 
-	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):IntVector
+	@:to private static #if (!js && !flash) inline #end function toIntVector<T:Int>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):IntVector
 	{
 		return new IntVector(length, fixed, cast array);
 	}
 
-	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FloatVector
+	@:to private static #if (!js && !flash) inline #end function toFloatVector<T:Float>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FloatVector
 	{
 		return new FloatVector(length, fixed, cast array, true);
 	}
 
 	#if !cs
-	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FunctionVector
+	@:to private static #if (!js && !flash) inline #end function toFunctionVector<T:Function>
+		(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FunctionVector
 	{
 		return new FunctionVector(length, fixed, cast array);
 	}
 	#end
 
-	@:to static #if (!js && !flash) inline #end function toObjectVector<T:{}>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
+	@:to private static #if (!js && !flash) inline #end function toObjectVector<T:{}>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
 	{
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}
 
-	@:to static #if (!js && !flash) inline #end function toNullVector<T:Null<Dynamic>>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
+	@:to private static #if (!js && !flash) inline #end function toNullVector<T:Null<Dynamic>>(t:IVector<T>, length:Int, fixed:Bool,
+			array:Array<T>):ObjectVector<T>
 	{
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}
 
-	@:from static inline function fromBoolVector<T>(vector:BoolVector):Vector<T>
+	@:from private static inline function fromBoolVector<T>(vector:BoolVector):Vector<T>
 	{
 		return cast vector;
 	}
 
-	@:from static inline function fromIntVector<T>(vector:IntVector):Vector<T>
+	@:from private static inline function fromIntVector<T>(vector:IntVector):Vector<T>
 	{
 		return cast vector;
 	}
 
-	@:from static inline function fromFloatVector<T>(vector:FloatVector):Vector<T>
+	@:from private static inline function fromFloatVector<T>(vector:FloatVector):Vector<T>
 	{
 		return cast vector;
 	}
 
 	#if !cs
-	@:from static inline function fromFunctionVector<T:Function>(vector:FunctionVector):Vector<T>
+	@:from private static inline function fromFunctionVector<T:Function>(vector:FunctionVector):Vector<T>
 	{
 		return cast vector;
 	}
 	#end
 
-	@:from static inline function fromObjectVector<T>(vector:ObjectVector<T>):Vector<T>
+	@:from private static inline function fromObjectVector<T>(vector:ObjectVector<T>):Vector<T>
 	{
 		return cast vector;
 	}
