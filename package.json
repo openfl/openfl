@@ -95,6 +95,7 @@
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
     "hxp": "openfl/hxp",
+    "jpeg-js": "^0.3.4",
     "lime": "openfl/lime#develop",
     "mocha": "^5.2.0",
     "mocha-chrome": "^1.1.0",

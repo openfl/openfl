@@ -48,7 +48,6 @@ import format.swf.tags.TagPlaceObject;
 import format.swf.tags.TagSymbolClass;
 import format.swf.SWFRoot;
 import format.swf.SWFTimelineContainer;
-import format.tools.Deflate;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import openfl.display.PNGEncoderOptions;
@@ -277,7 +276,9 @@ class SWFLiteExporter {
 				png.add (CHeader ( { width: data.bitmapWidth, height: data.bitmapHeight, colbits: 8, color: ColIndexed, interlaced: false } ));
 				png.add (CPalette (palette));
 				if (transparent) png.add(CUnknown("tRNS", alpha));
-				png.add (CData (Deflate.run (values)));
+				var valuesBA:ByteArray = values;
+				valuesBA.deflate ();
+				png.add (CData (valuesBA));
 				png.add (CEnd);
 				
 				var output = new BytesOutput ();
@@ -326,7 +327,13 @@ class SWFLiteExporter {
 					
 				}
 				
+				#if !nodejs
 				var image = Image.fromBytes (data.bitmapData);
+				#else
+				var jpeg = js.Lib.require("jpeg-js");
+				var bytes:Bytes = data.bitmapData;
+				var image = jpeg.decode(bytes.getData());
+				#end
 				
 				var values = Bytes.alloc ((image.width + 1) * image.height);
 				var index = 0;
@@ -343,7 +350,9 @@ class SWFLiteExporter {
 				var png = new List ();
 				png.add (CHeader ( { width: image.width, height: image.height, colbits: 8, color: ColIndexed, interlaced: false } ));
 				png.add (CPalette (alphaPalette));
-				png.add (CData (Deflate.run (values)));
+				var valuesBA:ByteArray = values;
+				valuesBA.deflate();
+				png.add (CData (valuesBA));
 				png.add (CEnd);
 				
 				var output = new BytesOutput ();
