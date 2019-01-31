@@ -4,6 +4,7 @@ import openfl.events.Event;
 import openfl.utils.Dictionary;
 import openfl.Lib;
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 class FlashRenderer
 {
 	private static var instances:Dictionary<IDisplayObject, Bool>;

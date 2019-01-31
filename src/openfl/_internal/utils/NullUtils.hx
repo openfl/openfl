@@ -8,6 +8,7 @@ import haxe.macro.ExprTools;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class NullUtils
 {
 	public static macro function valueEquals(a:Expr, b:Expr, type:Expr):Expr

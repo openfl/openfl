@@ -1,9 +1,12 @@
 package openfl.media;
 
 #if !flash
+import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.renderer.canvas.CanvasVideo;
 import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.context3D.Context3DVideo;
+import openfl._internal.utils.Float32Array;
+import openfl._internal.utils.UInt16Array;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -18,10 +21,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 #if lime
-import lime.graphics.opengl.GLBuffer;
 import lime.graphics.RenderContext;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 #end
 
 #if !openfl_debug

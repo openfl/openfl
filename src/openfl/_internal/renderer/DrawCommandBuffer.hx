@@ -17,6 +17,7 @@ import openfl.Vector;
 @:noDebug
 #end
 @:allow(openfl._internal.renderer.DrawCommandReader)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DrawCommandBuffer
 {
 	private static var empty:DrawCommandBuffer = new DrawCommandBuffer();
@@ -30,7 +31,7 @@ class DrawCommandBuffer
 	private var ff:Array<Array<Float>>;
 	private var i:Array<Int>;
 	private var ii:Array<Array<Int>>;
-	private var o:Array<Dynamic>;
+	@SuppressWarnings("checkstyle:Dynamic") private var o:Array<Dynamic>;
 
 	public function new()
 	{

@@ -5,13 +5,11 @@ import haxe.io.Bytes;
 import haxe.Timer;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.ArrayBufferView;
+import openfl._internal.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
-#if lime
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -136,7 +134,7 @@ import lime.utils.UInt8Array;
 		#end
 	}
 
-	public function uploadFromTypedArray(data:#if lime ArrayBufferView #else Dynamic #end, miplevel:UInt = 0):Void
+	public function uploadFromTypedArray(data:ArrayBufferView, miplevel:UInt = 0):Void
 	{
 		if (data == null) return;
 

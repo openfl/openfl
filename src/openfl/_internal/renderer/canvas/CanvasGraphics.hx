@@ -30,10 +30,11 @@ import js.Browser;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasGraphics
 {
-	private static var SIN45:Float = 0.70710678118654752440084436210485;
-	private static var TAN22:Float = 0.4142135623730950488016887242097;
+	private static inline var SIN45:Float = 0.70710678118654752440084436210485;
+	private static inline var TAN22:Float = 0.4142135623730950488016887242097;
 	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapStroke:BitmapData;
@@ -47,7 +48,7 @@ class CanvasGraphics
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
 	private static var worldAlpha:Float;
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
@@ -87,6 +88,7 @@ class CanvasGraphics
 		#end
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
 	{
 		#if (js && html5)
@@ -98,6 +100,7 @@ class CanvasGraphics
 		#end
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	private static function createGradientPattern(type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasPattern #else Void #end
 	{

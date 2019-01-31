@@ -3,7 +3,6 @@ package openfl.media;
 #if !flash
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
-import openfl.media.Sound;
 #if lime
 import lime.media.AudioSource;
 #end

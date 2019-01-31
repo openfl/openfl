@@ -25,6 +25,7 @@ typedef UploadCallback = UInt->Int->ATFGPUFormat->Int->Int->Int->Bytes->Void;
 	The ATF specification can be found here:
 	<https://www.adobe.com/devnet/archive/flashruntimes/articles/atf-file-format.html>
 **/
+@SuppressWarnings("checkstyle:FieldDocComment")
 class ATFReader
 {
 	private var atfFormat:ATFFormat;

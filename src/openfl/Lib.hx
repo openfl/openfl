@@ -13,10 +13,11 @@ import openfl.net.URLRequest;
 import lime.system.System;
 #end
 #if swf
+// Workaround to keep SWFLibrary/SWFLiteLibrary types available
 #if flash
 import openfl._internal.formats.swf.SWFLibrary;
 #else
-import openfl._internal.formats.swf.SWFLiteLibrary; // workaround
+import openfl._internal.formats.swf.SWFLiteLibrary;
 #end
 #end
 #if (js && html5)
@@ -34,6 +35,9 @@ import js.Browser;
 	@:noCompletion private static var __lastTimerID:UInt = 0;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
+	#if 0
+	private static var __unusedImports:Array<Class<Dynamic>> = [SWFLibrary, SWFLiteLibrary];
+	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()

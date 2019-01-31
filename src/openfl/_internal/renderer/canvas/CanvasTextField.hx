@@ -17,6 +17,7 @@ import js.Browser;
 @:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
 @:access(openfl.text.TextFormat)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasTextField
 {
 	#if (js && html5)

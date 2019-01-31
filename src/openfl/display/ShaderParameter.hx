@@ -1,10 +1,8 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.utils.Float32Array;
 import openfl.display3D.Context3D;
-#if lime
-import lime.utils.Float32Array;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -16,7 +14,7 @@ import lime.utils.Float32Array;
 #end
 @:final class ShaderParameter<T> /*implements Dynamic*/
 {
-	public var index(default, null):Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var index(default, null):Dynamic;
 	@:noCompletion public var name(default, set):String;
 	public var type(default, null):ShaderParameterType;
 	public var value:Array<T>;
@@ -28,7 +26,7 @@ import lime.utils.Float32Array;
 	@:noCompletion private var __isInt:Bool;
 	@:noCompletion private var __isUniform:Bool;
 	@:noCompletion private var __length:Int;
-	@:noCompletion private var __uniformMatrix:#if lime Float32Array #else Dynamic #end;
+	@:noCompletion private var __uniformMatrix:Float32Array;
 	@:noCompletion private var __useArray:Bool;
 
 	public function new()
@@ -283,8 +281,7 @@ import lime.utils.Float32Array;
 		#end
 	}
 
-	@:noCompletion private function __updateGLFromBuffer(context:Context3D, buffer:#if lime Float32Array #else Dynamic #end, position:Int, length:Int,
-			bufferOffset:Int):Void
+	@:noCompletion private function __updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
 		#if lime
 		var gl = context.gl;

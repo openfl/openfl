@@ -15,6 +15,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class FlashTilemap
 {
 	private static var alphaColorTransform:ColorTransform = new ColorTransform();

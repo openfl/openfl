@@ -4,6 +4,7 @@ package openfl._internal.macros;
 import haxe.macro.Compiler;
 import haxe.macro.Context;
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 class ExtraParams
 {
 	public static function include():Void

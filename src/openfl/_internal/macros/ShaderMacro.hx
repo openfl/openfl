@@ -8,8 +8,13 @@ using haxe.macro.ExprTools;
 using haxe.macro.Tools;
 using haxe.macro.TypeTools;
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 class ShaderMacro
 {
+	#if 0
+	private static var __suppressWarning:Array<Class<Dynamic>> = [Expr];
+	#end
+
 	public static function build():Array<Field>
 	{
 		var fields = Context.getBuildFields();
@@ -164,8 +169,22 @@ class ShaderMacro
 							default: null;
 						}
 
-						if (glVertexSource != null) block.unshift(macro if (__glVertexSource == null) __glVertexSource = $v{glVertexSource});
-						if (glFragmentSource != null) block.unshift(macro if (__glFragmentSource == null) __glFragmentSource = $v{glFragmentSource});
+						if (glVertexSource != null)
+						{
+							block.unshift(macro if (__glVertexSource == null)
+							{
+								__glVertexSource = $v{glVertexSource};
+							});
+						}
+
+						if (glFragmentSource != null)
+						{
+							block.unshift(macro if (__glFragmentSource == null)
+							{
+								__glFragmentSource = $v{glFragmentSource};
+							});
+						}
+
 						block.push(Context.parse("__isGenerated = true", pos));
 						block.push(Context.parse("__initGL ()", pos));
 

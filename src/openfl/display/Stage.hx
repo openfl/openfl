@@ -1297,6 +1297,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	}
 	#end
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion @:dox(hide) public function render(context:#if lime RenderContext #else Dynamic #end):Void
 	{
 		if (__rendering) return;
@@ -1456,17 +1457,16 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (dispatcher.stage == this || dispatcher.stage == null)
 				{
 					#if !openfl_disable_handle_error
-					try {
-					#end
-
-					dispatcher.__dispatch(event);
-
-					#if !openfl_disable_handle_error
+					try
+					{
+						dispatcher.__dispatch(event);
 					}
 					catch (e:Dynamic)
 					{
 						__handleError(e);
 					}
+					#else
+					dispatcher.__dispatch(event);
 					#end
 				}
 			}

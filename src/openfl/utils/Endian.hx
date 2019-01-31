@@ -1,11 +1,11 @@
 package openfl.utils;
 
 #if !flash
-#if !openfljs
 #if lime
 import lime.system.Endian as LimeEndian;
 #end
 
+#if !openfljs
 /**
 	The Endian class contains values that denote the byte order used to
 	represent multibyte numbers. The byte order is either bigEndian (most
@@ -104,10 +104,6 @@ import lime.system.Endian as LimeEndian;
 	}
 }
 #else
-#if lime
-import lime.system.Endian as LimeEndian;
-#end
-
 @:enum abstract Endian(String) from String to String
 {
 	public var BIG_ENDIAN = "bigEndian";

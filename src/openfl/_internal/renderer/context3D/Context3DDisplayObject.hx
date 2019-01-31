@@ -16,6 +16,7 @@ import lime.math.ARGB;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
 	public static inline function render(displayObject:DisplayObject, renderer:OpenGLRenderer):Void

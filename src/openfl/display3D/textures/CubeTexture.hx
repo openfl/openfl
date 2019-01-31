@@ -2,17 +2,16 @@ package openfl.display3D.textures;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.ArrayBufferView;
+import openfl._internal.utils.Log;
+import openfl._internal.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
-#if lime
-import lime.graphics.opengl.GLFramebuffer;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -107,7 +106,7 @@ import lime.utils.UInt8Array;
 		#end
 	}
 
-	public function uploadFromTypedArray(data:#if lime ArrayBufferView #else Dynamic #end, side:UInt, miplevel:UInt = 0):Void
+	public function uploadFromTypedArray(data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void
 	{
 		if (data == null) return;
 
@@ -125,8 +124,7 @@ import lime.utils.UInt8Array;
 		__uploadedSides |= 1 << side;
 	}
 
-	@:noCompletion private override function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int,
-			surfaceSelector:Int):#if lime GLFramebuffer #else Dynamic #end
+	@:noCompletion private override function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		var gl = __context.gl;
 
@@ -149,7 +147,7 @@ import lime.utils.UInt8Array;
 
 				if (code != gl.FRAMEBUFFER_COMPLETE)
 				{
-					trace('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
+					Log.error('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
 				}
 			}
 		}

@@ -25,6 +25,7 @@ import lime.graphics.cairo.CairoHintStyle;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CairoTextField
 {
 	public static function render(textField:TextField, renderer:CairoRenderer, transform:Matrix):Void

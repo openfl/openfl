@@ -23,11 +23,12 @@ import lime.math.Matrix3;
 @:allow(openfl.display)
 class CairoRenderer extends DisplayObjectRenderer
 {
-	public var cairo:#if lime CairoRenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") public var cairo:#if lime CairoRenderContext #else Dynamic #end;
 
 	@:noCompletion private var __matrix:Matrix;
-	@:noCompletion private var __matrix3:#if lime Matrix3 #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __matrix3:#if lime Matrix3 #else Dynamic #end;
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(cairo:#if lime Cairo #else Dynamic #end)
 	{
 		super();
@@ -42,6 +43,7 @@ class CairoRenderer extends DisplayObjectRenderer
 		#end
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function applyMatrix(transform:Matrix, cairo:#if lime Cairo #else Dynamic #end = null):Void
 	{
 		if (cairo == null) cairo = this.cairo;
@@ -164,6 +166,7 @@ class CairoRenderer extends DisplayObjectRenderer
 		__setBlendModeCairo(cairo, value);
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __setBlendModeCairo(cairo:#if lime Cairo #else Dynamic #end, value:BlendMode):Void
 	{
 		#if lime

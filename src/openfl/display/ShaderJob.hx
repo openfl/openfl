@@ -12,9 +12,10 @@ class ShaderJob extends EventDispatcher
 	public var height:Int;
 	public var progress(default, null):Float;
 	public var shader:Shader;
-	public var target:Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var target:Dynamic;
 	public var width:Int;
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(shader:Shader = null, target:Dynamic = null, width:Int = 0, height:Int = 0)
 	{
 		super();

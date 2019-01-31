@@ -6,6 +6,7 @@ import haxe.ds.IntMap;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DStats
 {
 	private static var drawCallsCounters:IntMap<DrawCallCounter> = [

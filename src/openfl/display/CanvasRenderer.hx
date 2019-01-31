@@ -20,12 +20,13 @@ import lime.graphics.Canvas2DRenderContext;
 @:allow(openfl.text)
 class CanvasRenderer extends DisplayObjectRenderer
 {
-	public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
 	public var pixelRatio(default, null):Float = 1;
 
 	@:noCompletion private var __isDOM:Bool;
 	@:noCompletion private var __tempMatrix:Matrix;
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(context:#if lime Canvas2DRenderContext #else Dynamic #end)
 	{
 		super();
@@ -39,11 +40,13 @@ class CanvasRenderer extends DisplayObjectRenderer
 		#end
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function applySmoothing(context:#if lime Canvas2DRenderContext #else Dynamic #end, value:Bool):Void
 	{
 		context.imageSmoothingEnabled = value;
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function setTransform(transform:Matrix, context:#if lime Canvas2DRenderContext #else Dynamic #end = null):Void
 	{
 		if (context == null)
@@ -166,6 +169,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 		__setBlendModeContext(context, value);
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __setBlendModeContext(context:#if lime Canvas2DRenderContext #else Dynamic #end, value:BlendMode):Void
 	{
 		switch (value)

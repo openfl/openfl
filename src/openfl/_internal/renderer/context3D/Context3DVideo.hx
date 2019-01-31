@@ -16,6 +16,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DVideo
 {
 	private static var __textureSizeValue:Array<Float> = [0, 0.];

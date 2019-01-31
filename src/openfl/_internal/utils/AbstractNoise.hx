@@ -16,6 +16,7 @@ import openfl.display.BitmapData;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class AbstractNoise
 {
 	private var octaves(null, null):Int;

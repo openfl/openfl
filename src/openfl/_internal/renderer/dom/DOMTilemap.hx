@@ -10,6 +10,7 @@ import js.Browser;
 @:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DOMTilemap
 {
 	public static function clear(tilemap:Tilemap, renderer:DOMRenderer):Void

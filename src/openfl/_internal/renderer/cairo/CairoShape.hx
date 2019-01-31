@@ -10,6 +10,7 @@ import openfl.display.DisplayObject;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CairoShape
 {
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void

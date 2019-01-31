@@ -15,6 +15,7 @@ import lime.graphics.cairo.CairoPattern;
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CairoBitmap
 {
 	public static inline function render(bitmap:Bitmap, renderer:CairoRenderer):Void

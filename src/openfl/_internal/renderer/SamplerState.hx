@@ -8,6 +8,7 @@ import openfl.display3D.Context3DWrapMode;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class SamplerState
 {
 	public var centroid:Bool;

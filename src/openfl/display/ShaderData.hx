@@ -8,6 +8,7 @@ import openfl.utils.ByteArray;
 @:noDebug
 #end
 @:forward()
+@SuppressWarnings("checkstyle:Dynamic")
 abstract ShaderData(Dynamic) from Dynamic to Dynamic
 {
 	public function new(byteArray:ByteArray)

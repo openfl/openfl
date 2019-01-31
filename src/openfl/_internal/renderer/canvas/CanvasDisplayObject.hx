@@ -8,6 +8,7 @@ import lime.math.ARGB;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasDisplayObject
 {
 	public static inline function render(displayObject:DisplayObject, renderer:CanvasRenderer):Void

@@ -1,9 +1,6 @@
 package openfl.geom;
 
 #if !flash
-import openfl.geom.Orientation3D;
-import openfl.geom.Vector3D;
-import openfl.errors.Error;
 import openfl.Vector;
 
 #if !openfl_debug

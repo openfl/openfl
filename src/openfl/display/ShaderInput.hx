@@ -19,7 +19,7 @@ import openfl.display3D.Context3D;
 	public var channels(default, null):Int;
 	public var filter:Context3DTextureFilter;
 	public var height:Int;
-	public var index(default, null):Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var index(default, null):Dynamic;
 	public var input:T;
 	public var mipFilter:Context3DMipFilter;
 	@:noCompletion public var name:String;

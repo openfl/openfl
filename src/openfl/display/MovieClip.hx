@@ -1,6 +1,7 @@
 package openfl.display;
 
 #if !flash
+// TODO: Force keeping of SWF symbols a different way?
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
@@ -17,7 +18,13 @@ import openfl._internal.utils.Log;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
-import openfl.filters.*;
+import openfl.filters.BitmapFilter;
+import openfl.filters.BlurFilter;
+import openfl.filters.ColorMatrixFilter;
+import openfl.filters.ConvolutionFilter;
+import openfl.filters.DisplacementMapFilter;
+import openfl.filters.DropShadowFilter;
+import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
 #if hscript
 import hscript.Interp;
@@ -73,6 +80,13 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private static var __useParentFPS:Bool;
 	#else
 	@:noCompletion private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
+	#end
+	#if 0
+	// Suppress checkstyle warning
+	private static var __unusedImport:Array<Class<Dynamic>> = [
+		BitmapSymbol, ButtonSymbol, DynamicTextSymbol, FontSymbol, ShapeSymbol, SpriteSymbol, StaticTextSymbol, SWFSymbol, BlurFilter, ColorMatrixFilter,
+		ConvolutionFilter, DisplacementMapFilter, DropShadowFilter, GlowFilter
+	];
 	#end
 
 	/**
@@ -625,7 +639,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 					__frameScripts.set(frame, script);
 					#elseif js
-					var script = untyped __js__('eval({0})', "(function(){" + frameData.scriptSource + "})");
+					var script = untyped __js__("eval({0})", "(function(){" + frameData.scriptSource + "})");
 					var wrapper = function()
 					{
 						try
@@ -634,7 +648,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 						}
 						catch (e:Dynamic)
 						{
-							trace("Error evaluating frame script\n " + e + "\n" + haxe.CallStack.exceptionStack().map(function(a)
+							Log.info("Error evaluating frame script\n " + e + "\n" + haxe.CallStack.exceptionStack().map(function(a)
 								{
 									return untyped a[2];
 								}).join("\n") + "\n" + e.stack + "\n" + untyped script.toString());

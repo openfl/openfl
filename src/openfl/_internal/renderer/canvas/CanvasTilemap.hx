@@ -9,9 +9,10 @@ import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-
+// TODO: Avoid use of private APIs
+import lime._internal.graphics.ImageCanvasUtil;
 #end
+
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tile)
@@ -20,6 +21,7 @@ import lime._internal.graphics.ImageCanvasUtil; // TODO
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasTilemap
 {
 	public static inline function render(tilemap:Tilemap, renderer:CanvasRenderer):Void
@@ -59,6 +61,7 @@ class CanvasTilemap
 		#end
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	private static function renderTileContainer(group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
 			alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, source:Dynamic,
 			rect:Rectangle):Void

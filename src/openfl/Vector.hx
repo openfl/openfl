@@ -152,8 +152,8 @@ abstract Vector<T>(IVector<T>)
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}
 
-	@:to private static #if (!js && !flash) inline #end function toNullVector<T:Null<Dynamic>>(t:IVector<T>, length:Int, fixed:Bool,
-			array:Array<T>):ObjectVector<T>
+	@SuppressWarnings("checkstyle:Dynamic") @:to private static #if (!js && !flash) inline #end function toNullVector<T:Null<Dynamic>>(t:IVector<T>,
+			length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
 	{
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}
@@ -392,6 +392,7 @@ abstract Vector<T>(IVector<T>)
 		return new BoolVector(__array.splice(pos, len));
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
@@ -458,6 +459,7 @@ abstract Vector<T>(IVector<T>)
 
 	@:noCompletion private var __array:Array<Float>;
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void
 	{
 		if (forceCopy)
@@ -634,6 +636,7 @@ abstract Vector<T>(IVector<T>)
 		return new FloatVector(__array.splice(pos, len));
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
@@ -882,6 +885,7 @@ abstract Vector<T>(IVector<T>)
 		return new FunctionVector(__array.splice(pos, len));
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
@@ -1116,6 +1120,7 @@ abstract Vector<T>(IVector<T>)
 		return new IntVector(__array.splice(pos, len));
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
@@ -1182,6 +1187,7 @@ abstract Vector<T>(IVector<T>)
 
 	@:noCompletion private var __array:Array<T>;
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void
 	{
 		if (forceCopy)
@@ -1204,6 +1210,7 @@ abstract Vector<T>(IVector<T>)
 		this.fixed = (fixed == true);
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function concat(?a:IVector<T>):IVector<T>
 	{
 		if (a == null)
@@ -1358,6 +1365,7 @@ abstract Vector<T>(IVector<T>)
 		return new ObjectVector(__array.splice(pos, len));
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion @:keep private function toJSON():Dynamic
 	{
 		return __array;
@@ -1484,7 +1492,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return untyped __js__("Array.prototype.indexOf.call")(this, x, from);
 	}
 
-	public /*inline*/ function insertAt(index:Int, element:T):Void
+	public function insertAt(index:Int, element:T):Void
 	{
 		// this.insertAt (index, element);
 		if (!this.fixed || index < this.length)
@@ -1505,7 +1513,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return untyped __js__("Array.prototype.join.call")(this, sep);
 	}
 
-	public /*inline*/ function lastIndexOf(x:T, ?from:Int):Int
+	public function lastIndexOf(x:T, ?from:Int):Int
 	{
 		// return this.lastIndexOf (x, from);
 		if (from == null)
@@ -1518,7 +1526,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public /*inline*/ function pop():Null<T>
+	public function pop():Null<T>
 	{
 		// return this.pop ();
 		if (!fixed)
@@ -1531,7 +1539,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public /*inline*/ function push(x:T):Int
+	public function push(x:T):Int
 	{
 		// return this.push (x);
 		if (!fixed)
@@ -1544,7 +1552,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public /*inline*/ function removeAt(index:Int):T
+	public function removeAt(index:Int):T
 	{
 		// return this.removeAt (index);
 		if (!this.fixed || index < this.length)
@@ -1561,7 +1569,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return untyped __js__("Array.prototype.reverse.call")(this);
 	}
 
-	@:arrayAccess public /*inline*/ function set(index:Int, value:T):T
+	@:arrayAccess public function set(index:Int, value:T):T
 	{
 		// return this.set (index, value);
 		if (!this.fixed || index < this.length)
@@ -1574,7 +1582,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public /*inline*/ function shift():Null<T>
+	public function shift():Null<T>
 	{
 		// return this.shift ();
 		if (!this.fixed)
@@ -1610,7 +1618,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return (this != null) ? Std.string(this) : null;
 	}
 
-	public /*inline*/ function unshift(x:T):Void
+	public function unshift(x:T):Void
 	{
 		// this.unshift (x);
 		if (!this.fixed)

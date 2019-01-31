@@ -19,6 +19,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DShape
 {
 	public static function render(shape:DisplayObject, renderer:OpenGLRenderer):Void

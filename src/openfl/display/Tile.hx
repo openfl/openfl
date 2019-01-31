@@ -16,7 +16,7 @@ class Tile
 	public var alpha(get, set):Float;
 	public var blendMode(get, set):BlendMode;
 	@:beta public var colorTransform(get, set):ColorTransform;
-	public var data:Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var data:Dynamic;
 	public var id(get, set):Int;
 	public var matrix(get, set):Matrix;
 	public var originX(get, set):Float;

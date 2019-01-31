@@ -2,6 +2,8 @@ package openfl._internal.renderer.context3D;
 
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.utils.Float32Array;
+import openfl._internal.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.OpenGLRenderer;
@@ -10,8 +12,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
 import lime.math.ARGB;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 #end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -29,6 +29,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DGraphics
 {
 	private static var blankBitmapData = new BitmapData(1, 1, false, 0);

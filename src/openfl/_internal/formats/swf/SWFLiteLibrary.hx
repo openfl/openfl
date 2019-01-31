@@ -24,6 +24,7 @@ import openfl.utils.AssetManifest;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:keep class SWFLiteLibrary extends AssetLibrary
 {
 	private var alphaCheck:Map<String, Bool>;

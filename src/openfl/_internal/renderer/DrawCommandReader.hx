@@ -17,6 +17,7 @@ import openfl.Vector;
 @:noDebug
 #end
 @:allow(openfl._internal.renderer)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DrawCommandReader
 {
 	public var buffer:DrawCommandBuffer;
@@ -155,7 +156,9 @@ class DrawCommandReader
 		return buffer.i[iPos + index];
 	}
 
-	@:noCompletion private inline function obj(index:Int):Dynamic
+	@:noCompletion
+	@SuppressWarnings("checkstyle:Dynamic")
+	private inline function obj(index:Int):Dynamic
 	{
 		return buffer.o[oPos + index];
 	}

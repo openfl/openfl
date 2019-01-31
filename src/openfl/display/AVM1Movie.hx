@@ -9,6 +9,7 @@ import openfl.errors.ArgumentError;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:Dynamic")
 class AVM1Movie extends DisplayObject
 {
 	@:noCompletion private function new()

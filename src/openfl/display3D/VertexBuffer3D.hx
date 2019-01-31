@@ -1,15 +1,11 @@
 package openfl.display3D;
 
 #if !flash
-import haxe.io.Bytes;
+import openfl._internal.backend.gl.GLBuffer;
+import openfl._internal.utils.ArrayBufferView;
+import openfl._internal.utils.Float32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-#if lime
-import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.ArrayBufferView;
-import lime.utils.Float32Array;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -21,11 +17,11 @@ class VertexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:Vector<Float>;
-	@:noCompletion private var __id:#if lime GLBuffer #else Dynamic #end;
+	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numVertices:Int;
 	@:noCompletion private var __stride:Int;
-	@:noCompletion private var __tempFloat32Array:#if lime Float32Array #else Dynamic #end;
+	@:noCompletion private var __tempFloat32Array:Float32Array;
 	@:noCompletion private var __usage:Int;
 	@:noCompletion private var __vertexSize:Int;
 
@@ -58,7 +54,7 @@ class VertexBuffer3D
 		#end
 	}
 
-	public function uploadFromTypedArray(data:#if lime ArrayBufferView #else Dynamic #end, byteLength:Int = -1):Void
+	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
 		var gl = __context.gl;

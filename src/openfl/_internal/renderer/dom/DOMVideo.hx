@@ -5,6 +5,7 @@ import openfl.media.Video;
 
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DOMVideo
 {
 	public static function clear(video:Video, renderer:DOMRenderer):Void

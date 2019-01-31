@@ -1,6 +1,8 @@
 package openfl._internal.text;
 
 import haxe.Timer;
+import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.utils.Log;
 import openfl.Vector;
 import openfl.geom.Rectangle;
 import openfl.text.AntiAliasType;
@@ -12,16 +14,12 @@ import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 #if lime
 import lime.graphics.cairo.CairoFontFace;
-import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 #end
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
-#end
-#if sys
-import haxe.io.Path;
 #end
 
 #if !openfl_debug
@@ -31,6 +29,7 @@ import haxe.io.Path;
 @:access(openfl.text.Font)
 @:access(openfl.text.TextField)
 @:access(openfl.text.TextFormat)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class TextEngine
 {
 	private static inline var UTF8_TAB:Int = 9;
@@ -92,13 +91,13 @@ class TextEngine
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
-	@:noCompletion private var __texture:#if lime GLTexture #else Dynamic #end;
+	@:noCompletion private var __texture:GLTexture;
 	// @:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	// @:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	// @:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	private var __useIntAdvances:Null<Bool>;
 
-	@:noCompletion @:dox(hide) public var __cairoFont:#if lime CairoFontFace #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion @:dox(hide) public var __cairoFont:#if lime CairoFontFace #else Dynamic #end;
 	@:noCompletion @:dox(hide) public var __font:Font;
 
 	public function new(textField:TextField)
@@ -146,12 +145,12 @@ class TextEngine
 	private function createRestrictRegexp(restrict:String):EReg
 	{
 		var declinedRange = ~/\^(.-.|.)/gu;
-		var declined = '';
+		var declined = "";
 
 		var accepted = declinedRange.map(restrict, function(ereg)
 		{
 			declined += ereg.matched(1);
-			return '';
+			return "";
 		});
 
 		var testRegexpParts:Array<String> = [];
@@ -166,7 +165,7 @@ class TextEngine
 			testRegexpParts.push('[$declined]');
 		}
 
-		return new EReg('(${testRegexpParts.join('|')})', 'g');
+		return new EReg('(${testRegexpParts.join('|')})', "g");
 	}
 
 	private static function findFont(name:String):Font
@@ -401,7 +400,7 @@ class TextEngine
 						systemFontDirectory + "/CoreAddition/Helvetica.ttf"
 					];
 					#elseif linux
-					fontList = [new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine()];
+					fontList = [new sys.io.Process("fc-match", ["sans", "-f%{file}"]).stdout.readLine()];
 					#elseif android
 					fontList = [systemFontDirectory + "/DroidSans.ttf"];
 					#else
@@ -448,7 +447,7 @@ class TextEngine
 						systemFontDirectory + "/CoreAddition/Courier.ttf"
 					];
 					#elseif linux
-					fontList = [new sys.io.Process('fc-match', ['mono', '-f%{file}']).stdout.readLine()];
+					fontList = [new sys.io.Process("fc-match", ["mono", "-f%{file}"]).stdout.readLine()];
 					#elseif android
 					fontList = [systemFontDirectory + "/DroidSansMono.ttf"];
 					#else
@@ -511,7 +510,7 @@ class TextEngine
 			systemFontDirectory + "/CoreAddition/Times New Roman.ttf"
 		];
 		#elseif linux
-		fontList = [new sys.io.Process('fc-match', ['serif', '-f%{file}']).stdout.readLine()];
+		fontList = [new sys.io.Process("fc-match", ["serif", "-f%{file}"]).stdout.readLine()];
 		#elseif android
 		fontList = [
 			systemFontDirectory + "/DroidSerif-Regular.ttf",
@@ -1505,7 +1504,7 @@ class TextEngine
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups)
 		{
-			trace("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height,
+			Log.info("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height,
 				"x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
 		}
 		#end
@@ -1520,7 +1519,7 @@ class TextEngine
 
 		if (__restrictRegexp != null)
 		{
-			value = __restrictRegexp.split(value).join('');
+			value = __restrictRegexp.split(value).join("");
 		}
 
 		// if (maxChars > 0 && value.length > maxChars) {

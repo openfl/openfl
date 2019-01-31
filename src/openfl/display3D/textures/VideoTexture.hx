@@ -2,11 +2,9 @@ package openfl.display3D.textures;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.backend.gl.GLTexture;
 import openfl.events.Event;
 import openfl.net.NetStream;
-#if lime
-import lime.graphics.opengl.GLTexture;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -52,7 +50,7 @@ import lime.graphics.opengl.GLTexture;
 		#end
 	}
 
-	@:noCompletion private override function __getTexture():#if lime GLTexture #else Dynamic #end
+	@:noCompletion private override function __getTexture():GLTexture
 	{
 		#if (js && html5)
 		if ((!__netStream.__video.paused || __netStream.__seeking) && __netStream.__video.readyState > 0)

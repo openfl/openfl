@@ -2,7 +2,6 @@ package openfl.display;
 
 #if !flash
 import haxe.io.Path;
-import openfl._internal.formats.swf.SWFLiteLibrary;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
@@ -364,7 +363,7 @@ class Loader extends DisplayObjectContainer
 			var extension = "";
 			__path = request.url;
 
-			var queryIndex = __path.indexOf('?');
+			var queryIndex = __path.indexOf("?");
 			if (queryIndex > -1)
 			{
 				__path = __path.substring(0, queryIndex);
@@ -389,7 +388,7 @@ class Loader extends DisplayObjectContainer
 				}
 			}
 
-			var extIndex = __path.lastIndexOf('.');
+			var extIndex = __path.lastIndexOf(".");
 			if (extIndex > -1)
 			{
 				extension = __path.substring(extIndex + 1);
@@ -646,6 +645,7 @@ class Loader extends DisplayObjectContainer
 	}
 
 	// Event Handlers
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function BitmapData_onError(error:Dynamic):Void
 	{
 		// TODO: Dispatch HTTPStatusEvent
@@ -742,7 +742,7 @@ class Loader extends DisplayObjectContainer
 			// script.innerHTML = loader.data;
 			// Browser.document.head.appendChild (script);
 
-			untyped __js__("eval")('(function () {' + loader.data + '})()');
+			untyped __js__("eval")("(function () {" + loader.data + "})()");
 			#end
 
 			contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));

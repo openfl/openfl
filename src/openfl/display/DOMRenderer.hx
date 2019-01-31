@@ -23,7 +23,7 @@ import js.html.Element;
 @:allow(openfl.display)
 class DOMRenderer extends DisplayObjectRenderer
 {
-	public var element:#if lime DOMRenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") public var element:#if lime DOMRenderContext #else Dynamic #end;
 	public var pixelRatio(default, null):Float = 1;
 
 	@:noCompletion private var __canvasRenderer:CanvasRenderer;
@@ -35,6 +35,7 @@ class DOMRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __vendorPrefix:String;
 	@:noCompletion private var __z:Int;
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(element:#if lime DOMRenderContext #else Dynamic #end)
 	{
 		super();
@@ -77,6 +78,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		__canvasRenderer.__isDOM = true;
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function applyStyle(parent:DisplayObject, childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void
 	{
 		#if (js && html5)
@@ -95,6 +97,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		#end
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function clearStyle(childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void
 	{
 		#if (js && html5)

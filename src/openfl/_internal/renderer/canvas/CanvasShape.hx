@@ -6,6 +6,7 @@ import openfl.display.DisplayObject;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasShape
 {
 	public static inline function render(shape:DisplayObject, renderer:CanvasRenderer):Void

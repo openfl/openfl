@@ -1,16 +1,14 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.backend.gl.GLProgram;
+import openfl._internal.backend.gl.GLShader;
 import openfl._internal.renderer.ShaderBuffer;
+import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;
-#if lime
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
-import lime.utils.Float32Array;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -29,7 +27,7 @@ class Shader
 	public var byteCode(null, default):ByteArray;
 	public var data(get, set):ShaderData;
 	public var glFragmentSource(get, set):String;
-	public var glProgram(default, null):#if lime GLProgram #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
 	public var glVertexSource(get, set):String;
 	public var precisionHint:ShaderPrecision;
 	public var program:Program3D;
@@ -126,7 +124,6 @@ class Shader
 	// }
 	// return shader;
 	// }
-	#if lime
 	@:noCompletion private function __createGLShader(source:String, type:Int):GLShader
 	{
 		var gl = __context.gl;
@@ -145,9 +142,7 @@ class Shader
 
 		return shader;
 	}
-	#end
 
-	#if lime
 	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
 	{
 		var gl = __context.gl;
@@ -180,7 +175,6 @@ class Shader
 
 		return program;
 	}
-	#end
 
 	@:noCompletion private function __disable():Void
 	{
@@ -316,9 +310,7 @@ class Shader
 
 				// TODO
 				// program.uploadSources (vertex, fragment);
-				#if lime
 				program.__glProgram = __createGLProgram(vertex, fragment);
-				#end
 
 				__context.__programs.set(id, program);
 			}

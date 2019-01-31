@@ -5,6 +5,7 @@ import openfl.display.DOMRenderer;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DOMDisplayObject
 {
 	public static function clear(displayObject:DisplayObject, renderer:DOMRenderer):Void

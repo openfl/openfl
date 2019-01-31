@@ -243,7 +243,7 @@ import openfl._internal.Lib;
 
 		if (!~/^\(.+\)$/.match(functionName))
 		{
-			var thisArg = functionName.split('.').slice(0, -1).join('.');
+			var thisArg = functionName.split(".").slice(0, -1).join(".");
 			if (thisArg.length > 0)
 			{
 				functionName += '.bind(${thisArg})';

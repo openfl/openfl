@@ -18,6 +18,7 @@ import openfl.utils.Dictionary;
 import openfl.Vector;
 
 @:access(flash.display.Graphics)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class FlashGraphics
 {
 	public static var bitmapFill:Dictionary<Graphics, BitmapData> = new Dictionary(true);

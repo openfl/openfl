@@ -3,7 +3,8 @@ package openfl._internal.renderer.dom;
 import openfl.display.Bitmap;
 import openfl.display.DOMRenderer;
 #if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
+// TODO: Avoid use of private APIs
+import lime._internal.graphics.ImageCanvasUtil;
 #end
 #if (js && html5)
 import js.Browser;
@@ -12,6 +13,7 @@ import js.Browser;
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DOMBitmap
 {
 	public static function clear(bitmap:Bitmap, renderer:DOMRenderer):Void

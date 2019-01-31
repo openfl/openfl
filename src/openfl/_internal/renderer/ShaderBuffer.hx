@@ -1,5 +1,7 @@
 package openfl._internal.renderer;
 
+import openfl._internal.backend.gl.GLBuffer;
+import openfl._internal.utils.Float32Array;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -7,16 +9,13 @@ import openfl.display.BitmapData;
 import openfl.display.GraphicsShader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
-#if lime
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.Float32Array;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 @:access(openfl.display.Shader)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class ShaderBuffer
 {
 	public var inputCount:Int;
@@ -34,13 +33,13 @@ class ShaderBuffer
 	public var overrideFloatValues:Array<Array<Float>>;
 	public var overrideIntCount:Int;
 	public var overrideIntNames:Array<String>;
-	public var overrideIntValues:Array<Array<Dynamic>>;
+	@SuppressWarnings("checkstyle:Dynamic") public var overrideIntValues:Array<Array<Dynamic>>;
 	// public var overrideNames:Array<String>;
 	// public var overrideValues:Array<Array<Dynamic>>;
 	public var paramBoolCount:Int;
 	public var paramCount:Int;
-	public var paramData:#if lime Float32Array #else Dynamic #end;
-	public var paramDataBuffer:#if lime GLBuffer #else Dynamic #end;
+	public var paramData:Float32Array;
+	public var paramDataBuffer:GLBuffer;
 	public var paramDataLength:Int;
 	public var paramFloatCount:Int;
 	public var paramIntCount:Int;

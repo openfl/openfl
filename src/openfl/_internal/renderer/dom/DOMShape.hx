@@ -8,6 +8,7 @@ import openfl.display.DOMRenderer;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DOMShape
 {
 	public static function clear(shape:DisplayObject, renderer:DOMRenderer):Void

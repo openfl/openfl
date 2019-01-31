@@ -49,7 +49,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __scissorRectangle:Rectangle = new Rectangle();
 	@:noCompletion private static var __textureSizeValue:Array<Float> = [0, 0];
 
-	public var gl:#if lime WebGLRenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") public var gl:#if lime WebGLRenderContext #else Dynamic #end;
 
 	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
@@ -65,16 +65,16 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __displayHeight:Int;
 	@:noCompletion private var __displayWidth:Int;
 	@:noCompletion private var __flipped:Bool;
-	@:noCompletion private var __gl:#if lime WebGLRenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __gl:#if lime WebGLRenderContext #else Dynamic #end;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:Context3DMaskShader;
-	@:noCompletion private var __matrix:#if lime Matrix4 #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __matrix:#if lime Matrix4 #else Dynamic #end;
 	@:noCompletion private var __maskObjects:Array<DisplayObject>;
 	@:noCompletion private var __numClipRects:Int;
 	@:noCompletion private var __offsetX:Int;
 	@:noCompletion private var __offsetY:Int;
-	@:noCompletion private var __projection:#if lime Matrix4 #else Dynamic #end;
-	@:noCompletion private var __projectionFlipped:#if lime Matrix4 #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __projection:#if lime Matrix4 #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __projectionFlipped:#if lime Matrix4 #else Dynamic #end;
 	@:noCompletion private var __scrollRectMasks:ObjectPool<Shape>;
 	@:noCompletion private var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private var __stencilReference:Int;
@@ -272,6 +272,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function getMatrix(transform:Matrix):#if lime Matrix4 #else Dynamic #end
 	{
 		if (gl != null)

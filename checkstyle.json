@@ -84,7 +84,6 @@
 				"none": [
 					"beforePackage",
 					"betweenImports",
-					"beforeUsing",
 					"typeDefinition",
 					"afterLeftCurly",
 					"beforeRightCurly"
@@ -93,7 +92,9 @@
 				"defaultPolicy": "upto",
 				"exact": [],
 				"max": 1,
-				"ignore": [],
+				"ignore": [
+					"afterClassVars"
+				],
 				"atleast": [],
 				"skipSingleLineTypes": true
 			},
@@ -137,23 +138,14 @@
 		{
 			"props": {
 				"character": "tab",
-				"wrapPolicy": "larger",
-				"ignoreComments": true,
-				"ignoreConditionals": false,
-				"conditionalPolicy": "aligned"
-			},
-			"type": "Indentation"
-		},
-		{
-			"props": {
-				"character": "tab",
 				"ignorePattern": "^$"
 			},
 			"type": "IndentationCharacter"
 		},
 		{
 			"props": {
-				"ignoreReturnAssignments": true
+				"ignoreReturnAssignments": true,
+				"severity": "IGNORE"
 			},
 			"type": "InnerAssignment"
 		},
@@ -417,6 +409,18 @@
 				"ignoreEnumAbstractValues": true
 			},
 			"type": "Type"
+		},
+		{
+			"props": {
+				"tokens": [
+					"ABSTRACT_DEF",
+					"CLASS_DEF",
+					"ENUM_DEF",
+					"INTERFACE_DEF"
+				],
+				"severity": "IGNORE"
+			},
+			"type": "TypeDocComment"
 		},
 		{
 			"props": {},

@@ -1,9 +1,14 @@
 package openfl.display3D;
 
 #if !flash
-import haxe.io.Bytes;
+import openfl._internal.backend.gl.GLBuffer;
+import openfl._internal.backend.gl.GLFramebuffer;
+import openfl._internal.backend.gl.GLTexture;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.Float32Array;
+import openfl._internal.utils.UInt16Array;
+import openfl._internal.utils.UInt8Array;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -21,22 +26,12 @@ import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
 #if lime
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLTexture;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
-import lime.utils.Float32Array;
-import lime.utils.UInt8Array;
-import lime.utils.UInt16Array;
-#else
-private typedef GLBuffer = Dynamic;
-private typedef GLFramebuffer = Dynamic;
-private typedef GLTexture = Dynamic;
 #end
 
 #if !openfl_debug
@@ -88,9 +83,9 @@ private typedef GLTexture = Dynamic;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
-	@:noCompletion private var __fragmentConstants:#if lime Float32Array #else Dynamic #end;
+	@:noCompletion private var __fragmentConstants:Float32Array;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
-	@:noCompletion private var __positionScale:#if lime Float32Array #else Dynamic #end; // TODO: Better approach?
+	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __programs:Map<String, Program3D>;
 	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
@@ -99,7 +94,7 @@ private typedef GLTexture = Dynamic;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
-	@:noCompletion private var __vertexConstants:#if lime Float32Array #else Dynamic #end;
+	@:noCompletion private var __vertexConstants:Float32Array;
 
 	@:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{

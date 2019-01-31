@@ -15,6 +15,7 @@ import openfl.Assets;
 @:noDebug
 #end
 @:access(openfl._internal.symbols.SWFSymbol)
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:keep class SWFLite
 {
 	public static var instances:Map<String, SWFLite> = new Map();
@@ -89,6 +90,7 @@ import openfl.Assets;
 		return false;
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	private static function resolveClass(name:String):Class<Dynamic>
 	{
 		var value = Type.resolveClass(name);
@@ -107,6 +109,7 @@ import openfl.Assets;
 		return value;
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	private static function resolveEnum(name:String):Enum<Dynamic>
 	{
 		var value = Type.resolveEnum(name);

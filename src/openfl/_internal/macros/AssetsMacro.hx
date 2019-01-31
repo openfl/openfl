@@ -7,19 +7,23 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import sys.io.File;
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 class AssetsMacro
 {
 	private static var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	private static var base64Encoder:BaseCode;
+	#if 0
+	private static var __suppressWarning:Array<Class<Dynamic>> = [Expr];
+	#end
 
 	private static function base64Encode(bytes:Bytes):String
 	{
-		var extension = switch (bytes.length % 3)
+		var extension = (switch (bytes.length % 3)
 		{
 			case 1: "==";
 			case 2: "=";
 			default: "";
-		}
+		});
 
 		if (base64Encoder == null)
 		{
@@ -326,8 +330,8 @@ class AssetsMacro
 
 		if (fields != null)
 		{
-			#if (!html5) // CFFILoader.h(248) : NOT Implemented:api_buffer_data
-
+			// CFFILoader.h(248) : NOT Implemented:api_buffer_data
+			#if (!html5)
 			var constructor = macro
 				{
 					super();

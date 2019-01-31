@@ -173,6 +173,7 @@ class Clipboard
 		}
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function setDataHandler(format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool
 	{
 		openfl._internal.Lib.notImplemented();

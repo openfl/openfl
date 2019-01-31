@@ -12,8 +12,6 @@ import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
-import openfl.utils.Endian;
-import openfl.utils.Future;
 #if lime
 import lime.system.System;
 import lime.utils.ArrayBuffer;

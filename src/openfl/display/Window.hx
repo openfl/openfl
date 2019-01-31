@@ -17,9 +17,9 @@ class Window #if lime extends LimeWindow #end
 {
 	#if !lime
 	public var application:Application;
-	public var context:Dynamic;
-	public var cursor:Dynamic;
-	public var display:Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var context:Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var cursor:Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var display:Dynamic;
 	public var frameRate:Float;
 	public var fullscreen:Bool;
 	public var height:Int;
@@ -29,6 +29,7 @@ class Window #if lime extends LimeWindow #end
 	public var width:Int;
 	#end
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(application:Application, attributes:#if lime WindowAttributes #else Dynamic #end)
 	{
 		#if lime

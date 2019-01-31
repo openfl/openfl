@@ -1,13 +1,12 @@
 package openfl._internal.renderer.context3D;
 
+import openfl._internal.utils.Float32Array;
+import openfl._internal.utils.UInt16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-#if lime
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
-#end
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DBuffer
 {
 	private static inline var MAX_INDEX_BUFFER_LENGTH:Int = 0xFFFF;
@@ -17,11 +16,11 @@ class Context3DBuffer
 	public var dataPerVertex:Int;
 	public var elementCount:Int;
 	public var elementType:Context3DElementType;
-	public var indexBufferData:Array<#if lime UInt16Array #else Dynamic #end>;
+	public var indexBufferData:Array<UInt16Array>;
 	public var indexBuffers:Array<IndexBuffer3D>;
 	public var indexCount:Int;
 	public var vertexBuffer:VertexBuffer3D;
-	public var vertexBufferData:#if lime Float32Array #else Dynamic #end;
+	public var vertexBufferData:Float32Array;
 	public var vertexCount:Int;
 
 	private var context3D:Context3D;

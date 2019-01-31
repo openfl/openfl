@@ -3,6 +3,7 @@ package openfl._internal.utils;
 #if !lime
 import haxe.ds.ObjectMap;
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 class ObjectPool<T>
 {
 	public var activeObjects(default, null):Int;

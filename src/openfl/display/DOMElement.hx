@@ -8,8 +8,9 @@ import js.html.Element;
 class DOMElement extends #if flash Sprite #else DisplayObject #end
 {
 	@:noCompletion private var __active:Bool;
-	@:noCompletion private var __element:#if (js && html5) Element #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __element:#if (js && html5) Element #else Dynamic #end;
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(element:#if (js && html5) Element #else Dynamic #end)
 	{
 		super();

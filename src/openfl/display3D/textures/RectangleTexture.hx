@@ -2,12 +2,12 @@ package openfl.display3D.textures;
 
 #if !flash
 import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.ArrayBufferView;
+import openfl._internal.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 #if lime
 import lime.graphics.Image;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
 #end
 
 #if !openfl_debug
@@ -72,7 +72,7 @@ import lime.utils.UInt8Array;
 		#end
 	}
 
-	public function uploadFromTypedArray(data:#if lime ArrayBufferView #else Dynamic #end):Void
+	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
 		var gl = __context.gl;
 

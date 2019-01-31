@@ -2,6 +2,7 @@ package openfl._internal.formats.agal;
 
 import haxe.Int64;
 import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.Log;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -16,6 +17,7 @@ import lime.graphics.opengl.GL;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class AGALConverter
 {
 	private static var limitedProfile:Null<Bool>#if !desktop = true #end;
@@ -142,8 +144,8 @@ class AGALConverter
 					var sr = sr1.toGLSL();
 
 					if (sr.indexOf(".") > -1)
-					{ // swizzle
-
+					{
+						// swizzle
 						sb.add(dr.toGLSL() + " = 1.0 / " + sr1.toGLSL() + "; // rcp");
 					}
 					else
@@ -362,7 +364,8 @@ class AGALConverter
 				case 0x27: // kill /  discard
 
 					if (true)
-					{ // (openfl.display.Stage3D.allowDiscard) {
+					{
+						// (openfl.display.Stage3D.allowDiscard) {
 
 						// ensure we have a full source mask since there is no destination register
 						sr1.sourceMask = 0xF;
@@ -522,6 +525,7 @@ class AGALConverter
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class DestRegister
 {
 	public var mask:Int;
@@ -583,9 +587,10 @@ private enum ProgramType
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class RegisterMap
 {
-	private var mEntries = new Array<RegisterMapEntry>();
+	private var mEntries:Array<RegisterMapEntry> = new Array();
 
 	public function new()
 	{
@@ -736,7 +741,7 @@ class RegisterMap
 					sb.add("samplerCube ");
 
 				case RegisterUsage.UNUSED:
-					trace("Missing switch patten: RegisterUsage.UNUSED");
+					Log.info("Missing switch patten: RegisterUsage.UNUSED");
 
 				case RegisterUsage.SAMPLER_2D_ALPHA:
 
@@ -809,12 +814,12 @@ private class RegisterMapEntry
 
 @:enum abstract RegisterType(Int)
 {
-	var ATTRIBUTE = 0;
-	var CONSTANT = 1;
-	var TEMPORARY = 2;
-	var OUTPUT = 3;
-	var VARYING = 4;
-	var SAMPLER = 5;
+	public var ATTRIBUTE = 0;
+	public var CONSTANT = 1;
+	public var TEMPORARY = 2;
+	public var OUTPUT = 3;
+	public var VARYING = 4;
+	public var SAMPLER = 5;
 }
 
 private enum RegisterUsage
@@ -833,6 +838,7 @@ private enum RegisterUsage
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class SamplerRegister
 {
 	public var b:Int; // lod bias
@@ -933,6 +939,7 @@ private class SamplerRegister
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class SourceRegister
 {
 	public var d:Int;
@@ -1005,7 +1012,7 @@ private class SourceRegister
 		{
 			// indirect register
 			str += o;
-			var indexComponent = String.fromCharCode('x'.charCodeAt(0) + q);
+			var indexComponent = String.fromCharCode("x".charCodeAt(0) + q);
 			var indexRegister = AGALConverter.prefixFromType(itype, programType) + this.n + "." + indexComponent;
 			str += "[ int(" + indexRegister + ") +" + offset + "]";
 		}

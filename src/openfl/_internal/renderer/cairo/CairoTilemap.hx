@@ -27,6 +27,7 @@ import lime.math.Matrix3;
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CairoTilemap
 {
 	public static function render(tilemap:Tilemap, renderer:CairoRenderer):Void
@@ -53,6 +54,7 @@ class CairoTilemap
 		Rectangle.__pool.release(rect);
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	private static function renderTileContainer(group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
 			alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData,
 			surface:#if lime CairoSurface #else Dynamic #end, pattern:#if lime CairoPattern #else Dynamic #end, rect:Rectangle,

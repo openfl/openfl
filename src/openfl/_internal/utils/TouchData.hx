@@ -10,12 +10,13 @@ import lime.ui.Touch;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class TouchData
 {
 	public static var __pool:ObjectPool<TouchData> = new ObjectPool<TouchData>(function() return new TouchData(), function(data) data.reset());
 
 	public var rollOutStack:Array<DisplayObject>;
-	public var touch:#if lime Touch #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") public var touch:#if lime Touch #else Dynamic #end;
 	public var touchDownTarget:InteractiveObject;
 	public var touchOverTarget:InteractiveObject;
 

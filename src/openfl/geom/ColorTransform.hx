@@ -3,8 +3,8 @@ package openfl.geom;
 #if !flash
 import openfl._internal.utils.ObjectPool;
 #if lime
+import openfl._internal.utils.Float32Array;
 import lime.math.ColorMatrix;
-import lime.utils.Float32Array;
 #end
 
 /**

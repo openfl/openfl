@@ -4,6 +4,7 @@ package openfl._internal.renderer.context3D.stats;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DrawCallCounter
 {
 	public var currentDrawCallsNum(default, null):Int = 0;

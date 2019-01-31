@@ -7,6 +7,11 @@ import haxe.PosInfos;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings([
+	"checkstyle:FieldDocComment",
+	"checkstyle:Dynamic",
+	"checkstyle:NullableParameter"
+])
 class Log
 {
 	public static var level:LogLevel;
@@ -66,7 +71,7 @@ class Log
 		#elseif js
 		untyped __js__("console").log(message);
 		#else
-		trace(message);
+		@SuppressWarnings("checkstyle:Trace") trace(message);
 		#end
 	}
 
@@ -79,7 +84,7 @@ class Log
 		#elseif js
 		untyped __js__("console").log(message);
 		#else
-		trace(Std.string(message));
+		@SuppressWarnings("checkstyle:Trace") trace(Std.string(message));
 		#end
 	}
 
@@ -132,9 +137,10 @@ class Log
 		{
 			untyped __js__("console = {}");
 		}
-		if (untyped __js__("console").log == null)
+		var _console = untyped __js__("console");
+		if (_console.log == null)
 		{
-			untyped __js__("console").log = function() {};
+			_console.log = function() {};
 		}
 		#end
 	}

@@ -1,6 +1,7 @@
 package openfl._internal.formats.html;
 
 import openfl._internal.text.TextFormatRange;
+import openfl._internal.utils.Log;
 import openfl.text.TextFormat;
 import openfl.Vector;
 
@@ -8,6 +9,7 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class HTMLParser
 {
 	private static var __regexAlign:EReg = ~/align=("([^"]+)"|'([^']+)')/i;
@@ -91,7 +93,7 @@ class HTMLParser
 				{
 					if (tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
 					{
-						trace('Invalid HTML, unexpected closing tag ignored: ' + tagName);
+						Log.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
 						continue;
 					}
 

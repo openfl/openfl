@@ -19,6 +19,7 @@ import openfl.text.Font;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class TextLayout
 {
 	private static inline var FT_LOAD_DEFAULT:Int = 0;
@@ -49,7 +50,7 @@ class TextLayout
 	public var autoHint:Bool;
 	public var direction(get, set):TextDirection;
 	public var font(default, set):Font;
-	public var glyphs(get, null):Array<#if lime Glyph #else Dynamic #end>;
+	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, null):Array<#if lime Glyph #else Dynamic #end>;
 	public var language(get, set):String;
 	public var letterSpacing:Float = 0;
 	@:isVar public var positions(get, null):Array<GlyphPosition>;
@@ -60,12 +61,12 @@ class TextLayout
 	private var __buffer:Bytes;
 	private var __direction:TextDirection;
 	private var __dirty:Bool;
-	private var __handle:Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") private var __handle:Dynamic;
 	private var __language:String;
 	private var __script:TextScript;
 	private var __font:Font;
-	private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
-	private var __hbFont:#if lime HBFTFont #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if lime HBFTFont #else Dynamic #end;
 
 	public function new(text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
 			language:String = "en")
@@ -209,7 +210,9 @@ class TextLayout
 		return value;
 	}
 
-	@:noCompletion private function get_glyphs():Array<#if lime Glyph #else Dynamic #end>
+	@:noCompletion
+	@SuppressWarnings("checkstyle:Dynamic")
+	private function get_glyphs():Array<#if lime Glyph #else Dynamic #end>
 	{
 		var glyphs = [];
 
@@ -270,6 +273,7 @@ class TextLayout
 	}
 }
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TextDirection(Int) to Int
 {
 	public var INVALID = 0;
@@ -334,6 +338,7 @@ class TextLayout
 	}
 }
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TextScript(String) to(String)
 {
 	public var COMMON = "Zyyy";
@@ -478,7 +483,8 @@ class TextLayout
 	{
 		return switch (this)
 		{
-			case HEBREW, ARABIC, SYRIAC, THAANA, NKO, SAMARITAN, MANDAIC, IMPERIAL_ARAMAIC, PHOENICIAN, LYDIAN, CYPRIOT, KHAROSHTHI, OLD_SOUTH_ARABIAN, AVESTAN, INSCRIPTIONAL_PAHLAVI, PSALTER_PAHLAVI, OLD_TURKIC: true;
+			case HEBREW, ARABIC, SYRIAC, THAANA, NKO, SAMARITAN, MANDAIC, IMPERIAL_ARAMAIC, PHOENICIAN, LYDIAN, CYPRIOT, KHAROSHTHI, OLD_SOUTH_ARABIAN, AVESTAN, INSCRIPTIONAL_PAHLAVI, PSALTER_PAHLAVI, OLD_TURKIC:
+				true;
 			// case KURDISH: true;
 			default: false;
 		}

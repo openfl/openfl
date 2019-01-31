@@ -8,6 +8,7 @@ import lime._internal.graphics.ImageCanvasUtil; // TODO
 #end
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasBitmap
 {
 	public static inline function render(bitmap:Bitmap, renderer:CanvasRenderer):Void

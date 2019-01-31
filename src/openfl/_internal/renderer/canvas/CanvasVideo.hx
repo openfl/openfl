@@ -5,6 +5,7 @@ import openfl.media.Video;
 
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasVideo
 {
 	public static function render(video:Video, renderer:CanvasRenderer):Void

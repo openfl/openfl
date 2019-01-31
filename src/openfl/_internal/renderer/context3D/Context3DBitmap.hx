@@ -18,6 +18,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(openfl.display.Stage)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DBitmap
 {
 	public static function render(bitmap:Bitmap, renderer:OpenGLRenderer):Void

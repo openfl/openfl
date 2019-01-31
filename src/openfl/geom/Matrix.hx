@@ -3,8 +3,8 @@ package openfl.geom;
 #if !flash
 import openfl._internal.utils.ObjectPool;
 #if lime
+import openfl._internal.utils.Float32Array;
 import lime.math.Matrix3;
-import lime.utils.Float32Array;
 #end
 
 /**
@@ -498,7 +498,7 @@ class Matrix
 	**/
 	public function rotate(theta:Float):Void
 	{
-		/*
+		/**
 			Rotate object "after" other transforms
 
 			[  a  b   0 ][  ma mb  0 ]
@@ -509,7 +509,6 @@ class Matrix
 			mb = sin
 			mc = -sin
 			mtx = my = 0
-
 		**/
 
 		var cos = Math.cos(theta);

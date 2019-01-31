@@ -8,6 +8,7 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 #if lime
+import lime._internal.graphics.ImageCanvasUtil;
 import lime._internal.graphics.ImageDataUtil;
 import lime.math.Vector2;
 import lime.math.Vector4;

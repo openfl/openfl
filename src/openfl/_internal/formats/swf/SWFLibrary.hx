@@ -25,6 +25,7 @@ import flash.display.AVM1Movie;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:keep class SWFLibrary extends AssetLibrary
 {
 	private var applicationDomain:ApplicationDomain;

@@ -14,11 +14,14 @@ import lime.utils.Assets as LimeAssets;
 @:dox(hide) class AssetCache implements IAssetCache
 {
 	public var enabled(get, set):Bool;
-	/* deprecated */
+
+	/** deprecated **/
 	@:dox(hide) public var bitmapData:Map<String, BitmapData>;
-	/* deprecated */
+
+	/** deprecated **/
 	@:dox(hide) public var font:Map<String, Font>;
-	/* deprecated */
+
+	/** deprecated **/
 	@:dox(hide) public var sound:Map<String, Sound>;
 
 	@:noCompletion private var __enabled:Bool = true;

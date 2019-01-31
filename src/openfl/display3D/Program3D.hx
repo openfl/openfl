@@ -1,8 +1,12 @@
 package openfl.display3D;
 
 #if !flash
+import openfl._internal.backend.gl.GLProgram;
+import openfl._internal.backend.gl.GLShader;
+import openfl._internal.backend.gl.GLUniformLocation;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
@@ -10,11 +14,7 @@ import openfl.utils.ByteArray;
 import openfl.Vector;
 #if lime
 import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
-import lime.graphics.opengl.GLUniformLocation;
 import lime.utils.BytePointer;
-import lime.utils.Float32Array;
 #end
 
 #if !openfl_debug
@@ -37,16 +37,16 @@ import lime.utils.Float32Array;
 	@:noCompletion private var __agalVertexUniformMap:UniformMap;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Context3DProgramFormat;
-	@:noCompletion private var __glFragmentShader:#if lime GLShader #else Dynamic #end;
+	@:noCompletion private var __glFragmentShader:GLShader;
 	@:noCompletion private var __glFragmentSource:String;
-	@:noCompletion private var __glProgram:#if lime GLProgram #else Dynamic #end;
+	@:noCompletion private var __glProgram:GLProgram;
 	@:noCompletion private var __glslAttribNames:Array<String>;
 	@:noCompletion private var __glslAttribTypes:Array<ShaderParameterType>;
 	@:noCompletion private var __glslSamplerNames:Array<String>;
-	@:noCompletion private var __glslUniformLocations:Array<#if lime GLUniformLocation #else Dynamic #end>;
+	@:noCompletion private var __glslUniformLocations:Array<GLUniformLocation>;
 	@:noCompletion private var __glslUniformNames:Array<String>;
 	@:noCompletion private var __glslUniformTypes:Array<ShaderParameterType>;
-	@:noCompletion private var __glVertexShader:#if lime GLShader #else Dynamic #end;
+	@:noCompletion private var __glVertexShader:GLShader;
 	@:noCompletion private var __glVertexSource:String;
 	// @:noCompletion private var __memUsage:Int;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
@@ -229,9 +229,9 @@ import lime.utils.Float32Array;
 
 	@:noCompletion private function __buildAGALUniformList():Void
 	{
+		#if lime
 		if (__format == GLSL) return;
 
-		#if lime
 		var gl = __context.gl;
 
 		__agalUniforms.clear();
@@ -324,7 +324,7 @@ import lime.utils.Float32Array;
 
 			if (Log.level == LogLevel.VERBOSE)
 			{
-				trace('${i} name:${uniform.name} type:${uniform.type} size:${uniform.size} location:${uniform.location}');
+				Log.verbose('${i} name:${uniform.name} type:${uniform.type} size:${uniform.size} location:${uniform.location}');
 			}
 		}
 
@@ -584,7 +584,7 @@ import lime.utils.Float32Array;
 		}
 	}
 
-	@:noCompletion private function __setPositionScale(positionScale:#if lime Float32Array #else Dynamic #end):Void
+	@:noCompletion private function __setPositionScale(positionScale:Float32Array):Void
 	{
 		if (__format == GLSL) return;
 
@@ -682,10 +682,10 @@ import lime.utils.Float32Array;
 @:dox(hide) @:noCompletion class Uniform
 {
 	public var name:String;
-	public var location:#if lime GLUniformLocation #else Dynamic #end;
+	public var location:GLUniformLocation;
 	public var type:Int;
 	public var size:Int;
-	public var regData:#if lime Float32Array #else Dynamic #end;
+	public var regData:Float32Array;
 	public var regIndex:Int;
 	public var regCount:Int;
 	public var isDirty:Bool;

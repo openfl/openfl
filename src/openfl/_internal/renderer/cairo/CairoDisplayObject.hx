@@ -12,6 +12,7 @@ import lime.math.ARGB;
 #end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class CairoDisplayObject
 {
 	public static function render(displayObject:DisplayObject, renderer:CairoRenderer):Void

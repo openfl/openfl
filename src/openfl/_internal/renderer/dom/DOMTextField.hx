@@ -11,6 +11,7 @@ import js.Browser;
 
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextField)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class DOMTextField
 {
 	private static var __regexColor:EReg = ~/color=("#([^"]+)"|'#([^']+)')/i;
@@ -131,7 +132,8 @@ class DOMTextField
 						textField.__style.setProperty("cursor", "inherit", null);
 					}
 
-					untyped (textField.__div).contentEditable = (textEngine.type == INPUT);
+					var div = untyped textField.__div;
+					div.contentEditable = (textEngine.type == INPUT);
 
 					var style = textField.__style;
 

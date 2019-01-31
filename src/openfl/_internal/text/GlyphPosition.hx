@@ -9,6 +9,7 @@ import lime.text.Glyph;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings(["checkstyle:FieldDocComment", "checkstyle:Dynamic"])
 class GlyphPosition
 {
 	public var advance:#if lime Vector2 #else Dynamic #end;

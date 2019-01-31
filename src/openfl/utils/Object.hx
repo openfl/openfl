@@ -65,13 +65,13 @@ package openfl.utils;
 }
 
 #if (!cs || haxe_ver > "3.3.0")
-@:keep @:native('haxe.lang.Iterator') private interface Iterator_<T>
+@:keep @:native("haxe.lang.Iterator") private interface Iterator_<T>
 {
 	public function hasNext():Bool;
 	public function next():T;
 }
 
-@:keep @:native('haxe.lang.Iterable') private interface Iterable_<T>
+@:keep @:native("haxe.lang.Iterable") private interface Iterable_<T>
 {
 	public function iterator():Iterator_<T>;
 }

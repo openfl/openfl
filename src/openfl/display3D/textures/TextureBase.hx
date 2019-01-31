@@ -1,6 +1,9 @@
 package openfl.display3D.textures;
 
 #if !flash
+import openfl._internal.backend.gl.GLFramebuffer;
+import openfl._internal.backend.gl.GLRenderbuffer;
+import openfl._internal.backend.gl.GLTexture;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
@@ -8,9 +11,6 @@ import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
 import lime.graphics.Image;
 import lime.graphics.RenderContext;
 #end
@@ -35,9 +35,9 @@ class TextureBase extends EventDispatcher
 	// private var __compressedMemoryUsage:Int;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Int;
-	@:noCompletion private var __glDepthRenderbuffer:#if lime GLRenderbuffer #else Dynamic #end;
-	@:noCompletion private var __glFramebuffer:#if lime GLFramebuffer #else Dynamic #end;
-	@:noCompletion private var __glStencilRenderbuffer:#if lime GLRenderbuffer #else Dynamic #end;
+	@:noCompletion private var __glDepthRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __glFramebuffer:GLFramebuffer;
+	@:noCompletion private var __glStencilRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
@@ -45,8 +45,8 @@ class TextureBase extends EventDispatcher
 	// private var __outputTextureMemoryUsage:Bool = false;
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
-	@:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
-	@:noCompletion private var __textureID:#if lime GLTexture #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __textureID:GLTexture;
 	@:noCompletion private var __textureTarget:Int;
 	@:noCompletion private var __width:Int;
 
@@ -162,7 +162,8 @@ class TextureBase extends EventDispatcher
 		}
 	}
 
-	@:noCompletion private function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):#if lime GLFramebuffer #else Dynamic #end
+	@SuppressWarnings("checkstyle:Dynamic")
+	@:noCompletion private function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		var gl = __context.gl;
 
@@ -280,7 +281,7 @@ class TextureBase extends EventDispatcher
 	}
 	#end
 
-	@:noCompletion private function __getTexture():#if lime GLTexture #else Dynamic #end
+	@:noCompletion private function __getTexture():GLTexture
 	{
 		return __textureID;
 	}
