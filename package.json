@@ -1,6 +1,6 @@
 {
   "name": "openfl",
-  "version": "8.6.4",
+  "version": "8.8.0",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "openfl",
@@ -95,6 +95,7 @@
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
     "hxp": "openfl/hxp",
+    "jpeg-js": "^0.3.4",
     "lime": "openfl/lime#develop",
     "mocha": "^5.2.0",
     "mocha-chrome": "^1.1.0",

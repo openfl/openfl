@@ -1,17 +1,17 @@
-package openfl.ui; #if !flash
+package openfl.ui;
 
-
+#if !flash
+#if lime
 import lime.ui.MouseCursor as LimeMouseCursor;
+#end
 
-
-@:enum abstract MouseCursor(String) from String to String {
-	
+@:enum abstract MouseCursor(String) from String to String
+{
 	public var ARROW = "arrow";
 	public var AUTO = "auto";
 	public var BUTTON = "button";
 	public var HAND = "hand";
 	public var IBEAM = "ibeam";
-	
 	@:noCompletion private var __CROSSHAIR = "crosshair";
 	@:noCompletion private var __CUSTOM = "custom";
 	@:noCompletion private var __MOVE = "move";
@@ -21,11 +21,12 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	@:noCompletion private var __RESIZE_WE = "resize_we";
 	@:noCompletion private var __WAIT = "wait";
 	@:noCompletion private var __WAIT_ARROW = "waitarrow";
-	
-	@:from private static function fromLimeCursor (cursor:LimeMouseCursor):MouseCursor {
-		
-		return switch (cursor) {
-			
+
+	#if lime
+	@:from private static function fromLimeCursor(cursor:LimeMouseCursor):MouseCursor
+	{
+		return switch (cursor)
+		{
 			case LimeMouseCursor.ARROW: MouseCursor.ARROW;
 			case LimeMouseCursor.DEFAULT: MouseCursor.AUTO;
 			case LimeMouseCursor.POINTER: MouseCursor.BUTTON;
@@ -40,14 +41,31 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 			case LimeMouseCursor.WAIT_ARROW: MouseCursor.__WAIT_ARROW;
 			case LimeMouseCursor.CUSTOM: MouseCursor.__CUSTOM;
 			default: MouseCursor.AUTO;
-			
 		}
-		
 	}
-	
+
+	@:to private static function toLimeCursor(cursor:MouseCursor):LimeMouseCursor
+	{
+		return switch (cursor)
+		{
+			case MouseCursor.ARROW: LimeMouseCursor.ARROW;
+			case MouseCursor.AUTO: LimeMouseCursor.DEFAULT;
+			case MouseCursor.BUTTON: LimeMouseCursor.POINTER;
+			case MouseCursor.HAND: LimeMouseCursor.MOVE;
+			case MouseCursor.IBEAM: LimeMouseCursor.TEXT;
+			case MouseCursor.__CROSSHAIR: LimeMouseCursor.CROSSHAIR;
+			case MouseCursor.__RESIZE_NESW: LimeMouseCursor.RESIZE_NESW;
+			case MouseCursor.__RESIZE_NS: LimeMouseCursor.RESIZE_NS;
+			case MouseCursor.__RESIZE_NWSE: LimeMouseCursor.RESIZE_NWSE;
+			case MouseCursor.__RESIZE_WE: LimeMouseCursor.RESIZE_WE;
+			case MouseCursor.__WAIT: LimeMouseCursor.WAIT;
+			case MouseCursor.__WAIT_ARROW: LimeMouseCursor.WAIT_ARROW;
+			case MouseCursor.__CUSTOM: LimeMouseCursor.CUSTOM;
+			default: LimeMouseCursor.DEFAULT;
+		}
+	}
+	#end
 }
-
-
 #else
 typedef MouseCursor = flash.ui.MouseCursor;
 #end

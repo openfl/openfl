@@ -13,6 +13,10 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	public function set (position:Int, value:Int):Int;
 	
 	
+	public static var defaultEndian /*(get, set)*/:Endian;
+	// @:noCompletion private function get_defaultEndian ():Endian;
+	// @:noCompletion private function set_defaultEndian (value:Endian):Endian;
+	
 	/**
 	 * Denotes the default object encoding for the ByteArray class to use for a
 	 * new ByteArray instance. When you create a new ByteArray instance, the
@@ -26,6 +30,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * used. The value is a constant from the ObjectEncoding class.
 	 */
 	public static var defaultObjectEncoding:ObjectEncoding;
+	
 	
 	/**
 	 * The number of bytes of data available for reading from the current

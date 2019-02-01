@@ -220,10 +220,7 @@ class Tools {
 			}
 			
 			packageName = packageName.charAt (0).toLowerCase () + packageName.substr (1);
-			name = name.substr (0, 1).toUpperCase () + name.substr (1);
-			
-			var packageNameDot = packageName;
-			if (packageNameDot.length > 0) packageNameDot += ".";
+			name = formatClassName (name, prefix);
 			
 			var symbolID = swf.symbols.get (className);
 			var templateData = null;
@@ -313,7 +310,7 @@ class Tools {
 					
 				}
 				
-				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfAsset.id, SYMBOL_ID: symbolID, PREFIX: prefix, CLASS_PROPERTIES: classProperties };
+				var context = { PACKAGE_NAME: packageName, NATIVE_CLASS_NAME: className, CLASS_NAME: name, SWF_ID: swfAsset.id, SYMBOL_ID: symbolID, PREFIX: prefix, CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				var targetPath;
 				
@@ -331,7 +328,7 @@ class Tools {
 				templateFile.data = template.execute (context);
 				output.assets.push (templateFile);
 				
-				generatedClasses.push (packageNameDot + prefix + name);
+				generatedClasses.push ((packageName.length > 0 ? packageName + "." : "") + name);
 				
 			}
 			
@@ -377,7 +374,6 @@ class Tools {
 			
 			if (templateData != null && symbol.className != null) {
 				
-				//var className = formatClassName (symbol.className, prefix);
 				var className = symbol.className;
 				
 				var name = className;
@@ -392,8 +388,7 @@ class Tools {
 					
 				}
 				
-				var packageNameDot = packageName;
-				if (packageNameDot.length > 0) packageNameDot += ".";
+				name = formatClassName (name, prefix);
 				
 				var classProperties = [];
 				var objectReferences = new Map<String, Bool> ();
@@ -465,14 +460,14 @@ class Tools {
 					
 				}
 				
-				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfID, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
+				var context = { PACKAGE_NAME: packageName, NATIVE_CLASS_NAME: className, CLASS_NAME: name, SWF_ID: swfID, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				
 				var templateFile = new Asset ("", #if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, Path.directory (symbol.className.split (".").join ("/"))) + "/" + name + ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute (context);
 				output.push (templateFile);
 				
-				generatedClasses.push (className);
+				generatedClasses.push ((packageName.length > 0 ? packageName + "." : "") + name);
 				
 			}
 			

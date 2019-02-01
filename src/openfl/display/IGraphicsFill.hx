@@ -1,24 +1,12 @@
-package openfl.display; #if !flash
+package openfl.display;
 
+#if !flash
+import openfl._internal.renderer.GraphicsFillType;
 
-interface IGraphicsFill {
-	
-	@:noCompletion private var __graphicsFillType (default, null):GraphicsFillType;
-	
+interface IGraphicsFill
+{
+	@:noCompletion private var __graphicsFillType(default, null):GraphicsFillType;
 }
-
-
-@:fakeEnum(Int) enum GraphicsFillType {
-	
-	SOLID_FILL;
-	GRADIENT_FILL;
-	BITMAP_FILL;
-	END_FILL;
-	SHADER_FILL;
-	
-}
-
-
 #else
 typedef IGraphicsFill = flash.display.IGraphicsFill;
 #end

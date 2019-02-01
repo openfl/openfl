@@ -117,7 +117,7 @@ package openfl.net {
 		// @:noCompletion @:dox(hide) @:require(flash10) public var nearNonce (default, null):String;
 		// #end
 		
-		public function get objectEncoding ():String { return null; }
+		public function get objectEncoding ():uint { return null; }
 		
 		// #if flash
 		// @:noCompletion @:dox(hide) @:require(flash10) public var peerStreams (default, null):Array<Dynamic>;

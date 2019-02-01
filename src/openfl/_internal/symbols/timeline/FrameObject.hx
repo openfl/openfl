@@ -1,6 +1,5 @@
 package openfl._internal.symbols.timeline;
 
-
 import openfl._internal.formats.swf.FilterType;
 import openfl.display.BlendMode;
 import openfl.geom.ColorTransform;
@@ -10,11 +9,8 @@ import openfl.geom.Matrix;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class FrameObject {
-	
-	
+class FrameObject
+{
 	public var blendMode:BlendMode;
 	public var cacheAsBitmap:Null<Bool>;
 	public var clipDepth:Int;
@@ -27,13 +23,6 @@ class FrameObject {
 	public var symbol:Int;
 	public var type:FrameObjectType;
 	public var visible:Null<Bool>;
-	
-	
-	public function new () {
-		
-		
-		
-	}
-	
-	
+
+	public function new() {}
 }

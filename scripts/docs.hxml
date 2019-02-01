@@ -23,6 +23,20 @@ ImportAll
 
 --next
 
+-xml xml/AIR.xml
+-cpp obj/docs
+-D display
+-D air_doc_gen
+-D flash_doc_gen
+-D openfl_doc_gen
+-D doc_gen
+ImportAll
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
 -xml xml/Windows.xml
 -cpp obj/docs
 -D display

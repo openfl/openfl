@@ -1,0 +1,13 @@
+{
+	"lineEnds": {
+		"leftCurly": "both",
+		"rightCurly": "both"
+	},
+	"sameLine": {
+		"ifBody": "same",
+		"ifElse": "next",
+		"doWhile": "next",
+		"tryBody": "next",
+		"tryCatch": "next"
+	}
+}

@@ -2,6 +2,7 @@ package flash.display; #if flash
 
 
 import openfl._internal.renderer.flash.FlashGraphics;
+import openfl.display.BlendMode;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -89,6 +90,11 @@ import openfl.Vector;
 	public function lineStyle (thickness:Null<Float> = null, color:Null<UInt> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Null<Float> = 3):Void;
 	public function lineTo (x:Float, y:Float):Void;
 	public function moveTo (x:Float, y:Float):Void;
+	
+	@:dox(hide) @:noCompletion public inline function overrideBlendMode (blendMode:BlendMode):Void {
+		// ignored
+	}
+	
 	@:require(flash11_6) public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
 	
 	

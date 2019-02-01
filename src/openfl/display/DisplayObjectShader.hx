@@ -1,20 +1,14 @@
 package openfl.display;
 
-
 import openfl.utils.ByteArray;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-class DisplayObjectShader extends Shader {
-	
-	
-	@:glVertexHeader(
-		
-		"attribute float openfl_Alpha;
+class DisplayObjectShader extends Shader
+{
+	@:glVertexHeader("attribute float openfl_Alpha;
 		attribute vec4 openfl_ColorMultiplier;
 		attribute vec4 openfl_ColorOffset;
 		attribute vec4 openfl_Position;
@@ -27,14 +21,8 @@ class DisplayObjectShader extends Shader {
 		
 		uniform mat4 openfl_Matrix;
 		uniform bool openfl_HasColorTransform;
-		uniform vec2 openfl_TextureSize;"
-		
-	)
-	
-	
-	@:glVertexBody(
-		
-		"openfl_Alphav = openfl_Alpha;
+		uniform vec2 openfl_TextureSize;")
+	@:glVertexBody("openfl_Alphav = openfl_Alpha;
 		openfl_TextureCoordv = openfl_TextureCoord;
 		
 		if (openfl_HasColorTransform) {
@@ -44,41 +32,23 @@ class DisplayObjectShader extends Shader {
 			
 		}
 		
-		gl_Position = openfl_Matrix * openfl_Position;"
-		
-	)
-	
-	
-	@:glVertexSource(
-		
-		"#pragma header
+		gl_Position = openfl_Matrix * openfl_Position;")
+	@:glVertexSource("#pragma header
 		
 		void main(void) {
 			
 			#pragma body
 			
-		}"
-		
-	)
-	
-	
-	@:glFragmentHeader(
-		
-		"varying float openfl_Alphav;
+		}")
+	@:glFragmentHeader("varying float openfl_Alphav;
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
 		varying vec2 openfl_TextureCoordv;
 		
 		uniform bool openfl_HasColorTransform;
 		uniform sampler2D openfl_Texture;
-		uniform vec2 openfl_TextureSize;"
-		
-	)
-	
-	
-	@:glFragmentBody(
-		
-		"vec4 color = texture2D (openfl_Texture, openfl_TextureCoordv);
+		uniform vec2 openfl_TextureSize;")
+	@:glFragmentBody("vec4 color = texture2D (openfl_Texture, openfl_TextureCoordv);
 		
 		if (color.a == 0.0) {
 			
@@ -110,15 +80,8 @@ class DisplayObjectShader extends Shader {
 			
 			gl_FragColor = color * openfl_Alphav;
 			
-		}"
-		
-	)
-	
-	
-	@:glFragmentSource(
-		
-		#if emscripten
-		"#pragma header
+		}")
+	@:glFragmentSource(#if emscripten "#pragma header
 		
 		void main(void) {
 			
@@ -126,25 +89,16 @@ class DisplayObjectShader extends Shader {
 			
 			gl_FragColor = gl_FragColor.bgra;
 			
-		}"
-		#else
-		"#pragma header
+		}" #else "#pragma header
 		
 		void main(void) {
 			
 			#pragma body
 			
-		}"
-		#end
-		
+		}" #end
 	)
-	
-	
-	public function new (code:ByteArray = null) {
-		
-		super (code);
-		
+	public function new(code:ByteArray = null)
+	{
+		super(code);
 	}
-	
-	
 }

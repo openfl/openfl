@@ -1,13 +1,13 @@
-package openfl.display3D; #if !flash #if !openfljs
+package openfl.display3D;
 
-
+#if !flash
+#if !openfljs
 #if cs
 import openfl._internal.utils.NullUtils;
 #end
 
-
-@:enum abstract Context3DStencilAction(Null<Int>) {
-	
+@:enum abstract Context3DStencilAction(Null<Int>)
+{
 	public var DECREMENT_SATURATE = 0;
 	public var DECREMENT_WRAP = 1;
 	public var INCREMENT_SATURATE = 2;
@@ -16,11 +16,11 @@ import openfl._internal.utils.NullUtils;
 	public var KEEP = 5;
 	public var SET = 6;
 	public var ZERO = 7;
-	
-	@:from private static function fromString (value:String):Context3DStencilAction {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):Context3DStencilAction
+	{
+		return switch (value)
+		{
 			case "decrementSaturate": DECREMENT_SATURATE;
 			case "decrementWrap": DECREMENT_WRAP;
 			case "incrementSaturate": INCREMENT_SATURATE;
@@ -30,15 +30,13 @@ import openfl._internal.utils.NullUtils;
 			case "set": SET;
 			case "zero": ZERO;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case Context3DStencilAction.DECREMENT_SATURATE: "decrementSaturate";
 			case Context3DStencilAction.DECREMENT_WRAP: "decrementWrap";
 			case Context3DStencilAction.INCREMENT_SATURATE: "incrementSaturate";
@@ -48,35 +46,26 @@ import openfl._internal.utils.NullUtils;
 			case Context3DStencilAction.SET: "set";
 			case Context3DStencilAction.ZERO: "zero";
 			default: null;
-			
 		}
-		
 	}
-	
+
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals (a:Context3DStencilAction, b:Context3DStencilAction):Bool {
-		
-		return NullUtils.valueEquals (a, b, Int);
-		
+	@:noCompletion @:op(A == B) private static function equals(a:Context3DStencilAction, b:Context3DStencilAction):Bool
+	{
+		return NullUtils.valueEquals(a, b, Int);
 	}
 	#end
-	
+
 	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals (a:Context3DStencilAction, b:Context3DStencilAction):Bool {
-		
-		return !equals (a, b);
-		
+	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DStencilAction, b:Context3DStencilAction):Bool
+	{
+		return !equals(a, b);
 	}
 	#end
-	
 }
-
-
 #else
-
-
-@:enum abstract Context3DStencilAction(String) from String to String {
-	
+@:enum abstract Context3DStencilAction(String) from String to String
+{
 	public var DECREMENT_SATURATE = "decrementSaturate";
 	public var DECREMENT_WRAP = "decrementWrap";
 	public var INCREMENT_SATURATE = "incrementSaturate";
@@ -85,10 +74,7 @@ import openfl._internal.utils.NullUtils;
 	public var KEEP = "keep";
 	public var SET = "set";
 	public var ZERO = "zero";
-	
 }
-
-
 #end
 #else
 typedef Context3DStencilAction = flash.display3D.Context3DStencilAction;

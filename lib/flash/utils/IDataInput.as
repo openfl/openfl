@@ -18,8 +18,8 @@ package flash.utils {
 		function get endian ():String;
 		function set endian (value:String):void;
 		
-		function get objectEncoding ():String;
-		function set objectEncoding (value:String):void;
+		function get objectEncoding ():uint;
+		function set objectEncoding (value:uint):void;
 		
 		function readBoolean ():Boolean;
 		function readByte ():int;

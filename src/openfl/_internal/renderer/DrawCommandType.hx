@@ -1,8 +1,7 @@
 package openfl._internal.renderer;
 
-
-enum DrawCommandType {
-	
+enum DrawCommandType
+{
 	BEGIN_BITMAP_FILL;
 	BEGIN_FILL;
 	BEGIN_GRADIENT_FILL;
@@ -22,9 +21,9 @@ enum DrawCommandType {
 	LINE_STYLE;
 	LINE_TO;
 	MOVE_TO;
+	OVERRIDE_BLEND_MODE;
 	OVERRIDE_MATRIX;
 	WINDING_EVEN_ODD;
 	WINDING_NON_ZERO;
 	UNKNOWN;
-	
 }

@@ -1,3 +1,63 @@
+8.8.0 (01/07/2019)
+------------------
+
+* Added `ByteArray.defaultEndian` property
+* Updated canvas `TextField` renderer to use text baseline for more consistent rendering
+* Updated the types for `KeyboardEvent` on Flash to improve support for `switch` cases
+* Improved `UncaughtErrorEvents` handler to not run on debug by default
+* Initial support for mouse wheel support in `TextField` scrolling
+* Disabled some incorrect HTML5 canvas renderer blend modes
+* Fixed the behavior of `ByteArray.defaultObjectEncoding`
+* Fixed a possible infinite loop when applying word wrap to narrow `TextField` instances
+* Fixed a regression in marking `scrollRect` changes as dirty
+* Fixed a regression in HTML5 DOM rendering when objects are removed from the stage
+* Fixed dirty object calculation for `removeChild` in some renderers
+* Fixed issues in SWF processing to improve NPM/Haxelib release compatibility
+* Fixed `Loader` to dispatch an error if `Loader.loadBytes` returns a null `BitmapData`
+* Fixed some issues with multi-format `TextField` line breaking
+* Fixed some minor issues for users trying to use OpenFL with unsupported Haxe versions
+* Fixed some issues with `Graphics` objects being dirty when using `cacheAsBitmap`
+* Fixed missing `Event.CONTEXT3D_CREATE` event if `requestContext3D` is called again
+* Fixed support for using AMF0/AMF3 object formats in NPM `ByteArray`
+* Fixed the behavior of `MovieClip` with `buttonMode` but with `enabled` false
+* Fixed some issues when setting the `CubeTexture` sampler state
+* Fixed support for disabling the context menu on browsers that show on mouse down
+* Fixed unnecessary Lime version warning when running `openfl create`
+* Fixed a case where `Stage3D` could render when the context had not been cleared
+* Fixed `Sound.getLength` for sounds streamed from OGG Vorbis audio files
+
+
+8.7.0 (12/04/2018)
+------------------
+
+* Updated to Lime 7.2.*
+* Added `stage.fullScreenSourceRect` support
+* Added initial `tile.getBounds` and `tile.hitTestTile` APIs
+* Added support for using `<tab>` to set focus (`tabIndex`, `tabChildren` etc)
+* Improved several internal APIs for better memory and performance
+* Improved the quality of `DropShadowFilter` and `GlowFilter`
+* Improved `DisplacementMapFilter` to support software rendering
+* Improved support for Haxe 4 preview 5
+* Improved the behavior of `simpleButton.enabled` and `simpleButton.mouseEnabled`
+* Improved the behavior of `movieClip.buttonMode`
+* Improved the behavior of `MouseEvent.RELEASE_OUTSIDE`
+* Improved the quality of `bitmapData.perlinNoise`
+* Improved the rendering of `cacheAsBitmap` objects with alpha
+* Improved the GL renderer to respect `StageQuality.LOW` to disable smoothing
+* Improved the standard index.html template for cases when the window is transparent
+* Improved rendering in `TextField` with underlined text
+* Improved handling of HTML5 text when we know the font ascent/descent at compile-time
+* Improved `MovieClip` framescript timing and reliability
+* Improved SWF class generation with additional properties and more reliability
+* Fixed setting transforms for `cacheAsBitmap` objects
+* Fixed an internal issue when pooling `ColorTransform` that could fail in recursion
+* Fixed the `TextFormat` extern types to not have an extra field
+* Fixed texture upload for HTML5 video when video was not ready yet
+* Fixed a regression when performing the letterboxing logic on non-resizable windows
+* Fixed an issue where fonts on native targets had the wrong baseline
+* Fixed incorrect handling of transforms for same frames in SWF timeline animations
+
+
 8.6.4 (10/19/2018)
 ------------------
 

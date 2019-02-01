@@ -30,9 +30,9 @@ package flash.net {
 		
 		//@:require(flash11_4) public var length (default, null):Float;
 		
-		public function get objectEncoding ():String { return null; }
-		public function set objectEncoding (value:String):void {}
-		// public var objectEncoding:String;
+		public function get objectEncoding ():uint { return null; }
+		public function set objectEncoding (value:uint):void {}
+		// public var objectEncoding:uint;
 		//@:require(flash11_4) public var position:Float;
 		
 		public function new ():void {}

@@ -1,13 +1,13 @@
-package openfl.display3D; #if !flash #if !openfljs
+package openfl.display3D;
 
-
+#if !flash
+#if !openfljs
 #if cs
 import openfl._internal.utils.NullUtils;
 #end
 
-
-@:enum abstract Context3DCompareMode(Null<Int>) {
-	
+@:enum abstract Context3DCompareMode(Null<Int>)
+{
 	public var ALWAYS = 0;
 	public var EQUAL = 1;
 	public var GREATER = 2;
@@ -16,11 +16,11 @@ import openfl._internal.utils.NullUtils;
 	public var LESS_EQUAL = 5;
 	public var NEVER = 6;
 	public var NOT_EQUAL = 7;
-	
-	@:from private static function fromString (value:String):Context3DCompareMode {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):Context3DCompareMode
+	{
+		return switch (value)
+		{
 			case "always": ALWAYS;
 			case "equal": EQUAL;
 			case "greater": GREATER;
@@ -30,15 +30,13 @@ import openfl._internal.utils.NullUtils;
 			case "never": NEVER;
 			case "notEqual": NOT_EQUAL;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case Context3DCompareMode.ALWAYS: "always";
 			case Context3DCompareMode.EQUAL: "equal";
 			case Context3DCompareMode.GREATER: "greater";
@@ -48,35 +46,26 @@ import openfl._internal.utils.NullUtils;
 			case Context3DCompareMode.NEVER: "never";
 			case Context3DCompareMode.NOT_EQUAL: "notEqual";
 			default: null;
-			
 		}
-		
 	}
-	
+
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals (a:Context3DCompareMode, b:Context3DCompareMode):Bool {
-		
-		return NullUtils.valueEquals (a, b, Int);
-		
+	@:noCompletion @:op(A == B) private static function equals(a:Context3DCompareMode, b:Context3DCompareMode):Bool
+	{
+		return NullUtils.valueEquals(a, b, Int);
 	}
 	#end
-	
+
 	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals (a:Context3DCompareMode, b:Context3DCompareMode):Bool {
-		
-		return !equals (a, b);
-		
+	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DCompareMode, b:Context3DCompareMode):Bool
+	{
+		return !equals(a, b);
 	}
 	#end
-	
 }
-
-
 #else
-
-
-@:enum abstract Context3DCompareMode(String) from String to String {
-	
+@:enum abstract Context3DCompareMode(String) from String to String
+{
 	public var ALWAYS = "always";
 	public var EQUAL = "equal";
 	public var GREATER = "greater";
@@ -85,10 +74,7 @@ import openfl._internal.utils.NullUtils;
 	public var LESS_EQUAL = "lessEqual";
 	public var NEVER = "never";
 	public var NOT_EQUAL = "notEqual";
-	
 }
-
-
 #end
 #else
 typedef Context3DCompareMode = flash.display3D.Context3DCompareMode;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="Validation Testing" package="org.openfl.tests.integration" version="1.0.0" company="OpenFL" />
+	<app file="TestMain" main="IntegrationTestMain" path="build" swf-version="12.0" />
+	
+	<source path="../unit/src" />
+	<source path="src" />
+	
+	<haxelib name="openfl" />
+	<haxelib name="munit" />
+	<haxelib name="mlib" />
+	<haxelib name="format" />
+	
+	<define name="openfl-integration-testing" />
+	<define name="integration" />
+	
+	<assets path="assets" rename="" embed="false" />
+	
+</project>

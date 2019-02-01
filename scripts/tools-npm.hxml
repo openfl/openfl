@@ -13,7 +13,7 @@
 # -lib nodejs
 -cp ../node_modules/hxnodejs/src
 --macro allowPackage('sys')
---macro _hxnodejs.InitMacro.include()
+--macro define('nodejs')
 -D nodejs
 -D hxnodejs
 -D nocffi

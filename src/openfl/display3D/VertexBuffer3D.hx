@@ -1,11 +1,9 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
-
-import haxe.io.Bytes;
-import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.ArrayBufferView;
-import lime.utils.Float32Array;
+#if !flash
+import openfl._internal.backend.gl.GLBuffer;
+import openfl._internal.utils.ArrayBufferView;
+import openfl._internal.utils.Float32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -13,14 +11,10 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
-
-
-class VertexBuffer3D {
-	
-	
+class VertexBuffer3D
+{
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:Vector<Float>;
 	@:noCompletion private var __id:GLBuffer;
@@ -30,91 +24,78 @@ class VertexBuffer3D {
 	@:noCompletion private var __tempFloat32Array:Float32Array;
 	@:noCompletion private var __usage:Int;
 	@:noCompletion private var __vertexSize:Int;
-	
-	
-	@:noCompletion private function new (context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:String) {
-		
+
+	@:noCompletion private function new(context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:String)
+	{
 		__context = context3D;
 		__numVertices = numVertices;
 		__vertexSize = dataPerVertex;
-		
+
 		var gl = __context.gl;
-		
-		__id = gl.createBuffer ();
+
+		__id = gl.createBuffer();
 		__stride = __vertexSize * 4;
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
-		
 	}
-	
-	
-	public function dispose ():Void {
-		
+
+	public function dispose():Void
+	{
 		var gl = __context.gl;
-		gl.deleteBuffer (__id);
-		
+		gl.deleteBuffer(__id);
 	}
-	
-	
-	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void {
-		
+
+	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void
+	{
+		#if lime
 		var offset = byteArrayOffset + startVertex * __stride;
 		var length = numVertices * __vertexSize;
-		
-		uploadFromTypedArray (new Float32Array (data, offset, length));
-		
+
+		uploadFromTypedArray(new Float32Array(data, offset, length));
+		#end
 	}
-	
-	
-	public function uploadFromTypedArray (data:ArrayBufferView, byteLength:Int = -1):Void {
-		
+
+	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
+	{
 		if (data == null) return;
 		var gl = __context.gl;
-		
-		__context.__bindGLArrayBuffer (__id);
-		gl.bufferData (gl.ARRAY_BUFFER, data, __usage);
-		
+
+		__context.__bindGLArrayBuffer(__id);
+		gl.bufferData(gl.ARRAY_BUFFER, data, __usage);
 	}
-	
-	
-	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
-		
+
+	public function uploadFromVector(data:Vector<Float>, startVertex:Int, numVertices:Int):Void
+	{
+		#if lime
 		if (data == null) return;
 		var gl = __context.gl;
-		
+
 		// TODO: Optimize more
-		
+
 		var start = startVertex * __vertexSize;
 		var count = numVertices * __vertexSize;
 		var length = start + count;
-		
+
 		var existingFloat32Array = __tempFloat32Array;
-		
-		if (__tempFloat32Array == null || __tempFloat32Array.length < count) {
-			
-			__tempFloat32Array = new Float32Array (count);
-			
-			if (existingFloat32Array != null) {
-				
-				__tempFloat32Array.set (existingFloat32Array);
-				
+
+		if (__tempFloat32Array == null || __tempFloat32Array.length < count)
+		{
+			__tempFloat32Array = new Float32Array(count);
+
+			if (existingFloat32Array != null)
+			{
+				__tempFloat32Array.set(existingFloat32Array);
 			}
-			
 		}
-		
-		for (i in start...length) {
-			
+
+		for (i in start...length)
+		{
 			__tempFloat32Array[i - start] = data[i];
-			
 		}
-		
-		uploadFromTypedArray (__tempFloat32Array);
-		
+
+		uploadFromTypedArray(__tempFloat32Array);
+		#end
 	}
-	
-	
 }
-
-
 #else
 typedef VertexBuffer3D = flash.display3D.VertexBuffer3D;
 #end

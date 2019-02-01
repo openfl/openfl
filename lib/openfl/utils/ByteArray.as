@@ -14,6 +14,9 @@ package openfl.utils {
 		public function set (position:int, value:int):int { return 0; }
 		
 		
+		public static var defaultEndian:String;
+		
+		
 		/**
 		 * Denotes the default object encoding for the ByteArray class to use for a
 		 * new ByteArray instance. When you create a new ByteArray instance, the
@@ -26,7 +29,7 @@ package openfl.utils {
 		 * ActionScript 3.0, ActionScript2.0, or ActionScript 1.0 format should be
 		 * used. The value is a constant from the ObjectEncoding class.
 		 */
-		public static var defaultObjectEncoding:String;
+		public static var defaultObjectEncoding:uint;
 		
 		/**
 		 * The number of bytes of data available for reading from the current
@@ -65,9 +68,9 @@ package openfl.utils {
 		 * ActionScript 1.0 format should be used when writing to, or reading from, a
 		 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 		 */
-		public function get objectEncoding ():String { return null; }
-		public function set objectEncoding (value:String):void {}
-		// public var objectEncoding:String;
+		public function get objectEncoding ():uint { return null; }
+		public function set objectEncoding (value:uint):void {}
+		// public var objectEncoding:uint;
 		
 		/**
 		 * Moves, or returns the current position, in bytes, of the file pointer into
