@@ -309,23 +309,7 @@ class Context3DTilemap
 			renderer.updateShader();
 
 			var vertexBuffer = tilemap.__buffer.vertexBuffer;
-
-			if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_2);
-			if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 2, FLOAT_2);
-
-			if (tilemap.tileAlphaEnabled)
-			{
-				if (shader.__alpha != null) context.setVertexBufferAt(shader.__alpha.index, vertexBuffer, 4, FLOAT_1);
-			}
-
-			if (tilemap.tileColorTransformEnabled)
-			{
-				var position = tilemap.tileAlphaEnabled ? 5 : 4;
-
-				if (shader.__colorMultiplier != null) context.setVertexBufferAt(shader.__colorMultiplier.index, vertexBuffer, position, FLOAT_4);
-				if (shader.__colorOffset != null) context.setVertexBufferAt(shader.__colorOffset.index, vertexBuffer, position + 4, FLOAT_4);
-			}
-
+			var vertexBufferPosition = lastFlushedPosition * dataPerVertex * 4;
 			var length = (bufferPosition - lastFlushedPosition);
 
 			while (lastFlushedPosition < bufferPosition)
@@ -333,13 +317,38 @@ class Context3DTilemap
 				length = Std.int(Math.min(bufferPosition - lastFlushedPosition, context.__quadIndexBufferElements));
 				if (length <= 0) break;
 
-				if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, tilemap.__buffer
-					.vertexBuffer, lastFlushedPosition * 16, FLOAT_2);
-				if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, tilemap.__buffer
-					.vertexBuffer, (lastFlushedPosition * 16) + 2, FLOAT_2);
+				if (shader.__position != null)
+				{
+					context.setVertexBufferAt(shader.__position.index, vertexBuffer, vertexBufferPosition, FLOAT_2);
+				}
+
+				if (shader.__textureCoord != null)
+				{
+					context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, vertexBufferPosition + 2, FLOAT_2);
+				}
+
+				if (tilemap.tileAlphaEnabled)
+				{
+					if (shader.__alpha != null)
+					{
+						context.setVertexBufferAt(shader.__alpha.index, vertexBuffer, vertexBufferPosition + 4, FLOAT_1);
+					}
+				}
+
+				if (tilemap.tileColorTransformEnabled)
+				{
+					var position = tilemap.tileAlphaEnabled ? 5 : 4;
+					if (shader.__colorMultiplier != null)
+					{
+						context.setVertexBufferAt(shader.__colorMultiplier.index, vertexBuffer, vertexBufferPosition + position, FLOAT_4);
+					}
+					if (shader.__colorOffset != null)
+					{
+						context.setVertexBufferAt(shader.__colorOffset.index, vertexBuffer, vertexBufferPosition + position + 4, FLOAT_4);
+					}
+				}
 
 				context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
-
 				lastFlushedPosition += length;
 			}
 
