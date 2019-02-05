@@ -23,6 +23,8 @@ package openfl.text;
 	default formatting. The default formatting that Flash Player uses for each
 	property (if property's value is `null`) is as follows:
 	
+	| | |
+	| --- | --- |
 	| align = "left" | |
 	| blockIndent = 0 | |
 	| bold = false | |
