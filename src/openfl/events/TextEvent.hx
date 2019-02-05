@@ -14,21 +14,43 @@ package openfl.events;
 class TextEvent extends Event
 {
 	/**
-		Defines the value of the `type` property of a `link`
-		event object.
-
+		Defines the value of the `type` property of a `link` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The text
+		field containing the hyperlink that has been clicked. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`text`</entry><entry>The remainder of
+		the URL after "event:"</entry></row></tbody></tgroup>
 	**/
 	public static inline var LINK:String = "link";
 
 	/**
-		Defines the value of the `type` property of a
-		`textInput` event object.
-
+		Defines the value of the `type` property of a `textInput` event
+		object.
 		**Note:** This event is not dispatched for the Delete or Backspace
 		keys.
 
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`true`;
+		call the `preventDefault()` method to cancel default
+		behavior.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The text
+		field into which characters are being entered. The target is not
+		always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`text`</entry><entry>The character or
+		sequence of characters entered by the
+		user.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TEXT_INPUT:String = "textInput";
 

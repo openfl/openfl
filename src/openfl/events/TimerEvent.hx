@@ -12,18 +12,29 @@ package openfl.events;
 class TimerEvent extends Event
 {
 	/**
-		Defines the value of the `type` property of a
-		`timer` event object.
-
+		Defines the value of the `type` property of a `timer` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The Timer
+		object that has reached its interval.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TIMER:String = "timer";
 
 	/**
-		Defines the value of the `type` property of a
-		`timerComplete` event object.
-
+		Defines the value of the `type` property of a `timerComplete` event
+		object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The Timer
+		object that has completed its requests.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TIMER_COMPLETE:String = "timerComplete";
 

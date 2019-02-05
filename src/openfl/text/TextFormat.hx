@@ -6,24 +6,37 @@ package openfl.text;
 	TextFormat class to create specific text formatting for text fields. You
 	can apply text formatting to both static and dynamic text fields. The
 	properties of the TextFormat class apply to device and embedded fonts.
-	However, for embedded fonts, bold and italic text actually require specific
-	fonts. If you want to display bold or italic text with an embedded font,
-	you need to embed the bold and italic variations of that font.
-
-	You must use the constructor `new TextFormat()` to create a
-	TextFormat object before setting its properties. When you apply a
-	TextFormat object to a text field using the
-	`TextField.defaultTextFormat` property or the
-	`TextField.setTextFormat()` method, only its defined properties
-	are applied. Use the `TextField.defaultTextFormat` property to
-	apply formatting BEFORE you add text to the `TextField`, and the
-	`setTextFormat()` method to add formatting AFTER you add text to
-	the `TextField`. The TextFormat properties are `null`
-	by default because if you don't provide values for the properties, Flash
-	Player uses its own default formatting. The default formatting that Flash
-	Player uses for each property(if property's value is `null`) is
-	as follows:
-
+	However, for embedded fonts, bold and italic text actually require
+	specific fonts. If you want to display bold or italic text with an
+	embedded font, you need to embed the bold and italic variations of that
+	font.
+	You must use the constructor `new TextFormat()` to create a TextFormat
+	object before setting its properties. When you apply a TextFormat object
+	to a text field using the `TextField.defaultTextFormat` property or the
+	`TextField.setTextFormat()` method, only its defined properties are
+	applied. Use the `TextField.defaultTextFormat` property to apply
+	formatting BEFORE you add text to the `TextField`, and the
+	`setTextFormat()` method to add formatting AFTER you add text to the
+	`TextField`. The TextFormat properties are `null` by default because if
+	you don't provide values for the properties, Flash Player uses its own
+	default formatting. The default formatting that Flash Player uses for each
+	property (if property's value is `null`) is as follows:
+	// TODO: Table <tgroup cols="1"><tbody><row><entry>align =
+	"left"</entry></row><row><entry>blockIndent =
+	0</entry></row><row><entry>bold = false</entry></row><row><entry>bullet =
+	false</entry></row><row><entry>color =
+	0x000000</entry></row><row><entry>font = "Times New Roman" (default font
+	is Times on Mac OS X)</entry></row><row><entry>indent =
+	0</entry></row><row><entry>italic = false</entry></row><row><entry>kerning
+	= false</entry></row><row><entry>leading =
+	0</entry></row><row><entry>leftMargin =
+	0</entry></row><row><entry>letterSpacing =
+	0</entry></row><row><entry>rightMargin = 0</entry></row><row><entry>size =
+	12</entry></row><row><entry>tabStops = [] (empty
+	array)</entry></row><row><entry>target = "" (empty
+	string)</entry></row><row><entry>underline =
+	false</entry></row><row><entry>url = "" (empty
+	string)</entry></row></tbody></tgroup>
 	The default formatting for each property is also described in each
 	property description.
 **/

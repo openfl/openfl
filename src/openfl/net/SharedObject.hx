@@ -167,6 +167,14 @@ class SharedObject extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
 	@:noCompletion private static var __sharedObjects:Map<String, SharedObject>;
 
+	/**
+		Indicates the object on which callback methods are invoked. The
+		default object is `this`. You can set the client property to another
+		object, and callback methods will be invoked on that other object.
+
+		@throws TypeError The `client` property must be set to a non-null
+						  object.
+	**/
 	public var client:Dynamic;
 
 	/**
@@ -183,7 +191,63 @@ class SharedObject extends EventDispatcher
 		new value.
 	**/
 	public var data(default, null):Dynamic;
+
+	/**
+		Specifies the number of times per second that a client's changes to a
+		shared object are sent to the server.
+		Use this method when you want to control the amount of traffic between
+		the client and the server. For example, if the connection between the
+		client and server is relatively slow, you may want to set `fps` to a
+		relatively low value. Conversely, if the client is connected to a
+		multiuser application in which timing is important, you may want to
+		set `fps` to a relatively high value.
+
+		Setting `fps` will trigger a `sync` event and update all changes to
+		the server. If you only want to update the server manually, set `fps`
+		to 0.
+
+		Changes are not sent to the server until the `sync` event has been
+		dispatched. That is, if the response time from the server is slow,
+		updates may be sent to the server less frequently than the value
+		specified in this property.
+	**/
 	public var fps(null, default):Float;
+
+	/**
+		The object encoding (AMF version) for this shared object. When a local
+		shared object is written to disk, the `objectEncoding` property
+		indicates which Action Message Format version should be used: the
+		ActionScript 3.0 format (AMF3) or the ActionScript 1.0 or 2.0 format
+		(AMF0).
+		Object encoding is handled differently depending if the shared object
+		is local or remote.
+
+		* **Local shared objects**. You can get or set the value of the
+		`objectEncoding` property for local shared objects. The value of
+		`objectEncoding` affects what formatting is used for _writing_ this
+		local shared object. If this local shared object must be readable by
+		ActionScript 2.0 or 1.0 SWF files, set `objectEncoding` to
+		`ObjectEncoding.AMF0`. Even if object encoding is set to write AMF3,
+		Flash Player can still read AMF0 local shared objects. That is, if you
+		use the default value of this property, `ObjectEncoding.AMF3`, your
+		SWF file can still read shared objects created by ActionScript 2.0 or
+		1.0 SWF files.
+		* **Remote shared objects**. When connected to the server, a remote
+		shared object inherits its `objectEncoding` setting from the
+		associated NetConnection instance (the instance used to connect to the
+		remote shared object). When not connected to the server, a remote
+		shared object inherits the `defaultObjectEncoding` setting from the
+		associated NetConnection instance. Because the value of a remote
+		shared object's `objectEncoding` property is determined by the
+		NetConnection instance, this property is read-only for remote shared
+		objects.
+
+		@throws ReferenceError You attempted to set the value of the
+							   `objectEncoding` property on a remote shared
+							   object. This property is read-only for remote
+							   shared objects because its value is determined
+							   by the associated NetConnection instance.
+	**/
 	public var objectEncoding:ObjectEncoding;
 
 	/**
@@ -255,8 +319,44 @@ class SharedObject extends EventDispatcher
 		catch (e:Dynamic) {}
 	}
 
+	/**
+		Closes the connection between a remote shared object and the server.
+		If a remote shared object is locally persistent, the user can make
+		changes to the local copy of the object after this method is called.
+		Any changes made to the local object are sent to the server the next
+		time the user connects to the remote shared object.
+
+	**/
 	public function close():Void {}
 
+	/**
+		Connects to a remote shared object on a server through a specified
+		NetConnection object. Use this method after calling `getRemote()`.
+		When a connection is successful, the `sync` event is dispatched.
+		Before attempting to work with a remote shared object, first check for
+		any errors using a `try..catch..finally` statement. Then, listen for
+		and handle the `sync` event before you make changes to the shared
+		object. Any changes made locally — before the `sync` event is
+		dispatched — might be lost.
+
+		Call the `connect()` method to connect to a remote shared object, for
+		example:
+		<codeblock xml:space="preserve"> var myRemoteSO:SharedObject =
+		SharedObject.getRemote("mo", myNC.uri, false);
+		myRemoteSO.connect(myNC); ```
+
+		@param myConnection A NetConnection object that uses the Real-Time
+							Messaging Protocol (RTMP), such as a NetConnection
+							object used to communicate with Flash Media
+							Server.
+		@param params       A string defining a message to pass to the remote
+							shared object on the server. Cannot be used with
+							Flash Media Server.
+		@throws Error Flash Player could not connect to the specified remote
+					  shared object. Verify that the NetConnection instance is
+					  valid and connected and that the remote shared object
+					  was successfully created on the server.
+	**/
 	public function connect(myConnection:NetConnection, params:String = null):Void
 	{
 		openfl._internal.Lib.notImplemented();
@@ -607,6 +707,67 @@ class SharedObject extends EventDispatcher
 		return __sharedObjects.get(id);
 	}
 
+	/**
+		Returns a reference to a shared object on Flash Media Server that
+		multiple clients can access. If the remote shared object does not
+		already exist, this method creates one.
+		To create a remote shared object, call `getRemote()` the call
+		`connect()` to connect the remote shared object to the server, as in
+		the following:
+		<codeblock xml:space="preserve"> var nc:NetConnection = new
+		NetConnection(); nc.connect("rtmp://somedomain.com/applicationName");
+		var myRemoteSO:SharedObject = SharedObject.getRemote("mo", nc.uri,
+		false); myRemoteSO.connect(nc); ```
+		To confirm that the local and remote copies of the shared object are
+		synchronized, listen for and handle the `sync` event. All clients that
+		want to share this object must pass the same values for the `name` and
+		`remotePath` parameters.
+
+		To create a shared object that is available only to the current
+		client, use `SharedObject.getLocal()`.
+
+		@param name        The name of the remote shared object. The name can
+						   include forward slashes (/); for example,
+						   work/addresses is a legal name. Spaces are not
+						   allowed in a shared object name, nor are the
+						   following characters: <pre xml:space="preserve"> ~
+						   % & \ ; : " ' , > ? ? #</pre>
+		@param remotePath  The URI of the server on which the shared object
+						   will be stored. This URI must be identical to the
+						   URI of the NetConnection object passed to the
+						   `connect()` method.
+		@param persistence Specifies whether the attributes of the shared
+						   object's data property are persistent locally,
+						   remotely, or both. This parameter can also specify
+						   where the shared object will be stored locally.
+						   Acceptable values are as follows:
+						   * A value of `false` specifies that the shared
+						   object is not persistent on the client or server.
+						   * A value of `true` specifies that the shared
+						   object is persistent only on the server.
+						   * A full or partial local path to the shared object
+						   indicates that the shared object is persistent on
+						   the client and the server. On the client, it is
+						   stored in the specified path; on the server, it is
+						   stored in a subdirectory within the application
+						   directory.
+
+						   **Note:** If the user has chosen to never allow
+						   local storage for this domain, the object will not
+						   be saved locally, even if a local path is specified
+						   for persistence. For more information, see the
+						   class description.
+		@param secure      Determines whether access to this shared object is
+						   restricted to SWF files that are delivered over an
+						   HTTPS connection. For more information, see the
+						   description of the `secure` parameter in the
+						   `getLocal` method entry.
+		@return A reference to an object that can be shared across multiple
+				clients.
+		@throws Error Flash Player can't create or find the shared object.
+					  This might occur if nonexistent paths were specified for
+					  the `remotePath` and `persistence` parameters.
+	**/
 	public static function getRemote(name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject
 	{
 		openfl._internal.Lib.notImplemented();
@@ -614,13 +775,60 @@ class SharedObject extends EventDispatcher
 		return null;
 	}
 
+	/**
+		Broadcasts a message to all clients connected to a remote shared
+		object, including the client that sent the message. To process and
+		respond to the message, create a callback function attached to the
+		shared object.
+
+	**/
 	public function send(args:Array<Dynamic>):Void
 	{
 		openfl._internal.Lib.notImplemented();
 	}
 
+	/**
+		Indicates to the server that the value of a property in the shared
+		object has changed. This method marks properties as _dirty_, which
+		means changed.
+		Call the `SharedObject.setProperty()` to create properties for a
+		shared object.
+
+		The `SharedObject.setProperty()` method implements `setDirty()`. In
+		most cases, such as when the value of a property is a primitive type
+		like String or Number, you can call `setProperty()` instead of calling
+		`setDirty()`. However, when the value of a property is an object that
+		contains its own properties, call `setDirty()` to indicate when a
+		value within the object has changed.
+
+		@param propertyName The name of the property that has changed.
+	**/
 	public function setDirty(propertyName:String):Void {}
 
+	/**
+		Updates the value of a property in a shared object and indicates to
+		the server that the value of the property has changed. The
+		`setProperty()` method explicitly marks properties as changed, or
+		dirty.
+		For more information about remote shared objects see the <a
+		href="http://www.adobe.com/go/learn_fms_docs_en"> Flash Media Server
+		documentation</a>.
+
+		**Note:** The `SharedObject.setProperty()` method implements the
+		`setDirty()` method. In most cases, such as when the value of a
+		property is a primitive type like String or Number, you would use
+		`setProperty()` instead of `setDirty`. However, when the value of a
+		property is an object that contains its own properties, use
+		`setDirty()` to indicate when a value within the object has changed.
+		In general, it is a good idea to call `setProperty()` rather than
+		`setDirty()`, because `setProperty()` updates a property value only
+		when that value has changed, whereas `setDirty()` forces
+		synchronization on all subscribed clients.
+
+		@param propertyName The name of the property in the shared object.
+		@param value        The value of the property (an ActionScript
+							object), or `null` to delete the property.
+	**/
 	public function setProperty(propertyName:String, value:Object = null):Void
 	{
 		if (data != null)

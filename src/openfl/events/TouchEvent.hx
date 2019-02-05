@@ -46,66 +46,418 @@ class TouchEvent extends Event
 	// @:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OVER:String;
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_BEGIN` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_BEGIN` touch
+		event object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_BEGIN:String = "touchBegin";
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_END` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_END` touch event
+		object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_END:String = "touchEnd";
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_MOVE` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_MOVE` touch event
+		object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_MOVE:String = "touchMove";
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_OUT` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_OUT` touch event
+		object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_OUT:String = "touchOut";
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_OVER` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_OVER` touch event
+		object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_OVER:String = "touchOver";
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_ROLL_OUT` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_ROLL_OUT` touch
+		event object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_ROLL_OUT:String = "touchRollOut";
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_ROLL_OVER` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_ROLL_OVER` touch
+		event object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_ROLL_OVER:String = "touchRollOver";
 
 	/**
-		Defines the value of the `type` property of a
-		`TOUCH_TAP` touch event object.
-
+		Defines the value of the `type` property of a `TOUCH_TAP` touch event
+		object.
 		The dispatched TouchEvent object has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`altKey`</entry><entry>`true`
+		if the Alt key is active (Windows or
+		Linux).</entry></row><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`commandKey`</entry><entry>`true` on
+		the Mac if the Command key is active; `false` if it is inactive.
+		Always `false` on
+		Windows.</entry></row><row><entry>`controlKey`</entry><entry>`true` if
+		the Ctrl or Control key is active; `false` if it is
+		inactive.</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
+		Windows or Linux if the Ctrl key is active. `true` on Mac if either
+		the Ctrl key or the Command key is active. Otherwise,
+		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`eventPhase`</entry><entry>The
+		current phase in the event
+		flow.</entry></row><row><entry>`isRelatedObjectInaccessible`</entry><entry>`true`
+		if the relatedObject property is set to `null` because of security
+		sandbox rules.</entry></row><row><entry>`localX`</entry><entry>The
+		horizontal coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`localY`</entry><entry>The
+		vertical coordinate at which the event occurred relative to the
+		containing sprite.</entry></row><row><entry>`pressure`</entry><entry>A
+		value between `0.0` and `1.0` indicating force of the contact with the
+		device. If the device does not support detecting the pressure, the
+		value is
+		`1.0`.</entry></row><row><entry>`relatedObject`</entry><entry>A
+		reference to a display list object related to the
+		event.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key is active; `false` if it is
+		inactive.</entry></row><row><entry>`sizeX`</entry><entry>Width of the
+		contact area.</entry></row><row><entry>`sizeY`</entry><entry>Height of
+		the contact area.</entry></row><row><entry>`stageX`</entry><entry>The
+		horizontal coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`stageY`</entry><entry>The
+		vertical coordinate at which the event occurred in global stage
+		coordinates.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance under the touching device. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row><row><entry>`touchPointID`</entry><entry>A unique
+		identification number (as an int) assigned to the touch
+		point.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TOUCH_TAP:String = "touchTap";
 
@@ -130,6 +482,16 @@ class TouchEvent extends Event
 		Indicates whether the first point of contact is mapped to mouse events.
 	**/
 	public var isPrimaryTouchPoint:Bool;
+	/**
+		If `true`, the `relatedObject` property is set to `null` for reasons
+		related to security sandboxes. If the nominal value of `relatedObject`
+		is a reference to a DisplayObject in another sandbox, `relatedObject`
+		is set to `null` unless there is permission in both directions across
+		this sandbox boundary. Permission is established by calling
+		`Security.allowDomain()` from a SWF file, or by providing a policy
+		file from the server of an image file, and setting the
+		`LoaderContext.checkPolicyFile` property when loading the image.
+	**/
 	// @:noCompletion @:dox(hide) public var isRelatedObjectInaccessible:Bool;
 
 	/**

@@ -20,15 +20,48 @@ import sys.io.Process;
 	content to as many users as possible. When you know the device's
 	capabilities, you can tell the server to send the appropriate SWF files or
 	tell the SWF file to alter its presentation.
-
 	However, some capabilities of Adobe AIR are not listed as properties in
 	the Capabilities class. They are properties of other classes:
+	// TODO: Table <tgroup
+	cols="2"><thead><row><entry>Property</entry><entry>Description</entry></row></thead><tbody><row><entry>`NativeApplication.supportsDockIcon`</entry><entry>Whether
+	the operating system supports application doc
+	icons.</entry></row><row><entry>`NativeApplication.supportsMenu`</entry><entry>Whether
+	the operating system supports a global application menu
+	bar.</entry></row><row><entry>`NativeApplication.supportsSystemTrayIcon`</entry><entry>Whether
+	the operating system supports system tray
+	icons.</entry></row><row><entry>`NativeWindow.supportsMenu`</entry><entry>Whether
+	the operating system supports window
+	menus.</entry></row><row><entry>`NativeWindow.supportsTransparency`</entry><entry>Whether
+	the operating system supports transparent
+	windows.</entry></row></tbody></tgroup></adobetable>
+	Do _not_ use `Capabilities.os` or `Capabilities.manufacturer` to determine
+	a capability based on the operating system. Basing a capability on the
+	operating system is a bad idea, since it can lead to problems if an
+	application does not consider all potential target operating systems.
+	Instead, use the property corresponding to the capability for which you
+	are testing.
+
+	You can send capabilities information, which is stored in the
+	`Capabilities.serverString` property as a URL-encoded string, using the
+	`GET` or `POST` HTTP method. The following example shows a server string
+	for a computer that has MP3 support and 1600 x 1200 pixel resolution and
+	that is running Windows XP with an input method editor (IME) installed:
+	<pre
+	xml:space="preserve">A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=t&
+	SB=f&DEB=t&V=WIN%209%2C0%2C0%2C0&M=Adobe%20Windows&
+	R=1600x1200&DP=72&COL=color&AR=1.0&OS=Windows%20XP&
+	L=en&PT=External&AVD=f&LFD=f&WD=f&IME=t</pre>
+	The following table lists the properties of the Capabilities class and
+	corresponding server strings: <adobetable><tgroup
+	cols="2"><thead><row><entry align="left">Capabilities class
+	property</entry><entry align="left">Server
+	string</entry></row></thead><tbody><row><entry>`avHardwareDisable`</entry><entry>`AVD`</entry></row><row><entry>`hasAccessibility`</entry><entry>`ACC`</entry></row><row><entry>`hasAudio`</entry><entry>`A`</entry></row><row><entry>`hasAudioEncoder`</entry><entry>`AE`</entry></row><row><entry>`hasEmbeddedVideo`</entry><entry>`EV`</entry></row><row><entry>`hasIME`</entry><entry>`IME`</entry></row><row><entry>`hasMP3`</entry><entry>`MP3`</entry></row><row><entry>`hasPrinting`</entry><entry>`PR`</entry></row><row><entry>`hasScreenBroadcast`</entry><entry>`SB`</entry></row><row><entry>`hasScreenPlayback`</entry><entry>`SP`</entry></row><row><entry>`hasStreamingAudio`</entry><entry>`SA`</entry></row><row><entry>`hasStreamingVideo`</entry><entry>`SV`</entry></row><row><entry>`hasTLS`</entry><entry>`TLS`</entry></row><row><entry>`hasVideoEncoder`</entry><entry>`VE`</entry></row><row><entry>`isDebugger`</entry><entry>`DEB`</entry></row><row><entry>`language`</entry><entry>`L`</entry></row><row><entry>`localFileReadDisable`</entry><entry>`LFD`</entry></row><row><entry>`manufacturer`</entry><entry>`M`</entry></row><row><entry>`maxLevelIDC`</entry><entry>`ML`</entry></row><row><entry>`os`</entry><entry>`OS`</entry></row><row><entry>`pixelAspectRatio`</entry><entry>`AR`</entry></row><row><entry>`playerType`</entry><entry>`PT`</entry></row><row><entry>`screenColor`</entry><entry>`COL`</entry></row><row><entry>`screenDPI`</entry><entry>`DP`</entry></row><row><entry>`screenResolutionX`</entry><entry>`R`</entry></row><row><entry>`screenResolutionY`</entry><entry>`R`</entry></row><row><entry>`version`</entry><entry>`V`</entry></row></tbody></tgroup>
 
 
-	There is also a `WD` server string that specifies whether
-	windowless mode is disabled. Windowless mode can be disabled in Flash
-	Player due to incompatibility with the web browser or to a user setting in
-	the mms.cfg file. There is no corresponding Capabilities property.
+	There is also a `WD` server string that specifies whether windowless mode
+	is disabled. Windowless mode can be disabled in Flash Player due to
+	incompatibility with the web browser or to a user setting in the mms.cfg
+	file. There is no corresponding Capabilities property.
 
 	All properties of the Capabilities class are read-only.
 **/
@@ -166,24 +199,29 @@ import sys.io.Process;
 	public static var isEmbeddedInAcrobat(default, null) = false;
 
 	/**
-		Specifies the language code of the system on which the content is running.
-		The language is specified as a lowercase two-letter language code from ISO
-		639-1. For Chinese, an additional uppercase two-letter country code from
-		ISO 3166 distinguishes between Simplified and Traditional Chinese. The
-		languages codes are based on the English names of the language: for
-		example, `hu` specifies Hungarian.
-
+		Specifies the language code of the system on which the content is
+		running. The language is specified as a lowercase two-letter language
+		code from ISO 639-1. For Chinese, an additional uppercase two-letter
+		country code from ISO 3166 distinguishes between Simplified and
+		Traditional Chinese. The languages codes are based on the English
+		names of the language: for example, `hu` specifies Hungarian.
 		On English systems, this property returns only the language code
-		(`en`), not the country code. On Microsoft Windows systems,
-		this property returns the user interface(UI) language, which refers to
-		the language used for all menus, dialog boxes, error messages, and help
-		files. The following table lists the possible values:
+		(`en`), not the country code. On Microsoft Windows systems, this
+		property returns the user interface (UI) language, which refers to the
+		language used for all menus, dialog boxes, error messages, and help
+		files. The following table lists the possible values: // TODO: Table
+		<tgroup cols="2"><thead><row><entry
+		align="left">Language</entry><entry
+		align="left">Value</entry></row></thead><tbody><row><entry>Czech</entry><entry>`cs`</entry></row><row><entry>Danish</entry><entry>`da`</entry></row><row><entry>Dutch</entry><entry>`nl`</entry></row><row><entry>English</entry><entry>`en`</entry></row><row><entry>Finnish</entry><entry>`fi`</entry></row><row><entry>French</entry><entry>`fr`</entry></row><row><entry>German</entry><entry>`de`</entry></row><row><entry>Hungarian</entry><entry>`hu`</entry></row><row><entry>Italian</entry><entry>`it`</entry></row><row><entry>Japanese</entry><entry>`ja`</entry></row><row><entry>Korean</entry><entry>`ko`</entry></row><row><entry>Norwegian</entry><entry>`no`</entry></row><row><entry>Other/unknown</entry><entry>`xu`</entry></row><row><entry>Polish</entry><entry>`pl`</entry></row><row><entry>Portuguese</entry><entry>`pt`</entry></row><row><entry>Russian</entry><entry>`ru`</entry></row><row><entry>Simplified
+		Chinese</entry><entry>`zh-CN`</entry></row><row><entry>Spanish</entry><entry>`es`</entry></row><row><entry>Swedish</entry><entry>`sv`</entry></row><row><entry>Traditional
+		Chinese</entry><entry>`zh-TW`</entry></row><row><entry>Turkish</entry><entry>`tr`</entry></row></tbody></tgroup>
 
-		_Note:_ The value of `Capabilities.language` property
-		is limited to the possible values on this list. Because of this
-		limitation, Adobe AIR applications should use the first element in the
-		`Capabilities.languages` array to determine the primary user
-		interface language for the system.
+
+		_Note:_ The value of `Capabilities.language` property is limited to
+		the possible values on this list. Because of this limitation, Adobe
+		AIR applications should use the first element in the
+		`Capabilities.languages` array to determine the primary user interface
+		language for the system.
 
 		The server string is `L`.
 	**/
@@ -242,18 +280,51 @@ import sys.io.Process;
 	public static var maxLevelIDC(default, null) = 0;
 
 	/**
-		Specifies the current operating system. The `os` property can
-		return the following strings:
-
+		Specifies the current operating system. The `os` property can return
+		the following strings: // TODO: Table <tgroup
+		cols="2"><thead><row><entry>Operating
+		system</entry><entry>Value</entry></row></thead><tbody><row><entry>Windows
+		7</entry><entry>`"Windows 7"`</entry></row><row><entry>Windows
+		Vista</entry><entry>`"Windows Vista"`</entry></row><row><entry>Windows
+		Server 2008 R2</entry><entry>`"Windows Server 2008
+		R2"`</entry></row><row><entry>Windows Server
+		2008</entry><entry>`"Windows Server
+		2008"`</entry></row><row><entry>Windows Home
+		Server</entry><entry>`"Windows Home
+		Server"`</entry></row><row><entry>Windows Server 2003
+		R2</entry><entry>`"Windows Server 2003
+		R2"`</entry></row><row><entry>Windows Server
+		2003</entry><entry>`"Windows Server
+		2003"`</entry></row><row><entry>Windows XP 64</entry><entry>`"Windows
+		Server XP 64"`</entry></row><row><entry>Windows
+		XP</entry><entry>`"Windows XP"`</entry></row><row><entry>Windows
+		98</entry><entry>`"Windows 98"`</entry></row><row><entry>Windows
+		95</entry><entry>`"Windows 95"`</entry></row><row><entry>Windows
+		NT</entry><entry>`"Windows NT"`</entry></row><row><entry>Windows
+		2000</entry><entry>`"Windows 2000"`</entry></row><row><entry>Windows
+		ME</entry><entry>`"Windows ME"`</entry></row><row><entry>Windows
+		CE</entry><entry>`"Windows CE"`</entry></row><row><entry>Windows
+		SmartPhone</entry><entry>`"Windows
+		SmartPhone"`</entry></row><row><entry>Windows
+		PocketPC</entry><entry>`"Windows
+		PocketPC"`</entry></row><row><entry>Windows
+		CEPC</entry><entry>`"Windows CEPC"`</entry></row><row><entry>Windows
+		Mobile</entry><entry>`"Windows Mobile"`</entry></row><row><entry>Mac
+		OS</entry><entry>`"Mac OS X.Y.Z"` (where X.Y.Z is the version number,
+		for example: `"Mac OS
+		10.5.2"`)</entry></row><row><entry>Linux</entry><entry>`"Linux"`
+		(Flash Player attaches the Linux version, such as `"Linux
+		2.6.15-1.2054_FC5smp"`</entry></row><row><entry>iPhone OS
+		4.1</entry><entry>`"iPhone3,1"`</entry></row></tbody></tgroup>
 		The server string is `OS`.
 
-		Do _not_ use `Capabilities.os` to determine a
-		capability based on the operating system if a more specific capability
-		property exists. Basing a capability on the operating system is a bad
-		idea, since it can lead to problems if an application does not consider
-		all potential target operating systems. Instead, use the property
-		corresponding to the capability for which you are testing. For more
-		information, see the Capabilities class description.
+		Do _not_ use `Capabilities.os` to determine a capability based on the
+		operating system if a more specific capability property exists. Basing
+		a capability on the operating system is a bad idea, since it can lead
+		to problems if an application does not consider all potential target
+		operating systems. Instead, use the property corresponding to the
+		capability for which you are testing. For more information, see the
+		Capabilities class description.
 	**/
 	public static var os(get, never):String;
 

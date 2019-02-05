@@ -4,6 +4,64 @@ package openfl.display;
 import openfl._internal.utils.Float32Array;
 import openfl.display3D.Context3D;
 
+/**
+	TODO: Document GLSL Shaders
+	A ShaderParameter instance represents a single input parameter of a shader
+	kernel. A kernel can be defined to accept zero, one, or more parameters
+	that are used in the kernel execution. A ShaderParameter provides
+	information about the parameter, such as the type of data it expects. It
+	also provides a mechanism for setting the parameter value that is used
+	when the shader executes. To specify a value or values for the shader
+	parameter, create an Array containing the value or values and assign it to
+	the `value` property.
+	A ShaderParameter instance representing a parameter for a Shader instance
+	is accessed as a property of the Shader instance's `data` property. The
+	ShaderParameter property has the same name as the parameter's name in the
+	shader code. For example, if a shader defines a parameter named `radius`,
+	the ShaderParameter instance representing the `radius` parameter is
+	available as the `radius` property, as shown here:
+	<codeblock xml:space="preserve">var radiusParam:ShaderParameter =
+	myShader.data.radius;```
+	In addition to the defined properties of the ShaderParameter class, each
+	ShaderParameter instance has additional properties corresponding to any
+	metadata defined for the parameter. These properties are added to the
+	ShaderParameter object when it is created. The properties' names match the
+	metadata names specified in the shader's source code. The data type of
+	each property varies according to the data type of the corresponding
+	metadata. A text metadata value such as "description" is a String
+	instance. A metadata property with a non-string value (such as `minValue`
+	or `defaultValue`) is represented as an Array instance. The number of
+	elements and element data types correspond to the metadata values.
+
+	For example, suppose a shader includes the following two parameter
+	declarations:
+	<codeblock xml:space="preserve"> parameter float2 size < description: "The
+	size of the image to which the kernel is applied"; minValue: float2(0.0,
+	0.0); maxValue: float2(100.0, 100.0); defaultValue: float2(50.0, 50.0); >;
+	parameter float radius < description: "The radius of the effect";
+	minValue: 0.0; maxValue: 50.0; defaultValue: 25.0; >; ```
+	The ShaderParameter instance corresponding to the `size` parameter has the
+	following metadata properties in addition to its built-in properties:
+	// TODO: Table <tgroup cols="3"><thead><row><entry>Property
+	name</entry><entry>Data
+	type</entry><entry>Value</entry></row></thead><tbody><row><entry>`name`</entry><entry>String</entry><entry>`"size"`</entry></row><row><entry>`description`</entry><entry>String</entry><entry>`"The
+	size of the image to which the kernel is
+	applied"`</entry></row><row><entry>`minValue`</entry><entry>Array</entry><entry>`[0,
+	0]`</entry></row><row><entry>`maxValue`</entry><entry>Array</entry><entry>`[100,
+	100]`</entry></row><row><entry>`defaultValue`</entry><entry>Array</entry><entry>`[50,
+	50]`</entry></row></tbody></tgroup></adobetable>
+	The ShaderParameter corresponding to the `radius` parameter has the
+	following additional properties:
+	<adobetable><tgroup cols="3"><thead><row><entry>Property
+	name</entry><entry>Data
+	type</entry><entry>Value</entry></row></thead><tbody><row><entry>`name`</entry><entry>String</entry><entry>`"radius"`</entry></row><row><entry>`description`</entry><entry>String</entry><entry>`"The
+	radius of the
+	effect"`</entry></row><row><entry>`minValue`</entry><entry>Array</entry><entry>`[0]`</entry></row><row><entry>`maxValue`</entry><entry>Array</entry><entry>`[50]`</entry></row><row><entry>`defaultValue`</entry><entry>Array</entry><entry>`[25]`</entry></row></tbody></tgroup>
+
+	Generally, developer code does not create a ShaderParameter instance
+	directly. A ShaderParameter instance is created for each of a shader's
+	parameters when the Shader instance is created.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -14,9 +72,62 @@ import openfl.display3D.Context3D;
 #end
 @:final class ShaderParameter<T> /*implements Dynamic*/
 {
+	/**
+		The zero-based index of the parameter.
+	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var index(default, null):Dynamic;
 	@:noCompletion public var name(default, set):String;
+
+	/**
+		The data type of the parameter as defined in the shader. The set of
+		possible values for the `type` property is defined by the constants in
+		the ShaderParameterType class.
+	**/
 	public var type(default, null):ShaderParameterType;
+
+	/**
+		The value or values that are passed in as the parameter value to the
+		shader. The `value` property is an indexed Array. The number and type
+		of the elements of the Array correspond to the data type of the
+		parameter, which can be determined using the `type` property.
+		The following table indicates the parameter type and corresponding
+		number and data type of the `value` Array's elements:
+		// TODO: Table <tgroup cols="3"><thead><row><entry>Parameter
+		type</entry><entry># Elements</entry><entry>Element data
+		type</entry></row></thead><tbody><row><entry>float
+		(`ShaderParameterType.FLOAT`)</entry><entry>1</entry><entry>Number</entry></row><row><entry>float2
+		(`ShaderParameterType.FLOAT2`)</entry><entry>2</entry><entry>Number</entry></row><row><entry>float3
+		(`ShaderParameterType.FLOAT3`)</entry><entry>3</entry><entry>Number</entry></row><row><entry>float4
+		(`ShaderParameterType.FLOAT4`)</entry><entry>4</entry><entry>Number</entry></row><row><entry>int
+		(`ShaderParameterType.INT`)</entry><entry>1</entry><entry>int or
+		uint</entry></row><row><entry>int2
+		(`ShaderParameterType.INT2`)</entry><entry>2</entry><entry>int or
+		uint</entry></row><row><entry>int3
+		(`ShaderParameterType.INT3`)</entry><entry>3</entry><entry>int or
+		uint</entry></row><row><entry>int4
+		(`ShaderParameterType.INT4`)</entry><entry>4</entry><entry>int or
+		uint</entry></row><row><entry>bool
+		(`ShaderParameterType.BOOL`)</entry><entry>1</entry><entry>Boolean</entry></row><row><entry>bool2
+		(`ShaderParameterType.BOOL2`)</entry><entry>2</entry><entry>Boolean</entry></row><row><entry>bool3
+		(`ShaderParameterType.BOOL3`)</entry><entry>3</entry><entry>Boolean</entry></row><row><entry>bool4
+		(`ShaderParameterType.BOOL4`)</entry><entry>4</entry><entry>Boolean</entry></row><row><entry>float2x2
+		(`ShaderParameterType.MATRIX2X2`)</entry><entry>4</entry><entry>Number</entry></row><row><entry>float3x3
+		(`ShaderParameterType.MATRIX3X3`)</entry><entry>9</entry><entry>Number</entry></row><row><entry>float4x4
+		(`ShaderParameterType.MATRIX4X4`)</entry><entry>16</entry><entry>Number</entry></row></tbody></tgroup>
+
+		For the matrix parameter types, the array elements fill the rows of
+		the matrix, then the columns. For example, suppose the following line
+		of ActionScript is used to fill a `float2x2` parameter named
+		`myMatrix`:
+		<codeblock xml:space="preserve">myShader.data.myMatrix.value = [.1,
+		.2, .3, .4];```
+		Within the shader, the matrix elements have the following values:
+
+		* `myMatrix[0][0]`: .1
+		* `myMatrix[0][1]`: .2
+		* `myMatrix[1][0]`: .3
+		* `myMatrix[1][1]`: .4
+	**/
 	public var value:Array<T>;
 
 	@:noCompletion private var __arrayLength:Int;

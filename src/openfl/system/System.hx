@@ -29,8 +29,29 @@ import cpp.vm.Gc;
 #end
 @:final class System
 {
+	/**
+		The amount of memory (in bytes) that is allocated to
+		Adobe<sup>஼/sup> Flash<sup>஼/sup> Player or Adobe<sup>஼/sup>
+		AIR<sup>஼/sup> and that is not in use. This unused portion of
+		allocated memory (`System.totalMemory`) fluctuates as garbage
+		collection takes place. Use this property to monitor garbage
+		collection.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory (default, null):Float;
+	/**
+		The currently installed system IME. To register for imeComposition
+		events, call `addEventListener()` on this instance.
+	**/
 	// @:noCompletion @:dox(hide) public static var ime (default, null):flash.system.IME;
+	/**
+		The entire amount of memory (in bytes) used by an application. This is
+		the amount of resident private memory for the entire process.
+		AIR developers should use this property to determine the entire memory
+		consumption of an application.
+
+		For Flash Player, this includes the memory used by the container
+		application, such as the web browser.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var privateMemory (default, null):Float;
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage (default, null):Float;
 
@@ -123,6 +144,14 @@ import cpp.vm.Gc;
 	}
 	#end
 
+	/**
+		Makes the specified XML object immediately available for garbage
+		collection. This method will remove parent and child connections
+		between all the nodes for the specified XML node.
+
+		@param node XML reference that should be made available for garbage
+					collection.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
 
 	/**

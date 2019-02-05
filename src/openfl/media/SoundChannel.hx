@@ -107,7 +107,6 @@ import lime.media.AudioSource;
 
 	/**
 		Stops the sound playing in the channel.
-
 	**/
 	public function stop():Void
 	{

@@ -20,7 +20,6 @@ import js.Browser;
 
 	You can access LoaderInfo objects in two ways:
 
-
 	* The `contentLoaderInfo` property of a flash.display.Loader
 	object -  The `contentLoaderInfo` property is always available
 	for any Loader object. For a Loader object that has not called the
@@ -28,7 +27,6 @@ import js.Browser;
 	sufficiently loaded, attempting to access many of the properties of the
 	`contentLoaderInfo` property throws an error.
 	* The `loaderInfo` property of a display object.
-
 
 	The `contentLoaderInfo` property of a Loader object provides
 	information about the content that the Loader object is loading, whereas
@@ -86,7 +84,6 @@ import js.Browser;
 					  completed.
 					   * All ActionScript code in the first frame of the
 					  loaded SWF's main timeline has been executed.
-
 
 					  For example, an `Event.INIT` is dispatched
 					  when the first frame of a movie or animation is loaded.
@@ -394,6 +391,8 @@ class LoaderInfo extends EventDispatcher
 		parameters = {};
 	}
 
+	@:noCompletion @:dox(hide)
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	public static function create(loader:Loader):LoaderInfo
 	{
 		var loaderInfo = new LoaderInfo();

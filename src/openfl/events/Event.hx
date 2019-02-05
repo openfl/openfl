@@ -49,9 +49,8 @@ package openfl.events;
 class Event
 {
 	/**
-		The `ACTIVATE` constant defines the value of the
-		`type` property of an `activate` event object.
-
+		The `ACTIVATE` constant defines the value of the `type` property of an
+		`activate` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
@@ -60,76 +59,208 @@ class Event
 		however, dispatch it manually.
 
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		DisplayObject instance with a listener registered for the `activate`
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var ACTIVATE:String = "activate";
 
 	/**
-		The `Event.ADDED` constant defines the value of the
-		`type` property of an `added` event object.
-
+		The `Event.ADDED` constant defines the value of the `type` property of
+		an `added` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		DisplayObject instance being added to the display list. The `target`
+		is not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var ADDED:String = "added";
 
 	/**
-		The `Event.ADDED_TO_STAGE` constant defines the value of the
-		`type` property of an `addedToStage` event object.
-
+		The `Event.ADDED_TO_STAGE` constant defines the value of the `type`
+		property of an `addedToStage` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		DisplayObject instance being added to the on stage display list,
+		either directly or through the addition of a sub tree in which the
+		DisplayObject instance is contained. If the DisplayObject instance is
+		being directly added, the `added` event occurs before this
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var ADDED_TO_STAGE:String = "addedToStage";
 	// @:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
 
 	/**
-		The `Event.CANCEL` constant defines the value of the
-		`type` property of a `cancel` event object.
-
+		The `Event.CANCEL` constant defines the value of the `type` property
+		of a `cancel` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>A reference
+		to the object on which the operation is
+		canceled.</entry></row></tbody></tgroup>
 	**/
 	public static inline var CANCEL:String = "cancel";
 
 	/**
-		The `Event.CHANGE` constant defines the value of the
-		`type` property of a `change` event object.
-
+		The `Event.CHANGE` constant defines the value of the `type` property
+		of a `change` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The object
+		that has had its value modified. The `target` is not always the object
+		in the display list that registered the event listener. Use the
+		`currentTarget` property to access the object in the display list that
+		is currently processing the event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var CHANGE:String = "change";
 	// @:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE:String;
 	// @:noCompletion @:dox(hide) public static var CHANNEL_STATE:String;
+
+	/**
+		The `Event.CLEAR` constant defines the value of the `type` property of
+		a `clear` event object.
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		InteractiveObject instance with a listener registered for the `clear`
+		event.</entry></row></tbody></tgroup>
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
 	public static inline var CLEAR:String = "clear";
 
 	/**
-		The `Event.CLOSE` constant defines the value of the
-		`type` property of a `close` event object.
-
+		The `Event.CLOSE` constant defines the value of the `type` property of
+		a `close` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The object
+		whose connection has been closed.</entry></row></tbody></tgroup>
 	**/
 	public static inline var CLOSE:String = "close";
 
 	/**
-		The `Event.COMPLETE` constant defines the value of the
-		`type` property of a `complete` event object.
-
+		The `Event.COMPLETE` constant defines the value of the `type` property
+		of a `complete` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The network
+		object that has completed loading. </entry></row></tbody></tgroup>
 	**/
 	public static inline var COMPLETE:String = "complete";
 
 	/**
-		The `Event.CONNECT` constant defines the value of the
-		`type` property of a `connect` event object.
-
+		The `Event.CONNECT` constant defines the value of the `type` property
+		of a `connect` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The Socket
+		or XMLSocket object that has established a network
+		connection.</entry></row></tbody></tgroup>
 	**/
 	public static inline var CONNECT:String = "connect";
 	public static inline var CONTEXT3D_CREATE:String = "context3DCreate";
+
+	/**
+		Defines the value of the `type` property of a `copy` event object.
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		InteractiveObject instance with a listener registered for the `copy`
+		event.</entry></row></tbody></tgroup>
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
 	public static inline var COPY:String = "copy";
+
+	/**
+		Defines the value of the `type` property of a `cut` event object.
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		InteractiveObject instance with a listener registered for the `cut`
+		event.</entry></row></tbody></tgroup>
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
 	public static inline var CUT:String = "cut";
 
 	/**
-		The `Event.DEACTIVATE` constant defines the value of the
-		`type` property of a `deactivate` event object.
-
+		The `Event.DEACTIVATE` constant defines the value of the `type`
+		property of a `deactivate` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
@@ -138,153 +269,402 @@ class Event
 		however, dispatch it manually.
 
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		DisplayObject instance with a listener registered for the `deactivate`
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var DEACTIVATE:String = "deactivate";
 
 	/**
-		The `Event.ENTER_FRAME` constant defines the value of the
-		`type` property of an `enterFrame` event object.
-
+		The `Event.ENTER_FRAME` constant defines the value of the `type`
+		property of an `enterFrame` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		DisplayObject instance with a listener registered for the `enterFrame`
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var ENTER_FRAME:String = "enterFrame";
+
+	/**
+		The `Event.EXIT_FRAME` constant defines the value of the `type`
+		property of an `exitFrame` event object.
+		**Note:** This event has neither a "capture phase" nor a "bubble
+		phase", which means that event listeners must be added directly to any
+		potential targets, whether the target is on the display list or not.
+
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		DisplayObject instance with a listener registered for the `enterFrame`
+		event.</entry></row></tbody></tgroup>
+	**/
 	public static inline var EXIT_FRAME:String = "exitFrame";
+
+	/**
+		The `Event.FRAME_CONSTRUCTED` constant defines the value of the `type`
+		property of an `frameConstructed` event object.
+		**Note:** This event has neither a "capture phase" nor a "bubble
+		phase", which means that event listeners must be added directly to any
+		potential targets, whether the target is on the display list or not.
+
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		DisplayObject instance with a listener registered for the
+		`frameConstructed` event.</entry></row></tbody></tgroup>
+	**/
 	public static inline var FRAME_CONSTRUCTED:String = "frameConstructed";
 	public static inline var FRAME_LABEL:String = "frameLabel";
+
+	/**
+		The `Event.FULL_SCREEN` constant defines the value of the `type`
+		property of a `fullScreen` event object.
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The Stage
+		object.</entry></row></tbody></tgroup>
+	**/
 	public static inline var FULLSCREEN:String = "fullScreen";
 
 	/**
-		The `Event.ID3` constant defines the value of the
-		`type` property of an `id3` event object.
-
+		The `Event.ID3` constant defines the value of the `type` property of
+		an `id3` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The Sound
+		object loading the MP3 for which ID3 data is now available. The
+		`target` is not always the object in the display list that registered
+		the event listener. Use the `currentTarget` property to access the
+		object in the display list that is currently processing the
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var ID3:String = "id3";
 
 	/**
-		The `Event.INIT` constant defines the value of the
-		`type` property of an `init` event object.
-
+		The `Event.INIT` constant defines the value of the `type` property of
+		an `init` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		LoaderInfo object associated with the SWF file being
+		loaded.</entry></row></tbody></tgroup>
 	**/
 	public static inline var INIT:String = "init";
 
 	/**
-		The `Event.MOUSE_LEAVE` constant defines the value of the
-		`type` property of a `mouseLeave` event object.
-
+		The `Event.MOUSE_LEAVE` constant defines the value of the `type`
+		property of a `mouseLeave` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The Stage
+		object. The `target` is not always the object in the display list that
+		registered the event listener. Use the `currentTarget` property to
+		access the object in the display list that is currently processing the
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var MOUSE_LEAVE:String = "mouseLeave";
 
 	/**
-		The `Event.OPEN` constant defines the value of the
-		`type` property of an `open` event object.
-
+		The `Event.OPEN` constant defines the value of the `type` property of
+		an `open` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The network
+		object that has opened a connection. </entry></row></tbody></tgroup>
 	**/
 	public static inline var OPEN:String = "open";
+
+	/**
+		The `Event.PASTE` constant defines the value of the `type` property of
+		a `paste` event object.
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		InteractiveObject instance with a listener registered for the `paste`
+		event.</entry></row></tbody></tgroup>
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
 	public static inline var PASTE:String = "paste";
 
 	/**
-		The `Event.REMOVED` constant defines the value of the
-		`type` property of a `removed` event object.
-
+		The `Event.REMOVED` constant defines the value of the `type` property
+		of a `removed` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		DisplayObject instance to be removed from the display list. The
+		`target` is not always the object in the display list that registered
+		the event listener. Use the `currentTarget` property to access the
+		object in the display list that is currently processing the
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var REMOVED:String = "removed";
 
 	/**
-		The `Event.REMOVED_FROM_STAGE` constant defines the value of
-		the `type` property of a `removedFromStage` event
-		object.
-
+		The `Event.REMOVED_FROM_STAGE` constant defines the value of the
+		`type` property of a `removedFromStage` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		DisplayObject instance being removed from the on stage display list,
+		either directly or through the removal of a sub tree in which the
+		DisplayObject instance is contained. If the DisplayObject instance is
+		being directly removed, the `removed` event occurs before this
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var REMOVED_FROM_STAGE:String = "removedFromStage";
 
 	/**
-		The `Event.RENDER` constant defines the value of the
-		`type` property of a `render` event object.
-
+		The `Event.RENDER` constant defines the value of the `type` property
+		of a `render` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		the default behavior cannot be
+		canceled.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		DisplayObject instance with a listener registered for the `render`
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var RENDER:String = "render";
 
 	/**
-		The `Event.RESIZE` constant defines the value of the
-		`type` property of a `resize` event object.
-
+		The `Event.RESIZE` constant defines the value of the `type` property
+		of a `resize` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The Stage
+		object.</entry></row></tbody></tgroup>
 	**/
 	public static inline var RESIZE:String = "resize";
 
 	/**
-		The `Event.SCROLL` constant defines the value of the
-		`type` property of a `scroll` event object.
-
+		The `Event.SCROLL` constant defines the value of the `type` property
+		of a `scroll` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		TextField object that has been scrolled. The `target` property is not
+		always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var SCROLL:String = "scroll";
 
 	/**
-		The `Event.SELECT` constant defines the value of the
-		`type` property of a `select` event object.
-
+		The `Event.SELECT` constant defines the value of the `type` property
+		of a `select` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The object
+		on which an item has been selected.</entry></row></tbody></tgroup>
 	**/
 	public static inline var SELECT:String = "select";
+
+	/**
+		The `Event.SELECT_ALL` constant defines the value of the `type`
+		property of a `selectAll` event object.
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>Any
+		InteractiveObject instance with a listener registered for the
+		`selectAll` event.</entry></row></tbody></tgroup>
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
 	public static inline var SELECT_ALL:String = "selectAll";
 
 	/**
-		The `Event.SOUND_COMPLETE` constant defines the value of the
-		`type` property of a `soundComplete` event object.
-
+		The `Event.SOUND_COMPLETE` constant defines the value of the `type`
+		property of a `soundComplete` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		SoundChannel object in which a sound has finished
+		playing.</entry></row></tbody></tgroup>
 	**/
 	public static inline var SOUND_COMPLETE:String = "soundComplete";
 
 	/**
-		The `Event.TAB_CHILDREN_CHANGE` constant defines the value of
-		the `type` property of a `tabChildrenChange` event
-		object.
-
+		The `Event.TAB_CHILDREN_CHANGE` constant defines the value of the
+		`type` property of a `tabChildrenChange` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The object
+		whose tabChildren flag has changed. The `target` is not always the
+		object in the display list that registered the event listener. Use the
+		`currentTarget` property to access the object in the display list that
+		is currently processing the event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TAB_CHILDREN_CHANGE:String = "tabChildrenChange";
 
 	/**
-		The `Event.TAB_ENABLED_CHANGE` constant defines the value of
-		the `type` property of a `tabEnabledChange` event
-		object.
-
+		The `Event.TAB_ENABLED_CHANGE` constant defines the value of the
+		`type` property of a `tabEnabledChange` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject whose tabEnabled flag has changed. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the
+		event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TAB_ENABLED_CHANGE:String = "tabEnabledChange";
 
 	/**
-		The `Event.TAB_INDEX_CHANGE` constant defines the value of the
-		`type` property of a `tabIndexChange` event object.
-
+		The `Event.TAB_INDEX_CHANGE` constant defines the value of the `type`
+		property of a `tabIndexChange` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The object
+		whose tabIndex has changed. The `target` is not always the object in
+		the display list that registered the event listener. Use the
+		`currentTarget` property to access the object in the display list that
+		is currently processing the event.</entry></row></tbody></tgroup>
 	**/
 	public static inline var TAB_INDEX_CHANGE:String = "tabIndexChange";
 	public static inline var TEXTURE_READY:String = "textureReady";
+	/**
+		The `Event.TEXT_INTERACTION_MODE_CHANGE` constant defines the value of
+		the `type` property of a `interaction mode` event object.
+		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		TextField object whose interaction mode property is changed. For
+		example on Android, one can change the interaction mode to SELECTION
+		via context menu. The `target` property is not always the object in
+		the display list that registered the event listener. Use the
+		`currentTarget` property to access the object in the display list that
+		is currently processing the event.</entry></row></tbody></tgroup>
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
 
 	/**
-		The `Event.UNLOAD` constant defines the value of the
-		`type` property of an `unload` event object.
-
+		The `Event.UNLOAD` constant defines the value of the `type` property
+		of an `unload` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`target`</entry><entry>The
+		LoaderInfo object associated with the SWF file being unloaded or
+		replaced.</entry></row></tbody></tgroup>
 	**/
 	public static inline var UNLOAD:String = "unload";
 
@@ -400,6 +780,19 @@ class Event
 		return event;
 	}
 
+	/**
+		A utility function for implementing the `toString()` method in custom
+		ActionScript 3.0 Event classes. Overriding the `toString()` method is
+		recommended, but not required. <pre xml:space="preserve"> class
+		PingEvent extends Event { var URL:String; public override function
+		toString():String { return formatToString("PingEvent", "type",
+		"bubbles", "cancelable", "eventPhase", "URL"); } } </pre>
+
+		@param className The name of your custom Event class. In the previous
+						 example, the `className` parameter is `PingEvent`.
+		@return The name of your custom Event class and the String value of
+				your `...arguments` parameter.
+	**/
 	public function formatToString(className:String, ?p1:String, ?p2:String, ?p3:String, ?p4:String, ?p5:String):String
 	{
 		var parameters = [];

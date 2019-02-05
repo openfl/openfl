@@ -93,7 +93,8 @@
 				"exact": [],
 				"max": 1,
 				"ignore": [
-					"afterClassVars"
+					"afterClassVars",
+					"betweenAbstractVars"
 				],
 				"atleast": [],
 				"skipSingleLineTypes": true
@@ -131,7 +132,8 @@
 			"props": {
 				"ignoreSetter": true,
 				"ignoreFormat": "^(main|run)$",
-				"ignoreConstructorParameter": true
+				"ignoreConstructorParameter": true,
+				"severity": "IGNORE"
 			},
 			"type": "HiddenField"
 		},
@@ -392,7 +394,8 @@
 		},
 		{
 			"props": {
-				"format": "^\\s*(TODO|FIXME|HACK|XXX|BUG)"
+				"format": "^\\s*(TODO|FIXME|HACK|XXX|BUG)",
+				"severity": "IGNORE"
 			},
 			"type": "TODOComment"
 		},

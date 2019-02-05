@@ -219,7 +219,61 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		The window background color.
 	**/
 	public var color(get, set):Null<Int>;
+	/**
+		Controls Flash runtime color correction for displays. Color correction
+		works only if the main monitor is assigned a valid ICC color profile,
+		which specifies the device's particular color attributes. By default,
+		the Flash runtime tries to match the color correction of its host
+		(usually a browser).
+		Use the `Stage.colorCorrectionSupport` property to determine if color
+		correction is available on the current system and the default state. .
+		If color correction is available, all colors on the stage are assumed
+		to be in the sRGB color space, which is the most standard color space.
+		Source profiles of input devices are not considered during color
+		correction. No input color correction is applied; only the stage
+		output is mapped to the main monitor's ICC color profile.
+
+		In general, the benefits of activating color management include
+		predictable and consistent color, better conversion, accurate proofing
+		and more efficient cross-media output. Be aware, though, that color
+		management does not provide perfect conversions due to devices having
+		a different gamut from each other or original images. Nor does color
+		management eliminate the need for custom or edited profiles. Color
+		profiles are dependent on browsers, operating systems (OS), OS
+		extensions, output devices, and application support.
+
+		Applying color correction degrades the Flash runtime performance. A
+		Flash runtime's color correction is document style color correction
+		because all SWF movies are considered documents with implicit sRGB
+		profiles. Use the `Stage.colorCorrectionSupport` property to tell the
+		Flash runtime to correct colors when displaying the SWF file
+		(document) to the display color space. Flash runtimes only compensates
+		for differences between monitors, not for differences between input
+		devices (camera/scanner/etc.).
+
+		The three possible values are strings with corresponding constants in
+		the flash.display.ColorCorrection class:
+
+		* `"default"`: Use the same color correction as the host system.
+		* `"on"`: Always perform color correction.
+		* `"off"`: Never perform color correction.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
+
+	/**
+		Specifies whether the Flash runtime is running on an operating system
+		that supports color correction and whether the color profile of the
+		main (primary) monitor can be read and understood by the Flash
+		runtime. This property also returns the default state of color
+		correction on the host system (usually the browser). Currently the
+		return values can be:
+		The three possible values are strings with corresponding constants in
+		the flash.display.ColorCorrectionSupport class:
+
+		* `"unsupported"`: Color correction is not available.
+		* `"defaultOn"`: Always performs color correction.
+		* `"defaultOff"`: Never performs color correction.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
 	public var contentsScaleFactor(get, never):Float;
 	public var context3D(default, null):Context3D;
@@ -354,9 +408,73 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  the _ActionScript 3.0 Developer's Guide_.
 	**/
 	public var frameRate(get, set):Float;
+
+	/**
+		Returns the height of the monitor that will be used when going to full
+		screen size, if that state is entered immediately. If the user has
+		multiple monitors, the monitor that's used is the monitor that most of
+		the stage is on at the time.
+		**Note**: If the user has the opportunity to move the browser from one
+		monitor to another between retrieving the value and going to full
+		screen size, the value could be incorrect. If you retrieve the value
+		in an event handler that sets `Stage.displayState` to
+		`StageDisplayState.FULL_SCREEN`, the value will be correct.
+
+		This is the pixel height of the monitor and is the same as the stage
+		height would be if `Stage.align` is set to `StageAlign.TOP_LEFT` and
+		`Stage.scaleMode` is set to `StageScaleMode.NO_SCALE`.
+	**/
 	public var fullScreenHeight(get, never):UInt;
-	public var fullScreenWidth(get, never):UInt;
+
+	/**
+		Sets the Flash runtime to scale a specific region of the stage to
+		full-screen mode. If available, the Flash runtime scales in hardware,
+		which uses the graphics and video card on a user's computer, and
+		generally displays content more quickly than software scaling.
+		When this property is set to a valid rectangle and the `displayState`
+		property is set to full-screen mode, the Flash runtime scales the
+		specified area. The actual Stage size in pixels within ActionScript
+		does not change. The Flash runtime enforces a minimum limit for the
+		size of the rectangle to accommodate the standard "Press Esc to exit
+		full-screen mode" message. This limit is usually around 260 by 30
+		pixels but can vary on platform and Flash runtime version.
+
+		This property can only be set when the Flash runtime is not in
+		full-screen mode. To use this property correctly, set this property
+		first, then set the `displayState` property to full-screen mode, as
+		shown in the code examples.
+
+		To enable scaling, set the `fullScreenSourceRect` property to a
+		rectangle object:
+		<codeblock xml:space="preserve"> // valid, will enable hardware
+		scaling stage.fullScreenSourceRect = new Rectangle(0,0,320,240); ```
+		To disable scaling, set the `fullScreenSourceRect=null` in
+		ActionScript 3.0, and `undefined` in ActionScript 2.0.
+		<codeblock xml:space="preserve"> stage.fullScreenSourceRect = null;
+		```
+		The end user also can select within Flash Player Display Settings to
+		turn off hardware scaling, which is enabled by default. For more
+		information, see <a href="http://www.adobe.com/go/display_settings"
+		scope="external">www.adobe.com/go/display_settings</a>.
+	**/
 	public var fullScreenSourceRect(get, set):Rectangle;
+
+	/**
+		Returns the width of the monitor that will be used when going to full
+		screen size, if that state is entered immediately. If the user has
+		multiple monitors, the monitor that's used is the monitor that most of
+		the stage is on at the time.
+		**Note**: If the user has the opportunity to move the browser from one
+		monitor to another between retrieving the value and going to full
+		screen size, the value could be incorrect. If you retrieve the value
+		in an event handler that sets `Stage.displayState` to
+		`StageDisplayState.FULL_SCREEN`, the value will be correct.
+
+		This is the pixel width of the monitor and is the same as the stage
+		width would be if `Stage.align` is set to `StageAlign.TOP_LEFT` and
+		`Stage.scaleMode` is set to `StageScaleMode.NO_SCALE`.
+	**/
+	public var fullScreenWidth(get, never):UInt;
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
 
 	/**
@@ -449,7 +567,45 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  the _ActionScript 3.0 Developer's Guide_.
 	**/
 	public var scaleMode(get, set):StageScaleMode;
+
+	/**
+		Specifies whether to show or hide the default items in the Flash
+		runtime context menu.
+		If the `showDefaultContextMenu` property is set to `true` (the
+		default), all context menu items appear. If the
+		`showDefaultContextMenu` property is set to `false`, only the Settings
+		and About... menu items appear.
+
+		@throws SecurityError Calling the `showDefaultContextMenu` property of
+							  a Stage object throws an exception for any
+							  caller that is not in the same security sandbox
+							  as the Stage owner (the main SWF file). To avoid
+							  this, the Stage owner can grant permission to
+							  the domain of the caller by calling the
+							  `Security.allowDomain()` method or the
+							  `Security.allowInsecureDomain()` method. For
+							  more information, see the "Security" chapter in
+							  the _ActionScript 3.0 Developer's Guide_.
+	**/
 	public var showDefaultContextMenu:Bool;
+
+	/**
+		The area of the stage that is currently covered by the software
+		keyboard.
+		The area has a size of zero (0,0,0,0) when the soft keyboard is not
+		visible.
+
+		When the keyboard opens, the `softKeyboardRect` is set at the time the
+		softKeyboardActivate event is dispatched. If the keyboard changes size
+		while open, the runtime updates the `softKeyboardRect` property and
+		dispatches an additional softKeyboardActivate event.
+
+		**Note:** On Android, the area covered by the keyboard is estimated
+		when the operating system does not provide the information necessary
+		to determine the exact area. This problem occurs in fullscreen mode
+		and also when the keyboard opens in response to an InteractiveObject
+		receiving focus or invoking the `requestSoftKeyboard()` method.
+	**/
 	public var softKeyboardRect:Rectangle;
 	public var stage3Ds(default, null):Vector<Stage3D>;
 
@@ -512,6 +668,31 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  the _ActionScript 3.0 Developer's Guide_.
 	**/
 	public var stageHeight(default, null):Int;
+	/**
+		A list of StageVideo objects available for playing external videos.
+		You can use only a limited number of StageVideo objects at a time.
+		When a SWF begins to run, the number of available StageVideo objects
+		depends on the platform and on available hardware.
+
+		To use a StageVideo object, assign a member of the `stageVideos`
+		Vector object to a StageVideo variable.
+
+		All StageVideo objects are displayed on the stage behind any display
+		objects. The StageVideo objects are displayed on the stage in the
+		order they appear in the `stageVideos` Vector object. For example, if
+		the `stageVideos` Vector object contains three entries:
+
+		1. The StageVideo object in the 0 index of the `stageVideos` Vector
+		object is displayed behind all StageVideo objects.
+		2. The StageVideo object at index 1 is displayed in front of the
+		StageVideo object at index 0.
+		3. The StageVideo object at index 2 is displayed in front of the
+		StageVideo object at index 1.
+
+		Use the `StageVideo.depth` property to change this ordering.
+
+		**Note:** AIR for TV devices support only one StageVideo object.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
 
 	/**
@@ -558,6 +739,60 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public var stageWidth(default, null):Int;
 	public var window(default, null):Window;
 
+	/**
+		Indicates whether GPU compositing is available and in use. The
+		`wmodeGPU` value is `true` _only_ when all three of the following
+		conditions exist:
+		* GPU compositing has been requested.
+		* GPU compositing is available.
+		* GPU compositing is in use.
+
+		Specifically, the `wmodeGPU` property indicates one of the following:
+
+		1. GPU compositing has not been requested or is unavailable. In this
+		case, the `wmodeGPU` property value is `false`.
+		2. GPU compositing has been requested (if applicable and available),
+		but the environment is operating in "fallback mode" (not optimal
+		rendering) due to limitations of the content. In this case, the
+		`wmodeGPU` property value is `true`.
+		3. GPU compositing has been requested (if applicable and available),
+		and the environment is operating in the best mode. In this case, the
+		`wmodeGPU` property value is also `true`.
+
+		In other words, the `wmodeGPU` property identifies the capability and
+		state of the rendering environment. For runtimes that do not support
+		GPU compositing, such as AIR 1.5.2, the value is always `false`,
+		because (as stated above) the value is `true` only when GPU
+		compositing has been requested, is available, and is in use.
+
+		The `wmodeGPU` property is useful to determine, at runtime, whether or
+		not GPU compositing is in use. The value of `wmodeGPU` indicates if
+		your content is going to be scaled by hardware, or not, so you can
+		present graphics at the correct size. You can also determine if you're
+		rendering in a fast path or not, so that you can adjust your content
+		complexity accordingly.
+
+		For Flash Player in a browser, GPU compositing can be requested by the
+		value of `gpu` for the `wmode` HTML parameter in the page hosting the
+		SWF file. For other configurations, GPU compositing can be requested
+		in the header of a SWF file (set using SWF authoring tools).
+
+		However, the `wmodeGPU` property does not identify the current
+		rendering performance. Even if GPU compositing is "in use" the
+		rendering process might not be operating in the best mode. To adjust
+		your content for optimal rendering, use a Flash runtime debugger
+		version, and set the `DisplayGPUBlendsetting` in your mm.cfg file.
+
+		**Note:** This property is always `false` when referenced from
+		ActionScript that runs before the runtime performs its first rendering
+		pass. For example, if you examine `wmodeGPU` from a script in Frame 1
+		of Adobe Flash Professional, and your SWF file is the first SWF file
+		loaded in a new instance of the runtime, then the `wmodeGPU` value is
+		`false`. To get an accurate value, wait until at least one rendering
+		pass has occurred. If you write an event listener for the `exitFrame`
+		event of any `DisplayObject`, the `wmodeGPU` value at is the correct
+		value.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU (default, null):Bool;
 	@:noCompletion private var __cacheFocus:InteractiveObject;
 	@:noCompletion private var __clearBeforeRender:Bool;

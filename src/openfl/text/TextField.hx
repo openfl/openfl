@@ -145,6 +145,16 @@ class TextField extends InteractiveObject
 	@:noCompletion private static var __missingFontWarning:Map<String, Bool> = new Map();
 
 	/**
+		When set to `true` and the text field is not in focus, Flash Player
+		highlights the selection in the text field in gray. When set to
+		`false` and the text field is not in focus, Flash Player does not
+		highlight the selection in the text field.
+
+		@default false
+	**/
+	// var alwaysShowSelection : Bool;
+
+	/**
 		The type of anti-aliasing used for this text field. Use
 		`flash.text.AntiAliasType` constants for this property. You can
 		control this setting only if the font is embedded(with the
@@ -257,6 +267,19 @@ class TextField extends InteractiveObject
 		is 0, the second position is 1, and so on).
 	**/
 	public var caretIndex(get, never):Int;
+	/**
+		A Boolean value that specifies whether extra white space (spaces, line
+		breaks, and so on) in a text field with HTML text is removed. The
+		default value is `false`. The `condenseWhite` property only affects
+		text set with the `htmlText` property, not the `text` property. If you
+		set text with the `text` property, `condenseWhite` is ignored.
+		If `condenseWhite` is set to `true`, use standard HTML commands such
+		as `<BR>` and `<P>` to place line breaks in the text field.
+
+		Set the `condenseWhite` property before setting the `htmlText`
+		property.
+	**/
+	// var condenseWhite : Bool;
 
 	/**
 		Specifies the format applied to newly inserted text, such as text entered
@@ -319,16 +342,35 @@ class TextField extends InteractiveObject
 	public var embedFonts(get, set):Bool;
 
 	/**
-		The type of grid fitting used for this text field. This property applies
-		only if the `flash.text.AntiAliasType` property of the text
+		The type of grid fitting used for this text field. This property
+		applies only if the `flash.text.AntiAliasType` property of the text
 		field is set to `flash.text.AntiAliasType.ADVANCED`.
-
 		The type of grid fitting used determines whether Flash Player forces
-		strong horizontal and vertical lines to fit to a pixel or subpixel grid,
-		or not at all.
+		strong horizontal and vertical lines to fit to a pixel or subpixel
+		grid, or not at all.
 
-		For the `flash.text.GridFitType` property, you can use the
-		following string values:
+		For the `flash.text.GridFitType` property, you can use the following
+		string values:
+		// TODO: Table <tgroup cols="2"><thead><row><entry>String
+		value</entry><entry>Description</entry></row></thead><tbody><row><entry>`flash.text.GridFitType.NONE`</entry><entry>Specifies
+		no grid fitting. Horizontal and vertical lines in the glyphs are not
+		forced to the pixel grid. This setting is recommended for animation or
+		for large font
+		sizes.</entry></row><row><entry>`flash.text.GridFitType.PIXEL`</entry><entry>Specifies
+		that strong horizontal and vertical lines are fit to the pixel grid.
+		This setting works only for left-aligned text fields. To use this
+		setting, the `flash.dispaly.AntiAliasType` property of the text field
+		must be set to `flash.text.AntiAliasType.ADVANCED`. This setting
+		generally provides the best legibility for left-aligned
+		text.</entry></row><row><entry>`flash.text.GridFitType.SUBPIXEL`</entry><entry>Specifies
+		that strong horizontal and vertical lines are fit to the subpixel grid
+		on an LCD monitor. To use this setting, the `flash.text.AntiAliasType`
+		property of the text field must be set to
+		`flash.text.AntiAliasType.ADVANCED`. The
+		`flash.text.GridFitType.SUBPIXEL` setting is often good for
+		right-aligned or centered dynamic text, and it is sometimes a useful
+		trade-off for animation versus text
+		quality.</entry></row></tbody></tgroup>
 
 		@default pixel
 	**/
@@ -336,11 +378,155 @@ class TextField extends InteractiveObject
 
 	/**
 		Contains the HTML representation of the text field contents.
-
 		Flash Player supports the following HTML tags:
+		// TODO: Table <tgroup cols="2"><thead><row><entry> Tag
+		</entry><entry> Description </entry></row></thead><tbody><row><entry>
+		Anchor tag </entry><entry> The `<a>` tag creates a hypertext link and
+		supports the following attributes:
+		*  `target`: Specifies the name of the target window where you load
+		the page. Options include `_self`, `_blank`, `_parent`, and `_top`.
+		The `_self` option specifies the current frame in the current window,
+		`_blank` specifies a new window, `_parent` specifies the parent of the
+		current frame, and `_top` specifies the top-level frame in the current
+		window.
+		*  `href`: Specifies a URL or an ActionScript `link` event.The URL can
+		be either absolute or relative to the location of the SWF file that is
+		loading the page. An example of an absolute reference to a URL is
+		`http://www.adobe.com`; an example of a relative reference is
+		`/index.html`. Absolute URLs must be prefixed with http://; otherwise,
+		Flash Player or AIR treats them as relative URLs. You can use the
+		`link` event to cause the link to execute an ActionScript function in
+		a SWF file instead of opening a URL. To specify a `link` event, use
+		the event scheme instead of the http scheme in your `href` attribute.
+		An example is `href="event:myText"` instead of `href="http://myURL"`;
+		when the user clicks a hypertext link that contains the event scheme,
+		the text field dispatches a `link` TextEvent with its `text` property
+		set to "`myText`". You can then create an ActionScript function that
+		executes whenever the link TextEvent is dispatched. You can also
+		define `a:link`, `a:hover`, and `a:active` styles for anchor tags by
+		using style sheets.
+		</entry></row><row><entry> Bold tag </entry><entry> The `**` tag
+		renders text as bold. A bold typeface must be available for the font
+		used. </entry></row><row><entry> Break tag </entry><entry> The `<br>`
+		tag creates a line break in the text field. Set the text field to be a
+		multiline text field to use this tag. </entry></row><row><entry> Font
+		tag </entry><entry> The `<font>` tag specifies a font or list of fonts
+		to display the text.The font tag supports the following attributes:
+		*  `color`: Only hexadecimal color (`#FFFFFF`) values are supported.
+		*  `face`: Specifies the name of the font to use. As shown in the
+		following example, you can specify a list of comma-delimited font
+		names, in which case Flash Player selects the first available font. If
+		the specified font is not installed on the local computer system or
+		isn't embedded in the SWF file, Flash Player selects a substitute
+		font.
+		*  `size`: Specifies the size of the font. You can use absolute pixel
+		sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.
+		</entry></row><row><entry> Image tag </entry><entry> The `<img>` tag
+		lets you embed external image files (JPEG, GIF, PNG), SWF files, and
+		movie clips inside text fields. Text automatically flows around images
+		you embed in text fields. You must set the text field to be multiline
+		to wrap text around an image.
+		The `<img>` tag supports the following attributes:
 
+		*  `src`: Specifies the URL to an image or SWF file, or the linkage
+		identifier for a movie clip symbol in the library. This attribute is
+		required; all other attributes are optional. External files (JPEG,
+		GIF, PNG, and SWF files) do not show until they are downloaded
+		completely.
+		*  `width`: The width of the image, SWF file, or movie clip being
+		inserted, in pixels.
+		*  `height`: The height of the image, SWF file, or movie clip being
+		inserted, in pixels.
+		*  `align`: Specifies the horizontal alignment of the embedded image
+		within the text field. Valid values are `left` and `right`. The
+		default value is `left`.
+		*  `hspace`: Specifies the amount of horizontal space that surrounds
+		the image where no text appears. The default value is 8.
+		*  `vspace`: Specifies the amount of vertical space that surrounds the
+		image where no text appears. The default value is 8.
+		*  `id`: Specifies the name for the movie clip instance (created by
+		Flash Player) that contains the embedded image file, SWF file, or
+		movie clip. This approach is used to control the embedded content with
+		ActionScript.
+		*  `checkPolicyFile`: Specifies that Flash Player checks for a URL
+		policy file on the server associated with the image domain. If a
+		policy file exists, SWF files in the domains listed in the file can
+		access the data of the loaded image, for example, by calling the
+		`BitmapData.draw()` method with this image as the `source` parameter.
+		For more information related to security, see the Flash Player
+		Developer Center Topic: <a
+		href="http://www.adobe.com/go/devnet_security_en"
+		scope="external">Security</a>.
+
+		Flash displays media embedded in a text field at full size. To specify
+		the dimensions of the media you are embedding, use the `<img>` tag
+		`height` and `width` attributes.
+
+		In general, an image embedded in a text field appears on the line
+		following the `<img>` tag. However, when the `<img>` tag is the first
+		character in the text field, the image appears on the first line of
+		the text field.
+
+		For AIR content in the application security sandbox, AIR ignores `img`
+		tags in HTML content in ActionScript TextField objects. This is to
+		prevent possible phishing attacks,
+		</entry></row><row><entry> Italic tag </entry><entry> The `_` tag
+		displays the tagged text in italics. An italic typeface must be
+		available for the font used. </entry></row><row><entry> List item tag
+		</entry><entry> The `
+		* ` tag places a bullet in front of the text that it encloses.
+		**Note:** Because Flash Player and AIR do not recognize ordered and
+		unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered.
+		All lists are unordered and all list items use bullets.
+		</entry></row><row><entry> Paragraph tag </entry><entry> The `
+		` tag creates a new paragraph. The text field must be set to be a
+		multiline text field to use this tag. The `
+		` tag supports the following attributes:
+		*  align: Specifies alignment of text within the paragraph; valid
+		values are `left`, `right`, `justify`, and `center`.
+		*  class: Specifies a CSS style class defined by a
+		flash.text.StyleSheet object.
+		</entry></row><row><entry> Span tag </entry><entry> The `<span>` tag
+		is available only for use with CSS text styles. It supports the
+		following attribute:
+		*  class: Specifies a CSS style class defined by a
+		flash.text.StyleSheet object.
+		</entry></row><row><entry> Text format tag </entry><entry>
+		The `<textformat>` tag lets you use a subset of paragraph formatting
+		properties of the TextFormat class within text fields, including line
+		leading, indentation, margins, and tab stops. You can combine
+		`<textformat>` tags with the built-in HTML tags.
+
+		The `<textformat>` tag has the following attributes:
+
+		*  `blockindent`: Specifies the block indentation in points;
+		corresponds to `TextFormat.blockIndent`.
+		*  `indent`: Specifies the indentation from the left margin to the
+		first character in the paragraph; corresponds to `TextFormat.indent`.
+		Both positive and negative numbers are acceptable.
+		*  `leading`: Specifies the amount of leading (vertical space) between
+		lines; corresponds to `TextFormat.leading`. Both positive and negative
+		numbers are acceptable.
+		*  `leftmargin`: Specifies the left margin of the paragraph, in
+		points; corresponds to `TextFormat.leftMargin`.
+		*  `rightmargin`: Specifies the right margin of the paragraph, in
+		points; corresponds to `TextFormat.rightMargin`.
+		*  `tabstops`: Specifies custom tab stops as an array of non-negative
+		integers; corresponds to `TextFormat.tabStops`.
+		</entry></row><row><entry> Underline tag </entry><entry> The `<u>` tag
+		underlines the tagged text.
+		</entry></row></tbody></tgroup></adobetable>
+		Flash Player and AIR support the following HTML entities:
+		<adobetable><tgroup cols="2"><thead><row><entry> Entity
+		</entry><entry> Description </entry></row></thead><tbody><row><entry>
+		&amp;lt; </entry><entry> < (less than) </entry></row><row><entry>
+		&amp;gt; </entry><entry> > (greater than) </entry></row><row><entry>
+		&amp;amp; </entry><entry> & (ampersand) </entry></row><row><entry>
+		&amp;quot; </entry><entry> " (double quotes)
+		</entry></row><row><entry> &amp;apos; </entry><entry> ' (apostrophe,
+		single quote) </entry></row></tbody></tgroup>
 		Flash Player and AIR also support explicit character codes, such as
-		&#38;(ASCII ampersand) and &#x20AC;(Unicode € symbol).
+		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
 	**/
 	public var htmlText(get, set):UTF8String;
 
@@ -494,6 +680,7 @@ class TextField extends InteractiveObject
 		@default true
 	**/
 	public var selectable(get, set):Bool;
+	// var selectedText(default,never) : String;
 
 	/**
 		The zero-based character index value of the first character in the current
@@ -522,6 +709,23 @@ class TextField extends InteractiveObject
 		@default 0
 	**/
 	public var sharpness(get, set):Float;
+	/**
+		Attaches a style sheet to the text field. For information on creating
+		style sheets, see the StyleSheet class and the _ActionScript 3.0
+		Developer's Guide_.
+		You can change the style sheet associated with a text field at any
+		time. If you change the style sheet in use, the text field is redrawn
+		with the new style sheet. You can set the style sheet to `null` or
+		`undefined` to remove the style sheet. If the style sheet in use is
+		removed, the text field is redrawn without a style sheet.
+
+		**Note:** If the style sheet is removed, the contents of both
+		`TextField.text` and ` TextField.htmlText` change to incorporate the
+		formatting previously applied by the style sheet. To preserve the
+		original `TextField.htmlText` contents without the formatting, save
+		the value in a variable before removing the style sheet.
+	**/
+	// var styleSheet : StyleSheet;
 
 	/**
 		A string that is the current text in the text field. Lines are separated
@@ -548,11 +752,31 @@ class TextField extends InteractiveObject
 		The height of the text in pixels.
 	**/
 	public var textHeight(get, never):Float;
+	/**
+		The interaction mode property, Default value is
+		TextInteractionMode.NORMAL. On mobile platforms, the normal mode
+		implies that the text can be scrolled but not selected. One can switch
+		to the selectable mode through the in-built context menu on the text
+		field. On Desktop, the normal mode implies that the text is in
+		scrollable as well as selection mode.
+	**/
+	// @:require(flash11) var textInteractionMode(default,never) : TextInteractionMode;
 
 	/**
 		The width of the text in pixels.
 	**/
 	public var textWidth(get, never):Float;
+	/**
+		The thickness of the glyph edges in this text field. This property
+		applies only when `flash.text.AntiAliasType` is set to
+		`flash.text.AntiAliasType.ADVANCED`.
+		The range for `thickness` is a number from -200 to 200. If you attempt
+		to set `thickness` to a value outside that range, the property is set
+		to the nearest value in the range (either -200 or 200).
+
+		@default 0
+	**/
+	// var thickness : Float;
 
 	/**
 		The type of the text field. Either one of the following TextFieldType
@@ -565,6 +789,15 @@ class TextField extends InteractiveObject
 							  flash.text.TextFieldType.
 	**/
 	public var type(get, set):TextFieldType;
+	/**
+		Specifies whether to copy and paste the text formatting along with the
+		text. When set to `true`, Flash Player copies and pastes formatting
+		(such as alignment, bold, and italics) when you copy and paste between
+		text fields. Both the origin and destination text fields for the copy
+		and paste procedure must have `useRichTextClipboard` set to `true`.
+		The default value is `false`.
+	**/
+	// var useRichTextClipboard : Bool;
 
 	/**
 		A Boolean value that indicates whether the text field has word wrap. If
@@ -705,6 +938,8 @@ class TextField extends InteractiveObject
 		__updateScrollH();
 	}
 
+	// function copyRichText() : String;
+
 	/**
 		Returns a rectangle that is the bounding box of the character.
 
@@ -779,6 +1014,17 @@ class TextField extends InteractiveObject
 		return -1;
 	}
 
+	/**
+		Given a character index, returns the index of the first character in
+		the same paragraph.
+
+		@param charIndex The zero-based index value of the character (for
+						 example, the first character is 0, the second
+						 character is 1, and so on).
+		@return The zero-based index value of the first character in the same
+				paragraph.
+		@throws RangeError The character index specified is out of range.
+	**/
 	public function getFirstCharInParagraph(charIndex:Int):Int
 	{
 		if (charIndex < 0 || charIndex > text.length) return -1;
@@ -802,6 +1048,25 @@ class TextField extends InteractiveObject
 
 		return startIndex;
 	}
+
+	/**
+		Returns a DisplayObject reference for the given `id`, for an image or
+		SWF file that has been added to an HTML-formatted text field by using
+		an `<img>` tag. The `<img>` tag is in the following format:
+		<pre xml:space="preserve">` <img src = 'filename.jpg' id =
+		'instanceName' >`</pre>
+
+		@param id The `id` to match (in the `id` attribute of the `<img>`
+				  tag).
+		@return The display object corresponding to the image or SWF file with
+				the matching `id` attribute in the `<img>` tag of the text
+				field. For media loaded from an external source, this object
+				is a Loader object, and, once loaded, the media object is a
+				child of that Loader object. For media embedded in the SWF
+				file, it is the loaded object. If no `<img>` tag with the
+				matching `id` exists, the method returns `null`.
+	**/
+	// function getImageReference(id : String) : flash.display.DisplayObject;
 
 	/**
 		Returns the zero-based index value of the line at the point specified by
@@ -835,6 +1100,16 @@ class TextField extends InteractiveObject
 		return -1;
 	}
 
+	/**
+		Returns the zero-based index value of the line containing the
+		character specified by the `charIndex` parameter.
+
+		@param charIndex The zero-based index value of the character (for
+						 example, the first character is 0, the second
+						 character is 1, and so on).
+		@return The zero-based index value of the line.
+		@throws RangeError The character index specified is out of range.
+	**/
 	public function getLineIndexOfChar(charIndex:Int):Int
 	{
 		if (charIndex < 0 || charIndex > __text.length) return -1;
@@ -852,6 +1127,13 @@ class TextField extends InteractiveObject
 		return -1;
 	}
 
+	/**
+		Returns the number of characters in a specific text line.
+
+		@param lineIndex The line number for which you want the length.
+		@return The number of characters in the line.
+		@throws RangeError The line number specified is out of range.
+	**/
 	public function getLineLength(lineIndex:Int):Int
 	{
 		__updateLayout();
@@ -969,6 +1251,18 @@ class TextField extends InteractiveObject
 		return __textEngine.text.substring(startIndex, endIndex);
 	}
 
+	/**
+		Given a character index, returns the length of the paragraph
+		containing the given character. The length is relative to the first
+		character in the paragraph (as returned by
+		`getFirstCharInParagraph()`), not to the character index passed in.
+
+		@param charIndex The zero-based index value of the character (for
+						 example, the first character is 0, the second
+						 character is 1, and so on).
+		@return Returns the number of characters in the paragraph.
+		@throws RangeError The character index specified is out of range.
+	**/
 	public function getParagraphLength(charIndex:Int):Int
 	{
 		if (charIndex < 0 || charIndex > text.length) return -1;
@@ -983,23 +1277,41 @@ class TextField extends InteractiveObject
 		return endIndex - startIndex;
 	}
 
+	// function getRawText() : String;
+
 	/**
-		Returns a TextFormat object that contains formatting information for the
-		range of text that the `beginIndex` and `endIndex`
-		parameters specify. Only properties that are common to the entire text
-		specified are set in the resulting TextFormat object. Any property that is
+		Returns a TextFormat object that contains formatting information for
+		the range of text that the `beginIndex` and `endIndex` parameters
+		specify. Only properties that are common to the entire text specified
+		are set in the resulting TextFormat object. Any property that is
 		_mixed_, meaning that it has different values at different points in
 		the text, has a value of `null`.
-
 		If you do not specify values for these parameters, this method is
 		applied to all the text in the text field.
 
 		The following table describes three possible usages:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Usage</entry><entry>Description</entry></row></thead><tbody><row><entry>`my_textField.getTextFormat()`</entry><entry>Returns
+		a TextFormat object containing formatting information for all text in
+		a text field. Only properties that are common to all text in the text
+		field are set in the resulting TextFormat object. Any property that is
+		_mixed_, meaning that it has different values at different points in
+		the text, has a value of
+		`null`.</entry></row><row><entry>`my_textField.getTextFormat(beginIndex:Number)`</entry><entry>Returns
+		a TextFormat object containing a copy of the text format of the
+		character at the `beginIndex`
+		position.</entry></row><row><entry>`my_textField.getTextFormat(beginIndex:Number,endIndex:Number)`</entry><entry>Returns
+		a TextFormat object containing formatting information for the span of
+		text from `beginIndex` to `endIndex-1`. Only properties that are
+		common to all of the text in the specified range are set in the
+		resulting TextFormat object. Any property that is mixed (that is, has
+		different values at different points in the range) has its value set
+		to `null`.</entry></row></tbody></tgroup>
 
-		@return The TextFormat object that represents the formatting properties
-				for the specified text.
-		@throws RangeError The `beginIndex` or `endIndex`
-						   specified is out of range.
+		@return The TextFormat object that represents the formatting
+				properties for the specified text.
+		@throws RangeError The `beginIndex` or `endIndex` specified is out of
+						   range.
 	**/
 	public function getTextFormat(beginIndex:Int = -1, endIndex:Int = -1):TextFormat
 	{
@@ -1051,11 +1363,72 @@ class TextField extends InteractiveObject
 		return format;
 	}
 
+	/**
+		Returns true if an embedded font is available with the specified
+		`fontName` and `fontStyle` where `Font.fontType` is
+		`flash.text.FontType.EMBEDDED`. Starting with Flash Player 10, two
+		kinds of embedded fonts can appear in a SWF file. Normal embedded
+		fonts are only used with TextField objects. CFF embedded fonts are
+		only used with the flash.text.engine classes. The two types are
+		distinguished by the `fontType` property of the `Font` class, as
+		returned by the `enumerateFonts()` function.
+		TextField cannot use a font of type `EMBEDDED_CFF`. If `embedFonts` is
+		set to `true` and the only font available at run time with the
+		specified name and style is of type `EMBEDDED_CFF`, Flash Player fails
+		to render the text, as if no embedded font were available with the
+		specified name and style.
+
+		If both `EMBEDDED` and `EMBEDDED_CFF` fonts are available with the
+		same name and style, the `EMBEDDED` font is selected and text renders
+		with the `EMBEDDED` font.
+
+		@param fontName  The name of the embedded font to check.
+		@param fontStyle Specifies the font style to check. Use
+						 `flash.text.FontStyle`
+		@return `true` if a compatible embedded font is available, otherwise
+				`false`.
+		@throws ArgumentError The `fontStyle` specified is not a member of
+							  `flash.text.FontStyle`.
+	**/
+	// @:require(flash10) static function isFontCompatible(fontName : String, fontStyle : String) : Bool;
+
+	/**
+		Replaces the current selection with the contents of the `value`
+		parameter. The text is inserted at the position of the current
+		selection, using the current default character format and default
+		paragraph format. The text is not treated as HTML.
+		You can use the `replaceSelectedText()` method to insert and delete
+		text without disrupting the character and paragraph formatting of the
+		rest of the text.
+
+		**Note:** This method does not work if a style sheet is applied to the
+		text field.
+
+		@param value The string to replace the currently selected text.
+		@throws Error This method cannot be used on a text field with a style
+					  sheet.
+	**/
 	public function replaceSelectedText(value:String):Void
 	{
 		__replaceSelectedText(value, false);
 	}
 
+	/**
+		Replaces the range of characters that the `beginIndex` and `endIndex`
+		parameters specify with the contents of the `newText` parameter. As
+		designed, the text from `beginIndex` to `endIndex-1` is replaced.
+		**Note:** This method does not work if a style sheet is applied to the
+		text field.
+
+		@param beginIndex The zero-based index value for the start position of
+						  the replacement range.
+		@param endIndex   The zero-based index position of the first character
+						  after the desired text span.
+		@param newText    The text to use to replace the specified range of
+						  characters.
+		@throws Error This method cannot be used on a text field with a style
+					  sheet.
+	**/
 	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void
 	{
 		__replaceText(beginIndex, endIndex, newText, false);

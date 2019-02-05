@@ -229,9 +229,9 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __buildAGALUniformList():Void
 	{
-		#if lime
 		if (__format == GLSL) return;
 
+		#if lime
 		var gl = __context.gl;
 
 		__agalUniforms.clear();

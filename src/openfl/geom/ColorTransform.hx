@@ -197,6 +197,13 @@ class ColorTransform
 		alphaMultiplier *= second.alphaMultiplier;
 	}
 
+	/**
+		Formats and returns a string that describes all of the properties of
+		the ColorTransform object.
+
+		@return A string that lists all of the properties of the
+				ColorTransform object.
+	**/
 	public function toString():String
 	{
 		return

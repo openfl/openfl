@@ -158,6 +158,24 @@ class Transform
 		__hasMatrix = true;
 	}
 
+	/**
+		Returns a Matrix3D object, which can transform the space of a
+		specified display object in relation to the current display object's
+		space. You can use the `getRelativeMatrix3D()` method to move one
+		three-dimensional display object relative to another three-dimensional
+		display object.
+
+		@param relativeTo The display object relative to which the
+						  transformation occurs. To get a Matrix3D object
+						  relative to the stage, set the parameter to the
+						  `root` or `stage` object. To get the world-relative
+						  matrix of the display object, set the parameter to a
+						  display object that has a perspective transformation
+						  applied to it.
+		@return A Matrix3D object that can be used to transform the space from
+				the `relativeTo` display object to the current display object
+				space.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
 	// Get & Set Methods
 	@:noCompletion private function get_colorTransform():ColorTransform

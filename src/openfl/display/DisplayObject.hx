@@ -260,7 +260,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		object performs pixel snapping automatically. The animation speed can be
 		significantly faster depending on the complexity of the vector content.
 
-
 		The `cacheAsBitmap` property is automatically set to
 		`true` whenever you apply a filter to a display object(when
 		its `filter` array is not empty), and if a display object has a
@@ -273,7 +272,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		`cacheAsBitmap` property is set to `true` and
 		instead renders from vector data in the following cases:
 
-
 		* The bitmap is too large. In AIR 1.5 and Flash Player 10, the maximum
 		size for a bitmap image is 8,191 pixels in width or height, and the total
 		number of pixels cannot exceed 16,777,215 pixels.(So, if a bitmap image
@@ -281,7 +279,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		and earlier, the limitation is is 2880 pixels in height and 2,880 pixels
 		in width.
 		*  The bitmap fails to allocate(out of memory error).
-
 
 		The `cacheAsBitmap` property is best used with movie clips
 		that have mostly static content and that do not scale and rotate

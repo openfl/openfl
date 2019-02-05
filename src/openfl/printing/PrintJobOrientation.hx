@@ -1,10 +1,26 @@
 package openfl.printing;
 
 #if !flash
+
 #if !openfljs
+/**
+	This class provides values that are used by the `PrintJob.orientation`
+	property for the image position of a printed page.
+**/
 @:enum abstract PrintJobOrientation(Null<Int>)
 {
+	/**
+		The landscape (horizontal) image orientation for printing. This
+		constant is used with the `PrintJob.orientation` property. Use the
+		syntax `PrintJobOrientation.LANDSCAPE`.
+	**/
 	public var LANDSCAPE = 0;
+
+	/**
+		The portrait (vertical) image orientation for printing. This constant
+		is used with the `PrintJob.orientation` property. Use the syntax
+		`PrintJobOrientation.PORTRAIT`.
+	**/
 	public var PORTRAIT = 1;
 
 	@:from private static function fromString(value:String):PrintJobOrientation

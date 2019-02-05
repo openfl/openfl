@@ -281,6 +281,54 @@ import js.html.CanvasRenderingContext2D;
 		}
 	}
 
+	/**
+		Specifies a shader fill used by subsequent calls to other Graphics
+		methods (such as `lineTo()` or `drawCircle()`) for the object. The
+		fill remains in effect until you call the `beginFill()`,
+		`beginBitmapFill()`, `beginGradientFill()`, or `beginShaderFill()`
+		method. Calling the `clear()` method clears the fill.
+		The application renders the fill whenever three or more points are
+		drawn, or when the `endFill()` method is called.
+
+		Shader fills are not supported under GPU rendering; filled areas will
+		be colored cyan.
+
+		@param shader The shader to use for the fill. This Shader instance is
+					  not required to specify an image input. However, if an
+					  image input is specified in the shader, the input must
+					  be provided manually. To specify the input, set the
+					  `input` property of the corresponding ShaderInput
+					  property of the `Shader.data` property.
+					  When you pass a Shader instance as an argument the
+					  shader is copied internally. The drawing fill operation
+					  uses that internal copy, not a reference to the original
+					  shader. Any changes made to the shader, such as changing
+					  a parameter value, input, or bytecode, are not applied
+					  to the copied shader that's used for the fill.
+		@param matrix A matrix object (of the flash.geom.Matrix class), which
+					  you can use to define transformations on the shader. For
+					  example, you can use the following matrix to rotate a
+					  shader by 45 degrees (pi/4 radians): <codeblock
+					  xml:space="preserve"> matrix = new flash.geom.Matrix();
+					  matrix.rotate(Math.PI / 4); ```
+					  The coordinates received in the shader are based on the
+					  matrix that is specified for the `matrix` parameter. For
+					  a default (`null`) matrix, the coordinates in the shader
+					  are local pixel coordinates which can be used to sample
+					  an input.
+		@throws ArgumentError When the shader output type is not compatible
+							  with this operation (the shader must specify a
+							  `pixel3` or `pixel4` output).
+		@throws ArgumentError When the shader specifies an image input that
+							  isn't provided.
+		@throws ArgumentError When a ByteArray or Vector.<Number> instance is
+							  used as an input and the `width` and `height`
+							  properties aren't specified for the ShaderInput,
+							  or the specified values don't match the amount
+							  of data in the input object. See the
+							  `ShaderInput.input` property for more
+							  information.
+	**/
 	public function beginShaderFill(shader:Shader, matrix:Matrix = null):Void
 	{
 		if (shader != null)
@@ -329,6 +377,13 @@ import js.html.CanvasRenderingContext2D;
 		#end
 	}
 
+	/**
+		Copies all of drawing commands from the source Graphics object into
+		the calling Graphics object.
+
+		@param sourceGraphics The Graphics object from which to copy the
+							  drawing commands.
+	**/
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
 		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone() : null;

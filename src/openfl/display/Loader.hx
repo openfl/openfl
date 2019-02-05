@@ -158,7 +158,6 @@ class Loader extends DisplayObjectContainer
 		events that the LoaderInfo object associated with the
 		`contentLoaderInfo` property of the Loader object:
 
-
 		* The `open` event is dispatched when loading begins.
 		* The `ioError` or `securityError` event is
 		dispatched if the file cannot be loaded or if an error occured during the
@@ -231,14 +230,12 @@ class Loader extends DisplayObjectContainer
 		body), the POST operation is subject to the security rules applied to
 		uploads:
 
-
 		* The POST operation must be performed in response to a user-initiated
 		action, such as a mouse click or key press.
 		* If the POST operation is cross-domain(the POST target is not on the
 		same server as the SWF file that is sending the POST request), the target
 		server must provide a URL policy file that permits cross-domain
 		access.
-
 
 		Also, for any multipart Content-Type, the syntax must be valid
 		(according to the RFC2046 standard). If the syntax appears to be invalid,
@@ -602,7 +599,6 @@ class Loader extends DisplayObjectContainer
 		* Timers are stopped.
 		* Camera and Microphone instances are detached
 		* Movie clips are stopped.
-
 
 		@param gc Provides a hint to the garbage collector to run on the child SWF
 				  objects(`true`) or not(`false`). If you

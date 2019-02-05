@@ -20,37 +20,120 @@ import openfl.display.InteractiveObject;
 class FocusEvent extends Event
 {
 	/**
-		Defines the value of the `type` property of a
-		`focusIn` event object.
-
+		Defines the value of the `type` property of a `focusIn` event object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`keyCode`</entry><entry>0; applies
+		only to `keyFocusChange`
+		events.</entry></row><row><entry>`relatedObject`</entry><entry>The
+		complementary InteractiveObject instance that is affected by the
+		change in
+		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`false`;
+		applies only to `keyFocusChange`
+		events.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance that has just received focus. The `target`
+		is not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the event.
+		</entry></row><row><entry>`direction`</entry><entry>The direction from
+		which focus was assigned. This property reports the value of the
+		`direction` parameter of the `assignFocus()` method of the stage. If
+		the focus changed through some other means, the value will always be
+		`FocusDirection.NONE`. Applies only to `focusIn` events. For all other
+		focus events the value will be
+		`FocusDirection.NONE`.</entry></row></tbody></tgroup>
 	**/
 	public static inline var FOCUS_IN:String = "focusIn";
 
 	/**
-		Defines the value of the `type` property of a
-		`focusOut` event object.
+		Defines the value of the `type` property of a `focusOut` event object.
 
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		there is no default behavior to
+		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`keyCode`</entry><entry>0; applies
+		only to `keyFocusChange`
+		events.</entry></row><row><entry>`relatedObject`</entry><entry>The
+		complementary InteractiveObject instance that is affected by the
+		change in
+		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`false`;
+		applies only to `keyFocusChange`
+		events.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance that has just lost focus. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the event.
+		</entry></row></tbody></tgroup>
 	**/
 	public static inline var FOCUS_OUT:String = "focusOut";
 
 	/**
-		Defines the value of the `type` property of a
-		`keyFocusChange` event object.
-
+		Defines the value of the `type` property of a `keyFocusChange` event
+		object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`true`;
+		call the `preventDefault()` method to cancel default
+		behavior.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`keyCode`</entry><entry>The key
+		code value of the key pressed to trigger a `keyFocusChange`
+		event.</entry></row><row><entry>`relatedObject`</entry><entry>The
+		complementary InteractiveObject instance that is affected by the
+		change in
+		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
+		Shift key modifier is activated; `false`
+		otherwise.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance that currently has focus. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the event.
+		</entry></row></tbody></tgroup>
 	**/
 	public static inline var KEY_FOCUS_CHANGE:String = "keyFocusChange";
 
 	/**
-		Defines the value of the `type` property of a
-		`mouseFocusChange` event object.
-
+		Defines the value of the `type` property of a `mouseFocusChange` event
+		object.
 		This event has the following properties:
+		// TODO: Table <tgroup
+		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`true`;
+		call the `preventDefault()` method to cancel default
+		behavior.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		object that is actively processing the Event object with an event
+		listener.</entry></row><row><entry>`keyCode`</entry><entry>0; applies
+		only to `keyFocusChange`
+		events.</entry></row><row><entry>`relatedObject`</entry><entry>The
+		complementary InteractiveObject instance that is affected by the
+		change in
+		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`false`;
+		applies only to `keyFocusChange`
+		events.</entry></row><row><entry>`target`</entry><entry>The
+		InteractiveObject instance that currently has focus. The `target` is
+		not always the object in the display list that registered the event
+		listener. Use the `currentTarget` property to access the object in the
+		display list that is currently processing the event.
+		</entry></row></tbody></tgroup>
 	**/
 	public static inline var MOUSE_FOCUS_CHANGE:String = "mouseFocusChange";
 
+	/**
+		If `true`, the `relatedObject` property is set to `null` for reasons
+		related to security sandboxes. If the nominal value of `relatedObject`
+		is a reference to a DisplayObject in another sandbox, `relatedObject`
+		is set to `null` unless there is permission in both directions across
+		this sandbox boundary. Permission is established by calling
+		`Security.allowDomain()` from a SWF file, or by providing a policy
+		file from the server of an image file, and setting the
+		`LoaderContext.checkPolicyFile` property when loading the image.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
 
 	/**

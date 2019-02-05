@@ -176,7 +176,6 @@ import openfl.geom.Rectangle;
 								  might also interpret this contact as a
 								  combination of several mouse events, as well.
 
-
 								  Specifically, if a user moves a finger
 								  over an InteractiveObject, and then provides
 								  a secondary tap, the InteractiveObject
@@ -358,7 +357,6 @@ import openfl.geom.Rectangle;
 								  requirements to indicate zoom. Some devices
 								  might also interpret this contact as a
 								  combination of several mouse events, as well.
-
 
 								  Specifically, if a user moves a finger
 								  over an InteractiveObject, and then moves the
@@ -1068,6 +1066,14 @@ class InteractiveObject extends DisplayObject
 		`doubleClick` event.
 	**/
 	public var doubleClickEnabled:Bool;
+
+	/**
+		Specifies whether this object displays a focus rectangle. It can take
+		one of three values: `true`, `false`, or `null`. Values of `true` and
+		`false` work as expected, specifying whether or not the focus
+		rectangle appears. A value of `null` indicates that this object obeys
+		the `stageFocusRect` property of the Stage.
+	**/
 	public var focusRect:Null<Bool>;
 
 	/**
@@ -1111,8 +1117,68 @@ class InteractiveObject extends DisplayObject
 		iOS.
 	**/
 	public var needsSoftKeyboard:Bool;
+
+	/**
+		Defines the area that should remain on-screen when a soft keyboard is
+		displayed.
+		If the `needsSoftKeyboard` property of this InteractiveObject is
+		`true`, then the runtime adjusts the display as needed to keep the
+		object in view while the user types. Ordinarily, the runtime uses the
+		object bounds obtained from the `DisplayObject.getBounds()` method.
+		You can specify a different area using this
+		`softKeyboardInputAreaOfInterest` property.
+
+		Specify the `softKeyboardInputAreaOfInterest` in stage coordinates.
+
+		**Note:** On Android, the `softKeyboardInputAreaOfInterest` is not
+		respected in landscape orientations.
+	**/
 	public var softKeyboardInputAreaOfInterest:Rectangle;
+
+	/**
+		Specifies whether this object is in the tab order. If this object is
+		in the tab order, the value is `true`; otherwise, the value is
+		`false`. By default, the value is `false`, except for the following:
+		* For a SimpleButton object, the value is `true`.
+		* For a TextField object with `type = "input"`, the value is `true`.
+		* For a Sprite object or MovieClip object with `buttonMode = true`,
+		the value is `true`.
+	**/
 	public var tabEnabled(get, set):Bool;
+
+	/**
+		Specifies the tab ordering of objects in a SWF file. The `tabIndex`
+		property is -1 by default, meaning no tab index is set for the object.
+
+		If any currently displayed object in the SWF file contains a
+		`tabIndex` property, automatic tab ordering is disabled, and the tab
+		ordering is calculated from the `tabIndex` properties of objects in
+		the SWF file. The custom tab ordering includes only objects that have
+		`tabIndex` properties.
+
+		The `tabIndex` property can be a non-negative integer. The objects are
+		ordered according to their `tabIndex` properties, in ascending order.
+		An object with a `tabIndex` value of 1 precedes an object with a
+		`tabIndex` value of 2. Do not use the same `tabIndex` value for
+		multiple objects.
+
+		The custom tab ordering that the `tabIndex` property defines is
+		_flat_. This means that no attention is paid to the hierarchical
+		relationships of objects in the SWF file. All objects in the SWF file
+		with `tabIndex` properties are placed in the tab order, and the tab
+		order is determined by the order of the `tabIndex` values.
+
+		**Note:** To set the tab order for TLFTextField instances, cast the
+		display object child of the TLFTextField as an InteractiveObject, then
+		set the `tabIndex` property. For example: <pre xml:space="preserve">
+		InteractiveObject(tlfInstance.getChildAt(1)).tabIndex = 3; </pre> To
+		reverse the tab order from the default setting for three instances of
+		a TLFTextField object (`tlfInstance1`, `tlfInstance2` and
+		`tlfInstance3`), use: <pre xml:space="preserve">
+		InteractiveObject(tlfInstance1.getChildAt(1)).tabIndex = 3;
+		InteractiveObject(tlfInstance2.getChildAt(1)).tabIndex = 2;
+		InteractiveObject(tlfInstance3.getChildAt(1)).tabIndex = 1; </pre>
+	**/
 	public var tabIndex(get, set):Int;
 
 	@:noCompletion private var __tabEnabled:Null<Bool>;

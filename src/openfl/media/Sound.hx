@@ -98,43 +98,86 @@ class Sound extends EventDispatcher
 
 	/**
 		Provides access to the metadata that is part of an MP3 file.
-
 		MP3 sound files can contain ID3 tags, which provide metadata about the
-		file. If an MP3 sound that you load using the `Sound.load()`
-		method contains ID3 tags, you can query these properties. Only ID3 tags
-		that use the UTF-8 character set are supported.
+		file. If an MP3 sound that you load using the `Sound.load()` method
+		contains ID3 tags, you can query these properties. Only ID3 tags that
+		use the UTF-8 character set are supported.
 
-		Flash Player 9 and later and AIR support ID3 2.0 tags, specifically 2.3
-		and 2.4. The following tables list the standard ID3 2.0 tags and the type
-		of content the tags represent. The `Sound.id3` property
-		provides access to these tags through the format
-		`my_sound.id3.COMM`, `my_sound.id3.TIME`, and so on.
-		The first table describes tags that can be accessed either through the ID3
-		2.0 property name or the ActionScript property name. The second table
-		describes ID3 tags that are supported but do not have predefined
-		properties in ActionScript.
-
+		Flash Player 9 and later and AIR support ID3 2.0 tags, specifically
+		2.3 and 2.4. The following tables list the standard ID3 2.0 tags and
+		the type of content the tags represent. The `Sound.id3` property
+		provides access to these tags through the format `my_sound.id3.COMM`,
+		`my_sound.id3.TIME`, and so on. The first table describes tags that
+		can be accessed either through the ID3 2.0 property name or the
+		ActionScript property name. The second table describes ID3 tags that
+		are supported but do not have predefined properties in ActionScript.
+		// TODO: Table <tgroup cols="2"><tbody><row><entry>**ID3 2.0
+		tag**</entry><entry>**Corresponding Sound class
+		property**</entry></row><row><entry>COMM</entry><entry>Sound.id3.comment</entry></row><row><entry>TALB</entry><entry>Sound.id3.album
+		</entry></row><row><entry>TCON</entry><entry>Sound.id3.genre</entry></row><row><entry>TIT2</entry><entry>Sound.id3.songName
+		</entry></row><row><entry>TPE1</entry><entry>Sound.id3.artist</entry></row><row><entry>TRCK</entry><entry>Sound.id3.track
+		</entry></row><row><entry>TYER</entry><entry>Sound.id3.year
+		</entry></row></tbody></tgroup></adobetable>
+		The following table describes ID3 tags that are supported but do not
+		have predefined properties in the Sound class. You access them by
+		calling `mySound.id3.TFLT`, `mySound.id3.TIME`, and so on. **NOTE:**
+		None of these tags are supported in Flash Lite 4.
+		<adobetable><tgroup
+		cols="2"><tbody><row><entry>**Property**</entry><entry>**Description**</entry></row><row><entry>TFLT</entry><entry>File
+		type</entry></row><row><entry>TIME</entry><entry>Time</entry></row><row><entry>TIT1</entry><entry>Content
+		group
+		description</entry></row><row><entry>TIT2</entry><entry>Title/song
+		name/content
+		description</entry></row><row><entry>TIT3</entry><entry>Subtitle/description
+		refinement</entry></row><row><entry>TKEY</entry><entry>Initial
+		key</entry></row><row><entry>TLAN</entry><entry>Languages</entry></row><row><entry>TLEN</entry><entry>Length</entry></row><row><entry>TMED</entry><entry>Media
+		type</entry></row><row><entry>TOAL</entry><entry>Original
+		album/movie/show
+		title</entry></row><row><entry>TOFN</entry><entry>Original
+		filename</entry></row><row><entry>TOLY</entry><entry>Original
+		lyricists/text
+		writers</entry></row><row><entry>TOPE</entry><entry>Original
+		artists/performers</entry></row><row><entry>TORY</entry><entry>Original
+		release year</entry></row><row><entry>TOWN</entry><entry>File
+		owner/licensee</entry></row><row><entry>TPE1</entry><entry>Lead
+		performers/soloists</entry></row><row><entry>TPE2</entry><entry>Band/orchestra/accompaniment</entry></row><row><entry>TPE3</entry><entry>Conductor/performer
+		refinement</entry></row><row><entry>TPE4</entry><entry>Interpreted,
+		remixed, or otherwise modified
+		by</entry></row><row><entry>TPOS</entry><entry>Part of a
+		set</entry></row><row><entry>TPUB</entry><entry>Publisher</entry></row><row><entry>TRCK</entry><entry>Track
+		number/position in
+		set</entry></row><row><entry>TRDA</entry><entry>Recording
+		dates</entry></row><row><entry>TRSN</entry><entry>Internet radio
+		station name</entry></row><row><entry>TRSO</entry><entry>Internet
+		radio station
+		owner</entry></row><row><entry>TSIZ</entry><entry>Size</entry></row><row><entry>TSRC</entry><entry>ISRC
+		(international standard recording
+		code)</entry></row><row><entry>TSSE</entry><entry>Software/hardware
+		and settings used for
+		encoding</entry></row><row><entry>TYER</entry><entry>Year</entry></row><row><entry>WXXX</entry><entry>URL
+		link frame</entry></row></tbody></tgroup>
 		When using this property, consider the Flash Player security model:
 
-
-		* The `id3` property of a Sound object is always permitted
-		for SWF files that are in the same security sandbox as the sound file. For
+		* The `id3` property of a Sound object is always permitted for SWF
+		files that are in the same security sandbox as the sound file. For
 		files in other sandboxes, there are security checks.
-		* When you load the sound, using the `load()` method of the
-		Sound class, you can specify a `context` parameter, which is a
-		SoundLoaderContext object. If you set the `checkPolicyFile`
-		property of the SoundLoaderContext object to `true`, Flash
-		Player checks for a URL policy file on the server from which the sound is
-		loaded. If a policy file exists and permits access from the domain of the
-		loading SWF file, then the file is allowed to access the `id3`
-		property of the Sound object; otherwise it is not.
+		* When you load the sound, using the `load()` method of the Sound
+		class, you can specify a `context` parameter, which is a
+		SoundLoaderContext object. If you set the `checkPolicyFile` property
+		of the SoundLoaderContext object to `true`, Flash Player checks for a
+		URL policy file on the server from which the sound is loaded. If a
+		policy file exists and permits access from the domain of the loading
+		SWF file, then the file is allowed to access the `id3` property of the
+		Sound object; otherwise it is not.
 
-		However, in Adobe AIR, content in the `application` security
-		sandbox(content installed with the AIR application) are not restricted by
+		However, in Adobe AIR, content in the `application` security sandbox
+		(content installed with the AIR application) are not restricted by
 		these security limitations.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
+		Developer Center Topic: <a
+		href="http://www.adobe.com/go/devnet_security_en"
+		scope="external">Security</a>.
 	**/
 	public var id3(get, never):ID3Info;
 
@@ -232,6 +275,13 @@ class Sound extends EventDispatcher
 		}
 	}
 
+	/**
+		Closes the stream, causing any download of data to cease. No data may
+		be read from the stream after the `close()` method is called.
+
+		@throws IOError The stream could not be closed, or the stream was not
+						open.
+	**/
 	public function close():Void
 	{
 		#if lime
@@ -243,6 +293,28 @@ class Sound extends EventDispatcher
 		#end
 	}
 
+	/**
+		Extracts raw sound data from a Sound object.
+		This method is designed to be used when you are working with
+		dynamically generated audio, using a function you assign to the
+		`sampleData` event for a different Sound object. That is, you can use
+		this method to extract sound data from a Sound object. Then you can
+		write the data to the byte array that another Sound object is using to
+		stream dynamic audio.
+
+		The audio data is placed in the target byte array starting from the
+		current position of the byte array. The audio data is always exposed
+		as 44100 Hz Stereo. The sample type is a 32-bit floating-point value,
+		which can be converted to a Number using `ByteArray.readFloat()`.
+
+		@param target A ByteArray object in which the extracted sound samples
+					  are placed.
+		@param length The number of sound samples to extract. A sample
+					  contains both the left and right channels נthat is,
+					  two 32-bit floating-point values.
+		@return The number of samples written to the ByteArray specified in
+				the `target` parameter.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#if lime
 	public static function fromAudioBuffer(buffer:AudioBuffer):Sound

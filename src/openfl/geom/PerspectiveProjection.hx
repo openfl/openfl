@@ -87,6 +87,9 @@ class PerspectiveProjection
 	}
 	#end
 
+	/**
+		Creates an instance of a PerspectiveProjection object.
+	**/
 	public function new()
 	{
 		__fieldOfView = 0;

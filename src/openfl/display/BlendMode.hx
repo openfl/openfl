@@ -11,7 +11,6 @@ package openfl.display;
 	openfl.display.DisplayObject class.
 	*  The `blendMode` parameter of the `draw()`
 	method of the openfl.display.BitmapData class
-
 **/
 @:enum abstract BlendMode(Null<Int>)
 {
