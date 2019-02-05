@@ -80,11 +80,12 @@ class SampleDataEvent extends Event
 		Defines the value of the `type` property of a `SampleDataEvent` event
 		object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`position`</entry><entry>The point
-		from which audio data is provided.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `position` | The point from which audio data is provided. |
 	**/
 	public static inline var SAMPLE_DATA:String = "sampleData";
 

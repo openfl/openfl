@@ -353,18 +353,15 @@ class PrintJob
 		The Print dialog box lets the user change print settings. When the
 		`PrintJob.start()` method returns successfully (the user clicks OK in
 		the Print dialog box), the following properties are populated,
-		representing the user's chosen print settings: // TODO: Table <tgroup
-		cols="4"><thead><row><entry>Property</entry><entry>Type</entry><entry>Units</entry><entry>Notes</entry></row></thead><tbody><row><entry>`PrintJob.paperHeight`</entry><entry>Number</entry><entry>Points</entry><entry>Overall
-		paper
-		height.</entry></row><row><entry>`PrintJob.paperWidth`</entry><entry>Number</entry><entry>Points</entry><entry>Overall
-		paper
-		width.</entry></row><row><entry>`PrintJob.pageHeight`</entry><entry>Number</entry><entry>Points</entry><entry>Height
-		of actual printable area on the page; any user-set margins are
-		ignored.</entry></row><row><entry>`PrintJob.pageWidth`</entry><entry>Number</entry><entry>Points</entry><entry>Width
-		of actual printable area on the page; any user-set margins are
-		ignored.</entry></row><row><entry>`PrintJob.orientation`</entry><entry>String</entry><entry/><entry>`"portrait"`
-		(`flash.printing.PrintJobOrientation.PORTRAIT`) or `"landscape"`
-		(`flash.printing.PrintJobOrientation.LANDSCAPE`).</entry></row></tbody></tgroup>
+		representing the user's chosen print settings:
+		
+		| Property | Type | Units | Notes |
+		| --- | --- | --- | --- |
+		| `PrintJob.paperHeight` | Number | Points | Overall paper height. |
+		| `PrintJob.paperWidth` | Number | Points | Overall paper width. |
+		| `PrintJob.pageHeight` | Number | Points | Height of actual printable area on the page; any user-set margins are ignored. |
+		| `PrintJob.pageWidth` | Number | Points | Width of actual printable area on the page; any user-set margins are ignored. |
+		| `PrintJob.orientation` | String | | `"portrait"` (`flash.printing.PrintJobOrientation.PORTRAIT`) or `"landscape"` (`flash.printing.PrintJobOrientation.LANDSCAPE`). |
 
 		**Note:** If the user cancels the Print dialog box, the properties are
 		not populated.

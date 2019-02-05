@@ -351,26 +351,12 @@ class TextField extends InteractiveObject
 
 		For the `flash.text.GridFitType` property, you can use the following
 		string values:
-		// TODO: Table <tgroup cols="2"><thead><row><entry>String
-		value</entry><entry>Description</entry></row></thead><tbody><row><entry>`flash.text.GridFitType.NONE`</entry><entry>Specifies
-		no grid fitting. Horizontal and vertical lines in the glyphs are not
-		forced to the pixel grid. This setting is recommended for animation or
-		for large font
-		sizes.</entry></row><row><entry>`flash.text.GridFitType.PIXEL`</entry><entry>Specifies
-		that strong horizontal and vertical lines are fit to the pixel grid.
-		This setting works only for left-aligned text fields. To use this
-		setting, the `flash.dispaly.AntiAliasType` property of the text field
-		must be set to `flash.text.AntiAliasType.ADVANCED`. This setting
-		generally provides the best legibility for left-aligned
-		text.</entry></row><row><entry>`flash.text.GridFitType.SUBPIXEL`</entry><entry>Specifies
-		that strong horizontal and vertical lines are fit to the subpixel grid
-		on an LCD monitor. To use this setting, the `flash.text.AntiAliasType`
-		property of the text field must be set to
-		`flash.text.AntiAliasType.ADVANCED`. The
-		`flash.text.GridFitType.SUBPIXEL` setting is often good for
-		right-aligned or centered dynamic text, and it is sometimes a useful
-		trade-off for animation versus text
-		quality.</entry></row></tbody></tgroup>
+		
+		| String value | Description |
+		| --- | --- |
+		| `flash.text.GridFitType.NONE` | Specifies no grid fitting. Horizontal and vertical lines in the glyphs are not forced to the pixel grid. This setting is recommended for animation or for large font sizes. |
+		| `flash.text.GridFitType.PIXEL` | Specifies that strong horizontal and vertical lines are fit to the pixel grid. This setting works only for left-aligned text fields. To use this setting, the `flash.dispaly.AntiAliasType` property of the text field must be set to `flash.text.AntiAliasType.ADVANCED`. This setting generally provides the best legibility for left-aligned text. |
+		| `flash.text.GridFitType.SUBPIXEL` | Specifies that strong horizontal and vertical lines are fit to the subpixel grid on an LCD monitor. To use this setting, the `flash.text.AntiAliasType` property of the text field must be set to `flash.text.AntiAliasType.ADVANCED`. The `flash.text.GridFitType.SUBPIXEL` setting is often good for right-aligned or centered dynamic text, and it is sometimes a useful trade-off for animation versus text quality. |
 
 		@default pixel
 	**/
@@ -379,152 +365,31 @@ class TextField extends InteractiveObject
 	/**
 		Contains the HTML representation of the text field contents.
 		Flash Player supports the following HTML tags:
-		// TODO: Table <tgroup cols="2"><thead><row><entry> Tag
-		</entry><entry> Description </entry></row></thead><tbody><row><entry>
-		Anchor tag </entry><entry> The `<a>` tag creates a hypertext link and
-		supports the following attributes:
-		*  `target`: Specifies the name of the target window where you load
-		the page. Options include `_self`, `_blank`, `_parent`, and `_top`.
-		The `_self` option specifies the current frame in the current window,
-		`_blank` specifies a new window, `_parent` specifies the parent of the
-		current frame, and `_top` specifies the top-level frame in the current
-		window.
-		*  `href`: Specifies a URL or an ActionScript `link` event.The URL can
-		be either absolute or relative to the location of the SWF file that is
-		loading the page. An example of an absolute reference to a URL is
-		`http://www.adobe.com`; an example of a relative reference is
-		`/index.html`. Absolute URLs must be prefixed with http://; otherwise,
-		Flash Player or AIR treats them as relative URLs. You can use the
-		`link` event to cause the link to execute an ActionScript function in
-		a SWF file instead of opening a URL. To specify a `link` event, use
-		the event scheme instead of the http scheme in your `href` attribute.
-		An example is `href="event:myText"` instead of `href="http://myURL"`;
-		when the user clicks a hypertext link that contains the event scheme,
-		the text field dispatches a `link` TextEvent with its `text` property
-		set to "`myText`". You can then create an ActionScript function that
-		executes whenever the link TextEvent is dispatched. You can also
-		define `a:link`, `a:hover`, and `a:active` styles for anchor tags by
-		using style sheets.
-		</entry></row><row><entry> Bold tag </entry><entry> The `**` tag
-		renders text as bold. A bold typeface must be available for the font
-		used. </entry></row><row><entry> Break tag </entry><entry> The `<br>`
-		tag creates a line break in the text field. Set the text field to be a
-		multiline text field to use this tag. </entry></row><row><entry> Font
-		tag </entry><entry> The `<font>` tag specifies a font or list of fonts
-		to display the text.The font tag supports the following attributes:
-		*  `color`: Only hexadecimal color (`#FFFFFF`) values are supported.
-		*  `face`: Specifies the name of the font to use. As shown in the
-		following example, you can specify a list of comma-delimited font
-		names, in which case Flash Player selects the first available font. If
-		the specified font is not installed on the local computer system or
-		isn't embedded in the SWF file, Flash Player selects a substitute
-		font.
-		*  `size`: Specifies the size of the font. You can use absolute pixel
-		sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.
-		</entry></row><row><entry> Image tag </entry><entry> The `<img>` tag
-		lets you embed external image files (JPEG, GIF, PNG), SWF files, and
-		movie clips inside text fields. Text automatically flows around images
-		you embed in text fields. You must set the text field to be multiline
-		to wrap text around an image.
-		The `<img>` tag supports the following attributes:
-
-		*  `src`: Specifies the URL to an image or SWF file, or the linkage
-		identifier for a movie clip symbol in the library. This attribute is
-		required; all other attributes are optional. External files (JPEG,
-		GIF, PNG, and SWF files) do not show until they are downloaded
-		completely.
-		*  `width`: The width of the image, SWF file, or movie clip being
-		inserted, in pixels.
-		*  `height`: The height of the image, SWF file, or movie clip being
-		inserted, in pixels.
-		*  `align`: Specifies the horizontal alignment of the embedded image
-		within the text field. Valid values are `left` and `right`. The
-		default value is `left`.
-		*  `hspace`: Specifies the amount of horizontal space that surrounds
-		the image where no text appears. The default value is 8.
-		*  `vspace`: Specifies the amount of vertical space that surrounds the
-		image where no text appears. The default value is 8.
-		*  `id`: Specifies the name for the movie clip instance (created by
-		Flash Player) that contains the embedded image file, SWF file, or
-		movie clip. This approach is used to control the embedded content with
-		ActionScript.
-		*  `checkPolicyFile`: Specifies that Flash Player checks for a URL
-		policy file on the server associated with the image domain. If a
-		policy file exists, SWF files in the domains listed in the file can
-		access the data of the loaded image, for example, by calling the
-		`BitmapData.draw()` method with this image as the `source` parameter.
-		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
-
-		Flash displays media embedded in a text field at full size. To specify
-		the dimensions of the media you are embedding, use the `<img>` tag
-		`height` and `width` attributes.
-
-		In general, an image embedded in a text field appears on the line
-		following the `<img>` tag. However, when the `<img>` tag is the first
-		character in the text field, the image appears on the first line of
-		the text field.
-
-		For AIR content in the application security sandbox, AIR ignores `img`
-		tags in HTML content in ActionScript TextField objects. This is to
-		prevent possible phishing attacks,
-		</entry></row><row><entry> Italic tag </entry><entry> The `_` tag
-		displays the tagged text in italics. An italic typeface must be
-		available for the font used. </entry></row><row><entry> List item tag
-		</entry><entry> The `
-		* ` tag places a bullet in front of the text that it encloses.
-		**Note:** Because Flash Player and AIR do not recognize ordered and
-		unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered.
-		All lists are unordered and all list items use bullets.
-		</entry></row><row><entry> Paragraph tag </entry><entry> The `
-		` tag creates a new paragraph. The text field must be set to be a
-		multiline text field to use this tag. The `
-		` tag supports the following attributes:
-		*  align: Specifies alignment of text within the paragraph; valid
-		values are `left`, `right`, `justify`, and `center`.
-		*  class: Specifies a CSS style class defined by a
-		flash.text.StyleSheet object.
-		</entry></row><row><entry> Span tag </entry><entry> The `<span>` tag
-		is available only for use with CSS text styles. It supports the
-		following attribute:
-		*  class: Specifies a CSS style class defined by a
-		flash.text.StyleSheet object.
-		</entry></row><row><entry> Text format tag </entry><entry>
-		The `<textformat>` tag lets you use a subset of paragraph formatting
-		properties of the TextFormat class within text fields, including line
-		leading, indentation, margins, and tab stops. You can combine
-		`<textformat>` tags with the built-in HTML tags.
-
-		The `<textformat>` tag has the following attributes:
-
-		*  `blockindent`: Specifies the block indentation in points;
-		corresponds to `TextFormat.blockIndent`.
-		*  `indent`: Specifies the indentation from the left margin to the
-		first character in the paragraph; corresponds to `TextFormat.indent`.
-		Both positive and negative numbers are acceptable.
-		*  `leading`: Specifies the amount of leading (vertical space) between
-		lines; corresponds to `TextFormat.leading`. Both positive and negative
-		numbers are acceptable.
-		*  `leftmargin`: Specifies the left margin of the paragraph, in
-		points; corresponds to `TextFormat.leftMargin`.
-		*  `rightmargin`: Specifies the right margin of the paragraph, in
-		points; corresponds to `TextFormat.rightMargin`.
-		*  `tabstops`: Specifies custom tab stops as an array of non-negative
-		integers; corresponds to `TextFormat.tabStops`.
-		</entry></row><row><entry> Underline tag </entry><entry> The `<u>` tag
-		underlines the tagged text.
-		</entry></row></tbody></tgroup></adobetable>
+		
+		| Tag |  Description  |
+		| --- | --- |
+		| Anchor tag | The `<a>` tag creates a hypertext link and supports the following attributes:<ul><li>`target`: Specifies the name of the target window where you load the page. Options include `_self`, `_blank`, `_parent`, and `_top`. The `_self` option specifies the current frame in the current window, `_blank` specifies a new window, `_parent` specifies the parent of the current frame, and `_top` specifies the top-level frame in the current window.</li><li>`href`: Specifies a URL or an ActionScript `link` event.The URL can be either absolute or relative to the location of the SWF file that is loading the page. An example of an absolute reference to a URL is `http://www.adobe.com`; an example of a relative reference is `/index.html`. Absolute URLs must be prefixed with http://; otherwise, Flash Player or AIR treats them as relative URLs. You can use the `link` event to cause the link to execute an ActionScript function in a SWF file instead of opening a URL. To specify a `link` event, use the event scheme instead of the http scheme in your `href` attribute. An example is `href="event:myText"` instead of `href="http://myURL"`; when the user clicks a hypertext link that contains the event scheme, the text field dispatches a `link` TextEvent with its `text` property set to "`myText`". You can then create an ActionScript function that executes whenever the link TextEvent is dispatched. You can also define `a:link`, `a:hover`, and `a:active` styles for anchor tags by using style sheets.</li></ul> |
+		| Bold tag | The `<b>` tag renders text as bold. A bold typeface must be available for the font used. |
+		| Break tag | The `<br>` tag creates a line break in the text field. Set the text field to be a multiline text field to use this tag.  |
+		| Font tag | The `<font>` tag specifies a font or list of fonts to display the text.The font tag supports the following attributes:<ul><li>`color`: Only hexadecimal color (`#FFFFFF`) values are supported.</li><li>`face`: Specifies the name of the font to use. As shown in the following example, you can specify a list of comma-delimited font names, in which case Flash Player selects the first available font. If the specified font is not installed on the local computer system or isn't embedded in the SWF file, Flash Player selects a substitute font.</li><li>`size`: Specifies the size of the font. You can use absolute pixel sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.</li></ul> |
+		| Image tag | The `<img>` tag lets you embed external image files (JPEG, GIF, PNG), SWF files, and movie clips inside text fields. Text automatically flows around images you embed in text fields. You must set the text field to be multiline to wrap text around an image.<br>The `<img>` tag supports the following attributes:<ul><li>`src`: Specifies the URL to an image or SWF file, or the linkage identifier for a movie clip symbol in the library. This attribute is required; all other attributes are optional. External files (JPEG, GIF, PNG, and SWF files) do not show until they are downloaded completely.</li><li>`width`: The width of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`height`: The height of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`align`: Specifies the horizontal alignment of the embedded image within the text field. Valid values are `left` and `right`. The default value is `left`.</li><li>`hspace`: Specifies the amount of horizontal space that surrounds the image where no text appears. The default value is 8.</li><li>`vspace`: Specifies the amount of vertical space that surrounds the image where no text appears. The default value is 8.</li><li>`id`: Specifies the name for the movie clip instance (created by Flash Player) that contains the embedded image file, SWF file, or movie clip. This approach is used to control the embedded content with ActionScript.</li><li>`checkPolicyFile`: Specifies that Flash Player checks for a URL policy file on the server associated with the image domain. If a policy file exists, SWF files in the domains listed in the file can access the data of the loaded image, for example, by calling the `BitmapData.draw()` method with this image as the `source` parameter. For more information related to security, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).</li></ul>Flash displays media embedded in a text field at full size. To specify the dimensions of the media you are embedding, use the `<img>` tag `height` and `width` attributes. <br>In general, an image embedded in a text field appears on the line following the `<img>` tag. However, when the `<img>` tag is the first character in the text field, the image appears on the first line of the text field.<br>For AIR content in the application security sandbox, AIR ignores `img` tags in HTML content in ActionScript TextField objects. This is to prevent possible phishing attacks. |
+		| Italic tag | The `<i>` tag displays the tagged text in italics. An italic typeface must be available for the font used. |
+		| List item tag | The `<li>` tag places a bullet in front of the text that it encloses.<br>**Note:** Because Flash Player and AIR do not recognize ordered and unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered. All lists are unordered and all list items use bullets. |
+		| Paragraph tag | The `<p>` tag creates a new paragraph. The text field must be set to be a multiline text field to use this tag. The `<p>` tag supports the following attributes:<ul><li>align: Specifies alignment of text within the paragraph; valid values are `left`, `right`, `justify`, and `center`.</li><li>class: Specifies a CSS style class defined by a flash.text.StyleSheet object.</li></ul> |
+		| Span tag | The `<span>` tag is available only for use with CSS text styles. It supports the following attribute:<ul><li>class: Specifies a CSS style class defined by a flash.text.StyleSheet object.</li></ul> |
+		| Text format tag | The `<textformat>` tag lets you use a subset of paragraph formatting properties of the TextFormat class within text fields, including line leading, indentation, margins, and tab stops. You can combine `<textformat>` tags with the built-in HTML tags.<br>The `<textformat>` tag has the following attributes:<li>`blockindent`: Specifies the block indentation in points; corresponds to `TextFormat.blockIndent`.</li><li>`indent`: Specifies the indentation from the left margin to the first character in the paragraph; corresponds to `TextFormat.indent`. Both positive and negative numbers are acceptable.</li><li>`leading`: Specifies the amount of leading (vertical space) between lines; corresponds to `TextFormat.leading`. Both positive and negative numbers are acceptable.</li><li>`leftmargin`: Specifies the left margin of the paragraph, in points; corresponds to `TextFormat.leftMargin`.</li><li>`rightmargin`: Specifies the right margin of the paragraph, in points; corresponds to `TextFormat.rightMargin`.</li><li>`tabstops`: Specifies custom tab stops as an array of non-negative integers; corresponds to `TextFormat.tabStops`.</li></ul> |
+		| Underline tag | The `<u>` tag underlines the tagged text. |
+		
 		Flash Player and AIR support the following HTML entities:
-		<adobetable><tgroup cols="2"><thead><row><entry> Entity
-		</entry><entry> Description </entry></row></thead><tbody><row><entry>
-		&amp;lt; </entry><entry> < (less than) </entry></row><row><entry>
-		&amp;gt; </entry><entry> > (greater than) </entry></row><row><entry>
-		&amp;amp; </entry><entry> & (ampersand) </entry></row><row><entry>
-		&amp;quot; </entry><entry> " (double quotes)
-		</entry></row><row><entry> &amp;apos; </entry><entry> ' (apostrophe,
-		single quote) </entry></row></tbody></tgroup>
+		 
+		| Entity | Description |
+		| --- | --- |
+		| &amp;lt; | < (less than) |
+		| &amp;gt; | > (greater than) |
+		| &amp;amp; | & (ampersand) |
+		| &amp;quot; | " (double quotes) |
+		| &amp;apos; | ' (apostrophe, single quote) |
+		
 		Flash Player and AIR also support explicit character codes, such as
 		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
 	**/
@@ -1290,23 +1155,12 @@ class TextField extends InteractiveObject
 		applied to all the text in the text field.
 
 		The following table describes three possible usages:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Usage</entry><entry>Description</entry></row></thead><tbody><row><entry>`my_textField.getTextFormat()`</entry><entry>Returns
-		a TextFormat object containing formatting information for all text in
-		a text field. Only properties that are common to all text in the text
-		field are set in the resulting TextFormat object. Any property that is
-		_mixed_, meaning that it has different values at different points in
-		the text, has a value of
-		`null`.</entry></row><row><entry>`my_textField.getTextFormat(beginIndex:Number)`</entry><entry>Returns
-		a TextFormat object containing a copy of the text format of the
-		character at the `beginIndex`
-		position.</entry></row><row><entry>`my_textField.getTextFormat(beginIndex:Number,endIndex:Number)`</entry><entry>Returns
-		a TextFormat object containing formatting information for the span of
-		text from `beginIndex` to `endIndex-1`. Only properties that are
-		common to all of the text in the specified range are set in the
-		resulting TextFormat object. Any property that is mixed (that is, has
-		different values at different points in the range) has its value set
-		to `null`.</entry></row></tbody></tgroup>
+		
+		| Usage | Description |
+		| --- | --- |
+		| `my_textField.getTextFormat()` | Returns a TextFormat object containing formatting information for all text in a text field. Only properties that are common to all text in the text field are set in the resulting TextFormat object. Any property that is _mixed_, meaning that it has different values at different points in the text, has a value of `null`. |
+		| `my_textField.getTextFormat(beginIndex:Number)` | Returns a TextFormat object containing a copy of the text format of the character at the `beginIndex` position. |
+		| `my_textField.getTextFormat(beginIndex:Number,endIndex:Number)` | Returns a TextFormat object containing formatting information for the span of text from `beginIndex` to `endIndex-1`. Only properties that are common to all of the text in the specified range are set in the resulting TextFormat object. Any property that is mixed (that is, has different values at different points in the range) has its value set to `null`. |
 
 		@return The TextFormat object that represents the formatting
 				properties for the specified text.

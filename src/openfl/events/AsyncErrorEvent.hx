@@ -20,15 +20,14 @@ class AsyncErrorEvent extends ErrorEvent
 		The `AsyncErrorEvent.ASYNC_ERROR` constant defines the value of the
 		`type` property of an `asyncError` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to cancel.
-		</entry></row><row><entry>`currentTarget`</entry><entry>The object
-		that is actively processing the Event object with an event listener.
-		</entry></row><row><entry>`target`</entry><entry>The object
-		dispatching the
-		event.</entry></row><row><entry>`error`</entry><entry>The error that
-		triggered the event.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object dispatching the event. |
+		| `error` | The error that triggered the event. |
 	**/
 	public static inline var ASYNC_ERROR:String = "asyncError";
 

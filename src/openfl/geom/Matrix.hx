@@ -33,8 +33,7 @@ import lime.math.Matrix3;
 	A transformation matrix object is a 3 x 3 matrix with the following
 	contents:
 
-	//TODO: Image href="../../images/matrix_props1.jpg" placement="inline"
-	alt="Matrix class properties in matrix notation"
+	![Matrix class properties in matrix notation](/images/matrix_props1.jpg)
 
 	In traditional transformation matrixes, the `u`, `v`, and `w` properties
 	provide extra capabilities. The Matrix class can only operate in
@@ -42,9 +41,7 @@ import lime.math.Matrix3;
 	and `v` are 0.0, and that the property value `w` is 1.0. The effective
 	values of the matrix are as follows:
 
-	//TODO: Image href="../../images/matrix_props2.jpg" placement="inline"
-	alt="Matrix class properties in matrix notation showing assumed values for
-	u, v, and w"
+	![Matrix class properties in matrix notation showing assumed values for u, v, and w](/images/matrix_props2.jpg)
 
 	You can get and set the values of all six of the other properties in a
 	Matrix object: `a`, `b`, `c`, `d`, `tx`, and `ty`.
@@ -53,47 +50,14 @@ import lime.math.Matrix3;
 	translation, scaling, rotation, and skewing. You can set three of these
 	transformations by using specialized methods, as described in the
 	following table:
-	// TODO: Table <tgroup
-	cols="5"><thead><row><entry>Transformation</entry><entry>Method</entry><entry>Matrix
-	values</entry><entry>Display
-	result</entry><entry>Description</entry></row></thead><tbody><row
-	valign="top"><entry>Translation (displacement)</entry><entry
-	outputclass="nowrap">`translate(tx, ty)` </entry><entry>//TODO: Image
-	height="104" href="../../images/matrix_translate.jpg" placement="inline"
-	alt="Matrix notation of translate method parameters"
-	width="150"</entry><entry>//TODO: Image height="91"
-	href="../../images/matrix_translate_image.jpg" placement="inline"
-	alt="Illustration of translate method effects"
-	width="111"</entry><entry>Moves the image `tx` pixels to the right and
-	`ty` pixels down.</entry></row><row
-	valign="top"><entry>Scaling</entry><entry>`scale(sx,
-	sy)`</entry><entry>//TODO: Image height="105"
-	href="../../images/matrix_scale.jpg" placement="inline" alt="Matrix
-	notation of scale method parameters" width="140"</entry><entry>//TODO:
-	Image height="84" href="../../images/matrix_scale_image.jpg"
-	placement="inline" alt="Illustration of scale method effects"
-	width="111"</entry><entry>Resizes the image, multiplying the location of
-	each pixel by `sx` on the _x_ axis and `sy` on the _y_
-	axis.</entry></row><row
-	valign="top"><entry>Rotation</entry><entry>`rotate(q)`</entry><entry>//TODO:
-	Image height="105" href="../../images/matrix_rotate.jpg"
-	placement="inline" alt="Matrix notation of rotate method properties"
-	width="219"</entry><entry>//TODO: Image height="91"
-	href="../../images/matrix_rotate_image.jpg" placement="inline"
-	alt="Illustration of rotate method effects"
-	width="111"</entry><entry>Rotates the image by an angle `q`, which is
-	measured in radians.</entry></row><row valign="top"><entry>Skewing or
-	shearing </entry><entry>None; must set the properties `b` and
-	`c`</entry><entry>//TODO: Image href="../../images/matrix_skew.jpg"
-	placement="inline" alt="Matrix notation of skew function
-	properties"</entry><entry>//TODO: Image height="77"
-	href="../../images/matrix_skew_image.jpg" placement="inline"
-	alt="Illustration of skew function effects"
-	width="111"</entry><entry>Progressively slides the image in a direction
-	parallel to the _x_ or _y_ axis. The `b` property of the Matrix object
-	represents the tangent of the skew angle along the _y_ axis; the `c`
-	property of the Matrix object represents the tangent of the skew angle
-	along the _x_ axis.</entry></row></tbody></tgroup>
+	
+	| Transformation | Method | Matrix values | Display result | Description |
+	| --- | --- | --- | --- | --- |
+	| Translation (displacement) | `translate(tx, ty)` | ![Matrix notation of translate method parameters](/images/matrix_translate.jpg) | ![Illustration of translate method effects](/images/matrix_translate_image.jpg) | Moves the image `tx` pixels to the right and `ty` pixels down. |
+	| Scaling | `scale(sx, sy)` | ![Matrix notation of scale method parameters](/images/matrix_scale.jpg) | ![Illustration of scale method effects](/images/matrix_scale_image.jpg) | Resizes the image, multiplying the location of each pixel by `sx` on the _x_ axis and `sy` on the _y_ axis. |
+	| Rotation | `rotate(q)` | ![Matrix notation of rotate method properties](/images/matrix_rotate.jpg) | ![Illustration of rotate method effects](/images/matrix_rotate_image.jpg) | Rotates the image by an angle `q`, which is measured in radians. |
+	| Skewing or shearing | None; must set the properties `b` and `c` | ![Matrix notation of skew function properties](/images/matrix_skew.jpg) | ![Illustration of skew function effects](/images/matrix_skew_image.jpg) | Progressively slides the image in a direction parallel to the _x_ or _y_ axis. The `b` property of the Matrix object represents the tangent of the skew angle along the _y_ axis; the `c` property of the Matrix object represents the tangent of the skew angle along the _x_ axis. |
+	
 	Each transformation function alters the current matrix properties so that
 	you can effectively combine multiple transformations. To do this, you call
 	more than one transformation function before applying the matrix to its
@@ -156,24 +120,20 @@ class Matrix
 	/**
 		Creates a new Matrix object with the specified parameters. In matrix
 		notation, the properties are organized like this:
-		//TODO: Image href="../../images/matrix_props2.jpg" placement="inline"
-		alt="Matrix class properties in matrix notation showing assumed values
-		for u, v, and w"
+		
+		![Matrix class properties in matrix notation showing assumed values for u, v, and w](/images/matrix_props2.jpg)
 
 		If you do not provide any parameters to the `new Matrix()`
 		constructor, it creates an _identity matrix_ with the following
 		values:
-		// TODO: Table <tgroup cols="2"><tbody><row><entry><pre
-		xml:space="preserve">a = 1</pre></entry><entry><pre
-		xml:space="preserve">b = 0</pre></entry></row><row><entry><pre
-		xml:space="preserve">c = 0</pre></entry><entry><pre
-		xml:space="preserve">d = 1</pre></entry></row><row><entry><pre
-		xml:space="preserve">tx = 0</pre></entry><entry><pre
-		xml:space="preserve">ty = 0</pre></entry></row></tbody></tgroup>
+		
+		| `a = 1` | `b = 0` |
+		| `c = 0` | `d = 1` |
+		| `tx = 0` | `ty = 0` |
+		
 		In matrix notation, the identity matrix looks like this:
 
-		//TODO: Image href="../../images/matrix_identity.jpg"
-		placement="inline" alt="Matrix class properties in matrix notation"
+		![Matrix class properties in matrix notation](/images/matrix_identity.jpg)
 
 		@param a  The value that affects the positioning of pixels along the
 				  _x_ axis when scaling or rotating an image.
@@ -413,27 +373,13 @@ class Matrix
 		The following illustrations show gradients in which the matrix was
 		defined using the `createGradientBox()` method with different
 		parameter settings:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>`createGradientBox()`
-		settings</entry><entry>Resulting
-		gradient</entry></row></thead><tbody><row><entry><pre
-		xml:space="preserve">width = 25; height = 25; rotation = 0; tx = 0; ty
-		= 0;</pre></entry><entry align="center">//TODO: Image
-		href="../../images/createGradientBox-1.jpg" placement="inline"
-		alt="resulting linear gradient"</entry></row><row><entry><pre
-		xml:space="preserve">width = 25; height = 25; rotation = 0; tx = 25;
-		ty = 0;</pre></entry><entry align="center">//TODO: Image
-		href="../../images/createGradientBox-2.jpg" placement="inline"
-		alt="resulting linear gradient"</entry></row><row><entry><pre
-		xml:space="preserve">width = 50; height = 50; rotation = 0; tx = 0; ty
-		= 0;</pre></entry><entry align="center">//TODO: Image
-		href="../../images/createGradientBox-3.jpg" placement="inline"
-		alt="resulting linear gradient"</entry></row><row><entry><pre
-		xml:space="preserve">width = 50; height = 50; rotation = Math.PI / 4;
-		// 45 degrees tx = 0; ty = 0;</pre></entry><entry
-		align="center">//TODO: Image
-		href="../../images/createGradientBox-4.jpg" placement="inline"
-		alt="resulting linear gradient"</entry></row></tbody></tgroup>
+		
+		| `createGradientBox()` settings | Resulting gradient |
+		| --- | --- |
+		| `width = 25; height = 25; rotation = 0; tx = 0; ty = 0;` | ![resulting linear gradient](/images/createGradientBox-1.jpg) |
+		| `width = 25; height = 25; rotation = 0; tx = 25; ty = 0;` | ![resulting linear gradient](/images/createGradientBox-2.jpg) |
+		| `width = 50; height = 50; rotation = 0; tx = 0; ty = 0;` | ![resulting linear gradient](/images/createGradientBox-3.jpg) |
+		| `width = 50; height = 50; rotation = Math.PI / 4; // 45 degrees tx = 0; ty = 0;` | ![resulting linear gradient](/images/createGradientBox-4.jpg) |
 
 		@param width    The width of the gradient box.
 		@param height   The height of the gradient box.
@@ -508,9 +454,7 @@ class Matrix
 
 		In matrix notation, the identity matrix looks like this:
 
-		//TODO: Image href="../../images/matrix_identity.jpg"
-		placement="inline" alt="Matrix class properties in matrix notation"
-
+		![Matrix class properties in matrix notation](/images/matrix_identity.jpg)
 	**/
 	public function identity():Void
 	{
@@ -563,9 +507,7 @@ class Matrix
 		the Matrix object. In matrix notation, this is the same as
 		concatenating the current matrix with the following:
 
-		//TODO: Image height="105" href="../../images/matrix_rotate.jpg"
-		placement="inline" alt="Matrix notation of scale method parameters"
-		width="219"
+		![Matrix notation of scale method parameters](/images/matrix_rotate.jpg)
 
 		@param angle The rotation angle in radians.
 	**/
@@ -609,9 +551,7 @@ class Matrix
 		object. In matrix notation, this is the same as concatenating the
 		current matrix with the following matrix:
 
-		//TODO: Image height="105" href="../../images/matrix_scale.jpg"
-		placement="inline" alt="Matrix notation of scale method parameters"
-		width="140"
+		![Matrix notation of scale method parameters](/images/matrix_scale.jpg)
 
 		@param sx A multiplier used to scale the object along the _x_ axis.
 		@param sy A multiplier used to scale the object along the _y_ axis.

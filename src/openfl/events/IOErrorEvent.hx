@@ -22,17 +22,15 @@ class IOErrorEvent extends ErrorEvent
 		Defines the value of the `type` property of an `ioError` event object.
 
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`errorID`</entry><entry>A reference
-		number associated with the specific error (AIR
-		only).</entry></row><row><entry>`target`</entry><entry>The network
-		object experiencing the input/output
-		error.</entry></row><row><entry>`text`</entry><entry>Text to be
-		displayed as an error message.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `errorID` | A reference number associated with the specific error (AIR only). |
+		| `target` | The network object experiencing the input/output error. |
+		| `text` | Text to be displayed as an error message. |
 	**/
 	public static inline var IO_ERROR:String = "ioError";
 

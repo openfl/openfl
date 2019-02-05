@@ -25,33 +25,20 @@ class KeyboardEvent extends Event
 		The `KeyboardEvent.KEY_DOWN` constant defines the value of the `type`
 		property of a `keyDown` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`true`
-		in AIR, `false` in Flash Player; in AIR, canceling this event prevents
-		the character from being entered into a text
-		field.</entry></row><row><entry>`charCode`</entry><entry>The character
-		code value of the key pressed or
-		released.</entry></row><row><entry>`commandKey`</entry><entry>`true`
-		on Mac if the Command key is active. Otherwise,
-		`false`</entry></row><row><entry>`controlKey`</entry><entry>`true` on
-		Windows and Linux if the Ctrl key is active. `true` on Mac if either
-		the Control key is active. Otherwise,
-		`false`</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
-		Windows and Linux if the Ctrl key is active. `true` on Mac if either
-		the Ctrl key or the Command key is active. Otherwise,
-		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`keyCode`</entry><entry>The key
-		code value of the key pressed or
-		released.</entry></row><row><entry>`keyLocation`</entry><entry>The
-		location of the key on the
-		keyboard.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if
-		the Shift key is active; `false` if it is
-		inactive.</entry></row><row><entry>`target`</entry><entry>The
-		InteractiveObject instance with focus. The `target` is not always the
-		object in the display list that registered the event listener. Use the
-		`currentTarget` property to access the object in the display list that
-		is currently processing the event.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `true` in AIR, `false` in Flash Player; in AIR, canceling this event prevents the character from being entered into a text field. |
+		| `charCode` | The character code value of the key pressed or released. |
+		| `commandKey` | `true` on Mac if the Command key is active. Otherwise, `false` |
+		| `controlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Control key is active. Otherwise, `false` |
+		| `ctrlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `keyCode` | The key code value of the key pressed or released. |
+		| `keyLocation` | The location of the key on the keyboard. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `target` | The InteractiveObject instance with focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var KEY_DOWN:String = "keyDown";
 
@@ -59,32 +46,20 @@ class KeyboardEvent extends Event
 		The `KeyboardEvent.KEY_UP` constant defines the value of the `type`
 		property of a `keyUp` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`charCode`</entry><entry>Contains the
-		character code value of the key pressed or
-		released.</entry></row><row><entry>`commandKey`</entry><entry>`true`
-		on Mac if the Command key is active. Otherwise,
-		`false`</entry></row><row><entry>`controlKey`</entry><entry>`true` on
-		Windows and Linux if the Ctrl key is active. `true` on Mac if either
-		the Control key is active. Otherwise,
-		`false`</entry></row><row><entry>`ctrlKey`</entry><entry>`true` on
-		Windows if the Ctrl key is active. `true` on Mac if either the Ctrl
-		key or the Command key is active. Otherwise,
-		`false`.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`keyCode`</entry><entry>The key
-		code value of the key pressed or
-		released.</entry></row><row><entry>`keyLocation`</entry><entry>The
-		location of the key on the
-		keyboard.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if
-		the Shift key is active; `false` if it is
-		inactive.</entry></row><row><entry>`target`</entry><entry>The
-		InteractiveObject instance with focus. The `target` is not always the
-		object in the display list that registered the event listener. Use the
-		`currentTarget` property to access the object in the display list that
-		is currently processing the event.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `charCode` | Contains the character code value of the key pressed or released. |
+		| `commandKey` | `true` on Mac if the Command key is active. Otherwise, `false` |
+		| `controlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Control key is active. Otherwise, `false` |
+		| `ctrlKey` | `true` on Windows if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `keyCode` | The key code value of the key pressed or released. |
+		| `keyLocation` | The location of the key on the keyboard. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `target` | The InteractiveObject instance with focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var KEY_UP:String = "keyUp";
 

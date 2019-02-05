@@ -28,15 +28,14 @@ class SecurityErrorEvent extends ErrorEvent
 		The `SecurityErrorEvent.SECURITY_ERROR` constant defines the value of
 		the `type` property of a `securityError` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`target`</entry><entry>The network
-		object reporting the security
-		error.</entry></row><row><entry>`text`</entry><entry>Text to be
-		displayed as an error message.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The network object reporting the security error. |
+		| `text` | Text to be displayed as an error message. |
 	**/
 	public static inline var SECURITY_ERROR:String = "securityError";
 

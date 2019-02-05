@@ -20,18 +20,15 @@ class ProgressEvent extends Event
 		Defines the value of the `type` property of a `progress` event object.
 
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`bytesLoaded`</entry><entry>The
-		number of items or bytes loaded at the time the listener processes the
-		event.</entry></row><row><entry>`bytesTotal`</entry><entry>The total
-		number of items or bytes that ultimately will be loaded if the loading
-		process
-		succeeds.</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`target`</entry><entry>The object
-		reporting progress. </entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `bytesLoaded` | The number of items or bytes loaded at the time the listener processes the event. |
+		| `bytesTotal` | The total number of items or bytes that ultimately will be loaded if the loading process succeeds. |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object reporting progress.  |
 	**/
 	public static inline var PROGRESS:String = "progress";
 
@@ -39,17 +36,15 @@ class ProgressEvent extends Event
 		Defines the value of the `type` property of a `socketData` event
 		object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the
-		Event.</entry></row><row><entry>`bytesLoaded`</entry><entry>The number
-		of items or bytes loaded at the time the listener processes the
-		event.</entry></row><row><entry>`bytesTotal`</entry><entry>0; this
-		property is not used by `socketData` event
-		objects.</entry></row><row><entry>`target`</entry><entry>The socket
-		reporting progress.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event. |
+		| `bytesLoaded` | The number of items or bytes loaded at the time the listener processes the event. |
+		| `bytesTotal` | 0; this property is not used by `socketData` event objects. |
+		| `target` | The socket reporting progress. |
 	**/
 	public static inline var SOCKET_DATA:String = "socketData";
 

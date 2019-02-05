@@ -13,8 +13,7 @@ package openfl.text;
 	The following diagram indicates the points and measurements of a text
 	field and the line of text the field contains:
 
-	//TODO: Image href="../../images/text-metrics.jpg" placement="inline"
-	alt="An image illustrating text metrics"
+	![An image illustrating text metrics](/images/text-metrics.jpg)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

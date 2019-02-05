@@ -165,8 +165,7 @@ class Security
 		scripts siteB.swf, siteA.swf is the accessing party, and siteB.swf is
 		the party being accessed.
 
-		//TODO: Image href="../../images/crossScript_load.jpg"
-		placement="inline" alt="Cross-domain diagram"
+		![Cross-domain diagram](/images/crossScript_load.jpg)
 
 		Cross-domain permissions that are established with `allowDomain()` are
 		asymmetrical. In the previous example, siteA.swf can script siteB.swf,
@@ -194,37 +193,14 @@ class Security
 
 		Flash Player's cross-domain security rules have evolved from version
 		to version. The following table summarizes the differences.
-		// TODO: Table <tgroup cols="5"><thead><row><entry>Latest SWF version
-		involved in cross-scripting</entry><entry>`allowDomain()`
-		needed?</entry><entry>`allowInsecureDomain()`
-		needed?</entry><entry>Which SWF file must call `allowDomain()` or
-		`allowInsecureDomain()`?</entry><entry>What can be specified in
-		`allowDomain()` or
-		`allowInsecureDomain()`?</entry></row></thead><tbody><row><entry
-		align="center">5 or earlier</entry><entry>No</entry><entry
-		align="center">No</entry><entry align="center">N/A</entry><entry
-		align="center">N/A</entry></row><row><entry
-		align="center">6</entry><entry>Yes, if superdomains don't
-		match</entry><entry align="center">No</entry><entry>The SWF file being
-		accessed, or any SWF file with the same superdomain as the SWF file
-		being accessed</entry><entry>
-		* Text-based domain (mysite.com)
-		* IP address (192.168.1.1)
-		</entry></row><row><entry align="center">7</entry><entry>Yes, if
-		domains don't match exactly</entry><entry>Yes, if performing
-		HTTP-to-HTTPS access (even if domains match exactly)</entry><entry>The
-		SWF file being accessed, or any SWF file with exactly the same domain
-		as the SWF file being accessed</entry><entry>
-		* Text-based domain (mysite.com)
-		* IP address (192.168.1.1)
-		</entry></row><row><entry align="center">8 or later</entry><entry>Yes,
-		if domains don't match exactly</entry><entry>Yes, if performing
-		HTTP-to-HTTPS access (even if domains match exactly)</entry><entry>SWF
-		file being accessed</entry><entry>
-		* Text-based domain (mysite.com)
-		* IP address (192.168.1.1)
-		* Wildcard (~~)
-		</entry></row></tbody></tgroup>
+		
+		| Latest SWF version involved in cross-scripting | `allowDomain()` needed? | `allowInsecureDomain()` needed? | Which SWF file must call `allowDomain()` or `allowInsecureDomain()`? | What can be specified in `allowDomain()` or `allowInsecureDomain()`? |
+		| --- | --- | --- | --- | --- |
+		| 5 or earlier | No | No | N/A | N/A |
+		| 6 | Yes, if superdomains don't match | No | The SWF file being accessed, or any SWF file with the same superdomain as the SWF file being accessed | <ul><li>Text-based domain (mysite.com)</li><li>IP address (192.168.1.1)</li></ul> |
+		| 7 | Yes, if domains don't match exactly | Yes, if performing HTTP-to-HTTPS access (even if domains match exactly) | The SWF file being accessed, or any SWF file with exactly the same domain as the SWF file being accessed | <ul><li>Text-based domain (mysite.com)</li><li>IP address (192.168.1.1)</li></ul> |
+		| 8 or later | Yes, if domains don't match exactly | Yes, if performing HTTP-to-HTTPS access (even if domains match exactly) | SWF file being accessed | <ul><li>Text-based domain (mysite.com)</li><li>IP address (192.168.1.1)</li><li>Wildcard (~~)</li></ul> |
+		
 		The versions that control the behavior of Flash Player are _SWF
 		versions_ (the published version of a SWF file), not the version of
 		Flash Player itself. For example, when Flash Player 8 is playing a SWF

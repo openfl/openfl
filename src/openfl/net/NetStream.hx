@@ -189,21 +189,14 @@ import js.Browser;
 
 							The `onCuePoint` event object has the following
 							properties:
-							// TODO: Table <tgroup
-							cols="2"><thead><row><entry>Property</entry><entry>Description</entry></row></thead><tbody><row><entry>`name`</entry><entry>The
-							name given to the cue point when it was embedded
-							in the video
-							file.</entry></row><row><entry>`parameters`</entry><entry>An
-							associative array of name and value pair strings
-							specified for this cue point. Any valid string can
-							be used for the parameter name or
-							value.</entry></row><row><entry>`time`</entry><entry>The
-							time in seconds at which the cue point occurred in
-							the video file during
-							playback.</entry></row><row><entry>`type`</entry><entry>The
-							type of cue point that was reached, either
-							navigation or
-							event.</entry></row></tbody></tgroup>
+							
+							| Property | Description |
+							| --- | --- |
+							| `name` | The name given to the cue point when it was embedded in the video file. |
+							|`parameters` | An associative array of name and value pair strings specified for this cue point. Any valid string can be used for the parameter name or value. |
+							|`time` | The time in seconds at which the cue point occurred in the video file during playback. |
+							|`type` | The type of cue point that was reached, either navigation or event. |
+							
 							You can define cue points in a video file when you
 							first encode the file, or when you import a video
 							clip in the Flash authoring tool by using the
@@ -383,18 +376,12 @@ import js.Browser;
 
 							This event can return an information object with
 							the following properties:
-							// TODO: Table <tgroup
-							cols="3"><thead><row><entry>Code
-							property</entry><entry>Level
-							property</entry><entry>Meaning</entry></row></thead><tbody><row><entry>`NetStream.Play.Switch`</entry><entry>`"status"`</entry><entry>The
-							subscriber is switching from one stream to another
-							in a
-							playlist.</entry></row><row><entry>`NetStream.Play.Complete`</entry><entry>`"status"`</entry><entry>Playback
-							has
-							completed.</entry></row><row><entry>`NetStream.Play.TransitionComplete`</entry><entry>`"status"`</entry><entry>The
-							subscriber is switching to a new stream as a
-							result of stream bit-rate
-							switching</entry></row></tbody></tgroup>
+							
+							| Code property | Level property | Meaning |
+							| --- | --- | --- |
+							| `NetStream.Play.Switch` | `"status"` | The subscriber is switching from one stream to another in a playlist. |
+							| `NetStream.Play.Complete` | `"status"` | Playback has completed. |
+							| `NetStream.Play.TransitionComplete` | `"status"` | The subscriber is switching to a new stream as a result of stream bit-rate switching |
 	@event onSeekPoint      Called synchronously from `appendBytes()` when the
 							append bytes parser encounters a point that it
 							believes is a seekable point (for example, a video
@@ -1618,20 +1605,11 @@ class NetStream extends EventDispatcher
 					following table (you cannot use `publish()` for MP3 format
 					files). The syntax differs depending on the file format.
 
-					// TODO: Table <tgroup cols="3"><thead><row><entry>File
-					format</entry><entry>Syntax</entry><entry>Example</entry></row></thead><tbody><row><entry>FLV</entry><entry>Specify
-					the stream name as a string without a filename
-					extension.</entry><entry>`ns.publish("myflvstream");`</entry></row><row><entry>MPEG-4-based
-					files (such as F4V or MP4)</entry><entry>Specify the
-					stream name as a string with the prefix `mp4:` with or
-					without the filename extension. Flash Player doesn't
-					encode using H.264, but Flash Media Server can record any
-					codec in the F4V container. Flash Media Live Encoder can
-					encode using H.264.
-					</entry><entry>`ns.publish("mp4:myvideo.f4v")`
-					`ns.publish("mp4:myvideo");`</entry></row><row><entry>RAW</entry><entry>Specify
-					the stream name as a string with the prefix
-					`raw:`</entry><entry>`ns.publish("raw:myvideo");`</entry></row></tbody></tgroup>
+					| File format | Syntax | Example |
+					| --- | --- | --- |
+					| FLV | Specify the stream name as a string without a filename extension. | `ns.publish("myflvstream");` |
+					| MPEG-4-based files (such as F4V or MP4) | Specify the stream name as a string with the prefix `mp4:` with or without the filename extension. Flash Player doesn't encode using H.264, but Flash Media Server can record any codec in the F4V container. Flash Media Live Encoder can encode using H.264. | `ns.publish("mp4:myvideo.f4v")` `ns.publish("mp4:myvideo");` |
+					| RAW | Specify the stream name as a string with the prefix `raw:` | `ns.publish("raw:myvideo");` |
 		@param type A string that specifies how to publish the stream. Valid
 					values are "`record`", "`append`", "`appendWithGap`", and
 					"`live`". The default value is "`live`".

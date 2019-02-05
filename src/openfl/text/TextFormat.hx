@@ -10,6 +10,7 @@ package openfl.text;
 	specific fonts. If you want to display bold or italic text with an
 	embedded font, you need to embed the bold and italic variations of that
 	font.
+	
 	You must use the constructor `new TextFormat()` to create a TextFormat
 	object before setting its properties. When you apply a TextFormat object
 	to a text field using the `TextField.defaultTextFormat` property or the
@@ -21,22 +22,26 @@ package openfl.text;
 	you don't provide values for the properties, Flash Player uses its own
 	default formatting. The default formatting that Flash Player uses for each
 	property (if property's value is `null`) is as follows:
-	// TODO: Table <tgroup cols="1"><tbody><row><entry>align =
-	"left"</entry></row><row><entry>blockIndent =
-	0</entry></row><row><entry>bold = false</entry></row><row><entry>bullet =
-	false</entry></row><row><entry>color =
-	0x000000</entry></row><row><entry>font = "Times New Roman" (default font
-	is Times on Mac OS X)</entry></row><row><entry>indent =
-	0</entry></row><row><entry>italic = false</entry></row><row><entry>kerning
-	= false</entry></row><row><entry>leading =
-	0</entry></row><row><entry>leftMargin =
-	0</entry></row><row><entry>letterSpacing =
-	0</entry></row><row><entry>rightMargin = 0</entry></row><row><entry>size =
-	12</entry></row><row><entry>tabStops = [] (empty
-	array)</entry></row><row><entry>target = "" (empty
-	string)</entry></row><row><entry>underline =
-	false</entry></row><row><entry>url = "" (empty
-	string)</entry></row></tbody></tgroup>
+	
+	| align = "left" | |
+	| blockIndent = 0 | |
+	| bold = false | |
+	| bullet = false | |
+	| color = 0x000000 | |
+	| font = "Times New Roman" (default font is Times on Mac OS X) | |
+	| indent = 0 | |
+	| italic = false | |
+	| kerning = false | |
+	| leading = 0 | |
+	| leftMargin = 0 | |
+	| letterSpacing = 0 | |
+	| rightMargin = 0 | |
+	| size = 12 | |
+	| tabStops = [] (empty array) | |
+	| target = "" (empty string) | |
+	| underline = false | |
+	| url = "" (empty string) | |
+	
 	The default formatting for each property is also described in each
 	property description.
 **/

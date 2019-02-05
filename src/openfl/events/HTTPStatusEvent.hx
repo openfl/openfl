@@ -38,20 +38,16 @@ class HTTPStatusEvent extends Event
 		of the `type` property of a `httpResponseStatus` event object.
 
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`responseURL`</entry><entry>The URL
-		from which the response was
-		returned.</entry></row><row><entry>`responseHeaders`</entry><entry>The
-		response headers that the response returned, as an array of
-		URLRequestHeader
-		objects.</entry></row><row><entry>`status`</entry><entry>The HTTP
-		status code returned by the
-		server.</entry></row><row><entry>`target`</entry><entry>The network
-		object receiving an HTTP status code. </entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `responseURL` | The URL from which the response was returned. |
+		| `responseHeaders` | The response headers that the response returned, as an array of URLRequestHeader objects. |
+		| `status` | The HTTP status code returned by the server. |
+		| `target` | The network object receiving an HTTP status code. |
 	**/
 	public static inline var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 
@@ -59,15 +55,14 @@ class HTTPStatusEvent extends Event
 		The `HTTPStatusEvent.HTTP_STATUS` constant defines the value of the
 		`type` property of a `httpStatus` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`status`</entry><entry>The HTTP
-		status code returned by the
-		server.</entry></row><row><entry>`target`</entry><entry>The network
-		object receiving an HTTP status code. </entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `status` | The HTTP status code returned by the server. |
+		| `target` | The network object receiving an HTTP status code.  |
 	**/
 	public static inline var HTTP_STATUS:String = "httpStatus";
 

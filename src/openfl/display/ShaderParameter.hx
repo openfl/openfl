@@ -42,21 +42,25 @@ import openfl.display3D.Context3D;
 	minValue: 0.0; maxValue: 50.0; defaultValue: 25.0; >; ```
 	The ShaderParameter instance corresponding to the `size` parameter has the
 	following metadata properties in addition to its built-in properties:
-	// TODO: Table <tgroup cols="3"><thead><row><entry>Property
-	name</entry><entry>Data
-	type</entry><entry>Value</entry></row></thead><tbody><row><entry>`name`</entry><entry>String</entry><entry>`"size"`</entry></row><row><entry>`description`</entry><entry>String</entry><entry>`"The
-	size of the image to which the kernel is
-	applied"`</entry></row><row><entry>`minValue`</entry><entry>Array</entry><entry>`[0,
-	0]`</entry></row><row><entry>`maxValue`</entry><entry>Array</entry><entry>`[100,
-	100]`</entry></row><row><entry>`defaultValue`</entry><entry>Array</entry><entry>`[50,
-	50]`</entry></row></tbody></tgroup></adobetable>
+	
+	| Property name | Data type | Value |
+	| --- | --- | --- |
+	| `name` | String | `"size"` |
+	| `description` | String | `"The size of the image to which the kernel is applied"` |
+	| `minValue` | Array | `[0, 0]` |
+	| `maxValue` | Array | `[100, 100]` |
+	| `defaultValue` | Array | `[50, 50]` |
+	
 	The ShaderParameter corresponding to the `radius` parameter has the
 	following additional properties:
-	<adobetable><tgroup cols="3"><thead><row><entry>Property
-	name</entry><entry>Data
-	type</entry><entry>Value</entry></row></thead><tbody><row><entry>`name`</entry><entry>String</entry><entry>`"radius"`</entry></row><row><entry>`description`</entry><entry>String</entry><entry>`"The
-	radius of the
-	effect"`</entry></row><row><entry>`minValue`</entry><entry>Array</entry><entry>`[0]`</entry></row><row><entry>`maxValue`</entry><entry>Array</entry><entry>`[50]`</entry></row><row><entry>`defaultValue`</entry><entry>Array</entry><entry>`[25]`</entry></row></tbody></tgroup>
+	
+	| Property name | Data type | Value |
+	| --- | --- | --- |
+	| `name` | String | `"radius"` |
+	| `description` | String | `"The radius of the effect"` |
+	| `minValue` | Array | `[0]` |
+	| `maxValue` | Array | `[50]` |
+	| `defaultValue` | Array | `[25]` |
 
 	Generally, developer code does not create a ShaderParameter instance
 	directly. A ShaderParameter instance is created for each of a shader's
@@ -92,28 +96,24 @@ import openfl.display3D.Context3D;
 		parameter, which can be determined using the `type` property.
 		The following table indicates the parameter type and corresponding
 		number and data type of the `value` Array's elements:
-		// TODO: Table <tgroup cols="3"><thead><row><entry>Parameter
-		type</entry><entry># Elements</entry><entry>Element data
-		type</entry></row></thead><tbody><row><entry>float
-		(`ShaderParameterType.FLOAT`)</entry><entry>1</entry><entry>Number</entry></row><row><entry>float2
-		(`ShaderParameterType.FLOAT2`)</entry><entry>2</entry><entry>Number</entry></row><row><entry>float3
-		(`ShaderParameterType.FLOAT3`)</entry><entry>3</entry><entry>Number</entry></row><row><entry>float4
-		(`ShaderParameterType.FLOAT4`)</entry><entry>4</entry><entry>Number</entry></row><row><entry>int
-		(`ShaderParameterType.INT`)</entry><entry>1</entry><entry>int or
-		uint</entry></row><row><entry>int2
-		(`ShaderParameterType.INT2`)</entry><entry>2</entry><entry>int or
-		uint</entry></row><row><entry>int3
-		(`ShaderParameterType.INT3`)</entry><entry>3</entry><entry>int or
-		uint</entry></row><row><entry>int4
-		(`ShaderParameterType.INT4`)</entry><entry>4</entry><entry>int or
-		uint</entry></row><row><entry>bool
-		(`ShaderParameterType.BOOL`)</entry><entry>1</entry><entry>Boolean</entry></row><row><entry>bool2
-		(`ShaderParameterType.BOOL2`)</entry><entry>2</entry><entry>Boolean</entry></row><row><entry>bool3
-		(`ShaderParameterType.BOOL3`)</entry><entry>3</entry><entry>Boolean</entry></row><row><entry>bool4
-		(`ShaderParameterType.BOOL4`)</entry><entry>4</entry><entry>Boolean</entry></row><row><entry>float2x2
-		(`ShaderParameterType.MATRIX2X2`)</entry><entry>4</entry><entry>Number</entry></row><row><entry>float3x3
-		(`ShaderParameterType.MATRIX3X3`)</entry><entry>9</entry><entry>Number</entry></row><row><entry>float4x4
-		(`ShaderParameterType.MATRIX4X4`)</entry><entry>16</entry><entry>Number</entry></row></tbody></tgroup>
+		
+		| Parameter type | # Elements | Element data type |
+		| --- | --- | --- |
+		| float (`ShaderParameterType.FLOAT`) | 1 | Number |
+		| float2 (`ShaderParameterType.FLOAT2`) | 2 | Number |
+		| float3 (`ShaderParameterType.FLOAT3`) | 3 | Number |
+		| float4 (`ShaderParameterType.FLOAT4`) | 4 | Number |
+		| int (`ShaderParameterType.INT`) | 1 | int or uint |
+		| int2 (`ShaderParameterType.INT2`) | 2 | int or uint |
+		| int3 (`ShaderParameterType.INT3`) | 3 | int or uint |
+		| int4 (`ShaderParameterType.INT4`) | 4 | int or uint |
+		| bool (`ShaderParameterType.BOOL`) | 1 | Boolean |
+		| bool2	(`ShaderParameterType.BOOL2`) | 2 | Boolean |
+		| bool3 (`ShaderParameterType.BOOL3`) | 3 | Boolean |
+		| bool4 (`ShaderParameterType.BOOL4`) | 4 | Boolean |
+		| float2x2 (`ShaderParameterType.MATRIX2X2`) | 4 | Number |
+		| float3x3 (`ShaderParameterType.MATRIX3X3`) | 9 | Number |
+		| float4x4 (`ShaderParameterType.MATRIX4X4`) | 16 | Number |
 
 		For the matrix parameter types, the array elements fill the rows of
 		the matrix, then the columns. For example, suppose the following line

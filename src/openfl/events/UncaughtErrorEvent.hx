@@ -80,17 +80,15 @@ class UncaughtErrorEvent extends ErrorEvent
 		Defines the value of the `type` property of an `uncaughtError` event
 		object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`true`;
-		cancelling the event prevents the uncaught error dialog from appearing
-		in debugger runtime
-		versions</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`error`</entry><entry>The uncaught
-		error.</entry></row><row><entry>`target`</entry><entry>The LoaderInfo
-		object associated with the SWF where the error
-		happened.</entry></row><row><entry>`text`</entry><entry>Text error
-		message.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `true`; cancelling the event prevents the uncaught error dialog from appearing in debugger runtime versions |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `error` | The uncaught error. |
+		| `target` | The LoaderInfo object associated with the SWF where the error happened. |
+		| `text` | Text error message. |
 	**/
 	public static inline var UNCAUGHT_ERROR:String = "uncaughtError";
 

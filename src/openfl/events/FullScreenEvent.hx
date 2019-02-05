@@ -17,15 +17,14 @@ class FullScreenEvent extends ActivityEvent
 		The `FullScreenEvent.FULL_SCREEN` constant defines the value of the
 		`type` property of a `fullScreen` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`fullScreen`</entry><entry>`true`
-		if the display state is full screen or `false` if it is
-		normal.</entry></row><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`target`</entry><entry>The Stage
-		object.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `fullScreen` | `true` if the display state is full screen or `false` if it is normal. |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The Stage object. |
 	**/
 	public static inline var FULL_SCREEN:String = "fullScreen";
 	public static inline var FULL_SCREEN_INTERACTIVE_ACCEPTED:String = "fullScreenInteractiveAccepted";

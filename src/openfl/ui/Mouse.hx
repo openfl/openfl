@@ -26,17 +26,15 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		The default value is `flash.ui.MouseCursor.AUTO`.
 
 		To set values for this property, use the following string values:
-		// TODO: Table <tgroup cols="2"><thead><row><entry>String
-		value</entry><entry>Description</entry></row></thead><tbody><row><entry>`flash.ui.MouseCursor.AUTO`</entry><entry>Mouse
-		cursor will change automatically based on the object under the
-		mouse.</entry></row><row><entry>`flash.ui.MouseCursor.ARROW`</entry><entry>Mouse
-		cursor will be an
-		arrow.</entry></row><row><entry>`flash.ui.MouseCursor.BUTTON`</entry><entry>Mouse
-		cursor will be a button clicking
-		hand.</entry></row><row><entry>`flash.ui.MouseCursor.HAND`</entry><entry>Mouse
-		cursor will be a dragging
-		hand.</entry></row><row><entry>`flash.ui.MouseCursor.IBEAM`</entry><entry>Mouse
-		cursor will be an I-beam.</entry></row></tbody></tgroup>
+		
+		| String value | Description |
+		| --- | --- |
+		| `flash.ui.MouseCursor.AUTO` | Mouse cursor will change automatically based on the object under the mouse. |
+		| `flash.ui.MouseCursor.ARROW` | Mouse cursor will be an arrow. |
+		| `flash.ui.MouseCursor.BUTTON` | Mouse cursor will be a button clicking hand. |
+		| `flash.ui.MouseCursor.HAND` | Mouse cursor will be a dragging hand. |
+		| `flash.ui.MouseCursor.IBEAM` | Mouse cursor will be an I-beam. |
+		
 		**Note:** For Flash Player 10.2 or AIR 2.6 and later versions, this
 		property sets or gets the cursor name when you are using a native
 		cursor. A native cursor name defined using `Mouse.registerCursor()`

@@ -64,16 +64,16 @@ class Rectangle
 
 	/**
 		The sum of the `y` and `height` properties.
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var bottom(get, set):Float;
 
 	/**
 		The location of the Rectangle object's bottom-right corner, determined
 		by the values of the `right` and `bottom` properties.
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var bottomRight(get, set):Point;
 
@@ -81,8 +81,8 @@ class Rectangle
 		The height of the rectangle, in pixels. Changing the `height` value of
 		a Rectangle object has no effect on the `x`, `y`, and `width`
 		properties.
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var height:Float;
 
@@ -95,15 +95,14 @@ class Rectangle
 		The value of the `left` property is equal to the value of the `x`
 		property.
 
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var left(get, set):Float;
 
 	/**
 		The sum of the `x` and `width` properties.
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var right(get, set):Float;
 
@@ -122,16 +121,15 @@ class Rectangle
 		The value of the `top` property is equal to the value of the `y`
 		property.
 
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var top(get, set):Float;
 
 	/**
 		The location of the Rectangle object's top-left corner, determined by
 		the _x_ and _y_ coordinates of the point.
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var topLeft(get, set):Point;
 
@@ -139,8 +137,8 @@ class Rectangle
 		The width of the rectangle, in pixels. Changing the `width` value of a
 		Rectangle object has no effect on the `x`, `y`, and `height`
 		properties.
-		//TODO: Image href="../../images/rectangle.jpg" placement="inline"
-		alt="A rectangle image showing location and measurement properties."
+		
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var width:Float;
 
@@ -360,8 +358,8 @@ class Rectangle
 		intersection as a Rectangle object. If the rectangles do not
 		intersect, this method returns an empty Rectangle object with its
 		properties set to 0.
-		//TODO: Image href="../../images/rectangle_intersect.jpg"
-		placement="inline" alt="The resulting intersection rectangle."
+		
+		![The resulting intersection rectangle.](/images/rectangle_intersect.jpg)
 
 		@param toIntersect The Rectangle object to compare against to see if
 						   it intersects with this Rectangle object.
@@ -486,12 +484,11 @@ class Rectangle
 		Adds two rectangles together to create a new Rectangle object, by
 		filling in the horizontal and vertical space between the two
 		rectangles.
-		//TODO: Image href="../../images/rectangle_union.jpg"
-		placement="inline" alt="The resulting union rectangle."
+		
+		![The resulting union rectangle.](/images/rectangle_union.jpg)
 
 		**Note:** The `union()` method ignores rectangles with `0` as the
-		height or width value, such as: `var rect2:Rectangle = new
-		Rectangle(300,300,50,0);`
+		height or width value, such as: `var rect2:Rectangle = new Rectangle(300,300,50,0);`
 
 		@param toUnion A Rectangle object to add to this Rectangle object.
 		@return A new Rectangle object that is the union of the two

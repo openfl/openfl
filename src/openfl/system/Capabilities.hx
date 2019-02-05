@@ -22,18 +22,15 @@ import sys.io.Process;
 	tell the SWF file to alter its presentation.
 	However, some capabilities of Adobe AIR are not listed as properties in
 	the Capabilities class. They are properties of other classes:
-	// TODO: Table <tgroup
-	cols="2"><thead><row><entry>Property</entry><entry>Description</entry></row></thead><tbody><row><entry>`NativeApplication.supportsDockIcon`</entry><entry>Whether
-	the operating system supports application doc
-	icons.</entry></row><row><entry>`NativeApplication.supportsMenu`</entry><entry>Whether
-	the operating system supports a global application menu
-	bar.</entry></row><row><entry>`NativeApplication.supportsSystemTrayIcon`</entry><entry>Whether
-	the operating system supports system tray
-	icons.</entry></row><row><entry>`NativeWindow.supportsMenu`</entry><entry>Whether
-	the operating system supports window
-	menus.</entry></row><row><entry>`NativeWindow.supportsTransparency`</entry><entry>Whether
-	the operating system supports transparent
-	windows.</entry></row></tbody></tgroup></adobetable>
+	
+	| Property | Description |
+	| --- | --- |
+	| `NativeApplication.supportsDockIcon` | Whether the operating system supports application doc icons. |
+	| `NativeApplication.supportsMenu` | Whether the operating system supports a global application menu bar. |
+	| `NativeApplication.supportsSystemTrayIcon` | Whether the operating system supports system tray icons. |
+	| `NativeWindow.supportsMenu` | Whether the operating system supports window menus. |
+	| `NativeWindow.supportsTransparency` | Whether the operating system supports transparent windows. |
+	
 	Do _not_ use `Capabilities.os` or `Capabilities.manufacturer` to determine
 	a capability based on the operating system. Basing a capability on the
 	operating system is a bad idea, since it can lead to problems if an
@@ -53,9 +50,36 @@ import sys.io.Process;
 	L=en&PT=External&AVD=f&LFD=f&WD=f&IME=t</pre>
 	The following table lists the properties of the Capabilities class and
 	corresponding server strings: <adobetable><tgroup
-	cols="2"><thead><row><entry align="left">Capabilities class
+	<row><entry align="left">Capabilities class
 	property</entry><entry align="left">Server
-	string</entry></row></thead><tbody><row><entry>`avHardwareDisable`</entry><entry>`AVD`</entry></row><row><entry>`hasAccessibility`</entry><entry>`ACC`</entry></row><row><entry>`hasAudio`</entry><entry>`A`</entry></row><row><entry>`hasAudioEncoder`</entry><entry>`AE`</entry></row><row><entry>`hasEmbeddedVideo`</entry><entry>`EV`</entry></row><row><entry>`hasIME`</entry><entry>`IME`</entry></row><row><entry>`hasMP3`</entry><entry>`MP3`</entry></row><row><entry>`hasPrinting`</entry><entry>`PR`</entry></row><row><entry>`hasScreenBroadcast`</entry><entry>`SB`</entry></row><row><entry>`hasScreenPlayback`</entry><entry>`SP`</entry></row><row><entry>`hasStreamingAudio`</entry><entry>`SA`</entry></row><row><entry>`hasStreamingVideo`</entry><entry>`SV`</entry></row><row><entry>`hasTLS`</entry><entry>`TLS`</entry></row><row><entry>`hasVideoEncoder`</entry><entry>`VE`</entry></row><row><entry>`isDebugger`</entry><entry>`DEB`</entry></row><row><entry>`language`</entry><entry>`L`</entry></row><row><entry>`localFileReadDisable`</entry><entry>`LFD`</entry></row><row><entry>`manufacturer`</entry><entry>`M`</entry></row><row><entry>`maxLevelIDC`</entry><entry>`ML`</entry></row><row><entry>`os`</entry><entry>`OS`</entry></row><row><entry>`pixelAspectRatio`</entry><entry>`AR`</entry></row><row><entry>`playerType`</entry><entry>`PT`</entry></row><row><entry>`screenColor`</entry><entry>`COL`</entry></row><row><entry>`screenDPI`</entry><entry>`DP`</entry></row><row><entry>`screenResolutionX`</entry><entry>`R`</entry></row><row><entry>`screenResolutionY`</entry><entry>`R`</entry></row><row><entry>`version`</entry><entry>`V`</entry></row></tbody></tgroup>
+	string |
+		|`avHardwareDisable` | `AVD` |
+		|`hasAccessibility` | `ACC` |
+		|`hasAudio` | `A` |
+		|`hasAudioEncoder` | `AE` |
+		|`hasEmbeddedVideo` | `EV` |
+		|`hasIME` | `IME` |
+		|`hasMP3` | `MP3` |
+		|`hasPrinting` | `PR` |
+		|`hasScreenBroadcast` | `SB` |
+		|`hasScreenPlayback` | `SP` |
+		|`hasStreamingAudio` | `SA` |
+		|`hasStreamingVideo` | `SV` |
+		|`hasTLS` | `TLS` |
+		|`hasVideoEncoder` | `VE` |
+		|`isDebugger` | `DEB` |
+		|`language` | `L` |
+		|`localFileReadDisable` | `LFD` |
+		|`manufacturer` | `M` |
+		|`maxLevelIDC` | `ML` |
+		|`os` | `OS` |
+		|`pixelAspectRatio` | `AR` |
+		|`playerType` | `PT` |
+		|`screenColor` | `COL` |
+		|`screenDPI` | `DP` |
+		|`screenResolutionX` | `R` |
+		|`screenResolutionY` | `R` |
+		|`version` | `V` |
 
 
 	There is also a `WD` server string that specifies whether windowless mode
@@ -209,13 +233,31 @@ import sys.io.Process;
 		(`en`), not the country code. On Microsoft Windows systems, this
 		property returns the user interface (UI) language, which refers to the
 		language used for all menus, dialog boxes, error messages, and help
-		files. The following table lists the possible values: // TODO: Table
-		<tgroup cols="2"><thead><row><entry
-		align="left">Language</entry><entry
-		align="left">Value</entry></row></thead><tbody><row><entry>Czech</entry><entry>`cs`</entry></row><row><entry>Danish</entry><entry>`da`</entry></row><row><entry>Dutch</entry><entry>`nl`</entry></row><row><entry>English</entry><entry>`en`</entry></row><row><entry>Finnish</entry><entry>`fi`</entry></row><row><entry>French</entry><entry>`fr`</entry></row><row><entry>German</entry><entry>`de`</entry></row><row><entry>Hungarian</entry><entry>`hu`</entry></row><row><entry>Italian</entry><entry>`it`</entry></row><row><entry>Japanese</entry><entry>`ja`</entry></row><row><entry>Korean</entry><entry>`ko`</entry></row><row><entry>Norwegian</entry><entry>`no`</entry></row><row><entry>Other/unknown</entry><entry>`xu`</entry></row><row><entry>Polish</entry><entry>`pl`</entry></row><row><entry>Portuguese</entry><entry>`pt`</entry></row><row><entry>Russian</entry><entry>`ru`</entry></row><row><entry>Simplified
-		Chinese</entry><entry>`zh-CN`</entry></row><row><entry>Spanish</entry><entry>`es`</entry></row><row><entry>Swedish</entry><entry>`sv`</entry></row><row><entry>Traditional
-		Chinese</entry><entry>`zh-TW`</entry></row><row><entry>Turkish</entry><entry>`tr`</entry></row></tbody></tgroup>
-
+		files. The following table lists the possible values:
+		
+		| Language | Value |
+		| --- | --- |
+		| Czech | `cs` |
+		| Danish | `da` |
+		| Dutch | `nl` |
+		| English | `en` |
+		| Finnish | `fi` |
+		| French | `fr` |
+		| German | `de` |
+		| Hungarian | `hu` |
+		| Italian | `it` |
+		| Japanese | `ja` |
+		| Korean | `ko` |
+		| Norwegian | `no` |
+		| Other/unknown | `xu` |
+		| Polish | `pl` |
+		| Portuguese | `pt` |
+		| Russian | `ru` |
+		| Simplified Chinese | `zh-CN` |
+		| Spanish | `es` |
+		| Swedish | `sv` |
+		| Traditional Chinese | `zh-TW` |
+		| Turkish | `tr` |
 
 		_Note:_ The value of `Capabilities.language` property is limited to
 		the possible values on this list. Because of this limitation, Adobe
@@ -281,41 +323,33 @@ import sys.io.Process;
 
 	/**
 		Specifies the current operating system. The `os` property can return
-		the following strings: // TODO: Table <tgroup
-		cols="2"><thead><row><entry>Operating
-		system</entry><entry>Value</entry></row></thead><tbody><row><entry>Windows
-		7</entry><entry>`"Windows 7"`</entry></row><row><entry>Windows
-		Vista</entry><entry>`"Windows Vista"`</entry></row><row><entry>Windows
-		Server 2008 R2</entry><entry>`"Windows Server 2008
-		R2"`</entry></row><row><entry>Windows Server
-		2008</entry><entry>`"Windows Server
-		2008"`</entry></row><row><entry>Windows Home
-		Server</entry><entry>`"Windows Home
-		Server"`</entry></row><row><entry>Windows Server 2003
-		R2</entry><entry>`"Windows Server 2003
-		R2"`</entry></row><row><entry>Windows Server
-		2003</entry><entry>`"Windows Server
-		2003"`</entry></row><row><entry>Windows XP 64</entry><entry>`"Windows
-		Server XP 64"`</entry></row><row><entry>Windows
-		XP</entry><entry>`"Windows XP"`</entry></row><row><entry>Windows
-		98</entry><entry>`"Windows 98"`</entry></row><row><entry>Windows
-		95</entry><entry>`"Windows 95"`</entry></row><row><entry>Windows
-		NT</entry><entry>`"Windows NT"`</entry></row><row><entry>Windows
-		2000</entry><entry>`"Windows 2000"`</entry></row><row><entry>Windows
-		ME</entry><entry>`"Windows ME"`</entry></row><row><entry>Windows
-		CE</entry><entry>`"Windows CE"`</entry></row><row><entry>Windows
-		SmartPhone</entry><entry>`"Windows
-		SmartPhone"`</entry></row><row><entry>Windows
-		PocketPC</entry><entry>`"Windows
-		PocketPC"`</entry></row><row><entry>Windows
-		CEPC</entry><entry>`"Windows CEPC"`</entry></row><row><entry>Windows
-		Mobile</entry><entry>`"Windows Mobile"`</entry></row><row><entry>Mac
-		OS</entry><entry>`"Mac OS X.Y.Z"` (where X.Y.Z is the version number,
-		for example: `"Mac OS
-		10.5.2"`)</entry></row><row><entry>Linux</entry><entry>`"Linux"`
-		(Flash Player attaches the Linux version, such as `"Linux
-		2.6.15-1.2054_FC5smp"`</entry></row><row><entry>iPhone OS
-		4.1</entry><entry>`"iPhone3,1"`</entry></row></tbody></tgroup>
+		the following strings:
+		
+		|Operating system | Value |
+		| --- | --- |
+		| Windows 7 | `"Windows 7"` |
+		| Windows Vista | `"Windows Vista"` |
+		| Windows Server 2008 R2 | `"Windows Server 2008 R2"` |
+		| Windows Server 2008 | `"Windows Server 2008"` |
+		| Windows Home Server | `"Windows Home Server"` |
+		| Windows Server 2003 R2 | `"Windows Server 2003 R2"` |
+		| Windows Server 2003 | `"Windows Server 2003"` |
+		| Windows XP 64 | `"Windows Server XP 64"` |
+		| Windows XP | `"Windows XP"` |
+		| Windows 98 | `"Windows 98"` |
+		| Windows 95 | `"Windows 95"` |
+		| Windows NT | `"Windows NT"` |
+		| Windows 2000 | `"Windows 2000"` |
+		| Windows ME | `"Windows ME"` |
+		| Windows CE | `"Windows CE"` |
+		| Windows SmartPhone | `"Windows SmartPhone"` |
+		| Windows PocketPC | `"Windows PocketPC"` |
+		| Windows CEPC | `"Windows CEPC"` |
+		| Windows Mobile | `"Windows Mobile"` |
+		| Mac OS | `"Mac OS X.Y.Z"` (where X.Y.Z is the version number, for example: `"Mac OS 10.5.2"`) |
+		| Linux | `"Linux"` (Flash Player attaches the Linux version, such as `"Linux 2.6.15-1.2054_FC5smp"` |
+		| iPhone OS 4.1 | `"iPhone3,1"` |
+		
 		The server string is `OS`.
 
 		Do _not_ use `Capabilities.os` to determine a capability based on the

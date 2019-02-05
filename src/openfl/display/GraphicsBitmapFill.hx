@@ -42,23 +42,17 @@ import openfl.geom.Matrix;
 		For example, consider the following bitmap (a 20 x 20-pixel
 		checkerboard pattern):
 
-		//TODO: Image
-		href="../../images/movieClip_beginBitmapFill_repeat_1.jpg"
-		placement="inline" alt="20 by 20 pixel checkerboard"
+		![20 by 20 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_1.jpg)
 
 		When `repeat` is set to `true` (as in the following example), the
 		bitmap fill repeats the bitmap:
 
-		//TODO: Image
-		href="../../images/movieClip_beginBitmapFill_repeat_2.jpg"
-		placement="inline" alt="60 by 60 pixel checkerboard"
+		![60 by 60 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_2.jpg)
 
 		When `repeat` is set to `false`, the bitmap fill uses the edge pixels
 		for the fill area outside the bitmap:
 
-		//TODO: Image
-		href="../../images/movieClip_beginBitmapFill_repeat_3.jpg"
-		placement="inline" alt="60 by 60 pixel image with no repeating"
+		![60 by 60 pixel image with no repeating](/images/movieClip_beginBitmapFill_repeat_3.jpg)
 	**/
 	public var repeat:Bool;
 

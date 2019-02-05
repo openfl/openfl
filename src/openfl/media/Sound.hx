@@ -111,51 +111,55 @@ class Sound extends EventDispatcher
 		can be accessed either through the ID3 2.0 property name or the
 		ActionScript property name. The second table describes ID3 tags that
 		are supported but do not have predefined properties in ActionScript.
-		// TODO: Table <tgroup cols="2"><tbody><row><entry>**ID3 2.0
-		tag**</entry><entry>**Corresponding Sound class
-		property**</entry></row><row><entry>COMM</entry><entry>Sound.id3.comment</entry></row><row><entry>TALB</entry><entry>Sound.id3.album
-		</entry></row><row><entry>TCON</entry><entry>Sound.id3.genre</entry></row><row><entry>TIT2</entry><entry>Sound.id3.songName
-		</entry></row><row><entry>TPE1</entry><entry>Sound.id3.artist</entry></row><row><entry>TRCK</entry><entry>Sound.id3.track
-		</entry></row><row><entry>TYER</entry><entry>Sound.id3.year
-		</entry></row></tbody></tgroup></adobetable>
+		
+		| ID3 2.0 tag | Corresponding Sound class property |
+		| --- | --- |
+		| COMM | Sound.id3.comment |
+		| TALB | Sound.id3.album |
+		| TCON | Sound.id3.genre |
+		| TIT2 | Sound.id3.songName |
+		| TPE1 | Sound.id3.artist |
+		| TRCK | Sound.id3.track |
+		| TYER | Sound.id3.year |
+		
 		The following table describes ID3 tags that are supported but do not
 		have predefined properties in the Sound class. You access them by
 		calling `mySound.id3.TFLT`, `mySound.id3.TIME`, and so on. **NOTE:**
 		None of these tags are supported in Flash Lite 4.
-		<adobetable><tgroup
-		cols="2"><tbody><row><entry>**Property**</entry><entry>**Description**</entry></row><row><entry>TFLT</entry><entry>File
-		type</entry></row><row><entry>TIME</entry><entry>Time</entry></row><row><entry>TIT1</entry><entry>Content
-		group
-		description</entry></row><row><entry>TIT2</entry><entry>Title/song
-		name/content
-		description</entry></row><row><entry>TIT3</entry><entry>Subtitle/description
-		refinement</entry></row><row><entry>TKEY</entry><entry>Initial
-		key</entry></row><row><entry>TLAN</entry><entry>Languages</entry></row><row><entry>TLEN</entry><entry>Length</entry></row><row><entry>TMED</entry><entry>Media
-		type</entry></row><row><entry>TOAL</entry><entry>Original
-		album/movie/show
-		title</entry></row><row><entry>TOFN</entry><entry>Original
-		filename</entry></row><row><entry>TOLY</entry><entry>Original
-		lyricists/text
-		writers</entry></row><row><entry>TOPE</entry><entry>Original
-		artists/performers</entry></row><row><entry>TORY</entry><entry>Original
-		release year</entry></row><row><entry>TOWN</entry><entry>File
-		owner/licensee</entry></row><row><entry>TPE1</entry><entry>Lead
-		performers/soloists</entry></row><row><entry>TPE2</entry><entry>Band/orchestra/accompaniment</entry></row><row><entry>TPE3</entry><entry>Conductor/performer
-		refinement</entry></row><row><entry>TPE4</entry><entry>Interpreted,
-		remixed, or otherwise modified
-		by</entry></row><row><entry>TPOS</entry><entry>Part of a
-		set</entry></row><row><entry>TPUB</entry><entry>Publisher</entry></row><row><entry>TRCK</entry><entry>Track
-		number/position in
-		set</entry></row><row><entry>TRDA</entry><entry>Recording
-		dates</entry></row><row><entry>TRSN</entry><entry>Internet radio
-		station name</entry></row><row><entry>TRSO</entry><entry>Internet
-		radio station
-		owner</entry></row><row><entry>TSIZ</entry><entry>Size</entry></row><row><entry>TSRC</entry><entry>ISRC
-		(international standard recording
-		code)</entry></row><row><entry>TSSE</entry><entry>Software/hardware
-		and settings used for
-		encoding</entry></row><row><entry>TYER</entry><entry>Year</entry></row><row><entry>WXXX</entry><entry>URL
-		link frame</entry></row></tbody></tgroup>
+		
+		| Property | Description |
+		| --- | --- |
+		| TFLT | File type |
+		| TIME | Time |
+		| TIT1 | Content group description |
+		| TIT2 | Title/song name/content description |
+		| TIT3 | Subtitle/description refinement |
+		| TKEY | Initial key |
+		| TLAN | Languages |
+		| TLEN | Length |
+		| TMED | Media type |
+		| TOAL | Original album/movie/show title |
+		| TOFN | Original filename |
+		| TOLY | Original lyricists/text writers |
+		| TOPE | Original artists/performers |
+		| TORY | Original release year |
+		| TOWN | File owner/licensee |
+		| TPE1 | Lead performers/soloists |
+		| TPE2 | Band/orchestra/accompaniment |
+		| TPE3 | Conductor/performer refinement |
+		| TPE4 | Interpreted, remixed, or otherwise modified by |
+		| TPOS | Part of a set |
+		| TPUB | Publisher |
+		| TRCK | Track number/position in set |
+		| TRDA | Recording dates |
+		| TRSN | Internet radio station name |
+		| TRSO | Internet radio station owner |
+		| TSIZ | Size |
+		| TSRC | ISRC (international standard recording code) |
+		| TSSE | Software/hardware and settings used for encoding |
+		| TYER | Year |
+		| WXXX | URL link frame |
+		
 		When using this property, consider the Flash Player security model:
 
 		* The `id3` property of a Sound object is always permitted for SWF

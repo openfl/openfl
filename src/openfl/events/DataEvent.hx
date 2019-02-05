@@ -18,15 +18,14 @@ class DataEvent extends TextEvent
 	/**
 		Defines the value of the `type` property of a `data` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`data`</entry><entry>The raw data
-		loaded into Flash Player or Adobe
-		AIR.</entry></row><row><entry>`target`</entry><entry>The XMLSocket
-		object receiving data.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `data` | The raw data loaded into Flash Player or Adobe AIR. |
+		| `target` | The XMLSocket object receiving data. |
 	**/
 	public static inline var DATA:String = "data";
 
@@ -34,16 +33,14 @@ class DataEvent extends TextEvent
 		Defines the value of the `type` property of an `uploadCompleteData`
 		event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`data`</entry><entry>The raw data
-		returned from the server after a successful file
-		upload.</entry></row><row><entry>`target`</entry><entry>The
-		FileReference object receiving data after a successful
-		upload.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `data` | The raw data returned from the server after a successful file upload. |
+		| `target` | The FileReference object receiving data after a successful upload. |
 	**/
 	public static inline var UPLOAD_COMPLETE_DATA:String = "uploadCompleteData";
 

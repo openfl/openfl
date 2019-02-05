@@ -17,16 +17,14 @@ class ActivityEvent extends Event
 		The `ActivityEvent.ACTIVITY` constant defines the value of the `type`
 		property of an `activity` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`activating`</entry><entry>`true`
-		if the device is activating or `false` if it is
-		deactivating.</entry></row><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`target`</entry><entry>The object
-		beginning or ending a session, such as a Camera or Microphone
-		object.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `activating` | `true` if the device is activating or `false` if it is deactivating. |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object beginning or ending a session, such as a Camera or Microphone object. |
 	**/
 	public static inline var ACTIVITY:String = "activity";
 

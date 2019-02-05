@@ -21,21 +21,15 @@ class ContextMenuEvent extends Event
 		Defines the value of the `type` property of a `menuItemSelect` event
 		object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`contextMenuOwner`</entry><entry>The
-		display list object to which the menu is
-		attached.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`mouseTarget`</entry><entry>The
-		display list object on which the user right-clicked to display the
-		context menu.</entry></row><row><entry>`target`</entry><entry>The
-		ContextMenuItem object that has been selected. The target is not
-		always the object in the display list that registered the event
-		listener. Use the `currentTarget` property to access the object in the
-		display list that is currently processing the
-		event.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `contextMenuOwner` | The display list object to which the menu is attached. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `mouseTarget` | The display list object on which the user right-clicked to display the context menu. |
+		| `target` | The ContextMenuItem object that has been selected. The target is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MENU_ITEM_SELECT:String = "menuItemSelect";
 
@@ -43,21 +37,15 @@ class ContextMenuEvent extends Event
 		Defines the value of the `type` property of a `menuSelect` event
 		object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`false`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`contextMenuOwner`</entry><entry>The
-		display list object to which the menu is
-		attached.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`mouseTarget`</entry><entry>The
-		display list object on which the user right-clicked to display the
-		context menu.</entry></row><row><entry>`target`</entry><entry>The
-		ContextMenu object that is about to be displayed. The target is not
-		always the object in the display list that registered the event
-		listener. Use the `currentTarget` property to access the object in the
-		display list that is currently processing the
-		event.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `contextMenuOwner` | The display list object to which the menu is attached. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `mouseTarget` | The display list object on which the user right-clicked to display the context menu. |
+		| `target` | The ContextMenu object that is about to be displayed. The target is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MENU_SELECT:String = "menuSelect";
 

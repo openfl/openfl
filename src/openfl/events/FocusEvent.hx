@@ -22,30 +22,17 @@ class FocusEvent extends Event
 	/**
 		Defines the value of the `type` property of a `focusIn` event object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
-		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`keyCode`</entry><entry>0; applies
-		only to `keyFocusChange`
-		events.</entry></row><row><entry>`relatedObject`</entry><entry>The
-		complementary InteractiveObject instance that is affected by the
-		change in
-		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`false`;
-		applies only to `keyFocusChange`
-		events.</entry></row><row><entry>`target`</entry><entry>The
-		InteractiveObject instance that has just received focus. The `target`
-		is not always the object in the display list that registered the event
-		listener. Use the `currentTarget` property to access the object in the
-		display list that is currently processing the event.
-		</entry></row><row><entry>`direction`</entry><entry>The direction from
-		which focus was assigned. This property reports the value of the
-		`direction` parameter of the `assignFocus()` method of the stage. If
-		the focus changed through some other means, the value will always be
-		`FocusDirection.NONE`. Applies only to `focusIn` events. For all other
-		focus events the value will be
-		`FocusDirection.NONE`.</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `keyCode` | 0; applies only to `keyFocusChange` events. |
+		| `relatedObject` | The complementary InteractiveObject instance that is affected by the change in focus. |
+		| `shiftKey` | `false`; applies only to `keyFocusChange` events. |
+		| `target` | The InteractiveObject instance that has just received focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+		| `direction` | The direction from which focus was assigned. This property reports the value of the `direction` parameter of the `assignFocus()` method of the stage. If the focus changed through some other means, the value will always be `FocusDirection.NONE`. Applies only to `focusIn` events. For all other focus events the value will be `FocusDirection.NONE`. |
 	**/
 	public static inline var FOCUS_IN:String = "focusIn";
 
@@ -53,24 +40,24 @@ class FocusEvent extends Event
 		Defines the value of the `type` property of a `focusOut` event object.
 
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`false`;
+		
+		|Property | Value || --- | --- || `bubbles` | `true` || `cancelable` | `false`;
 		there is no default behavior to
-		cancel.</entry></row><row><entry>`currentTarget`</entry><entry>The
+		cancel. || `currentTarget` | The
 		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`keyCode`</entry><entry>0; applies
+		listener. || `keyCode` | 0; applies
 		only to `keyFocusChange`
-		events.</entry></row><row><entry>`relatedObject`</entry><entry>The
+		events. || `relatedObject` | The
 		complementary InteractiveObject instance that is affected by the
 		change in
-		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`false`;
+		focus. || `shiftKey` | `false`;
 		applies only to `keyFocusChange`
-		events.</entry></row><row><entry>`target`</entry><entry>The
+		events. || `target` | The
 		InteractiveObject instance that has just lost focus. The `target` is
 		not always the object in the display list that registered the event
 		listener. Use the `currentTarget` property to access the object in the
 		display list that is currently processing the event.
-		</entry></row></tbody></tgroup>
+		 |
 	**/
 	public static inline var FOCUS_OUT:String = "focusOut";
 
@@ -78,24 +65,16 @@ class FocusEvent extends Event
 		Defines the value of the `type` property of a `keyFocusChange` event
 		object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`true`;
-		call the `preventDefault()` method to cancel default
-		behavior.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`keyCode`</entry><entry>The key
-		code value of the key pressed to trigger a `keyFocusChange`
-		event.</entry></row><row><entry>`relatedObject`</entry><entry>The
-		complementary InteractiveObject instance that is affected by the
-		change in
-		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`true` if the
-		Shift key modifier is activated; `false`
-		otherwise.</entry></row><row><entry>`target`</entry><entry>The
-		InteractiveObject instance that currently has focus. The `target` is
-		not always the object in the display list that registered the event
-		listener. Use the `currentTarget` property to access the object in the
-		display list that is currently processing the event.
-		</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `true`; call the `preventDefault()` method to cancel default behavior. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `keyCode` | The key code value of the key pressed to trigger a `keyFocusChange` event. |
+		| `relatedObject` | The complementary InteractiveObject instance that is affected by the change in focus. |
+		| `shiftKey` | `true` if the Shift key modifier is activated; `false` otherwise. |
+		| `target` | The InteractiveObject instance that currently has focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var KEY_FOCUS_CHANGE:String = "keyFocusChange";
 
@@ -103,24 +82,16 @@ class FocusEvent extends Event
 		Defines the value of the `type` property of a `mouseFocusChange` event
 		object.
 		This event has the following properties:
-		// TODO: Table <tgroup
-		cols="2"><thead><row><entry>Property</entry><entry>Value</entry></row></thead><tbody><row><entry>`bubbles`</entry><entry>`true`</entry></row><row><entry>`cancelable`</entry><entry>`true`;
-		call the `preventDefault()` method to cancel default
-		behavior.</entry></row><row><entry>`currentTarget`</entry><entry>The
-		object that is actively processing the Event object with an event
-		listener.</entry></row><row><entry>`keyCode`</entry><entry>0; applies
-		only to `keyFocusChange`
-		events.</entry></row><row><entry>`relatedObject`</entry><entry>The
-		complementary InteractiveObject instance that is affected by the
-		change in
-		focus.</entry></row><row><entry>`shiftKey`</entry><entry>`false`;
-		applies only to `keyFocusChange`
-		events.</entry></row><row><entry>`target`</entry><entry>The
-		InteractiveObject instance that currently has focus. The `target` is
-		not always the object in the display list that registered the event
-		listener. Use the `currentTarget` property to access the object in the
-		display list that is currently processing the event.
-		</entry></row></tbody></tgroup>
+		
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `true`; call the `preventDefault()` method to cancel default behavior. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `keyCode` | 0; applies only to `keyFocusChange` events. |
+		| `relatedObject` | The complementary InteractiveObject instance that is affected by the change in focus. |
+		| `shiftKey` | `false`; applies only to `keyFocusChange` events. |
+		| `target` | The InteractiveObject instance that currently has focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MOUSE_FOCUS_CHANGE:String = "mouseFocusChange";
 

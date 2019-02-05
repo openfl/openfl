@@ -41,7 +41,7 @@ import openfl.geom.Matrix;
 		1, respectively. For example, the following shows a `focalPointRatio`
 		set to 0.75:
 
-		![radial gradient with focalPointRatio set to 0.75](https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/images/radial_sketch.jpg)
+		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
 	**/
 	public var focalPointRatio:Float;
 
@@ -56,7 +56,7 @@ import openfl.geom.Matrix;
 
 		| `InterpolationMethod.LINEAR_RGB` | `InterpolationMethod.RGB` |
 		| --- | --- |
-		| ![linear gradient with InterpolationMethod.LINEAR_RGB](https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/images/beginGradientFill_interp_linearrgb.jpg) | ![linear gradient with InterpolationMethod.RGB](https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/images/beginGradientFill_interp_rgb.jpg) |
+		| ![linear gradient with InterpolationMethod.LINEAR_RGB](/images/beginGradientFill_interp_linearrgb.jpg) | ![linear gradient with InterpolationMethod.RGB](/images/beginGradientFill_interp_rgb.jpg) |
 	**/
 	public var interpolationMethod:InterpolationMethod;
 
@@ -84,9 +84,9 @@ import openfl.geom.Matrix;
 
 		| `ratios` | Gradient |
 		| --- | --- |
-		| `[0, 127]` | ![linear gradient blue to green with ratios 0 and 127](https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/images/gradient-ratios-1.jpg) |
-		| `[0, 255]` | ![linear gradient blue to green with ratios 0 and 255](https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/images/gradient-ratios-2.jpg) |
-		| `[127, 255]` | ![linear gradient blue to green with ratios 127 and 255](https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/images/gradient-ratios-3.jpg) |
+		| `[0, 127]` | ![linear gradient blue to green with ratios 0 and 127](/images/gradient-ratios-1.jpg) |
+		| `[0, 255]` | ![linear gradient blue to green with ratios 0 and 255](/images/gradient-ratios-2.jpg) |
+		| `[127, 255]` | ![linear gradient blue to green with ratios 127 and 255](/images/gradient-ratios-3.jpg) |
 
 		The values in the array must increase sequentially; for example, `[0,
 		63, 127, 190, 255]`.
@@ -110,20 +110,17 @@ import openfl.geom.Matrix;
 		This example uses `SpreadMethod.PAD` for the spread method, and the
 		gradient fill looks like the following:
 
-		//TODO: Image href="../../images/beginGradientFill_spread_pad.jpg"
-		placement="inline" alt="linear gradient with SpreadMethod.PAD"
+		![linear gradient with SpreadMethod.PAD](/images/beginGradientFill_spread_pad.jpg)
 
 		If you use `SpreadMethod.REFLECT` for the spread method, the gradient
 		fill looks like the following:
-
-		//TODO: Image href="../../images/beginGradientFill_spread_reflect.jpg"
-		placement="inline" alt="linear gradient with SpreadMethod.REFLECT"
+		
+		![linear gradient with SpreadMethod.REFLECT](/images/beginGradientFill_spread_reflect.jpg)
 
 		If you use `SpreadMethod.REPEAT` for the spread method, the gradient
 		fill looks like the following:
 
-		//TODO: Image href="../../images/beginGradientFill_spread_repeat.jpg"
-		placement="inline" alt="linear gradient with SpreadMethod.REPEAT"
+		![linear gradient with SpreadMethod.REPEAT](/images/beginGradientFill_spread_repeat.jpg)
 	**/
 	public var spreadMethod:SpreadMethod;
 

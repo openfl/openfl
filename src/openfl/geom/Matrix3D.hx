@@ -3,102 +3,6 @@ package openfl.geom;
 #if !flash
 import openfl.Vector;
 
-/**
-	The Matrix class represents a transformation matrix that determines how to
-	map points from one coordinate space to another. You can perform various
-	graphical transformations on a display object by setting the properties of
-	a Matrix object, applying that Matrix object to the `matrix` property of a
-	Transform object, and then applying that Transform object as the
-	`transform` property of the display object. These transformation functions
-	include translation (_x_ and _y_ repositioning), rotation, scaling, and
-	skewing.
-	Together these types of transformations are known as _affine
-	transformations_. Affine transformations preserve the straightness of
-	lines while transforming, so that parallel lines stay parallel.
-
-	To apply a transformation matrix to a display object, you create a
-	Transform object, set its `matrix` property to the transformation matrix,
-	and then set the `transform` property of the display object to the
-	Transform object. Matrix objects are also used as parameters of some
-	methods, such as the following:
-
-	* The `draw()` method of a BitmapData object
-	* The `beginBitmapFill()` method, `beginGradientFill()` method, or
-	`lineGradientStyle()` method of a Graphics object
-
-	A transformation matrix object is a 3 x 3 matrix with the following
-	contents:
-
-	//TODO: Image href="../../images/matrix_props1.jpg" placement="inline"
-	alt="Matrix class properties in matrix notation"
-
-	In traditional transformation matrixes, the `u`, `v`, and `w` properties
-	provide extra capabilities. The Matrix class can only operate in
-	two-dimensional space, so it always assumes that the property values `u`
-	and `v` are 0.0, and that the property value `w` is 1.0. The effective
-	values of the matrix are as follows:
-
-	//TODO: Image href="../../images/matrix_props2.jpg" placement="inline"
-	alt="Matrix class properties in matrix notation showing assumed values for
-	u, v, and w"
-
-	You can get and set the values of all six of the other properties in a
-	Matrix object: `a`, `b`, `c`, `d`, `tx`, and `ty`.
-
-	The Matrix class supports the four major types of transformations:
-	translation, scaling, rotation, and skewing. You can set three of these
-	transformations by using specialized methods, as described in the
-	following table:
-	// TODO: Table <tgroup
-	cols="5"><thead><row><entry>Transformation</entry><entry>Method</entry><entry>Matrix
-	values</entry><entry>Display
-	result</entry><entry>Description</entry></row></thead><tbody><row
-	valign="top"><entry>Translation (displacement)</entry><entry
-	outputclass="nowrap">`translate(tx, ty)` </entry><entry>//TODO: Image
-	height="104" href="../../images/matrix_translate.jpg" placement="inline"
-	alt="Matrix notation of translate method parameters"
-	width="150"</entry><entry>//TODO: Image height="91"
-	href="../../images/matrix_translate_image.jpg" placement="inline"
-	alt="Illustration of translate method effects"
-	width="111"</entry><entry>Moves the image `tx` pixels to the right and
-	`ty` pixels down.</entry></row><row
-	valign="top"><entry>Scaling</entry><entry>`scale(sx,
-	sy)`</entry><entry>//TODO: Image height="105"
-	href="../../images/matrix_scale.jpg" placement="inline" alt="Matrix
-	notation of scale method parameters" width="140"</entry><entry>//TODO:
-	Image height="84" href="../../images/matrix_scale_image.jpg"
-	placement="inline" alt="Illustration of scale method effects"
-	width="111"</entry><entry>Resizes the image, multiplying the location of
-	each pixel by `sx` on the _x_ axis and `sy` on the _y_
-	axis.</entry></row><row
-	valign="top"><entry>Rotation</entry><entry>`rotate(q)`</entry><entry>//TODO:
-	Image height="105" href="../../images/matrix_rotate.jpg"
-	placement="inline" alt="Matrix notation of rotate method properties"
-	width="219"</entry><entry>//TODO: Image height="91"
-	href="../../images/matrix_rotate_image.jpg" placement="inline"
-	alt="Illustration of rotate method effects"
-	width="111"</entry><entry>Rotates the image by an angle `q`, which is
-	measured in radians.</entry></row><row valign="top"><entry>Skewing or
-	shearing </entry><entry>None; must set the properties `b` and
-	`c`</entry><entry>//TODO: Image href="../../images/matrix_skew.jpg"
-	placement="inline" alt="Matrix notation of skew function
-	properties"</entry><entry>//TODO: Image height="77"
-	href="../../images/matrix_skew_image.jpg" placement="inline"
-	alt="Illustration of skew function effects"
-	width="111"</entry><entry>Progressively slides the image in a direction
-	parallel to the _x_ or _y_ axis. The `b` property of the Matrix object
-	represents the tangent of the skew angle along the _y_ axis; the `c`
-	property of the Matrix object represents the tangent of the skew angle
-	along the _x_ axis.</entry></row></tbody></tgroup>
-	Each transformation function alters the current matrix properties so that
-	you can effectively combine multiple transformations. To do this, you call
-	more than one transformation function before applying the matrix to its
-	display object target (by using the `transform` property of that display
-	object).
-
-	Use the `new Matrix()` constructor to create a Matrix object before you
-	can call the methods of the Matrix object.
-**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -119,29 +23,7 @@ class Matrix3D
 			});
 	}
 	#end
-
-	/**
-		Creates a new Matrix object with the specified parameters. In matrix
-		notation, the properties are organized like this:
-		//TODO: Image href="../../images/matrix_props2.jpg" placement="inline"
-		alt="Matrix class properties in matrix notation showing assumed values
-		for u, v, and w"
-
-		If you do not provide any parameters to the `new Matrix()`
-		constructor, it creates an _identity matrix_ with the following
-		values:
-		// TODO: Table <tgroup cols="2"><tbody><row><entry><pre
-		xml:space="preserve">a = 1</pre></entry><entry><pre
-		xml:space="preserve">b = 0</pre></entry></row><row><entry><pre
-		xml:space="preserve">c = 0</pre></entry><entry><pre
-		xml:space="preserve">d = 1</pre></entry></row><row><entry><pre
-		xml:space="preserve">tx = 0</pre></entry><entry><pre
-		xml:space="preserve">ty = 0</pre></entry></row></tbody></tgroup>
-		In matrix notation, the identity matrix looks like this:
-
-		//TODO: Image href="../../images/matrix_identity.jpg"
-		placement="inline" alt="Matrix class properties in matrix notation"
-	**/
+	
 	public function new(v:Vector<Float> = null)
 	{
 		if (v != null && v.length == 16)
@@ -247,12 +129,6 @@ class Matrix3D
 		rawData[14] += z;
 	}
 
-	/**
-		Returns a new Matrix object that is a clone of this matrix, with an
-		exact copy of the contained object.
-
-		@return A Matrix object.
-	**/
 	public function clone():Matrix3D
 	{
 		return new Matrix3D(this.rawData.copy());
@@ -582,19 +458,6 @@ class Matrix3D
 			(x * rawData[2] + y * rawData[6] + z * rawData[10]), (x * rawData[3] + y * rawData[7] + z * rawData[11]));
 	}
 
-	/**
-		Sets each matrix property to a value that causes a null
-		transformation. An object transformed by applying an identity matrix
-		will be identical to the original.
-		After calling the `identity()` method, the resulting matrix has the
-		following properties: `a`=1, `b`=0, `c`=0, `d`=1, `tx`=0, `ty`=0.
-
-		In matrix notation, the identity matrix looks like this:
-
-		//TODO: Image href="../../images/matrix_identity.jpg"
-		placement="inline" alt="Matrix class properties in matrix notation"
-
-	**/
 	public function identity():Void
 	{
 		rawData = new Vector<Float>([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]);
@@ -620,12 +483,6 @@ class Matrix3D
 		}
 	}
 
-	/**
-		Performs the opposite transformation of the original matrix. You can
-		apply an inverted matrix to an object to undo the transformation
-		performed when applying the original matrix.
-
-	**/
 	public function invert():Bool
 	{
 		var d = determinant;
