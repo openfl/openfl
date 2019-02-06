@@ -198,8 +198,8 @@ class PrintJob
 		printable area, the same type of clipping takes place.
 
 		If you want to scale a Sprite object before you print it, set scale
-		properties (see `flash.display.DisplayObject.scaleX` and
-		`flash.display.DisplayObject.scaleY`) before calling this method, and
+		properties (see `openfl.display.DisplayObject.scaleX` and
+		`openfl.display.DisplayObject.scaleY`) before calling this method, and
 		set them back to their original values after printing. The scale of a
 		Sprite object has no relation to `printArea`. That is, if you specify
 		a print area that is 50 x 50 pixels, 2500 pixels are printed. If you
@@ -354,14 +354,14 @@ class PrintJob
 		`PrintJob.start()` method returns successfully (the user clicks OK in
 		the Print dialog box), the following properties are populated,
 		representing the user's chosen print settings:
-		
+
 		| Property | Type | Units | Notes |
 		| --- | --- | --- | --- |
 		| `PrintJob.paperHeight` | Number | Points | Overall paper height. |
 		| `PrintJob.paperWidth` | Number | Points | Overall paper width. |
 		| `PrintJob.pageHeight` | Number | Points | Height of actual printable area on the page; any user-set margins are ignored. |
 		| `PrintJob.pageWidth` | Number | Points | Width of actual printable area on the page; any user-set margins are ignored. |
-		| `PrintJob.orientation` | String | | `"portrait"` (`flash.printing.PrintJobOrientation.PORTRAIT`) or `"landscape"` (`flash.printing.PrintJobOrientation.LANDSCAPE`). |
+		| `PrintJob.orientation` | String | | `"portrait"` (`openfl.printing.PrintJobOrientation.PORTRAIT`) or `"landscape"` (`openfl.printing.PrintJobOrientation.LANDSCAPE`). |
 
 		**Note:** If the user cancels the Print dialog box, the properties are
 		not populated.

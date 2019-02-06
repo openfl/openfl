@@ -25,7 +25,7 @@ class KeyboardEvent extends Event
 		The `KeyboardEvent.KEY_DOWN` constant defines the value of the `type`
 		property of a `keyDown` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -46,7 +46,7 @@ class KeyboardEvent extends Event
 		The `KeyboardEvent.KEY_UP` constant defines the value of the `type`
 		property of a `keyUp` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |

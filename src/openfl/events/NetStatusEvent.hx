@@ -17,7 +17,7 @@ class NetStatusEvent extends Event
 		Defines the value of the `type` property of a `netStatus` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -48,7 +48,7 @@ class NetStatusEvent extends Event
 
 		The following table describes the possible string values of the `code`
 		and `level` properties.
-		
+
 		| Code property | Level property | Meaning |
 		| --- | --- | --- |
 		| `"NetConnection.Call.BadVersion"` | `"error"` | Packet encoded in an unidentified format. |
@@ -116,7 +116,7 @@ class NetStatusEvent extends Event
 		| `"SharedObject.Flush.Failed"` | `"error"` | The "pending" status is resolved, but the `SharedObject.flush()` failed. |
 		| `"SharedObject.Flush.Success"` | `"status"` | The "pending" status is resolved and the `SharedObject.flush()` call succeeded. |
 		| `"SharedObject.UriMismatch"` | `"error"` | An attempt was made to connect to a NetConnection object that has a different URI (URL) than the shared object. |
-		
+
 		If you consistently see errors regarding the buffer, try changing the
 		buffer using the `NetStream.bufferTime` property.
 	**/

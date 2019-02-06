@@ -266,7 +266,7 @@ class LoaderContext
 		behavior after the image is decoded. The runtime can flush the decoded
 		data at any time and re-decode the image the next time it is required.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash11) public var imageDecodingPolicy:flash.system.ImageDecodingPolicy;
+	// @:noCompletion @:dox(hide) @:require(flash11) public var imageDecodingPolicy:openfl.system.ImageDecodingPolicy;
 	/**
 		An Object containing the parameters to pass to the LoaderInfo object
 		of the content.
@@ -293,8 +293,8 @@ class LoaderContext
 
 		The following code uses the LoaderContext.parameters property to
 		replicate a parameter passed to this URL:
-		<pre xml:space="preserve"> import flash.system.LoaderContext; import
-		flash.display.Loader; var l:Loader = new Loader(); var
+		<pre xml:space="preserve"> import openfl.system.LoaderContext; import
+		openfl.display.Loader; var l:Loader = new Loader(); var
 		lc:LoaderContext = new LoaderContext; lc.parameters = { "foo": "bar"
 		}; l.load(new URLRequest("child.swf"), lc); </pre>
 		To verify that the parameter passed properly, use the following trace
@@ -335,8 +335,8 @@ class LoaderContext
 
 		The following code uses `requestedContentParent` to place the loaded
 		content into a Sprite object:
-		<pre xml:space="preserve"> import flash.system.LoaderContext; import
-		flash.display.Loader; import flash.display.Sprite; var
+		<pre xml:space="preserve"> import openfl.system.LoaderContext; import
+		openfl.display.Loader; import openfl.display.Sprite; var
 		lc:LoaderContext = new LoaderContext(); var l:Loader = new Loader();
 		var s:Sprite = new Sprite(); lc.requestedContentParent = s;
 		addChild(s); l.load(new URLRequest("child.swf"), lc); </pre>

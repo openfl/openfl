@@ -193,14 +193,14 @@ class Security
 
 		Flash Player's cross-domain security rules have evolved from version
 		to version. The following table summarizes the differences.
-		
+
 		| Latest SWF version involved in cross-scripting | `allowDomain()` needed? | `allowInsecureDomain()` needed? | Which SWF file must call `allowDomain()` or `allowInsecureDomain()`? | What can be specified in `allowDomain()` or `allowInsecureDomain()`? |
 		| --- | --- | --- | --- | --- |
 		| 5 or earlier | No | No | N/A | N/A |
 		| 6 | Yes, if superdomains don't match | No | The SWF file being accessed, or any SWF file with the same superdomain as the SWF file being accessed | <ul><li>Text-based domain (mysite.com)</li><li>IP address (192.168.1.1)</li></ul> |
 		| 7 | Yes, if domains don't match exactly | Yes, if performing HTTP-to-HTTPS access (even if domains match exactly) | The SWF file being accessed, or any SWF file with exactly the same domain as the SWF file being accessed | <ul><li>Text-based domain (mysite.com)</li><li>IP address (192.168.1.1)</li></ul> |
 		| 8 or later | Yes, if domains don't match exactly | Yes, if performing HTTP-to-HTTPS access (even if domains match exactly) | SWF file being accessed | <ul><li>Text-based domain (mysite.com)</li><li>IP address (192.168.1.1)</li><li>Wildcard (~~)</li></ul> |
-		
+
 		The versions that control the behavior of Flash Player are _SWF
 		versions_ (the published version of a SWF file), not the version of
 		Flash Player itself. For example, when Flash Player 8 is playing a SWF
@@ -486,7 +486,7 @@ class Security
 
 		For example, following the previous code, these lines do not throw an
 		exception:
-		<codeblock xml:space="preserve"> import flash.net.~~; var
+		<codeblock xml:space="preserve"> import openfl.net.~~; var
 		request:URLRequest = new
 		URLRequest("http://www.example.com/sub/dir/vars.txt"); var
 		loader:URLLoader = new URLLoader(); loader.load(request); var
@@ -494,7 +494,7 @@ class Security
 		URLRequest("http://www.example.com/sub/dir/deep/vars2.txt");
 		loader2.load(request2); ```
 		However, the following code does throw a security exception:
-		<codeblock xml:space="preserve"> import flash.net.~~; var
+		<codeblock xml:space="preserve"> import openfl.net.~~; var
 		request3:URLRequest = new
 		URLRequest("http://www.example.com/elsewhere/vars3.txt"); var
 		loader3:URLLoader = new URLLoader(); loader3.load(request3); ```
@@ -557,7 +557,7 @@ class Security
 					 Security Settings panel you want to display. If you omit
 					 this parameter, `SecurityPanel.DEFAULT` is used.
 	**/
-	// @:noCompletion @:dox(hide) public static function showSettings (panel:flash.system.SecurityPanel = null):Void;
+	// @:noCompletion @:dox(hide) public static function showSettings (panel:openfl.system.SecurityPanel = null):Void;
 }
 #else
 typedef Security = flash.system.Security;

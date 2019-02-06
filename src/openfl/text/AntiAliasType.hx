@@ -5,7 +5,7 @@ package openfl.text;
 #if !openfljs
 /**
 	The AntiAliasType class provides values for anti-aliasing in the
-	flash.text.TextField class.
+	openfl.text.TextField class.
 **/
 @:enum abstract AntiAliasType(Null<Int>)
 {

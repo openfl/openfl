@@ -28,7 +28,7 @@ class SecurityErrorEvent extends ErrorEvent
 		The `SecurityErrorEvent.SECURITY_ERROR` constant defines the value of
 		the `type` property of a `securityError` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

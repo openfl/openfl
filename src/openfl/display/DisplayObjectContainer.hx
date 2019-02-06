@@ -89,7 +89,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public var tabChildren(get, set):Bool;
 
-	// @:noCompletion @:dox(hide) public var textSnapshot (default, never):flash.text.TextSnapshot;
+	// @:noCompletion @:dox(hide) public var textSnapshot (default, never):openfl.text.TextSnapshot;
 	@:noCompletion private var __removedChildren:Vector<DisplayObject>;
 	@:noCompletion private var __tabChildren:Bool;
 

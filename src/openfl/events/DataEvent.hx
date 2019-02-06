@@ -18,7 +18,7 @@ class DataEvent extends TextEvent
 	/**
 		Defines the value of the `type` property of a `data` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -33,7 +33,7 @@ class DataEvent extends TextEvent
 		Defines the value of the `type` property of an `uploadCompleteData`
 		event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

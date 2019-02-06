@@ -48,7 +48,7 @@ class MouseEvent extends Event
 		The `MouseEvent.CONTEXT_MENU` constant defines the value of the `type`
 		property of a `contextMenu` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -74,7 +74,7 @@ class MouseEvent extends Event
 		object. The `doubleClickEnabled` property must be `true` for an object
 		to generate the `doubleClick` event.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -98,7 +98,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `middleClick` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -122,7 +122,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `middleMouseDown` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -147,7 +147,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `middleMouseUp` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -172,7 +172,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `mouseDown` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -197,7 +197,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `mouseMove` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -221,7 +221,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `mouseOut` event object.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -246,7 +246,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `mouseOver` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -270,7 +270,7 @@ class MouseEvent extends Event
 	/**
 		Defines the value of the `type` property of a `mouseUp` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -295,7 +295,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `mouseWheel` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -328,7 +328,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `rightClick` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -352,7 +352,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `rightMouseDown` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -377,7 +377,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `rightMouseUp` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -401,7 +401,7 @@ class MouseEvent extends Event
 	/**
 		Defines the value of the `type` property of a `rollOut` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |
@@ -426,7 +426,7 @@ class MouseEvent extends Event
 		Defines the value of the `type` property of a `rollOver` event object.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows). |

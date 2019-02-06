@@ -20,7 +20,7 @@ import js.Browser;
 
 	You can access LoaderInfo objects in two ways:
 
-	* The `contentLoaderInfo` property of a flash.display.Loader
+	* The `contentLoaderInfo` property of a openfl.display.Loader
 	object -  The `contentLoaderInfo` property is always available
 	for any Loader object. For a Loader object that has not called the
 	`load()` or `loadBytes()` method, or that has not
@@ -113,7 +113,7 @@ class LoaderInfo extends EventDispatcher
 {
 	@:noCompletion private static var __rootURL:String = #if (js && html5)(Browser.supported ? Browser.document.URL : "") #else "" #end;
 
-	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):flash.display.ActionScriptVersion;
+	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):openfl.display.ActionScriptVersion;
 
 	/**
 		When an external SWF file is loaded, all ActionScript 3.0 definitions

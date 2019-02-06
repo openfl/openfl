@@ -14,7 +14,7 @@ class TimerEvent extends Event
 	/**
 		Defines the value of the `type` property of a `timer` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -28,7 +28,7 @@ class TimerEvent extends Event
 		Defines the value of the `type` property of a `timerComplete` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

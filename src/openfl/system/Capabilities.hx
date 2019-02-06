@@ -22,7 +22,7 @@ import sys.io.Process;
 	tell the SWF file to alter its presentation.
 	However, some capabilities of Adobe AIR are not listed as properties in
 	the Capabilities class. They are properties of other classes:
-	
+
 	| Property | Description |
 	| --- | --- |
 	| `NativeApplication.supportsDockIcon` | Whether the operating system supports application doc icons. |
@@ -30,7 +30,7 @@ import sys.io.Process;
 	| `NativeApplication.supportsSystemTrayIcon` | Whether the operating system supports system tray icons. |
 	| `NativeWindow.supportsMenu` | Whether the operating system supports window menus. |
 	| `NativeWindow.supportsTransparency` | Whether the operating system supports transparent windows. |
-	
+
 	Do _not_ use `Capabilities.os` or `Capabilities.manufacturer` to determine
 	a capability based on the operating system. Basing a capability on the
 	operating system is a bad idea, since it can lead to problems if an
@@ -234,7 +234,7 @@ import sys.io.Process;
 		property returns the user interface (UI) language, which refers to the
 		language used for all menus, dialog boxes, error messages, and help
 		files. The following table lists the possible values:
-		
+
 		| Language | Value |
 		| --- | --- |
 		| Czech | `cs` |
@@ -324,7 +324,7 @@ import sys.io.Process;
 	/**
 		Specifies the current operating system. The `os` property can return
 		the following strings:
-		
+
 		|Operating system | Value |
 		| --- | --- |
 		| Windows 7 | `"Windows 7"` |
@@ -349,7 +349,7 @@ import sys.io.Process;
 		| Mac OS | `"Mac OS X.Y.Z"` (where X.Y.Z is the version number, for example: `"Mac OS 10.5.2"`) |
 		| Linux | `"Linux"` (Flash Player attaches the Linux version, such as `"Linux 2.6.15-1.2054_FC5smp"` |
 		| iPhone OS 4.1 | `"iPhone3,1"` |
-		
+
 		The server string is `OS`.
 
 		Do _not_ use `Capabilities.os` to determine a capability based on the
@@ -446,7 +446,7 @@ import sys.io.Process;
 
 	/**
 		Specifies the type of touchscreen supported, if any. Values are defined in
-		the flash.system.TouchscreenType class.
+		the openfl.system.TouchscreenType class.
 	**/
 	public static var touchscreenType(default, null) = TouchscreenType.FINGER; // TODO
 

@@ -49,7 +49,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_BEGIN` touch
 		event object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |
@@ -79,7 +79,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_END` touch event
 		object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |
@@ -109,7 +109,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_MOVE` touch event
 		object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |
@@ -139,7 +139,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_OUT` touch event
 		object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |
@@ -169,7 +169,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_OVER` touch event
 		object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |
@@ -199,7 +199,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_ROLL_OUT` touch
 		event object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |
@@ -229,7 +229,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_ROLL_OVER` touch
 		event object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |
@@ -259,7 +259,7 @@ class TouchEvent extends Event
 		Defines the value of the `type` property of a `TOUCH_TAP` touch event
 		object.
 		The dispatched TouchEvent object has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `altKey` | `true` if the Alt key is active (Windows or Linux). |

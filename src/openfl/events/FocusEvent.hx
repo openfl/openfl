@@ -22,7 +22,7 @@ class FocusEvent extends Event
 	/**
 		Defines the value of the `type` property of a `focusIn` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -40,7 +40,7 @@ class FocusEvent extends Event
 		Defines the value of the `type` property of a `focusOut` event object.
 
 		This event has the following properties:
-		
+
 		|Property | Value || --- | --- || `bubbles` | `true` || `cancelable` | `false`;
 		there is no default behavior to
 		cancel. || `currentTarget` | The
@@ -65,7 +65,7 @@ class FocusEvent extends Event
 		Defines the value of the `type` property of a `keyFocusChange` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -82,7 +82,7 @@ class FocusEvent extends Event
 		Defines the value of the `type` property of a `mouseFocusChange` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |

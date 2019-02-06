@@ -5,10 +5,10 @@ package openfl.text;
 	The TextLineMetrics class contains information about the text position and
 	measurements of a _line of text_ within a text field. All measurements are
 	in pixels. Objects of this class are returned by the
-	`flash.text.TextField.getLineMetrics()` method.
+	`openfl.text.TextField.getLineMetrics()` method.
 	For measurements related to the text field containing the line of text
 	(for example, the "Text Field height" measurement in the diagram), see
-	flash.text.TextField.
+	openfl.text.TextField.
 
 	The following diagram indicates the points and measurements of a text
 	field and the line of text the field contains:
@@ -71,7 +71,7 @@ class TextLineMetrics
 		Creates a TextLineMetrics object. The TextLineMetrics object contains
 		information about the text metrics of a line of text in a text field.
 		Objects of this class are returned by the
-		flash.text.TextField.getLineMetrics() method.
+		openfl.text.TextField.getLineMetrics() method.
 
 		@param x           The left position of the first character in pixels.
 		@param width       The width of the text of the selected lines (not

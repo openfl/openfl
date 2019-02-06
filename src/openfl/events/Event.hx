@@ -58,7 +58,7 @@ class Event
 		however, dispatch it manually.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -72,7 +72,7 @@ class Event
 		The `Event.ADDED` constant defines the value of the `type` property of
 		an `added` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -86,7 +86,7 @@ class Event
 		The `Event.ADDED_TO_STAGE` constant defines the value of the `type`
 		property of an `addedToStage` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -101,7 +101,7 @@ class Event
 		The `Event.CANCEL` constant defines the value of the `type` property
 		of a `cancel` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -115,7 +115,7 @@ class Event
 		The `Event.CHANGE` constant defines the value of the `type` property
 		of a `change` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -131,14 +131,14 @@ class Event
 		The `Event.CLEAR` constant defines the value of the `type` property of
 		a `clear` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
 		| `cancelable` | `false`; there is no default behavior to cancel. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | Any InteractiveObject instance with a listener registered for the `clear` event. |
-		
+
 		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
 		`paste`, or `selectAll` events. TextField objects always include Cut,
 		Copy, Paste, Clear, and Select All commands in the context menu. You
@@ -156,7 +156,7 @@ class Event
 		The `Event.CLOSE` constant defines the value of the `type` property of
 		a `close` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -170,7 +170,7 @@ class Event
 		The `Event.COMPLETE` constant defines the value of the `type` property
 		of a `complete` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -184,7 +184,7 @@ class Event
 		The `Event.CONNECT` constant defines the value of the `type` property
 		of a `connect` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -198,14 +198,14 @@ class Event
 	/**
 		Defines the value of the `type` property of a `copy` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
 		| `cancelable` | `false`; there is no default behavior to cancel. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | Any InteractiveObject instance with a listener registered for the `copy` event. |
-		
+
 		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
 		`paste`, or `selectAll` events. TextField objects always include Cut,
 		Copy, Paste, Clear, and Select All commands in the context menu. You
@@ -222,14 +222,14 @@ class Event
 	/**
 		Defines the value of the `type` property of a `cut` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
 		| `cancelable` | `false`; there is no default behavior to cancel. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | Any InteractiveObject instance with a listener registered for the `cut` event. |
-		
+
 		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
 		`paste`, or `selectAll` events. TextField objects always include Cut,
 		Copy, Paste, Clear, and Select All commands in the context menu. You
@@ -254,7 +254,7 @@ class Event
 		however, dispatch it manually.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -272,7 +272,7 @@ class Event
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -290,7 +290,7 @@ class Event
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -308,7 +308,7 @@ class Event
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -323,7 +323,7 @@ class Event
 		The `Event.FULL_SCREEN` constant defines the value of the `type`
 		property of a `fullScreen` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -337,7 +337,7 @@ class Event
 		The `Event.ID3` constant defines the value of the `type` property of
 		an `id3` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -351,7 +351,7 @@ class Event
 		The `Event.INIT` constant defines the value of the `type` property of
 		an `init` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -365,7 +365,7 @@ class Event
 		The `Event.MOUSE_LEAVE` constant defines the value of the `type`
 		property of a `mouseLeave` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -379,7 +379,7 @@ class Event
 		The `Event.OPEN` constant defines the value of the `type` property of
 		an `open` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -393,14 +393,14 @@ class Event
 		The `Event.PASTE` constant defines the value of the `type` property of
 		a `paste` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
 		| `cancelable` | `false`; there is no default behavior to cancel. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | Any InteractiveObject instance with a listener registered for the `paste` event. |
-		
+
 		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
 		`paste`, or `selectAll` events. TextField objects always include Cut,
 		Copy, Paste, Clear, and Select All commands in the context menu. You
@@ -418,7 +418,7 @@ class Event
 		The `Event.REMOVED` constant defines the value of the `type` property
 		of a `removed` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -432,7 +432,7 @@ class Event
 		The `Event.REMOVED_FROM_STAGE` constant defines the value of the
 		`type` property of a `removedFromStage` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -450,7 +450,7 @@ class Event
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -464,7 +464,7 @@ class Event
 		The `Event.RESIZE` constant defines the value of the `type` property
 		of a `resize` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -478,7 +478,7 @@ class Event
 		The `Event.SCROLL` constant defines the value of the `type` property
 		of a `scroll` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -492,7 +492,7 @@ class Event
 		The `Event.SELECT` constant defines the value of the `type` property
 		of a `select` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -506,14 +506,14 @@ class Event
 		The `Event.SELECT_ALL` constant defines the value of the `type`
 		property of a `selectAll` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
 		| `cancelable` | `false`; there is no default behavior to cancel. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | Any InteractiveObject instance with a listener registered for the `selectAll` event. |
-		
+
 		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
 		`paste`, or `selectAll` events. TextField objects always include Cut,
 		Copy, Paste, Clear, and Select All commands in the context menu. You
@@ -531,7 +531,7 @@ class Event
 		The `Event.SOUND_COMPLETE` constant defines the value of the `type`
 		property of a `soundComplete` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -545,7 +545,7 @@ class Event
 		The `Event.TAB_CHILDREN_CHANGE` constant defines the value of the
 		`type` property of a `tabChildrenChange` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -559,7 +559,7 @@ class Event
 		The `Event.TAB_ENABLED_CHANGE` constant defines the value of the
 		`type` property of a `tabEnabledChange` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -573,7 +573,7 @@ class Event
 		The `Event.TAB_INDEX_CHANGE` constant defines the value of the `type`
 		property of a `tabIndexChange` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -587,7 +587,7 @@ class Event
 		The `Event.TEXT_INTERACTION_MODE_CHANGE` constant defines the value of
 		the `type` property of a `interaction mode` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -601,7 +601,7 @@ class Event
 		The `Event.UNLOAD` constant defines the value of the `type` property
 		of an `unload` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

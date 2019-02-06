@@ -65,7 +65,7 @@ class IntegrationTestMain
 			#if (flash && air)
 				flash.desktop.NativeApplication.nativeApplication.exit();
 			#elseif flash
-				flash.external.ExternalInterface.call("testResult", successful);
+				openfl.external.ExternalInterface.call("testResult", successful);
 			#elseif js
 				js.Lib.eval("testResult(" + successful + ");");
 			#elseif (neko || cpp || java || cs || python || php || hl || eval)

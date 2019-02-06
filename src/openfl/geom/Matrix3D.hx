@@ -23,7 +23,7 @@ class Matrix3D
 			});
 	}
 	#end
-	
+
 	public function new(v:Vector<Float> = null)
 	{
 		if (v != null && v.length == 16)

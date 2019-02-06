@@ -189,14 +189,14 @@ import js.Browser;
 
 							The `onCuePoint` event object has the following
 							properties:
-							
+
 							| Property | Description |
 							| --- | --- |
 							| `name` | The name given to the cue point when it was embedded in the video file. |
 							|`parameters` | An associative array of name and value pair strings specified for this cue point. Any valid string can be used for the parameter name or value. |
 							|`time` | The time in seconds at which the cue point occurred in the video file during playback. |
 							|`type` | The type of cue point that was reached, either navigation or event. |
-							
+
 							You can define cue points in a video file when you
 							first encode the file, or when you import a video
 							clip in the Flash authoring tool by using the
@@ -256,7 +256,7 @@ import js.Browser;
 							embedded in a media file that is playing. The
 							image data can produce either JPEG, PNG, or GIF
 							content. Use the
-							`flash.display.Loader.loadBytes()` method to load
+							`openfl.display.Loader.loadBytes()` method to load
 							the byte array into a display object.
 							`onImageData` is actually a property of the
 							`NetStream.client` object. The property is listed
@@ -376,7 +376,7 @@ import js.Browser;
 
 							This event can return an information object with
 							the following properties:
-							
+
 							| Code property | Level property | Meaning |
 							| --- | --- | --- |
 							| `NetStream.Play.Switch` | `"status"` | The subscriber is switching from one stream to another in a playlist. |
@@ -884,7 +884,7 @@ class NetStream extends EventDispatcher
 		about the quality of service. The object is a snapshot of the current
 		state.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var info (default, null):flash.net.NetStreamInfo;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var info (default, null):openfl.net.NetStreamInfo;
 
 	/**
 		The number of seconds of data in the subscribing stream's buffer in
@@ -948,7 +948,7 @@ class NetStream extends EventDispatcher
 		properties contain statistics about the quality of service. The object
 		is a snapshot of the current state.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastInfo (default, null):flash.net.NetStreamMulticastInfo;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastInfo (default, null):openfl.net.NetStreamMulticastInfo;
 	/**
 		For RTMFP connections, specifies the maximum number of peers to which
 		to proactively push multicast media.
@@ -1052,7 +1052,7 @@ class NetStream extends EventDispatcher
 		errors.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var videoSampleAccess:Bool;
-	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:flash.media.VideoStreamSettings;
+	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:openfl.media.VideoStreamSettings;
 	@:noCompletion private var __closed:Bool;
 	@:noCompletion private var __connection:NetConnection;
 	@:noCompletion private var __timer:Timer;
@@ -1242,7 +1242,7 @@ class NetStream extends EventDispatcher
 
 		@param microphone The source of the audio stream to be transmitted.
 	**/
-	// @:noCompletion @:dox(hide) public function attachAudio (microphone:flash.media.Microphone):Void;
+	// @:noCompletion @:dox(hide) public function attachAudio (microphone:openfl.media.Microphone):Void;
 	/**
 		Starts capturing video from a camera, or stops capturing if
 		`theCamera` is set to `null`. This method is available only to the
@@ -1300,7 +1300,7 @@ class NetStream extends EventDispatcher
 						 capturing video, and any additional parameters you
 						 send are ignored.
 	**/
-	// @:noCompletion @:dox(hide) public function attachCamera (theCamera:flash.media.Camera, snapshotMilliseconds:Int = -1):Void;
+	// @:noCompletion @:dox(hide) public function attachCamera (theCamera:openfl.media.Camera, snapshotMilliseconds:Int = -1):Void;
 
 	/**
 		Stops playing all data on the stream, sets the `time` property to 0,
@@ -1323,7 +1323,7 @@ class NetStream extends EventDispatcher
 		another purpose. Other subscribers are not affected.
 		*  You can stop a subscribing stream from playing, without closing the
 		stream or changing the stream type by using
-		`flash.net.NetStream.play(false)`.
+		`openfl.net.NetStream.play(false)`.
 
 	**/
 	public function close():Void
@@ -1538,7 +1538,7 @@ class NetStream extends EventDispatcher
 		scope="external">Flash Media Server 3.5.3 documentation</a>.
 
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public function play2 (param:flash.net.NetStreamPlayOptions):Void;
+	// @:noCompletion @:dox(hide) @:require(flash10) public function play2 (param:openfl.net.NetStreamPlayOptions):Void;
 	/**
 		Sends streaming audio, video, and data messages from a client to Flash
 		Media Server, optionally recording the stream during transmission.

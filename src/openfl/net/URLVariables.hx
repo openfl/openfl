@@ -5,7 +5,7 @@ package openfl.net;
 	The URLVariables class allows you to transfer variables between an
 	application and a server. Use URLVariables objects with methods of the
 	URLLoader class, with the `data` property of the URLRequest
-	class, and with flash.net package functions.
+	class, and with openfl.net package functions.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

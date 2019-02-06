@@ -22,7 +22,7 @@ class IOErrorEvent extends ErrorEvent
 		Defines the value of the `type` property of an `ioError` event object.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

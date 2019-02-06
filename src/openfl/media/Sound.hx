@@ -111,7 +111,7 @@ class Sound extends EventDispatcher
 		can be accessed either through the ID3 2.0 property name or the
 		ActionScript property name. The second table describes ID3 tags that
 		are supported but do not have predefined properties in ActionScript.
-		
+
 		| ID3 2.0 tag | Corresponding Sound class property |
 		| --- | --- |
 		| COMM | Sound.id3.comment |
@@ -121,12 +121,12 @@ class Sound extends EventDispatcher
 		| TPE1 | Sound.id3.artist |
 		| TRCK | Sound.id3.track |
 		| TYER | Sound.id3.year |
-		
+
 		The following table describes ID3 tags that are supported but do not
 		have predefined properties in the Sound class. You access them by
 		calling `mySound.id3.TFLT`, `mySound.id3.TIME`, and so on. **NOTE:**
 		None of these tags are supported in Flash Lite 4.
-		
+
 		| Property | Description |
 		| --- | --- |
 		| TFLT | File type |
@@ -159,7 +159,7 @@ class Sound extends EventDispatcher
 		| TSSE | Software/hardware and settings used for encoding |
 		| TYER | Year |
 		| WXXX | URL link frame |
-		
+
 		When using this property, consider the Flash Player security model:
 
 		* The `id3` property of a Sound object is always permitted for SWF

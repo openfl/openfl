@@ -20,7 +20,7 @@ class ProgressEvent extends Event
 		Defines the value of the `type` property of a `progress` event object.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -36,7 +36,7 @@ class ProgressEvent extends Event
 		Defines the value of the `type` property of a `socketData` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

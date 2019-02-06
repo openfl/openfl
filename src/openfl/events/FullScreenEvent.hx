@@ -17,7 +17,7 @@ class FullScreenEvent extends ActivityEvent
 		The `FullScreenEvent.FULL_SCREEN` constant defines the value of the
 		`type` property of a `fullScreen` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `fullScreen` | `true` if the display state is full screen or `false` if it is normal. |

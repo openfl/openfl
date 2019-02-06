@@ -46,11 +46,11 @@
 				"thresholds": [
 					{
 						"complexity": 21,
-						"severity": "WARNING"
+						"severity": "IGNORE"
 					},
 					{
 						"complexity": 31,
-						"severity": "WARNING"
+						"severity": "IGNORE"
 					}
 				]
 			},
@@ -181,7 +181,8 @@
 		{
 			"props": {
 				"max": 200,
-				"ignorePattern": "^$"
+				"ignorePattern": "^$",
+				"severity": "IGNORE"
 			},
 			"type": "LineLength"
 		},
@@ -196,7 +197,8 @@
 		{
 			"props": {
 				"max": 95,
-				"countEmpty": true
+				"countEmpty": true,
+				"severity": "IGNORE"
 			},
 			"type": "MethodLength"
 		},
@@ -279,7 +281,8 @@
 		{
 			"props": {
 				"max": 14,
-				"ignoreOverriddenMethods": false
+				"ignoreOverriddenMethods": false,
+				"severity": "IGNORE"
 			},
 			"type": "ParameterNumber"
 		},

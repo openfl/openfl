@@ -16,7 +16,7 @@ class TextEvent extends Event
 	/**
 		Defines the value of the `type` property of a `link` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |
@@ -34,7 +34,7 @@ class TextEvent extends Event
 		keys.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `true` |

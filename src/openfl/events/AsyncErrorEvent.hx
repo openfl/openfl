@@ -20,7 +20,7 @@ class AsyncErrorEvent extends ErrorEvent
 		The `AsyncErrorEvent.ASYNC_ERROR` constant defines the value of the
 		`type` property of an `asyncError` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

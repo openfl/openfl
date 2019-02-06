@@ -10,7 +10,7 @@ package openfl.text;
 	specific fonts. If you want to display bold or italic text with an
 	embedded font, you need to embed the bold and italic variations of that
 	font.
-	
+
 	You must use the constructor `new TextFormat()` to create a TextFormat
 	object before setting its properties. When you apply a TextFormat object
 	to a text field using the `TextField.defaultTextFormat` property or the
@@ -22,7 +22,7 @@ package openfl.text;
 	you don't provide values for the properties, Flash Player uses its own
 	default formatting. The default formatting that Flash Player uses for each
 	property (if property's value is `null`) is as follows:
-	
+
 	| | |
 	| --- | --- |
 	| align = "left" | |
@@ -43,7 +43,7 @@ package openfl.text;
 	| target = "" (empty string) | |
 	| underline = false | |
 	| url = "" (empty string) | |
-	
+
 	The default formatting for each property is also described in each
 	property description.
 **/
@@ -59,7 +59,7 @@ class TextFormat
 
 		@default TextFormatAlign.LEFT
 		@throws ArgumentError The `align` specified is not a member of
-							  flash.text.TextFormatAlign.
+							  openfl.text.TextFormatAlign.
 	**/
 	public var align:TextFormatAlign;
 
@@ -95,7 +95,7 @@ class TextFormat
 		color black(0x000000).
 	**/
 	public var color:Null<Int>;
-	// @:noCompletion @:dox(hide) public var display:flash.text.TextFormatDisplay;
+	// @:noCompletion @:dox(hide) public var display:openfl.text.TextFormatDisplay;
 
 	/**
 		The name of the font for text in this text format, as a string. The

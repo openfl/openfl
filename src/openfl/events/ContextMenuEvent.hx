@@ -21,7 +21,7 @@ class ContextMenuEvent extends Event
 		Defines the value of the `type` property of a `menuItemSelect` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -37,7 +37,7 @@ class ContextMenuEvent extends Event
 		Defines the value of the `type` property of a `menuSelect` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

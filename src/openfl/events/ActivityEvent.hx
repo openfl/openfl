@@ -17,7 +17,7 @@ class ActivityEvent extends Event
 		The `ActivityEvent.ACTIVITY` constant defines the value of the `type`
 		property of an `activity` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `activating` | `true` if the device is activating or `false` if it is deactivating. |

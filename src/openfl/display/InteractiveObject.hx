@@ -1048,8 +1048,8 @@ import openfl.geom.Rectangle;
 #end
 class InteractiveObject extends DisplayObject
 {
-	// @:noCompletion @:dox(hide) public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
-	// @:noCompletion @:dox(hide) public var contextMenu:flash.ui.ContextMenu;
+	// @:noCompletion @:dox(hide) public var accessibilityImplementation:openfl.accessibility.AccessibilityImplementation;
+	// @:noCompletion @:dox(hide) public var contextMenu:openfl.ui.ContextMenu;
 
 	/**
 		Specifies whether the object receives `doubleClick` events. The

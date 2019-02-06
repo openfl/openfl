@@ -62,7 +62,7 @@ import openfl.geom.Matrix;
 
 	/**
 		A transformation matrix as defined by the Matrix class. The
-		flash.geom.Matrix class includes a `createGradientBox()` method to set
+		openfl.geom.Matrix class includes a `createGradientBox()` method to set
 		up the matrix for use with the `beginGradientFill()` method.
 	**/
 	public var matrix:Matrix;
@@ -99,8 +99,8 @@ import openfl.geom.Matrix;
 		or `SpreadMethod.REPEAT`.
 		For example, the following shows a simple linear gradient between two
 		colors:
-		<codeblock xml:space="preserve"> import flash.geom.* import
-		flash.display.* var fillType:String = GradientType.LINEAR; var
+		<codeblock xml:space="preserve"> import openfl.geom.* import
+		openfl.display.* var fillType:String = GradientType.LINEAR; var
 		colors:Array = [0xFF0000, 0x0000FF]; var alphas:Array = [1, 1]; var
 		ratios:Array = [0x00, 0xFF]; var matr:Matrix = new Matrix();
 		matr.createGradientBox(20, 20, 0, 0, 0); var spreadMethod:String =
@@ -114,7 +114,7 @@ import openfl.geom.Matrix;
 
 		If you use `SpreadMethod.REFLECT` for the spread method, the gradient
 		fill looks like the following:
-		
+
 		![linear gradient with SpreadMethod.REFLECT](/images/beginGradientFill_spread_reflect.jpg)
 
 		If you use `SpreadMethod.REPEAT` for the spread method, the gradient
@@ -141,8 +141,8 @@ import openfl.geom.Matrix;
 								   `GradientType.LINEAR` or
 								   `GradientType.RADIAL`.
 		@param matrix              A transformation matrix as defined by the
-								   flash.geom.Matrix class. The
-								   flash.geom.Matrix class includes a
+								   openfl.geom.Matrix class. The
+								   openfl.geom.Matrix class includes a
 								   `createGradientBox()` method, which lets
 								   you conveniently set up the matrix for use
 								   with the `beginGradientFill()` method.

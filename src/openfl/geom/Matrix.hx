@@ -50,14 +50,14 @@ import lime.math.Matrix3;
 	translation, scaling, rotation, and skewing. You can set three of these
 	transformations by using specialized methods, as described in the
 	following table:
-	
+
 	| Transformation | Method | Matrix values | Display result | Description |
 	| --- | --- | --- | --- | --- |
 	| Translation (displacement) | `translate(tx, ty)` | ![Matrix notation of translate method parameters](/images/matrix_translate.jpg) | ![Illustration of translate method effects](/images/matrix_translate_image.jpg) | Moves the image `tx` pixels to the right and `ty` pixels down. |
 	| Scaling | `scale(sx, sy)` | ![Matrix notation of scale method parameters](/images/matrix_scale.jpg) | ![Illustration of scale method effects](/images/matrix_scale_image.jpg) | Resizes the image, multiplying the location of each pixel by `sx` on the _x_ axis and `sy` on the _y_ axis. |
 	| Rotation | `rotate(q)` | ![Matrix notation of rotate method properties](/images/matrix_rotate.jpg) | ![Illustration of rotate method effects](/images/matrix_rotate_image.jpg) | Rotates the image by an angle `q`, which is measured in radians. |
 	| Skewing or shearing | None; must set the properties `b` and `c` | ![Matrix notation of skew function properties](/images/matrix_skew.jpg) | ![Illustration of skew function effects](/images/matrix_skew_image.jpg) | Progressively slides the image in a direction parallel to the _x_ or _y_ axis. The `b` property of the Matrix object represents the tangent of the skew angle along the _y_ axis; the `c` property of the Matrix object represents the tangent of the skew angle along the _x_ axis. |
-	
+
 	Each transformation function alters the current matrix properties so that
 	you can effectively combine multiple transformations. To do this, you call
 	more than one transformation function before applying the matrix to its
@@ -120,17 +120,17 @@ class Matrix
 	/**
 		Creates a new Matrix object with the specified parameters. In matrix
 		notation, the properties are organized like this:
-		
+
 		![Matrix class properties in matrix notation showing assumed values for u, v, and w](/images/matrix_props2.jpg)
 
 		If you do not provide any parameters to the `new Matrix()`
 		constructor, it creates an _identity matrix_ with the following
 		values:
-		
+
 		| `a = 1` | `b = 0` |
 		| `c = 0` | `d = 1` |
 		| `tx = 0` | `ty = 0` |
-		
+
 		In matrix notation, the identity matrix looks like this:
 
 		![Matrix class properties in matrix notation](/images/matrix_identity.jpg)
@@ -316,7 +316,7 @@ class Matrix
 		`translate()` methods in succession. For example,
 		`mat1.createBox(2,2,Math.PI/4, 100, 100)` has the same effect as the
 		following:
-		<codeblock xml:space="preserve"> import flash.geom.Matrix; var
+		<codeblock xml:space="preserve"> import openfl.geom.Matrix; var
 		mat1:Matrix = new Matrix(); mat1.identity(); mat1.rotate(Math.PI/4);
 		mat1.scale(2,2); mat1.translate(10,20); ```
 
@@ -373,7 +373,7 @@ class Matrix
 		The following illustrations show gradients in which the matrix was
 		defined using the `createGradientBox()` method with different
 		parameter settings:
-		
+
 		| `createGradientBox()` settings | Resulting gradient |
 		| --- | --- |
 		| `width = 25; height = 25; rotation = 0; tx = 0; ty = 0;` | ![resulting linear gradient](/images/createGradientBox-1.jpg) |

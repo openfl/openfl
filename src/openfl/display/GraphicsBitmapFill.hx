@@ -24,10 +24,10 @@ import openfl.geom.Matrix;
 	public var bitmapData:BitmapData;
 
 	/**
-		A matrix object (of the flash.geom.Matrix class) that defines
+		A matrix object (of the openfl.geom.Matrix class) that defines
 		transformations on the bitmap. For example, the following matrix
 		rotates a bitmap by 45 degrees (pi/4 radians): <codeblock
-		xml:space="preserve"> matrix = new flash.geom.Matrix();
+		xml:space="preserve"> matrix = new openfl.geom.Matrix();
 		matrix.rotate(Math.PI / 4); ```
 	**/
 	public var matrix:Matrix;
@@ -73,7 +73,7 @@ import openfl.geom.Matrix;
 
 		@param bitmapData A transparent or opaque bitmap image that contains
 						  the bits to display.
-		@param matrix     A matrix object (of the flash.geom.Matrix class),
+		@param matrix     A matrix object (of the openfl.geom.Matrix class),
 						  which you use to define transformations on the
 						  bitmap.
 		@param repeat     If `true`, the bitmap image repeats in a tiled

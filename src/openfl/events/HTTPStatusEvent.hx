@@ -38,7 +38,7 @@ class HTTPStatusEvent extends Event
 		of the `type` property of a `httpResponseStatus` event object.
 
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |
@@ -55,7 +55,7 @@ class HTTPStatusEvent extends Event
 		The `HTTPStatusEvent.HTTP_STATUS` constant defines the value of the
 		`type` property of a `httpStatus` event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

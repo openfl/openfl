@@ -42,7 +42,7 @@ import lime.graphics.RenderContext;
 	encoded with either the Sorenson Spark or On2 VP6 codec and also supports
 	an alpha channel. The On2 VP6 video codec uses less bandwidth than older
 	technologies and offers additional deblocking and deringing filters. See
-	the flash.net.NetStream class for more information about video playback
+	the openfl.net.NetStream class for more information about video playback
 	and supported formats.
 
 	Flash Player 9.0.115.0 and later supports mipmapping to optimize runtime

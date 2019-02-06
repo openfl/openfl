@@ -64,7 +64,7 @@ class Rectangle
 
 	/**
 		The sum of the `y` and `height` properties.
-		
+
 		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var bottom(get, set):Float;
@@ -72,7 +72,7 @@ class Rectangle
 	/**
 		The location of the Rectangle object's bottom-right corner, determined
 		by the values of the `right` and `bottom` properties.
-		
+
 		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var bottomRight(get, set):Point;
@@ -81,7 +81,7 @@ class Rectangle
 		The height of the rectangle, in pixels. Changing the `height` value of
 		a Rectangle object has no effect on the `x`, `y`, and `width`
 		properties.
-		
+
 		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var height:Float;
@@ -101,7 +101,7 @@ class Rectangle
 
 	/**
 		The sum of the `x` and `width` properties.
-		
+
 		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var right(get, set):Float;
@@ -128,7 +128,7 @@ class Rectangle
 	/**
 		The location of the Rectangle object's top-left corner, determined by
 		the _x_ and _y_ coordinates of the point.
-		
+
 		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var topLeft(get, set):Point;
@@ -137,7 +137,7 @@ class Rectangle
 		The width of the rectangle, in pixels. Changing the `width` value of a
 		Rectangle object has no effect on the `x`, `y`, and `height`
 		properties.
-		
+
 		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var width:Float;
@@ -358,7 +358,7 @@ class Rectangle
 		intersection as a Rectangle object. If the rectangles do not
 		intersect, this method returns an empty Rectangle object with its
 		properties set to 0.
-		
+
 		![The resulting intersection rectangle.](/images/rectangle_intersect.jpg)
 
 		@param toIntersect The Rectangle object to compare against to see if
@@ -484,7 +484,7 @@ class Rectangle
 		Adds two rectangles together to create a new Rectangle object, by
 		filling in the horizontal and vertical space between the two
 		rectangles.
-		
+
 		![The resulting union rectangle.](/images/rectangle_union.jpg)
 
 		**Note:** The `union()` method ignores rectangles with `0` as the

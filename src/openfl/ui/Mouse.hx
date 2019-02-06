@@ -23,26 +23,26 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	/**
 		Sets or returns the type of cursor, or, for a native cursor, the
 		cursor name.
-		The default value is `flash.ui.MouseCursor.AUTO`.
+		The default value is `openfl.ui.MouseCursor.AUTO`.
 
 		To set values for this property, use the following string values:
-		
+
 		| String value | Description |
 		| --- | --- |
-		| `flash.ui.MouseCursor.AUTO` | Mouse cursor will change automatically based on the object under the mouse. |
-		| `flash.ui.MouseCursor.ARROW` | Mouse cursor will be an arrow. |
-		| `flash.ui.MouseCursor.BUTTON` | Mouse cursor will be a button clicking hand. |
-		| `flash.ui.MouseCursor.HAND` | Mouse cursor will be a dragging hand. |
-		| `flash.ui.MouseCursor.IBEAM` | Mouse cursor will be an I-beam. |
-		
+		| `openfl.ui.MouseCursor.AUTO` | Mouse cursor will change automatically based on the object under the mouse. |
+		| `openfl.ui.MouseCursor.ARROW` | Mouse cursor will be an arrow. |
+		| `openfl.ui.MouseCursor.BUTTON` | Mouse cursor will be a button clicking hand. |
+		| `openfl.ui.MouseCursor.HAND` | Mouse cursor will be a dragging hand. |
+		| `openfl.ui.MouseCursor.IBEAM` | Mouse cursor will be an I-beam. |
+
 		**Note:** For Flash Player 10.2 or AIR 2.6 and later versions, this
 		property sets or gets the cursor name when you are using a native
 		cursor. A native cursor name defined using `Mouse.registerCursor()`
 		overwrites currently predefined cursor types (such as
-		`flash.ui.MouseCursor.IBEAM`).
+		`openfl.ui.MouseCursor.IBEAM`).
 
 		@throws ArgumentError If set to any value which is not a member of
-							  `flash.ui.MouseCursor`, or is not a string
+							  `openfl.ui.MouseCursor`, or is not a string
 							  specified using the `Mouse.registerCursor()`
 							  method.
 	**/
@@ -112,7 +112,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		@param cursor The properties for the native cursor, such as icon
 					  bitmap, specified as a MouseCursorData instance.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_2) public static function registerCursor (name:String, cursor:flash.ui.MouseCursorData):Void;
+	// @:noCompletion @:dox(hide) @:require(flash10_2) public static function registerCursor (name:String, cursor:openfl.ui.MouseCursorData):Void;
 
 	/**
 		Displays the pointer. The pointer is visible by default.

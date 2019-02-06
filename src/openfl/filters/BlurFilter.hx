@@ -140,11 +140,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 					   the quality using the BitmapFilterQuality constants:
 
 
-					  * `flash.filters.BitmapFilterQuality.LOW`
+					  * `openfl.filters.BitmapFilterQuality.LOW`
 
-					  * `flash.filters.BitmapFilterQuality.MEDIUM`
+					  * `openfl.filters.BitmapFilterQuality.MEDIUM`
 
-					  * `flash.filters.BitmapFilterQuality.HIGH`
+					  * `openfl.filters.BitmapFilterQuality.HIGH`
 
 
 					   High quality approximates a Gaussian blur. For most

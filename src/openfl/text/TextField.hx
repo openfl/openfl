@@ -156,10 +156,10 @@ class TextField extends InteractiveObject
 
 	/**
 		The type of anti-aliasing used for this text field. Use
-		`flash.text.AntiAliasType` constants for this property. You can
+		`openfl.text.AntiAliasType` constants for this property. You can
 		control this setting only if the font is embedded(with the
 		`embedFonts` property set to `true`). The default
-		setting is `flash.text.AntiAliasType.NORMAL`.
+		setting is `openfl.text.AntiAliasType.NORMAL`.
 
 		To set values for this property, use the following string values:
 	**/
@@ -205,7 +205,7 @@ class TextField extends InteractiveObject
 		fixed.
 
 		@throws ArgumentError The `autoSize` specified is not a member
-							  of flash.text.TextFieldAutoSize.
+							  of openfl.text.TextFieldAutoSize.
 	**/
 	public var autoSize(get, set):TextFieldAutoSize;
 
@@ -343,20 +343,20 @@ class TextField extends InteractiveObject
 
 	/**
 		The type of grid fitting used for this text field. This property
-		applies only if the `flash.text.AntiAliasType` property of the text
-		field is set to `flash.text.AntiAliasType.ADVANCED`.
+		applies only if the `openfl.text.AntiAliasType` property of the text
+		field is set to `openfl.text.AntiAliasType.ADVANCED`.
 		The type of grid fitting used determines whether Flash Player forces
 		strong horizontal and vertical lines to fit to a pixel or subpixel
 		grid, or not at all.
 
-		For the `flash.text.GridFitType` property, you can use the following
+		For the `openfl.text.GridFitType` property, you can use the following
 		string values:
-		
+
 		| String value | Description |
 		| --- | --- |
-		| `flash.text.GridFitType.NONE` | Specifies no grid fitting. Horizontal and vertical lines in the glyphs are not forced to the pixel grid. This setting is recommended for animation or for large font sizes. |
-		| `flash.text.GridFitType.PIXEL` | Specifies that strong horizontal and vertical lines are fit to the pixel grid. This setting works only for left-aligned text fields. To use this setting, the `flash.dispaly.AntiAliasType` property of the text field must be set to `flash.text.AntiAliasType.ADVANCED`. This setting generally provides the best legibility for left-aligned text. |
-		| `flash.text.GridFitType.SUBPIXEL` | Specifies that strong horizontal and vertical lines are fit to the subpixel grid on an LCD monitor. To use this setting, the `flash.text.AntiAliasType` property of the text field must be set to `flash.text.AntiAliasType.ADVANCED`. The `flash.text.GridFitType.SUBPIXEL` setting is often good for right-aligned or centered dynamic text, and it is sometimes a useful trade-off for animation versus text quality. |
+		| `openfl.text.GridFitType.NONE` | Specifies no grid fitting. Horizontal and vertical lines in the glyphs are not forced to the pixel grid. This setting is recommended for animation or for large font sizes. |
+		| `openfl.text.GridFitType.PIXEL` | Specifies that strong horizontal and vertical lines are fit to the pixel grid. This setting works only for left-aligned text fields. To use this setting, the `openfl.dispaly.AntiAliasType` property of the text field must be set to `openfl.text.AntiAliasType.ADVANCED`. This setting generally provides the best legibility for left-aligned text. |
+		| `openfl.text.GridFitType.SUBPIXEL` | Specifies that strong horizontal and vertical lines are fit to the subpixel grid on an LCD monitor. To use this setting, the `openfl.text.AntiAliasType` property of the text field must be set to `openfl.text.AntiAliasType.ADVANCED`. The `openfl.text.GridFitType.SUBPIXEL` setting is often good for right-aligned or centered dynamic text, and it is sometimes a useful trade-off for animation versus text quality. |
 
 		@default pixel
 	**/
@@ -365,7 +365,7 @@ class TextField extends InteractiveObject
 	/**
 		Contains the HTML representation of the text field contents.
 		Flash Player supports the following HTML tags:
-		
+
 		| Tag |  Description  |
 		| --- | --- |
 		| Anchor tag | The `<a>` tag creates a hypertext link and supports the following attributes:<ul><li>`target`: Specifies the name of the target window where you load the page. Options include `_self`, `_blank`, `_parent`, and `_top`. The `_self` option specifies the current frame in the current window, `_blank` specifies a new window, `_parent` specifies the parent of the current frame, and `_top` specifies the top-level frame in the current window.</li><li>`href`: Specifies a URL or an ActionScript `link` event.The URL can be either absolute or relative to the location of the SWF file that is loading the page. An example of an absolute reference to a URL is `http://www.adobe.com`; an example of a relative reference is `/index.html`. Absolute URLs must be prefixed with http://; otherwise, Flash Player or AIR treats them as relative URLs. You can use the `link` event to cause the link to execute an ActionScript function in a SWF file instead of opening a URL. To specify a `link` event, use the event scheme instead of the http scheme in your `href` attribute. An example is `href="event:myText"` instead of `href="http://myURL"`; when the user clicks a hypertext link that contains the event scheme, the text field dispatches a `link` TextEvent with its `text` property set to "`myText`". You can then create an ActionScript function that executes whenever the link TextEvent is dispatched. You can also define `a:link`, `a:hover`, and `a:active` styles for anchor tags by using style sheets.</li></ul> |
@@ -375,13 +375,13 @@ class TextField extends InteractiveObject
 		| Image tag | The `<img>` tag lets you embed external image files (JPEG, GIF, PNG), SWF files, and movie clips inside text fields. Text automatically flows around images you embed in text fields. You must set the text field to be multiline to wrap text around an image.<br>The `<img>` tag supports the following attributes:<ul><li>`src`: Specifies the URL to an image or SWF file, or the linkage identifier for a movie clip symbol in the library. This attribute is required; all other attributes are optional. External files (JPEG, GIF, PNG, and SWF files) do not show until they are downloaded completely.</li><li>`width`: The width of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`height`: The height of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`align`: Specifies the horizontal alignment of the embedded image within the text field. Valid values are `left` and `right`. The default value is `left`.</li><li>`hspace`: Specifies the amount of horizontal space that surrounds the image where no text appears. The default value is 8.</li><li>`vspace`: Specifies the amount of vertical space that surrounds the image where no text appears. The default value is 8.</li><li>`id`: Specifies the name for the movie clip instance (created by Flash Player) that contains the embedded image file, SWF file, or movie clip. This approach is used to control the embedded content with ActionScript.</li><li>`checkPolicyFile`: Specifies that Flash Player checks for a URL policy file on the server associated with the image domain. If a policy file exists, SWF files in the domains listed in the file can access the data of the loaded image, for example, by calling the `BitmapData.draw()` method with this image as the `source` parameter. For more information related to security, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).</li></ul>Flash displays media embedded in a text field at full size. To specify the dimensions of the media you are embedding, use the `<img>` tag `height` and `width` attributes. <br>In general, an image embedded in a text field appears on the line following the `<img>` tag. However, when the `<img>` tag is the first character in the text field, the image appears on the first line of the text field.<br>For AIR content in the application security sandbox, AIR ignores `img` tags in HTML content in ActionScript TextField objects. This is to prevent possible phishing attacks. |
 		| Italic tag | The `<i>` tag displays the tagged text in italics. An italic typeface must be available for the font used. |
 		| List item tag | The `<li>` tag places a bullet in front of the text that it encloses.<br>**Note:** Because Flash Player and AIR do not recognize ordered and unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered. All lists are unordered and all list items use bullets. |
-		| Paragraph tag | The `<p>` tag creates a new paragraph. The text field must be set to be a multiline text field to use this tag. The `<p>` tag supports the following attributes:<ul><li>align: Specifies alignment of text within the paragraph; valid values are `left`, `right`, `justify`, and `center`.</li><li>class: Specifies a CSS style class defined by a flash.text.StyleSheet object.</li></ul> |
-		| Span tag | The `<span>` tag is available only for use with CSS text styles. It supports the following attribute:<ul><li>class: Specifies a CSS style class defined by a flash.text.StyleSheet object.</li></ul> |
+		| Paragraph tag | The `<p>` tag creates a new paragraph. The text field must be set to be a multiline text field to use this tag. The `<p>` tag supports the following attributes:<ul><li>align: Specifies alignment of text within the paragraph; valid values are `left`, `right`, `justify`, and `center`.</li><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
+		| Span tag | The `<span>` tag is available only for use with CSS text styles. It supports the following attribute:<ul><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
 		| Text format tag | The `<textformat>` tag lets you use a subset of paragraph formatting properties of the TextFormat class within text fields, including line leading, indentation, margins, and tab stops. You can combine `<textformat>` tags with the built-in HTML tags.<br>The `<textformat>` tag has the following attributes:<li>`blockindent`: Specifies the block indentation in points; corresponds to `TextFormat.blockIndent`.</li><li>`indent`: Specifies the indentation from the left margin to the first character in the paragraph; corresponds to `TextFormat.indent`. Both positive and negative numbers are acceptable.</li><li>`leading`: Specifies the amount of leading (vertical space) between lines; corresponds to `TextFormat.leading`. Both positive and negative numbers are acceptable.</li><li>`leftmargin`: Specifies the left margin of the paragraph, in points; corresponds to `TextFormat.leftMargin`.</li><li>`rightmargin`: Specifies the right margin of the paragraph, in points; corresponds to `TextFormat.rightMargin`.</li><li>`tabstops`: Specifies custom tab stops as an array of non-negative integers; corresponds to `TextFormat.tabStops`.</li></ul> |
 		| Underline tag | The `<u>` tag underlines the tagged text. |
-		
+
 		Flash Player and AIR support the following HTML entities:
-		 
+
 		| Entity | Description |
 		| --- | --- |
 		| &amp;lt; | < (less than) |
@@ -389,7 +389,7 @@ class TextField extends InteractiveObject
 		| &amp;amp; | & (ampersand) |
 		| &amp;quot; | " (double quotes) |
 		| &amp;apos; | ' (apostrophe, single quote) |
-		
+
 		Flash Player and AIR also support explicit character codes, such as
 		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
 	**/
@@ -565,8 +565,8 @@ class TextField extends InteractiveObject
 
 	/**
 		The sharpness of the glyph edges in this text field. This property applies
-		only if the `flash.text.AntiAliasType` property of the text
-		field is set to `flash.text.AntiAliasType.ADVANCED`. The range
+		only if the `openfl.text.AntiAliasType` property of the text
+		field is set to `openfl.text.AntiAliasType.ADVANCED`. The range
 		for `sharpness` is a number from -400 to 400. If you attempt to
 		set `sharpness` to a value outside that range, Flash sets the
 		property to the nearest value in the range(either -400 or 400).
@@ -633,8 +633,8 @@ class TextField extends InteractiveObject
 	public var textWidth(get, never):Float;
 	/**
 		The thickness of the glyph edges in this text field. This property
-		applies only when `flash.text.AntiAliasType` is set to
-		`flash.text.AntiAliasType.ADVANCED`.
+		applies only when `openfl.text.AntiAliasType` is set to
+		`openfl.text.AntiAliasType.ADVANCED`.
 		The range for `thickness` is a number from -200 to 200. If you attempt
 		to set `thickness` to a value outside that range, the property is set
 		to the nearest value in the range (either -200 or 200).
@@ -651,7 +651,7 @@ class TextField extends InteractiveObject
 
 		@default dynamic
 		@throws ArgumentError The `type` specified is not a member of
-							  flash.text.TextFieldType.
+							  openfl.text.TextFieldType.
 	**/
 	public var type(get, set):TextFieldType;
 	/**
@@ -931,7 +931,7 @@ class TextField extends InteractiveObject
 				file, it is the loaded object. If no `<img>` tag with the
 				matching `id` exists, the method returns `null`.
 	**/
-	// function getImageReference(id : String) : flash.display.DisplayObject;
+	// function getImageReference(id : String) : openfl.display.DisplayObject;
 
 	/**
 		Returns the zero-based index value of the line at the point specified by
@@ -1155,7 +1155,7 @@ class TextField extends InteractiveObject
 		applied to all the text in the text field.
 
 		The following table describes three possible usages:
-		
+
 		| Usage | Description |
 		| --- | --- |
 		| `my_textField.getTextFormat()` | Returns a TextFormat object containing formatting information for all text in a text field. Only properties that are common to all text in the text field are set in the resulting TextFormat object. Any property that is _mixed_, meaning that it has different values at different points in the text, has a value of `null`. |
@@ -1220,10 +1220,10 @@ class TextField extends InteractiveObject
 	/**
 		Returns true if an embedded font is available with the specified
 		`fontName` and `fontStyle` where `Font.fontType` is
-		`flash.text.FontType.EMBEDDED`. Starting with Flash Player 10, two
+		`openfl.text.FontType.EMBEDDED`. Starting with Flash Player 10, two
 		kinds of embedded fonts can appear in a SWF file. Normal embedded
 		fonts are only used with TextField objects. CFF embedded fonts are
-		only used with the flash.text.engine classes. The two types are
+		only used with the openfl.text.engine classes. The two types are
 		distinguished by the `fontType` property of the `Font` class, as
 		returned by the `enumerateFonts()` function.
 		TextField cannot use a font of type `EMBEDDED_CFF`. If `embedFonts` is
@@ -1238,11 +1238,11 @@ class TextField extends InteractiveObject
 
 		@param fontName  The name of the embedded font to check.
 		@param fontStyle Specifies the font style to check. Use
-						 `flash.text.FontStyle`
+						 `openfl.text.FontStyle`
 		@return `true` if a compatible embedded font is available, otherwise
 				`false`.
 		@throws ArgumentError The `fontStyle` specified is not a member of
-							  `flash.text.FontStyle`.
+							  `openfl.text.FontStyle`.
 	**/
 	// @:require(flash10) static function isFontCompatible(fontName : String, fontStyle : String) : Bool;
 

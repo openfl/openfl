@@ -42,7 +42,7 @@ import openfl.display3D.Context3D;
 	minValue: 0.0; maxValue: 50.0; defaultValue: 25.0; >; ```
 	The ShaderParameter instance corresponding to the `size` parameter has the
 	following metadata properties in addition to its built-in properties:
-	
+
 	| Property name | Data type | Value |
 	| --- | --- | --- |
 	| `name` | String | `"size"` |
@@ -50,10 +50,10 @@ import openfl.display3D.Context3D;
 	| `minValue` | Array | `[0, 0]` |
 	| `maxValue` | Array | `[100, 100]` |
 	| `defaultValue` | Array | `[50, 50]` |
-	
+
 	The ShaderParameter corresponding to the `radius` parameter has the
 	following additional properties:
-	
+
 	| Property name | Data type | Value |
 	| --- | --- | --- |
 	| `name` | String | `"radius"` |
@@ -96,7 +96,7 @@ import openfl.display3D.Context3D;
 		parameter, which can be determined using the `type` property.
 		The following table indicates the parameter type and corresponding
 		number and data type of the `value` Array's elements:
-		
+
 		| Parameter type | # Elements | Element data type |
 		| --- | --- | --- |
 		| float (`ShaderParameterType.FLOAT`) | 1 | Number |

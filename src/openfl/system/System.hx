@@ -17,7 +17,7 @@ import cpp.vm.Gc;
 	with shared objects and the use of the Clipboard.
 
 	Additional properties and methods are in other classes within the
-	flash.system package: the Capabilities class, the IME class, and the
+	openfl.system package: the Capabilities class, the IME class, and the
 	Security class.
 
 	This class contains only static methods and properties. You cannot
@@ -42,7 +42,7 @@ import cpp.vm.Gc;
 		The currently installed system IME. To register for imeComposition
 		events, call `addEventListener()` on this instance.
 	**/
-	// @:noCompletion @:dox(hide) public static var ime (default, null):flash.system.IME;
+	// @:noCompletion @:dox(hide) public static var ime (default, null):openfl.system.IME;
 	/**
 		The entire amount of memory (in bytes) used by an application. This is
 		the amount of resident private memory for the entire process.
@@ -152,7 +152,7 @@ import cpp.vm.Gc;
 		@param node XML reference that should be made available for garbage
 					collection.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:openfl.xml.XML):Void;
 
 	/**
 		Closes Flash Player.

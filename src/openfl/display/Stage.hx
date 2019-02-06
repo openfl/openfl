@@ -252,13 +252,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		devices (camera/scanner/etc.).
 
 		The three possible values are strings with corresponding constants in
-		the flash.display.ColorCorrection class:
+		the openfl.display.ColorCorrection class:
 
 		* `"default"`: Use the same color correction as the host system.
 		* `"on"`: Always perform color correction.
 		* `"off"`: Never perform color correction.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:openfl.display.ColorCorrection;
 
 	/**
 		Specifies whether the Flash runtime is running on an operating system
@@ -268,13 +268,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		correction on the host system (usually the browser). Currently the
 		return values can be:
 		The three possible values are strings with corresponding constants in
-		the flash.display.ColorCorrectionSupport class:
+		the openfl.display.ColorCorrectionSupport class:
 
 		* `"unsupported"`: Color correction is not available.
 		* `"defaultOn"`: Always performs color correction.
 		* `"defaultOff"`: Never performs color correction.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):openfl.display.ColorCorrectionSupport;
 	public var contentsScaleFactor(get, never):Float;
 	public var context3D(default, null):Context3D;
 	// @:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
@@ -693,7 +693,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		**Note:** AIR for TV devices support only one StageVideo object.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
+	// @:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<openfl.media.StageVideo>;
 
 	/**
 		Specifies the current width, in pixels, of the Stage.

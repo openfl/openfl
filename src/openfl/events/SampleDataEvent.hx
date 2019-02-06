@@ -80,7 +80,7 @@ class SampleDataEvent extends Event
 		Defines the value of the `type` property of a `SampleDataEvent` event
 		object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

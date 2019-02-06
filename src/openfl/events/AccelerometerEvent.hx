@@ -16,7 +16,7 @@ class AccelerometerEvent extends Event
 		Defines the value of the `type` property of a `AccelerometerEvent`
 		event object.
 		This event has the following properties:
-		
+
 		| Property | Value |
 		| --- | --- |
 		| `bubbles` | `false` |

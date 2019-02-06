@@ -305,11 +305,11 @@ import js.html.CanvasRenderingContext2D;
 					  shader. Any changes made to the shader, such as changing
 					  a parameter value, input, or bytecode, are not applied
 					  to the copied shader that's used for the fill.
-		@param matrix A matrix object (of the flash.geom.Matrix class), which
+		@param matrix A matrix object (of the openfl.geom.Matrix class), which
 					  you can use to define transformations on the shader. For
 					  example, you can use the following matrix to rotate a
 					  shader by 45 degrees (pi/4 radians): <codeblock
-					  xml:space="preserve"> matrix = new flash.geom.Matrix();
+					  xml:space="preserve"> matrix = new openfl.geom.Matrix();
 					  matrix.rotate(Math.PI / 4); ```
 					  The coordinates received in the shader are based on the
 					  matrix that is specified for the `matrix` parameter. For

@@ -140,7 +140,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 	/**
 		Indicates the byte order for the data. Possible values are constants
-		from the flash.utils.Endian class, `Endian.BIG_ENDIAN` or
+		from the openfl.utils.Endian class, `Endian.BIG_ENDIAN` or
 		`Endian.LITTLE_ENDIAN`.
 
 		@default Endian.BIG_ENDIAN
