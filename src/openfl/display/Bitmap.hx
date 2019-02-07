@@ -152,10 +152,7 @@ class Bitmap extends DisplayObject
 		var px = __renderTransform.__transformInverseX(x, y);
 		var py = __renderTransform.__transformInverseY(x, y);
 
-		if (px > 0 &&
-			py > 0 &&
-			px <= __bitmapData.width &&
-			py <= __bitmapData.height)
+		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height)
 		{
 			if (__scrollRect != null && !__scrollRect.contains(px, py))
 			{
@@ -182,10 +179,7 @@ class Bitmap extends DisplayObject
 		var px = __renderTransform.__transformInverseX(x, y);
 		var py = __renderTransform.__transformInverseY(x, y);
 
-		if (px > 0 &&
-			py > 0 &&
-			px <= __bitmapData.width &&
-			py <= __bitmapData.height)
+		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height)
 		{
 			return true;
 		}

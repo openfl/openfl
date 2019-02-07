@@ -47,6 +47,46 @@ class ExtraParams
 				}
 			}
 		}
+
+		/**
+			Add hidden ApplicationMain type
+			for better code completion when
+			'update' has not been called
+		**/
+
+		try
+		{
+			Context.getModule("ApplicationMain");
+		}
+		catch (e:Dynamic)
+		{
+			var pos = Context.currentPos();
+			Context.defineModule("ApplicationMain", [
+				{
+					fields: [
+						{
+							access: [APublic, AStatic],
+							kind: FFun(
+								{
+									args: [],
+									expr: macro {},
+									ret: null
+								}),
+							meta: [
+								{name: ":noCompletion", pos: pos},
+								{name: ":dox", params: [macro hide], pos: pos}
+							],
+							name: "main",
+							pos: pos
+						}
+					],
+					kind: TDClass(null, [], false),
+					name: "ApplicationMain",
+					pack: [],
+					pos: pos
+				}
+			]);
+		}
 	}
 
 	public static function includeExterns():Void
